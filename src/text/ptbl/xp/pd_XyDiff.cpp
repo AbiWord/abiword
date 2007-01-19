@@ -1441,8 +1441,8 @@ bool PD_XyDiff::apply()
 		const PP_AttrProp * pAP2;
 		UT_return_val_if_fail(pPt2->getAttrProp(api, &pAP2), false);
 
-		const XML_Char ** pAttrs2 = pAP2->getAttributes();
-		const XML_Char ** pProps2 = pAP2->getProperties();
+		const gchar ** pAttrs2 = pAP2->getAttributes();
+		const gchar ** pProps2 = pAP2->getProperties();
 
 		switch(pf->getType())
 		{

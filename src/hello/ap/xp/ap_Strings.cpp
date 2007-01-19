@@ -30,12 +30,12 @@
 // (there will only be one instance of this sub-class)
 //////////////////////////////////////////////////////////////////
 
-AP_BuiltinStringSet::AP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName)
+AP_BuiltinStringSet::AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName)
 	: XAP_BuiltinStringSet(pApp,szLanguageName)
 {
 #define dcl(id,s)					s,
 
-	static const XML_Char * s_a[] =
+	static const gchar * s_a[] =
 	{
 		dcl(__FIRST__,0)			// bogus entry for zero
 #include "ap_String_Id.h"
@@ -51,7 +51,7 @@ AP_BuiltinStringSet::~AP_BuiltinStringSet(void)
 {
 }
 
-const XML_Char * AP_BuiltinStringSet::getValue(XAP_String_Id id) const
+const gchar * AP_BuiltinStringSet::getValue(XAP_String_Id id) const
 {
 	// if it's in our range, we fetch it.
 	// otherwise, we hand it down to the base class.
@@ -100,12 +100,12 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 	
 #define dcl(id,s)				{ #id,s },
 
-	static struct { const XML_Char * szId; const XML_Char * szString; } s_mapXAP[] =
+	static struct { const gchar * szId; const gchar * szString; } s_mapXAP[] =
 	{
 #include "xap_String_Id.h"
 	};
 	
-	static struct { const XML_Char * szId; const XML_Char * szString; } s_mapAP[] =
+	static struct { const gchar * szId; const gchar * szString; } s_mapAP[] =
 	{
 #include "ap_String_Id.h"
 	};
@@ -157,18 +157,18 @@ AP_DiskStringSet::~AP_DiskStringSet(void)
 
 	for (k=kLimit-1; k>=0; k--)
 	{
-		XML_Char * sz = (XML_Char *)m_vecStringsAP.getNthItem(k);
+		gchar * sz = (gchar *)m_vecStringsAP.getNthItem(k);
 		if (sz)
 			g_free(sz);
 	}
 }
 
-bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
+bool AP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 {
 	if (id < AP_STRING_ID__FIRST__)
 		return XAP_DiskStringSet::setValue(id,szString);
 
-	XML_Char * szDup = NULL;
+	gchar * szDup = NULL;
 	if (szString && *szString)
 		if (!(szDup = g_strdup(szString)))
 			return false;
@@ -180,7 +180,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 	return bResult;
 }
 
-const XML_Char * AP_DiskStringSet::getValue(XAP_String_Id id) const
+const gchar * AP_DiskStringSet::getValue(XAP_String_Id id) const
 {
 	// dispatch to XAP code if not in our range
 	
@@ -193,7 +193,7 @@ const XML_Char * AP_DiskStringSet::getValue(XAP_String_Id id) const
 
 	if (id-AP_STRING_ID__FIRST__ < kLimit)
 	{
-		const XML_Char * szValue = (const XML_Char *) m_vecStringsAP.getNthItem(id-AP_STRING_ID__FIRST__);
+		const gchar * szValue = (const gchar *) m_vecStringsAP.getNthItem(id-AP_STRING_ID__FIRST__);
 		if (szValue)
 			return szValue;
 	}
@@ -212,7 +212,7 @@ const XML_Char * AP_DiskStringSet::getValue(XAP_String_Id id) const
 
 #define dcl(id,s)					{ #id, AP_STRING_ID_##id },
 
-static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
+static struct { const gchar * szName; XAP_String_Id id; } s_map[] =
 {
 #include "ap_String_Id.h"
 };
@@ -221,7 +221,7 @@ static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
+bool AP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
@@ -255,7 +255,7 @@ bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 
 		for (k=0; k<kLimit; k++)
 		{
-			const XML_Char * szValue = AP_DiskStringSet::getValue(s_map[k].id);
+			const gchar * szValue = AP_DiskStringSet::getValue(s_map[k].id);
 			if (!szValue || !*szValue)
 				UT_DEBUGMSG(("WARNING: Translation for id [%s] not found.\n",s_map[k].szName));
 		}

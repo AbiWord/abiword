@@ -57,14 +57,14 @@ public:
 public:
 	virtual tProperty_type getType() const = 0;
 
-	static PP_PropertyType *createPropertyType(tProperty_type Type, const XML_Char *p_init);
+	static PP_PropertyType *createPropertyType(tProperty_type Type, const gchar *p_init);
 };
 
 class ABI_EXPORT PP_PropertyTypeBool : public PP_PropertyType
 {
 
 public:
-	PP_PropertyTypeBool(const XML_Char *p_init);
+	PP_PropertyTypeBool(const gchar *p_init);
 
 	tProperty_type getType() const {return Property_type_bool;}
 
@@ -80,7 +80,7 @@ class ABI_EXPORT PP_PropertyTypeInt : public PP_PropertyType
 {
 
 public:
-	PP_PropertyTypeInt(const XML_Char *p_init);
+	PP_PropertyTypeInt(const gchar *p_init);
 
 	tProperty_type getType() const {return Property_type_int;}
 
@@ -96,7 +96,7 @@ class ABI_EXPORT PP_PropertyTypeSize : public PP_PropertyType
 {
 
 public:
-	PP_PropertyTypeSize(const XML_Char *p_init);
+	PP_PropertyTypeSize(const gchar *p_init);
 
 	tProperty_type getType() const {return Property_type_size;}
 
@@ -114,7 +114,7 @@ class ABI_EXPORT PP_PropertyTypeColor : public PP_PropertyType
 {
 
 public:
-	PP_PropertyTypeColor(const XML_Char *p_init);
+	PP_PropertyTypeColor(const gchar *p_init);
 
 	tProperty_type getType() const {return Property_type_color;}
 
@@ -145,27 +145,27 @@ typedef unsigned int tPropLevel;
 class ABI_EXPORT PP_Property
 {
 public:
-	XML_Char *			m_pszName;
-	XML_Char *			m_pszInitial;
+	gchar *			m_pszName;
+	gchar *			m_pszInitial;
 	bool				m_bInherit;
 	PP_PropertyType *	m_pProperty;
 	tPropLevel          m_iLevel;
 	~PP_Property();
 
-	inline const XML_Char *	getName() const {return m_pszName;}
-	inline const XML_Char *	getInitial() const {return m_pszInitial;}
+	inline const gchar *	getName() const {return m_pszName;}
+	inline const gchar *	getInitial() const {return m_pszInitial;}
 	const PP_PropertyType *	getInitialType (tProperty_type Type) const;
 	inline bool				canInherit() const {return m_bInherit;}
 	inline tPropLevel       getLevel() const {return m_iLevel;}
 };
 
-const PP_Property * PP_lookupProperty(const XML_Char * pszName);
+const PP_Property * PP_lookupProperty(const gchar * pszName);
 
-void PP_resetInitialBiDiValues(const XML_Char * pszValue);
+void PP_resetInitialBiDiValues(const gchar * pszValue);
 
 ABI_EXPORT void PP_setDefaultFontFamily(const char* pszFamily);
 
-ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
+ABI_EXPORT const gchar * PP_evalProperty(const gchar * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
@@ -173,7 +173,7 @@ ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 bool bExpandStyles=false);
 
 
-ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const XML_Char * pszName,
+ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const gchar * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
@@ -182,6 +182,6 @@ ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const XML_Char * pszName,
 								 bool bExpandStyles=false);
 
 ABI_EXPORT UT_uint32        PP_getPropertyCount();
-ABI_EXPORT const XML_Char * PP_getNthPropertyName(UT_uint32 n);
+ABI_EXPORT const gchar * PP_getNthPropertyName(UT_uint32 n);
 ABI_EXPORT tPropLevel       PP_getNthPropertyLevel(UT_uint32 n);
 #endif /* PP_PROPERTY_H */

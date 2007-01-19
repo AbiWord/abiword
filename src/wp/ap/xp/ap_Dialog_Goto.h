@@ -49,7 +49,7 @@ public:
 	static char **              getJumpTargets(); // TODO: Change to UT_UCSChar
 	
 	UT_uint32					getExistingBookmarksCount() const;
-	const XML_Char *			getNthExistingBookmark(UT_uint32 n) const;
+	const gchar *			getNthExistingBookmark(UT_uint32 n) const;
 
 protected:
 	// These are the "current use" dialog data items,

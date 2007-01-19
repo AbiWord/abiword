@@ -480,7 +480,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 // Now extract widgets from the menu items
 //
 
-	const UT_GenericVector<const XML_Char*>* footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const UT_GenericVector<const gchar*>* footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
 	
 		

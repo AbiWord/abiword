@@ -65,7 +65,7 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
 	  m_bSuggestName(false),
 	  m_answer(a_VOID)
 {
-  const XML_Char * savedir = 0;
+  const gchar * savedir = 0;
   if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir))
     {
       m_szPersistPathname = g_strdup(savedir);

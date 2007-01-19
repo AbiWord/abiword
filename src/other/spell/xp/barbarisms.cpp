@@ -229,7 +229,7 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_G
 	and the suggestions are in UT_UCSChar
 
 */
-void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
+void BarbarismChecker::startElement(const gchar *name, const gchar **atts)
 {
 	// TODO: find out the correct arguments for UT_getAttribute...
 

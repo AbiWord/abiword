@@ -118,8 +118,8 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 	m_pFontPreview->setVecProperties( & m_vecProps);
 }
 
-void XAP_Dialog_FontChooser::addOrReplaceVecProp(const XML_Char * pszProp,
-												 const XML_Char * pszVal)
+void XAP_Dialog_FontChooser::addOrReplaceVecProp(const gchar * pszProp,
+												 const gchar * pszVal)
 {
 	UT_sint32 iCount = m_vecProps.getItemCount();
 	const char * pszV = NULL;
@@ -132,7 +132,7 @@ void XAP_Dialog_FontChooser::addOrReplaceVecProp(const XML_Char * pszProp,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) m_vecProps.getNthItem(i);
+		pszV = (const gchar *) m_vecProps.getNthItem(i);
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
@@ -182,28 +182,28 @@ void XAP_Dialog_FontChooser::event_previewClear(void)
  * vecProp(n)   :   vecProp(n+1)
  * "property"   :   "value"
  */
-const XML_Char * XAP_Dialog_FontChooser::getVal(const XML_Char * szProp) const
+const gchar * XAP_Dialog_FontChooser::getVal(const gchar * szProp) const
 {
 	UT_sint32 i = m_vecProps.getItemCount();
 	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
-	const XML_Char * pszV = NULL;
+	const gchar * pszV = NULL;
 	for(j= 0; j<i ;j=j+2)
 	{
-		pszV = (const XML_Char *) m_vecProps.getNthItem(j);
+		pszV = (const gchar *) m_vecProps.getNthItem(j);
 		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
 			break;
 	}
 	if( j < i )
-		return  (const XML_Char *) m_vecProps.getNthItem(j+1);
+		return  (const gchar *) m_vecProps.getNthItem(j+1);
 	else
 		return NULL;
 }
 
 /*!
  * This method sets all the local properties from a vector of pointers
- * to const XML_Char * strings of Property - Value pairs.
+ * to const gchar * strings of Property - Value pairs.
  * This method wipes out all the old values and clears all the bools
  * assciated with them.
  */
@@ -223,7 +223,7 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 //
 // Do the Text decorations
 //
-	const XML_Char * s = NULL;
+	const gchar * s = NULL;
 	s = getVal("text-decoration");
 	m_bUnderline = (NULL != strstr(s,"underline"));
 	m_bOverline = (NULL != strstr(s,"overline"));
@@ -239,37 +239,37 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 	m_bSubScript = strcmp(s,"subscript")==0;
 }
 
-void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)
+void XAP_Dialog_FontChooser::setFontFamily(const gchar * pFontFamily)
 {
 	CLONEP((char *&) m_pFontFamily, pFontFamily);
 	addOrReplaceVecProp("font-family",pFontFamily);
 }
 
-void XAP_Dialog_FontChooser::setFontSize(const XML_Char * pFontSize)
+void XAP_Dialog_FontChooser::setFontSize(const gchar * pFontSize)
 {
 	CLONEP((char *&) m_pFontSize, pFontSize);
 	addOrReplaceVecProp("font-size",pFontSize);
 }
 
-void XAP_Dialog_FontChooser::setFontWeight(const XML_Char * pFontWeight)
+void XAP_Dialog_FontChooser::setFontWeight(const gchar * pFontWeight)
 {
 	CLONEP((char *&) m_pFontWeight, pFontWeight);
 	addOrReplaceVecProp("font-weight",pFontWeight);
 }
 
-void XAP_Dialog_FontChooser::setFontStyle(const XML_Char * pFontStyle)
+void XAP_Dialog_FontChooser::setFontStyle(const gchar * pFontStyle)
 {
 	CLONEP((char *&)m_pFontStyle, pFontStyle);
 	addOrReplaceVecProp("font-style",pFontStyle);
 }
 
-void XAP_Dialog_FontChooser::setColor(const XML_Char * pColor)
+void XAP_Dialog_FontChooser::setColor(const gchar * pColor)
 {
 	CLONEP((char *&)m_pColor, pColor);
 	addOrReplaceVecProp("color",pColor);
 }
 
-void XAP_Dialog_FontChooser::setBGColor(const XML_Char * pBGColor)
+void XAP_Dialog_FontChooser::setBGColor(const gchar * pBGColor)
 {
 	CLONEP((char *&)m_pBGColor, pBGColor);
 	addOrReplaceVecProp("bgcolor",pBGColor);
@@ -325,7 +325,7 @@ void XAP_Dialog_FontChooser::setHidden(bool bHidden)
 	m_bHidden = bHidden;
 }
 
-void XAP_Dialog_FontChooser::setBackGroundColor(const XML_Char * pBackground)
+void XAP_Dialog_FontChooser::setBackGroundColor(const gchar * pBackground)
 {
 	m_pColorBackground = pBackground;
 }
@@ -338,7 +338,7 @@ void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, 
 	m_bTopline = bTopline;
 	m_bBottomline = bBottomline;
 
-	static XML_Char s[50];
+	static gchar s[50];
 	UT_String decors;
 	decors.clear();
 	if(bUnderline)
@@ -354,7 +354,7 @@ void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, 
 	if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
 		decors = "none";
 	sprintf(s,"%s",decors.c_str());
-	addOrReplaceVecProp("text-decoration",(const XML_Char *) s);
+	addOrReplaceVecProp("text-decoration",(const gchar *) s);
 }
 
 XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
@@ -362,7 +362,7 @@ XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 	return m_answer;
 }
 
-bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamily) const
+bool XAP_Dialog_FontChooser::getChangedFontFamily(const gchar ** pszFontFamily) const
 {
 	bool bchanged = didPropChange(m_pFontFamily,getVal("font-family"));
 	bool useVal = (bchanged && !m_bChangedFontFamily);
@@ -373,7 +373,7 @@ bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamil
 	return bchanged;
 }
 
-bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) const
+bool XAP_Dialog_FontChooser::getChangedFontSize(const gchar ** pszFontSize) const
 {
 	bool bchanged = didPropChange(m_pFontSize,getVal("font-size"));
 	bool useVal = (bchanged && !m_bChangedFontSize);
@@ -384,7 +384,7 @@ bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) c
 	return bchanged;
 }
 
-bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeight) const
+bool XAP_Dialog_FontChooser::getChangedFontWeight(const gchar ** pszFontWeight) const
 {
 	bool bchanged = didPropChange(m_pFontWeight,getVal("font-weight"));
 	bool useVal = (bchanged && !m_bChangedFontWeight);
@@ -395,7 +395,7 @@ bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeigh
 	return bchanged;
 }
 
-bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle) const
+bool XAP_Dialog_FontChooser::getChangedFontStyle(const gchar ** pszFontStyle) const
 {
 	bool bchanged = didPropChange(m_pFontStyle,getVal("font-style"));
 	bool useVal = (bchanged && !m_bChangedFontStyle);
@@ -406,7 +406,7 @@ bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle)
 	return bchanged;
 }
 
-bool XAP_Dialog_FontChooser::getChangedBGColor(const XML_Char ** pszBGColor) const
+bool XAP_Dialog_FontChooser::getChangedBGColor(const gchar ** pszBGColor) const
 {
 	bool bchanged = didPropChange(m_pBGColor,getVal("bgcolor"));
 	bool useVal = (bchanged && !m_bChangedBGColor);
@@ -418,7 +418,7 @@ bool XAP_Dialog_FontChooser::getChangedBGColor(const XML_Char ** pszBGColor) con
 }
 
 
-bool XAP_Dialog_FontChooser::getChangedColor(const XML_Char ** pszColor) const
+bool XAP_Dialog_FontChooser::getChangedColor(const gchar ** pszColor) const
 {
 	bool bchanged = didPropChange(m_pColor,getVal("color"));
 	bool useVal = (bchanged && !m_bChangedColor);
@@ -432,7 +432,7 @@ bool XAP_Dialog_FontChooser::getChangedColor(const XML_Char ** pszColor) const
 /*!
  * Compare two prop values and gracefully handle the cases of NULL pointers
  */
-bool XAP_Dialog_FontChooser::didPropChange(const XML_Char * v1, const XML_Char * v2) const
+bool XAP_Dialog_FontChooser::didPropChange(const gchar * v1, const gchar * v2) const
 {
 	if(v1 == NULL && v2 == NULL)
 		return false;
@@ -499,7 +499,7 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 /////////////////////////////////////////////////////////////////////////
 
-XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackground)
+XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackground)
 	: XAP_Preview(gc),
 		m_pFont(NULL),
 		m_iAscent(0),
@@ -520,7 +520,7 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 /*!
  * This method assigns a pointer to a
  *  vector with Char * strings of span-level properties
- * The vector has const XML_Char * string in the order
+ * The vector has const gchar * string in the order
  * (n) Property (n+1) Value
  *
  * This code stolen from ap_Dialog_Lists.cpp
@@ -534,21 +534,21 @@ void XAP_Preview_FontPreview::setVecProperties( const UT_Vector * vFontProps)
  * This method returns a pointer to the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists.
  */
-const XML_Char * XAP_Preview_FontPreview::getVal(const XML_Char * szProp)
+const gchar * XAP_Preview_FontPreview::getVal(const gchar * szProp)
 {
 	UT_sint32 i = m_vecProps->getItemCount();
 	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
-	const XML_Char * pszV = NULL;
+	const gchar * pszV = NULL;
 	for(j= 0; j<i ;j=j+2)
 	{
-		pszV = (const XML_Char *) m_vecProps->getNthItem(j);
+		pszV = (const gchar *) m_vecProps->getNthItem(j);
 		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
 			break;
 	}
 	if( j < i )
-		return  (const XML_Char *) m_vecProps->getNthItem(j+1);
+		return  (const gchar *) m_vecProps->getNthItem(j+1);
 	else
 		return NULL;
 }
@@ -565,7 +565,7 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	bool isUnder,isOver,isStrike;
 
-	const XML_Char * pDecor = getVal("text-decoration");
+	const gchar * pDecor = getVal("text-decoration");
 	if(pDecor)
 	{
 		isUnder = (NULL != strstr(pDecor,"underline"));

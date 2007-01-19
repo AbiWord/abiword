@@ -32,7 +32,7 @@
 #endif
 #include "ut_bytebuf.h"
 
-/* XML_Char definition moved to ut_types.h */
+/* gchar definition moved to ut_types.h */
 
 ABI_EXPORT char * UT_XML_Decode( const char * inKey );
 
@@ -109,9 +109,9 @@ class ABI_EXPORT UT_XML
     public:
       virtual ~Listener () {}
 
-      virtual void startElement (const XML_Char * name, const XML_Char ** atts) = 0;
-      virtual void endElement (const XML_Char * name) = 0;
-      virtual void charData (const XML_Char * buffer, int length) = 0;
+      virtual void startElement (const gchar * name, const gchar ** atts) = 0;
+      virtual void endElement (const gchar * name) = 0;
+      virtual void charData (const gchar * buffer, int length) = 0;
 
     protected:
       Listener () {}
@@ -131,14 +131,14 @@ class ABI_EXPORT UT_XML
     public:
       virtual ~ExpertListener () {}
 
-      virtual void StartElement (const XML_Char * name, const XML_Char ** atts) = 0;
-      virtual void EndElement (const XML_Char * name) = 0;
-      virtual void CharData (const XML_Char * buffer, int length) = 0;
-      virtual void ProcessingInstruction (const XML_Char * target, const XML_Char * data) = 0;
-      virtual void Comment (const XML_Char * data) = 0;
+      virtual void StartElement (const gchar * name, const gchar ** atts) = 0;
+      virtual void EndElement (const gchar * name) = 0;
+      virtual void CharData (const gchar * buffer, int length) = 0;
+      virtual void ProcessingInstruction (const gchar * target, const gchar * data) = 0;
+      virtual void Comment (const gchar * data) = 0;
       virtual void StartCdataSection () = 0;
       virtual void EndCdataSection () = 0;
-      virtual void Default (const XML_Char * buffer, int length) = 0;
+      virtual void Default (const gchar * buffer, int length) = 0;
 
     protected:
       ExpertListener () {}
@@ -186,13 +186,13 @@ class ABI_EXPORT UT_XML
    * 
    * or vice versa... ?
    */
-  void startElement (const XML_Char * name, const XML_Char ** atts);
-  void endElement (const XML_Char * name);
-  void charData (const XML_Char * buffer, int length);
-  void processingInstruction (const XML_Char * target, const XML_Char * data);
-  void comment (const XML_Char * data);
+  void startElement (const gchar * name, const gchar ** atts);
+  void endElement (const gchar * name);
+  void charData (const gchar * buffer, int length);
+  void processingInstruction (const gchar * target, const gchar * data);
+  void comment (const gchar * data);
   void cdataSection (bool start);
-  void defaultData (const XML_Char * buffer, int length);
+  void defaultData (const gchar * buffer, int length);
 };
 
 class DefaultReader : public UT_XML::Reader

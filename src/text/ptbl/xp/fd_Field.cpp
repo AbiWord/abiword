@@ -31,7 +31,7 @@
 #include "ut_types.h"
 
 fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, 
-                   FieldType fieldType, const XML_Char *pParam)
+                   FieldType fieldType, const gchar *pParam)
     : m_fragObject(fO),m_pPieceTable(pt),
       m_updateCount(0), m_iFieldType(fieldType), m_pParameter(0)
 {
@@ -66,12 +66,12 @@ fd_Field::FieldType fd_Field::getFieldType(void) const
 	return m_iFieldType;
 }
 
-XML_Char* fd_Field::getValue(void) const
+gchar* fd_Field::getValue(void) const
 {
 	return m_szValue;
 }
 
-void fd_Field::setValue(const XML_Char* szValue)
+void fd_Field::setValue(const gchar* szValue)
 {
         FREEP(m_szValue);
 	m_szValue = g_strdup(szValue);

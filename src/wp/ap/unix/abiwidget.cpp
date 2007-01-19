@@ -404,7 +404,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
-const XML_Char * sz = UT_getAttribute(prop, props_in); \
+const gchar * sz = UT_getAttribute(prop, props_in); \
 if (sz) \
 { bool val; \
 if (multiple) \
@@ -418,9 +418,9 @@ fire(var); \
 } \
 } while(0)
 
-#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const XML_Char * sz = UT_getAttribute(prop, props_in); if (sz) { double val = atof(sz); if (val != var) { var = val; fire(val); } } } while(0) 
+#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { double val = atof(sz); if (val != var) { var = val; fire(val); } } } while(0) 
 
-#define FIRE_STRING_CHARFMT(prop, var, fire) do { const XML_Char * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
+#define FIRE_STRING_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
 
 class Stateful_ViewListener : public AV_Listener
 {
@@ -443,7 +443,7 @@ public:
 		if ((AV_CHG_FMTCHAR | AV_CHG_MOTION) & mask)
 			{
 				// get current char properties from pView
-				const XML_Char ** props_in = NULL;
+				const gchar ** props_in = NULL;
 				
 				if (!m_pView->getCharFormat(&props_in))
 					return true;
@@ -470,7 +470,7 @@ public:
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
 			{
 				// get current char properties from pView
-				const XML_Char ** props_in = NULL;
+				const gchar ** props_in = NULL;
 				
 				if (!m_pView->getBlockFormat(&props_in))
 					return true;
@@ -720,24 +720,24 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 			if(iPageCount > 1)
 			{
 				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
-				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 			}
 			else
 			{
 				UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 			}
 		}
 		else
 		{
 			UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-			pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+			pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		}
 	}
 	else
 	{
 		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );		s_bFirstDrawDone = false;
+		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );		s_bFirstDrawDone = false;
 	}
 }
 

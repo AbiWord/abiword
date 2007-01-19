@@ -26,6 +26,18 @@
 #define COMPILED_FROM_DSP
 #endif /* _WIN32 */
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
+#ifndef gchar
+typedef gchar gchar;
+#endif
+
 #include <expat.h>
 
 #include "ut_assert.h"
@@ -38,38 +50,38 @@
 extern "C" {
 #endif
 
-static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
+static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
-  const XML_Char * ptr = 0;
-  const XML_Char ** new_atts = atts;
+  const gchar * ptr = 0;
+  const gchar ** new_atts = atts;
   if (atts == 0) new_atts = &ptr;
 
   pXML->startElement (static_cast<const char *>(name), static_cast<const char **>(new_atts));
 }
 
-static void _endElement (void * userData, const XML_Char * name)
+static void _endElement (void * userData, const gchar * name)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->endElement (static_cast<const char *>(name));
 }
 
-static void _charData (void * userData, const XML_Char * buffer, int length)
+static void _charData (void * userData, const gchar * buffer, int length)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->charData (static_cast<const char *>(buffer), length);
 }
 
-static void _processingInstruction (void * userData, const XML_Char * target, const XML_Char * data)
+static void _processingInstruction (void * userData, const gchar * target, const gchar * data)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->processingInstruction (static_cast<const char *>(target), static_cast<const char *>(data));
 }
 
-static void _comment (void * userData, const XML_Char * data)
+static void _comment (void * userData, const gchar * data)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->comment (static_cast<const char *>(data));
@@ -87,7 +99,7 @@ static void _endCdataSection (void * userData)
   pXML->cdataSection (false);
 }
 
-static void _default (void * userData, const XML_Char * buffer, int length)
+static void _default (void * userData, const gchar * buffer, int length)
 {
   UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->defaultData (static_cast<const char *>(buffer), length);

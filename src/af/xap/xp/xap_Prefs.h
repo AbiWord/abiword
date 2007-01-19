@@ -69,11 +69,11 @@ enum XAPPrefsLog_Level
 class ABI_EXPORT XAP_PrefsScheme
 {
 public:
-	XAP_PrefsScheme(XAP_Prefs *pPrefs, const XML_Char * szSchemeName);
+	XAP_PrefsScheme(XAP_Prefs *pPrefs, const gchar * szSchemeName);
 	~XAP_PrefsScheme(void);
 
-	const XML_Char *	getSchemeName(void) const;
-	bool				setSchemeName(const XML_Char * szNewSchemeName);
+	const gchar *	getSchemeName(void) const;
+	bool				setSchemeName(const gchar * szNewSchemeName);
 	// The idea of the tick is that some object can cache a preference
 	// value if it makes a performance difference.  It should also save
 	// a copy of the tick count and the scheme pointer.  If the scheme
@@ -84,20 +84,20 @@ public:
 	// every time any preference value in the scheme is changed.
     UT_uint32			getTickCount() {return m_uTick;}
 	
-	bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
-	bool				setValueBool(const XML_Char * szKey, bool bValue);
+	bool				setValue(const gchar * szKey, const gchar * szValue);
+	bool				setValueBool(const gchar * szKey, bool bValue);
 	
 	// the get*Value*() functions return the answer in the last
 	// argument; they return error information as the function
 	// return value.
-	bool				getValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
 	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
-	bool				getValueBool(const XML_Char * szKey, bool * pbValue) const;
-	bool				getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const;
+	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
+	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue) const;
 	
 protected:
-	XML_Char *			m_szName;
-	UT_GenericStringMap<XML_Char*> m_hash;
+	gchar *			m_szName;
+	UT_GenericStringMap<gchar*> m_hash;
 	XAP_Prefs *			m_pPrefs;
 	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };
@@ -117,16 +117,16 @@ public:
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getNthPluginScheme(UT_uint32 k) const;
-	XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
-	XAP_PrefsScheme *		getPluginScheme(const XML_Char * szSchemeName) const;
+	XAP_PrefsScheme *		getScheme(const gchar * szSchemeName) const;
+	XAP_PrefsScheme *		getPluginScheme(const gchar * szSchemeName) const;
 	bool					addScheme(XAP_PrefsScheme * pNewScheme);
 	bool					addPluginScheme(XAP_PrefsScheme * pNewScheme);
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
-	bool					setCurrentScheme(const XML_Char * szSchemeName);
+	bool					setCurrentScheme(const gchar * szSchemeName);
 
-	bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin = true) const;
-	bool					getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
 
 	bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(bool bAuto);
@@ -150,7 +150,7 @@ public:
 	
 	virtual void				fullInit(void) = 0;
 	virtual bool				loadBuiltinPrefs(void) = 0;
-	virtual const XML_Char *	getBuiltinSchemeName(void) const = 0;
+	virtual const gchar *	getBuiltinSchemeName(void) const = 0;
 	virtual const char *		getPrefsPathname(void) const = 0;
 
 	void					addListener	  ( PrefsListener pFunc, void *data );
@@ -161,7 +161,7 @@ public:
 	void                    log(const char * where, const char * what, XAPPrefsLog_Level level = Log);
 	
 	// a only-to-be-used-by XAP_PrefsScheme::setValue
-	void					_markPrefChange	( const XML_Char *szKey );
+	void					_markPrefChange	( const gchar *szKey );
 protected:
 	void					_pruneRecent(void);
 	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, 
@@ -201,11 +201,11 @@ protected:
 
 	/* Implementation of UT_XML::Listener */
 public:
-	void					startElement(const XML_Char *name, const XML_Char **atts);
-	void					endElement(const XML_Char *name);
-	void					charData(const XML_Char *s, int len);
+	void					startElement(const gchar *name, const gchar **atts);
+	void					endElement(const gchar *name);
+	void					charData(const gchar *s, int len);
 private:
-	void					_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts);
+	void					_startElement_SystemDefaultFile(const gchar *name, const gchar **atts);
 	bool					m_bLoadSystemDefaultFile;
     bool                    m_bIgnoreThisOne;
 private:
@@ -214,7 +214,7 @@ private:
 		bool				m_parserStatus;
 		bool				m_bFoundAbiPreferences;
 		bool				m_bFoundSelect;
-		XML_Char *			m_szSelectedSchemeName;
+		gchar *			m_szSelectedSchemeName;
 		bool				m_bFoundRecent;
 		bool				m_bFoundGeometry;
 	} m_parserState;

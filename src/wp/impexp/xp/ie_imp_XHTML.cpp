@@ -170,7 +170,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
   // to represent the <ol> and <ul> list types
   // <ol> has an id of 1 and <ul> is given the list id of 2
 
-  static const XML_Char *ol_atts[] =
+  static const gchar *ol_atts[] =
   {
     "id", "1",
     "parentid", "0",
@@ -181,7 +181,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     NULL, NULL
   };
 
-  static const XML_Char *ol_p_atts[] = 
+  static const gchar *ol_p_atts[] = 
   {
     "level", "1",
     "listid", "1",
@@ -195,7 +195,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     NULL, NULL
   };
 
-  static const XML_Char *ul_atts[] =
+  static const gchar *ul_atts[] =
   {
     "id", "2",
     "parentid", "0",
@@ -206,7 +206,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     NULL, NULL
   };
 
-  static const XML_Char *ul_p_atts[] =
+  static const gchar *ul_p_atts[] =
   {
     "level", "1",
     "listid", "2",
@@ -760,11 +760,11 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_XHTML::startElement(const XML_Char *name,
-								const XML_Char **attributes)
+void IE_Imp_XHTML::startElement(const gchar *name,
+								const gchar **attributes)
 {
-	const XML_Char ** atts =
-		(const XML_Char **)UT_cloneAndDecodeAttributes (attributes);
+	const gchar ** atts =
+		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
 	
 	int i = 0;
 	int failLine;
@@ -774,8 +774,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
 #define NEW_ATTR_SZ 3
- 	const XML_Char *new_atts[NEW_ATTR_SZ];
-	XML_Char * sz;
+ 	const gchar *new_atts[NEW_ATTR_SZ];
+	gchar * sz;
 	sz = NULL;
 
 	for(i = 0; i < NEW_ATTR_SZ; i++)
@@ -818,7 +818,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			/* stack class attr. values if recognized;
 			 * NOTE: these are ptrs to static strings - don't alloc/g_free them
 			 */
-			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("class"), atts);
+			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("class"), atts);
 			SectionClass sc = childOfSection () ? sc_other : s_class_query (p_val);
 			if (sc == sc_other)
 				m_divClasses.push_back (0);
@@ -840,7 +840,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 
 			if (style)
 				{
-					p_val = _getXMLPropValue (static_cast<const XML_Char *>("align"), atts);
+					p_val = _getXMLPropValue (static_cast<const gchar *>("align"), atts);
 					if (p_val)
 						{
 							if (!strcmp (p_val, "right"))
@@ -854,7 +854,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 						}
 				}
 
-			p_val = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			p_val = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 			if (style && p_val)
 				{
 					*style += p_val;
@@ -916,18 +916,18 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		{
 			UT_UTF8String style;
 			
-			const XML_Char * p_val = 0;
+			const gchar * p_val = 0;
 
-			p_val = _getXMLPropValue (static_cast<const XML_Char *>("color"), atts);
+			p_val = _getXMLPropValue (static_cast<const gchar *>("color"), atts);
 			if (p_val) s_append_color (style, p_val, "color");
 
-			p_val = _getXMLPropValue (static_cast<const XML_Char *>("background"), atts);
+			p_val = _getXMLPropValue (static_cast<const gchar *>("background"), atts);
 			if (p_val) s_append_color (style, p_val, "bgcolor");
 
-			p_val = _getXMLPropValue (static_cast<const XML_Char *>("size"), atts);
+			p_val = _getXMLPropValue (static_cast<const gchar *>("size"), atts);
 			if (p_val) s_append_font_size (style, p_val);
 			
-			p_val = _getXMLPropValue (static_cast<const XML_Char *>("face"), atts);
+			p_val = _getXMLPropValue (static_cast<const gchar *>("face"), atts);
 			if (p_val) s_append_font_family (style, p_val);
 			
 			// UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
@@ -966,10 +966,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		}
 		else
 		{
-			const XML_Char * style = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
-			const XML_Char * align = _getXMLPropValue (static_cast<const XML_Char *>("align"), atts);
+			const gchar * style = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const gchar * align = _getXMLPropValue (static_cast<const gchar *>("align"), atts);
 
-			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("awml:style"), atts);
+			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("awml:style"), atts);
 
 			if (p_val)
 				{
@@ -1031,7 +1031,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		m_iNewListID++;
 		m_iListID = m_iNewListID;
 
-		const XML_Char** listAtts;
+		const gchar** listAtts;
 		listAtts = (tokenIndex == TT_OL ? ol_atts : ul_atts);
 
 		UT_String szListID, szParentID;
@@ -1056,14 +1056,14 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			m_parseState =  _PS_Sec;
 		X_CheckError (requireSection ());
 
-		XML_Char *sz;
+		gchar *sz;
 
 		if (m_listType != L_NONE)
 		{
 			UT_uint16 thisID = m_iListID;
 			m_utsParents.viewTop(reinterpret_cast<void**>(&parentID));
 
-			const XML_Char** listAtts;
+			const gchar** listAtts;
 			listAtts = (m_listType == L_OL ? ol_p_atts : ul_p_atts);
 
 			/* assign the appropriate list ID, parent ID, and level
@@ -1092,7 +1092,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			listAtts[IDpos] = szListID.c_str();
 			listAtts[parentIDpos] = szParentID.c_str();
 
-			const XML_Char* temp = static_cast<const XML_Char*>(listAtts[propsPos]);
+			const gchar* temp = static_cast<const gchar*>(listAtts[propsPos]);
 			listAtts[propsPos] = props.c_str();
 
 			X_CheckError(appendStrux(PTX_Block, listAtts));
@@ -1127,7 +1127,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		{
 			UT_UTF8String utf8val;
 
-			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 			if (p_val)
 				{
 					utf8val = static_cast<const char *>(p_val);
@@ -1149,9 +1149,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 
 	case TT_A:
 	{
-		const XML_Char * p_val = 0;
-		p_val = _getXMLPropValue(static_cast<const XML_Char *>("xlink:href"), atts);
-		if (p_val == 0) p_val = _getXMLPropValue(static_cast<const XML_Char *>("href"), atts);
+		const gchar * p_val = 0;
+		p_val = _getXMLPropValue(static_cast<const gchar *>("xlink:href"), atts);
+		if (p_val == 0) p_val = _getXMLPropValue(static_cast<const gchar *>("href"), atts);
 		if( p_val )
 		{
 			X_CheckError(requireBlock ());
@@ -1164,14 +1164,14 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		}
 		else
 		{
-			p_val = _getXMLPropValue(static_cast<const XML_Char *>("id"), atts);
-			if (p_val == 0) p_val = _getXMLPropValue(static_cast<const XML_Char *>("name"), atts);
+			p_val = _getXMLPropValue(static_cast<const gchar *>("id"), atts);
+			if (p_val == 0) p_val = _getXMLPropValue(static_cast<const gchar *>("name"), atts);
 			if (p_val)
 			{
 				X_CheckError(requireBlock ());
 
 				UT_sint32 i;
- 				const XML_Char *bm_new_atts[5];
+ 				const gchar *bm_new_atts[5];
 				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
 	    		sz = NULL;
 			    sz = g_strdup("type");
@@ -1218,12 +1218,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 
 	case TT_IMG:
 		{
-		const XML_Char * szSrc    = _getXMLPropValue (static_cast<const XML_Char *>("src"),    atts);
-		const XML_Char * szStyle  = _getXMLPropValue (static_cast<const XML_Char *>("style"),  atts);
-		const XML_Char * szWidth  = _getXMLPropValue (static_cast<const XML_Char *>("width"),  atts);
-		const XML_Char * szHeight = _getXMLPropValue (static_cast<const XML_Char *>("height"), atts);
-		const XML_Char * szTitle  = _getXMLPropValue (static_cast<const XML_Char *>("title"), atts);
-		const XML_Char * szAlt    = _getXMLPropValue (static_cast<const XML_Char *>("alt"), atts);
+		const gchar * szSrc    = _getXMLPropValue (static_cast<const gchar *>("src"),    atts);
+		const gchar * szStyle  = _getXMLPropValue (static_cast<const gchar *>("style"),  atts);
+		const gchar * szWidth  = _getXMLPropValue (static_cast<const gchar *>("width"),  atts);
+		const gchar * szHeight = _getXMLPropValue (static_cast<const gchar *>("height"), atts);
+		const gchar * szTitle  = _getXMLPropValue (static_cast<const gchar *>("title"), atts);
+		const gchar * szAlt    = _getXMLPropValue (static_cast<const gchar *>("alt"), atts);
 
 		if ( szSrc == 0) break;
 		if (*szSrc == 0) break;
@@ -1361,7 +1361,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 #if 0
 		got_string:
 #endif
-		const XML_Char * api_atts[9];
+		const gchar * api_atts[9];
 
 		UT_String dataid;
 		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
@@ -1432,7 +1432,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		{
 			requireSection();
 			m_parseState = _PS_Table;
-			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 
 			X_CheckError(m_TableHelperStack->tableStart (getDoc(),static_cast<const char *>(szStyle)));
 		}
@@ -1440,7 +1440,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	case TT_THEAD:
 		{
 			m_parseState = _PS_Table;
-			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 
 			m_TableHelperStack->theadStart (static_cast<const char *>(szStyle));
 		}
@@ -1448,7 +1448,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	case TT_TFOOT:
 		{
 			m_parseState = _PS_Table;
-			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 
 			m_TableHelperStack->tfootStart (static_cast<const char *>(szStyle));
 		}
@@ -1456,7 +1456,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	case TT_TBODY:
 		{
 			m_parseState = _PS_Table;
-			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 
 			m_TableHelperStack->tbodyStart (static_cast<const char *>(szStyle));
 		}
@@ -1464,7 +1464,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	case TT_TR:
 		{
 			m_parseState = _PS_Cell;
-			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
 
 			m_TableHelperStack->trStart (static_cast<const char *>(szStyle));
 			UT_DEBUGMSG(("Finished TR process \n"));
@@ -1475,9 +1475,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		{
 			UT_DEBUGMSG(("Doing TD \n"));
 			m_parseState = _PS_Block;
-			const XML_Char * szStyle   = _getXMLPropValue (static_cast<const XML_Char *>("style"),   atts);
-			const XML_Char * szColSpan = _getXMLPropValue (static_cast<const XML_Char *>("colspan"), atts);
-			const XML_Char * szRowSpan = _getXMLPropValue (static_cast<const XML_Char *>("rowspan"), atts);
+			const gchar * szStyle   = _getXMLPropValue (static_cast<const gchar *>("style"),   atts);
+			const gchar * szColSpan = _getXMLPropValue (static_cast<const gchar *>("colspan"), atts);
+			const gchar * szRowSpan = _getXMLPropValue (static_cast<const gchar *>("rowspan"), atts);
 
 			UT_uint32 colspan = 1;
 			UT_uint32 rowspan = 1;
@@ -1513,8 +1513,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		{
 			if (!isPasting())
 				{
-					const XML_Char * szName    = _getXMLPropValue (static_cast<const XML_Char *>("name"),    atts);
-					const XML_Char * szContent = _getXMLPropValue (static_cast<const XML_Char *>("content"), atts);
+					const gchar * szName    = _getXMLPropValue (static_cast<const gchar *>("name"),    atts);
+					const gchar * szContent = _getXMLPropValue (static_cast<const gchar *>("content"), atts);
 
 					if (szName && *szName && szContent && *szContent)
 						{
@@ -1568,7 +1568,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 
   X_Fail:
   cleanup:
-	XML_Char ** p = (XML_Char **) atts;
+	gchar ** p = (gchar **) atts;
 	if (p)
 	{
 		while (*p)
@@ -1581,10 +1581,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 	}
 }
 
-void IE_Imp_XHTML::endElement(const XML_Char *name)
+void IE_Imp_XHTML::endElement(const gchar *name)
 {
 	int failLine = 0;
-	const XML_Char *atts[3];
+	const gchar *atts[3];
 	UT_uint32 uid;
 	UT_UTF8String sUID;
 
@@ -1783,8 +1783,8 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		if( m_szBookMarkName )
 		{
 			UT_sint32 i;
-			XML_Char * sz = NULL;
-			const XML_Char *bm_new_atts[5];
+			gchar * sz = NULL;
+			const gchar *bm_new_atts[5];
 			for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
 		    sz = g_strdup("type");
 			bm_new_atts[0] = sz; 
@@ -1867,7 +1867,7 @@ X_Fail:
 	return;
 }
 
-void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
+void IE_Imp_XHTML::charData (const gchar * buffer, int length)
 {
 #if DEBUG
 #if 0
@@ -1928,7 +1928,7 @@ X_Fail:
 	return;
 }
 
-FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
+FG_Graphic * IE_Imp_XHTML::importDataURLImage (const gchar * szData)
 {
 	if (strncmp (szData, "image/", 6))
 		{
@@ -1984,7 +1984,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 	return pfg;
 }
 
-FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
+FG_Graphic * IE_Imp_XHTML::importImage (const gchar * szSrc)
 {
 	const char * szFile = static_cast<const char *>(szSrc);
 
@@ -2014,9 +2014,9 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 {
 	if (!requireBlock ()) return false;
 
-	const XML_Char * api_atts[3];
+	const gchar * api_atts[3];
 
-	XML_Char * sz = NULL;
+	gchar * sz = NULL;
 
 	sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
 	if (sz == NULL)
@@ -2072,12 +2072,12 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 	UT_UTF8String utf8val = s_parseCSStyle (style, CSS_MASK_BLOCK);
 	UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 
-	const XML_Char * api_atts[5];
+	const gchar * api_atts[5];
 
 	api_atts[2] = NULL;
 	api_atts[4] = NULL;
 
-	XML_Char * sz = NULL;
+	gchar * sz = NULL;
 
 	sz = g_strdup(PT_STYLE_ATTRIBUTE_NAME);
 	if (sz == NULL)
@@ -2157,7 +2157,7 @@ bool IE_Imp_XHTML::requireSection ()
 	return true;
 }
 
-bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const gchar ** attributes)
 {
 	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %x \n",pts,getDoc()));
 	if(pts == PTX_Section)
@@ -2180,7 +2180,7 @@ bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
+bool IE_Imp_XHTML::appendFmt( const gchar ** attributes)
 {
 	if(!m_addedPTXSection)
 		{
@@ -2201,7 +2201,7 @@ bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
+bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<gchar*>* pVecAttributes)
 {
 	if(!m_addedPTXSection)
 		{
@@ -2215,12 +2215,12 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 		{
 			if(pVecAttributes->getItemCount() >= 2)
 			{
-				XML_Char * pszProp = pVecAttributes->getNthItem(0);
-				XML_Char * pszVal = pVecAttributes->getNthItem(1);
+				gchar * pszProp = pVecAttributes->getNthItem(0);
+				gchar * pszVal = pVecAttributes->getNthItem(1);
 				if(strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
 				{
-					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
-					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
+					const_cast<UT_GenericVector<gchar*>*>(pVecAttributes)->deleteNthItem(0);
+					const_cast<UT_GenericVector<gchar*>*>(pVecAttributes)->deleteNthItem(0);
 				}
 				if(pVecAttributes->getItemCount() == 0)
 				{
@@ -2231,7 +2231,7 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 		}
 	else
 		{
-			const XML_Char * attributes[3] = {"props",NULL,NULL};
+			const gchar * attributes[3] = {"props",NULL,NULL};
 			UT_String sPropString("");
 			UT_uint32 i = 0;
 			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
@@ -2270,7 +2270,7 @@ bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 }
 
 
-bool IE_Imp_XHTML::appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp_XHTML::appendObject(PTObjectType pto, const gchar ** attributes)
 {
 	if(!m_addedPTXSection)
 		{

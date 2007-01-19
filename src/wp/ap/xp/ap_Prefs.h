@@ -33,7 +33,7 @@ public:
 	virtual ~AP_Prefs(void);
 
 	virtual bool				loadBuiltinPrefs(void);
-	virtual const XML_Char *	getBuiltinSchemeName(void) const;
+	virtual const gchar *	getBuiltinSchemeName(void) const;
 	const char *		        getPrefsPathname(void) const;
 	virtual void				overlayEnvironmentPrefs(void) = 0;
 	virtual void				fullInit(void);

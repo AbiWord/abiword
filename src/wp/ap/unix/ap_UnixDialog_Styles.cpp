@@ -365,7 +365,7 @@ void AP_UnixDialog_Styles::event_Apply(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	const XML_Char * szStyle = getCurrentStyle();
+	const gchar * szStyle = getCurrentStyle();
 	if(szStyle && *szStyle)
 	{
 		getView()->setStyle(szStyle);
@@ -417,7 +417,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
 			UT_UTF8String s;
 			pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete,s);
-			const XML_Char * msg = s.utf8_str();
+			const gchar * msg = s.utf8_str();
 		
 			getFrame()->showMessageBox (static_cast<const char *>(msg),
 										XAP_Dialog_MessageBox::b_O,
@@ -1179,7 +1179,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 	UT_sint32 i= 0;
 	for(i=0; i< count; i+=2)
 	{
-		gchar * sz = static_cast<gchar *>(const_cast<XML_Char*>(m_vecAllProps.getNthItem(i)));
+		gchar * sz = static_cast<gchar *>(const_cast<gchar*>(m_vecAllProps.getNthItem(i)));
 		GtkWidget * li = gtk_list_item_new_with_label(sz);
 		gtk_widget_show(li);
 		gtk_container_add(GTK_CONTAINER(delCombo->list),li);
@@ -1219,7 +1219,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 	
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
 	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
-	const XML_Char * pszSt = "P";
+	const gchar * pszSt = "P";
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
 	if(strstr(m_styleType, s.utf8_str()) != 0)
 		pszSt = "C";
@@ -1351,7 +1351,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		UT_UTF8String s;
 		pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin,s);
-		const XML_Char * msg = s.utf8_str();
+		const gchar * msg = s.utf8_str();
 		
 		getFrame()->showMessageBox (static_cast<const char *>(msg),
 									XAP_Dialog_MessageBox::b_O,

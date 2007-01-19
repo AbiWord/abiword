@@ -146,7 +146,7 @@ protected:
 	void				_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
 	void				_rtf_pcdata(const char * szPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
 	void				_rtf_nl(void);
-	const XML_Char *    _getStyleProp(s_RTF_AttrPropAdapter_Style * pADStyle,
+	const gchar *    _getStyleProp(s_RTF_AttrPropAdapter_Style * pADStyle,
 									  const s_RTF_AttrPropAdapter * apa,
 									  const char * szProp);
 
@@ -156,10 +156,10 @@ protected:
 	void                            _clearStyles();
 	void                            _selectStyles();
 	UT_uint32                       _getStyleNumber(const PD_Style * pStyle);
-	UT_uint32                       _getStyleNumber(const XML_Char * szStyleName);
+	UT_uint32                       _getStyleNumber(const gchar * szStyleName);
 
-	void                            _write_prop_ifnotdefault(const PD_Style * pStyle, const XML_Char * szPropName, const char * szRTFName);
-	void                            _write_prop_ifyes(const PD_Style * pStyle, const XML_Char * szPropName, const char * szRTFName);
+	void                            _write_prop_ifnotdefault(const PD_Style * pStyle, const gchar * szPropName, const char * szRTFName);
+	void                            _write_prop_ifyes(const PD_Style * pStyle, const gchar * szPropName, const char * szRTFName);
 	void                            _write_tabdef(const char * szTabStops);
 	void                            _write_charfmt(const s_RTF_AttrPropAdapter &);
 	
@@ -231,7 +231,7 @@ public:
 	int getFontPitch(void) const { return nPitch;}
 	bool isTrueType(void) const { return fTrueType;}
 private:    
-    const XML_Char * szFamily;
+    const gchar * szFamily;
     int nCharset;
     int nPitch;
     UT_String m_szName;

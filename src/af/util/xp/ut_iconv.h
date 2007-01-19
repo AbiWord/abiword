@@ -60,7 +60,7 @@ class ABI_EXPORT auto_iconv
 
 #endif /* c++ */
 
-UT_BEGIN_EXTERN_C
+G_BEGIN_DECLS
 
 const char * ucs2Internal ();
 #define UCS_2_INTERNAL ucs2Internal()
@@ -88,7 +88,7 @@ char *      UT_convert_cd (const char *str,
 			   UT_uint32 *bytes_read,
 			   UT_uint32 *bytes_written);
 
-UT_END_EXTERN_C
+G_END_DECLS
 
 #endif /* UT_ICONV_H */
 

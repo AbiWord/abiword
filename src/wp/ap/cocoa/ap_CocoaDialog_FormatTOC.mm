@@ -178,7 +178,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 		[self createNumberingItems:_numberingTypeData];
 		[self createNumberingItems:_pageNumberingData];
 
-		const UT_GenericVector<const XML_Char *> * vecTABLeaders = _xap->getVecTABLeadersLabel();
+		const UT_GenericVector<const gchar *> * vecTABLeaders = _xap->getVecTABLeadersLabel();
 
 		UT_sint32 nTypes = vecTABLeaders->getItemCount();
 
@@ -186,7 +186,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		for (UT_sint32 n = 0; n < nTypes; n++)
 			{
-				const XML_Char * tabLeader = vecTABLeaders->getNthItem(n);
+				const gchar * tabLeader = vecTABLeaders->getNthItem(n);
 
 				[_tabLeadersData addItemWithTitle:[NSString stringWithUTF8String:((const char *) tabLeader)]];
 			}
@@ -211,7 +211,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (void)createNumberingItems:(NSPopUpButton *)popup
 {
-	const UT_GenericVector<const XML_Char *> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const UT_GenericVector<const gchar *> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
 	UT_sint32 nTypes = vecTypeList->getItemCount();
 
@@ -219,7 +219,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 	for (UT_sint32 n = 0; n < nTypes; n++)
 		{
-			const XML_Char * typeList = vecTypeList->getNthItem(n);
+			const gchar * typeList = vecTypeList->getNthItem(n);
 
 			[popup addItemWithTitle:[NSString stringWithUTF8String:((const char *) typeList)]];
 		}
@@ -450,7 +450,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 - (void)saveDetailLevelSettings
 {
 	if (_xap) {
-		const UT_GenericVector<const XML_Char *> * vecPropList = _xap->getVecLabelPropValue();
+		const UT_GenericVector<const gchar *> * vecPropList = _xap->getVecLabelPropValue();
 
 		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getDetailsLevel());
 		UT_UTF8String sTOCProp;

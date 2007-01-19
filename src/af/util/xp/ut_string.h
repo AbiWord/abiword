@@ -33,30 +33,19 @@
 
 class UT_GrowBuf;
 
-UT_BEGIN_EXTERN_C
-
-////////////////////////////////////////////////////////////////////////
-//
-//  XML string (XML_Char)
-//
-//  String is built of 8-bit units (bytes)
-//
-////////////////////////////////////////////////////////////////////////
+G_BEGIN_DECLS
 
 // this function allocates (and returns a pointer to) new memory for the new string
-ABI_EXPORT bool  UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
+ABI_EXPORT bool  UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource);
 // This function uses a static buffer to do the translation
-ABI_EXPORT XML_Char *  UT_XML_transNoAmpersands(const XML_Char * szSource);
+ABI_EXPORT gchar *  UT_XML_transNoAmpersands(const gchar * szSource);
 
-ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
-ABI_EXPORT void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
-ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
-ABI_EXPORT bool  UT_isValidUTF8string(const XML_Char * p, UT_uint32 len);
+ABI_EXPORT void  UT_decodeUTF8string(const gchar * p, UT_uint32 len, UT_GrowBuf * pResult);
 
 ABI_EXPORT bool  UT_isValidXML(const char *s);
 ABI_EXPORT bool  UT_validXML(char * s);
 
-/* ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
+/* ABI_EXPORT gchar *  UT_decodeXMLstring(gchar *pcIn);
  * This has moved to ut_xml.cpp as UT_XML::decode ()
  */
 
@@ -233,6 +222,6 @@ ABI_EXPORT bool            UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_u
 
 ABI_EXPORT bool            UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc);
 
-UT_END_EXTERN_C
+G_END_DECLS
 
 #endif /* UT_STRING_H */

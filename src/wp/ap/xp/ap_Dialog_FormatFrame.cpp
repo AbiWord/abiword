@@ -120,7 +120,7 @@ void AP_Dialog_FormatFrame::setActiveFrame(XAP_Frame *pFrame)
 void AP_Dialog_FormatFrame::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
 	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
@@ -442,7 +442,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 
 #define REPLACE_CELL_PROPERTY(X) \
 	do { \
-		const XML_Char * prop = 0; \
+		const gchar * prop = 0; \
 		if (pAP->getProperty(X, prop)) \
 			m_vecProps.addOrReplaceProp(X, prop); \
 		else \
@@ -541,7 +541,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 	m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str()); // FIXME ??
 		
-	const XML_Char * pszStyle = 0;
+	const gchar * pszStyle = 0;
 	m_vecProps.getProp("background-color", pszStyle);
 	if (pszStyle) {
 		m_backgroundColor.setColor(pszStyle);
@@ -710,12 +710,12 @@ void AP_Dialog_FormatFrame::applyChanges()
 	if (!pView)
 		return;
 
-	const XML_Char ** propsArray  = new const XML_Char * [count + 2];
+	const gchar ** propsArray  = new const gchar * [count + 2];
 
 	for (UT_sint32 j = 0; j < count; j = j + 2)
 	{
-		propsArray[j  ] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
-		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
+		propsArray[j  ] = static_cast<gchar *>(m_vecProps.getNthItem(j));
+		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
 	}
 	propsArray[count  ] = 0;
 	propsArray[count+1] = 0;
@@ -1066,7 +1066,7 @@ void AP_Dialog_FormatFrame::_createPreviewFromGC(GR_Graphics * gc,
 
 bool AP_Dialog_FormatFrame::_getToggleButtonStatus(const char * lineStyle)
 {
-	const XML_Char * pszStyle = NULL;
+	const gchar * pszStyle = NULL;
 	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
 
 	m_vecProps.getProp(lineStyle, pszStyle);
@@ -1114,7 +1114,7 @@ void AP_FormatFrame_preview::draw(void)
 //  Draw the cell background
 //
 	
-	const XML_Char * pszBGCol = NULL;
+	const gchar * pszBGCol = NULL;
 	if(m_pFormatFrame->getImage())
 	{
 		GR_Image * pImg = m_pFormatFrame->getImage();
@@ -1147,7 +1147,7 @@ void AP_FormatFrame_preview::draw(void)
 	}
 	else
 	{
-		m_pFormatFrame->getPropVector().getProp(static_cast<const XML_Char *>("background-color"), pszBGCol);
+		m_pFormatFrame->getPropVector().getProp(static_cast<const gchar *>("background-color"), pszBGCol);
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);

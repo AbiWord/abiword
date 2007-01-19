@@ -105,7 +105,7 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 	if(res && *res)	
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
-		setHyperlink(static_cast<const XML_Char*>(res));
+		setHyperlink(static_cast<const gchar*>(res));
 	}
 	else
 	{
@@ -149,7 +149,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
   DELETEPV(m_pBookmarks);
-  m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
+  m_pBookmarks = new const gchar *[getExistingBookmarksCount()];
 	
   for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++)
   	  m_pBookmarks[i] = getNthExistingBookmark(i);
@@ -157,14 +157,14 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   int (*my_cmp)(const void *, const void *) =
   	  (int (*)(const void*, const void*)) strcmp;
     	
-  qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
+  qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(gchar*),my_cmp);
 
   for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++)
   	  gtk_clist_append (GTK_CLIST (m_clist), const_cast<gchar **>(reinterpret_cast<const gchar **>(&m_pBookmarks[i])));
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
 
-  const XML_Char * hyperlink = getHyperlink();
+  const gchar * hyperlink = getHyperlink();
   if (hyperlink)
   {
 	gtk_entry_set_text(GTK_ENTRY(m_entry), hyperlink);

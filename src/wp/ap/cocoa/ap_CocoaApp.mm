@@ -303,7 +303,7 @@ bool AP_CocoaApp::initialize(void)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 	    
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(gchar*)AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 	    
@@ -313,15 +313,15 @@ bool AP_CocoaApp::initialize(void)
 		const char * szStringSet = NULL;
 	    
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  (const XML_Char**)&szStringSet))
+							  (const gchar**)&szStringSet))
 			   && (szStringSet)
 			   && (*szStringSet)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 #if 0			
 			getPrefsValueDirectory(true,
-								   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
-								   (const XML_Char**)&szDirectory);
+								   (const gchar*)AP_PREF_KEY_StringSetDirectory,
+								   (const gchar**)&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			UT_String szPathname = szDirectory;
@@ -370,7 +370,7 @@ bool AP_CocoaApp::initialize(void)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName)
+	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName)
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 		;
@@ -386,7 +386,7 @@ bool AP_CocoaApp::initialize(void)
 	
 	getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
 	const char * szMenuLayoutName = NULL;
-	if ((getPrefsValue(AP_PREF_KEY_MenuLayout, static_cast<const XML_Char**>(&szMenuLayoutName))) &&
+	if ((getPrefsValue(AP_PREF_KEY_MenuLayout, static_cast<const gchar**>(&szMenuLayoutName))) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName)) {
 		;
 	}
@@ -483,18 +483,18 @@ bool AP_CocoaApp::shutdown(void)
   terms.  
   \param bAppSpecific Is this key specific to the app, or is it
   general to AbiSuite?
-  \param szKey A string of XML_Chars representing the desired key
+  \param szKey A string of gchars representing the desired key
   \param pszValue pointer for the value to be returned in. 
   \return True if successful, false otherwise.  
   \todo support meaningful return values.
 */
 bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
-										const XML_Char * szKey, const XML_Char ** pszValue) const
+										const gchar * szKey, const gchar ** pszValue) const
 {
     if (!m_prefs)
 		return false;
 
-    const XML_Char * psz = NULL;
+    const gchar * psz = NULL;
     if (!m_prefs->getPrefsValue(szKey,&psz))
 		return false;
 
@@ -504,9 +504,9 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
 		return true;
     }
 
-    const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+    const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-    static XML_Char buf[1024];
+    static gchar buf[1024];
     UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
 	
     sprintf(buf,"%s/%s",dir,psz);
@@ -525,7 +525,7 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 #if 0
     // we return a static string, use it quickly.
 	
-    static XML_Char buf[1024];
+    static gchar buf[1024];
     UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(PACKAGE_NAME) + 2) < sizeof(buf));
 
     sprintf(buf,"%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);

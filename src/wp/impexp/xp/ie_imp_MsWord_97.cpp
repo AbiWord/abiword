@@ -97,7 +97,7 @@ static int docProc (wvParseStruct *ps, wvTag tag);
 	The style names that have been commented out are those that do not
     have currently a localised equivalent in AW
 */
-static const XML_Char * s_translateStyleId(UT_uint32 id)
+static const gchar * s_translateStyleId(UT_uint32 id)
 {
 	if(id >= 4094)
 	{
@@ -1217,14 +1217,14 @@ void IE_Imp_MsWord_97::_flush ()
 		  for(i=0;i< static_cast<UT_sint32>(m_vecEmObjects.getItemCount()); i++)
 		  {
 			  pObject = m_vecEmObjects.getNthItem(i);
-			  const XML_Char* propsArray[5];
+			  const gchar* propsArray[5];
 			  if(pObject->objType == PTO_Bookmark)
 			  {
-				  propsArray[0] = static_cast<const XML_Char *>("name");
-				  propsArray[1] = static_cast<const XML_Char *>(pObject->props1.c_str());
-				  propsArray[2] = static_cast<const XML_Char *>("type");
-				  propsArray[3] = static_cast<const XML_Char *>(pObject->props2.c_str());
-				  propsArray[4] = static_cast<const XML_Char *>(NULL);
+				  propsArray[0] = static_cast<const gchar *>("name");
+				  propsArray[1] = static_cast<const gchar *>(pObject->props1.c_str());
+				  propsArray[2] = static_cast<const gchar *>("type");
+				  propsArray[3] = static_cast<const gchar *>(pObject->props2.c_str());
+				  propsArray[4] = static_cast<const gchar *>(NULL);
 				  _appendObject (PTO_Bookmark, propsArray);
 			  }
 			  else
@@ -1263,7 +1263,7 @@ void IE_Imp_MsWord_97::_flush ()
 	  
 	  if(m_bBidiMode)
 	  {
-		  const XML_Char* pProps = "props";
+		  const gchar* pProps = "props";
 		  UT_String prop_basic = m_charProps;
 
 		  UT_String prop_ltr = prop_basic;
@@ -1285,9 +1285,9 @@ void IE_Imp_MsWord_97::_flush ()
 		  prop_ltr += "dir-override:ltr";
 		  prop_rtl += "dir-override:rtl";
 	
-		  const XML_Char rev[] ="revision";
+		  const gchar rev[] ="revision";
 
-		  const XML_Char* propsArray[5];
+		  const gchar* propsArray[5];
 		  propsArray[0] = pProps;
 		  propsArray[1] = prop_basic.c_str();
 		  propsArray[2] = NULL;
@@ -1453,9 +1453,9 @@ static int s_cmp_bookmarks_bsearch(const void * a, const void * b)
 	return (A - B->pos);
 }
 
-XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 pos)
+gchar * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 pos)
 {
-	XML_Char *str;
+	gchar *str;
 	UT_UTF8String sUTF8;
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
@@ -1467,7 +1467,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 		  sUTF8.clear();
 		  sUTF8.appendUCS2(p, len);
 		  
-		  str = new XML_Char[sUTF8.byteLength()+1];
+		  str = new gchar[sUTF8.byteLength()+1];
 		  strcpy(str, sUTF8.utf8_str());
 		} else
 		  str = NULL;
@@ -1480,7 +1480,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 		if(ps->Sttbfbkmk.s8strings[pos])
 		{
 			UT_uint32 len = strlen(ps->Sttbfbkmk.s8strings[pos]);
-			str = new XML_Char[len + 1];
+			str = new gchar[len + 1];
 			UT_uint32 i = 0;
 			for(i = 0; i < len; i++)
 				str[i] = ps->Sttbfbkmk.s8strings[pos][i];
@@ -1626,16 +1626,16 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	this->_flush();
 	bool error = false;
 
-	const XML_Char* propsArray[5];
-	propsArray[0] = static_cast<const XML_Char *>("name");
-	propsArray[1] = static_cast<const XML_Char *>(bm->name);
-	propsArray[2] = static_cast<const XML_Char *>("type");
+	const gchar* propsArray[5];
+	propsArray[0] = static_cast<const gchar *>("name");
+	propsArray[1] = static_cast<const gchar *>(bm->name);
+	propsArray[2] = static_cast<const gchar *>("type");
 	propsArray[4] = 0;
 
 	if(bm->start)
-		propsArray[3] = static_cast<const XML_Char *>("start");
+		propsArray[3] = static_cast<const gchar *>("start");
 	else
-		propsArray[3] = static_cast<const XML_Char *>("end");
+		propsArray[3] = static_cast<const gchar *>("end");
 
 	if(m_bInTable && !m_bCellOpen)
 	{
@@ -2249,7 +2249,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 {
 	SEP * asep = static_cast <SEP *>(prop);
 
-	const XML_Char * propsArray[15];  
+	const gchar * propsArray[15];  
 	UT_String propBuffer;
 	UT_String props;
 
@@ -2466,8 +2466,8 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	xxx_UT_DEBUGMSG (("DOM:SEVIOR the section properties are: '%s'\n", props.c_str()));
 
 	
-	propsArray[0] = static_cast<const XML_Char *>("props");
-	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
+	propsArray[0] = static_cast<const gchar *>("props");
+	propsArray[1] = static_cast<const gchar *>(props.c_str());
 
 	UT_uint32 iOff = 2;
 	
@@ -2582,7 +2582,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	UT_return_val_if_fail(iOff <= sizeof(propsArray), 1);
 	
 
-	if (!_appendStrux(PTX_Section, static_cast<const XML_Char **>(&propsArray[0])))
+	if (!_appendStrux(PTX_Section, static_cast<const gchar **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
@@ -2608,7 +2608,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	if (m_nSections > 1) // don't apply on the 1st page
 	{
 		// new sections always need a block
-		if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(NULL)))
+		if (!_appendStrux(PTX_Block, static_cast<const gchar **>(NULL)))
 		{
 			UT_DEBUGMSG (("DOM: error appending new block\n"));
 			return 1;
@@ -2892,7 +2892,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	_generateParaProps(m_paraProps, apap, ps);
 	
 	//props, level, listid, parentid, style, NULL
-	const XML_Char * propsArray[11];
+	const gchar * propsArray[11];
 
 	/* lists */
 	UT_uint32 myListId = 0;
@@ -2991,7 +2991,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 		
 		
-		const XML_Char * list_atts[15];
+		const gchar * list_atts[15];
 		UT_uint32 iOffset = 0;
 		UT_String propBuffer;
 		
@@ -3060,7 +3060,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		
 		// NULL
 		list_atts[iOffset++] = 0;
-		UT_return_val_if_fail( iOffset <=  sizeof(list_atts)/sizeof(XML_Char *), 1 );
+		UT_return_val_if_fail( iOffset <=  sizeof(list_atts)/sizeof(gchar *), 1 );
 
 		// now add this to our vector of lists
 		ListIdLevelPair * llp = new ListIdLevelPair;
@@ -3094,8 +3094,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
  	// props
 	UT_uint32 i = 0;
-	propsArray[i++] = static_cast<const XML_Char *>("props");
-	propsArray[i++] = static_cast<const XML_Char *>(m_paraProps.c_str());
+	propsArray[i++] = static_cast<const gchar *>("props");
+	propsArray[i++] = static_cast<const gchar *>(m_paraProps.c_str());
 
 	
 	// level, or 0 for default, normal level
@@ -3123,7 +3123,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			propsArray[i++] = "style";
 			
 			char * t = NULL;
-			const XML_Char * pName = NULL;
+			const gchar * pName = NULL;
 			if(pSTD)
 				pName = s_translateStyleId(pSTD[apap->istd].sti);
 		
@@ -3157,7 +3157,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 		xxx_UT_DEBUGMSG(("_beginPara: pos %d [text ends %d]\n", ps->currentcp, m_iFootnotesStart));
 		
-		if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
+		if (!_appendStrux(PTX_Block, static_cast<const gchar **>(&propsArray[0])))
 		{
 			UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 			return 1;
@@ -3168,26 +3168,26 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props
-		const XML_Char *list_field_fmt[5];
+		const gchar *list_field_fmt[5];
 		list_field_fmt[0] = "type";
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = "props";
 		list_field_fmt[3] = "text-decoration:none";
 		list_field_fmt[4] = 0;
-		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
+		_appendObject(PTO_Field, static_cast<const gchar**>(&list_field_fmt[0]));
 		m_bInPara = true;
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
 		{
-		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+		        const gchar* attribs[3] = {"props","text-decoration:none",NULL};
 			getDoc()->appendFmt(attribs);
 			UT_UCSChar tab = UCS_TAB;
 			_appendSpan(&tab, 1);
 		}
 		else if(apap->linfo.ixchFollow == 1) // space
 		{
-		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+		        const gchar* attribs[3] = {"props","text-decoration:none",NULL};
 			getDoc()->appendFmt(attribs);
 			UT_UCSChar space = UCS_SPACE;
 			_appendSpan(&space, 1);
@@ -3286,7 +3286,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	CHP *achp = static_cast <CHP *>(prop);
 
-	const XML_Char * propsArray[7];
+	const gchar * propsArray[7];
 	UT_uint32 propsOffset = 0;
 
 	m_charProps.clear();
@@ -3329,8 +3329,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// until the end of the current pragraph
 	m_bBidiMode = m_bBidiMode || (m_bLTRCharContext ^ m_bLTRParaContext);
 
-	propsArray[propsOffset++] = static_cast<const XML_Char *>("props");
-	propsArray[propsOffset++] = static_cast<const XML_Char *>(m_charProps.c_str());
+	propsArray[propsOffset++] = static_cast<const gchar *>("props");
+	propsArray[propsOffset++] = static_cast<const gchar *>(m_charProps.c_str());
 
 	if(!m_bEncounteredRevision && (achp->fRMark || achp->fRMarkDel))
 	{
@@ -3342,13 +3342,13 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	if (achp->fRMark)
 	{
-	    propsArray[propsOffset++] = static_cast<const XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<const gchar *>("revision");
 		m_charRevs = "1";
 	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
 	else if (achp->fRMarkDel)
 	{
-	    propsArray[propsOffset++] = static_cast<const XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<const gchar *>("revision");
 		m_charRevs = "-1";
 	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
@@ -3363,9 +3363,9 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		
 		if(achp->istd != istdNil && achp->istd < iCount)
 		{
-			propsArray[propsOffset++] = static_cast<const XML_Char *>("style");
+			propsArray[propsOffset++] = static_cast<const gchar *>("style");
 			char * t = NULL;
-			const XML_Char * pName = s_translateStyleId(pSTD[achp->istd].sti);
+			const gchar * pName = s_translateStyleId(pSTD[achp->istd].sti);
 		
 			if(pName)
 			{
@@ -3398,7 +3398,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	if(!bDoNotAppendFmt)
 	{
-		if (!_appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
+		if (!_appendFmt(static_cast<const gchar **>(&propsArray[0])))
 		{
 			UT_DEBUGMSG(("DOM: error appending character formatting\n"));
 			return 1;
@@ -3731,7 +3731,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 	char * t = NULL, * t1 = NULL, * t2 = NULL;
 	UT_UTF8String sProps = "toc-has-heading:0;", sTemp, sLeader;
 
-	const XML_Char * attrs [3] = {"props", NULL, NULL};
+	const gchar * attrs [3] = {"props", NULL, NULL};
 
 	char * command = wvWideStrToMB (f->command);
 	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertTOC: command %s\n", command));
@@ -4003,7 +4003,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	
 	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
 
-	const XML_Char* atts[5];
+	const gchar* atts[5];
 	atts[0] = "type";
 	atts[1] = 0;
 	atts[2] = 0;
@@ -4070,14 +4070,14 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				atts[1] = "page_ref";
 				atts[2] = "param";
 				if(token)
-					atts[3] = static_cast<const XML_Char *>(token);
+					atts[3] = static_cast<const gchar *>(token);
 				else
 					atts[3] = "no_bookmark_given";
 				break;
 
 			case F_HYPERLINK:
 				{
-					const XML_Char *new_atts[3];
+					const gchar *new_atts[3];
 					token = strtok (NULL, "\"\" ");
 
 					if(token) {
@@ -4138,7 +4138,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			m_bInPara = true ;
 		}
 
-		if (!_appendObject (PTO_Field, static_cast<const XML_Char**>(&atts[0])))
+		if (!_appendObject (PTO_Field, static_cast<const gchar**>(&atts[0])))
 		{
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
 		}
@@ -4283,11 +4283,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 
   UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
-  const XML_Char* propsArray[5];
-  propsArray[0] = static_cast<const XML_Char *>("props");
-  propsArray[1] = static_cast<const XML_Char *>(propBuffer.c_str());
-  propsArray[2] = static_cast<const XML_Char *>("dataid");
-  propsArray[3] = static_cast<const XML_Char *>(propsName.c_str());
+  const gchar* propsArray[5];
+  propsArray[0] = static_cast<const gchar *>("props");
+  propsArray[1] = static_cast<const gchar *>(propBuffer.c_str());
+  propsArray[2] = static_cast<const gchar *>("dataid");
+  propsArray[3] = static_cast<const gchar *>(propsName.c_str());
   propsArray[4] = 0;
 
   if (!_ensureInBlock())
@@ -4828,8 +4828,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   UT_sint32 vspan = 0;
   UT_String propBuffer;
 
-  const XML_Char* propsArray[3];
-  propsArray[0] = static_cast<const XML_Char*>("props");
+  const gchar* propsArray[3];
+  propsArray[0] = static_cast<const gchar*>("props");
   propsArray[1] = "";
   propsArray[2] = NULL;
 	  
@@ -5293,7 +5293,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 	UT_uint32 iCount = ps->stsh.Stshi.cstd;
 //	UT_uint16 iBase  = ps->stsh.Stshi.cbSTDBaseInFile;
 
-	const XML_Char * attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	const gchar * attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 iOffset = 0;
 	
 	const STD * pSTD = ps->stsh.std;
@@ -5324,7 +5324,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		attribs[iOffset++] = PT_NAME_ATTRIBUTE_NAME;
 
 		// make sure we use standard names for standard styles
-		const XML_Char * pName = s_translateStyleId(pSTD->sti);
+		const gchar * pName = s_translateStyleId(pSTD->sti);
 
 		if(pName)
 		{
@@ -5592,7 +5592,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		}
 
 		// next, deal footnote formatting matters
-		const XML_Char * props[] = {"document-footnote-type",            NULL,
+		const gchar * props[] = {"document-footnote-type",            NULL,
 									"document-footnote-initial",         NULL,
 									"document-footnote-restart-section", NULL,
 									"document-footnote-restart-page",    NULL,
@@ -5693,7 +5693,7 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			wvFree(pPLCF_txt);
 		}
 		// next, deal endnote formatting matters
-		const XML_Char * props[] = {"document-endnote-type",            NULL,
+		const gchar * props[] = {"document-endnote-type",            NULL,
 									"document-endnote-initial",         NULL,
 									"document-endnote-restart-section", NULL,
 									"document-endnote-restart-page",    NULL,
@@ -5887,8 +5887,8 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	this->_flush();
 
 	bool res = true;
-	const XML_Char * attribsS[3] ={"footnote-id",NULL,NULL};
-	const XML_Char* attribsR[9] = {"type", "footnote_ref", "footnote-id",
+	const gchar * attribsS[3] ={"footnote-id",NULL,NULL};
+	const gchar* attribsR[9] = {"type", "footnote_ref", "footnote-id",
 								   NULL, NULL, NULL, NULL, NULL, NULL};
 	UT_uint32 iOffR = 3;
 
@@ -5904,7 +5904,7 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	attribsR[iOffR++] = "style";
 	attribsR[iOffR++] = m_charStyle.c_str();
 		
-	UT_return_val_if_fail( iOffR <= sizeof(attribsR)/sizeof(XML_Char*), false );
+	UT_return_val_if_fail( iOffR <= sizeof(attribsR)/sizeof(gchar*), false );
 	
 	if(f->type)
 	{
@@ -5942,8 +5942,8 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	this->_flush();
 
 	bool res = true;
-	const XML_Char * attribsS[3] ={"endnote-id",NULL,NULL};
-	const XML_Char* attribsR[9] = {"type", "endnote_ref", "endnote-id",
+	const gchar * attribsS[3] ={"endnote-id",NULL,NULL};
+	const gchar* attribsR[9] = {"type", "endnote_ref", "endnote-id",
 								   NULL, NULL, NULL, NULL, NULL, NULL};
 	UT_uint32 iOffR = 3;
 
@@ -5959,7 +5959,7 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	attribsR[iOffR++] = "style";
 	attribsR[iOffR++] = m_charStyle.c_str();
 		
-	UT_return_val_if_fail(iOffR <= sizeof(attribsR)/sizeof(XML_Char*), false);
+	UT_return_val_if_fail(iOffR <= sizeof(attribsR)/sizeof(gchar*), false);
 	
 	if(f->type)
 	{
@@ -6054,13 +6054,13 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		// if this is the first character in a footnote, insert the reference
 		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos)
 		{
-			const XML_Char* attribsA[] = {"type", "footnote_anchor",
+			const gchar* attribsA[] = {"type", "footnote_anchor",
 										   "footnote-id", NULL,
 										   "props",       NULL,
 										   "style",       NULL,
 										   NULL};
 			
-			const XML_Char * attribsB[] = {"props", NULL,
+			const gchar * attribsB[] = {"props", NULL,
 											"style", NULL,
 											NULL};
 
@@ -6129,13 +6129,13 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		// if this is the first character in an endnote, insert the anchor
 		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
 		{
-			const XML_Char * attribsA[] = {"type", "endnote_anchor",
+			const gchar * attribsA[] = {"type", "endnote_anchor",
 										   "endnote-id", NULL,
 										   "props",       NULL,
 										   "style",       NULL,
 										   NULL};
 			
-			const XML_Char * attribsB[] = {"props", NULL,
+			const gchar * attribsB[] = {"props", NULL,
 										   "style", NULL,
 										   NULL};
 
@@ -6240,7 +6240,7 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 
 // 		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos)
 // 		{
-// 			const XML_Char * attribsB[] = {"props", NULL,
+// 			const gchar * attribsB[] = {"props", NULL,
 // 											"style", NULL,
 // 											NULL};
 
@@ -6400,7 +6400,7 @@ bool IE_Imp_MsWord_97::_ensureInBlock()
     return bret;
 }
  
-bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const gchar ** attributes)
 {
 	if(pts == PTX_SectionFrame)
 	{
@@ -6455,7 +6455,7 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	return getDoc()->appendStrux(pts, attributes);
 }
 
-bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const gchar ** attributes)
 {
 	if(m_bInHeaders)
 	{
@@ -6494,7 +6494,7 @@ bool IE_Imp_MsWord_97::_appendSpan(const UT_UCSChar * p, UT_uint32 length)
 	return getDoc()->appendSpan(p, length);
 }
 
-bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
+bool IE_Imp_MsWord_97::_appendFmt(const gchar ** attributes)
 {
 	// no special processing required, this only changes m_loading in
 	// the PT
@@ -6510,7 +6510,7 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
     each shared header as we go using the info stored in the current
     header's d struct.
 */
-bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const gchar ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
 	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
@@ -6539,7 +6539,7 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** att
 	return bRet;
 }
 
-bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const gchar ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
 	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
@@ -6792,7 +6792,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 	if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported /*&& m_pHeaders[m_iCurrentHeader].len > 2*/)
 	{
 		UT_uint32 iOff = 0;
-		const XML_Char * attribsB[] = {NULL, NULL,
+		const gchar * attribsB[] = {NULL, NULL,
 									   NULL, NULL,
 									   NULL};
 					
@@ -6808,7 +6808,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			attribsB[iOff++] = m_paraStyle.c_str();
 		}
 					
-		const XML_Char * attribsC[] = {NULL, NULL,
+		const gchar * attribsC[] = {NULL, NULL,
 									   NULL, NULL,
 									   NULL};
 		iOff = 0;
@@ -6824,7 +6824,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			attribsC[iOff++] = m_charStyle.c_str();
 		}
 					
-		const XML_Char * attribsS[] = {"type", NULL,
+		const gchar * attribsS[] = {"type", NULL,
 									   "id",   NULL,
 									   NULL};
 					

@@ -87,7 +87,7 @@ void AP_Dialog_Tab::_storeWindowData()
 
 void AP_Dialog_Tab::_populateWindowData(void)
 {
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
@@ -132,14 +132,14 @@ void AP_Dialog_Tab::_populateWindowData(void)
 	_setTabList(m_tabInfo.getItemCount());
 	_setAlignment(FL_TAB_LEFT);
 
-	const XML_Char ** propsBlock = NULL;
+	const gchar ** propsBlock = NULL;
 	pView->getBlockFormat(&propsBlock);
 
-	_setDefaultTabStop((const XML_Char *)"0");
+	_setDefaultTabStop((const gchar *)"0");
 
 	if (propsBlock[0])
 	{
-		const XML_Char * sz;
+		const gchar * sz;
 		
 		sz = UT_getAttribute("default-tab-interval", propsBlock);
 
@@ -147,7 +147,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 		{
 			double inches = UT_convertToInches(sz);
 
-			_setDefaultTabStop((const XML_Char *)UT_convertInchesToDimensionString(m_dim, inches));
+			_setDefaultTabStop((const gchar *)UT_convertInchesToDimensionString(m_dim, inches));
 		}
 
 	}
@@ -527,11 +527,11 @@ void AP_Dialog_Tab::clearList()
 bool AP_Dialog_Tab::buildTab( UT_String & buffer )
 {
 	// get current value from member
-	const XML_Char* szOld = _gatherTabEdit();
+	const gchar* szOld = _gatherTabEdit();
 	bool res = UT_isValidDimensionString(szOld, MAX_TAB_LENGTH);
 	if (res)
 	{
-		const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
+		const gchar* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
 		UT_String_sprintf( buffer, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
 		 					(static_cast<char>(_gatherLeader()))+'0');
@@ -689,7 +689,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	        UT_DEBUGMSG(("AMOUNT = 0 amt = %d \n",amt));
 	}
 	// get current value from member
-	const XML_Char* szOld = _gatherDefaultTabStop();
+	const gchar* szOld = _gatherDefaultTabStop();
 	double d = UT_convertDimensionless(szOld);
 
 	// figure out which dimension and units to spin in
@@ -748,7 +748,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	if (d < dMin)
 		d = dMin;
 
-	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
+	const gchar* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
 
 	_setDefaultTabStop(szNew);
 }
@@ -822,7 +822,7 @@ void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 	if (d < dMin)
 		d = dMin;
 
-	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
+	const gchar* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
 
 	_setDefaultTabStop(szNew);
 }

@@ -39,13 +39,13 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 	xxx_UT_DEBUGMSG(("Frag Object created indexAP %x \n",m_indexAP));
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_return_if_fail (pAP);
-    const XML_Char* pszType = NULL;
-    const XML_Char* pszName = NULL;
-	const XML_Char* pszParam = NULL;
+    const gchar* pszType = NULL;
+    const gchar* pszName = NULL;
+	const gchar* pszParam = NULL;
 
-    pAP->getAttribute(static_cast<const XML_Char *>("type"), pszType);
-    pAP->getAttribute(static_cast<const XML_Char *>("name"), pszName);
-    pAP->getAttribute(static_cast<const XML_Char *>("param"), pszParam);
+    pAP->getAttribute(static_cast<const gchar *>("type"), pszType);
+    pAP->getAttribute(static_cast<const gchar *>("name"), pszName);
+    pAP->getAttribute(static_cast<const gchar *>("param"), pszParam);
 
     fd_Field::FieldType fieldType;
 

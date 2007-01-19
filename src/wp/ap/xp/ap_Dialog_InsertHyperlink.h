@@ -42,9 +42,9 @@ public:
 	tAnswer				getAnswer(void) const;
 	void            	setAnswer(tAnswer a);
 	UT_uint32			getExistingBookmarksCount() const;
-	const XML_Char *	getNthExistingBookmark(UT_uint32 n) const;
-	const XML_Char *	getHyperlink() const;
-	void				setHyperlink(const XML_Char * link);
+	const gchar *	getNthExistingBookmark(UT_uint32 n) const;
+	const gchar *	getHyperlink() const;
+	void				setHyperlink(const gchar * link);
 	void				setDoc(FV_View * pView);
 	
 private:
@@ -52,7 +52,7 @@ private:
 	FV_View *           m_pView;
 	
 	AP_Dialog_InsertHyperlink::tAnswer	m_answer;
-	XML_Char *			m_pHyperlink;
+	gchar *			m_pHyperlink;
 };
 
 #endif /* AP_DIALOG_TOGGLECASE_H */

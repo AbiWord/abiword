@@ -175,7 +175,7 @@ static void _css_length (const char *str,GR_Graphics* pG,
 	}
 }
 
-void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
+void UT_svg::startElement (const gchar * name, const gchar ** atts)
 {
 	if (m_bContinue == false) return;
 	if (m_ePM != pm_parse) m_bContinue = false;
@@ -184,7 +184,7 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	 || strcmp(static_cast<const char*>(name),"svg:svg")==0)
 	{
 		m_bSVG = true;
-		const XML_Char **attr = atts;
+		const gchar **attr = atts;
 		while (*attr && (m_ePM!=pm_recognizeContent))
 		{
 			if (strcmp((const char*)(*attr),"width")==0)
@@ -252,7 +252,7 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	}
 }
 
-void UT_svg::endElement (const XML_Char * name)
+void UT_svg::endElement (const gchar * name)
 {
 	if (m_bContinue == false) return;
 
@@ -310,7 +310,7 @@ void UT_svg::endElement (const XML_Char * name)
 		cb_end(cb_userdata, static_cast<const char *>(name));
 }
 
-void UT_svg::charData (const XML_Char * str, int len) // non-terminated string
+void UT_svg::charData (const gchar * str, int len) // non-terminated string
 {
 	if (m_bContinue == false) return;
 

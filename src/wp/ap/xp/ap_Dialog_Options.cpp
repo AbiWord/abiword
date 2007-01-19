@@ -69,10 +69,10 @@ AP_Dialog_Options::tAnswer AP_Dialog_Options::getAnswer(void) const
 }
 
 inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme,
-							 XML_Char const * key,
+							 gchar const * key,
 							 bool var )
 {
-	XML_Char szBuffer[2] = {0,0};
+	gchar szBuffer[2] = {0,0};
 	szBuffer[0] = ((var)==true ? '1' : '0');
 	pPrefsScheme->setValue( key, szBuffer );
 }
@@ -223,12 +223,12 @@ void AP_Dialog_Options::_storeWindowData(void)
 #endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save ruler units value
-	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
-				   (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
+	pPrefsScheme->setValue((gchar*)AP_PREF_KEY_RulerUnits,
+				   (gchar*)UT_dimensionName( _gatherViewRulerUnits()) );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save screen color
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
+	pPrefsScheme->setValue((gchar*)XAP_PREF_KEY_ColorForTransparent,
 				   _gatherColorForTransparent() );
 
 
@@ -237,10 +237,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// TODO: change to snprintf
-	XML_Char szBuffer[40];
+	gchar szBuffer[40];
 	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
-	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,
-				   (XML_Char*)szBuffer );
+	pPrefsScheme->setValue((gchar*)AP_PREF_KEY_OptionsTabNumber,
+				   (gchar*)szBuffer );
 
 	// allow the prefListeners to receive their calls
 	pPrefs->endBlockChange();
@@ -331,8 +331,8 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_LIST_VIEW_RULER_UNITS:
-			pPrefsScheme->setValue ((XML_Char*)AP_PREF_KEY_RulerUnits,
-						(XML_Char*)UT_dimensionName (_gatherViewRulerUnits()));
+			pPrefsScheme->setValue ((gchar*)AP_PREF_KEY_RulerUnits,
+						(gchar*)UT_dimensionName (_gatherViewRulerUnits()));
 			break;
 
 		case id_CHECK_VIEW_CURSOR_BLINK:
@@ -355,7 +355,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
-			pPrefsScheme->setValue ((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
+			pPrefsScheme->setValue ((gchar*)XAP_PREF_KEY_ColorForTransparent,
 						_gatherColorForTransparent());
 			break;
 
@@ -396,10 +396,10 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_NOTEBOOK:
-			XML_Char szBuffer[40];
+			gchar szBuffer[40];
 			sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
-			pPrefsScheme->setValue ((XML_Char*)AP_PREF_KEY_OptionsTabNumber,
-						(XML_Char*)szBuffer );
+			pPrefsScheme->setValue ((gchar*)AP_PREF_KEY_OptionsTabNumber,
+						(gchar*)szBuffer );
 			break;
 
 		// Ignore window controls/special buttons
@@ -435,15 +435,15 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 	pPrefs->savePrefsFile();
 }
 
-void AP_Dialog_Options::_setColorForTransparent(const XML_Char *
+void AP_Dialog_Options::_setColorForTransparent(const gchar *
 												pzsColorForTransparent)
 {
 	strncpy(m_CurrentTransparentColor,pzsColorForTransparent,9);
 }
 
-const XML_Char * AP_Dialog_Options::_gatherColorForTransparent(void)
+const gchar * AP_Dialog_Options::_gatherColorForTransparent(void)
 {
-	return (const XML_Char *) m_CurrentTransparentColor;
+	return (const gchar *) m_CurrentTransparentColor;
 }
 
 void AP_Dialog_Options::_eventSave(void)
@@ -459,7 +459,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 {
 	bool			b;
 	XAP_Prefs		*pPrefs = 0;
-	const XML_Char	*pszBuffer = 0;
+	const gchar	*pszBuffer = 0;
 	m_bInitialPop = true;
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
@@ -468,62 +468,62 @@ void AP_Dialog_Options::_populateWindowData(void)
 	UT_return_if_fail ( pPrefs );
 
 	// ------------ Spell
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_AutoSpellCheck,&b))
 		_setSpellCheckAsType (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckCaps,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_SpellCheckCaps,&b))
 		_setSpellUppercase (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckNumbers,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_SpellCheckNumbers,&b))
 		_setSpellNumbers (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoGrammarCheck,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_AutoGrammarCheck,&b))
 		_setGrammarCheck (b);
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 #ifndef HAVE_HILDON
 	//-------------ShowSplash
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ShowSplash,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ShowSplash,&b))
 		_setShowSplash (b);
 #endif
 	// ------------ View
-	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))
+	if (pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
 
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
-		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
+		if (pPrefs->getPrefsValueBool((gchar*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
 			_setViewShowToolbar (i, b);
 		}
 	}
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StatusBarVisible,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_StatusBarVisible,&b))
 		_setViewShowStatusBar (b);
 #endif	
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ParaVisible,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ParaVisible,&b))
 		_setViewUnprintable (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AllowCustomToolbars,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AllowCustomToolbars,&b))
 		_setAllowCustomToolbars(b);
 
 #if defined(XP_UNIX_TARGET_GTK)
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
 		_setEnableSmoothScrolling(b);
 #endif
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoLoadPlugins,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AutoLoadPlugins,&b))
 		_setAutoLoadPlugins(b);
 
 	// TODO: JOAQUIN FIX THIS
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFile,&b))
+	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AutoSaveFile,&b))
 		_setAutoSaveFile (b);
 
 	UT_String stBuffer;
@@ -539,14 +539,14 @@ void AP_Dialog_Options::_populateWindowData(void)
 		
 	// ------------ Screen Color
 
-	const XML_Char * pszColorForTransparent = NULL;
+	const gchar * pszColorForTransparent = NULL;
 	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, &pszColorForTransparent))
 		_setColorForTransparent(pszColorForTransparent);
 
 
 	// ------------ the page tab number
 	int which = getInitialPageNum ();
-	if ((which == -1) && pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
+	if ((which == -1) && pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
 	else
 	  _setNotebookPageNum(which);
@@ -636,7 +636,7 @@ void AP_Dialog_Options::_initEnableControls()
 void AP_Dialog_Options::_event_SetDefaults(void)
 {
 	XAP_Prefs		*pPrefs;
-	const XML_Char	*old_name;
+	const gchar	*old_name;
 	int currentPage;
 
 	pPrefs = m_pApp->getPrefs();
@@ -769,7 +769,7 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 			m_BOData[bo].m_current = m_BOData[bo].m_original;
 		}
 
-	const XML_Char * pszValue = 0;
+	const gchar * pszValue = 0;
 
 	/* Auto-Save Period
 	 */
@@ -1035,7 +1035,7 @@ void AP_PreferenceScheme::saveChanges()
 	m_soAutoSaveExtension.m_original = g_strdup(m_soAutoSaveExtension.m_current);
 	CHECK_EXT(m_soAutoSaveExtension.m_original);
 
-	const XML_Char * szValue = 0;
+	const gchar * szValue = 0;
 
 	/* StringSet
 	 */
@@ -1187,7 +1187,7 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	// m_BOData[bo_IgnoreUppercase	].m_default = !m_BOData[bo_IgnoreUppercase	].m_default;
 	// m_BOData[bo_IgnoreURLs		].m_default = !m_BOData[bo_IgnoreURLs		].m_default;
 
-	const XML_Char * pszValue = 0;
+	const gchar * pszValue = 0;
 
 	/* Auto-Save Period
 	 */
@@ -1410,7 +1410,7 @@ void AP_PreferenceSchemeManager::updateUnsavedChanges(bool bCallerHasUnsavedChan
 		}
 }
 
-UT_uint32 AP_PreferenceSchemeManager::getLanguageIndex(const XML_Char * szLanguageCode) const
+UT_uint32 AP_PreferenceSchemeManager::getLanguageIndex(const gchar * szLanguageCode) const
 {
 	UT_uint32 index = 1;
 
@@ -1426,8 +1426,8 @@ UT_uint32 AP_PreferenceSchemeManager::getLanguageIndex(const XML_Char * szLangua
 
 static int s_compareQ(const void * a, const void * b)
 {
-	const XML_Char ** A = (const XML_Char **) a;
-	const XML_Char ** B = (const XML_Char **) b;
+	const gchar ** A = (const gchar **) a;
+	const gchar ** B = (const gchar **) b;
 
 	return g_utf8_collate(*A,*B);
 }
@@ -1436,10 +1436,10 @@ void AP_PreferenceSchemeManager::_constructLanguageArrays()
 {
 	m_LanguageCount = m_LanguageTable.getCount();
 
-	const XML_Char ** ppLanguageTemp = new const XML_Char * [m_LanguageCount];
+	const gchar ** ppLanguageTemp = new const gchar * [m_LanguageCount];
 
-	m_ppLanguage     = new const XML_Char * [m_LanguageCount];
-	m_ppLanguageCode = new const XML_Char * [m_LanguageCount];
+	m_ppLanguage     = new const gchar * [m_LanguageCount];
+	m_ppLanguageCode = new const gchar * [m_LanguageCount];
 
 	UT_ASSERT(ppLanguageTemp && m_ppLanguage && m_ppLanguageCode);
 
@@ -1473,7 +1473,7 @@ void AP_PreferenceSchemeManager::_constructLanguageArrays()
 
 	/* sort the temporary array
 	 */
-	qsort(ppLanguageTemp, m_LanguageCount-nDontSort, sizeof(XML_Char *), s_compareQ);
+	qsort(ppLanguageTemp, m_LanguageCount-nDontSort, sizeof(gchar *), s_compareQ);
 
 	/* Copy the sorted codes and a ssign each language its code
 	 */
@@ -1497,9 +1497,9 @@ void AP_PreferenceSchemeManager::_constructLanguageArrays()
 
 /* TODO: make this dynamic!
  */
-static const XML_Char * s_internal_units[5] = { "in", "cm", "mm", "pt", "pi" };
+static const gchar * s_internal_units[5] = { "in", "cm", "mm", "pt", "pi" };
 
-UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const XML_Char * szUnits) const
+UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const gchar * szUnits) const
 {
 	UT_uint32 index = 0;
 
@@ -1513,11 +1513,11 @@ UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const XML_Char * szUni
 	return index;
 }
 
-const XML_Char * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp_Units)
+const gchar * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp_Units)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	const XML_Char * tmp = 0;
+	const gchar * tmp = 0;
 
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch))
 		if (strcmp (tmp, PopUp_Units) == 0)
@@ -1542,7 +1542,7 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	const XML_Char * tmp = 0;
+	const gchar * tmp = 0;
 	char * tmpcopy = 0;
 
 	m_PopUp_UnitsCount = 0;

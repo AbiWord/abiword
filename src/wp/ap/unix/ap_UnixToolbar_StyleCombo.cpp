@@ -38,7 +38,7 @@
 
 int sort_cb(gconstpointer a, gconstpointer b)
 {
-	return strcmp((const XML_Char*)a, (const XML_Char*)b);
+	return strcmp((const gchar*)a, (const gchar*)b);
 }
 
 EV_Toolbar_Control * AP_UnixToolbar_StyleCombo::static_constructor(EV_Toolbar * pToolbar,
@@ -206,7 +206,7 @@ AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle,
 	UT_return_if_fail (pStyle);
 	UT_LocaleTransactor t (LC_NUMERIC, "C");
 
-	const XML_Char *value = NULL;
+	const gchar *value = NULL;
 
 	if (pStyle->getPropertyExpand ("font-family", value)) {
 		pango_font_description_set_family (desc, value);

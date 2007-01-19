@@ -74,11 +74,11 @@ UT_String XAP_AppImpl::localizeHelpUrl (const char * pathBeforeLang,
 	UT_return_val_if_fail(pPrefs, "");
 
 	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
-	const XML_Char* abiSuiteLocString = NULL;
+	const gchar* abiSuiteLocString = NULL;
 	UT_String url;
 
 	// evil...
-	pPrefs->getPrefsValue((XML_Char*)"StringSet", &abiSuiteLocString);
+	pPrefs->getPrefsValue((gchar*)"StringSet", &abiSuiteLocString);
 
 	// 1st try file on user's computer (local file), if not exist try remote help
 	UT_String path(abiSuiteLibDir);

@@ -41,10 +41,10 @@ class GR_Graphics;
 class XAP_Preview_FontPreview  : public XAP_Preview
 {
 public:
-	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackgound);
+	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const UT_Vector * vFontProps);
-    const XML_Char * getVal(const XML_Char * szProp);
+    const gchar * getVal(const gchar * szProp);
 	void draw(void);
 	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
 	void clearScreen(void);
@@ -87,25 +87,25 @@ public:
 	    return m_drawString;
 	  }
 
-	void                            addOrReplaceVecProp(const XML_Char * pszProp,
-														const XML_Char * pszVal);
+	void                            addOrReplaceVecProp(const gchar * pszProp,
+														const gchar * pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
-	const XML_Char *                getVal(const XML_Char * szProp) const;
+	const gchar *                getVal(const gchar * szProp) const;
 	void                            setAllPropsFromVec(UT_Vector * vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
-	void							setFontFamily(const XML_Char * pFontFamily);
-	void							setFontSize(const XML_Char * pFontSize);
-	void							setFontWeight(const XML_Char * pFontWeight);
-	void							setFontStyle(const XML_Char * pFontStyle);
-	void							setColor(const XML_Char * pColor);
-	void							setBGColor(const XML_Char * pBGColor);
+	void							setFontFamily(const gchar * pFontFamily);
+	void							setFontSize(const gchar * pFontSize);
+	void							setFontWeight(const gchar * pFontWeight);
+	void							setFontStyle(const gchar * pFontStyle);
+	void							setColor(const gchar * pColor);
+	void							setBGColor(const gchar * pBGColor);
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
 	void                            setHidden(bool bHidden);
 	void                            setSuperScript(bool bSuperScript);
 	void                            setSubScript(bool bSubScript);
-	void                            setBackGroundColor (const XML_Char * pBackGroundColor);
+	void                            setBackGroundColor (const gchar * pBackGroundColor);
 
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
@@ -115,13 +115,13 @@ public:
 	// of the field in the supplied argument w/o regard to whether
 	// they changed it or not.  this value is a static string in
 	// the dialog and must be valid only until the dialog is released.
-	bool                            didPropChange(const XML_Char * v1, const XML_Char * v2) const;
-	bool							getChangedFontFamily(const XML_Char ** pszFontFamily) const;
-	bool							getChangedFontSize(const XML_Char ** pszFontSize) const;
-	bool							getChangedFontWeight(const XML_Char ** pszFontWeight) const;
-	bool							getChangedFontStyle(const XML_Char ** pszFontStyle) const;
-	bool							getChangedColor(const XML_Char ** pszColor) const;
-	bool							getChangedBGColor(const XML_Char ** pszColor) const;
+	bool                            didPropChange(const gchar * v1, const gchar * v2) const;
+	bool							getChangedFontFamily(const gchar ** pszFontFamily) const;
+	bool							getChangedFontSize(const gchar ** pszFontSize) const;
+	bool							getChangedFontWeight(const gchar ** pszFontWeight) const;
+	bool							getChangedFontStyle(const gchar ** pszFontStyle) const;
+	bool							getChangedColor(const gchar ** pszColor) const;
+	bool							getChangedBGColor(const gchar ** pszColor) const;
 	bool							getChangedUnderline(bool * pbUnderline) const;
 	bool							getChangedOverline(bool * pbOverline) const;
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
@@ -138,13 +138,13 @@ protected:
 
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
 	GR_Graphics *					m_pGraphics;			/* input */
-	const XML_Char *                m_pColorBackground;
-	XML_Char *						m_pFontFamily;			/* input/output */
-	XML_Char *						m_pFontSize;			/* input/output */
-	XML_Char *						m_pFontWeight;			/* input/output */
-	XML_Char *						m_pFontStyle;			/* input/output */
-	XML_Char *						m_pColor;				/* input/output */
-	XML_Char *						m_pBGColor;				/* input/output */
+	const gchar *                m_pColorBackground;
+	gchar *						m_pFontFamily;			/* input/output */
+	gchar *						m_pFontSize;			/* input/output */
+	gchar *						m_pFontWeight;			/* input/output */
+	gchar *						m_pFontStyle;			/* input/output */
+	gchar *						m_pColor;				/* input/output */
+	gchar *						m_pBGColor;				/* input/output */
 	bool							m_bUnderline;			/* input/output */
 	bool							m_bOverline;			/* input/output */
 	bool							m_bStrikeout;			/* input/output */

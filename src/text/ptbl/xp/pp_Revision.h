@@ -45,13 +45,13 @@ class PP_Revision: public PP_AttrProp
   public:
 	PP_Revision(UT_uint32 Id,
 				PP_RevisionType eType,
-				const XML_Char *  props,
-				const XML_Char * attrs);
+				const gchar *  props,
+				const gchar * attrs);
 
 	PP_Revision(UT_uint32 Id,
 				PP_RevisionType eType,
-				const XML_Char ** props,
-				const XML_Char ** attrs);
+				const gchar ** props,
+				const gchar ** attrs);
 
 	virtual ~PP_Revision(){};
 	
@@ -61,11 +61,11 @@ class PP_Revision: public PP_AttrProp
 	PP_RevisionType  getType()  const {return m_eType;}
 	void             setType(PP_RevisionType t) {m_eType = t; m_bDirty = true;}
 	
-	const XML_Char * getPropsString();
-	const XML_Char * getAttrsString();
+	const gchar * getPropsString();
+	const gchar * getAttrsString();
 
 	// this is intentionally not virtual (no need for that)
-	bool	setAttributes(const XML_Char ** attributes);
+	bool	setAttributes(const gchar ** attributes);
 	
 	bool operator == (const PP_Revision &op2) const;
 
@@ -120,19 +120,19 @@ class PP_RevisionAttr
 	PP_RevisionAttr()
 		:m_vRev(),m_sXMLstring(),m_bDirty(true),m_iSuperfluous(0),m_pLastRevision(NULL)
 		{};
-	PP_RevisionAttr(const XML_Char * r);
+	PP_RevisionAttr(const gchar * r);
 
 	
-	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pAttrs, const XML_Char ** pProps);
+	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const gchar ** pAttrs, const gchar ** pProps);
 	
 	~PP_RevisionAttr();
 
-	void                  setRevision(const XML_Char * r);
+	void                  setRevision(const gchar * r);
 
 	void                  addRevision(UT_uint32 iId,
 									  PP_RevisionType eType,
-									  const XML_Char ** pAttrs,
-									  const XML_Char ** pProps);
+									  const gchar ** pAttrs,
+									  const gchar ** pProps);
 
 	bool                  changeRevisionType(UT_uint32 iId, PP_RevisionType eType);
 	bool                  changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
@@ -161,22 +161,22 @@ class PP_RevisionAttr
 	    querie the returned PP_Revision object.
     */
 	bool                  isVisible(UT_uint32 id);
-	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue);
-	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue);
+	bool                  hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue);
+	bool                  hasProperty(const gchar * pName, const gchar * &pValue);
 	PP_RevisionType       getType(UT_uint32 iId);
 	PP_RevisionType       getType();
 #if 0
 	const UT_Vector *     getProps(UT_uint32 iId);
 	const UT_Vector *     getProps();
 #endif
-	const XML_Char *      getXMLstring();
+	const gchar *      getXMLstring();
 	void                  forceDirty() {m_bDirty = true;}
 	bool                  isFragmentSuperfluous() const;
 
 	bool operator == (const PP_RevisionAttr &op2) const;
 
   private:
-	void _init(const XML_Char *r);
+	void _init(const gchar *r);
 	void _clear();
 	void _refreshString();
 

@@ -146,7 +146,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_ASSERT(p_color);
 	_setColorFG(p_color->getColor());
 
-	const XML_Char* pszStyle = NULL;
+	const gchar* pszStyle = NULL;
 	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
 	{
 		PD_Style *pStyle = NULL;
@@ -155,10 +155,10 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 
-	const XML_Char *pszFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar *pszFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	m_bIsOverhanging = (pszFontStyle && !strcmp(pszFontStyle, "italic"));
 
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	/*
 	  TODO map line width to a property, not a hard-coded value
@@ -169,13 +169,13 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
 
-	XML_Char* p;
+	gchar* p;
 	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}
 	UT_ASSERT(p || !pszDecor);
-	XML_Char*	q = strtok(p, " ");
+	gchar*	q = strtok(p, " ");
 
 	while (q)
 	{
@@ -206,7 +206,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	bChanged |= (_getDecorations() != oldDecors);
 
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	UT_Byte oldPos = m_fPosition;
 
@@ -255,12 +255,12 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	//set the language member
 	UT_Language lls;
-	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	// NB: m_pLanguage is a pointer into static tables inside UT_Language class and as
 	// such has a guaranteed life-span same as the application; hence no g_strdup here and
 	// no strcmp later
-	const XML_Char * pszOldLanguage = m_pLanguage;
+	const gchar * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls.getCodeFromCode(pszLanguage);
 	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
 	if(pszOldLanguage && (m_pLanguage != pszOldLanguage))
@@ -283,7 +283,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	UT_BidiCharType iOldOverride = m_iDirOverride;
 	UT_BidiCharType iNewOverride;
-	const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	// the way MS Word handles bidi is peculiar and requires that we allow
 	// temporarily a non-standard value for the dir-override property
 	// called "nobidi"
@@ -1511,7 +1511,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 					 leftClear,getWidth(),xoff,getLine()->getHeight()));
 
 }
-const XML_Char * fp_TextRun::getLanguage() const
+const gchar * fp_TextRun::getLanguage() const
 { 
   return m_pLanguage; 
 }
@@ -2883,20 +2883,20 @@ void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 	if(dir == UT_BIDI_UNSET || dir == m_iDirOverride)
 		return;
 
-	const XML_Char * prop[] = {NULL, NULL, 0};
-	const XML_Char direction[] = "dir-override";
-	const XML_Char rtl[] = "rtl";
-	const XML_Char ltr[] = "ltr";
+	const gchar * prop[] = {NULL, NULL, 0};
+	const gchar direction[] = "dir-override";
+	const gchar rtl[] = "rtl";
+	const gchar ltr[] = "ltr";
 
-	prop[0] = static_cast<const XML_Char*>(&direction[0]);
+	prop[0] = static_cast<const gchar*>(&direction[0]);
 
 	switch(dir)
 	{
 		case UT_BIDI_LTR:
-			prop[1] = static_cast<const XML_Char*>(&ltr[0]);
+			prop[1] = static_cast<const gchar*>(&ltr[0]);
 			break;
 		case UT_BIDI_RTL:
-			prop[1] = static_cast<const XML_Char*>(&rtl[0]);
+			prop[1] = static_cast<const gchar*>(&rtl[0]);
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

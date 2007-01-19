@@ -686,11 +686,11 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	} // switch
 }
 
-XML_Char ** UT_cloneAndDecodeAttributes (const XML_Char ** attrs)
+gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs)
 {
     UT_UTF8String s;
     UT_uint32 count = 0;
-    const XML_Char ** p = attrs;
+    const gchar ** p = attrs;
 
     while (*p)
     {
@@ -700,8 +700,8 @@ XML_Char ** UT_cloneAndDecodeAttributes (const XML_Char ** attrs)
 
     UT_return_val_if_fail(count % 2 == 0, NULL);
 
-    XML_Char ** attrs2 =
-	(XML_Char **) UT_calloc (count + 1, sizeof (XML_Char*));
+    gchar ** attrs2 =
+	(gchar **) UT_calloc (count + 1, sizeof (gchar*));
 
     UT_uint32 i;
     for (i = 0; i < count; i++)
@@ -716,11 +716,11 @@ XML_Char ** UT_cloneAndDecodeAttributes (const XML_Char ** attrs)
     return attrs2;
 }
 
-const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
+const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 {
 	UT_return_val_if_fail( atts, NULL );
 
-	const XML_Char** p = atts;
+	const gchar** p = atts;
 
 	while (*p)
 	{
@@ -979,12 +979,12 @@ const UT_UTF8String & UT_VersionInfo::getString() const
 }
 
 
-const XML_Char ** UT_setPropsToNothing(const XML_Char ** props)
+const gchar ** UT_setPropsToNothing(const gchar ** props)
 {
 	if(!props)
 		return NULL;
 	
-	const XML_Char ** props2;
+	const gchar ** props2;
 
 	UT_uint32 iCount  = 0;
 									
@@ -992,7 +992,7 @@ const XML_Char ** UT_setPropsToNothing(const XML_Char ** props)
 		iCount += 2;
 
 									
-	props2 = new const XML_Char * [iCount+1];
+	props2 = new const gchar * [iCount+1];
 
 	UT_uint32 i;
 	for(i = 0; i < iCount; i += 2)
@@ -1006,12 +1006,12 @@ const XML_Char ** UT_setPropsToNothing(const XML_Char ** props)
 	return props2;
 }
 
-const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * value)
+const gchar ** UT_setPropsToValue(const gchar ** props, const gchar * value)
 {
 	if(!props)
 		return NULL;
 	
-	const XML_Char ** props2;
+	const gchar ** props2;
 
 	UT_uint32 iCount  = 0;
 									
@@ -1019,7 +1019,7 @@ const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * v
 		iCount += 2;
 
 									
-	props2 = new const XML_Char * [iCount+1];
+	props2 = new const gchar * [iCount+1];
 
 	UT_uint32 i;
 	for(i = 0; i < iCount; i += 2)
@@ -1039,7 +1039,7 @@ const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * v
 
    the caller has to delete[] the array; the process is destructive to props
 */
-const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
+const gchar ** UT_splitPropsToArray(gchar * pProps)
 {
 		UT_return_val_if_fail( pProps, NULL);
 	
@@ -1064,7 +1064,7 @@ const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
 	
 		UT_uint32 iPropCount = i;
 		UT_uint32 j = 0;
-		const XML_Char ** pPropsArray = new const XML_Char *[2 * iPropCount + 1];
+		const gchar ** pPropsArray = new const gchar *[2 * iPropCount + 1];
 		UT_return_val_if_fail( pPropsArray, NULL );
 	
 		const char * pStart = pProps;

@@ -207,7 +207,7 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    PtWidget_t *buttonCancel;
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
-   XML_Char * unixstr = NULL;      // used for conversions
+   gchar * unixstr = NULL;      // used for conversions
 
 	windowSpell = abiCreatePhabDialog("ap_QNXDialog_Spell",pSS,AP_STRING_ID_DLG_Spell_SpellTitle); 
 	SetupContextHelp(windowSpell,this);

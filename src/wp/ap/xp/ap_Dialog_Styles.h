@@ -46,15 +46,15 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void _tabCallback(const char *, const char *);
 
  protected:
-	void event_paraPreviewUpdated (const XML_Char * pageLeftMargin,
-				       const XML_Char * pageRightMargin,
-				       const XML_Char * align,
-				       const XML_Char * firstLineIndent,
-				       const XML_Char * leftIndent,
-				       const XML_Char * rightIndent,
-				       const XML_Char * beforeSpacing,
-				       const XML_Char * afterSpacing,
-				       const XML_Char * lineSpacing) const;
+	void event_paraPreviewUpdated (const gchar * pageLeftMargin,
+				       const gchar * pageRightMargin,
+				       const gchar * align,
+				       const gchar * firstLineIndent,
+				       const gchar * leftIndent,
+				       const gchar * rightIndent,
+				       const gchar * beforeSpacing,
+				       const gchar * afterSpacing,
+				       const gchar * lineSpacing) const;
 	virtual void event_charPreviewUpdated (void) const; 
 
 	virtual const char * getCurrentStyle (void) const = 0;
@@ -65,14 +65,14 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	PD_Document * getLDoc(void) const;
 	void drawLocal(void);
 	void destroyAbiPreview(void);
-	void removeVecProp(const XML_Char * pszProp);
-	void addOrReplaceVecProp(const XML_Char * pszProp,  const XML_Char * pszVal);
-	void addOrReplaceVecAttribs(const XML_Char * pszProp,  const XML_Char * pszVal);
-	void fillVecWithProps(const XML_Char * szStyle, bool bReplaceAttributes);
+	void removeVecProp(const gchar * pszProp);
+	void addOrReplaceVecProp(const gchar * pszProp,  const gchar * pszVal);
+	void addOrReplaceVecAttribs(const gchar * pszProp,  const gchar * pszVal);
+	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
-	const XML_Char * getAttsVal(const XML_Char * szProp) const;
-	const XML_Char * getPropsVal(const XML_Char * szProp) const;
-	const XML_Char * getVecVal(const UT_Vector * v, const XML_Char * szProp) const;
+	const gchar * getAttsVal(const gchar * szProp) const;
+	const gchar * getPropsVal(const gchar * szProp) const;
+	const gchar * getVecVal(const UT_Vector * v, const gchar * szProp) const;
 	void ModifyLists(void);
 	void ModifyFont(void);
 	void ModifyParagraph(void);
@@ -80,7 +80,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void ModifyLang(void);
 
 	void updateCurrentStyle(void);
-    bool createNewStyle(const XML_Char * szName);
+    bool createNewStyle(const gchar * szName);
 	bool applyModifiedStyleToDoc(void);
 	void setDoc(PD_Document * pDoc);
 	void setFrame(XAP_Frame * pFrame);
@@ -103,8 +103,8 @@ protected:
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
 	AP_Preview_Abi *	          m_pAbiPreview;
-	UT_GenericVector<const XML_Char*> m_vecAllProps;
-	UT_GenericVector<const XML_Char*> m_vecAllAttribs;
+	UT_GenericVector<const gchar*> m_vecAllProps;
+	UT_GenericVector<const gchar*> m_vecAllAttribs;
 
 private:
 	XAP_Frame *                   m_pFrame;

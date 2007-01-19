@@ -37,8 +37,8 @@ enum UT_LANGUAGE_DIR
 
 struct UT_LangRecord
 {
-	XML_Char * m_szLangCode;
-	XML_Char * m_szLangName;
+	gchar * m_szLangCode;
+	gchar * m_szLangName;
 	UT_uint32  m_nID;
     UT_LANGUAGE_DIR m_eDir;
 };
@@ -50,16 +50,16 @@ public:
 	UT_Language();
 
 	UT_uint32	getCount();
-	const XML_Char * 	getNthLangCode(UT_uint32 n);
-	const XML_Char * 	getNthLangName(UT_uint32 n);
+	const gchar * 	getNthLangCode(UT_uint32 n);
+	const gchar * 	getNthLangName(UT_uint32 n);
 	const UT_uint32  	getNthId(UT_uint32 n);
-	const XML_Char * 	getCodeFromName(const XML_Char * szName);
-	const XML_Char * 	getCodeFromCode(const XML_Char * szCode); //
+	const gchar * 	getCodeFromName(const gchar * szName);
+	const gchar * 	getCodeFromCode(const gchar * szCode); //
 																  //see the cpp file for explanation
-	const UT_LangRecord* getLangRecordFromCode(const XML_Char * szCode);
-	UT_uint32 	        getIndxFromCode(const XML_Char * szCode);
-	UT_uint32 	        getIdFromCode(const XML_Char * szCode);
-	UT_LANGUAGE_DIR		getDirFromCode(const XML_Char * szCode);
+	const UT_LangRecord* getLangRecordFromCode(const gchar * szCode);
+	UT_uint32 	        getIndxFromCode(const gchar * szCode);
+	UT_uint32 	        getIdFromCode(const gchar * szCode);
+	UT_LANGUAGE_DIR		getDirFromCode(const gchar * szCode);
 
 private:
 	static bool	s_Init;

@@ -460,7 +460,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
 	// TODO
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	

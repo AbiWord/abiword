@@ -65,18 +65,18 @@ public:
 		return m_error;
 	}
 
-	virtual void startElement (const XML_Char * element_name, const XML_Char ** atts)
+	virtual void startElement (const gchar * element_name, const gchar ** atts)
 	{
 		NSMutableDictionary * dictionary = [NSMutableDictionary dictionaryWithCapacity:4];
 
 		NSString * name = [NSString stringWithUTF8String:element_name];
 
-		const XML_Char ** attr = atts;
+		const gchar ** attr = atts;
 
 		while (*attr)
 			{
-				const XML_Char * key   = *attr++;
-				const XML_Char * value = *attr++;
+				const gchar * key   = *attr++;
+				const gchar * value = *attr++;
 
 				if (*key && value)
 					{
@@ -92,7 +92,7 @@ public:
 			}
 	}
 
-	virtual void endElement (const XML_Char * element_name)
+	virtual void endElement (const gchar * element_name)
 	{
 		NSString * name = [NSString stringWithUTF8String:element_name];
 
@@ -105,7 +105,7 @@ public:
 			}
 	}
 
-	virtual void charData (const XML_Char * buffer, int length)
+	virtual void charData (const gchar * buffer, int length)
 	{
 		UT_UTF8String data(buffer,length);
 

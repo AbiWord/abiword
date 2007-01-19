@@ -227,7 +227,7 @@ protected:
 								 UT_uint32 iXID,
 								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
-	void				_outputXMLChar(const XML_Char * data, UT_uint32 length);
+	void				_outputXMLChar(const gchar * data, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleLists(void);
 	void				_handlePageSize(void);
@@ -256,7 +256,7 @@ private:
 	// despite being a std::string, it will store an UTF-8 buffer
 	typedef std::set<std::string> string_set;
 	string_set m_pUsedImages;
-	const XML_Char*		getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key);
+	const gchar*		getObjectKey(const PT_AttrPropIndex& api, const gchar* key);
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -373,8 +373,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szName = 0;
-		const XML_Char * szValue = 0;
+		const gchar * szName = 0;
+		const gchar * szValue = 0;
 
 		UT_uint32 k = 0;
 		while (pAP->getNthAttribute (k++, szName, szValue))
@@ -471,8 +471,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	if (bHaveProp && pAP)
 	{
 		UT_UTF8String url;
-		const XML_Char * szName;
-		const XML_Char * szValue;
+		const gchar * szName;
+		const gchar * szValue;
 		UT_uint32 k = 0;
 
 		while (pAP->getNthAttribute(k++,szName,szValue))
@@ -653,8 +653,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 #endif /* ENABLE_RESOURCE_MANAGER */
 }
 
-// This method is very much like _outputData but uses XML_Chars instead of UT_UCS4_Char's.
-void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 length)
+// This method is very much like _outputData but uses gchars instead of UT_UCS4_Char's.
+void s_AbiWord_1_Listener::_outputXMLChar(const gchar * data, UT_uint32 length)
 {
 	UT_UTF8String sBuf (data, length);
 	sBuf.escapeXML();
@@ -755,7 +755,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	UT_String s;
 	UT_String_sprintf(s, "%d", pDocument->getTopXID());
 	
-	const XML_Char *attr[5];
+	const gchar *attr[5];
 	attr[0] = "template";
 	attr[1] = m_bIsTemplate ? "true" : "false";
 	attr[2] = "xid-max";
@@ -801,14 +801,14 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 }
 
 
-const XML_Char*
-s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key)
+const gchar*
+s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const gchar* key)
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	if (bHaveProp && pAP)
 	{
-		const XML_Char* value;
+		const gchar* value;
 		if (pAP->getAttribute(key, value))
 			return value;
 	}
@@ -849,7 +849,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				_closeSpan();
                 _closeField();
 #ifndef ENABLE_RESOURCE_MANAGER
-				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+				const gchar* image_name = getObjectKey(api, static_cast<const gchar*>("dataid"));
 				if (image_name)
 					m_pUsedImages.insert(image_name);
 #endif
@@ -871,7 +871,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("math","/",false,api,pcr->getXID());
-					const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+					const gchar* image_name = getObjectKey(api, static_cast<const gchar*>("dataid"));
 					if (image_name)
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
@@ -882,7 +882,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
 						m_pUsedImages.insert(sPNGname->utf8_str());
 					}
-					const XML_Char* latex_name = getObjectKey(api, static_cast<const XML_Char*>("latexid"));
+					const gchar* latex_name = getObjectKey(api, static_cast<const gchar*>("latexid"));
 					if(latex_name)
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",latex_name));
@@ -895,7 +895,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("embed","/",false,api,pcr->getXID());
-					const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+					const gchar* image_name = getObjectKey(api, static_cast<const gchar*>("dataid"));
 					if (image_name)
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
@@ -922,8 +922,8 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    					_closeField();
 					const PP_AttrProp * pAP = NULL;
 					m_pDocument->getAttrProp(api,&pAP);
-					const XML_Char * pName;
-					const XML_Char * pValue;
+					const gchar * pName;
+					const gchar * pValue;
 					bool bFound = false;
 					UT_uint32 k = 0;
 
@@ -983,7 +983,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	*psfh = 0;							// we don't need it.
 #ifndef ENABLE_RESOURCE_MANAGER
 	PT_AttrPropIndex api = pcr->getIndexAP();
-	const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>(PT_STRUX_IMAGE_DATAID));
+	const gchar* image_name = getObjectKey(api, static_cast<const gchar*>(PT_STRUX_IMAGE_DATAID));
 	if (image_name)
 		m_pUsedImages.insert(image_name);
 #endif
@@ -1527,9 +1527,9 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	if (status)
 	    {
 	   		m_pie->write("<d name=\"");
-			// We assume that UT_XML_Char is equivalent to char.
+			// We assume that UT_gchar is equivalent to char.
 			// That's not really a good assumption, but, hey.
-			// TODO: make szName, szMimeType be UT_XML_Chars.
+			// TODO: make szName, szMimeType be UT_gchars.
 			_outputXMLChar(szName, strlen(szName));
 		   	if (szMimeType)
 			{

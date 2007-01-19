@@ -223,13 +223,13 @@ void AP_CocoaDialog_Tab::_setLeader( eTabLeader a )
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-const XML_Char* AP_CocoaDialog_Tab::_gatherDefaultTabStop()
+const gchar* AP_CocoaDialog_Tab::_gatherDefaultTabStop()
 {
 	NSControl* w = [m_dlg  _lookupWidget:id_SPIN_DEFAULT_TAB_STOP];
 	return [[w stringValue] UTF8String];
 }
 
-void AP_CocoaDialog_Tab::_setDefaultTabStop(const XML_Char* defaultTabStop)
+void AP_CocoaDialog_Tab::_setDefaultTabStop(const gchar* defaultTabStop)
 {
 	NSControl* w = [m_dlg  _lookupWidget:id_SPIN_DEFAULT_TAB_STOP];
 

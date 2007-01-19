@@ -58,12 +58,12 @@ public:
 	virtual ~XAP_Dialog_Encoding(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
-	void							setEncoding(const XML_Char * pEncoding);
-	const XML_Char *				getEncoding() const;
+	void							setEncoding(const gchar * pEncoding);
+	const gchar *				getEncoding() const;
 	XAP_Dialog_Encoding::tAnswer	getAnswer(void) const;
 	
 protected:
-	void							_setEncoding(const XML_Char * pEnc);
+	void							_setEncoding(const gchar * pEnc);
 
 	void                            _setAnswer (XAP_Dialog_Encoding::tAnswer answer)
 		{ m_answer = answer; };
@@ -71,7 +71,7 @@ protected:
 		{ m_iSelIndex = index; };
 	UT_uint32                       _getSelectionIndex () const
 		{ return m_iSelIndex; };
-	const XML_Char **               _getAllEncodings () const
+	const gchar **               _getAllEncodings () const
 		{ return m_ppEncodings; };
 	UT_uint32                       _getEncodingsCount() const
 		{ return m_iEncCount; };
@@ -80,11 +80,11 @@ private:
 	XAP_Dialog_Encoding::tAnswer	m_answer;
 
 	// the following keeps the string that the user sees in the dialogue; this is locale-dependent
-	const XML_Char *				m_pDescription;
+	const gchar *				m_pDescription;
 	// this keeps the actual encoding string corresponding to m_pDescription
-	const XML_Char *				m_pEncoding;
+	const gchar *				m_pEncoding;
 	UT_Encoding *					m_pEncTable;
-	const XML_Char **				m_ppEncodings;
+	const gchar **				m_ppEncodings;
 	UT_uint32						m_iEncCount;
 	UT_uint32						m_iSelIndex;
 };

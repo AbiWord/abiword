@@ -360,7 +360,7 @@ void XAP_QNXDialog_Encoding::_populateWindowData(void)
 
 	for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
 	{
-		const XML_Char* s = _getAllEncodings()[i];
+		const gchar* s = _getAllEncodings()[i];
 
 		gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
 		gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));

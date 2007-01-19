@@ -134,7 +134,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 			  
 	for (UT_uint32 i=0; i < m_iLangCount;  i++ )
 	{
-		const XML_Char* sLang = m_ppLanguages[i];
+		const gchar* sLang = m_ppLanguages[i];
 		const UT_uint32 nItems = pVec->getItemCount();	
 		
 		tvi.iImage = 0;    

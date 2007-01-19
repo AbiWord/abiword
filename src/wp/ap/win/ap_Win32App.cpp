@@ -268,7 +268,7 @@ bool AP_Win32App::initialize(void)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName)
+	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName)
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 		;
@@ -399,12 +399,12 @@ bool AP_Win32App::shutdown(void)
 }
 
 bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
-											const XML_Char * szKey, const XML_Char ** pszValue) const
+											const gchar * szKey, const gchar ** pszValue) const
 {
 	if (!m_prefs)
 		return false;
 
-	const XML_Char * psz = NULL;
+	const gchar * psz = NULL;
 	if (!m_prefs->getPrefsValue(szKey,&psz))
 		return false;
 
@@ -414,9 +414,9 @@ bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
 		return true;
 	}
 
-	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+	const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-	static XML_Char buf[1024];
+	static gchar buf[1024];
 	UT_return_val_if_fail ((strlen(dir) + strlen(psz) + 2) < sizeof(buf), false);
 	
 	sprintf(buf,"%s\\%s",dir,psz);
@@ -428,7 +428,7 @@ const char * AP_Win32App::getAbiSuiteAppDir(void) const
 {
 	// we return a static string, use it quickly.
 	
-	static XML_Char buf[1024];
+	static gchar buf[1024];
 	UT_return_val_if_fail ((strlen(getAbiSuiteLibDir()) + strlen(PACKAGE_NAME) + 2) < sizeof(buf), NULL);
 
 	sprintf(buf,"%s\\%s",getAbiSuiteLibDir(),PACKAGE_NAME);
@@ -1631,7 +1631,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 {		
 	const char * szDirectory = NULL;
-	const XML_Char * szStringSet = NULL;
+	const gchar * szStringSet = NULL;
 	UT_Vector* pVec = new UT_Vector();
 	UT_Language lang;	
 					

@@ -33,8 +33,8 @@
 #if 0
 static int s_compareQ(const void * a, const void * b)
 {
-	const XML_Char ** A = static_cast<const XML_Char **>(a);
-	const XML_Char ** B = static_cast<const XML_Char **>(b);
+	const gchar ** A = static_cast<const gchar **>(a);
+	const gchar ** B = static_cast<const gchar **>(b);
 
 	return strcmp(*A,*B);
 }
@@ -50,7 +50,7 @@ XAP_Dialog_Encoding::XAP_Dialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Di
 	
 	UT_ASSERT(m_pEncTable);
 	m_iEncCount = m_pEncTable->getCount();
-	m_ppEncodings = new const XML_Char * [m_iEncCount];
+	m_ppEncodings = new const gchar * [m_iEncCount];
 
 	// Build array of encoding names
 	for(UT_uint32 i = 0; i < m_iEncCount; i++)
@@ -67,7 +67,7 @@ XAP_Dialog_Encoding::~XAP_Dialog_Encoding(void)
 // we will not use the value passed to us, but rather will reference
 // ourselves into m_pEncTable; that way we do not have to worry about
 // the string disappearing on us, nor do we need to clone it
-void XAP_Dialog_Encoding::setEncoding(const XML_Char * pEncoding)
+void XAP_Dialog_Encoding::setEncoding(const gchar * pEncoding)
 {
 	UT_return_if_fail(m_pEncTable);
 	m_iSelIndex		= m_pEncTable->getIndxFromEncoding(pEncoding);
@@ -77,7 +77,7 @@ void XAP_Dialog_Encoding::setEncoding(const XML_Char * pEncoding)
 
 // in this case we do not need to worry about the lifespan of pDesc
 // since we call it only internally, always referring back to m_pEncTable
-void XAP_Dialog_Encoding::_setEncoding(const XML_Char * pDesc)
+void XAP_Dialog_Encoding::_setEncoding(const gchar * pDesc)
 {
 	UT_return_if_fail(m_pEncTable);
 	m_pDescription	= pDesc;
@@ -90,7 +90,7 @@ XAP_Dialog_Encoding::tAnswer XAP_Dialog_Encoding::getAnswer(void) const
 	return m_answer;
 }
 
-const XML_Char * XAP_Dialog_Encoding::getEncoding() const
+const gchar * XAP_Dialog_Encoding::getEncoding() const
 {
 	return m_pEncoding;
 }

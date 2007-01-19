@@ -31,8 +31,8 @@
 
 struct enc_entry
 {
-	XML_Char ** encs;
-	XML_Char * desc;
+	gchar ** encs;
+	gchar * desc;
 	UT_uint32  id;
 };
 
@@ -42,11 +42,11 @@ public:
 	UT_Encoding();
 
 	UT_uint32	getCount();
-	const XML_Char * 	getNthEncoding(UT_uint32 n);
-	const XML_Char * 	getNthDescription(UT_uint32 n);
-	const XML_Char * 	getEncodingFromDescription(const XML_Char * desc);
-	UT_uint32 	getIndxFromEncoding(const XML_Char * enc);
-	UT_uint32 	getIdFromEncoding(const XML_Char * enc);
+	const gchar * 	getNthEncoding(UT_uint32 n);
+	const gchar * 	getNthDescription(UT_uint32 n);
+	const gchar * 	getEncodingFromDescription(const gchar * desc);
+	UT_uint32 	getIndxFromEncoding(const gchar * enc);
+	UT_uint32 	getIdFromEncoding(const gchar * enc);
 
 private:
 	static bool	s_Init;

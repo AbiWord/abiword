@@ -44,17 +44,17 @@ typedef enum _AP_String_Id_Enum
 class AP_BuiltinStringSet : public XAP_BuiltinStringSet
 {
 public:
-	AP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName);
+	AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
 	virtual ~AP_BuiltinStringSet(void);
 
-	virtual const XML_Char *	getValue(XAP_String_Id id) const;
+	virtual const gchar *	getValue(XAP_String_Id id) const;
 
 #ifdef DEBUG
 	bool						dumpBuiltinSet(const char * szFilename) const;
 #endif
 
 protected:
-	const XML_Char **			m_arrayAP;
+	const gchar **			m_arrayAP;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -67,13 +67,13 @@ public:
 	AP_DiskStringSet(XAP_App * pApp);
 	virtual ~AP_DiskStringSet(void);
 
-	virtual bool				setValue(XAP_String_Id id, const XML_Char * szString);
-	virtual bool				setValue(const XML_Char * szId, const XML_Char * szString);
-	virtual const XML_Char *	getValue(XAP_String_Id id) const;
+	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
+	virtual bool				setValue(const gchar * szId, const gchar * szString);
+	virtual const gchar *	getValue(XAP_String_Id id) const;
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 
 protected:
-	UT_GenericVector<XML_Char*>					m_vecStringsAP;
+	UT_GenericVector<gchar*>					m_vecStringsAP;
 };
 
 

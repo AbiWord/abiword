@@ -133,7 +133,7 @@ void  AP_Dialog_Replace::setActiveFrame(XAP_Frame *pFrame)
 void  AP_Dialog_Replace::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
     UT_uint32 title_width = 0;
 	// conditionally set title
 	UT_UTF8String s;

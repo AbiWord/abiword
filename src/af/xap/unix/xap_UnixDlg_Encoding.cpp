@@ -174,7 +174,7 @@ void XAP_UnixDialog_Encoding::_populateWindowData(void)
 	
 	for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
     {
-		const XML_Char* s = _getAllEncodings()[i];
+		const gchar* s = _getAllEncodings()[i];
 		
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);

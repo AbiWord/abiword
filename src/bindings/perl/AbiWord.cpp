@@ -154,7 +154,7 @@ XS(XS_AbiWord__FV_View_setPaperColor)
 		warn( "AbiWord::FV_View::setPaperColor() -- pView is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
 #line 80 "AbiWord.xs"
-		pView->setPaperColor((XML_Char*) color);
+		pView->setPaperColor((gchar*) color);
 #line 159 "AbiWord.c"
     }
     XSRETURN_EMPTY;
@@ -178,7 +178,7 @@ XS(XS_AbiWord__FV_View_setCharFormat)
 	};
 #line 90 "AbiWord.xs"
 	{
-		XML_Char **properties = new XML_Char* [items];
+		gchar **properties = new gchar* [items];
 		// printf("setCharFormat\n");
 
 		for (int i = 1; i < items; ++i)
@@ -188,13 +188,13 @@ XS(XS_AbiWord__FV_View_setCharFormat)
 
 		switch (ix) {
 		case 0:
-			pView->setCharFormat((const XML_Char **) properties);
+			pView->setCharFormat((const gchar **) properties);
 			break;
 		case 1:
-			pView->setSectionFormat((const XML_Char **) properties);
+			pView->setSectionFormat((const gchar **) properties);
 			break;
 		case 2:
-			pView->setBlockFormat((const XML_Char **) properties);
+			pView->setBlockFormat((const gchar **) properties);
 			break;
 		}
 

@@ -283,7 +283,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 
 	if (bOK)
 	{
-		const XML_Char * s;
+		const gchar * s;
 		static UT_String szEnc;
 
 		s = pDialog->getEncoding();
@@ -500,7 +500,7 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 		UT_UCS4Char cLRO = UCS_LRO;
 		UT_UCS4Char cPDF = UCS_PDF;
 
-		const XML_Char *szValue = NULL;
+		const gchar *szValue = NULL;
 		if(pAP->getProperty("dir-override", szValue))
 		{
 			if(m_eDirOverride == DO_UNSET)
@@ -638,7 +638,7 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 
 	if (bHaveProp && pAP)
 	{
-		const XML_Char *szValue = NULL;
+		const gchar *szValue = NULL;
 		if(pAP->getProperty("dom-dir", szValue))
 		{
 			if(!g_ascii_strcasecmp("rtl",szValue))
@@ -783,7 +783,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 			if (bHaveProp && pAP)
 			{
-				const XML_Char *szValue = NULL;
+				const gchar *szValue = NULL;
 				if(pAP->getProperty("dom-dir", szValue))
 				{
 					if(!g_ascii_strcasecmp("rtl",szValue))
@@ -809,7 +809,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeBlock();
 			m_bInBlock = true;
 
-			const XML_Char * szValue = NULL;
+			const gchar * szValue = NULL;
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			const PP_AttrProp * pAP = NULL;

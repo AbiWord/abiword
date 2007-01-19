@@ -502,7 +502,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 	UT_String HeaderV,HeaderEvenV,HeaderLastV,HeaderFirstV;
 	UT_String FooterV,FooterEvenV,FooterLastV,FooterFirstV;
 	vecHdrFtr.clear();
-	const XML_Char * szHeaderV = NULL;
+	const gchar * szHeaderV = NULL;
 	bool bres = pAP->getAttribute("header",szHeaderV);
 	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
@@ -592,7 +592,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 					PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
 					const PP_AttrProp * pAPHdr = NULL;
 					getAttrProp(indexAPHdr, &pAPHdr);
-					const XML_Char * szID = NULL;
+					const gchar * szID = NULL;
 					bres = pAPHdr->getAttribute("id",szID);
 					UT_DEBUGMSG(("SEVIOR: Found candidate id = %s \n",szID));
 					if(bres && (szID != NULL))

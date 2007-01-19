@@ -100,8 +100,8 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	//
 	// Screen Color stuff
 	//
-	const XML_Char * _gatherColorForTransparent(void);									
-	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
+	const gchar * _gatherColorForTransparent(void);									
+	void _setColorForTransparent(const gchar * pzsColorForTransparent);
 	bool  isInitialPopulationHappenning(void)
 		{ return m_bInitialPop; }
 
@@ -184,7 +184,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 
 	tAnswer 			m_answer;
 	XAP_Frame * 		m_pFrame;
-	XML_Char			m_CurrentTransparentColor[10];
+	gchar			m_CurrentTransparentColor[10];
 
 private:
 	bool                m_bInitialPop;
@@ -338,25 +338,25 @@ public:
 
 	// TODO
 
-	const XML_Char * getNthLanguage(UT_uint32 n) const
+	const gchar * getNthLanguage(UT_uint32 n) const
 	{
 		return ((n + 1) < m_LanguageCount) ? m_ppLanguage[n+1] : 0;
 	}
-	const XML_Char * getNthLanguageCode(UT_uint32 n) const
+	const gchar * getNthLanguageCode(UT_uint32 n) const
 	{
 		return ((n + 1) < m_LanguageCount) ? m_ppLanguageCode[n+1] : 0;
 	}
 	UT_uint32				getLanguageCount() const { return (m_LanguageCount - 1); }
-	UT_uint32				getLanguageIndex(const XML_Char * szLanguageCode) const;
+	UT_uint32				getLanguageIndex(const gchar * szLanguageCode) const;
 
 	const char * getPopUp_NthUnits(UT_uint32 n) const
 	{
 		return ((n < m_PopUp_UnitsCount) ? m_PopUp_UnitsList[n] : 0);
 	}
 	UT_uint32				getPopUp_UnitsCount() const { return m_PopUp_UnitsCount; }
-	UT_uint32				getPopUp_UnitsIndex(const XML_Char * szUnits) const;
+	UT_uint32				getPopUp_UnitsIndex(const gchar * szUnits) const;
 
-	static const XML_Char *	reverseTranslate(const char * PopUp_Units);
+	static const gchar *	reverseTranslate(const char * PopUp_Units);
 
 private:
 	void					_constructLanguageArrays();
@@ -370,8 +370,8 @@ private:
 
 	UT_Language									m_LanguageTable;
 	UT_uint32									m_LanguageCount;
-	const XML_Char **							m_ppLanguage;
-	const XML_Char **							m_ppLanguageCode;
+	const gchar **							m_ppLanguage;
+	const gchar **							m_ppLanguageCode;
 
 	UT_uint32									m_PopUp_UnitsCount;
 	char *										m_PopUp_UnitsList[4];

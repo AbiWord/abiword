@@ -438,8 +438,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame)
 	// localise	
 	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
-	XML_Char **targets = getJumpTargets ();
-	XML_Char *text = NULL;
+	gchar **targets = getJumpTargets ();
+	gchar *text = NULL;
 	if ((text = targets[AP_JUMPTARGET_PAGE]) != NULL)
 		gtk_label_set_text (GTK_LABEL (m_lbPage), text);
 	if ((text = targets[AP_JUMPTARGET_LINE]) != NULL)
@@ -521,7 +521,7 @@ AP_UnixDialog_Goto::updateWindow ()
 	for (UT_uint32 i = 0; i < numBookmarks; i++) {
 
 		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-		const XML_Char *name = getNthExistingBookmark(i);
+		const gchar *name = getNthExistingBookmark(i);
 		UT_DEBUGMSG (("    ROB: '%s'\n", name));
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
 							COLUMN_NAME, name, /* 

@@ -34,7 +34,7 @@ class XAP_Dialog;
 
 // This macro sets up stack pointers to be used with the ConvertToUnixString
 // macro.
-#define SETUP_UNIX_STRING  	XML_Char * newstr = NULL;
+#define SETUP_UNIX_STRING  	gchar * newstr = NULL;
 
 // This macro is for use in Unix dialogs where the strings are to
 // be stripped of ampersands (Windows accelerator characters).
@@ -86,7 +86,7 @@ GtkWidget * abiGtkMenuFromCStrVector(const UT_GenericVector<const char*> & vec, 
 
 void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...);
 
-void convertMnemonics(XML_Char * s);
+void convertMnemonics(gchar * s);
 
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);

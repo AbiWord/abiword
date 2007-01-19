@@ -163,10 +163,10 @@ struct ABI_EXPORT UT_Point
 
 const char * UT_pathSuffix(const char * path);
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
-ABI_EXPORT const XML_Char* UT_getAttribute(const XML_Char* name,
-					   const XML_Char** atts);
+ABI_EXPORT const gchar* UT_getAttribute(const gchar* name,
+					   const gchar** atts);
 
-ABI_EXPORT XML_Char ** UT_cloneAndDecodeAttributes (const XML_Char ** attrs);
+ABI_EXPORT gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs);
 
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
@@ -304,11 +304,11 @@ class ABI_EXPORT UT_VersionInfo
    this function reuses the property names from the original string, so if those are freed, the copy
    too becomes invalid !!!
 */
-const XML_Char ** UT_setPropsToNothing(const XML_Char ** props);
+const gchar ** UT_setPropsToNothing(const gchar ** props);
 
-const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * value);
+const gchar ** UT_setPropsToValue(const gchar ** props, const gchar * value);
 
-const XML_Char ** UT_splitPropsToArray(XML_Char * props);
+const gchar ** UT_splitPropsToArray(gchar * props);
 
 UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
 UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);

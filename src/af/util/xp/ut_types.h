@@ -23,14 +23,6 @@
 #include <stdlib.h>
 #include <glib.h>
 
-#ifdef __cplusplus
-#define UT_BEGIN_EXTERN_C		G_BEGIN_DECLS
-#define UT_END_EXTERN_C			G_END_DECLS
-#else
-#define UT_BEGIN_EXTERN_C
-#define UT_END_EXTERN_C
-#endif
-
 /*
  *  This macro allow using GNUC extension with -pedantic
  */
@@ -61,12 +53,6 @@ typedef gint32		    UT_sint32;
 
 typedef guint64 UT_uint64;
 typedef gint64 UT_sing64;
-
-/* If expat is in use, include <expat.h> before "ut_types.h"
- */
-#ifndef XML_Char
-typedef char XML_Char;
-#endif
 
 /*!
  * Confidence heuristic datatype normalized to the range

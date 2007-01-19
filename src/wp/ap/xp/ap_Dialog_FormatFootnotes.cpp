@@ -191,7 +191,7 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 {
 	UT_String sFootType;
 	UT_String sEndType;
-	const XML_Char * pProps[19] = {"document-footnote-type",NULL,
+	const gchar * pProps[19] = {"document-footnote-type",NULL,
 								  "document-footnote-initial",NULL,
 								  "document-footnote-restart-section",NULL,
 								  "document-footnote-restart-page",NULL,
@@ -350,12 +350,12 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 }	
 
 
-const UT_GenericVector<const XML_Char*>* AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
+const UT_GenericVector<const gchar*>* AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
 {
-	static UT_GenericVector<const XML_Char*>* vec = NULL;
+	static UT_GenericVector<const gchar*>* vec = NULL;
 	if (vec == NULL) {
-		const XML_Char **current = s_FootnoteTypeDesc;
-		vec = new UT_GenericVector<const XML_Char*>();
+		const gchar **current = s_FootnoteTypeDesc;
+		vec = new UT_GenericVector<const gchar*>();
 		while (*current) {
 			vec->addItem(*current);
 			current++;

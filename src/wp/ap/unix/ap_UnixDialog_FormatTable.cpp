@@ -511,7 +511,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	m_wApplyToMenu = glade_xml_get_widget(xml, "omApplyTo");
 	GtkWidget * menu = gtk_menu_new();
 	
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());

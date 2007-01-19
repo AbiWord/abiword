@@ -1277,12 +1277,12 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	//
 	// Fixme Put in code to insert image here.
 	//
-	  const XML_Char* szDataID = 0;
-	  const XML_Char* szTitle = 0;
-	  const XML_Char* szDescription = 0;
-	  const  XML_Char* szWidth = 0;
-	  const  XML_Char * szHeight = 0;
-	  const XML_Char * szEmbed= NULL;
+	  const gchar* szDataID = 0;
+	  const gchar* szTitle = 0;
+	  const gchar* szDescription = 0;
+	  const  gchar* szWidth = 0;
+	  const  gchar * szHeight = 0;
+	  const gchar * szEmbed= NULL;
 	  if(!m_bDoingCopy)
 	  {
 	    bool bFound = m_pImageAP->getAttribute("dataid",szDataID);
@@ -1326,7 +1326,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  bFound = m_pImageAP->getProperty("alt",szDescription);
 	  sProps += "; height:";
 	  sProps += szHeight;
-	  const XML_Char*	attributes[] = {
+	  const gchar*	attributes[] = {
 	    "dataid", NULL,
 	    "title",NULL,
 	    "alt",NULL,
@@ -1421,7 +1421,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    UT_UTF8String sWidth;
 	    UT_UTF8String sHeight;
 
-	    const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+	    const gchar * properties[] = {"width", NULL, "height", NULL, 0};
 
 	    {
 	      UT_LocaleTransactor t(LC_NUMERIC, "C");

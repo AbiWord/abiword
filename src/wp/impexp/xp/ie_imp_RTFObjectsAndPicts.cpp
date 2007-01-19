@@ -249,12 +249,12 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
-		const XML_Char* propsArray[5];
-		propsArray[0] = static_cast<const XML_Char *>("dataid");
-		propsArray[1] = static_cast<const XML_Char *>(image_name);
+		const gchar* propsArray[5];
+		propsArray[0] = static_cast<const gchar *>("dataid");
+		propsArray[1] = static_cast<const gchar *>(image_name);
 		if (resize)
 		{
-			propsArray[2] = static_cast<const XML_Char *>("props");
+			propsArray[2] = static_cast<const gchar *>("props");
 			propsArray[3] = propBuffer.c_str();
 			propsArray[4] = NULL;
 		}
@@ -373,12 +373,12 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
-		const XML_Char* propsArray[5];
-		propsArray[0] = static_cast<const XML_Char *>("dataid");
-		propsArray[1] = static_cast<const XML_Char *>(szName.c_str());
+		const gchar* propsArray[5];
+		propsArray[0] = static_cast<const gchar *>("dataid");
+		propsArray[1] = static_cast<const gchar *>(szName.c_str());
 		if (resize)
 		{
-			propsArray[2] = static_cast<const XML_Char *>("props");
+			propsArray[2] = static_cast<const gchar *>("props");
 			propsArray[3] = propBuffer.c_str();
 			propsArray[4] = NULL;
 		}
@@ -1048,7 +1048,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 
 // OK Assemble the attributes/properties for the Frame
 
-	const XML_Char * attribs[5] = {"props",NULL,NULL,NULL,NULL};
+	const gchar * attribs[5] = {"props",NULL,NULL,NULL,NULL};
 	if(isStruxImage())
 	{
 		attribs[2] = PT_STRUX_IMAGE_DATAID;

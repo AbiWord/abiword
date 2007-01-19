@@ -297,7 +297,7 @@ GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
 /*! 
  * little helper method for lookup properties
  */
-FootnoteType FL_DocLayout::FootnoteTypeFromString(const XML_Char * pszFootnoteType)
+FootnoteType FL_DocLayout::FootnoteTypeFromString(const gchar * pszFootnoteType)
 {
 	FootnoteType iFootnoteType;
 	if (pszFootnoteType == NULL)
@@ -377,18 +377,18 @@ FootnoteType FL_DocLayout::FootnoteTypeFromString(const XML_Char * pszFootnoteTy
  */
 void FL_DocLayout::_lookupProperties(void)
 {
-	const XML_Char * pszFootnoteType = NULL;
+	const gchar * pszFootnoteType = NULL;
 	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
 	UT_return_if_fail(pDocAP);
-	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
+	pDocAP->getProperty("document-footnote-type", (const gchar *&)pszFootnoteType);
 	m_FootnoteType = FootnoteTypeFromString(pszFootnoteType);
 
-	const XML_Char * pszEndnoteType = NULL;
-	pDocAP->getProperty("document-endnote-type", (const XML_Char *&)pszEndnoteType);
+	const gchar * pszEndnoteType = NULL;
+	pDocAP->getProperty("document-endnote-type", (const gchar *&)pszEndnoteType);
 	m_EndnoteType = FootnoteTypeFromString(pszEndnoteType);
 
-	const XML_Char * pszTmp = NULL;
-	pDocAP->getProperty("document-footnote-initial", (const XML_Char *&)pszTmp);
+	const gchar * pszTmp = NULL;
+	pDocAP->getProperty("document-footnote-initial", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		m_iFootnoteVal =  atoi(pszTmp);
@@ -398,7 +398,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_iFootnoteVal = 1;
 	}
 
-	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-footnote-restart-section", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -415,7 +415,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_bRestartFootSection = false;
 	}
 
-	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-footnote-restart-page", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -432,7 +432,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_bRestartFootPage = false;
 	}
 
-	pDocAP->getProperty("document-endnote-initial", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-initial", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		m_iEndnoteVal =  atoi(pszTmp);
@@ -442,7 +442,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_iEndnoteVal = 1;
 	}
 
-	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-restart-section", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -459,7 +459,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_bRestartEndSection = false;
 	}
 
-	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-place-endsection", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -476,7 +476,7 @@ void FL_DocLayout::_lookupProperties(void)
 		m_bPlaceAtDocEnd = false;
 	}
 
-	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-place-enddoc", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -738,11 +738,11 @@ void FL_DocLayout::setView(FV_View* pView)
 			// keep updating itself
 			pPrefs->addListener ( _prefsListener, this );
 			bool b;
-			if (m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("DebugFlash"),&b)  &&  b == true)
+			if (m_pPrefs->getPrefsValueBool(static_cast<const gchar *>("DebugFlash"),&b)  &&  b == true)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}
-			m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("AutoGrammarCheck"),&b);
+			m_pPrefs->getPrefsValueBool(static_cast<const gchar *>("AutoGrammarCheck"),&b);
 			if (b)
 			{
 				addBackgroundCheckReason(bgcrGrammar);
@@ -1433,7 +1433,7 @@ bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
 	pBlock = static_cast<fl_BlockLayout *>(pCL);
 	bool filled = false;
 
-	const XML_Char * pBookmark = pTOC->getRangeBookmarkName().size() ? pTOC->getRangeBookmarkName().utf8_str() : NULL;
+	const gchar * pBookmark = pTOC->getRangeBookmarkName().size() ? pTOC->getRangeBookmarkName().utf8_str() : NULL;
 	
 	if(pBookmark)
 	{
@@ -1525,7 +1525,7 @@ bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
    updates affected TOCs in response to bookmark operation
    returns true if operation resulted in change, false otherwise
 */
-bool FL_DocLayout::updateTOCsOnBookmarkChange(const XML_Char * pBookmark)
+bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 {
 	UT_return_val_if_fail( pBookmark && !isLayoutFilling(), false );
 	bool bChange = false;
@@ -2295,8 +2295,8 @@ void FL_DocLayout::updateColor()
 	{
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
-		const XML_Char * pszTransparentColor = NULL;
-		pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+		const gchar * pszTransparentColor = NULL;
+		pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 //
 // Save the new preference color
 //
@@ -3219,23 +3219,23 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
     // (b = !b)
 	bool changed = false;
 #ifndef WITHOUT_SPELL
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckCaps), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckNumbers), &b );
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckNumbers), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
 	pDocLayout->m_bSpellCheckNumbers = b;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckInternet), &b );
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckInternet), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
 
 	// auto spell
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b );
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
 	if(b != pDocLayout->m_bAutoSpellCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -3244,7 +3244,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 
 	// grammar check
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoGrammarCheck), &b );
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoGrammarCheck), &b );
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
 	if(b != pDocLayout->m_bAutoGrammarCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -3261,7 +3261,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 		if(pFrame)
 		{
-			pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_AutoSaveFile), &b );
+			pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_AutoSaveFile), &b );
 			changed = (b != pFrame->isBackupRunning());
 			if(changed)
 			{
@@ -3292,11 +3292,11 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		;
 	}
 
-	pPrefs->getPrefsValueBool( static_cast<const XML_Char *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
+	pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
 	pDocLayout->_toggleAutoSmartQuotes( b );
 
-	const XML_Char * pszTransparentColor = NULL;
-	pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+	const gchar * pszTransparentColor = NULL;
+	pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 	if(strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
 	{
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))

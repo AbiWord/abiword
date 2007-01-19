@@ -74,7 +74,7 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 	   return UT_IE_BOGUSDOCUMENT;
 	}
 
-   	const XML_Char* propsArray[3];
+   	const gchar* propsArray[3];
    	propsArray[0] = "dataid";
    	propsArray[1] = "image_0";
    	propsArray[2] = NULL;

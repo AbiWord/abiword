@@ -499,7 +499,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 //
 // Insert the cell
 //
-	const XML_Char * atts[4] = {"props",NULL,NULL,NULL};
+	const gchar * atts[4] = {"props",NULL,NULL,NULL};
 	atts[1] = sCellProps.c_str();
 	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
 	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
@@ -1534,8 +1534,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 // stuff for cell insertion.
 //
 	UT_uint32 i,j;
-	const XML_Char * attrs[3] = {"style","Normal",NULL};
-	const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	const gchar * attrs[3] = {"style","Normal",NULL};
+	const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sRowTop = "top-attach";
 	UT_String sRowBot = "bot-attach";
 	UT_String sColLeft = "left-attach";
@@ -1910,7 +1910,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			UT_sint32 Left,Right,Top,Bot;
 			getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 			UT_DEBUGMSG(("SEVIOR: Before Insert column left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
-			const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 			UT_String sRowTop = "top-attach";
 			UT_String sRowBot = "bot-attach";
 			UT_String sColLeft = "left-attach";
@@ -2427,7 +2427,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	{
 		for(i=0; i < numCols; i++)
 		{
-			const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+			const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 			UT_String sRowTop = "top-attach";
 			UT_String sRowBot = "bot-attach";
 			UT_String sColLeft = "left-attach";
@@ -3120,7 +3120,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 /*!
  * Insert a table of the  number of rows and columns given.
  */
-UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML_Char * pPropsArray[])
+UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gchar * pPropsArray[])
 {
 	// TODO -- why does this function return UT_Error? If bool is
 	// sufficient, it should return bool, and if not, than the
@@ -3270,8 +3270,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 // stuff for cell insertion.
 //
 	UT_sint32 i,j;
-	const XML_Char * attrs[3] = {"style","Normal",NULL};
-	const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	const gchar * attrs[3] = {"style","Normal",NULL};
+	const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sRowTop = "top-attach";
 	UT_String sRowBot = "bot-attach";
 	UT_String sColLeft = "left-attach";
@@ -3377,7 +3377,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	{
 		bool bLang = false, bMarker = false;
 
-		XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+		XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 											 &bLang);
 
 		const UT_LangRecord * pLR = NULL;
@@ -3386,7 +3386,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 		{
 			pLR = XAP_App::getApp()->getKbdLanguage();
 		
-			XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+			XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 		}
 
 		if(bMarker && pLR)
@@ -3445,7 +3445,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	return _charInsert(text, count, bForce);
 }
 
-bool FV_View::cmdStartList(const XML_Char * style)
+bool FV_View::cmdStartList(const gchar * style)
 {
 	m_pDoc->beginUserAtomicGlob();
 	fl_BlockLayout * pBlock = getCurrentBlock();
@@ -3476,9 +3476,9 @@ bool FV_View::cmdStopList(void)
 
 void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 {
-	const XML_Char * properties[] = { "font-family", NULL, 0};
-	const XML_Char ** props_in = NULL;
-	const XML_Char * currentfont;
+	const gchar * properties[] = { "font-family", NULL, 0};
+	const gchar ** props_in = NULL;
+	const gchar * currentfont;
 	bool bisList = false;
 	fl_BlockLayout * curBlock = NULL;
 	fl_BlockLayout * nBlock = NULL;
@@ -4109,7 +4109,7 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	if(!pH)
 		return;
 
-	const XML_Char * pTarget = pH->getTarget();
+	const gchar * pTarget = pH->getTarget();
 
 	if(*pTarget == '#')
 		pTarget++;
@@ -4138,7 +4138,7 @@ void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 	if(!pH)
 		return;
 
-	const XML_Char * pTarget = pH->getTarget();
+	const gchar * pTarget = pH->getTarget();
 
 	if(*pTarget == '#')
 		pTarget++;
@@ -4165,7 +4165,7 @@ void FV_View::cmdHyperlinkCopyLocation(PT_DocPosition pos)
 	if(!pH)
 		return;
 
-	const XML_Char * pTarget = pH->getTarget();
+	const gchar * pTarget = pH->getTarget();
 
 	if(strcmp(pTarget,"#")==0)
 		return;
@@ -4320,7 +4320,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 UT_Error FV_View::cmdSave(void)
 {
 	// transfer any persistent properties into the doc
-	const XML_Char ** ppProps = getViewPersistentProps();
+	const gchar ** ppProps = getViewPersistentProps();
 	m_pDoc->setProperties(ppProps);
 	
 	UT_Error tmpVar;
@@ -4335,7 +4335,7 @@ UT_Error FV_View::cmdSave(void)
 UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
 {
 	// transfer any persistent properties into the doc
-	const XML_Char ** ppProps = getViewPersistentProps();
+	const gchar ** ppProps = getViewPersistentProps();
 	m_pDoc->setProperties(ppProps);
 
 	UT_Error tmpVar;
@@ -4719,22 +4719,22 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	{
 		return false;
 	}
-	XML_Char * pAttr[4];
+	gchar * pAttr[4];
 
 	UT_uint32 target_len = strlen(szName);
-	XML_Char * target  = new XML_Char[ target_len+ 2];
+	gchar * target  = new gchar[ target_len+ 2];
 
 	if(UT_go_path_is_uri(szName) || relLink)
 	{
-		strncpy(target, static_cast<const XML_Char*>(szName), target_len + 1);
+		strncpy(target, static_cast<const gchar*>(szName), target_len + 1);
 	}
 	else
 	{
 		target[0] =  '#';
-		strncpy(target + 1, static_cast<const XML_Char*>(szName), target_len + 1);
+		strncpy(target + 1, static_cast<const gchar*>(szName), target_len + 1);
 	}
 
-	XML_Char target_l[]  = "xlink:href";
+	gchar target_l[]  = "xlink:href";
 	pAttr [0] = &target_l[0];
 	pAttr [1] = &target[0];
 	pAttr [2] = 0;
@@ -4752,8 +4752,8 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	if(bRet)
 	{
-		const XML_Char ** pAttrs = const_cast<const XML_Char **>(pAttr);
-		const XML_Char ** pProps = 0;
+		const gchar ** pAttrs = const_cast<const gchar **>(pAttr);
+		const gchar ** pProps = 0;
 		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttrs, pProps);
 	}
 
@@ -4858,22 +4858,22 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		return false;
 	}
 
-	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
+	if(!m_pDoc->isBookmarkUnique(static_cast<const gchar*>(szName)))
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark(static_cast<const XML_Char*>(szName), false, &posStart, &posEnd);
+		_deleteBookmark(static_cast<const gchar*>(szName), false, &posStart, &posEnd);
 	}
 
-	XML_Char * pAttr[6];
+	gchar * pAttr[6];
 
-	XML_Char name_l [] = "name";
-	XML_Char type_l [] = "type";
-	XML_Char name[BOOKMARK_NAME_SIZE + 1];
-	strncpy(name, static_cast<const XML_Char*>(szName), BOOKMARK_NAME_SIZE);
+	gchar name_l [] = "name";
+	gchar type_l [] = "type";
+	gchar name[BOOKMARK_NAME_SIZE + 1];
+	strncpy(name, static_cast<const gchar*>(szName), BOOKMARK_NAME_SIZE);
 	name[BOOKMARK_NAME_SIZE] = 0;
 
-	XML_Char type[] = "start";
+	gchar type[] = "start";
 	pAttr [0] = &name_l[0];
 	pAttr [1] = &name[0];
 	pAttr [2] = &type_l[0];
@@ -4883,13 +4883,13 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
 
-	const XML_Char ** pAttrs = const_cast<const XML_Char **>(pAttr);
-	const XML_Char ** pProps = 0;
+	const gchar ** pAttrs = const_cast<const gchar **>(pAttr);
+	const gchar ** pProps = 0;
 	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttrs, pProps);
 
 	if(bRet)
 	{
-		strncpy(type,static_cast<const XML_Char*>("end"), 3);
+		strncpy(type,static_cast<const gchar*>("end"), 3);
 		type[3] = 0;
 		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
 	}
@@ -5030,7 +5030,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 
 
 /*****************************************************************/
-UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs, const XML_Char ** extra_props)
+UT_Error FV_View::cmdInsertField(const char* szName, const gchar ** extra_attrs, const gchar ** extra_props)
 {
 	bool bResult = true;
 
@@ -5136,10 +5136,10 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,NULL,NULL);
 	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,NULL,NULL);
 	// OK Insert the MathML Object
-	const XML_Char * atts[9]={"dataid",NULL,"latexid",NULL,"props",NULL,NULL,NULL,NULL};
-	atts[1] = static_cast<const XML_Char *>(sMathName.utf8_str());
-	atts[3] = static_cast<const XML_Char *>(sLatexName.utf8_str());
-	const XML_Char *cur_style = NULL;
+	const gchar * atts[9]={"dataid",NULL,"latexid",NULL,"props",NULL,NULL,NULL,NULL};
+	atts[1] = static_cast<const gchar *>(sMathName.utf8_str());
+	atts[3] = static_cast<const gchar *>(sLatexName.utf8_str());
+	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
@@ -5148,7 +5148,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	}
 
 	bool bDidGlob = false;
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -5200,9 +5200,9 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 {
   UT_DEBUGMSG(("Insert Math Object at %d name %s \n",pos,szUID));
-	const XML_Char * atts[5]={"dataid",NULL,NULL,NULL,NULL};
+	const gchar * atts[5]={"dataid",NULL,NULL,NULL,NULL};
 	atts[1] = szUID;
-	const XML_Char *cur_style = NULL;
+	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
@@ -5210,7 +5210,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 		atts[3] = cur_style;
 	}
 	bool bDidGlob = false;
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -5248,7 +5248,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
 {
 
-	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
 	bool bRepeat = true;
 	UT_UTF8String sUID;
 	UT_uint32 uid = 0;
@@ -5262,7 +5262,7 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
 	}
 	atts[1] = sUID.utf8_str();
-	const XML_Char *cur_style = NULL;
+	const gchar *cur_style = NULL;
 	const char * mimetypeGOChart = g_strdup(szMime);
 	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
 	UT_DEBUGMSG(("Chart text is... \n %s \n",sBuf.c_str()));
@@ -5278,7 +5278,7 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 		atts[5] = cur_style;
 	}
 	bool bDidGlob = false;
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -5370,7 +5370,7 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	{
 	  return false;
 	}
-	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
 	bool bRepeat = true;
 	UT_UTF8String sUID;
 	UT_uint32 uid = 0;
@@ -5387,14 +5387,14 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	const char * mimetypeGOChart = g_strdup(szMime);
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
 	UT_return_val_if_fail(bres,false)
-	const XML_Char *cur_style = NULL;
+	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
 		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
 		atts[5] = cur_style;
 	}
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -5449,7 +5449,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	bool flag;
 	pRun->mapXYToPosition(0, 0, pos, flag, flag, flag);
 	cmdSelect (pos, pos+1);
-	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
 	bool bRepeat = true;
 	UT_UTF8String sUID;
 	UT_uint32 uid = 0;
@@ -5466,14 +5466,14 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	const char * mimetypeGOChart = g_strdup(szMime);
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
 	UT_return_val_if_fail(bres,false)
-	const XML_Char *cur_style = NULL;
+	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
 		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
 		atts[5] = cur_style;
 	}
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();

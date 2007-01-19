@@ -185,7 +185,7 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
 	for ( i = 0; (ps = prefs->getNthScheme(i)) != 0; i++ ) {
 		UT_DEBUGMSG(("    %d [%s]\n", i, ps->getSchemeName() ));
 
-		XML_Char const *pszKey, *pszValue;
+		gchar const *pszKey, *pszValue;
 		for ( UT_uint32 j = 0; ps->getNthValue(j, &pszKey, &pszValue ); j++ ) {
 			UT_DEBUGMSG(("        %x %-30s : %s\n", j, pszKey, pszValue ));
 		}
@@ -279,7 +279,7 @@ void AP_QNXDialog_Options::event_WindowDelete(void)
 
 void AP_QNXDialog_Options::event_AllowTransparentColor(void)
 {
-	strcpy(m_CurrentTransparentColor, (const XML_Char *)"ffffff");
+	strcpy(m_CurrentTransparentColor, (const gchar *)"ffffff");
 }
 
 void AP_QNXDialog_Options::event_ChooseTransparentColor(void)

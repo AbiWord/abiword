@@ -82,7 +82,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_bGuide = false;
 	m_xGuide = 0;
 
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
@@ -1164,7 +1164,7 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	UT_sint32 xAbsLeft,xAbsRight;
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
 	if(bRTL)
 	{
@@ -1273,7 +1273,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// draw a dark-gray bar over the left margin
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
     UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) * pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap;
 
@@ -1603,7 +1603,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	UT_return_val_if_fail(pBL,false);
@@ -2220,9 +2220,9 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 				buf += _getTabStopString(&m_infoCache, j);
 			}
 
-			const XML_Char * properties[3];
+			const gchar * properties[3];
 			properties[0] = "tabstops";
-			properties[1] = static_cast<const XML_Char *>(buf.c_str());
+			properties[1] = static_cast<const gchar *>(buf.c_str());
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
 			m_draggingWhat = DW_NOTHING;
@@ -2500,7 +2500,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
@@ -2568,7 +2568,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 			if((m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME) && !isInFrame)
 			{
-				const XML_Char * properties[3];
+				const gchar * properties[3];
 				properties[0] = "page-margin-left";
 				properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
 				properties[2] = 0;
@@ -2585,8 +2585,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAP(pSectionAP);
-					const XML_Char * pszXpos = NULL;
-					const XML_Char * pszWidth = NULL;
+					const gchar * pszXpos = NULL;
+					const gchar * pszWidth = NULL;
 					UT_sint32 iX;
 					UT_sint32 iWidth;
 					if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
@@ -2622,7 +2622,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					sXpos = UT_formatDimensionedValue(dX,"in", NULL);
 					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-					const XML_Char * props[6] = {"frame-width",sWidth.c_str(),
+					const gchar * props[6] = {"frame-width",sWidth.c_str(),
 								"xpos",sXpos.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
@@ -2654,7 +2654,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 				double dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 
-				const XML_Char * properties[3];
+				const gchar * properties[3];
 				properties[0] = "page-margin-right";
 				properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
 				properties[2] = 0;
@@ -2675,7 +2675,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAP(pSectionAP);
-					const XML_Char * pszWidth = NULL;
+					const gchar * pszWidth = NULL;
 					UT_sint32 iWidth;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 					{
@@ -2696,7 +2696,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					UT_String sWidth("");
 					double dWidth = static_cast<double>(iWidth)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-					const XML_Char * props[4] = {"frame-width",sWidth.c_str(),
+					const gchar * props[4] = {"frame-width",sWidth.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
 				}
@@ -2720,7 +2720,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 		{
 			double dxrel = tick.scalePixelDistanceToUnits(m_draggingRect.width);
 
-			const XML_Char * properties[3];
+			const gchar * properties[3];
 			properties[0] = "column-gap";
 			properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
@@ -2753,7 +2753,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 
-			const XML_Char * properties[5];
+			const gchar * properties[5];
             double dxrel;
             double dxrel2;
             UT_sint32 xdelta;
@@ -2807,7 +2807,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			// the paragraph.  since first-line-indent is stored in the
 			// document in relative coordinates, we don't need to do anything.
 			double dxrel;
-			const XML_Char * properties[3];
+			const gchar * properties[3];
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 
 			// in rtl block we drag the right margin, of course :-);
@@ -2842,7 +2842,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 			double dxrel;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
-			const XML_Char * properties[3];
+			const gchar * properties[3];
 
 			// in rtl block we drag the left indent
 			xxx_UT_DEBUGMSG(("DW_RIGHTINDENT (release): m_draggingCenter %d\n", m_draggingCenter));
@@ -2888,7 +2888,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent);
 
 
-			const XML_Char * properties[3];
+			const gchar * properties[3];
 			properties[0] = "text-indent";
 			properties[1] = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
@@ -3124,7 +3124,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
-			const XML_Char * props[3] = {NULL,NULL,NULL};
+			const gchar * props[3] = {NULL,NULL,NULL};
 			if(!bDragLeftMost)
 			{
 				props[0] = "table-column-props";
@@ -3235,9 +3235,9 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 		buf += _getTabStopString(&m_infoCache, i);
 	}
 
-	const XML_Char * properties[3];
+	const gchar * properties[3];
 	properties[0] = "tabstops";
-	properties[1] = static_cast<const XML_Char *>(buf.c_str());
+	properties[1] = static_cast<const gchar *>(buf.c_str());
 	properties[2] = 0;
 	UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
 
@@ -3304,7 +3304,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 							// a right edge of the rightmost column.
 
 	bool bRTLglobal;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
@@ -4072,7 +4072,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
 
 	bool bRTL;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
 	if(bRTL)
 	{
@@ -4556,8 +4556,8 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	AP_TopRuler *pTopRuler = static_cast<AP_TopRuler *>(data);
 	UT_return_if_fail ( data && pPrefs );
 
-	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	const gchar *pszBuffer;
+	pPrefs->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
@@ -4576,7 +4576,7 @@ void AP_TopRuler::setDimension( UT_Dimension newdim )
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
 #ifndef EMBEDDED_TARGET    
-	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
+	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue);
 	UT_String pzMessageFormat;
 	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
@@ -4592,7 +4592,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2)
 {
 #ifndef EMBEDDED_TARGET    
-	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue1);
+	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue1);
 	char buf1[100];
 	strcpy(buf1, pText);
 	pText = m_pG->invertDimension(tick.dimType, dValue2);

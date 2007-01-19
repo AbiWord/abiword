@@ -220,7 +220,7 @@ bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
  * a change record and should only be used under exceptional circumstances to 
  * repair the piecetable during loading. It was necessary to import RTF tables.
  */
-bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
+bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes )
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_DEBUGMSG(("SEVIOR: Inserting strux of type %d no update %x \n",pts,sdh));
@@ -726,11 +726,11 @@ void pt_PieceTable::deleteHdrFtrStrux(pf_Frag_Strux * pfs)
 		if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
 			return;
 
-		const XML_Char * pszHdrId;
+		const gchar * pszHdrId;
 		if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
 			return;
 
-		const XML_Char * pszHdrType;
+		const gchar * pszHdrType;
 		if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
 			return;
 
@@ -1096,8 +1096,8 @@ pf_Frag *    pt_PieceTable::_findPrevHyperlink(pf_Frag * pfStart)
 				const PP_AttrProp * pAP = NULL;
 				pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 				UT_return_val_if_fail (pAP, NULL);
-				const XML_Char* pszHref = NULL;
-				const XML_Char* pszHname  = NULL;
+				const gchar* pszHref = NULL;
+				const gchar* pszHname  = NULL;
 				UT_uint32 k = 0;
 				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				{
@@ -1154,8 +1154,8 @@ pf_Frag *    pt_PieceTable::_findNextHyperlink(pf_Frag * pfStart)
 				const PP_AttrProp * pAP = NULL;
 				pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 				UT_return_val_if_fail (pAP, NULL);
-				const XML_Char* pszHref = NULL;
-				const XML_Char* pszHname  = NULL;
+				const gchar* pszHref = NULL;
+				const gchar* pszHname  = NULL;
 				UT_uint32 k = 0;
 				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				{

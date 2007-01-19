@@ -49,8 +49,8 @@ public:
 				UT_uint32 start,
 				PL_StruxDocHandle pItem,
 				fl_AutoNum * pParent,
-				const XML_Char * lDelim,
-				const XML_Char * lDecimal,
+				const gchar * lDelim,
+				const gchar * lDecimal,
 				FL_ListType lType,
 				PD_Document * pDoc,
 				FV_View * pView);
@@ -59,8 +59,8 @@ public:
 				UT_uint32 parent_id,
 				FL_ListType lType,
 				UT_uint32 start,
-				const XML_Char * lDelim,
-				const XML_Char * lDecimal,
+				const gchar * lDelim,
+				const gchar * lDecimal,
 				PD_Document * pDoc,
 				FV_View * pView);
 
@@ -79,10 +79,10 @@ public:
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
 	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
 	void						setListType(FL_ListType lType);
-	void						setDelim(const XML_Char * pszDelim);
-	const XML_Char *			getDelim() const;
-	void						setDecimal(const XML_Char * pszDecimal);
-	const XML_Char *			getDecimal() const;
+	void						setDelim(const gchar * pszDelim);
+	const gchar *			getDelim() const;
+	void						setDecimal(const gchar * pszDecimal);
+	const gchar *			getDecimal() const;
 	bool						isDirty() const;
 	UT_uint16					getStartValue() const { return m_iStartValue; }
 
@@ -155,9 +155,9 @@ protected:
 	bool						m_bUpdatingItems;
 	bool						m_bDirty;
 	UT_sint32					m_ioffset;
-	XML_Char					m_pszDecimal[80]; // BAD BAD HARDCODED ARRAY LENGTHS
-	XML_Char					m_pszDelim[80];
-	XML_Char					m_pszIndent[80];
+	gchar					m_pszDecimal[80]; // BAD BAD HARDCODED ARRAY LENGTHS
+	gchar					m_pszDelim[80];
+	gchar					m_pszIndent[80];
 	bool						m_bWordMultiStyle;
 	PL_StruxDocHandle			m_pParentItem;
 };

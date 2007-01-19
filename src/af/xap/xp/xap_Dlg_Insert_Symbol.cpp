@@ -135,7 +135,7 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 
 	/* Now get the font of the symbol to be inserted */
 
-	XML_Char * symfont = (XML_Char *) getInsertedFont();
+	gchar * symfont = (gchar *) getInsertedFont();
 
 	m_pListener->insertSymbol(c, (char*)symfont);
 	UT_DEBUGMSG(("Insert Char %x \n",c));
@@ -155,7 +155,7 @@ void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
 void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;											 
+	gchar * tmp = NULL;											 
 	UT_UTF8String sTitle;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle,sTitle);
 

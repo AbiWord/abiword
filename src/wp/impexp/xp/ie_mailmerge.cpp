@@ -449,14 +449,14 @@ public:
 		{
 		}
 	
-	virtual void startElement (const XML_Char * name, const XML_Char ** atts) 
+	virtual void startElement (const gchar * name, const gchar ** atts) 
 		{
 			mCharData.clear ();
 			mKey.clear ();
 			
 			if (!strcmp (name, "awmm:field"))
 			{
-				const XML_Char * key = UT_getAttribute("name", atts);
+				const gchar * key = UT_getAttribute("name", atts);
 				if (key) {
 					mKey = key;
 					mAcceptingText = true;
@@ -464,7 +464,7 @@ public:
 			}
 		}
 	
-	virtual void endElement (const XML_Char * name)
+	virtual void endElement (const gchar * name)
 		{
 			if (!strcmp(name, "awmm:field") && mLooping) {      
 				if (m_vecHeaders)
@@ -483,7 +483,7 @@ public:
 			mKey.clear ();
 		}
 	
-	virtual void charData (const XML_Char * buffer, int length)
+	virtual void charData (const gchar * buffer, int length)
 		{
 			if (buffer && length && mAcceptingText && mLooping) {
 				UT_String buf(buffer, length);

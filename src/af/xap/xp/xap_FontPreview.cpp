@@ -60,8 +60,8 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 	addOrReplaceVecProp("font-size","36pt");
 }
 
-void XAP_FontPreview::addOrReplaceVecProp(const XML_Char * pszProp,
-										  const XML_Char * pszVal)
+void XAP_FontPreview::addOrReplaceVecProp(const gchar * pszProp,
+										  const gchar * pszVal)
 {
 	UT_sint32 iCount = m_vecProps.getItemCount();
 	const char * pszV = NULL;
@@ -74,7 +74,7 @@ void XAP_FontPreview::addOrReplaceVecProp(const XML_Char * pszProp,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = reinterpret_cast<const XML_Char *>(m_vecProps.getNthItem(i));
+		pszV = reinterpret_cast<const gchar *>(m_vecProps.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
@@ -88,12 +88,12 @@ void XAP_FontPreview::addOrReplaceVecProp(const XML_Char * pszProp,
 	return;
 }
 
-void XAP_FontPreview::setFontFamily(const XML_Char * pFontFamily)
+void XAP_FontPreview::setFontFamily(const gchar * pFontFamily)
 {
 	addOrReplaceVecProp("font-family",pFontFamily);
 }
 
-void XAP_FontPreview::setText(const XML_Char * pFontFamily)
+void XAP_FontPreview::setText(const gchar * pFontFamily)
 {
 	UT_return_if_fail(pFontFamily);
 	FREEP(m_drawString);

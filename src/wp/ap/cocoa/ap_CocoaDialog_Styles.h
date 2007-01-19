@@ -86,10 +86,10 @@ public:
 	void         event_modifySheetDidEnd(int code);
 	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
-	XML_Char *   getNewStyleName(void) const {return (XML_Char *) m_newStyleName;}
-	XML_Char *   getBasedonName(void) const {return (XML_Char *) m_basedonName;}
-	XML_Char *   getFollowedbyName(void) const {return (XML_Char *) m_followedbyName;}
-	XML_Char *   getStyleType(void) const {return (XML_Char *) m_styleType;}
+	gchar *   getNewStyleName(void) const {return (gchar *) m_newStyleName;}
+	gchar *   getBasedonName(void) const {return (gchar *) m_basedonName;}
+	gchar *   getFollowedbyName(void) const {return (gchar *) m_followedbyName;}
+	gchar *   getStyleType(void) const {return (gchar *) m_styleType;}
 
 private:
 	void				_populateWindowData(void);
@@ -104,10 +104,10 @@ private:
 	virtual void setModifyDescription( const char * desc);
 	bool        _populateModify(void);
 
-	XML_Char    m_newStyleName[40];
-	XML_Char    m_basedonName[40];
-	XML_Char    m_followedbyName[40];
-	XML_Char    m_styleType[40];
+	gchar    m_newStyleName[40];
+	gchar    m_basedonName[40];
+	gchar    m_followedbyName[40];
+	gchar    m_styleType[40];
 	GR_CocoaGraphics	* 		m_pAbiPreviewWidget;
 	int m_whichRow;
 	StyleType m_whichType;

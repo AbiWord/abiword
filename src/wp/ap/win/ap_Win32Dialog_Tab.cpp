@@ -343,14 +343,14 @@ void AP_Win32Dialog_Tab::_setLeader( eTabLeader a )
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-const XML_Char * AP_Win32Dialog_Tab::_gatherDefaultTabStop()
+const gchar * AP_Win32Dialog_Tab::_gatherDefaultTabStop()
 {
 	_win32Dialog.getControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, Buffer, 128);
 
 	return Buffer;
 }
 
-void AP_Win32Dialog_Tab::_setDefaultTabStop( const XML_Char* default_tab )
+void AP_Win32Dialog_Tab::_setDefaultTabStop( const gchar* default_tab )
 {
 	_win32Dialog.setControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, default_tab);
 }

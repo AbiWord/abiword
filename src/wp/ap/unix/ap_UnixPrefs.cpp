@@ -131,8 +131,8 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
 
 
-	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_StringSet,
-				  (XML_Char*)szNewLang);
+	m_builtinScheme->setValue((gchar*)AP_PREF_KEY_StringSet,
+				  (gchar*)szNewLang);
 
 	// g_free the language id, if it was allocated
 	if (lc_ctype != NULL) g_free(lc_ctype);

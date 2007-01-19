@@ -39,7 +39,7 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 	pFL->getSpanAP(blockOffset, false, pSpanAP);
 	if (pSpanAP)
 	{
-		const XML_Char *pszDataID;
+		const gchar *pszDataID;
 		bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
       
 		if (bFoundDataID && pszDataID)
@@ -68,7 +68,7 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 	pFL->getAP(pSpanAP);
 	if (pSpanAP)
 	{
-		const XML_Char *pszDataID;
+		const gchar *pszDataID;
 		bool bFoundDataID = pSpanAP->getAttribute("strux-image-dataid", pszDataID);
       
 		if (bFoundDataID && pszDataID)

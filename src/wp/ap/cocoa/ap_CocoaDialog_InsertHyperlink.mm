@@ -89,7 +89,7 @@ void AP_CocoaDialog_InsertHyperlink::event_OK(void)
 	NSString * str = [m_dlg bookmarkText];
 	if(str)	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
-		setHyperlink((XML_Char*)[str UTF8String]);
+		setHyperlink((gchar*)[str UTF8String]);
 	}
 	else {
 		setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
@@ -136,7 +136,7 @@ void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 		LocalizeControl(_addBtn, pSS, XAP_STRING_ID_DLG_OK);
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_hyperlinkLabel, pSS, AP_STRING_ID_DLG_InsertHyperlink_Msg);
-		const XML_Char* href = _xap->getHyperlink();
+		const gchar* href = _xap->getHyperlink();
 		if (href) {
 			[_hyperlinkValue setStringValue:[NSString stringWithUTF8String:href]];
 		}

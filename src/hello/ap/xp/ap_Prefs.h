@@ -31,7 +31,7 @@ class AP_Prefs : public XAP_Prefs
 
 	virtual void					fullInit(void);
 	virtual bool                loadBuiltinPrefs(void);
-	virtual const XML_Char*        getBuiltinSchemeName(void) const;
+	virtual const gchar*        getBuiltinSchemeName(void) const;
 	virtual const char*            getPrefsPathname(void) const = 0;
 };
 

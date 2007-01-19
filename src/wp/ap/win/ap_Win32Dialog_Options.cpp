@@ -657,8 +657,8 @@ void AP_Win32Dialog_Options_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 */	
 void AP_Win32Dialog_Options_General::_onInitDialog()
 {	
-	const XML_Char *pLangCode;
-	const XML_Char *pLang;
+	const gchar *pLangCode;
+	const gchar *pLang;
 	UT_Language	lang;	
 	int	i, nIndex;;
 	const XAP_StringSet * pSS = getApp()->getStringSet();	

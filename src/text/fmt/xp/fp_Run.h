@@ -667,7 +667,7 @@ public:
 	fp_BookmarkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	bool 				isStartOfBookmark() const {return m_bIsStart;};
-	const XML_Char * 	getName() const {return m_pName;};
+	const gchar * 	getName() const {return m_pName;};
 	bool 				isComrade(fp_BookmarkRun *pBR) const;
 
 	virtual bool canBreakAfter(void) const;
@@ -710,7 +710,7 @@ private:
 
 	bool m_bIsStart;
 	#define BOOKMARK_NAME_SIZE 30
-	XML_Char	  	m_pName[BOOKMARK_NAME_SIZE + 1];
+	gchar	  	m_pName[BOOKMARK_NAME_SIZE + 1];
 	po_Bookmark		* m_pBookmark;
 };
 
@@ -720,7 +720,7 @@ public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	~fp_HyperlinkRun();
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
-	const XML_Char * 	getTarget() const {return static_cast<const XML_Char *>(m_pTarget);};
+	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
 
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
@@ -759,7 +759,7 @@ private:
 	virtual bool _deleteFollowingIfAtInsPoint() const;
 	
 	bool m_bIsStart;
-	XML_Char *	  	m_pTarget;
+	gchar *	  	m_pTarget;
 };
 
 
@@ -894,7 +894,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
-	const XML_Char *		_getParameter() const { return m_pParameter; }
+	const gchar *		_getParameter() const { return m_pParameter; }
 	virtual bool			_letPointPass(void) const;
 	virtual bool			_recalcWidth(void);
 
@@ -904,7 +904,7 @@ private:
 	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;
-	const XML_Char *		m_pParameter;
+	const gchar *		m_pParameter;
 	enum
 	{
 		TEXT_POSITION_NORMAL,

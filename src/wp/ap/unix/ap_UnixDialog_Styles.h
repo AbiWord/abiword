@@ -84,10 +84,10 @@ public:
 	bool         isModifySignalBlocked(void) const;         
 	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
-	XML_Char *   getNewStyleName(void) const {return (XML_Char *) m_newStyleName;}
-	XML_Char *   getBasedonName(void) const {return (XML_Char *) m_basedonName;}
-	XML_Char *   getFollowedbyName(void) const {return (XML_Char *) m_followedbyName;}
-	XML_Char *   getStyleType(void) const {return (XML_Char *) m_styleType;}
+	gchar *   getNewStyleName(void) const {return (gchar *) m_newStyleName;}
+	gchar *   getBasedonName(void) const {return (gchar *) m_basedonName;}
+	gchar *   getFollowedbyName(void) const {return (gchar *) m_followedbyName;}
+	gchar *   getStyleType(void) const {return (gchar *) m_styleType;}
 protected:
 
 	enum
@@ -175,10 +175,10 @@ protected:
 	GList *     m_gbasedOnStyles;
 	GList *     m_gfollowedByStyles;
 	GList *     m_gStyleType;
-	XML_Char    m_newStyleName[40];
-	XML_Char    m_basedonName[40];
-	XML_Char    m_followedbyName[40];
-	XML_Char    m_styleType[40];
+	gchar    m_newStyleName[40];
+	gchar    m_basedonName[40];
+	gchar    m_followedbyName[40];
+	gchar    m_styleType[40];
 private:
 	bool m_bIsNew;
 	bool m_bBlockModifySignal;

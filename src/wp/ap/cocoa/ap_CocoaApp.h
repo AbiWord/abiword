@@ -54,7 +54,7 @@ public:
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					shutdown(void);
-	virtual bool					getPrefsValueDirectory(bool bAppSpecific, const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual bool					getPrefsValueDirectory(bool bAppSpecific, const gchar * szKey, const gchar ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);

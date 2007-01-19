@@ -136,7 +136,7 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	int nItem;
 	int nDefF = 0;
 	int nDefE = 0;
-	const UT_GenericVector<const XML_Char*>* pType = getFootnoteTypeLabelList();
+	const UT_GenericVector<const gchar*>* pType = getFootnoteTypeLabelList();
 	UT_return_val_if_fail( pType, 0 );
 
 	for(UT_uint32 i = 0; i < pType->getItemCount(); ++i)

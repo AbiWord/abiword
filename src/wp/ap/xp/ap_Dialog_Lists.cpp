@@ -177,7 +177,7 @@ void AP_Dialog_Lists::StartList(void)
 {
 	UT_ASSERT_HARMLESS(!IS_NONE_LIST_TYPE(m_DocListType));
 	getBlock()->listUpdate();
-	const XML_Char* pStyle = getBlock()->getListStyleString(m_DocListType);
+	const gchar* pStyle = getBlock()->getListStyleString(m_DocListType);
 	UT_return_if_fail (pStyle);
 	getView()->cmdStartList(pStyle);
 }
@@ -227,7 +227,7 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
  */
 void AP_Dialog_Lists::Apply(void)
 {
-	XML_Char szStart[20];
+	gchar szStart[20];
 	if(!isModal() && (!isPageLists() || m_bFoldingLevelChanged))
 	{
 //
@@ -235,7 +235,7 @@ void AP_Dialog_Lists::Apply(void)
 //
 	        m_bFoldingLevelChanged = false;
 		fl_AutoNum * pAuto = getBlock()->getAutoNum();
-		const XML_Char * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
+		const gchar * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
 		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
 		props[1] = sStr.utf8_str();
 		UT_uint32 ID = 0;
@@ -280,11 +280,11 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "Symbol", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
+		strncpy( (gchar *) m_pszFont, _getDingbatsFontName(), 80);
 	}
 
 /*!
@@ -296,14 +296,14 @@ void AP_Dialog_Lists::Apply(void)
 	if(isModal())
 	{
 //
-// Fill out output vector with XML_Char * strings to be accessed via the calling
+// Fill out output vector with gchar * strings to be accessed via the calling
 // function.
 //
 		if(m_OutProps.getItemCount() > 0)
 			m_OutProps.clear();
 		sprintf(szStart,"%d",m_iStartValue);
 		m_OutProps.addItem((void *) "start-value");
-		m_Output[0] = (XML_Char *) szStart;
+		m_Output[0] = (gchar *) szStart;
 		m_OutProps.addItem((void *) m_Output[0].c_str());
 		m_OutProps.addItem((void *) "list-style");
 		m_Output[1] = getBlock()->getListStyleString(m_NewListType);
@@ -339,7 +339,7 @@ void AP_Dialog_Lists::Apply(void)
 	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_NewListType != NOT_A_LIST)
 	{
 		getView()->getDocument()->beginUserAtomicGlob();
-		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
+		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(gchar *) m_pszDelim,(gchar *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
 		if(getAutoNum() != NULL)
 		{
 			getAutoNum()->update(0);
@@ -464,7 +464,7 @@ void AP_Dialog_Lists::Apply(void)
 // We can't share an sdh amongst two autonum's so we can't start a sublist.
 // We'll change the list style instead.
 //
-				getView()->changeListStyle(pBlock->getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
+				getView()->changeListStyle(pBlock->getAutoNum(),m_NewListType,m_iStartValue,(gchar *) m_pszDelim,(gchar *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
 				if(pBlock->getAutoNum() != NULL)
 				{
 					pBlock->getAutoNum()->update(0);
@@ -519,21 +519,21 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 {
 	// if we can get the current font, we will use it where appropriate
 	// the "NULL" string does not work too well on Windows in numbered lists
-	const XML_Char** props_in = NULL;
-	const XML_Char * font_family;
+	const gchar** props_in = NULL;
+	const gchar * font_family;
 	if (getView()->getCharFormat(&props_in))
 		font_family = UT_getAttribute("font-family", props_in);
 	else
-		font_family =(const XML_Char *) "NULL";
+		font_family =(const gchar *) "NULL";
 
 	if(m_NewListType == NOT_A_LIST)
 	{
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 		m_fAlign = 0.0;
 		m_fIndent = 0.0;
 		m_iLevel = 0;
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 1;
 	}
 
@@ -542,62 +542,62 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		m_iLevel = 1;
 	}
 
-	strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+	strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
 	m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 
 	if( m_NewListType == NUMBERED_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, font_family, 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, font_family, 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 1;
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L.", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L.", 80);
 	}
 	else if( m_NewListType == LOWERCASE_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, font_family, 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, font_family, 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 1;
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L)", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L)", 80);
 	}
 	else if( m_NewListType == UPPERCASE_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, font_family, 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, font_family, 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 1;
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L)", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L)", 80);
 	}
 	else if( m_NewListType == HEBREW_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, font_family, 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) "", 80);
+		strncpy( (gchar *) m_pszFont, font_family, 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) "", 80);
 		m_iStartValue = 1;
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
 	else if( m_NewListType < BULLETED_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 1;
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
 	else
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) ".", 80);
 		m_iStartValue = 0;
 	}
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "Symbol", 80);
 	}
 	else if (m_NewListType == NOT_A_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
+		strncpy( (gchar *) m_pszFont, _getDingbatsFontName(), 80);
 	}
 
 	if(props_in)
@@ -644,18 +644,18 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		 m_NewListType == IMPLIES_LIST  ||
 		 m_NewListType == DASHED_LIST )
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "Symbol", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
 	else if (m_NewListType == NOT_A_LIST)
 	{
-		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
-		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
+		strncpy( (gchar *) m_pszFont, _getDingbatsFontName(), 80);
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
 /*!
  * OK fill the preview variables with what they need and load them into
@@ -731,7 +731,7 @@ UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
  * Fill our variables from this vector.
  * This is used by the Modal dialog and is filled from the styles dialog.
  */
-void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const XML_Char*> * vp)
+void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const gchar*> * vp)
 {
 	UT_sint32 i;
 	if(vp->getItemCount() > 0)
@@ -769,30 +769,30 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const XML_Char*> * 
 		i = findVecItem(vp,"list-delim");
 		if( i>= 0)
 		{
-			strncpy( (XML_Char *) m_pszDelim, vp->getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszDelim, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszDelim, "%L", 80);
+			strncpy( (gchar *) m_pszDelim, "%L", 80);
 		}
 		i = findVecItem(vp,"list-decimal");
 		if( i>= 0)
 		{
-			strncpy( (XML_Char *) m_pszDecimal, vp->getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszDecimal, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszDecimal, ".", 80);
+			strncpy( (gchar *) m_pszDecimal, ".", 80);
 		}
 
 		i = findVecItem(vp,"field-font");
 		if( i>= 0)
 		{
-			strncpy( (XML_Char *) m_pszFont, vp->getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszFont, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszFont, "NULL", 80);
+			strncpy( (gchar *) m_pszFont, "NULL", 80);
 		}
 		i = findVecItem(vp,"list-style");
 		if( i>= 0)
@@ -814,7 +814,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const XML_Char*> * 
  */
 void AP_Dialog_Lists::fillDialogFromBlock(void)
 {
-	UT_GenericVector<const XML_Char*> va,vp;
+	UT_GenericVector<const gchar*> va,vp;
 
 	if (getBlock()->getPreviousList() != NULL)
 	{
@@ -832,7 +832,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 //
 	const PP_AttrProp * pAP = NULL;
 	getBlock()->getAP(pAP);
-	const XML_Char *pszTEXTFOLDED = NULL;
+	const gchar *pszTEXTFOLDED = NULL;
 	if(!pAP || !pAP->getProperty("text-folded",pszTEXTFOLDED))
 	{
 		m_iCurrentLevel = 0;
@@ -886,15 +886,15 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"list-delim");
 		if(getAutoNum())
 		{
-			strncpy( (XML_Char *) m_pszDelim, getAutoNum()->getDelim(), 80);
+			strncpy( (gchar *) m_pszDelim, getAutoNum()->getDelim(), 80);
 		}
 		else if(i >=0 )
 		{
-			strncpy( (XML_Char *) m_pszDelim, vp.getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszDelim, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszDelim, "%L", 80);
+			strncpy( (gchar *) m_pszDelim, "%L", 80);
 		}
 
 
@@ -906,25 +906,25 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"list-decimal");
 		if(getAutoNum())
 		{
-			strncpy( (XML_Char *) m_pszDecimal, getAutoNum()->getDecimal(), 80);
+			strncpy( (gchar *) m_pszDecimal, getAutoNum()->getDecimal(), 80);
 		}
 		else if( i>= 0)
 		{
-			strncpy( (XML_Char *) m_pszDecimal, vp.getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszDecimal, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszDecimal, ".", 80);
+			strncpy( (gchar *) m_pszDecimal, ".", 80);
 		}
 
 		i = findVecItem(&vp,"field-font");
 		if( i>= 0)
 		{
-			strncpy( (XML_Char *) m_pszFont, vp.getNthItem(i+1), 80);
+			strncpy( (gchar *) m_pszFont, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			strncpy( (XML_Char *) m_pszFont, "NULL", 80);
+			strncpy( (gchar *) m_pszFont, "NULL", 80);
 		}
 		i = findVecItem(&vp,"list-style");
 		if( i>= 0)
@@ -944,7 +944,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 //  		i = findVecItem(&va,PT_STYLE_ATTRIBUTE_NAME);
 //  		if( i>= 0)
 //  		{
-//  			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
+//  			m_DocListType = getBlock()->getListTypeFromStyle( (const gchar *) va.getNthItem(i+1));
 //  		}
 //  		else
 //  		{
@@ -954,7 +954,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&va,"level");
 		if( i>= 0)
 		{
-			m_iLevel = atoi((const XML_Char *) va.getNthItem(i+1));
+			m_iLevel = atoi((const gchar *) va.getNthItem(i+1));
 		}
 		else
 		{
@@ -965,7 +965,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	{
 		m_iID = getAutoNum()->getID();
 		m_DocListType = getAutoNum()->getType();
-		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) getAutoNum()->getDecimal(), 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) getAutoNum()->getDecimal(), 80);
 
 	}
 	else
@@ -1030,7 +1030,7 @@ UT_uint32 AP_Dialog_Lists::getID(void)
  * This method returns the index to the value corresponding to the
  * key in this props vector
  */
-UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const XML_Char*> * v, char * key)
+UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, char * key)
 {
 	const char* const_key = key;
 	return findVecItem( v, const_key);
@@ -1040,7 +1040,7 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const XML_Char*> * v, c
  * This method returns the index to the value corresponding to the
  * key in this props vector
  */
-UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const XML_Char*> * v, const char * key)
+UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, const char * key)
 {
 	UT_sint32 i = v->getItemCount();
 	if(i < 0)
@@ -1072,7 +1072,7 @@ bool AP_Dialog_Lists::isLastOnLevel(void)
 void AP_Dialog_Lists::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
 	UT_uint32 title_width = 33;
 
 	UT_UTF8String s;
@@ -1115,7 +1115,7 @@ AV_View * AP_Dialog_Lists::getAvView(void)
 	return pFrame->getCurrentView();
 }
 
-const XML_Char* AP_Dialog_Lists::_getDingbatsFontName() const
+const gchar* AP_Dialog_Lists::_getDingbatsFontName() const
 {
 	return "Dingbats";
 }
@@ -1144,7 +1144,7 @@ AP_Dialog_Lists * AP_Lists_preview::getLists(void)
 	return m_pLists;
 }
 
-void AP_Lists_preview::setData(XML_Char * pszFont,float fAlign,float fIndent)
+void AP_Lists_preview::setData(gchar * pszFont,float fAlign,float fIndent)
 {
 	//
 	// we draw at 16 points in this preview

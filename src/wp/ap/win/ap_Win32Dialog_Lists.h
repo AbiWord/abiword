@@ -83,7 +83,7 @@ private:
 	FL_ListType				_getListTypeFromCombos() const;
 	void					_setListType(FL_ListType type);
 	void					_selectFont();
-	virtual const XML_Char*	_getDingbatsFontName() const;
+	virtual const gchar*	_getDingbatsFontName() const;
 
 	bool					m_bDestroy_says_stopupdating;
 	bool					m_bAutoUpdate_happening_now;

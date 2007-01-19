@@ -73,7 +73,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
-	const XML_Char * pszFontSize = NULL;
+	const gchar * pszFontSize = NULL;
 	pSpanAP->getProperty("font-size", pszFontSize);
 	UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
 

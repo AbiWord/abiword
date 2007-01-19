@@ -409,8 +409,8 @@ enum _XAP_CocoaTool_Id
 		if (int count = static_cast<int>(pAP->getPropertyCount())) {
 			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
 				for (int i = 0; i < count; i++) {
-					const XML_Char * szName  = 0;
-					const XML_Char * szValue = 0;
+					const gchar * szName  = 0;
+					const gchar * szValue = 0;
 
 					if (pAP->getNthProperty(i, szName, szValue)) {
 						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
@@ -446,8 +446,8 @@ enum _XAP_CocoaTool_Id
 		if (int count = static_cast<int>(style->getPropertyCount())) {
 			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
 				for (int i = 0; i < count; i++) {
-					const XML_Char * szName  = 0;
-					const XML_Char * szValue = 0;
+					const gchar * szName  = 0;
+					const gchar * szValue = 0;
 
 					if (style->getNthProperty(i, szName, szValue)) {
 						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
@@ -545,7 +545,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {
 	PD_Style * pStyle = 0;
 
-	const XML_Char * szValue = 0;
+	const gchar * szValue = 0;
 
 // This is where the style/name split gets really hairy. This index AP MIGHT be
 // from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME

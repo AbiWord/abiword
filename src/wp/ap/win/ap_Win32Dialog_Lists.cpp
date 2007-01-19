@@ -1055,7 +1055,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 		return;
 	}
 
-	const XML_Char** props_in = NULL;
+	const gchar** props_in = NULL;
 
 	bool bUnderline = false;
 
@@ -1083,7 +1083,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
 
-		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
+		const gchar * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
 			bUnderline = (strstr(s, "underline") != NULL);
@@ -1108,7 +1108,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 		return;
 	}
 
-	const XML_Char* pszFont;
+	const gchar* pszFont;
 	bool bDirty = false;
 
 
@@ -1184,7 +1184,7 @@ void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pWorker)
 	}
 }
 
-const XML_Char* AP_Win32Dialog_Lists::_getDingbatsFontName() const
+const gchar* AP_Win32Dialog_Lists::_getDingbatsFontName() const
 {
 	return "Dingbats";
 }

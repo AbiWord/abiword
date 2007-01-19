@@ -174,7 +174,7 @@ void UT_XML::flush_all ()
     }
 }
 
-/* Declared in ut_xml.h as: void UT_XML::startElement (const XML_Char * name, const XML_Char ** atts);
+/* Declared in ut_xml.h as: void UT_XML::startElement (const gchar * name, const gchar ** atts);
  */
 void UT_XML::startElement (const char * name, const char ** atts)
 {
@@ -201,7 +201,7 @@ void UT_XML::startElement (const char * name, const char ** atts)
 	  m_pExpertListener->StartElement (name, atts);
 }
 
-/* Declared in ut_xml.h as: void UT_XML::endElement (const XML_Char * name);
+/* Declared in ut_xml.h as: void UT_XML::endElement (const gchar * name);
  */
 void UT_XML::endElement (const char * name)
 {
@@ -222,7 +222,7 @@ void UT_XML::endElement (const char * name)
 	  m_pExpertListener->EndElement (name);
 }
 
-/* Declared in ut_xml.h as: void UT_XML::charData (const XML_Char * buffer, int length);
+/* Declared in ut_xml.h as: void UT_XML::charData (const gchar * buffer, int length);
  */
 void UT_XML::charData (const char * buffer, int length)
 {
@@ -275,7 +275,7 @@ void UT_XML::cdataSection (bool start)
 	}
 }
 
-/* Declared in ut_xml.h as: void UT_XML::defaultData (const XML_Char * buffer, int length);
+/* Declared in ut_xml.h as: void UT_XML::defaultData (const gchar * buffer, int length);
  */
 void UT_XML::defaultData (const char * buffer, int length)
 {
@@ -363,16 +363,16 @@ public:
 	UT_XML_Decoder () {}
 	virtual ~UT_XML_Decoder () {}
 
-	virtual void startElement (const XML_Char * name, const XML_Char ** atts)
+	virtual void startElement (const gchar * name, const gchar ** atts)
 	{
 		mKey = UT_getAttribute ( "k", atts ) ;
 	}
 	
-	virtual void endElement (const XML_Char * name)
+	virtual void endElement (const gchar * name)
 	{
 	}
 	
-	virtual void charData (const XML_Char * buffer, int length)
+	virtual void charData (const gchar * buffer, int length)
 	{
 	}
 	

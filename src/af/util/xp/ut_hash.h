@@ -86,7 +86,7 @@ public:
 
 	/* IMPORTANT: list() is for use only with <XML_C/char*> maps
 	 */
-	const XML_Char ** list ();
+	const gchar ** list ();
 	
 	UT_GenericVector<T>* enumerate(bool strip_null_values = true) const;
 	UT_GenericVector<const UT_String*>* keys(bool strip_null_values = true) const;
@@ -223,7 +223,7 @@ private:
 	size_t reorg_threshold;
 	size_t flags;
 
-	XML_Char ** m_list;
+	gchar ** m_list;
 };
 
 #if 0 //def _MSC_VER // have to intialise the templates in order to have class exported
@@ -397,11 +397,11 @@ UT_GenericStringMap<T>::~UT_GenericStringMap()
    TODO: make this a specialized method.
  */
 template <class T>
-const XML_Char ** UT_GenericStringMap<T>::list()
+const gchar ** UT_GenericStringMap<T>::list()
 {
 	if (!m_list)
 	{
-		m_list = reinterpret_cast<XML_Char **>(g_try_malloc (2 * (n_keys + 1) * sizeof (XML_Char *)));
+		m_list = reinterpret_cast<gchar **>(g_try_malloc (2 * (n_keys + 1) * sizeof (gchar *)));
 		if (m_list == 0)
 			return 0;
 
@@ -409,22 +409,22 @@ const XML_Char ** UT_GenericStringMap<T>::list()
 
 		UT_Cursor c(this);
 
-		for (const XML_Char * value = reinterpret_cast<XML_Char*>(c.first ()); 
+		for (const gchar * value = reinterpret_cast<gchar*>(c.first ()); 
 			 c.is_valid (); 
-			 value = reinterpret_cast<XML_Char*>(c.next ()))
+			 value = reinterpret_cast<gchar*>(c.next ()))
 		{
 			const char * key = c.key().c_str ();
 
 			if (!key || !value)
 				continue;
 
-			m_list[index++] = static_cast<XML_Char *>(const_cast<char *>(key));
-			m_list[index++] = static_cast<XML_Char *>(const_cast<char *>(value));
+			m_list[index++] = static_cast<gchar *>(const_cast<char *>(key));
+			m_list[index++] = static_cast<gchar *>(const_cast<char *>(value));
 		}
 		m_list[index++] = NULL;
 		m_list[index  ] = NULL;
 	}
-	return const_cast<const XML_Char **>(m_list);
+	return const_cast<const gchar **>(m_list);
 }
 
 /*!

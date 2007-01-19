@@ -173,7 +173,7 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		
 	case IDOK:				// also AP_RID_DIALOG_FIELD_BTN_OK
 		// set the extra param
-		XML_Char param[256];
+		gchar param[256];
 		GetWindowText(m_hwndParam,(LPTSTR) &param[0], 256);
 		setParameter(param);
 		EndDialog(hWnd,0);

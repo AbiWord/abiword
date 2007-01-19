@@ -122,7 +122,7 @@ public:
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
-	XML_Char *							m_bgFillStyle;
+	gchar *							m_bgFillStyle;
 	UT_PropVector                           m_vecProps;
 	UT_UTF8String                           m_sBorderThickness;
 protected:

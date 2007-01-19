@@ -495,7 +495,7 @@ void fl_FootnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_return_if_fail(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const XML_Char *pszFootnotePID = NULL;
+	const gchar *pszFootnotePID = NULL;
 	if(!pSectionAP->getAttribute("footnote-id",pszFootnotePID))
 	{
 		m_iFootnotePID = 0;
@@ -722,7 +722,7 @@ void fl_EndnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_return_if_fail(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const XML_Char *pszEndnotePID = NULL;
+	const gchar *pszEndnotePID = NULL;
 	if(!pSectionAP->getAttribute("endnote-id",pszEndnotePID))
 	{
 		m_iEndnotePID = 0;

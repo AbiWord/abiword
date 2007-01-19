@@ -52,7 +52,7 @@ protected:
  					    virtual void    _set##a( t )
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
-	SET_GATHER			(DefaultTabStop,	const XML_Char*);
+	SET_GATHER			(DefaultTabStop,	const gchar*);
 
 
 	// to populate the whole list

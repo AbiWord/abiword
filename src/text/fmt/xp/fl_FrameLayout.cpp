@@ -59,11 +59,11 @@
 #include "fg_GraphicVector.h"
 #include "fv_View.h"
 
-static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
-								 const XML_Char * color, PP_PropertyMap::Line & line);
+static void s_border_properties (const gchar * border_color, const gchar * border_style, const gchar * border_width,
+								 const gchar * color, PP_PropertyMap::Line & line);
 
-static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
-									 const XML_Char * pszBackgroundColor,
+static void s_background_properties (const gchar * pszBgStyle, const gchar * pszBgColor,
+									 const gchar * pszBackgroundColor,
 									 PP_PropertyMap::Background & background);
 
 
@@ -591,8 +591,8 @@ void fl_FrameLayout::_createFrameContainer(void)
 	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 	getAP(pSectionAP);
 	
-	const XML_Char * pszDataID = NULL;
-	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+	const gchar * pszDataID = NULL;
+	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 	DELETEP(m_pGraphicImage);
 	DELETEP(m_pImageImage);
 	if(pszDataID && *pszDataID)
@@ -781,27 +781,27 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG );
 
-	const XML_Char *pszFrameType = NULL;
-	const XML_Char *pszPositionTo = NULL;
-	const XML_Char *pszWrapMode = NULL;
-	const XML_Char *pszXpos = NULL;
-	const XML_Char *pszYpos = NULL;
-	const XML_Char *pszColXpos = NULL;
-	const XML_Char *pszColYpos = NULL;
-	const XML_Char *pszPageXpos = NULL;
-	const XML_Char *pszPageYpos = NULL;
-	const XML_Char *pszWidth = NULL;
-	const XML_Char *pszHeight = NULL;
-	const XML_Char *pszXpad = NULL;
-	const XML_Char *pszYpad = NULL;
+	const gchar *pszFrameType = NULL;
+	const gchar *pszPositionTo = NULL;
+	const gchar *pszWrapMode = NULL;
+	const gchar *pszXpos = NULL;
+	const gchar *pszYpos = NULL;
+	const gchar *pszColXpos = NULL;
+	const gchar *pszColYpos = NULL;
+	const gchar *pszPageXpos = NULL;
+	const gchar *pszPageYpos = NULL;
+	const gchar *pszWidth = NULL;
+	const gchar *pszHeight = NULL;
+	const gchar *pszXpad = NULL;
+	const gchar *pszYpad = NULL;
 
-	const XML_Char * pszColor = NULL;
-	const XML_Char * pszBorderColor = NULL;
-	const XML_Char * pszBorderStyle = NULL;
-	const XML_Char * pszBorderWidth = NULL;
+	const gchar * pszColor = NULL;
+	const gchar * pszBorderColor = NULL;
+	const gchar * pszBorderStyle = NULL;
+	const gchar * pszBorderWidth = NULL;
 
-	const XML_Char * pszBoundingSpace = NULL;
-	const XML_Char * pszTightWrapped = NULL;
+	const gchar * pszBoundingSpace = NULL;
+	const gchar * pszTightWrapped = NULL;
 
 // Frame Type
 
@@ -1086,9 +1086,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	 */
 	m_background.reset ();
 
-	const XML_Char * pszBgStyle = NULL;
-	const XML_Char * pszBgColor = NULL;
-	const XML_Char * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = NULL;
+	const gchar * pszBgColor = NULL;
+	const gchar * pszBackgroundColor = NULL;
 
 	pSectionAP->getProperty ("bg-style",    pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",     pszBgColor);
@@ -1142,15 +1142,15 @@ void fl_FrameLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		const XML_Char *pszPositionTo = NULL;
-		const XML_Char *pszWrapMode = NULL;
-		const XML_Char *pszXpos = NULL;
-		const XML_Char *pszYpos = NULL;
-		const XML_Char *pszColXpos = NULL;
-		const XML_Char *pszColYpos = NULL;
-		const XML_Char *pszPageXpos = NULL;
-		const XML_Char *pszPageYpos = NULL;
-		const XML_Char * pszTightWrapped = NULL;
+		const gchar *pszPositionTo = NULL;
+		const gchar *pszWrapMode = NULL;
+		const gchar *pszXpos = NULL;
+		const gchar *pszYpos = NULL;
+		const gchar *pszColXpos = NULL;
+		const gchar *pszColYpos = NULL;
+		const gchar *pszPageXpos = NULL;
+		const gchar *pszPageYpos = NULL;
+		const gchar * pszTightWrapped = NULL;
 
 
 		// Position-to
@@ -1380,8 +1380,8 @@ void fl_FrameLayout::collapse(void)
 
 // Frame Background
 
-static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
-									 const XML_Char * pszBackgroundColor,
+static void s_background_properties (const gchar * pszBgStyle, const gchar * pszBgColor,
+									 const gchar * pszBackgroundColor,
 									 PP_PropertyMap::Background & background)
 {
 	if (pszBgStyle)
@@ -1410,8 +1410,8 @@ static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char
 		}
 }
 
-static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
-								 const XML_Char * color, PP_PropertyMap::Line & line)
+static void s_border_properties (const gchar * border_color, const gchar * border_style, const gchar * border_width,
+								 const gchar * color, PP_PropertyMap::Line & line)
 {
 	/* frame-border properties:
 	 * 

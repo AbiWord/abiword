@@ -46,7 +46,7 @@ typedef struct field;
 
 struct bookmark
 {
-	XML_Char * name;
+	gchar * name;
 	UT_uint32  pos;
 	bool	   start;
 };
@@ -197,7 +197,7 @@ private:
 						   void *props, int dirty);
 	int 	   _endComment (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
-	XML_Char * _getBookmarkName(const wvParseStruct * ps, UT_uint32 pos);
+	gchar * _getBookmarkName(const wvParseStruct * ps, UT_uint32 pos);
 	bool	   _insertBookmarkIfAppropriate(UT_uint32 iPos);
 	bool	   _insertBookmark(bookmark * bm);
 	UT_Error   _handleImage (Blip *, long width, long height, long cropt, long cropb, long cropl, long cropr);
@@ -231,13 +231,13 @@ private:
 	bool        _findNextENoteSection();
 	bool        _shouldUseInsert()const;
 	bool        _ensureInBlock();
-	bool        _appendStrux(PTStruxType pts, const XML_Char ** attributes);
-	bool        _appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool        _appendStrux(PTStruxType pts, const gchar ** attributes);
+	bool        _appendObject(PTObjectType pto, const gchar ** attributes);
 	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool        _appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes);
-	bool        _appendObjectHdrFtr(PTObjectType pto, const XML_Char ** attributes);
+	bool        _appendStruxHdrFtr(PTStruxType pts, const gchar ** attributes);
+	bool        _appendObjectHdrFtr(PTObjectType pto, const gchar ** attributes);
 	bool        _appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length);
-	bool		_appendFmt(const XML_Char ** attributes);
+	bool		_appendFmt(const gchar ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos, bool bDoBlockIns);
 	bool        _insertHeaderSection(bool bDoBlockIns);

@@ -44,7 +44,7 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	m_columnWidth = 0.7;	// In DIM_IN
 	
 	/* Use default units*/
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else

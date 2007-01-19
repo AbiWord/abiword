@@ -55,8 +55,8 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	if(bAddChangeRec && m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrib = NULL;
-		const XML_Char ** ppRevProps  = NULL;
+		const gchar ** ppRevAttrib = NULL;
+		const gchar ** ppRevProps  = NULL;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -81,15 +81,15 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		// that the text does not get inserted with a leftover
 		// revision attribute (e.g., if we are inserting it next to
 		// revisioned text
-		const XML_Char name[] = "revision";
-		const XML_Char * ppRevAttrib[5];
+		const gchar name[] = "revision";
+		const gchar * ppRevAttrib[5];
 		ppRevAttrib[0] = name;
 		ppRevAttrib[1] = NULL;
 		ppRevAttrib[2] = NULL;
 		ppRevAttrib[3] = NULL;
 		ppRevAttrib[4] = NULL;
 		
-		const XML_Char * pRevision = NULL;
+		const gchar * pRevision = NULL;
 
 		// first retrive the fmt we have (_realChangeSpanFmt()) is
 		// quite involved, so we want to avoid calling it, if we can)
@@ -102,13 +102,13 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		const PP_AttrProp * pAP;
 		if(_getSpanAttrPropHelper(pf1, &pAP))
 		{
-		        const XML_Char * szStyleNameVal = NULL;
+		        const gchar * szStyleNameVal = NULL;
 		        pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
 			if(!pAP->getAttribute(name, pRevision))
 			{
 				// if we have no revision attribute, then everything
 				// is OK
-				const XML_Char * ppStyle[3];
+				const gchar * ppStyle[3];
 				ppStyle[0] = PT_STYLE_ATTRIBUTE_NAME;
 				ppStyle[1] = NULL;
 				ppStyle[2] = NULL;
@@ -383,8 +383,8 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 									const UT_UCSChar * p,
 									UT_uint32 length,
-									const XML_Char ** attributes,
-									const XML_Char ** properties,
+									const gchar ** attributes,
+									const gchar ** properties,
 									fd_Field * pField,
 									bool bAddChangeRec)
 {
@@ -549,7 +549,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 	// PLAM: This is the list of field attrs that should not inherit
 	// PLAM: to the span following a field.
-	const XML_Char * pFieldAttrs[12];
+	const gchar * pFieldAttrs[12];
 	pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
 	pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
 	pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;

@@ -42,7 +42,7 @@
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
 
-XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
+XAP_StringSet::XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName)
   : m_encoding("UTF-8")
 {
 	m_pApp = pApp;
@@ -55,10 +55,10 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 XAP_StringSet::~XAP_StringSet(void)
 {
 	if (m_szLanguageName)
-		g_free(const_cast<XML_Char *>(m_szLanguageName));
+		g_free(const_cast<gchar *>(m_szLanguageName));
 }
 
-const XML_Char * XAP_StringSet::getLanguageName(void) const
+const gchar * XAP_StringSet::getLanguageName(void) const
 {
 	return m_szLanguageName;
 }
@@ -123,7 +123,7 @@ bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 	return true;
 }
 
-void XAP_StringSet::setEncoding(const XML_Char * inEncoding)
+void XAP_StringSet::setEncoding(const gchar * inEncoding)
 {
   UT_return_if_fail(inEncoding != 0);
   m_encoding = inEncoding;
@@ -141,12 +141,12 @@ const char * XAP_StringSet::getEncoding() const
 // (bidi processing, we only need this in the disk stringset)
 //////////////////////////////////////////////////////////////////
 
-XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName)
+XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName)
 	: XAP_StringSet(pApp,szLanguageName)
 {
-#define dcl(id,s)					static_cast<const XML_Char *>(s),
+#define dcl(id,s)					static_cast<const gchar *>(s),
 
-	static const XML_Char * s_a[] =
+	static const gchar * s_a[] =
 	{
 		dcl(__FIRST__,0)			// bogus entry for zero
 #include "xap_String_Id.h"
@@ -162,7 +162,7 @@ XAP_BuiltinStringSet::~XAP_BuiltinStringSet(void)
 {
 }
 
-const XML_Char * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
+const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 {
 	if ( (id > XAP_STRING_ID__FIRST__) && (id < XAP_STRING_ID__LAST__) )
 		return m_arrayXAP[id];
@@ -193,7 +193,7 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 
 	for (k=kLimit-1; k>=0; k--)
 	{
-		XML_Char * sz = m_vecStringsXAP.getNthItem(k);
+		gchar * sz = m_vecStringsXAP.getNthItem(k);
 		if (sz)
 			g_free(sz);
 	}
@@ -202,10 +202,10 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 	DELETEP(m_pFallbackStringSet);
 }
 
-bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
+bool XAP_DiskStringSet::setLanguage(const gchar * szLanguageName)
 {
 	if (m_szLanguageName)
-		g_free(const_cast<XML_Char *>(m_szLanguageName));
+		g_free(const_cast<gchar *>(m_szLanguageName));
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		m_szLanguageName = g_strdup(szLanguageName);
@@ -217,10 +217,10 @@ void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
 	m_pFallbackStringSet = pFallback;
 }
 
-bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
+bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 {
 	bool bFoundMultiByte = false;
-	XML_Char * szDup = NULL;
+	gchar * szDup = NULL;
 	if (szString && *szString)
 	{
 		UT_GrowBuf gb;
@@ -274,14 +274,14 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		    };
 		}
 		length = str.getLength();
-		szDup = static_cast<XML_Char *>(g_try_malloc(length+1));
+		szDup = static_cast<gchar *>(g_try_malloc(length+1));
 		if (!szDup)
 			return false;
 		memcpy(szDup,str.getPointer(0),length);
 		szDup[length]='\0';
 	}
 
-    XML_Char* pOldValue = NULL;
+    gchar* pOldValue = NULL;
 	bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 
@@ -293,13 +293,13 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 	return bResult;
 }
 
-const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
+const gchar * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 {
 	UT_uint32 kLimit = m_vecStringsXAP.getItemCount();
 
 	if (id < kLimit)
 	{
-		const XML_Char * szValue = m_vecStringsXAP.getNthItem(id);
+		const gchar * szValue = m_vecStringsXAP.getNthItem(id);
 		if (szValue)
 			return szValue;
 	}
@@ -314,9 +314,9 @@ const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 // build a static table to map id by names into numbers
 //////////////////////////////////////////////////////////////////
 
-#define dcl(id,s)					{ (const XML_Char *) #id, XAP_STRING_ID_##id },
+#define dcl(id,s)					{ (const gchar *) #id, XAP_STRING_ID_##id },
 
-static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
+static struct { const gchar * szName; XAP_String_Id id; } s_map[] =
 {
 #include "xap_String_Id.h"
 };
@@ -325,7 +325,7 @@ static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
+bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
@@ -347,7 +347,7 @@ bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStrin
 
 /*****************************************************************/
 
-void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts)
+void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 {
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
@@ -357,7 +357,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		// we expect something of the form:
 		// <AbiStrings app="AbiWord" ver="1.0" language="en-US">...</AbiStrings>
 
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (*a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -407,7 +407,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		// undefined -- we remember the last one that the XML parser
 		// give us.
 
-		const XML_Char ** a;
+		const gchar ** a;
 		for (a = atts; (*a); a += 2)
 		{
 			// require a value for each attribute keyword
@@ -434,13 +434,13 @@ InvalidFileError:
 	return;
 }
 
-void XAP_DiskStringSet::endElement(const XML_Char * /* name */)
+void XAP_DiskStringSet::endElement(const gchar * /* name */)
 {
 	// everything in this file is contained in start-tags
 	return;
 }
 
-void XAP_DiskStringSet::charData(const XML_Char * /* s */, int /* len */)
+void XAP_DiskStringSet::charData(const gchar * /* s */, int /* len */)
 {
 	// everything in this file is contained in start-tags
 	return;
@@ -480,7 +480,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 
 		for (k=0; k<kLimit; k++)
 		{
-			const XML_Char * szValue = XAP_DiskStringSet::getValue(s_map[k].id);
+			const gchar * szValue = XAP_DiskStringSet::getValue(s_map[k].id);
 			if (!szValue || !*szValue)
 				UT_DEBUGMSG(("WARNING: Translation for id [%s] not found.\n",s_map[k].szName));
 		}

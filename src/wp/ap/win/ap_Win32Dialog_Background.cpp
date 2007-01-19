@@ -84,7 +84,7 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail (pFrame);
 
-	const XML_Char *  pszC = getColor();
+	const gchar *  pszC = getColor();
 	UT_RGBColor rgbColor(255,255,255);
 	if(strcmp(pszC,"transparent") != 0)
 	{

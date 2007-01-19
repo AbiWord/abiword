@@ -65,15 +65,15 @@ public:
 	virtual ~XAP_Dialog_Language(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
-	void							setLanguageProperty(const XML_Char * pLangProp);
-	bool							getChangedLangProperty(const XML_Char ** pszLangProp) const;
+	void							setLanguageProperty(const gchar * pLangProp);
+	bool							getChangedLangProperty(const gchar ** pszLangProp) const;
 
 	bool                            isMakeDocumentDefault() const {return m_bDocDefault;}
 	void                            setMakeDocumentDefault(bool b) {m_bDocDefault = b;}
 
 	void                            getDocDefaultLangDescription(UT_UTF8String &s);
 	void                            getDocDefaultLangCheckboxLabel(UT_UTF8String &s);
-	void                            setDocumentLanguage(const XML_Char * pLang);
+	void                            setDocumentLanguage(const gchar * pLang);
 	
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
 	
@@ -81,18 +81,18 @@ public:
 	UT_Vector* 						getAvailableDictionaries();
 
 protected:
-	void							_setLanguage(const XML_Char * pLang);
+	void							_setLanguage(const gchar * pLang);
 	
 	XAP_Dialog_Language::tAnswer	m_answer;
 
 	// the following keeps the string that the user sees in the dialogue; this is locale-dependent
-	const XML_Char *				m_pLanguage;
+	const gchar *				m_pLanguage;
 	// this keeps the actual property string corresponding to m_pLanguage
-	const XML_Char *				m_pLangProperty;
+	const gchar *				m_pLangProperty;
 	bool							m_bChangedLanguage;
 	UT_Language *					m_pLangTable;
-	const XML_Char **				m_ppLanguages;
-	const XML_Char **				m_ppLanguagesCode;
+	const gchar **				m_ppLanguages;
+	const gchar **				m_ppLanguagesCode;
 	UT_uint32					    m_iLangCount;
 	bool                            m_bSpellCheck;
 	bool                            m_bDocDefault;

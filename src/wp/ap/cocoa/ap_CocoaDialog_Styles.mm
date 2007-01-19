@@ -216,7 +216,7 @@ void AP_CocoaDialog_Styles::event_Apply(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	const XML_Char * szStyle = getCurrentStyle();
+	const gchar * szStyle = getCurrentStyle();
 	if(szStyle && *szStyle)
 	{
 		getView()->setStyle(szStyle);
@@ -254,7 +254,7 @@ void AP_CocoaDialog_Styles::event_DeleteClicked(NSString* data)
 		if (!getDoc()->removeStyle(style)) // actually remove the style
 		{
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
-			const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete);
+			const gchar * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete);
 		
 			getFrame()->showMessageBox ((const char *)msg,
 										XAP_Dialog_MessageBox::b_O,
@@ -468,7 +468,7 @@ void AP_CocoaDialog_Styles::event_styleType(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	const char * psz = [[m_modifyDlg->_styleTypeCombo stringValue] UTF8String];
 	snprintf((char *) m_styleType, sizeof(m_styleType), "%s", psz);
-	const XML_Char * pszSt = "P";
+	const gchar * pszSt = "P";
 	UT_UTF8String label;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter, label);
 	if(strstr(m_styleType, label.utf8_str()) != 0) {
@@ -567,7 +567,7 @@ void AP_CocoaDialog_Styles::event_ModifyClicked(void)
 	{
 		// can't change builtin, error message
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin);
+		const gchar * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin);
 		
 		getFrame()->showMessageBox ((const char *)msg,
 									XAP_Dialog_MessageBox::b_O,

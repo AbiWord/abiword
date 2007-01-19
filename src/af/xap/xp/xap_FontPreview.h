@@ -38,16 +38,16 @@ public:
 	XAP_FontPreview();	
 	virtual ~XAP_FontPreview(void);
 
-	void							addOrReplaceVecProp(const XML_Char * pszProp,
-														const XML_Char * pszVal);
-	void							setFontFamily(const XML_Char * pFontFamily);
-	void							setText(const XML_Char * pFontFamily);
+	void							addOrReplaceVecProp(const gchar * pszProp,
+														const gchar * pszVal);
+	void							setFontFamily(const gchar * pFontFamily);
+	void							setText(const gchar * pFontFamily);
 	void							draw(void);
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-	const XML_Char *                m_pColorBackground;
+	const gchar *                m_pColorBackground;
 	UT_sint32						m_width;
 	UT_sint32						m_height;
 private:

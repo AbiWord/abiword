@@ -88,7 +88,7 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 void AP_Dialog_Goto::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
 	UT_uint32 title_width = 33;
 
 	UT_UTF8String s;
@@ -126,7 +126,7 @@ UT_uint32 AP_Dialog_Goto::getExistingBookmarksCount() const
 	return m_pView->getDocument()->getBookmarkCount();
 }
 
-const XML_Char * AP_Dialog_Goto::getNthExistingBookmark(UT_uint32 n) const
+const gchar * AP_Dialog_Goto::getNthExistingBookmark(UT_uint32 n) const
 {
 	UT_return_val_if_fail (m_pView, NULL);
 	return m_pView->getDocument()->getNthBookmark(n);

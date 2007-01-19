@@ -26,7 +26,7 @@
 
 //#include <limits.h>
 
-PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props, const XML_Char * attrs):
+PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * props, const gchar * attrs):
 	m_iID(Id), m_eType(eType), m_bDirty(true)
 {
 	if(!props && !attrs)
@@ -115,7 +115,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 	}
 }
 
-PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props, const XML_Char ** attrs):
+PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar ** props, const gchar ** attrs):
 	m_iID(Id), m_eType(eType), m_bDirty(true)
 {
 	if(!props && !attrs)
@@ -136,7 +136,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** 
     Sets attributes taking care of any nested revision attribute (which needs to be parsed
     and combined with the current AP set.
 */
-bool PP_Revision::setAttributes(const XML_Char ** attributes)
+bool PP_Revision::setAttributes(const gchar ** attributes)
 {
 	if(!PP_AttrProp::setAttributes(attributes))
 		return false;
@@ -148,7 +148,7 @@ bool PP_Revision::setAttributes(const XML_Char ** attributes)
 
 bool PP_Revision::_handleNestedRevAttr()
 {
-	const XML_Char * pNestedRev = NULL;
+	const gchar * pNestedRev = NULL;
 	getAttribute("revision", pNestedRev);
 	
 	if(pNestedRev)
@@ -181,21 +181,21 @@ bool PP_Revision::_handleNestedRevAttr()
 
 
 /*! converts the internal vector of properties into XML string */
-const XML_Char * PP_Revision::getPropsString()
+const gchar * PP_Revision::getPropsString()
 {
 	if(m_bDirty)
 		_refreshString();
 
-	return (const XML_Char*) m_sXMLProps.c_str();
+	return (const gchar*) m_sXMLProps.c_str();
 }
 
 /*! converts the internal vector of attributes into XML string */
-const XML_Char * PP_Revision::getAttrsString()
+const gchar * PP_Revision::getAttrsString()
 {
 	if(m_bDirty)
 		_refreshString();
 
-	return (const XML_Char*) m_sXMLAttrs.c_str();
+	return (const gchar*) m_sXMLAttrs.c_str();
 }
 
 void PP_Revision::_refreshString()
@@ -205,7 +205,7 @@ void PP_Revision::_refreshString()
 
 	UT_uint32 i;
 	UT_uint32 iCount = getPropertyCount();
-	const XML_Char * n, *v;
+	const gchar * n, *v;
 
 	for(i = 0; i < iCount; i++)
 	{
@@ -268,8 +268,8 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 
 	// now the lengthy comparison
 	UT_uint32 i;
-	const XML_Char * n;
-	const XML_Char * v1, * v2;
+	const gchar * n;
+	const gchar * v1, * v2;
 
 	for(i = 0; i < iPCount1; i++)
 	{
@@ -299,7 +299,7 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 
 /*! create class instance from an XML attribute string
  */
-PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r):
+PP_RevisionAttr::PP_RevisionAttr(const gchar * r):
 	m_pLastRevision(NULL)
 {
 	_init(r);
@@ -307,7 +307,7 @@ PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r):
 
 /*! create class instance from a single revision data */
 PP_RevisionAttr::PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType,
-								 const XML_Char ** pAttrs, const XML_Char ** pProps)
+								 const gchar ** pAttrs, const gchar ** pProps)
 {
 	PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
 	m_vRev.addItem((void*)pRevision);
@@ -321,7 +321,7 @@ PP_RevisionAttr::~PP_RevisionAttr()
 
 /*! initialize instance with XML attribute string
  */
-void PP_RevisionAttr::setRevision(const XML_Char * r)
+void PP_RevisionAttr::setRevision(const gchar * r)
 {
 	_clear();
 	_init(r);
@@ -344,7 +344,7 @@ void PP_RevisionAttr::_clear()
 /*! parse given XML attribute string and fill the
     instance with the data
 */
-void PP_RevisionAttr::_init(const XML_Char *r)
+void PP_RevisionAttr::_init(const gchar *r)
 {
 	if(!r)
 		return;
@@ -359,7 +359,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 
 	UT_sint32 iId;
 	PP_RevisionType eType;
-	XML_Char * pProps, * pAttrs,
+	gchar * pProps, * pAttrs,
 		     * cl_brace = 0, * op_brace = 0,
 		     * cl_brace2 = 0;
 
@@ -576,7 +576,7 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 #endif
 	
 	// finally, remove the revision attribute if present
-	const XML_Char * v;
+	const gchar * v;
 	if(r0->getAttribute("revision", v))
 		r0->setAttribute("revision", NULL);
 
@@ -600,8 +600,8 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 
 // these are special instances of PP_Revision that are used to in the
 // following function to handle special cases
-static const PP_Revision s_del(0, PP_REVISION_DELETION, (XML_Char*)0, (XML_Char*)0);
-static const PP_Revision s_add(0, PP_REVISION_ADDITION, (XML_Char*)0, (XML_Char*)0);
+static const PP_Revision s_del(0, PP_REVISION_DELETION, (gchar*)0, (gchar*)0);
+static const PP_Revision s_add(0, PP_REVISION_ADDITION, (gchar*)0, (gchar*)0);
 
 const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id,
 																	   const PP_Revision ** ppR)
@@ -796,7 +796,7 @@ bool PP_RevisionAttr::isVisible(UT_uint32 id)
     is already present in this attribute.
 */
 void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
-								  const XML_Char ** pAttrs, const XML_Char ** pProps)
+								  const gchar ** pAttrs, const gchar ** pProps)
 {
 	UT_uint32 i;
 
@@ -832,7 +832,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 
 				m_iSuperfluous = iId;
 
-				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0, (XML_Char*)0);
+				const PP_Revision * pRevision = new PP_Revision(iId, eType, (gchar*)0, (gchar*)0);
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_ADDITION) && (r_type == PP_REVISION_DELETION))
@@ -865,7 +865,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 				delete r;
 				m_vRev.deleteNthItem(i);
 
-				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0, (XML_Char*)0);
+				const PP_Revision * pRevision = new PP_Revision(iId, eType, (gchar*)0, (gchar*)0);
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_DELETION))
@@ -1082,14 +1082,14 @@ void PP_RevisionAttr::_refreshString()
 
 
 
-/*! get an XML_Char string representation of this revision
+/*! get an gchar string representation of this revision
  */
-const XML_Char * PP_RevisionAttr::getXMLstring()
+const gchar * PP_RevisionAttr::getXMLstring()
 {
 	if(m_bDirty)
 		_refreshString();
 
-	return (const XML_Char*) m_sXMLstring.c_str();
+	return (const gchar*) m_sXMLstring.c_str();
 }
 
 /*! returns true if the fragment marked by this attribute is
@@ -1131,7 +1131,7 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue)
+bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue)
 {
 	const PP_Revision * s;
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId, &s);
@@ -1146,7 +1146,7 @@ bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const X
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pValue)
+bool PP_RevisionAttr::hasProperty(const gchar * pName, const gchar * &pValue)
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getProperty(pName, pValue);

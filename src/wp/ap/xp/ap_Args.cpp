@@ -137,7 +137,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 		// see abi/docs/AbiSource_Localization.abw for details.
 		AP_BuiltinStringSet * pBuiltinStringSet = 
 			new AP_BuiltinStringSet(getApp(),
-									static_cast<XML_Char*>(AP_PREF_DEFAULT_StringSet));
+									static_cast<gchar*>(AP_PREF_DEFAULT_StringSet));
 		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
 		delete pBuiltinStringSet;
 	}

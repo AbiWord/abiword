@@ -62,7 +62,7 @@ static void s_color_changed(GtkWidget * csel,
 	static char buf_color[12];
 
 	sprintf(buf_color,"%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
-	dlg->setColor ((const XML_Char *) buf_color);
+	dlg->setColor ((const gchar *) buf_color);
 }
 
 #undef CTI
@@ -153,7 +153,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	gtk_widget_show (colorsel);
 	gtk_container_add (GTK_CONTAINER(vbox), colorsel);
 
-	const XML_Char *  pszC = getColor();
+	const gchar *  pszC = getColor();
 	UT_RGBColor c(255,255,255);
 	if(strcmp(pszC,"transparent") != 0)
 	{

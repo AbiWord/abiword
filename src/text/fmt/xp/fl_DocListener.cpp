@@ -55,7 +55,7 @@
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 
-static HdrFtrType s_convertToHdrFtrType(const XML_Char * pszHFType);
+static HdrFtrType s_convertToHdrFtrType(const gchar * pszHFType);
 
 /*!
  Create DocListener
@@ -321,7 +321,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_DEBUGMSG(("SEVIOR: Doing Populate Section in DocListener \n"));
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const XML_Char* pszSectionType = NULL;
+			const gchar* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
 			UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n",
 						 pszSectionType ? pszSectionType : "(null)"));
@@ -357,7 +357,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 
 				if(hfType != FL_HDRFTR_NONE)
 				{
-					const XML_Char* pszID = NULL;
+					const gchar* pszID = NULL;
 					pAP->getAttribute("id", pszID);
 					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
@@ -499,7 +499,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		const PP_AttrProp* pAP = NULL;
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			const XML_Char* pszSectionType = NULL;
+			const gchar* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
@@ -513,7 +513,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				HdrFtrType hfType = s_convertToHdrFtrType(pszSectionType);
 				if(hfType != FL_HDRFTR_NONE)
 				{
-					const XML_Char* pszID = NULL;
+					const gchar* pszID = NULL;
 					pAP->getAttribute("id", pszID);
 
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
@@ -1190,7 +1190,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			UT_ASSERT(bres);
 			PL_StruxDocHandle sdh = pL->getStruxDocHandle();
 	
-			const XML_Char* pszSectionType = NULL;
+			const gchar* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
 			//
 			// OK Sevior adds code to actually change a 
@@ -1209,7 +1209,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//  OK first we need a previous section with a
 				//  matching ID
 				//
-				const XML_Char* pszID = NULL;
+				const gchar* pszID = NULL;
 				pAP->getAttribute("id", pszID);
 
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
@@ -1305,7 +1305,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
 			UT_ASSERT(bres);
 	
-			const XML_Char* pszHFSectionType = NULL;
+			const gchar* pszHFSectionType = NULL;
 			pHFAP->getAttribute("type", pszHFSectionType);
 			//
             // Look for type of Hdr/Ftr
@@ -1317,7 +1317,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//  OK now we need a previous section with a
 				//  matching ID
 				//
-				const XML_Char* pszHFID = NULL;
+				const gchar* pszHFID = NULL;
 				pHFAP->getAttribute("id", pszHFID);
 
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
@@ -2381,7 +2381,7 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 }
 
 /*! Helper method to convert hf strings to HdrFtrType */
-static HdrFtrType s_convertToHdrFtrType(const XML_Char * pszHFType)
+static HdrFtrType s_convertToHdrFtrType(const gchar * pszHFType)
 {
 	if (!pszHFType)
 		return FL_HDRFTR_NONE;

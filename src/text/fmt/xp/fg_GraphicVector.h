@@ -69,7 +69,7 @@ protected:
 	UT_sint32 m_iMaxW;
 	UT_sint32 m_iMaxH;
 	const PP_AttrProp* m_pSpanAP;
-	const XML_Char* m_pszDataID;
+	const gchar* m_pszDataID;
 };
 
 #endif /* FG_GRAPHICVECTOR_H */

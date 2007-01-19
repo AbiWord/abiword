@@ -38,7 +38,7 @@
 /****************************************************************/
 /****************************************************************/
 
-bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object * pfo, const XML_Char ** attributes, const XML_Char ** properties)
+bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object * pfo, const gchar ** attributes, const gchar ** properties)
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
@@ -59,8 +59,8 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 											   PT_DocPosition dpos,
 											   UT_uint32 length,
-											   const XML_Char ** attributes,
-											   const XML_Char ** properties,
+											   const gchar ** attributes,
+											   const gchar ** properties,
 											   pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfNewEnd,
 											   UT_uint32 * pfragOffsetNewEnd,

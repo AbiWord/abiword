@@ -208,7 +208,7 @@ typedef struct _SCRIPT_DIGITSUBSTITUTE
 
 #endif
 
-UT_BEGIN_EXTERN_C
+G_BEGIN_DECLS
 
 /* functions -- we are loading these dynamically, so we define them as
    pointers, and prefix t for type */
@@ -397,5 +397,5 @@ typedef HRESULT (WINAPI * tScriptXtoCP) (int iX,
 										 int *piTrailing);
 
 
-UT_END_EXTERN_C
+G_END_DECLS
 #endif

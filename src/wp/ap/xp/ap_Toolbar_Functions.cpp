@@ -190,7 +190,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
   UT_return_val_if_fail ( pPrefs, EV_TIS_Gray );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -340,7 +340,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 	{
 	case AP_TOOLBAR_ID_FMT_STYLE:
 		{
-			const XML_Char * sz = NULL;
+			const gchar * sz = NULL;
 			if (!pView->getStyle(&sz))
 			{
 				static const char * sz2 ="None";
@@ -457,8 +457,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	bool bSize = false;
 	bool bString = false;
 
-	const XML_Char * prop = NULL;
-	const XML_Char * val  = NULL;
+	const gchar * prop = NULL;
+	const gchar * val  = NULL;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -553,8 +553,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	if (prop && val)
 	{
 		// get current char properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
+		const gchar ** props_in = NULL;
+		const gchar * sz = NULL;
 
 		if (!pView->getCharFormat(&props_in))
 			return s;
@@ -606,8 +606,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	if (pszState)
 		*pszState = NULL;
 
-	const XML_Char * prop = "";
-	const XML_Char * val  = NULL;
+	const gchar * prop = "";
+	const gchar * val  = NULL;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -652,8 +652,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	if (prop && val)
 	{
 		// get current block properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
+		const gchar ** props_in = NULL;
+		const gchar * sz = NULL;
 
         bool bResult = pView->getSectionFormat(&props_in);
 
@@ -693,8 +693,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 	bool bPoints = false;
 
-	const XML_Char * prop = "text-align";
-	const XML_Char * val  = NULL;
+	const gchar * prop = "text-align";
+	const gchar * val  = NULL;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -762,8 +762,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	if (prop && val)
 	{
 		// get current block properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
+		const gchar ** props_in = NULL;
+		const gchar * sz = NULL;
 
 		if (!pView->getBlockFormat(&props_in))
 			return s;

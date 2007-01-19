@@ -94,7 +94,7 @@
 class _fmtPair
 {
 public:
-	_fmtPair(const XML_Char * p,
+	_fmtPair(const gchar * p,
 			 const PP_AttrProp * c, const PP_AttrProp * b, const PP_AttrProp * s,
 			 PD_Document * pDoc, bool bExpandStyles)
 		{
@@ -102,8 +102,8 @@ public:
 			m_val  = PP_evalProperty(p,c,b,s, pDoc, bExpandStyles);
 		}
 
-	const XML_Char *	m_prop;
-	const XML_Char *	m_val;
+	const gchar *	m_prop;
+	const gchar *	m_val;
 };
 
 class FV_Caret_Listener : public AV_Listener
@@ -279,80 +279,80 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 
-   	const XML_Char * pszTmpColor = NULL;
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
+   	const gchar * pszTmpColor = NULL;
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorShowPara);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorSpellSquiggle);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorGrammarSquiggle);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorMargin);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorFieldOffset);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorImage);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorHyperLink);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorHdrFtr);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorColumnLine);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[0]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[1]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[2]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[3]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[4]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[5]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[6]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[7]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[8]);
 	}
-	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[9]);
 	}
@@ -393,29 +393,29 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 #ifndef BIDI_RTL_DOMINANT
 	if(m_bDefaultDirectionRtl)
 	{
-		//const XML_Char bidi_dir_name[] = "dir"; ###TF
-		const XML_Char bidi_dir_value[] = "rtl";
-		const XML_Char bidi_domdir_name[] = "dom-dir";
-		const XML_Char bidi_align_name[] = "text-align";
-		const XML_Char bidi_align_value[] = "right";
+		//const gchar bidi_dir_name[] = "dir"; ###TF
+		const gchar bidi_dir_value[] = "rtl";
+		const gchar bidi_domdir_name[] = "dom-dir";
+		const gchar bidi_align_name[] = "text-align";
+		const gchar bidi_align_value[] = "right";
 
-		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+		const gchar * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
-		m_pDoc->addStyleProperties(static_cast<const XML_Char*>("Normal"), static_cast<const XML_Char**>(&bidi_props[0]));
+		m_pDoc->addStyleProperties(static_cast<const gchar*>("Normal"), static_cast<const gchar**>(&bidi_props[0]));
 		PP_resetInitialBiDiValues("rtl");
 	}
 #else
 	if(!m_bDefaultDirectionRtl)
 	{
-		//const XML_Char bidi_dir_name[] = "dir";  ###TF
-		const XML_Char bidi_dir_value[] = "ltr";
-		const XML_Char bidi_domdir_name[] = "dom-dir";
-		const XML_Char bidi_align_name[] = "text-align";
-		const XML_Char bidi_align_value[] = "left";
+		//const gchar bidi_dir_name[] = "dir";  ###TF
+		const gchar bidi_dir_value[] = "ltr";
+		const gchar bidi_domdir_name[] = "dom-dir";
+		const gchar bidi_align_name[] = "text-align";
+		const gchar bidi_align_value[] = "left";
 
-		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+		const gchar * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
-		m_pDoc->addStyleProperties(static_cast<const XML_Char*>("Normal"), static_cast<const XML_Char**>(bidi_props));
+		m_pDoc->addStyleProperties(static_cast<const gchar*>("Normal"), static_cast<const gchar**>(bidi_props));
 		PP_resetInitialBiDiValues("ltr");
 	}
 #endif
@@ -493,7 +493,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	const PP_AttrProp * pDocAP = m_pDoc->getAttrProp();
 	if(pDocAP)
 	{
-		const XML_Char * szValue;
+		const gchar * szValue;
 		pDocAP->getProperty("dom-dir",szValue);
 
 		if(szValue)
@@ -881,7 +881,7 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseLeftPress(x,y);
 }
 
-void FV_View::setFrameFormat(const XML_Char * properties[])
+void FV_View::setFrameFormat(const gchar * properties[])
 {
 	UT_String dataID("");
 	setFrameFormat(properties,NULL,dataID);
@@ -953,11 +953,11 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	{
 		return false;
 	}
-	const XML_Char* szDataID = 0;
-	const XML_Char* szTitle = 0;
-	const XML_Char* szDescription = 0;
-	const  XML_Char* szWidth = 0;
-	const  XML_Char * szHeight = 0;
+	const gchar* szDataID = 0;
+	const gchar* szTitle = 0;
+	const gchar* szDescription = 0;
+	const  gchar* szWidth = 0;
+	const  gchar * szHeight = 0;
     bool bFound = pAP->getAttribute(PT_STRUX_IMAGE_DATAID,szDataID);
 	if(!bFound)
 	{
@@ -980,7 +980,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	sProps += szWidth;
 	sProps += "; height:";
 	sProps += szHeight;
-	const XML_Char*	attributes[] = {
+	const gchar*	attributes[] = {
 		PT_IMAGE_DATAID, NULL,
 		PT_IMAGE_TITLE,NULL,
 		PT_IMAGE_DESCRIPTION,NULL,
@@ -1025,7 +1025,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 /*!
  * This method converts an image located position pos to a positioned object.
  */
-void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** attributes)
+void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attributes)
 {
 
 	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
@@ -1099,7 +1099,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
-void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_String & sDataID)
+void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -1133,7 +1133,7 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 	}
 	else
 	{
-		const XML_Char * attributes[3] = {
+		const gchar * attributes[3] = {
 			PT_STRUX_IMAGE_DATAID,NULL,NULL};
 		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionFrame);	
 						
@@ -1152,7 +1152,7 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 }
 
 
-void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * properties[])
+void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[])
 {
 	bool bRet;
 	setCursorWait();
@@ -1435,8 +1435,8 @@ UT_RGBColor FV_View::getColorSelBackground ()
     return pFrame->getColorSelBackground ();
   
   if (!m_bgColorInitted) {
-    const XML_Char * pszTmpColor = NULL;
-    if (XAP_App::getApp()->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSelBackground), &pszTmpColor))
+    const gchar * pszTmpColor = NULL;
+    if (XAP_App::getApp()->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSelBackground), &pszTmpColor))
       {
 	UT_parseColor(pszTmpColor, bgcolor);
       }
@@ -2041,11 +2041,11 @@ void FV_View::updateLayout(void)
 	m_pLayout->updateLayout();
 }
 
-void FV_View::setPaperColor(const XML_Char* clr)
+void FV_View::setPaperColor(const gchar* clr)
 {
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
 
-	const XML_Char * props[3];
+	const gchar * props[3];
 	props[0] = "background-color";
 	props[1] = clr;
 	props[2] = 0;
@@ -2199,7 +2199,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		  The following brute-force solution works, but is atrociously
 		  expensive, so we should avoid using it whenever feasible.
 		*/
-		const XML_Char ** propsBlock = NULL;
+		const gchar ** propsBlock = NULL;
 		getBlockFormat(&propsBlock);
 
 		bool bMatch = false;
@@ -2248,7 +2248,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		  TODO: devise special case logic for (at minimum) char motion
 		*/
-		const XML_Char ** propsChar = NULL;
+		const gchar ** propsChar = NULL;
 		getCharFormat(&propsChar);
 
 		bool bMatch = false;
@@ -2295,7 +2295,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		  The following brute-force solution works, but is atrociously
 		  expensive, so we should avoid using it whenever feasible.
 		*/
-		const XML_Char ** propsSection = NULL;
+		const gchar ** propsSection = NULL;
 		getSectionFormat(&propsSection);
 
 		bool bMatch = false;
@@ -2642,7 +2642,7 @@ bool FV_View::setTOCProps(PT_DocPosition pos, const char * szProps)
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	const XML_Char * atts[3] ={"props",NULL,NULL};
+	const gchar * atts[3] ={"props",NULL,NULL};
 	atts[1] = szProps;
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,atts,NULL,PTX_SectionTOC);
 	
@@ -2983,7 +2983,7 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 	}
 	const PP_AttrProp * pBlockAP = NULL;
 	pBlock->getAP(pBlockAP);
-	const XML_Char* pszCurStyle = NULL;
+	const gchar* pszCurStyle = NULL;
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszCurStyle);
 	if(pszCurStyle == NULL)
 	{
@@ -3069,7 +3069,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		fl_BlockLayout * pBlock =  vListBlocks.getNthItem(i);
 		PT_DocPosition posBlock = pBlock->getPosition();
 
-		const XML_Char * pListAttrs[10];
+		const gchar * pListAttrs[10];
 		pListAttrs[0] = "listid";
 		pListAttrs[1] = NULL;
 		pListAttrs[2] = "parentid";
@@ -3085,7 +3085,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		// properties, since their values are not necessarily part
 		// of the style definition, so that cloneWithEliminationIfEqual
 		// which we call later will not get rid off them
-		const XML_Char * pListProps[20];
+		const gchar * pListProps[20];
 		pListProps[0] =  "start-value";
 		pListProps[1] =  NULL;
 		pListProps[2] =  "list-style";
@@ -3169,7 +3169,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		}
 		else if(!pBlock->isListItem())
 		{
-			XML_Char* cType = pBlock->getListStyleString(listType);
+			gchar* cType = pBlock->getListStyleString(listType);
 			pBlock->StartList(cType);
 		}
 	}
@@ -3476,21 +3476,21 @@ void FV_View::insertParagraphBreak(void)
 		_setPoint(getCurrentBlock()->getPosition());
 	}
 
-	const XML_Char* style = NULL;
+	const gchar* style = NULL;
 	PD_Style* pStyle = NULL;
 	if(getStyle(&style) && bAtEnd)
 	{
 		m_pDoc->getStyle(static_cast<const char*>(style), &pStyle);
 		if(pStyle != NULL  && !bBefore)
 		{
-			const XML_Char* szFollow = NULL;
+			const gchar* szFollow = NULL;
 			pStyle->getAttribute("followedby",szFollow);
 			if(szFollow && strcmp(szFollow,"Current Settings")!=0)
 			{
 				if(pStyle->getFollowedBy())
 					pStyle = pStyle->getFollowedBy();
 
-				const XML_Char* szValue = NULL;
+				const gchar* szValue = NULL;
 //
 // The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
 // style
@@ -3506,7 +3506,7 @@ void FV_View::insertParagraphBreak(void)
 //
 // Stop a List if "followed-by" is not a list style
 //
-					const XML_Char * szListType = NULL;
+					const gchar * szListType = NULL;
 					pStyle->getProperty("list-style",szListType);
 					bool bisListStyle = false;
 					if(szListType)
@@ -3567,19 +3567,19 @@ void FV_View::insertParagraphBreaknoListUpdate(void)
 	_ensureInsertionPointOnScreen();
 }
 
-bool FV_View::appendStyle(const XML_Char ** style)
+bool FV_View::appendStyle(const gchar ** style)
 {
 	return m_pDoc->appendStyle(style);
 }
 
-bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
+bool FV_View::setStyle(const gchar * style, bool bDontGeneralUpdate)
 {
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	return setStyleAtPos(style, posStart, posEnd, bDontGeneralUpdate);
 }
 
-bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT_DocPosition posEnd1, bool bDontGeneralUpdate)
+bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_DocPosition posEnd1, bool bDontGeneralUpdate)
 {
 	bool bRet;
 
@@ -3635,7 +3635,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 // Get This info before it's lost from the following processing
 //
 	fl_BlockLayout * pBL = getCurrentBlock();
-	const XML_Char * pszStyle = NULL;
+	const gchar * pszStyle = NULL;
 	pStyle->getProperty("list-style",pszStyle);
 	bool bisListStyle = false;
 	if(pszStyle)
@@ -3703,7 +3703,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	getBlocksInSelection( &vBlock);
 	setScreenUpdateOnGeneralUpdate( false);
 	bool bCharStyle = pStyle->isCharStyle();
-	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
+	const gchar * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 //
 // Need this to adjust the start and end positions of the style change.
@@ -3776,7 +3776,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		}
 	}
 	bool bHasNumberedHeading = false;
-	const XML_Char * pszCurStyle = style;
+	const gchar * pszCurStyle = style;
 	PD_Style * pCurStyle = pStyle;
 	UT_uint32 depth = 0;
 	if (bCharStyle)
@@ -4061,10 +4061,10 @@ fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 }
 
 
-static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
+static const gchar * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 {
 	UT_ASSERT(pAP);
-	const XML_Char* sz = NULL;
+	const gchar* sz = NULL;
 
 	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
 
@@ -4076,11 +4076,11 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 	return sz;
 }
 
-bool FV_View::getStyle(const XML_Char ** style)
+bool FV_View::getStyle(const gchar ** style)
 {
 	bool bCharStyle = false;
-	const XML_Char * szChar = NULL;
-	const XML_Char * szBlock = NULL;
+	const gchar * szChar = NULL;
+	const gchar * szBlock = NULL;
 
 	const PP_AttrProp * pBlockAP = NULL;
 
@@ -4147,7 +4147,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 			if (bCheck)
 			{
-				const XML_Char* sz = x_getStyle(pBlockAP, true);
+				const gchar* sz = x_getStyle(pBlockAP, true);
 
 				if (strcmp(sz, szBlock))
 				{
@@ -4241,7 +4241,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 				if (bCheck)
 				{
-					const XML_Char* sz = x_getStyle(pSpanAP, true);
+					const gchar* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
 
 					if ((bCharStyle != bHere) || ((sz && szChar && strcmp(sz, szChar))))
@@ -4262,7 +4262,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 	return true;
 }
 
-bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attribs[])
+bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
 {
 	bool bRet;
 
@@ -4411,7 +4411,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 			bool bChangeFmt = true;
 			if(posStart == 2 && posEnd == posEOD && properties)
 			{
-				const XML_Char * hidden = UT_getAttribute("display", properties);
+				const gchar * hidden = UT_getAttribute("display", properties);
 				if(hidden && !strcmp(hidden, "none"))
 				{
 					// we will be applying fmt ourselves ...
@@ -4469,7 +4469,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 						{
 							// this is the complicated case
 							// strip the display prop and apply the rest to the whole set
-							const XML_Char ** reducedProps = new const XML_Char *[prop_count];
+							const gchar ** reducedProps = new const gchar *[prop_count];
 							UT_return_val_if_fail( reducedProps, false );
 
 							UT_uint32 j = 0;
@@ -4488,7 +4488,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,reducedProps,PTX_Block);
 
 							// now apply the hidden prop to the reduced range alone ...
-							const XML_Char * hiddenProp[3] = {"display", "none", NULL};
+							const gchar * hiddenProp[3] = {"display", "none", NULL};
 							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd2,NULL,hiddenProp,PTX_Block);
 							delete [] reducedProps;
 						}
@@ -4534,7 +4534,7 @@ bool FV_View::resetCharFormat(bool bAll)
 		if(pAP)
 		{
 			UT_uint32 i = 0;
-			const XML_Char * szName, *szValue;
+			const gchar * szName, *szValue;
 			while(pAP->getNthProperty(i++,szName,szValue))
 			{
 				// add other props as required ...
@@ -4550,9 +4550,9 @@ bool FV_View::resetCharFormat(bool bAll)
 	// first we reset everything ...
 	// we have to do this, because setCharFormat() calls are cumulative (it uses
 	// PTC_AddFmt)
-	const XML_Char p[] = "props";
-	const XML_Char v[] = "";
-	const XML_Char * props_out[3] = {p,v,NULL};
+	const gchar p[] = "props";
+	const gchar v[] = "";
+	const gchar * props_out[3] = {p,v,NULL};
 	
 	bool bRet = setCharFormat(NULL, props_out);
 
@@ -4747,7 +4747,7 @@ bool FV_View::getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& 
  * 
  * [Question: How does, e.g., paragraph background color export to other formats?]
  */
-bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const
+bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const
 {
 	UT_return_val_if_fail(szProperty,false);
 
@@ -4843,7 +4843,7 @@ bool FV_View::isMathLoaded(void)
 	return true;
 }
 
-bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const
+bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const
 {
 	UT_return_val_if_fail(szProperty,false);
 
@@ -4869,7 +4869,7 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 
 	bExplicitlyDefined = false;
 
-	const XML_Char * szPropValue = 0;
+	const gchar * szPropValue = 0;
 
 	if (pSpanAP)
 	{
@@ -4911,12 +4911,12 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 	return okay;
 }
 
-bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
+bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles)
 {
 	return getCharFormat(pProps,bExpandStyles,0);
 }
 
-bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_DocPosition posStart)
+bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPosition posStart)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -4937,7 +4937,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 // fixme
 #if 0
 	// NOTE: caller must g_free this, but not the referenced contents
-	const XML_Char ** tprops = static_cast<const XML_Char **>(UT_calloc(3, sizeof(XML_Char *)));
+	const gchar ** tprops = static_cast<const gchar **>(UT_calloc(3, sizeof(gchar *)));
 	UT_DEBUGMSG(("charFormat \n"));
 	tprops[0] = "fred";
 	tprops[1] = "1";
@@ -5124,7 +5124,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 				{
 					f = v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+					const gchar * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 
 					// prune anything that doesn't match
 					if (value && strcmp(f->m_val, value))
@@ -5150,11 +5150,11 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must g_free this, but not the referenced contents
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
 	if (!props)
 		return false;
 
-	const XML_Char ** p = props;
+	const gchar ** p = props;
 	i = v.getItemCount();
 	UT_uint32 numProps = count;
 	while (i > 0)
@@ -5261,10 +5261,10 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		getAllBlocksInList(&v);
 	else
 		getBlocksInSelection(&v);
-	const XML_Char * props[] = {NULL,"0.0in",NULL,NULL};
-	const XML_Char ind_left [] = "margin-left";
-	const XML_Char ind_right[] = "margin-right";
-	const XML_Char * indent;
+	const gchar * props[] = {NULL,"0.0in",NULL,NULL};
+	const gchar ind_left [] = "margin-left";
+	const gchar ind_right[] = "margin-right";
+	const gchar * indent;
 	
 	for(i = 0; i<v.getItemCount();i++)
 	{
@@ -5295,7 +5295,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
 		props[0] = indent;
-		props[1] = static_cast<const XML_Char *>(szNewAlign.c_str());
+		props[1] = static_cast<const gchar *>(szNewAlign.c_str());
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 	}
 	//
@@ -5315,8 +5315,8 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1, 
 								   PT_DocPosition ipos2, 
 								   PTStruxType iStrux,
-								   const XML_Char * attributes[] ,
-								   const XML_Char * properties[])
+								   const gchar * attributes[] ,
+								   const gchar * properties[])
 {
 	bool bRet;
 
@@ -5342,7 +5342,7 @@ bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
 	{
 		return false;
 	}	
-	const XML_Char * pszDataID = NULL;
+	const gchar * pszDataID = NULL;
     bret = m_pDoc->getAttributeFromSDH(sdh, isShowRevisions(), getRevisionLevel(), PT_STRUX_IMAGE_DATAID,&pszDataID);
 	if(!bret)
 	{
@@ -5355,7 +5355,7 @@ bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
 	return true;
 }
 
-bool FV_View::setBlockFormat(const XML_Char * properties[])
+bool FV_View::setBlockFormat(const gchar * properties[])
 {
 	bool bRet;
 
@@ -5391,7 +5391,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bool bDomDirChange = false;
 	UT_BidiCharType iDomDir = UT_BIDI_LTR;
 
-	const XML_Char ** p  = properties;
+	const gchar ** p  = properties;
 
 	while(*p)
 	{
@@ -5454,7 +5454,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
  */
 bool FV_View::setCollapsedRange(PT_DocPosition posLow, 
 								PT_DocPosition posHigh,
-								const XML_Char * properties[])
+								const gchar * properties[])
 {
 	bool bRet;
 
@@ -5485,11 +5485,11 @@ bool FV_View::setCollapsedRange(PT_DocPosition posLow,
  * page number will be inserted at the top of the container.
  *
 \param bIsFooter true if the user wants a pagenumber in a footer.
-\param const  XML_Char ** atts	const string describing left , center or right
+\param const  gchar ** atts	const string describing left , center or right
  * justification.
  */
 
-bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
+bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
 {
 //
 // Quick hack to stop a segfault if a user tries to insert a header from
@@ -5589,7 +5589,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 // Insert a page number with the correct formatting.
 //
 
-	const XML_Char* f_attributes[] = {
+	const gchar* f_attributes[] = {
 		"type", "page_number",
 		NULL, NULL
 	};
@@ -5635,16 +5635,16 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 								FL_ListType lType,
 								UT_uint32 startv,
-								const XML_Char* pszDelim,
-								const XML_Char* pszDecimal,
-								const XML_Char* pszFont,
+								const gchar* pszDelim,
+								const gchar* pszDecimal,
+								const gchar* pszFont,
 								float Align,
 								float Indent)
 {
 	bool bRet;
 	UT_uint32 i=0;
-	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
-	UT_GenericVector<const XML_Char*> va,vp;
+	gchar pszStart[80],pszAlign[20],pszIndent[20];
+	UT_GenericVector<const gchar*> va,vp;
 	UT_GenericVector<PL_StruxDocHandle> vb;
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
 	m_pDoc->beginUserAtomicGlob();
@@ -5683,7 +5683,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		return;
 	}
 
-	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
+	gchar * style = getCurrentBlock()->getListStyleString(lType);
 //
 // This is depeciated..
 	va.addItem( PT_STYLE_ATTRIBUTE_NAME);	va.addItem( style);
@@ -5721,22 +5721,22 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	// Assemble the List attributes
 	//
 	UT_uint32 counta = va.getItemCount() + 1;
-	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
+	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = va.getNthItem(i);
 	}
-	attribs[i] = static_cast<XML_Char *>(NULL);
+	attribs[i] = static_cast<gchar *>(NULL);
 	//
 	// Now assemble the list properties
 	//
 	UT_uint32 countp = vp.getItemCount() + 1;
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = vp.getNthItem(i);
 	}
-	props[i] = static_cast<XML_Char *>(NULL);
+	props[i] = static_cast<gchar *>(NULL);
 
 	i = 0;
 	sdh = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
@@ -5763,7 +5763,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 }
 
 
-bool FV_View::getSectionFormat(const XML_Char ***pProps)
+bool FV_View::getSectionFormat(const gchar ***pProps)
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
@@ -5864,7 +5864,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 				{
 					f = v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
+					const gchar * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
 
 					// prune anything that doesn't match
 					if(f->m_val == NULL  || value == NULL)
@@ -5895,11 +5895,11 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must g_free this, but not the referenced contents
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
 	if (!props)
 		return false;
 
-	const XML_Char ** p = props;
+	const gchar ** p = props;
 
 	i = v.getItemCount();
 	UT_uint32 numProps = count;
@@ -5951,7 +5951,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
 	UT_sint32 n = 0;
 	UT_String sPropName;
 	UT_String sPropVal;
-	const XML_Char * pszPropVal;
+	const gchar * pszPropVal;
 	for(n = 0; n < iPropsCount; n++)
 	{
 		if((PP_getNthPropertyLevel(n) & PP_LEVEL_TABLE))
@@ -5969,7 +5969,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
 	return true;
 }
 
-bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
+bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles)
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;	// TODO do we care about section-level inheritance?
@@ -6071,7 +6071,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 				{
 					f = v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+					const gchar * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match
@@ -6098,11 +6098,11 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must g_free this, but not the referenced contents
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
 	if (!props)
 		return false;
 
-	const XML_Char ** p = props;
+	const gchar ** p = props;
 
 	i = v.getItemCount();
 	UT_uint32 numProps = count;
@@ -7151,7 +7151,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 				XAP_App::getApp()->openURL(numberString);
 				return false;
 			}
-			if(m_pDoc->isBookmarkUnique(static_cast<const XML_Char *>(numberString)))
+			if(m_pDoc->isBookmarkUnique(static_cast<const gchar *>(numberString)))
 				goto book_mark_not_found; //bookmark does not exist
 
 			while(pSL)
@@ -7594,7 +7594,7 @@ FV_View::getCurrentBlock(void)
 	return _findGetCurrentBlock();
 }
 
-void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
+void FV_View::insertSymbol(UT_UCSChar c, gchar * symfont)
 {
 
 	// First check to see if there is a selection already.
@@ -7613,8 +7613,8 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
 
-	const XML_Char ** props_in = NULL;
-	const XML_Char * currentfont;
+	const gchar ** props_in = NULL;
+	const gchar * currentfont;
 	getCharFormat(&props_in);
 	currentfont = UT_getAttribute("font-family",props_in);
 	g_free(props_in);
@@ -7622,7 +7622,7 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	if(strstr(symfont,currentfont) == NULL)
 	{
 		// Set the font
-		const XML_Char* properties[] = { "font-family", 0, 0 };
+		const gchar* properties[] = { "font-family", 0, 0 };
 		properties[1] = symfont ;
 		setCharFormat(properties);
 
@@ -8333,7 +8333,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
  \param applyTo the range to apply the changes to
  \return True if the operation was succesful, false otherwise
  */
-bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
+bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -8455,7 +8455,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 					}
 					else
 					{
-						const XML_Char * attributes[3] = {
+						const gchar * attributes[3] = {
 							PT_STRUX_IMAGE_DATAID,NULL,NULL};
 						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
 						
@@ -8575,7 +8575,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 					}
 					else
 					{
-						const XML_Char * attributes[3] = {
+						const gchar * attributes[3] = {
 							PT_STRUX_IMAGE_DATAID,NULL,NULL};
 						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,
 													  posStart,
@@ -8620,7 +8620,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
  \param col will be set to the cell to the property value, if the requested property exists
  \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellProperty(XML_Char * szPropName, XML_Char * &szPropValue)
+bool FV_View::getCellProperty(gchar * szPropName, gchar * &szPropValue)
 {
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())
@@ -8652,13 +8652,13 @@ bool FV_View::getCellProperty(XML_Char * szPropName, XML_Char * &szPropValue)
 	}
 }
 
-bool FV_View::setTableFormat(const XML_Char * properties[])
+bool FV_View::setTableFormat(const gchar * properties[])
 {
 	PT_DocPosition pos = getPoint();
 	return setTableFormat(pos, properties);
 }
 
-bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
+bool FV_View::setTableFormat(PT_DocPosition pos, const gchar * properties[])
 {
 	bool bRet;
 
@@ -8704,7 +8704,7 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
 	return bRet;
 }
 
-bool FV_View::setSectionFormat(const XML_Char * properties[])
+bool FV_View::setSectionFormat(const gchar * properties[])
 {
 	bool bRet;
 	setCursorWait();
@@ -10975,7 +10975,7 @@ bool FV_View::insertParaBreakIfNeededAtPos(PT_DocPosition pos)
 void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 	setCursorWait();
-	const XML_Char* block_props[] = {
+	const gchar* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
@@ -11405,7 +11405,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 void FV_View::insertHeaderFooter(HdrFtrType hfType)
 {
-	const XML_Char* block_props[] = {
+	const gchar* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
@@ -11474,7 +11474,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
 }
 
-bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
+bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
 {
 //	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
 
@@ -11518,25 +11518,25 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 		szString = "footer-last";
 	}
 
-	static XML_Char sid[15];
+	static gchar sid[15];
 
 	UT_return_val_if_fail(m_pDoc,false);
 	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
 	sprintf(sid, "%i", id);
 
-	const XML_Char* sec_attributes1[] = {
+	const gchar* sec_attributes1[] = {
 		"type", szString.c_str(),
 		"id",sid,"listid","0","parentid","0",
 		NULL, NULL
 	};
 
-	const XML_Char* sec_attributes2[] = {
+	const gchar* sec_attributes2[] = {
 		szString.c_str(), sid,
 		NULL, NULL
 	};
 
 
-	const XML_Char* block_props[] = {
+	const gchar* block_props[] = {
 		"text-align", "center",
 		NULL, NULL
 	};
@@ -11891,7 +11891,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	       m_FrameEdit.setPointInside();
 	}
 	_makePointLegal();
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	getCharFormat(&props_in);
 
 	// add field for footnote reference
@@ -11901,7 +11901,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_uint32 pid = m_pDoc->getUID(bFootnote ? UT_UniqueId::Footnote : UT_UniqueId::Endnote);
 	UT_String_sprintf(footpid,"%d",pid);
 	
-	const XML_Char* attrs[] = {
+	const gchar* attrs[] = {
 		"footnote-id", footpid.c_str(),
 		NULL, NULL
 	};
@@ -11920,13 +11920,13 @@ bool FV_View::insertFootnote(bool bFootnote)
 	PT_DocPosition FanchEnd;
 	PT_DocPosition FbodyEnd;
 
-	const XML_Char *cur_style;
+	const gchar *cur_style;
 	getStyle(&cur_style);
 
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
-	const XML_Char * dumProps[3] = {"list-tag","123",NULL};
+	const gchar * dumProps[3] = {"list-tag","123",NULL};
 	PT_DocPosition dpBody = getPoint();
 //
 // This does a rebuild of the affected paragraph
@@ -12003,8 +12003,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 // Place a format mark before the field so we can select the field.
 //
-	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
-	static XML_Char sid[15];
+	const gchar * propListTag[] = {"list-tag",NULL,NULL};
+	static gchar sid[15];
 	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
 	sprintf(sid, "%i", id);
 	propListTag[1] = sid;
@@ -12087,9 +12087,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 	return true;
 }
 
-bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
+bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 {
-	const XML_Char* block_attrs[] = {
+	const gchar* block_attrs[] = {
 		"footnote-id", enpid,
 		NULL, NULL
 	};
@@ -12097,7 +12097,7 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
 	{
 		block_attrs[0] = "endnote-id";
 	}
-	const XML_Char* block_attrs2[] = {
+	const gchar* block_attrs2[] = {
 		"footnote-id", enpid,
 		"style", "Footnote Text", // xxx 'Footnote Body'
 		NULL, NULL
@@ -12174,7 +12174,7 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
 	return e;
 }
 
-bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
+bool FV_View::insertPageNum(const gchar ** props, HdrFtrType hfType)
 {
 
 	/*
@@ -12186,7 +12186,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 	  point in a place where it can write the page_num field.
 	*/
 
-	const XML_Char* f_attributes[] = {
+	const gchar* f_attributes[] = {
 		"type", "page_number",
 		NULL, NULL
 	};
@@ -12245,9 +12245,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	if(iWindowWidth == 0)
 	{
 	// Get fall-back defaults for zoom from prefs
-		const XML_Char * szZoom = NULL;
+		const gchar * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const XML_Char**>(&szZoom));
+							  static_cast<const gchar**>(&szZoom));
 		UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
 		if(szZoom)
 		{
@@ -12294,9 +12294,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	if(iWindowHeight == 0)
 	{
 	// Get fall-back defaults for zoom from prefs
-		const XML_Char * szZoom = NULL;
+		const gchar * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const XML_Char**>(&szZoom));
+							  static_cast<const gchar**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);
@@ -13027,7 +13027,7 @@ SpellChecker * FV_View::getDictForSelection ()
 	SpellChecker * checker = NULL;
 	const char * szLang = NULL;
 
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	if (getCharFormat(&props_in))
 	{
 		szLang = UT_getAttribute("lang", props_in);
@@ -13058,10 +13058,10 @@ SpellChecker * FV_View::getDictForSelection ()
 
    the returned pointer is to a static variable, so use it or loose it
 */
-const XML_Char ** FV_View::getViewPersistentProps()
+const gchar ** FV_View::getViewPersistentProps()
 {
 	const UT_uint32 iMax = 3;
-	static const XML_Char * pProps[iMax];
+	static const gchar * pProps[iMax];
 	UT_uint32 i = 0;
 
 	if(m_eBidiOrder == FV_Order_Logical_LTR)
@@ -13108,11 +13108,11 @@ UT_uint32 fv_PropCache::getTick(void) const
 	return m_iTick;
 }
 
-const XML_Char ** fv_PropCache::getCopyOfProps(void) const
+const gchar ** fv_PropCache::getCopyOfProps(void) const
 {
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(m_iNumProps+1, sizeof(XML_Char *))); 
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(m_iNumProps+1, sizeof(gchar *))); 
 	UT_uint32 i =0;
-	const XML_Char ** p = props;
+	const gchar ** p = props;
 	for(i =0; i< m_iNumProps;i++)
 	{
 		p[i] = m_pszProps[i];
@@ -13124,17 +13124,17 @@ const XML_Char ** fv_PropCache::getCopyOfProps(void) const
 	return props;
 }
 
-void fv_PropCache::fillProps(UT_uint32 numProps, const XML_Char ** props)
+void fv_PropCache::fillProps(UT_uint32 numProps, const gchar ** props)
 {
 	m_iNumProps = numProps;
-	m_pszProps = static_cast<XML_Char **>(UT_calloc(m_iNumProps, sizeof(XML_Char *))); 
+	m_pszProps = static_cast<gchar **>(UT_calloc(m_iNumProps, sizeof(gchar *))); 
 	UT_uint32 i = 0;
 	xxx_UT_DEBUGMSG(("m_pszProps %x props %x ",m_pszProps,props));
 	for(i =0; i< m_iNumProps && (props[i] != NULL);i++)
 	{
 		if(props[i] != NULL)
 		{
-			m_pszProps[i] = const_cast<XML_Char *>(props[i]);
+			m_pszProps[i] = const_cast<gchar *>(props[i]);
 			xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
 		}
 		else

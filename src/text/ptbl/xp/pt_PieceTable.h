@@ -81,19 +81,19 @@ public:
 protected:
 	bool					_realInsertObject(PT_DocPosition dpos,
 											  PTObjectType pto,
-											  const XML_Char ** attributes,
-											  const XML_Char ** properties);
+											  const gchar ** attributes,
+											  const gchar ** properties);
 
 	bool					_realInsertObject(PT_DocPosition dpos,
 											  PTObjectType pto,
-											  const XML_Char ** attributes,
-											  const XML_Char ** properties, pf_Frag_Object ** ppfo );
+											  const gchar ** attributes,
+											  const gchar ** properties, pf_Frag_Object ** ppfo );
 
 	bool					_realInsertSpan(PT_DocPosition dpos,
 											const UT_UCSChar * p,
 											UT_uint32 length,
-											const XML_Char ** attributes,
-											const XML_Char ** properties,
+											const gchar ** attributes,
+											const gchar ** properties,
 											fd_Field * pField = NULL,
 											bool bAddChangeRec = true);
 
@@ -117,21 +117,21 @@ protected:
 	bool					_realChangeSpanFmt(PTChangeFmt ptc,
 											   PT_DocPosition dpos1,
 											   PT_DocPosition dpos2,
-											   const XML_Char ** attributes,
-											   const XML_Char ** properties,
+											   const gchar ** attributes,
+											   const gchar ** properties,
 											   bool bRevisionDelete);
 
 	bool					_realInsertStrux(PT_DocPosition dpos,
 											 PTStruxType pts,
-											 const XML_Char ** attributes,
-											 const XML_Char ** properties,
+											 const gchar ** attributes,
+											 const gchar ** properties,
 											 pf_Frag_Strux ** ppfs_ret);
 
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
 												PT_DocPosition dpos1,
 												PT_DocPosition dpos2,
-												const XML_Char ** attributes,
-												const XML_Char ** properties,
+												const gchar ** attributes,
+												const gchar ** properties,
 												PTStruxType pts,
 												bool bRevisionDelete);
 
@@ -147,13 +147,13 @@ protected:
 public:
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties);
+										 const gchar ** attributes,
+										 const gchar ** properties);
 
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties, pf_Frag_Object ** ppfo );
+										 const gchar ** attributes,
+										 const gchar ** properties, pf_Frag_Object ** ppfo );
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -189,8 +189,8 @@ public:
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties);
+										  const gchar ** attributes,
+										  const gchar ** properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -198,40 +198,40 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
-										const XML_Char ** attributes,
-										const XML_Char ** properties,
+										const gchar ** attributes,
+										const gchar ** properties,
 										pf_Frag_Strux ** ppfs_ret = 0
 										);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties,
+										   const gchar ** attributes,
+										   const gchar ** properties,
 										   PTStruxType pts=PTX_StruxDummy);
 
 
 	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
 										   pf_Frag_Strux * pfs,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties);
+										   const gchar ** attributes,
+										   const gchar ** properties);
 
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const gchar ** attributes);
 
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const XML_Char ** attributes,const XML_Char ** properties);
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const gchar ** attributes,const gchar ** properties);
 
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
 	bool                    deleteStruxWithNotify(PL_StruxDocHandle sdh);
-	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
+	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes );
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char ** props,
+													 const gchar ** attrs, const gchar ** props,
 													 bool bSkipEmbededSections);
 	
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char * props,
+													 const gchar ** attrs, const gchar * props,
 													 bool bSkipEmbededSections);
 
 
@@ -248,29 +248,29 @@ public:
 	// the document.
 
 	PD_Document *			getDocument(void);
-	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char ** props,
+	bool					appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
 											   bool bSkipEmbededSections);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char * props,
+	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
 											   bool bSkipEmbededSections);
 	
-	bool					appendFmt(const XML_Char ** attributes);
-	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
+	bool					appendFmt(const gchar ** attributes);
+	bool					appendFmt(const UT_GenericVector<gchar*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool					appendObject(PTObjectType pto, const gchar ** attributes);
 	bool					appendFmtMark(void);
-	bool					appendStyle(const XML_Char ** attributes);
+	bool					appendStyle(const gchar ** attributes);
 
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+												  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-												   const XML_Char ** attributes);
+												   const gchar ** attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
-	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
 	
-	bool					removeStyle(const XML_Char * name);
+	bool					removeStyle(const gchar * name);
 	size_t					getStyleCount(void);
 
 	bool					tellListener(PL_Listener * pListener);
@@ -474,21 +474,21 @@ protected:
 
 	void                    _deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr);
 
-	bool                    _fixHdrFtrReferences(const XML_Char * pType, const XML_Char * pId, bool bNotional = false);
+	bool                    _fixHdrFtrReferences(const gchar * pType, const gchar * pId, bool bNotional = false);
 	
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);
 
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
-													  const XML_Char ** attributes,
-													  const XML_Char ** properties,
+													  const gchar ** attributes,
+													  const gchar ** properties,
 													  bool bRevisionDelete);
 	
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
-													  const XML_Char ** attributes,
-													  const XML_Char ** properties,
+													  const gchar ** attributes,
+													  const gchar ** properties,
 													  bool bDoAll,
 													  bool bRevisionDelete);
 
@@ -500,8 +500,8 @@ protected:
 													 pf_Frag_Text * pft, UT_uint32 fragOffset,
 													 PT_DocPosition dpos,
 													 UT_uint32 length,
-													 const XML_Char ** attributes,
-													 const XML_Char ** properties,
+													 const gchar ** attributes,
+													 const gchar ** properties,
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd,
@@ -516,8 +516,8 @@ protected:
 													   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 													   PT_DocPosition dpos,
 													   UT_uint32 length,
-													   const XML_Char ** attributes,
-													   const XML_Char ** properties,
+													   const gchar ** attributes,
+													   const gchar ** properties,
 													   pf_Frag_Strux * pfs,
 													   pf_Frag ** ppfNewEnd,
 													   UT_uint32 * pfragOffsetNewEnd,
@@ -534,12 +534,12 @@ protected:
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	bool					_loadBuiltinStyles(void);
-	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const XML_Char ** attributes);
+	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const gchar ** attributes);
 
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
-														 const XML_Char ** attributes,
-														 const XML_Char ** properties);
+														 const gchar ** attributes,
+														 const gchar ** properties);
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
 														 PP_AttrProp *p_AttrProp);
@@ -554,7 +554,7 @@ protected:
 										   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
 														PT_DocPosition dpos,
-														const XML_Char ** attributes, const XML_Char ** properties,
+														const gchar ** attributes, const gchar ** properties,
 														pf_Frag_Strux * pfs,
 														pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
@@ -570,21 +570,21 @@ protected:
 	bool					_changePointWithNotify(PT_DocPosition dpos);
 
 	// helper methods for the appned and insert*BeforeFrag methods
-	bool					_makeStrux(PTStruxType pts, const XML_Char ** attributes,
+	bool					_makeStrux(PTStruxType pts, const gchar ** attributes,
 									   pf_Frag_Strux * &pfs);
-	bool					_makeObject(PTObjectType pto, const XML_Char ** attributes,
+	bool					_makeObject(PTObjectType pto, const gchar ** attributes,
 										pf_Frag_Object * &pfo);
 	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
-	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes);
+	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const gchar ** attributes);
 	UT_sint32               _getNextChangeRecordNumber(void)
 	{ return m_iCurCRNumber++;}
 	// implemented in pt_PT_InsertStrux.cpp
 	bool                    _translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 														PP_RevisionType eType,
-														const XML_Char ** & ppRevAttrib,
-														const XML_Char ** & ppRevProps,
-														const XML_Char **   ppAttrib,
-														const XML_Char **   ppProps);
+														const gchar ** & ppRevAttrib,
+														const gchar ** & ppRevProps,
+														const gchar **   ppAttrib,
+														const gchar **   ppProps);
 	
 
 	PTState					m_pts;		/* are we loading or editing */

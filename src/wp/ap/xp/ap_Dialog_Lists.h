@@ -46,7 +46,7 @@ public:
 	// data twiddlers
 	void				draw(void);
 	AP_Dialog_Lists*	getLists(void);
-	void				setData(XML_Char * pszFont,float fAlign,float fIndent);
+	void				setData(gchar * pszFont,float fAlign,float fIndent);
 
 
 protected:
@@ -82,14 +82,14 @@ public:
 	void						StopList(void);
 	void						Apply(void);
 	void						fillDialogFromBlock(void);
-	void						fillDialogFromVector(UT_GenericVector<const XML_Char*> * inVec);
+	void						fillDialogFromVector(UT_GenericVector<const gchar*> * inVec);
 	void						PopulateDialogData(void);
 	void						fillFakeLabels(void);
 	bool						isLastOnLevel(void);
-	XML_Char *					getListStyleString( UT_uint32 iListType);
+	gchar *					getListStyleString( UT_uint32 iListType);
 	UT_uint32					decodeListType(char * listformat);
-	UT_sint32					findVecItem(UT_GenericVector<const XML_Char*> * v, char * key);
-	UT_sint32					findVecItem(UT_GenericVector<const XML_Char*> * v, const char * key);
+	UT_sint32					findVecItem(UT_GenericVector<const gchar*> * v, char * key);
+	UT_sint32					findVecItem(UT_GenericVector<const gchar*> * v, const char * key);
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}
@@ -114,7 +114,7 @@ public:
 	bool						isModal(void) const { return m_bIsModal;}
 
 protected:
-	virtual const XML_Char*	_getDingbatsFontName() const;
+	virtual const gchar*	_getDingbatsFontName() const;
 
 	// declare JavaBean-like accessors for private variable needed in the
 	// platform code.
@@ -177,9 +177,9 @@ private:
 	UT_UCSChar				m_curListLabel[100];
 	UT_UCSChar				m_newListLabel[100];
 	FL_ListType				m_NewListType;
-	XML_Char				m_pszDelim[80];
-	XML_Char				m_pszDecimal[80];
-	XML_Char				m_pszFont[80];
+	gchar				m_pszDelim[80];
+	gchar				m_pszDecimal[80];
+	gchar				m_pszFont[80];
 	float					m_fAlign;
 	float					m_fIndent;
 	UT_uint32				m_iLevel;

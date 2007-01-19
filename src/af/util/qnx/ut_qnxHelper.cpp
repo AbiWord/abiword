@@ -273,7 +273,7 @@ return (PtWidget_t *)-1;
 
 void localizeLabel(PtWidget_t * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());

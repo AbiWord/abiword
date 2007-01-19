@@ -115,7 +115,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 
 	case IDOK:
 		{
-			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
+			gchar buf[BOOKMARK_SIZE_LIMIT+1];
 			getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
 							 buf,
 							 BOOKMARK_SIZE_LIMIT );
@@ -127,7 +127,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 
 	case AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE:
 		{
-			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
+			gchar buf[BOOKMARK_SIZE_LIMIT+1];
 			getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
 							 buf,
 							 BOOKMARK_SIZE_LIMIT );
@@ -150,7 +150,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			}
 			case CBN_EDITCHANGE:
 			{
-				XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
+				gchar buf[BOOKMARK_SIZE_LIMIT+1];
 				getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
 								buf,
 								BOOKMARK_SIZE_LIMIT );

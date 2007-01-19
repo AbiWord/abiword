@@ -213,16 +213,16 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const gchar ** attributes,const gchar ** properties );	
 PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);	
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties);
+										 const gchar ** attributes,
+										 const gchar ** properties);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties, fd_Field ** pField );
+										 const gchar ** attributes,
+										 const gchar ** properties, fd_Field ** pField );
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -240,8 +240,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties);
+										  const gchar ** attributes,
+										  const gchar ** properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
@@ -253,29 +253,29 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret = 0);
+										  const gchar ** attributes,
+										  const gchar ** properties, pf_Frag_Strux ** ppfs_ret = 0);
 
 	void                    deleteHdrFtrStrux(PL_StruxDocHandle sdh);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties,
+										   const gchar ** attributes,
+										   const gchar ** properties,
 										   PTStruxType pts);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties);
+										   const gchar ** attributes,
+										   const gchar ** properties);
 
 
 	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
 										   PL_StruxDocHandle sdh,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties);
+										   const gchar ** attributes,
+										   const gchar ** properties);
 
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
@@ -285,43 +285,43 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										  PP_AttrProp *p_AttrProp);
 
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char ** props,
+													 const gchar ** attrs, const gchar ** props,
 													 bool bSkipEmbededSections);
 	
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char * props,
+													 const gchar ** attrs, const gchar * props,
 													 bool bSkipEmbededSections);
 	
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
-	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char ** props,
+	bool					appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
 											   bool bSkipEmbededSections);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char * props,
+	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
 											   bool bSkipEmbededSections);
-	bool					appendFmt(const XML_Char ** attributes);
-	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
+	bool					appendFmt(const gchar ** attributes);
+	bool					appendFmt(const UT_GenericVector<gchar*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool					appendObject(PTObjectType pto, const gchar ** attributes);
 	bool					appendFmtMark(void);
-	bool					appendStyle(const XML_Char ** attributes);
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
+	bool					appendStyle(const gchar ** attributes);
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const gchar ** attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+												  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-												   const XML_Char ** attributes);
+												   const gchar ** attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
-	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
 	pf_Frag *               getLastFrag() const;
 	bool                    checkForSuspect(void);
 	bool                    repairDoc(void);
-	bool                    removeStyle(const XML_Char * name);
+	bool                    removeStyle(const gchar * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
@@ -387,15 +387,15 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 
-    PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr,
-											const XML_Char * pszHdrFtrID);
-	bool                    verifySectionID(const XML_Char * pszId);
+    PL_StruxDocHandle       findHdrFtrStrux(const gchar * pszHdtFtr,
+											const gchar * pszHdrFtrID);
+	bool                    verifySectionID(const gchar * pszId);
 	PL_StruxDocHandle       getLastSectionSDH(void);
 	PL_StruxDocHandle       getLastStruxOfType(PTStruxType pts);
 
 	bool                    changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
-	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
+	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes );
 	bool                    isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts);
 
 	// the function below does exactly what the name says -- returns the AP index; in revisions mode
@@ -418,14 +418,14 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
 	
-	bool					addStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
-	bool					addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
-	bool	                setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
-	bool	                addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
+	bool					addStyleProperty(const gchar * szStyleName, const gchar * szPropertyName, const gchar * szPropertyValue);
+	bool					addStyleProperties(const gchar * szStyleName, const gchar ** pProperties);
+	bool	                setAllStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs);
+	bool	                addStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs);
 
-    PL_StruxDocHandle       findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
-    PL_StruxDocHandle       findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
-	bool					updateDocForStyleChange(const XML_Char * szStyleName,
+    PL_StruxDocHandle       findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos);
+    PL_StruxDocHandle       findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos);
+	bool					updateDocForStyleChange(const gchar * szStyleName,
 													bool isParaStyle);
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
@@ -481,7 +481,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32				getListsCount(void) const;
 	void					addList(fl_AutoNum * pAutoNum);
-	bool					appendList(const XML_Char ** attributes);
+	bool					appendList(const gchar ** attributes);
 	bool					fixListHierarchy(void);
 	void					removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
 	void					listUpdate(PL_StruxDocHandle sdh);
@@ -503,14 +503,14 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
 	fp_PageSize				m_docPageSize;
-	bool					setPageSizeFromFile(const XML_Char ** attributes);
+	bool					setPageSizeFromFile(const gchar ** attributes);
 
-	bool					isBookmarkUnique(const XML_Char * pName) const;
-	bool					isBookmarkRelativeLink(const XML_Char * pName) const;
+	bool					isBookmarkUnique(const gchar * pName) const;
+	bool					isBookmarkRelativeLink(const gchar * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
-	const XML_Char *		getNthBookmark(UT_uint32 n)const{return reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(n));}
-	void					addBookmark(const XML_Char * pName);
-	void					removeBookmark(const XML_Char * pName);
+	const gchar *		getNthBookmark(UT_uint32 n)const{return reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(n));}
+	void					addBookmark(const gchar * pName);
+	void					removeBookmark(const gchar * pName);
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Functions for dealing with revisions
@@ -558,9 +558,9 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
 	PT_AttrPropIndex        getAttrPropIndex() const {return m_indexAP;}
-	bool                    setAttrProp(const XML_Char ** ppAttr);
-	bool                    setAttributes(const XML_Char ** ppAttr);
-	bool                    setProperties(const XML_Char ** ppProps);
+	bool                    setAttrProp(const gchar ** ppAttr);
+	bool                    setAttributes(const gchar ** ppAttr);
+	bool                    setProperties(const gchar ** ppProps);
 	void                     setDontImmediatelyLayout(bool b)
 		{ m_bDontImmediatelyLayout = b;}
 	bool                     isDontImmediateLayout(void)

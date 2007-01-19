@@ -238,8 +238,8 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 
 	const char * szDirectory = NULL;
 	getPrefsValueDirectory(true,
-			       static_cast<const XML_Char*>(AP_PREF_KEY_StringSetDirectory),
-			       static_cast<const XML_Char**>(&szDirectory));
+			       static_cast<const gchar*>(AP_PREF_KEY_StringSetDirectory),
+			       static_cast<const gchar**>(&szDirectory));
 	UT_ASSERT((szDirectory) && (*szDirectory));
 
 	UT_String szPathname = szDirectory;
@@ -296,13 +296,13 @@ bool AP_UnixApp::initialize(bool has_display)
     {	
 		// Loading default string set for untranslated messages
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this, 
-													static_cast<const XML_Char*>(AP_PREF_DEFAULT_StringSet));
+													static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
 		UT_ASSERT(pBuiltinStringSet);
 
 		// try loading strings by preference
 		const char * szStringSet = NULL;
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  static_cast<const XML_Char**>(&szStringSet)))
+							  static_cast<const gchar**>(&szStringSet)))
 			   && (szStringSet)
 			   && (*szStringSet)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
@@ -368,7 +368,7 @@ bool AP_UnixApp::initialize(bool has_display)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, static_cast<const XML_Char**>(&szMenuLabelSetName))
+	if (getPrefsValue( AP_PREF_KEY_StringSet, static_cast<const gchar**>(&szMenuLabelSetName))
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 		;
@@ -441,18 +441,18 @@ bool AP_UnixApp::shutdown(void)
   terms.  
   \param bAppSpecific Is this key specific to the app, or is it
   general to AbiSuite?
-  \param szKey A string of XML_Chars representing the desired key
+  \param szKey A string of gchars representing the desired key
   \param pszValue pointer for the value to be returned in. 
   \return True if successful, false otherwise.  
   \todo support meaningful return values.
 */
 bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
-										const XML_Char * szKey, const XML_Char ** pszValue) const
+										const gchar * szKey, const gchar ** pszValue) const
 {
     if (!m_prefs)
 		return false;
 
-    const XML_Char * psz = NULL;
+    const gchar * psz = NULL;
     if (!m_prefs->getPrefsValue(szKey,&psz))
 		return false;
 
@@ -462,9 +462,9 @@ bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
 		return true;
     }
 
-    const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+    const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-    static XML_Char buf[1024];
+    static gchar buf[1024];
     UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
 	
     sprintf(buf,"%s/%s",dir,psz);

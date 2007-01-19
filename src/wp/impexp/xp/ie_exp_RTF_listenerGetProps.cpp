@@ -324,7 +324,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	const PP_AttrProp * pTableAP = NULL;
 	m_pDocument->getAttrProp(api,&pTableAP);
-	const XML_Char * szColor = NULL;
+	const gchar * szColor = NULL;
 	UT_sint32 ndxColor;
 
 // Background
@@ -401,7 +401,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	const PP_AttrProp * pCellAP = NULL;
 	m_pDocument->getAttrProp(api,&pCellAP);
-	const XML_Char * szColor = NULL;
+	const gchar * szColor = NULL;
 	UT_sint32 ndxColor;
 
 // top
@@ -480,7 +480,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 		if(!pAP)
 			continue;
 
-		const XML_Char * pRev;
+		const gchar * pRev;
 		char *pDup  = NULL;
 
 		if(pAP->getAttribute("revision", pRev))
@@ -580,7 +580,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 		if(!pAP)
 			continue;
 
-		const XML_Char * pRev;
+		const gchar * pRev;
 		char *pDup  = NULL;
 
 		if(pAP->getAttribute("revision", pRev))
@@ -677,7 +677,7 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 {
 	// see if we have a previously unused color reference.
 	
-	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const gchar * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	UT_sint32 ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 	if (ndxColor == -1)
 		m_pie->_addColor(static_cast<const char*>(szColor));

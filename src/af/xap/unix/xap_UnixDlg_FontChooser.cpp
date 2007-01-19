@@ -299,7 +299,7 @@ void XAP_UnixDialog_FontChooser::fontRowChanged(void)
 		gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
 		UT_ASSERT(text);
 		g_snprintf(szFontFamily, 50, "%s",text);
-		addOrReplaceVecProp("font-family",static_cast<XML_Char*>(szFontFamily));
+		addOrReplaceVecProp("font-family",static_cast<gchar*>(szFontFamily));
 	}
 
 	updatePreview();
@@ -371,12 +371,12 @@ void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
 		UT_ASSERT(text);
 
 		g_snprintf(szFontSize, 50, "%spt",
-				   static_cast<const XML_Char *>(XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text)));
+				   static_cast<const gchar *>(XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text)));
 
 //		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0])));
 //		g_snprintf(szFontSize, 50, "%spt",text[0]);
 
-		addOrReplaceVecProp("font-size",static_cast<XML_Char *>(szFontSize));
+		addOrReplaceVecProp("font-size",static_cast<gchar *>(szFontSize));
 	}
 	updatePreview();
 }
@@ -395,7 +395,7 @@ void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 				static_cast<unsigned int>(m_currentFGColor[RED] 	* static_cast<gdouble>(255.0)),
 				static_cast<unsigned int>(m_currentFGColor[GREEN]	* static_cast<gdouble>(255.0)),
 				static_cast<unsigned int>(m_currentFGColor[BLUE] 	* static_cast<gdouble>(255.0)));
-		addOrReplaceVecProp("color",static_cast<XML_Char *>(buf_color));
+		addOrReplaceVecProp("color",static_cast<gchar *>(buf_color));
 	}
 	updatePreview();
 }
@@ -416,7 +416,7 @@ void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 				static_cast<unsigned int>(m_currentBGColor[GREEN]	* static_cast<gdouble>(255.0)),
 				static_cast<unsigned int>(m_currentBGColor[BLUE] 	* static_cast<gdouble>(255.0)));
 
-		addOrReplaceVecProp("bgcolor",static_cast<XML_Char *>(buf_color));
+		addOrReplaceVecProp("bgcolor",static_cast<gchar *>(buf_color));
 	}
 	updatePreview();
 }
@@ -918,7 +918,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// Set the defaults in the list boxes according to dialog data
 	gint foundAt = 0;
 
-	// is this safe with an XML_Char * string?
+	// is this safe with an gchar * string?
 	foundAt = searchTreeView(GTK_TREE_VIEW(m_fontList), const_cast<char *>(getVal("font-family")));
 
 	// select and scroll to font name
@@ -993,7 +993,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	// Set color in the color selector
-	const XML_Char * pszBGCol = getVal("bgcolor");
+	const gchar * pszBGCol = getVal("bgcolor");
 	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
 	{
 		UT_RGBColor c;

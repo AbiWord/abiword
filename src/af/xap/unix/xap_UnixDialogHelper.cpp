@@ -882,7 +882,7 @@ void abiDestroyWidget(GtkWidget * me)
  */
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -890,7 +890,7 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 	FREEP(unixstr);	
 }
 
-void convertMnemonics(XML_Char * s)
+void convertMnemonics(gchar * s)
 {
 	UT_return_if_fail(s);
 
@@ -917,7 +917,7 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(widget), newlbl);
@@ -932,7 +932,7 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
  */
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -946,7 +946,7 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
  */
 void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -962,7 +962,7 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
@@ -982,7 +982,7 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	UT_String markupStr(UT_String_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl));
@@ -1002,7 +1002,7 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 //	UT_ASSERT(GTK_IS_MENU(widget));
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());

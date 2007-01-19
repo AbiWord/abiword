@@ -48,18 +48,18 @@ UT_uint32 AP_Dialog_InsertBookmark::getExistingBookmarksCount() const
 	return m_pDoc->getBookmarkCount();
 }
 
-const XML_Char * AP_Dialog_InsertBookmark::getNthExistingBookmark(UT_uint32 n) const
+const gchar * AP_Dialog_InsertBookmark::getNthExistingBookmark(UT_uint32 n) const
 {
 	UT_return_val_if_fail (m_pDoc, NULL);
 	return m_pDoc->getNthBookmark(n);
 }
 
-const XML_Char * AP_Dialog_InsertBookmark::getBookmark() const
+const gchar * AP_Dialog_InsertBookmark::getBookmark() const
 {
   return m_pBookmark;
 }
 
-void AP_Dialog_InsertBookmark::setBookmark(const XML_Char * mark)
+void AP_Dialog_InsertBookmark::setBookmark(const gchar * mark)
 {
 	strncpy(m_pBookmark, mark, BOOKMARK_SIZE_LIMIT);
 }

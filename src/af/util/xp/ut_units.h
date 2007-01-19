@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #endif
 
-UT_BEGIN_EXTERN_C
+G_BEGIN_DECLS
 
 #define UT_PAPER_UNITS_PER_INCH				100
 /* Units of UT_LAYOUT_RESOLUTION = dots per inch */
@@ -79,6 +79,6 @@ ABI_EXPORT bool UT_isValidDimensionString(const char * sz, size_t max_length = 0
 ABI_EXPORT UT_uint32 UT_getDimensionPrecisicion (UT_Dimension dim);
 ABI_EXPORT double UT_getDimensionResolution (UT_Dimension dim);
 
-UT_END_EXTERN_C
+G_END_DECLS
 
 #endif /* UT_UNITS_H */

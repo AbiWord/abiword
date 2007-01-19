@@ -105,7 +105,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 	LocalizeControl(oCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	LocalizeControl(oOK,     pSS, XAP_STRING_ID_DLG_OK);
 
-	const XML_Char * pszC = 0;
+	const gchar * pszC = 0;
 
 	if (_xap)
 		{

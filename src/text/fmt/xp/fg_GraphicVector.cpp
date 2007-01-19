@@ -147,7 +147,7 @@ double FG_GraphicVector::getHeight(void)
  */
 const char * FG_GraphicVector::getWidthProp(void)
 {
-	const XML_Char * szWidth = NULL;
+	const gchar * szWidth = NULL;
 	m_pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
 	{
@@ -162,7 +162,7 @@ const char * FG_GraphicVector::getWidthProp(void)
  */
 const char * FG_GraphicVector::getHeightProp(void)
 {
-	const XML_Char * szHeight = NULL;
+	const gchar * szHeight = NULL;
 	m_pSpanAP->getProperty("height", szHeight);
 	if(szHeight == NULL)
 	{
@@ -195,8 +195,8 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 	  We need to know the display size of the new image.
 	*/
 
-	const XML_Char *pszWidth;
-	const XML_Char *pszHeight;
+	const gchar *pszWidth;
+	const gchar *pszHeight;
 	if(pSpanAP != NULL)
 	{
 		m_pSpanAP = pSpanAP;
@@ -255,14 +255,14 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
 #ifndef __MRC__
-	const XML_Char*	attributes[] = {
+	const gchar*	attributes[] = {
 		"dataid", szName,
 		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 		NULL, NULL
 	};
 #else
 	// MrCPP does not like the above
-	const XML_Char * attributes[] = {
+	const gchar * attributes[] = {
 		"dataid", NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL
@@ -309,14 +309,14 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
 #ifndef __MRC__
-	const XML_Char*	attributes[] = {
+	const gchar*	attributes[] = {
 		PT_STRUX_IMAGE_DATAID, szName,
 		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 	   	NULL, NULL
 	};
 #else
 	// MrCPP does not like the above
-	const XML_Char * attributes[] = {
+	const gchar * attributes[] = {
 		PT_STRUX_IMAGE_DATAID, NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL

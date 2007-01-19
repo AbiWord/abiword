@@ -390,7 +390,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	
 	if(pAP)
 	{
-		const XML_Char * pA = NULL;
+		const gchar * pA = NULL;
 
 		// TODO this should probably be stored as an attribute of the
 		// styles section rather then the whole doc ...
@@ -786,8 +786,8 @@ void PD_Document::_setClean(void)
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  PTObjectType pto,
-								  const XML_Char ** attributes,
-								  const XML_Char ** properties)
+								  const gchar ** attributes,
+								  const gchar ** properties)
 {
 	if(isDoingTheDo())
 	{
@@ -798,8 +798,8 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  PTObjectType pto,
-								  const XML_Char ** attributes,
-								  const XML_Char ** properties, fd_Field ** pField)
+								  const gchar ** attributes,
+								  const gchar ** properties, fd_Field ** pField)
 {
 	if(isDoingTheDo())
 	{
@@ -931,8 +931,8 @@ bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								PT_DocPosition dpos1,
 								PT_DocPosition dpos2,
-								const XML_Char ** attributes,
-								const XML_Char ** properties)
+								const gchar ** attributes,
+								const gchar ** properties)
 {
 	if(isDoingTheDo())
 	{
@@ -960,8 +960,8 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  PTStruxType pts,
-							  const XML_Char ** attributes,
-							  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret)
+							  const gchar ** attributes,
+							  const gchar ** properties, pf_Frag_Strux ** ppfs_ret)
 {
 	if(isDoingTheDo())
 	{
@@ -984,8 +984,8 @@ void PD_Document::deleteHdrFtrStrux(PL_StruxDocHandle sdh)
 bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 								 PT_DocPosition dpos1,
 								 PT_DocPosition dpos2,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties,
+								 const gchar ** attributes,
+								 const gchar ** properties,
 								 PTStruxType pts)
 {
 	if(isDoingTheDo())
@@ -998,8 +998,8 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 
 bool PD_Document::changeStruxFmtNoUndo(PTChangeFmt ptc,
 								 PL_StruxDocHandle sdh,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties)
+								 const gchar ** attributes,
+								 const gchar ** properties)
 {
 	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
 	UT_return_val_if_fail (pfs->getType() == pf_Frag::PFT_Strux,false);
@@ -1013,8 +1013,8 @@ bool PD_Document::changeStruxFmtNoUndo(PTChangeFmt ptc,
 bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 								 PT_DocPosition dpos1,
 								 PT_DocPosition dpos2,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties)
+								 const gchar ** attributes,
+								 const gchar ** properties)
 {
 	if(isDoingTheDo())
 	{
@@ -1048,7 +1048,7 @@ bool  PD_Document::deleteFmtMark( PT_DocPosition dpos)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
+bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -1073,7 +1073,7 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 /*!
     appends given fmt to the last strux in document
 */
-bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char ** props,
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const gchar ** attributes, const gchar ** props,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -1081,7 +1081,7 @@ bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attribut
 	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
 }
 
-bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char * props,
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const gchar ** attributes, const gchar * props,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -1090,7 +1090,7 @@ bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attribut
 }
 
 bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-									 const XML_Char ** attributes, const XML_Char ** props,
+									 const gchar ** attributes, const gchar ** props,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -1099,7 +1099,7 @@ bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 }
 
 bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-										   const XML_Char ** attributes, const XML_Char * props,
+										   const gchar ** attributes, const gchar * props,
 									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -1107,7 +1107,7 @@ bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 	return m_pPieceTable->changeLastStruxFmtNoUndo(dpos, pts,attributes,props,bSkipEmbededSections);
 }
 
-bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -1219,7 +1219,7 @@ bool PD_Document::checkForSuspect(void)
 	return true;
 }
 
-bool PD_Document::appendFmt(const XML_Char ** attributes)
+bool PD_Document::appendFmt(const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();
@@ -1227,7 +1227,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 	return m_pPieceTable->appendFmt(attributes);
 }
 
-bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
+bool PD_Document::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();
@@ -1249,7 +1249,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	// * at the moment we do not handle LRE/RLE
 	// * we replace LRO/RLO with our dir-override property
 
-	const XML_Char * attrs[] = {"props", NULL, NULL};
+	const gchar * attrs[] = {"props", NULL, NULL};
 	UT_String s;
 			
 	bool result = true;
@@ -1327,7 +1327,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	return result;
 }
 
-bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool PD_Document::appendObject(PTObjectType pto, const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();
@@ -1367,7 +1367,7 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
-	const XML_Char * pszValue = NULL;
+	const gchar * pszValue = NULL;
 
 	bool bHiddenRevision = false;
 	getAttrProp(indexAP, &pAP,NULL,bShowRevisions,iRevisionLevel,bHiddenRevision);
@@ -1416,7 +1416,7 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions,
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
-	const XML_Char * pszValue = NULL;
+	const gchar * pszValue = NULL;
 
 	bool bHiddenRevision = false;
 
@@ -1452,7 +1452,7 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  * a change record and should only be used under exceptional circumstances to 
  * repair the piecetable during loading. It was necessary to import RTF tables.
  */
-bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
+bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes )
 {
 #if 0
 	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
@@ -1605,7 +1605,7 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
  * This method scans the document to check that the id of a header/footer
  *  section actually exists in a section somewhere in the document.
  */
-bool PD_Document::verifySectionID(const XML_Char * pszId)
+bool PD_Document::verifySectionID(const gchar * pszId)
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -1621,7 +1621,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
 				 UT_return_val_if_fail (pAP,false);
-				 const XML_Char * pszIDName = NULL;
+				 const gchar * pszIDName = NULL;
 				 (pAP)->getAttribute("header", pszIDName);
 				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
@@ -1648,7 +1648,7 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 					 return true;
 
 				 // the id could also be hidden in a revision attribute ...
-				 const XML_Char * pszRevisionAttr = NULL;
+				 const gchar * pszRevisionAttr = NULL;
 				 
 				 if((pAP)->getAttribute("revision", pszRevisionAttr))
 				 {
@@ -1708,8 +1708,8 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 \param const char * pszHdrFtrID the unique string to match with Docsection.
 \returns a PL_StruxDocHandle of the matching frag or NULL if none found.
  */
-PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
-											const XML_Char * pszHdrFtrID)
+PL_StruxDocHandle PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
+											const gchar * pszHdrFtrID)
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -1725,8 +1725,8 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
 				 UT_return_val_if_fail (pAP,false);
-				 const XML_Char * pszIDName = NULL;
-				 const XML_Char * pszHeaderName = NULL;
+				 const gchar * pszIDName = NULL;
+				 const gchar * pszHeaderName = NULL;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
 				 if(pszIDName && pszHeaderName && (strcmp(pszIDName,pszHdrFtrID) == 0) && (strcmp(pszHeaderName,pszHdrFtr) == 0))
@@ -2425,7 +2425,7 @@ void PD_Document::getAllUsedStyles(UT_GenericVector <PD_Style*>* pVecStyles)
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_return_if_fail (pAP);
-		const XML_Char * pszStyleName = NULL;
+		const gchar * pszStyleName = NULL;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
 // We've found a style...
@@ -2474,7 +2474,7 @@ private:
 	PT_DocPosition thisStruxPos;
 	UT_uint32 fragLength;
 	bool bChangeIndexAP;
-	friend bool PD_Document::removeStyle(const XML_Char * pszName);
+	friend bool PD_Document::removeStyle(const gchar * pszName);
 };
 
 /*!
@@ -2482,7 +2482,7 @@ private:
  * all instances of it from the document including the basedon heiracy and the
  * followed-by sequences.
  */
-bool PD_Document::removeStyle(const XML_Char * pszName)
+bool PD_Document::removeStyle(const gchar * pszName)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 //
@@ -2493,7 +2493,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	m_pPieceTable->getStyle(pszName,&pNuke);
 	UT_return_val_if_fail (pNuke, false);
 	pNormal = pNuke->getBasedOn();
-	const XML_Char * szBack = NULL;
+	const gchar * szBack = NULL;
 	if(pNormal == NULL)
 	{
 		m_pPieceTable->getStyle("Normal",&pNormal);
@@ -2555,7 +2555,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_return_val_if_fail (pAP, false);
-		const XML_Char * pszStyleName = NULL;
+		const gchar * pszStyleName = NULL;
 		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 //
 // It does so remember this frag and set the old indexAP to Normal
@@ -2662,7 +2662,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 		{
 			bDoFollowedby = true;
 		}
-		const XML_Char * nAtts[5] ={NULL,NULL,NULL,NULL,NULL};
+		const gchar * nAtts[5] ={NULL,NULL,NULL,NULL,NULL};
 		if( bDoBasedOn && bDoFollowedby)
 		{
 			nAtts[0] = "basedon"; nAtts[1] =  szBack;
@@ -2686,7 +2686,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
 			}
-			const_cast<PD_Style *>(pStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
+			const_cast<PD_Style *>(pStyle)->addAttributes( static_cast<const gchar **>(&nAtts[0]));
 		}
 	}
 
@@ -2774,7 +2774,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	return true;
 }
 
-bool PD_Document::appendStyle(const XML_Char ** attributes)
+bool PD_Document::appendStyle(const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -3244,7 +3244,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 												  bool bShow, UT_uint32 iId, bool &bHiddenRevision) const
 {
 	PP_AttrProp * pNewAP = NULL;
-	const XML_Char* pRevision = NULL;
+	const gchar* pRevision = NULL;
 	bHiddenRevision = false;
 	
 	bool bMark = isMarkRevisions();
@@ -3893,7 +3893,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
 	}
 	{
-		const XML_Char * szAttributes[3] = {PT_DATAITEM_ATTRIBUTE_NAME,szName,NULL};
+		const gchar * szAttributes[3] = {PT_DATAITEM_ATTRIBUTE_NAME,szName,NULL};
 		PT_AttrPropIndex iAP= 0;
 		m_pPieceTable->getVarSet().storeAP(szAttributes, &iAP);
 		PX_ChangeRecord * pcr =  new PX_ChangeRecord(PX_ChangeRecord::PXT_CreateDataItem,0,iAP,getXID());
@@ -4152,7 +4152,7 @@ bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szProp
 	return (*ppS)->addProperty(szPropertyName, szPropertyValue);
 }
 
-bool	PD_Document::addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties)
+bool	PD_Document::addStyleProperties(const gchar * szStyleName, const gchar ** pProperties)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
@@ -4166,10 +4166,10 @@ bool	PD_Document::addStyleProperties(const XML_Char * szStyleName, const XML_Cha
 /*!
  * This methods changes the attributes of a style (basedon,followedby)
  *
-\param szStyleName the const XML_Char * name of the style
+\param szStyleName the const gchar * name of the style
 \param pAttribs The list of attributes of the updated style.
 */
-bool	PD_Document::addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
+bool	PD_Document::addStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
@@ -4196,7 +4196,7 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
 	UT_return_val_if_fail (pAP, NULL);
-	const XML_Char * pszStyleName = NULL;
+	const gchar * pszStyleName = NULL;
 	(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 	if(pszStyleName == NULL  || strcmp(pszStyleName,"Current Settings") == 0 || strcmp(pszStyleName,"None") == 0)
 	{
@@ -4280,10 +4280,10 @@ PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh
  * plus the properties. We have to save the indexAP of the pre-existing style
  * and broadcast it out witht e change records.
  *
-\param szStyleName the const XML_Char * name of the style
+\param szStyleName the const gchar * name of the style
 \param pAttribs The list of attributes/properties of the updated style.
 */
-bool	PD_Document::setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs)
+bool	PD_Document::setAllStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs)
 {
 	PD_Style * pS;
 	PD_Style ** ppS = &pS;
@@ -4308,7 +4308,7 @@ bool	PD_Document::setAllStyleAttributes(const XML_Char * szStyleName, const XML_
 \param pos the document position to start from.
 \return the sdh of the strux found.
 */
-PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
+PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
 	PL_StruxDocHandle sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
@@ -4327,7 +4327,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_return_val_if_fail (pAP,0);
-			const XML_Char * pszStyleName = NULL;
+			const gchar * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 			{
@@ -4357,7 +4357,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 \param pos the document position to start from.
 \return the sdh of the strux found.
 */
-PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
+PL_StruxDocHandle PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
 	PL_StruxDocHandle sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
@@ -4376,7 +4376,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
 			UT_return_val_if_fail (pAP, 0);
-			const XML_Char * pszStyleName = NULL;
+			const gchar * pszStyleName = NULL;
 			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 			{
@@ -4406,7 +4406,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 \param szStyle the name of style that has changed.
 \param isParaStyle true if the style is a paragraph type.
 */
-bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
+bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 											bool isParaStyle)
 {
 	PT_DocPosition pos = 0;
@@ -4435,7 +4435,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				const PP_AttrProp * pAP = NULL;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_return_val_if_fail (pAP, false);
-				const XML_Char * pszStyleName = NULL;
+				const gchar * pszStyleName = NULL;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 				bool bUpdate = false;
 //
@@ -4504,7 +4504,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				const PP_AttrProp * pAP = NULL;
 				m_pPieceTable->getAttrProp(indexAP,&pAP);
 				UT_return_val_if_fail (pAP, false);
-				const XML_Char * pszStyleName = NULL;
+				const gchar * pszStyleName = NULL;
 				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
 
 //
@@ -4747,13 +4747,13 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 }
 
 
-bool PD_Document::appendList(const XML_Char ** attributes)
+bool PD_Document::appendList(const gchar ** attributes)
 {
-	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
+	const gchar * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
 	FL_ListType type;
 
-	for (const XML_Char ** a = attributes; (*a); a++)
+	for (const gchar ** a = attributes; (*a); a++)
 	{
 		if (strcmp(a[0],"id") == 0)
 			szID = a[1];
@@ -4780,7 +4780,7 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	if(!szDelim)
 		return false;
 	if(!szDec)
-		szDec = static_cast<const XML_Char *>(".");
+		szDec = static_cast<const gchar *>(".");
 	id = atoi(szID);
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
@@ -4941,15 +4941,15 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 }
 
 
-bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
+bool PD_Document:: setPageSizeFromFile(const gchar ** attributes)
 {
-	const XML_Char * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
+	const gchar * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
 	double width=0.0;
 	double height=0.0;
 	double scale =1.0;
 	UT_Dimension u = DIM_IN;
 
-	for (const XML_Char ** a = attributes; (*a); a++)
+	for (const gchar ** a = attributes; (*a); a++)
 	{
 		if (strcmp(a[0],"pagetype") == 0)
 		        szPageSize = a[1];
@@ -5012,16 +5012,16 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	return true;
 }
 
-void PD_Document::addBookmark(const XML_Char * pName)
+void PD_Document::addBookmark(const gchar * pName)
 {
 	m_vBookmarkNames.addItem(const_cast<void*>(static_cast<const void*>(pName)));
 }
 
-void PD_Document::removeBookmark(const XML_Char * pName)
+void PD_Document::removeBookmark(const gchar * pName)
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
+		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
 		if(!strcmp(pName, pBM))
 		{
 			m_vBookmarkNames.deleteNthItem(i);
@@ -5032,11 +5032,11 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 
 /*! Returns true if pName doesn't correspond to a
  *  currently existing bookmark. */
-bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
+bool PD_Document::isBookmarkUnique(const gchar * pName) const
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
+		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
 		if(!strcmp(pName, pBM))
 			return false;
 	}
@@ -5048,9 +5048,9 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 
  *  Current heuristic: if pName contains a ., then it's a rel link;
  * otherwise it's a bookmark. */
-bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
+bool PD_Document::isBookmarkRelativeLink(const gchar * pName) const
 {
-	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
 	return strchr(static_cast<const char *>(pName), '.') != NULL;
 }
 
@@ -5068,7 +5068,7 @@ const PP_AttrProp * PD_Document::getAttrProp() const
     Sets document attributes and properties
     can only be used while loading documents
     
-    \param const XML_Char ** ppAttr: array of attribute/value pairs
+    \param const gchar ** ppAttr: array of attribute/value pairs
 
 	    if ppAttr == NULL and m_indexAP == 0xffffffff, the function
     	creates a new AP and sets it to the default values hardcoded
@@ -5090,7 +5090,7 @@ const PP_AttrProp * PD_Document::getAttrProp() const
 
     Tomas, Dec 6, 2003
 */
-bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
+bool PD_Document::setAttrProp(const gchar ** ppAttr)
 {
 	// this method can only be used while loading  ...
 	if(m_pPieceTable->getPieceTableState() != PTS_Loading)
@@ -5107,7 +5107,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 
 		// first create an empty AP by passing NULL to storeAP
 		// cast needed to disambiguate function signature
-		bRet = VARSET.storeAP(static_cast<const XML_Char **>(0), &m_indexAP);
+		bRet = VARSET.storeAP(static_cast<const gchar **>(0), &m_indexAP);
 
 		if(!bRet)
 			return false;
@@ -5115,7 +5115,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		// now set standard attributes
 		UT_uint32 i = 0;
 		const UT_uint32 iSize = 21;
-		const XML_Char * attr[iSize];
+		const gchar * attr[iSize];
 
 		attr[i++] = "xmlns";
 		attr[i++] = "http://www.abisource.com/awml.dtd";
@@ -5160,10 +5160,10 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 
 		// now set default properties, starting with dominant
 		// direction
-		const XML_Char r[] = "rtl";
-		const XML_Char l[] = "ltr";
-		const XML_Char p[] = "dom-dir";
-		const XML_Char * props[3] = {p,l,NULL};
+		const gchar r[] = "rtl";
+		const gchar l[] = "ltr";
+		const gchar p[] = "dom-dir";
+		const gchar * props[3] = {p,l,NULL};
 
 		bool bRTL = false;
 		XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&bRTL);
@@ -5295,7 +5295,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	{
 		// have an AP and given something to add to it
 		// first, we need to take care of the top-xid attribute
-		const XML_Char * pXID = UT_getAttribute("top-xid", ppAttr);
+		const gchar * pXID = UT_getAttribute("top-xid", ppAttr);
 		if(pXID && *pXID)
 		{
 			UT_uint32 iXID = atoi(pXID);
@@ -5308,13 +5308,13 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	return bRet;
 }
 
-bool PD_Document::setAttributes(const XML_Char ** ppAttr)
+bool PD_Document::setAttributes(const gchar ** ppAttr)
 {
 	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
 }
 
 
-bool PD_Document::setProperties(const XML_Char ** ppProps)
+bool PD_Document::setProperties(const gchar ** ppProps)
 {
 	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, NULL, ppProps, &m_indexAP, this);
 }
@@ -5323,10 +5323,10 @@ bool PD_Document::setProperties(const XML_Char ** ppProps)
 
 void PD_Document::lockStyles(bool b)
 {
-	const XML_Char *attr[3];
-	const XML_Char n[] = "styles";
-	const XML_Char v1[] = "locked";
-	const XML_Char v2[] = "unlocked";
+	const gchar *attr[3];
+	const gchar n[] = "styles";
+	const gchar v1[] = "locked";
+	const gchar v2[] = "unlocked";
 
 	attr[0] = n;
 	attr[2] = NULL;
@@ -5476,7 +5476,7 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 }
 
 bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
+										const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -5527,7 +5527,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 	// * at the moment we do not handle LRE/RLE
 	// * we replace LRO/RLO with our dir-override property
 
-	const XML_Char * attrs[] = {"props", NULL, NULL};
+	const gchar * attrs[] = {"props", NULL, NULL};
 	UT_String s;
 			
 	bool result = true;
@@ -5591,7 +5591,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 }
 
 bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-										 const XML_Char ** attributes)
+										 const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	if(pF->getType() == pf_Frag::PFT_Strux)
@@ -5633,7 +5633,7 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 	return m_pPieceTable->insertFmtMarkBeforeFrag(pF);
 }
 
-bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes)
+bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const gchar ** attributes)
 {
 	pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	return m_pPieceTable->changeStruxFormatNoUpdate(ptc ,pfs,attributes);
@@ -5644,7 +5644,7 @@ bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle s
  * Change the attributes of an object without generating a Change Record.
  * Use with extreme care.
  */
-bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties )
+bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const gchar ** attributes,const gchar ** properties )
 {
 	pf_Frag_Object * pfo = const_cast<pf_Frag_Object *>(static_cast<const pf_Frag_Object *>(odh));
 	return m_pPieceTable->changeObjectFormatNoUpdate(ptc ,pfo,attributes,properties);
@@ -5660,7 +5660,7 @@ PT_AttrPropIndex  PD_Document::getAPIFromSOH(PL_ObjectHandle odh)
 	return pfo->getIndexAP();
 }	
 
-bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
+bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -5831,8 +5831,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	bDeleted = false;
 
 	UT_uint32 iRealDeleteCount;
-	const XML_Char * ppAttr[3];
-	const XML_Char rev[] = "revision";
+	const gchar * ppAttr[3];
+	const gchar rev[] = "revision";
 	ppAttr[0] = rev;
 	ppAttr[1] = NULL;
 	ppAttr[2] = NULL;
@@ -5840,7 +5840,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	UT_uint32 iAttrCount;
 	UT_uint32 iPropCount;
 
-	const XML_Char ** ppProps = NULL, ** ppAttr2 = NULL;
+	const gchar ** ppProps = NULL, ** ppAttr2 = NULL;
 	bool bRet = true;
 	UT_uint32 i;
 
@@ -6021,8 +6021,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				// from the revision attribute
 				iPropCount = 0;
 				iAttrCount = 0;
-				ppProps = new const XML_Char *[2*pRev->getPropertyCount()+1];
-				ppAttr2 = new const XML_Char *[2*pRev->getAttributeCount()+3];
+				ppProps = new const gchar *[2*pRev->getPropertyCount()+1];
+				ppAttr2 = new const gchar *[2*pRev->getAttributeCount()+3];
 
 				for(i = 0; i < pRev->getPropertyCount(); i++)
 				{
@@ -6030,8 +6030,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 
 					// we have to make copies of these because they might be deleted
 					// before we need them
-					ppProps[2*i] = (XML_Char*)g_strdup(ppProps[2*i]);
-					ppProps[2*i + 1] = (XML_Char*)g_strdup(ppProps[2*i + 1]);
+					ppProps[2*i] = (gchar*)g_strdup(ppProps[2*i]);
+					ppProps[2*i + 1] = (gchar*)g_strdup(ppProps[2*i + 1]);
 					iPropCount += 2; // these will need to be freed later ...
 				}
 
@@ -6043,8 +6043,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					
 					// we have to make copies of these because they might be deleted
 					// before we need them
-					ppAttr2[2*i] = (XML_Char*)g_strdup(ppAttr2[2*i]);
-					ppAttr2[2*i + 1] = (XML_Char*)g_strdup(ppAttr2[2*i + 1]);
+					ppAttr2[2*i] = (gchar*)g_strdup(ppAttr2[2*i]);
+					ppAttr2[2*i + 1] = (gchar*)g_strdup(ppAttr2[2*i + 1]);
 					iAttrCount += 2; // these will need to be freed later ...
 				}
 
@@ -6113,10 +6113,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
 
 				for(i = 0; i < iPropCount; ++i)
-					g_free((XML_Char*)ppProps[i]);
+					g_free((gchar*)ppProps[i]);
 				
 				for(i = 0; i < iAttrCount; ++i)
-					g_free((XML_Char*)ppAttr2[i]);
+					g_free((gchar*)ppAttr2[i]);
 
 				delete ppProps;
 				delete ppAttr2;
@@ -6163,7 +6163,7 @@ bool PD_Document::acceptAllRevisions()
 			return false;
 		}
 		
-		const XML_Char * pszRevision = NULL;
+		const gchar * pszRevision = NULL;
 		pAP->getAttribute("revision", pszRevision);
 		
 		if(pszRevision == NULL)
@@ -6245,7 +6245,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 			return false;
 		}
 		
-		const XML_Char * pszRevision = NULL;
+		const gchar * pszRevision = NULL;
 		pAP->getAttribute("revision", pszRevision);
 		
 		if(pszRevision == NULL)
@@ -6356,7 +6356,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 			return false;
 		}
 		
-		const XML_Char * pszRevision = NULL;
+		const gchar * pszRevision = NULL;
 		pAP->getAttribute("revision", pszRevision);
 		
 		if(pszRevision == NULL)
@@ -6429,7 +6429,7 @@ void PD_Document::purgeRevisionTable(bool bUnconditional /* = false */)
 				UT_return_if_fail(getAttrProp(api, &pAP));
 				UT_return_if_fail(pAP);
 
-				const XML_Char * pVal;
+				const gchar * pVal;
 
 				if(pAP->getAttribute(PT_REVISION_ATTRIBUTE_NAME, pVal))
 					return;
@@ -7144,7 +7144,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
 
-		const XML_Char* pRevision = NULL;
+		const gchar* pRevision = NULL;
 
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))
 		{
@@ -7207,7 +7207,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 		// the revision has a valid index to an inflated AP, so we use it
 		bHiddenRevision = pAP->getRevisionHidden();
 
-		const XML_Char* pRevision = NULL;
+		const gchar* pRevision = NULL;
 
 		// only do this if the pRevisions pointer is set to NULL
 		if(bRevisionAttrNeeded && pAP->getAttribute("revision", pRevision))

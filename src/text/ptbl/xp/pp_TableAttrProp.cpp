@@ -122,8 +122,8 @@ bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
-								   const XML_Char ** properties,
+bool pp_TableAttrProp::createAP(const gchar ** attributes,
+								   const gchar ** properties,
 								   UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;
@@ -143,7 +143,7 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const UT_GenericVector<XML_Char*> * pVector,
+bool pp_TableAttrProp::createAP(const UT_GenericVector<gchar*> * pVector,
 								   UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;

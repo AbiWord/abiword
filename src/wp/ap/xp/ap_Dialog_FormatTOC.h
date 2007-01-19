@@ -60,11 +60,11 @@ public:
     UT_UTF8String     getTOCPropVal(UT_UTF8String & sProp);
     UT_UTF8String     getTOCPropVal(const char * szProp);
     UT_UTF8String     getTOCPropVal(const char * szProp,UT_sint32 i);
-	const UT_GenericVector<const XML_Char*> *       getVecTABLeadersLabel(void)
+	const UT_GenericVector<const gchar*> *       getVecTABLeadersLabel(void)
 		{ return & m_vecTABLeadersLabel;}
-	const UT_GenericVector<const XML_Char*> *       getVecTABLeadersProp(void)
+	const UT_GenericVector<const gchar*> *       getVecTABLeadersProp(void)
 		{ return & m_vecTABLeadersProp;}
-	const UT_GenericVector<const XML_Char*>*   getVecLabelPropValue(void)
+	const UT_GenericVector<const gchar*>*   getVecLabelPropValue(void)
 		{ return & m_vecLabelPropValue;}
 	void              incrementStartAt(UT_sint32 iLevel, bool bInc);
     double            getIncrement(const char * sz);
@@ -85,9 +85,9 @@ private:
 	const PP_AttrProp *   m_pAP;
 	bool                  m_bTOCFilled;
 	UT_UTF8String         m_sTOCProps;
-	UT_GenericVector<const XML_Char*> m_vecTABLeadersLabel;
-	UT_GenericVector<const XML_Char*> m_vecTABLeadersProp;
-	UT_GenericVector<const XML_Char*> m_vecLabelPropValue;
+	UT_GenericVector<const gchar*> m_vecTABLeadersLabel;
+	UT_GenericVector<const gchar*> m_vecTABLeadersProp;
+	UT_GenericVector<const gchar*> m_vecLabelPropValue;
 	UT_sint32   m_iMainLevel;
 	UT_sint32   m_iDetailsLevel;
 };

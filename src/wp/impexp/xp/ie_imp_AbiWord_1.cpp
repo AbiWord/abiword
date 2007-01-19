@@ -310,11 +310,11 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
 
-void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
-									const XML_Char **attributes)
+void IE_Imp_AbiWord_1::startElement(const gchar *name,
+									const gchar **attributes)
 {
-	const XML_Char ** atts =
-		(const XML_Char **)UT_cloneAndDecodeAttributes (attributes);
+	const gchar ** atts =
+		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
 	
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
@@ -343,7 +343,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 	case TT_SECTION:
 	{
 		X_VerifyParseState(_PS_Doc);
-		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("id", atts));
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
@@ -364,7 +364,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 // OK this is a header/footer with an id without a matching section. Fix this
 // now.
 //
-			const XML_Char * pszType = static_cast<const XML_Char*>(_getXMLPropValue("type", atts));
+			const gchar * pszType = static_cast<const gchar*>(_getXMLPropValue("type", atts));
 			if(pszType)
 			{
 				PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
@@ -391,7 +391,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 
 		// Need to set the min Unique id now.
 
-		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("footnote-id", atts));
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("footnote-id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
@@ -412,7 +412,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 
 		// Need to set the min Unique id now.
 
-		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("endnote-id", atts));
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("endnote-id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
@@ -449,7 +449,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
-		const XML_Char * pszId = _getXMLPropValue("list", atts);
+		const gchar * pszId = _getXMLPropValue("list", atts);
 		bool bOK;
 		if(pszId)
 		{
@@ -508,7 +508,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
 #else
-		//const XML_Char * pszId = _getXMLPropValue("dataid", atts);
+		//const gchar * pszId = _getXMLPropValue("dataid", atts);
 
 		//
 		// Remove this assert because the image object MUST have already
@@ -658,7 +658,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 //
 // Have to see if the style already exists. If it does, replace it with this.
 //
-		const XML_Char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME,atts);
+		const gchar * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME,atts);
 		PD_Style * pStyle = NULL;
 		if(getDoc()->getStyle(szName, &pStyle))
 		{
@@ -680,7 +680,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		m_parseState = _PS_RevisionSec;
 
 		// parse the attributes ...
-		const XML_Char * szS = UT_getAttribute("show",atts);
+		const gchar * szS = UT_getAttribute("show",atts);
 		UT_uint32 i;
 		if(szS)
 		{
@@ -730,7 +730,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		X_VerifyParseState(_PS_RevisionSec);
 		m_parseState = _PS_Revision;
 
-		const XML_Char * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
+		const gchar * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
 		if(szS)
 		{
 			m_currentRevisionId = atoi(szS);
@@ -755,7 +755,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		m_parseState = _PS_HistorySec;
 
 		// parse the attributes ...
-		const XML_Char * szS = UT_getAttribute("version",atts);
+		const gchar * szS = UT_getAttribute("version",atts);
 		UT_uint32 i;
 		if(szS)
 		{
@@ -790,7 +790,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		X_VerifyParseState(_PS_HistorySec);
 		m_parseState = _PS_Version;
 
-		const XML_Char * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
+		const gchar * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
 		if(szS)
 		{
 			UT_uint32 iId = atoi(szS);
@@ -889,7 +889,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 	}
 
   cleanup:
-	XML_Char ** p = (XML_Char **) atts;
+	gchar ** p = (gchar **) atts;
 	if (p)
 	{
 		while (*p)
@@ -902,7 +902,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 	}
 }
 
-void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
+void IE_Imp_AbiWord_1::endElement(const gchar *name)
 {
   	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 
@@ -1187,23 +1187,23 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 /*****************************************************************/
 /*****************************************************************/
 
-const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
+const gchar * IE_Imp_AbiWord_1::_getDataItemName(const gchar ** atts)
 {
 	return _getXMLPropValue ("name", atts);
 }
 
-const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
+const gchar * IE_Imp_AbiWord_1::_getDataItemMimeType(const gchar ** atts)
 {
-	const XML_Char *val = _getXMLPropValue ("mime-type", atts);
+	const gchar *val = _getXMLPropValue ("mime-type", atts);
 
 	// if the mime-type was not specified, for backwards
  	// compatibility we assume that it is a png image
 	return (val ? val : "image/png");
 }
 
-bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
+bool IE_Imp_AbiWord_1::_getDataItemEncoded(const gchar ** atts)
 {
-  	const XML_Char *val = _getXMLPropValue ("base64", atts);
+  	const gchar *val = _getXMLPropValue ("base64", atts);
 
 	if ((!val) || (strcmp (val, "no") != 0))
 	  return true;
@@ -1211,7 +1211,7 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 	return false;
 }
 
-bool IE_Imp_AbiWord_1::_handleImage(const XML_Char ** atts)
+bool IE_Imp_AbiWord_1::_handleImage(const gchar ** atts)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
 	static const char * psz_href = "href"; // could make this xlink:href, but is #ID valid in XLINK?
@@ -1333,7 +1333,7 @@ bool IE_Imp_AbiWord_1::_handleImage(const XML_Char ** atts)
 #endif
 }
 
-bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
+bool IE_Imp_AbiWord_1::_handleResource (const gchar ** atts, bool isResource)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
 	if (atts == 0) return false;
@@ -1344,11 +1344,11 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 		{
 			// <resource id="ID" type="" desc=""> ... </resource>
 
-			const XML_Char * r_id = 0;
-			const XML_Char * r_mt = 0;
-			const XML_Char * r_ds = 0;
+			const gchar * r_id = 0;
+			const gchar * r_mt = 0;
+			const gchar * r_ds = 0;
 
-			const XML_Char ** attr = atts;
+			const gchar ** attr = atts;
 			while (*attr)
 				{
 					if (strcmp (*attr, "id") == 0)
@@ -1389,12 +1389,12 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 			// <d name="ID" mime-type="image/png" base64="yes"> ... </d>
 			// <d name="ID" mime-type="image/svg+xml | application/mathxml+xml" base64="no"> <![CDATA[ ... ]]> </d>
 
-			const XML_Char * r_id = 0;
-			const XML_Char * r_64 = 0;
+			const gchar * r_id = 0;
+			const gchar * r_64 = 0;
 
 			enum { mt_unknown, mt_png, mt_svg, mt_mathml,mt_embed } mt = mt_unknown;
-			const XML_Char * pszEmbed = NULL;
-			const XML_Char ** attr = atts;
+			const gchar * pszEmbed = NULL;
+			const gchar ** attr = atts;
 			while (*attr)
 				{
 					if (strcmp (*attr, "name") == 0)

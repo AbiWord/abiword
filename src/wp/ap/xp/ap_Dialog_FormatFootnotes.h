@@ -75,7 +75,7 @@ public:
 	void                updateDocWithValues(void);
 	void                setInitialValues(void);
 	
-	static const UT_GenericVector<const XML_Char*>* getFootnoteTypeLabelList(void);
+	static const UT_GenericVector<const gchar*>* getFootnoteTypeLabelList(void);
 	
 private:
 	tAnswer         m_answer;

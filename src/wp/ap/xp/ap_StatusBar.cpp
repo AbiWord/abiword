@@ -84,7 +84,7 @@ private:
     UT_uint32			m_pageNr;
     UT_uint32			m_nrPages;
 
-    const XML_Char *	m_szFormat;
+    const gchar *	m_szFormat;
 };
 
 ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
@@ -132,7 +132,7 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 ap_sbf_PageInfo::~ap_sbf_PageInfo()
 {
 	if (m_szFormat)
-		g_free(const_cast<XML_Char *>(m_szFormat));
+		g_free(const_cast<gchar *>(m_szFormat));
 
 }
 
@@ -285,7 +285,7 @@ void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask mask)
     {
 	const char * szLang = NULL;
 
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(&props_in))
 	{
 	    szLang = UT_getAttribute("lang", props_in);

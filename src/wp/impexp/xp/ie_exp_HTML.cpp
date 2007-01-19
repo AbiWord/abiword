@@ -1588,7 +1588,7 @@ void s_HTML_Listener::_closeStyleSheet ()
 
 // TODO: Use the styleIndent code to clean up this output
 void s_HTML_Listener::_populateHeaderStyle() {
-	const XML_Char * staticCSSHeaderProps [9] = {"position: relative;","width: 100%;","height: auto;",
+	const gchar * staticCSSHeaderProps [9] = {"position: relative;","width: 100%;","height: auto;",
 		"top: 0;","bottom: auto;","right: 0;","left: 0;","}",NULL}; // Static properties for headers
 	m_utf8_1 = "#header {"; // Reinitialize the variable, now to deal with the header-identified div
 	m_utf8_1 += MYEOL;	
@@ -1601,7 +1601,7 @@ void s_HTML_Listener::_populateHeaderStyle() {
 }
 // TODO: Use the styleIndent code to clean up this output
 void s_HTML_Listener::_populateFooterStyle() {
-	const XML_Char * staticCSSFooterProps [9] = {"position: relative;","width: 100%;","height: auto;",
+	const gchar * staticCSSFooterProps [9] = {"position: relative;","width: 100%;","height: auto;",
 		"top: auto;","bottom: 0;","right: 0;","left: 0;","}",NULL}; // Static properties for footers
 	m_utf8_1 = "#footer {"; // Reinitialize the variable, now to deal with the footer-identified div
 	m_utf8_1 += MYEOL;
@@ -1620,8 +1620,8 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 
 	/* some cascading style rules
 	 */
-	const XML_Char * szName  = 0;
-	const XML_Char * szValue = 0;
+	const gchar * szName  = 0;
+	const gchar * szValue = 0;
 
 	if (get_Embed_CSS ())
 	{
@@ -1729,7 +1729,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		
 		// Set margins for paged media to match those set in AbiWord
 		// TODO: consolidate all places of awml-css21 matching into one UT/PP function
-		const XML_Char * marginProps [10] = {"page-margin-top","padding-top",
+		const gchar * marginProps [10] = {"page-margin-top","padding-top",
 			"page-margin-bottom","padding-bottom",
 			"page-margin-left","padding-left",
 			"page-margin-right","padding-right",
@@ -1902,10 +1902,10 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpec
 	const char* pszRightMargin = NULL;
 	const char* pszTopMargin = NULL;
 	const char* pszBottomMargin = NULL;
-	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
-	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
-	pSectionAP->getProperty("page-margin-top", (const XML_Char *&)pszTopMargin);
-	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
+	pSectionAP->getProperty("page-margin-left", (const gchar *&)pszLeftMargin);
+	pSectionAP->getProperty("page-margin-right", (const gchar *&)pszRightMargin);
+	pSectionAP->getProperty("page-margin-top", (const gchar *&)pszTopMargin);
+	pSectionAP->getProperty("page-margin-bottom", (const gchar *&)pszBottomMargin);
 	
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
@@ -1996,7 +1996,7 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 				/* The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME
 				 * attribute within the style
 				 */
-				const XML_Char * szName = 0;
+				const gchar * szName = 0;
 				pBasedOn->getAttribute (PT_NAME_ATTRIBUTE_NAME, szName);
 
 				if (szName)
@@ -2132,7 +2132,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	}
 	m_bWroteText = false;
 
-	const XML_Char * szDefault = "Normal"; // TODO: should be/is a #define somewhere?
+	const gchar * szDefault = "Normal"; // TODO: should be/is a #define somewhere?
 
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
@@ -2155,10 +2155,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 	bool tagPending = false;
 
-	const XML_Char * szValue = 0;
-	const XML_Char * szLevel = 0;
-	const XML_Char * szListID = 0;
-	const XML_Char * szStyleType = 0;
+	const gchar * szValue = 0;
+	const gchar * szLevel = 0;
+	const gchar * szListID = 0;
+	const gchar * szStyleType = 0;
 
 	/*	This is the point at which we differentiate between different
 	 *	types of tags in HTML.  We do a sequence of checks on the "style"
@@ -2509,7 +2509,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		return;
 	}
 
-	const XML_Char * szP_DomDir = 0;
+	const gchar * szP_DomDir = 0;
 	pAP->getProperty ("dom-dir", szP_DomDir);
 
 	if (szP_DomDir) // any reason why this can't be used with
@@ -2524,12 +2524,12 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		goto class_only;
 	
 	{
-		const XML_Char * szP_TextAlign = 0;
-		const XML_Char * szP_MarginBottom = 0;
-		const XML_Char * szP_MarginTop = 0;
-		const XML_Char * szP_MarginLeft = 0;
-		const XML_Char * szP_MarginRight = 0;
-		const XML_Char * szP_TextIndent = 0;
+		const gchar * szP_TextAlign = 0;
+		const gchar * szP_MarginBottom = 0;
+		const gchar * szP_MarginTop = 0;
+		const gchar * szP_MarginLeft = 0;
+		const gchar * szP_MarginRight = 0;
+		const gchar * szP_TextIndent = 0;
 
 		pAP->getProperty ("text-align",    szP_TextAlign);
 		pAP->getProperty ("margin-bottom", szP_MarginBottom);
@@ -2727,7 +2727,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			return;
 	}
 
-	const XML_Char * szA_Style = 0;
+	const gchar * szA_Style = 0;
 
 	bool have_style = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szA_Style);
 	if (have_style)
@@ -2767,14 +2767,14 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		}
 	
 	{
-		const XML_Char * szP_FontWeight = 0;
-		const XML_Char * szP_FontStyle = 0;
-		const XML_Char * szP_FontSize = 0;
-		const XML_Char * szP_FontFamily = 0;
-		const XML_Char * szP_TextDecoration = 0;
-		const XML_Char * szP_TextPosition = 0;
-		const XML_Char * szP_Color = 0;
-		const XML_Char * szP_BgColor = 0;
+		const gchar * szP_FontWeight = 0;
+		const gchar * szP_FontStyle = 0;
+		const gchar * szP_FontSize = 0;
+		const gchar * szP_FontFamily = 0;
+		const gchar * szP_TextDecoration = 0;
+		const gchar * szP_TextPosition = 0;
+		const gchar * szP_Color = 0;
+		const gchar * szP_BgColor = 0;
 
 		pAP->getProperty ("font-weight",     szP_FontWeight);
 		pAP->getProperty ("font-style",      szP_FontStyle);
@@ -2946,7 +2946,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		bInSpan = true;
 	}
 
-	const XML_Char * szP_Lang = 0;
+	const gchar * szP_Lang = 0;
 	pAP->getProperty ("lang",         szP_Lang);
 	
 	if (szP_Lang)
@@ -2984,7 +2984,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		 * the span should have rtl placement on a line, but it will ignore this 
 		 * value when printing the actual span.
 		 */
-		const XML_Char * szP_DirOverride = 0;
+		const gchar * szP_DirOverride = 0;
 		
 		pAP->getProperty ("dir-override", szP_DirOverride);
 		
@@ -3147,10 +3147,10 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	}
 
 #if 0
-	const XML_Char * pszLeftOffset = 0;
-	const XML_Char * pszTopOffset = 0;
-	const XML_Char * pszRightOffset = 0;
-	const XML_Char * pszBottomOffset = 0;
+	const gchar * pszLeftOffset = 0;
+	const gchar * pszTopOffset = 0;
+	const gchar * pszRightOffset = 0;
+	const gchar * pszBottomOffset = 0;
 
 	pSectionAP->getProperty ("cell-margin-left",   pszLeftOffset);
 	pSectionAP->getProperty ("cell-margin-top",    pszTopOffset);
@@ -3669,8 +3669,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 	{
 		double dColSpacePT = 0;
 		double dRowSpacePT = 0;
-		const XML_Char * pszTableColSpacing = m_TableHelper.getTableProp ("table-col-spacing");
-		const XML_Char * pszTableRowSpacing = m_TableHelper.getTableProp ("table-row-spacing");
+		const gchar * pszTableColSpacing = m_TableHelper.getTableProp ("table-col-spacing");
+		const gchar * pszTableRowSpacing = m_TableHelper.getTableProp ("table-row-spacing");
 
 		if(pszTableColSpacing)
 			dColSpacePT = UT_convertToDimension(pszTableColSpacing, DIM_PT);
@@ -4064,7 +4064,7 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
-	const XML_Char * tempProp = 0;
+	const gchar * tempProp = 0;
 	
 	if(m_bInTextBox)
 	  _closeTextBox(); // Fortunately for the html exporter, abi does not permit nested frames.
@@ -4096,7 +4096,7 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	// TODO: { abiprop, cssprop }.  It would still require that the units used for both specs be compatible.
 	//
 	//	TODO: Take care of padding as well.
-	const XML_Char * propNames[20] = {"bot-thickness","border-bottom-width",
+	const gchar * propNames[20] = {"bot-thickness","border-bottom-width",
 									"top-thickness","border-top-width",
 									"right-thickness","border-right-width",
 									"left-thickness","border-left-width",
@@ -4398,7 +4398,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	const XML_Char * szDataID = 0;
+	const gchar * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
 	if (szDataID == 0) return;
@@ -4503,7 +4503,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 		
 	m_utf8_1 = "object";
 		
-	const XML_Char * szWidth  = 0;
+	const gchar * szWidth  = 0;
 		
 	pAP->getProperty ("width",  szWidth);
 		
@@ -4584,7 +4584,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 	
-	const XML_Char * szDataID = 0;
+	const gchar * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
 	if (szDataID == 0) return;
@@ -4692,7 +4692,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	}
 	m_utf8_1 = "img";
 
-	const XML_Char * szWidth  = 0;
+	const gchar * szWidth  = 0;
 
 	pAP->getProperty ("width",  szWidth);
 
@@ -4734,7 +4734,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 		m_utf8_1 += "\"";
 	}
 
-	const XML_Char * szTitle  = 0;
+	const gchar * szTitle  = 0;
 	pAP->getAttribute ("title",  szTitle);
 	if (szTitle) {
 		m_utf8_1 += " title=\"";
@@ -4742,7 +4742,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 		m_utf8_1 += "\"";
 	}
 
-	const XML_Char * szAlt  = 0;
+	const gchar * szAlt  = 0;
 	pAP->getAttribute ("alt",  szAlt);
 	m_utf8_1 += " alt=\"";
 	if (szAlt) {
@@ -4827,7 +4827,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	const XML_Char * szType = 0;
+	const gchar * szType = 0;
 	pAP->getAttribute ("type", szType);
 
 	if (szType == 0) return;
@@ -4852,7 +4852,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			(strcmp (szType, "footnote_ref") == 0) ||
 			(strcmp (szType, "endnote_ref") == 0))
 		{
-			const XML_Char * szA_Style = 0;
+			const gchar * szA_Style = 0;
 			bool have_style = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szA_Style);
 			if (have_style)
 			{
@@ -4875,7 +4875,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				m_utf8_1 += szType;
 				m_utf8_1 += "\"";
 			}
-			const XML_Char * szA_Props = 0;
+			const gchar * szA_Props = 0;
 			bool have_props = pAP->getAttribute (PT_PROPS_ATTRIBUTE_NAME, szA_Props);
 			if(have_props)
 			{
@@ -4884,14 +4884,14 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				m_utf8_1 += "\"";
 			}
 			
-			XML_Char * szTypeCpy = new XML_Char[strlen(szType) + 2];
+			gchar * szTypeCpy = new gchar[strlen(szType) + 2];
 			strncpy(szTypeCpy, szType, strlen(szType)+1);
-			const XML_Char * noteToken = (XML_Char *)strtok((char *)szTypeCpy, "_");
-			XML_Char * idAttr = new XML_Char[strlen(noteToken) + 4];
+			const gchar * noteToken = (gchar *)strtok((char *)szTypeCpy, "_");
+			gchar * idAttr = new gchar[strlen(noteToken) + 4];
 			strncpy(idAttr, noteToken, strlen(noteToken)+1);
-			const XML_Char * partToken = (XML_Char *)strtok(NULL, "_");
-			const XML_Char * szID = 0;
-			const XML_Char * szNoteNumInit = 0;
+			const gchar * partToken = (gchar *)strtok(NULL, "_");
+			const gchar * szID = 0;
+			const gchar * szNoteNumInit = 0;
 			UT_uint32 noteNumInit = 1;
 
 			UT_UTF8String notePNString;
@@ -4959,7 +4959,7 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	const XML_Char * szHRef = 0;
+	const gchar * szHRef = 0;
 	pAP->getAttribute ("xlink:href", szHRef);
 
 	if (szHRef) // trust this to be a valid URL??
@@ -4989,14 +4989,14 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	const XML_Char * szType = 0;
+	const gchar * szType = 0;
 	pAP->getAttribute ("type", szType);
 
 	if (szType == 0) return; // ??
 
 	if (g_ascii_strcasecmp (szType, "start") == 0)
 	{
-		const XML_Char * szName = 0;
+		const gchar * szName = 0;
 		pAP->getAttribute ("name", szName);
 
 		if (szName)
@@ -5034,7 +5034,7 @@ void s_HTML_Listener::_handleMath (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	const XML_Char * szDataID = 0;
+	const gchar * szDataID = 0;
 	bool bFound = pAP->getAttribute ("dataid", szDataID);
 
 	if (szDataID == 0) return; // ??
@@ -5230,7 +5230,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				
 				// This block prepares us for getting document-level properties (namely, the endnote-place-endsection one stored in doEndnotes)
 				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
-				const XML_Char * doEndnotes = NULL;
+				const gchar * doEndnotes = NULL;
 				const PP_AttrProp * pDAP = NULL;
 				m_pDocument->getAttrProp (docApi, &pDAP);
 				
@@ -5363,7 +5363,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				const PP_AttrProp * pAP = 0;
 				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 				if (!bHaveProp || (pAP == 0)) return true;
-				const XML_Char * szType = 0;
+				const gchar * szType = 0;
 				if((pAP->getProperty ("frame-type", szType)) && szType)
 				  {
 				     if (!strcmp(szType, "textbox"))
@@ -5427,7 +5427,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 
 		const PP_AttrProp * pAP = 0;
 		bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
-		const XML_Char * szValue = 0;
+		const gchar * szValue = 0;
 		UT_UTF8String tocHeadingUTF8;
 
 		listPopToDepth(0);
@@ -5662,7 +5662,7 @@ bool s_HTML_HdrFtr_Listener::populateStrux (PL_StruxDocHandle sdh,
 		
 			if (!bHaveProp || (pAP == 0)) return true;
 		
-			const XML_Char * szType = 0;
+			const gchar * szType = 0;
 			pAP->getAttribute ("type", szType);
 			/* // */
 			
@@ -5766,8 +5766,8 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 
 	UT_uint32 j = 0;
 
-	const XML_Char * szName  = 0;
-	const XML_Char * szValue = 0;
+	const gchar * szName  = 0;
+	const gchar * szValue = 0;
 
 	UT_UTF8String name;
 	UT_UTF8String value;
@@ -5924,7 +5924,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 
 	PD_Style * basis = style->getBasedOn ();
 
-	const XML_Char * parent_name = NULL;
+	const gchar * parent_name = NULL;
 	if (basis && 
 		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
 		strcmp(style_name, parent_name) != 0)
@@ -5932,7 +5932,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		parent = const_cast<s_StyleTree *>(find (basis));
 		if (parent == 0)
 		{
-			const XML_Char * basis_name = 0;
+			const gchar * basis_name = 0;
 			basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, basis_name);
 			if (!basis_name) return false;
 
@@ -5993,7 +5993,7 @@ const s_StyleTree * s_StyleTree::find (const char * style_name) const
 
 const s_StyleTree * s_StyleTree::find (PD_Style * style) const
 {
-	const XML_Char * style_name = 0;
+	const gchar * style_name = 0;
 	style->getAttribute (PT_NAME_ATTRIBUTE_NAME, style_name);
 	if (!style_name) return NULL;
 
@@ -6074,7 +6074,7 @@ void s_StyleTree::styleCheck (PT_AttrPropIndex api)
 
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szStyle = NULL;
+		const gchar * szStyle = NULL;
 		bool have_style  = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szStyle);
 
 		if (have_style && szStyle)
@@ -6174,21 +6174,21 @@ public:
 
 	/* Implementation of ExpertListener
 	 */
-	void	StartElement (const XML_Char * name, const XML_Char ** atts);
-	void	EndElement (const XML_Char * name);
-	void	CharData (const XML_Char * buffer, int length);
-	void	ProcessingInstruction (const XML_Char * target, const XML_Char * data);
-	void	Comment (const XML_Char * data);
+	void	StartElement (const gchar * name, const gchar ** atts);
+	void	EndElement (const gchar * name);
+	void	CharData (const gchar * buffer, int length);
+	void	ProcessingInstruction (const gchar * target, const gchar * data);
+	void	Comment (const gchar * data);
 	void	StartCdataSection ();
 	void	EndCdataSection ();
-	void	Default (const XML_Char * buffer, int length);
+	void	Default (const gchar * buffer, int length);
 
 private:
 	void	_handleMetaTag (const char * key, UT_UTF8String & value);
 	void	_handleMeta ();
 
 	bool	echo () const;
-	bool	condition (const XML_Char * data) const;
+	bool	condition (const gchar * data) const;
 
 	PD_Document *	m_pDocument;
 	IE_Exp_HTML *	m_pie;
@@ -6218,7 +6218,7 @@ s_TemplateHandler::~s_TemplateHandler ()
 	// 
 }
 
-void s_TemplateHandler::StartElement (const XML_Char * name, const XML_Char ** atts)
+void s_TemplateHandler::StartElement (const gchar * name, const gchar ** atts)
 {
 	if (!echo ()) return;
 
@@ -6233,7 +6233,7 @@ void s_TemplateHandler::StartElement (const XML_Char * name, const XML_Char ** a
 
 	if (atts)
 	{
-		const XML_Char ** attr = atts;
+		const gchar ** attr = atts;
 
 		UT_UTF8String tmp;
 
@@ -6266,7 +6266,7 @@ void s_TemplateHandler::StartElement (const XML_Char * name, const XML_Char ** a
 	m_empty = true;
 }
 
-void s_TemplateHandler::EndElement (const XML_Char * name)
+void s_TemplateHandler::EndElement (const gchar * name)
 {
 	if (!echo ()) return;
 
@@ -6284,7 +6284,7 @@ void s_TemplateHandler::EndElement (const XML_Char * name)
 	}
 }
 
-void s_TemplateHandler::CharData (const XML_Char * buffer, int length)
+void s_TemplateHandler::CharData (const gchar * buffer, int length)
 {
 	if (!echo ()) return;
 
@@ -6303,7 +6303,7 @@ void s_TemplateHandler::CharData (const XML_Char * buffer, int length)
 	m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 }
 
-void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XML_Char * data)
+void s_TemplateHandler::ProcessingInstruction (const gchar * target, const gchar * data)
 {
 	bool bAbiXHTML = (strncmp (target, "abi-xhtml-", 10) == 0);
 
@@ -6562,7 +6562,7 @@ bool s_TemplateHandler::echo () const
 	return (mode == 0);
 }
 
-bool s_TemplateHandler::condition (const XML_Char * data) const
+bool s_TemplateHandler::condition (const gchar * data) const
 {
 	const char * eq = strstr (data, "==");
 	const char * ne = strstr (data, "!=");
@@ -6602,7 +6602,7 @@ bool s_TemplateHandler::condition (const XML_Char * data) const
 	return (eq ? match : !match);
 }
 
-void s_TemplateHandler::Comment (const XML_Char * data)
+void s_TemplateHandler::Comment (const gchar * data)
 {
 	if (!echo ()) return;
 
@@ -6642,7 +6642,7 @@ void s_TemplateHandler::EndCdataSection ()
 	m_cdata = false;
 }
 
-void s_TemplateHandler::Default (const XML_Char * buffer, int length)
+void s_TemplateHandler::Default (const gchar * buffer, int length)
 {
 	// do nothing
 }
@@ -6682,7 +6682,7 @@ IE_Exp_HTML::~IE_Exp_HTML ()
 void IE_Exp_HTML::_buildStyleTree ()
 {
 	const PD_Style * p_pds = 0;
-	const XML_Char * szStyleName = 0;
+	const gchar * szStyleName = 0;
 
 	UT_GenericVector<PD_Style*> * pStyles = NULL;
 	getDoc()->enumStyles(pStyles);

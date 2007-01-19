@@ -34,7 +34,7 @@ class fl_AutoLists
 		UT_uint32 getXmlListsSize();
 		UT_uint32 getFmtListsSize();
 
-		const XML_Char * getXmlList(UT_uint32 i);
+		const gchar * getXmlList(UT_uint32 i);
 		const char *     getFmtList(UT_uint32 i);
 };
 
@@ -43,24 +43,24 @@ class fl_AutoLists
 
 #define IS_NONE_LIST_TYPE(x) ((x) == NOT_A_LIST)
 
-#define  XML_NUMBERED_LIST (( const XML_Char *) "Numbered List")
-#define  XML_LOWERCASE_LIST ((const XML_Char *) "Lower Case List")
-#define  XML_UPPERCASE_LIST ((const XML_Char *) "Upper Case List")
-#define  XML_LOWERROMAN_LIST ((const XML_Char *) "Lower Roman List")
-#define  XML_UPPERROMAN_LIST ((const XML_Char *) "Upper Roman List")
-#define  XML_HEBREW_LIST ((const XML_Char *) "Hebrew List")
-#define  XML_ARABICNUM_LIST ((const XML_Char *) "Arabic List")
-#define  XML_BULLETED_LIST ((const XML_Char *) "Bullet List")
-#define  XML_DASHED_LIST ((const XML_Char *) "Dashed List")
-#define  XML_SQUARE_LIST ((const XML_Char *) "Square List")
-#define  XML_TRIANGLE_LIST ((const XML_Char *) "Triangle List")
-#define  XML_DIAMOND_LIST ((const XML_Char *) "Diamond List")
-#define  XML_STAR_LIST ((const XML_Char *) "Star List")
-#define  XML_IMPLIES_LIST ((const XML_Char *) "Implies List")
-#define  XML_TICK_LIST ((const XML_Char *) "Tick List")
-#define  XML_BOX_LIST ((const XML_Char *) "Box List")
-#define  XML_HAND_LIST ((const XML_Char *) "Hand List")
-#define  XML_HEART_LIST ((const XML_Char *) "Heart List")
+#define  XML_NUMBERED_LIST (( const gchar *) "Numbered List")
+#define  XML_LOWERCASE_LIST ((const gchar *) "Lower Case List")
+#define  XML_UPPERCASE_LIST ((const gchar *) "Upper Case List")
+#define  XML_LOWERROMAN_LIST ((const gchar *) "Lower Roman List")
+#define  XML_UPPERROMAN_LIST ((const gchar *) "Upper Roman List")
+#define  XML_HEBREW_LIST ((const gchar *) "Hebrew List")
+#define  XML_ARABICNUM_LIST ((const gchar *) "Arabic List")
+#define  XML_BULLETED_LIST ((const gchar *) "Bullet List")
+#define  XML_DASHED_LIST ((const gchar *) "Dashed List")
+#define  XML_SQUARE_LIST ((const gchar *) "Square List")
+#define  XML_TRIANGLE_LIST ((const gchar *) "Triangle List")
+#define  XML_DIAMOND_LIST ((const gchar *) "Diamond List")
+#define  XML_STAR_LIST ((const gchar *) "Star List")
+#define  XML_IMPLIES_LIST ((const gchar *) "Implies List")
+#define  XML_TICK_LIST ((const gchar *) "Tick List")
+#define  XML_BOX_LIST ((const gchar *) "Box List")
+#define  XML_HAND_LIST ((const gchar *) "Hand List")
+#define  XML_HEART_LIST ((const gchar *) "Heart List")
 
 //
 // MS Word uses 0.5 inches so we do too.

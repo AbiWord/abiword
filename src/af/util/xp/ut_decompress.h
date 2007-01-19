@@ -21,10 +21,10 @@
 #ifndef UT_DECOMPRESS_H
 #define UT_DECOMPRESS_H
 
-UT_BEGIN_EXTERN_C
+G_BEGIN_DECLS
 
 int UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, char **retBuf, int *retFileSize);
 
-UT_END_EXTERN_C
+G_END_DECLS
 
 #endif

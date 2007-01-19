@@ -443,7 +443,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtWidget_t * buttonCancel;
 	PtWidget_t * panelGroup;
 
-	XML_Char * unixstr = NULL;
+	gchar * unixstr = NULL;
 	const char *litem[1];
 
 	litem[0] = unixstr;

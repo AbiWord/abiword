@@ -437,7 +437,7 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock, bool bVerifyRange)
 		PD_Document * pDoc = m_pLayout->getDocument();
 		UT_return_val_if_fail( pDoc, false );
 
-		const XML_Char * pBookmark = m_sRangeBookmark.utf8_str();
+		const gchar * pBookmark = m_sRangeBookmark.utf8_str();
 	
 		if(!m_pDoc->isBookmarkUnique(pBookmark))
 		{
@@ -1578,7 +1578,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const XML_Char *pszTOCPID = NULL;
+	const gchar *pszTOCPID = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-id",pszTOCPID))
 	{
 		m_iTOCPID = 0;
@@ -1594,7 +1594,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	m_sNumOff4 = "0.5in";
 
 
-	const XML_Char *pszINDENT = NULL;
+	const gchar *pszINDENT = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
 	{
 		m_sNumOff1 = "0.5in";
@@ -1633,7 +1633,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sNumOff4 = pszINDENT;
 	}
 
-	const XML_Char *pszTOCSRC = NULL;
+	const gchar *pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
 		m_sSourceStyle1 = "Heading 1";
@@ -1669,7 +1669,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_sSourceStyle4 = pszTOCSRC;
 	}
-	const XML_Char * pszTOCDEST = NULL;
+	const gchar * pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
 		m_sDestStyle1 = "Contents 1";
@@ -1706,7 +1706,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sDestStyle4 = pszTOCDEST;
 	}
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	const XML_Char * pszTOCHEADING = NULL;
+	const gchar * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
 		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, m_sTOCHeading);
@@ -1716,7 +1716,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_sTOCHeading = pszTOCHEADING;
 	}
 
-	const XML_Char * pszTOCHEADINGStyle = NULL;
+	const gchar * pszTOCHEADINGStyle = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading-style",pszTOCHEADINGStyle))
 	{
 		m_sTOCHeadingStyle = "Contents Header";
@@ -1727,7 +1727,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 
 
-	const XML_Char * pszTOCHASHEADING = NULL;
+	const gchar * pszTOCHASHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-heading",pszTOCHASHEADING))
 	{
 		m_bTOCHeading = true;
@@ -1746,7 +1746,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label
 //
-	const XML_Char * pszTOCLABEL = NULL;
+	const gchar * pszTOCLABEL = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label1",pszTOCLABEL))
 	{
 		m_bHasLabel1 = true;
@@ -1813,7 +1813,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Inherits
 //
-	const XML_Char * pszTOCLABELINHERITS = NULL;
+	const gchar * pszTOCLABELINHERITS = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits1",pszTOCLABELINHERITS))
 	{
 		m_bInherit1 = true;
@@ -1880,7 +1880,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Type
 //
-	const XML_Char * pszTOCLABELTYPE = NULL;
+	const gchar * pszTOCLABELTYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type1",pszTOCLABELTYPE))
 	{
 		m_iLabType1 = FOOTNOTE_TYPE_NUMERIC;
@@ -1919,7 +1919,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Before Text
 //
-	const XML_Char * pszTOCSTRBEFORE = NULL;
+	const gchar * pszTOCSTRBEFORE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before1",pszTOCSTRBEFORE))
 	{
 		m_sLabBefore1 = "";
@@ -1958,7 +1958,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label After Text
 //
-	const XML_Char * pszTOCSTRAFTER = NULL;
+	const gchar * pszTOCSTRAFTER = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after1",pszTOCSTRAFTER))
 	{
 		m_sLabAfter1 = "";
@@ -1997,7 +1997,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Label Initial Value
 //
-	const XML_Char * pszTOCLABELSTART = NULL;
+	const gchar * pszTOCLABELSTART = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start1",pszTOCLABELSTART))
 	{
 		m_iStartAt1 = 1;
@@ -2036,7 +2036,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC Page Number Type
 //
-	const XML_Char * pszTOCPAGETYPE = NULL;
+	const gchar * pszTOCPAGETYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
 	{
 		m_iNumType1 = FOOTNOTE_TYPE_NUMERIC;
@@ -2075,7 +2075,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 // TOC TAB leader
 //
-	const XML_Char * pszTOCTABTYPE = NULL;
+	const gchar * pszTOCTABTYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
 	{
 		m_iTabLeader1 = FL_LEADER_DOT;

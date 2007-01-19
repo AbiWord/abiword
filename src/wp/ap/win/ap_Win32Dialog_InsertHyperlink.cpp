@@ -84,7 +84,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK));
 
-	const XML_Char * hyperlink = getHyperlink();
+	const gchar * hyperlink = getHyperlink();
 
 	if(hyperlink)
 	{

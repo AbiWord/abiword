@@ -81,7 +81,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		pG = getGraphics();
 	}
-	const XML_Char* pRevision = NULL;
+	const gchar* pRevision = NULL;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{

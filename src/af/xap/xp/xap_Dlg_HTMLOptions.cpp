@@ -195,7 +195,7 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "data:base64";
 	}
-	const XML_Char * szValue = (const XML_Char *) pref.utf8_str ();
+	const gchar * szValue = (const gchar *) pref.utf8_str ();
 
 	pPScheme->setValue (XAP_PREF_KEY_HTMLExportOptions, szValue);
 }
@@ -228,7 +228,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 
 	if (pPrefs == NULL) return;
 
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	bool haveValue = pPrefs->getPrefsValue (XAP_PREF_KEY_HTMLExportOptions, &szValue);
 
 	if (haveValue && szValue)

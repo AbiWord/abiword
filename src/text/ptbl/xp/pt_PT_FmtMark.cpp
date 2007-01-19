@@ -41,8 +41,8 @@
 
 bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
-													const XML_Char ** attributes,
-													const XML_Char ** properties)
+													const gchar ** attributes,
+													const gchar ** properties)
 {
 	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
@@ -271,7 +271,7 @@ bool pt_PieceTable::purgeFmtMarks()
 
 bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
 												   PT_DocPosition dpos, 
-												   const XML_Char ** attributes, const XML_Char ** properties,
+												   const gchar ** attributes, const gchar ** properties,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
@@ -338,7 +338,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	// the old way is rather inefficient, inserting one property at a time ...
 	_insertFmtMarkFragWithNotify(ptc, dpos, pAttrProp->getAttributes(), pAttrProp->getProperties());
 #else
-	const XML_Char * properties[] =	{ NULL, NULL, 0};
+	const gchar * properties[] =	{ NULL, NULL, 0};
 
 	int Index = 0;
 	
@@ -358,7 +358,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	}
 	while(true);
 
-	const XML_Char * Attributes[] =	{ NULL, NULL, 0};
+	const gchar * Attributes[] =	{ NULL, NULL, 0};
 
 	Index = 0;
 	

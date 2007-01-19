@@ -43,7 +43,7 @@
 /****************************************************************/
 /****************************************************************/
 
-bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
+bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
@@ -51,7 +51,7 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 
 	if(attributes)
 	{
-		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(pXID && *pXID)
 		{
@@ -193,7 +193,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
     when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
     will be modified
 */
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char ** props,
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attributes, const gchar ** props,
 									   bool bSkipEmbededSections)
 {
 	// can only be used while loading the document
@@ -234,7 +234,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
     As above, but props represented by a single XML string
     
 */
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char * props,
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attributes, const gchar * props,
 									   bool bSkipEmbededSections)
 {
 	if(props && *props)
@@ -248,7 +248,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 		
 		char * pProps = g_strdup(props);
 
-		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
+		const gchar ** pPropsArray = UT_splitPropsToArray(pProps);
 		UT_return_val_if_fail( pPropsArray, false );
 		
 		bool bRet = appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
@@ -260,13 +260,13 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 	}
 	else
 	{
-		const XML_Char ** pPropsArray = NULL;
+		const gchar ** pPropsArray = NULL;
 		return appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
 	}
 }
 
 /*! changes formatting of a strux while loading document */
-bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading,false);
@@ -296,7 +296,7 @@ bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attrib
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
+bool pt_PieceTable::appendFmt(const gchar ** attributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading, false);
@@ -318,7 +318,7 @@ bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
+bool pt_PieceTable::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading, false);
@@ -379,7 +379,7 @@ bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	return true;
 }
 
-bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool pt_PieceTable::appendObject(PTObjectType pto, const gchar ** attributes)
 {
 	pf_Frag_Object * pfo = NULL;
 	if(!_makeObject(pto,attributes,pfo) || !pfo)
@@ -387,7 +387,7 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
 
 	if(attributes)
 	{
-		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(pXID && *pXID)
 		{
@@ -411,7 +411,7 @@ bool pt_PieceTable::appendFmtMark(void)
 }
 
 bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
+										  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
@@ -422,7 +422,7 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 
 	if(attributes)
 	{
-		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(pXID && *pXID)
 		{
@@ -500,7 +500,7 @@ bool pt_PieceTable::insertSpanBeforeFrag(pf_Frag * pf, const UT_UCSChar * p, UT_
 }
 
 bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-										   const XML_Char ** attributes)
+										   const gchar ** attributes)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
@@ -511,7 +511,7 @@ bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 
 	if(attributes)
 	{
-		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(pXID && *pXID)
 		{
@@ -538,7 +538,7 @@ bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF)
 }
 
 
-bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)
+bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
@@ -551,7 +551,7 @@ bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attr
 	return true;
 }
 
-bool pt_PieceTable::_makeStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux * &pfs)
+bool pt_PieceTable::_makeStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux * &pfs)
 {
 	// create a new structure fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -592,7 +592,7 @@ bool pt_PieceTable::_makeStrux(PTStruxType pts, const XML_Char ** attributes, pf
 }
 
 
-bool pt_PieceTable::_makeObject(PTObjectType pto, const XML_Char ** attributes, pf_Frag_Object * &pfo)
+bool pt_PieceTable::_makeObject(PTObjectType pto, const gchar ** attributes, pf_Frag_Object * &pfo)
 {
 	// create a new object fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -629,7 +629,7 @@ bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff)
 }
 
 
-bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes)
+bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const gchar ** attributes)
 {
 	// this function can only be called while loading the document.
 	UT_return_val_if_fail (m_pts==PTS_Loading,false);

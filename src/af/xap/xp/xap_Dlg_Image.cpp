@@ -265,7 +265,7 @@ void XAP_Dialog_Image::setHeight(UT_sint32 iHeight)
 void XAP_Dialog_Image::_convertToPreferredUnits(const char *sz, UT_String & pRet)
 {
 	UT_Dimension PreferedUnits = getPreferedUnits();
-	pRet = (const XML_Char *) UT_reformatDimensionString(PreferedUnits,sz);
+	pRet = (const gchar *) UT_reformatDimensionString(PreferedUnits,sz);
 }
 
 /*!

@@ -131,8 +131,8 @@ void s_RTF_ListenerWriteDoc::_closeSpan(void)
 
 // Frame Background
 
-static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
-									 const XML_Char * pszBackgroundColor,
+static void s_background_properties (const gchar * pszBgStyle, const gchar * pszBgColor,
+									 const gchar * pszBackgroundColor,
 									 PP_PropertyMap::Background & background)
 {
 	if (pszBgStyle)
@@ -161,8 +161,8 @@ static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char
 		}
 }
 
-static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
-								 const XML_Char * color, PP_PropertyMap::Line & line)
+static void s_border_properties (const gchar * border_color, const gchar * border_style, const gchar * border_width,
+								 const gchar * color, PP_PropertyMap::Line & line)
 {
 	/* frame-border properties:
 	 * 
@@ -263,7 +263,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
-	const XML_Char *pszTOCPID = NULL;
+	const gchar *pszTOCPID = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-id",pszTOCPID))
 	{
 	}
@@ -278,7 +278,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 #endif
 
 
-	const XML_Char *pszINDENT = NULL;
+	const gchar *pszINDENT = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
 	{
 	}
@@ -309,7 +309,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	const XML_Char *pszTOCSRC = NULL;
+	const gchar *pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
 	}
@@ -337,7 +337,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	else
 	{
 	}
-	const XML_Char * pszTOCDEST = NULL;
+	const gchar * pszTOCDEST = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
 	{
 	}
@@ -365,7 +365,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	else
 	{
 	}
-	const XML_Char * pszTOCHEADING = NULL;
+	const gchar * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{
 	}
@@ -373,7 +373,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	{
 	}
 
-	const XML_Char * pszTOCHEADINGStyle = NULL;
+	const gchar * pszTOCHEADINGStyle = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading-style",pszTOCHEADINGStyle))
 	{
 	}
@@ -382,7 +382,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 
 
-	const XML_Char * pszTOCHASHEADING = NULL;
+	const gchar * pszTOCHASHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-heading",pszTOCHASHEADING))
 	{
 	}
@@ -398,7 +398,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label
 //
-	const XML_Char * pszTOCLABEL = NULL;
+	const gchar * pszTOCLABEL = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label1",pszTOCLABEL))
 	{
 	}
@@ -453,7 +453,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Inherits
 //
-	const XML_Char * pszTOCLABELINHERITS = NULL;
+	const gchar * pszTOCLABELINHERITS = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits1",pszTOCLABELINHERITS))
 	{
 	}
@@ -508,7 +508,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Type
 //
-	const XML_Char * pszTOCLABELTYPE = NULL;
+	const gchar * pszTOCLABELTYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type1",pszTOCLABELTYPE))
 	{
 	}
@@ -539,7 +539,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Before Text
 //
-	const XML_Char * pszTOCSTRBEFORE = NULL;
+	const gchar * pszTOCSTRBEFORE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before1",pszTOCSTRBEFORE))
 	{
 	}
@@ -570,7 +570,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label After Text
 //
-	const XML_Char * pszTOCSTRAFTER = NULL;
+	const gchar * pszTOCSTRAFTER = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after1",pszTOCSTRAFTER))
 	{
 	}
@@ -601,7 +601,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Label Initial Value
 //
-	const XML_Char * pszTOCLABELSTART = NULL;
+	const gchar * pszTOCLABELSTART = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start1",pszTOCLABELSTART))
 	{
 	}
@@ -632,7 +632,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC Page Number Type
 //
-	const XML_Char * pszTOCPAGETYPE = NULL;
+	const gchar * pszTOCPAGETYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
 	{
 	}
@@ -663,7 +663,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 //
 // TOC TAB leader
 //
-	const XML_Char * pszTOCTABTYPE = NULL;
+	const gchar * pszTOCTABTYPE = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
 	{
 	}
@@ -781,24 +781,24 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	m_apiThisFrame = apiFrame;
 	m_bInFrame = true;
 
-	const XML_Char *pszFrameType = NULL;
-	const XML_Char *pszWrapMode = NULL;
-	const XML_Char *pszPositionTo = NULL;
-	const XML_Char *pszXpos = NULL;
-	const XML_Char *pszYpos = NULL;
-	const XML_Char *pszColXpos = NULL;
-	const XML_Char *pszColYpos = NULL;
-	const XML_Char *pszPageXpos = NULL;
-	const XML_Char *pszPageYpos = NULL;
-	const XML_Char *pszWidth = NULL;
-	const XML_Char *pszHeight = NULL;
-	const XML_Char *pszXpad = NULL;
-	const XML_Char *pszYpad = NULL;
+	const gchar *pszFrameType = NULL;
+	const gchar *pszWrapMode = NULL;
+	const gchar *pszPositionTo = NULL;
+	const gchar *pszXpos = NULL;
+	const gchar *pszYpos = NULL;
+	const gchar *pszColXpos = NULL;
+	const gchar *pszColYpos = NULL;
+	const gchar *pszPageXpos = NULL;
+	const gchar *pszPageYpos = NULL;
+	const gchar *pszWidth = NULL;
+	const gchar *pszHeight = NULL;
+	const gchar *pszXpad = NULL;
+	const gchar *pszYpad = NULL;
 
-	const XML_Char * pszColor = NULL;
-	const XML_Char * pszBorderColor = NULL;
-	const XML_Char * pszBorderStyle = NULL;
-	const XML_Char * pszBorderWidth = NULL;
+	const gchar * pszColor = NULL;
+	const gchar * pszBorderColor = NULL;
+	const gchar * pszBorderStyle = NULL;
+	const gchar * pszBorderWidth = NULL;
 	
 	FL_FrameType iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
@@ -1063,9 +1063,9 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	 */
 	background.reset ();
 
-	const XML_Char * pszBgStyle = NULL;
-	const XML_Char * pszBgColor = NULL;
-	const XML_Char * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = NULL;
+	const gchar * pszBgColor = NULL;
+	const gchar * pszBackgroundColor = NULL;
 
 	pSectionAP->getProperty ("bg-style",    pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",     pszBgColor);
@@ -1178,8 +1178,8 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 //
 // Image name
 //
-		const XML_Char * pszDataID = NULL;
-		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+		const gchar * pszDataID = NULL;
+		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 		if(pszDataID != NULL)
 		{
 			const UT_ByteBuf * pbb = NULL;
@@ -1362,7 +1362,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
     
     if (NULL != pDeepestAP) 
 	{
-		const XML_Char * styleSzValue = 0;
+		const gchar * styleSzValue = 0;
 		bool have_style  = pDeepestAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, 
 													 styleSzValue);
         if (!have_style) 
@@ -1793,8 +1793,8 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_closeSpan ();
 				const PP_AttrProp * pAP = NULL;
 				m_pDocument->getAttrProp(api,&pAP);
-				const XML_Char * pName;
-				const XML_Char * pValue;
+				const gchar * pName;
+				const gchar * pValue;
 				bool bFound = false;
 				UT_uint32 k = 0;
 				while(pAP->getNthAttribute(k++, pName, pValue))
@@ -1929,7 +1929,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 if(strcmp(szPrefix,"field") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
-		 const XML_Char * pszType = NULL;
+		 const gchar * pszType = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("type", pszType);
 		 if(pszType == NULL)
@@ -2240,8 +2240,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 else if(strcmp(szPrefix,"math") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
-		 const XML_Char * pszDataId = NULL;
-		 const XML_Char * pszLatexId = NULL;
+		 const gchar * pszDataId = NULL;
+		 const gchar * pszLatexId = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
 		 pSpanAP->getAttribute("latexid", pszLatexId);
@@ -2257,8 +2257,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_UTF8String sPropName;
 		 UT_UTF8String sPropVal;
 		 UT_sint32 i = 0;
-		 const XML_Char * szProp = NULL;
-		 const XML_Char * szVal = NULL;
+		 const gchar * szProp = NULL;
+		 const gchar * szVal = NULL;
 		 for(i = 0; i < 50; i++)
 		 {
 		   szProp = NULL;
@@ -2290,7 +2290,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 	 else if(strcmp(szPrefix,"embed") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
-		 const XML_Char * pszDataId = NULL;
+		 const gchar * pszDataId = NULL;
 		 m_pDocument->getAttrProp(api, &pSpanAP);
 		 pSpanAP->getAttribute("dataid", pszDataId);
 		 UT_UTF8String sProps;
@@ -2305,8 +2305,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 UT_UTF8String sPropName;
 		 UT_UTF8String sPropVal;
 		 UT_sint32 i = 0;
-		 const XML_Char * szProp = NULL;
-		 const XML_Char * szVal = NULL;
+		 const gchar * szProp = NULL;
+		 const gchar * szVal = NULL;
 		 for(i = 0; i < 50; i++)
 		 {
 		   szProp = NULL;
@@ -2848,14 +2848,14 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 {
 	const PP_AttrProp* pSectionAP = NULL;
 	m_pDocument->getAttrProp(api, &pSectionAP);
-	const XML_Char* pszHomogeneous = NULL;
+	const gchar* pszHomogeneous = NULL;
 	pSectionAP->getProperty("homogeneous", pszHomogeneous);
 	UT_String sPropVal;
 	UT_String sProp;
-	const XML_Char* pszLeftOffset = NULL;
-	const XML_Char* pszTopOffset = NULL;
-	const XML_Char* pszRightOffset = NULL;
-	const XML_Char* pszBottomOffset = NULL;
+	const gchar* pszLeftOffset = NULL;
+	const gchar* pszTopOffset = NULL;
+	const gchar* pszRightOffset = NULL;
+	const gchar* pszBottomOffset = NULL;
 	pSectionAP->getProperty("cell-margin-left", pszLeftOffset);
 	pSectionAP->getProperty("cell-margin-top", pszTopOffset);
 	pSectionAP->getProperty("cell-margin-right", pszRightOffset);
@@ -2888,10 +2888,10 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 		sPropVal= pszBottomOffset;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
-	const XML_Char* pszLeftAttach = NULL;
-	const XML_Char* pszRightAttach = NULL;
-	const XML_Char* pszTopAttach = NULL;
-	const XML_Char* pszBottomAttach = NULL;
+	const gchar* pszLeftAttach = NULL;
+	const gchar* pszRightAttach = NULL;
+	const gchar* pszTopAttach = NULL;
+	const gchar* pszBottomAttach = NULL;
 	pSectionAP->getProperty("left-attach", pszLeftAttach);
 	pSectionAP->getProperty("right-attach", pszRightAttach);
 	pSectionAP->getProperty("top-attach", pszTopAttach);
@@ -2924,7 +2924,7 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 
 	/* cell-border properties:
 	 */
-	const XML_Char * pszColor = NULL;
+	const gchar * pszColor = NULL;
 	pSectionAP->getProperty ("color", pszColor);
 	if (pszColor)
 	{
@@ -2932,9 +2932,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 		sPropVal= pszColor;
 		UT_String_setProperty(sCellProps,sProp,sPropVal);
 	}
-	const XML_Char * pszBorderColor = NULL;
-	const XML_Char * pszBorderStyle = NULL;
-	const XML_Char * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = NULL;
+	const gchar * pszBorderStyle = NULL;
+	const gchar * pszBorderWidth = NULL;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	if (pszBorderColor && *pszBorderColor)
@@ -3040,9 +3040,9 @@ void s_RTF_ListenerWriteDoc::_fillCellProps(PT_AttrPropIndex api, UT_String & sC
 
 	/* cell fill
 	 */
-	const XML_Char * pszBgStyle = NULL;
-	const XML_Char * pszBgColor = NULL;
-	const XML_Char * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = NULL;
+	const gchar * pszBgColor = NULL;
+	const gchar * pszBackgroundColor = NULL;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	if (pszBgStyle && *pszBgStyle)
@@ -3513,16 +3513,16 @@ double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
-	const XML_Char * szColumns = PP_evalProperty("columns",
+	const gchar * szColumns = PP_evalProperty("columns",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
+	const gchar * szColumnGap = PP_evalProperty("column-gap",
 												   pSpanAP,pBlockAP,pSectionAP,
 												   m_pDocument,true);
-	const XML_Char * szMarginLeft = PP_evalProperty("page-margin-left",
+	const gchar * szMarginLeft = PP_evalProperty("page-margin-left",
 													pSpanAP,pBlockAP,pSectionAP,
 													m_pDocument,true);
-	const XML_Char * szMarginRight = PP_evalProperty("page-margin-right",
+	const gchar * szMarginRight = PP_evalProperty("page-margin-right",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	UT_sint32 iNumCols = 1;
@@ -3569,7 +3569,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 {
 	const PP_AttrProp* pSectionAP = NULL;
 	m_pDocument->getAttrProp(api, &pSectionAP);
-	const XML_Char* pszHomogeneous = NULL;
+	const gchar* pszHomogeneous = NULL;
 	pSectionAP->getProperty("homogeneous", pszHomogeneous);
 	UT_String sPropVal;
 	UT_String sProp;
@@ -3582,10 +3582,10 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 			UT_String_setProperty(sTableProps,sProp,sPropVal);
 		}
 	}
-	const XML_Char* pszLeftOffset = NULL;
-	const XML_Char* pszTopOffset = NULL;
-	const XML_Char* pszRightOffset = NULL;
-	const XML_Char* pszBottomOffset = NULL;
+	const gchar* pszLeftOffset = NULL;
+	const gchar* pszTopOffset = NULL;
+	const gchar* pszRightOffset = NULL;
+	const gchar* pszBottomOffset = NULL;
 	pSectionAP->getProperty("table-margin-left", pszLeftOffset);
 	pSectionAP->getProperty("table-margin-top", pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", pszRightOffset);
@@ -3619,7 +3619,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
 
-	const XML_Char * pszLineThick = NULL;
+	const gchar * pszLineThick = NULL;
 	pSectionAP->getProperty("table-line-thickness", pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
@@ -3628,8 +3628,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
 
-	const XML_Char * pszTableColSpacing = NULL;
-	const XML_Char * pszTableRowSpacing = NULL;
+	const gchar * pszTableColSpacing = NULL;
+	const gchar * pszTableRowSpacing = NULL;
 	pSectionAP->getProperty("table-col-spacing", pszTableColSpacing);
 	pSectionAP->getProperty("table-row-spacing", pszTableRowSpacing);
 	if(pszTableColSpacing && *pszTableColSpacing)
@@ -3644,8 +3644,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		sPropVal= pszTableRowSpacing;
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
-	const XML_Char * pszLeftColPos = NULL;
-	const XML_Char * pszColumnProps = NULL;
+	const gchar * pszLeftColPos = NULL;
+	const gchar * pszColumnProps = NULL;
 	pSectionAP->getProperty("table-column-leftpos", pszLeftColPos);
 	pSectionAP->getProperty("table-column-props", pszColumnProps);
 	if(pszLeftColPos && *pszLeftColPos)
@@ -3663,8 +3663,8 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 //
 // global row height type
 //
-	const XML_Char * pszRowHeightType = NULL;
-	const XML_Char * pszRowHeight = NULL;
+	const gchar * pszRowHeightType = NULL;
+	const gchar * pszRowHeight = NULL;
 	pSectionAP->getProperty("table-row-height-type", pszRowHeightType);
 	if(pszRowHeightType && *pszRowHeightType)
 	{
@@ -3682,7 +3682,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 //
 // Positioned row controls
 //
-	const XML_Char * pszRowHeights = NULL;
+	const gchar * pszRowHeights = NULL;
 	pSectionAP->getProperty("table-row-heights", pszRowHeights);
 	if(pszRowHeights && *pszRowHeights)
 	{
@@ -3693,7 +3693,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 
 	/* table-border properties:
 	 */
-	const XML_Char * pszColor = NULL;
+	const gchar * pszColor = NULL;
 	pSectionAP->getProperty ("color", pszColor);
 	if (pszColor)
 	{
@@ -3701,9 +3701,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		sPropVal= pszColor;
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
-	const XML_Char * pszBorderColor = NULL;
-	const XML_Char * pszBorderStyle = NULL;
-	const XML_Char * pszBorderWidth = NULL;
+	const gchar * pszBorderColor = NULL;
+	const gchar * pszBorderStyle = NULL;
+	const gchar * pszBorderWidth = NULL;
 
 	pSectionAP->getProperty ("bot-color",       pszBorderColor);
 	if (pszBorderColor && *pszBorderColor)
@@ -3809,9 +3809,9 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 
 	/* table fill
 	 */
-	const XML_Char * pszBgStyle = NULL;
-	const XML_Char * pszBgColor = NULL;
-	const XML_Char * pszBackgroundColor = NULL;
+	const gchar * pszBgStyle = NULL;
+	const gchar * pszBgColor = NULL;
+	const gchar * pszBackgroundColor = NULL;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	if (pszBgStyle && *pszBgStyle)
@@ -3977,21 +3977,21 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
 			m_pDocument->getAttrProp(indexAP, &pAP);
-			const XML_Char* pszHeaderID = NULL;
+			const gchar* pszHeaderID = NULL;
 			bool bHeader = false;
-			const XML_Char* pszFooterID = NULL;
+			const gchar* pszFooterID = NULL;
 			bool bFooter = false;
-			const XML_Char* pszHeaderEvenID = NULL;
+			const gchar* pszHeaderEvenID = NULL;
 			bool bHeaderEven = false;
-			const XML_Char* pszFooterEvenID = NULL;
+			const gchar* pszFooterEvenID = NULL;
 			bool bFooterEven = false;
-			const XML_Char* pszHeaderFirstID = NULL;
+			const gchar* pszHeaderFirstID = NULL;
 			bool bHeaderFirst = false;
-			const XML_Char* pszFooterFirstID = NULL;
+			const gchar* pszFooterFirstID = NULL;
 			bool bFooterFirst = false;
-			const XML_Char* pszHeaderLastID = NULL;
+			const gchar* pszHeaderLastID = NULL;
 			bool bHeaderLast = false;
-			const XML_Char* pszFooterLastID = NULL;
+			const gchar* pszFooterLastID = NULL;
 			bool bFooterLast = false;
 			
 // header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
@@ -4362,7 +4362,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	// <docfmt>
 
-	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
+	const gchar * szDefaultTabs = PP_evalProperty("default-tab-interval",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",static_cast<const char*>(szDefaultTabs),1440);
@@ -4393,19 +4393,19 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth.c_str(),0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight.c_str(),0);
 
-	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
+	const gchar * szLeftMargin = PP_evalProperty("page-margin-left",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margl",static_cast<const char*>(szLeftMargin),1800);
-	const XML_Char * szRightMargin = PP_evalProperty("page-margin-right",
+	const gchar * szRightMargin = PP_evalProperty("page-margin-right",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margr",static_cast<const char*>(szRightMargin),1800);
-	const XML_Char * szTopMargin = PP_evalProperty("page-margin-top",
+	const gchar * szTopMargin = PP_evalProperty("page-margin-top",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margt",static_cast<const char*>(szTopMargin),1440);
-	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-bottom",
+	const gchar * szBottomMargin = PP_evalProperty("page-margin-bottom",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margb",static_cast<const char*>(szBottomMargin),1440);
@@ -4435,58 +4435,58 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 
-	const XML_Char * szColumns = PP_evalProperty("columns",
+	const gchar * szColumns = PP_evalProperty("columns",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
+	const gchar * szColumnGap = PP_evalProperty("column-gap",
 												   pSpanAP,pBlockAP,pSectionAP,
 												   m_pDocument,true);
 
-	const XML_Char * szColumnLine = PP_evalProperty("column-line",
+	const gchar * szColumnLine = PP_evalProperty("column-line",
 													pSpanAP,pBlockAP,pSectionAP,
 													m_pDocument,true);
 
 
-	const XML_Char * szMarginLeft = PP_evalProperty("page-margin-left",
+	const gchar * szMarginLeft = PP_evalProperty("page-margin-left",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szMarginTop = PP_evalProperty("page-margin-top",
+	const gchar * szMarginTop = PP_evalProperty("page-margin-top",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szMarginRight = PP_evalProperty("page-margin-right",
+	const gchar * szMarginRight = PP_evalProperty("page-margin-right",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szMarginBottom = PP_evalProperty("page-margin-bottom",
+	const gchar * szMarginBottom = PP_evalProperty("page-margin-bottom",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szHeaderY = PP_evalProperty("page-margin-header",
+	const gchar * szHeaderY = PP_evalProperty("page-margin-header",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szFooterY = PP_evalProperty("page-margin-footer",
+	const gchar * szFooterY = PP_evalProperty("page-margin-footer",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-// 	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
+// 	const gchar * szSpaceAfter = PP_evalProperty("section-space-after",
 // 												 pSpanAP,pBlockAP,pSectionAP,
 // 												 m_pDocument,true);
 
-	const XML_Char * szRestartNumbering = PP_evalProperty("section-restart",
+	const gchar * szRestartNumbering = PP_evalProperty("section-restart",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	const XML_Char * szRestartAt = PP_evalProperty("section-restart-value",
+	const gchar * szRestartAt = PP_evalProperty("section-restart-value",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-	const XML_Char * szHeaderExists = NULL;
+	const gchar * szHeaderExists = NULL;
 	pSectionAP->getAttribute("header", szHeaderExists);
-	const XML_Char * szFooterExists = NULL;
+	const gchar * szFooterExists = NULL;
 	pSectionAP->getAttribute("footer", szFooterExists);
-	const XML_Char * szDomDir = PP_evalProperty("dom-dir",
+	const gchar * szDomDir = PP_evalProperty("dom-dir",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
@@ -4646,13 +4646,13 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 	const PP_AttrProp * pBookmarkAP = NULL;
 	m_pDocument->getAttrProp(api,&pBookmarkAP);
 
-	const XML_Char * szType = NULL;
+	const gchar * szType = NULL;
 	bool bFound = pBookmarkAP->getAttribute("type", szType);
 	if (!bFound) {
 		UT_DEBUGMSG (("RTF_Export: cannot get type for bookmark\n"));
 		return;
 	}
-	const XML_Char * szName = NULL;
+	const gchar * szName = NULL;
 	bFound = pBookmarkAP->getAttribute("name", szName);
 	if (!bFound) {
 		UT_DEBUGMSG (("RTF_Export: cannot get name for bookmark\n"));
@@ -4681,7 +4681,7 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	const PP_AttrProp * pHyperlinkAP = NULL;
 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
 
-	const XML_Char * szHyper = NULL;
+	const gchar * szHyper = NULL;
 	bool bFound = pHyperlinkAP->getAttribute("xlink:href", szHyper);
 	if (!bFound)
 	{
@@ -4710,7 +4710,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 
 	// fetch the "name" of the image and use it to fetch the actual image data.
 
-	const XML_Char * szDataID = NULL;
+	const gchar * szDataID = NULL;
 	bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
 	if (!bFoundDataID)
 	{
@@ -4730,12 +4730,12 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	// see if the image has a width/height attribute that should
 	// override the actual pixel size of the image.
 
-	const XML_Char * szWidthProp = NULL;
-	const XML_Char * szHeightProp = NULL;
-	const XML_Char * szCroplProp = NULL;
-	const XML_Char * szCroprProp = NULL;
-	const XML_Char * szCroptProp = NULL;
-	const XML_Char * szCropbProp = NULL;
+	const gchar * szWidthProp = NULL;
+	const gchar * szHeightProp = NULL;
+	const gchar * szCroplProp = NULL;
+	const gchar * szCroprProp = NULL;
+	const gchar * szCroptProp = NULL;
+	const gchar * szCropbProp = NULL;
 	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
 	bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
 	bool bFoundCropl = pImageAP->getProperty ("cropl",szCroplProp);
@@ -4787,7 +4787,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			{
 			        double dWidth = UT_convertToInches(szWidthProp);   // Our "goal" width is _before_ scaling
 				double scalex = dWidth/dImageWidth;                // How intuitive!
-			        const XML_Char * szWidthGoal = UT_convertInchesToDimensionString(DIM_IN, dImageWidth,".4");
+			        const gchar * szWidthGoal = UT_convertInchesToDimensionString(DIM_IN, dImageWidth,".4");
 				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",static_cast<const char*>(szWidthGoal),0);
 				UT_uint32 iscalex = static_cast<UT_uint32>(100.0*scalex);
 				m_pie->_rtf_keyword("picscalex",iscalex);
@@ -4797,7 +4797,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			{
 			        double dHeight = UT_convertToInches(szHeightProp);
 				double scaley = dHeight/dImageHeight;
-			        const XML_Char * szHeightGoal = UT_convertInchesToDimensionString(DIM_IN, dImageHeight,".4");
+			        const gchar * szHeightGoal = UT_convertInchesToDimensionString(DIM_IN, dImageHeight,".4");
 				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",static_cast<const char*>(szHeightGoal),0);
 				UT_uint32 iscaley = static_cast<UT_uint32>(100.0*scaley);
 				m_pie->_rtf_keyword("picscaley",iscaley);

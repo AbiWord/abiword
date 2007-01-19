@@ -74,7 +74,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
-	const XML_Char * pszEmbedType = NULL;
+	const gchar * pszEmbedType = NULL;
 	pSpanAP->getProperty("embed-type", pszEmbedType);
 	UT_ASSERT(pszEmbedType);
 	UT_DEBUGMSG(("Embed Type %s \n",pszEmbedType));

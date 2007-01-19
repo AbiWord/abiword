@@ -53,14 +53,14 @@
 	read-only segment.
 */
 #ifndef BIDI_RTL_DOMINANT
-	XML_Char def_dom_dir[]="ltr";
-	XML_Char default_direction[]="ltr";
-	XML_Char text_align[]="left\0";		//the '\0' is needed so that we can copy
+	gchar def_dom_dir[]="ltr";
+	gchar default_direction[]="ltr";
+	gchar text_align[]="left\0";		//the '\0' is needed so that we can copy
 										//the word 'right' here
 #else
-	XML_Char def_dom_dir[]="rtl";
-	XML_Char default_direction[]="rtl";
-	XML_Char text_align[]="right";
+	gchar def_dom_dir[]="rtl";
+	gchar default_direction[]="rtl";
+	gchar text_align[]="right";
 #endif
 
 // KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
@@ -265,7 +265,7 @@ static int s_compare (const void * a, const void * b)
 
 /*****************************************************************/
 
-const PP_Property * PP_lookupProperty(const XML_Char * name)
+const PP_Property * PP_lookupProperty(const gchar * name)
 {
 	PP_Property * prop = NULL;
 
@@ -275,7 +275,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 }
 
 //allows us to reset the default value for the direction settings;
-void PP_resetInitialBiDiValues(const XML_Char * pszValue)
+void PP_resetInitialBiDiValues(const gchar * pszValue)
 {
 	int i;
 	int count = NrElements(_props);
@@ -293,7 +293,7 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 		else if ((0 == strcmp(_props[i].m_pszName, "text-align")))
 		{
 			UT_DEBUGMSG(("reseting text-align (%s)\n", pszValue));
-			if(pszValue[0] == (XML_Char)'r')
+			if(pszValue[0] == (gchar)'r')
 				strncpy(_props[i].m_pszInitial,"right", 5);
 			else
 				strncpy(_props[i].m_pszInitial, "left", 4);
@@ -306,14 +306,14 @@ void PP_setDefaultFontFamily(const char* pszFamily)
 {
 	static UT_String family(pszFamily);
 	PP_Property* prop = static_cast<PP_Property*>(bsearch ("font-family", _props, NrElements(_props), sizeof(_props[0]), s_compare));
-	prop->m_pszInitial = const_cast<XML_Char*>(reinterpret_cast<const XML_Char*>(family.c_str()));
+	prop->m_pszInitial = const_cast<gchar*>(reinterpret_cast<const gchar*>(family.c_str()));
 }
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {
 	PD_Style * pStyle = NULL;
 
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 //
 // SHIT. This is where the style/name split gets really hairy. This index AP MIGHT be
 // from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME
@@ -340,12 +340,12 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	return pStyle;
 }
 
-static const XML_Char * s_evalProperty (const PP_Property * pProp,
+static const gchar * s_evalProperty (const PP_Property * pProp,
 										const PP_AttrProp * pAttrProp,
 										PD_Document * pDoc,
 										bool bExpandStyles)
 {
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 
 	if (pAttrProp->getProperty (pProp->getName(), szValue))
 		{
@@ -368,7 +368,7 @@ static const XML_Char * s_evalProperty (const PP_Property * pProp,
 	return NULL;
 }
 
-const XML_Char * PP_evalProperty (const XML_Char *  pszName,
+const gchar * PP_evalProperty (const gchar *  pszName,
 								  const PP_AttrProp * pSpanAttrProp,
 								  const PP_AttrProp * pBlockAttrProp,
 								  const PP_AttrProp * pSectionAttrProp,
@@ -402,7 +402,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 
 	// see if the property is on the Span item.
 
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 
 	// TODO: ?? make lookup more efficient by tagging each property with scope (block, char, section)
 
@@ -558,7 +558,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 	return szValue;
 }
 
-const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
+const PP_PropertyType * PP_evalPropertyType(const gchar *  pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
@@ -671,7 +671,7 @@ UT_uint32        PP_getPropertyCount()
 	return (sizeof(_props)/sizeof(PP_Property));
 }
 
-const XML_Char * PP_getNthPropertyName(UT_uint32 n)
+const gchar * PP_getNthPropertyName(UT_uint32 n)
 {
 	return _props[n].getName();
 }
@@ -700,7 +700,7 @@ const PP_PropertyType *	PP_Property::getInitialType(tProperty_type Type) const
 	return m_pProperty;
 }
 
-PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const XML_Char *p_init)
+PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const gchar *p_init)
 {
 	PP_PropertyType *p_property = NULL;
 	switch(Type)
@@ -729,22 +729,22 @@ PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const 
 	return p_property;
 }
 
-PP_PropertyTypeColor::PP_PropertyTypeColor(const XML_Char *p_init)
+PP_PropertyTypeColor::PP_PropertyTypeColor(const gchar *p_init)
 {
 	UT_parseColor(p_init, Color);
 }
 
-PP_PropertyTypeBool::PP_PropertyTypeBool(const XML_Char *p_init)
+PP_PropertyTypeBool::PP_PropertyTypeBool(const gchar *p_init)
 {
 	State = (strcmp("yes", p_init) != 0);
 }
 
-PP_PropertyTypeInt::PP_PropertyTypeInt(const XML_Char *p_init)
+PP_PropertyTypeInt::PP_PropertyTypeInt(const gchar *p_init)
 {
 	Value = atoi(p_init);
 }
 
-PP_PropertyTypeSize::PP_PropertyTypeSize(const XML_Char *p_init)
+PP_PropertyTypeSize::PP_PropertyTypeSize(const gchar *p_init)
 {
 	Value = UT_convertDimensionless(p_init);
 	Dim = UT_determineDimension(p_init);

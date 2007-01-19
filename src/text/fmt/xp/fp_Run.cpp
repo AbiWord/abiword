@@ -412,7 +412,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	
 	//evaluate the "display" property and superimpose it over anything
 	//we got as the result of revisions
-	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
+	const gchar *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
 												 pSectionAP, pDoc, true);
 
 	if(pszDisplay && !strcmp(pszDisplay,"none"))
@@ -1882,18 +1882,18 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 //
 // Lookup Decoration properties for this run
 //
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
+	const gchar *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
 	_setLineWidth(getToplineThickness());
 
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
-	XML_Char* p;
+	gchar* p;
 	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}
 	UT_ASSERT(p || !pszDecor);
-	XML_Char*	q = strtok(p, " ");
+	gchar*	q = strtok(p, " ");
 
 	while (q)
 	{
@@ -2889,8 +2889,8 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 
 	getSpanAP(pAP);
 	
-	const XML_Char * pTarget;
-	const XML_Char * pName;
+	const gchar * pTarget;
+	const gchar * pName;
 	bool bFound = false;
 	UT_uint32 k = 0;
 
@@ -2906,7 +2906,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	if(bFound)
 	{
 		UT_uint32 iTargetLen = strlen(pTarget);
-		m_pTarget = new XML_Char [iTargetLen + 1];
+		m_pTarget = new gchar [iTargetLen + 1];
 		strncpy(m_pTarget, pTarget, iTargetLen + 1);
 		m_bIsStart = true;
 		//if this is a start of the hyperlink, we set m_pHyperlink to this,
@@ -3017,7 +3017,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties this %x block %x \n",this,getBlock()));
 	_inheritProperties();
 	xxx_UT_DEBUGMSG(("After Inherit props Height is %d \n",getHeight()));
-	const XML_Char* pRevision = NULL;
+	const gchar* pRevision = NULL;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
 	{
@@ -3339,13 +3339,13 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pSpanAP = pSpanAP;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
-	const XML_Char * szWidth = NULL;
+	const gchar * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
 	{
 		szWidth = "0in";
 	}
-	const XML_Char * szHeight = NULL;
+	const gchar * szHeight = NULL;
 	pSpanAP->getProperty("height", szHeight);
 	if(pG == NULL)
 	{
@@ -3911,8 +3911,8 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 
 	
-	const XML_Char* pszType = NULL;
-	const XML_Char* pszParam = NULL;
+	const gchar* pszType = NULL;
+	const gchar* pszParam = NULL;
 
 	if(pSpanAP)
 	{
@@ -3964,7 +3964,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDescent(pG->getFontDescent(_getFont()));
 	_setHeight(pG->getFontHeight(_getFont()));
 
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const gchar * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	if (0 == strcmp(pszPosition, "superscript"))
 	{
@@ -3981,16 +3981,16 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 //
 // Lookup Decoration properties for this run
 //
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
+	const gchar *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
 	_setLineWidth(getToplineThickness());
 	_setDecorations(0);
-	XML_Char* p;
+	gchar* p;
 	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}
 	UT_ASSERT(p || !pszDecor);
-	XML_Char*	q = strtok(p, " ");
+	gchar*	q = strtok(p, " ");
 
 	while (q)
 	{
@@ -4301,7 +4301,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.ch_sp);
 	}
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4322,7 +4322,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4343,7 +4343,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4364,7 +4364,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4384,7 +4384,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4406,7 +4406,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4430,7 +4430,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
 	if (getField())
-	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4454,7 +4454,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4477,7 +4477,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4500,7 +4500,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4523,7 +4523,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4546,7 +4546,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(g_strdup(szFieldValue)));
+		getField()->setValue(static_cast<const gchar*>(g_strdup(szFieldValue)));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4569,7 +4569,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4592,7 +4592,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4615,7 +4615,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4633,7 +4633,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	time_t	tim = time(NULL);
 	UT_UTF8String_sprintf(szFieldValue, "%ld", static_cast<long>(tim));
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -4646,7 +4646,7 @@ bool fp_FieldDateTimeCustomRun::calculateValue(void)
 {
 	fd_Field * fld = getField();
 	if (fld) {
-	  const XML_Char * param = fld->getParameter ();
+	  const gchar * param = fld->getParameter ();
 
 	  if (!param) // sensible fallback if no param specified
 		  param = "%x %X";
@@ -4661,7 +4661,7 @@ bool fp_FieldDateTimeCustomRun::calculateValue(void)
 	  
 	  strftime(szFieldValue, FPFIELD_MAX_LENGTH, param, pTime);
 	  if (getField())
-		  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		  getField()->setValue(static_cast<const gchar*>(szFieldValue));
 	  
 	  UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 	  
@@ -4687,7 +4687,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4702,7 +4702,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_ID);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_ID));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_ID));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4714,7 +4714,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_Version);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Version));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_Version));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4726,7 +4726,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_Options);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Options));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_Options));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4738,7 +4738,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_Target);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Target));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_Target));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4750,7 +4750,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_CompileDate);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_CompileDate));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_CompileDate));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4762,7 +4762,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 {
 	UT_UTF8String szFieldValue(XAP_App::s_szBuild_CompileTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_CompileTime));
+		getField()->setValue(static_cast<const gchar*>(XAP_App::s_szBuild_CompileTime));
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
 
@@ -4771,7 +4771,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid;
+	const gchar * footid;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4789,7 +4789,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	{
 		return false;
 	}
-	const XML_Char * footid = NULL;
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4820,7 +4820,7 @@ bool fp_FieldFootnoteRefRun::canBreakBefore(void) const
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid;
+	const gchar * footid;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4834,7 +4834,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid = NULL;
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4862,7 +4862,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid;
+	const gchar * footid;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4877,7 +4877,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 {
 
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid = NULL;
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4905,7 +4905,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid;
+	const gchar * footid;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4920,7 +4920,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 {
 
 	const PP_AttrProp * pp = getSpanAP();
-	const XML_Char * footid = NULL;
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
@@ -4965,7 +4965,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%X", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4988,7 +4988,7 @@ bool fp_FieldDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+		getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -5017,7 +5017,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	strcpy (szFieldValue, name);
 
 	if (getField())
-	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -5095,7 +5095,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	}
 
 	if (getField())
-	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -5196,7 +5196,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	}
 
 	if (getField())
-	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -5222,7 +5222,7 @@ bool fp_FieldPageCountRun::calculateValue(void)
 	}
 
 	if (getField())
-	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue.utf8_str()));
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue.utf8_str()));
 
 	return _setValue(szFieldValue.ucs4_str().ucs4_str());
 }
@@ -5239,7 +5239,7 @@ bool fp_FieldMailMergeRun::calculateValue(void)
 {
 	fd_Field * fld = getField();
 	if (fld) {
-	  const XML_Char * param = fld->getParameter ();
+	  const gchar * param = fld->getParameter ();
 
 	  if (!param)
 	    return false;
@@ -5262,7 +5262,7 @@ bool fp_FieldMailMergeRun::calculateValue(void)
 	      value = pDoc->getMailMergeField(param);
 	    }
 
-	  fld->setValue(static_cast<const XML_Char*>(value.utf8_str()));
+	  fld->setValue(static_cast<const gchar*>(value.utf8_str()));
 
 	  return _setValue(value.ucs4_str().ucs4_str());
 	}
@@ -5288,7 +5288,7 @@ bool fp_FieldMetaRun::calculateValue(void)
 	  value = " ";
 
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(value.utf8_str()));
+		getField()->setValue(static_cast<const gchar*>(value.utf8_str()));
 
 	return _setValue(value.ucs4_str().ucs4_str());
 }
@@ -5693,7 +5693,7 @@ UT_BidiCharType fp_Run::getVisDirection()
 		else
 		{
 			bool b;
-			XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b);
+			XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b);
 			if(b)
 				return UT_BIDI_RTL;
 			else
@@ -5724,18 +5724,18 @@ void fp_Run::setVisDirection(UT_BidiCharType iDir)
 #if 0
 void fp_Run::setDirectionProperty(UT_BidiCharType dir)
 {
-	const XML_Char * prop[] = {NULL, NULL, 0};
-	const XML_Char direction[] = "dir";
-	const XML_Char rtl[] = "rtl";
-	const XML_Char ltr[] = "ltr";
+	const gchar * prop[] = {NULL, NULL, 0};
+	const gchar direction[] = "dir";
+	const gchar rtl[] = "rtl";
+	const gchar ltr[] = "ltr";
 	UT_String other;
 
-	prop[0] = static_cast<const XML_Char*>(&direction);
+	prop[0] = static_cast<const gchar*>(&direction);
 
 	switch(dir)
 	{
-		case UT_BIDI_LTR:  prop[1] = static_cast<const XML_Char*>(&ltr);     break;
-		case UT_BIDI_RTL:  prop[1] = static_cast<const XML_Char*>(&rtl);     break;
+		case UT_BIDI_LTR:  prop[1] = static_cast<const gchar*>(&ltr);     break;
+		case UT_BIDI_RTL:  prop[1] = static_cast<const gchar*>(&rtl);     break;
 		default:
 		 {
 		 	// for anything other we will print the UT_BidiCharType value
@@ -5744,7 +5744,7 @@ void fp_Run::setDirectionProperty(UT_BidiCharType dir)
 		 	// (we could do this for rtl and ltr as well, but "rtl" and "ltr"
 		 	// are much more informative.)
 		 	UT_String_sprintf(other,"fbt%d",static_cast<UT_uint32>(dir));
-		 	prop[1] = static_cast<const XML_Char*>(other.c_str()); break;
+		 	prop[1] = static_cast<const gchar*>(other.c_str()); break;
 		 }
 	};
 

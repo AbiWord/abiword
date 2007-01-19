@@ -42,11 +42,11 @@ public:
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
 	bool						setIndexAP(PT_AttrPropIndex indexAP);
 
-	bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type) const;
-	bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
-	bool					getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue);
-	bool					getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue);
+	bool					getProperty(const gchar * szName, const gchar *& szValue) const;
+	const PP_PropertyType *	getPropertyType(const gchar * szName, tProperty_type Type) const;
+	bool					getAttribute(const gchar * szName, const gchar *& szValue) const;
+	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue);
+	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue);
 	
 	PD_Style *				getBasedOn(void);
 	PD_Style *				getFollowedBy(void);
@@ -58,24 +58,24 @@ public:
 	bool					isList(void);
 	bool					isDisplayed(void) const { return m_bDisplayed; }
 
-	bool					addProperty(const XML_Char * szName, const XML_Char * szValue);
-	bool					addProperties(const XML_Char ** pProperties);
-	bool					setAllAttributes(const XML_Char ** pAtts);
-	bool					addAttributes(const XML_Char ** pAtts);
+	bool					addProperty(const gchar * szName, const gchar * szValue);
+	bool					addProperties(const gchar ** pProperties);
+	bool					setAllAttributes(const gchar ** pAtts);
+	bool					addAttributes(const gchar ** pAtts);
 	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth);
 	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth);
 	size_t getPropertyCount(void) const;
 	size_t getAttributeCount(void) const;
-	bool getNthProperty (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const;
-	bool getNthAttribute (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const;
+	bool getNthProperty (int ndx, const gchar *&szName,
+			     const gchar *&szValue) const;
+	bool getNthAttribute (int ndx, const gchar *&szName,
+			     const gchar *&szValue) const;
 
 	inline const char * getName (void) const {return m_szName;}
 
 protected:
-	bool					_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
-	bool					_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
+	bool					_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
+	bool					_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
 
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;

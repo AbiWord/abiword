@@ -68,7 +68,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 /*****************************************************************/
 
-XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
+XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const gchar * szSchemeName)
 	: m_hash(41)
 {
 	m_pPrefs = pPrefs;
@@ -85,7 +85,7 @@ XAP_PrefsScheme::~XAP_PrefsScheme(void)
 	FREEP(m_szName);
 
 	// loop through and g_free the values
-	UT_GenericVector<XML_Char*> * pVec = m_hash.enumerate ();
+	UT_GenericVector<gchar*> * pVec = m_hash.enumerate ();
 
 	UT_uint32 cnt = pVec->size();
 
@@ -98,21 +98,21 @@ XAP_PrefsScheme::~XAP_PrefsScheme(void)
 	DELETEP(pVec);
 }
 
-const XML_Char * XAP_PrefsScheme::getSchemeName(void) const
+const gchar * XAP_PrefsScheme::getSchemeName(void) const
 {
 	return m_szName;
 }
 
-bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
+bool XAP_PrefsScheme::setSchemeName(const gchar * szNewSchemeName)
 {
 	FREEP(m_szName);
 	return (NULL != (m_szName = g_strdup(szNewSchemeName)));
 }
 
-bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
+bool XAP_PrefsScheme::setValue(const gchar * szKey, const gchar * szValue)
 {
 	++m_uTick;
-	XML_Char * pEntry = m_hash.pick(szKey);
+	gchar * pEntry = m_hash.pick(szKey);
 	if (pEntry)
 	{
 		if (strcmp(szValue,pEntry) == 0)
@@ -132,14 +132,14 @@ bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 	return true;
 }
 
-bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
+bool XAP_PrefsScheme::setValueBool(const gchar * szKey, bool bValue)
 {
-	return setValue(szKey, reinterpret_cast<const XML_Char*>((bValue) ? "1" : "0"));
+	return setValue(szKey, reinterpret_cast<const gchar*>((bValue) ? "1" : "0"));
 }
 
-bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_PrefsScheme::getValue(const gchar * szKey, const gchar ** pszValue) const
 {
-	XML_Char *pEntry = m_hash.pick(szKey);
+	gchar *pEntry = m_hash.pick(szKey);
 	if (!pEntry)
 		return false;
 
@@ -150,7 +150,7 @@ bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValu
 
 bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 {
-	XML_Char *pEntry = m_hash.pick(stKey);
+	gchar *pEntry = m_hash.pick(stKey);
 	if (!pEntry)
 		return false;
 
@@ -158,11 +158,11 @@ bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 	return true;
 }
 
-bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, bool * pbValue) const
+bool XAP_PrefsScheme::getValueBool(const gchar * szKey, bool * pbValue) const
 {
 	*pbValue = false;				// assume something
 	
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	if (!getValue(szKey,&szValue))
 		return false;				// bogus keyword ??
 
@@ -185,7 +185,7 @@ bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, bool * pbValue) const
 	}
 }
 
-bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const
+bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue) const
 {
 	if (k >= static_cast<UT_uint32>(m_hash.size()))
 		return false;
@@ -506,7 +506,7 @@ XAP_PrefsScheme * XAP_Prefs::getNthPluginScheme(UT_uint32 k) const
 	return _getNthScheme(k, m_vecPluginSchemes);
 }
 
-XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
+XAP_PrefsScheme * XAP_Prefs::getScheme(const gchar * szSchemeName) const
 {
 	UT_uint32 kLimit = m_vecSchemes.getItemCount();
 	UT_uint32 k;
@@ -526,7 +526,7 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	return NULL;
 }
 
-XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const XML_Char * szSchemeName) const
+XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const gchar * szSchemeName) const
 {
 	UT_uint32 kLimit = m_vecPluginSchemes.getItemCount();
 	UT_uint32 k;
@@ -548,8 +548,8 @@ XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const XML_Char * szSchemeName) cons
 
 bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 {
-	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
-	const XML_Char * szThisSchemeName = pNewScheme->getSchemeName();
+	const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
+	const gchar * szThisSchemeName = pNewScheme->getSchemeName();
 	
 	if (strcmp(static_cast<const char*>(szThisSchemeName), static_cast<const char*>(szBuiltinSchemeName)) == 0)
 	{
@@ -575,7 +575,7 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 		{
 	
 
-		const XML_Char new_name[] = "_custom_";
+		const gchar new_name[] = "_custom_";
 
 			if (setCurrentScheme(new_name))
 			{
@@ -599,7 +599,7 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 	return m_currentScheme;
 }
 
-bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
+bool XAP_Prefs::setCurrentScheme(const gchar * szSchemeName)
 {
 	// set the current scheme.
 
@@ -616,10 +616,10 @@ bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 }
 
 /*****************************************************************/
-static const XML_Char DEBUG_PREFIX[] = "DeBuG";  // case insensitive
-static const XML_Char NO_PREF_VALUE[] = "";
+static const gchar DEBUG_PREFIX[] = "DeBuG";  // case insensitive
+static const gchar NO_PREF_VALUE[] = "";
 
-bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue, bool bAllowBuiltin) const
+bool XAP_Prefs::getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
@@ -662,7 +662,7 @@ bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue, bool b
 	return false;
 }
 
-bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool bAllowBuiltin) const
+bool XAP_Prefs::getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
@@ -700,7 +700,7 @@ extern "C" static int n_compare (const void *name, const void *id)
 
 /*****************************************************************/
 
-void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
+void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 {
 	if (m_bLoadSystemDefaultFile) /* redirection - used to happen earlier */
 	{
@@ -739,7 +739,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		// we expect something of the form:
 		// <AbiPreferences app="AbiWord" ver="1.0">...</AbiPreferences>
 
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -781,7 +781,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		//     useenvlocale="1"
 		//     />
 
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -836,7 +836,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		if (!pNewScheme)
 			goto MemoryError;
 		
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (*a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -845,7 +845,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			{
 				bIsNamed = true;
 				
-				const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
+				const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
 
 				if (strcmp(static_cast<const char*>(a[1]), static_cast<const char*>(szBuiltinSchemeName)) == 0)
 				{
@@ -889,7 +889,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		if (!pNewScheme)
 			goto MemoryError;
 		
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (*a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -930,7 +930,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		// we expect something of the form:
 		// <Recent max="4" name1="v1" name2="v2" ... />
 
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (*a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -941,9 +941,9 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			}
 			else if (strncmp(static_cast<const char*>(a[0]), "name", 4) == 0)
 			{
-				// NOTE: taking advantage of the fact that XML_Char == char
-				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
-				XML_Char * sz;
+				// NOTE: taking advantage of the fact that gchar == char
+				UT_ASSERT((sizeof(gchar) == sizeof(char)));
+				gchar * sz;
 
 				// see bug 10709 - Non-URI paths aren't displayed correctly in the file menu
 				// this provides a seamless migration
@@ -995,7 +995,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			m_geom.m_posy = posy;
 			m_geom.m_flags = flags;
 			
-			const XML_Char ** a = atts;
+			const gchar ** a = atts;
 			while (*a)
 			{
 				UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -1060,13 +1060,13 @@ InvalidFileError:
 	return;
 }
 
-void XAP_Prefs::endElement(const XML_Char * /* name */)
+void XAP_Prefs::endElement(const gchar * /* name */)
 {
 	// everything in this file is contained in start-tags
 	return;
 }
 
-void XAP_Prefs::charData(const XML_Char * /* s */, int /* len */)
+void XAP_Prefs::charData(const gchar * /* s */, int /* len */)
 {
 	// everything in this file is contained in start-tags
 	return;
@@ -1236,7 +1236,7 @@ bool XAP_Prefs::savePrefsFile(void)
 		UT_uint32 kLimit = m_vecSchemes.getItemCount();
 		UT_uint32 k;
 
-		const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
+		const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
 
 		for (k=0; k<kLimit; k++)
 		{
@@ -1247,7 +1247,7 @@ bool XAP_Prefs::savePrefsFile(void)
 				continue;
 			}
 
-			const XML_Char * szThisSchemeName = p->getSchemeName();
+			const gchar * szThisSchemeName = p->getSchemeName();
 			bool bIsBuiltin = (p == m_builtinScheme);
 
 			if (bIsBuiltin)
@@ -1265,8 +1265,8 @@ bool XAP_Prefs::savePrefsFile(void)
 
 			fprintf(fp,"\n\t<Scheme\n\t\tname=\"%s\"\n",szThisSchemeName);
 
-			const XML_Char * szKey;
-			const XML_Char * szValue;
+			const gchar * szKey;
+			const gchar * szValue;
 			UT_uint32 j;
 
 			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
@@ -1282,7 +1282,7 @@ bool XAP_Prefs::savePrefsFile(void)
 				{
 					// for non-builtin sets, we only print the values which are different
 					// from the builtin set.
-					const XML_Char * szBuiltinValue = NO_PREF_VALUE;
+					const gchar * szBuiltinValue = NO_PREF_VALUE;
 					m_builtinScheme->getValue(szKey,&szBuiltinValue);
 					if (strcmp(static_cast<const char*>(szValue),static_cast<const char*>(szBuiltinValue)) != 0 ||
 						// Always print debug values
@@ -1342,11 +1342,11 @@ bool XAP_Prefs::savePrefsFile(void)
 				continue;
 			}
 
-			const XML_Char * szThisSchemeName = p->getSchemeName();
+			const gchar * szThisSchemeName = p->getSchemeName();
 			fprintf(fp,"\n\t<Plugin\n\t\tname=\"%s\"\n",szThisSchemeName);
 
-			const XML_Char * szKey;
-			const XML_Char * szValue;
+			const gchar * szKey;
+			const gchar * szValue;
 			UT_uint32 j;
 
 			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
@@ -1438,7 +1438,7 @@ Cleanup:
 
 /*****************************************************************/
 
-void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_Char **atts)
+void XAP_Prefs::_startElement_SystemDefaultFile(const gchar *name, const gchar **atts)
 {
 	// routine to parse system default preferences file and
 	// overlay values onto the builtin scheme.
@@ -1459,7 +1459,7 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 		// undefined -- we remember the last one that the XML parser
 		// give us.
 
-		const XML_Char ** a = atts;
+		const gchar ** a = atts;
 		while (a && *a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
@@ -1548,7 +1548,7 @@ void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 	}
 }
 
-void XAP_Prefs::_markPrefChange( const XML_Char *szKey )
+void XAP_Prefs::_markPrefChange( const gchar *szKey )
 {
 	if ( m_bInChangeBlock )
 	{

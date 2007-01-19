@@ -27,7 +27,7 @@
 
 
 
-void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * pszVal)
+void UT_PropVector::addOrReplaceProp(const gchar * pszProp, const gchar * pszVal)
 {
 	UT_ASSERT(pszVal);
 	
@@ -43,20 +43,20 @@ void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * 
 	}*/
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2) {
-		pszV = reinterpret_cast<const XML_Char *>(getNthItem(i));
+		pszV = reinterpret_cast<const gchar *>(getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0)) {
 			break;
 		}
 	}
 	if((iCount > 0) && (i < iCount)) {
-	    XML_Char* pVal;
-		XML_Char * val = g_strdup(pszVal);
+	    gchar* pVal;
+		gchar * val = g_strdup(pszVal);
 		setNthItem(i+1, val, &pVal);
 		FREEP(pVal);
 	}
 	else {
-		XML_Char * prop = g_strdup(pszProp);
-		XML_Char * val = g_strdup(pszVal);
+		gchar * prop = g_strdup(pszProp);
+		gchar * val = g_strdup(pszVal);
 		addItem(prop);
 		addItem(val);
 	}
@@ -64,8 +64,8 @@ void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * 
 }
 
 
-void UT_PropVector::getProp(const XML_Char * pszProp,
-									   const XML_Char * &pszVal)
+void UT_PropVector::getProp(const gchar * pszProp,
+									   const gchar * &pszVal)
 {
 	UT_sint32 iCount = getItemCount();
 	const char * pszV = NULL;
@@ -92,9 +92,9 @@ void UT_PropVector::getProp(const XML_Char * pszProp,
  from the Vector of all properties of the current format.
  If the Property does not exists nothing happens
  \param UT_Vector &vec the vector to remove the pair from
- \param const XML_Char * pszProp the property name
+ \param const gchar * pszProp the property name
 */
-void UT_PropVector::removeProp(const XML_Char * pszProp)
+void UT_PropVector::removeProp(const gchar * pszProp)
 {
 	UT_sint32 iCount = getItemCount();
 	const char * pszV = NULL;
@@ -112,8 +112,8 @@ void UT_PropVector::removeProp(const XML_Char * pszProp)
 	}
 	if(i < iCount)
 	{
-		XML_Char * pSP = getNthItem(i);
-		XML_Char * pSV = getNthItem(i+1);
+		gchar * pSP = getNthItem(i);
+		gchar * pSV = getNthItem(i+1);
 		FREEP(pSP);
 		FREEP(pSV);
 		deleteNthItem(i+1);

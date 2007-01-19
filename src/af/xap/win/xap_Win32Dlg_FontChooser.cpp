@@ -117,7 +117,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_pFontSize && *m_pFontSize)
 	{
-		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+		UT_ASSERT(sizeof(char) == sizeof(gchar));
 		lf.lfHeight = (long) -(UT_convertToPoints(m_pFontSize))*4/3;
 	}
 	else

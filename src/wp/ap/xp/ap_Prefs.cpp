@@ -76,7 +76,7 @@ void AP_Prefs::fullInit(void)
 		   
 /*****************************************************************/
 
-const XML_Char * AP_Prefs::getBuiltinSchemeName(void) const
+const gchar * AP_Prefs::getBuiltinSchemeName(void) const
 {
 	return "_builtin_";
 }
@@ -94,7 +94,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	// layout).  we let the System Administrator to
 	// override our built-in values.
 	
-	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
+	const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
 	
 	XAP_PrefsScheme * pScheme = new XAP_PrefsScheme(this, szBuiltinSchemeName);
 	if (!pScheme)
@@ -102,8 +102,8 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 
 	struct _table
 	{
-		XML_Char *		m_szKey;
-		XML_Char *		m_szValue;
+		gchar *		m_szKey;
+		gchar *		m_szValue;
 	};
 
 	struct _table _t[] =
@@ -123,7 +123,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	UT_uint32 k;
 	for (k=0; k<NrElements(_t); k++)
 	{
-		XML_Char *xp;
+		gchar *xp;
 		bool bDelete = true;
 
 		// do not decode empty strings
@@ -134,7 +134,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 		}
 		else
 		{
-			xp =  (XML_Char*)UT_XML_Decode(_t[k].m_szValue);
+			xp =  (gchar*)UT_XML_Decode(_t[k].m_szValue);
 		}
 		
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));

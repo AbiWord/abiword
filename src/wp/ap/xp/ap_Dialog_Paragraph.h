@@ -64,8 +64,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_TABS } tAnswer;
 
-	bool setDialogData(const XML_Char ** pProps);
- 	bool getDialogData(const XML_Char **& pProps);
+	bool setDialogData(const gchar ** pProps);
+ 	bool getDialogData(const gchar **& pProps);
 
 	// expects a width in paper units.
 	void setMaxWidth(UT_sint32 width) { m_iMaxWidth = UT_inchesFromPaperUnits(width); }
@@ -87,9 +87,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	UT_sint32 			_getMenuItemValue(tControl item);
 	void 				_setCheckItemValue(tControl item, tCheckState value, tOperation = op_UICHANGE);
 	tCheckState 		_getCheckItemValue(tControl item);
-	void 				_setSpinItemValue(tControl item, const XML_Char * value, tOperation = op_UICHANGE);
-	const XML_Char * 	_getSpinItemValue(tControl item);
-	const XML_Char *	_makeAbsolute(const XML_Char * value);
+	void 				_setSpinItemValue(tControl item, const gchar * value, tOperation = op_UICHANGE);
+	const gchar * 	_getSpinItemValue(tControl item);
+	const gchar *	_makeAbsolute(const gchar * value);
 
 	void				_doSpin(tControl edit, UT_sint32 amt);
 	virtual void		_syncControls(tControl changed, bool bAll = false);
@@ -99,8 +99,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// final dialog answer
 	tAnswer					m_answer;
 
-	XML_Char *				m_pageLeftMargin;
-	XML_Char *				m_pageRightMargin;
+	gchar *				m_pageLeftMargin;
+	gchar *				m_pageRightMargin;
 
 	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;
@@ -113,14 +113,14 @@ private:
 	private:
 		UT_sint32		m_siData;
 		tCheckState		m_csData;
-		XML_Char *		m_szData;
+		gchar *		m_szData;
 
 		bool			m_bChanged;
 
 	public:
 		sControlData (UT_sint32 data);
 		sControlData (tCheckState data);
-		sControlData (XML_Char * data = 0); // default is empty string
+		sControlData (gchar * data = 0); // default is empty string
 
 		sControlData (const sControlData & rhs);
 
@@ -138,7 +138,7 @@ private:
 			data = m_csData;
 			return true;
 		}
-		inline bool getData (const XML_Char *& data) const
+		inline bool getData (const gchar *& data) const
 		{
 			data = m_szData;
 			return (data != NULL);
@@ -154,7 +154,7 @@ private:
 			m_csData = data;
 			return true;
 		}
-		bool setData (const XML_Char * data);
+		bool setData (const gchar * data);
 
 		inline bool changed () const { return m_bChanged; }
 		inline void changed (bool c) { m_bChanged = c; }

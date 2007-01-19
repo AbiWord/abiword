@@ -152,82 +152,28 @@ bool XAP_Dictionary::load(void)
 	return true;
 }
 
-static void _smashUTF8(UT_GrowBuf * pgb)
-{
-	// smash any UTF-8 sequences into a single UCS char
-
-	// since we change the GrowBuf in-place, we
-	// recompute the length and buffer pointer
-	// to avoid accidents....
-
-	for (UT_uint32 k=0; (k < pgb->getLength()); k++)
-	{
-		UT_UCS4Char * p = reinterpret_cast<UT_UCS4Char*>(pgb->getPointer(k));
-		UT_UCS4Char  ck = *p;
-		
-		if (ck < 0x0080)						// latin-1
-			continue;
-		else if ((ck & 0x00f0) == 0x00f0)		// lead byte in 4-byte surrogate pair, ik
-		{
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
-			continue;
-		}
-		else if ((ck & 0x00e0) == 0x00e0)		// lead byte in 3-byte sequence
-		{
-			UT_ASSERT(k+2 < pgb->getLength());
-			XML_Char buf[4];
-			buf[0] = static_cast<XML_Char>(p[0]);
-			buf[1] = static_cast<XML_Char>(p[1]);
-			buf[2] = static_cast<XML_Char>(p[2]);
-			buf[3] = 0;
-			UT_UCSChar ucs = UT_decodeUTF8char(buf,3);
-			pgb->overwrite(k,reinterpret_cast<UT_GrowBufElement*>(&ucs),1);
-			pgb->del(k+1,2);
-			continue;
-		}
-		else if ((ck & 0x00c0) == 0x00c0)		// lead byte in 2-byte sequence
-		{
-			UT_ASSERT(k+1 < pgb->getLength());
-			XML_Char buf[3];
-			buf[0] = static_cast<XML_Char>(p[0]);
-			buf[1] = static_cast<XML_Char>(p[1]);
-			buf[2] = 0;
-			UT_UCSChar ucs = UT_decodeUTF8char(buf,2);
-			pgb->overwrite(k,reinterpret_cast<UT_GrowBufElement*>(&ucs),1);
-			pgb->del(k+1,1);
-			continue;
-		}
-		else // ((ck & 0x0080) == 0x0080)		// trailing byte in multi-byte sequence
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			// let it remain as is...
-			continue;
-		}
-	}
-}
-
 #define X_ReturnIfFail(exp)		do { bool b = (exp); if (!b) return (false); } while (0)
 
 bool XAP_Dictionary::_parseUTF8(void)
 {
 	UT_GrowBuf gbBlock(1024);
 	bool bEatLF = false;
-	bool bSmashUTF8 = false;
-	unsigned char c;
+	gchar buf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	gint len;
 
-	while (fread(&c, 1, sizeof(c), m_fp) > 0)
+	while (fread(buf, 1, sizeof(gchar), m_fp) > 0)
 	{
-		switch (c)
+		switch (buf[0])
 		{
 		case '\r':
 		case '\n':
-			if ((c == '\n') && bEatLF)
+			if ((buf[0] == '\n') && bEatLF)
 			{
 				bEatLF = false;
 				break;
 			}
 
-			if (c == '\r')
+			if (buf[0] == '\r')
 			{
 				bEatLF = true;
 			}
@@ -236,26 +182,19 @@ bool XAP_Dictionary::_parseUTF8(void)
 			
 			if (gbBlock.getLength() > 0)
 			{
-				if (bSmashUTF8)
-					_smashUTF8(&gbBlock);
-
 				X_ReturnIfFail(addWord(reinterpret_cast<UT_UCS4Char*>(gbBlock.getPointer(0)), gbBlock.getLength()));
 				gbBlock.truncate(0);
-				bSmashUTF8 = false;
 			}
 			break;
 
 		default:
 			bEatLF = false;
 
-			// deal with plain character.  to simplify parsing logic,
-			// we just stuff all text chars (latin-1 and UTF-8 escape
-			// sequences) into the GrowBuf and will smash the UTF-8
-			// sequences into unicode in a moment.
-
-			if (c > 0x7f)
-				bSmashUTF8 = true;
-			UT_UCSChar uc = static_cast<UT_UCSChar>(c);
+			len = g_utf8_next_char(buf) - buf;
+			if (len > 1) {
+				fread (buf + 1, len - 1, sizeof (gchar), m_fp);
+			}
+			UT_UCSChar uc = g_utf8_get_char(buf);
 			X_ReturnIfFail(gbBlock.ins(gbBlock.getLength(),reinterpret_cast<UT_GrowBufElement*>(&uc),1));
 			break;
 		}
@@ -263,10 +202,6 @@ bool XAP_Dictionary::_parseUTF8(void)
 
 	if (gbBlock.getLength() > 0)
 	{
-		// if we have text left over (without final CR/LF), emit it now
-		if (bSmashUTF8)
-			_smashUTF8(&gbBlock);
-
 		X_ReturnIfFail(addWord(reinterpret_cast<UT_UCS4Char*>(gbBlock.getPointer(0)), gbBlock.getLength()));
 	}
 
@@ -313,9 +248,9 @@ void XAP_Dictionary::_outputUTF8(const UT_UCSChar * data, UT_uint32 length)
 	{
 		if (*pData > 0x007f)
 		{
-			const XML_Char * s = UT_encodeUTF8char(*pData++);
-			while (*s)
-				buf += (char)*s++;
+			gchar outbuf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+			g_unichar_to_utf8(*pData++, outbuf);
+			buf += outbuf;
 		}
 		else
 		{

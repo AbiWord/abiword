@@ -191,7 +191,7 @@ static int s_compareQ(const void * a, const void *b)
  */
 static int s_compareB(const void * l, const void *e)
 {
-	const XML_Char * L   = static_cast<const XML_Char *>(l);
+	const gchar * L   = static_cast<const gchar *>(l);
 	const UT_LangRecord * E = static_cast<const UT_LangRecord *>(e);
 
 #if 0
@@ -222,7 +222,7 @@ void UT_Language_updateLanguageNames()
     
     for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
     {
-        s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
+        s_Table[i].m_szLangName = const_cast<gchar *>(pSS->getValue(s_Table[i].m_nID));
     }
 
     qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
@@ -249,12 +249,12 @@ UT_uint32 UT_Language::getCount()
 	return (NrElements(s_Table));
 }
 
-const XML_Char * UT_Language::getNthLangCode(UT_uint32 n)
+const gchar * UT_Language::getNthLangCode(UT_uint32 n)
 {
 	return (s_Table[n].m_szLangCode);
 }
 
-const XML_Char * UT_Language::getNthLangName(UT_uint32 n)
+const gchar * UT_Language::getNthLangName(UT_uint32 n)
 {
 	return (s_Table[n].m_szLangName);
 }
@@ -264,7 +264,7 @@ const UT_uint32 UT_Language::getNthId(UT_uint32 n)
 	return (s_Table[n].m_nID);
 }
 
-const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
+const gchar * UT_Language::getCodeFromName(const gchar * szName)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
@@ -279,7 +279,7 @@ const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
 	return NULL;
 }
 
-UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
+UT_uint32 UT_Language::getIndxFromCode(const gchar * szCode)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
@@ -289,7 +289,7 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 	}
 
 	// see if our tables contain short version of this code, e.g., hr instead of hr-HR
-	static XML_Char szShortCode[7];
+	static gchar szShortCode[7];
 	strncpy(szShortCode, szCode,6);
 	szShortCode[6] = 0;
 
@@ -313,7 +313,7 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 	return 0;
 }
 
-UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
+UT_uint32 UT_Language::getIdFromCode(const gchar * szCode)
 {
 	const UT_LangRecord * e = getLangRecordFromCode(szCode);
 
@@ -336,7 +336,7 @@ UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 // possible to compare the language property by simply comparing the
 // pointers, rather than having to use strcmp()
 
-const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
+const gchar * UT_Language::getCodeFromCode(const gchar * szName)
 {
 	const UT_LangRecord * e = getLangRecordFromCode(szName);
 	
@@ -351,7 +351,7 @@ const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 	}
 }
 
-UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
+UT_LANGUAGE_DIR UT_Language::getDirFromCode(const gchar * szCode)
 {
 	const UT_LangRecord * e = getLangRecordFromCode(szCode);
 	
@@ -366,7 +366,7 @@ UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
 	}
 }
 
-const UT_LangRecord * UT_Language::getLangRecordFromCode(const XML_Char * szCode)
+const UT_LangRecord * UT_Language::getLangRecordFromCode(const gchar * szCode)
 {
 	const UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
 																   NrElements(s_Table),
@@ -374,7 +374,7 @@ const UT_LangRecord * UT_Language::getLangRecordFromCode(const XML_Char * szCode
 	if(!e)
 	{
 		// see if our tables contain short version of this code, e.g., hr instead of hr-HR
-		static XML_Char szShortCode[7];
+		static gchar szShortCode[7];
 		strncpy(szShortCode, szCode,6);
 		szShortCode[6] = 0;
 

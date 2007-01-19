@@ -434,7 +434,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	GtkWidget * windowColumns;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	//	XML_Char * unixstr = NULL;	// used for conversions
+	//	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle,s);
 	

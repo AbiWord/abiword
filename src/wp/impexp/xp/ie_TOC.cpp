@@ -155,7 +155,7 @@ bool TOC_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	bool bHaveProp = mDocument->getAttrProp (pcr->getIndexAP(), &pAP);
 
 	if (bHaveProp) {
-	  const XML_Char * szValue = 0;
+	  const gchar * szValue = 0;
 	  bool bHaveStyle  = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME,  szValue);
 	  
 	  if (bHaveStyle) {
@@ -264,7 +264,7 @@ bool IE_TOCHelper::isTOCStyle(const UT_UTF8String & styleName, int * out_level) 
   return false;
 }
 
-bool IE_TOCHelper::isTOCStyle(const XML_Char * styleName, int * out_level) const
+bool IE_TOCHelper::isTOCStyle(const gchar * styleName, int * out_level) const
 {
   return isTOCStyle(UT_UTF8String(styleName), out_level);
 }

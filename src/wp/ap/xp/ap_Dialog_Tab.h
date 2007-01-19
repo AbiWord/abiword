@@ -100,7 +100,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 					 	virtual void    _set##a( u ) = 0
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
-	SET_GATHER			(DefaultTabStop,	const XML_Char*);
+	SET_GATHER			(DefaultTabStop,	const gchar*);
 
 	// to populate the whole list
 	virtual void _setTabList(UT_uint32 count) = 0;

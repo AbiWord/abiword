@@ -301,7 +301,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 					  0, 0);
 
 
-	XML_Char *trans = NULL;
+	gchar *trans = NULL;
 
 	// placeholder so we stick to the enum's ordering
 	// does not show up in UI
@@ -695,7 +695,7 @@ AP_UnixDialog_Tab::_setLeader (eTabLeader l)
 }
 
 //! Get default tab stop.
-const XML_Char * 
+const gchar * 
 AP_UnixDialog_Tab::_gatherDefaultTabStop ()
 {
 	return gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
@@ -703,7 +703,7 @@ AP_UnixDialog_Tab::_gatherDefaultTabStop ()
 
 //! Set default tab stop.
 void 
-AP_UnixDialog_Tab::_setDefaultTabStop (const XML_Char *defaultTabStop)
+AP_UnixDialog_Tab::_setDefaultTabStop (const gchar *defaultTabStop)
 {
 	UT_DEBUGMSG (("ROB: _setDefaultTabStop '%s'\n", defaultTabStop));
 

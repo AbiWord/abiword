@@ -160,7 +160,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
 
-	pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+	pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation

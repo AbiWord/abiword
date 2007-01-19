@@ -1716,7 +1716,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 				UT_String sCellProps;
 				UT_String sVal;
 				UT_String sDum;
-				const XML_Char * attrs[3] = {"props",NULL,NULL};
+				const gchar * attrs[3] = {"props",NULL,NULL};
 				for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
 				{
 					sCellProps.clear();
@@ -1766,7 +1766,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 				UT_String sTop;
 				UT_String sBot;
 				const char * szVal = NULL;
-				const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
+				const gchar * sProps[5] = {NULL,NULL,NULL,NULL};
 				PT_DocPosition posCell = 0;
 				if(b)
 				{
@@ -2153,7 +2153,7 @@ void IE_Imp_RTF::HandleRow(void)
 void IE_Imp_RTF::HandleNoteReference(void)
 {
 	// see if we have a reference marker pending ...
-	const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+	const gchar * attribs[3] ={"footnote-id",NULL,NULL};
 
 	if(!m_bNoteIsFNote)
 	{
@@ -2250,7 +2250,7 @@ void IE_Imp_RTF::HandleNote(void)
 	}
 	
 	m_iDepthAtFootnote = m_stateStack.getDepth();
-	const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+	const gchar * attribs[3] ={"footnote-id",NULL,NULL};
 
 	if(!m_bNoteIsFNote)
 	{
@@ -2586,8 +2586,8 @@ bool IE_Imp_RTF::HandleParKeyword()
 		m_bSectionHasPara = true;
 	}
 	UT_String sProps;
-	const XML_Char * attrs[3] = {NULL, NULL, NULL};
-	const XML_Char * props = NULL;
+	const gchar * attrs[3] = {NULL, NULL, NULL};
+	const gchar * props = NULL;
 	UT_String rev;
 
 	UT_return_val_if_fail( buildCharacterProps(sProps), false);
@@ -2595,7 +2595,7 @@ bool IE_Imp_RTF::HandleParKeyword()
 
 	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
 	{
-		const XML_Char * pStyle = NULL;
+		const gchar * pStyle = NULL;
 		
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
@@ -3275,7 +3275,7 @@ bool IE_Imp_RTF::HandleField()
 	if (tokenType == RTF_TOKEN_OPEN_BRACE)
 	{
 		UT_ByteBuf fldBuf;
-		XML_Char * xmlField = NULL;
+		gchar * xmlField = NULL;
 		bool gotStarKW = false;
 		bool gotFldinstKW = false;
 		// bUseResult will to be set to false if we encounter a field
@@ -3425,7 +3425,7 @@ bool IE_Imp_RTF::HandleField()
 		}
 		else 
 		{
-			const XML_Char * props[] = {"list-tag","dummy",NULL};
+			const gchar * props[] = {"list-tag","dummy",NULL};
 			getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);
 			m_dposPaste++;
 		}
@@ -3443,7 +3443,7 @@ bool IE_Imp_RTF::HandleField()
   \param isXML whether xmlField is used or not.
   \see IE_Imp_RTF::HandleField
  */
-XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML)
+gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool & isXML)
 {
 	// this is quite complex as field instructions are not really document in the RTF specs.
 	// we will guess as much us possible.
@@ -3537,7 +3537,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			isXML = false;
 			
 			instr = strtok(0, " \\{}");
-			const XML_Char *new_atts[3];
+			const gchar *new_atts[3];
 
 			new_atts[0] = "xlink:href";
 			UT_String href;
@@ -3975,7 +3975,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aendnotes:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+			const gchar * props[] = {"document-endnote-place-endsection", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -3983,7 +3983,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aenddoc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+			const gchar * props[] = {"document-endnote-place-enddoc", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -3991,7 +3991,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnstart:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-initial", NULL,
+			const gchar * props[] = {"document-endnote-initial", NULL,
 										NULL};
 			UT_String i;
 			UT_String_sprintf(i,"%d",param);
@@ -4003,7 +4003,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		if(!getLoadStylesOnly())
 		{
 			
-			const XML_Char * props[] = {"document-endnote-restart-section", "1",
+			const gchar * props[] = {"document-endnote-restart-section", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4011,7 +4011,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnnar:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-type", "numeric",
+			const gchar * props[] = {"document-endnote-type", "numeric",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4019,7 +4019,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnnalc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-type", "lower",
+			const gchar * props[] = {"document-endnote-type", "lower",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4027,7 +4027,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnnauc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-type", "upper",
+			const gchar * props[] = {"document-endnote-type", "upper",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4035,7 +4035,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnnrlc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-endnote-type", "lower-roman",
+			const gchar * props[] = {"document-endnote-type", "lower-roman",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4043,7 +4043,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_aftnnruc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+			const gchar * props[] = {"document-footnote-type", "upper-roman",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4177,13 +4177,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return _appendField ("time");
 	case RTF_KW_chdpl:
 	{
-		const XML_Char * attribs[3] ={"param",NULL,NULL};
+		const gchar * attribs[3] ={"param",NULL,NULL};
 		attribs[1] = "%A, %B %d, %Y";
 		return _appendField ("datetime_custom", attribs);
 	}
 	case RTF_KW_chdpa:
 	{
-		const XML_Char * attribs[3] ={"param",NULL,NULL};
+		const gchar * attribs[3] ={"param",NULL,NULL};
 		attribs[1] = "%a, %b %d, %Y";
 		return _appendField ("datetime_custom");
 	}
@@ -4276,14 +4276,14 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return ParseChar(UCS_EN_SPACE);
 	case RTF_KW_endnotes:
 	{
-		const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+		const gchar * props[] = {"document-endnote-place-endsection", "1",
 									NULL};
 		getDoc()->setProperties(&props[0]);
 	}
 	break;
 	case RTF_KW_enddoc:
 	{
-		const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+		const gchar * props[] = {"document-endnote-place-enddoc", "1",
 									NULL};
 		getDoc()->setProperties(&props[0]);
 	}
@@ -4383,7 +4383,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnstart:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-initial", NULL,
+			const gchar * props[] = {"document-footnote-initial", NULL,
 										NULL};
 			UT_String i;
 			UT_String_sprintf(i,"%d",param);
@@ -4394,7 +4394,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnrstpg:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-restart-page", "1",
+			const gchar * props[] = {"document-footnote-restart-page", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4402,7 +4402,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnrestart:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-restart-section", "1",
+			const gchar * props[] = {"document-footnote-restart-section", "1",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4410,7 +4410,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnnar:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "numeric",
+			const gchar * props[] = {"document-footnote-type", "numeric",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4418,7 +4418,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnnalc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "lower",
+			const gchar * props[] = {"document-footnote-type", "lower",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4426,7 +4426,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnnauc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper",
+			const gchar * props[] = {"document-footnote-type", "upper",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4434,7 +4434,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnnrlc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "lower-roman",
+			const gchar * props[] = {"document-footnote-type", "lower-roman",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4442,7 +4442,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_ftnnruc:
 		if(!getLoadStylesOnly())
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+			const gchar * props[] = {"document-footnote-type", "upper-roman",
 										NULL};
 			getDoc()->setProperties(&props[0]);
 		}
@@ -5392,7 +5392,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 	return true;
 }
 
-void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const XML_Char * style)
+void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gchar * style)
 {
 	attr.clear();
 	
@@ -5593,11 +5593,11 @@ bool IE_Imp_RTF::bUseInsertNotAppend(void)
 // saves us inserting overrides on most space characters in the document
 bool IE_Imp_RTF::_appendSpan()
 {
-	const XML_Char* pProps = "props";
-	const XML_Char* pRevs  = "revision";
-	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
+	const gchar* pProps = "props";
+	const gchar* pRevs  = "revision";
+	const gchar* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 
-	const XML_Char* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
+	const gchar* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
 
 	UT_String prop_basic;
 	UT_String revision;
@@ -5785,11 +5785,11 @@ bool IE_Imp_RTF::_appendSpan()
 	
 bool IE_Imp_RTF::_insertSpan()
 {
-	const XML_Char* pProps = "props";
-	const XML_Char* pRevs  = "revision";
-	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
+	const gchar* pProps = "props";
+	const gchar* pRevs  = "revision";
+	const gchar* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 
-	const XML_Char* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
+	const gchar* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
 
 	UT_String prop_basic;
 	UT_String revision;
@@ -6012,12 +6012,12 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 	else
 	{
-		const XML_Char* pProps = "props";
-		const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
+		const gchar* pProps = "props";
+		const gchar* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 		UT_String propBuffer;
 		buildCharacterProps(propBuffer);
 
-		const XML_Char* propsArray[7];
+		const gchar* propsArray[7];
 		propsArray[0] = pProps;
 		propsArray[1] = propBuffer.c_str();
 		propsArray[2] = NULL;
@@ -6221,7 +6221,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 
 bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 {
-	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	const gchar* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
 
 //
@@ -6739,7 +6739,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			// Insert a list-label field??
 			//
-			const XML_Char* fielddef[5];
+			const gchar* fielddef[5];
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
 			fielddef[2] = NULL;
@@ -6757,7 +6757,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 //
 			if(bWord97List)
 			{
-					const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+					const gchar* attribs[3] = {"props","text-decoration:none",NULL};
 					getDoc()->appendFmt(attribs);
 			}
 			getDoc()->appendSpan(&cTab,1);
@@ -6817,7 +6817,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 					lType = static_cast<FL_ListType>(j);
 				else
 					lType = static_cast<FL_ListType>(0);
-				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
+				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
 				getDoc()->addList(pAuto);
 				pAuto->fixHierarchy();
 			}
@@ -6941,7 +6941,7 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 
 bool IE_Imp_RTF::ApplySectionAttributes()
 {
-	XML_Char* pProps = "props";
+	gchar* pProps = "props";
 	UT_String propBuffer;
 	UT_String tempBuffer;
 	UT_String szHdrID;
@@ -7099,7 +7099,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 
-	const XML_Char* propsArray[15];
+	const gchar* propsArray[15];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer.c_str();
 	paramIndex = 2;
@@ -8910,7 +8910,7 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	}
 	UT_UTF8String sPropName;
 	UT_UTF8String sInputAbiProps;
-	const XML_Char * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
+	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
 	sPropName = "dataid";
 	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
 	attrs[1] = sDataIDVal.utf8_str();
@@ -8972,7 +8972,7 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 	}
 	UT_UTF8String sPropName;
 	UT_UTF8String sInputAbiProps;
-	const XML_Char * attrs[7] = {"dataid",NULL,NULL,NULL,NULL};
+	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL};
 	sPropName = "dataid";
 	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
 	attrs[1] = sDataIDVal.utf8_str();
@@ -9138,7 +9138,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 	UT_String sProp = "table-sdh";	
 	UT_String_removeProperty(sProps,sProp);
-	const XML_Char * attrs[3] = {"props",NULL,NULL};
+	const gchar * attrs[3] = {"props",NULL,NULL};
 	if(! bIsPasteIntoSame)
 	{
 		attrs[1] = sProps.c_str();
@@ -9189,7 +9189,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		UT_String sTop;
 		UT_String sBot;
 		const char * szVal = NULL;
-		const XML_Char * sProps[5] = {NULL,NULL,NULL,NULL};
+		const gchar * sProps[5] = {NULL,NULL,NULL,NULL};
 		PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
 		while(b && (posCell < posEndTable))
 		{
@@ -9352,7 +9352,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		pPaste->m_iCurTopCell = iMyTop;
 	}
 	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
-	const XML_Char * attrs[3] = {"props",NULL,NULL};
+	const gchar * attrs[3] = {"props",NULL,NULL};
 	attrs[1] = sProps.c_str();
  	insertStrux(PTX_SectionCell,attrs,NULL);
 	m_newParaFlagged = true;
@@ -9366,7 +9366,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  * Insert into a hyperlink means the m_dposPate is additionally incremented
  * to handle the extra end hyperlink run.
  */
-bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XML_Char ** props)
+bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar ** props)
 {
 	bool bInHyperlink = false;
 	bool bDoExtraBlock = false;
@@ -10055,7 +10055,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	/* read the bookmark name. It is PCDATA hence we are likely to find non ASCII data.*/
 	HandlePCData(bookmarkName);
 
-	const XML_Char * props [5];
+	const gchar * props [5];
 	props [0] = "type";
 	switch (type) {
 	case RBT_START:
@@ -10120,7 +10120,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	UT_uint32 numHdrFtr;
 	const RTFHdrFtr * header;
 	UT_String tempBuffer;
-	const XML_Char* szType = NULL;
+	const gchar* szType = NULL;
 
 	UT_return_if_fail(m_pImportFile);
 
@@ -10134,7 +10134,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		m_lenPasteBuffer = header->m_buf.getLength ();
 		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
 		m_dposPaste = FV_DOCPOS_EOD;
-		const XML_Char* propsArray[9];
+		const gchar* propsArray[9];
 		UT_String hdrftrID;
 		switch (header->m_type)
 		{
@@ -10211,15 +10211,15 @@ void IE_Imp_RTF::_appendHdrFtr ()
   \param xmlField the field type value
   \return true if OK
  */
-bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAttribs)
+bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 {
 	bool ok;
-	const XML_Char** propsArray = NULL;
+	const gchar** propsArray = NULL;
 	UT_String propBuffer;
 	buildCharacterProps(propBuffer);
 
-	const XML_Char * pStyle = NULL;
-    const XML_Char * pStyleName = NULL;
+	const gchar * pStyle = NULL;
+    const gchar * pStyleName = NULL;
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 	{
@@ -10233,7 +10233,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	}
 	if(pszAttribs == NULL)
 	{
-		propsArray = static_cast<const XML_Char **>(UT_calloc(7, sizeof(XML_Char *)));		
+		propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));		
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
@@ -10249,7 +10249,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		{
 			isize++;
 		}
-		propsArray = static_cast<const XML_Char **>(UT_calloc(7+isize, sizeof(XML_Char *)));
+		propsArray = static_cast<const gchar **>(UT_calloc(7+isize, sizeof(gchar *)));
 
 		UT_uint32 iEmptyAttrib = 4;
 		propsArray [0] = "type";
@@ -10527,7 +10527,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 styleCount = 0;
-	UT_GenericVector<UT_GenericVector<const XML_Char*>*> vecStyles;
+	UT_GenericVector<UT_GenericVector<const gchar*>*> vecStyles;
 	RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
 	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
@@ -10535,7 +10535,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 	static UT_String propBuffer;
 
-	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	const gchar* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
 	UT_UCS4String styleName;// = "";
 	UT_sint32 styleNumber = 0;
@@ -10724,7 +10724,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 // OK now we clone this and save it so we can set basedon's and followedby's
 //
 			UT_sint32 i =0;
-			UT_GenericVector<const XML_Char*>* pVecAttr = new UT_GenericVector<const XML_Char*>();
+			UT_GenericVector<const gchar*>* pVecAttr = new UT_GenericVector<const gchar*>();
 			for( i= 0; i< static_cast<UT_sint32>(attribsCount); i++)
 			{
 				if(attribs[i] != NULL)
@@ -10774,7 +10774,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 		attribsCount = 0;
 		attribs[attribsCount] = NULL;
-		UT_GenericVector<const XML_Char*> * pCurStyleVec = vecStyles.getNthItem(i);
+		UT_GenericVector<const gchar*> * pCurStyleVec = vecStyles.getNthItem(i);
 		UT_sint32 nAtts = static_cast<UT_sint32>(pCurStyleVec->getItemCount());
 		UT_sint32 j = 0;
 		const char * szName = NULL;
@@ -10864,12 +10864,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 		for(j=0; j< nAtts; j++)
 		{
-			const XML_Char * sz = pCurStyleVec->getNthItem(j);
+			const gchar * sz = pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
 			{
 				// MUST NOT USED delete[] on strings allocated by g_try_malloc/UT_calloc !!!
 				// delete [] sz;
-				g_free(const_cast<XML_Char*>(sz));
+				g_free(const_cast<gchar*>(sz));
 				sz = NULL;
 			}
 		}

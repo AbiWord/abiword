@@ -21,12 +21,6 @@
 #ifndef XAP_ENCMGR_H
 #define XAP_ENCMGR_H
 
-#ifdef HAVE_EXPAT
-#include <expat.h>
-#else
-#define XML_Encoding void
-#endif
-
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -34,6 +28,16 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+
+#ifdef HAVE_EXPAT
+#ifndef gchar
+typedef gchar gchar;
+#endif
+#include <expat.h>
+#else
+#define XML_Encoding void
+#endif
+
 #include "ut_bijection.h"
 #include "ut_iconv.h"
 #include "ut_xml.h"
@@ -233,7 +237,7 @@ public:
 
 	/*this is used by code that reads xml using expat*/
 	static int XAP_XML_UnknownEncodingHandler(void *encodingHandlerData,
-                                          const XML_Char *name,
+                                          const gchar *name,
                                           XML_Encoding *info);
 
 	/*it's terminated with the record with NULL in language name. */

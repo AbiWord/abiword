@@ -246,7 +246,7 @@ bool AP_QNXApp::initialize(void)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName) && (szMenuLabelSetName) && (*szMenuLabelSetName))
+	if (getPrefsValue( AP_PREF_KEY_StringSet, (const gchar**)&szMenuLabelSetName) && (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 	}
 	else
@@ -296,12 +296,12 @@ void AP_QNXApp::reallyExit(void)
 }
 
 bool AP_QNXApp::getPrefsValueDirectory(bool bAppSpecific,
-										   const XML_Char * szKey, const XML_Char ** pszValue) const
+										   const gchar * szKey, const gchar ** pszValue) const
 {
 	if (!m_prefs)
 		return false;
 
-	const XML_Char * psz = NULL;
+	const gchar * psz = NULL;
 	if (!m_prefs->getPrefsValue(szKey,&psz))
 		return false;
 
@@ -311,9 +311,9 @@ bool AP_QNXApp::getPrefsValueDirectory(bool bAppSpecific,
 		return true;
 	}
 
-	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
+	const gchar * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
 
-	static XML_Char buf[1024];
+	static gchar buf[1024];
 	UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
 	
 	sprintf(buf,"%s/%s",dir,psz);
@@ -325,7 +325,7 @@ const char * AP_QNXApp::getAbiSuiteAppDir(void) const
 {
 	// we return a static string, use it quickly.
 	
-	static XML_Char buf[1024];
+	static gchar buf[1024];
 
 	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);
 	return buf;

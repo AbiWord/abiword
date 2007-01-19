@@ -1220,8 +1220,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
-		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = XML_Char_strdup(somePropHolder); else sLeftThickness = "1px";
-		const XML_Char * props[38] = {"frame-type","textbox",
+		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = gchar_strdup(somePropHolder); else sLeftThickness = "1px";
+		const gchar * props[38] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1351,23 +1351,23 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 //  Frame Image
 
-		const XML_Char * pszDataID = NULL;
-		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+		const gchar * pszDataID = NULL;
+		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 
 		UT_String sFrameProps;
 		UT_String sProp;
 		UT_String sVal;
 
-		const XML_Char *pszFrameType = NULL;
-		const XML_Char *pszPositionTo = NULL;
-		const XML_Char *pszWrapMode=NULL;
-		const XML_Char *pszXpad = NULL;
-		const XML_Char *pszYpad = NULL;
+		const gchar *pszFrameType = NULL;
+		const gchar *pszPositionTo = NULL;
+		const gchar *pszWrapMode=NULL;
+		const gchar *pszXpad = NULL;
+		const gchar *pszYpad = NULL;
 
-		const XML_Char * pszColor = NULL;
-		const XML_Char * pszBorderColor = NULL;
-		const XML_Char * pszBorderStyle = NULL;
-		const XML_Char * pszBorderWidth = NULL;
+		const gchar * pszColor = NULL;
+		const gchar * pszBorderColor = NULL;
+		const gchar * pszBorderStyle = NULL;
+		const gchar * pszBorderWidth = NULL;
 
 
 // Frame Type
@@ -1565,9 +1565,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	/* Frame fill
 	 */
 
-		const XML_Char * pszBgStyle = NULL;
-		const XML_Char * pszBgColor = NULL;
-		const XML_Char * pszBackgroundColor = NULL;
+		const gchar * pszBgStyle = NULL;
+		const gchar * pszBgColor = NULL;
+		const gchar * pszBackgroundColor = NULL;
 
 		pSectionAP->getProperty ("bg-style",    pszBgStyle);
 		pSectionAP->getProperty ("bgcolor",     pszBgColor);
@@ -1689,17 +1689,17 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
-		const XML_Char ** atts = NULL;
+		const gchar ** atts = NULL;
 		if( pszDataID == NULL)
 		{
-			atts = new const XML_Char * [3];
+			atts = new const gchar * [3];
 			atts[0] = "props";
 			atts[1] = sFrameProps.c_str();
 			atts[2] =  NULL;
 		}
 		else
 		{
-			atts = new const XML_Char * [5];
+			atts = new const gchar * [5];
 			atts[0] = PT_STRUX_IMAGE_DATAID;
 			atts[1] = pszDataID;
 			atts[2] = "props";

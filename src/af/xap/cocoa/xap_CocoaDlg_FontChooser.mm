@@ -182,8 +182,8 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 	fontSize = [m_dlg selectedSize];
 	
 	snprintf(szFontSize, sizeof(szFontSize), "%spt",
-				   (XML_Char *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget([fontSize UTF8String]));
-	addOrReplaceVecProp("font-size",(XML_Char *)szFontSize);
+				   (gchar *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget([fontSize UTF8String]));
+	addOrReplaceVecProp("font-size",(gchar *)szFontSize);
 
 	updatePreview();
 }
@@ -195,7 +195,7 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 	\param attr the CSS attribute
 	\param buf the buf to store the color (static in the caller)
  */
-void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor * color, const XML_Char * attr, char * buf)
+void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor * color, const gchar * attr, char * buf)
 {
 	float r,g,b,a;
 	color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
@@ -204,7 +204,7 @@ void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor * color, const XML_Char 
 			(unsigned int) (r 	* (float) 255.0),
 			(unsigned int) (g	* (float) 255.0),
 			(unsigned int) (b * (float) 255.0));
-	addOrReplaceVecProp(attr,(XML_Char *)buf);
+	addOrReplaceVecProp(attr,(gchar *)buf);
 	updatePreview();
 }
 
@@ -263,7 +263,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 	
 	// Set color in the color selector
-	const XML_Char * pszBGCol = getVal("bgcolor");
+	const gchar * pszBGCol = getVal("bgcolor");
 	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
 	{
 		UT_RGBColor c;

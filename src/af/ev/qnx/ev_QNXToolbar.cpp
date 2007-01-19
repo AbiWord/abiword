@@ -224,7 +224,7 @@ bool EV_QNXToolbar::synthesize(void)
 	//PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
 	//PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
 
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	m_pQNXApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
 

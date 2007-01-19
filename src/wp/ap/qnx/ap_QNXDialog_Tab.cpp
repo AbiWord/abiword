@@ -600,16 +600,16 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-const XML_Char * AP_QNXDialog_Tab::_gatherDefaultTabStop()
+const gchar * AP_QNXDialog_Tab::_gatherDefaultTabStop()
 {
 	char *text = NULL;
 	PtGetResource(_lookupWidget(id_SPIN_DEFAULT_TAB_STOP), Pt_ARG_TEXT_STRING, &text, 0);
 	return text;
 }
 
-void AP_QNXDialog_Tab::_setDefaultTabStop( const XML_Char * a )
+void AP_QNXDialog_Tab::_setDefaultTabStop( const gchar * a )
 {
-	const XML_Char *suffix;
+	const gchar *suffix;
 	double d;
 
 	PtWidget_t *w = _lookupWidget(id_SPIN_DEFAULT_TAB_STOP);

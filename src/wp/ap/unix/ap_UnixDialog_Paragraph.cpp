@@ -254,7 +254,7 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 		// this function will massage the contents for proper
 		// formatting for spinbuttons that need it.  for example,
 		// line spacing can't be negative.
-		_setSpinItemValue(id, (const XML_Char *)
+		_setSpinItemValue(id, (const gchar *)
 						  gtk_entry_get_text(GTK_ENTRY(widget)));
 
 		// to ensure the massaged value is reflected back up
@@ -314,7 +314,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
 
-	XML_Char * unixstr = NULL;
+	gchar * unixstr = NULL;
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle,s);
@@ -403,7 +403,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * labelBreaks;
 	GtkWidget * checkbuttonDomDirection;
 
-	XML_Char * unixstr = NULL;
+	gchar * unixstr = NULL;
 
 	vboxContents = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vboxContents);

@@ -104,8 +104,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		
 		iRealDeleteCount = 0;
 
-		const XML_Char name[] = "revision";
-		const XML_Char * pRevision = NULL;
+		const gchar name[] = "revision";
+		const gchar * pRevision = NULL;
 
 		// we cannot retrieve the start and end fragments here and
 		// then work between them in a loop using getNext() because
@@ -324,11 +324,11 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
 							return false;
 
-						const XML_Char * pszHdrId;
+						const gchar * pszHdrId;
 						if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
 							return false;
 
-						const XML_Char * pszHdrType;
+						const gchar * pszHdrType;
 						if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
 							return false;
 
@@ -359,7 +359,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			}
 
 			Revisions.addRevision(iId,PP_REVISION_DELETION,NULL,NULL);
-			const XML_Char * ppRevAttrib[3];
+			const gchar * ppRevAttrib[3];
 			ppRevAttrib[0] = name;
 			ppRevAttrib[1] = Revisions.getXMLstring();
 			ppRevAttrib[2] = NULL;
@@ -394,11 +394,11 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
 							return false;
 
-						const XML_Char * pszHdrId;
+						const gchar * pszHdrId;
 						if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
 							return false;
 
-						const XML_Char * pszHdrType;
+						const gchar * pszHdrType;
 						if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
 							return false;
 
@@ -428,7 +428,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
     bNotional indicates that the header has been marked deleted in revison mode, but not
     physically removed from the document
 */
-bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_Char * pszHdrId,
+bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar * pszHdrId,
 										 bool bNotional /* = false */)
 {
 	UT_return_val_if_fail( pszHdrType && pszHdrId, false );
@@ -447,12 +447,12 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 				continue;
 
 			// check for normal attribute
-			const XML_Char * pszMyHdrId = NULL;
+			const gchar * pszMyHdrId = NULL;
 			if(pAP->getAttribute(pszHdrType, pszMyHdrId) && pszMyHdrId)
 			{
 				if(0 == strcmp(pszMyHdrId, pszHdrId))
 				{
-					const XML_Char* pAttrs [3];
+					const gchar* pAttrs [3];
 					pAttrs[0] = pszHdrType;
 					pAttrs[1] = "";
 					pAttrs[2] = NULL;
@@ -463,7 +463,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 			}
 
 			// now check for revision attribute ...
-			const XML_Char * pszRevision;
+			const gchar * pszRevision;
 			if(pAP->getAttribute("revision", pszRevision) && pszRevision)
 			{
 				bool bFound = false;
@@ -474,7 +474,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 					const PP_Revision * pRev = Revisions.getNthRevision(i);
 					UT_return_val_if_fail( pRev, false );
 
-					const XML_Char * pszMyHdrId = NULL;
+					const gchar * pszMyHdrId = NULL;
 					if(pRev->getAttribute(pszHdrType, pszMyHdrId) && pszMyHdrId)
 					{
 						if(0 != strcmp(pszHdrId, pszMyHdrId))
@@ -503,7 +503,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 								// previous revision and has no changes in the current
 								// revision, so we need to add a new revisions in which
 								// the header is not referenced
-								const XML_Char * pAttrs [3] = {pszHdrType, pszHdrId, NULL};
+								const gchar * pAttrs [3] = {pszHdrType, pszHdrId, NULL};
 								Revisions.addRevision(iId, PP_REVISION_FMT_CHANGE, pAttrs, NULL);
 							}
 						}
@@ -515,7 +515,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 				
 				if(bFound)
 				{
-					const XML_Char* pAttrs [3];
+					const gchar* pAttrs [3];
 					pAttrs[0] = "revision";
 					pAttrs[1] = Revisions.getXMLstring();
 					pAttrs[2] = NULL;
@@ -1704,8 +1704,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 		    		const PP_AttrProp * pAP = NULL;
 				    pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
 				    UT_return_val_if_fail (pAP, false);
-				    const XML_Char* pszHref = NULL;
-				    const XML_Char* pszHname  = NULL;
+				    const gchar* pszHref = NULL;
+				    const gchar* pszHname  = NULL;
 		            UT_uint32 k = 0;
         		    bool bStart = false;
 				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))

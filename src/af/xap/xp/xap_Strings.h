@@ -62,12 +62,12 @@ typedef UT_uint32			XAP_String_Id;
 class XAP_StringSet
 {
 public:
-	XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName);
+	XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName);
 	virtual ~XAP_StringSet(void);
 
-	const XML_Char *			getLanguageName(void) const;
+	const gchar *			getLanguageName(void) const;
 
-	virtual const XML_Char *	getValue(XAP_String_Id id) const = 0;
+	virtual const gchar *	getValue(XAP_String_Id id) const = 0;
 
 	bool getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const;
 	bool getValueUTF8(XAP_String_Id id, UT_UTF8String &s) const;
@@ -77,7 +77,7 @@ public:
 
 protected:
 	XAP_App *					m_pApp;
-	const XML_Char *			m_szLanguageName;
+	const gchar *			m_szLanguageName;
 
  private:
 	UT_String m_encoding ;
@@ -90,13 +90,13 @@ protected:
 class XAP_BuiltinStringSet : public XAP_StringSet
 {
 public:
-	XAP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName);
+	XAP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
 	virtual ~XAP_BuiltinStringSet(void);
 
-	virtual const XML_Char *	getValue(XAP_String_Id id) const;
+	virtual const gchar *	getValue(XAP_String_Id id) const;
 	
 private:
-	const XML_Char **			m_arrayXAP;
+	const gchar **			m_arrayXAP;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -109,26 +109,26 @@ public:
 	XAP_DiskStringSet(XAP_App * pApp);
 	virtual ~XAP_DiskStringSet(void);
 
-	virtual bool				setValue(XAP_String_Id id, const XML_Char * szString);
-	virtual bool				setValue(const XML_Char * szId, const XML_Char * szString);
-	virtual const XML_Char *	getValue(XAP_String_Id id) const;
+	virtual bool				setValue(XAP_String_Id id, const gchar * szString);
+	virtual bool				setValue(const gchar * szId, const gchar * szString);
+	virtual const gchar *	getValue(XAP_String_Id id) const;
 	virtual bool				loadStringsFromDisk(const char * szFilename);
 
-	bool						setLanguage(const XML_Char * szLanguageName);
+	bool						setLanguage(const gchar * szLanguageName);
 	void						setFallbackStringSet(XAP_StringSet * pFallback);
 	
 public:
 	/* Implementation of UT_XML::Listener
 	 */
-	void					startElement(const XML_Char *name, const XML_Char **atts);
-	void					endElement(const XML_Char *name);
-	void					charData(const XML_Char *s, int len);
+	void					startElement(const gchar *name, const gchar **atts);
+	void					endElement(const gchar *name);
+	void					charData(const gchar *s, int len);
 
 protected:
 	XAP_StringSet *				m_pFallbackStringSet;
 
 private:
-	UT_GenericVector<XML_Char*>	m_vecStringsXAP;
+	UT_GenericVector<gchar*>	m_vecStringsXAP;
 
 	struct
 	{

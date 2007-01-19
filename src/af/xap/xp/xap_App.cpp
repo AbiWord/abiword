@@ -383,7 +383,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	EV_EditBindingMap * pBindingMap = NULL;
 
 	if ((getPrefsValue(szKeyBindingsKey,
-				 static_cast<const XML_Char**>(&szBindings))) && 
+				 static_cast<const gchar**>(&szBindings))) && 
 	    (szBindings) && (*szBindings))
 		pBindingMap = m_pApp->getBindingMap(szBindings);
 	if (!pBindingMap)
@@ -1036,7 +1036,7 @@ XAP_Prefs * XAP_App::getPrefs() const
 	return m_prefs;
 }
 
-bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_App::getPrefsValue(const gchar * szKey, const gchar ** pszValue) const
 {
 	if (!m_prefs)
 		return false;
@@ -1052,7 +1052,7 @@ bool XAP_App::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
 	return m_prefs->getPrefsValue(stKey, stValue);
 }
 
-bool XAP_App::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
+bool XAP_App::getPrefsValueBool(const gchar * szKey, bool * pbValue) const
 {
 	if (!m_prefs)
 		return false;
@@ -1781,7 +1781,7 @@ void XAP_App::_fundamentalAsserts() const
 	// directly inside of a void *
 	UT_ASSERT(sizeof(void*) >= sizeof(UT_uint32));
 
-	// we frequently assume that XML_Char * is only one byte in size
-	UT_ASSERT(sizeof(XML_Char) == sizeof(char));
+	// we frequently assume that gchar * is only one byte in size
+	UT_ASSERT(sizeof(gchar) == sizeof(char));
 }
 #endif

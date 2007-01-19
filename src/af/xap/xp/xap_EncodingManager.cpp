@@ -289,7 +289,7 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 }
 
 int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerData*/,
-                                          const XML_Char *name,
+                                          const gchar *name,
                                           XML_Encoding *info)
 {
 #ifndef	HAVE_EXPAT

@@ -227,7 +227,7 @@ public:
 		{ return m_bRestartFootSection;}
 	bool                getRestartFootOnPage(void) const
 		{ return m_bRestartFootPage;}
-	FootnoteType        FootnoteTypeFromString( const XML_Char * pszStr);
+	FootnoteType        FootnoteTypeFromString( const gchar * pszStr);
 // EndNotes
 	void                insertEndnoteContainer(fp_EndnoteContainer * pECon);
 	void                removeEndnoteContainer(fp_EndnoteContainer * pECon);
@@ -262,7 +262,7 @@ public:
 	bool                removeTOC(fl_TOCLayout * pTOC);
 	bool                fillTOC(fl_TOCLayout * pTOC);
 	void                recalculateTOCFields(void);
-	bool                updateTOCsOnBookmarkChange(const XML_Char * pBookmark);
+	bool                updateTOCsOnBookmarkChange(const gchar * pBookmark);
 // --------------------------------------------------------------------
 #ifndef WITHOUT_SPELL
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }

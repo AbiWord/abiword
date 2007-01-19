@@ -58,7 +58,7 @@ const char *AP_Dialog_Field::GetFieldFormat(void) const
 
 }
 
-void AP_Dialog_Field::setParameter(const XML_Char * pParam)
+void AP_Dialog_Field::setParameter(const gchar * pParam)
 {
 	if(m_pParameter)
 		FREEP( m_pParameter );

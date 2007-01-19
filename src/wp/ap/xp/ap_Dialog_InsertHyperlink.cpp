@@ -50,24 +50,24 @@ UT_uint32 AP_Dialog_InsertHyperlink::getExistingBookmarksCount() const
 	return m_pDoc->getBookmarkCount();
 }
 
-const XML_Char * AP_Dialog_InsertHyperlink::getNthExistingBookmark(UT_uint32 n) const
+const gchar * AP_Dialog_InsertHyperlink::getNthExistingBookmark(UT_uint32 n) const
 {
 	UT_return_val_if_fail (m_pDoc, NULL);
 	return m_pDoc->getNthBookmark(n);
 }
 
-const XML_Char * AP_Dialog_InsertHyperlink::getHyperlink() const
+const gchar * AP_Dialog_InsertHyperlink::getHyperlink() const
 {
-  return (const XML_Char *)m_pHyperlink;
+  return (const gchar *)m_pHyperlink;
 }
 
-void AP_Dialog_InsertHyperlink::setHyperlink(const XML_Char * link)
+void AP_Dialog_InsertHyperlink::setHyperlink(const gchar * link)
 {
 	if(m_pHyperlink)
 		delete [] m_pHyperlink;
 
 	UT_uint32 len = strlen(link);
-	m_pHyperlink = new XML_Char [len+1];
+	m_pHyperlink = new gchar [len+1];
 	strncpy(m_pHyperlink, link, len + 1);
 }
 
@@ -86,7 +86,7 @@ void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 			pView->getSelectionText(pSelection);
 			UT_return_if_fail(pSelection);
 
-			m_pHyperlink = new XML_Char [UT_UCS4_strlen(pSelection)+1];
+			m_pHyperlink = new gchar [UT_UCS4_strlen(pSelection)+1];
 			UT_UCS4_strcpy_to_char(m_pHyperlink, pSelection);
 
 			FREEP(pSelection);

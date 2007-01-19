@@ -53,10 +53,15 @@ void XAP_Log::log(const UT_String &method_name, AV_View *pAV_View, EV_EditMethod
 			UT_UCSChar *orig_data;
 			UT_UCSChar *data = orig_data = pCallData->m_pData;
 			UT_uint32 data_length = pCallData->m_dataLength;
-			UT_String stData(UT_encodeUTF8char(*data++));
+			gchar outbuf[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+			g_unichar_to_utf8(*data++, outbuf);
+			UT_String stData(outbuf);
 
-			while (static_cast<size_t>(data - pCallData->m_pData) < data_length)
-				stData += UT_encodeUTF8char(*data++);
+			while (static_cast<size_t>(data - pCallData->m_pData) < data_length) {
+				memset(outbuf, 0, sizeof(outbuf));
+				g_unichar_to_utf8(*data++, outbuf);
+				stData += outbuf;
+			}
 
 			fprintf(m_pOutput, "%s</calldata>\n\t</event>\n", stData.c_str());
 			

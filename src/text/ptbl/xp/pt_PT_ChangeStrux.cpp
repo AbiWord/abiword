@@ -63,8 +63,8 @@ bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
  */
 bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 										 pf_Frag_Strux * pfs,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties)
+										 const gchar ** attributes,
+										 const gchar ** properties)
 {
 	PT_AttrPropIndex indexNewAP;
 	PTStruxType pts = pfs->getStruxType();
@@ -102,8 +102,8 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 								   PT_DocPosition dpos1,
 								   PT_DocPosition dpos2,
-								   const XML_Char ** attributes,
-								   const XML_Char ** properties,
+								   const gchar ** attributes,
+								   const gchar ** properties,
 								   PTStruxType pts)
 {
 	bool bDoAll = (pts == PTX_StruxDummy);
@@ -150,8 +150,8 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							bool bResult;
 							// get attributes for this fragement
 							const PP_AttrProp * pAP;
-							const XML_Char * pRevision = NULL;
-							const XML_Char name[] = "revision";
+							const gchar * pRevision = NULL;
+							const gchar name[] = "revision";
 
 							if(getAttrProp(pfs->getIndexAP(),&pAP))
 							{
@@ -164,8 +164,8 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							// them ourselves
 							PTChangeFmt revPtc = ptc;
 							PP_RevisionAttr Revisions(pRevision);
-							const XML_Char ** attrs = attributes;
-							const XML_Char ** props = properties;
+							const gchar ** attrs = attributes;
+							const gchar ** props = properties;
 							
 							if(ptc == PTC_RemoveFmt)
 							{
@@ -190,7 +190,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							if(props != properties)
 								delete[] props;
 							
-							const XML_Char * ppRevAttrib[3];
+							const gchar * ppRevAttrib[3];
 							ppRevAttrib[0] = name;
 							ppRevAttrib[1] = Revisions.getXMLstring();
 							ppRevAttrib[2] = NULL;
@@ -219,7 +219,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts, false);
 }
 
-bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const XML_Char ** attributes)
+bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const gchar ** attributes)
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
@@ -247,8 +247,8 @@ bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 											  pf_Frag_Strux * pfs,
-											  const XML_Char ** attributes,
-											  const XML_Char ** properties,
+											  const gchar ** attributes,
+											  const gchar ** properties,
 											  bool bRevisionDelete)
 {
 	PT_AttrPropIndex indexNewAP;
@@ -293,8 +293,8 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
  */
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 											  pf_Frag_Strux * pfs,
-											  const XML_Char ** attributes,
-											  const XML_Char ** properties,
+											  const gchar ** attributes,
+											  const gchar ** properties,
 											  bool bDoAll,
 											  bool bRevisionDelete)
 {
@@ -416,8 +416,8 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 										PT_DocPosition dpos1,
 										PT_DocPosition dpos2,
-										const XML_Char ** attributes,
-										const XML_Char ** properties,
+										const gchar ** attributes,
+										const gchar ** properties,
 										PTStruxType pts,
 										bool bRevisionDelete)
 {
@@ -536,7 +536,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 // NO. We want to remove all character level properties that clash with properties
 // defined in th strux level style. -MES
 //
-		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 
 		PD_Style * pStyle = NULL;
 		PTChangeFmt ptcs = PTC_RemoveFmt;
@@ -548,16 +548,16 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 //
 		pStyle->getAllProperties(&vProps,0);
 //
-// Finally make the const XML_Char * array of properties
+// Finally make the const gchar * array of properties
 //
-		const XML_Char ** sProps = NULL;
+		const gchar ** sProps = NULL;
 		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
+		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
 		countp--;
 		UT_uint32 i;
 		for(i=0; i<countp; i++)
 		{
-			sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+			sProps[i] = (const gchar *) vProps.getNthItem(i);
 		}
 		sProps[i] = NULL;
 
@@ -671,7 +671,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 }
 
 bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
-											 const XML_Char ** attrs, const XML_Char ** props,
+											 const gchar ** attrs, const gchar ** props,
 											 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
@@ -705,7 +705,7 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 
 	
 bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
-											 const XML_Char ** attrs, const XML_Char * props,
+											 const gchar ** attrs, const gchar * props,
 											 bool bSkipEmbededSections)
 {
 	if(props && *props)
@@ -719,7 +719,7 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 		
 		char * pProps = g_strdup(props);
 
-		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
+		const gchar ** pPropsArray = UT_splitPropsToArray(pProps);
 		UT_return_val_if_fail( pPropsArray, false );
 		
 		bool bRet = changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
@@ -731,7 +731,7 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 	}
 	else
 	{
-		const XML_Char ** pPropsArray = NULL;
+		const gchar ** pPropsArray = NULL;
 		return changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
 	}
 }

@@ -38,14 +38,14 @@
 /*****************************************************************/
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 PTObjectType pto,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties,  pf_Frag_Object ** ppfo)
+								 const gchar ** attributes,
+								 const gchar ** properties,  pf_Frag_Object ** ppfo)
 {
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrs  = NULL;
-		const XML_Char ** ppRevProps  = NULL;
+		const gchar ** ppRevAttrs  = NULL;
+		const gchar ** ppRevProps  = NULL;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -71,10 +71,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		UT_uint32 iRevAttrCount = 0;
 		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
 
-		const XML_Char ** ppRevAttrib = NULL;
+		const gchar ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)
 		{
-			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
 			UT_return_val_if_fail( ppRevAttrib, false );
 
 			UT_uint32 i = 0;
@@ -107,14 +107,14 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 PTObjectType pto,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties )
+								 const gchar ** attributes,
+								 const gchar ** properties )
 {
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrs = NULL;
-		const XML_Char ** ppRevProps  = NULL;
+		const gchar ** ppRevAttrs = NULL;
+		const gchar ** ppRevProps  = NULL;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -139,10 +139,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		UT_uint32 iRevAttrCount = 0;
 		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
 
-		const XML_Char ** ppRevAttrib = NULL;
+		const gchar ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)
 		{
-			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
 			UT_return_val_if_fail( ppRevAttrib, false );
 
 			UT_uint32 i = 0;
@@ -174,8 +174,8 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									PTObjectType pto,
-									const XML_Char ** attributes,
-									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
+									const gchar ** attributes,
+									const gchar ** properties,  pf_Frag_Object ** ppfo)
 {
 	UT_ASSERT_HARMLESS((pto == PTO_Math) || (pto == PTO_Embed) || (properties == NULL));
 
@@ -236,8 +236,8 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									PTObjectType pto,
-									const XML_Char ** attributes,
-									const XML_Char ** properties )
+									const gchar ** attributes,
+									const gchar ** properties )
 {
 
 	// dpos == 1 seems to be generally bad. - plam
@@ -268,19 +268,19 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 		}
 	    }
 	}
-	UT_GenericVector<XML_Char*>  Atts;
+	UT_GenericVector<gchar*>  Atts;
 	Atts.clear();
 	if(attributes)
 	{
 		for(i=0; attributes[i] != 0; i++)
 		{
-		    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(attributes[i])));
+		    Atts.addItem(static_cast<gchar *>(const_cast<char *>(attributes[i])));
 		}
 	}
 	if(sProps.size() > 0)
 	{
-	    Atts.addItem(static_cast<XML_Char *>("props"));
-	    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(sProps.utf8_str())));
+	    Atts.addItem(static_cast<gchar *>("props"));
+	    Atts.addItem(static_cast<gchar *>(const_cast<char *>(sProps.utf8_str())));
 	}
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(&Atts,&indexAP))

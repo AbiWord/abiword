@@ -581,8 +581,8 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 
 void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 {
-	const UT_GenericVector<const XML_Char*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	const UT_GenericVector<const XML_Char*> * vecPropList = getVecLabelPropValue();
+	const UT_GenericVector<const gchar*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const UT_GenericVector<const gchar*> * vecPropList = getVecLabelPropValue();
 	UT_sint32 nTypes = vecTypeList->getItemCount();
 	UT_UTF8String * sProp = NULL;
 	UT_UTF8String * sVal = NULL;
@@ -636,8 +636,8 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 
 void AP_UnixDialog_FormatTOC::_createTABTypeItems(void)
 {
-	const UT_GenericVector<const XML_Char*> * vecLabels = getVecTABLeadersLabel();
-	const UT_GenericVector<const XML_Char*> * vecProps = getVecTABLeadersProp();
+	const UT_GenericVector<const gchar*> * vecLabels = getVecTABLeadersLabel();
+	const UT_GenericVector<const gchar*> * vecProps = getVecTABLeadersProp();
 	UT_sint32 nTypes = vecLabels->getItemCount();
 	UT_UTF8String * sProp = NULL;
 	UT_UTF8String * sVal = NULL;

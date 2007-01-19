@@ -603,7 +603,7 @@ private:
 public:
 	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID, 
 							UT_sint32 param, bool fParam);
-	bool insertStrux(PTStruxType pts , const XML_Char ** attrs=NULL, const XML_Char ** props=NULL);
+	bool insertStrux(PTStruxType pts , const gchar ** attrs=NULL, const gchar ** props=NULL);
 
 	/*  Parser stuff */
 	bool StandardKeywordParser(IE_Imp_RTFGroupParser *parser);
@@ -785,7 +785,7 @@ private:
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
-	void     _formRevisionAttr(UT_String & s,UT_String & props, const XML_Char * style);
+	void     _formRevisionAttr(UT_String & s,UT_String & props, const gchar * style);
 	
 
 private:
@@ -829,7 +829,7 @@ private:
 	UT_GenericVector<RTFFontTableItem*> m_fontTable;
 	UT_NumberVector m_colourTable;
 	UT_Vector m_hdrFtrTable;
-	UT_GenericVector<XML_Char *> m_styleTable;
+	UT_GenericVector<gchar *> m_styleTable;
 
 	struct _rtfAbiListTable
 	{
@@ -868,9 +868,9 @@ private:
 	UT_GenericVector<RTF_msword97_list *> m_vecWord97Lists;
 	UT_GenericVector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
 	void _appendHdrFtr ();
-	bool _appendField (const XML_Char *xmlField, 
-                       const XML_Char ** pszAttribs=NULL);
-	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
+	bool _appendField (const gchar *xmlField, 
+                       const gchar ** pszAttribs=NULL);
+	gchar *_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, 
                                   bool & isXML);
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;

@@ -326,13 +326,13 @@ public:
 	bool	           tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style, pf_Frag_Strux * pfsThis);
 	/* append/insert methods
 	 */
-	bool	           Block (PTStruxType pts, const XML_Char ** attributes);
-	bool	           BlockFormat (const XML_Char ** attributes);
+	bool	           Block (PTStruxType pts, const gchar ** attributes);
+	bool	           BlockFormat (const gchar ** attributes);
 
 	bool	           Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
-	bool	           InlineFormat (const XML_Char ** attributes);
+	bool	           InlineFormat (const gchar ** attributes);
 
-	bool	           Object (PTObjectType pto, const XML_Char ** attributes);
+	bool	           Object (PTObjectType pto, const gchar ** attributes);
     void               padAllRowsWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 extra);
 	void               padRowWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 row, UT_sint32 extra);
 	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col);
@@ -410,13 +410,13 @@ public:
 
 	/* append/insert methods
 	 */
-	bool					Block (PTStruxType pts, const XML_Char ** attributes);
-	bool					BlockFormat (const XML_Char ** attributes);
+	bool					Block (PTStruxType pts, const gchar ** attributes);
+	bool					BlockFormat (const gchar ** attributes);
 
 	bool					Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
-	bool					InlineFormat (const XML_Char ** attributes);
+	bool					InlineFormat (const gchar ** attributes);
 
-	bool					Object (PTObjectType pto, const XML_Char ** attributes);
+	bool					Object (PTObjectType pto, const gchar ** attributes);
 	bool                    setCaptionOn(void);
 	bool                    setCaptionOff(void);
 	bool                    tdEnd(void);

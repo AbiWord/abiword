@@ -104,15 +104,15 @@ class ABI_EXPORT fd_Field
 
 		__last_field_dont_use__
 	} FieldType;
-    fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType, const XML_Char *pParam);
+    fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType, const gchar *pParam);
     virtual							~fd_Field(void);
     bool							update(void);
     void							setBlock(fl_BlockLayout * pBlock);
     fl_BlockLayout *				getBlock( void);
 	FieldType						getFieldType(void) const;
-	XML_Char *						getValue(void) const;
-	void							setValue(const XML_Char * szValue);
-	const XML_Char * 				getParameter(void) const {return static_cast<const XML_Char *>(m_pParameter);};
+	gchar *						getValue(void) const;
+	void							setValue(const gchar * szValue);
+	const gchar * 				getParameter(void) const {return static_cast<const gchar *>(m_pParameter);};
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate
@@ -128,8 +128,8 @@ class ABI_EXPORT fd_Field
     pt_PieceTable *	m_pPieceTable;
     UT_uint32 m_updateCount;
     FieldType m_iFieldType;
-	XML_Char * m_szValue;
-	XML_Char * m_pParameter;
+	gchar * m_szValue;
+	gchar * m_pParameter;
 };
 
 #endif

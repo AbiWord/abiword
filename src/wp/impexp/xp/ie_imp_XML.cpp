@@ -216,7 +216,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_XML::startElement (const XML_Char * /*name*/, const XML_Char ** /*atts*/)
+void IE_Imp_XML::startElement (const gchar * /*name*/, const gchar ** /*atts*/)
 {
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	m_error = UT_IE_UNSUPTYPE;
@@ -224,7 +224,7 @@ void IE_Imp_XML::startElement (const XML_Char * /*name*/, const XML_Char ** /*at
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
-void IE_Imp_XML::endElement (const XML_Char * /*name*/)
+void IE_Imp_XML::endElement (const gchar * /*name*/)
 {
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	m_error = UT_IE_UNSUPTYPE;
@@ -238,9 +238,9 @@ void IE_Imp_XML::_data_NewBlock ()
 	m_bStripLeading = true; // only makes a difference if !m_bWhiteSignificant
 }
 
-void IE_Imp_XML::charData(const XML_Char *s, int len)
+void IE_Imp_XML::charData(const gchar *s, int len)
 {
-	// TODO XML_Char is defined in the xml parser
+	// TODO gchar is defined in the xml parser
 	// TODO as a 'char' not as a 'unsigned char'.
 	// TODO does this cause any problems ??
 
@@ -354,7 +354,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						// white space added for readability.  strip out any
 						// white space and put the rest in the ByteBuf.
 						
-						UT_return_if_fail ((sizeof(XML_Char) == sizeof(UT_Byte)));
+						UT_return_if_fail ((sizeof(gchar) == sizeof(UT_Byte)));
 						
 						UT_uint32 actualLen = m_currentDataItem.getLength();
 						m_currentDataItem.ins(actualLen, len); // allocate all the possibly needed memory at once
@@ -399,14 +399,14 @@ UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 	return m_nstackFmtStartIndex.getDepth();
 }
 
-bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
+bool IE_Imp_XML::_pushInlineFmt(const gchar ** atts)
 {
 	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
 	UT_uint32 k;
 
 	for (k=0; (atts[k]); k++)
 	{
-		XML_Char * p;
+		gchar * p;
 		if (!(p = g_strdup(atts[k])))
 			return false;
 		if (m_vecInlineFmt.addItem(p)!=0)
@@ -426,15 +426,15 @@ void IE_Imp_XML::_popInlineFmt(void)
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
 	for (k = end; k >= (UT_uint32)start; k--)
 	{
-		const XML_Char * p = static_cast<XML_Char *>(m_vecInlineFmt.getNthItem(k-1));
+		const gchar * p = static_cast<gchar *>(m_vecInlineFmt.getNthItem(k-1));
 		m_vecInlineFmt.deleteNthItem(k-1);
 		if (p)
 			g_free(const_cast<void *>(static_cast<const void *>(p)));
 	}
 }
 
-const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
-											  const XML_Char ** atts)
+const gchar * IE_Imp_XML::_getXMLPropValue(const gchar *name,
+											  const gchar ** atts)
 {
 	return UT_getAttribute(name, atts);
 }

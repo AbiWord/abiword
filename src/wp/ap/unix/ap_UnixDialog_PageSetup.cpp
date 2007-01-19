@@ -559,7 +559,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint
 
 void Markup(GtkWidget * widget, const XAP_StringSet * pSS, char *string)
 {
-	XML_Char * unixstr = NULL;	// used for conversions
+	gchar * unixstr = NULL;	// used for conversions
 	UT_XML_cloneNoAmpersands(unixstr, string);
 	UT_String markupStr(UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr));
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());

@@ -206,12 +206,12 @@ bool IE_Imp_Text::_insertBlock()
 	else
 	{
 	    // text gets applied in the Normal style
-	    const XML_Char * propsArray[3];
+	    const gchar * propsArray[3];
 	    propsArray[0] = "style";
 	    propsArray[1] = "Normal";
 	    propsArray[2] = 0;
 
-	    ret = appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0]));
+	    ret = appendStrux(PTX_Block, static_cast<const gchar **>(&propsArray[0]));
 	}
 	if(!isPasting())
 	{
@@ -261,7 +261,7 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				m_bBlockDirectionPending = false;
 
 				// set 'dom-dir' property of the block ...
-				const XML_Char * propsArray[3];
+				const gchar * propsArray[3];
 				propsArray[0] = "props";
 				propsArray[1] = NULL;
 				propsArray[2] = NULL;
@@ -284,7 +284,7 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 						m_pBlock = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
 					}
 				}
-				appendStruxFmt(m_pBlock, static_cast<const XML_Char **>(&propsArray[0]));
+				appendStruxFmt(m_pBlock, static_cast<const gchar **>(&propsArray[0]));
 			
 				// if this is the first data in the block and the first
 				// character is LRM or RLM followed by a strong character,
@@ -781,13 +781,13 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, GsfInput * fp)
 UT_Error IE_Imp_Text::_writeHeader(GsfInput * /* fp */)
 {
 	// text gets applied in the Normal style
-	const XML_Char * propsArray[3];
+	const gchar * propsArray[3];
 	propsArray[0] = "style";
 	propsArray[1] = "Normal";
 	propsArray[2] = 0;
 
 	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const XML_Char**>(&propsArray[0])));
+	X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const gchar**>(&propsArray[0])));
 
 	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
 	UT_return_val_if_fail( pf->getType() == pf_Frag::PFT_Strux, UT_ERROR);
@@ -927,8 +927,8 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 
 	if (bOK)
 	{
-		const XML_Char * s;
-		static XML_Char szEnc[16];
+		const gchar * s;
+		static gchar szEnc[16];
 
 		s = pDialog->getEncoding();
 		UT_return_val_if_fail (s, false);

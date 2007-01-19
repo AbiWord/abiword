@@ -55,7 +55,7 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 
 	XAP_App * pApp = XAP_App::getApp();
 
-	if ((pApp->getPrefsValue(szToolbarLabelSetKey, static_cast<const XML_Char **>(&szToolbarLabelSetName))) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
+	if ((pApp->getPrefsValue(szToolbarLabelSetKey, static_cast<const gchar **>(&szToolbarLabelSetName))) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
 	else
 		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;

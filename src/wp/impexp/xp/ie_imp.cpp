@@ -91,7 +91,7 @@ bool IE_Imp::isClipboard () const
 	return m_isPaste;
 }
 
-bool IE_Imp::appendStrux (PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp::appendStrux (PTStruxType pts, const gchar ** attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStrux (pts, attributes);
@@ -103,7 +103,7 @@ bool IE_Imp::appendStrux (PTStruxType pts, const XML_Char ** attributes)
 		}
 }
 
-bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStruxFmt(pfs, attributes);
@@ -139,8 +139,8 @@ bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
 		}
 }
 
-bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attribs,
-						   const XML_Char ** props)
+bool IE_Imp::appendObject (PTObjectType pto, const gchar ** attribs,
+						   const gchar ** props)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendObject (pto, attribs);
@@ -152,7 +152,7 @@ bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attribs,
 		}
 }
 
-bool IE_Imp::appendFmt(const XML_Char ** attributes)
+bool IE_Imp::appendFmt(const gchar ** attributes)
 {
 	bool bRes;
 
@@ -169,7 +169,7 @@ bool IE_Imp::appendFmt(const XML_Char ** attributes)
 	return bRes;
 }
 
-bool IE_Imp::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
+bool IE_Imp::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
 {
 	bool bRes;
 
@@ -178,9 +178,9 @@ bool IE_Imp::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 		// m_pDocument->appendFmtMark();
 	}
 	else {
-		const XML_Char ** attributes;
+		const gchar ** attributes;
 
-		attributes = (const XML_Char **)pVecAttributes->getNthItem(0);
+		attributes = (const gchar **)pVecAttributes->getNthItem(0);
 
 		bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
 										  m_dpos, m_dpos,

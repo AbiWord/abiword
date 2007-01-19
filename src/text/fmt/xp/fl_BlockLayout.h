@@ -150,8 +150,8 @@ public:
 		return m_pLayout->getView(); 
 	}
 
-	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
-	const PP_PropertyType * getPropertyType(const XML_Char * szName, 
+	const char* getProperty(const gchar * pszName, bool bExpandStyles = true) const;
+	const PP_PropertyType * getPropertyType(const gchar * szName, 
 											tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void);
@@ -181,8 +181,8 @@ public:
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void);
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
-	void	getListAttributesVector(UT_GenericVector<const XML_Char*> * va);
-	void  getListPropertyVector(UT_GenericVector<const XML_Char*> * vp);
+	void	getListAttributesVector(UT_GenericVector<const gchar*> * va);
+	void  getListPropertyVector(UT_GenericVector<const gchar*> * vp);
 
 	char *	getFormatFromListType(FL_ListType iListType);
 	void remItemFromList(void);
@@ -191,15 +191,15 @@ public:
 	void prependList( fl_BlockLayout * nextList);
 	FL_ListType decodeListType(char * listformat);
 	FL_ListType getListType(void);
-	XML_Char* getListStyleString( FL_ListType iListType);
-	FL_ListType getListTypeFromStyle( const XML_Char * style);
+	gchar* getListStyleString( FL_ListType iListType);
+	FL_ListType getListTypeFromStyle( const gchar * style);
 	fl_BlockLayout * getNextList(UT_uint32 id);
 	bool isListLabelInBlock(void);
-	void StartList( const XML_Char * style, PL_StruxDocHandle prevSDH = NULL);
+	void StartList( const gchar * style, PL_StruxDocHandle prevSDH = NULL);
 
 	void StartList( FL_ListType lType, UT_uint32 start,
-					const XML_Char * lDelim, const XML_Char * lDecimal, 
-					const XML_Char * fFont, float Align, float indent, 
+					const gchar * lDelim, const gchar * lDecimal, 
+					const gchar * fFont, float Align, float indent, 
 					UT_uint32 iParentID = 0, UT_uint32 level=0 );
 
 	void StopListInBlock(void);
@@ -521,7 +521,7 @@ protected:
 	fl_BlockLayout          *m_prevToSpell;
 #endif
 	bool                    m_bListItem;
-	const XML_Char *		m_szStyle;
+	const gchar *		m_szStyle;
 	bool                    m_bIsCollapsed;
 	bool                    m_bHasUpdatableField;
 

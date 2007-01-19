@@ -57,7 +57,7 @@ void AP_QNXDialog_InsertHyperlink::event_OK(void)
 	if(res && *res)	
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
-		setHyperlink((XML_Char*)res);
+		setHyperlink((gchar*)res);
 	}
 	else
 	{
@@ -175,7 +175,7 @@ PtWidget_t *PtButton_cancel;
 	localizeLabel(PtButton_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	//Add existing bookmarks to the list.
- XML_Char ** pBookmarks = (XML_Char **)UT_calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
+ gchar ** pBookmarks = (gchar **)UT_calloc(getExistingBookmarksCount(),sizeof(gchar*));
 	if(getHyperlink())
 	{
 	int start,end;
@@ -186,7 +186,7 @@ PtWidget_t *PtButton_cancel;
 	}
 	
   for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
-   pBookmarks[i] =(XML_Char *) getNthExistingBookmark(i);
+   pBookmarks[i] =(gchar *) getNthExistingBookmark(i);
 	PtListAddItems(mBookmarkList,(const char **)pBookmarks,getExistingBookmarksCount(),0);
 	g_free(pBookmarks);	
 	

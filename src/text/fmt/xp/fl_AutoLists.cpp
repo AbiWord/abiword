@@ -24,7 +24,7 @@
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
 
-static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
+static const gchar * xml_Lists[] = { XML_NUMBERED_LIST,
 										XML_LOWERCASE_LIST,
 										XML_UPPERCASE_LIST,
 										XML_LOWERROMAN_LIST,
@@ -44,7 +44,7 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 										XML_HEBREW_LIST
 };
 
-const XML_Char * fl_AutoLists::getXmlList(UT_uint32 i)
+const gchar * fl_AutoLists::getXmlList(UT_uint32 i)
 {
     UT_uint32 j = i;
 	if(i > OTHER_NUMBERED_LISTS)

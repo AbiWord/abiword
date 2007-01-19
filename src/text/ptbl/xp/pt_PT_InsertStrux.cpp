@@ -58,10 +58,10 @@
 */
 bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 												PP_RevisionType eType,
-												const XML_Char ** & ppRevAttrib,
-												const XML_Char ** & ppRevProps,
-												const XML_Char **   ppAttrib,
-												const XML_Char **   ppProps)
+												const gchar ** & ppRevAttrib,
+												const gchar ** & ppRevProps,
+												const gchar **   ppAttrib,
+												const gchar **   ppProps)
 {
 	// foolproofing
 	ppRevAttrib = NULL;
@@ -72,11 +72,11 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 	const PP_AttrProp * pRevisedAP = NULL;
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(indexAP, &pAP);
-	const XML_Char name[] = "revision";
+	const gchar name[] = "revision";
 
 	if(pAP)
 	{
-		const XML_Char * pRev = NULL;
+		const gchar * pRev = NULL;
 		if(pAP->getAttribute(name, pRev))
 		{
 			// OK, the previous strux had a revision attribute, which was copied into the new
@@ -153,8 +153,8 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		}
 
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrib = NULL;
-		const XML_Char ** ppRevProps  = NULL;
+		const gchar ** ppRevAttrib = NULL;
+		const gchar ** ppRevProps  = NULL;
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
 
@@ -169,8 +169,8 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								PTStruxType pts,
-								const XML_Char ** attributes,
-								const XML_Char ** properties,
+								const gchar ** attributes,
+								const gchar ** properties,
 								pf_Frag_Strux ** ppfs_ret)
 {
 	if(m_pDocument->isMarkRevisions())
@@ -195,8 +195,8 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		}
 
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrs = NULL;
-		const XML_Char ** ppRevProps  = NULL;
+		const gchar ** ppRevAttrs = NULL;
+		const gchar ** ppRevProps  = NULL;
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, NULL, NULL);
@@ -209,10 +209,10 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		UT_uint32 iRevAttrCount = 0;
 		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
 
-		const XML_Char ** ppRevAttrib = NULL;
+		const gchar ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)
 		{
-			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
 			UT_return_val_if_fail( ppRevAttrib, false );
 
 			UT_uint32 i = 0;
@@ -445,8 +445,8 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 
 bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 									 PTStruxType pts,
-									 const XML_Char ** attributes,
-									 const XML_Char ** properties,
+									 const gchar ** attributes,
+									 const gchar ** properties,
 									 pf_Frag_Strux ** ppfs_ret)
 {
 	// insert a new structure fragment at the given document position.

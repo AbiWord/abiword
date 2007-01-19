@@ -135,7 +135,7 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 
   gtk_color_selection_get_color (csel, cur);
   sprintf(color,"#%02x%02x%02x",CTI(cur, 0), CTI(cur, 1), CTI(cur, 2));
-  strncpy(dlg->m_CurrentTransparentColor,static_cast<const XML_Char *>(color),9);
+  strncpy(dlg->m_CurrentTransparentColor,static_cast<const gchar *>(color),9);
 
   UT_DEBUGMSG (("Changing Color [%s]\n", color));
 
@@ -199,7 +199,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 	// Don't destroy it if he did so.
 	while (!abiRunModalDialog(GTK_DIALOG (dlg), m_pFrame, this, GTK_RESPONSE_OK, FALSE)) {
 		// Answer was 0, so reset color to default
-		strncpy(m_CurrentTransparentColor,static_cast<const XML_Char *>("ffffff"),9);
+		strncpy(m_CurrentTransparentColor,static_cast<const gchar *>("ffffff"),9);
 
 		UT_parseColor(m_CurrentTransparentColor,c);
 		gdouble currentColor[4] = { 0, 0, 0, 0 };

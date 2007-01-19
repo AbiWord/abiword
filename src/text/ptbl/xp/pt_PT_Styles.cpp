@@ -40,7 +40,7 @@
 // Styles represent named collections of formatting properties.
 
 #define _s(name, displayed, type, base, follow, props)	\
-	do { const XML_Char * a[] = {						\
+	do { const gchar * a[] = {						\
 			PT_NAME_ATTRIBUTE_NAME, name,				\
 			PT_TYPE_ATTRIBUTE_NAME, type,				\
 			PT_BASEDON_ATTRIBUTE_NAME, base,			\
@@ -295,7 +295,7 @@ Failed:
 	return false;
 }
 
-bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, const XML_Char ** attributes)
+bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, const gchar ** attributes)
 {
 	// this function can only be called before loading the document.
 	UT_return_val_if_fail (m_pts==PTS_Create, false);
@@ -317,7 +317,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, co
 }
 
 
-bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
+bool pt_PieceTable::appendStyle(const gchar ** attributes)
 {
 	// this function can only be called while loading the document.
   //UT_ASSERT(m_pts==PTS_Loading);
@@ -330,7 +330,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 
 	// verify unique name
 
-	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
 	const char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
 	if (!szName || !*szName)
 	{
@@ -370,10 +370,10 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	}
 }
 
-bool pt_PieceTable::removeStyle (const XML_Char * szName)
+bool pt_PieceTable::removeStyle (const gchar * szName)
 {
 	UT_return_val_if_fail (szName, false);
-	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
+	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
 
 	UT_DEBUGMSG(("DOM: remove the style, maybe recode the hash-table\n"));
 

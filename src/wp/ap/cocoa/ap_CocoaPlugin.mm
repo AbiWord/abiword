@@ -791,15 +791,15 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 			if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
 				if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
 					{
-						const XML_Char param_name[] = "param";
-						const XML_Char * pParam = (const XML_Char *) [field_name UTF8String];
-						const XML_Char * pAttr[3];
+						const gchar param_name[] = "param";
+						const gchar * pParam = (const gchar *) [field_name UTF8String];
+						const gchar * pAttr[3];
 
-						pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+						pAttr[0] = static_cast<const gchar *>(&param_name[0]);
 						pAttr[1] = pParam;
 						pAttr[2] = 0;
 
-						pView->cmdInsertField("mail_merge", static_cast<const XML_Char **>(&pAttr[0]));
+						pView->cmdInsertField("mail_merge", static_cast<const gchar **>(&pAttr[0]));
 					}
 }
 

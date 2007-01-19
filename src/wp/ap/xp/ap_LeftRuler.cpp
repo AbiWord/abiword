@@ -67,7 +67,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_bGuide = false;
 	m_yGuide = 0;
 	
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
@@ -389,7 +389,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		return;
 	}
 
-	const XML_Char * properties[3];
+	const gchar * properties[3];
 
 	bool hdrftr = pView->isHdrFtrEdit();
 
@@ -462,9 +462,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAP(pSectionAP);
-					const XML_Char * pszYpos = NULL;
+					const gchar * pszYpos = NULL;
 					UT_sint32 iYpos;
-					const XML_Char * pszHeight = NULL;
+					const gchar * pszHeight = NULL;
 					UT_sint32 iHeight;
 					if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
 					{
@@ -499,7 +499,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					UT_String sHeight("");
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
-					const XML_Char * props[6] = {"ypos",sYpos.c_str(),
+					const gchar * props[6] = {"ypos",sYpos.c_str(),
 						"frame-height",sHeight.c_str(),
 						NULL,NULL};
 					pView->setFrameFormat(props);
@@ -578,7 +578,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				{
 					const PP_AttrProp* pSectionAP = NULL;
 					pFrame->getAP(pSectionAP);
-					const XML_Char * pszHeight = NULL;
+					const gchar * pszHeight = NULL;
 					UT_sint32 iHeight;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
@@ -599,7 +599,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					UT_String sHeight("");
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
-					const XML_Char * props[4] = {"frame-height",sHeight.c_str(),
+					const gchar * props[4] = {"frame-height",sHeight.c_str(),
 								NULL,NULL};
 					pView->setFrameFormat(props);
 				}
@@ -1942,8 +1942,8 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
 	UT_ASSERT( data && pPrefs );
 
-	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
+	const gchar *pszBuffer;
+	pPrefs->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
@@ -1962,9 +1962,9 @@ void AP_LeftRuler::setDimension( UT_Dimension newdim )
 void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
 #ifndef EMBEDDED_TARGET    
-	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
+	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue);
 	char temp[100];
-	const XML_Char *pzMessageFormat = XAP_App::getApp()->getStringSet()->getValue(messageID);
+	const gchar *pzMessageFormat = XAP_App::getApp()->getStringSet()->getValue(messageID);
 	sprintf(temp, pzMessageFormat, pText);
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());

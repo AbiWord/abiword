@@ -137,7 +137,7 @@ void XAP_CocoaDialog_Encoding::_populateWindowData(void)
 
 	for (UT_uint32 i = 0; i < _getEncodingsCount(); i++)
 	{
-		const XML_Char* s = _getAllEncodings()[i];
+		const gchar* s = _getAllEncodings()[i];
 
 		[m_dataSource addString:[NSString stringWithUTF8String:s]];
 	} 

@@ -125,7 +125,7 @@ PtWidget_t *PtButton_ok;
 PtWidget_t *MainWindow;
 PtWidget_t *PtButton_delete;
 int numBookmark = getExistingBookmarksCount();
-XML_Char **bookmarkList=(XML_Char **)UT_calloc(numBookmark,sizeof(XML_Char*));
+gchar **bookmarkList=(gchar **)UT_calloc(numBookmark,sizeof(gchar*));
 int i;
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -142,9 +142,9 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//Add existing bookmarks to the widget.
 	for(i=0;i<numBookmark;i++)
 	{
-		bookmarkList[i]=(XML_Char *)getNthExistingBookmark(i);
+		bookmarkList[i]=(gchar *)getNthExistingBookmark(i);
 	}	
-	PtListAddItems(m_comboBox,(const XML_Char **)bookmarkList,i,0);
+	PtListAddItems(m_comboBox,(const gchar **)bookmarkList,i,0);
 	g_free(bookmarkList);
 	if (getBookmark() && strlen(getBookmark()) > 0)
 	  {
@@ -186,7 +186,7 @@ void AP_QNXDialog_InsertBookmark::event_OK(void)
 {
 	UT_ASSERT(m_comboBox);
 	// get the bookmark name, if any (return cancel if no name given)	
-	XML_Char *mark;
+	gchar *mark;
 	
 	PtGetResource(m_comboBox,Pt_ARG_TEXT_STRING,&mark,0);
 	if(mark && *mark)
@@ -210,7 +210,7 @@ void AP_QNXDialog_InsertBookmark::event_Delete(void)
 {
 	UT_ASSERT(m_comboBox);
 	// get the bookmark name, if any (return cancel if no name given)	
-	XML_Char *mark;
+	gchar *mark;
 	
 	PtGetResource(m_comboBox,Pt_ARG_TEXT_STRING,&mark,0);
 	if(mark && *mark)

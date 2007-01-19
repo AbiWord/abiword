@@ -705,7 +705,7 @@ static void setDragIcon(GtkWidget * wwd, GtkImage * img)
 */
 GtkToolbarStyle EV_UnixToolbar::getStyle(void)
 {
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	

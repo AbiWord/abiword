@@ -51,7 +51,7 @@ AP_FrameData::AP_FrameData()
 	m_bIsFullScreen = false;
 
 	bool b;
-	const XML_Char *str;
+	const gchar *str;
 
 	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
 		m_bInsertMode = b;

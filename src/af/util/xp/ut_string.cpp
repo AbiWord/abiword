@@ -47,27 +47,19 @@
 #include "ut_case.h"
 #undef  UT_STRING_CPP
 
-////////////////////////////////////////////////////////////////////////
-//
-//  XML string (XML_Char)
-//
-//  String is built of 8-bit units (bytes)
-//
-////////////////////////////////////////////////////////////////////////
-
-bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
+bool UT_XML_cloneNoAmpersands(gchar *& rszDest, const gchar * szSource)
 {
 	if (szSource == NULL)
 		return false;
 
 	UT_uint32 length = strlen(szSource) + 1;
-	rszDest = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
+	rszDest = static_cast<gchar *>(UT_calloc(length, sizeof(gchar)));
 
 	if (!rszDest)
 		return false;
 
-	const XML_Char * o = szSource;
-	XML_Char * n = rszDest;
+	const gchar * o = szSource;
+	gchar * n = rszDest;
 	while (*o != 0)
 	{
 		if (*o != '&')
@@ -82,9 +74,9 @@ bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 }
 
 /* This uses the clone no ampersands but dumps into a static buffer */
-XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
+gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 {
-	static XML_Char *rszDestBuffer = NULL;
+	static gchar *rszDestBuffer = NULL;
 	static UT_uint32 iDestBufferLength = 0;
 
 	if (szSource == NULL)
@@ -96,7 +88,7 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 			g_free(rszDestBuffer);
 		}
 		iDestBufferLength = 0;
-		rszDestBuffer = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
+		rszDestBuffer = static_cast<gchar *>(UT_calloc(length, sizeof(gchar)));
 
 		if (!rszDestBuffer)
 			return NULL;
@@ -105,8 +97,8 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 	}
 	memset(rszDestBuffer, 0, iDestBufferLength);
 
-	const XML_Char * o = szSource;
-	XML_Char * n = rszDestBuffer;
+	const gchar * o = szSource;
+	gchar * n = rszDestBuffer;
 	while (*o != 0)
 	{
 		if (*o != '&')
@@ -120,39 +112,6 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 	return rszDestBuffer;
 }
 
-UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
-{
-	UT_UCSChar ucs, ucs1, ucs2, ucs3, ucs4;
-
-	switch (len)
-	{
-		case 2:
-			ucs1 = static_cast<UT_UCSChar>(p[0] & 0x1f);
-			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
-			ucs  = (ucs1 << 6) | ucs2;
-			return ucs;
-
-		case 3:
-			ucs1 = static_cast<UT_UCSChar>(p[0] & 0x0f);
-			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
-			ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
-			ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
-			return ucs;
-
-		case 4:
-			ucs1 = static_cast<UT_UCSChar>((p[0] & 0x07) << 2) | static_cast<UT_UCSChar>((p[1] & 0x0f00) >> 4);
-			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x0f);
-			ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
-			ucs4 = static_cast<UT_UCSChar>(p[3] & 0x3f);
-			ucs  = (ucs1 << 16) | (ucs2 << 12) | (ucs3 << 6) | ucs3;
-			return ucs;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return 0;
-	}
-}
-
 /*! \fn bool UT_isValidXML(const char *s)
 	 \param s The string of characters which is to be checked for XML-validity.
 	 \retval TRUE if the characters are all valid for XML, FALSE if any one of them is not.
@@ -164,7 +123,7 @@ bool UT_isValidXML(const char *pString)
 	if(!pString)
 		return true;
 
-	if(!UT_isValidUTF8string(pString, strlen(pString)))
+	if(!g_utf8_validate(pString, -1, NULL))
 		return false;
 
 	const UT_Byte * s = reinterpret_cast<const UT_Byte *>(pString);
@@ -195,8 +154,8 @@ bool UT_validXML(char * pString)
 	if(!pString)
 		return false;
 
-	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
+	UT_ASSERT(sizeof(gchar) == sizeof(UT_Byte));
+	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// gchar is signed...
 	
 	bool bChanged = false;
 	UT_uint32 len = strlen(pString);
@@ -273,81 +232,16 @@ bool UT_validXML(char * pString)
 	return bChanged;
 }
 
-	
-
-/*!
-    Checks that string p contains valid utf-8 sequence
-*/
-bool  UT_isValidUTF8string(const XML_Char * pString, UT_uint32 len)
-{
-	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
-
-	int bytesInSequence = 0;
-	int bytesExpectedInSequence = 0;
-
-	for (UT_uint32 k=0; k<len; k++)
-	{
-		if (p[k] < 0x80)						// plain us-ascii part of latin-1
-		{
-			if(bytesInSequence != 0)
-				return false;
-
-			bytesExpectedInSequence = 0;
-			bytesInSequence = 0;
-		}
-		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
-		{
-			if(bytesInSequence != 0)
-				return false;
-			
-			bytesExpectedInSequence = 4;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
-		{
-			if(bytesInSequence != 0)
-				return false;
-			
-			bytesExpectedInSequence = 3;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
-		{
-			if(bytesInSequence != 0)
-				return false;
-			
-			bytesExpectedInSequence = 2;
-			bytesInSequence = 1;
-		}
-		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
-		{
-			if(bytesInSequence == 0)
-				return false;
-			
-			bytesInSequence++;
-			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
-			{
-				bytesInSequence = 0;
-				bytesExpectedInSequence = 0;
-			}
-		}
-	}
-
-	return true;
-}
-	
-
-void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * pResult)
+void UT_decodeUTF8string(const gchar * pString, UT_uint32 len, UT_GrowBuf * pResult)
 {
 	// decode the given string [ p[0]...p[len] ] and append to the given growbuf.
 
-	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
+	UT_ASSERT(sizeof(gchar) == sizeof(UT_Byte));
+	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// gchar is signed...
 
 	int bytesInSequence = 0;
 	int bytesExpectedInSequence = 0;
-	XML_Char buf[5];
+	gchar buf[5];
 
 	for (UT_uint32 k=0; k<len; k++)
 	{
@@ -385,7 +279,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 			buf[bytesInSequence++] = p[k];
 			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
 			{
-				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
+				UT_UCSChar c = g_utf8_get_char(buf);
 				pResult->append(reinterpret_cast<UT_GrowBufElement *>(&c),1);
 				bytesInSequence = 0;
 				bytesExpectedInSequence = 0;
@@ -887,37 +781,6 @@ UT_UCS2Char * UT_UCS2_strnrev(UT_UCS2Char * src, UT_uint32 n)
 //   UT_UCS2Char and is now UT_UCS4Char
 //
 ////////////////////////////////////////////////////////////////////////
-
-#if 1 // i didn't get a chance to test this -- jeff
-XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
-{
-	// convert the given unicode character into a UTF-8 sequence
-	// return pointer to static buffer.
-
-	static XML_Char sBuf[10];
-
-	memset(sBuf,0,sizeof(sBuf));
-	if (cIn < 0x0080)
-	{
-		sBuf[0] = static_cast<XML_Char>(cIn);
-	}
-	else if (cIn < 0x0800)
-	{
-		// 110xxxxx 10xxxxxx
-		sBuf[0] = 0x00c0 | ((cIn >> 6) & 0x001f);
-		sBuf[1] = 0x0080 | (    cIn    & 0x003f);
-	}
-	else
-	{
-		// 1110xxxx 10xxxxxx 10xxxxxx
-		sBuf[0] = 0x00e0 | ((cIn >> 12) & 0x000f);
-		sBuf[1] = 0x0080 | ((cIn >>  6) & 0x003f);
-		sBuf[2] = 0x0080 | (    cIn     & 0x003f);
-	}
-
-	return sBuf;
-}
-#endif // --jeff
 
 bool UT_isSmartQuotableCharacter(UT_UCSChar c)
 {

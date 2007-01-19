@@ -47,8 +47,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 start,
 						PL_StruxDocHandle pFirst,
 						fl_AutoNum * pParent,
-						const XML_Char * lDelim,
-						const XML_Char * lDecimal,
+						const gchar * lDelim,
+						const gchar * lDecimal,
 						FL_ListType lType,
 						PD_Document * pDoc,
 						FV_View * pView)
@@ -83,8 +83,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 parent_id,
 						FL_ListType lType,
 						UT_uint32 start,
-						const XML_Char * lDelim,
-						const XML_Char * lDecimal,
+						const gchar * lDelim,
+						const gchar * lDecimal,
 						PD_Document * pDoc,
 						FV_View * pView)
 	:	m_pParent(0),
@@ -625,24 +625,24 @@ bool fl_AutoNum::isDirty() const
 	return m_bDirty;
 }
 
-void fl_AutoNum::setDelim(const XML_Char * lDelim)
+void fl_AutoNum::setDelim(const gchar * lDelim)
 {
 	strncpy( m_pszDelim, lDelim, 80);
 	m_bDirty = true;
 }
 
-const XML_Char * fl_AutoNum::getDelim() const
+const gchar * fl_AutoNum::getDelim() const
 {
 	return m_pszDelim;
 }
 
 
-const XML_Char * fl_AutoNum::getDecimal() const
+const gchar * fl_AutoNum::getDecimal() const
 {
 	return m_pszDecimal;
 }
 
-void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
+void fl_AutoNum::setDecimal(const gchar * lDecimal)
 {
 	strncpy( m_pszDecimal, lDecimal, 80);
 	m_bDirty = true;

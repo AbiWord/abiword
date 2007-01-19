@@ -415,7 +415,7 @@ void AP_CocoaDialog_Lists::_fillFontMenu(NSPopUpButton* menu)
 	}
 }
 
-const XML_Char* AP_CocoaDialog_Lists::_getDingbatsFontName() const
+const gchar* AP_CocoaDialog_Lists::_getDingbatsFontName() const
 {
 	return "Zapf Dingbats";
 }

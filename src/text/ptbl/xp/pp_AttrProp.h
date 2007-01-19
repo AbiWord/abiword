@@ -74,49 +74,49 @@ public:
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
 
-	// The "XML_Char **" is an argv-like thing containing
+	// The "gchar **" is an argv-like thing containing
 	// multiple sets of name/value pairs.  names are in the
 	// even cells; values are in the odd.  the list is
 	// terminated by a null name.
 
-	bool	setAttributes(const XML_Char ** attributes);
-	bool    setAttributes(const UT_GenericVector<XML_Char*> * pVector);
-	bool	setProperties(const XML_Char ** properties);
-	bool	setProperties(const UT_GenericVector<XML_Char*> * pVector);
+	bool	setAttributes(const gchar ** attributes);
+	bool    setAttributes(const UT_GenericVector<gchar*> * pVector);
+	bool	setProperties(const gchar ** properties);
+	bool	setProperties(const UT_GenericVector<gchar*> * pVector);
 
-	const XML_Char ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
-	const XML_Char ** getProperties () const;
+	const gchar ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
+	const gchar ** getProperties () const;
 
-	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
-	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
+	bool	setAttribute(const gchar * szName, const gchar * szValue);
+	bool	setProperty(const gchar * szName, const gchar * szValue);
 
-	bool	getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
-	bool	getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
+	bool	getNthAttribute(int ndx, const gchar *& szName, const gchar *& szValue) const;
+	bool	getNthProperty(int ndx, const gchar *& szName, const gchar *& szValue) const;
 
-	bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
-	bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	const PP_PropertyType *getPropertyType(const XML_Char * szName, tProperty_type Type) const;
+	bool getAttribute(const gchar * szName, const gchar *& szValue) const;
+	bool getProperty(const gchar * szName, const gchar *& szValue) const;
+	const PP_PropertyType *getPropertyType(const gchar * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;
 	bool hasAttributes(void) const;
 	size_t getPropertyCount (void) const;
 	size_t getAttributeCount (void) const;
-	bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
-	bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+	bool areAlreadyPresent(const gchar ** attributes, const gchar ** properties) const;
+	bool areAnyOfTheseNamesPresent(const gchar ** attributes, const gchar ** properties) const;
 	bool isExactMatch(const PP_AttrProp * pMatch) const;
 	bool isEquivalent(const PP_AttrProp * pAP2) const;
-	bool isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const;
+	bool isEquivalent(const gchar ** attrs, const gchar ** props) const;
 
-	PP_AttrProp * createExactly(const XML_Char ** attributes,
-				    const XML_Char ** properties) const;
+	PP_AttrProp * createExactly(const gchar ** attributes,
+				    const gchar ** properties) const;
 
-	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
-										const XML_Char ** properties,
+	PP_AttrProp * cloneWithReplacements(const gchar ** attributes,
+										const gchar ** properties,
 										bool bClearProps) const;
-	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
-									   const XML_Char ** properties) const;
-	PP_AttrProp * cloneWithEliminationIfEqual(const XML_Char ** attributes,
-									   const XML_Char ** properties) const;
+	PP_AttrProp * cloneWithElimination(const gchar ** attributes,
+									   const gchar ** properties) const;
+	PP_AttrProp * cloneWithEliminationIfEqual(const gchar ** attributes,
+									   const gchar ** properties) const;
 
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
@@ -152,15 +152,15 @@ protected:
 	void _clearEmptyAttributes();
 
 
-	typedef UT_Pair<const XML_Char*,const PP_PropertyType *> PropertyPair;
+	typedef UT_Pair<const gchar*,const PP_PropertyType *> PropertyPair;
 
-	UT_GenericStringMap<XML_Char*> * m_pAttributes; // of XML_Char*
+	UT_GenericStringMap<gchar*> * m_pAttributes; // of gchar*
 	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
 	
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK
-	mutable const XML_Char **   m_szProperties;
+	mutable const gchar **   m_szProperties;
 	
 	mutable PT_AttrPropIndex    m_iRevisedIndex;
 	mutable PP_RevisionState    m_RevisionState;

@@ -85,7 +85,7 @@ bool AP_Dialog_Latex::convertLatexToMathML(void)
 void AP_Dialog_Latex::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
         UT_uint32 title_width = 60;
 	char wName[200];
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_Latex_LatexTitle));

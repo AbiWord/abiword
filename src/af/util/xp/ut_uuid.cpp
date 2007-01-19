@@ -398,7 +398,7 @@ bool UT_UUID::_makeUUID(uuid &uu)
 	{
 #if 0
 		bool bNoMAC;
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_NoMACinUUID,
+		XAP_App::getApp()->getPrefsValueBool((gchar*)XAP_PREF_KEY_NoMACinUUID,
 											 &bNoMAC);
 		
         if(bNoMAC || !UT_getEthernetAddress(s_node))

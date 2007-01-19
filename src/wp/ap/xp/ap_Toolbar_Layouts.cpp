@@ -231,7 +231,7 @@ XAP_String_Id XAP_Toolbar_Factory_vec::getLabelStringID(void)
 	return m_label;
 }
 
-const XML_Char * XAP_Toolbar_Factory_vec::getPrefKey(void)
+const gchar * XAP_Toolbar_Factory_vec::getPrefKey(void)
 {
 	return m_prefKey;
 }
@@ -299,7 +299,7 @@ UT_uint32	XAP_Toolbar_Factory::countToolbars(void) const
 	Return the Prefs key for the toolbar.
  */
 const
-XML_Char* XAP_Toolbar_Factory::prefKeyForToolbar(UT_uint32 t) const
+gchar* XAP_Toolbar_Factory::prefKeyForToolbar(UT_uint32 t) const
 {
 	XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(t);
 	return pVec->getPrefKey();
@@ -588,7 +588,7 @@ bool  XAP_Toolbar_Factory::saveToolbarsInCurrentScheme(void)
 		UT_uint32 NrEntries = pVec->getNrEntries();
 		UT_DEBUGMSG(("SEVIOR: Number of entries in TB %d \n",NrEntries));
 		sprintf(buf,"%d",NrEntries);
-		pScheme->setValue((const XML_Char *)sTBBase.c_str(),(const XML_Char *) buf );
+		pScheme->setValue((const gchar *)sTBBase.c_str(),(const gchar *) buf );
 //
 // Loop through this toolbar definition and save it in the preferences
 //		
@@ -605,7 +605,7 @@ bool  XAP_Toolbar_Factory::saveToolbarsInCurrentScheme(void)
 			sprintf(buf,"%d",iLay);
 			sTBBase += buf;
 			sprintf(buf,"%d",curId);
-			pScheme->setValue((const XML_Char *) sTBBase.c_str(),(const XML_Char *) buf );
+			pScheme->setValue((const gchar *) sTBBase.c_str(),(const gchar *) buf );
 //
 // Save flags in contructed key
 //
@@ -614,7 +614,7 @@ bool  XAP_Toolbar_Factory::saveToolbarsInCurrentScheme(void)
 			sprintf(buf,"%d",iLay);
 			sTBBase += buf;
 			sprintf(buf,"%d",curFlag);
-			pScheme->setValue((const XML_Char *) sTBBase.c_str(),(const XML_Char *) buf );
+			pScheme->setValue((const gchar *) sTBBase.c_str(),(const gchar *) buf );
 		}
 	}
 	return true;
@@ -652,12 +652,12 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 		UT_String sTBBase = XAP_PREF_KEY_ToolbarNumEntries;
 		const char * szCurName =  s_ttTable[iTB].m_name;
 		sTBBase +=szCurName;
-		const XML_Char * szNrEntries = NULL;
+		const gchar * szNrEntries = NULL;
 		UT_uint32 NrEntries = 0;
 //
 // Get Number of entries if the correct key exists. Otherwise use defaults.
 //
-		pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szNrEntries);
+		pScheme->getValue((const gchar *)sTBBase.c_str(),&szNrEntries);
 		if(szNrEntries && *szNrEntries)
 		{	
 			pVec = new XAP_Toolbar_Factory_vec(szCurName);
@@ -675,8 +675,8 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += szCurName;
 				sprintf(buf,"%d",iLay);
 				sTBBase += buf;
-				const XML_Char * szCurId = NULL;
-				pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szCurId);
+				const gchar * szCurId = NULL;
+				pScheme->getValue((const gchar *)sTBBase.c_str(),&szCurId);
 				if(szCurId == NULL)
 				{
 					continue;
@@ -698,8 +698,8 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				sTBBase += szCurName;
 				sprintf(buf,"%d",iLay);
 				sTBBase += buf;
-				const XML_Char * szCurFlag = NULL;
-				pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szCurFlag);
+				const gchar * szCurFlag = NULL;
+				pScheme->getValue((const gchar *)sTBBase.c_str(),&szCurFlag);
 				if(szCurFlag != NULL)
 				{
 					EV_Toolbar_LayoutFlags curFlag = (EV_Toolbar_LayoutFlags) atoi(szCurFlag);

@@ -72,7 +72,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// this, open/import will not.
 
 	bool bCheckWritePermission = true;
-	const XML_Char * szTitle = NULL;
+	const gchar * szTitle = NULL;
 	int   flags = 0;
 
 	switch (m_id)

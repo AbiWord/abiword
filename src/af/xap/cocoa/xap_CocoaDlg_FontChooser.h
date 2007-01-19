@@ -145,9 +145,9 @@ private:
 	bool		m_bSuperScriptInitialValue;
 	bool		m_bSubScriptInitialValue;
 
-	void _colorChanged(NSColor* color, const XML_Char* attr, char* buf);
+	void _colorChanged(NSColor* color, const gchar* attr, char* buf);
 
-	XML_Char *	m_currentFamily;
+	gchar *	m_currentFamily;
 	XAP_CocoaDialog_FontChooserController*	m_dlg;
 };
 

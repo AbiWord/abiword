@@ -557,7 +557,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 	case AP_RID_DIALOG_STYLES_TOP_BUTTON_APPLY:
 		{
-			const XML_Char * szStyle = getCurrentStyle();
+			const gchar * szStyle = getCurrentStyle();
 			if(szStyle && *szStyle)
 			{
 				getView()->setStyle(szStyle);
@@ -676,7 +676,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_win32DialogNewModify.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_NEWMODIFY, this);
 			if(m_answer == AP_Dialog_Styles::a_OK)
 			{
-				createNewStyle((XML_Char *) m_newStyleName);
+				createNewStyle((gchar *) m_newStyleName);
 				_populateCList();
 			}
 			destroyAbiPreview();
@@ -970,7 +970,7 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 void AP_Win32Dialog_Styles::eventStyleType()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();	
-	const XML_Char * pszSt = "P";
+	const gchar * pszSt = "P";
 	char szTemp[128];
 	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                           szTemp,

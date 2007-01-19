@@ -161,16 +161,16 @@ double AP_Dialog_Columns::getIncrement(const char * sz)
 */
 void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 {
-	XML_Char  pszAfter[25];
-	XML_Char  pszMaxHeight[25];
+	gchar  pszAfter[25];
+	gchar  pszMaxHeight[25];
 
 	m_pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	m_pDoc = m_pView->getDocument();
-	const XML_Char ** pszSecProps = NULL;
+	const gchar ** pszSecProps = NULL;
 	m_pView->getSectionFormat(&pszSecProps);
 
-	_convertToPreferredUnits( pFrame, static_cast<const XML_Char *>(UT_getAttribute("section-space-after",pszSecProps)), pszAfter);
-	_convertToPreferredUnits( pFrame, static_cast<const XML_Char *>(UT_getAttribute("section-max-column-height",pszSecProps)), pszMaxHeight);
+	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-space-after",pszSecProps)), pszAfter);
+	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-max-column-height",pszSecProps)), pszMaxHeight);
 
 	if(pszAfter && *pszAfter)
 	{
@@ -181,10 +181,10 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("SEVIOR: Initial Height string = %s \n",pszMaxHeight));
 		m_HeightString = pszMaxHeight;
 	}
-	const XML_Char * pszMarginTop = UT_getAttribute("page-margin-top",pszSecProps);
-	const XML_Char * pszMarginBottom =  UT_getAttribute("page-margin-bottom",pszSecProps);
-	const XML_Char * pszMarginLeft =  UT_getAttribute("page-margin-left",pszSecProps);
-	const XML_Char * pszMarginRight =  UT_getAttribute("page-margin-right",pszSecProps);
+	const gchar * pszMarginTop = UT_getAttribute("page-margin-top",pszSecProps);
+	const gchar * pszMarginBottom =  UT_getAttribute("page-margin-bottom",pszSecProps);
+	const gchar * pszMarginLeft =  UT_getAttribute("page-margin-left",pszSecProps);
+	const gchar * pszMarginRight =  UT_getAttribute("page-margin-right",pszSecProps);
 	if(pszMarginTop && *pszMarginTop)
 	{
 		m_dMarginTop = UT_convertToInches(pszMarginTop);
@@ -366,18 +366,18 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
  * Converts the string sz into the units seleced for the ruler.
 \param XAP_Frame * pFrame defined the frame of the application
 \param const char * sz is the string containing the old value
-\param const XML_Char * pRet is the string to which the new value is copied.
+\param const gchar * pRet is the string to which the new value is copied.
 */
-void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *sz, XML_Char * pRet)
+void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *sz, gchar * pRet)
 {
 	UT_Dimension PreferedUnits = DIM_none;
-	const XML_Char * pszRulerUnits = NULL;
+	const gchar * pszRulerUnits = NULL;
 
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
 		PreferedUnits = UT_determineDimension(static_cast<const char *>(pszRulerUnits));
 	};
-	strncpy(pRet, static_cast<const XML_Char *>(UT_reformatDimensionString(PreferedUnits,sz)), 25);
+	strncpy(pRet, static_cast<const gchar *>(UT_reformatDimensionString(PreferedUnits,sz)), 25);
 }
 
 

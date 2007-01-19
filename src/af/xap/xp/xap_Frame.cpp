@@ -205,7 +205,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLayoutName = NULL;
 	if ((pApp->getPrefsValue(szMenuLayoutKey,
-				 static_cast<const XML_Char**>(&szMenuLayoutName))) &&
+				 static_cast<const gchar**>(&szMenuLayoutName))) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName))
 		;
 	else
@@ -218,7 +218,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szMenuLabelSetKey,
-				 static_cast<const XML_Char**>(&szMenuLabelSetName))) &&
+				 static_cast<const gchar**>(&szMenuLabelSetName))) &&
 	    (szMenuLabelSetName) && (*szMenuLabelSetName))
 		;
 	else
@@ -231,7 +231,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLayouts = NULL;
 	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
-							 static_cast<const XML_Char**>(&szToolbarLayouts))) &&
+							 static_cast<const gchar**>(&szToolbarLayouts))) &&
 	    (szToolbarLayouts) && (*szToolbarLayouts))
 		;
 	else
@@ -262,7 +262,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szToolbarLabelSetKey,
-				 static_cast<const XML_Char**>(&szToolbarLabelSetName))) &&
+				 static_cast<const gchar**>(&szToolbarLabelSetName))) &&
 	    (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
 	else
@@ -275,7 +275,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarAppearance = NULL;
 	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
-			    static_cast<const XML_Char**>(&szToolbarAppearance));
+			    static_cast<const gchar**>(&szToolbarAppearance));
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	m_pFrameImpl->m_szToolbarAppearance = g_strdup(szToolbarAppearance);
 
@@ -316,9 +316,9 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	else if( g_ascii_strcasecmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
-		const XML_Char * szZoom = NULL;
+		const gchar * szZoom = NULL;
 		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const XML_Char**>(&szZoom));
+							  static_cast<const gchar**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);
@@ -335,9 +335,9 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	else if( g_ascii_strcasecmp( stTmp.c_str(), "Page" ) == 0 )
 	{
 		m_zoomType = z_WHOLEPAGE;
-		const XML_Char * szZoom = NULL;
+		const gchar * szZoom = NULL;
 		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  static_cast<const XML_Char**>(&szZoom));
+							  static_cast<const gchar**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);
@@ -473,13 +473,13 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 		pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+		pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
 	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+	pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 
 	if(pView->getPoint() > 0)
 	{

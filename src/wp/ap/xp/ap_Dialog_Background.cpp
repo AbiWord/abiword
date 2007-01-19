@@ -62,12 +62,12 @@ void AP_Dialog_Background::setHighlight(void)
 	m_bDoHighlight = true;
 }
 
-const XML_Char * AP_Dialog_Background::getColor (void) const
+const gchar * AP_Dialog_Background::getColor (void) const
 {
-	return static_cast<const XML_Char *>(m_pszColor);
+	return static_cast<const gchar *>(m_pszColor);
 }
 
-void  AP_Dialog_Background::setColor (const XML_Char * pszColor)
+void  AP_Dialog_Background::setColor (const gchar * pszColor)
 {
 	if(pszColor && strcmp(pszColor,"transparent") != 0)
 	{

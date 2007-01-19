@@ -1392,8 +1392,8 @@ Defun1(toggleAutoSpell)
 
 	bool b = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b);
-	return pPrefsScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), !b);
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b);
+	return pPrefsScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), !b);
 }
 #endif
 
@@ -1641,25 +1641,25 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 				UT_String sFilled;
 				UT_String_sprintf(sFilled," %d",iFilled);
 				msg += sFilled+"%";
-				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 				
 			}
 			else
 			{
 				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+				pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 			}
 		}
 		else
 		{
 			UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-			pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+			pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		}
 	}
 	else
 	{
 		UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc));
-		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );		s_bFirstDrawDone = false;
+		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );		s_bFirstDrawDone = false;
 	}
 }
 
@@ -1968,9 +1968,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		UT_return_val_if_fail (pPrefs, false);
 
-		const XML_Char * ftype = 0;
+		const gchar * ftype = 0;
 
-		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, false);
+		pPrefs->getPrefsValue (static_cast<const gchar *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, false);
 		if (ftype)
 			{
 				// load the default file format
@@ -3592,7 +3592,7 @@ Defun(closeWindow)
 
 	bool close = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_CloseOnLastDoc), &close);
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_CloseOnLastDoc), &close);
 	return s_closeWindow (pAV_View, pCallData, close);
 #else
 	// must, to comply with the HIG
@@ -4472,7 +4472,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCal
 	}
 	pMathRun = static_cast<fp_MathRun *>(pRun);
 	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
-	const XML_Char * pszLatexID = NULL;
+	const gchar * pszLatexID = NULL;
 	pSpanAP->getAttribute("latexid",pszLatexID);
 	if(pszLatexID == NULL)
 	{
@@ -5589,7 +5589,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 
 	bool b = false;
 
-	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	pPrefs->getPrefsValueBool(static_cast<gchar*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &b);
 	if(b)
 	{
@@ -5597,7 +5597,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 
 		if (pLR)
 		{
-			const XML_Char * props_out[] = {"lang", NULL, NULL};
+			const gchar * props_out[] = {"lang", NULL, NULL};
 			props_out[1] = pLR->m_szLangCode;
 			pView->setCharFormat(props_out);
 		}
@@ -5668,7 +5668,7 @@ Defun(insertClosingParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -5677,7 +5677,7 @@ Defun(insertClosingParenthesis)
 	{
 		pLR = pApp->getKbdLanguage();
 		
-		pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+		pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 
 	if(bMarker && pLR)
@@ -5723,7 +5723,7 @@ Defun(insertOpeningParenthesis)
 
 	bool bLang = false, bMarker = false;
 
-	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -5732,7 +5732,7 @@ Defun(insertOpeningParenthesis)
 	{
 		pLR = pApp->getKbdLanguage();
 		
-		pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
+		pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &bMarker);
 	}
 	
 	if(bMarker && pLR)
@@ -7369,7 +7369,7 @@ static bool s_doLangDlg(FV_View * pView)
 		= static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
 	UT_return_val_if_fail(pDialog, false);
 	
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
 		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
@@ -7382,7 +7382,7 @@ static bool s_doLangDlg(FV_View * pView)
 	const PP_AttrProp *  pAP = pDoc->getAttrProp();
 	UT_return_val_if_fail( pAP, false );
 
-	const XML_Char * pLang = NULL;
+	const gchar * pLang = NULL;
 	bool bRet = pAP->getProperty("lang", pLang);
 
 	if(bRet)
@@ -7406,8 +7406,8 @@ static bool s_doLangDlg(FV_View * pView)
 	{
 		//UT_DEBUGMSG(("pressed OK\n"));
 		UT_uint32 k = 0;
-		const XML_Char * props_out[3];
-		const XML_Char * s = NULL;
+		const gchar * props_out[3];
+		const gchar * s = NULL;
 
 		bool bChange = pDialog->getChangedLangProperty(&s);
 		
@@ -7466,7 +7466,7 @@ UT_return_val_if_fail(pDialog, false);
 
 	// get current font info from pView
 
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
 		// stuff font properties into the dialog.
@@ -7485,11 +7485,11 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Set the background color for the preview
 //
-		XML_Char  background[8];
+		gchar  background[8];
 		UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType()->getColor();
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
-		pDialog->setBackGroundColor( static_cast<const XML_Char *>(background));
+		pDialog->setBackGroundColor( static_cast<const gchar *>(background));
 
 		// these behave a little differently since they are
 		// probably just check boxes and we don't have to
@@ -7502,7 +7502,7 @@ UT_return_val_if_fail(pDialog, false);
 		bool bTopLine = false;
 		bool bBottomLine = false;
 
-		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
+		const gchar * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
 			bUnderline = (strstr(s, "underline") != NULL);
@@ -7514,7 +7514,7 @@ UT_return_val_if_fail(pDialog, false);
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
 
 		bool bHidden = false;
-		const XML_Char * h = UT_getAttribute("display", props_in);
+		const gchar * h = UT_getAttribute("display", props_in);
 		if(h)
 		{
 			bHidden = (strstr(h, "none") != NULL);
@@ -7564,8 +7564,8 @@ UT_return_val_if_fail(pDialog, false);
 	if (bOK)
 	{
 		UT_uint32  k = 0;
-		const XML_Char * props_out[19];
-		const XML_Char * s;
+		const gchar * props_out[19];
+		const gchar * s;
 
 		if (pDialog->getChangedFontFamily(&s))
 		{
@@ -7614,7 +7614,7 @@ UT_return_val_if_fail(pDialog, false);
 		bool bBottomline = false;
 		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
 		UT_String decors;
-		static XML_Char sstr[50];
+		static gchar sstr[50];
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
 		{
 			decors.clear();
@@ -7632,7 +7632,7 @@ UT_return_val_if_fail(pDialog, false);
 				decors = "none";
 			sprintf(sstr,"%s",decors.c_str());
 			props_out[k++] = "text-decoration";
-			props_out[k++] = static_cast<const XML_Char *>(sstr);
+			props_out[k++] = static_cast<const gchar *>(sstr);
 		}
 
 		bool bHidden = false;
@@ -7710,7 +7710,7 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 {
   UT_return_if_fail(szTabStops && szDflTabStop);
 
-	const XML_Char * properties[3];
+	const gchar * properties[3];
 	properties[0] = "tabstops";
 	properties[1] = szTabStops;
 	properties[2] = 0;
@@ -7795,7 +7795,7 @@ static bool s_doParagraphDlg(FV_View * pView)
 	AP_Dialog_Paragraph * pDialog
 		= static_cast<AP_Dialog_Paragraph *>(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 UT_return_val_if_fail(pDialog, false);
-	const XML_Char ** props = NULL;
+	const gchar ** props = NULL;
 
 	if (!pView->getBlockFormat(&props))
 		return false;
@@ -7818,13 +7818,13 @@ UT_return_val_if_fail(pDialog, false);
 	// get the dialog answer
 	AP_Dialog_Paragraph::tAnswer answer = pDialog->getAnswer();
 
-	const XML_Char ** propitem = NULL;
+	const gchar ** propitem = NULL;
 
 	switch (answer)
 	{
 	case AP_Dialog_Paragraph::a_OK:
 
-		// getDialogData() returns us XML_Char ** data we have to g_free
+		// getDialogData() returns us gchar ** data we have to g_free
 		pDialog->getDialogData(props);
 		UT_return_val_if_fail (props, false);
 
@@ -7919,7 +7919,7 @@ Defun(language)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	const XML_Char * properties[] = { "lang", NULL, 0};
+	const gchar * properties[] = { "lang", NULL, 0};
 
 	char lang[10];
 	UT_return_val_if_fail(pCallData->m_dataLength < sizeof(lang),false);
@@ -7929,7 +7929,7 @@ Defun(language)
 		lang[i] = static_cast<char>(pCallData->m_pData[i]);
 	lang[i] = 0;
 	
-	properties[1] = static_cast<const XML_Char *>(&lang[0]);
+	properties[1] = static_cast<const gchar *>(&lang[0]);
 	pView->setCharFormat(properties);
 	return true;
 }
@@ -7954,9 +7954,9 @@ Defun(fontFamily)
 	ABIWORD_VIEW;
 	
 	UT_return_val_if_fail(pView, false);
-	const XML_Char * properties[] = { "font-family", NULL, 0};
+	const gchar * properties[] = { "font-family", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 	
 	return true;
@@ -7968,16 +7968,16 @@ Defun(fontSize)
 	ABIWORD_VIEW;
 
 	UT_return_val_if_fail(pView, false);	
-	const XML_Char * properties[] = { "font-size", NULL, 0};
+	const gchar * properties[] = { "font-size", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);	
-	const XML_Char * sz = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	const gchar * sz = reinterpret_cast<const gchar *>(utf8.utf8_str());
 
 	if (sz && *sz)
 	{
 		UT_String buf (sz);
 		buf += "pt";
 
-		properties[1] = static_cast<const XML_Char *>(buf.c_str());
+		properties[1] = static_cast<const gchar *>(buf.c_str());
 		pView->setCharFormat(properties);
 	}
 	return true;
@@ -7986,13 +7986,13 @@ Defun(fontSize)
 static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 {
 	UT_return_val_if_fail(pView, false);
-	const XML_Char ** span_props = NULL;
-	const XML_Char * properties[] = { "font-size", NULL, 0};
+	const gchar ** span_props = NULL;
+	const gchar * properties[] = { "font-size", NULL, 0};
 	
 	pView->getCharFormat(&span_props);
 	UT_return_val_if_fail(span_props, false);
 	
-	const XML_Char * s = UT_getAttribute("font-size", span_props);
+	const gchar * s = UT_getAttribute("font-size", span_props);
 
 	if(!s)
 		return false;
@@ -8032,7 +8032,7 @@ static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 	if(dPoints < 2.0)
 		return false;
 	
-	const XML_Char * sz = UT_formatDimensionString(DIM_PT, dPoints);
+	const gchar * sz = UT_formatDimensionString(DIM_PT, dPoints);
 
 	if(!sz || !*sz)
 		return false;
@@ -8068,8 +8068,8 @@ Defun(formatPainter)
   // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
 
   UT_return_val_if_fail(pView, false);
-  const XML_Char ** block_properties = 0;
-  const XML_Char ** span_properties  = 0;
+  const gchar ** block_properties = 0;
+  const gchar ** span_properties  = 0;
 
   // get the current document's selected range
   PD_DocumentRange range;
@@ -8123,9 +8123,9 @@ Defun(formatPainter)
 /*****************************************************************/
 
 static bool _toggleSpanOrBlock(FV_View * pView,
-				  const XML_Char * prop,
-				  const XML_Char * vOn,
-				  const XML_Char * vOff,
+				  const gchar * prop,
+				  const gchar * vOn,
+				  const gchar * vOff,
 				  bool bMultiple,
 				  bool isSpan)
 {
@@ -8133,11 +8133,11 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * props_out[] =	{ NULL, NULL, 0};
+	const gchar * props_out[] =	{ NULL, NULL, 0};
 
 	// get current font info from pView
-	const XML_Char ** props_in = NULL;
-	const XML_Char * s;
+	const gchar ** props_in = NULL;
+	const gchar * s;
 
 	if (isSpan)
 	{
@@ -8153,7 +8153,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	props_out[0] = prop;
 	props_out[1] = vOn; 	// be optimistic
 
-	XML_Char * buf = NULL;
+	gchar * buf = NULL;
 
 	s = UT_getAttribute(prop, props_in);
 	if (s)
@@ -8161,7 +8161,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		if (bMultiple)
 		{
 			// some properties have multiple values
-			const XML_Char*	p = strstr(s, vOn);
+			const gchar*	p = strstr(s, vOn);
 
 			if (p)
 			{
@@ -8171,13 +8171,13 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 
 				// ... take it out
 				int len = strlen(s);
-				buf = static_cast<XML_Char *>(UT_calloc(len, sizeof(XML_Char)));
+				buf = static_cast<gchar *>(UT_calloc(len, sizeof(gchar)));
 
 				strncpy(buf, s, p - s);
 				strcat(buf, s + (p - s) + strlen(vOn));
 
 				// now see if anything's left
-				XML_Char * q  = g_strdup(buf);
+				gchar * q  = g_strdup(buf);
 
 				if (q && strtok(q, " "))
 					props_out[1] = buf; 	// yep, use it
@@ -8193,7 +8193,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				{
 					// ...put it in by appending to current contents
 					int len = strlen(s) + strlen(vOn) + 2;
-					buf = static_cast<XML_Char *>(UT_calloc(len, sizeof(XML_Char)));
+					buf = static_cast<gchar *>(UT_calloc(len, sizeof(gchar)));
 
 					strcpy(buf, s);
 					strcat(buf, " ");
@@ -8223,9 +8223,9 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 }
 
 static bool _toggleSpan(FV_View * pView,
-			   const XML_Char * prop,
-			   const XML_Char * vOn,
-			   const XML_Char * vOff,
+			   const gchar * prop,
+			   const gchar * vOn,
+			   const gchar * vOff,
 			   bool bMultiple=false)
 {
   return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, true);
@@ -8256,9 +8256,9 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	  pGraphics->setPortrait (orient);
 
 	  const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
-	  const XML_Char * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
+	  const gchar * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
 
-	  XML_Char msgBuf [1024];
+	  gchar msgBuf [1024];
 
 	  dg_DrawArgs da;
 	  memset(&da, 0, sizeof(da));
@@ -8376,7 +8376,7 @@ UT_return_val_if_fail(pDialog, false);
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String msg (pSS->getValue(AP_STRING_ID_MSG_PrintingDoc));
 
-		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 
@@ -8588,18 +8588,18 @@ static bool s_doZoomDlg(FV_View * pView)
 	switch (pDialog->getZoomType())
 	{
 	case XAP_Frame::z_PAGEWIDTH:
-		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-				       static_cast<const XML_Char*>("Width"));
+		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const gchar*>("Width"));
 		break;
 	case XAP_Frame::z_WHOLEPAGE:
-		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-				       static_cast<const XML_Char*>("Page"));
+		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const gchar*>("Page"));
 		break;
 	default:
 		{
 			UT_UTF8String percent = UT_UTF8String_sprintf("%lu", static_cast<unsigned long>(pDialog->getZoomPercent()));
-			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-					       static_cast<const XML_Char*>(percent.utf8_str()));
+			pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+					       static_cast<const gchar*>(percent.utf8_str()));
 		}
 		break;
 	}
@@ -8625,8 +8625,8 @@ Defun1(zoom100)
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_val_if_fail (pPrefsScheme, false);
-	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("100"));
+	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("100"));
 
   pFrame->raise();
 
@@ -8649,8 +8649,8 @@ Defun1(zoom200)
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_val_if_fail (pPrefsScheme, false);
-	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("200"));
+	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("200"));
 
   pFrame->raise();
 
@@ -8673,8 +8673,8 @@ Defun1(zoom50)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("50"));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("50"));
 
   pFrame->raise();
 
@@ -8697,8 +8697,8 @@ Defun1(zoom75)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("75"));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("75"));
 
   pFrame->raise();
 
@@ -8721,8 +8721,8 @@ Defun1(zoomWidth)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("Width"));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("Width"));
 
   pFrame->raise();
 
@@ -8748,8 +8748,8 @@ Defun1(zoomWhole)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("Page"));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const gchar*>("Page"));
 
 
   pFrame->raise();
@@ -8778,8 +8778,8 @@ Defun1(zoomIn)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>(tmp.c_str()));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const gchar*>(tmp.c_str()));
 	
 	pFrame->setZoomType( XAP_Frame::z_PERCENT );
 	pFrame->quickZoom(newZoom);
@@ -8804,8 +8804,8 @@ Defun1(zoomOut)
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>(tmp.c_str()));
+UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const gchar*>(tmp.c_str()));
 	pFrame->setZoomType( XAP_Frame::z_PERCENT );
 	pFrame->quickZoom(newZoom);
 
@@ -8929,7 +8929,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	// respect units set in the dialogue constructer from prefs
 	UT_Dimension orig_uprefs = DIM_IN;
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	if (pApp->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 	{
 		// we only allow in, cm, mm in the dlg
@@ -8950,7 +8950,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Set the second page of info
 	// All the page and header/footer margins
 	//
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 	const char* pszLeftMargin = NULL;
 	const char* pszTopMargin = NULL;
 	const char* pszRightMargin = NULL;
@@ -9165,8 +9165,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_val_if_fail(pPrefsScheme, false);
-	pPrefsScheme->setValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits),
-						   static_cast<const XML_Char *>(UT_dimensionName(final_unit)));
+	pPrefsScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits),
+						   static_cast<const gchar *>(UT_dimensionName(final_unit)));
 
 	//
 	// Recover ppView
@@ -9217,7 +9217,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	// Convert them into const char strings and change the section format
 	//
-	UT_GenericVector<const XML_Char*> v;
+	UT_GenericVector<const gchar*> v;
 	//szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
 	szLeftMargin = UT_formatDimensionString(final_margu,dLeftMargin);
 	v.addItem("page-margin-left");
@@ -9249,13 +9249,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	v.addItem(szHeaderMargin.c_str());
 
 	UT_uint32 countv = v.getItemCount() + 1;
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countv, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(countv, sizeof(gchar *)));
 	UT_uint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
 		props[i] = v.getNthItem(i);
 	}
-	props[i] = static_cast<XML_Char *>(NULL);
+	props[i] = static_cast<gchar *>(NULL);
 	if(ppView->isHdrFtrEdit())
 	{
 		ppView->clearHdrFtrEdit();
@@ -9284,7 +9284,7 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 		{
 			UT_return_val_if_fail (p_view != NULL, false);
 
-			p_view->insertSymbol(Char, static_cast<XML_Char*>(p_font_name));
+			p_view->insertSymbol(Char, static_cast<gchar*>(p_font_name));
 
 			return true;
 		}
@@ -9437,7 +9437,7 @@ Defun1(dlgSpellPrefs)
 /*****************************************************************/
 
 /* the array below is a HACK. FIXME */
-static XML_Char* s_TBPrefsKeys [] = {
+static gchar* s_TBPrefsKeys [] = {
 #if XP_SIMPLE_TOOLBAR
 	AP_PREF_KEY_SimpleBarVisible,
 #else	
@@ -9477,7 +9477,7 @@ _viewTBx(AV_View* pAV_View, int num)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail (pScheme, false);
 
-	pScheme->setValueBool(static_cast<XML_Char*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
+	pScheme->setValueBool(static_cast<gchar*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
 
 	//	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	//	pView->draw(NULL);
@@ -9541,7 +9541,7 @@ Defun1(viewStd)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail (pScheme, false);
 
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
+	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
 #endif
 	return true;
 }
@@ -9576,7 +9576,7 @@ Defun1(viewFormat)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail (pScheme, false);
 
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
+	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
 #endif
 	return true;
 }
@@ -9610,7 +9610,7 @@ UT_return_val_if_fail(pFrameData, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail (pScheme, false);
 
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
+	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
 #endif
 	return true;
 }
@@ -9643,7 +9643,7 @@ UT_return_val_if_fail(pFrameData, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
 
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
+	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
 	
 #endif
 	return true;
@@ -9670,7 +9670,7 @@ UT_return_val_if_fail(pScheme, false);
 
 	pApp->setToolbarsCustomizable (!b);
 
-	pScheme->setValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_AllowCustomToolbars), !b);
+	pScheme->setValueBool(static_cast<const gchar *>(XAP_PREF_KEY_AllowCustomToolbars), !b);
 
 	return true;
 }
@@ -9835,7 +9835,7 @@ UT_return_val_if_fail(pFrameData, false);	// don't do anything if fullscreen
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_StatusBarVisible), pFrameData->m_bShowStatusBar);
+	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_StatusBarVisible), pFrameData->m_bShowStatusBar);
 	return true;
 }
 
@@ -9864,7 +9864,7 @@ UT_return_val_if_fail(pFrameData, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-UT_return_val_if_fail(pScheme, false);	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_RulerVisible), pFrameData->m_bShowRuler);
+UT_return_val_if_fail(pScheme, false);	pScheme->setValueBool(static_cast<const gchar *>(AP_PREF_KEY_RulerVisible), pFrameData->m_bShowRuler);
 
 	return true;
 }
@@ -9990,7 +9990,7 @@ UT_return_val_if_fail(pPrefsScheme, false);
 	UT_uint32 iZoom = 0;
 	
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	const XML_Char *p_zoom = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	const gchar *p_zoom = reinterpret_cast<const gchar *>(utf8.utf8_str());
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
@@ -10005,16 +10005,16 @@ UT_return_val_if_fail(pPrefsScheme, false);
 	
 	if(strcmp(p_zoom, sPageWidth.utf8_str()) == 0)
 	{
-		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>("Width"));
+		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const gchar*>("Width"));
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
 	else if(strcmp(p_zoom, sWholePage.utf8_str()) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
-		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>("Page"));
+		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const gchar*>("Page"));
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
 	else if(strcmp(p_zoom, sPercent.utf8_str()) == 0)
@@ -10026,8 +10026,8 @@ UT_return_val_if_fail(pPrefsScheme, false);
 	{
 		// we've gotten back a number - turn it into a zoom percentage
 		//UT_UTF8String tmp (UT_UTF8String_sprintf("%d",p_zoom))
-		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>(utf8.utf8_str()));		
+		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const gchar*>(utf8.utf8_str()));		
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
 	}
@@ -10115,19 +10115,19 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 {
 	UT_return_val_if_fail(pView,false);
 
-	const XML_Char * right_attributes [] = {
+	const gchar * right_attributes [] = {
 	  "text-align", "right", NULL, NULL
 	};
 
-	const XML_Char * left_attributes [] = {
+	const gchar * left_attributes [] = {
 	  "text-align", "left", NULL, NULL
 	};
 
-	const XML_Char * center_attributes [] = {
+	const gchar * center_attributes [] = {
 	  "text-align", "center", NULL, NULL
 	};
 
-	const XML_Char ** atts = NULL;
+	const gchar ** atts = NULL;
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -10186,15 +10186,15 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
 	{
-		const XML_Char * pParam = pDialog->getParameter();
-		const XML_Char * pAttr[3];
-		const XML_Char param_name[] = "param";
-		pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+		const gchar * pParam = pDialog->getParameter();
+		const gchar * pAttr[3];
+		const gchar param_name[] = "param";
+		pAttr[0] = static_cast<const gchar *>(&param_name[0]);
 		pAttr[1] = pParam;
 		pAttr[2] = 0;
 
 		if(pParam)
-			pView->cmdInsertField(pDialog->GetFieldFormat(),static_cast<const XML_Char **>(&pAttr[0]));
+			pView->cmdInsertField(pDialog->GetFieldFormat(),static_cast<const gchar **>(&pAttr[0]));
 		else
 			pView->cmdInsertField(pDialog->GetFieldFormat());
 	}
@@ -10525,7 +10525,7 @@ Defun(setPosImage)
 //
 // Now define the Frame attributes strux
 //
-	const XML_Char * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+	const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
 					  NULL,"props",NULL,NULL};
 	attributes[1] = dataID;
 	attributes[3] = sFrameProps.c_str();
@@ -10569,8 +10569,8 @@ Defun (dlgFmtPosImage)
 
 	const PP_AttrProp* pAP = NULL;
 	pPosObj->getAP(pAP);
-	const XML_Char* szTitle = 0;
-	const XML_Char* szDescription = 0;
+	const gchar* szTitle = 0;
+	const gchar* szDescription = 0;
 	pDialog->setInHdrFtr(false);
 	const char * pszRulerUnits = NULL;
 	UT_Dimension dim = DIM_IN;
@@ -10609,8 +10609,8 @@ Defun (dlgFmtPosImage)
 	  pDialog->setDescription (description);
 	  FREEP(description);
 	}
-	const XML_Char * pszWidth = NULL;
-	const XML_Char * pszHeight = NULL;
+	const gchar * pszWidth = NULL;
+	const gchar * pszHeight = NULL;
 	if(!pAP || !pAP->getProperty("frame-width",pszWidth))
 	{
 	  pszWidth = "1.0in";
@@ -10680,7 +10680,7 @@ Defun (dlgFmtPosImage)
 	  UT_String sHeight;
 	  POSITION_TO newFormatMode = pDialog->getPositionTo(); 
 	  WRAPPING_TYPE newWrapMode = pDialog->getWrapping();
-	  const XML_Char * properties[] = {"frame-width", NULL, 
+	  const gchar * properties[] = {"frame-width", NULL, 
 					   "frame-height", NULL, 
 					   "wrap-mode",NULL,
 					   "position-to",NULL,
@@ -10734,7 +10734,7 @@ Defun (dlgFmtPosImage)
 	  title.escapeXML();
 	  description.escapeXML();
 
-	  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+	  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
 	  attribs[1] = title.utf8_str();
 	  attribs[3] = description.utf8_str();
 	  //
@@ -10825,7 +10825,7 @@ UT_return_val_if_fail(pDialog, false);
 		}
 	}
     pView->cmdSelect(pos,pos+1);
-	const XML_Char ** props_in = NULL;
+	const gchar ** props_in = NULL;
 
 	const PP_AttrProp * pAP = 0;
 	pView->getAttributes (&pAP);
@@ -10835,11 +10835,11 @@ UT_return_val_if_fail(pDialog, false);
 	{
 	  // stuff properties into the dialog.
 
-	  const XML_Char* szWidth = UT_getAttribute("width", props_in);
-	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
+	  const gchar* szWidth = UT_getAttribute("width", props_in);
+	  const gchar* szHeight = UT_getAttribute("height", props_in);
 
-	  const XML_Char* szTitle = 0;
-	  const XML_Char* szDescription = 0;
+	  const gchar* szTitle = 0;
+	  const gchar* szDescription = 0;
 	  pDialog->setInHdrFtr(bInHdrFtr);
 	  if (pAP) {
 		  pAP->getAttribute ("title", szTitle);
@@ -10922,7 +10922,7 @@ UT_return_val_if_fail(pDialog, false);
 		  sWidth = pDialog->getWidthString();
 		  sHeight = pDialog->getHeightString();
 		  UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
-		  const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+		  const gchar * properties[] = {"width", NULL, "height", NULL, 0};
 		  // TODO: set format
 
 		  if((newWrap == WRAP_INLINE) && (oldWrap == WRAP_INLINE))
@@ -10938,7 +10938,7 @@ UT_return_val_if_fail(pDialog, false);
 			  title.escapeXML();
 			  description.escapeXML();
 
-			  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+			  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
 			  attribs[1] = title.utf8_str();
 			  attribs[3] = description.utf8_str();
 
@@ -11183,7 +11183,7 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Now define the Frame attributes strux
 //
-			  const XML_Char * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+			  const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
 												NULL,"props",NULL,NULL};
 			  attributes[1] = dataID;
 			  attributes[3] = sFrameProps.c_str();
@@ -11241,8 +11241,8 @@ UT_return_val_if_fail(pDialog, false);
 	bool bSpaceAfter = false;
 	bool bMaxHeight = false;
 
-	const XML_Char ** props_in = NULL;
-	const XML_Char * sz = NULL;
+	const gchar ** props_in = NULL;
+	const gchar * sz = NULL;
 
 	bool bResult = pView->getSectionFormat(&props_in);
 
@@ -11335,16 +11335,16 @@ UT_return_val_if_fail(pDialog, false);
 			strcpy(buf4, "left");
 		}
 #ifndef __MRC__ 		/* column-order */
-		const XML_Char * properties[] = { "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
+		const gchar * properties[] = { "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
 #else
-		const XML_Char * properties[] = { "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
+		const gchar * properties[] = { "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
 		properties [1] = buf;
 		properties [3] = buf2;
 		properties [5] = buf3;
 		properties [7] = buf4;
 #endif
 
-		UT_sint32 num_in_props = sizeof(properties)/sizeof(XML_Char *);
+		UT_sint32 num_in_props = sizeof(properties)/sizeof(gchar *);
 		UT_sint32 num_out_props = num_in_props;
 		if(bMaxHeight)
 		{
@@ -11354,7 +11354,7 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			num_out_props += 2;
 		}
-		const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(num_out_props,sizeof(XML_Char *)));
+		const gchar ** props = static_cast<const gchar **>(UT_calloc(num_out_props,sizeof(gchar *)));
 		UT_sint32 i = 0;
 		for(i = 0; i < num_in_props-1; i++)
 		{
@@ -11388,7 +11388,7 @@ Defun(style)
 	
 	UT_return_val_if_fail(pView, false);
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	const XML_Char * style = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	const gchar * style = reinterpret_cast<const gchar *>(utf8.utf8_str());
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION  | AV_CHG_HDRFTR);
 	
@@ -11615,7 +11615,7 @@ UT_return_val_if_fail(pDialog, false);
 				UT_String_sprintf(tmp, "%fin/", pDialog->getColumnWidth());
 				propBuffer += tmp;
 			}
-			const XML_Char * propsArray[3];
+			const gchar * propsArray[3];
 			propsArray[0] = "table-column-props";
 			propsArray[1] = propBuffer.c_str();
 			propsArray[2] = NULL;
@@ -11684,7 +11684,7 @@ Defun1(insertSumRows)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * atts[3]={"param","",NULL};
+	const gchar * atts[3]={"param","",NULL};
 	pView->cmdInsertField("sum_rows",atts,NULL);
 	return true;
 }
@@ -11694,7 +11694,7 @@ Defun1(insertSumCols)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * atts[3]={"param","",NULL};
+	const gchar * atts[3]={"param","",NULL};
 	pView->cmdInsertField("sum_cols",atts,NULL);
 	return true;
 }
@@ -11775,9 +11775,9 @@ void s_getPageMargins(FV_View * pView,
 {
   UT_return_if_fail(pView);
   // get current char properties from pView
-  const XML_Char * prop = NULL;
-  const XML_Char ** props_in = NULL;
-  const XML_Char * sz = NULL;
+  const gchar * prop = NULL;
+  const gchar ** props_in = NULL;
+  const gchar * sz = NULL;
 
 	{
 		pView->getBlockFormat(&props_in);
@@ -11911,22 +11911,22 @@ Defun1(toggleDomDirection)
 
 	UT_return_val_if_fail(pView,false);
 
-	const XML_Char * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
-	const XML_Char drtl[]	= "rtl";
-	const XML_Char dltr[]	= "ltr";
-	const XML_Char aright[] = "right";
-	const XML_Char aleft[]	= "left";
-	XML_Char cur_alignment[10];
+	const gchar * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
+	const gchar drtl[]	= "rtl";
+	const gchar dltr[]	= "ltr";
+	const gchar aright[] = "right";
+	const gchar aleft[]	= "left";
+	gchar cur_alignment[10];
 
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBl, false );
 	strcpy(cur_alignment,pBl->getProperty("text-align"));
-	properties[3] = static_cast<XML_Char *>(&cur_alignment[0]);
+	properties[3] = static_cast<gchar *>(&cur_alignment[0]);
 
 
 	if(pBl->getDominantDirection()== UT_BIDI_RTL)
 	{
-		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+		properties[1] = static_cast<const gchar *>(&dltr[0]);
 		/*
 		//the last run in the block is the FmtMark, and we need
 		//to reset its direction
@@ -11935,7 +11935,7 @@ Defun1(toggleDomDirection)
 	}
 	else
 	{
-		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+		properties[1] = static_cast<const gchar *>(&drtl[0]);
 		/*
 		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_RTL);
 		*/
@@ -11946,11 +11946,11 @@ Defun1(toggleDomDirection)
 	// i.e., justfied or centered, then leave it
 	if(!strcmp(properties[3],aleft))
 	{
-		properties[3] = static_cast<const XML_Char *>(&aright[0]);
+		properties[3] = static_cast<const gchar *>(&aright[0]);
 	}
 	else if(!strcmp(properties[3],aright))
 	{
-		properties[3] = static_cast<const XML_Char *>(&aleft[0]);
+		properties[3] = static_cast<const gchar *>(&aleft[0]);
 
 	}
 
@@ -11967,9 +11967,9 @@ Defun1(toggleDomDirectionSect)
 
 	UT_return_val_if_fail(pView,false);
 
-	const XML_Char * properties[] = { "dom-dir", NULL, 0};
-	const XML_Char drtl[]	= "rtl";
-	const XML_Char dltr[]	= "ltr";
+	const gchar * properties[] = { "dom-dir", NULL, 0};
+	const gchar drtl[]	= "rtl";
+	const gchar dltr[]	= "ltr";
 
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBl, false );
@@ -11979,11 +11979,11 @@ Defun1(toggleDomDirectionSect)
 	
 	if(pSL->getColumnOrder())
 	{
-		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+		properties[1] = static_cast<const gchar *>(&dltr[0]);
 	}
 	else
 	{
-		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+		properties[1] = static_cast<const gchar *>(&drtl[0]);
 	}
 
 	pView->setSectionFormat(properties);
@@ -12003,20 +12003,20 @@ Defun1(toggleDomDirectionDoc)
 	const PP_AttrProp * pAP = pDoc->getAttrProp();
 	UT_return_val_if_fail( pAP, false );
 
-	const XML_Char * properties[] = { "dom-dir", NULL, 0};
-	const XML_Char drtl[]	= "rtl";
-	const XML_Char dltr[]	= "ltr";
-	const XML_Char * szValue;
+	const gchar * properties[] = { "dom-dir", NULL, 0};
+	const gchar drtl[]	= "rtl";
+	const gchar dltr[]	= "ltr";
+	const gchar * szValue;
 	
 	UT_return_val_if_fail(pAP->getProperty(properties[0], szValue), false);
 	
 	if(!strcmp(szValue, drtl))
 	{
-		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+		properties[1] = static_cast<const gchar *>(&dltr[0]);
 	}
 	else
 	{
-		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+		properties[1] = static_cast<const gchar *>(&drtl[0]);
 	}
 
 	UT_return_val_if_fail(pDoc->setProperties(properties), false);
@@ -12048,9 +12048,9 @@ Defun(colorForeTB)
 	ABIWORD_VIEW;
 	
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * properties[] = { "color", NULL, 0};
+	const gchar * properties[] = { "color", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 
 	return true;
@@ -12062,9 +12062,9 @@ Defun(colorBackTB)
 	ABIWORD_VIEW;
 
 	UT_return_val_if_fail(pView,false);	
-	const XML_Char * properties[] = { "bgcolor", NULL, 0};
+	const gchar * properties[] = { "bgcolor", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
+	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 
 	return true;
@@ -12095,7 +12095,7 @@ Defun1(alignLeft)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "text-align", "left", 0};
+	const gchar * properties[] = { "text-align", "left", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12109,7 +12109,7 @@ Defun1(alignCenter)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "text-align", "center", 0};
+	const gchar * properties[] = { "text-align", "center", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12123,7 +12123,7 @@ Defun1(alignRight)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "text-align", "right", 0};
+	const gchar * properties[] = { "text-align", "right", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12137,7 +12137,7 @@ Defun1(alignJustify)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "text-align", "justify", 0};
+	const gchar * properties[] = { "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12147,7 +12147,7 @@ Defun1(setStyleHeading1)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * style = "Heading 1";
+	const gchar * style = "Heading 1";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
@@ -12159,7 +12159,7 @@ Defun1(setStyleHeading2)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * style = "Heading 2";
+	const gchar * style = "Heading 2";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
@@ -12170,7 +12170,7 @@ Defun1(setStyleHeading3)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const XML_Char * style = "Heading 3";
+	const gchar * style = "Heading 3";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
@@ -12184,7 +12184,7 @@ Defun1(sectColumns1)
 	if(pView->isHdrFtrEdit())
 		return false;
 
-	const XML_Char * properties[] = { "columns", "1", 0};
+	const gchar * properties[] = { "columns", "1", 0};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -12197,7 +12197,7 @@ Defun1(sectColumns2)
 	if(pView->isHdrFtrEdit())
 		return false;
 
-	const XML_Char * properties[] = { "columns", "2", 0};
+	const gchar * properties[] = { "columns", "2", 0};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -12209,7 +12209,7 @@ Defun(sectColumns3)
 	UT_return_val_if_fail(pView,false);
 	if(pView->isHdrFtrEdit())
 		return false;
-	const XML_Char * properties[] = { "columns", "3", 0};
+	const gchar * properties[] = { "columns", "3", 0};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -12223,7 +12223,7 @@ Defun1(paraBefore0)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "margin-top", "0pt", 0};
+	const gchar * properties[] = { "margin-top", "0pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12237,7 +12237,7 @@ Defun1(paraBefore12)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "margin-top", "12pt", 0};
+	const gchar * properties[] = { "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12251,7 +12251,7 @@ Defun1(singleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "line-height", "1.0", 0};
+	const gchar * properties[] = { "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12265,7 +12265,7 @@ Defun1(middleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "line-height", "1.5", 0};
+	const gchar * properties[] = { "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12279,7 +12279,7 @@ Defun1(doubleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char * properties[] = { "line-height", "2.0", 0};
+	const gchar * properties[] = { "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -12346,7 +12346,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
 		return false;
 
 	const char * szCurrentInputMode = pApp->getInputMode();
@@ -12360,8 +12360,8 @@ Defun1(cycleInputMode)
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	pScheme->setValue(static_cast<const XML_Char *>(AP_PREF_KEY_KeyBindings),
-					  const_cast<const XML_Char *>(szNextInputMode));
+	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_KeyBindings),
+					  const_cast<const gchar *>(szNextInputMode));
 
 	return bResult;
 }
@@ -12379,7 +12379,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
 		return false;
 
 	// toggle the insert mode
@@ -12396,7 +12396,7 @@ UT_return_val_if_fail(pFrameData, false);
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	pScheme->setValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
+	pScheme->setValueBool(static_cast<const gchar*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
 
 	return true;
 }
@@ -12973,9 +12973,9 @@ Defun(dlgColorPickerFore)
 UT_return_val_if_fail(pDialog, false);//
 // Set the color in the dialog to the current Color
 //
-	const XML_Char ** propsChar = NULL;
+	const gchar ** propsChar = NULL;
 	pView->getCharFormat(&propsChar);
-	const XML_Char * pszChar = UT_getAttribute("color",propsChar);
+	const gchar * pszChar = UT_getAttribute("color",propsChar);
 	pDialog->setColor(pszChar);
 //
 // Set the dialog to Foreground Color Mode.
@@ -12989,8 +12989,8 @@ UT_return_val_if_fail(pDialog, false);//
 
 	if (bOK)
 	{
-		const XML_Char * clr = pDialog->getColor();
-		const XML_Char * properties[] = { "color", NULL, 0};
+		const gchar * clr = pDialog->getColor();
+		const gchar * properties[] = { "color", NULL, 0};
 		properties[1] = clr;
 		pView->setCharFormat(properties);
 	}
@@ -13019,9 +13019,9 @@ Defun(dlgColorPickerBack)
 UT_return_val_if_fail(pDialog, false);//
 // Set the color in the dialog to the current Color
 //
-	const XML_Char ** propsChar = NULL;
+	const gchar ** propsChar = NULL;
 	pView->getCharFormat(&propsChar);
-	const XML_Char * pszChar = UT_getAttribute("bgcolor",propsChar);
+	const gchar * pszChar = UT_getAttribute("bgcolor",propsChar);
 	pDialog->setColor(pszChar);
 //
 // Set the dialog to Highlight Color Mode.
@@ -13035,8 +13035,8 @@ UT_return_val_if_fail(pDialog, false);//
 
 	if (bOK)
 	{
-		const XML_Char * clr = pDialog->getColor();
-		const XML_Char * properties[] = { "bgcolor", NULL, 0};
+		const gchar * clr = pDialog->getColor();
+		const gchar * properties[] = { "bgcolor", NULL, 0};
 		properties[1] = clr;
 		pView->setCharFormat(properties);
 	}
@@ -13065,9 +13065,9 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Get Current background color
 //
-	const XML_Char ** propsSection = NULL;
+	const gchar ** propsSection = NULL;
 	pView->getSectionFormat(&propsSection);
-	const XML_Char * pszBackground = UT_getAttribute("background-color",propsSection);
+	const gchar * pszBackground = UT_getAttribute("background-color",propsSection);
 	pDialog->setColor(pszBackground);
 
 	pDialog->runModal (pFrame);
@@ -13079,7 +13079,7 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		// let the view set the proper value in the
 		// document and refresh/redraw itself
-		const XML_Char * clr = pDialog->getColor();
+		const gchar * clr = pDialog->getColor();
 		pView->setPaperColor (clr);
 	}
 
@@ -13174,7 +13174,7 @@ UT_return_val_if_fail(pDialog, false);//
 		pDialog->setValue((AP_Dialog_HdrFtr::HdrFtr_Control) i,
 						  bOldBools[i], false);
 	}
-	const XML_Char ** propsSectionIn = NULL;
+	const gchar ** propsSectionIn = NULL;
 	pView->getSectionFormat(&propsSectionIn);
 	const char * szRestart = NULL;
 	szRestart = UT_getAttribute("section-restart",propsSectionIn);

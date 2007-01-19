@@ -191,19 +191,19 @@ void XAP_UnixHildonDialog_FontChooser::loadFontInfo()
 		static_cast<unsigned int>(m_currentFGColor[GREEN] * static_cast<gdouble>(255.0)),
 		static_cast<unsigned int>(m_currentFGColor[BLUE] * static_cast<gdouble>(255.0)));
 
-	addOrReplaceVecProp("color",static_cast<XML_Char *>(buf_color));
+	addOrReplaceVecProp("color",static_cast<gchar *>(buf_color));
 	
 	
 	//font family
 	char *szFontFamily = new char[strlen(cszFontFamily)  + 1 ];
 	sprintf(szFontFamily, cszFontFamily);		
-	addOrReplaceVecProp("font-family",static_cast<XML_Char *> (szFontFamily) );		
+	addOrReplaceVecProp("font-family",static_cast<gchar *> (szFontFamily) );		
 				
 	//font size
 	char *szFontSize = new char[50];
 	memset(szFontSize, '\0', 50);
 	g_snprintf(szFontSize, 50, "%dpt", iFontSize);		
-	addOrReplaceVecProp("font-size", static_cast<XML_Char *> (szFontSize) );
+	addOrReplaceVecProp("font-size", static_cast<gchar *> (szFontSize) );
 				
 	//font style
 	if (bFontItalic)
@@ -255,7 +255,7 @@ void XAP_UnixHildonDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_answer = a_OK;			
 		
 		//TODO
-		//addOrReplaceVecProp("bgcolor",static_cast<XML_Char *>(buf_color));
+		//addOrReplaceVecProp("bgcolor",static_cast<gchar *>(buf_color));
 	}	
 	gtk_widget_destroy(GTK_WIDGET(m_Widget));
 	m_doneFirstFont = false;

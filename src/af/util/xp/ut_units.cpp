@@ -599,7 +599,7 @@ bool UT_isValidDimensionString(const char * sz, size_t max_length)
 	if (max_length > 0 && (strlen(sz) > max_length))
 		return false;
 	
-	const XML_Char* p = sz;
+	const gchar* p = sz;
 	bool valid = true;
 	bool seenDecSep = false;
 	int valChars = 0;

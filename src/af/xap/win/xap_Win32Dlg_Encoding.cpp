@@ -79,7 +79,7 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		// load each string name into the list
 		for ( UT_uint32 i=0; i < _getEncodingsCount();  i++ )
 		{
-			const XML_Char* s = _getAllEncodings()[i];
+			const gchar* s = _getAllEncodings()[i];
 			addItemToList(XAP_RID_DIALOG_ENCODING_LBX_ENCODING, (LPCSTR) s);
 			setListDataItem(XAP_RID_DIALOG_ENCODING_LBX_ENCODING, i, (DWORD) i);
         }

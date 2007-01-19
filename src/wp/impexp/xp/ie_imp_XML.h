@@ -69,12 +69,12 @@ public:
      *
      * You *must* override these next two methods:
      */
-    virtual void startElement (const XML_Char * name, const XML_Char ** atts);
-    virtual void endElement (const XML_Char * name);
+    virtual void startElement (const gchar * name, const gchar ** atts);
+    virtual void endElement (const gchar * name);
     /*
      * but you get this one for free:
      */
-    virtual void charData (const XML_Char * buffer, int length);
+    virtual void charData (const gchar * buffer, int length);
 
     /* If you don't wish the XML parser to use the standard/default file handler, you
      * can provide your own via an implementation of UT_XML::Reader here:
@@ -102,10 +102,10 @@ protected:
     virtual UT_Error	_loadFile(GsfInput * input);
     int             _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
-    const XML_Char* _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
+    const gchar* _getXMLPropValue(const gchar *name, const gchar **atts);
 
     UT_uint32		_getInlineDepth(void) const;
-    bool			_pushInlineFmt(const XML_Char ** atts);
+    bool			_pushInlineFmt(const gchar ** atts);
     void			_popInlineFmt(void);
 
     typedef enum _parseState { _PS_Init,
@@ -138,7 +138,7 @@ protected:
     UT_Error        m_error;
     ParseState      m_parseState;
 
-    XML_Char		m_charDataSeen[4];
+    gchar		m_charDataSeen[4];
     UT_uint32		m_lenCharDataSeen;
     UT_uint32		m_lenCharDataExpected;
     UT_uint32		m_iOperationCount;
@@ -146,12 +146,12 @@ protected:
     bool            m_bWhiteSignificant;
     bool            m_bWasSpace;
 
-    UT_GenericVector<XML_Char*> m_vecInlineFmt;
+    UT_GenericVector<gchar*> m_vecInlineFmt;
     UT_NumberStack		m_nstackFmtStartIndex;
 
     UT_ByteBuf		m_currentDataItem;
-    XML_Char *		m_currentDataItemName;
-    XML_Char *		m_currentDataItemMimeType;
+    gchar *		m_currentDataItemName;
+    gchar *		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;
 
 	const char *	m_szFileName;

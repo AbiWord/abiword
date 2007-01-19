@@ -38,14 +38,14 @@ public:
 	virtual ~AP_Dialog_Field();
 	AP_Dialog_Field::tAnswer	getAnswer(void) const;
 	const char *GetFieldFormat(void) const;
-	const XML_Char * getParameter(void) const {return m_pParameter;};
-	void	setParameter(const XML_Char * pParam);
+	const gchar * getParameter(void) const {return m_pParameter;};
+	void	setParameter(const gchar * pParam);
 protected:
 	AP_Dialog_Field::tAnswer	m_answer;
 	int m_iTypeIndex;
 	int m_iFormatIndex;
 private:
-	XML_Char * m_pParameter;
+	gchar * m_pParameter;
 };
 
 #endif /* AP_DIALOG_FIELD_H */

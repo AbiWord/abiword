@@ -273,7 +273,7 @@ void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
  */
 const char * ie_PartTable::getTableProp(const char * pProp)
 {
-	const XML_Char * szVal = NULL;
+	const gchar * szVal = NULL;
 	if(m_TableAttProp == NULL)
 	{
 		return NULL;
@@ -289,7 +289,7 @@ const char * ie_PartTable::getTableProp(const char * pProp)
  */
 const char * ie_PartTable::getCellProp(const char * pProp)
 {
-	const XML_Char * szVal = NULL;
+	const gchar * szVal = NULL;
 	if(m_CellAttProp == NULL)
 	{
 		return NULL;
@@ -2071,7 +2071,7 @@ bool IE_Imp_TableHelper::tableStart (void)
 		}
 		else
 		{
-			const XML_Char * atts[3] = {NULL,NULL,NULL};
+			const gchar * atts[3] = {NULL,NULL,NULL};
 			atts[0] = "props";
 			atts[1] = m_style.utf8_str();
 			if (!getDoc()->appendStrux (PTX_SectionTable,atts))
@@ -2092,7 +2092,7 @@ bool IE_Imp_TableHelper::tableStart (void)
 		}
 		else
 		{
-			const XML_Char * atts[3] = {NULL,NULL,NULL};
+			const gchar * atts[3] = {NULL,NULL,NULL};
 			atts[0] = "props";
 			atts[1] = m_style.utf8_str();
 			getDoc()->insertStruxBeforeFrag(pf,PTX_SectionTable,atts);
@@ -2423,7 +2423,7 @@ bool IE_Imp_TableHelper::tdEnd(void)
 	m_current->setProp("left-attach", UT_String_sprintf("%d",m_current->m_left));
 	m_current->setProp("right-attach", UT_String_sprintf("%d",m_current->m_right));
 
-	const XML_Char * atts[3] = {"props",NULL,NULL};
+	const gchar * atts[3] = {"props",NULL,NULL};
 	atts[1] = m_current->m_sCellProps.c_str();
 	UT_DEBUGMSG(("Props for td are : %s \n",atts[1]));
 	pf_Frag * pf = NULL;
@@ -2481,7 +2481,7 @@ bool IE_Imp_TableHelper::tdPending ()
 }
 
 
-bool IE_Imp_TableHelper::Block (PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp_TableHelper::Block (PTStruxType pts, const gchar ** attributes)
 {
 	pf_Frag * pf = NULL;
 	if(m_bCaptionOn)
@@ -2497,7 +2497,7 @@ bool IE_Imp_TableHelper::Block (PTStruxType pts, const XML_Char ** attributes)
 	return true;
 }
 
-bool IE_Imp_TableHelper::BlockFormat (const XML_Char ** attributes)
+bool IE_Imp_TableHelper::BlockFormat (const gchar ** attributes)
 {
 	if(!m_bBlockInsertedForCell)
 		{
@@ -2577,7 +2577,7 @@ bool IE_Imp_TableHelper::setCaptionOff(void)
 }
 
 
-bool IE_Imp_TableHelper::InlineFormat (const XML_Char ** attributes)
+bool IE_Imp_TableHelper::InlineFormat (const gchar ** attributes)
 {
 	if(!m_bBlockInsertedForCell)
 		{
@@ -2596,7 +2596,7 @@ bool IE_Imp_TableHelper::InlineFormat (const XML_Char ** attributes)
 	return true;
 }
 
-bool IE_Imp_TableHelper::Object (PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp_TableHelper::Object (PTObjectType pto, const gchar ** attributes)
 {
 	if(!m_bBlockInsertedForCell)
 		{
@@ -2786,7 +2786,7 @@ bool IE_Imp_TableHelperStack::tdEnd (void)
 	return th->tdEnd();
 }
 
-bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const XML_Char ** attributes)
+bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const gchar ** attributes)
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th)
@@ -2797,7 +2797,7 @@ bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const XML_Char ** attribut
 	return false;
 }
 
-bool IE_Imp_TableHelperStack::BlockFormat (const XML_Char ** attributes)
+bool IE_Imp_TableHelperStack::BlockFormat (const gchar ** attributes)
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th)
@@ -2817,7 +2817,7 @@ bool IE_Imp_TableHelperStack::Inline (const UT_UCSChar * ucs4_str, UT_sint32 len
 	return false;
 }
 
-bool IE_Imp_TableHelperStack::InlineFormat (const XML_Char ** attributes)
+bool IE_Imp_TableHelperStack::InlineFormat (const gchar ** attributes)
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th)
@@ -2828,7 +2828,7 @@ bool IE_Imp_TableHelperStack::InlineFormat (const XML_Char ** attributes)
 	return false;
 }
 
-bool IE_Imp_TableHelperStack::Object (PTObjectType pto, const XML_Char ** attributes)
+bool IE_Imp_TableHelperStack::Object (PTObjectType pto, const gchar ** attributes)
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th)

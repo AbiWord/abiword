@@ -97,7 +97,7 @@ bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * 
 
 
 
-bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const gchar ** attributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
@@ -136,7 +136,7 @@ bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 	return false;
 }
 
-bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const UT_GenericVector<gchar*>* pVecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
@@ -181,7 +181,7 @@ bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) 
 }
 
 bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
-						   const XML_Char ** attributes, const XML_Char ** properties,
+						   const gchar ** attributes, const gchar ** properties,
 						   PT_AttrPropIndex * papiNew,PD_Document * pDoc)
 {
 	// merge the given attr/props with set referenced by apiOld
@@ -277,7 +277,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 // TODO this is not right; we first have to remove any properties that we got
 // from the current style if any, only then we can proceed
 #if 1
-		const XML_Char * szStyle;
+		const gchar * szStyle;
 		bool bFound = papOld->getAttribute
 			(PT_STYLE_ATTRIBUTE_NAME, szStyle);
 
@@ -306,7 +306,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				// OK, old style is a list, is the new style?
 				// (the following function cares not whether we are dealing
 				//  with attributes or properties)
-				const XML_Char * pNewStyle = NULL;
+				const gchar * pNewStyle = NULL;
 
 				if(properties)
 					pNewStyle = UT_getAttribute("list-style", properties);
@@ -316,7 +316,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				{
 					UT_DEBUGMSG(("new style is not a list style\n"));
 					
-					const XML_Char * pListAttrs[8];
+					const gchar * pListAttrs[8];
 					pListAttrs[0] = "listid";
 					pListAttrs[1] = NULL;
 					pListAttrs[2] = "parentid";
@@ -330,7 +330,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 					// properties, since their values are not necessarily part
 					// of the style definition, so that cloneWithEliminationIfEqual
 					// which we call later will not get rid off them
-					const XML_Char * pListProps[20];
+					const gchar * pListProps[20];
 					pListProps[0] =  "start-value";
 					pListProps[1] =  NULL;
 					pListProps[2] =  "list-style";
@@ -352,7 +352,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 					pListProps[18] =  NULL;
 					pListProps[19] =  NULL;
 					
-					pNew1 = papOld->cloneWithElimination((const XML_Char **)&pListAttrs, (const XML_Char **)&pListProps);
+					pNew1 = papOld->cloneWithElimination((const gchar **)&pListAttrs, (const gchar **)&pListProps);
 				}
 			}
 			
@@ -360,28 +360,28 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		
 			pStyle->getAllProperties(&vProps,0);
 		
-			const XML_Char ** sProps = NULL;
+			const gchar ** sProps = NULL;
 			UT_uint32 countp = vProps.getItemCount() + 1;
-			sProps = new const XML_Char*[countp];
+			sProps = new const gchar*[countp];
 			countp--;
 			UT_uint32 i;
 			for(i=0; i<countp; i++)
 			{
-				sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+				sProps[i] = (const gchar *) vProps.getNthItem(i);
 			}
 			sProps[i] = NULL;
 		
 			
 			pStyle->getAllAttributes(&vAttribs,0);
 			
-			const XML_Char ** sAttribs = NULL;
+			const gchar ** sAttribs = NULL;
 			countp = vAttribs.getItemCount() + 1;
-			sAttribs = new const XML_Char*[countp];
+			sAttribs = new const gchar*[countp];
 			countp--;
 			
 			for(i=0; i<countp; i++)
 			{
-				sAttribs[i] = (const XML_Char *) vAttribs.getNthItem(i);
+				sAttribs[i] = (const gchar *) vAttribs.getNthItem(i);
 			}
 			sAttribs[i] = NULL;
 		

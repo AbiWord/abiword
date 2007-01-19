@@ -84,7 +84,7 @@ public:
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
 		{ return _getFont(); }
-	const XML_Char *			getLanguage() const;
+	const gchar *			getLanguage() const;
 
 
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
@@ -187,7 +187,7 @@ private:
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!
-	const XML_Char *		m_pLanguage;
+	const gchar *		m_pLanguage;
 	bool					m_bIsOverhanging;
 
 	bool                    m_bKeepWidths;

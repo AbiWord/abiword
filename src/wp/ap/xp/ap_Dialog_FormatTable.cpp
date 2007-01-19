@@ -100,7 +100,7 @@ void AP_Dialog_FormatTable::setActiveFrame(XAP_Frame *pFrame)
 void AP_Dialog_FormatTable::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
+	gchar * tmp = NULL;
 	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));
 	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
@@ -347,7 +347,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		 * update the border colors
 		 */
 		
-		XML_Char * color = NULL;
+		gchar * color = NULL;
 		
 		if (pView->getCellProperty("left-color", color))
 			m_vecProps.addOrReplaceProp("left-color", color);
@@ -374,7 +374,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		 */
 
 		UT_RGBColor clr;
-		XML_Char * bgColor = NULL;
+		gchar * bgColor = NULL;
 		if (pView->getCellProperty("background-color", bgColor))
 		{
 			m_vecProps.addOrReplaceProp("background-color", bgColor);
@@ -472,15 +472,15 @@ void AP_Dialog_FormatTable::applyChanges()
 		return;
 
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+1];
+	const gchar ** propsArray  = new const gchar * [m_vecProps.getItemCount()+1];
 	propsArray[m_vecProps.getItemCount()] = NULL;
 	
 	UT_sint32 i = m_vecProps.getItemCount();
 	UT_sint32 j;
 	for(j= 0; j<i; j=j+2)
 	{
-		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
-		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
+		propsArray[j] = static_cast<gchar *>(m_vecProps.getNthItem(j));
+		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
 	}
 
 	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
@@ -613,7 +613,7 @@ void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
 
 bool AP_Dialog_FormatTable::_getToggleButtonStatus(const char * lineStyle)
 {
-	const XML_Char * pszStyle = NULL;
+	const gchar * pszStyle = NULL;
 	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
 
 	m_vecProps.getProp(lineStyle, pszStyle);
@@ -682,7 +682,7 @@ void AP_FormatTable_preview::draw(void)
 //  Draw the cell background
 //
 	
-	const XML_Char * pszBGCol = NULL;
+	const gchar * pszBGCol = NULL;
 	if(m_pFormatTable->getImage())
 	{
 		GR_Image * pImg = m_pFormatTable->getImage();
@@ -715,7 +715,7 @@ void AP_FormatTable_preview::draw(void)
 	}
 	else
 	{
-		m_pFormatTable->getPropVector().getProp(static_cast<const XML_Char *>("background-color"), pszBGCol);
+		m_pFormatTable->getPropVector().getProp(static_cast<const gchar *>("background-color"), pszBGCol);
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
@@ -760,7 +760,7 @@ void AP_FormatTable_preview::draw(void)
 	// top border
 	if (m_pFormatTable->getTopToggled())
 	{
-		const XML_Char * pszTopColor = NULL;
+		const gchar * pszTopColor = NULL;
 		m_pFormatTable->getPropVector().getProp("top-color", pszTopColor);
 		if (pszTopColor)
 		{
@@ -769,7 +769,7 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		const XML_Char * pszTopThickness = NULL;
+		const gchar * pszTopThickness = NULL;
 		m_pFormatTable->getPropVector().getProp("top-thickness", pszTopThickness);
 		if(pszTopThickness)
 		{
@@ -788,7 +788,7 @@ void AP_FormatTable_preview::draw(void)
 	// left border
 	if (m_pFormatTable->getLeftToggled())
 	{
-		const XML_Char * pszLeftColor = NULL;
+		const gchar * pszLeftColor = NULL;
 		m_pFormatTable->getPropVector().getProp("left-color", pszLeftColor);
 		if (pszLeftColor)
 		{
@@ -797,7 +797,7 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		const XML_Char * pszLeftThickness = NULL;
+		const gchar * pszLeftThickness = NULL;
 		m_pFormatTable->getPropVector().getProp("left-thickness", pszLeftThickness);
 		if(pszLeftThickness)
 		{
@@ -815,7 +815,7 @@ void AP_FormatTable_preview::draw(void)
 	// right border
 	if (m_pFormatTable->getRightToggled())
 	{
-		const XML_Char * pszRightColor = NULL;
+		const gchar * pszRightColor = NULL;
 		m_pFormatTable->getPropVector().getProp("right-color", pszRightColor);
 		if (pszRightColor)
 		{
@@ -824,7 +824,7 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		const XML_Char * pszRightThickness = NULL;
+		const gchar * pszRightThickness = NULL;
 		m_pFormatTable->getPropVector().getProp("right-thickness", pszRightThickness);
 		if(pszRightThickness)
 		{
@@ -842,7 +842,7 @@ void AP_FormatTable_preview::draw(void)
 	// bottom border
 	if (m_pFormatTable->getBottomToggled())
 	{
-		const XML_Char * pszBottomColor = NULL;
+		const gchar * pszBottomColor = NULL;
 		m_pFormatTable->getPropVector().getProp("bot-color", pszBottomColor);
 		if (pszBottomColor)
 		{
@@ -851,7 +851,7 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		const XML_Char * pszBotThickness = NULL;
+		const gchar * pszBotThickness = NULL;
 		m_pFormatTable->getPropVector().getProp("bot-thickness", pszBotThickness);
 		if(pszBotThickness)
 		{

@@ -585,8 +585,8 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	
 
 	/* Now the Page Numbering style */
-	const UT_GenericVector<const XML_Char*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	const UT_GenericVector<const XML_Char*> * vecPropList = getContainer()->getVecLabelPropValue();
+	const UT_GenericVector<const gchar*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const UT_GenericVector<const gchar*> * vecPropList = getContainer()->getVecLabelPropValue();
 	UT_sint32 nTypes = vecTypeList->getItemCount();
 	UT_UTF8String * sProp = NULL;	
 	UT_UTF8String  val;
@@ -610,8 +610,8 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE, CB_SETCURSEL, iHist, 0);	*/
 
 	/* Tab Type styles */
-	const UT_GenericVector<const XML_Char*> * vecLabels = getContainer()->getVecTABLeadersLabel();
-	const UT_GenericVector<const XML_Char*> * vecProps = getContainer()->getVecTABLeadersProp();
+	const UT_GenericVector<const gchar*> * vecLabels = getContainer()->getVecTABLeadersLabel();
+	const UT_GenericVector<const gchar*> * vecProps = getContainer()->getVecTABLeadersProp();
 	nTypes = vecLabels->getItemCount();
 	sProp = NULL;	
 	sProp = new UT_UTF8String("toc-tab-leader");	
@@ -762,7 +762,7 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 	{	
 		UT_String sNum;		
 
-		const UT_GenericVector<const XML_Char*> * vecPropList = getContainer()->getVecLabelPropValue();
+		const UT_GenericVector<const gchar*> * vecPropList = getContainer()->getVecLabelPropValue();
 		const char * szVal = static_cast<const char *>(vecPropList->getNthItem(nSelected));
 		sProp = static_cast<char *> ("toc-page-type");
 		sVal = static_cast<const char *> (szVal);

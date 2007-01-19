@@ -36,10 +36,10 @@
 #include <libxml/parserInternals.h>
 
 // override typedef in ut_xml.h:
-#ifdef XML_Char
-#undef XML_Char
+#ifdef gchar
+#undef gchar
 #endif
-#define XML_Char xmlChar
+#define gchar xmlChar
 
 UT_HTML::UT_HTML (const char * szEncoding)
 {
@@ -59,32 +59,32 @@ UT_HTML::~UT_HTML ()
 extern "C" {
 #endif
 
-static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
+static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
 	UT_HTML * pXML = static_cast<UT_HTML *>(userData);
 
 	/* libxml2 can supply atts == 0, which is a little at variance to what is expected...
 	 */
-	const XML_Char * ptr = 0;
-	const XML_Char ** new_atts = atts;
+	const gchar * ptr = 0;
+	const gchar ** new_atts = atts;
 	if (atts == 0) new_atts = &ptr;
 
 	pXML->startElement (reinterpret_cast<const char *>(name),
 						reinterpret_cast<const char **>(new_atts));
 }
 
-static void _endElement (void * userData, const XML_Char * name)
+static void _endElement (void * userData, const gchar * name)
 {
 	UT_HTML * pXML = static_cast<UT_HTML *>(userData);
 	pXML->endElement (reinterpret_cast<const char *>(name));
 }
 
-static xmlEntityPtr _getEntity (void * userData, const XML_Char * name)
+static xmlEntityPtr _getEntity (void * userData, const gchar * name)
 {
 	return xmlGetPredefinedEntity (name);
 }
 
-static void _charData (void * userData, const XML_Char * buffer, int length)
+static void _charData (void * userData, const gchar * buffer, int length)
 {
 	UT_HTML * pXML = static_cast<UT_HTML *>(userData);
 	pXML->charData (reinterpret_cast<const char *>(buffer), length);

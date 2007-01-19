@@ -49,15 +49,15 @@
 bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 PT_DocPosition dpos1,
 									 PT_DocPosition dpos2,
-									 const XML_Char ** attributes,
-								  const XML_Char ** properties)
+									 const gchar ** attributes,
+								  const gchar ** properties)
 {
 	// if dpos1 == dpos2 we are inserting a fmt mark; this must be chanelled throught
 	// the non-revision branch ...
 	if(m_pDocument->isMarkRevisions() && dpos1 != dpos2)
 	{
-		const XML_Char name[] = "revision";
-		const XML_Char * pRevision = NULL;
+		const gchar name[] = "revision";
+		const gchar * pRevision = NULL;
 
 		// we cannot retrieve the start and end fragments here and
 		// then work between them in a loop using getNext() because
@@ -95,8 +95,8 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			// have to add these props (the removal is indicated by their emptiness)
 			// as we cannot rely on callers to set these correctly, we have to emtpy
 			// them ourselves
-			const XML_Char ** attrs = attributes;
-			const XML_Char ** props = properties;
+			const gchar ** attrs = attributes;
+			const gchar ** props = properties;
 							
 			if(ptc == PTC_RemoveFmt)
 			{
@@ -112,7 +112,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			if(props != properties)
 				delete[] props;
 			
-			const XML_Char * ppRevAttrib[3];
+			const gchar * ppRevAttrib[3];
 			ppRevAttrib[0] = name;
 			ppRevAttrib[1] = Revisions.getXMLstring();
 			ppRevAttrib[2] = NULL;
@@ -329,8 +329,8 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 											 pf_Frag_Text * pft, UT_uint32 fragOffset,
 											 PT_DocPosition dpos,
 											 UT_uint32 length,
-											 const XML_Char ** attributes,
-											 const XML_Char ** properties,
+											 const gchar ** attributes,
+											 const gchar ** properties,
 											 pf_Frag_Strux * pfs,
 											 pf_Frag ** ppfNewEnd,
 											 UT_uint32 * pfragOffsetNewEnd,
@@ -395,8 +395,8 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 									   PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   const XML_Char ** attributes,
-									   const XML_Char ** properties,
+									   const gchar ** attributes,
+									   const gchar ** properties,
 									   bool bRevisionDelete)
 {
 	// apply a span-level formatting change to the given region.
@@ -418,8 +418,8 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 // Deal with addStyle
 //
 	bool bApplyStyle = (PTC_AddStyle == ptc);
-	const XML_Char ** sProps = NULL;
-	const XML_Char ** lProps = properties;
+	const gchar ** sProps = NULL;
+	const gchar ** lProps = properties;
 	if(bApplyStyle)
 	{
 //
@@ -429,7 +429,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 // style (they exist there) to specifc values in strux (if not overridden by
 // the style) then finally to default value.
 //
-		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 		PD_Style * pStyle = NULL;
 		UT_return_val_if_fail (szStyle,false);
 		getDocument()->getStyle(szStyle,&pStyle);
@@ -440,15 +440,15 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 //
 		pStyle->getAllProperties(&vProps,0);
 //
-// Finally make the const XML_Char * array of properties
+// Finally make the const gchar * array of properties
 //
 		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
+		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
 		countp--;
 		UT_uint32 i;
 		for(i=0; i<countp; i++)
 		{
-			sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+			sProps[i] = (const gchar *) vProps.getNthItem(i);
 		}
 		sProps[i] = NULL;
 		lProps = sProps;

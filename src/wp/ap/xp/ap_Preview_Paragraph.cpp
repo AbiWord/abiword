@@ -149,16 +149,16 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 
 #define SCALE_TO_PIXELS(s) ((UT_uint32) (UT_convertToInches(s) * (double) DIMENSION_INCH_SCALE_FACTOR))
 
-void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
-										   const XML_Char * pageRightMargin,
+void AP_Preview_Paragraph_Block::setFormat(const gchar * pageLeftMargin,
+										   const gchar * pageRightMargin,
 										   AP_Dialog_Paragraph::tAlignState align,
-										   const XML_Char * firstLineIndent,
+										   const gchar * firstLineIndent,
 										   AP_Dialog_Paragraph::tIndentState indent,
-										   const XML_Char * leftIndent,
-										   const XML_Char * rightIndent,
-										   const XML_Char * beforeSpacing,
-										   const XML_Char * afterSpacing,
-										   const XML_Char * lineSpacing,
+										   const gchar * leftIndent,
+										   const gchar * rightIndent,
+										   const gchar * beforeSpacing,
+										   const gchar * afterSpacing,
+										   const gchar * lineSpacing,
 										   AP_Dialog_Paragraph::tSpacingState spacing)
 {
 	// align is always set
@@ -496,16 +496,16 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 	DELETEP(m_followingBlock);
 }
 
-void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
-									 const XML_Char * pageRightMargin,
+void AP_Preview_Paragraph::setFormat(const gchar * pageLeftMargin,
+									 const gchar * pageRightMargin,
 									 AP_Dialog_Paragraph::tAlignState align,
-									 const XML_Char * firstLineIndent,
+									 const gchar * firstLineIndent,
 									 AP_Dialog_Paragraph::tIndentState indent,
-									 const XML_Char * leftIndent,
-									 const XML_Char * rightIndent,
-									 const XML_Char * beforeSpacing,
-									 const XML_Char * afterSpacing,
-									 const XML_Char * lineSpacing,
+									 const gchar * leftIndent,
+									 const gchar * rightIndent,
+									 const gchar * beforeSpacing,
+									 const gchar * afterSpacing,
+									 const gchar * lineSpacing,
 									 AP_Dialog_Paragraph::tSpacingState spacing,
 									 UT_BidiCharType dir)
 {

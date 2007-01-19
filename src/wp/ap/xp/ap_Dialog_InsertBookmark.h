@@ -44,9 +44,9 @@ public:
 	tAnswer 			getAnswer(void) const;
 	void				setAnswer(tAnswer a);
 	UT_uint32			getExistingBookmarksCount() const;
-	const XML_Char *	getNthExistingBookmark(UT_uint32 n) const;
-	const XML_Char *	getBookmark() const;
-	void				setBookmark(const XML_Char * mark);
+	const gchar *	getNthExistingBookmark(UT_uint32 n) const;
+	const gchar *	getBookmark() const;
+	void				setBookmark(const gchar * mark);
 	void				setDoc(FV_View * pView);
 
 	void setSuggestedBM(const UT_UCS4Char * str)
@@ -68,7 +68,7 @@ private:
 	UT_UCS4String m_suggested;
 	
 	AP_Dialog_InsertBookmark::tAnswer	m_answer;
-	XML_Char			m_pBookmark[BOOKMARK_SIZE_LIMIT + 1];
+	gchar			m_pBookmark[BOOKMARK_SIZE_LIMIT + 1];
 };
 
 #endif /* AP_DIALOG_TOGGLECASE_H */

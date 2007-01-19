@@ -492,7 +492,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	bool bIcons = true;
 	bool bText = false;
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_return_val_if_fail((szValue) && (*szValue),false);
 

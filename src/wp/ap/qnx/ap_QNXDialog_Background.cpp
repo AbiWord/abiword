@@ -158,7 +158,7 @@ PtWidget_t * AP_QNXDialog_Background::_constructWindow (void)
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 
-	const XML_Char *  pszC = getColor();
+	const gchar *  pszC = getColor();
 	UT_RGBColor c(255,255,255);
 	if(strcmp(pszC,"transparent") != 0)
 	{

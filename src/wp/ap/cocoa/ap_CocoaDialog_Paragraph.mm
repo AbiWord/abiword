@@ -160,7 +160,7 @@ void AP_CocoaDialog_Paragraph::event_EditChanged(id sender)
 	// this function will massage the contents for proper
 	// formatting for spinbuttons that need it.  for example,
 	// line spacing can't be negative.
-	_setSpinItemValue(idc, (const XML_Char *)
+	_setSpinItemValue(idc, (const gchar *)
 						[[sender stringValue] UTF8String]);
 
 	// to ensure the massaged value is reflected back up

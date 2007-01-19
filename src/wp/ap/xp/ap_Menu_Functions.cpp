@@ -307,7 +307,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
   UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
 
   bool b = true ;
-  pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
+  pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -568,34 +568,18 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	UT_return_val_if_fail(pView != NULL, NULL);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
-
-	const char * c = NULL;
-	const UT_UCSChar *p;
-	static char cBuf[128];		// BUGBUG: possible buffer overflow
-	UT_UTF8String s;
-	UT_uint32 len = 0;
-
-	p = pView->getContextSuggest(ndx);
-	if (p && *p)
-		len = UT_UCS4_strlen(p);
-
-	if (len)
-	{
-		// this is a suggestion
-		char *outbuf = cBuf;
-		int i;
-		for (i = 0; i < static_cast<int>(len); i++) {
-			outbuf += g_unichar_to_utf8(p[i], outbuf);
-		}
-		*outbuf = 0;
-		c = cBuf;		
+	UT_UCSChar *p = pView->getContextSuggest(ndx);
+	gchar * c = NULL;
+	if (p && *p) {
+		c = g_ucs4_to_utf8(p, -1, NULL, NULL, NULL);
 	}
 	else if (ndx == 1)
 	{
-		// placeholder when no suggestions		
+		// placeholder when no suggestions
 		const XAP_StringSet * pSS = pApp->getStringSet();
+		UT_UTF8String s;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
-		c = s.utf8_str();
+		c = g_strdup(s.utf8_str());
 	}
 
 	FREEP(p);
@@ -606,7 +590,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 		static char buf[128];	// BUGBUG: possible buffer overflow
 
 		sprintf(buf,szFormat,c);
-
+		g_free (c); c = NULL;
 		return buf;
 	}
 
@@ -786,7 +770,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	switch (id)
 	  {
 	  case AP_MENU_ID_TOOLS_AUTOSPELL:
-	    pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b);
+	    pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_AutoSpellCheck), &b);
 	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 	    break;
 
@@ -838,8 +822,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
-	const XML_Char * prop = NULL;
-	const XML_Char * val  = NULL;
+	const gchar * prop = NULL;
+	const gchar * val  = NULL;
 
 	if(pView->getDocument()->areStylesLocked() && !(AP_MENU_ID_FMT_SUPERSCRIPT == id || AP_MENU_ID_FMT_SUBSCRIPT == id)) {
           return EV_MIS_Gray;
@@ -914,8 +898,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const gchar ** props_in = NULL;
+		const gchar * sz;
 
 		if (!pView->getCharFormat(&props_in))
 			return s;
@@ -950,8 +934,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
-	const XML_Char * prop = "text-align";
-	const XML_Char * val  = NULL;
+	const gchar * prop = "text-align";
+	const gchar * val  = NULL;
 
 	if(pView->getDocument()->areStylesLocked()) {
 	    return EV_MIS_Gray;
@@ -988,8 +972,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const gchar ** props_in = NULL;
+		const gchar * sz;
 
 		if (!pView->getBlockFormat(&props_in))
 			return s;
@@ -1017,8 +1001,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_DocFmt)
 	const PP_AttrProp * pAP = pDoc->getAttrProp();
 	UT_return_val_if_fail( pAP, EV_MIS_Gray );
 	
-	const XML_Char * prop = NULL;
-	const XML_Char * val  = NULL;
+	const gchar * prop = NULL;
+	const gchar * val  = NULL;
 
 	if(pDoc->areStylesLocked()) {
 	    return EV_MIS_Gray;
@@ -1038,7 +1022,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_DocFmt)
 
 	if (prop && val)
 	{
-		const XML_Char * sz;
+		const gchar * sz;
 
 		if (!pAP->getProperty(prop, sz))
 			return s;
@@ -1057,8 +1041,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
-	const XML_Char * prop = NULL;
-	const XML_Char * val  = NULL;
+	const gchar * prop = NULL;
+	const gchar * val  = NULL;
 
 	if(pView->getDocument()->areStylesLocked()) {
 	    return EV_MIS_Gray;
@@ -1079,8 +1063,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
+		const gchar ** props_in = NULL;
+		const gchar * sz;
 
 		if (!pView->getSectionFormat(&props_in))
 			return s;

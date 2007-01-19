@@ -39,8 +39,8 @@ public:
 
 	AP_Dialog_Background::tAnswer		getAnswer(void) const;
 	
-	const XML_Char * getColor (void) const;
-	void  setColor (const XML_Char * pszColor);
+	const gchar * getColor (void) const;
+	void  setColor (const gchar * pszColor);
 	void  setColor (UT_RGBColor& col);
 	void  setForeground(void);
 	void  setHighlight(void);
@@ -52,7 +52,7 @@ public:
 
  private:
 	UT_RGBColor m_color;
-	XML_Char    m_pszColor[12];
+	gchar    m_pszColor[12];
 	AP_Dialog_Background::tAnswer		m_answer;
 	bool m_bDoForeground;
 	bool m_bDoHighlight;

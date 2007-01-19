@@ -59,14 +59,14 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	m_pFrame = NULL;
 
 	// determine unit system to use in this dialog
-	const XML_Char * szRulerUnits;
+	const gchar * szRulerUnits;
 	UT_return_if_fail (m_pApp);
 
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
 	const bool bHasRulerUnits =
-		pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
+		pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
 
 	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
 
@@ -101,7 +101,7 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 	UT_VECTOR_PURGEALL(sControlData *, m_vecProperties);
 }
 
-bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
+bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 {
 	UT_return_val_if_fail (pProps, false);
 
@@ -112,7 +112,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 
 	if (pProps[0])
 	{
-		const XML_Char * sz;
+		const gchar * sz;
 
 		sz = UT_getAttribute("text-align", pProps);
 		if (sz)
@@ -185,7 +185,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			// if spacing is "NONE".  Must flip the sign (strip minus)
 			// to give illusion of Word's definitions of indent/margin.
 
-			const XML_Char * newSz = sz;
+			const gchar * newSz = sz;
 
 			if (sz[0] == '-')
 				newSz++;
@@ -213,7 +213,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 					strcpy(pTmp, sz);
 					pTmp[posPlus] = 0;
 
-					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)pTmp, op_INIT);
+					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (gchar*)pTmp, op_INIT);
 				}
 				else
 				{
@@ -345,14 +345,14 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
             if (!p) return false;						\
         } while (0)											\
 
-bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
+bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 {
 	UT_Vector v;
 
 	struct propPair
 	{
-		XML_Char * prop;
-		XML_Char * val;
+		gchar * prop;
+		gchar * val;
 	};
 
 	propPair * p;
@@ -491,8 +491,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		// "exactly" simply has units.
 		// "multiple" has no units.
 
-		XML_Char * pTmp = NULL;
-		const XML_Char * pString = _getSpinItemValue(id_SPIN_SPECIAL_SPACING);
+		gchar * pTmp = NULL;
+		const gchar * pString = _getSpinItemValue(id_SPIN_SPECIAL_SPACING);
 		UT_uint32 nSize = 0;
 
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
@@ -508,7 +508,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			break;
 		case spacing_ATLEAST:
 			nSize = strlen(pString);
-			pTmp = (XML_Char *) UT_calloc(nSize + 2, sizeof(XML_Char));
+			pTmp = (gchar *) UT_calloc(nSize + 2, sizeof(gchar));
 			UT_return_val_if_fail (pTmp, false);
 
 			strncpy(pTmp, pString, nSize);
@@ -604,11 +604,11 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// export everything in the array
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
-	const XML_Char ** newprops = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
+	const gchar ** newprops = (const gchar **) UT_calloc(count, sizeof(gchar *));
 	if (!newprops)
 		return false;
 
-	const XML_Char ** newitem = newprops;
+	const gchar ** newitem = newprops;
 
 	UT_uint32 i = v.getItemCount();
 
@@ -626,7 +626,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	UT_VECTOR_FREEALL(propPair *, v);
 
 	// DO NOT purge the propPair's CONTENTS, because they will be pointed to
-	// by the pointers we just copied into memory typed (XML_Char **)
+	// by the pointers we just copied into memory typed (gchar **)
 
 	pProps = newprops;
 
@@ -759,10 +759,10 @@ AP_Dialog_Paragraph::tCheckState AP_Dialog_Paragraph::_getCheckItemValue(tContro
 	return value;
 }
 
-const XML_Char * AP_Dialog_Paragraph::_makeAbsolute(const XML_Char * value)
+const gchar * AP_Dialog_Paragraph::_makeAbsolute(const gchar * value)
 {
 	UT_uint32 i = 0;
-	const XML_Char * tempstring = value;
+	const gchar * tempstring = value;
 
 	// from the start of the string, if a character is a space, walk on.
 	// when we hit a '-', we leave the pointer at value + i + 1
@@ -778,7 +778,7 @@ const XML_Char * AP_Dialog_Paragraph::_makeAbsolute(const XML_Char * value)
 
 	return tempstring;
 }
-void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * value,
+void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const gchar * value,
 											tOperation op /* = op_UICHANGE */)
 {
 	UT_return_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount() && value);
@@ -792,7 +792,7 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 	case id_SPIN_LEFT_INDENT:
 	case id_SPIN_RIGHT_INDENT:
 	case id_SPIN_SPECIAL_INDENT:
-		pItem->setData (reinterpret_cast<const XML_Char *>(UT_reformatDimensionString (m_dim, value)));
+		pItem->setData (reinterpret_cast<const gchar *>(UT_reformatDimensionString (m_dim, value)));
 		break;
 
 	case id_SPIN_BEFORE_SPACING:
@@ -801,7 +801,7 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 			/* NOTE : line spacing can't be negative, so take absolute value:
 			 */
 			const char * abs_value = UT_reformatDimensionString (DIM_PT, _makeAbsolute (value));
-			pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+			pItem->setData (reinterpret_cast<const gchar *>(abs_value));
 		}
 		break;
 
@@ -809,12 +809,12 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 		if (_getMenuItemValue (id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 			{
 				const char * abs_value = UT_reformatDimensionString (DIM_none, _makeAbsolute (value), ".2");
-				pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+				pItem->setData (reinterpret_cast<const gchar *>(abs_value));
 			}
 		else
 			{
 				const char * abs_value = UT_reformatDimensionString (DIM_PT, _makeAbsolute (value));
-				pItem->setData (reinterpret_cast<const XML_Char *>(abs_value));
+				pItem->setData (reinterpret_cast<const gchar *>(abs_value));
 			}
 		break;
 
@@ -832,14 +832,14 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 		_syncControls(item);
 }
 
-const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
+const gchar * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 {
 	UT_return_val_if_fail ((UT_uint32) item <= m_vecProperties.getItemCount(), NULL);
 
 	sControlData * pItem = _getPropertyItem (item);
 	UT_return_val_if_fail (pItem, NULL);
 
-	const XML_Char * value = NULL;
+	const gchar * value = NULL;
 	pItem->getData (value);
 	UT_ASSERT_HARMLESS(value);
 	return value;
@@ -863,7 +863,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 	UT_ASSERT_HARMLESS(amt); // zero makes no sense
 
 	// get current value from member
-	const XML_Char* szOld = _getSpinItemValue(edit);
+	const gchar* szOld = _getSpinItemValue(edit);
 	double d = UT_convertDimensionless(szOld);
 
 	// figure out which dimension and units to spin in
@@ -961,7 +961,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		if (d < dMin)
 			d = dMin;
 	}
-	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision);
+	const gchar* szNew = UT_formatDimensionString(dimSpin, d, szPrecision);
 
 	_setSpinItemValue(edit, szNew);
 }
@@ -996,7 +996,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 					leftPageMargin)
 		{
 			_setSpinItemValue(id_SPIN_LEFT_INDENT,
-									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
+									(const gchar *)UT_formatDimensionString(m_dim, -leftPageMargin),
 									op_SYNC);
 		}
 
@@ -1005,7 +1005,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 						UT_convertInchesToDimension(m_iMaxWidth, m_dim) - rightIndent)
   		{
   			_setSpinItemValue(id_SPIN_LEFT_INDENT,
-  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
+  									(const gchar *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
   									op_SYNC);
   		}
 	}
@@ -1022,7 +1022,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 					rightPageMargin)
 		{
 			_setSpinItemValue(id_SPIN_RIGHT_INDENT,
-									(const XML_Char *)UT_formatDimensionString(m_dim, -rightPageMargin),
+									(const gchar *)UT_formatDimensionString(m_dim, -rightPageMargin),
 									op_SYNC);
 		}
 
@@ -1031,7 +1031,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 						UT_convertInchesToDimension(m_iMaxWidth, m_dim) - leftIndent)
   		{
   			_setSpinItemValue(id_SPIN_RIGHT_INDENT,
-  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - leftIndent),
+  									(const gchar *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - leftIndent),
   									op_SYNC);
   		}
 	}
@@ -1077,7 +1077,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 				if (m_dim != DIM_IN)
 					dDefault = UT_convertInchesToDimension(dDefault, m_dim);
 
-				const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
+				const gchar* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
 
 				_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 			}
@@ -1107,7 +1107,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			else if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_HANGING)
 				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
 
-			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, -val, ".1");
+			const gchar* szNew = UT_convertInchesToDimensionString(m_dim, -val, ".1");
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 		}
 
@@ -1125,7 +1125,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 		if(-effectiveLeftMargin > leftPageMargin)
 		{
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT,
-									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
+									(const gchar *)UT_formatDimensionString(m_dim, -leftPageMargin),
 									op_SYNC);
 		} 
 
@@ -1133,7 +1133,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			UT_convertInchesToDimension(m_iMaxWidth, m_dim) - rightIndent)
   		{
   			_setSpinItemValue(id_SPIN_SPECIAL_INDENT,
-  									(const XML_Char *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
+  									(const gchar *)UT_convertInchesToDimensionString(m_dim, m_iMaxWidth - rightIndent),
   									op_SYNC);
   		}
 	}
@@ -1269,10 +1269,10 @@ AP_Dialog_Paragraph::sControlData::sControlData (tCheckState data) :
 
 /* default is empty string
  */
-AP_Dialog_Paragraph::sControlData::sControlData (XML_Char * data) :
+AP_Dialog_Paragraph::sControlData::sControlData (gchar * data) :
 	m_siData(0),
 	m_csData(check_INDETERMINATE),
-	m_szData(new XML_Char[SPIN_BUF_TEXT_SIZE]),
+	m_szData(new gchar[SPIN_BUF_TEXT_SIZE]),
 	m_bChanged(false)
 {
 	m_szData[SPIN_BUF_TEXT_SIZE-1] = 0;
@@ -1282,11 +1282,11 @@ AP_Dialog_Paragraph::sControlData::sControlData (XML_Char * data) :
 AP_Dialog_Paragraph::sControlData::sControlData (const sControlData & rhs) :
 	m_siData(rhs.m_siData),
 	m_csData(rhs.m_csData),
-	m_szData(rhs.m_szData ? new XML_Char[SPIN_BUF_TEXT_SIZE] : 0),
+	m_szData(rhs.m_szData ? new gchar[SPIN_BUF_TEXT_SIZE] : 0),
 	m_bChanged(false)
 {
 	if (m_szData)
-		memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
+		memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (gchar));
 }
 
 AP_Dialog_Paragraph::sControlData::~sControlData ()
@@ -1305,7 +1305,7 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 				{
 					UT_TRY
 						{
-							m_szData = new XML_Char[SPIN_BUF_TEXT_SIZE];
+							m_szData = new gchar[SPIN_BUF_TEXT_SIZE];
 						}
 					UT_CATCH(...)
 						{
@@ -1313,7 +1313,7 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 						}
 				}
 			UT_return_val_if_fail (m_szData, *this);
-			memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (XML_Char));
+			memcpy (m_szData, rhs.m_szData, SPIN_BUF_TEXT_SIZE * sizeof (gchar));
 		}
 	else if (m_szData)
 		{
@@ -1324,13 +1324,13 @@ AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator=
 	return *this;
 }
 
-bool AP_Dialog_Paragraph::sControlData::setData (const XML_Char * data)
+bool AP_Dialog_Paragraph::sControlData::setData (const gchar * data)
 {
 	if (!m_szData)
 		{
 			UT_TRY
 				{
-					m_szData = new XML_Char[SPIN_BUF_TEXT_SIZE];
+					m_szData = new gchar[SPIN_BUF_TEXT_SIZE];
 				}
 			UT_CATCH(...)
 				{

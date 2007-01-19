@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	virtual void startElement (const XML_Char * name, const XML_Char ** atts)
+	virtual void startElement (const gchar * name, const gchar ** atts)
 	{
 		if (!strcmp (name, "dictionary"))
 		{
@@ -53,11 +53,11 @@ public:
 		}
 	}
 
-	virtual void endElement (const XML_Char * name)
+	virtual void endElement (const gchar * name)
 	{
 	}
 
-	virtual void charData (const XML_Char * buffer, int length)
+	virtual void charData (const gchar * buffer, int length)
 	{
 	}
 

@@ -271,7 +271,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 #endif
 	m_pListenerWriteDoc->_setTabEaten(false);
 
-	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const XML_Char *) pszHdrFtr,(const XML_Char * ) pszHdrFtrID);
+	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const gchar *) pszHdrFtr,(const gchar * ) pszHdrFtrID);
 
 	if(hdrSDH == NULL)
 	{
@@ -766,10 +766,10 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_keyword("fet",2);				// Allow both footnotes and endnotes
 	_rtf_keyword("ftnstart",1);			// First footnote is one - later use
 	                                    // document properties
-	const XML_Char * pszFootnoteType = NULL;
+	const gchar * pszFootnoteType = NULL;
 	const PP_AttrProp* pDocAP = getDoc()->getAttrProp();
 	UT_return_val_if_fail (pDocAP, false);
-	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
+	pDocAP->getProperty("document-footnote-type", (const gchar *&)pszFootnoteType);
 	if (pszFootnoteType == NULL)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
@@ -839,8 +839,8 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
 
-	const XML_Char * pszEndnoteType = NULL;
-	pDocAP->getProperty("document-endnote-type", (const XML_Char *&)pszEndnoteType);
+	const gchar * pszEndnoteType = NULL;
+	pDocAP->getProperty("document-endnote-type", (const gchar *&)pszEndnoteType);
 	if (pszEndnoteType == NULL)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
@@ -910,8 +910,8 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
 
-	const XML_Char * pszTmp = NULL;
-	pDocAP->getProperty("document-footnote-initial", (const XML_Char *&)pszTmp);
+	const gchar * pszTmp = NULL;
+	pDocAP->getProperty("document-footnote-initial", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		_rtf_keyword("ftnstart",atoi(pszTmp));			// First footnote
@@ -921,7 +921,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_keyword("ftnstart",1);			// First footnote
 	}
 
-	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-footnote-restart-section", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -930,7 +930,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		}
 	}
 
-	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-footnote-restart-page", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -939,12 +939,12 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		}
 	}
 
-	pDocAP->getProperty("document-endnote-initial", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-initial", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		_rtf_keyword("aftnstart", atoi(pszTmp)); // initial endnote value
 	}
-	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-restart-section", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -953,7 +953,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		}
 	}
 
-	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-place-endsection", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -962,7 +962,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		}
 	}
 
-	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
+	pDocAP->getProperty("document-endnote-place-enddoc", (const gchar *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
 		if(strcmp(pszTmp,"1") == 0)
@@ -1072,11 +1072,11 @@ bool IE_Exp_RTF::_write_rtf_header(void)
  *                     doesn't have the default value.
  */
 void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle,
-					  const XML_Char * szPropName,
+					  const gchar * szPropName,
 					  const char * szRTFName)
 {
-	const XML_Char * sz = NULL;
-	if (pStyle->getProperty((const XML_Char *)szPropName, sz)) {
+	const gchar * sz = NULL;
+	if (pStyle->getProperty((const gchar *)szPropName, sz)) {
 		_rtf_keyword_ifnotdefault_twips(szRTFName, sz, 0);
 	}
 }
@@ -1085,11 +1085,11 @@ void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle,
  * Write an RTF keyword if the given property is "yes".
  */
 void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle,
-				   const XML_Char * szPropName,
+				   const gchar * szPropName,
 				   const char * szRTFName)
 {
-    const XML_Char * sz = NULL;
-    if (pStyle->getProperty((const XML_Char *)szPropName, sz) && strcmp(sz, "yes") == 0) {
+    const gchar * sz = NULL;
+    if (pStyle->getProperty((const gchar *)szPropName, sz) && strcmp(sz, "yes") == 0) {
 	    _rtf_keyword(szRTFName);
     }
 }
@@ -1224,12 +1224,12 @@ void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
 /*!
  * Get style
  */
-const XML_Char * IE_Exp_RTF::_getStyleProp(
+const gchar * IE_Exp_RTF::_getStyleProp(
 	s_RTF_AttrPropAdapter_Style * pADStyle,
 	const s_RTF_AttrPropAdapter * apa,
 	const char * szProp)
 {
-	const XML_Char *szVal = NULL;
+	const gchar *szVal = NULL;
 	if(pADStyle != NULL)
 	{
 		szVal = pADStyle->getProperty(szProp);
@@ -1257,31 +1257,31 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 								bool & bStartedList, PL_StruxDocHandle sdh, UT_uint32 & iCurrID, bool &bIsListBlock,
 								UT_sint32 iNestLevel)
 {
-	const XML_Char * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szFirstLineIndent = PP_evalProperty("text-indent",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szLeftIndent = PP_evalProperty("margin-left",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szRightIndent = PP_evalProperty("margin-right",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szTopMargin = PP_evalProperty("margin-top",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szBottomMargin = PP_evalProperty("margin-bottom",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szFirstLineIndent = PP_evalProperty("text-indent",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szLeftIndent = PP_evalProperty("margin-left",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szRightIndent = PP_evalProperty("margin-right",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szTopMargin = PP_evalProperty("margin-top",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szBottomMargin = PP_evalProperty("margin-bottom",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 
 	// TODO add other properties here
 
 	// Do abi specific list information.
 
-	const XML_Char * szListid=NULL;
-	const XML_Char * szParentid=NULL;
-	const XML_Char * szListStyle=NULL;
+	const gchar * szListid=NULL;
+	const gchar * szParentid=NULL;
+	const gchar * szListStyle=NULL;
 
-	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("listid"), szListid))		szListid = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("parentid"), szParentid))
+	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const gchar*>("listid"), szListid))		szListid = NULL;
+	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const gchar*>("parentid"), szParentid))
 		szParentid = NULL;
 	UT_uint32 listid = 0;
-	const XML_Char * szAbiListDelim = NULL;
-	const XML_Char * szAbiListDecimal = NULL;
+	const gchar * szAbiListDelim = NULL;
+	const gchar * szAbiListDecimal = NULL;
 	static UT_String szAbiStartValue;
 	static UT_String szLevel;
 	if(szListid!=NULL)
@@ -1300,7 +1300,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		}
 	}
 	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const gchar * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 
 		
 	UT_uint32 id = 0;
@@ -1381,7 +1381,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 
 	// it is essential that the \rtlpar and \ltrpar tokens are issued
 	// before any formatting, otherwise it can cause difficulties
-	const XML_Char * szBidiDir = PP_evalProperty("dom-dir",
+	const gchar * szBidiDir = PP_evalProperty("dom-dir",
 												 pSpanAP,
 												 pBlockAP,
 												 pSectionAP,
@@ -1420,7 +1420,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	_rtf_keyword_ifnotdefault_twips("sb",static_cast<const char*>(szTopMargin),0);
 	_rtf_keyword_ifnotdefault_twips("sa",static_cast<const char*>(szBottomMargin),0);
 
-	const XML_Char * szStyle = NULL;
+	const gchar * szStyle = NULL;
 	if (pBlockAP->getAttribute("style", szStyle))
 	{
 	    _rtf_keyword("s", _getStyleNumber(szStyle));
@@ -1511,7 +1511,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		///
 		/// extract text before and after numbering symbol
 		///
-		static XML_Char p[80],leftDelim[80],rightDelim[80];
+		static gchar p[80],leftDelim[80],rightDelim[80];
 		sprintf(p, "%s",pAuto->getDelim());
 		UT_uint32 rTmp;
 
@@ -1707,7 +1707,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
  */
 void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
-	//const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
+	//const gchar * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
 	//UT_sint32 iStyle = -1;
 	s_RTF_AttrPropAdapter_Style * pADStyle = NULL;
 #if 0
@@ -1722,7 +1722,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 //
 	}
 #endif
-	const XML_Char * szColor = _getStyleProp(pADStyle,&apa,"color");
+	const gchar * szColor = _getStyleProp(pADStyle,&apa,"color");
 
 	UT_sint32 ndxColor = -1;
 	if(szColor)
@@ -1750,7 +1750,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword("highlight",ndxColor);
 		}
 	}
-	const XML_Char * szFont = NULL;
+	const gchar * szFont = NULL;
 	if(pADStyle != NULL)
 	{
 		szFont = pADStyle->getProperty("font-family");
@@ -1762,7 +1762,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword("f",ndxFont);	// font index in fonttbl
 	}
 
-	const XML_Char * szFontSize = _getStyleProp(pADStyle,&apa,"font-size");
+	const gchar * szFontSize = _getStyleProp(pADStyle,&apa,"font-size");
 	double dbl = UT_convertToPoints(szFontSize);
 	UT_sint32 d = (UT_sint32)(dbl*2.0);
 
@@ -1773,15 +1773,15 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			d = 24;
 		_rtf_keyword("fs",d);	// font size in half points
 	}
-	const XML_Char * szFontStyle = _getStyleProp(pADStyle,&apa,"font-style");
+	const gchar * szFontStyle = _getStyleProp(pADStyle,&apa,"font-style");
 	if (szFontStyle && *szFontStyle && (strcmp(szFontStyle,"italic")==0))
 		_rtf_keyword("i");
 
-	const XML_Char * szFontWeight = _getStyleProp(pADStyle,&apa,"font-weight");
+	const gchar * szFontWeight = _getStyleProp(pADStyle,&apa,"font-weight");
 	if (szFontWeight && *szFontWeight && (strcmp(szFontWeight,"bold")==0))
 		_rtf_keyword("b");
 
-	const XML_Char * szFontDecoration = _getStyleProp(pADStyle,&apa,"text-decoration");
+	const gchar * szFontDecoration = _getStyleProp(pADStyle,&apa,"text-decoration");
 	if (szFontDecoration && *szFontDecoration)
 	{
 		if (strstr(szFontDecoration,"underline") != 0)
@@ -1800,7 +1800,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		}
 	}
 
-	const XML_Char * szFontPosition = _getStyleProp(pADStyle,&apa,"text-position");
+	const gchar * szFontPosition = _getStyleProp(pADStyle,&apa,"text-position");
 	if (szFontPosition && *szFontPosition)
 	{
 		if (!strcmp(szFontPosition,"superscript"))
@@ -1810,15 +1810,15 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	}
 
 	// export the language of the run of text
-	const XML_Char * szLang = _getStyleProp(pADStyle,&apa,"lang");
+	const gchar * szLang = _getStyleProp(pADStyle,&apa,"lang");
 	if ( szLang )
 	  {
 	    xxx_UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
 	    _rtf_keyword("lang", wvLangToLIDConverter(szLang));
 	  }
 
-	//###TF const XML_Char * szDir = apa.getProperty("dir");
-	const XML_Char * szDirOvrr = _getStyleProp(pADStyle,&apa,"dir-override");
+	//###TF const gchar * szDir = apa.getProperty("dir");
+	const gchar * szDirOvrr = _getStyleProp(pADStyle,&apa,"dir-override");
 
 	bool bProceed = true;
 	if (szDirOvrr)
@@ -1847,14 +1847,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword ("rtlch");
 	}  */
 
-	const XML_Char * szHidden = _getStyleProp(pADStyle,&apa,"display");
+	const gchar * szHidden = _getStyleProp(pADStyle,&apa,"display");
 	if(szHidden && *szHidden && !strcmp(szHidden, "none"))
 	{
 		_rtf_keyword ("v");
 	}
 	
 	
-	const XML_Char * szListTag = apa.getProperty("list-tag");
+	const gchar * szListTag = apa.getProperty("list-tag");
 	if (szListTag && *szListTag)
 	{
 		_rtf_open_brace();
@@ -1877,7 +1877,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 								  PL_StruxDocHandle sdh, UT_sint32 iNestLevel,
 								  bool & bStartedList,  bool &bIsListBlock, UT_uint32 &iCurrID)
 {
-	const XML_Char *szRevisions = apa.getAttribute("revision");
+	const gchar *szRevisions = apa.getAttribute("revision");
 	if (szRevisions && *szRevisions)
 	{
 		PP_RevisionAttr RA(szRevisions);
@@ -2085,8 +2085,8 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
     _write_prop_ifyes(pStyle, "keep-together", "keep");
     _write_prop_ifyes(pStyle, "keep-with-next", "keepn");
 
-    const XML_Char * sz = NULL;
-    if (pStyle->getProperty((const XML_Char *)"text-align", sz))
+    const gchar * sz = NULL;
+    if (pStyle->getProperty((const gchar *)"text-align", sz))
 	{
 		if (strcmp(sz, "left") == 0)
 		{
@@ -2110,8 +2110,8 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
 		}
     }
 
-    const XML_Char * szLineHeight = NULL;
-    if (pStyle->getProperty((const XML_Char *) "line-height", szLineHeight)
+    const gchar * szLineHeight = NULL;
+    if (pStyle->getProperty((const gchar *) "line-height", szLineHeight)
 		&& strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
@@ -2132,7 +2132,7 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
     // apoctl
 
     // tabdef
-    if (pStyle->getProperty((const XML_Char *) "tabstops", sz)) _write_tabdef(sz);
+    if (pStyle->getProperty((const gchar *) "tabstops", sz)) _write_tabdef(sz);
 
 
     // shading
@@ -2248,7 +2248,7 @@ UT_uint32 IE_Exp_RTF::_getStyleNumber(const PD_Style * pStyle)
  * Return the style number that was assigned to the named style.
  * The style must be present in the style hash.
  */
-UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
+UT_uint32 IE_Exp_RTF::_getStyleNumber(const gchar * szStyle)
 {
 	if(strcmp(szStyle, "Normal Clean")== 0)
 	{

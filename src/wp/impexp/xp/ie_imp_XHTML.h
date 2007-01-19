@@ -82,29 +82,29 @@ public:
 
 	virtual ~IE_Imp_XHTML ();
 
-	void					startElement (const XML_Char * name, const XML_Char ** atts);
-	void					endElement (const XML_Char * name);
+	void					startElement (const gchar * name, const gchar ** atts);
+	void					endElement (const gchar * name);
 
-	virtual void			charData (const XML_Char * buffer, int length);
+	virtual void			charData (const gchar * buffer, int length);
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, 
 										UT_uint32 lenData, 
 										const char * szEncoding = 0);
 
-	virtual bool  appendStrux(PTStruxType pts, const XML_Char ** attributes);
-	virtual bool  appendFmt( const XML_Char ** attributes);
-	virtual bool  appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
+	virtual bool  appendStrux(PTStruxType pts, const gchar ** attributes);
+	virtual bool  appendFmt( const gchar ** attributes);
+	virtual bool  appendFmt(const UT_GenericVector<gchar*> * pVecAttributes);
 	virtual bool  appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	virtual bool  appendObject(PTObjectType pto, const XML_Char ** attributes);
+	virtual bool  appendObject(PTObjectType pto, const gchar ** attributes);
 
 
 protected:
 	virtual UT_Error        _loadFile (GsfInput * input);
-	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
+	virtual FG_Graphic *	importImage (const gchar * szSrc);
 
 private:
-	FG_Graphic *			importDataURLImage (const XML_Char * szData);
+	FG_Graphic *			importDataURLImage (const gchar * szData);
 
 	bool					pushInline (const char * props);
 	bool					newBlock (const char * style, const char * css, const char * align);
@@ -122,7 +122,7 @@ private:
 	UT_uint16	m_iNewImage;
 
 	UT_Stack	m_utsParents;
-	XML_Char *  m_szBookMarkName;
+	gchar *  m_szBookMarkName;
 
 	bool        m_addedPTXSection;
 

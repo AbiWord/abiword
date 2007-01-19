@@ -1467,7 +1467,7 @@ void FV_View::_insertSectionBreak(void)
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecPrevHdrFtr;
 	pPrevDSL->getVecOfHdrFtrs( &vecPrevHdrFtr);
 	UT_uint32 i =0;
-	const XML_Char* block_props[] = {
+	const gchar* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
@@ -2988,8 +2988,8 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 }
 
 bool FV_View::_insertField(const char* szName, 
-						   const XML_Char ** extra_attrs, 
-						   const XML_Char ** extra_props)
+						   const gchar ** extra_attrs, 
+						   const gchar ** extra_props)
 {
 	bool bResult;
 	int attrCount = 0;
@@ -3005,7 +3005,7 @@ bool FV_View::_insertField(const char* szName,
 		attrCount++;
 	}
 
-	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
+	const gchar ** attributes = new const gchar*[attrCount+4];
 
 	int i = 0;
 	while (extra_attrs && extra_attrs[i] != NULL)
@@ -4521,8 +4521,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_RGBColor clrFillColor;
 			if (getViewMode() != VIEW_PRINT)
 			{
-				const XML_Char * pszTransparentColor = NULL;
-				this->getApp()->getPrefs()->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+				const gchar * pszTransparentColor = NULL;
+				this->getApp()->getPrefs()->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 				clrFillColor.setColor(pszTransparentColor);
 			}
 			else
@@ -5165,7 +5165,7 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 
 UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition *posStart, PT_DocPosition *posEnd)
 {
-	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char *>(szName)))
+	if(!m_pDoc->isBookmarkUnique(static_cast<const gchar *>(szName)))
 	{
 		// even though we will only send out a single explicit deleteSpan
 		// call, we need to find out where both of the markers are in the
@@ -5198,7 +5198,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 					if(pRun->getType()== FPRUN_BOOKMARK)
 					{
 						pB1 = static_cast<fp_BookmarkRun*>(pRun);
-						if(!strcmp(static_cast<const XML_Char *>(szName), pB1->getName()))
+						if(!strcmp(static_cast<const gchar *>(szName), pB1->getName()))
 						{
 							bmBlockOffset[i] = pRun->getBlockOffset();
 							pBlock[i] = pRun->getBlock();
@@ -5445,7 +5445,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		// get language code for misspelled word
 		const char * szLang = NULL;
 
-		const XML_Char ** props_in = NULL;
+		const gchar ** props_in = NULL;
 
 		if (getCharFormat(&props_in))
 		{
@@ -5517,7 +5517,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	FV_View *pView = static_cast<FV_View *>(data);
 	bool b;
 	UT_ASSERT(data && pPrefs);
-	if ( pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_CursorBlink), &b) && b != pView->m_bCursorBlink )
+	if ( pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_CursorBlink), &b) && b != pView->m_bCursorBlink )
 	{
 		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s\n",
 					 pView->m_bCursorBlink ? "TRUE" : "FALSE",
@@ -5529,80 +5529,80 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 
 
 	// Update colors
-   	const XML_Char * pszTmpColor = NULL;
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
+   	const gchar * pszTmpColor = NULL;
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorShowPara);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorSpellSquiggle);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorGrammarSquiggle);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorMargin);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorFieldOffset);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorImage);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorHyperLink);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorHdrFtr);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorColumnLine);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[0]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[1]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[2]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[3]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[4]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[5]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[6]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[7]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[8]);
 	}
-	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
+	if (pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[9]);
 	}
@@ -5615,8 +5615,8 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 	if (!pView->m_bWarnedThatRestartNeeded &&
-		( pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
-		 || (pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
+		( pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
+		 || (pPrefs->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
 		)
 	{
 		/*	It is possible to change this at runtime, but it may impact the
@@ -5689,7 +5689,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //
-	const XML_Char * pszHdrFtrType = NULL;
+	const gchar * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
@@ -5779,9 +5779,9 @@ void FV_View::_fixInsertionPointAfterRevision()
 		PT_DocPosition posStart = getPoint();
 		PT_DocPosition posEnd = posStart;
 
-		const XML_Char rev[] = "revision";
-		const XML_Char val[] = "";
-		const XML_Char * attr[3] = {rev,val,NULL};
+		const gchar rev[] = "revision";
+		const gchar val[] = "";
+		const gchar * attr[3] = {rev,val,NULL};
 
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
 
@@ -5830,7 +5830,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// see if prefs specify we should set language based on kbd layout
 	UT_return_val_if_fail(m_pApp, false);
 	bool bSetLang = false;
-	m_pApp->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	m_pApp->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bSetLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -5931,9 +5931,9 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 					UT_uint32 currID = pBlock->getAutoNum()->getID();
 					curlevel++;
 					fl_AutoNum * pAuto = pBlock->getAutoNum();
-					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
-					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
-					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
+					const gchar * pszAlign = pBlock->getProperty("margin-left",true);
+					const gchar * pszIndent = pBlock->getProperty("text-indent",true);
+					const gchar * pszFieldF = pBlock->getProperty("field-font",true);
 					float fAlign = static_cast<float>(atof(pszAlign));
 					float fIndent = static_cast<float>(atof(pszIndent));
 //

@@ -50,7 +50,7 @@ bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 	return true;
 }
 
-bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getProperty(const gchar * szName, const gchar *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -61,7 +61,7 @@ bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) c
 }
 
 
-bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue)
+bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -92,7 +92,7 @@ bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szVa
 }
 
 
-bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -124,7 +124,7 @@ bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szV
 }
 
 
-bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue)
+bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -156,7 +156,7 @@ bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szV
 }
 
 
-bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -187,7 +187,7 @@ bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& sz
 	return false;
 }
 
-const PP_PropertyType *	PD_Style::getPropertyType(const XML_Char * szName, tProperty_type Type) const
+const PP_PropertyType *	PD_Style::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -198,7 +198,7 @@ const PP_PropertyType *	PD_Style::getPropertyType(const XML_Char * szName, tProp
 }
 
 
-bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getAttribute(const gchar * szName, const gchar *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -232,7 +232,7 @@ bool PD_Style::isCharStyle(void) const
 {
 	// TODO: cache this too  
 
-	const XML_Char * szValue = NULL;
+	const gchar * szValue = NULL;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
 			return g_ascii_strcasecmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
@@ -262,7 +262,7 @@ PD_Style * PD_Style::getBasedOn(void)
 	if (m_pBasedOn)
 		return m_pBasedOn;
 
-	const XML_Char * szStyle;
+	const gchar * szStyle;
 
 	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, szStyle))
 		if (szStyle && szStyle[0])
@@ -278,7 +278,7 @@ PD_Style * PD_Style::getFollowedBy(void)
 	if (m_pFollowedBy)
 		return m_pFollowedBy;
 
-	const XML_Char * szStyle;
+	const gchar * szStyle;
 
 	if (getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, szStyle))
 		if (szStyle && szStyle[0])
@@ -292,7 +292,7 @@ PD_Style * PD_Style::getFollowedBy(void)
 /*!
  * Add a property to the style definition.
  */
-bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
+bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres= true;
@@ -301,7 +301,7 @@ bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
 		return false;
 	else
 	{
-		const XML_Char * pProps[4] = {NULL,NULL,NULL,NULL};
+		const gchar * pProps[4] = {NULL,NULL,NULL,NULL};
 		pProps[0] = szName;
 		pProps[1] = szValue;
 		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProps, false);
@@ -315,9 +315,9 @@ bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
  * This method adds the properties defined in pProperties to the already
  * defined set. If a property already exists in the definition, its value is
  * replaced.
-\param const XML_Char ** pProperties string of properties
+\param const gchar ** pProperties string of properties
 */
-bool PD_Style::addProperties(const XML_Char ** pProperties)
+bool PD_Style::addProperties(const gchar ** pProperties)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres= true;
@@ -336,10 +336,10 @@ bool PD_Style::addProperties(const XML_Char ** pProperties)
  * This method replaces the previous set of attributes/properties with
  * a new one defined in pAtts. It is imperitive that updateDocForStyleChange
  * be called after this method.
- \param const XML_Char ** pAtts list of attributes with an extended properties
+ \param const gchar ** pAtts list of attributes with an extended properties
  *                        string
  */
-bool PD_Style::setAllAttributes(const XML_Char ** pAtts)
+bool PD_Style::setAllAttributes(const gchar ** pAtts)
 {
 	bool bres =	m_pPT->getVarSet().storeAP(pAtts, &m_indexAP);
 	m_pFollowedBy = NULL;
@@ -348,7 +348,7 @@ bool PD_Style::setAllAttributes(const XML_Char ** pAtts)
 }
 
 
-bool PD_Style::addAttributes(const XML_Char ** pAtts)
+bool PD_Style::addAttributes(const gchar ** pAtts)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres = false;
@@ -392,8 +392,8 @@ size_t PD_Style::getPropertyCount(void) const
 	        return pAP->getPropertyCount();
 }
 	
-bool PD_Style::getNthAttribute (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const
+bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
+			     const gchar *&szValue) const
 {
   	PP_AttrProp * pAP = NULL;
 	
@@ -405,8 +405,8 @@ bool PD_Style::getNthAttribute (int ndx, const XML_Char *&szName,
 	  }
 }
 
-bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
-			       const XML_Char *&szValue) const
+bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
+			       const gchar *&szValue) const
 {
   	PP_AttrProp * pAP = NULL;
 	
@@ -421,7 +421,7 @@ bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
 /*!
  * This method fills a vector structure with all the attributes defined
  * in this style, including the basedon style.
-\param vProps the vector containing const XML_Char * (name,value) pairs
+\param vProps the vector containing const gchar * (name,value) pairs
 */
 
 bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
@@ -431,8 +431,8 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 //
 	UT_uint32 count = getAttributeCount();
 	UT_uint32 i,j;
-	const XML_Char * szName = NULL;
-	const XML_Char * szValue = NULL;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
 	for(i=0; i < count; i++)
 	{
 		getNthAttribute(i, szName, szValue);
@@ -460,7 +460,7 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 /*!
  * This method fills a vector structure with all the properties defined
  * in this style, including the basedon style.
-\param vProps the vector containing const XML_Char * (name,value) pairs
+\param vProps the vector containing const gchar * (name,value) pairs
 */
 
 bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
@@ -470,8 +470,8 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 //
 	UT_uint32 count = getPropertyCount();
 	UT_uint32 i,j;
-	const XML_Char * szName = NULL;
-	const XML_Char * szValue = NULL;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
 	for(i=0; i < count; i++)
 	{
 		getNthProperty(i, szName, szValue);

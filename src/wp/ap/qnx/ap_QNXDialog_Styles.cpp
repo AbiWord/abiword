@@ -413,7 +413,7 @@ void AP_QNXDialog_Styles::event_Apply(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	const XML_Char * szStyle = getCurrentStyle();
+	const gchar * szStyle = getCurrentStyle();
 	if(szStyle && *szStyle)
 	{
 		getView()->setStyle(szStyle);
@@ -471,7 +471,7 @@ void AP_QNXDialog_Styles::event_DeleteClicked(void)
 		if (!getDoc()->removeStyle(style)) // actually remove the style
 		{
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
-			const XML_Char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete);
+			const gchar * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete);
 		
 			getFrame()->showMessageBox ((const char *)msg,
 										XAP_Dialog_MessageBox::b_O,
@@ -1197,7 +1197,7 @@ void AP_QNXDialog_Styles::event_styleType(void)
 	psz = _combo_or_text_entry(m_wStyleTypeEntry, NULL);
 
 	snprintf((char *) m_styleType,40,"%s",psz);
-	const XML_Char * pszSt = "P";
+	const gchar * pszSt = "P";
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
 	if(strstr(m_styleType, s.utf8_str()) != 0)
 		pszSt = "C";

@@ -74,7 +74,7 @@ protected:
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;
-	const XML_Char *        m_pszDataID;
+	const gchar *        m_pszDataID;
 	UT_UTF8String           m_sEmbedML;
 	GR_EmbedManager * 	    m_pEmbedManager;
 	UT_sint32               m_iEmbedUID;

@@ -62,7 +62,7 @@ public:
 
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
-									       const XML_Char * szKey, const XML_Char ** pszValue) const;
+									       const gchar * szKey, const gchar ** pszValue) const;
 	virtual const XAP_StringSet *	                getStringSet(void) const;
 	virtual const char *			        getAbiSuiteAppDir(void) const;
 	virtual const char * 					getAbiSuiteAppGladeDir(void) const;

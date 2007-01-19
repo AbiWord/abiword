@@ -463,7 +463,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp =
-			static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const XML_Char*>(mai.szProp),
+			static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const gchar*>(mai.szProp),
 																	 Property_type_size));
 		
 		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
@@ -609,8 +609,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	// First, test if this is not a block that is the wrapper around a
 	// footnote text, if it is, we will get the direction from the
 	// document section that contains the footnote
-	const XML_Char * pszFntId = NULL;
-	const XML_Char * pszDir = NULL;
+	const gchar * pszFntId = NULL;
+	const gchar * pszDir = NULL;
 		
 	if (pBlockAP && pBlockAP->getAttribute("footnote-id", pszFntId ))
 	{
@@ -765,7 +765,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
-		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const XML_Char*>(mai.szProp), Property_type_size));
+		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const gchar*>(mai.szProp), Property_type_size));
 		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
@@ -917,9 +917,9 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 	//const PP_AttrProp * pBlockAP = NULL;
 	//getAttrProp(&pBlockAP);
-	const XML_Char * szLid=NULL;
-	const XML_Char * szPid=NULL;
-	const XML_Char * szLevel=NULL;
+	const gchar * szLid=NULL;
+	const gchar * szPid=NULL;
+	const gchar * szLevel=NULL;
 	UT_uint32 id,parent_id,level;
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
@@ -999,11 +999,11 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		//
 		if(pAutoNum == NULL)
 		{
-			const XML_Char * pszStart = getProperty("start-value",true);
-			const XML_Char * lDelim =  getProperty("list-delim",true);
-			const XML_Char * lDecimal =  getProperty("list-decimal",true);
+			const gchar * pszStart = getProperty("start-value",true);
+			const gchar * lDelim =  getProperty("list-delim",true);
+			const gchar * lDecimal =  getProperty("list-decimal",true);
 			UT_uint32 start = atoi(pszStart);
-			const XML_Char * style = NULL;
+			const gchar * style = NULL;
 			style = getProperty("list-style",true);
 			if(!style)
 			{
@@ -3662,7 +3662,7 @@ void fl_BlockLayout::setNeedsRedraw(void)
 	getSectionLayout()->setNeedsRedraw();
 }
 
-const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
+const char* fl_BlockLayout::getProperty(const gchar * pszName, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -3718,7 +3718,7 @@ UT_sint32 fl_BlockLayout::getLength()
 	return length;
 }
 
-const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
+const PP_PropertyType * fl_BlockLayout::getPropertyType(const gchar * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -4451,7 +4451,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		bool b;
 
 		// possibly auto-replace the squiggled word with a suggestion
-		if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_SpellAutoReplace), &b))
+		if (pPrefs->getPrefsValueBool(static_cast<gchar*>(AP_PREF_KEY_SpellAutoReplace), &b))
 		{
 			if (b && !bIsIgnored)
 			{
@@ -5161,7 +5161,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	m_pLayout->getDocument()->getAttrProp(iAP, &pSpanAP);
 #endif
 	
-	const XML_Char* pszType = NULL;
+	const gchar* pszType = NULL;
 	pSpanAP->getAttribute("type", pszType);
 
 	// Create the field run.
@@ -6859,7 +6859,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout %x \n",this));
 //
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
-//	const XML_Char * szOldStyle = m_szStyle;
+//	const gchar * szOldStyle = m_szStyle;
 	UT_sint32 iOldDomDirection = m_iDomDirection;
 
 	lookupProperties();
@@ -7341,7 +7341,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 
 	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
 	fl_SectionLayout* pSL = NULL;
-	const XML_Char* pszNewID = NULL;
+	const gchar* pszNewID = NULL;
 
 	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%x sdh of block =%x \n",getPosition(true),sdh,getStruxDocHandle()));
 
@@ -7392,7 +7392,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 // Determine if this is a header or a footer.
 //
-			const XML_Char* pszSectionType = NULL;
+			const gchar* pszSectionType = NULL;
 			pHFAP->getAttribute("type", pszSectionType);
 
 			HdrFtrType hfType = FL_HDRFTR_NONE;
@@ -8989,25 +8989,25 @@ fl_BlockLayout::recheckIgnoredWords(void)
 //List Item Stuff
 ///////////////////////////////////////////////////////////////////////////
 
-XML_Char* fl_BlockLayout::getListStyleString( FL_ListType iListType)
+gchar* fl_BlockLayout::getListStyleString( FL_ListType iListType)
 {
 
-	XML_Char* style;
+	gchar* style;
 
 	// These strings match piece table styles and should not be
 	// internationalized
 	UT_sint32 nlisttype = static_cast<UT_sint32>(iListType);
 	if(nlisttype < 0 || nlisttype >= static_cast<UT_sint32>(NOT_A_LIST))
-		style = static_cast<XML_Char *>(NULL);
+		style = static_cast<gchar *>(NULL);
 	else
 	{
 		fl_AutoLists al;
-		style = const_cast<XML_Char *>(al.getXmlList(nlisttype));
+		style = const_cast<gchar *>(al.getXmlList(nlisttype));
 	}
 	return style;
 }
 
-FL_ListType fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
+FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style)
 {
 	FL_ListType lType = NOT_A_LIST;
 	UT_uint32 j;
@@ -9069,10 +9069,10 @@ FL_ListType fl_BlockLayout::getListType(void)
 
 void fl_BlockLayout::remItemFromList(void)
 {
-	XML_Char lid[15], buf[5];
+	gchar lid[15], buf[5];
 	UT_uint32 id;
 	bool bRet;
-	UT_GenericVector<const XML_Char*> vp;
+	UT_GenericVector<const gchar*> vp;
 	if( m_bListLabelCreated == true)
 	{
 		m_bListLabelCreated = false;
@@ -9102,14 +9102,14 @@ void fl_BlockLayout::remItemFromList(void)
 		//
 		// Set formatiing to match the next paragraph if it exists
 		//
-		const XML_Char ** props = NULL;
+		const gchar ** props = NULL;
 
 		if(pNext != NULL)
 		{
 			pNext->getListPropertyVector( &vp);
 			UT_uint32 countp = vp.getItemCount() + 1;
 			UT_uint32 i;
-			props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+			props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
@@ -9123,7 +9123,7 @@ void fl_BlockLayout::remItemFromList(void)
 					props[i] = vp.getNthItem(i);
 				}
 			}
-			props[i] = static_cast<XML_Char *>(NULL);
+			props[i] = static_cast<gchar *>(NULL);
 
 		}
 		else
@@ -9131,7 +9131,7 @@ void fl_BlockLayout::remItemFromList(void)
 			getListPropertyVector( &vp);
 			UT_uint32 countp = vp.getItemCount() + 1;
 			UT_uint32 i;
-			props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+			props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
@@ -9145,15 +9145,15 @@ void fl_BlockLayout::remItemFromList(void)
 					props[i] = vp.getNthItem(i);
 				}
 			}
-			props[i] = static_cast<XML_Char *>(NULL);
+			props[i] = static_cast<gchar *>(NULL);
 		}
 		if (currLevel == 0)
 		{
 #ifndef __MRC__
-			const XML_Char * attribs[] = {	"listid", lid,
+			const gchar * attribs[] = {	"listid", lid,
 										"level", buf, NULL, NULL };
 #else
-			const XML_Char * attribs[] = {	"listid", NULL,
+			const gchar * attribs[] = {	"listid", NULL,
 											"level", NULL, NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
@@ -9167,10 +9167,10 @@ void fl_BlockLayout::remItemFromList(void)
 		else
 		{
 #ifndef __MRC__
-			const XML_Char * attribs[] = {	"listid", lid,
+			const gchar * attribs[] = {	"listid", lid,
 											"level", buf,NULL,NULL };
 #else
-			const XML_Char * attribs[] = {	"listid", NULL,
+			const gchar * attribs[] = {	"listid", NULL,
 											"level", NULL, NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
@@ -9193,7 +9193,7 @@ void fl_BlockLayout::remItemFromList(void)
  * Start a list with the paragraph definition container in the style defined by "style"
 \param const XML_CHar * style the name of the paragraph style for this block.
 */
-void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
+void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 {
 	//
 	// Starts a new list at the current block with list style style all other
@@ -9201,13 +9201,13 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	//
 	FL_ListType lType;
 	PD_Style* pStyle = 0;
-	const XML_Char* szDelim     = 0;
-	const XML_Char* szDec       = 0;
-	const XML_Char* szStart     = 0;
-	const XML_Char* szAlign     = 0;
-	const XML_Char* szIndent    = 0;;
-	const XML_Char* szFont      = 0;
-	const XML_Char* szListStyle = 0;;
+	const gchar* szDelim     = 0;
+	const gchar* szDec       = 0;
+	const gchar* szStart     = 0;
+	const gchar* szAlign     = 0;
+	const gchar* szIndent    = 0;;
+	const gchar* szFont      = 0;
+	const gchar* szListStyle = 0;;
 	UT_uint32 startv, level, currID;
 
 	// TODO -- this mixture of float and double is a mess, we should
@@ -9219,18 +9219,18 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Found list of style %s \n",style));
 		// Use the props in the style
-		pStyle->getProperty(static_cast<const XML_Char *>("list-delim"), szDelim);
-		pStyle->getProperty(static_cast<const XML_Char *>("list-decimal"), szDec);
-		pStyle->getProperty(static_cast<const XML_Char *>("start-value"), szStart);
+		pStyle->getProperty(static_cast<const gchar *>("list-delim"), szDelim);
+		pStyle->getProperty(static_cast<const gchar *>("list-decimal"), szDec);
+		pStyle->getProperty(static_cast<const gchar *>("start-value"), szStart);
 
 		if(m_iDomDirection == UT_BIDI_RTL)
-		   pStyle->getProperty(static_cast<const XML_Char *>("margin-right"), szAlign);
+		   pStyle->getProperty(static_cast<const gchar *>("margin-right"), szAlign);
 	    else
-		   pStyle->getProperty(static_cast<const XML_Char *>("margin-left"), szAlign);
+		   pStyle->getProperty(static_cast<const gchar *>("margin-left"), szAlign);
 
-		pStyle->getProperty(static_cast<const XML_Char *>("text-indent"), szIndent);
-		pStyle->getProperty(static_cast<const XML_Char *>("field-font"), szFont);
-		pStyle->getProperty(static_cast<const XML_Char *>("list-style"), szListStyle);
+		pStyle->getProperty(static_cast<const gchar *>("text-indent"), szIndent);
+		pStyle->getProperty(static_cast<const gchar *>("field-font"), szFont);
+		pStyle->getProperty(static_cast<const gchar *>("list-style"), szListStyle);
 		if (szStart)
 			startv = atoi(szStart);
 		else
@@ -9308,20 +9308,20 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
-void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const XML_Char*> * va)
+void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const gchar*> * va)
 {
 	//
 	// This function fills the vector va with list attributes
 	//
 	UT_uint32 count=0,level;
-	const XML_Char * style = NULL;
-	const XML_Char * lid = NULL;
-	static XML_Char  buf[5];
+	const gchar * style = NULL;
+	const gchar * lid = NULL;
+	static gchar  buf[5];
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAP(pBlockAP);
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
-	pBlockAP->getAttribute(static_cast<const XML_Char *>(PT_LISTID_ATTRIBUTE_NAME),lid);
+	pBlockAP->getAttribute(static_cast<const gchar *>(PT_LISTID_ATTRIBUTE_NAME),lid);
 	if(getAutoNum())
 	{
 		level = getAutoNum()->getLevel();
@@ -9357,26 +9357,26 @@ void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const XML_Char*> *
 }
 
 
-void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const XML_Char*>* vp)
+void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const gchar*>* vp)
 {
 	//
 	// This function fills the vector vp with list properties. All vector
-	// quantities are const XML_Char *
+	// quantities are const gchar *
 	//
 	UT_uint32 count=0;
-	const XML_Char * pszStart = getProperty("start-value",true);
-	const XML_Char * lDelim =  getProperty("list-delim",true);
-	const XML_Char * lDecimal =  getProperty("list-decimal",true);
+	const gchar * pszStart = getProperty("start-value",true);
+	const gchar * lDelim =  getProperty("list-delim",true);
+	const gchar * lDecimal =  getProperty("list-decimal",true);
 
-	const XML_Char * pszAlign;
+	const gchar * pszAlign;
 	if(m_iDomDirection == UT_BIDI_RTL)
 		pszAlign =  getProperty("margin-right",true);
 	else
 		pszAlign =  getProperty("margin-left",true);
 
-	const XML_Char * pszIndent =  getProperty("text-indent",true);
-	const XML_Char * fFont =  getProperty("field-font",true);
-	const XML_Char * pszListStyle =  getProperty("list-style",true);
+	const gchar * pszIndent =  getProperty("text-indent",true);
+	const gchar * fFont =  getProperty("field-font",true);
+	const gchar * pszListStyle =  getProperty("list-style",true);
 	if(pszStart != NULL)
 	{
 		vp->addItem("start-value");	
@@ -9430,20 +9430,20 @@ void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const XML_Char*>* vp
 }
 
 
-void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
+void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar * lDelim, const gchar * lDecimal, const gchar * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
 {
 	//
 	// Starts a new list at the current block with all the options
 	//
-	XML_Char lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
-	XML_Char * style = getListStyleString(lType);
+	gchar lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
+	gchar * style = getListStyleString(lType);
 	bool bRet;
 	UT_uint32 id=0;
-	UT_GenericVector<const XML_Char*> vp,va;
+	UT_GenericVector<const gchar*> vp,va;
 
 	fl_AutoNum * pAutoNum;
 	const PP_AttrProp * pBlockAP = NULL;
-	const XML_Char * szLid=NULL;
+	const gchar * szLid=NULL;
 	getAP(pBlockAP);
 	bool bGetPrevAuto = true;
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
@@ -9513,19 +9513,19 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
+	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = va.getNthItem(i);
 	}
-	attribs[i] = static_cast<XML_Char *>(NULL);
+	attribs[i] = static_cast<gchar *>(NULL);
 
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = vp.getNthItem(i);
 	}
-	props[i] = static_cast<XML_Char *>(NULL);
+	props[i] = static_cast<gchar *>(NULL);
 	setStarting( false);
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
@@ -9542,10 +9542,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 	//
 	// Stops the list in the current block
 	//
-	static XML_Char lid[15],pszlevel[5];
+	static gchar lid[15],pszlevel[5];
 	bool bRet;
 	UT_uint32 id, level;
-	UT_GenericVector<const XML_Char*> vp;
+	UT_GenericVector<const gchar*> vp;
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
 	bool bHasStopped = m_pDoc->hasListStopped();
@@ -9574,8 +9574,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 	//
 	// Set formatting to match the next paragraph if it exists
 	//
-	const XML_Char ** props = NULL;
-	const XML_Char * szAlign, * szIndent;
+	const gchar ** props = NULL;
+	const gchar * szAlign, * szIndent;
 	pPrev = getPrevBlockInDocument();
 	pNext = getNextBlockInDocument();
 
@@ -9611,18 +9611,18 @@ void	fl_BlockLayout::StopListInBlock(void)
 			FL_ListType newType;
 			PD_Style * pStyle;
 			float fAlign, fIndent;
-			XML_Char align[30], indent[30];
+			gchar align[30], indent[30];
 
 			newType = getAutoNum()->getParent()->getType();
 			m_pDoc->getStyle(static_cast<char *>(getListStyleString(newType)), &pStyle);
 			if (pStyle)
 			{
 				if(m_iDomDirection == UT_BIDI_RTL)
-					pStyle->getProperty(static_cast<const XML_Char *>("margin-right"), szAlign);
+					pStyle->getProperty(static_cast<const gchar *>("margin-right"), szAlign);
 				else
-					pStyle->getProperty(static_cast<const XML_Char *>("margin-left"), szAlign);
+					pStyle->getProperty(static_cast<const gchar *>("margin-left"), szAlign);
 
-				pStyle->getProperty(static_cast<const XML_Char *>("text-indent"), szIndent);
+				pStyle->getProperty(static_cast<const gchar *>("text-indent"), szIndent);
 				fAlign = static_cast<float>(UT_convertToInches(szAlign));
 				fAlign *= level;
 				strncpy( align,
@@ -9696,7 +9696,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	}
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+	props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for (i = 0; i < vp.getItemCount(); i++)
 	{
 		props[i] = vp.getNthItem(i);
@@ -9706,7 +9706,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 
 	if (id == 0)
 	{
-		const XML_Char * pListAttrs[10];
+		const gchar * pListAttrs[10];
 		pListAttrs[0] = "listid";
 		pListAttrs[1] = NULL;
 		pListAttrs[2] = "parentid";
@@ -9722,7 +9722,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		// properties, since their values are not necessarily part
 		// of the style definition, so that cloneWithEliminationIfEqual
 		// which we call later will not get rid off them
-		const XML_Char * pListProps[20];
+		const gchar * pListProps[20];
 		pListProps[0] =  "start-value";
 		pListProps[1] =  NULL;
 		pListProps[2] =  "list-style";
@@ -9770,7 +9770,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	}
 	else
 	{
-		const XML_Char * attribs[] = {	"listid", NULL,"level",NULL, NULL,NULL };
+		const gchar * attribs[] = {	"listid", NULL,"level",NULL, NULL,NULL };
 		attribs [1] = lid;
 		attribs [3] = pszlevel;
 
@@ -9959,26 +9959,26 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	// Make the current block an element of the list before in the block nextList
 	//
 	UT_ASSERT(nextList);
-	UT_GenericVector<const XML_Char*> va,vp;
+	UT_GenericVector<const gchar*> va,vp;
 
 	nextList->getListPropertyVector( &vp);
 	nextList->getListAttributesVector( &va);
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
+	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = va.getNthItem(i);
 	}
-	attribs[i] = static_cast<XML_Char *>(NULL);
+	attribs[i] = static_cast<gchar *>(NULL);
 
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = vp.getNthItem(i);
 	}
-	props[i] = static_cast<XML_Char *>(NULL);
+	props[i] = static_cast<gchar *>(NULL);
 	m_bStartList =	false;
 	m_bStopList = false;
 	FV_View* pView = getView();
@@ -9999,7 +9999,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	// Make the current block the next element of the list in the block prevList
 	//
 	UT_ASSERT(prevList);
-	UT_GenericVector<const XML_Char*> va,vp;
+	UT_GenericVector<const gchar*> va,vp;
 //
 // Defensive code. This should not happen
 //
@@ -10011,19 +10011,19 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
-	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
+	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
 		attribs[i] = va.getNthItem(i);
 	}
-	attribs[i] = static_cast<XML_Char *>(NULL);
+	attribs[i] = static_cast<gchar *>(NULL);
 
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
+	const gchar ** props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
 		props[i] = vp.getNthItem(i);
 	}
-	props[i] = static_cast<XML_Char *>(NULL);
+	props[i] = static_cast<gchar *>(NULL);
 	m_bStartList =	false;
 	m_bStopList = false;
 	FV_View* pView = getView();
@@ -10163,22 +10163,22 @@ void fl_BlockLayout::_createListLabel(void)
 		offset = pView->getPoint() - getPosition();
 	}
 #if 1
-	const  XML_Char ** blockatt;
+	const  gchar ** blockatt;
 	bool bHaveBlockAtt = pView->getCharFormat(&blockatt,true,getPosition());
 #endif
 #if 1
-	XML_Char * tagatt[3] = {"list-tag",NULL,NULL};
-	XML_Char tagID[12];
+	gchar * tagatt[3] = {"list-tag",NULL,NULL};
+	gchar tagID[12];
 
 	UT_return_if_fail(m_pDoc);
 	UT_uint32 itag = m_pDoc->getUID(UT_UniqueId::List);
 
 	sprintf(tagID,"%d",itag);
-	tagatt[1] = static_cast<XML_Char *>(&tagID[0]);
-	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,const_cast<const XML_Char **>(tagatt));
+	tagatt[1] = static_cast<gchar *>(&tagID[0]);
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,const_cast<const gchar **>(tagatt));
 #endif
 
-	const XML_Char* attributes[] = {
+	const gchar* attributes[] = {
 		"type","list_label",
 		NULL, NULL
 	};
@@ -10467,20 +10467,20 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 void fl_BlockLayout::setDominantDirection(UT_BidiCharType iDirection)
 {
 	m_iDomDirection = iDirection;
-	XML_Char * prop[] = {NULL, NULL, 0};
-	XML_Char   ddir[] = "dom-dir";
-	XML_Char   rtl[]  = "rtl";
-	XML_Char   ltr[]  = "ltr";
+	gchar * prop[] = {NULL, NULL, 0};
+	gchar   ddir[] = "dom-dir";
+	gchar   rtl[]  = "rtl";
+	gchar   ltr[]  = "ltr";
 
-	prop[0] = static_cast<XML_Char *>(&ddir[0]);
+	prop[0] = static_cast<gchar *>(&ddir[0]);
 
 	if(m_iDomDirection == UT_BIDI_RTL)
 	{
-		prop[1] = static_cast<XML_Char *>(&rtl[0]);
+		prop[1] = static_cast<gchar *>(&rtl[0]);
 	}
 	else
 	{
-		prop[1] = static_cast<XML_Char *>(&ltr[0]);
+		prop[1] = static_cast<gchar *>(&ltr[0]);
 	}
 
 	PT_DocPosition offset = getPosition();
@@ -10488,8 +10488,8 @@ void fl_BlockLayout::setDominantDirection(UT_BidiCharType iDirection)
 	//NB The casts in the following call are really necessary, it refuses to compile without them. #TF
 	getDocument()->changeStruxFmt(static_cast<PTChangeFmt>(PTC_AddFmt),
 								  offset, offset2,
-								  static_cast<const XML_Char **>(NULL),
-								  const_cast<const XML_Char **>(prop),
+								  static_cast<const gchar **>(NULL),
+								  const_cast<const gchar **>(prop),
 								  static_cast<PTStruxType>(PTX_Block));
 	UT_DEBUGMSG(("Block::setDominantDirection: offset=%d\n", offset));
 }

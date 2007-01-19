@@ -96,9 +96,9 @@ struct fv_ChangeState
 	bool				bDirty;
 	bool				bSelection;
 	UT_uint32			iColumn;
-	const XML_Char **	propsChar;
-	const XML_Char **	propsBlock;
-	const XML_Char **	propsSection;
+	const gchar **	propsChar;
+	const gchar **	propsBlock;
+	const gchar **	propsSection;
 };
 
 struct FV_DocCount
@@ -121,13 +121,13 @@ public:
 	UT_uint32         getTick(void) const;
 	void              setTick(UT_uint32 iTick);
 	bool              isValid(void) const;
-	const XML_Char ** getCopyOfProps(void) const;
-	void              fillProps(UT_uint32 numProps, const XML_Char ** props);
+	const gchar ** getCopyOfProps(void) const;
+	void              fillProps(UT_uint32 numProps, const gchar ** props);
 	void              clearProps(void);
 private:
 	UT_uint32         m_iTick;
 	UT_uint32         m_iNumProps;
-	XML_Char **       m_pszProps;
+	gchar **       m_pszProps;
 };
 
 enum FV_BIDI_Order
@@ -217,7 +217,7 @@ public:
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
-	UT_Error		cmdInsertField(const char* szName, const XML_Char ** extra_attrs = NULL, const XML_Char ** extra_props = NULL);
+	UT_Error		cmdInsertField(const char* szName, const gchar ** extra_attrs = NULL, const gchar ** extra_props = NULL);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
@@ -239,7 +239,7 @@ public:
 	UT_Error		cmdInsertGraphic(FG_Graphic*);
 	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
 	virtual void	toggleCase(ToggleCase c);
-	virtual void	setPaperColor(const XML_Char * clr);
+	virtual void	setPaperColor(const gchar * clr);
 
 	virtual bool    isDocumentPresent(void);
 	virtual void	cmdCopy(bool bToClipboard = true);
@@ -297,17 +297,17 @@ public:
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
 
-	bool	setSectionFormat(const XML_Char * properties[]);
-	bool	getSectionFormat(const XML_Char *** properties);
+	bool	setSectionFormat(const gchar * properties[]);
+	bool	getSectionFormat(const gchar *** properties);
 
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
-	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const XML_Char * properties[]);
-	bool	setBlockFormat(const XML_Char * properties[]);
-	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
-	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const XML_Char * attributes[] ,const XML_Char * properties[]);
+	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const gchar * properties[]);
+	bool	setBlockFormat(const gchar * properties[]);
+	bool	getBlockFormat(const gchar *** properties,bool bExpandStyles=true);
+	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const gchar * attributes[] ,const gchar * properties[]);
 	bool    isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux);
 
-	bool	processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
+	bool	processPageNumber(HdrFtrType hfType, const gchar ** atts);
 
 #ifndef WITHOUT_SPELL
 	bool	isTextMisspelled()const ;
@@ -321,14 +321,14 @@ public:
 	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock);
 	bool	isPointBeforeListLabel(void);
 	bool	isCurrentListBlockEmpty(void);
-	bool	cmdStartList(const XML_Char * style);
+	bool	cmdStartList(const gchar * style);
 	bool	cmdStopList(void);
 	void	changeListStyle(fl_AutoNum* pAuto,
 							FL_ListType lType,
 							UT_uint32 startv,
-							const XML_Char* pszDelim,
-							const XML_Char* pszDecimal,
-							const XML_Char* pszFormat,
+							const gchar* pszDelim,
+							const gchar* pszDecimal,
+							const gchar* pszFormat,
 							float Aligm,
 							float Indent);
 
@@ -341,20 +341,20 @@ public:
 	 */
 	// - begin
 	bool    getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& pBlockAP, const PP_AttrProp *& pSectionAP, const PP_AttrProp *& pDocAP) const;
-	bool	queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const;
-	bool	queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const;
+	bool	queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const;
+	bool	queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const;
 	// - end
 
-	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
+	bool	setCharFormat(const gchar * properties[], const gchar * attribs[] = NULL);
 	bool	resetCharFormat(bool bAll);
-	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
-	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
+	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true);
+	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart);
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
-	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
-	bool	setStyleAtPos(const XML_Char * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
+	bool	setStyle(const gchar * style, bool bDontGeneralUpdate=false);
+	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
 	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock);
-	bool	getStyle(const XML_Char ** style);
-	bool appendStyle(const XML_Char ** style);
+	bool	getStyle(const gchar ** style);
+	bool appendStyle(const gchar ** style);
 
 	UT_uint32		getCurrentPageNumber(void);
 
@@ -366,7 +366,7 @@ public:
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);
 	void	insertSectionBreak(void);
-	void	insertSymbol(UT_UCSChar c, XML_Char * symfont);
+	void	insertSymbol(UT_UCSChar c, gchar * symfont);
 
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
@@ -447,11 +447,11 @@ public:
 	void            selectFrame(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
-	void            setFrameFormat(const XML_Char ** props);
-	void            setFrameFormat(const XML_Char ** attribs, const XML_Char ** props);
-	void            setFrameFormat(const XML_Char ** props,FG_Graphic * pFG, UT_String & dataID);
+	void            setFrameFormat(const gchar ** props);
+	void            setFrameFormat(const gchar ** attribs, const gchar ** props);
+	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, UT_String & dataID);
 	void            convertInLineToPositioned(PT_DocPosition pos, 
-											const XML_Char ** attribs);
+											const gchar ** attribs);
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
 
@@ -487,7 +487,7 @@ public:
 	void				markSavedPositionAsNeeded(void);
 	bool				needSavedPosition(void);
 	void				insertHeaderFooter(HdrFtrType hfType);
-	bool				insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
+	bool				insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
 
 	void				cmdEditHeader(void);
 	void				cmdEditFooter(void);
@@ -508,7 +508,7 @@ public:
 // Stuff for edittable Footnote/Endnotes
 //
 	bool	            insertFootnote(bool bFootnote);
-	bool	            insertFootnoteSection(bool bFootnote,const XML_Char * enpid);
+	bool	            insertFootnoteSection(bool bFootnote,const gchar * enpid);
 	bool                isInFootnote(PT_DocPosition pos);
 	bool                isInFootnote(void);
 	bool                isInEndnote(PT_DocPosition pos);
@@ -582,7 +582,7 @@ public:
 
 // -----------------------
 
-	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
+	bool				insertPageNum(const gchar ** props, HdrFtrType hfType);
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
         void                removeCaret(UT_UTF8String & sDocUUID);
@@ -672,14 +672,14 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot);
-	bool				setCellFormat(const XML_Char * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
-	bool				getCellProperty(XML_Char * szPropName, XML_Char * &szPropValue);
-	bool	            setTableFormat(const XML_Char * properties[]);
-	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
+	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
+	bool				getCellProperty(gchar * szPropName, gchar * &szPropValue);
+	bool	            setTableFormat(const gchar * properties[]);
+	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
 	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps);
 
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
-									   const XML_Char * pPropsArray[]);
+									   const gchar * pPropsArray[]);
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 
 									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
@@ -755,7 +755,7 @@ public:
 		                { return m_pLeftRuler;}
 	
 
-	const XML_Char **   getViewPersistentProps();
+	const gchar **   getViewPersistentProps();
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
@@ -804,8 +804,8 @@ protected:
 									  UT_sint32& xClick,
 									  UT_sint32& yClick) const;
 	bool                _insertField(const char* szName, 
-									 const XML_Char ** extra_attrs = NULL, 
-									 const XML_Char ** extra_props = NULL);
+									 const gchar ** extra_attrs = NULL, 
+									 const gchar ** extra_props = NULL);
 	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
 	void				_clearSelection(void);
@@ -814,7 +814,7 @@ protected:
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL,
 							 bool bNoUpdate = false,
 							 bool bCaretLeft = false);
-	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
+	bool				_insertFormatPair(const gchar * szName, const gchar * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords(bool bIgnoreAll = false);
 	void				_fixInsertionPointCoords(fv_CaretProps * pCP);

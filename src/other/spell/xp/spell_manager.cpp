@@ -152,7 +152,7 @@ void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen
 	UT_Language			lang;
 	
 	UT_uint32 id = lang.getIndxFromCode(szLang);
-	const XML_Char* pLang  = lang.getNthLangName(id);	
+	const gchar* pLang  = lang.getNthLangName(id);	
 	sprintf(szLangName, "%s [%s]", pLang, szLang); // language name [language_code]
 
 	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_SPELL_CANTLOAD_DICT),
