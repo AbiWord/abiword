@@ -437,6 +437,23 @@ Section "MS Write (*.wri)"
 	End:
 SectionEnd
 
+Section "OPML"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOPML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiOPML Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiOPML Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOPML.dll"
+  
+	End:
+SectionEnd
+
 Section "T602"
 	SectionIn 2
 
@@ -766,6 +783,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\AbiNroff.dll"
 	Delete "$INSTDIR\AbiOpenDocument.dll"
 	Delete "$INSTDIR\AbiOpenWriter.dll"
+	Delete "$INSTDIR\AbiOPML.dll"
 	Delete "$INSTDIR\AbiPalmDoc.dll"
 	Delete "$INSTDIR\AbiPsion.dll"
 	Delete "$INSTDIR\AbiSDW.dll"
