@@ -2020,8 +2020,13 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 		xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::setFont: %s\n", szLCFontName));
 		if(strstr(szLCFontName,"symbol") != NULL)
 		{
+			/*
+			 * I am not too happy about this, and do not want to see the exception
+			 * list to grow much more, but cannot think of another simple solution.
+			 */
 			if(!strstr(szLCFontName,"starsymbol") &&
-			   !strstr(szLCFontName, "opensymbol"))
+			   !strstr(szLCFontName,"opensymbol") &&
+			   !strstr(szLCFontName,"symbolnerve"))
 				_setIsSymbol(true);
 		}
 		
