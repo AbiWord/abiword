@@ -105,8 +105,13 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	// Set in Block???
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
-	strncpy( m_pszDelim, lDelim, 80);
-	strncpy( m_pszDecimal, lDecimal, 80);
+
+	if (lDelim)
+		strncpy( m_pszDelim, lDelim, 80);
+
+	if (lDecimal)
+		strncpy( m_pszDecimal, lDecimal, 80);
+	
 	if(m_iParentID != 0)
 	{
 		_setParent(m_pDoc->getListByID(parent_id));
