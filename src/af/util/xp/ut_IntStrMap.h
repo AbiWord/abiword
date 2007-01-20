@@ -34,12 +34,6 @@
 
 /* Four hash maps are defined here:
  * 
- * 1. UT_IntStrMap
- *    Maps integers to UTF-8 strings, e.g. map[1] == "one"
- *    
- * 2. UT_NumberMap
- *    Maps UTF-8 strings to integers, e.g. map["one"] == 1
- *    
  * 3. UT_GenericUTF8Hash
  *    An alternative to UT_StringPtrMap (defined in ut_hash.h) but restricted to UTF-8 string keys;
  *    one important difference is that UT_GenericUTF8Hash automatically g_free()s/deletes its contents.
@@ -51,123 +45,6 @@
  *    Useful subclass of UT_GenericUTF8Hash which maps UTF-8 strings to UTF-8 strings, e.g. map["one"] == "1"
  */
 
-class ABI_EXPORT UT_IntStrMap
-{
-private:
-	struct IntStr
-	{
-		UT_sint32		key;
-		UT_UTF8String *	value;
-	};
-public:
-	UT_IntStrMap ();
-	UT_IntStrMap (UT_uint32 increment);
-
-	~UT_IntStrMap ();
-
-	void clear ();
-
-	bool ins (UT_sint32 key, UT_UTF8String * value); // responsibility for value passes here
-	bool ins (UT_sint32 key, const char * value);
-
-	/* returns false if no such key-value
-	 */
-	bool del (UT_sint32 key);                         // value is deleted
-	bool del (UT_sint32 key, UT_UTF8String *& value); // value is passed back
-
-	inline const UT_UTF8String * operator[] (UT_sint32 key)
-	{
-		UT_uint32 index;
-		return lookup (key, index) ? m_pair[index].value : 0;
-	}
-
-private:
-	bool lookup (UT_sint32 key, UT_uint32 & index);
-
-	bool grow ();
-
-	IntStr *	m_pair;
-
-	UT_uint32	m_pair_count;
-	UT_uint32	m_pair_max;
-
-	UT_uint32	m_index;
-	UT_uint32	m_increment;
-
-public:
-	inline bool pair (UT_uint32 index, UT_sint32 & key, const UT_UTF8String *& value) const
-	{
-		if (index >= m_pair_count) return false;
-		key   = m_pair[index].key;
-		value = m_pair[index].value;
-		return true;
-	}
-	UT_uint32 count () const { return m_pair_count; }
-};
-
-class ABI_EXPORT UT_NumberMap
-{
-private:
-	struct NumberStr
-	{
-		UT_UTF8String *	key;
-		UT_sint32		value;
-	};
-public:
-	/* operator[] must return something, even if key not found, so what?
-	 * set default return value in constructor
-	 */
-	UT_NumberMap (UT_sint32 default_value = -1, UT_uint32 increment = 32);
-
-	~UT_NumberMap ();
-
-	void clear ();
-
-	bool ins (const UT_UTF8String & key, UT_sint32 value);
-
-	/* returns false if no such key-value
-	 */
-	bool del (const char * key);
-
-	inline UT_sint32 operator[] (const char * key)
-	{
-		UT_uint32 index;
-		return lookup (key, index) ? m_pair[index].value : m_default_value;
-	}
-	inline UT_sint32 operator[] (const UT_UTF8String & key)
-	{
-		UT_uint32 index;
-		return lookup (key, index) ? m_pair[index].value : m_default_value;
-	}
-
-private:
-	bool lookup (const char *          key, UT_uint32 & index);
-	bool lookup (const UT_UTF8String & key, UT_uint32 & index);
-
-	bool lookup (const char * key, UT_uint32 key_length, UT_uint32 & index);
-
-	bool grow ();
-
-	NumberStr *	m_pair;
-
-	UT_uint32	m_pair_count;
-	UT_uint32	m_pair_max;
-
-	UT_uint32	m_index;
-	UT_uint32	m_increment;
-
-	UT_sint32	m_default_value;
-
-public:
-	inline bool pair (UT_uint32 index, const UT_UTF8String *& key, UT_sint32 & value) const
-	{
-		if (index >= m_pair_count) return false;
-		key   = m_pair[index].key;
-		value = m_pair[index].value;
-		return true;
-	}
-	UT_uint32 count () const { return m_pair_count; }
-};
 
 class ABI_EXPORT UT_GenericUTF8Hash
 {
