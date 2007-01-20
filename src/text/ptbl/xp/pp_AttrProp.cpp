@@ -29,7 +29,6 @@
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
-#include "ut_pair.h"
 
 #include "pt_Types.h"
 
@@ -90,10 +89,12 @@ PP_AttrProp::~PP_AttrProp()
 			if(entry)
 			{
 				// hack. don't do it.
-				gchar* tmp = (gchar*)entry->first();
+				gchar* tmp = (gchar*)entry->first;
 				FREEP(tmp);
-				if (entry->second())
-					delete entry->second();
+				if (entry->second) 
+				{
+					delete entry->second;
+				}
 				delete entry;
 			}
 		}
@@ -405,7 +406,7 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 		const PropertyPair* p = pEntry;
 
 		// hack. don't do it.
-		gchar* tmp = (gchar*)p->first();
+		gchar* tmp = (gchar*)p->first;
 		UT_return_val_if_fail (!m_bIsReadOnly, false);
 		if(strcmp(szName,"line-height") == 0)
 		{
@@ -413,8 +414,10 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 		}
 
 		FREEP(tmp);
-		if (p->second())
-			delete p->second();
+		if (p->second) 
+		{
+			delete p->second;
+		}
 		delete p;
 		m_pProperties->set(szName, new PropertyPair(szValue2, NULL));
 	}
@@ -502,7 +505,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const gchar *& szName, const gchar *& 
 	if ( (i == ndx) && c.is_valid())
  		{
 		  szName = c.key().c_str();
-		  szValue = val->first();
+		  szValue = val->first;
 		  return true;
  		}
 	return false;
@@ -527,7 +530,7 @@ bool PP_AttrProp::getProperty(const gchar * szName, const gchar *& szValue) cons
 	if (!pEntry)
 		return false;
 
-	szValue = pEntry->first();
+	szValue = pEntry->first;
 	return true;
 }
 /*! This method retrieves the entirety of [this] AP's "props", and returns it as an array of
@@ -555,7 +558,7 @@ const gchar ** PP_AttrProp::getProperties () const
 	{
 		PropertyPair * pP = (PropertyPair *) pList[i];
 		m_szProperties[i-1] = pList[i-1];
-		m_szProperties[i] = pP->first();
+		m_szProperties[i] = pP->first;
 	}
 	m_szProperties[i-1] = NULL;
 	m_szProperties[i] = NULL;
@@ -573,15 +576,15 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const gchar * szName, tPrope
 	if (!pEntry)
 		return NULL;
 
-	if(!pEntry->second())
+	if(!pEntry->second)
 	{
-		m_pProperties->set(szName, new PropertyPair(pEntry->first(),
-				    PP_PropertyType::createPropertyType(Type,pEntry->first())));
+		m_pProperties->set(szName, new PropertyPair(pEntry->first,
+				    PP_PropertyType::createPropertyType(Type,pEntry->first)));
 		delete pEntry;
 		pEntry = m_pProperties->pick(szName);
 	}
 
-	return pEntry->second();
+	return pEntry->second;
 }
 
 /*! This method finds the attribute indicated by name
@@ -851,8 +854,8 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 			if (strcmp(l1, l2) != 0)
 				return false;
 
-			l1 = v1->first();
-			l2 = v2->first();
+			l1 = v1->first;
+			l2 = v2->first;
 
 			if (strcmp(l1,l2) != 0)
 				return false;
@@ -876,8 +879,6 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 PP_AttrProp * PP_AttrProp::createExactly(const gchar ** attributes,
 					 const gchar ** properties) const
 {
-	bool bIgnoreProps = false; // see below
-
 	// first, create a new AttrProp using just the values given.
 
 	PP_AttrProp * papNew = new PP_AttrProp();
@@ -980,16 +981,17 @@ void PP_AttrProp::_clearEmptyProperties()
 		{
 			const PropertyPair* p = pEntry;
 
-			const char *s = p->first();
+			const char *s = p->first;
 			if(s == NULL || *s == 0)
 			{
 
-				gchar* tmp = const_cast<gchar*>(p->first());
+				gchar* tmp = const_cast<gchar*>(p->first);
 				UT_return_if_fail (!m_bIsReadOnly);
 				FREEP(tmp);
 				m_pProperties->remove(_hc1.key(),pEntry);
-				if (p->second()) {
-					delete p->second();
+				if (p->second) 
+				{
+					delete p->second;
 				}
 				delete p;
 
@@ -1275,7 +1277,7 @@ void PP_AttrProp::_computeCheckSum(void)
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
   
- 			s2 = val->first();
+ 			s2 = val->first;
  			cch = strlen(s2);
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';

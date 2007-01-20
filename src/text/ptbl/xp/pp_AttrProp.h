@@ -21,10 +21,11 @@
 #ifndef PP_ATTRPROP_H
 #define PP_ATTRPROP_H
 
+#include <utility>
+
 #include "ut_types.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
-#include "ut_pair.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
 #include "pt_Types.h"
@@ -152,7 +153,7 @@ protected:
 	void _clearEmptyAttributes();
 
 
-	typedef UT_Pair<const gchar*,const PP_PropertyType *> PropertyPair;
+	typedef std::pair<const gchar*,const PP_PropertyType *> PropertyPair;
 
 	UT_GenericStringMap<gchar*> * m_pAttributes; // of gchar*
 	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
