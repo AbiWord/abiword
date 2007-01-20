@@ -92,7 +92,6 @@ noinst_HEADERS = \
 	pd_Document.h \
 	pd_Iterator.h \
 	pd_Style.h \
-	pd_XyDiff.h \
 	pf_Frag_FmtMark.h \
 	pf_Frag.h \
 	pf_Fragments.h \

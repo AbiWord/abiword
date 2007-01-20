@@ -665,7 +665,6 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisionsAfter;
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 	static EV_EditMethod_Fn revisionCompareDocuments;
-	static EV_EditMethod_Fn revisionMergeDocuments;
 	static EV_EditMethod_Fn purgeAllRevisions;
 	static EV_EditMethod_Fn startNewRevision;
 	
@@ -1033,7 +1032,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionFindNext),		0,  ""),
 	EV_EditMethod(NF(revisionFindPrev),		0,  ""),
-	EV_EditMethod(NF(revisionMergeDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
@@ -13793,60 +13791,6 @@ Defun1(revisionCompareDocuments)
 		pDialog->calculate(pDoc, pDoc2);
 		pDialog->runModal(pFrame);
 		pDialogFactory->releaseDialog(pDialog);
-	}
-	return true;
-}
-
-Defun1(revisionMergeDocuments)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-	UT_return_val_if_fail(pView,false);
-	PD_Document * pDoc = pView->getDocument();
-	UT_return_val_if_fail(pDoc,false);
-
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_return_val_if_fail(pFrame,false);
-
-	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_MERGEDOCUMENTS);
-	UT_uint32 iVer;
-	if(pDoc2)
-	{
-		xxx_UT_DEBUGMSG(("MERGE DOCUMENTS:\n   related:     %d\n"
-					                     "   stylesheets: %d\n"
-										 "   history:     %d\n"
-					                     "   contents:    %d\n"
-					                     "   format:      %d\n",
-					 pDoc->areDocumentsRelated(*pDoc2),
-					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
-					 pDoc->areDocumentHistoriesEqual(*pDoc2, iVer),
-					 pDoc->areDocumentContentsEqual(*pDoc2, pos1),
-					 pDoc->areDocumentFormatsEqual(*pDoc2, pos2)));
-
-		if((pDoc->getType() != ADDOCUMENT_ABIWORD) || (pDoc2->getType() != ADDOCUMENT_ABIWORD))
-		{
-			// can only diff AbiWord documents ...
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return false;
-		}
-
-		if(pDoc->areDocumentHistoriesEqual(*pDoc2, iVer))
-		{
-			// the two docs are identical -- there is nothing to merge
-			return true;
-		}
-		
-		if(!pDoc->areDocumentsRelated(*pDoc2))
-		{
-			// the two documents are not related, issue warning ...
-			pFrame->showMessageBox(AP_STRING_ID_MSG_MergeDocsNotRelated, 
-								   XAP_Dialog_MessageBox::b_O, 
-								   XAP_Dialog_MessageBox::a_OK);
-			
-		}
-		
-		pDoc->diffIntoRevisions(*pDoc2);
-
 	}
 	return true;
 }

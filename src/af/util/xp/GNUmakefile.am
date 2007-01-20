@@ -142,7 +142,6 @@ noinst_HEADERS = \
 	ut_TextIterator.h \
 	ut_thread.h \
 	ut_timer.h \
-	ut_tree.h \
 	ut_types.h \
 	ut_unicode.h \
 	ut_units.h \

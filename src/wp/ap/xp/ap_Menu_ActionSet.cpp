@@ -251,7 +251,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_PURGE, 0,0,0,0, "purgeAllRevisions", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS, 0,1,0,0, "revisionCompareDocuments",NULL,NULL);
-	_s(AP_MENU_ID_TOOLS_REVISIONS_MERGE_DOCUMENTS, 0,1,0,0, "revisionMergeDocuments",NULL,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_AUTO, 0,0,1,0, "toggleAutoRevision",ap_GetState_AutoRevision,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);

@@ -155,23 +155,6 @@ enum
 // the creator (product) of this document. AbiWord, KWord, etc...
 #define PD_META_KEY_GENERATOR         "abiword.generator"
 
-class PD_DocumentDiff
-{
-  public:
-	PD_DocumentDiff(bool bDel, PT_DocPosition p1, PT_DocPosition p2, UT_uint32 len)
-		:m_bDeleted(bDel), m_pos1(p1), m_pos2(p2), m_len(len){};
-
-#ifdef DEBUG
-	void _dump() const;
-#endif
-	
-	bool           m_bDeleted;
-	PT_DocPosition m_pos1;
-	PT_DocPosition m_pos2;
-	UT_uint32      m_len;
-};
-
-
 
 /*!
  PD_Document is the representation for a document.
@@ -631,9 +614,6 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool      findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
 										 UT_uint32 & iKnownLength,
 										 const PD_Document &d) const;
-
-	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
-	void      diffIntoRevisions(const PD_Document &d);
 
 	virtual void   setAutoRevisioning(bool autorev);
 
