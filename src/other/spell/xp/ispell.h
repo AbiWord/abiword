@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.15  2007/01/20 18:30:16  sum1
+ * g_free -> free.
+ *
  * Revision 1.14  2007/01/16 23:13:55  dom
  * that was embarrassing. g_free software? :) also, handle strdup()
  *
@@ -165,7 +168,7 @@
  * Revision 1.2  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-g_free on Win32.  It also *works* on Win32 now, since I
+ * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.1  1998/12/28 18:04:43  davet
