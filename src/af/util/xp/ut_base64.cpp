@@ -22,7 +22,7 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_string.h"
-#include "ut_stringbuf.h"
+#include "ut_unicode.h"
 #include "ut_base64.h"
 
 /*****************************************************************/
@@ -299,7 +299,7 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 	unsigned char byte1 = 0;	// initialize to prevent compiler warning
 	unsigned char byte2;
 
-	while (UT_UCS4Char ucs4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (b64ptr, b64len))
+	while (UT_UCS4Char ucs4 = UT_Unicode::UTF8_to_UCS4 (b64ptr, b64len))
 		{
 			if ((ucs4 & 0x7f) == ucs4)
 				{

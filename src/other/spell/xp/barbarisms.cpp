@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_hash.h"
 #include "ut_string.h"
-#include "ut_stringbuf.h"
+#include "ut_unicode.h"
 #include "ut_string_class.h"
 #include "xap_App.h"
 
@@ -260,7 +260,7 @@ void BarbarismChecker::startElement(const gchar *name, const gchar **atts)
 
 			while (true)
 			{
-				UT_UCS4Char ch4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (pUTF8, length);
+				UT_UCS4Char ch4 = UT_Unicode::UTF8_to_UCS4 (pUTF8, length);
 				if (ch4 == 0)
 					break;
 				nUSC4Len++;
