@@ -77,7 +77,6 @@ libUtil_xp_a_SOURCES= \
 	ut_vector.cpp		\
 	ut_wctomb.cpp		\
 	ut_OverstrikingChars.cpp \
-	ut_pair.cpp		\
 	ut_bijection.cpp	\
 	ut_Encoding.cpp		\
 	ut_iconv.cpp		\
@@ -124,7 +123,6 @@ noinst_HEADERS = \
 	ut_misc.h \
 	ut_mutex.h \
 	ut_OverstrikingChars.h \
-	ut_pair.h \
 	ut_path.h \
 	ut_PerlBindings.h \
 	ut_png.h \

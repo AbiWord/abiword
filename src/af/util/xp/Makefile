@@ -50,7 +50,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_vector.cpp		\
 		ut_PropVector.cpp	\
 		ut_wctomb.cpp		\
-		ut_pair.cpp		\
 		ut_bijection.cpp	\
 		ut_string_class.cpp	\
 		ut_stringbuf.cpp  	\
