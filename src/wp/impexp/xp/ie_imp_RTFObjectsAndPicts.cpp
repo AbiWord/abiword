@@ -27,8 +27,9 @@
   the RTF importer.
 */
 
+#include <utility>
+
 #include "ut_locale.h"
-#include "ut_pair.h"
 
 #include "ie_imp_RTF.h"
 #include "ie_imp_RTFParse.h"
@@ -582,7 +583,7 @@ bool IE_Imp_RTF::HandlePicture()
 class ABI_EXPORT RTFProps_FrameProps
 {
 public:
-	typedef UT_Pair<UT_UTF8String*,UT_UTF8String*> PropertyPair;
+	typedef std::pair<UT_UTF8String*,UT_UTF8String*> PropertyPair;
 
 	RTFProps_FrameProps();
 	virtual ~RTFProps_FrameProps()
@@ -645,8 +646,8 @@ void RTFProps_FrameProps::clear(void)
  */
 void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 {
-	const UT_UTF8String *propName = pair->first();
-	const UT_UTF8String *propValue = pair->second();
+	const UT_UTF8String *propName = pair->first;
+	const UT_UTF8String *propValue = pair->second;
 
 	UT_sint32 ival = 0;
 	if(strcmp(propName->utf8_str(),"dxTextLeft")== 0)
