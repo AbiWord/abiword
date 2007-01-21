@@ -205,7 +205,10 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			{
 				rec.height = pG->tlu(3);
 			}
-			pImage->scaleImageTo(pG,rec);
+			if(pImage)
+			{
+				pImage->scaleImageTo(pG,rec);
+			}
 			m_pImageImage = pImage;
 		}
 		pFrame->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
