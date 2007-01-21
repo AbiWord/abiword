@@ -1,2 +1,4 @@
 GNUmakefile
 GNUmakefile.in
+*.nib
+nibinst

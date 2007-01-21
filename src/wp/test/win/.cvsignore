@@ -1,1 +1,4 @@
 GNUmakefile.in
+GNUmakefile
+.deps
+testwrap.sh
