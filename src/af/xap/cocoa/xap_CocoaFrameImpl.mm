@@ -498,9 +498,8 @@ EV_Toolbar * XAP_CocoaFrameImpl::_newToolbar(XAP_Frame *frame,
 											 const char *szLayout,
 											 const char *szLanguage)
 {
-	return (new EV_CocoaToolbar(static_cast<XAP_CocoaApp *>(XAP_App::getApp()), 
-							   (AP_CocoaFrame *)frame, 
-							   szLayout, szLanguage));
+	return (new EV_CocoaToolbar((AP_CocoaFrame *)frame, 
+								szLayout, szLanguage));
 }
 
 void XAP_CocoaFrameImpl::_queue_resize()

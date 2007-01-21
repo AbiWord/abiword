@@ -829,11 +829,12 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		m_pCurrentFontFamilyHelper = 0;
 		m_Listener = 0;
 
-		m_pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+		XAP_CocoaApp * pCocoaApp = dynamic_cast<XAP_CocoaApp *>(XAP_App::getApp());
+		UT_ASSERT(pCocoaApp);
 
-		m_pMenuActionSet       = m_pCocoaApp->getMenuActionSet();
-		m_pToolbarActionSet    = m_pCocoaApp->getToolbarActionSet();
-		m_pEditMethodContainer = m_pCocoaApp->getEditMethodContainer();
+		m_pMenuActionSet       = pCocoaApp->getMenuActionSet();
+		m_pToolbarActionSet    = pCocoaApp->getToolbarActionSet();
+		m_pEditMethodContainer = pCocoaApp->getEditMethodContainer();
 
 		if (!m_pToolbarActionSet || !m_pMenuActionSet || !m_pEditMethodContainer)
 		{
@@ -1005,7 +1006,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 #include "xap_CocoaTools.h"
 #undef defn
 
-	const XAP_StringSet * pSS = m_pCocoaApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	const char * tooltip = 0;
 

@@ -173,8 +173,6 @@ private:
 
 	XAP_CocoaFontFamilyHelper *		m_pCurrentFontFamilyHelper;
 
-	XAP_CocoaApp *					m_pCocoaApp;
-
 	const EV_Menu_ActionSet *		m_pMenuActionSet;
 	const EV_Toolbar_ActionSet *	m_pToolbarActionSet;
 	const EV_EditMethodContainer *	m_pEditMethodContainer;

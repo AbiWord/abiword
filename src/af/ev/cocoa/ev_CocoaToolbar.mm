@@ -227,13 +227,13 @@
 /*****************************************************************/
 
 
-EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame,
+EV_CocoaToolbar::EV_CocoaToolbar(AP_CocoaFrame * pCocoaFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
-	: EV_Toolbar(pCocoaApp->getEditMethodContainer(),
+	: EV_Toolbar(XAP_App::getApp()->getEditMethodContainer(),
 				 szToolbarLayoutName,
 				 szToolbarLabelSetName),
-	 m_pCocoaApp (pCocoaApp), m_pCocoaFrame(pCocoaFrame)
+	  m_pCocoaFrame(pCocoaFrame)
 {
 	m_pViewListener = 0;
 	m_wToolbar = nil;
@@ -325,7 +325,7 @@ bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
 	// invoke the appropriate function.
 	// return true iff handled.
 
-	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
+	const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(tlbrid);
@@ -355,7 +355,7 @@ bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
 	if (!szMethodName)
 		return false;
 	
-	const EV_EditMethodContainer * pEMC = m_pCocoaApp->getEditMethodContainer();
+	const EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
@@ -422,10 +422,10 @@ bool EV_CocoaToolbar::synthesize(void)
 
 	// create a Cocoa toolbar from the info provided.
 	float btnX = 0;
-	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
+	const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
-	XAP_Toolbar_ControlFactory * pFactory = m_pCocoaApp->getControlFactory();
+	XAP_Toolbar_ControlFactory * pFactory = XAP_App::getApp()->getControlFactory();
 	UT_ASSERT(pFactory);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
@@ -461,7 +461,7 @@ bool EV_CocoaToolbar::synthesize(void)
 	////////////////////////////////////////////////////////////////
 	// TODO
 	const gchar * szValue = NULL;
-	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
+	XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	
 	if (g_ascii_strcasecmp(szValue, "icon") == 0) {
@@ -745,7 +745,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
 	
-	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
+	const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
@@ -956,11 +956,6 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	return true;
 }
 
-XAP_CocoaApp * EV_CocoaToolbar::getApp(void)
-{
-	return m_pCocoaApp;
-}
-
 AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 {
 	return m_pCocoaFrame;
@@ -988,7 +983,7 @@ void EV_CocoaToolbar::hide(void)
 bool EV_CocoaToolbar::repopulateStyles(void)
 {
 #if 0
-	XAP_Toolbar_ControlFactory * pFactory = m_pCocoaApp->getControlFactory();
+	XAP_Toolbar_ControlFactory * pFactory = XAP_App::getApp()->getControlFactory();
 	UT_ASSERT(pFactory);
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, AP_TOOLBAR_ID_FMT_STYLE);
 	AP_CocoaToolbar_StyleCombo * pStyleC = static_cast<AP_CocoaToolbar_StyleCombo *>(pControl);

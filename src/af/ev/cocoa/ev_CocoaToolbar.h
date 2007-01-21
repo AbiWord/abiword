@@ -33,7 +33,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-class XAP_CocoaApp;
 class AP_CocoaFrame;
 class AP_CocoaToolbar_Icons;
 class EV_CocoaToolbar_ViewListener;
@@ -55,7 +54,7 @@ class EV_CocoaToolbar;
 class EV_CocoaToolbar : public EV_Toolbar
 {
 public:
-	EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame,
+	EV_CocoaToolbar(AP_CocoaFrame * pCocoaFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -68,7 +67,6 @@ public:
 	virtual bool repopulateStyles(void);
 	UT_sint32 destroy(void);
 	void      rebuildToolbar(UT_sint32 oldpos);
-	XAP_CocoaApp *	getApp(void);
 	AP_CocoaFrame * getFrame(void);
 	virtual void show(void);
 	virtual void hide(void);
@@ -86,7 +84,6 @@ public:
 protected:
 	void							_releaseListener(void);
 	
-	XAP_CocoaApp *					m_pCocoaApp;
 	AP_CocoaFrame *					m_pCocoaFrame;
 	EV_CocoaToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
