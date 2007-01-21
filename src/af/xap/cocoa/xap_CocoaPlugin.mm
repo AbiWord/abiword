@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 2004 Francis James Franklin
+ * Copyright (C) 2007 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,82 +42,84 @@ public:
 	s_SimpleXML_Listener (id <XAP_CocoaPlugin_SimpleXML> callback) :
 		m_callback(callback),
 		m_error(0)
-	{
-		m_parser.setListener(this);
-	}
+		{
+			m_parser.setListener(this);
+		}
 
 	virtual ~s_SimpleXML_Listener ()
-	{
-		if (m_error)
+		{
+			if (m_error)
 			{
 				[m_error release];
 				m_error = 0;
 			}
-	}
+		}
 
 	NSString * parse (NSString * path)
-	{
-		if (m_parser.parse ([path UTF8String]) != UT_OK)
-			if (!m_error)
+		{
+			if (m_parser.parse ([path UTF8String]) != UT_OK)
+			{
+				if (!m_error)
 				{
 					m_error = [NSString stringWithFormat:@"Error while parsing \"%@\"", path];
 					[m_error retain];
 				}
-		return m_error;
-	}
+			}
+			return m_error;
+		}
 
 	virtual void startElement (const gchar * element_name, const gchar ** atts)
-	{
-		NSMutableDictionary * dictionary = [NSMutableDictionary dictionaryWithCapacity:4];
+		{
+			NSMutableDictionary * dictionary = [NSMutableDictionary dictionaryWithCapacity:4];
 
-		NSString * name = [NSString stringWithUTF8String:element_name];
+			NSString * name = [NSString stringWithUTF8String:element_name];
 
-		const gchar ** attr = atts;
+			const gchar ** attr = atts;
 
-		while (*attr)
+			while (*attr)
 			{
 				const gchar * key   = *attr++;
 				const gchar * value = *attr++;
 
 				if (*key && value)
-					{
-						[dictionary setObject:[NSString stringWithUTF8String:value] forKey:[NSString stringWithUTF8String:key]];
-					}
+				{
+					[dictionary setObject:[NSString stringWithUTF8String:value] forKey:[NSString stringWithUTF8String:key]];
+				}
 			}
-		if (![m_callback startElement:name attributes:dictionary])
+			if (![m_callback startElement:name attributes:dictionary])
 			{
 				m_parser.stop();
 
 				m_error = @"Simple XML parser stopped by callback method \"startElement:attributes:\".";
 				[m_error retain];
 			}
-	}
+		}
 
 	virtual void endElement (const gchar * element_name)
-	{
-		NSString * name = [NSString stringWithUTF8String:element_name];
+		{
+			NSString * name = [NSString stringWithUTF8String:element_name];
 
-		if (![m_callback endElement:name])
+			if (![m_callback endElement:name])
 			{
 				m_parser.stop();
 
 				m_error = @"Simple XML parser stopped by callback method \"endElement:\".";
 				[m_error retain];
 			}
-	}
+		}
 
 	virtual void charData (const gchar * buffer, int length)
-	{
-		UT_UTF8String data(buffer,length);
-
-		if (![m_callback characterData:[NSString stringWithUTF8String:(data.utf8_str())]])
+		{
+			UT_UTF8String data(buffer,length);
+			// FIXME: remove the UT_UTF8String from here
+			if (![m_callback characterData:[NSString stringWithUTF8String:(data.utf8_str())]])
 			{
 				m_parser.stop();
 
 				m_error = @"Simple XML parser stopped by callback method \"characterData:\".";
 				[m_error retain];
 			}
-	}
+		}
 };
 
 @implementation XAP_CocoaPlugin
@@ -124,9 +127,9 @@ public:
 - (id)init
 {
 	if (self = [super init])
-		{
-			m_delegate = nil;
-		}
+	{
+		m_delegate = nil;
+	}
 	return self;
 }
 
@@ -140,10 +143,10 @@ public:
 {
 	BOOL bLoaded = NO;
 
-	if (NSBundle * bundle = [NSBundle bundleWithPath:path])
-		if (![bundle isLoaded])
-			if ([bundle load])
-				if (Class bundleClass = [bundle principalClass])
+	if (NSBundle * bundle = [NSBundle bundleWithPath:path]) {
+		if (![bundle isLoaded]) {
+			if ([bundle load]) {
+				if (Class bundleClass = [bundle principalClass]) {
 					if (id <NSObject, XAP_CocoaPluginDelegate> instance = [[bundleClass alloc] init])
 					{
 						if ([instance respondsToSelector:@selector(pluginCanRegisterForAbiWord:version:interface:)])
@@ -158,6 +161,10 @@ public:
 							[instance release];
 						}
 					}
+				}
+			}
+		}
+	}
 	return bLoaded;
 }
 
@@ -235,15 +242,17 @@ public:
 	NSString * resource_path = 0;
 
 	if (relativePath)
+	{
 		if ([relativePath length])
-			{
-				UT_String path;
+		{
+			UT_String path;
 
-				if (pApp->findAbiSuiteLibFile(path, [relativePath UTF8String]))
-					{
-						resource_path = [NSString stringWithUTF8String:(path.c_str())];
-					}
+			if (pApp->findAbiSuiteLibFile(path, [relativePath UTF8String]))
+			{
+				resource_path = [NSString stringWithUTF8String:(path.c_str())];
 			}
+		}
+	}
 	return resource_path;
 }
 
@@ -253,9 +262,11 @@ public:
 
 	NSString * resource_path = [NSString stringWithUTF8String:(pApp->getUserPrivateDirectory())];
 
-	if (relativePath)
-		if ([relativePath length])
+	if (relativePath) {
+		if ([relativePath length]) {
 			resource_path = [resource_path stringByAppendingPathComponent:relativePath];
+		}
+	}
 
 	return resource_path;
 }
@@ -265,14 +276,14 @@ public:
 	NSString * error = 0;
 
 	if (path && callback)
-		{
-			s_SimpleXML_Listener parser(callback);
-			error = parser.parse(path);
-		}
+	{
+		s_SimpleXML_Listener parser(callback);
+		error = parser.parse(path);
+	}
 	else
-		{
-			error = @"Method \"parseFile:simpleXML:\" requires path and callback!";
-		}
+	{
+		error = @"Method \"parseFile:simpleXML:\" requires path and callback!";
+	}
 	return error;
 }
 
