@@ -622,50 +622,6 @@ void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * cont
 }
 
 
-static void _atsuStyleInit(ATSUStyle *atsuStyle, NSFont *font)
-{
-	OSStatus status;
-	
-	UT_ASSERT(atsuStyle);
-	
-	if(*atsuStyle) {
-		::ATSUDisposeStyle(*atsuStyle);
-	}
-	
-	status = ATSUCreateStyle(atsuStyle);
-
-	CFStringRef fontName = (CFStringRef)[font fontName];
-	ATSFontRef fontRef = ATSFontFindFromPostScriptName(fontName, 0);
-	if (fontRef == kATSUInvalidFontID) {
-		fontRef = ATSFontFindFromName(fontName, 0);
-		if (fontRef == kATSUInvalidFontID) {
-			NSLog(@"Unable to find ATSU font %@", fontName);
-		}
-	}
-	
-	// upside down - Flipped
-	CGAffineTransform transform = CGAffineTransformMakeScale (1,-1);
-	Fixed fontSize = FloatToFixed([font pointSize]);
-	
-	ATSUAttributeTag styleTags[] = { 
-		kATSUSizeTag, 
-		kATSUFontTag, 
-		kATSUFontMatrixTag
-	};
-	ByteCount styleSizes[] = {
-		sizeof(Fixed), 
-		sizeof(ATSFontRef), 
-		sizeof(CGAffineTransform) 
-	};
-	ATSUAttributeValuePtr styleValues[] = { 
-		&fontSize, 
-		&fontRef, 
-		&transform  
-	};
-	status = ATSUSetAttributes (*atsuStyle, 3, styleTags, styleSizes, styleValues);
-}
-
-
 
 static void _atsuCreateLayout(ATSUTextLayout *atsuLayout, const unichar* run, int len, int begin, 
 	int rangelen, ATSUStyle *atsuStyle,
@@ -787,7 +743,10 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 	NSFont* font = pUFont->getNSFont();
 	m_fontForGraphics = [[NSFontManager sharedFontManager] convertFont:font
 							toSize:[font pointSize] * (getZoomPercentage() / 100.)];
-	_atsuStyleInit(&m_atsuStyle, m_fontForGraphics);
+	if (m_atsuStyle) {
+		ATSUDisposeStyle(m_atsuStyle);
+	}
+	m_atsuStyle = m_pFont->makeAtsuStyle(m_fontForGraphics);
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
@@ -799,20 +758,6 @@ UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 UT_uint32 GR_CocoaGraphics::getFontHeight()
 {
 	return static_cast<UT_uint32>(lrint(ftluD(m_pFont->getHeight())));
-}
-
-
-void GR_CocoaGraphics::_initMetricsLayouts(void)
-{
-	m_fontMetricsTextStorage = [[NSTextStorage alloc] init];
-
-	m_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
-	[m_fontMetricsTextStorage addLayoutManager:m_fontMetricsLayoutManager];
-	[m_fontMetricsLayoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2];
-
-	m_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(10000, 1000)];
-	[m_fontMetricsTextContainer setLineFragmentPadding:0];
-	[m_fontMetricsLayoutManager addTextContainer:m_fontMetricsTextContainer];
 }
 
 

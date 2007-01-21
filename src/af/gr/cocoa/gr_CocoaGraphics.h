@@ -279,7 +279,6 @@ public:		//HACK
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 private:
 	/* private implementations. Allow esasy selection accross various ways */
-	void _initMetricsLayouts(void);
 	float _measureUnRemappedCharCached(const UT_UCSChar c);
 	void _setCapStyle(CapStyle inCapStyle, CGContextRef * context = 0);
 	void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef * context = 0);
