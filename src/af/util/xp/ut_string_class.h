@@ -110,7 +110,7 @@ public:
 	const char* c_str() const;
 
 private:
-	class UT_Stringbuf* pimpl;
+	class UT_StringImpl<char>* pimpl;
 };
 
 // helpers
@@ -362,7 +362,7 @@ public:
 	const char * utf8_str ();
 
 private:
-	class UT_UCS4Stringbuf* pimpl;
+	class UT_StringImpl<UT_UCS4Char>* pimpl;
 };
 
 // helpers

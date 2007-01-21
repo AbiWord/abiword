@@ -3,6 +3,7 @@
 // UT_Stringbuf.cpp
 
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
+// Copyright (c) 2007 Hubert Figuiere <hub@figuiere.net>
 // 
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,10 +23,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <algorithm>
+
+
 #include <glib.h>
 
 #include "ut_string.h"
 #include "ut_stringbuf.h"
+#include "ut_unicode.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -35,185 +40,8 @@
 
 //////////////////////////////////////////////////////////////////
 
-static inline
-void my_ut_swap(size_t & a, size_t & b)
-	{ size_t t = a; a = b; b = t; }
-
-static inline
-void my_ut_swap(char *& a, char *& b)
-	{ char * t = a; a = b; b = t; }
-
-static inline
-void my_ut_swap(UT_UCS2Char *& a, UT_UCS2Char *& b)
-	{ UT_UCS2Char * t = a; a = b; b = t; }
-
-static inline
-void my_ut_swap(UT_UCS4Char *& a, UT_UCS4Char *& b)
-	{ UT_UCS4Char * t = a; a = b; b = t; }
-
-//////////////////////////////////////////////////////////////////
-
-static const float g_rGrowBy = 1.5;
-
-static inline size_t priv_max(size_t a, size_t b)
-{
-	return a < b ? b : a;
-}
-
-////////////////////////////////////////////////////////////////////////
-//
-//  8-bit string
-//
-//  String is built of 8-bit units (bytes)
-//  Encoding could be any single-byte or multi-byte encoding
-//
-////////////////////////////////////////////////////////////////////////
-
-UT_Stringbuf::UT_Stringbuf()
-:	m_psz(0),
-	m_pEnd(0),
-	m_size(0)
-{
-}
-
-UT_Stringbuf::UT_Stringbuf(const UT_Stringbuf& rhs)
-	:	m_psz(new char_type[rhs.capacity()]),
-	m_pEnd(m_psz + rhs.size()),
-	m_size(rhs.capacity())
-{
-	copy(m_psz, rhs.m_psz, rhs.capacity());
-}
-
-UT_Stringbuf::UT_Stringbuf(const char_type* sz, size_t n)
-:	m_psz(new char_type[n+1]),
-	m_pEnd(m_psz + n),
-	m_size(n+1)
-{
-	copy(m_psz, sz, n);
-	m_psz[n] = 0;
-}
-
-UT_Stringbuf::UT_Stringbuf(const std::basic_string<char_type> &s)
-:	m_psz(new char_type[s.size()+1]),
-	m_pEnd(m_psz + s.size()),
-	m_size(s.size()+1)
-{
-	// string is terminated here, so we know
-	strcpy(m_psz, s.c_str());
-}
 
 
-UT_Stringbuf::~UT_Stringbuf()
-{
-	clear();
-}
-
-
-void UT_Stringbuf::operator=(const UT_Stringbuf& rhs)
-{
-	if (this != &rhs)
-	{
-		clear();
-		assign(rhs.m_psz, rhs.size());
-	}
-}
-
-void UT_Stringbuf::assign(const char_type* sz, size_t n)
-{
-	if (n)
-	{
-		if (n >= capacity())
-		{
-			grow_nocopy(n);
-		}
-		copy(m_psz, sz, n);
-		m_psz[n] = 0;
-		m_pEnd = m_psz + n;
-	} else {
-		clear();
-	}
-}
-
-void UT_Stringbuf::append(const char_type* sz, size_t n)
-{
-	if (!n)
-	{
-		return;
-	}
-	if (!capacity())
-	{
-		assign(sz, n);
-		return;
-	}
-	const size_t nLen = size();
-	grow_copy(nLen + n);
-	copy(m_psz + nLen, sz, n);
-	m_psz[nLen + n] = 0;
-	m_pEnd += n;
-}
-
-void UT_Stringbuf::append(const UT_Stringbuf& rhs)
-{
-	append(rhs.m_psz, rhs.size());
-}
-
-void UT_Stringbuf::swap(UT_Stringbuf& rhs)
-{
-	my_ut_swap(m_psz , rhs.m_psz );
-	my_ut_swap(m_pEnd, rhs.m_pEnd);
-	my_ut_swap(m_size, rhs.m_size);
-}
-
-void UT_Stringbuf::clear()
-{
-	if (m_psz)
-	{
-		delete[] m_psz;
-		m_psz = 0;
-		m_pEnd = 0;
-		m_size = 0;
-	}
-}
-
-void UT_Stringbuf::reserve(size_t n)
-{
-	grow_nocopy(n);
-}
-
-void UT_Stringbuf::grow_nocopy(size_t n)
-{
-	grow_common(n, false);
-}
-
-void UT_Stringbuf::grow_copy(size_t n)
-{
-	grow_common(n, true);
-}
-
-void UT_Stringbuf::grow_common(size_t n, bool bCopy)
-{
-	++n;	// allow for zero termination
-	if (n > capacity())
-	{
-		const size_t nCurSize = size();
-		n = priv_max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
-		char_type* pNew = new char_type[n];
-		if (bCopy && m_psz)
-		{
-			copy(pNew, m_psz, size() + 1);
-		}
-		delete[] m_psz;
-		m_psz  = pNew;
-		m_pEnd = m_psz + nCurSize;
-		m_size = n;
-	}
-}
-
-void UT_Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
-{
-	if (pDest && pSrc && n)
-		memcpy(pDest, pSrc, n * sizeof(char_type));
-}
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -470,19 +298,23 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	size_t i;
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (sz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // end-of-string?
+		int seql = UT_Unicode::UTF8_ByteLength (sz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // end-of-string?
 		bytelength += static_cast<size_t>(seql);
 	}
 	if (!grow (bytelength + 1)) return;
 
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (sz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // end-of-string?
-		UT_UCS4Stringbuf::UCS4_to_UTF8 (m_pEnd, bytelength, sz[i]);
+		int seql = UT_Unicode::UTF8_ByteLength (sz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // end-of-string?
+		UT_Unicode::UCS4_to_UTF8 (m_pEnd, bytelength, sz[i]);
 		m_strlen++;
 	}
 	*m_pEnd = 0;
@@ -494,19 +326,23 @@ void UT_UTF8Stringbuf::appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => n
 	size_t i;
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // end-of-string?
+		int seql = UT_Unicode::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // end-of-string?
 		bytelength += static_cast<size_t>(seql);
 	}
 	if (!grow (bytelength + 1)) return;
 
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // end-of-string?
-		UT_UCS4Stringbuf::UCS4_to_UTF8 (m_pEnd, bytelength, (UT_UCS4Char)sz[i]);
+		int seql = UT_Unicode::UTF8_ByteLength ((UT_UCS4Char)sz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // end-of-string?
+		UT_Unicode::UCS4_to_UTF8 (m_pEnd, bytelength, (UT_UCS4Char)sz[i]);
 		m_strlen++;
 	}
 	*m_pEnd = 0;
@@ -525,58 +361,58 @@ void UT_UTF8Stringbuf::escape (const UT_UTF8String & utf8_str1,
 	const char * str2 = utf8_str2.utf8_str ();
 
 	if (len2 > len1)
+	{
+		diff = len2 - len1;
+
+		size_t incr = 0;
+
+		char * ptr = m_psz;
+		while (ptr + len1 <= m_pEnd)
 		{
-			diff = len2 - len1;
-
-			size_t incr = 0;
-
-			char * ptr = m_psz;
-			while (ptr + len1 <= m_pEnd)
-				{
-					if (memcmp (ptr, str1, len1) == 0)
-						{
-							incr += diff;
-							ptr += len1;
-						}
-					else
-						{
-							++ptr;
-						}
-				}
-			if (!grow (incr)) return;
+			if (memcmp (ptr, str1, len1) == 0)
+			{
+				incr += diff;
+				ptr += len1;
+			}
+			else
+			{
+				++ptr;
+			}
 		}
+		if (!grow (incr)) return;
+	}
 	else
-		{
-			diff = len1 - len2;
-		}
+	{
+		diff = len1 - len2;
+	}
 
 	char * ptr = m_psz;
 	while (ptr + len1 <= m_pEnd)
+	{
+		if (memcmp (ptr, str1, len1) == 0)
 		{
-			if (memcmp (ptr, str1, len1) == 0)
+			if (diff)
+			{
+				if (len2 > len1)
 				{
-					if (diff)
-						{
-							if (len2 > len1)
-								{
-									memmove (ptr + diff, ptr, m_pEnd - ptr + 1);
-									m_pEnd += diff;
-								}
-							else
-								{
-									memmove (ptr, ptr + diff, m_pEnd - (ptr + diff) + 1);
-									m_pEnd -= diff;
-								}
-						}
-					memcpy (ptr, str2, len2);
-					ptr += len2;
-					m_strlen += utf8_str2.length () - utf8_str1.length ();
+					memmove (ptr + diff, ptr, m_pEnd - ptr + 1);
+					m_pEnd += diff;
 				}
-			else
+				else
 				{
-					++ptr;
+					memmove (ptr, ptr + diff, m_pEnd - (ptr + diff) + 1);
+					m_pEnd -= diff;
 				}
+			}
+			memcpy (ptr, str2, len2);
+			ptr += len2;
+			m_strlen += utf8_str2.length () - utf8_str1.length ();
 		}
+		else
+		{
+			++ptr;
+		}
+	}
 }
 
 /* FIXME -- these functions assume that &, <, > and " cannot appear in
@@ -715,7 +551,7 @@ void UT_UTF8Stringbuf::escapeURL ()
 
 	for(c = charCode(I.current()); c != 0; c = charCode(I.advance()))
 	{
-		UT_sint32 iByteLen = UT_UCS4Stringbuf::UTF8_ByteLength(c);
+		UT_sint32 iByteLen = UT_Unicode::UTF8_ByteLength(c);
 
 		if(iByteLen > 1)
 			iIncrease += iByteLen;
@@ -805,7 +641,7 @@ void UT_UTF8Stringbuf::escapeURL ()
 	for(c = charCode(J.current()); c != 0; c = charCode(J.advance()))
 	{
 		char * p = (char*) J.current();
-		UT_sint32 iByteLen = UT_UCS4Stringbuf::UTF8_ByteLength(c);
+		UT_sint32 iByteLen = UT_Unicode::UTF8_ByteLength(c);
 		
 		if (iByteLen > 1) // mutlibyte in utf-8; each byte is to be encoded
 		{
@@ -974,7 +810,7 @@ void UT_UTF8Stringbuf::decodeURL()
 					size_t iLenLeft = byteLength() - iLenBuff;
 					
 					char * p = buff + iLenBuff;
-					UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
+					UT_Unicode::UCS4_to_UTF8(p, iLenLeft, code);
  
 					// we need to null-terminate
 					*p = 0;
@@ -1228,38 +1064,47 @@ const char * UT_UTF8Stringbuf::UTF8Iterator::current ()
 
 const char * UT_UTF8Stringbuf::UTF8Iterator::start ()
 {
-	if (!sync ()) return 0;
+	if (!sync ()) 
+		return 0;
 	return m_utfbuf;
 }
 
 const char * UT_UTF8Stringbuf::UTF8Iterator::end ()
 {
-	if (!sync ()) return 0;
+	if (!sync ()) 
+		return 0;
 	return m_utfbuf + m_strbuf->byteLength ();
 }
 
 const char * UT_UTF8Stringbuf::UTF8Iterator::advance ()
 {
-	if (!sync ()) return 0;
-	if (*m_utfptr == 0) return 0;
-	do m_utfptr++;
-	while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
+	if (!sync ()) 
+		return 0;
+	if (*m_utfptr == 0) 
+		return 0;
+	do {
+		m_utfptr++;
+	} while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
 	return m_utfptr;
 }
 
 const char * UT_UTF8Stringbuf::UTF8Iterator::retreat ()
 {
-	if (!sync ()) return 0;
-	if (m_utfptr == m_utfbuf) return 0;
-	do m_utfptr--;
-	while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
+	if (!sync ()) 
+		return 0;
+	if (m_utfptr == m_utfbuf) 
+		return 0;
+	do {
+		m_utfptr--;
+	} while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
 	return m_utfptr;
 }
 
 // returns false only if there is no string data
 bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 {
-	if (m_strbuf == 0) return false;
+	if (m_strbuf == 0) 
+		return false;
 
 	const char * utf8_buffer = m_strbuf->data ();
 	if (utf8_buffer == 0)
@@ -1287,194 +1132,23 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 	return true;
 }
 
-////////////////////////////////////////////////////////////////////////
-//
-//  UCS-4 string
-//
-//  String is built of 32-bit units (longs)
-//
-//  NOTE: Ambiguity between UCS-2 and UTF-16 above makes no difference
-//  NOTE:  in the case of UCS-4 and UTF-32 since they really are
-//  NOTE:  identical
-//
-////////////////////////////////////////////////////////////////////////
 
-/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
- * UCS-4 value for that sequence; the pointer and length-remaining are incremented
- * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
- * end of the string
- */
-UT_UCS4Char UT_UCS4Stringbuf::UTF8_to_UCS4 (const char *& buffer, size_t & length)
-{
-	UT_UCS4Char ucs4 = g_utf8_get_char_validated (buffer, length);
-
-	if ((UT_sint32)ucs4 == -1 || (UT_sint32)ucs4 == -2)
-		return 0;
-
-	const char * p = g_utf8_next_char (buffer);
-	UT_uint32 diff = p - buffer;
-
-	buffer += diff;
-	length -= diff;
-
-	return ucs4;
-}
-
-/* Returns -1 if ucs4 is not valid UCS-4, 0 if ucs4 is 0, 1-6 otherwise
- */
-int UT_UCS4Stringbuf::UTF8_ByteLength (UT_UCS4Char u)
-{
-	return g_unichar_to_utf8 (u, NULL);
-}
-
-/* appends to the buffer the UTF-8 sequence corresponding to the UCS-4 value;
- * the pointer and length-remaining are incremented and decremented respectively;
- * returns false if not valid UCS-4 or if (length < UTF8_ByteLength (ucs4))
- */
-bool UT_UCS4Stringbuf::UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Char ucs4)
-{
-	gchar buf [6];
-	int seql = g_unichar_to_utf8 (ucs4, &buf[0]);
-	
-	if (length < static_cast<unsigned>(seql)) return false;
-
-	length -= seql;
-	for (int i = 0; i < seql; ++i)
-	{
-		*buffer++ = buf[i];
-	}
-	
-	return true;
-}
-
-UT_UCS4Stringbuf::UT_UCS4Stringbuf()
-:	m_psz(0),
-	m_pEnd(0),
-	m_size(0),
-	m_utf8string(0)
-{
-}
-
-UT_UCS4Stringbuf::UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs)
-:	m_psz(new char_type[rhs.capacity()]),
-	m_pEnd(m_psz + rhs.size()),
-	m_size(rhs.capacity()),
-	m_utf8string(0)
-{
-	copy(m_psz, rhs.m_psz, rhs.capacity());
-}
-
-UT_UCS4Stringbuf::UT_UCS4Stringbuf(const char_type* sz, size_t n)
-:	m_psz(new char_type[n+1]),
-	m_pEnd(m_psz + n),
-	m_size(n+1),
-	m_utf8string(0)
-{
-	copy(m_psz, sz, n);
-	m_psz[n] = 0;
-}
-
-UT_UCS4Stringbuf::~UT_UCS4Stringbuf()
-{
-	clear();
-}
-
-
-void UT_UCS4Stringbuf::operator=(const UT_UCS4Stringbuf& rhs)
-{
-	if (this != &rhs)
-	{
-		clear();
-		assign(rhs.m_psz, rhs.size());
-	}
-}
-
-void UT_UCS4Stringbuf::assign(const char_type* sz, size_t n)
-{
-	if (m_utf8string) // buffered internal UTF-8 string is invalid
-	{
-		delete[] m_utf8string;
-		m_utf8string = 0;
-	}
-	if (n)
-	{
-		if (n >= capacity())
-		{
-			grow_nocopy(n);
-		}
-		copy(m_psz, sz, n);
-		m_psz[n] = 0;
-		m_pEnd = m_psz + n;
-	} else {
-		clear();
-	}
-}
-
-void UT_UCS4Stringbuf::append(const char_type* sz, size_t n)
-{
-	if (!n)
-	{
-		return;
-	}
-	if (!capacity())
-	{
-		assign(sz, n);
-		return;
-	}
-	if (m_utf8string) // buffered internal UTF-8 string is invalid
-	{
-		delete[] m_utf8string;
-		m_utf8string = 0;
-	}
-	const size_t nLen = size();
-	grow_copy(nLen + n);
-	copy(m_psz + nLen, sz, n);
-	m_psz[nLen + n] = 0;
-	m_pEnd += n;
-}
-
-void UT_UCS4Stringbuf::append(const UT_UCS4Stringbuf& rhs)
-{
-	append(rhs.m_psz, rhs.size());
-}
-
-void UT_UCS4Stringbuf::swap(UT_UCS4Stringbuf& rhs)
-{
-	my_ut_swap(m_psz , rhs.m_psz );
-	my_ut_swap(m_pEnd, rhs.m_pEnd);
-	my_ut_swap(m_size, rhs.m_size);
-
-	my_ut_swap(m_utf8string, rhs.m_utf8string);
-}
-
-void UT_UCS4Stringbuf::clear()
-{
-	if (m_psz)
-	{
-		delete[] m_psz;
-		m_psz = 0;
-		m_pEnd = 0;
-		m_size = 0;
-	}
-	if (m_utf8string)
-	{
-		delete[] m_utf8string;
-		m_utf8string = 0;
-	}
-}
-
-const char* UT_UCS4Stringbuf::utf8_data()
-{
-	if (m_utf8string) return m_utf8string;
+template <>
+const char* UT_StringImpl<UT_UCS4Char>::utf8_data() 
+{ 
+	if (m_utf8string) 
+		return m_utf8string;
 
 	size_t utf8length = size ();
 	size_t bytelength = 0;
 	size_t i;
 	for (i = 0; i < utf8length; i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (m_psz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // huh? premature end-of-string?
+		int seql = UT_Unicode::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // huh? premature end-of-string?
 		bytelength += static_cast<size_t>(seql);
 	}
 	m_utf8string = new char[bytelength+1];
@@ -1482,52 +1156,14 @@ const char* UT_UCS4Stringbuf::utf8_data()
 	char * utf8string = m_utf8string;
 	for (i = 0; i < utf8length; i++)
 	{
-		int seql = UT_UCS4Stringbuf::UTF8_ByteLength (m_psz[i]);
-		if (seql < 0) continue; // not UCS-4 !!
-		if (seql == 0) break; // huh? premature end-of-string?
-		UT_UCS4Stringbuf::UCS4_to_UTF8 (utf8string, bytelength, m_psz[i]);
+		int seql = UT_Unicode::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // huh? premature end-of-string?
+		UT_Unicode::UCS4_to_UTF8 (utf8string, bytelength, m_psz[i]);
 	}
 	*utf8string = 0;
 
 	return m_utf8string;
-}
-
-void UT_UCS4Stringbuf::reserve(size_t n)
-{
-	grow_nocopy(n);
-}
-
-void UT_UCS4Stringbuf::grow_nocopy(size_t n)
-{
-	grow_common(n, false);
-}
-
-void UT_UCS4Stringbuf::grow_copy(size_t n)
-{
-	grow_common(n, true);
-}
-
-void UT_UCS4Stringbuf::grow_common(size_t n, bool bCopy)
-{
-	++n;	// allow for zero termination
-	if (n > capacity())
-	{
-		const size_t nCurSize = size();
-		n = priv_max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
-		char_type* pNew = new char_type[n];
-		if (bCopy && m_psz)
-		{
-			copy(pNew, m_psz, size() + 1);
-		}
-		delete[] m_psz;
-		m_psz  = pNew;
-		m_pEnd = m_psz + nCurSize;
-		m_size = n;
-	}
-}
-
-void UT_UCS4Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
-{
-	if(pSrc && pDest)
-		memcpy(pDest, pSrc, n * sizeof(char_type));
 }

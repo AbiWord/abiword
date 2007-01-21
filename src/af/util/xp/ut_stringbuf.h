@@ -7,6 +7,7 @@
 
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
+// Copyright (c) 2007 Hubert Figuiere <hub@figuiere.net>
 // 
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 #include <stdlib.h>	// size_t
 
 #include <string>
+#include <algorithm>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -35,36 +37,31 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+#include "ut_assert.h"
+#include "ut_unicode.h"
 
-// yes, i know that this is screaming for templates... -Dom
+//////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////
-//
-//  8-bit string
-//
-//  String is built of 8-bit units (bytes)
-//  Encoding could be any single-byte or multi-byte encoding
-//
-////////////////////////////////////////////////////////////////////////
+#define g_rGrowBy 1.5f
 
-class ABI_EXPORT UT_Stringbuf
+
+template <typename char_type>
+class UT_StringImpl
 {
 public:
-	typedef char char_type;
+	UT_StringImpl();
+	UT_StringImpl(const UT_StringImpl<char_type>& rhs);
+	UT_StringImpl(const char_type* sz, size_t n);
+	UT_StringImpl(const std::basic_string<char_type> &s);
+	~UT_StringImpl();
 
-	UT_Stringbuf();
-	UT_Stringbuf(const UT_Stringbuf& rhs);
-	UT_Stringbuf(const char_type* sz, size_t n);
-	UT_Stringbuf(const std::basic_string<char_type> &s);
-	~UT_Stringbuf();
-
-	void		operator=(const UT_Stringbuf& rhs);
+	void		operator=(const UT_StringImpl<char_type>& rhs);
 
 	void		assign(const char_type* sz, size_t n);
 	void		append(const char_type* sz, size_t n);
-	void		append(const UT_Stringbuf& rhs);
+	void		append(const UT_StringImpl<char_type>& rhs);
 
-	void		swap(UT_Stringbuf& rhs);
+	void		swap(UT_StringImpl<char_type>& rhs);
 	void		clear();
 	void        reserve(size_t n);
 
@@ -73,6 +70,8 @@ public:
 	size_t				capacity()	const { return m_size; }
 	const char_type*	data()		const { return m_psz; }
 	char_type*			data() 			  { return m_psz; }
+	/** return the utf8 content. Only for UCS4Char */
+	const char*			utf8_data();
 
 private:
 	void	grow_nocopy(size_t n);
@@ -84,13 +83,9 @@ private:
 	char_type*	m_psz;
 	char_type*	m_pEnd;
 	size_t		m_size;
+	char*		m_utf8string;
 };
 
-////////////////////////////////////////////////////////////////////////
-//
-//  UTF-8 string: encoding is *always* UTF-8
-//
-////////////////////////////////////////////////////////////////////////
 
 class UT_UTF8String;
 
@@ -173,75 +168,200 @@ private:
 	bool	grow (size_t length);
 };
 
+
+
 ////////////////////////////////////////////////////////////////////////
 //
-//  UCS-4 string
+//  Generic string implementation
 //
-//  String is built of 32-bit units (longs)
-//
-//  NOTE: Ambiguity between UCS-2 and UTF-16 above makes no difference
-//  NOTE:  in the case of UCS-4 and UTF-32 since they really are
-//  NOTE:  identical
+//  String is built of char_type units 
+//  Encoding could be any single-byte or multi-byte encoding
 //
 ////////////////////////////////////////////////////////////////////////
 
-class ABI_EXPORT UT_UCS4Stringbuf
+template <typename char_type>
+UT_StringImpl<char_type>::UT_StringImpl()
+	:	m_psz(0),
+		m_pEnd(0),
+		m_size(0),
+		m_utf8string(0)
 {
-public:
-	typedef UT_UCS4Char char_type;
+}
 
-	/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
-	 * UCS-4 value for that sequence; the pointer and length-remaining are incremented
-	 * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
-	 * end of the string
-	 */
-	static UT_UCS4Char UTF8_to_UCS4 (const char *& buffer, size_t & length);
+template <typename char_type>
+UT_StringImpl<char_type>::UT_StringImpl(const UT_StringImpl<char_type>& rhs)
+	:	m_psz(new char_type[rhs.capacity()]),
+		m_pEnd(m_psz + rhs.size()),
+		m_size(rhs.capacity()),
+		m_utf8string(0)
+{
+	copy(m_psz, rhs.m_psz, rhs.capacity());
+}
 
-	/* Returns -1 if ucs4 is not valid UCS-4, 0 if ucs4 is 0, 1-6 otherwise
-	 */
-	static int UTF8_ByteLength (UT_UCS4Char ucs4);
+template <typename char_type>
+UT_StringImpl<char_type>::UT_StringImpl(const char_type* sz, size_t n)
+:	m_psz(new char_type[n+1]),
+	m_pEnd(m_psz + n),
+	m_size(n+1),
+	m_utf8string(0)
+{
+	copy(m_psz, sz, n);
+	m_psz[n] = 0;
+}
 
-	/* appends to the buffer the UTF-8 sequence corresponding to the UCS-4 value;
-	 * the pointer and length-remaining are incremented and decremented respectively;
-	 * returns false if not valid UCS-4 or if (length < UTF8_ByteLength (ucs4))
-	 */
-	static bool UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Char ucs4);
+template <typename char_type>
+UT_StringImpl<char_type>::UT_StringImpl(const std::basic_string<char_type> &s)
+:	m_psz(new char_type[s.size()+1]),
+	m_pEnd(m_psz + s.size()),
+	m_size(s.size()+1),
+	m_utf8string(0)
+{
+	// string is terminated here, so we know
+	strcpy(m_psz, s.c_str());
+}
 
-	UT_UCS4Stringbuf();
-	UT_UCS4Stringbuf(const UT_UCS4Stringbuf& rhs);
-	UT_UCS4Stringbuf(const char_type* sz, size_t n);
-	~UT_UCS4Stringbuf();
 
-	void		operator=(const UT_UCS4Stringbuf& rhs);
+template <typename char_type>
+UT_StringImpl<char_type>::~UT_StringImpl()
+{
+	clear();
+}
 
-	void		assign(const char_type* sz, size_t n);
-	void		append(const char_type* sz, size_t n);
-	void		append(const UT_UCS4Stringbuf& rhs);
 
-	void		swap(UT_UCS4Stringbuf& rhs);
-	void		clear();
-	void        reserve(size_t n);
+template <typename char_type>
+void UT_StringImpl<char_type>::operator=(const UT_StringImpl<char_type>& rhs)
+{
+	if (this != &rhs)
+	{
+		clear();
+		assign(rhs.m_psz, rhs.size());
+	}
+}
 
-	bool				empty()		const { return m_psz == m_pEnd; }
-	size_t				size()		const { return m_pEnd - m_psz; }
-	size_t				capacity()	const { return m_size; }
-	const char_type*	data()		const { return m_psz; }
-	char_type*			data() 			  { return m_psz; }
+template <typename char_type>
+void UT_StringImpl<char_type>::assign(const char_type* sz, size_t n)
+{
+	if (n)
+	{
+		if (n >= capacity())
+		{
+			grow_nocopy(n);
+		}
+		copy(m_psz, sz, n);
+		m_psz[n] = 0;
+		m_pEnd = m_psz + n;
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	} else {
+		clear();
+	}
+}
 
-	const char*			utf8_data();
+template <typename char_type>
+void UT_StringImpl<char_type>::append(const char_type* sz, size_t n)
+{
+	if (!n)
+	{
+		return;
+	}
+	if (!capacity())
+	{
+		assign(sz, n);
+		return;
+	}
+	const size_t nLen = size();
+	grow_copy(nLen + n);
+	copy(m_psz + nLen, sz, n);
+	m_psz[nLen + n] = 0;
+	m_pEnd += n;
+}
 
-private:
-	void	grow_nocopy(size_t n);
-	void	grow_copy(size_t n);
-	void	grow_common(size_t n, bool bCopy);
+template <typename char_type>
+void UT_StringImpl<char_type>::append(const UT_StringImpl<char_type>& rhs)
+{
+	append(rhs.m_psz, rhs.size());
+}
 
-	static void copy(char_type* pDest, const char_type* pSrc, size_t n);
+template <typename char_type>
+void UT_StringImpl<char_type>::swap(UT_StringImpl<char_type>& rhs)
+{
+	std::swap(m_psz , rhs.m_psz );
+	std::swap(m_pEnd, rhs.m_pEnd);
+	std::swap(m_size, rhs.m_size);
+	std::swap(m_utf8string, rhs.m_utf8string);
+}
 
-	char_type*	m_psz;
-	char_type*	m_pEnd;
-	size_t		m_size;
+template <typename char_type>
+void UT_StringImpl<char_type>::clear()
+{
+	if (m_psz)
+	{
+		delete[] m_psz;
+		m_psz = 0;
+		m_pEnd = 0;
+		m_size = 0;
+	}
+	if(m_utf8string) {
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	}
+}
 
-	char*		m_utf8string;
-};
+template <typename char_type>
+void UT_StringImpl<char_type>::reserve(size_t n)
+{
+	grow_nocopy(n);
+}
+
+
+template <typename char_type>
+const char*	UT_StringImpl<char_type>::utf8_data() 
+{ 
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return ""; 
+}
+
+
+template <typename char_type>
+void UT_StringImpl<char_type>::grow_nocopy(size_t n)
+{
+	grow_common(n, false);
+}
+
+template <typename char_type>
+void UT_StringImpl<char_type>::grow_copy(size_t n)
+{
+	grow_common(n, true);
+}
+
+template <typename char_type>
+void UT_StringImpl<char_type>::grow_common(size_t n, bool bCopy)
+{
+	++n;	// allow for zero termination
+	if (n > capacity())
+	{
+		const size_t nCurSize = size();
+		n = std::max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
+		char_type* pNew = new char_type[n];
+		if (bCopy && m_psz)
+		{
+			copy(pNew, m_psz, size() + 1);
+		}
+		delete[] m_psz;
+		m_psz  = pNew;
+		m_pEnd = m_psz + nCurSize;
+		m_size = n;
+		delete[] m_utf8string;
+		m_utf8string = 0;
+	}
+}
+
+template <typename char_type>
+void UT_StringImpl<char_type>::copy(char_type* pDest, const char_type* pSrc, size_t n)
+{
+	if (pDest && pSrc && n)
+		memcpy(pDest, pSrc, n * sizeof(char_type));
+}
+
 
 #endif	// UT_STRINGBUF_H

@@ -28,6 +28,8 @@
 #include <locale.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <algorithm>
+
 #include <glib.h>
 
 #include "ut_string.h"
@@ -38,6 +40,7 @@
 #include "ut_assert.h"			// UT_ASSERT
 #include "ut_mbtowc.h"
 #include "ut_bytebuf.h"
+#include "ut_unicode.h"
 
 //
 // This string class is intended to meet the following requirements.
@@ -70,6 +73,9 @@ static const char pszEmpty[] = { 0 };
 static const UT_UCS2Char ucs2Empty[] = { 0 };
 static const UT_UCS4Char ucs4Empty[] = { 0 };
 
+
+
+
 ////////////////////////////////////////////////////////////////////////
 //
 //  8-bit string
@@ -80,23 +86,23 @@ static const UT_UCS4Char ucs4Empty[] = { 0 };
 ////////////////////////////////////////////////////////////////////////
 
 UT_String::UT_String()
-:	pimpl(new UT_Stringbuf)
+:	pimpl(new UT_StringImpl<char>)
 {
 }
 
 UT_String::UT_String(const char* sz, size_t n)
-:	pimpl(new UT_Stringbuf(sz, n ? n : (sz && *sz ? strlen(sz) : 0)))
+:	pimpl(new UT_StringImpl<char>(sz, n ? n : (sz && *sz ? strlen(sz) : 0)))
 {
 }
 
 UT_String::UT_String(const std::basic_string<char> & s)
-	: pimpl(new UT_Stringbuf(s))
+	: pimpl(new UT_StringImpl<char>(s))
 {
 }
 
 
 UT_String::UT_String(const UT_String& rhs)
-:	pimpl(new UT_Stringbuf(*rhs.pimpl))
+:	pimpl(new UT_StringImpl<char>(*rhs.pimpl))
 {
 }
 
@@ -170,7 +176,7 @@ UT_String& UT_String::operator+=(const UT_String& rhs)
 	if (this != &rhs) {
 		pimpl->append(*rhs.pimpl);
 	} else {
-		UT_Stringbuf t(*rhs.pimpl);
+		UT_StringImpl<char> t(*rhs.pimpl);
 		pimpl->append(t);
 	}
 	return *this;
@@ -197,9 +203,7 @@ UT_String& UT_String::operator+=(char rhs)
 
 void UT_String::swap(UT_String& rhs)
 {
-	UT_Stringbuf* p = pimpl;
-	pimpl = rhs.pimpl;
-	rhs.pimpl = p;
+	std::swap(pimpl, rhs.pimpl);
 }
 
 void UT_String::reserve(size_t n)
@@ -1247,8 +1251,9 @@ UT_UCS4String UT_UTF8String::ucs4_str ()
 
 	while (true)
 	{
-		UT_UCS4Char ucs4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (utf8string, bytelength);
-		if (ucs4 == 0) break;
+		UT_UCS4Char ucs4 = UT_Unicode::UTF8_to_UCS4 (utf8string, bytelength);
+		if (ucs4 == 0) 
+			break;
 		ucs4string += ucs4;
 	}
 	return ucs4string;
@@ -1321,31 +1326,31 @@ UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inForm
 ////////////////////////////////////////////////////////////////////////
 
 UT_UCS4String::UT_UCS4String()
-:	pimpl(new UT_UCS4Stringbuf)
+	: pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 }
 
 UT_UCS4String::UT_UCS4String(const UT_UCS4Char* sz, size_t n)
-:	pimpl(new UT_UCS4Stringbuf(sz, n ? n : (sz) ? UT_UCS4_strlen(sz) : 0))
+	:	pimpl(new UT_StringImpl<UT_UCS4Char>(sz, n ? n : (sz) ? UT_UCS4_strlen(sz) : 0))
 {
 }
 
 UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
-:	pimpl(new UT_UCS4Stringbuf(*rhs.pimpl))
+	:	pimpl(new UT_StringImpl<UT_UCS4Char>(*rhs.pimpl))
 {
 }
 
 /* construct from a string in UTF-8 format
  */
 UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */)
-:	pimpl(new UT_UCS4Stringbuf)
+	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
 		if (utf8_str == 0 || *utf8_str == '\0') return;
 		bytelength = strlen (utf8_str);
 	}
 	while (true) {
-		UT_UCS4Char ucs4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (utf8_str, bytelength);
+		UT_UCS4Char ucs4 = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
 		if (ucs4 == 0) break; // end-of-string
 		pimpl->append (&ucs4, 1);
 	}
@@ -1357,16 +1362,17 @@ UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == ze
  * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS4_isspace()
  */
 UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace)
-:	pimpl(new UT_UCS4Stringbuf)
+	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
 		if (utf8_str == 0 || *utf8_str == '\0') return;
 		bytelength = strlen (utf8_str);
 	}
-	UT_UCS4Char ucs4a = UT_UCS4Stringbuf::UTF8_to_UCS4 (utf8_str, bytelength);
+	UT_UCS4Char ucs4a = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
 	while (true) {
-		if (ucs4a == 0) break; // end-of-string
-		UT_UCS4Char ucs4b = UT_UCS4Stringbuf::UTF8_to_UCS4 (utf8_str, bytelength);
+		if (ucs4a == 0) 
+			break; // end-of-string
+		UT_UCS4Char ucs4b = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
 		if (UT_UCS4_isspace (ucs4a)) {
 			if (strip_whitespace) {
 				if (!UT_UCS4_isspace (ucs4b)) {
@@ -1471,7 +1477,7 @@ UT_UCS4String& UT_UCS4String::operator+=(const UT_UCS4String& rhs)
 	if (this != &rhs) {
 		pimpl->append(*rhs.pimpl);
 	} else {
-		UT_UCS4Stringbuf t(*rhs.pimpl);
+		UT_StringImpl<UT_UCS4Char> t(*rhs.pimpl);
 		pimpl->append(t);
 	}
 	return *this;
@@ -1497,7 +1503,7 @@ UT_UCS4String& UT_UCS4String::operator+=(UT_UCS4Char rhs)
 
 UT_UCS4String& UT_UCS4String::operator+=(char rhs)
 {
-  return this->operator+=(static_cast<unsigned char>(rhs));
+	return this->operator+=(static_cast<unsigned char>(rhs));
 }
 
 UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
@@ -1514,9 +1520,7 @@ UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
 
 void UT_UCS4String::swap(UT_UCS4String& rhs)
 {
-	UT_UCS4Stringbuf* p = pimpl;
-	pimpl = rhs.pimpl;
-	rhs.pimpl = p;
+	std::swap(pimpl, rhs.pimpl);
 }
 
 
