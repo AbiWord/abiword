@@ -30,67 +30,15 @@
 
 /*******************************************************************/
 
-NSTextStorage *   XAP_CocoaFont::s_fontMetricsTextStorage   = nil;
-NSLayoutManager * XAP_CocoaFont::s_fontMetricsLayoutManager = nil;
-NSTextContainer * XAP_CocoaFont::s_fontMetricsTextContainer = nil;
+ATSUTextLayout XAP_CocoaFont::s_atsuLayout = NULL;
 
 /*******************************************************************/
-
-XAP_CocoaFont_LayoutHelper::XAP_CocoaFont_LayoutHelper(NSFont * font) :
-	m_fontattr(nil),
-	m_storage(nil),
-	m_layout(nil)
-{
-	m_fontattr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
-	[m_fontattr retain];
-
-	m_storage = [[NSTextStorage alloc] initWithString:@"" attributes:m_fontattr];
-	m_layout  = [[NSLayoutManager alloc] init];
-
-	NSTextContainer * textContainer = [[NSTextContainer alloc] init];
-
-	[m_layout  addTextContainer:textContainer];
-	[m_storage addLayoutManager:m_layout];
-
-	[textContainer release];
-}
-
-XAP_CocoaFont_LayoutHelper::~XAP_CocoaFont_LayoutHelper()
-{
-	[m_fontattr release];
-	[m_storage release];
-	[m_layout release];
-}
-
-bool XAP_CocoaFont_LayoutHelper::setUnichar(UT_UCS4Char c, NSGlyph & firstGlyph)
-{
-	unichar uc = (unichar) c;
-	return setString([NSString stringWithCharacters:&uc length:1], firstGlyph);
-}
-
-bool XAP_CocoaFont_LayoutHelper::setString(NSString * str, NSGlyph & firstGlyph)
-{
-	NSAttributedString * attr_str = [[NSAttributedString alloc] initWithString:str attributes:m_fontattr];
-	[m_storage setAttributedString:attr_str];
-	[attr_str release];
-
-	bool bOkay = false;
-
-	if ([m_layout isValidGlyphIndex:0])
-	{
-		bOkay = true;
-		firstGlyph = [m_layout glyphAtIndex:0];
-	}
-	return bOkay;
-}
 
 
 XAP_CocoaFont::XAP_CocoaFont()
   : GR_Font(),
 	m_font(nil),
-	m_fontForCache(nil),
-	m_fontProps(nil),
-	m_LayoutHelper(NULL),
+	m_styleForCache(NULL),
 	_m_coverage(NULL)
 {
 	m_hashKey = "";
@@ -102,9 +50,7 @@ XAP_CocoaFont::XAP_CocoaFont()
 XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
   : GR_Font(),
 	m_font(nil),
-	m_fontForCache(nil),
-	m_fontProps(nil),
-	m_LayoutHelper(NULL),
+	m_styleForCache(NULL),
 	_m_coverage(NULL)
 {
 	m_hashKey = [[font fontName] UTF8String];
@@ -118,9 +64,7 @@ XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
   : GR_Font(copy),
 	m_font(nil),
-	m_fontForCache(nil),
-	m_fontProps(nil),
-	m_LayoutHelper(NULL),
+	m_styleForCache(NULL),
 	_m_coverage(NULL)
 {
 	m_hashKey = copy.hashKey();
@@ -134,10 +78,53 @@ XAP_CocoaFont::~XAP_CocoaFont()
 {
 	// release on nil is completely safe
 	[m_font release];
-	[m_fontForCache release];
-	[m_fontProps release];
+	if (m_styleForCache) {
+		ATSUDisposeStyle(m_styleForCache);
+	}
 	DELETEP(_m_coverage);
-	DELETEP(m_LayoutHelper);
+}
+
+
+ATSUStyle XAP_CocoaFont::makeAtsuStyle(NSFont *font) const
+{
+	ATSUStyle atsuStyle;
+	OSStatus status;
+	
+	status = ::ATSUCreateStyle(&atsuStyle);
+	UT_ASSERT(status == 0);
+
+	CFStringRef fontName = (CFStringRef)[font fontName];
+	ATSFontRef fontRef = ATSFontFindFromPostScriptName(fontName, 0);
+	if (fontRef == kATSUInvalidFontID) {
+		fontRef = ATSFontFindFromName(fontName, 0);
+		if (fontRef == kATSUInvalidFontID) {
+			NSLog(@"Unable to find ATSU font %@", fontName);
+		}
+	}
+	
+	// upside down - Flipped
+	CGAffineTransform transform = CGAffineTransformMakeScale (1,-1);
+	Fixed fontSize = FloatToFixed([font pointSize]);
+	
+	ATSUAttributeTag styleTags[] = { 
+		kATSUSizeTag, 
+		kATSUFontTag, 
+		kATSUFontMatrixTag
+	};
+	ByteCount styleSizes[] = {
+		sizeof(Fixed), 
+		sizeof(ATSFontRef), 
+		sizeof(CGAffineTransform) 
+	};
+	ATSUAttributeValuePtr styleValues[] = { 
+		&fontSize, 
+		&fontRef, 
+		&transform  
+	};
+	status = ATSUSetAttributes (atsuStyle, 3, styleTags, styleSizes, styleValues);
+	UT_ASSERT(status == 0);
+
+	return atsuStyle;
 }
 
 
@@ -168,6 +155,7 @@ void XAP_CocoaFont::_resetMetricsCache()
 	_m_size = 0;
 	DELETEP(_m_coverage);
 	_m_coverage = NULL;
+	memset(_m_text, 0, sizeof(_m_text));
 }
 
 
@@ -246,6 +234,8 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	UT_UCS4Char c = remapChar(g, remapFont(m_font));
 
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+#if 0  
 	if (!m_LayoutHelper)
 	{
 		m_LayoutHelper = new XAP_CocoaFont_LayoutHelper(m_font);
@@ -269,66 +259,67 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 			}
 		}
 	}
-
+#endif
 	return bHaveGlyph;
 }
 
 UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
-	if (m_fontForCache == nil)
+	if (m_styleForCache == NULL)
 	{
-		m_fontForCache = [[NSFontManager sharedFontManager] convertFont:m_font toSize:GR_CharWidthsCache::CACHE_FONT_SIZE];
-		[m_fontForCache retain];
+		NSFont *fontForCache = [[NSFontManager sharedFontManager] convertFont:m_font toSize:GR_CharWidthsCache::CACHE_FONT_SIZE];
 
-		m_fontProps = [[NSMutableDictionary alloc] init];
-		[m_fontProps setObject:m_fontForCache forKey:NSFontAttributeName];
+		m_styleForCache = makeAtsuStyle(fontForCache);
 	}
-	return _measureChar (cChar, m_fontForCache);
+	return _measureChar (cChar, m_styleForCache);
 }
 
 #define LAYOUT_CONTAINER_WIDTH 10000.0f
 
 void XAP_CocoaFont::_initMetricsLayouts(void)
 {
-	s_fontMetricsTextStorage = [[NSTextStorage alloc] init];
-
-	s_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
-	[s_fontMetricsTextStorage addLayoutManager:s_fontMetricsLayoutManager];
-
-	s_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(LAYOUT_CONTAINER_WIDTH, 1000)];
-	[s_fontMetricsTextContainer setLineFragmentPadding:0];
-	[s_fontMetricsLayoutManager addTextContainer:s_fontMetricsTextContainer];
+	OSStatus status;
+	status = ATSUCreateTextLayout(&s_atsuLayout);
+	UT_ASSERT(status == 0);
+    ATSLineLayoutOptions lineLayoutOptions = (kATSLineFractDisable | kATSLineDisableAutoAdjustDisplayPos | 
+											  kATSLineUseDeviceMetrics | kATSLineDisableAllLayoutOperations |
+											  kATSLineKeepSpacesOutOfMargin | kATSLineHasNoHangers);
+    ATSUAttributeTag tags[] = { 
+		kATSULineLayoutOptionsTag 
+	};
+    ByteCount sizes[] = { 
+		sizeof(ATSLineLayoutOptions) 
+	};
+    ATSUAttributeValuePtr values[] = { 
+		&lineLayoutOptions 
+	};
+    status = ATSUSetLayoutControls(s_atsuLayout, 1, tags, sizes, values);
+	UT_ASSERT(status == 0);
+//    status = ATSUSetTransientFontMatching(s_atsuLayout, YES);
+//	UT_ASSERT(status == 0);
 }
 
-UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, NSFont * font) const
+UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, ATSUStyle style) const
 {
-	if (!s_fontMetricsTextStorage) {
+	if (!s_atsuLayout) {
 		_initMetricsLayouts();
-    }
-	if (!s_fontMetricsTextStorage) {
-		UT_ASSERT(s_fontMetricsTextStorage);
-		return 0;
 	}
-
+	OSStatus status;
 	UT_uint32 charWidth = 0;
 
-	unichar c2 = remapChar(cChar, remapFont(font));
+	unichar c2 = remapChar(cChar, remapFont(m_font));
+	_m_text[0] = c2;
+	status = ATSUSetTextPointerLocation(s_atsuLayout, _m_text, 0, 1, 1);
+	UT_ASSERT(status == 0);
+	status = ATSUSetRunStyle(s_atsuLayout, m_styleForCache, 0, 1);
+	UT_ASSERT(status == 0);
 
-	if (NSString * aString = [[NSString alloc] initWithCharacters:&c2 length:1]) {
-		if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps]) {
-			[s_fontMetricsTextStorage setAttributedString:attributedString];
+	ATSUTextMeasurement after;
+	status = ::ATSUGetUnjustifiedBounds(s_atsuLayout, 0, 1,
+										NULL, &after, NULL, NULL);
+	UT_ASSERT(status == 0);
+	charWidth = FixedToInt(after);
 
-			NSRange glyphRange = [s_fontMetricsLayoutManager glyphRangeForTextContainer:s_fontMetricsTextContainer];
-			if (glyphRange.length) {
-				NSRect rect = [s_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange inTextContainer:s_fontMetricsTextContainer];
-				if (rect.size.width < LAYOUT_CONTAINER_WIDTH) {
-					charWidth = static_cast<UT_uint32>(rect.size.width);
-				}
-			}
-			[attributedString release];
-		}
-		[aString release];
-	}
 	return charWidth;
 }
 

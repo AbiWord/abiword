@@ -28,21 +28,6 @@
 #include "ut_vector.h"
 #include "gr_Graphics.h"
 
-class XAP_CocoaFont_LayoutHelper
-{
-private:
-	NSDictionary *		m_fontattr;
-	NSTextStorage *		m_storage;
-	NSLayoutManager *	m_layout;
-
-public:
-	XAP_CocoaFont_LayoutHelper(NSFont * font);
-
-	~XAP_CocoaFont_LayoutHelper();
-
-	bool	setUnichar(UT_UCS4Char c, NSGlyph & firstGlyph);
-	bool	setString(NSString * str, NSGlyph & firstGlyph);
-};
 
 /*
   We derive our handle from GR_Font so we can be passed around the GR
@@ -60,7 +45,9 @@ public:
 
 	~XAP_CocoaFont();
 
-	NSFont * 				getNSFont(void) const { return m_font; }
+	ATSUStyle               makeAtsuStyle(NSFont *font) const;
+	NSFont * 				getNSFont(void) const 
+		{ return m_font; }
 
 	UT_uint32				getSize(void);
 	const char * 			getName(void);
@@ -98,10 +85,7 @@ private:
 	RemapFont						m_rfRemap;
 
 	NSFont *						m_font;
-	mutable NSFont *				m_fontForCache;
-	mutable NSMutableDictionary *	m_fontProps;
-
-	XAP_CocoaFont_LayoutHelper *	m_LayoutHelper;
+	mutable ATSUStyle                       m_styleForCache;
 
 	void					_resetMetricsCache();
 	static void				_initMetricsLayouts(void);
@@ -109,7 +93,7 @@ private:
 	/*!
 		Measure the char for the given NSFont
 	 */
-	UT_sint32				_measureChar(UT_UCSChar cChar, NSFont * font) const;
+	UT_sint32				_measureChar(UT_UCSChar cChar, ATSUStyle style) const;
 
 	/* metrics cache */
 	UT_uint32						_m_size;
@@ -117,11 +101,10 @@ private:
 	volatile float							_m_descent;
 	volatile float							_m_height;
 	UT_NumberVector *				_m_coverage;
+	mutable unichar         _m_text[2]; /**< buffer for the text layout */
 
 	/*! static metrics stuff */
-	static NSTextStorage *		s_fontMetricsTextStorage;
-	static NSLayoutManager *	s_fontMetricsLayoutManager;
-	static NSTextContainer *	s_fontMetricsTextContainer;
+	static ATSUTextLayout       s_atsuLayout;
 };
 
 @interface XAP_CocoaFontFamilyHelper : NSObject
