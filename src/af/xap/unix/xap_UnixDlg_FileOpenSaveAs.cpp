@@ -998,7 +998,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	}
 	
  Cleanup:
-	DELETEP(file_name);
+	FREEP(file_name);
 	DELETEP(pImage);
 	DELETEP(pGr);
 	DELETEP(pGraphic);
