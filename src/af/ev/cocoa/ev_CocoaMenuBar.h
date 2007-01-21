@@ -28,7 +28,6 @@
 #include "ev_CocoaMenu.h"
 
 class AV_View;
-class XAP_CocoaApp;
 class AP_CocoaFrame;
 class EV_CocoaMenuBar;
 
@@ -82,7 +81,7 @@ struct EV_CocoaCommandKeyRef
 class EV_CocoaMenuBar : public EV_CocoaMenu
 {
 public:
-	EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName);
+	EV_CocoaMenuBar(const char * szMenuLayoutName, const char * szMenuLabelSetName);
 
 	virtual ~EV_CocoaMenuBar();
 

@@ -75,8 +75,7 @@ GR_Graphics * XAP_CocoaDialog_Print::getPrinterGraphicsContext(void)
 	if (m_pPrintGraphics == NULL) {
 		NSSize size = [[NSPrintInfo sharedPrintInfo] paperSize];	// TODO get the size from a real data
 		XAP_PrintingNSView* printingView = [[XAP_PrintingNSView  alloc] initWithFrame:NSMakeRect(0,0,size.width,size.height)];
-		//m_pPrintGraphics = new GR_CocoaGraphics (static_cast<NSView*>(printingView), XAP_App::getApp());	
-		GR_CocoaAllocInfo ai(static_cast<NSView*>(printingView), XAP_App::getApp());
+		GR_CocoaAllocInfo ai(static_cast<NSView*>(printingView));
 		m_pPrintGraphics = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 		m_pPrintGraphics->setIsPrinting(true);
 	}

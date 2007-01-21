@@ -300,6 +300,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 {
 	if (!XAP_AppController_Instance)
 	{
+		UT_DEBUGMSG(("sharedAppController does not exist.\n"));
 		[[XAP_CocoaAppController alloc] init];
 	}
 	return XAP_AppController_Instance;
@@ -307,6 +308,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (id)init 
 {
+	UT_DEBUGMSG(("create the XAP_CocoaAppController init\n"));
 	if (XAP_AppController_Instance)
 	{
 		NSLog (@"Attempt to allocate more that one XAP_CocoaAppController");

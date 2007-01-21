@@ -72,7 +72,7 @@ class AP_CocoaFrame;
 class EV_CocoaMenu : public EV_Menu
 {
 public:
-	EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu);
+	EV_CocoaMenu(const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu);
 
 	virtual ~EV_CocoaMenu();
 
@@ -91,8 +91,6 @@ private:
 	/*
 	static NSString *	_getItemCmd (const char * mnemonic, unsigned int & modifiers, UT_uint32 * keyRefKey = 0);
 	 */
-	XAP_CocoaApp *			m_pCocoaApp;
-	
 	EV_CocoaMenuTarget *	m_menuTarget;
 	EV_CocoaFontTarget *	m_fontTarget;
 	XAP_CocoaAppMenu_Id		m_AppMenuCurrent;

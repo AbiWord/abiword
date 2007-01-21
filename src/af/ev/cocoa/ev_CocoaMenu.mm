@@ -52,8 +52,8 @@
 #include "ap_CocoaFrame.h"
 #include "ap_Menu_Id.h"
 
-EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName) :
-	EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName, false)
+EV_CocoaMenuBar::EV_CocoaMenuBar(const char * szMenuLayoutName, const char * szMenuLabelSetName) :
+	EV_CocoaMenu(szMenuLayoutName, szMenuLabelSetName, false)
 {
 	// 
 }
@@ -64,8 +64,8 @@ EV_CocoaMenuBar::~EV_CocoaMenuBar()
 }
 
 
-EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName) :
-	EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName, true)
+EV_CocoaMenuPopup::EV_CocoaMenuPopup(const char * szMenuLayoutName, const char * szMenuLabelSetName) :
+	EV_CocoaMenu(szMenuLayoutName, szMenuLabelSetName, true)
 {
 	// 
 }
@@ -349,9 +349,8 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
 
 @end
 
-EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu) :
-	EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
-	m_pCocoaApp(pCocoaApp),
+EV_CocoaMenu::EV_CocoaMenu(const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu) :
+	EV_Menu(XAP_App::getApp(), XAP_App::getApp()->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	m_menuTarget(0),
 	m_fontTarget(0),
 	m_AppMenuCurrent(static_cast<XAP_CocoaAppMenu_Id>(0)),
@@ -394,7 +393,7 @@ void EV_CocoaMenu::buildAppMenu()
 
 	m_AppMenuCurrent = static_cast<XAP_CocoaAppMenu_Id>(0); // XAP_CocoaAppMenu_AbiWord, technically
 
-	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = XAP_App::getApp()->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	if (!pMenuActionSet)
 		return;
@@ -499,7 +498,7 @@ void EV_CocoaMenu::buildAppMenu()
 				{
 					MenuStack_clear();
 
-					const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+					const char ** data = getLabelName(XAP_App::getApp(), pAction, pLabel);
 					UT_ASSERT(data);
 					if (!data)
 						break; // erk!
@@ -524,7 +523,7 @@ void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pActi
 		{
 		case EV_MLF_BeginSubMenu:
 			{
-				const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+				const char ** data = getLabelName(XAP_App::getApp(), pAction, pLabel);
 				UT_ASSERT(data);
 				if (!data)
 					break; // erk!
@@ -560,7 +559,7 @@ void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pActi
 
 		case EV_MLF_Normal:
 			{
-				const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+				const char ** data = getLabelName(XAP_App::getApp(), pAction, pLabel);
 				UT_ASSERT(data);
 				if (!data)
 					break; // erk!
@@ -693,7 +692,7 @@ void EV_CocoaMenu::addToAppMenu(NSMenuItem * item)
 
 bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 {
-	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = XAP_App::getApp()->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	if (!pMenuActionSet)
 		return false;
@@ -708,7 +707,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 	if (!szMethodName)
 		return false;
 	
-	const EV_EditMethodContainer * pEMC = m_pCocoaApp->getEditMethodContainer();
+	const EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 	if (!pEMC)
 		return false;
@@ -720,7 +719,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 
 	UT_String script_name(pAction->getScriptName());
 
-	XAP_Frame * frame = m_pCocoaApp->getLastFocussedFrame();
+	XAP_Frame * frame = XAP_App::getApp()->getLastFocussedFrame();
 
 	AV_View * view = frame ? frame->getCurrentView() : 0;
 

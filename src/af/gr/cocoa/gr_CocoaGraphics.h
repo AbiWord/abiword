@@ -42,14 +42,16 @@ class StNSViewLocker;
 class GR_CocoaAllocInfo : public GR_AllocInfo
 {
 public:
-	GR_CocoaAllocInfo(NSView * v, XAP_App * app)
-		: m_view(v), m_app(app) {};
+	GR_CocoaAllocInfo(NSView * v)
+		: GR_AllocInfo(),
+		  m_view(v)
+		{
+		}
 
 	virtual GR_GraphicsId getType() const {return GRID_COCOA;}
 	virtual bool isPrinterGraphics() const { return false; }
 	
 	NSView *m_view;
-	XAP_App *m_app;
 };
 
 class GR_CocoaGraphics : public GR_Graphics

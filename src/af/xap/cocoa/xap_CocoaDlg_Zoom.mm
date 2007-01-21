@@ -79,8 +79,7 @@ void XAP_CocoaDialog_Zoom::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	XAP_CocoaNSView* view = [m_dlg preview];
 	NSSize size = [view bounds].size;
-	//m_pGR = new GR_CocoaGraphics(view, m_pApp);
-	GR_CocoaAllocInfo ai(view, m_pApp);
+	GR_CocoaAllocInfo ai(view);
 	m_pGR = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	_createPreviewFromGC(m_pGR, lrintf(size.width), lrintf(size.height));

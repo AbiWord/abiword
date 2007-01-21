@@ -401,7 +401,7 @@ bool AP_CocoaApp::initialize(void)
 
 	// synthesize a menu from the info in our base class.
 
-	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName, m_szMenuLabelSetName);
+	m_pCocoaMenu = new EV_CocoaMenuBar(m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pCocoaMenu);
 	if (!m_pCocoaMenu)
 		return false;
@@ -429,7 +429,7 @@ void AP_CocoaApp::rebuildMenus(void)
 	// getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
 
 	DELETEP(m_pCocoaMenu);
-	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName, m_szMenuLabelSetName);
+	m_pCocoaMenu = new EV_CocoaMenuBar(m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pCocoaMenu);
 
 	m_pCocoaMenu->buildAppMenu();
@@ -444,6 +444,7 @@ void AP_CocoaApp::rebuildMenus(void)
 */
 XAP_Frame * AP_CocoaApp::newFrame(void)
 {
+	UT_DEBUGMSG(("AP_CocoaApp::newFrame()\n"));
     AP_CocoaFrame * pCocoaFrame = new AP_CocoaFrame();
 
     if (pCocoaFrame)
@@ -509,7 +510,7 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
     static gchar buf[1024];
     UT_ASSERT((strlen(dir) + strlen(psz) + 2) < sizeof(buf));
 	
-    sprintf(buf,"%s/%s",dir,psz);
+    snprintf(buf, 1024, "%s/%s",dir,psz);
     *pszValue = buf;
     return true;
 }
@@ -528,7 +529,7 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
     static gchar buf[1024];
     UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(PACKAGE_NAME) + 2) < sizeof(buf));
 
-    sprintf(buf,"%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);
+    snprintf(buf, 1024, "%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);
     return buf;
 #endif
 }

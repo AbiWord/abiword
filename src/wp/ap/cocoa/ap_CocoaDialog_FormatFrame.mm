@@ -80,8 +80,8 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	/* make a new Cocoa GC
 	 */
 	DELETEP(m_pPreviewWidget);
-	GR_CocoaAllocInfo ai(view, m_pApp);
-	m_pPreviewWidget = (GR_CocoaGraphics *) m_pApp->newGraphics(ai); // m_pPreviewWidget = new GR_CocoaGraphics(view, m_pApp);
+	GR_CocoaAllocInfo ai(view);
+	m_pPreviewWidget = (GR_CocoaGraphics *) m_pApp->newGraphics(ai);
 
 	/* TODO: we need a good widget to query with a probable non-white (i.e. gray, or
 	 *       a similar bgcolor as our parent widget) background. This should be fine.

@@ -58,7 +58,6 @@ class EV_CocoaMenuBar;
 class EV_CocoaMenuPopup;
 class XAP_DialogFactory;
 class XAP_Frame;
-class XAP_CocoaApp;
 class GR_CocoaGraphics;
 
 class XAP_CocoaFrameImpl : public XAP_FrameImpl
@@ -112,7 +111,6 @@ public:
     virtual void                _rebuildToolbar(UT_uint32 ibar);
 	void                        _setController (XAP_CocoaFrameController * ctrl);
 	XAP_CocoaFrameController *	_getController () { return m_frameController; };
-	XAP_CocoaApp *				_getApp () { return m_pCocoaApp; };
 	virtual NSString *			_getNibName () = 0;
 	virtual XAP_CocoaFrameController *_createController() = 0;
 	static void				setToolbarRect(const NSRect &r);
@@ -128,7 +126,6 @@ protected:
 	virtual UT_RGBColor 		getColorSelBackground () const;
 private:
 	AP_CocoaDialogFactory		m_dialogFactory;
-	XAP_CocoaApp *				m_pCocoaApp;
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
 	
 	XAP_CocoaFrameController *		m_frameController;

@@ -68,7 +68,7 @@
 #undef USE_COCOA_RENDER
 
 
-#define CONTEXT_LOCKED__ m_viewLocker
+#define CONTEXT_LOCKED__ (m_viewLocker != NULL)
 #define LOCK_CONTEXT__   UT_ASSERT(CONTEXT_LOCKED__)
 
 /*#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin); \
@@ -1816,7 +1816,7 @@ float	GR_CocoaGraphics::_getScreenResolution(void)
 
 GR_Graphics *  GR_CocoaGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
-	GR_CocoaAllocInfo & allocator = (GR_CocoaAllocInfo&)info;
+	GR_CocoaAllocInfo & allocator = static_cast<GR_CocoaAllocInfo&>(info);
 	
 	return new GR_CocoaGraphics(allocator.m_view);
 }

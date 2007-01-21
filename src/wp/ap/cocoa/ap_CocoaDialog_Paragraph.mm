@@ -91,8 +91,7 @@ void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 void	AP_CocoaDialog_Paragraph::_createGC(XAP_CocoaNSView* owner)
 {
 	NSSize  size;
-	//m_pGraphics = new GR_CocoaGraphics(owner, XAP_App::getApp());
-	GR_CocoaAllocInfo ai(owner, XAP_App::getApp());
+	GR_CocoaAllocInfo ai(owner);
 	m_pGraphics = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	size = [owner bounds].size;

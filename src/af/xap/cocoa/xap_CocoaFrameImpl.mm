@@ -47,6 +47,7 @@
 #import "xap_CocoaToolPalette.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
+#import "xap_FrameNSWindow.h"
 
 /*****************************************************************/
 
@@ -69,7 +70,7 @@ int XAP_CocoaFrameImpl::_fe::abi_expose_repaint(void * p)
 //
 	UT_Rect localCopy;
 	XAP_Frame * pF = (XAP_Frame *)p;
-	FV_View * pV = (FV_View *) pF->getCurrentView();
+	FV_View * pV = dynamic_cast<FV_View *>(pF->getCurrentView());
 	if(!pV)
 	{ 
 		return TRUE;
@@ -118,6 +119,13 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 	  m_iAbiRepaintID(0)
 {
 //	m_pView = NULL;
+
+	// dirty hack to make sure the frame is compiled in as the class is only 
+	// referenced from a nib.
+	XAP_FrameNSWindow *p = nil;
+	if (0) {
+		p = [[[XAP_FrameNSWindow alloc] init] autorelease];
+	}
 }
 
 // TODO when cloning a new frame from an existing one
@@ -257,7 +265,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	[theWindow setTitle:[NSString stringWithUTF8String:m_pCocoaApp->getApplicationTitleForTitleBar()]];
+	[theWindow setTitle:[NSString stringWithUTF8String:XAP_App::getApp()->getApplicationTitleForTitleBar()]];
 
 	// create a toolbar instance for each toolbar listed in our base class.
 
@@ -282,7 +290,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	UT_uint32 width, height;
 	XAP_CocoaApp::windowGeometryFlags f;
 
-	m_pCocoaApp->getGeometry(&x, &y, &width, &height, &f);
+	dynamic_cast<XAP_CocoaApp*>(XAP_App::getApp())->getGeometry(&x, &y, &width, &height, &f);
 
 	// Set the size if requested
 	NSSize userSize;
@@ -316,7 +324,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		userSize.height = screenFrame.size.height;
 		userSize.width  = rintf(screenFrame.size.height * 0.9f);
 
-		if (m_pCocoaApp->getFrameCount() == 1)
+		if (XAP_App::getApp()->getFrameCount() == 1)
 		{
 			s_iNewFrameOffsetX = 0;
 			s_iNewFrameOffsetY = 0;
@@ -468,7 +476,7 @@ bool XAP_CocoaFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char 
 
 	UT_ASSERT(!m_pCocoaPopup);
 
-	m_pCocoaPopup = new EV_CocoaMenuPopup(m_pCocoaApp,szMenuName,m_szMenuLabelSetName);
+	m_pCocoaPopup = new EV_CocoaMenuPopup(szMenuName, m_szMenuLabelSetName);
 	if (m_pCocoaPopup && m_pCocoaPopup->synthesizeMenuPopup()) {
 		NSEvent *evt = [NSApp currentEvent];
 		[NSMenu popUpContextMenu:m_pCocoaPopup->getMenuHandle() withEvent:evt forView:[m_frameController getMainView]];
@@ -483,7 +491,7 @@ bool XAP_CocoaFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char 
 
 void XAP_CocoaFrameImpl::setTimeOfLastEvent(NSTimeInterval timestamp)
 {
-	m_pCocoaApp->setTimeOfLastEvent(timestamp);
+	dynamic_cast<XAP_CocoaApp*>(XAP_App::getApp())->setTimeOfLastEvent(timestamp);
 }
 
 EV_Toolbar * XAP_CocoaFrameImpl::_newToolbar(XAP_Frame *frame,
@@ -505,7 +513,7 @@ void XAP_CocoaFrameImpl::_queue_resize()
 
 EV_Menu* XAP_CocoaFrameImpl::_getMainMenu()
 {
-	return m_pCocoaApp->getCocoaMenuBar();
+	return dynamic_cast<XAP_CocoaApp*>(XAP_App::getApp())->getCocoaMenuBar();
 }
 
 

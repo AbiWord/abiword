@@ -115,8 +115,7 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	// make a new Cocoa GC
 	XAP_CocoaNSView* view = [m_dlg preview];
 	NSSize size = [view frame].size;
-	//m_pG = new GR_CocoaGraphics(view, m_pApp);
-	GR_CocoaAllocInfo ai(view, m_pApp);
+	GR_CocoaAllocInfo ai(view);
 	m_pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
