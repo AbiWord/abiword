@@ -394,7 +394,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
 
 
 
-GR_CocoaGraphics::GR_CocoaGraphics(NSView * win) :
+GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView * win) :
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_pWin(win),

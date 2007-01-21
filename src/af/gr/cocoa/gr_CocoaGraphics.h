@@ -37,12 +37,12 @@ class XAP_CocoaFont;
 
 class StNSViewLocker;
 
-@class XAP_CocoaNSView, XAP_CocoaNSScrollView;
+@class XAP_CocoaNSView;
 
 class GR_CocoaAllocInfo : public GR_AllocInfo
 {
 public:
-	GR_CocoaAllocInfo(NSView * v)
+	GR_CocoaAllocInfo(XAP_CocoaNSView * v)
 		: GR_AllocInfo(),
 		  m_view(v)
 		{
@@ -51,7 +51,7 @@ public:
 	virtual GR_GraphicsId getType() const {return GRID_COCOA;}
 	virtual bool isPrinterGraphics() const { return false; }
 	
-	NSView *m_view;
+	XAP_CocoaNSView *m_view;
 };
 
 class GR_CocoaGraphics : public GR_Graphics
@@ -187,7 +187,7 @@ class GR_CocoaGraphics : public GR_Graphics
 
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_CocoaGraphics(NSView * view);
+	GR_CocoaGraphics(XAP_CocoaNSView * view);
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
 								  const char* pszFontVariant, 

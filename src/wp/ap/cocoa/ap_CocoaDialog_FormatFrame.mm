@@ -344,14 +344,14 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 		[[_positionPopUp itemAtIndex:1] setState:NSOffState];
 		[[_positionPopUp itemAtIndex:2] setState:NSOffState];
 
-		[ _rightBorderBtn setImage:[NSImage imageNamed:@"tb_LineRight"]];
-		[   _topBorderBtn setImage:[NSImage imageNamed:@"tb_LineTop"]];
-		[  _leftBorderBtn setImage:[NSImage imageNamed:@"tb_LineLeft"]];
+		[_rightBorderBtn setImage:[NSImage imageNamed:@"tb_LineRight"]];
+		[_topBorderBtn setImage:[NSImage imageNamed:@"tb_LineTop"]];
+		[_leftBorderBtn setImage:[NSImage imageNamed:@"tb_LineLeft"]];
 		[_bottomBorderBtn setImage:[NSImage imageNamed:@"tb_LineBottom"]];
 
-		[ _rightBorderBtn setMenu:_linestyleMenu withController:self];
-		[   _topBorderBtn setMenu:_linestyleMenu withController:self];
-		[  _leftBorderBtn setMenu:_linestyleMenu withController:self];
+		[_rightBorderBtn setMenu:_linestyleMenu withController:self];
+		[_topBorderBtn setMenu:_linestyleMenu withController:self];
+		[_leftBorderBtn setMenu:_linestyleMenu withController:self];
 		[_bottomBorderBtn setMenu:_linestyleMenu withController:self];
 
 		[[self window] makeFirstResponder:_borderNumberForm];
