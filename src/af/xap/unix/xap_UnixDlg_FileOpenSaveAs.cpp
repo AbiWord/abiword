@@ -207,7 +207,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			if (m_answer == a_CANCEL)			// The easy way out
 				return false;
 
-			m_szFinalPathnameCandidate = g_strdup(gtk_file_chooser_get_uri(m_FC));
+			m_szFinalPathnameCandidate = gtk_file_chooser_get_uri(m_FC);
 			UT_ASSERT(m_szFinalPathnameCandidate);
 			return (m_answer == a_OK);
 		}
@@ -222,7 +222,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 			// Give us a filename we can mangle
 	
-			szDialogFilename = g_strdup(gtk_file_chooser_get_uri(m_FC));
+			szDialogFilename = gtk_file_chooser_get_uri(m_FC);
 			if (!szDialogFilename)
 				continue;
 	
@@ -441,7 +441,9 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	{
 		return;
 	}
-	UT_String sFileName = 	gtk_file_chooser_get_uri(m_FC);
+	gchar * uri = gtk_file_chooser_get_uri(m_FC);
+	UT_String sFileName(uri);
+	FREEP(uri);
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
 	UT_sint32 i = 0;
@@ -996,6 +998,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	}
 	
  Cleanup:
+	DELETEP(file_name);
 	DELETEP(pImage);
 	DELETEP(pGr);
 	DELETEP(pGraphic);
