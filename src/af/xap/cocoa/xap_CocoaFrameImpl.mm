@@ -47,6 +47,8 @@
 #import "xap_CocoaToolPalette.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
+#import "xap_FrameNSWindow.h"
+
 
 /*****************************************************************/
 
@@ -118,7 +120,12 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app)
 	  m_frameController(nil),
 	  m_iAbiRepaintID(0)
 {
-//	m_pView = NULL;
+	// dirty hack to make sure the frame is compiled in as the class is only 
+	// referenced from a nib.
+	XAP_FrameNSWindow *p = nil;
+	if (0) {
+		p = [[[XAP_FrameNSWindow alloc] init] autorelease];
+	}
 }
 
 // TODO when cloning a new frame from an existing one

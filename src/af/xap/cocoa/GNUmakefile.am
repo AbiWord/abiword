@@ -65,6 +65,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaTextView.mm	\
 	xap_Cocoa_NSTableUtils.mm	\
 	xap_Cocoa_ResourceIDs.mm	\
+	xap_FrameNSWindow.mm		\
 	xap_GenericListChooser_Controller.mm	\
 	xap_PrintingDelegate.mm		\
 	xap_PrintingNSView.mm
