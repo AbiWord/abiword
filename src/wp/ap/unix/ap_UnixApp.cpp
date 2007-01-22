@@ -227,14 +227,14 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 /*!
 * Try loading a string-set.
 * \param szStringSet Language id, e.g. de_AT
-* \param pFallbackStringSet String set to be used for untranslated strings.
+* \param pDefaultStringSet String set to be used for untranslated strings.
 * \return AP_DiskStringSet * on success, NULL if not found
 */
 AP_DiskStringSet * 
 AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet, 
-								AP_BuiltinStringSet * pFallbackStringSet)
+								AP_BuiltinStringSet * pDefaultStringSet)
 {
-	UT_ASSERT(pFallbackStringSet);
+	UT_ASSERT(pDefaultStringSet);
 
 	const char * szDirectory = NULL;
 	getPrefsValueDirectory(true,
@@ -242,23 +242,41 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 			       static_cast<const gchar**>(&szDirectory));
 	UT_ASSERT((szDirectory) && (*szDirectory));
 
-	UT_String szPathname = szDirectory;
-	if (szDirectory[szPathname.size()-1]!='/')
-		szPathname += "/";
-	szPathname += szStringSet;
-	szPathname += ".strings";
+	// fo_BA.strings
+	UT_String szPath = szDirectory;
+	if (szDirectory[szPath.size()-1]!='/')
+		szPath += "/";
+	szPath += szStringSet;
+	szPath += ".strings";
+
+	// fo.strings
+	UT_String szFallbackPath;
+	if (strlen(szStringSet) > 2) {
+		szFallbackPath = szDirectory;
+		if (szDirectory[szFallbackPath.size()-1]!='/')
+			szFallbackPath += "/";
+		szFallbackPath += szStringSet[0];
+		szFallbackPath += szStringSet[1];
+		szFallbackPath += ".strings";
+	}
 
 	AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-	if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
+	if (pDiskStringSet->loadStringsFromDisk(szPath.c_str()))
 	{
-		pDiskStringSet->setFallbackStringSet(pFallbackStringSet);
-		UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
+		pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
+		UT_DEBUGMSG(("Using StringSet [%s]\n",szPath.c_str()));
+		return pDiskStringSet;
+	}
+	else if (szFallbackPath.size() && pDiskStringSet->loadStringsFromDisk(szFallbackPath.c_str())) 
+	{
+		pDiskStringSet->setFallbackStringSet(pDefaultStringSet);
+		UT_DEBUGMSG(("Using StringSet [%s]\n",szFallbackPath.c_str()));
 		return pDiskStringSet;
 	}
 	else
 	{
 		DELETEP(pDiskStringSet);
-		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
+		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPath.c_str()));
 		return NULL;
 	}
 }
