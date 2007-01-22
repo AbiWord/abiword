@@ -74,6 +74,40 @@ static const UT_UCS2Char ucs2Empty[] = { 0 };
 static const UT_UCS4Char ucs4Empty[] = { 0 };
 
 
+template <> ABI_EXPORT
+const char* UT_StringImpl<UT_UCS4Char>::utf8_data() 
+{ 
+	if (m_utf8string) 
+		return m_utf8string;
+
+	size_t utf8length = size ();
+	size_t bytelength = 0;
+	size_t i;
+	for (i = 0; i < utf8length; i++)
+	{
+		int seql = UT_Unicode::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // huh? premature end-of-string?
+		bytelength += static_cast<size_t>(seql);
+	}
+	m_utf8string = new char[bytelength+1];
+
+	char * utf8string = m_utf8string;
+	for (i = 0; i < utf8length; i++)
+	{
+		int seql = UT_Unicode::UTF8_ByteLength (m_psz[i]);
+		if (seql < 0) 
+			continue; // not UCS-4 !!
+		if (seql == 0) 
+			break; // huh? premature end-of-string?
+		UT_Unicode::UCS4_to_UTF8 (utf8string, bytelength, m_psz[i]);
+	}
+	*utf8string = 0;
+
+	return m_utf8string;
+}
 
 
 ////////////////////////////////////////////////////////////////////////
