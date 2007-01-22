@@ -672,7 +672,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
-		UT_ASSERT_HARMLESS(iLen == strnlen((const char *) pData, iLen));
+		// iLen includes the terminating '\0'
+		UT_ASSERT_HARMLESS(iLen == strnlen((const char *) pData, iLen) + 1);
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		bSuccess = pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
