@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001, 2003, 2007 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
@@ -70,10 +70,6 @@ class XAP_CocoaModule;
 
 @interface XAP_CocoaDlg_PluginManagerController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-	IBOutlet NSButton *		oForceDeactivation;
-	IBOutlet NSButton *		oActivateBtn;
-	IBOutlet NSButton *		oDeactivateBtn;
-	IBOutlet NSButton *		oDeactivateAllBtn;
 	IBOutlet NSButton *		oInstallBtn;
 	IBOutlet NSButton *		oCloseBtn;
 
@@ -98,9 +94,6 @@ class XAP_CocoaModule;
 - (void)dealloc;
 
 - (IBAction)closeAction:(id)sender;
-- (IBAction)activateAction:(id)sender;
-- (IBAction)deactivateAction:(id)sender;
-- (IBAction)deactivateAllAction:(id)sender;
 - (IBAction)installAction:(id)sender;
 
 /* NSTableView delegate method
