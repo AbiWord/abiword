@@ -440,7 +440,7 @@ void XAP_DiskStringSet::charData(const gchar * /* s */, int /* len */)
 bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
 	bool bResult = false;			// assume failure
-printf("%s %s\n", __FUNCTION__, szFilename);
+
 	m_parserState.m_parserStatus = true;
 
 	UT_XML parser;
