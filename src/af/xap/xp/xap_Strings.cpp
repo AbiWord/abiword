@@ -399,9 +399,10 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 		const gchar ** a;
 		for (a = atts; (*a); a += 2)
 		{
+#ifdef DEBUG
 			// require a value for each attribute keyword
-			UT_ASSERT((a[1] && *a[1]));
-
+			g_warning("untranslated string '%s'\n", a[0]);
+#endif
 			if (strcmp(const_cast<char*>(a[0]), "class") == 0)
 				continue;
 
