@@ -1279,6 +1279,26 @@ bool operator!=(const UT_UTF8String& s1, const char * s2)
 	return s2 ? (strcmp(s1.utf8_str(), s2) != 0) : true;
 }
 
+bool operator==(const UT_UTF8String& s1, const std::string &s2)
+{
+	return s1.utf8_str() == s2;
+}
+
+bool operator!=(const UT_UTF8String& s1, const std::string &s2)
+{
+	return s1.utf8_str() != s2;
+}
+
+bool operator==(const std::string &s2, const UT_UTF8String& s1)
+{
+	return s1.utf8_str() == s2;
+}
+
+bool operator!=(const std::string &s2, const UT_UTF8String& s1)
+{
+	return s1.utf8_str() != s2;
+}
+
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 {
 	UT_UTF8String s(s1);
