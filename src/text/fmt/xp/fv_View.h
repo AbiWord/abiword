@@ -39,9 +39,14 @@
 // have to include these as they are instantiated in the FV_View
 // class definition
 #include "fv_FrameEdit.h"
-#include "fv_VisualDragText.h"
 #include "fv_Selection.h"
 #include "fv_InlineImage.h"
+
+#ifdef XP_UNIX_TARGET_GTK
+#include "fv_UnixVisualDrag.h"
+#else
+#include "fv_VisualDragText.h"
+#endif
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -978,7 +983,11 @@ private:
 	fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
 	FV_FrameEdit        m_FrameEdit;
+#ifdef XP_UNIX_TARGET_GTK
+	FV_UnixVisualDrag   m_VisualDragText;
+#else
 	FV_VisualDragText   m_VisualDragText;
+#endif
 	FV_Selection        m_Selection;
 	bool                m_bShowRevisions;
 

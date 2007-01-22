@@ -43,7 +43,7 @@ class ABI_EXPORT FV_VisualDragText
 public:
 
 	FV_VisualDragText (FV_View * pView);
-	~FV_VisualDragText();
+	virtual ~FV_VisualDragText();
 	GR_Graphics *         getGraphics(void) const ;
 	bool                  isActive(void) const;
     void                  setMode(FV_VisualDragMode iVisualDragMode);

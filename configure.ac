@@ -560,6 +560,7 @@ AC_CONFIG_FILES([
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
+ src/text/fmt/unix/GNUmakefile
  src/text/ptbl/GNUmakefile
  src/text/ptbl/xp/GNUmakefile
  src/text/ptbl/xp/t/GNUmakefile

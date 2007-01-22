@@ -71,6 +71,9 @@ endif
 
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
+if WITH_UNIX
+TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/unix'
+endif
 
 TOOLS_INCLUDES=-I'$(top_srcdir)/src/tools/cdump/xp'
 
@@ -134,7 +137,7 @@ ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
-ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
+ABI_LIBS+=$(top_builddir)/src/text/fmt/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
 
