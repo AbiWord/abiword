@@ -9550,7 +9550,16 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 	return NULL;
 }
 
+EV_EditMouseContext FV_View::getLastMouseContext(void)
+{
+	return m_prevMouseContext;
+}
 
+void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
+{
+	*x = m_iMouseX;
+	*y = m_iMouseY;
+}
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {

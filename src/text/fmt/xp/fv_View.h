@@ -264,6 +264,9 @@ public:
         virtual void    setCursorWait(void);
 	virtual void    clearCursorWait(void);
 	virtual void    setCursorToContext(void);
+	EV_EditMouseContext         getLastMouseContext(void);
+	void                getMousePos(UT_sint32 * x, UT_sint32 * y);
+
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	virtual void        updateLayout(void);
