@@ -1133,7 +1133,7 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 }
 
 
-template <>
+ABI_EXPORT template <>
 const char* UT_StringImpl<UT_UCS4Char>::utf8_data() 
 { 
 	if (m_utf8string) 
