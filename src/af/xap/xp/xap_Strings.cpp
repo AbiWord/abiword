@@ -367,7 +367,7 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found strings file for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
-				if (strcmp(const_cast<char*>(a[1]),szThisApp) != 0)
+				if (g_ascii_strcasecmp(a[1],szThisApp) != 0)
 				{
 					UT_DEBUGMSG(("Strings file does not match this application.\n"));
 					goto InvalidFileError;
