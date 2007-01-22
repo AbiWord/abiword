@@ -11,7 +11,7 @@
 <!-- (0.9.6+) by Piotr Banski <bansp@bigfoot.com>. Since February 2002 (0.99.2+)      --> 
 <!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 24-Aug-2003  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
+<AbiStrings ver="1.0" language="pl-PL">
 
 <Strings    class="XAP"
 

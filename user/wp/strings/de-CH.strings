@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="de-CH">
+<AbiStrings ver="1.0" language="de-CH">
 
 <Strings    class="XAP"
 SPELL_CANTLOAD_DICT="Das Wörterbuch für die %s Sprache konnte nicht geladen werden."

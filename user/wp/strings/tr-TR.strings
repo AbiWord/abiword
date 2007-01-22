@@ -12,7 +12,7 @@
 <!-- tr-TR translation provided by <team_turca@yahoo.com> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="tr-TR">
+<AbiStrings ver="1.0" language="tr-TR">
 
 <Strings	class="XAP"
 MSG_ImportingDoc="Dýþarýdan belge alýnýyor.."

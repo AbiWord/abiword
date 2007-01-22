@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="ja-JP">
+<AbiStrings ver="1.0" language="ja-JP">
 
 <Strings    class="XAP"
 SPELL_CANTLOAD_DICT="言語 %s 用の辞書を読み込むことができませんでした"

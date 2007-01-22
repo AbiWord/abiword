@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="uk-UA">
+<AbiStrings ver="1.0" language="uk-UA">
 
 <Strings    class="XAP"
 SPELL_CANTLOAD_DICT="Помилка при завантаженн╕ словника для мови '%s'"

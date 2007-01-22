@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="be-BY">
+<AbiStrings ver="1.0" language="be-BY">
 
 <Strings    class="XAP"
 DLG_ABOUT_Title="Пра %s"

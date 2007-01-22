@@ -61,7 +61,7 @@ print FILE
 "<!-- This file contains the string translations for one language.    -->\n".
 "<!-- This file is covered by the GNU Public License (GPL).           -->\n".
 "<!-- ==============================================================  -->\n\n".
-"<AbiStrings app=\"AbiWord\" ver=\"1.0\" language=\"$lang\">\n\n";
+"<AbiStrings ver=\"1.0\" language=\"$lang\">\n\n";
 
 my @tags = ();
 while (<IN>) {

@@ -355,25 +355,14 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 	if (strcmp(const_cast<char*>(name), "AbiStrings") == 0)
 	{
 		// we expect something of the form:
-		// <AbiStrings app="AbiWord" ver="1.0" language="en-US">...</AbiStrings>
+		// <AbiStrings ver="1.0" language="en-US">...</AbiStrings>
 
 		const gchar ** a = atts;
 		while (*a)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp(const_cast<char*>(a[0]), "app") == 0)
-			{
-				const char * szThisApp = m_pApp->getApplicationName();
-				UT_DEBUGMSG(("Found strings file for application [%s] (this is [%s]).\n",
-							a[1],szThisApp));
-				if (g_ascii_strcasecmp(a[1],szThisApp) != 0)
-				{
-					UT_DEBUGMSG(("Strings file does not match this application.\n"));
-					goto InvalidFileError;
-				}
-			}
-			else if (strcmp(const_cast<char*>(a[0]), "ver") == 0)
+			if (strcmp(const_cast<char*>(a[0]), "ver") == 0)
 			{
 				// TODO test version number
 			}
@@ -450,7 +439,7 @@ void XAP_DiskStringSet::charData(const gchar * /* s */, int /* len */)
 bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
 	bool bResult = false;			// assume failure
-
+printf("%s %s\n", __FUNCTION__, szFilename);
 	m_parserState.m_parserStatus = true;
 
 	UT_XML parser;

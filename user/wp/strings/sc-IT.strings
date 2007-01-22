@@ -11,7 +11,7 @@
 <!-- General consulting provided by Francesco Cheratzu <f.cheratzu@tiscali.it> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="sc-IT">
+<AbiStrings ver="1.0" language="sc-IT">
 
 <Strings	class="XAP"
 MSG_ImportingDoc="Seo importandho su documentu..."
