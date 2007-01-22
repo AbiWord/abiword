@@ -483,7 +483,7 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 	UT_DEBUGMSG(("AP_UnixFrame::toggleStatusBar %d\n", bStatusBarOn));	
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
-	UT_ASSERT(pFrameData);
+	UT_return_if_fail(pFrameData && pFrameData->m_pStatusBar);
 	
 	if (bStatusBarOn)
 		pFrameData->m_pStatusBar->show();
