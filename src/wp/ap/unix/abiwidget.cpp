@@ -50,7 +50,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "ut_go_file.h"
-
+#include "ut_timer.h"
 /**************************************************************************/
 /**************************************************************************/
 
@@ -372,6 +372,12 @@ enum {
 	SIGNAL_RIGHT_ALIGN,
 	SIGNAL_CENTER_ALIGN,
 	SIGNAL_JUSTIFY_ALIGN,
+	SIGNAL_STYLE_NAME,
+	SIGNAL_TEXT_SELECTED,
+	SIGNAL_IMAGE_SELECTED,
+	SIGNAL_SELECTION_CLEARED,
+	SIGNAL_ENTER_SELECTION,
+	SIGNAL_LEAVE_SELECTION,
 	SIGNAL_LAST
 };
 
@@ -399,6 +405,13 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 
 	INSTALL_DOUBLE_SIGNAL(SIGNAL_FONT_SIZE, "font-size", signal_font_size);
 	INSTALL_STRING_SIGNAL(SIGNAL_FONT_FAMILY, "font-family", signal_font_family);
+	INSTALL_STRING_SIGNAL(SIGNAL_STYLE_NAME, "style-name", signal_style_name);
+
+	INSTALL_BOOL_SIGNAL(SIGNAL_TEXT_SELECTED, "text-selected", signal_text_selected);
+	INSTALL_BOOL_SIGNAL(SIGNAL_IMAGE_SELECTED, "image-selected", signal_image_selected);
+	INSTALL_BOOL_SIGNAL(SIGNAL_SELECTION_CLEARED, "selection-cleared", signal_selection_cleared);
+	INSTALL_BOOL_SIGNAL(SIGNAL_ENTER_SELECTION, "enter_selection", signal_enter_selection);
+	INSTALL_BOOL_SIGNAL(SIGNAL_LEAVE_SELECTION, "leave-selection", signal_leave_selection);
 }
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
@@ -422,6 +435,8 @@ fire(var); \
 
 #define FIRE_STRING_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
 
+#define TOOLBAR_DELAY 1000 /* in milliseconds */
+
 class Stateful_ViewListener : public AV_Listener
 {
 public:
@@ -441,57 +456,101 @@ public:
 		UT_ASSERT(pView == m_pView);
 
 		if ((AV_CHG_FMTCHAR | AV_CHG_MOTION) & mask)
-			{
-				// get current char properties from pView
-				const gchar ** props_in = NULL;
+		{
+			// get current char properties from pView
+			const gchar ** props_in = NULL;
 				
-				if (!m_pView->getCharFormat(&props_in))
-					return true;
+			if (!m_pView->getCharFormat(&props_in))
+				return true;
+			
+			// NB: maybe *no* properties are consistent across the selection
+			if (props_in && props_in[0])
+			{
+				FIRE_BOOL_CHARFMT("font-weight", "bold", false, bold_, bold);
+				FIRE_BOOL_CHARFMT("font-style", "italic", false, italic_, italic);
+				FIRE_BOOL_CHARFMT("text-decoration", "underline", true, underline_, underline);
+				FIRE_BOOL_CHARFMT("text-decoration", "overline", true, overline_, overline);
+				FIRE_BOOL_CHARFMT("text-decoration", "line-through", true, line_through_, line_through);
+				FIRE_BOOL_CHARFMT("text-decoration", "topline", true, topline_, topline);
+				FIRE_BOOL_CHARFMT("text-decoration", "bottomline", true, bottomline_, bottomline);
+				FIRE_BOOL_CHARFMT("text-position", "superscript", true, superscript_, superscript);
+				FIRE_BOOL_CHARFMT("text-position", "subscript", true, subscript_, subscript);
 
-				// NB: maybe *no* properties are consistent across the selection
-				if (props_in && props_in[0])
-					{
-						FIRE_BOOL_CHARFMT("font-weight", "bold", false, bold_, bold);
-						FIRE_BOOL_CHARFMT("font-style", "italic", false, italic_, italic);
-						FIRE_BOOL_CHARFMT("text-decoration", "underline", true, underline_, underline);
-						FIRE_BOOL_CHARFMT("text-decoration", "overline", true, overline_, overline);
-						FIRE_BOOL_CHARFMT("text-decoration", "line-through", true, line_through_, line_through);
-						FIRE_BOOL_CHARFMT("text-decoration", "topline", true, topline_, topline);
-						FIRE_BOOL_CHARFMT("text-decoration", "bottomline", true, bottomline_, bottomline);
-						FIRE_BOOL_CHARFMT("text-position", "superscript", true, superscript_, superscript);
-						FIRE_BOOL_CHARFMT("text-position", "subscript", true, subscript_, subscript);
-
-						FIRE_DOUBLE_CHARFMT("font-size", font_size_, font_size);
-						
-						FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
-					}
+				FIRE_DOUBLE_CHARFMT("font-size", font_size_, font_size);
+				
+				FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
 			}
+		}
 
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
+		{
+			// get current char properties from pView
+			const gchar ** props_in = NULL;
+			
+			if (!m_pView->getBlockFormat(&props_in))
+				return true;
+			
+			// NB: maybe *no* properties are consistent across the selection
+			if (props_in && props_in[0])
 			{
-				// get current char properties from pView
-				const gchar ** props_in = NULL;
-				
-				if (!m_pView->getBlockFormat(&props_in))
-					return true;
+				FIRE_BOOL_CHARFMT("text-align", "left", false, leftAlign_, leftAlign);
+				FIRE_BOOL_CHARFMT("text-align", "right", false, rightAlign_, rightAlign);
+				FIRE_BOOL_CHARFMT("text-align", "center", false, centerAlign_, centerAlign);
+				FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
+				FIRE_STRING_CHARFMT("style-name", style_name_, style_name);
 
-				// NB: maybe *no* properties are consistent across the selection
-				if (props_in && props_in[0])
-					{
-						FIRE_BOOL_CHARFMT("text-align", "left", false, leftAlign_, leftAlign);
-						FIRE_BOOL_CHARFMT("text-align", "right", false, rightAlign_, rightAlign);
-						FIRE_BOOL_CHARFMT("text-align", "center", false, centerAlign_, centerAlign);
-						FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
-
-					}
 			}
+		}
 		if ((AV_CHG_ALL) & mask)
+		{
+			FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
+			FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
+			FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
+		}
+		if (mask & AV_CHG_MOUSEPOS)
+		{
+		// The selection changed; now figure out if we do have a selection or not
+			if (m_pView)
 			{
-				FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
-				FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
-				FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
-			}
+				if (m_pView->isSelectionEmpty())
+				{
+					
+					if (textSelected_ || imageSelected_)
+					{
+						FIRE_BOOL(true, selectionCleared_, selectionCleared);
+						textSelected_ = false;
+						imageSelected_ = false;
+					}
+				}
+				else 
+				{
+					if(m_pView->getLastMouseContext() == EV_EMC_POSOBJECT)
+					{
+						FIRE_BOOL(true, imageSelected_, imageSelected);
+					}
+					else
+					{
+						FIRE_BOOL(true, textSelected_, textSelected);
+					}
+			        PT_DocPosition pos = m_pView->getDocPositionFromLastXY();
+					PT_DocPosition left = m_pView->getSelectionLeftAnchor();
+					PT_DocPosition right = m_pView->getSelectionRightAnchor();
+					bool bBetween = ((pos >= left) && (pos < right));
+					if(!enterSelection_ && bBetween)
+					{
+						FIRE_BOOL(true, enterSelection_, enterSelection);
+						leaveSelection_ = false;
+					}
+					if(!leaveSelection_ && !bBetween)
+					{
+						FIRE_BOOL(true, leaveSelection_, leaveSelection);
+						enterSelection_ = false;
+					}
 
+				}
+			}
+		}
+	
 		return true;
 	}
 
@@ -525,6 +584,12 @@ public:
 	virtual void rightAlign(bool value) {}
 	virtual void centerAlign(bool value) {}
 	virtual void justifyAlign(bool value) {}
+	virtual void style_name(const char * value) {}
+	virtual void textSelected(bool value) {}
+	virtual void imageSelected(bool value) {}
+	virtual void selectionCleared(bool value) {}
+	virtual void enterSelection(bool value) {}
+	virtual void leaveSelection(bool value) {}
 
 private:
 
@@ -548,8 +613,13 @@ private:
 		rightAlign_ = false;
 		centerAlign_ = false;
 		justifyAlign_ = false;
+		style_name_ = "";
+		textSelected_ = false;
+		imageSelected_ = false;
+		selectionCleared_ = false;
+		enterSelection_ = false;
+		leaveSelection_ = false;
 	}
-
 	bool bold_;
 	bool italic_;
 	bool underline_;
@@ -568,10 +638,18 @@ private:
 	bool rightAlign_;
 	bool centerAlign_;
 	bool justifyAlign_;
+	UT_UTF8String style_name_;
+	bool textSelected_;
+	bool imageSelected_;
+	bool selectionCleared_;
+	bool enterSelection_;
+	bool leaveSelection_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
 };
+
+
 
 class AbiWidget_ViewListener : public Stateful_ViewListener
 {
@@ -600,6 +678,12 @@ public:
 	virtual void rightAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_RIGHT_ALIGN], 0, (gboolean)value);}
 	virtual void centerAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CENTER_ALIGN], 0, (gboolean)value);}
 	virtual void justifyAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_JUSTIFY_ALIGN], 0, (gboolean)value);}
+	virtual void style_name(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_STYLE_NAME], 0, value);}
+	virtual void textSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TEXT_SELECTED], 0, (gboolean)value);}
+	virtual void imageSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IMAGE_SELECTED], 0, (gboolean)value);}
+	virtual void selectionCleared(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SELECTION_CLEARED], 0, (gboolean)value);}
+	virtual void enterSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ENTER_SELECTION], 0, (gboolean)value);}
+	virtual void leaveSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEAVE_SELECTION], 0, (gboolean)value);}
 
 private:
 	AbiWidget *         m_pWidget;
@@ -737,7 +821,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	else
 	{
 		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );		s_bFirstDrawDone = false;
+		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
+		s_bFirstDrawDone = false;
 	}
 }
 
@@ -976,6 +1061,20 @@ abi_widget_get_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 	*iLength = size+1;
 	w->priv->m_iSelectionLength = size+1;
 	return szOut;
+}
+
+
+extern "C" gboolean
+abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
+{
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
+	if(pFrame == NULL)
+		return FALSE;
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pView == NULL)
+		return FALSE;
+	pView->getMousePos(x,y);
+	return true;
 }
 
 extern "C" gboolean

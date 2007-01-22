@@ -51,7 +51,8 @@ void libabiword_init_noargs ()
 
 void libabiword_shutdown ()
 {
-	if (_abiword_app) {
+	if (_abiword_app ) 
+	{
 		_abiword_app->shutdown();
 		delete _abiword_app;
 		_abiword_app = NULL;

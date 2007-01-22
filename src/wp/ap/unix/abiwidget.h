@@ -203,6 +203,13 @@ G_BEGIN_DECLS
     void (* signal_right_align) (AbiWidget * widget, gboolean value);
     void (* signal_center_align) (AbiWidget * widget, gboolean value);
     void (* signal_justify_align) (AbiWidget * widget, gboolean value);
+    void (* signal_style_name) (AbiWidget * widget, const char * value);
+    void (* signal_text_selected) (AbiWidget * widget, gboolean value);
+    void (* signal_image_selected) (AbiWidget * widget, gboolean value);
+    void (* signal_selection_cleared) (AbiWidget * widget, gboolean value);
+    void (* signal_enter_selection) (AbiWidget * widget, gboolean value);
+    void (* signal_leave_selection) (AbiWidget * widget, gboolean value);
+
 
     AbiSignal sig_pad[20];
   };
@@ -359,6 +366,7 @@ G_BEGIN_DECLS
 gint* iLength);
 
  gboolean abi_widget_insert_table(AbiWidget * w, gint32 rows, gint32 cols);
+ gboolean abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y);
 
 #ifdef HAVE_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
