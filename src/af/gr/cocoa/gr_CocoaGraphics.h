@@ -301,10 +301,6 @@ private:
 						float xOffset);
 	//
 	StNSViewLocker* m_viewLocker;
-	//private font metrics objects
-	NSTextStorage *m_fontMetricsTextStorage;
-    NSLayoutManager *m_fontMetricsLayoutManager;
-    NSTextContainer *m_fontMetricsTextContainer;
 };
 
 #endif /* GR_COCOAGRAPHICS_H */

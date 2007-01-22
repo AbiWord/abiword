@@ -413,10 +413,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(XAP_CocoaNSView * win) :
 	m_screenResolution(0),
 	m_bIsPrinting(false),
 	m_bIsDrawing(false),
-	m_viewLocker(NULL),
-	m_fontMetricsTextStorage(nil),
-	m_fontMetricsLayoutManager(nil),
-	m_fontMetricsTextContainer(nil)
+	m_viewLocker(NULL)
 {
 	_initColorAndImage();
 	
@@ -473,10 +470,11 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 		[m_3dColors[i] release];
 	}
 	
+	if (m_atsuStyle) {
+		ATSUDisposeStyle(m_atsuStyle);
+	}
+
 	DELETEP(m_viewLocker);
-	[m_fontMetricsTextStorage release];
-	[m_fontMetricsLayoutManager release];
-	[m_fontMetricsTextContainer release];
 }
 
 void GR_CocoaGraphics::fillNSRect (NSRect & aRect, NSColor * color)
