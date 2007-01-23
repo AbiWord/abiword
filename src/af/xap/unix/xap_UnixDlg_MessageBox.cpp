@@ -109,6 +109,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		case b_YNC:
 			// YES - NO - CANCEL
 			// this is only used for saving files.
+#ifndef EMBEDDED_TARGET
 			pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving,s);
 			tmp_str = g_strdup(s.utf8_str());
 			convertMnemonics(tmp_str);
@@ -122,8 +123,10 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							      GTK_STOCK_SAVE, 
 							      GTK_RESPONSE_YES,
 							      NULL);
+
 			dflResponse = GTK_RESPONSE_YES;
 			FREEP(tmp_str);
+			
 			label = gtk_label_new(NULL);
 			if (m_szSecondaryMessage == NULL)
 				separator =UT_String("");
@@ -157,9 +160,27 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			
 			gtk_widget_show_all (hbox);
 
+			gtk_dialog_set_has_separator(GTK_DIALOG(message), FALSE);
+#else
+			message = gtk_message_dialog_new (toplevel, 
+							  GTK_DIALOG_MODAL,
+							  GTK_MESSAGE_QUESTION,
+							  GTK_BUTTONS_NONE,
+							  "%s",
+							  m_szMessage);
+			
+			gtk_dialog_add_buttons(GTK_DIALOG(message),
+					       GTK_STOCK_NO,
+					       GTK_RESPONSE_NO,
+					       GTK_STOCK_CANCEL, 
+					       GTK_RESPONSE_CANCEL, 
+					       GTK_STOCK_YES, 
+					       GTK_RESPONSE_YES,
+					       NULL);
+#endif
   			gtk_dialog_set_default_response (GTK_DIALOG(message),
 							 GTK_RESPONSE_CANCEL);
-			gtk_dialog_set_has_separator(GTK_DIALOG(message), FALSE);
+			
 			break;
 			
 		default:
