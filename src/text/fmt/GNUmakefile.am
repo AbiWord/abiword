@@ -19,9 +19,11 @@
 include $(top_srcdir)/includes.mk
 
 if WITH_UNIX
-platform_subdirs = unix
+platform_subdirs=unix
+ABI_FMT_OBJECTS=$(ABI_OBJECTS)
 else
-platform_subdirs =
+platform_subdirs=
+ABI_FMT_OBJECTS=xp/*.o
 endif
 
 SUBDIRS = xp $(platform_subdirs)
@@ -31,7 +33,7 @@ noinst_LIBRARIES= libFmt.a
 
 libFmt_a_SOURCES = 
 
-libFmt_a_LIBADD = $(ABI_OBJECTS)
+libFmt_a_LIBADD = $(ABI_FMT_OBJECTS)
 
 EXTRA_DIST = \
 	Makefile
