@@ -18,7 +18,14 @@
 
 include $(top_srcdir)/includes.mk
 
-SUBDIRS = xp unix
+if WITH_UNIX
+platform_subdirs = unix
+else
+platform_subdirs =
+endif
+
+SUBDIRS = xp $(platform_subdirs)
+DIST_SUBDIRS = xp unix
 
 noinst_LIBRARIES= libFmt.a
 
