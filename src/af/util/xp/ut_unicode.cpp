@@ -28,7 +28,7 @@
 #include "ut_unicode.h"
 
 
-/* Returns -1 if ucs4 is not valid UCS-4, 0 if ucs4 is 0, 1-6 otherwise
+/* Returns -1 if ucs4 is not valid UCS-4, 1-6 otherwise
  */
 int UT_Unicode::UTF8_ByteLength (UT_UCS4Char u)
 {
