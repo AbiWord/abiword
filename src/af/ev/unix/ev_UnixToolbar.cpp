@@ -178,6 +178,13 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 }
 
 #ifdef EMBEDDED_TARGET
+static void
+menubutton_show_cb (GtkWidget *widget, gpointer data)
+{
+	g_signal_stop_emission_by_name (G_OBJECT (widget), "show");
+	gtk_widget_hide_all (widget);
+}
+
 /*!
  * Append a GtkMenuToolButton to the toolbar.
  */
@@ -192,10 +199,30 @@ toolbar_append_menubutton (GtkToolbar 	*toolbar,
 						   gulong		*handler_id)
 {
 	GtkToolItem *item = gtk_menu_tool_button_new (NULL, NULL);
-// 	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
 	gtk_menu_tool_button_set_menu (GTK_MENU_TOOL_BUTTON (item), menu);
-	
-	/* TODO -- populate the menu */
+
+	/* We want to hide the button part of the menu button -- to prevent
+	 * it from showing again when gtk_widget_show () is called on the
+	 * menubutton, we register a callback to the "show" signal, and hide
+	 * it if something tries to show it.
+	 */
+	GtkWidget * button_box = gtk_bin_get_child (GTK_BIN (item));
+	if (button_box)
+	{
+		GList * children =
+			gtk_container_get_children (GTK_CONTAINER (button_box));
+
+		if (children && children->data)
+		{
+			GtkWidget * button = GTK_WIDGET (children->data);
+			gtk_widget_hide_all (button);
+
+			g_signal_connect(G_OBJECT (button), "show",
+							 G_CALLBACK (menubutton_show_cb), NULL);
+
+			g_list_free (children);
+		}
+	}
 	
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
 											  label, private_text, TRUE,
@@ -1063,6 +1090,7 @@ bool EV_UnixToolbar::synthesize(void)
 				GtkWidget * wwd = wd->m_widget;
 				
 				g_object_set_data(G_OBJECT(wwd), "wd_pointer", wd);
+
 			}
 			break;
 #endif
