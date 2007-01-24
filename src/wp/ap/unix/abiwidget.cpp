@@ -1073,7 +1073,10 @@ abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView == NULL)
 		return FALSE;
-	pView->getMousePos(x,y);
+	UT_sint32 ix,iy;
+	pView->getMousePos(&ix,&iy);
+	*x = pView->getGraphics()->tdu(ix);
+	*y = pView->getGraphics()->tdu(iy);
 	return true;
 }
 
