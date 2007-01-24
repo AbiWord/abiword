@@ -228,6 +228,7 @@ noinst_HEADERS = \
 	ap_Menu_Id_List.h \
 	ap_Menu_Layouts_All.h \
 	ap_Menu_Layouts_MainMenu.h \
+	ap_Menu_Layouts_Embedded.h \
 	ap_ML_ContextEmbed.h \
 	ap_ML_ContextEquation.h \
 	ap_ML_ContextFrame.h \

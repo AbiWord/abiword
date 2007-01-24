@@ -77,7 +77,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_EDIT_UNDO)
 		MenuItem(AP_MENU_ID_EDIT_REDO)
 #endif
-		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_PASTE_SPECIAL)
 		MenuItem(AP_MENU_ID_EDIT_SELECTALL)
 		Separator()
