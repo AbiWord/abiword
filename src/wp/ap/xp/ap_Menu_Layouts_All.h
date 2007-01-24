@@ -27,7 +27,12 @@
 
 // Include each menu layout that we want to build.
 
+#if defined (EMBEDDED_TARGET) && !defined (HAVE_HILDON)
+#include "ap_Menu_Layouts_Embedded.h"
+#else
 #include "ap_Menu_Layouts_MainMenu.h"
+#endif
+
 #include "ap_ML_ContextText.h"
 
 #ifndef WITHOUT_SPELL
