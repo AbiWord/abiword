@@ -296,6 +296,10 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 {
 	size_t bytelength = 0;
 	size_t i;
+
+	if (!sz || (!n && !*sz))
+		return;
+	
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
 		if((0 == sz[i]) && (0 == n))

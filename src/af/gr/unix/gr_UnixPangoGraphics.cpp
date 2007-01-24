@@ -1750,6 +1750,9 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	UT_UTF8String utf8;
 	UT_uint32 iWidth = 0;
 
+	if (!iLength || iLength <= iCharOffset)
+		return 0;
+	
 	if(isSymbol())
 	{
 		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)
