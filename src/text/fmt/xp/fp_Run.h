@@ -882,7 +882,7 @@ public:
 	bool					_setValue(const UT_UCSChar *p_new_value);
 
 	virtual bool			calculateValue(void);
-	virtual const UT_UCSChar *    getValue(void) const { return reinterpret_cast<const UT_UCSChar *>(m_sFieldValue);}
+	virtual const UT_UCSChar *    getValue(void) const { return reinterpret_cast<const UT_UCS4Char *>(m_sFieldValue);}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 
 protected:
@@ -902,7 +902,7 @@ private:
 
 	//UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;
-	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
+	UT_UCS4Char				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;
 	const gchar *		m_pParameter;
 	enum

@@ -3761,13 +3761,14 @@ bool fp_FieldRun::_recalcWidth()
 	//lookupProperties();
 
 	getGraphics()->setFont(_getFont());
-
-	UT_sint32 iNewWidth =
-		getGraphics()->measureString(m_sFieldValue,
+	UT_sint32 iNewWidth = 0;
+	if(UT_UCS4_strlen(m_sFieldValue) > 0)
+	{
+		iNewWidth = getGraphics()->measureString(m_sFieldValue,
 									 0,
 									 UT_UCS4_strlen(m_sFieldValue),
 									 NULL);
-	
+	}
 	if (iNewWidth != getWidth())
 	{
 		clearScreen();

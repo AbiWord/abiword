@@ -377,7 +377,7 @@ bool fp_FieldTableSumCols::calculateValue(void)
 						if(pRun->getType() == FPRUN_FIELD)
 						{
 							fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
-							const UT_UCSChar * szVal = pFRun->getValue(); 
+							const  UT_UCS4Char * szVal = pFRun->getValue(); 
 							sValF.clear();
 							sValF.appendUCS4(szVal);
 							dSum += dGetVal(sValF.utf8_str());
