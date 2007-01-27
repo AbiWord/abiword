@@ -75,7 +75,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 
 	// Get the GtkWindow of the parent frame
 	// TODO fix that in hildon frame impl
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 #else	
 	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());

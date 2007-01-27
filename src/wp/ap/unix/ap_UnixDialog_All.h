@@ -98,7 +98,7 @@
 #	include "ap_UnixDialog_Download_File.h"
 #endif
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #   include "xap_UnixHildonDlg_FontChooser.h"
 #else
 #   include "xap_UnixDlg_FontChooser.h"
@@ -106,7 +106,7 @@
 
 #else
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixHildonDialog_FontChooser, 	FALSE)
 #else
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser, 		FALSE)

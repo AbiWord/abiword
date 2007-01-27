@@ -53,7 +53,7 @@
 #endif
 
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include "ap_UnixHildonFrameImpl.h"
 #endif
 
@@ -159,7 +159,7 @@ void AP_UnixFrame::setYScrollRange(void)
 
 
 AP_UnixFrame::AP_UnixFrame()
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 : AP_Frame(new AP_UnixHildonFrameImpl(this))
 #else
 : AP_Frame(new AP_UnixFrameImpl(this))

@@ -177,7 +177,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	glade_path += "/ap_UnixHildonDialog_HdrFtr.glade";
 #else
 	glade_path += "/ap_UnixDialog_HdrFtr.glade";

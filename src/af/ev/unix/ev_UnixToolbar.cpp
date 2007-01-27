@@ -61,7 +61,7 @@
 #include "ev_UnixMenuBar.h"
 #endif
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include "hildon-widgets/hildon-appview.h"
 #endif
 
@@ -687,7 +687,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   // the frame.
   //
     synthesize();
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	GtkBox * wBox = _getContainer();
 	gtk_box_reorder_child(wBox, m_wHandleBox, oldpos);
@@ -771,7 +771,7 @@ bool EV_UnixToolbar::synthesize(void)
 	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 //
 // Make the toolbar a destination for drops
@@ -848,7 +848,7 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
@@ -1121,7 +1121,7 @@ bool EV_UnixToolbar::synthesize(void)
 		}
 	}
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	
 	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	gtk_box_pack_end(GTK_BOX(HILDON_APPVIEW(wTLW)->vbox), m_wToolbar, FALSE, FALSE, 0);
@@ -1354,7 +1354,7 @@ XAP_Frame * EV_UnixToolbar::getFrame(void)
 void EV_UnixToolbar::show(void)
 {
 	if (m_wToolbar) {
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		gtk_widget_show (m_wToolbar);
 #else
 		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
@@ -1373,7 +1373,7 @@ void EV_UnixToolbar::hide(void)
 
 	if (m_wToolbar) {
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		gtk_widget_hide (m_wToolbar);
 #else
 		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));

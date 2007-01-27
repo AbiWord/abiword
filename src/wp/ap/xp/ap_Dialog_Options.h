@@ -70,7 +70,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT,
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
-#if (EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON) || defined(WIN32)
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 				   id_SHOWSPLASH,
 #endif
 				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
@@ -133,7 +133,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(GrammarCheck,		bool);
-#if (EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON) || defined(WIN32)
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	SET_GATHER			(ShowSplash,bool);
 #endif
 	SET_GATHER			(PrefsAutoSave, 	bool);

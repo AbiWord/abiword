@@ -330,7 +330,7 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		tmp = WID ("lblScreenColor");
 		localizeLabelUnderline (tmp, pSS, AP_STRING_ID_DLG_Options_Label_ChooseForTransparent);
 
-#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 		// Application Startup
 		tmp = WID ("lblApplicationStartup");
 		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_AppStartup);
@@ -476,7 +476,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	glade_path += "/ap_UnixHildonDialog_Options.glade";
 #else
 	glade_path += "/ap_UnixDialog_Options.glade";
@@ -566,7 +566,7 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
-#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	case id_SHOWSPLASH:
 		return m_checkbuttonShowSplash;
 #endif
@@ -672,7 +672,7 @@ DEFINE_GET_SET_BOOL(GrammarCheck)
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
 
 DEFINE_GET_SET_BOOL(AutoSaveFile)
-#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 DEFINE_GET_SET_BOOL(ShowSplash)
 #endif
 	

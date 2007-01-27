@@ -76,7 +76,7 @@
 #include "ev_GnomeToolbar.h"
 #endif
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include "xap_UnixHildonApp.h"
 #endif
 
@@ -589,7 +589,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	pUnixFrameImpl->resetIMContext ();
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	/* UGLY HACK -- for some reason in the OS2006 release of maemo the VKB
 	 * does not pop up automatically as it used to and we have to bring it up
 	 * ourselves; since this function is static we cannot make it virtual, and
@@ -777,7 +777,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // -- MES
 //
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
         GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame) {

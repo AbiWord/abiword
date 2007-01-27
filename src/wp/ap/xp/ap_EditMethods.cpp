@@ -3546,7 +3546,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		// in single XAPAPP mode we can't close the app when closing the last frame
 		// or reopen a new one.
 #if XAP_SINGLE_XAPAPP
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		// user initiate exit -- clear any state info from previous hibernation
 		pApp->clearStateInfo();
 #endif
@@ -3655,7 +3655,7 @@ Defun(querySaveAndExit)
 		pApp->closeModelessDlgs();
 
 		// TODO: this shouldn't be necessary, but just in case
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		// user initiate exit -- clear any state info from previous hibernation
 		pApp->clearStateInfo();
 #endif
@@ -9876,7 +9876,7 @@ Defun1(viewFullScreen)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_return_val_if_fail(pFrameData, false);
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	pFrame->setFullScreen(!pFrameData->m_bIsFullScreen);
 	pFrameData->m_bIsFullScreen = !pFrameData->m_bIsFullScreen;
 	return true;

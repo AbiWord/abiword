@@ -1548,7 +1548,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 			if (pMyUnixApp->openCmdLineFiles(&Args))
 			{
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 				s_bInitDone = true;
 				pMyUnixApp->processStartupQueue();
 #endif

@@ -54,7 +54,7 @@
 #include "ap_Menu_Id.h"
 // hack, icons are in wp
 #include "../../../wp/ap/unix/ap_UnixStockIcons.h"
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon-widgets/hildon-appview.h>
 #endif
 
@@ -503,7 +503,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				
 				// get the underlined value from the candidate label
 				guint keyCode;
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 				keyCode = GDK_VoidSymbol;
 #else
 				keyCode = _ev_get_underlined_char(buf);
@@ -641,7 +641,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		}
 	}
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 
 	// make sure our last item on the stack is the one we started with
@@ -950,7 +950,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
 	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
 #elif defined (EMBEDDED_MENUBUTTON)
@@ -974,7 +974,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
-#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
@@ -1096,7 +1096,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
 		}
 	
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	if (szMnemonicName && *szMnemonicName && !isPopup)
 	  {

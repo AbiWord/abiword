@@ -50,7 +50,7 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 	m_windowMain = NULL;
 
 	m_wlineBetween = NULL;
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	m_wtoggleOne = NULL;
 	m_wtoggleTwo = NULL;
@@ -72,7 +72,7 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 
 AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 {
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	DELETEP (m_pPreviewWidget);
 #endif
@@ -80,7 +80,7 @@ AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 
 /*****************************************************************/
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 static void s_two_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
@@ -136,7 +136,7 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->checkLineBetween();
 }
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
@@ -149,7 +149,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	dlg->event_previewExposed();
 #endif
@@ -189,7 +189,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
@@ -237,7 +237,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 												 GTK_TOGGLE_BUTTON(m_checkOrder)));
 
 	_storeWindowData();
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	DELETEP (m_pPreviewWidget);
 #endif
@@ -296,7 +296,7 @@ void AP_UnixDialog_Columns::readSpin(void)
 		event_Toggle(val);
 		return;
 	}
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
@@ -322,7 +322,7 @@ void AP_UnixDialog_Columns::readSpin(void)
 void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
@@ -337,7 +337,7 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
 	g_signal_handler_unblock(G_OBJECT(m_wSpin),
 							   m_spinHandlerID);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	switch (icolumns)
 	{
@@ -369,7 +369,7 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 							   m_threeHandlerID);
 #endif
 	setColumns( icolumns );
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	m_pColumnsPreview->draw();
 #endif
@@ -418,7 +418,7 @@ void AP_UnixDialog_Columns::event_Cancel(void)
 	m_answer = AP_Dialog_Columns::a_CANCEL;
 }
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 void AP_UnixDialog_Columns::event_previewExposed(void)
 {
@@ -451,7 +451,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 {
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	GtkWidget *wColumnFrame;
 	GtkWidget *tableColumns;
@@ -475,7 +475,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	GtkWidget * tableTop = gtk_table_new (1, 2, FALSE);
 	gtk_widget_show (tableTop);
@@ -671,7 +671,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	// might need to be queried or altered later.
 
 	m_wlineBetween = wLineBtween;
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	m_wtoggleOne = wToggleOne;
 	m_wtoggleTwo = wToggleTwo;
@@ -694,7 +694,7 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 {
 
 	// the control buttons
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	m_oneHandlerID = g_signal_connect(G_OBJECT(m_wtoggleOne),
 					   "clicked",
@@ -747,7 +747,7 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	// the expose event of the preview
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
 					   "expose_event",

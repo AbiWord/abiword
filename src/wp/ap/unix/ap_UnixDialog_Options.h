@@ -67,7 +67,7 @@ public:
 		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
 
 		// Application Startup
-#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
  		SET_GATHER (ShowSplash,		 bool);
 #endif
 		SET_GATHER (AutoLoadPlugins,	 bool);

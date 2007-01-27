@@ -206,7 +206,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::configure_event), NULL);
 
 	// focus and XIM related
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	const char focus_out_event_name[] = "focus-out-event";
 #else
 	const char focus_out_event_name[] = "leave_notify_event";
@@ -304,7 +304,7 @@ void AP_UnixFrameImpl::_createWindow()
 {
 	_createTopLevelWindow();
 	
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_widget_show_all(gtk_widget_get_parent(getTopLevelWindow()));
 #else
 	gtk_widget_show(getTopLevelWindow());

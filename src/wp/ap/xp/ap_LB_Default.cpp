@@ -350,7 +350,7 @@ ap_bs_NVK NVKTable[] =
 						  "querySaveAndExit",	"",					"",				""					}},
 //	{EV_NVK_F5,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	{EV_NVK_F6,			{ "viewFullScreen",					"",					"",				"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_F7,			{ "zoomIn",			"",					"",				"",

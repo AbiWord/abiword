@@ -117,7 +117,7 @@ static gboolean do_update(gpointer p)
 // FIXME!!! Could get nasty crash if the dlg is destroyed while 
 // a redraw is pending....
 //
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
 	dlg->event_PreviewAreaExposed();
@@ -154,7 +154,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	// *** this is how we add the gc ***
 	{
@@ -293,7 +293,7 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	if (m_paragraphPreview)
 		m_paragraphPreview->draw();
@@ -414,7 +414,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 
 	// "Indents and Spacing" page
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	boxSpacing = gtk_table_new (3, 4, FALSE);
 #else	
 	boxSpacing = gtk_table_new (7, 4, FALSE);
@@ -579,7 +579,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelSpecial, 2,3, 2,3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_label_set_justify (GTK_LABEL (labelSpecial), GTK_JUSTIFY_RIGHT);
 	gtk_misc_set_alignment (GTK_MISC (labelSpecial), 1, 0.5);
 #else
@@ -590,7 +590,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	listSpecial = gtk_option_menu_new ();
 	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	gtk_widget_show (listSpecial);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 3, 4, 2, 3,
                     (GtkAttachOptions) (GTK_SHRINK),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -640,7 +640,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	labelBy = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelBy);
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBy, 2, 3, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -659,7 +659,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(spinbuttonBy), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_INDENT);
 	gtk_widget_show (spinbuttonBy);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonBy, 3,4, 3,4,
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
                     (GtkAttachOptions) (GTK_SHRINK|GTK_EXPAND),
 #else
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
@@ -816,7 +816,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 //TODO: In hildon only hide components for future features
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	gtk_widget_show (labelSpacing);
 	gtk_widget_show (hseparator1);
@@ -935,7 +935,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
 	// End of notebook. Next comes the preview area.
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	hboxPreview = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPreview);
@@ -996,7 +996,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	m_spinbuttonAt_adj = spinbuttonAt_adj;
 	m_spinbuttonAt = spinbuttonAt;
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	m_drawingareaPreview = NULL;
 #else
 	m_drawingareaPreview = drawingareaPreview;
@@ -1085,7 +1085,7 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 
-#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
