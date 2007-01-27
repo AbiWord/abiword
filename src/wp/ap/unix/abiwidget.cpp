@@ -51,6 +51,8 @@
 #include "fl_DocLayout.h"
 #include "ut_go_file.h"
 #include "ut_timer.h"
+#include "ev_Toolbar_Actions.h"
+#include "ap_Toolbar_Id.h"
 /**************************************************************************/
 /**************************************************************************/
 
@@ -378,6 +380,7 @@ enum {
 	SIGNAL_SELECTION_CLEARED,
 	SIGNAL_ENTER_SELECTION,
 	SIGNAL_LEAVE_SELECTION,
+	SIGNAL_TABLE_STATE,
 	SIGNAL_LAST
 };
 
@@ -412,6 +415,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_SELECTION_CLEARED, "selection-cleared", signal_selection_cleared);
 	INSTALL_BOOL_SIGNAL(SIGNAL_ENTER_SELECTION, "enter-selection", signal_enter_selection);
 	INSTALL_BOOL_SIGNAL(SIGNAL_LEAVE_SELECTION, "leave-selection", signal_leave_selection);
+	INSTALL_BOOL_SIGNAL(SIGNAL_TABLE_STATE, "table-state", signal_table_state);
 }
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
@@ -508,6 +512,11 @@ public:
 				style_name_ = szStyle;
 				styleName(szStyle);
 			}
+			const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
+			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(AP_TOOLBAR_ID_INSERT_TABLE);
+			const gchar * sz = NULL;
+			bool b = (EV_TIS_ZERO == pAction->getToolbarItemState(pView,&sz));
+			FIRE_BOOL(b,tableState_,tableState);
 		}
 		if ((AV_CHG_ALL) & mask)
 		{
@@ -600,6 +609,7 @@ public:
 	virtual void selectionCleared(bool value) {}
 	virtual void enterSelection(bool value) {}
 	virtual void leaveSelection(bool value) {}
+	virtual void tableState(bool value) {}
 
 private:
 
@@ -629,6 +639,7 @@ private:
 		selectionCleared_ = false;
 		enterSelection_ = false;
 		leaveSelection_ = false;
+		tableState_ = false;
 	}
 	bool bold_;
 	bool italic_;
@@ -654,6 +665,7 @@ private:
 	bool selectionCleared_;
 	bool enterSelection_;
 	bool leaveSelection_;
+	bool tableState_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
@@ -694,6 +706,7 @@ public:
 	virtual void selectionCleared(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SELECTION_CLEARED], 0, (gboolean)value);}
 	virtual void enterSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ENTER_SELECTION], 0, (gboolean)value);}
 	virtual void leaveSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEAVE_SELECTION], 0, (gboolean)value);}
+	virtual void tableState(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TABLE_STATE], 0, (gboolean)value);}
 
 private:
 	AbiWidget *         m_pWidget;

@@ -209,6 +209,7 @@ G_BEGIN_DECLS
     void (* signal_selection_cleared) (AbiWidget * widget, gboolean value);
     void (* signal_enter_selection) (AbiWidget * widget, gboolean value);
     void (* signal_leave_selection) (AbiWidget * widget, gboolean value);
+    void (* signal_table_state) (AbiWidget * widget, gboolean value);
 
 
     AbiSignal sig_pad[20];
