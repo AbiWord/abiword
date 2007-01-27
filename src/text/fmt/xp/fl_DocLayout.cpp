@@ -997,7 +997,7 @@ fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pE
  */
 void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
 {
-	UT_DEBUGMSG(("Remove endnote container %x \n",pECon));
+	xxx_UT_DEBUGMSG(("Remove endnote container %x \n",pECon));
 	fl_DocSectionLayout * pDSL = getDocSecForEndnote(pECon);
 	if(pDSL->getFirstEndnoteContainer() == static_cast<fp_Container *>(pECon))
 	{
@@ -2600,7 +2600,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 							pDocLayout->m_iGrammarCount = 0;
 						}
 						
-						UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
+						xxx_UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
 						XAP_App * pApp = pDocLayout->getView()->getApp();
 						//
 						// If a grammar checker plugin is loaded it will check the block now.

@@ -201,7 +201,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bPrevListLabel(false),
 	  m_iAdditionalMarginAfter(0)
 {
-	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
+	xxx_UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
 	UT_ASSERT(myContainingLayout() != NULL);
 
@@ -4748,9 +4748,21 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	const PP_AttrProp * pBlockAP = NULL;
 	getSpanAP(blockOffset, false, pSpanAP);
 	getAP(pBlockAP);
-	const char * szLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+	const char * szLang = static_cast<const char *>(PP_evalProperty("lang",
+																	pSpanAP,
+																	pBlockAP,
+																	NULL,
+																	m_pDoc,
+																	true));
 
+	const GR_Font * pFont = m_pLayout->findFont(pSpanAP,
+												pBlockAP,
+												NULL,
+												m_pLayout->getGraphics());
+
+	UT_DEBUGMSG(("Got [%s], %s\n", pFont->getFamily(), szLang));
 	I.setLang(szLang);
+	I.setFont(pFont);
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 
@@ -4759,9 +4771,9 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		UT_uint32 iRunOffset = I.getNthOffset(i);
 		UT_uint32 iRunLength = I.getNthLength(i);
 
-		// because of bug 8542 we do not allow runs longer than 32000 chars, so if it is
-		// longer, just split it (we do not care where we split it, this is a contingency
-		// measure only)
+		// because of bug 8542 we do not allow runs longer than 32000 chars, so
+		// if it is longer, just split it (we do not care where we split it,
+		// this is a contingency measure only)
 		while(iRunLength)
 		{
 			UT_uint32 iRunSegment = UT_MIN(iRunLength, 32000);
@@ -8014,28 +8026,28 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		if (pFG == NULL)
 			return false;
 
-		UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
+		xxx_UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
 		_doInsertImageRun(blockOffset, pFG);
 		return true;
 	}
 
 	case PTO_Field:
-		UT_DEBUGMSG(("!!!Populate:InsertObject:Field: BlockOffset %d \n",blockOffset));
+		xxx_UT_DEBUGMSG(("!!!Populate:InsertObject:Field: BlockOffset %d \n",blockOffset));
 		_doInsertFieldRun(blockOffset, pcro);
 		return true;
 
 	case PTO_Bookmark:
-		UT_DEBUGMSG(("Populate:InsertBookmark:\n"));
+		xxx_UT_DEBUGMSG(("Populate:InsertBookmark:\n"));
 		_doInsertBookmarkRun(blockOffset);
 		return true;
 
 	case PTO_Hyperlink:
-		UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
+		xxx_UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
 		_doInsertHyperlinkRun(blockOffset);
 		return true;
 
 	case PTO_Math:
-		UT_DEBUGMSG(("Populate:InsertMathML:\n"));
+		xxx_UT_DEBUGMSG(("Populate:InsertMathML:\n"));
 		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
 		return true;
 
@@ -10581,7 +10593,7 @@ bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Cha
 	}
 	if(pRun == NULL)
 	{
-		UT_DEBUGMSG(("No run where one is expected block %x iBlockPos %d \n",this,iBlockPos));
+		xxx_UT_DEBUGMSG(("No run where one is expected block %x iBlockPos %d \n",this,iBlockPos));
 		return false;
 	}
 	//	UT_return_val_if_fail( pRun, false );
@@ -10971,7 +10983,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
 		if(pRun == NULL)
 			{
-				UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
+				xxx_UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
 				return false;
 			}
 		UT_return_val_if_fail( pRun, false );

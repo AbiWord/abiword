@@ -294,7 +294,7 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
  */
 void fl_EmbedLayout::_purgeLayout(void)
 {
-	UT_DEBUGMSG(("embedLayout: purge \n"));
+	xxx_UT_DEBUGMSG(("embedLayout: purge \n"));
 	fl_ContainerLayout * pCL = getFirstLayout();
 	while(pCL)
 	{
@@ -328,7 +328,7 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout,
 fl_FootnoteLayout::~fl_FootnoteLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Footlayout %x \n",this));
+	xxx_UT_DEBUGMSG(("Deleting Footlayout %x \n",this));
 	_purgeLayout();
 	fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(getFirstContainer());
 	while(pFC)
@@ -583,7 +583,7 @@ fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout,
 fl_EndnoteLayout::~fl_EndnoteLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Endlayout %x \n",this));
+	xxx_UT_DEBUGMSG(("Deleting Endlayout %x \n",this));
 	_purgeLayout();
 	fp_EndnoteContainer * pEC = static_cast<fp_EndnoteContainer *>(getFirstContainer());
 	while(pEC)
@@ -751,7 +751,7 @@ fp_Container* fl_EndnoteLayout::getNewContainer(fp_Container *)
 
 void fl_EndnoteLayout::_insertEndnoteContainer(fp_Container * pNewEC)
 {
-	UT_DEBUGMSG(("inserting endnote container into DocLayout list\n"));
+	xxx_UT_DEBUGMSG(("inserting endnote container into DocLayout list\n"));
 
 	m_pLayout->insertEndnoteContainer(static_cast<fp_EndnoteContainer *>(pNewEC));
 	m_bIsOnPage = true;

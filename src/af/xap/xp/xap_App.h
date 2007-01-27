@@ -272,14 +272,6 @@ public:
 	virtual void                clearStateInfo(){};
 	
 protected:
-	virtual const char*			_findNearestFont(const char* pszFontFamily,
-												 const char* pszFontStyle,
-												 const char* pszFontVariant,
-												 const char* pszFontWeight,
-												 const char* pszFontStretch,
-												 const char* pszFontSize,
-												 const char* pszLang);
-	
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}
 	void						_setUUIDGenerator(UT_UUIDGenerator * pG) { m_pUUIDGenerator = pG; }

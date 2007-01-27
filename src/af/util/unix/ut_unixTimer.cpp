@@ -47,7 +47,7 @@ UT_UNIXTimer::UT_UNIXTimer(UT_WorkerCallback pCallback, void* pData)
 
 UT_UNIXTimer::~UT_UNIXTimer()
 {
-	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
+	xxx_UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
 	stop();
 }
 

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998, 1999 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuiere
@@ -1460,37 +1461,11 @@ void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 	}
 }
 
-const char* XAP_App::_findNearestFont(const char* pszFontFamily,
-									  const char* pszFontStyle,
-									  const char* pszFontVariant,
-									  const char* pszFontWeight,
-									  const char* pszFontStretch,
-									  const char* pszFontSize,
-									  const char * pszLang)
-{
-	XAP_Frame * pFrame = getLastFocussedFrame();
-	if(pFrame == NULL)
-	{
-		return pszFontFamily;
-	}
-	GR_Graphics * pG = newDefaultScreenGraphics();
-	UT_return_val_if_fail( pG, pszFontFamily );
-
-	const char * pf = pG->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
-										  pszFontWeight, pszFontStretch, pszFontSize,
-										  pszLang);
-
-	delete pG;
-	return pf;
-}
-
 /*!
     Find the nearest matching font based on the provided parameters
 
-    TODO: we should use a more sophisticated description of fonts to allow for better matching
-    
-	NB: This is a convenience function; if you need to test for a number of fonts, you
-	    should use the code from this function to avoid recreating the graphics class. 
+    TODO: we should use a more sophisticated description of fonts to allow for
+    better matching
 */
 const char* XAP_App::findNearestFont(const char* pszFontFamily,
 									 const char* pszFontStyle,
@@ -1500,12 +1475,10 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 									 const char* pszFontSize,
 									 const char* pszLang)
 {
-	XAP_App * pApp = XAP_App::getApp();
-	UT_return_val_if_fail( pApp, pszFontFamily );
-	
-	return pApp->_findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
-								  pszFontWeight, pszFontStretch, pszFontSize,
-								  pszLang);
+	return GR_Graphics::findNearestFont(pszFontFamily, pszFontStyle,
+										pszFontVariant, pszFontWeight,
+										pszFontStretch, pszFontSize,
+										pszLang);
 }
 
 /*!

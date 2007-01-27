@@ -2502,7 +2502,7 @@ UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
 
 void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 {
-	UT_DEBUGMSG(("Doing delete broken tables from here \n"));
+	xxx_UT_DEBUGMSG(("Doing delete broken tables from here \n"));
 	if(m_bDeleteingBrokenContainers)
 	{
 		return;
@@ -2990,14 +2990,14 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
-	UT_DEBUGMSG(("Delete Owned Page %x \n",pPage));
+	xxx_UT_DEBUGMSG(("Delete Owned Page %x \n",pPage));
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->isPageHere(pPage))
 		{
 			pHdrFtr->deletePage(pPage);
-			UT_DEBUGMSG(("Delete Owned Page %x from HdrFtr %x \n",pPage,pHdrFtr));
+			xxx_UT_DEBUGMSG(("Delete Owned Page %x from HdrFtr %x \n",pPage,pHdrFtr));
 		}
 	}
 //
@@ -3543,7 +3543,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	UT_return_if_fail( pPair );
 	
 	// TODO outofmem
-	UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
+	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
 	pPair->setPage(pPage);
 	pPair->setShadow(new fl_HdrFtrShadow(m_pLayout, pPage, this, getStruxDocHandle(), m_apIndex));
 	//
@@ -3691,7 +3691,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	fp_Page * ppPage = pPair->getPage();
 	UT_ASSERT(pPage == ppPage);
 	delete pPair->getShadow();
-	UT_DEBUGMSG(("Doing deletePage %x \n",pPage));
+	xxx_UT_DEBUGMSG(("Doing deletePage %x \n",pPage));
 	if(getDocLayout()->findPage(ppPage) >= 0)
 	{
 			ppPage->removeHdrFtr(getHFType());
@@ -4937,7 +4937,7 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	// Force creation of the appropriate container object;
 	// throw away return value.
 	m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
-	UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW \n"));
+	xxx_UT_DEBUGMSG(("check that m_iType is indeed FL_SECTION_SHADOW \n"));
 	UT_ASSERT(m_iType == FL_SECTION_SHADOW);
 //	UT_ASSERT(0);
 	fl_Layout::setType(PTX_Section); // Set the type of this strux
@@ -5364,7 +5364,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
-	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -5546,7 +5546,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			{
 				pBL = m_pCurrentCell->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
 			}
-			UT_DEBUGMSG(("New Shadow block %x created and set as current \n",pBL));
+			xxx_UT_DEBUGMSG(("New Shadow block %x created and set as current \n",pBL));
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));

@@ -199,8 +199,8 @@ public:
 	
 	virtual GR_Font * getGUIFont(void);
 	
-	PangoFontMap * getFontMap() {return m_pFontMap;}
-	PangoContext * getContext() {return m_pContext;}
+	PangoFontMap * getFontMap() const {return m_pFontMap;}
+	PangoContext * getContext() const {return m_pContext;}
 
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
@@ -228,14 +228,6 @@ public:
 	bool isDingbat(void) const {return m_bIsDingbat;}
 	bool isSymbol(void) const {return m_bIsSymbol;};
 	
-	virtual const char* findNearestFont(const char* pszFontFamily,
-										const char* pszFontStyle,
-										const char* pszFontVariant,
-										const char* pszFontWeight,
-										const char* pszFontStretch,
-										const char* pszFontSize,
-										const char* pszLang);
-
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
 							   const char* pszFontVariant,
@@ -329,6 +321,8 @@ public:
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
 	void         _setColor(GdkColor & c);
+
+	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
   protected:
 	PangoFontMap *    m_pFontMap;
@@ -337,6 +331,10 @@ public:
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
+	PangoFont *       m_pAdjustedPangoFont;
+	GR_UnixPangoFont* m_pAdjustedPangoFontSource;
+	UT_uint32         m_iAdjustedPangoFontZoom;
+	
 	UT_uint32         m_iDeviceResolution;
 
 	GdkWindow *       m_pWin;

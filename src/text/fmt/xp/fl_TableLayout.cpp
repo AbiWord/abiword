@@ -116,7 +116,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 fl_TableLayout::~fl_TableLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
+	xxx_UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
 	m_bDoingDestructor = true;
 	_purgeLayout();
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
@@ -1818,7 +1818,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 fl_CellLayout::~fl_CellLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Delete cell %x \n",this));
+	xxx_UT_DEBUGMSG(("Delete cell %x \n",this));
 	_purgeLayout();
 	fp_CellContainer * pTC = static_cast<fp_CellContainer *>(getFirstContainer());
 	while(pTC)

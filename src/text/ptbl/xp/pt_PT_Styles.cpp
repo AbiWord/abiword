@@ -29,8 +29,6 @@
 #include "pd_Style.h"
 #include "fl_AutoLists.h"
 #include "ut_hash.h"
-// that's only to use the findNearestFont method
-#include "gr_Graphics.h"
 #include "xap_Strings.h"
 #include "xap_App.h"
 #include "xap_App.h"

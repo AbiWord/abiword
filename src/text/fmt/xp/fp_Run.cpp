@@ -3749,7 +3749,7 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 
 fp_FieldRun::~fp_FieldRun(void)
 {
-	UT_DEBUGMSG(("FieldRun deleted %x FieldType %d \n",this,getFieldType()));
+	xxx_UT_DEBUGMSG(("FieldRun deleted %x FieldType %d \n",this,getFieldType()));
 	return;
 }
 

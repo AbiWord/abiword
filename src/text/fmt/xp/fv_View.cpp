@@ -434,13 +434,13 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		s += pCountry;
 	}
 		
-	// findFont will do a fuzzy match, and return the nearest font in the system
-	GR_Font* pFont = m_pG->findFont("Times New Roman",
-									"normal", "normal",
-									"normal", "normal",
-									"12pt", s.utf8_str());
+	// do a fuzzy match for Times New Roman
+	const char * pszFamily =
+		GR_Graphics::findNearestFont ("Times New Roman",
+									  "normal", "normal",
+									  "normal", "normal",
+									  "12pt", s.utf8_str());
 	
-	const char * pszFamily = pFont ? pFont->getFamily() : NULL;
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);
 

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
@@ -409,16 +410,30 @@ class ABI_EXPORT GR_Graphics
 					   const char* pszFontStretch,
 					   const char* pszFontSize,
 					   const char* pszLang);
-	
-	virtual const char* findNearestFont(const char* pszFontFamily,
-										const char* pszFontStyle,
-										const char* pszFontVariant,
-										const char* pszFontWeight,
-										const char* pszFontStretch,
-										const char* pszFontSize,
-										const char* pszLang)
-	                                         {return pszFontFamily;}
 
+	/* Static 'virtual' -- if you are providing an implementation for this
+	 * function in a derrived graphics class, please define
+	 * XAP_HAVE_GR_findNearestFont in platform xap_*Features.h file
+	 */
+#ifdef XAP_HAVE_GR_findNearestFont
+	static const char* findNearestFont(const char* pszFontFamily,
+									   const char* pszFontStyle,
+									   const char* pszFontVariant,
+									   const char* pszFontWeight,
+									   const char* pszFontStretch,
+									   const char* pszFontSize,
+									   const char* pszLang);
+#else
+	static const char* findNearestFont(const char* pszFontFamily,
+									   const char* pszFontStyle,
+									   const char* pszFontVariant,
+									   const char* pszFontWeight,
+									   const char* pszFontStretch,
+									   const char* pszFontSize,
+									   const char* pszLang)
+		{return pszFontFamily;}
+#endif
+	
 	const char *      invertDimension(UT_Dimension, double) const;
 
 	bool              scaleDimensions(const char * szLeftIn,

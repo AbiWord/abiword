@@ -341,7 +341,7 @@ fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_EndnoteContainer::~fp_EndnoteContainer()
 {
-	UT_DEBUGMSG(("deleting endnote container %x \n",this));
+	xxx_UT_DEBUGMSG(("deleting endnote container %x \n",this));
 	m_pLocalNext = NULL;
 	m_pLocalPrev = NULL;
 	m_bOnPage = false;

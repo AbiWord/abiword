@@ -78,7 +78,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 
 fp_Page::~fp_Page()
 {
-	UT_DEBUGMSG(("fpPage: Deleting page %x \n",this));
+	xxx_UT_DEBUGMSG(("fpPage: Deleting page %x \n",this));
 	if (m_pOwner)
 	{
 		fl_DocSectionLayout *pDSL = m_pOwner;
@@ -1901,7 +1901,7 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 	}
 	else
 	{
-		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from columnheight changed. \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Mark for rebuild from columnheight changed. \n"));
 		m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
@@ -2375,7 +2375,7 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 	UT_return_val_if_fail(*ppHF, NULL);
 
 	(*ppHF)->setPage(this);
-	UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",*ppHF,this));
+	xxx_UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",*ppHF,this));
 	return *ppHF;
 }
 

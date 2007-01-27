@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
+ * Copyright (C) 2004-2007 Tomas Frydrych
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,6 +79,7 @@ int            GR_UnixPangoGraphics::s_iMaxScript = 0;
 class GR_UnixPangoItem: public GR_Item
 {
 	friend class GR_UnixPangoGraphics;
+	friend class GR_UnixPangoPrintGraphics;
 
   public:
 	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
@@ -133,7 +134,8 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		m_pLogOffsets(NULL),
 		m_pJustify(NULL),
 		m_iZoom(0),
-		m_iCharCount(0)
+		m_iCharCount(0),
+		m_iShapingAllocNo(0)
 	{
 		++s_iInstanceCount;
 		if(sUTF8 == NULL)
@@ -182,6 +184,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	int *             m_pJustify;
 	UT_uint32         m_iZoom;
 	UT_uint32         m_iCharCount;
+	UT_uint32         m_iShapingAllocNo;
 	
 	static UT_UTF8String * sUTF8;
 	static GR_UnixPangoRenderInfo * s_pOwnerUTF8;
@@ -230,6 +233,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
+	 m_pAdjustedPangoFont(NULL),
+	 m_pAdjustedPangoFontSource(NULL),
+	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
 	 m_pWin (win),
  	 m_pGC (NULL),
@@ -252,6 +258,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
+	 m_pAdjustedPangoFont(NULL),
+	 m_pAdjustedPangoFontSource(NULL),
+	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
 	 m_pWin (NULL),
  	 m_pGC (NULL),
@@ -750,22 +759,46 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		utf8 += text.getChar();
 	}
 
+	UT_uint32 iByteLength = utf8.byteLength();
+	
+	PangoAttrList *pAttrList = pango_attr_list_new();
+	PangoAttrIterator *pIter = pango_attr_list_get_iterator (pAttrList);
+	const GR_UnixPangoFont * pFont = (const GR_UnixPangoFont *) I.getFont();
+
+	if (pFont)
+	{
+		const PangoFontDescription * pfd = pFont->getPangoDescription();
+		PangoAttribute * pAttr = pango_attr_font_desc_new (pfd);
+		pAttr->start_index = 0;
+		pAttr->end_index = iByteLength;
+		pango_attr_list_insert(pAttrList, pAttr);		
+	}
+
+	const char * pLang = I.getLang();
+
+	if (pLang)
+	{
+		PangoLanguage  * pl = pango_language_from_string(pLang);
+		PangoAttribute * pAttr = pango_attr_language_new (pl);		
+		pAttr->start_index = 0;
+		pAttr->end_index = iByteLength;
+		pango_attr_list_insert(pAttrList, pAttr);		
+	}
+	
 	UT_uint32 iItemCount;
-	// PangoAttrList *pAttr = pango_attr_list_new();
 
 	// this will result in itemization assuming base direction of 0
 	// we set the appropriate embedding level later in shape()
 	GList *gItems = pango_itemize(m_pContext,
 								  utf8.utf8_str(),
-								  0, utf8.byteLength(),
-								  NULL, NULL);
+								  0, iByteLength,
+								  pAttrList, pIter);
+
+	pango_attr_iterator_destroy (pIter);
+	pango_attr_list_unref (pAttrList);
 	
 	iItemCount = g_list_length(gItems);
 
-	//!!!WDG haven't decided what to do about attributes yet We do not want to
-	//use these attributes, because the text we draw in a single call is always
-	//homogenous pango_attr_list_unref(pAttr);
-	
 	// now we process the ouptut
 	UT_uint32 iOffset = 0;
 	xxx_UT_DEBUGMSG(("itemize: number of items %d\n", iItemCount));
@@ -781,6 +814,20 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			return false;
 		}
 
+#if 0 //def DEBUG
+		PangoFont * pf = pI->m_pi->analysis.font;
+		PangoFontDescription * pfd = pango_font_describe (pf);
+		char * pfds = pango_font_description_to_string (pfd);
+		
+		PangoLanguage * lang = pI->m_pi->analysis.language;
+
+		UT_DEBUGMSG(("@@@@ ===== Item [%s] [%s] =====\n",
+					 pfds, pango_language_to_string(lang)));
+		
+		pango_font_description_free (pfd);
+		g_free (pfds);
+#endif
+		
 		I.addItem(iOffset, pI);
 		iOffset += pItem->num_chars;
 	}
@@ -843,10 +890,13 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
 
+	PangoFontset * pfs = NULL;
+	PangoFont    * pFontSubst = NULL;
+	
 	if(!ri)
 	{
-		// this simply allocates new instance of the RI which this function will
-		// fill with meaningful data
+		// this simply allocates new instance of the RI which this function
+		// will fill with meaningful data
 		ri = new GR_UnixPangoRenderInfo(pItem->getType());
 		UT_return_val_if_fail(ri, false);
 	}
@@ -859,6 +909,32 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	// need this so that isSymbol() and isDingbat() are correct
 	setFont(const_cast<GR_Font*>(si.m_pFont));
+
+	/*
+	 * Pango does a royally bad job of the font substitution in
+	 * pango_itemize(): it will happily return 'Times New Roman' as
+	 * font when we have requested 'Arial', even though the latter is
+	 * present and has the necessary coverage. Consequently we have to
+	 * do the font substitution manually even on the first shapping.
+	 *
+	 * If the font has changed from the one for which we previously shapped
+	 * (or have not shaped, in which case alloc no is 0), we load a fontset
+	 * for the requested font description. Later on, we pick the best font
+	 * for each character in this run.
+	 */
+	if(RI->m_iShapingAllocNo != si.m_pFont->getAllocNumber())
+	{
+		xxx_UT_DEBUGMSG(("@@@@ ===== Font change %d -> %d\n",
+					 RI->m_iShapingAllocNo,
+					 si.m_pFont->getAllocNumber()));
+			
+		GR_UnixPangoFont * pFont = (GR_UnixPangoFont*)si.m_pFont;
+
+		pfs = pango_font_map_load_fontset (getFontMap(),
+										   getContext(),
+										   pFont->getPangoDescription(),
+										   pItem->m_pi->analysis.language);
+	}
 	
 	UT_UTF8String utf8;
 	
@@ -866,14 +942,84 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
 	{
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
+		UT_UCS4Char c = si.m_Text.getChar();
 		if(isSymbol())
-			utf8 += adobeToUnicode(si.m_Text.getChar());
+			utf8 += adobeToUnicode(c);
 		else if(isDingbat())
-			utf8 += adobeDingbatsToUnicode(si.m_Text.getChar());
+			utf8 += adobeDingbatsToUnicode(c);
 		else
-			utf8 += si.m_Text.getChar();
+			utf8 += c;
+
+		if (pfs)
+		{
+			/*
+			 * A font change; get the best font for this character
+			 */
+			PangoFont * font = pango_fontset_get_font (pfs, c);
+			
+			if (!font)
+			{
+				/*
+				 * We did not find a suitable font -- nothing we can do.
+				 */
+
+				UT_DEBUGMSG(("@@@@ ===== Failed to find font for u%04x\n", c));
+			}
+			else if (pFontSubst && (pFontSubst != font))
+			{
+				/*
+			     * Ok, the font we got for this character does not match
+			     * the one we got the for the preceding characters.
+			     *
+			     * What we should do is to split the run before this character
+			     * so we might use two different fonts, but we currently
+			     * do not have the infrastructure to do this.
+			     *
+			     * NB: the run only contains characters from a single language
+			     * and script (as determined by PangoItemize), so any font that
+			     * advertises itself as having a coverage for this language and
+			     * script should actually contain all the characters in this
+			     * run -- I think this should happen only rarely and we will
+			     * blame the font for now ;-).
+			     *
+			     * If this font covers this character and the previous font
+			     * did not, there is a chance that this font has overall better
+			     * coverage than the previous one -- let's use this font, and
+			     * hope for the best.
+			     *
+			     * TODO: add return value to this function so we can indicate
+			     *       this problem to the caller and a mechanism to
+			     *       fp_TextRun to split itself before this character.
+			     */
+				UT_DEBUGMSG(("@@@@ ===== Font for u%04x does not match "
+							 "earlier font\n", c));
+				
+				pFontSubst = font;
+			}
+			else if (pFontSubst == font)
+			{
+				/* We now have two references to this font, rectify */
+				g_object_unref (G_OBJECT (pFontSubst));
+			}
+			else
+			{
+				pFontSubst = font;
+			}
+		}
 	}
 
+	if (pFontSubst)
+	{
+		/*
+		 * We are doing font substitution -- release the font previously
+		 * stored in the PangoAnalysis and replace it with this one.
+		 */
+		if (pItem->m_pi->analysis.font)
+			g_object_unref (G_OBJECT (pItem->m_pi->analysis.font));
+		
+		pItem->m_pi->analysis.font = pFontSubst;
+	}
+	
 	RI->m_iCharCount = si.m_iLength;
 	
 	if(RI->m_pGlyphs)
@@ -884,20 +1030,40 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	RI->m_pGlyphs = pango_glyph_string_new();
 
-	// before we can call this, we have to set analysis.font
-	// Is this the case, or is the font set by pango_itemize()? #TF
-	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) si.m_pFont;
-
-	// We want to do the shaping on a font at it's actual point size
-	UT_ASSERT_HARMLESS( !pFont->isGuiFont() );
-	
+	/*
+	 * We want to do the shaping on a font at it's actual point size, so we
+	 * cannot use the font in our PangoAnalysis structure, which we will
+	 * later use for drawing, and which will be adjusted for the current
+	 * zoom.
+	 */
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
-	UT_String s;
-	UT_String_sprintf(s, "%s %f",
-					  pFont->getDescription().c_str(),
-					  pFont->getPointSize());
+	UT_String              s;
+	PangoFont            * pPangoFontOrig = pItem->m_pi->analysis.font;
+	GR_UnixPangoFont     * pFont = (GR_UnixPangoFont *) si.m_pFont;;
+	PangoFontDescription * pfd;
+	
+	if (pPangoFontOrig)
+	{
+		pfd = pango_font_describe (pPangoFontOrig);
+		double dSize = (double)PANGO_SCALE * pFont->getPointSize();
+		pango_font_description_set_size (pfd, (gint)dSize);
+
+#if 0 //def DEBUG
+		char * s = pango_font_description_to_string (pfd);
+		UT_DEBUGMSG(("Item-based font [%s]\n", s));
+		g_free (s);
+#endif
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS( !pFont->isGuiFont() );
+		UT_String_sprintf(s, "%s %f",
+						  pFont->getDescription().c_str(),
+						  pFont->getPointSize());
 		
-	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
+		pfd = pango_font_description_from_string(s.c_str());
+	}
+
 	UT_return_val_if_fail(pfd, false);
 	PangoFont * pf = pango_context_load_font(getContext(), pfd);
 	pango_font_description_free(pfd);
@@ -910,6 +1076,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pGlyphs);
 
+	if (pPangoFontOrig)
+		pItem->m_pi->analysis.font = pPangoFontOrig;
+		
 	if(RI->m_pLogOffsets)
 	{
 		delete [] RI->m_pLogOffsets;
@@ -921,10 +1090,10 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	// need to transfer data that we will need later from si to RI
 	RI->m_iLength = si.m_iLength;
-
-	RI->m_pItem = si.m_pItem;
-	RI->m_pFont = si.m_pFont;
-
+	RI->m_pItem   = si.m_pItem;
+	RI->m_pFont   = si.m_pFont;
+	RI->m_iShapingAllocNo = si.m_pFont->getAllocNumber();
+	
 	RI->m_eShapingResult = GRSR_ContextSensitiveAndLigatures;
 
 	// remove any justification information -- it will have to be recalculated
@@ -942,22 +1111,24 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
-
-	UT_return_val_if_fail( RI.m_pGlyphs && RI.m_pLogOffsets, 0 );
+	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	
+	UT_return_val_if_fail( RI.m_pGlyphs && RI.m_pLogOffsets && pItem, 0 );
 	
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) RI.m_pFont;
 	UT_return_val_if_fail( pFont, 0 );
 	
-	PangoFont * pf = pFont->getPangoFont();
+	PangoFont * pf = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
 	UT_return_val_if_fail( pf, 0 );
 
 	UT_sint32 iStart = RI.m_iOffset;
 	UT_sint32 iEnd   = RI.m_iOffset + RI.m_iLength;
 	
-	UT_sint32 iwidth =  _measureExtent (RI.m_pGlyphs, pf, RI.m_iVisDir, NULL,
+	UT_sint32 iWidth =  _measureExtent (RI.m_pGlyphs, pf, RI.m_iVisDir, NULL,
 						   RI.m_pLogOffsets, iStart, iEnd);
-	xxx_UT_DEBUGMSG(("TextWidths Pango Font %x height %d text width %d \n",pFont,pFont->getAscent(),iwidth));
-	return iwidth;
+	xxx_UT_DEBUGMSG(("TextWidths Pango Font %x height %d text width %d \n",
+					 pFont, pFont->getAscent(), iWidth));
+	return iWidth;
 }
 
 /*!
@@ -965,14 +1136,16 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
  * *character* offset iStart to iEnd (excluding iEnd);
  *
  * iDir is the visual direction of the text
+ * 
  * pUtf8 pointer to the corresponding utf8 string; can be NULL if pLogOffsets
  *    is provided
+ *    
  * pLogOffsets is array of logical offsets (see
  *    gr_UnixPangoRenderInfo::m_pLogOffsets); if NULL, it will be calculated
  *    using the corresponding utf8 string and pointer returned back; the
  *    caller needs to delete[] it when no longer needed.
  *
- * on return iStart and iEnd contain the offset values that correspond to the
+ * On return iStart and iEnd contain the offset values that correspond to the
  * returned extent (e.g., if the original iStart and/or iEnd are not legal
  * character postions due to clustering rules, these can be different from
  * the requested values).
@@ -1078,6 +1251,50 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	}
 }
 
+/*
+ * This is used to get PangoFont that is correct for present zoom level.
+ * pFont is the font that we are supposed to be using (the user-selected font)
+ * pf is the PangoFont that we are actually using (possibly a different,
+ * substituted font).
+ */
+PangoFont *  GR_UnixPangoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf)
+{
+	UT_return_val_if_fail(pFont, NULL);
+	
+	if (!pf)
+		return pFont->getPangoFont();
+
+	/* See if this is not the font we have currently cached */
+	if (pFont == m_pAdjustedPangoFontSource &&
+		m_iAdjustedPangoFontZoom == getZoomPercentage())
+	{
+		return m_pAdjustedPangoFont;
+	}
+
+	/*
+	 * When Pango is doing font substitution for us, the substitute font
+	 * we are getting always has size 12pt, so we have to use the size of
+	 * our own font to fix this.
+	 */
+	PangoFontDescription * pfd = pango_font_describe (pf);
+
+	double dSize = pFont->getPointSize ();
+	dSize =
+		(gint)(dSize*(double)PANGO_SCALE *(double)getZoomPercentage() / 100.0);
+	
+	pango_font_description_set_size (pfd, (gint)dSize);
+
+	/* We cache this font to avoid all this huha if we can */
+	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
+	m_pAdjustedPangoFontSource = pFont;
+	m_iAdjustedPangoFontZoom = getZoomPercentage();
+	
+	pango_font_description_free(pfd);
+	
+	return m_pAdjustedPangoFont;
+}
+
+
 /*!
     The offset passed to us as part of ri is a visual offset
 */
@@ -1088,12 +1305,17 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
 	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars length %d \n",RI.m_iLength));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars length %d \n",
+					 RI.m_iLength));
 
 	if(RI.m_iLength == 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("Pango renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	PangoFont * pf = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
+
+	xxx_UT_DEBUGMSG(("Pango renderChars: xoff %d yoff %d\n",
+					 RI.m_xoff, RI.m_yoff));
+	
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
@@ -1103,7 +1325,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iOffset == 0 &&
 	   (RI.m_iLength == (UT_sint32)RI.m_iCharCount || !RI.m_iCharCount))
 	{
-		pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(),
+		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
 						 RI.m_pGlyphs, xoff, yoff);
 	}
 	else
@@ -1182,7 +1404,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		gs.glyphs = RI.m_pGlyphs->glyphs + iGlyphsStart;
 		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(),
+		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
 						 &gs, xoff, yoff);
 
 	}
@@ -1230,13 +1452,12 @@ void GR_UnixPangoGraphics::_scaleJustification(GR_UnixPangoRenderInfo & RI)
 /*!
    This function is called after shaping and before any operations are done on
    the glyphs. Although Pango does not have a separate character placement
-   stage, we need to scale the glyph metrics to appropriate zoom level (since we
-   shape @100% zoom).
+   stage, we need to scale the glyph metrics to appropriate zoom level (since
+   we shape @100% zoom).
 
-   NB: this is probably not ideal with int arithmetic as moving from one zoom to
-   another, and back we are bound to end up with incorrect metrics due to
-   rounding errors.
-
+   NB: this is probably not ideal with int arithmetic as moving from one zoom
+       to another, and back we are bound to end up with incorrect metrics due
+       to rounding errors.
 */
 void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 {
@@ -1251,7 +1472,8 @@ void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 }
 
-void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
+void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri,
+													 UT_GrowBuf & buf) const
 {
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
@@ -1271,7 +1493,8 @@ bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 	// the buffer has to have at least one more slot than the number of glyphs
 	if(!ri.s_pLogAttrs || ri.s_iStaticSize < ri.sUTF8->length() + 1)
 	{
-		UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8->length()+1),false);
+		UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8->length()+1),
+							  false);
 	}
 	
 	pango_break(ri.sUTF8->utf8_str(),
@@ -1283,7 +1506,8 @@ bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 	return true;
 }
 
-bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
+bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
+									bool bAfter)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO &&
 						  ri.m_iOffset < ri.m_iLength, false);
@@ -1329,7 +1553,8 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool b
 		
 	if(iNext == -1)
 	{
-		// we have not found any breaks in this run -- signal this to the caller
+		// we have not found any breaks in this run -- signal this to the
+		// caller
 		iNext = -2;
 	}
 	
@@ -1344,7 +1569,8 @@ bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
 	return true;
 }
 
-UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
+													bool bForward)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
@@ -1357,7 +1583,8 @@ UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bFo
 	UT_sint32 iOffset = ri.m_iOffset;
 
 	if(bForward)
-		while(!RI.s_pLogAttrs[iOffset].is_cursor_position && iOffset < RI.m_iLength)
+		while(!RI.s_pLogAttrs[iOffset].is_cursor_position &&
+			  iOffset < RI.m_iLength)
 			iOffset++;
 	else
 		while(!RI.s_pLogAttrs[iOffset].is_cursor_position && iOffset > 0)
@@ -1397,7 +1624,8 @@ void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 	// does, we have to expand the seletion to delete the entire cluster.
 
 	UT_sint32 iOffset = iNextOffset - 1;
-	while(iOffset > 0 && iOffset > ri.m_iOffset && !RI.s_pLogAttrs[iOffset].is_cursor_position)
+	while(iOffset > 0 && iOffset > ri.m_iOffset &&
+		  !RI.s_pLogAttrs[iOffset].is_cursor_position)
 		iOffset--;
 
 	if(RI.s_pLogAttrs[iOffset].is_cursor_position)
@@ -1421,7 +1649,8 @@ void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPermanent)
+UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
+												   bool bPermanent)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
@@ -1507,7 +1736,8 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
-	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount || !RI.m_pGlyphs)
+	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount ||
+	   !RI.m_pGlyphs)
 		return;
 
 	// make sure that we are not adding apples to oranges
@@ -2100,48 +2330,95 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 	xxx_UT_DEBUGMSG(("Font Height Pango %d \n",pFP->getAscent() + pFP->getDescent()));
 	return pFP->getAscent() + pFP->getDescent();
 }
-	
-const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
-												  const char* pszFontStyle,
-												  const char* pszFontVariant,
-												  const char* pszFontWeight,
-												  const char* pszFontStretch,
-												  const char* pszFontSize,
-												  const char* pszLang)
+
+/* Static 'virtual' function declared in gr_Graphics.h */
+const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
+										 const char* pszFontStyle,
+										 const char* pszFontVariant,
+										 const char* pszFontWeight,
+										 const char* pszFontStretch,
+										 const char* pszFontSize,
+										 const char* pszFontLang)
 {
-	UT_String s;
-	UT_String_sprintf(s, "%s, %s %s %s %s %s",
-					  pszFontFamily,
-					  pszFontStyle,
-					  pszFontVariant,
-					  pszFontWeight,
-					  pszFontStretch,
-					  pszFontSize);
-
-	const char * cs = s.c_str() + s.length() - 2;
-
-	if(!strcmp(cs, "pt"))
-	   s[s.length()-2] = 0;
-
-	xxx_UT_DEBUGMSG(("---FinfFont size %s \n",pszFontSize));
-
-	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
-	UT_return_val_if_fail( pfd, NULL );
-
-	PangoFont *pf = pango_context_load_font(getContext(), pfd);
-
-	pango_font_description_free(pfd);
-	pfd = pango_font_describe(pf);
+	static UT_UTF8String s = pszFontFamily;
 	
-	const char* face = pango_font_description_get_family(pfd);
+	double dSize = UT_convertToPoints(pszFontSize);
+	int iWeight = 400;
+	if (pszFontWeight)
+	{
+		if (!strcmp (pszFontWeight, "normal"))
+			iWeight = 400;
+		else if (!strcmp (pszFontWeight, "bold"))
+			iWeight = 700;
+		else if (!strcmp (pszFontWeight, "heavy"))
+			iWeight = 900;
+		else if (!strcmp (pszFontWeight, "semibold"))
+			iWeight = 600;
+		else if (!strcmp (pszFontWeight, "light"))
+			iWeight = 300;
+		else if (!strcmp (pszFontWeight, "ultralight"))
+			iWeight = 200;
+	}
+	
+	FcPattern *p = FcPatternCreate();
+	if (p)
+	{
+		FcValue v;
+		v.type = FcTypeString;
+		v.u.s  = (const FcChar8*) pszFontFamily;
+		FcPatternAdd(p, FC_FAMILY, v, FcFalse);
 
-	static char buffer[100];
-	strncpy(buffer, face, 99);
-	buffer[99] = 0;
+		v.u.s = (const FcChar8*) pszFontStyle;
+		FcPatternAdd(p, FC_STYLE, v, FcFalse);
+
+		v.u.s = (const FcChar8*) pszFontLang;
+		FcPatternAdd(p, FC_LANG, v, FcFalse);
+
+		v.type = FcTypeInteger;
+		v.u.i  = iWeight;
+		FcPatternAdd(p, FC_WEIGHT, v, FcFalse);
+
+		v.type = FcTypeDouble;
+		v.u.d  = dSize;
+		FcPatternAdd(p, FC_SIZE, v, FcFalse);
+		
+		FcDefaultSubstitute (p);
+		FcConfigSubstitute (FcConfigGetCurrent(), p, FcMatchPattern);
+
+		// must initalize this, as FcFontMatch will only modify it if the
+		// call does not succeed !!!
+		FcResult r = FcResultMatch;
+		FcPattern * p2 = FcFontMatch(FcConfigGetCurrent(), p, &r);
+
+		if (r == FcResultMatch)
+		{
+			FcChar8 * family;
+			if (FcResultMatch == FcPatternGetString(p2, FC_FAMILY, 0, &family))
+			{
+				s = (char*)family;
+			}
+
+			FcPatternDestroy (p2);
+		}
+		else
+			UT_DEBUGMSG(("@@@@ ===== No match for %s, %s, %s, %s, %s, %s, %s "
+						 "(%d)!!!\n",
+						 pszFontFamily,
+						 pszFontStyle,
+						 pszFontVariant,
+						 pszFontWeight,
+						 pszFontStretch,
+						 pszFontSize,
+						 pszFontLang,
+						 r));
+		
+		FcPatternDestroy (p);
+	}
+
+	xxx_UT_DEBUGMSG(("@@@@ ===== Requested [%s], found [%s]\n",
+				 pszFontFamily, s.utf8_str()));
 	
-	pango_font_description_free(pfd);
-	
-	return buffer;
+	return s.utf8_str();
 }
 
 
@@ -2156,8 +2433,8 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	double dPointSize = UT_convertToPoints(pszFontSize);
 	UT_String s;
 
-	// Pango is picky about the string we pass to it -- it cannot handle any 'normal'
-	// values, and it will stop parsing when it encounters one.
+	// Pango is picky about the string we pass to it -- it cannot handle any
+	// 'normal' values, and it will stop parsing when it encounters one.
 	const char * pStyle = pszFontStyle;
 	const char * pVariant = pszFontVariant;
 	const char * pWeight = pszFontWeight;
@@ -3405,7 +3682,9 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	gnome_print_gsave(m_gpc);
 	gnome_print_moveto(m_gpc, xoff, yoff);
 
-	PangoFontDescription * pfd = pango_font_describe (pFont->getPangoFont());
+	PangoFont * pf1 = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
+	
+	PangoFontDescription * pfd = pango_font_describe (pf1);
 	PangoFont * pf = pango_context_load_font (m_pContext, pfd);
 #ifdef DEBUG
 	char * psz = pango_font_description_to_string (pfd);

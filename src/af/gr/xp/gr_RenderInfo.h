@@ -1,5 +1,6 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2004 Tomas Frydrych, <tomasfrydrych@yahoo.co.uk>
+ * Copyright (C) 2004 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -122,10 +123,11 @@ class GR_Itemization
 {
   public:
 	GR_Itemization():
-		m_iEmbedingLevel(0),
+	    m_iEmbedingLevel(0),
 		m_iDirOverride(0),
 		m_bShowControlChars(false),
-		m_pLang(NULL)
+	    m_pLang(NULL),
+	    m_pFont(NULL)
 	{};
 	
 	virtual ~GR_Itemization() {clear();} // do not delete the actual
@@ -164,6 +166,9 @@ class GR_Itemization
 
 	void            setLang(const char * l) {m_pLang = l;}
 	const char *    getLang()const {return m_pLang;}
+
+	void            setFont(const GR_Font * pFont) {m_pFont = pFont;}
+	const GR_Font * getFont()const {return m_pFont;}
 	
   private:
 	UT_NumberVector m_vOffsets;
@@ -173,6 +178,7 @@ class GR_Itemization
 	UT_BidiCharType m_iDirOverride;
 	bool            m_bShowControlChars;
 	const char *    m_pLang;
+	const GR_Font * m_pFont;
 };
 
 /**

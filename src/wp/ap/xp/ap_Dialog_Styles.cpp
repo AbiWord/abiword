@@ -306,14 +306,14 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 		pStyle->getProperty(szName,szValue);
 		if(szValue)
 		{
-			UT_DEBUGMSG(("Adding char prop %s value %s \n",szName,szValue));
+			xxx_UT_DEBUGMSG(("Adding char prop %s value %s \n",szName,szValue));
 			addOrReplaceVecProp(szName, szValue);
 		}
 	}
 //
 // Loop through all the attributes and add those with non-null values
 //
-	UT_DEBUGMSG(("Replace Attributes %d \n",bReplaceAttributes));
+	xxx_UT_DEBUGMSG(("Replace Attributes %d \n",bReplaceAttributes));
 	if(bReplaceAttributes)
 	{
 		UT_Vector vecAllAtts;

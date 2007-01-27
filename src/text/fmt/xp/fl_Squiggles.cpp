@@ -481,7 +481,7 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 		pos1 = pos2 -1;
 	}
 	pView->_clearBetweenPositions(pos1, pos2, true);
-	UT_DEBUGMSG(("fl_Squiggles::clear posl %d pos2 %d \n", pos1,pos2));
+	xxx_UT_DEBUGMSG(("fl_Squiggles::clear posl %d pos2 %d \n", pos1,pos2));
 }
 
 /*!

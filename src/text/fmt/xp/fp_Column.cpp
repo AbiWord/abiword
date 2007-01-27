@@ -1645,7 +1645,7 @@ fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP
 
 fp_Column::~fp_Column()
 {
-	UT_DEBUGMSG(("Deleteing Column %x Number containers left %d \n",this,countCons()));
+	xxx_UT_DEBUGMSG(("Deleting Column %x Number containers left %d \n",this,countCons()));
 //	UT_ASSERT(countCons() == 0);
 }
 
@@ -2002,7 +2002,7 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 
 fp_ShadowContainer::~fp_ShadowContainer()
 {
-  UT_DEBUGMSG(("Delete Shadow Container %x from shadow Layout %x \n",this,getSectionLayout()));
+  xxx_UT_DEBUGMSG(("Delete Shadow Container %x from shadow Layout %x \n",this,getSectionLayout()));
   getSectionLayout()->setFirstContainer(NULL);
 }
 

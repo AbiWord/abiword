@@ -31,7 +31,11 @@
 # include "xap_CocoaFeatures.h"
 #elif defined(WIN32)
 # include "xap_Win32Features.h"
-#elif defined(EMBEDDED_TARGET)
+#elif defined(XP_UNIX_TARGET_GTK)
+# include "xap_UnixFeatures.h"
+#endif
+
+#if defined(EMBEDDED_TARGET)
 # include "xap_EmbeddedFeatures.h"
 #endif
 

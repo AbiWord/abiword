@@ -2806,7 +2806,7 @@ fp_TableContainer::~fp_TableContainer()
 	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
 	clearCons();
 	deleteBrokenTables(false,false);
-	UT_DEBUGMSG(("SEVIOR: deleting table %x \n",this));
+	xxx_UT_DEBUGMSG(("SEVIOR: deleting table %x \n",this));
 //
 // For debugging...
 //
@@ -3615,7 +3615,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 	}
 	if(containsNestedTables())
 	{
-		UT_DEBUGMSG(("Deleting nested broken tables \n"));
+		xxx_UT_DEBUGMSG(("Deleting nested broken tables \n"));
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
 		while(pCell)
 		{
@@ -3667,7 +3667,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 				fp_Container * pCon = pBroke->getContainer();
 				pBroke->setContainer(NULL);
 				pCon->deleteNthCon(i);
-				UT_DEBUGMSG(("Delete %x from column %x \n",pBroke,pCon));
+				xxx_UT_DEBUGMSG(("Delete %x from column %x \n",pBroke,pCon));
 				//
 				// Search before and after. This should not happen!
 				// FIXME put in some code to detect this in breakSection
@@ -3693,7 +3693,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 					UT_sint32 j = i;
 					while(j >= 0)
 					{
-						UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pNextCon)); 
+						xxx_UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pNextCon)); 
 						pNextCon->deleteNthCon(j);
 						j = pNextCon->findCon(pBroke);
 					}
@@ -3702,7 +3702,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 			}
 		}
 		bFirst = false;
-		UT_DEBUGMSG(("SEVIOR: table %x  Deleting broken table %x \n",this,pBroke));
+		xxx_UT_DEBUGMSG(("SEVIOR: table %x  Deleting broken table %x \n",this,pBroke));
 		delete pBroke;
 		if(pBroke == getLastBrokenTable())
 		{

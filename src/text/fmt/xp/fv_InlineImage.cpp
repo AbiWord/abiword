@@ -769,6 +769,8 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	}
 	UT_sint32 xoff = 0, yoff = 0;
 	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
+	UT_DEBUGMSG(("@@@@ ===== Screen offsets %d, %d; line ascent %d, run ascent %d\n",
+		     xoff, yoff, pRun->getLine()->getAscent(), pRun->getAscent()));
 	// Sevior's infamous + 1....
 	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + getGraphics()->tlu(1);	// Set the image size in the image selection rect
 	m_recCurFrame = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
