@@ -618,8 +618,10 @@ register_stock_icon(void)
 
 void abi_table_set_icon(AbiTable* abi_table,GtkWidget * gtkImageIcon)
 {
-	abi_table->icon = gtkImageIcon;
+	if(!GTK_IS_IMAGE(G_OBJECT(gtkImageIcon)))
+	   return;
 	g_object_unref (G_OBJECT (abi_table->icon));
+	abi_table->icon = gtkImageIcon;
 }
 
 /* ------------------- and now the GObject part ---------------------- */
