@@ -29,14 +29,17 @@ if WITH_SPELL
 spellsrc=	ap_Dialog_Spell.cpp
 endif
 
-if EMBEDDED
-not_embedded = 
+if NOSPLASH
 splash= 
 else
 splash =	ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
+endif
 
-not_embedded =	ap_StatusBar.cpp
+if NOSTATUSBAR
+statusbar = 
+else
+statusbar = ap_StatusBar.cpp
 endif
 
 libWpAp_xp_a_SOURCES=	$(spellsrc)		\
@@ -117,7 +120,7 @@ libWpAp_xp_a_SOURCES=	$(spellsrc)		\
 		ap_App.cpp			\
 		ap_Frame.cpp			\
 		ap_Dialog_Stylist.cpp		\
-		$(not_embedded)			\
+		$(statusbar)			\
 		$(BUILT_SOURCES)
 
 nodist_libWpAp_xp_a_SOURCES = 	$(splash)

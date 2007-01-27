@@ -24,7 +24,7 @@
 # makes the job of dealing with regular make files much simpler.  
 
 # automake complains at us if we just if out the hildon-specific parts
-if WITH_HILDON
+if EMBEDDED_HILDON
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
@@ -49,7 +49,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
@@ -141,7 +141,7 @@ ABI_LIBS+=$(top_builddir)/src/text/fmt/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 else
  ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 endif
@@ -155,7 +155,7 @@ ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/tf/libTF.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/xap/libTestXap.a
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 ABI_HILDON_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/hildon/*.o
 endif
 

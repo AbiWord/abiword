@@ -54,7 +54,7 @@
 #include "ap_Menu_Id.h"
 // hack, icons are in wp
 #include "../../../wp/ap/unix/ap_UnixStockIcons.h"
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon-widgets/hildon-appview.h>
 #endif
 
@@ -503,7 +503,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				
 				// get the underlined value from the candidate label
 				guint keyCode;
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 				keyCode = GDK_VoidSymbol;
 #else
 				keyCode = _ev_get_underlined_char(buf);
@@ -551,7 +551,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 					FREEP(dup);
 				}
 
-#ifndef EMBEDDED_TARGET
+#ifndef EMBEDDED_MENUBUTTON
 				if ((keyCode != GDK_VoidSymbol) && !isPopup)
 				  {
 					  // bind to top level if parent is top level
@@ -641,7 +641,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		}
 	}
 
-#ifdef HAVE_HILDON	 /* don't use accelerators in Hildon -- not enough screen space */
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 
 	// make sure our last item on the stack is the one we started with
@@ -950,10 +950,10 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
-#ifdef HAVE_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
 	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
-#elif EMBEDDED_TARGET
+#elif defined (EMBEDDED_MENUBUTTON)
 	m_wMenuBar = gtk_menu_new ();
 #else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
@@ -974,12 +974,12 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
-#ifndef HAVE_HILDON
+#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
-#ifdef EMBEDDED_TARGET
+#ifdef EMBEDDED_MENUBUTTON
 	m_wMenuBar = gtk_menu_new();
 #else
 	m_wMenuBar = gtk_menu_bar_new();
@@ -1096,7 +1096,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
 		}
 	
-#ifdef HAVE_HILDON /* not necessary in hildon */		
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	if (szMnemonicName && *szMnemonicName && !isPopup)
 	  {

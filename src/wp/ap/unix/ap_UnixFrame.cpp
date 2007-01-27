@@ -53,7 +53,7 @@
 #endif
 
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include "ap_UnixHildonFrameImpl.h"
 #endif
 
@@ -159,7 +159,7 @@ void AP_UnixFrame::setYScrollRange(void)
 
 
 AP_UnixFrame::AP_UnixFrame()
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 : AP_Frame(new AP_UnixHildonFrameImpl(this))
 #else
 : AP_Frame(new AP_UnixFrameImpl(this))
@@ -341,7 +341,7 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
-#ifndef EMBEDDED_TARGET
+#if !defined (EMBEDDED_TARGET) || defined (EMBEDDED_STATUSBAR)
 	if((getFrameMode() == XAP_NormalFrame) && (m_pData))
 	{
 		static_cast<AP_FrameData *>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);

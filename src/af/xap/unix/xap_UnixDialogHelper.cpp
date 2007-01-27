@@ -556,7 +556,7 @@ static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
 
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
   // prevent help button from being added twice
   gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));
@@ -621,7 +621,7 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	
 	// Get the GtkWindow of the parent frame
-#ifdef HAVE_HILDON 
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	GtkWidget * parentWindow = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 #else	
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();

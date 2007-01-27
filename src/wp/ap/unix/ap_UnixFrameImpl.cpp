@@ -96,7 +96,7 @@ void AP_UnixFrameImpl::_refillToolbarsInFrameData()
 // Idem.
 void AP_UnixFrameImpl::_showOrHideStatusbar()
 {
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	XAP_Frame* pFrame = getFrame();
 	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar;
 	static_cast<AP_UnixFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
@@ -206,7 +206,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::configure_event), NULL);
 
 	// focus and XIM related
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	const char focus_out_event_name[] = "focus-out-event";
 #else
 	const char focus_out_event_name[] = "leave_notify_event";
@@ -304,7 +304,7 @@ void AP_UnixFrameImpl::_createWindow()
 {
 	_createTopLevelWindow();
 	
-#ifdef HAVE_HILDON	
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_widget_show_all(gtk_widget_get_parent(getTopLevelWindow()));
 #else
 	gtk_widget_show(getTopLevelWindow());
@@ -323,7 +323,7 @@ void AP_UnixFrameImpl::_createWindow()
 
 GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	XAP_Frame* pFrame = getFrame();
 	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(pFrame);
 	UT_ASSERT(pUnixStatusBar);

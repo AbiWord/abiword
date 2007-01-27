@@ -120,7 +120,7 @@ protected:
 
 	virtual void dragText();
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	// need to be able to get at this from XAP_UnixHildonApp
   public:
 #endif

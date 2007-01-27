@@ -1160,7 +1160,7 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 	_xorGuide(true);
 
 	// Clear messages from status bar.
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
 	{
@@ -1961,7 +1961,7 @@ void AP_LeftRuler::setDimension( UT_Dimension newdim )
 
 void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue);
 	char temp[100];
 	const gchar *pzMessageFormat = XAP_App::getApp()->getStringSet()->getValue(messageID);

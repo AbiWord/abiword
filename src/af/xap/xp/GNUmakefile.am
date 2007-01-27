@@ -35,10 +35,10 @@ else
 print_src =
 endif
 
-if EMBEDDED
-not_embedded =
+if NOSTATUSBAR
+statusbar =
 else
-not_embedded = xap_StatusBar.cpp
+statusbar = xap_StatusBar.cpp
 endif
 
 libXap_xp_a_SOURCES= $(print_src) \
@@ -79,7 +79,7 @@ libXap_xp_a_SOURCES= $(print_src) \
 	xap_Draw_Symbol.cpp		\
 	xap_Scrollbar_ViewListener.cpp	\
 	xap_Strings.cpp			\
-	$(not_embedded)			\
+	$(statusbar)			\
 	xap_Toolbar_ControlFactory.cpp	\
 	xap_ViewListener.cpp		\
 	xav_View.cpp			\

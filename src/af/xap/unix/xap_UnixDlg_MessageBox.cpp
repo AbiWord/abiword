@@ -71,7 +71,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GtkWidget * hbox;
 	gchar     * msg;
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
 #else
 	toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());

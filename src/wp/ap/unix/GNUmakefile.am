@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 SUBDIRS = hildon
 endif
 
@@ -39,10 +39,10 @@ if WITH_SPELL
 spellglade=	ap_UnixDialog_Spell.glade
 endif
 
-if EMBEDDED
-not_embedded = 
+if NOSTATUSBAR
+statusbar = 
 else
-not_embedded = ap_UnixStatusBar.cpp
+statusbar = ap_UnixStatusBar.cpp
 endif
 
 glade_DATA = $(spellglade)	\
@@ -128,7 +128,7 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_Latex.cpp 		\
 	ap_UnixStockIcons.cpp 		\
 	abiwidget.cpp			\
-	$(not_embedded)
+	$(statusbar)
 
 EXTRA_DIST = \
 	Makefile \

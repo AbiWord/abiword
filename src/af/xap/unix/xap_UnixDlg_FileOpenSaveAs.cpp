@@ -58,7 +58,7 @@
 #include "gr_Painter.h"
 #include "gr_UnixPangoGraphics.h"
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #endif
 
@@ -597,7 +597,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	GtkWidget * wHildonView = gtk_widget_get_parent(parent);
 
 	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(wHildonView),
@@ -879,7 +879,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		FREEP(m_szFinalPathnameCandidate);
 
-#ifndef HAVE_HILDON
+#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);

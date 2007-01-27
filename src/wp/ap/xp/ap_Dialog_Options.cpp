@@ -114,7 +114,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
-#ifndef HAVE_HILDON
+#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
 #endif
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
@@ -362,7 +362,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_UNPRINTABLE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
-#ifndef HAVE_HILDON
+#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 		case id_SHOWSPLASH:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ShowSplash,
 					_gatherShowSplash());
@@ -482,7 +482,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
-#ifndef HAVE_HILDON
+#if EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	//-------------ShowSplash
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ShowSplash,&b))
 		_setShowSplash (b);

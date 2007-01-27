@@ -1725,7 +1725,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		}
 	}
 
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
 	{
@@ -4109,7 +4109,7 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 	_xorGuide(true);
 	FV_View *pView = static_cast<FV_View *>(m_pView);
 	// Clear messages from status bar.
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
 	{
@@ -4586,7 +4586,7 @@ void AP_TopRuler::setDimension( UT_Dimension newdim )
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue);
 	UT_String pzMessageFormat;
 	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
@@ -4602,7 +4602,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2)
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	const gchar * pText = m_pG->invertDimension(tick.dimType, dValue1);
 	char buf1[100];
 	strcpy(buf1, pText);
@@ -4622,7 +4622,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	UT_String pzMessageFormat;
 	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	static UT_String sCell;
@@ -4639,7 +4639,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
-#ifndef EMBEDDED_TARGET    
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
 	UT_String pzMessageFormat;
 	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 

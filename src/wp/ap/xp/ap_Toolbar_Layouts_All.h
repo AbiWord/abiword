@@ -27,7 +27,7 @@
 
 // Include each toolbar layout that we want to build.
 
-#ifdef EMBEDDED_TARGET
+#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 #  include "ap_TB_Layouts_Embedded.h"
 #else
 #  if XP_SIMPLE_TOOLBAR

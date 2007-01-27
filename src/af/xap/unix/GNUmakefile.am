@@ -21,7 +21,7 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 SUBDIRS = hildon t
 else
 SUBDIRS = t

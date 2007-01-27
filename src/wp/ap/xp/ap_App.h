@@ -41,7 +41,7 @@ class XAP_Frame;
 #elif defined(XP_TARGET_COCOA)
 #include "xap_CocoaApp.h"
 #define XAP_App_BaseClass XAP_CocoaApp
-#elif HAVE_HILDON
+#elif EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include "xap_UnixHildonApp.h"
 #define XAP_App_BaseClass XAP_UnixHildonApp
 #else

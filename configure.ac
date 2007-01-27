@@ -109,25 +109,7 @@ ABI_LIB
 
 # check for embedded and print first, so we can handle gnomeprint dependency
 # correcly
-ABI_HILDON_QUICK
-
-AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
-	case "${enableval}" in
-	   yes)	embedded=true ;;
-	   no) embedded=false ;;
-	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
-	esac
-],[	
-	if test "$embedded" != "true"; then
-	   embedded=undefined
-	fi
-])
-
-if test "$embedded" = "true"; then
-   AC_DEFINE(EMBEDDED_TARGET, 1, [Whether we are building for embedded device])
-fi
-
-AM_CONDITIONAL(EMBEDDED, test "x$embedded" = "xtrue")
+ABI_EMBEDDED
 
 # by default we, of course, want Abi to be able to print, but on embedded
 # systems it might not be required and because of the dependencies, we want an
@@ -146,7 +128,7 @@ AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	esac
 ],[print=undefined])
 
-if test "$print" = "undefined" && test "$embedded" = "true"; then
+if test "$print" = "undefined" && test "$embedded_print" = "false"; then
    print=false
 elif test "$print" = "undefined"; then
    print=true;
@@ -388,9 +370,9 @@ if test "$PLATFORM" = "unix"; then
 	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $FREETYPE_CFLAGS $GOFFICE_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
 	PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $FREETYPE_LIBS $BONOBO_LIBS $GNOMEVFS_LIBS $GNOMEUI_LIBS"
 	
-	if test "$hildon" = "true"; then
-		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
-		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
+	if test "$embedded" != "none"; then
+		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+		PLATFORM_LIBS="$PLATFORM_LIBS $EMBEDDED_LIBS"
 	fi		
 fi
 dnl AUTOCONF SUCKS
@@ -412,11 +394,6 @@ fi
 if test x$do_spell = xfalse ; then
    AC_DEFINE(WITHOUT_SPELL, 1, [Whether spellchecking should be disabled])
 fi
-
-# this should be after all other platform cflags have been set
-#if test "$embedded" = "true"; then
-#   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
-#fi
 
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
@@ -635,13 +612,9 @@ case "$PLATFORM" in
 esac
 
 case "$embedded" in
-     "true")
-	AC_MSG_RESULT([Configured for embedded target.]) ;;
-esac
-
-case "$hildon" in
-     "true")
-	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
+     "none" ) ;;
+     *)
+	AC_MSG_RESULT([Configured for embedded target (${embedded}).]) ;;
 esac
 
 case "$debug" in

@@ -25,7 +25,7 @@ DIST_SUBDIRS = cocoa qnx unix win xp
 noinst_LIBRARIES= libXap.a
 check_LIBRARIES = libTestXap.a 
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 objects = $(ABI_OBJECTS) $(ABI_HILDON_OBJECTS)
 else
 objects = $(ABI_OBJECTS)

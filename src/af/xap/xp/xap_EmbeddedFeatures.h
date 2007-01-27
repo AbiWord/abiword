@@ -23,6 +23,4 @@
 #ifndef __XAP_EMBEDDED_FEATURES_H__
 #define __XAP_EMBEDDED_FEATURES_H__
 
-#define EMBEDDED_TARGET 1
-
 #endif

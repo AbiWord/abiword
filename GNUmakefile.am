@@ -11,7 +11,7 @@ desktopdir = $(datadir)/applications
 
 icondir= $(datadir)/icons
 
-if WITH_HILDON
+if EMBEDDED_HILDON
 icon_DATA =
 desktop_DATA =
 else

@@ -1184,7 +1184,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 
 /*****************************************************************/
 /*****************************************************************/
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_SPLASH)
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixPangoGraphics * pUnixGraphics = NULL;
@@ -1526,7 +1526,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			}
 #endif
 
-#ifndef EMBEDDED_TARGET
+#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_SPLASH)
 			// do we show the splash?
 			bool bShowSplash = Args.getShowSplash();
 		
@@ -1548,7 +1548,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 			if (pMyUnixApp->openCmdLineFiles(&Args))
 			{
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 				s_bInitDone = true;
 				pMyUnixApp->processStartupQueue();
 #endif

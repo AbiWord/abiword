@@ -113,7 +113,7 @@ protected:
 										 // (we use this to sync clipboard
 										 // operations with the server).
 
-#ifdef HAVE_HILDON
+#if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	class XAP_UnixHildonApp * 		m_pUnixHildonApp;
 #endif
 	
