@@ -193,6 +193,8 @@ public:
 	PT_DocPosition	getSelectionRightAnchor(void) ;
 	UT_uint32       getSelectionLength(void) const;
 
+	UT_sint32       getFrameMargin(void) const;
+
 	virtual void focusChange(AV_Focus focus);
 	virtual bool    isActive(void);
 

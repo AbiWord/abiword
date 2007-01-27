@@ -410,7 +410,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_TEXT_SELECTED, "text-selected", signal_text_selected);
 	INSTALL_BOOL_SIGNAL(SIGNAL_IMAGE_SELECTED, "image-selected", signal_image_selected);
 	INSTALL_BOOL_SIGNAL(SIGNAL_SELECTION_CLEARED, "selection-cleared", signal_selection_cleared);
-	INSTALL_BOOL_SIGNAL(SIGNAL_ENTER_SELECTION, "enter_selection", signal_enter_selection);
+	INSTALL_BOOL_SIGNAL(SIGNAL_ENTER_SELECTION, "enter-selection", signal_enter_selection);
 	INSTALL_BOOL_SIGNAL(SIGNAL_LEAVE_SELECTION, "leave-selection", signal_leave_selection);
 }
 
@@ -497,8 +497,16 @@ public:
 				FIRE_BOOL_CHARFMT("text-align", "right", false, rightAlign_, rightAlign);
 				FIRE_BOOL_CHARFMT("text-align", "center", false, centerAlign_, centerAlign);
 				FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
-				FIRE_STRING_CHARFMT("style-name", style_name_, style_name);
 
+			}
+			const gchar * szStyle = NULL;
+			m_pView->getStyle(&szStyle);
+			if(szStyle == NULL)
+				szStyle = "None";
+			if (strcmp(style_name_.utf8_str(), szStyle) != 0)
+			{
+				style_name_ = szStyle;
+				styleName(szStyle);
 			}
 		}
 		if ((AV_CHG_ALL) & mask)
@@ -527,10 +535,12 @@ public:
 					if(m_pView->getLastMouseContext() == EV_EMC_POSOBJECT)
 					{
 						FIRE_BOOL(true, imageSelected_, imageSelected);
+						selectionCleared_ = false;
 					}
 					else
 					{
 						FIRE_BOOL(true, textSelected_, textSelected);
+						selectionCleared_ = false;
 					}
 			        PT_DocPosition pos = m_pView->getDocPositionFromLastXY();
 					PT_DocPosition left = m_pView->getSelectionLeftAnchor();
@@ -584,7 +594,7 @@ public:
 	virtual void rightAlign(bool value) {}
 	virtual void centerAlign(bool value) {}
 	virtual void justifyAlign(bool value) {}
-	virtual void style_name(const char * value) {}
+	virtual void styleName(const char * value) {}
 	virtual void textSelected(bool value) {}
 	virtual void imageSelected(bool value) {}
 	virtual void selectionCleared(bool value) {}
@@ -678,7 +688,7 @@ public:
 	virtual void rightAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_RIGHT_ALIGN], 0, (gboolean)value);}
 	virtual void centerAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CENTER_ALIGN], 0, (gboolean)value);}
 	virtual void justifyAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_JUSTIFY_ALIGN], 0, (gboolean)value);}
-	virtual void style_name(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_STYLE_NAME], 0, value);}
+	virtual void styleName(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_STYLE_NAME], 0, value);}
 	virtual void textSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TEXT_SELECTED], 0, (gboolean)value);}
 	virtual void imageSelected(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IMAGE_SELECTED], 0, (gboolean)value);}
 	virtual void selectionCleared(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SELECTION_CLEARED], 0, (gboolean)value);}

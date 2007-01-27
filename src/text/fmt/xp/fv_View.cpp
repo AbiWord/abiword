@@ -89,6 +89,9 @@
 #define BOOKMARK_NAME_SIZE 30
 #define CHECK_WINDOW_SIZE if(getWindowHeight() < m_pG->tlu(20)) return;
 
+// add 0.1 inch for a left border to click in for showBorder
+
+#define FRAME_MARGIN 144
 /****************************************************************/
 
 class _fmtPair
@@ -8766,6 +8769,11 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
+UT_sint32 FV_View::getFrameMargin(void) const
+{
+	return FRAME_MARGIN;// add 0.1 inch for a left border to click in
+}
+
 UT_sint32 FV_View::getNormalModeXOffset(void) const
 {
 	UT_ASSERT(getViewMode() != VIEW_PRINT);  
@@ -8775,7 +8783,7 @@ UT_sint32 FV_View::getNormalModeXOffset(void) const
 	{
 		if(static_cast<AP_Frame *>(pFrame)->isShowMargin())
 		{
-			iX += 144; // add 0.1 inch for a left border to click in
+			iX += FRAME_MARGIN; // add 0.1 inch for a left border to click in
 		}
 	}
 	return iX;

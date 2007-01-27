@@ -41,7 +41,7 @@
 #include "ap_Strings.h"
 #include "ut_string_class.h"
 #include "fp_TableContainer.h"
-
+#include "ap_Frame.h"
 #include "pp_AttrProp.h"
 #include "pd_Document.h"
 #include "gr_Painter.h"
@@ -1987,7 +1987,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	UT_return_val_if_fail( pView, 0 );
 
 	UT_sint32 y = pView->getGraphics()->tlu(s_iFixedHeight)/2;
-
+	UT_DEBUGMSG(("Doing setTableLineDrag \n"));
 	if(pView->getDocument()->isPieceTableChanging())
 	{
 		return 0;
@@ -2004,31 +2004,31 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 		x += iFixed;
 
 	// Set this in case we never get a mouse motion event
-    UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 	UT_sint32 xrel;
 
-    UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-    bool bRTL = false;
+	bool bRTL = false;
 
 	if(pBlock)
 		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 	
-	xxx_UT_DEBUGMSG(("setTableLineDrag: x = %d \n",x));
+	UT_DEBUGMSG(("setTableLineDrag: x = %d first pixel %d \n",x,xAbsLeft));
 	if(bRTL)
 		xrel = xAbsRight - static_cast<UT_sint32>(x);
 	else
 		xrel = static_cast<UT_sint32>(x) - xAbsLeft;
 
-    ap_RulerTicks tick(m_pG,m_dim);
-    UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
+	ap_RulerTicks tick(m_pG,m_dim);
+	UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
 
 	if(bRTL)
 	    m_draggingCenter = xAbsRight - xgrid;
 	else
 	    m_draggingCenter = xAbsLeft + xgrid;
 
-	xxx_UT_DEBUGMSG(("mousePress: m_draggingCenter (1) %d\n", m_draggingCenter));
+	UT_DEBUGMSG(("mousePress: m_draggingCenter (1) %d\n", m_draggingCenter));
 	m_oldX = xgrid; // used to determine if delta is zero on a mouse release
 
 // Now hit test against the cell containers to find the right cell to drag.
@@ -2041,7 +2041,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 		for(i=0; i<= m_infoCache.m_iCells && !bFound; i++)
 		{
 			_getCellMarkerRect(&m_infoCache, i, &rCell);
-			xxx_UT_DEBUGMSG(("setTableLine: cell %d left %d \n",i,rCell.left));
+			UT_DEBUGMSG(("setTableLine: cell %d left %d \n",i,rCell.left));
 			if(rCell.containsPoint(x,y))
 			{
 				bFound = true;
@@ -2098,6 +2098,10 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 				return 0;
 			else
 				return y;
+		}
+		else
+		{
+		        UT_DEBUGMSG(("Failed to find cellmark \n"));
 		}
 	}
 	return 0;
@@ -4066,7 +4070,14 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		ixMargin = 0;
+	        XAP_Frame * pFrame = static_cast<XAP_Frame*>(pView->getParentData());
+		if(pFrame)
+		{
+		        if(static_cast<AP_Frame *>(pFrame)->isShowMargin())
+			{
+			       ixMargin = pView->getFrameMargin();
+			}
+		}
 		xFixed = 0;
 	}
 	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
