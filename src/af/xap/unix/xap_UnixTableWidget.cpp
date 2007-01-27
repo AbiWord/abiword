@@ -616,6 +616,12 @@ register_stock_icon(void)
 	}
 }
 
+void abi_table_set_icon(AbiTable* abi_table,GtkWidget * gtkImageIcon)
+{
+	abi_table->icon = gtkImageIcon;
+	g_object_unref (G_OBJECT (abi_table->icon));
+}
+
 /* ------------------- and now the GObject part ---------------------- */
 
 static void
@@ -633,6 +639,7 @@ abi_table_class_init (AbiTableClass *klass)
 			      g_cclosure_user_marshal_VOID__UINT_UINT,
 			      G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
 }
+
 
 static void
 abi_table_init (AbiTable* table)

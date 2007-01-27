@@ -96,6 +96,10 @@ void	   abi_table_get_max_size   (const AbiTable* abi_table, guint* rows, guint*
 
 	GtkWidget * abi_table_get_label(AbiTable* abi_table);
 
+	/* Sets the table icon to the gtk_image cast as GtkWidget */
+
+	void abi_table_set_icon(AbiTable* abi_table, GtkWidget* icon);
+
 #ifdef __cplusplus
 }
 #endif
