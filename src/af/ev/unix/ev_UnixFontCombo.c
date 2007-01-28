@@ -397,8 +397,9 @@ abi_font_combo_new (void)
 }
 
 void
-abi_font_combo_append_font (AbiFontCombo 	*self, 
-			    const gchar		*font)
+abi_font_combo_insert_font (AbiFontCombo 	*self, 
+			    const gchar		*font, 
+			    gboolean 		 select)
 {
 	GtkTreeIter	 iter;
 
@@ -406,6 +407,13 @@ abi_font_combo_append_font (AbiFontCombo 	*self,
 	gtk_list_store_set (GTK_LIST_STORE (self->model), &iter, 
 			    FONT, font, 
 			    -1);
+
+	if (select) {
+		GtkTreeIter sorted_iter;
+		gtk_tree_model_sort_convert_child_iter_to_iter (
+			GTK_TREE_MODEL_SORT (self->sort), &sorted_iter, &iter);
+		gtk_combo_box_set_active_iter (GTK_COMBO_BOX (self), &sorted_iter);
+	}
 }
 
 /*!

@@ -253,6 +253,7 @@ combo_box_set_active_text (GtkComboBox *combo,
 {
 	GtkTreeModel 	*model;
 	GtkTreeIter		 iter;
+	gboolean 		 iter_valid;
 	gboolean		 next;
 	gchar			*value;
 	gulong			 prelight_handler_id;
@@ -260,13 +261,14 @@ combo_box_set_active_text (GtkComboBox *combo,
 	model = gtk_combo_box_get_model (combo);
 	next = gtk_tree_model_get_iter_first (model, &iter);
 	value = NULL;
+	iter_valid = FALSE;
 	while (next) {
 		gtk_tree_model_get (model, &iter, 
 							0, &value, 
 							-1);
 		if (0 == strcmp (text, value)) {
-			g_free (value);
-			value = NULL;
+			g_free (value); value = NULL;
+			iter_valid = true;
 			break;
 		}
 		g_free (value);
@@ -274,7 +276,7 @@ combo_box_set_active_text (GtkComboBox *combo,
 		next = gtk_tree_model_iter_next (model, &iter);
 	}
 
-	if (next) {
+	if (iter_valid) {
 		g_signal_handler_block (G_OBJECT (combo), handler_id);
 		prelight_handler_id = 0;
 		if (ABI_IS_FONT_COMBO (combo)) {
@@ -288,6 +290,17 @@ combo_box_set_active_text (GtkComboBox *combo,
 		if (prelight_handler_id) {
 			g_signal_handler_unblock (G_OBJECT (combo), prelight_handler_id);
 		}
+	}
+	else if (ABI_IS_FONT_COMBO (combo)) {
+		// special case font combo, non existant entries are added
+		g_signal_handler_block (G_OBJECT (combo), handler_id);
+		prelight_handler_id = * (gulong *) g_object_get_data (G_OBJECT (combo), PROP_HANDLER_ID);
+		g_signal_handler_block (G_OBJECT (combo), prelight_handler_id);
+
+		abi_font_combo_insert_font (ABI_FONT_COMBO (combo), text, TRUE);
+
+		g_signal_handler_unblock (G_OBJECT (combo), handler_id);
+		g_signal_handler_unblock (G_OBJECT (combo), prelight_handler_id);
 	}
 
 	return next;
@@ -1445,14 +1458,18 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Now make a new one.
 //
-	UT_uint32 items = v->getItemCount();
-	for (UT_uint32 m=0; m < items; m++)
-	{
-		const char * sz = v->getNthItem(m);
-		if (ABI_IS_FONT_COMBO (combo)) {
-			abi_font_combo_append_font (ABI_FONT_COMBO (combo), sz);
-		}
-		else {
+	gint items = v->getItemCount();
+	if (ABI_IS_FONT_COMBO (combo)) {
+		const gchar **fonts = g_new0 (const gchar *, items + 1);
+		for (gint m=0; m < items; m++) {
+			fonts[m] = v->getNthItem(m);
+		}						
+		abi_font_combo_set_fonts (ABI_FONT_COMBO (combo), fonts);
+		g_free (fonts); fonts = NULL;
+	}
+	else {
+		for (gint m=0; m < items; m++) {
+			const char * sz = v->getNthItem(m);
 			gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
 		}
 	}
