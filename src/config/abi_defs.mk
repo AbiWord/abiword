@@ -413,9 +413,15 @@ ABI_ENABLED_OPTIONS=
 ## conditionally enable some additional debugging and test code
 
 # NB: this is handled incorrectly in the platform defs
+ifdef ABI_OPT_DEBUG
 ifeq ($(ABI_OPT_DEBUG),1)
 ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
 ABI_OPTIONS+=Debug:On
+endif
+ifeq ($(ABI_OPT_DEBUG),2)
+ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
+ABI_OPTIONS+=Debug:On
+endif
 else
 ABI_DBGDEFS=		-DNDEBUG
 ABI_OPTIONS+=Debug:Off
