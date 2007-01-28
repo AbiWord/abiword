@@ -54,6 +54,7 @@ GType abi_font_combo_get_type (void);
 
 GtkWidget * 	abi_font_combo_new (void);
 void		abi_font_combo_append_font (AbiFontCombo *self, const gchar *font);
+void		abi_font_combo_set_fonts (AbiFontCombo *self, const gchar **fonts);
 
 G_END_DECLS
 

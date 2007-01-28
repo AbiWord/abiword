@@ -407,3 +407,35 @@ abi_font_combo_append_font (AbiFontCombo 	*self,
 			    FONT, font, 
 			    -1);
 }
+
+/*!
+ * Use this for updating the whole combo.
+ * \param self
+ * \param fonts NULL-terminated array of fonts.
+ */
+void
+abi_font_combo_set_fonts (AbiFontCombo 	 *self, 
+			  const gchar 	**fonts)
+{
+	GtkTreeIter	  iter;
+	const gchar	**font_iter;
+
+	g_return_if_fail (fonts);
+
+	gtk_combo_box_set_model (GTK_COMBO_BOX (self), NULL);
+	g_object_unref (G_OBJECT (self->sort)); self->sort = NULL;
+	gtk_list_store_clear (GTK_LIST_STORE (self->model));
+
+	font_iter = fonts;
+	while (font_iter && *font_iter) {
+		gtk_list_store_append (GTK_LIST_STORE (self->model), &iter);
+		gtk_list_store_set (GTK_LIST_STORE (self->model), &iter, 
+				    FONT, *font_iter, 
+				    -1);
+		font_iter++;
+	}
+
+	self->sort = gtk_tree_model_sort_new_with_model (self->model);
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (self->sort), FONT, GTK_SORT_ASCENDING);
+	gtk_combo_box_set_model (GTK_COMBO_BOX (self), self->sort);
+}

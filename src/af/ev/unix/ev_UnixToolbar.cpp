@@ -973,16 +973,19 @@ bool EV_UnixToolbar::synthesize(void)
 					pControl->populate();
 					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
-					if (v) {
-						UT_uint32 items = v->getItemCount();
-						for (UT_uint32 m=0; m < items; m++) {
+					gint items = v->getItemCount();
+					if (ABI_IS_FONT_COMBO (combo)) {
+						const gchar **fonts = g_new0 (const gchar *, items + 1);
+						for (gint m=0; m < items; m++) {
+							fonts[m] = v->getNthItem(m);
+						}						
+						abi_font_combo_set_fonts (ABI_FONT_COMBO (combo), fonts);
+						g_free (fonts); fonts = NULL;
+					}
+					else {
+						for (gint m=0; m < items; m++) {
 							const char * sz = v->getNthItem(m);
-							if (ABI_IS_FONT_COMBO (combo)) {
-								abi_font_combo_append_font (ABI_FONT_COMBO (combo), sz);
-							}
-							else {
-								gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
-							}
+							gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
 						}
 					}
 				}
