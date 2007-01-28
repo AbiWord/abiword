@@ -1083,10 +1083,43 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 			DELETEP(pExpRtf);
 			goto ReturnThisBuffer;
 		}
+
+		if ( AP_UnixClipboard::isHTMLTag(formatList[j]) )
+		{
+			IE_Exp_HTML * pExpHTML = new IE_Exp_HTML(dr.m_pDoc);
+			if (!pExpHTML)
+				return false;
+
+			pExpHTML->set_HTML4 (!strcmp (formatList[j], "text/html"));
+			pExpHTML->copyToBuffer(&dr,&m_selectionByteBuf);
+			DELETEP(pExpHTML);
+			goto ReturnThisBuffer;
+		}
+
+		if ( AP_UnixClipboard::isImageTag(formatList[j]) )
+		{
+			// TODO: we have to make a good way to tell if the current selection is just an image
+			FV_View * pView = NULL;
+			if(getLastFocussedFrame())
+				pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+
+			if (pView && !pView->isSelectionEmpty())
+				{
+					// don't own, don't g_free
+					const UT_ByteBuf * png = 0;
+	  
+					pView->saveSelectedImage (&png);
+					if (png && png->getLength() > 0)
+						{
+							m_selectionByteBuf.ins (0, png->getPointer (0), png->getLength ());
+							goto ReturnThisBuffer;
+						}
+				}
+		}
 			
 		if ( AP_UnixClipboard::isTextTag(formatList[j]) )
 		{
-			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
+			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc, "UTF-8");
 			if (!pExpText)
 				return false;
 
