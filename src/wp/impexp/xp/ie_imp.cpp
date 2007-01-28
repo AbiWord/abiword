@@ -745,10 +745,11 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	if (szFilename)
 		input = UT_go_file_open (szFilename, NULL);
 
-	if (input || szFilename == NULL)
+	if (input || (szFilename == NULL))
 		{
 			UT_Error result = constructImporter(pDocument, input, ieft, ppie, pieft);
-			g_object_unref (G_OBJECT (input));
+			if (input)
+				g_object_unref (G_OBJECT (input));
 			return result;
 		}
 
