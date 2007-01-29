@@ -1495,13 +1495,13 @@ bool XAP_Prefs::savePrefsFile(void)
 				"\n\t     include=\"0\" - exclude the listed fonts from the system font list"
 				"\n\t-->");
 
-		UT_uint32 k;
 		const std::vector<UT_UTF8String> & v = m_fonts.getFonts();
 		
-		for (k = 0; k < v.size(); ++k)
+		for (std::vector<UT_UTF8String>::const_iterator k = v.begin(); 
+			 k != v.end() ; ++k)
 		{
 			fprintf(fp,"\n\t\t<Face name=\"%s\"/>",
-					v[k].utf8_str());
+					(*k).utf8_str());
 		}
 
 		fprintf(fp, "\n\t</Fonts>\n");
@@ -1687,15 +1687,9 @@ bool XAP_FontSettings::isOnExcludeList (const char * name) const
 	if (!m_vecFonts.size())
 		return false;
 
-	std::vector<UT_UTF8String> & v =
-		const_cast<std::vector<UT_UTF8String> &> (m_vecFonts);
-	
-	std::vector<UT_UTF8String>::iterator I =
-		find(v.begin(), v.end(), name);
+	std::vector<UT_UTF8String>::const_iterator i =
+		find(m_vecFonts.begin(), m_vecFonts.end(), name);
 
-	if (I < v.end())
-		return true;
-
-	return false;
+	return i != m_vecFonts.end();
 }
 
