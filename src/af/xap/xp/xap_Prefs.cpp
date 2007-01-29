@@ -1496,11 +1496,11 @@ bool XAP_Prefs::savePrefsFile(void)
 		fprintf(fp, "\n\t<Fonts include=\"%d\">\n", m_fonts.getIncludeFlag());
 		fprintf(fp,
 				"\t<!--"
-				"\n\t     You can add here list of fonts to limit the fonts that appear "
+				"\n\t     Here you can put a list of fonts to limit the fonts that appear "
 				"\n\t     in the font UI:\n"
 				"\n\t\t<face name=\"some face\"/>\n"
-				"\n\t     The include attribute of 'Fonts' controls the signficance of "
-				"\n\tthe list:"
+				"\n\t     The include attribute of 'Fonts' controls the significance of "
+				"\n\t     the list:"
 				"\n\t     include=\"1\" - limit fonts to those listed"
 				"\n\t     include=\"0\" - exclude the listed fonts from the system font list"
 				"\n\t-->");
