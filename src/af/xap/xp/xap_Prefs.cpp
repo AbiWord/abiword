@@ -690,17 +690,10 @@ bool XAP_Prefs::getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAll
 }
 
 
-#ifndef __MRC__
 static int n_compare (const char *name, const xmlToIdMapping *id)
 {
 	return strcmp (name, id->m_name);
 }
-#else
-extern "C" static int n_compare (const void *name, const void *id)
-{
-	return strcmp (static_cast<const char *>(name), (static_cast<const xmlToIdMapping *>(id))->m_name);
-}
-#endif
 
 
 /*****************************************************************/
@@ -722,9 +715,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 	id = static_cast<xmlToIdMapping *>(bsearch (static_cast<const void*>(name), static_cast<const void*>(s_Tokens),
 									sizeof(s_Tokens)/sizeof(xmlToIdMapping),
 									sizeof (xmlToIdMapping),
-#ifndef __MRC__
 									(int (*)(const void*, const void*))
-#endif
 									n_compare));
 	if (!id)
 	{
@@ -741,7 +732,6 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		{
 			m_parserState.m_bFoundFonts = true;
 			const gchar ** a = atts;
-			const gchar * pName = NULL;
 			
 			while (a && *a)
 			{
