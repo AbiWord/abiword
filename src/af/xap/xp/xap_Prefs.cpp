@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -47,6 +48,8 @@ enum
 {
 	TT_ABIPREFERENCES,
 	TT_GEOMETRY,
+	TT_FACE,
+	TT_FONTS,
 	TT_LOG,
 	TT_PLUGIN,
 	TT_RECENT,
@@ -58,6 +61,8 @@ enum
 static struct xmlToIdMapping s_Tokens[] =
 {
 	{ "AbiPreferences",		TT_ABIPREFERENCES },
+	{ "Face",               TT_FACE },
+	{ "Fonts",              TT_FONTS },
 	{ "Geometry",			TT_GEOMETRY },
 	{ "Log",                TT_LOG},
 	{ "Plugin",				TT_PLUGIN },
@@ -731,7 +736,67 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 	{
 		case TT_LOG: // ignore
 			break;
+
+		case TT_FONTS:
+		{
+			m_parserState.m_bFoundFonts = true;
+			const gchar ** a = atts;
+			const gchar * pName = NULL;
 			
+			while (a && *a)
+			{
+				if (!strcmp (a[0], "include"))
+				{
+					if (!strcmp (a[1], "1") || !strcmp (a[1], "true"))
+						m_fonts.setIncludeFlag(true);
+					else
+						m_fonts.setIncludeFlag(false);
+				}
+				else
+				{
+					UT_DEBUGMSG(("Preferences: unknown attribute [%s] "
+								 "for <Fontface>\n",
+								 a[0]));
+				}
+				
+				a += 2;
+			}
+		}
+		break;
+			
+		case TT_FACE:
+		{
+			if (!m_parserState.m_bFoundFonts)
+			{
+				UT_ASSERT_HARMLESS (UT_SHOULD_NOT_HAPPEN);
+				break;
+			}
+			
+			const gchar ** a = atts;
+			const gchar * pName = NULL;
+			
+			while (a && *a)
+			{
+				if (!strcmp (a[0], "name"))
+				{
+					pName = a[1];
+				}
+				else
+				{
+					UT_DEBUGMSG(("Preferences: unknown attribute [%s] "
+								 "for <Fontface>\n",
+								 a[0]));
+				}
+				
+				a += 2;
+			}
+
+			if (pName)
+				m_fonts.addFont (pName);
+			
+		}
+		break;
+		
 		case TT_ABIPREFERENCES:
 		{
 		m_parserState.m_bFoundAbiPreferences = true;
@@ -1086,7 +1151,7 @@ bool XAP_Prefs::loadPrefsFile(void)
 	m_parserState.m_szSelectedSchemeName = NULL;
 	m_parserState.m_bFoundRecent = false;
 	m_parserState.m_bFoundGeometry = false;
-
+	m_parserState.m_bFoundFonts = false;
 	m_bLoadSystemDefaultFile = false;
 
 	UT_XML parser;
@@ -1426,6 +1491,31 @@ bool XAP_Prefs::savePrefsFile(void)
 	
 		fprintf(fp, "\t</Log>\n");
 	}
+
+	{
+		fprintf(fp, "\n\t<Fonts include=\"%d\">\n", m_fonts.getIncludeFlag());
+		fprintf(fp,
+				"\t<!--"
+				"\n\t     You can add here list of fonts to limit the fonts that appear "
+				"\n\t     in the font UI:\n"
+				"\n\t\t<face name=\"some face\"/>\n"
+				"\n\t     The include attribute of 'Fonts' controls the signficance of "
+				"\n\tthe list:"
+				"\n\t     include=\"1\" - limit fonts to those listed"
+				"\n\t     include=\"0\" - exclude the listed fonts from the system font list"
+				"\n\t-->");
+
+		UT_uint32 k;
+		const std::vector<UT_UTF8String> & v = m_fonts.getFonts();
+		
+		for (k = 0; k < v.size(); ++k)
+		{
+			fprintf(fp,"\n\t\t<Face name=\"%s\"/>",
+					v[k].utf8_str());
+		}
+
+		fprintf(fp, "\n\t</Fonts>\n");
+	}
 	
 	fprintf(fp,"\n</AbiPreferences>\n");
 	
@@ -1598,3 +1688,24 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
 	}
 }
+
+bool XAP_FontSettings::isOnExcludeList (const char * name) const
+{
+	if (m_bInclude)
+		return false;
+	
+	if (!m_vecFonts.size())
+		return false;
+
+	std::vector<UT_UTF8String> & v =
+		const_cast<std::vector<UT_UTF8String> &> (m_vecFonts);
+	
+	std::vector<UT_UTF8String>::iterator I =
+		find(v.begin(), v.end(), name);
+
+	if (I < v.end())
+		return true;
+
+	return false;
+}
+

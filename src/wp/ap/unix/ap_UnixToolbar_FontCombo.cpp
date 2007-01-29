@@ -54,7 +54,6 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	UT_ASSERT(id == AP_TOOLBAR_ID_FMT_FONT);
 	m_nPixels = 150;
 
-	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
 	m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
 }
 
@@ -77,13 +76,12 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 
 	UT_uint32 iGR = pGF->getDefaultClass(true);
 	
-	UT_GenericVector<const char*>* names = NULL;
+	std::vector<const char *>& names =
+		GR_UnixPangoGraphics::getAllFontNames();
 
 	UT_uint32 count = 0;
 	
-	names = GR_UnixPangoGraphics::getAllFontNames();
-	UT_return_val_if_fail( names, false );
-	count = names->size();
+	count = names.size();
 
 	m_vecContents.clear();
 
@@ -92,7 +90,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		const char * fName = NULL;
 		
 		// sort-out duplicates
-		fName = names->getNthItem(i);
+		fName = names[i];
 		
 		int foundAt = -1;
 
@@ -110,7 +108,6 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		if (foundAt == -1)
 			m_vecContents.addItem(fName);
 	}
-	DELETEP(names);
 	
 	return true;
 }

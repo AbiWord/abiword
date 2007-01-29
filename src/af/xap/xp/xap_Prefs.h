@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -30,12 +31,13 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_xml.h"
 
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
-class UT_String;
+#include <vector>
 
 /* For handling the position of windows on the screen, this sets up preferences */
 enum {
@@ -65,6 +67,32 @@ enum XAPPrefsLog_Level
 	Error
 };
 
+class ABI_EXPORT XAP_FontSettings
+{
+  public:
+	XAP_FontSettings()
+		:m_bInclude(false){};
+	
+	const std::vector<UT_UTF8String> & getFonts() const
+		{return m_vecFonts;}
+	
+	void addFont (const char * pFace)
+		{
+			m_vecFonts.push_back (pFace);
+		}
+
+	bool haveFontsToExclude () const {return (!m_bInclude && m_vecFonts.size());}
+	bool haveFontsToInclude () const {return (m_bInclude && m_vecFonts.size());}
+
+	bool isOnExcludeList (const char * name) const;
+
+	void setIncludeFlag (bool bInclude) {m_bInclude = bInclude;}
+	bool getIncludeFlag () const {return m_bInclude;}
+	
+  private:
+	std::vector<UT_UTF8String> m_vecFonts;
+	bool m_bInclude;
+};
 
 class ABI_EXPORT XAP_PrefsScheme
 {
@@ -148,10 +176,10 @@ public:
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	
-	virtual void				fullInit(void) = 0;
-	virtual bool				loadBuiltinPrefs(void) = 0;
+	virtual void			fullInit(void) = 0;
+	virtual bool			loadBuiltinPrefs(void) = 0;
 	virtual const gchar *	getBuiltinSchemeName(void) const = 0;
-	virtual const char *		getPrefsPathname(void) const = 0;
+	virtual const char *	getPrefsPathname(void) const = 0;
 
 	void					addListener	  ( PrefsListener pFunc, void *data );
 	void					removeListener ( PrefsListener pFunc, void *data = 0 );
@@ -159,6 +187,8 @@ public:
 	void					endBlockChange();
 
 	void                    log(const char * where, const char * what, XAPPrefsLog_Level level = Log);
+
+	XAP_FontSettings &      getFontSettings () {return m_fonts;}
 	
 	// a only-to-be-used-by XAP_PrefsScheme::setValue
 	void					_markPrefChange	( const gchar *szKey );
@@ -178,8 +208,10 @@ protected:
 
 	UT_uint32				m_iMaxRecent;
 	UT_GenericVector<char*>	m_vecRecent;		/* vector of (char *) */
-	UT_GenericVector<UT_UTF8String *> m_vecLog;           /* vector of UT_UTF8String */
+	UT_GenericVector<UT_UTF8String *> m_vecLog; /* vector of UT_UTF8String */
 
+	XAP_FontSettings        m_fonts;
+	
 	typedef struct					/* used to store the listener/data pairs in the vector  */
 	{
 		PrefsListener	m_pFunc;
@@ -187,36 +219,39 @@ protected:
 	} tPrefsListenersPair;
 
 	UT_GenericVector<tPrefsListenersPair *>	m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
-	UT_StringPtrMap		    m_ahashChanges;
-	bool					m_bInChangeBlock;
-	void					_sendPrefsSignal( UT_StringPtrMap *hash );
+	UT_StringPtrMap		m_ahashChanges;
+	bool				m_bInChangeBlock;
+	void				_sendPrefsSignal( UT_StringPtrMap *hash );
 
 	typedef struct {
-		UT_uint32				m_width, m_height;	/* Default width and height */
-		UT_sint32				m_posx, m_posy;		/* Default position */
-		UT_uint32				m_flags;			/* What is valid, what is not */
+		UT_uint32		m_width, m_height;	/* Default width and height */
+		UT_sint32		m_posx, m_posy;		/* Default position */
+		UT_uint32		m_flags;			/* What is valid, what is not */
 	} Pref_Geometry;
-	Pref_Geometry				m_geom;
+	
+	Pref_Geometry		m_geom;
 	
 
 	/* Implementation of UT_XML::Listener */
 public:
-	void					startElement(const gchar *name, const gchar **atts);
-	void					endElement(const gchar *name);
-	void					charData(const gchar *s, int len);
+	void				startElement(const gchar *name, const gchar **atts);
+	void				endElement(const gchar *name);
+	void				charData(const gchar *s, int len);
 private:
-	void					_startElement_SystemDefaultFile(const gchar *name, const gchar **atts);
-	bool					m_bLoadSystemDefaultFile;
-    bool                    m_bIgnoreThisOne;
+	void				_startElement_SystemDefaultFile(const gchar *name,
+														const gchar **atts);
+	bool				m_bLoadSystemDefaultFile;
+    bool                m_bIgnoreThisOne;
 private:
 	struct
 	{
-		bool				m_parserStatus;
-		bool				m_bFoundAbiPreferences;
-		bool				m_bFoundSelect;
+		bool			m_parserStatus;
+		bool			m_bFoundAbiPreferences;
+		bool			m_bFoundSelect;
 		gchar *			m_szSelectedSchemeName;
-		bool				m_bFoundRecent;
-		bool				m_bFoundGeometry;
+		bool			m_bFoundRecent;
+		bool			m_bFoundGeometry;
+		bool            m_bFoundFonts;
 	} m_parserState;
 
 };

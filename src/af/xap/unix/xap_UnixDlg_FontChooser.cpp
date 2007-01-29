@@ -890,16 +890,16 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	UT_GenericVector<const char*>* names = NULL;
 	UT_uint32 iCount = 0;
 	
-	names = GR_UnixPangoGraphics::getAllFontNames();
-	UT_return_if_fail( names );
-	iCount = names->size();
+	std::vector<const char *> & names =
+	    GR_UnixPangoGraphics::getAllFontNames();
+	
+	iCount = names.size();
 		
 	for (UT_uint32 i = 0; i < iCount; i++)
 	{
-		const char * fName = names->getNthItem(i);
+		const char * fName = names[i];
 			
 		if (!fontHash.contains(fName, NULL))
 		{
@@ -912,8 +912,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		    
 		  }
 	}
-
-	DELETEP(names);
 
 	// Set the defaults in the list boxes according to dialog data
 	gint foundAt = 0;

@@ -257,7 +257,6 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));
 
 	// Next construct a timer for auto-updating the dialog
-	GR_Graphics * pG = NULL;
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this);
 	m_bDestroy_says_stopupdating = false;
 
@@ -1119,22 +1118,22 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
-	UT_GenericVector<const char*>* names = NULL;
 	UT_uint32 count = 0;
 	
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
 	UT_return_val_if_fail(pGF, NULL);
 	
-	names = GR_UnixPangoGraphics::getAllFontNames();
-	UT_return_val_if_fail(names, NULL);
-	count = names->size();
+	std::vector<const char *> & names =
+	    GR_UnixPangoGraphics::getAllFontNames();
+	
+	count = names.size();
 
 	GList *glFonts = NULL;
 	const gchar *currentfont = NULL;
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-	    const gchar * lgn  = names->getNthItem(i);
+	    const gchar * lgn  = names[i];
 	    if(!currentfont ||
 	       strstr(currentfont,lgn)==NULL ||
 	       strlen(currentfont)!=strlen(lgn))
@@ -1144,8 +1143,6 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 	    }
 	}
 		
-	DELETEP(names);
-	
 	m_glFonts =  g_list_reverse(glFonts);
 	return m_glFonts;
 }

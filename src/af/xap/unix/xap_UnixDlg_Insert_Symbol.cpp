@@ -48,6 +48,8 @@
 #include "xap_UnixDlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"
 
+#include <vector>
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -558,12 +560,12 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		return NULL;
 	}
 
-	UT_GenericVector<const char*>* names = NULL;
 	UT_uint32 iCount = 0;
 	
-	names = GR_UnixPangoGraphics::getAllFontNames();
-	UT_return_val_if_fail( names, false );
-	iCount = names->size();
+	std::vector<const char *> & names =
+		GR_UnixPangoGraphics::getAllFontNames();
+	
+	iCount = names.size();
 		
 	GList *glFonts = NULL;
 	UT_String currentfont;
@@ -572,7 +574,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	for (UT_uint32 i = 0; i < iCount; i++)
 	{
 		const gchar * lgn = NULL;
-		lgn = static_cast<const gchar *>(names->getNthItem(i));
+		lgn = static_cast<const gchar *>(names[i]);
 		
 		if((strstr(currentfont.c_str(),lgn)==NULL) ||
 		   (currentfont.size() !=strlen(lgn)) )
@@ -584,7 +586,6 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		}
 	}	
 
-	DELETEP(names);
 	return g_list_reverse(glFonts);
 }
 

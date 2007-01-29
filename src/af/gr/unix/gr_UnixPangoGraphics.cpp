@@ -2602,25 +2602,58 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 #endif
 }
 
-UT_GenericVector<const char *> *  GR_UnixPangoGraphics::getAllFontNames(void)
+std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 {
-	FcFontSet* fs;
-	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+	bool bExclude = false;
+	bool bInclude = false;
 
-	// we know how many fonts there are, so we tell the vector constructor
-	UT_GenericVector<const char *> * pVec =
-		new UT_GenericVector<const char *>(fs->nfont,fs->nfont);
+	/*
+	 * Do this only once
+	 */
+	static std::vector<const char *> Vec;
 
-	UT_return_val_if_fail( pVec, NULL );
+	if (Vec.size())
+		return Vec;
+	
+	if (pPrefs)
+	{
+		XAP_FontSettings & Fonts = pPrefs->getFontSettings();
+		bExclude = Fonts.haveFontsToExclude();
+		bInclude = Fonts.haveFontsToInclude();
+		
+		if (bInclude)
+		{
+			for (UT_uint32 k = 0; k < Fonts.getFonts().size(); ++k)
+				Vec.push_back (Fonts.getFonts()[k].utf8_str());
+
+			return Vec;
+		}
+	}
+
+	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
+	FcFontSet* fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
 	
 	for(UT_sint32 i = 0; i < fs->nfont; ++i)
 	{
 		unsigned char *family;
 		FcPatternGetString(fs->fonts[i], FC_FAMILY, 0, &family);
-		pVec->addItem((const char *)family);
+
+		if (bExclude)
+		{
+			XAP_FontSettings & Fonts = pPrefs->getFontSettings();
+			if (Fonts.isOnExcludeList((const char *)family))
+			{
+				UT_DEBUGMSG(("@@@@ ===== Excluding font [%s] =====\n",
+							 family));
+				continue;
+			}
+		}
+		
+		Vec.push_back((const char*)family);
 	}
 
-	return pVec;
+	return Vec;
 }
 
 UT_uint32 GR_UnixPangoGraphics::getAllFontCount()

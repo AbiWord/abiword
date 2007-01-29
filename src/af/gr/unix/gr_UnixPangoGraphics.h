@@ -21,7 +21,10 @@
 #ifndef GR_UNIX_PANGOGRAPHICS_H
 #define GR_UNIX_PANGOGRAPHICS_H
 
+#include <vector>
+
 #include "ut_types.h"
+#include "ut_string_class.h"
 #include "gr_RenderInfo.h"
 
 #include <pango/pango-font.h>
@@ -241,7 +244,7 @@ public:
 	virtual void setClipRect(const UT_Rect* pRect);
 	virtual UT_uint32 getDeviceResolution(void) const;
 
-	static  UT_GenericVector<const char*> *   getAllFontNames(void);
+	static  std::vector<const char *> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
 									 const char * pszLang = NULL);
