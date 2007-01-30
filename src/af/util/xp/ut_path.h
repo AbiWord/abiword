@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <time.h>
 
-#ifdef MAXPATHLEN
+#if defined(MAXPATHLEN) && !defined(PATH_MAX)
 #define PATH_MAX MAXPATHLEN
 #else
 #include <limits.h>
