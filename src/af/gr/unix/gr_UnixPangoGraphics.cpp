@@ -80,7 +80,8 @@ class GR_UnixPangoItem: public GR_Item
 {
 	friend class GR_UnixPangoGraphics;
 	friend class GR_UnixPangoPrintGraphics;
-
+	friend class GR_UnixPangoRenderInfo;
+	
   public:
 	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
 	
@@ -141,7 +142,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		if(sUTF8 == NULL)
 			sUTF8 = new UT_UTF8String("");
 	};
-	
+
 	virtual ~GR_UnixPangoRenderInfo()
 	{
 		delete [] m_pJustify; delete [] m_pLogOffsets;
@@ -162,6 +163,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
 	virtual bool isJustified() const;
+	virtual bool canAppend(GR_RenderInfo &ri) const;
 
 	bool getUTF8Text();
 	
@@ -924,7 +926,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	 */
 	if(RI->m_iShapingAllocNo != si.m_pFont->getAllocNumber())
 	{
-		xxx_UT_DEBUGMSG(("@@@@ ===== Font change %d -> %d\n",
+		UT_DEBUGMSG(("@@@@ ===== Font change %d -> %d\n",
 					 RI->m_iShapingAllocNo,
 					 si.m_pFont->getAllocNumber()));
 			
@@ -962,7 +964,6 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 				/*
 				 * We did not find a suitable font -- nothing we can do.
 				 */
-
 				UT_DEBUGMSG(("@@@@ ===== Failed to find font for u%04x\n", c));
 			}
 			else if (pFontSubst && (pFontSubst != font))
@@ -971,29 +972,25 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			     * Ok, the font we got for this character does not match
 			     * the one we got the for the preceding characters.
 			     *
-			     * What we should do is to split the run before this character
+			     * What we could do is to split the run before this character
 			     * so we might use two different fonts, but we currently
-			     * do not have the infrastructure to do this.
+			     * do not have the infrastructure to do this. Also, doing this
+			     * breaks when the missing glyph is a combining character.
 			     *
-			     * NB: the run only contains characters from a single language
-			     * and script (as determined by PangoItemize), so any font that
-			     * advertises itself as having a coverage for this language and
-			     * script should actually contain all the characters in this
-			     * run -- I think this should happen only rarely and we will
-			     * blame the font for now ;-).
+			     * Alternatively, we would need to maintain an internal list
+			     * of fonts for each section, but that would mean also to
+			     * maintain separate glyph strings, which would be a nightmare.
 			     *
-			     * If this font covers this character and the previous font
-			     * did not, there is a chance that this font has overall better
-			     * coverage than the previous one -- let's use this font, and
-			     * hope for the best.
+			     * We can limit this from happening by preventing items that
+			     * will use different font from merging, which I have now done,
+			     * but again, this does not work when combining characters are
+			     * involved, because we cannot draw the combining character on
+			     * it's own.
 			     *
-			     * TODO: add return value to this function so we can indicate
-			     *       this problem to the caller and a mechanism to
-			     *       fp_TextRun to split itself before this character.
+			     * TODO -- devise a sensible way of handling this.
 			     */
 				UT_DEBUGMSG(("@@@@ ===== Font for u%04x does not match "
 							 "earlier font\n", c));
-				
 				pFontSubst = font;
 			}
 			else if (pFontSubst == font)
@@ -1005,6 +1002,17 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			{
 				pFontSubst = font;
 			}
+
+#ifdef DEBUG
+			PangoFontDescription * pfd =
+				pango_font_describe (font);
+			char * s = pango_font_description_to_string (pfd);
+
+			UT_DEBUGMSG(("@@@@ ===== Font for u%04x: %s\n", c, s));
+			g_free (s);
+			pango_font_description_free (pfd);
+#endif
+			
 		}
 	}
 
@@ -1048,9 +1056,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		double dSize = (double)PANGO_SCALE * pFont->getPointSize();
 		pango_font_description_set_size (pfd, (gint)dSize);
 
-#if 0 //def DEBUG
+#ifdef DEBUG
 		char * s = pango_font_description_to_string (pfd);
-		UT_DEBUGMSG(("Item-based font [%s]\n", s));
+		UT_DEBUGMSG(("@@@@ ===== Shaping with font [%s]\n", s));
 		g_free (s);
 #endif
 	}
@@ -2101,7 +2109,7 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		/* This is a bit weird, possibly a Pango bug, but it is better
 		 * to set any dangling widths to 0 than leave them at randomn values
 		 */
-		while (iOffset < iLength)
+		while (iOffset < (UT_uint32)iLength)
 		{
 			pWidths[iOffset++] = 0;
 		}
@@ -3327,6 +3335,24 @@ const char* GR_UnixPangoFont::getFamily() const
 //
 // GR_UnixPangoRenderInfo Implementation
 //
+
+bool GR_UnixPangoRenderInfo::canAppend(GR_RenderInfo &ri) const
+{
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+	GR_UnixPangoItem * pItem1 = (GR_UnixPangoItem *)m_pItem;
+	GR_UnixPangoItem * pItem2 = (GR_UnixPangoItem *)RI.m_pItem;
+
+	/* Do not merger runs that have not been shapped yet */
+	if (!pItem1 || !pItem2)
+		return false;
+
+	/* If the shapping resulted in font substitution we cannot merge */
+	if (pItem1->m_pi->analysis.font == pItem2->m_pi->analysis.font)
+		return true;
+
+	return false;
+}
+
 
 bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 {
