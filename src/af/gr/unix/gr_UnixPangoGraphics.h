@@ -244,7 +244,7 @@ public:
 	virtual void setClipRect(const UT_Rect* pRect);
 	virtual UT_uint32 getDeviceResolution(void) const;
 
-	static  std::vector<const char *> &       getAllFontNames(void);
+	static  const std::vector<const char *> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
 									 const char * pszLang = NULL);

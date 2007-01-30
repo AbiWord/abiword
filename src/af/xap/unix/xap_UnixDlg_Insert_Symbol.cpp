@@ -560,21 +560,18 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		return NULL;
 	}
 
-	UT_uint32 iCount = 0;
-	
-	std::vector<const char *> & names =
+	const std::vector<const char *> & names =
 		GR_UnixPangoGraphics::getAllFontNames();
 	
-	iCount = names.size();
-		
 	GList *glFonts = NULL;
 	UT_String currentfont;
 	UT_uint32 j = 0;
 
-	for (UT_uint32 i = 0; i < iCount; i++)
+	for (std::vector<const char *>::const_iterator i = names.begin(); 
+		 i != names.end(); i++)
 	{
 		const gchar * lgn = NULL;
-		lgn = static_cast<const gchar *>(names[i]);
+		lgn = *i;
 		
 		if((strstr(currentfont.c_str(),lgn)==NULL) ||
 		   (currentfont.size() !=strlen(lgn)) )

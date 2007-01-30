@@ -1118,28 +1118,25 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
-	UT_uint32 count = 0;
-	
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
 	UT_return_val_if_fail(pGF, NULL);
 	
-	std::vector<const char *> & names =
+	const std::vector<const char *> & names =
 	    GR_UnixPangoGraphics::getAllFontNames();
 	
-	count = names.size();
-
 	GList *glFonts = NULL;
 	const gchar *currentfont = NULL;
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (std::vector<const char *>::const_iterator i = names.begin(); 
+		 i != names.end(); i++)
 	{
-	    const gchar * lgn  = names[i];
+	    const gchar * lgn  = *i;
 	    if(!currentfont ||
 	       strstr(currentfont,lgn)==NULL ||
 	       strlen(currentfont)!=strlen(lgn))
 	    {
-		currentfont = lgn;
-		glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
+			currentfont = lgn;
+			glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
 	    }
 	}
 		

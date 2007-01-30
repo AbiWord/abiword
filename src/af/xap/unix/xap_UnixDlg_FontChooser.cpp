@@ -890,16 +890,13 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	UT_uint32 iCount = 0;
-	
-	std::vector<const char *> & names =
+	const std::vector<const char *> & names =
 	    GR_UnixPangoGraphics::getAllFontNames();
 	
-	iCount = names.size();
-		
-	for (UT_uint32 i = 0; i < iCount; i++)
+	for (std::vector<const char *>::const_iterator  i = names.begin();
+		 i != names.end(); i++)
 	{
-		const char * fName = names[i];
+		const char * fName = *i;
 			
 		if (!fontHash.contains(fName, NULL))
 		{

@@ -2602,7 +2602,7 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 #endif
 }
 
-std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
+const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 {
 	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 	bool bExclude = false;

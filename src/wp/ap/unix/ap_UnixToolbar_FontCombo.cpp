@@ -76,21 +76,18 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 
 	UT_uint32 iGR = pGF->getDefaultClass(true);
 	
-	std::vector<const char *>& names =
+	const std::vector<const char *>& names =
 		GR_UnixPangoGraphics::getAllFontNames();
-
-	UT_uint32 count = 0;
-	
-	count = names.size();
 
 	m_vecContents.clear();
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (std::vector<const char *>::const_iterator i = names.begin(); 
+		 i != names.end(); i++)
 	{
 		const char * fName = NULL;
 		
 		// sort-out duplicates
-		fName = names[i];
+		fName = *i;
 		
 		int foundAt = -1;
 
