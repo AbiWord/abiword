@@ -308,7 +308,6 @@ bool EV_Win32Menu::onCommand(AV_View * pView,
 bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 {	
 	bool bResult;
-	UT_uint32 tmp = 0;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -838,7 +837,6 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	{
 		char szTmp[255];
 		char* pTmp;
-		int nLen = strlen(item->szText);
 		
 		strncpy (szTmp, item->szText, pTabPos-item->szText);
 		pTmp = szTmp; pTmp+=pTabPos-item->szText; *pTmp=NULL;

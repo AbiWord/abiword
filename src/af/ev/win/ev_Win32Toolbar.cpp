@@ -125,8 +125,8 @@ EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 	m_pWin32Frame(pFrame),
 	m_pViewListener(NULL),
 	m_lid(0),				// view listener id
-	m_pFontCtrl(NULL),
-	m_hwnd(0)
+	m_hwnd(0),
+	m_pFontCtrl(NULL)
 {
 }
 
@@ -298,9 +298,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			SIZE size;
 			HFONT hfontSave;
 			const UT_GenericVector<const char*> * v = t->m_pFontCtrl->getContents();
-			const UT_Vector * vcharSet = t->m_pFontCtrl->getFontsCharset();						
 			const char * sz  = (const char *)v->getNthItem(dis->itemData);			
-			const int nCharset = (int)vcharSet->getNthItem(dis->itemData);						
 			
 			if(dis->itemState & ODS_COMBOBOXEDIT)
 			{
@@ -419,7 +417,6 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								// Find the proper non-localised text                                                                             					
 								XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
 								EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);                                                                         
-								const UT_GenericVector<const char*> * v = pControl->getContents();                                                                          
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
@@ -1075,8 +1072,8 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 		case EV_TBIT_ComboBox:
 			{
-				bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				bool bString = EV_TIS_ShouldUseString(tis);
+				//bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				//bool bString = EV_TIS_ShouldUseString(tis);
 				HWND hwndCombo = _getControlWindow(id);
 				UT_return_val_if_fail(hwndCombo, true);
 				UT_UTF8String utf8;
@@ -1362,7 +1359,6 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 // Now make a new one.
 //
-	UT_uint32 items = v->getItemCount();
 	int	nItem;													    
 	UT_UTF8String utf8;
 	UT_String str;
