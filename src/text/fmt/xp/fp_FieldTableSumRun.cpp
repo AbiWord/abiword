@@ -161,7 +161,7 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 		{
 			sFull += cCurrency;
 		}
-		sFull += "%'.2f";
+		sFull += "%.2f";
 		const char * szFmt = sFull.c_str();
 		UT_UTF8String_sprintf(sVal,szFmt,d);
 		return;
