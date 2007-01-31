@@ -2297,9 +2297,18 @@ void GR_Win32USPGraphics::_drawChars(const UT_UCSChar* pChars,
 		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 		LOG_USP_EXCPT_X("fScriptStringAnalyse failed", hRes)
 	}
+
+	hRes = 0; //reset this so we don't log misleading results
 	
-	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff),
-							0, NULL, 0, 0, FALSE);
+	if(SSA)
+	{
+		hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff),
+								0, NULL, 0, 0, FALSE);
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	if(hRes)
 	{
