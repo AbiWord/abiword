@@ -240,7 +240,7 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 	getPrefsValueDirectory(true,
 			       static_cast<const gchar*>(AP_PREF_KEY_StringSetDirectory),
 			       static_cast<const gchar**>(&szDirectory));
-	UT_ASSERT((szDirectory) && (*szDirectory));
+	UT_return_val_if_fail((szDirectory) && (*szDirectory), NULL);
 
 	// fo_BA.strings
 	UT_String szPath = szDirectory;
@@ -251,7 +251,7 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 
 	// fo.strings
 	UT_String szFallbackPath;
-	if (strlen(szStringSet) > 2) {
+	if (szStringSet && strlen(szStringSet) > 2) {
 		szFallbackPath = szDirectory;
 		if (szDirectory[szFallbackPath.size()-1]!='/')
 			szFallbackPath += "/";
