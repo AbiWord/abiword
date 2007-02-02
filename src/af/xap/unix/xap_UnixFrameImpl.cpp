@@ -1815,7 +1815,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		gtk_main();
 	}
 
-	if (pFrame->getCurrentView())
+	if (pFrame && pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
 
 	DELETEP(m_pUnixPopup);
