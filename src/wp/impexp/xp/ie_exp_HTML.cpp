@@ -4750,6 +4750,21 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	}
 	m_utf8_1 += "\"";
 
+	const gchar * szLang  = 0;
+	pAP->getProperty ("lang",  szLang);
+	if (szLang) {
+		if (!get_HTML4 ()) {
+			// we want to emit xml:lang in addition to lang
+			m_utf8_1 += " xml:lang=\"";
+			m_utf8_1 += szLang;
+			m_utf8_1 += "\"";
+		}
+
+		m_utf8_1 += " lang=\"";
+		m_utf8_1 += szLang;
+		m_utf8_1 += "\"";
+	}
+
 	if (!get_Embed_Images () || get_Multipart ())
 	{
 		m_utf8_1 += " src=\"";
