@@ -24,7 +24,7 @@ AC_PREREQ(2.50)
 
 m4_define([abiword_version_major], [2])
 m4_define([abiword_version_minor], [5])
-m4_define([abiword_version_micro], [0])
+m4_define([abiword_version_micro], [1])
 m4_define([abiword_series], [abiword_version_major.abiword_version_minor])
 m4_define([abiword_version], [abiword_version_major.abiword_version_minor.abiword_version_micro])
 
