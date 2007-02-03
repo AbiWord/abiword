@@ -130,6 +130,7 @@ noinst_HEADERS = \
 	xap_UnixDlg_WindowMore.h \
 	xap_UnixDlg_Zoom.h \
 	xap_UnixEncodingManager.h \
+	xap_UnixFeatures.h \
 	xap_UnixFontPreview.h \
 	xap_UnixFrameImpl.h \
 	xap_UnixModule.h \
