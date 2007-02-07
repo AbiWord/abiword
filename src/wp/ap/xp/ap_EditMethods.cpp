@@ -12926,7 +12926,7 @@ Defun1(mailMerge)
   filterCount = IE_MailMerge::getMergerCount();
 
   const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
-  UT_return_val_if_fail(szDescList);
+  UT_return_val_if_fail(szDescList, false);
 
   const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
   if(!szSuffixList)
