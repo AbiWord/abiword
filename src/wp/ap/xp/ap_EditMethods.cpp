@@ -1935,8 +1935,25 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		filterCount = IE_Imp::getImporterCount();
 
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_return_val_if_fail(szDescList, false);
+
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return false;
+	}
+
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return false;
+	}
+
 	UT_uint32 k = 0;
 
 	if (bSaveAs)
@@ -1962,9 +1979,24 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	else if (bSaveAs)
 	  {
 		XAP_App * pApp = XAP_App::getApp();
-		UT_return_val_if_fail (pApp, false);
+		if(!pApp)
+		{
+			UT_ASSERT_HARMLESS(pApp);
+			FREEP(szDescList);
+			FREEP(szSuffixList);
+			FREEP(nTypeList);
+			return false;
+		}
+
 		XAP_Prefs * pPrefs = pApp->getPrefs();
-		UT_return_val_if_fail (pPrefs, false);
+		if(!pPrefs)
+		{
+			UT_ASSERT_HARMLESS(pPrefs);
+			FREEP(szDescList);
+			FREEP(szSuffixList);
+			FREEP(nTypeList);
+			return false;
+		}
 
 		const gchar * ftype = 0;
 
@@ -2060,9 +2092,26 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
 
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_return_val_if_fail(szDescList, false);
+
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return false;
+	}
+
 	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
 		 UT_calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return false;
+	}
+
 	UT_uint32 k = 0;
 
 	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
@@ -2749,8 +2798,24 @@ Defun1(fileSaveImage)
 
 	UT_uint32 filterCount = 1;
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_return_val_if_fail(szDescList, false);
+
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return false;
+	}
+
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return false;
+	}
 
 	// we only support saving images in png format for now
 	szDescList[0] = "Portable Network Graphics (.png)";
@@ -2806,8 +2871,24 @@ Defun1(fileSaveEmbed)
 
 	UT_uint32 filterCount = 1;
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_return_val_if_fail(szDescList, false);
+
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return false;
+	}
+
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return false;
+	}
 
 	// we only support saving objects to their default format
 	szDescList[0] =  pRun->getEmbedManager()->getMimeTypeDescription();
@@ -9160,9 +9241,21 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// I am not entirely sure about this; perhaps the units should only be modifiable
 	// through the prefs dialogue, not through the page setup
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_return_val_if_fail(pPrefs, false);
+	if(!pPrefs)
+	{
+		UT_ASSERT_HARMLESS(pPrefs);
+		DELETEP(pDialog);
+		return false;
+	}
+
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_return_val_if_fail(pPrefsScheme, false);
+	if(!pPrefsScheme)
+	{
+		UT_ASSERT_HARMLESS(pPrefsScheme);
+		DELETEP(pDialog);
+		return false;
+	}
+
 	pPrefsScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_RulerUnits),
 						   static_cast<const gchar *>(UT_dimensionName(final_unit)));
 
@@ -9248,6 +9341,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	UT_uint32 countv = v.getItemCount() + 1;
 	const gchar ** props = static_cast<const gchar **>(UT_calloc(countv, sizeof(gchar *)));
+	if(!props)
+	{
+		UT_ASSERT_HARMLESS(props);
+		DELETEP(pDialog);
+		return false;
+	}
+
 	UT_uint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
@@ -12689,14 +12789,32 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+
 	UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
 
 	UT_uint32 filterCount = instance->getNumScripts ();
 
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_return_val_if_fail(szDescList, false);
+
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return false;
+	}
+
 	UT_ScriptIdType * nTypeList = static_cast<UT_ScriptIdType *>(UT_calloc(filterCount + 1, sizeof(UT_ScriptIdType)));
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return false;
+	}
+
 	UT_uint32 k = 0;
 
 	while (instance->enumerateDlgLabels(k, &szDescList[k],
@@ -12808,8 +12926,25 @@ Defun1(mailMerge)
   filterCount = IE_MailMerge::getMergerCount();
 
   const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+  UT_return_val_if_fail(szDescList);
+
   const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+  if(!szSuffixList)
+  {
+	  UT_ASSERT_HARMLESS(szSuffixList);
+	  FREEP(szDescList);
+	  return false;
+  }
+
   IEMergeType * nTypeList = static_cast<IEMergeType *>(UT_calloc(filterCount + 1, sizeof(IEMergeType)));
+  if(!nTypeList)
+  {
+	  UT_ASSERT_HARMLESS(nTypeList);
+	  FREEP(szDescList);
+	  FREEP(szSuffixList);
+	  return false;
+  }
+
   UT_uint32 k = 0;
   
   while (IE_MailMerge::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
