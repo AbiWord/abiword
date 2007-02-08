@@ -309,7 +309,6 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 
 BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	HWND hFrame     = GetParent(hWnd);
 	XAP_App*              pApp        = XAP_App::getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 
@@ -398,7 +397,6 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

@@ -1480,8 +1480,8 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 :	m_hdc(hdc),
 	m_xhdc(0), // once all the processing is done, this is changed to printHDC
 	m_yhdc(0), // once all the processing is done, this is changed to printHDC
-	m_layoutFont (0),
 	m_defaultCharWidth(0),
+	m_layoutFont (0),
 	m_tm(TEXTMETRIC()),
 	m_bGUIFont(false),
 	m_fPointSize(fPoints)

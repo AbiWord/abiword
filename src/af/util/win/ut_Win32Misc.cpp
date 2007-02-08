@@ -419,7 +419,7 @@ class UT_Win32AssertDlg
 	
   private:
 	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
-		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount), m_myHWND(NULL), m_bTimersPaused(false){};
+		: m_iLine(iLine), m_pCond(pCond), m_pFile(pFile), m_iCount(iCount), m_myHWND(NULL), m_bTimersPaused(false){};
 	~UT_Win32AssertDlg(){};
 
 	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
@@ -508,6 +508,8 @@ UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
 								lpTemplate,
 								NULL,
 								(DLGPROC)s_dlgProc,(LPARAM)this);
+
+	UT_ASSERT_HARMLESS((result != -1));
 
 	return m_answer;
 }

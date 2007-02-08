@@ -325,7 +325,7 @@ void GR_Win32CharWidths::_retrieveFontInfo(HDC hdc)
 			UT_uint16 * pStart = (UT_uint16*)p;
 			p += 2*iSegCount;
 			
-			UT_uint16 * pDelta = (UT_uint16*)p;
+			//UT_uint16 * pDelta = (UT_uint16*)p;
 			p += 2*iSegCount;
 			
 			UT_uint16 * pRangeOffset = (UT_uint16*)p;

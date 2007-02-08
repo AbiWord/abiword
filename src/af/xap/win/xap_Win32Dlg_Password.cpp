@@ -79,9 +79,7 @@ BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

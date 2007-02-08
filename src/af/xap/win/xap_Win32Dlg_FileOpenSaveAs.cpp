@@ -641,7 +641,6 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookInsertPicProc(HWND hDlg, UIN
 UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
-	HWND hFrame 	= GetParent(hFOSADlg);
 	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
 
 	const XAP_StringSet*  pSS	= XAP_App::getApp()->getStringSet();
@@ -782,8 +781,6 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 {
 	HWND hFOSADlg	= GetParent(hDlg);
-	HWND hFrame 	= GetParent(hFOSADlg);
-	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
 
 	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
 	UT_return_val_if_fail(pSS, false);

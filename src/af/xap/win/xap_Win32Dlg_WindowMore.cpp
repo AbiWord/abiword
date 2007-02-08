@@ -76,8 +76,6 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_BTN_OK,			XAP_STRING_ID_DLG_OK);
 	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
 
-	HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_WINDOWMORE_LIST);  
-
 	// load each frame name into the list
 	for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
 	{
@@ -101,9 +99,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 
 BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	int nItem;
 
 	switch (wId)

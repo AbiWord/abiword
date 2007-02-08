@@ -1170,7 +1170,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	UT_uint32 iZoom = getZoomPercentage();
 	GR_Win32USPFont * pFont = (GR_Win32USPFont*)RI.m_pFont;
 
-#ifdef DEBUG
+#if 0 //def DEBUG
 	UT_uint32 iPoints = (UT_uint32)pFont->getPointSize();
 #endif
 	
@@ -1430,7 +1430,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 	UT_uint32 iZoom = getZoomPercentage();
 	
-#ifdef DEBUG
+#if 0 //def DEBUG
 	UT_uint32 iPoints = (UT_uint32)pFont->getPointSize();
 #endif
 

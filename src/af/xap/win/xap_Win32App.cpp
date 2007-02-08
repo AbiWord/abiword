@@ -292,7 +292,6 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	char buf[PATH_MAX];
 	char buf2[PATH_MAX];
 	char szApplicationName[PATH_MAX];
-	const char * sz = NULL;
 
 	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
 

@@ -75,9 +75,9 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM),
 	  m_hKeyboardLayout(0),
-	  m_bWasAnAbiCommand(false),
 	  m_iconv(UT_ICONV_INVALID),
-	  m_bIsUnicodeInput(false)
+	  m_bIsUnicodeInput(false),
+	  m_bWasAnAbiCommand(false)
 {
 	HINSTANCE hInstUser;
 	if (hInstUser = LoadLibrary("USER32.DLL"))
@@ -354,8 +354,6 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
-	EV_EditModifierState ems = _getModifierState(); 		
-
 	/* 
 		If the key is NOT processed as an Abiword command
 		we follow their path and need to emit the char

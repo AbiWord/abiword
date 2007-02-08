@@ -164,7 +164,6 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 
 void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	GR_Win32Graphics * pWin32Graphics = (GR_Win32Graphics *)pGraphics;
 	if (pGraphics)
 		delete pGraphics;
 
