@@ -2241,12 +2241,7 @@ GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 	UT_sint32 x = (UT_sint32)((double)tdu(r.left) * m_fXYRatio);
 	UT_sint32 y = tdu(r.top);
 
-	if (!iWidth) { // can happen when drag'n'dropping text
-		iWidth = 1;
-	}
-	if (!iHeight) { // though not observed for height, safety never hurts
-		iHeight = 1;
-	}
+	UT_return_val_if_fail((iWidth > 0) && (iHeight > 0) && (y >= 0) && (x >= 0), NULL);
 
 	BITMAPINFO bmi; 
 	BYTE *imagedata;
