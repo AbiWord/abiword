@@ -198,7 +198,7 @@ static PP_Property _props[] =
 	{ "toc-has-label2",       "1",                false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-has-label3",       "1",                false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-has-label4",       "1",                false, NULL, PP_LEVEL_BLOCK},
-	{ "toc-heading",       "Table of Contents",   false, NULL, PP_LEVEL_BLOCK},
+	{ "toc-heading",       "Contents",   false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-heading-style",  "Contents Header",    false, NULL, PP_LEVEL_BLOCK},
     { "toc-id",                "0",               false, NULL, PP_LEVEL_SECT},
 	{ "toc-indent1",           "0.5in",           false, NULL, PP_LEVEL_BLOCK},
