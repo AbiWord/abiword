@@ -5477,7 +5477,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		pvFreshSuggestions = new UT_GenericVector<UT_UCSChar*>();
 		UT_ASSERT(pvFreshSuggestions);
 
-		if (checker->checkWord(stMisspelledWord.ucs4_str(), iLength) == SpellChecker::LOOKUP_FAILED)
+		if (checker && (checker->checkWord(stMisspelledWord.ucs4_str(), iLength) == SpellChecker::LOOKUP_FAILED))
 		{
 			// get suggestions from spelling engine
 			const UT_GenericVector<UT_UCSChar*>* cpvEngineSuggestions;
