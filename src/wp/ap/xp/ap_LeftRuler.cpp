@@ -94,6 +94,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	if(m_pView) 
 	{
 		// don't receive anymore scroll messages
+	  UT_DEBUGMSG(("Remove scroll listener %x \n",m_pScrollObj));
 		m_pView->removeScrollListener(m_pScrollObj);
 
 		// no more view messages
@@ -109,7 +110,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	XAP_App::getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 	UT_DEBUGMSG(("Deleted LeftRuler %x \n",this));
 	m_lidLeftRuler = 0;
-	//UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+	UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
 	DELETEP(m_pScrollObj);
 }
@@ -147,8 +148,11 @@ void AP_LeftRuler::setView(AV_View * pView)
 		// the actual on-screen widgets, we reuse it as documents
 		// change in the frame rather than recreating it with each
 		// view (as we do with some of the other objects).
-
 		DELETEP(m_pScrollObj);
+		if(m_lidLeftRuler !=  9999999)
+		{
+			m_pView->removeListener(m_lidLeftRuler);
+		}
 	}
 	
 	m_pView = pView;
@@ -157,9 +161,7 @@ void AP_LeftRuler::setView(AV_View * pView)
 	if (m_pScrollObj == NULL) 
 	{
 		m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	}
-	UT_ASSERT(m_pScrollObj);
-	m_pView->addScrollListener(m_pScrollObj);
+		m_pView->addScrollListener(m_pScrollObj);
 
 	// Register the LeftRuler as a ViewListeners on the View.
 	// This lets us receive notify events as the user interacts
@@ -167,7 +169,9 @@ void AP_LeftRuler::setView(AV_View * pView)
 	// us update the display as we move from block to block and
 	// from column to column.
 
-	m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidLeftRuler);
+		m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidLeftRuler);
+	}
+	UT_ASSERT(m_pScrollObj);
 
 	return;
 }

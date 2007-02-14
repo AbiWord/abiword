@@ -186,6 +186,20 @@ void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 
 void AV_View::addScrollListener(AV_ScrollObj* pObj)
 {
+	UT_sint32 count = m_scrollListeners.getItemCount();
+
+	for (UT_sint32 i = count-1; i >=0; i--)
+	{
+	     AV_ScrollObj* obj = m_scrollListeners.getNthItem(i);
+
+	     if (obj == pObj)
+	     {
+		  UT_DEBUGMSG(("Extra scroll object attempted attachment \n"));
+		  //		  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		  return;
+	     }
+
+	}
 	m_scrollListeners.addItem(pObj);
 }
 
@@ -193,14 +207,14 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
-	for (UT_sint32 i = 0; i < count; i++)
+	for (UT_sint32 i = count-1; i >=0; i--)
 	{
 		AV_ScrollObj* obj = m_scrollListeners.getNthItem(i);
 
 		if (obj == pObj)
 		{
+		  UT_DEBUGMSG(("Removing scroll listener %x in av_view %x \n",obj,this));
 			m_scrollListeners.deleteNthItem(i);
-			break;
 		}
 	}
 }
