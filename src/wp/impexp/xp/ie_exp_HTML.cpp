@@ -6783,7 +6783,9 @@ UT_Error IE_Exp_HTML::_doOptions ()
 
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
-	_doOptions ();
+	if (_doOptions () != UT_OK)
+		return UT_ERROR;
+
 	_buildStyleTree ();
 
 	if (isCopying ()) // ClipBoard
