@@ -127,6 +127,7 @@ static void s_delete_clicked(GtkWidget 	*widget,
 	gtk_main_quit();
 }
 
+#if 0
 static gint s_preview_exposed(GtkWidget * /* widget */,
 			      GdkEventExpose * /* pExposeEvent */,
 			      gpointer ptr)
@@ -136,6 +137,7 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 	dlg->previewPicture();
 	return FALSE;
 }
+#endif
 
 static void s_filetypechanged(GtkWidget * w, gpointer p)
 {
@@ -162,6 +164,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
 
+#if 0
 static void file_selection_changed  (GtkTreeSelection  *selection,
 				     gpointer           ptr)
 {
@@ -170,6 +173,7 @@ static void file_selection_changed  (GtkTreeSelection  *selection,
   UT_ASSERT(dlg);
   dlg->previewPicture();
 }
+#endif
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													 GtkWidget * filetypes_pulldown)
