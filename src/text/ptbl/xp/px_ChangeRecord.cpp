@@ -63,18 +63,7 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_iAdjust(0)
 {
 	// bulletproofing
-	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
 	memset(&m_MyDocUUID, 0, sizeof(m_MyDocUUID));
-
-	// after 2.5 branch this should be changed to use AD_Document::getNewUID()
-	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
-	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-
-	UT_return_if_fail(pUUID);
-	UT_ASSERT(pUUID->isValid());
-
-	pUUID->toBinary(m_MyUUID);
-	delete pUUID;
 }
 
 /*!
@@ -142,17 +131,6 @@ void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const
 {
   m_iAdjust = iAdj;
 }
-
-const char * PX_ChangeRecord::getMyUUID() const
-{
-	static char s[37];
-
-	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyUUID))
-		return NULL;
-	
-	return s;
-}
-
 
 /*!
   Get type of change record

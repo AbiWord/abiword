@@ -87,7 +87,6 @@ public:
 	UT_uint32               getXID() const {return m_iXID;}
 
 	const char *            getDocUUID() const;
-	const char *            getMyUUID() const;
 	
 	PD_Document *           getDocument(void) const;
 	void                    setDocument(const PD_Document * pDoc) const;
@@ -113,11 +112,10 @@ protected:
 
 	// the XID attribute of the frag
 	UT_uint32               m_iXID;
-mutable	 UT_sint32               m_iCRNumber;
-mutable  PD_Document *           m_pDoc;
+mutable	 UT_sint32			m_iCRNumber;
+mutable  PD_Document *		m_pDoc;
 private:
-	struct uuid             m_MyUUID;
-	mutable	struct uuid             m_MyDocUUID;
-	mutable UT_sint32               m_iAdjust;
+	mutable	struct uuid		m_MyDocUUID;
+	mutable UT_sint32		m_iAdjust;
 };
 #endif /* PX_CHANGERECORD_H */
