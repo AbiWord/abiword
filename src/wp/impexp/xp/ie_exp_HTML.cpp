@@ -6775,7 +6775,7 @@ UT_Error IE_Exp_HTML::_doOptions ()
 
 	if (!bSave)
 	{
-		return UT_ERROR;
+		return UT_SAVE_CANCELLED;
 	}
 #endif
 	return UT_OK;
@@ -6783,8 +6783,16 @@ UT_Error IE_Exp_HTML::_doOptions ()
 
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
-	if (_doOptions () != UT_OK)
+	UT_Error errOptions = _doOptions();
+
+	if (errOptions == UT_SAVE_CANCELLED) //see Bug 10840
+	{
+		return UT_SAVE_CANCELLED;
+	}
+	else if (errOptions != UT_OK)
+	{
 		return UT_ERROR;
+	}
 
 	_buildStyleTree ();
 
