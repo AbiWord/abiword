@@ -926,9 +926,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	 */
 	if(RI->m_iShapingAllocNo != si.m_pFont->getAllocNumber())
 	{
-		UT_DEBUGMSG(("@@@@ ===== Font change %d -> %d\n",
-					 RI->m_iShapingAllocNo,
-					 si.m_pFont->getAllocNumber()));
+		//UT_DEBUGMSG(("@@@@ ===== Font change %d -> %d\n",
+		//			 RI->m_iShapingAllocNo,
+		//			 si.m_pFont->getAllocNumber()));
 			
 		GR_UnixPangoFont * pFont = (GR_UnixPangoFont*)si.m_pFont;
 
@@ -1003,7 +1003,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 				pFontSubst = font;
 			}
 
-#ifdef DEBUG
+#if 0 //def DEBUG
 			PangoFontDescription * pfd =
 				pango_font_describe (font);
 			char * s = pango_font_description_to_string (pfd);
@@ -1056,7 +1056,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		double dSize = (double)PANGO_SCALE * pFont->getPointSize();
 		pango_font_description_set_size (pfd, (gint)dSize);
 
-#ifdef DEBUG
+#if 0 //def DEBUG
 		char * s = pango_font_description_to_string (pfd);
 		UT_DEBUGMSG(("@@@@ ===== Shaping with font [%s]\n", s));
 		g_free (s);
