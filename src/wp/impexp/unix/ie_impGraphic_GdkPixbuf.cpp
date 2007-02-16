@@ -79,6 +79,7 @@ s_getSuffixInfo (void)
 			suffixInfo.count++;
 			extensions++;
 		}
+		g_strfreev(extensions);
 		formatIter = formatIter->next;
 	}
 
