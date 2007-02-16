@@ -168,26 +168,6 @@ bool PX_ChangeRecord::getPersistance(void) const
 	return m_persistant;
 }
 
-bool PX_ChangeRecord::isSameDocUUID(uuid & u) const
-{
-	if(m_MyDocUUID.time_low != u.time_low)
-		return false;
-
-	if(m_MyDocUUID.time_mid != u.time_mid)
-		return false;
-	
-	if(m_MyDocUUID.time_high_and_version != u.time_high_and_version)
-		return false;
-
-	if(m_MyDocUUID.clock_seq != u.clock_seq)
-		return false;
-
-	if(memcmp(m_MyDocUUID.node , u.node, 6) != 0)
-		return false;
-
-	return true;
-}
-
 UT_sint32 PX_ChangeRecord::getAdjustment(void) const
 {
   return m_iAdjust;

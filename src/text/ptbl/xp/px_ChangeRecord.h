@@ -91,7 +91,6 @@ public:
 	PD_Document *           getDocument(void) const;
 	void                    setDocument(const PD_Document * pDoc) const;
 	bool                    setCRNumber(void) const;
-	bool                    isSameDocUUID( struct uuid & u) const;
 	bool                    isFromThisDoc(void) const;
 	void                    setAdjustment(UT_sint32 iAdj) const;
 	UT_sint32               getAdjustment(void) const;

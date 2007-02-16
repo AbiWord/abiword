@@ -215,13 +215,8 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			// we are to insert it immediately after this fragment.
 			// if we are coalescable, just append it to this fragment
 			// rather than create a new one.
-		        PX_ChangeRecord * pcr = NULL;
-			getNthUndo(&pcr,0);
-			AD_Document *pDoc = static_cast<AD_Document *>(getDocument());
-			const UT_UUID * pUUID = pDoc->getMyUUID();
-			pUUID->toBinary( myUID );
 			if (   (pft->getIndexAP()==indexAP)
-			       && m_varset.isContiguous(pft->getBufIndex(),fragLen,bi) && pcr && (pcr->isSameDocUUID(myUID)))
+			       && m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
 			{
 				// new text is contiguous, we just update the length of this fragment.
 
