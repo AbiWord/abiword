@@ -280,10 +280,17 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
-	g_object_unref(m_pContext);
+	if(m_pAdjustedPangoFont!= NULL)
+	{
+		g_object_unref(m_pAdjustedPangoFont);
+	}
+	if (m_pContext != NULL)
+	{
+		g_object_unref(m_pContext);
+	}
 	// NB: m_pFontMap is oft owned by Pango
 	if (m_bOwnsFontMap)
-		g_object_unref (G_OBJECT (m_pFontMap));
+		g_object_unref(m_pFontMap);
 
 	_destroyFonts();
 	delete m_pPFontGUI;
@@ -435,9 +442,11 @@ void GR_UnixPangoGraphics::init()
 	else
 	{
 		m_iDeviceResolution = 72;
-		m_pContext = pango_ft2_get_context(m_iDeviceResolution,
-										   m_iDeviceResolution);
 		m_pFontMap = pango_ft2_font_map_new ();
+		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
+										  m_iDeviceResolution,
+										  m_iDeviceResolution);	
+		m_pContext = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap));
 		m_bOwnsFontMap = true;
 	}
 #endif
@@ -809,12 +818,6 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		xxx_UT_DEBUGMSG(("itemize: creating item %d\n", i));
 		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
 		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem);
-		if(!pI)
-		{
-			UT_ASSERT(pI);
-			g_list_free(gItems);
-			return false;
-		}
 
 #if 0 //def DEBUG
 		PangoFont * pf = pI->m_pi->analysis.font;
@@ -1293,6 +1296,10 @@ PangoFont *  GR_UnixPangoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont,
 	pango_font_description_set_size (pfd, (gint)dSize);
 
 	/* We cache this font to avoid all this huha if we can */
+	if (m_pAdjustedPangoFont) 
+	{
+		g_object_unref(m_pAdjustedPangoFont);
+	}
 	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
 	m_pAdjustedPangoFontSource = pFont;
 	m_iAdjustedPangoFontZoom = getZoomPercentage();
@@ -1960,6 +1967,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_ASSERT(pItem);
 			if(pGstring)
 				pango_glyph_string_free(pGstring);
+			g_list_free(pItems);
 			return;
 		}
 
@@ -1978,6 +1986,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
+	g_list_free(pItems);
 }
 
 UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
@@ -2032,6 +2041,7 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 			UT_ASSERT(pItem);
 			if(pGstring)
 				pango_glyph_string_free(pGstring);
+			g_list_free(pItems);
 			return 0;
 		}
 
@@ -2119,6 +2129,7 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
+	g_list_free(pItems);
 	return iWidth;
 }
 
@@ -3166,6 +3177,10 @@ GR_UnixPangoFont::~GR_UnixPangoFont()
 {
 	if(m_pCover)
 		pango_coverage_unref(m_pCover);
+	if (m_pf) 
+	{
+		g_object_unref(m_pf);
+	}
 	pango_font_description_free(m_pfd);
 }
 
@@ -3206,7 +3221,10 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	
 	m_pfd = pango_font_description_from_string(s.c_str());
 	UT_return_if_fail(m_pfd);
-	
+
+	if (m_pf) {
+		g_object_unref(m_pf);
+	}
 	m_pf = pango_context_load_font(pG->getContext(), m_pfd);
 
 	UT_return_if_fail( m_pf );
