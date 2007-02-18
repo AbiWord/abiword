@@ -68,16 +68,17 @@ s_getSuffixInfo (void)
 	GSList 		 	 *tmp;
 	GdkPixbufFormat	 *format;
 	gchar 			**extensions;
+	gchar 			**extensionsIter;
 	gsize			  idx;
 
 	// dry run to count entries
 	formatIter = formatList;
 	while (formatIter) {
 		format = (GdkPixbufFormat *) formatIter->data;
-		extensions = gdk_pixbuf_format_get_extensions (format);
-		while (*extensions) {
+		extensionsIter = extensions = gdk_pixbuf_format_get_extensions (format);
+		while (*extensionsIter) {
 			suffixInfo.count++;
-			extensions++;
+			extensionsIter++;
 		}
 		g_strfreev(extensions);
 		formatIter = formatIter->next;
