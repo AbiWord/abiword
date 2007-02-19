@@ -1230,6 +1230,8 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 		iOffsetStart = iOffsetEnd + 1; // + 1 excludes iOffsetEnd
 		iOffsetEnd   = t + 1;          // + 1 includes iOffsetStart
 	}
+
+	UT_return_val_if_fail( iOffsetStart >= 0, 0 );
 	
 	pango_glyph_string_extents_range(pg,
 									 iOffsetStart,
