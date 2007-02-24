@@ -196,7 +196,8 @@ void AP_TopRuler::setView(AV_View * pView)
 	  // us update the display as we move from block to block and
 	  // from column to column.
 	  
-	  m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
+	  if (m_lidTopRuler == 0)
+	    m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
 	}
 }
 
