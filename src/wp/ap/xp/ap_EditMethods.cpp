@@ -10680,15 +10680,11 @@ Defun (dlgFmtPosImage)
 
 	if (szTitle) 
 	{
-	  char * title = UT_XML_Decode (szTitle);
-	  pDialog->setTitle (title);
-	  FREEP(title);
+	  pDialog->setTitle (szTitle);
 	}
 	if (szDescription) 
 	{
-	  char * description = UT_XML_Decode (szDescription);
-	  pDialog->setDescription (description);
-	  FREEP(description);
+	  pDialog->setDescription (szDescription);
 	}
 	const gchar * pszWidth = NULL;
 	const gchar * pszHeight = NULL;
@@ -10809,15 +10805,10 @@ Defun (dlgFmtPosImage)
 	  {
 	    properties[9] = "0";
 	  }
-	  UT_UTF8String title (pDialog->getTitle());
-	  UT_UTF8String description (pDialog->getDescription());
-
-	  title.escapeXML();
-	  description.escapeXML();
 
 	  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
-	  attribs[1] = title.utf8_str();
-	  attribs[3] = description.utf8_str();
+	  attribs[1] = pDialog->getTitle().utf8_str();
+	  attribs[3] = pDialog->getDescription().utf8_str();
 	  //
 	  // Change the frame!
 	  //
@@ -10928,14 +10919,10 @@ UT_return_val_if_fail(pDialog, false);
 	  }
 
 	  if (szTitle) {
-		  char * title = UT_XML_Decode (szTitle);
-		  pDialog->setTitle (title);
-		  FREEP(title);
+		  pDialog->setTitle (szTitle);
 	  }
 	  if (szDescription) {
-		  char * description = UT_XML_Decode (szDescription);
-		  pDialog->setDescription (description);
-		  FREEP(description);
+		  pDialog->setDescription (szDescription);
 	  }
 
 	  double width = 0., height = 0.;
@@ -11013,15 +11000,9 @@ UT_return_val_if_fail(pDialog, false);
 			  properties[1] = sWidth.c_str();
 			  properties[3] = sHeight.c_str();
 
-			  UT_UTF8String title (pDialog->getTitle());
-			  UT_UTF8String description (pDialog->getDescription());
-
-			  title.escapeXML();
-			  description.escapeXML();
-
 			  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
-			  attribs[1] = title.utf8_str();
-			  attribs[3] = description.utf8_str();
+			  attribs[1] = pDialog->getTitle().utf8_str();
+			  attribs[3] = pDialog->getDescription().utf8_str();
 
 			  pView->setCharFormat(properties, attribs);
 			  pView->updateScreen();
