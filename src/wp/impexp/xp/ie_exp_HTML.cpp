@@ -4711,7 +4711,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	{
 		percent = 100.0;
 	}
-	UT_UTF8String tmp;
+	UT_UTF8String tmp, escape;
 	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
 
 	UT_sint32 iImageWidth, iImageHeight;
@@ -4737,16 +4737,19 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	const gchar * szTitle  = 0;
 	pAP->getAttribute ("title",  szTitle);
 	if (szTitle) {
+		escape = szTitle;
 		m_utf8_1 += " title=\"";
-		m_utf8_1 += szTitle;
+		m_utf8_1 += escape.escapeXML();
 		m_utf8_1 += "\"";
+		escape.clear();
 	}
 
 	const gchar * szAlt  = 0;
 	pAP->getAttribute ("alt",  szAlt);
 	m_utf8_1 += " alt=\"";
 	if (szAlt) {
-		m_utf8_1 += szAlt;
+		escape = szAlt;
+		m_utf8_1 += escape.escapeXML();
 	}
 	m_utf8_1 += "\"";
 
