@@ -114,8 +114,8 @@ public:
 
 	void		escape (const UT_UTF8String & str1,
 						const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string
-	void		escapeXML ();  // escapes '<', '>' & '&' in the current string
-	void		decodeXML ();  // unescapes '<', '>' & '&' in the current string
+	void		escapeXML ();  // escapes '<', '>', '"', & '&' in the current string
+	void		decodeXML ();  // unescapes '<', '>', '"', & '&' in the current string
 	void		escapeMIME (); // translates the current string to
 							   // MIME "quoted-printable" format
 	void        escapeURL ();  // makes string conform to RFC 1738
