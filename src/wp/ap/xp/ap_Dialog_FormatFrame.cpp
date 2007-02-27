@@ -255,6 +255,14 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 	DELETEP(m_pImage);
 	m_pGraphic = pFG->clone();
 	GR_Graphics * pG = m_pFormatFramePreview->getGraphics();
+
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	UT_return_if_fail(pView && pView->getDocument());
+
+	UT_uint32 uid = pView->getDocument()->getUID(UT_UniqueId::Image); //see Bug 10851
+	m_sImagePath.clear();
+	UT_String_sprintf(m_sImagePath,"%d",uid);
+
 	if(m_pGraphic->getType() == FGT_Raster)
 	{
 		UT_sint32 iImageWidth;
