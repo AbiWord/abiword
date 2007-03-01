@@ -1570,6 +1570,7 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	{
 	  AP_LeftRulerTableInfo * pTInfo =  NULL;
 	  pTInfo = pInfo->m_vecTableRowInfo->getNthItem(0);
+	  UT_return_if_fail(pTInfo);
 	  fp_CellContainer * pCell = pTInfo->m_pCell;
 	  fp_Container * pHdr = pCell->getContainer();
 	  while(pHdr && !pHdr->isColumnType())
