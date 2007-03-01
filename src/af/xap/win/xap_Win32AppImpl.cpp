@@ -112,7 +112,7 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 
 	// Check for a %1 passed in from the registry.  If we find it,
 	// substitute our URL for %1.  Otherwise, just append sURL to params.
-	char *pdest = strstr(sParams.c_str(), "%1");
+	const char *pdest = strstr(sParams.c_str(), "%1");
 	if (pdest != NULL)
 	{
 		int i = pdest - sParams.c_str() + 1;
