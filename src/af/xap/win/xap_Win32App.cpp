@@ -494,7 +494,7 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpGlyphs = (LPWSTR) glyphArray;    // Character glyphs
 #endif
 #else	
-	gcpResult.lpGlyphs = (unsigned short *) glyphArray;    // Character glyphs
+	gcpResult.lpGlyphs = (LPWSTR) glyphArray;    // Character glyphs
 #endif
 	gcpResult.nGlyphs = 2;              // Array size
 
