@@ -94,6 +94,7 @@ public:
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};		
 	void						setApplyButton(bool b){m_bApplyButton=b;};	
 	void						setOkButton(bool b){m_bOkButton=b;};	
+	void						setCancelButton(bool b){m_bCancelButton=b;};
 	
 
 	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
@@ -112,6 +113,7 @@ private:
 	WHICHPROC 					m_lpfnDefSheet; 
 	bool						m_bApplyButton;
 	bool						m_bOkButton;
+	bool						m_bCancelButton;
 	PROPSHEETPAGE*				m_pages;
 	bool						m_modeless;
 	

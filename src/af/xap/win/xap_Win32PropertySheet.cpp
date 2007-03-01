@@ -154,8 +154,9 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 
 XAP_Win32PropertySheet::XAP_Win32PropertySheet()
 {	
-	setApplyButton(false);
+	setOkButton(false);
 	setApplyButton(true);
+	setCancelButton(true);
 	m_lpfnDefSheet = NULL;
 	m_pfnDlgProc = s_sheetWndProc;	
 	m_pCallback = NULL;
@@ -403,7 +404,10 @@ int XAP_Win32PropertySheet::runModeless (XAP_Win32App* pWin32App, XAP_Frame * pF
 	XAP_Win32DialogHelper::s_centerDialog(m_hWnd);
 
 	if (!m_bOkButton)
-		ShowWindow (GetDlgItem (m_hWnd, IDOK), FALSE);		
+		ShowWindow (GetDlgItem (m_hWnd, IDOK), FALSE);
+
+	if (!m_bCancelButton)
+		ShowWindow (GetDlgItem (m_hWnd, IDCANCEL), FALSE);
 	
 	return 0;
 }
