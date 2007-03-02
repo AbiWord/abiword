@@ -368,6 +368,8 @@ gint* iLength);
 
  gboolean abi_widget_insert_table(AbiWidget * w, gint32 rows, gint32 cols);
  gboolean abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y);
+ gboolean abi_widget_set_font_name(AbiWidget * w, gchar * szFontName);
+ gboolean abi_widget_set_font_size(AbiWidget * w, gchar * szFontsize);
 
 #ifdef HAVE_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);

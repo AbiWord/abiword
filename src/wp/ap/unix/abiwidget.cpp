@@ -1114,6 +1114,19 @@ abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 	return TRUE;
 }
 
+
+extern "C" gboolean
+abi_widget_set_font_name(AbiWidget * w, gchar * szName)
+{
+	return abi_widget_invoke_ex (w,"fontFamily",szName,0,0);
+}
+
+extern "C" gboolean
+abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
+{
+	return abi_widget_invoke_ex (w,"fontSize",szSize,0,0);
+}
+
 extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
