@@ -178,7 +178,9 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 	sVal = getNewStyle(sProp);
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
 
-	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)str_loc.utf8_str());
+	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)
+		(AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str())).c_str());
+
 	setTOCProperty(sProp,sVal);
 	applyTOCPropsToDoc ();
 
