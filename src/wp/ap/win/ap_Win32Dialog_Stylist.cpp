@@ -259,12 +259,17 @@ BOOL AP_Win32Dialog_Stylist::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	switch (wId)
 	{
-		case IDOK:
+		case IDOK: {
+			setStyleValid(true);
 			if (_styleClicked())
 				Apply();
+			}
+			destroy();
+			break;
 
 		case IDCANCEL:						// also AP_RID_DIALOG_STYLIST_BTN_CLOSE
 //			m_answer = a_CANCEL;
+			setStyleValid(false);
 			destroy();
 			return 1;
 		
