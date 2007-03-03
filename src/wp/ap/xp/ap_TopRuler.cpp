@@ -127,7 +127,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	}
 	m_pView = NULL;
 	m_pG = NULL;
-	xxx_UT_DEBUGMSG(("Deleting TopRuler %x \n",this));
+	UT_DEBUGMSG(("Deleting TopRuler %x \n",this));
 }
 
 /*****************************************************************/
@@ -161,6 +161,7 @@ void AP_TopRuler::setViewHidden(AV_View *pView)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
+	UT_DEBUGMSG(("setViewHidden View is set to %x \n",pView));
 	m_pView = pView;
 	m_bIsHidden = true;
 }
@@ -176,6 +177,7 @@ void AP_TopRuler::setView(AV_View * pView)
 
 		DELETEP(m_pScrollObj);
 	}
+	UT_DEBUGMSG(("setView is set to %x \n",pView));
 
 	m_pView = pView;
 
@@ -204,7 +206,13 @@ void AP_TopRuler::setView(AV_View * pView)
 void AP_TopRuler::_refreshView(void)
 {
   if (m_pView)
+  {
+        if(static_cast<FV_View *>(m_pFrame->getCurrentView()) != m_pView)
+	{
+	     m_pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
+	}
 	setView(m_pView);
+  }
 }
 
 /*! parameter is in device units

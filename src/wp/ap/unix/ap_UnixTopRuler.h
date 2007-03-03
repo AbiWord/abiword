@@ -53,7 +53,7 @@ public:
 protected:
 	GtkWidget *			m_wTopRuler;
 	GdkWindow *	m_rootWindow;
-
+	gulong          m_iStyleID;
 	class _fe
 	{
 	public:

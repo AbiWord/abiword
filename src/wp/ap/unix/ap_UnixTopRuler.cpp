@@ -54,7 +54,7 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 
 	// change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
-	g_signal_connect_after (G_OBJECT(toplevel),
+	m_iStyleID = g_signal_connect_after (G_OBJECT(toplevel),
 							  "style-set",
 							  G_CALLBACK(ruler_style_changed),
 							  static_cast<gpointer>(this));
@@ -62,6 +62,8 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)
 {
+	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+	g_signal_handler_disconnect(G_OBJECT(toplevel),	m_iStyleID);
 	DELETEP(m_pG);
 }
 
