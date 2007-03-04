@@ -45,7 +45,7 @@ void EV_Keyboard::setEditEventMap(EV_EditEventMapper * pEEM)
 
 bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 										  EV_EditMethod * pEM,
-										  UT_UCSChar * pData,
+										  const UT_UCSChar * pData,
 										  UT_uint32 dataLength)
 {
 	UT_return_val_if_fail(pView, false);

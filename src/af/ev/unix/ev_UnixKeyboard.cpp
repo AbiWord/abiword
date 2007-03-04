@@ -195,7 +195,7 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 	      UT_ASSERT(pEM);
 
 	      invokeKeyboardMethod(pView,pEM,
-				   const_cast<UT_UCS4Char *>(ucs.ucs4_str()), static_cast<UT_uint32>(ucs.size()));
+				   ucs.ucs4_str(), static_cast<UT_uint32>(ucs.size()));
 	      return true;	      
 	    }
 	  case EV_EEMR_INCOMPLETE:
