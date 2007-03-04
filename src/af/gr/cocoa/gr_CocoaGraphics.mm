@@ -732,9 +732,9 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	::CGContextSetShouldAntialias (m_CGContext, false);
 }
 
-void GR_CocoaGraphics::setFont(GR_Font * pFont)
+void GR_CocoaGraphics::setFont(const GR_Font * pFont)
 {
-	XAP_CocoaFont * pUFont = static_cast<XAP_CocoaFont *> (pFont);
+	XAP_CocoaFont * pUFont = static_cast<const XAP_CocoaFont *> (pFont);
 	UT_ASSERT (pUFont);
 	m_pFont = pUFont;
 	[m_fontForGraphics release];

@@ -585,9 +585,9 @@ UT_uint32 GR_Win32USPGraphics::getFontDescent()
     being set and call SelectObject() from inside the functions that access the DC only if
     that is necessary.
 */
-void GR_Win32USPGraphics::setFont(GR_Font* pFont)
+void GR_Win32USPGraphics::setFont(const GR_Font* pFont)
 {
-	m_pFont = static_cast<GR_Win32Font *>(pFont);
+	m_pFont = static_cast<const GR_Win32Font *>(pFont);
 
 	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
 

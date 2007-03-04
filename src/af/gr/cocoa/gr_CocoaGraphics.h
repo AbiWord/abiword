@@ -77,7 +77,7 @@ class GR_CocoaGraphics : public GR_Graphics
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidhths = NULL);
 
-	virtual void		setFont(GR_Font* pFont);
+	virtual void		setFont(const GR_Font* pFont);
 	virtual void        clearFont(void) { m_pFont = NULL;}
 	virtual UT_uint32	getFontHeight();
 

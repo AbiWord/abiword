@@ -424,9 +424,9 @@ void GR_QNXGraphics::drawGlyph(UT_uint32 Char,UT_sint32 xoff,UT_sint32 yoff)
 	UT_ASSERT(UT_TODO);
 }
 
-void GR_QNXGraphics::setFont(GR_Font * pFont)
+void GR_QNXGraphics::setFont(const GR_Font * pFont)
 {
-	QNXFont *qnxFont = static_cast<QNXFont *>(pFont);
+	QNXFont *qnxFont = static_cast<const QNXFont *>(pFont);
 	if(m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo)
 	{
 		//change size of font depending on zoom...

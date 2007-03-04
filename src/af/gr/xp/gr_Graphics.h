@@ -377,7 +377,7 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32	ftlu(UT_sint32 fontUnits) const;
 	double		ftluD(double fontUnits) const;
 	
-	virtual void      setFont(GR_Font* pFont) = 0;
+	virtual void      setFont(const GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
 	virtual UT_uint32 getFontAscent() = 0;
 	virtual UT_uint32 getFontDescent() = 0;

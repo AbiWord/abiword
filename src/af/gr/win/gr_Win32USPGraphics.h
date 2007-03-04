@@ -77,7 +77,7 @@ public:
 	static const char *    getUSPVersion();
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void		   setFont(GR_Font* pFont);
+	virtual void		   setFont(const GR_Font* pFont);
 	
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,

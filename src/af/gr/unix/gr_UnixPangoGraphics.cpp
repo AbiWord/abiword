@@ -913,7 +913,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	GR_UnixPangoRenderInfo * RI = (GR_UnixPangoRenderInfo *)ri;
 
 	// need this so that isSymbol() and isDingbat() are correct
-	setFont(const_cast<GR_Font*>(si.m_pFont));
+	setFont(si.m_pFont);
 
 	/*
 	 * Pango does a royally bad job of the font substitution in
@@ -2257,12 +2257,12 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
 						 0, 0);
 }
 
-void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
+void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
 {
 	UT_return_if_fail( pFont && pFont->getType() == GR_FONT_UNIX_PANGO);
 
 	//PangoFont * pf = (PangoFont*) pFont;
-	m_pPFont = static_cast<GR_UnixPangoFont*>(pFont);
+	m_pPFont = static_cast<const GR_UnixPangoFont*>(pFont);
 
 	_setIsSymbol(false);
 	_setIsDingbat(false);

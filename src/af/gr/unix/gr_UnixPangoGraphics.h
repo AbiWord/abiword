@@ -163,7 +163,7 @@ public:
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);
 	
-	virtual void           setFont(GR_Font *);
+	virtual void           setFont(const GR_Font *);
 	virtual void           clearFont(void) {m_pPFont = NULL;} 
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
