@@ -176,7 +176,7 @@ abi_table_set_max_size (AbiTable* abi_table, guint rows, guint cols)
 
 
 extern "C" void
-abi_table_set_labels(AbiTable* abi_table, gchar * szTable, gchar * szCancel)
+abi_table_set_labels(AbiTable* abi_table, const gchar * szTable, const gchar * szCancel)
 {
 	if(abi_table->szTable)
 		g_free(abi_table->szTable);

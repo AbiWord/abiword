@@ -841,7 +841,7 @@ bool EV_UnixToolbar::synthesize(void)
 					UT_UTF8String sCancel;
 					pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,sCancel);
 
-					abi_table_set_labels(ABITABLE_WIDGET(abi_table),const_cast<gchar *>(sTable.utf8_str()),const_cast<gchar *>(sCancel.utf8_str()));
+					abi_table_set_labels(ABITABLE_WIDGET(abi_table),sTable.utf8_str(),sCancel.utf8_str());
 					gtk_widget_show(abi_table);
 					UT_DEBUGMSG(("SEVIOR: Made insert table widget \n"));
 					wd->m_handlerId = g_signal_connect(abi_table, "selected",
