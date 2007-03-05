@@ -4,7 +4,7 @@
  *         Pat Lam
  *         Dom Lachowicz
  *         Tomas Frydrych
- *
+ *         Marc Maurer <uwog@uwog.net>		
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -35,85 +35,91 @@ class ABI_EXPORT GR_Caret
 	friend class GR_Graphics;
 
 public:
-	explicit GR_Caret(GR_Graphics * pG);
-	explicit GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID);
+	explicit						GR_Caret(GR_Graphics * pG);
+	explicit						GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID);
 	~GR_Caret();
 	
-	void enable();
+	void							enable();
 	// Disable hides the caret if it's currently visible.
 	// The caret can be disabled multiple times, and just as many enable
 	// calls need to take place for the cursor to show up.
 	// If the cursor is already enabled, the enable call just makes the
 	// cursor get redrawn.
 	// if bNoMulti is true, then only one enable call needed to reverse this disable.
-	void disable(bool bNoMulti = false);
-	inline bool isEnabled() const { return m_nDisableCount == 0; }
+	void							disable(bool bNoMulti = false);
+	inline bool						isEnabled() const { return m_nDisableCount == 0; }
 	
-	void setBlink(bool bBlink);
-	void forceDraw(void);
+	void							setBlink(bool bBlink);
+	void							forceDraw(void);
 	// When you call setCoords, the cursor is explicitly shown
 	// and the timer restarts from 0 for the next 500ms cycle.
-	void setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-				   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
-				   bool bPointDirection = false, UT_RGBColor * pClr = NULL);
+	void							setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
+										   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
+				 						  bool bPointDirection = false, UT_RGBColor * pClr = NULL);
 
 	// The caret needs to know about this to clip the save/restore rects.
 	void setWindowSize(UT_uint32 width, UT_uint32 height);
 
-	bool getInsertMode () {return m_insertMode;}
-	void setInsertMode (bool mode) {m_insertMode = mode;}
-        UT_UTF8String                   getUUID(void);
+	bool							getInsertMode () { return m_insertMode; }
+	void							setInsertMode (bool mode) { m_insertMode = mode; }
+	UT_UTF8String                   getUUID(void);
 	void                            setRemoteColor(UT_RGBColor clrRemote);
+	
+	void							resetBlinkTimeout(void);
+
 private:
-	static void s_work(UT_Worker * w);
-	static void s_enable(UT_Worker * w);
-
-	UT_sint32			m_xPoint;
-	UT_sint32			m_yPoint;
-	UT_uint32			m_iPointHeight;
-    // for bidi
-	UT_sint32			m_xPoint2;
-	UT_sint32			m_yPoint2;
-	UT_uint32			m_iPointHeight2;
-	bool				m_bPointDirection;
-	UT_RGBColor *		m_pClr;
-	GR_Graphics *		m_pG;
-
-	UT_uint32			m_iWindowWidth;
-	UT_uint32			m_iWindowHeight;
-
 	GR_Caret(); // no impl
 	GR_Caret(const GR_Caret& rhs);			// no impl.
 	void operator=(const GR_Caret& rhs);	// no impl.
 	
-	void	_erase();
-	void	_blink(bool bExplicit);
-	
-	UT_uint32 getCursorBlinkTime () const;
-	bool getCanCursorBlink () const;
+	static void						s_work(UT_Worker * w);
+	static void						s_enable(UT_Worker * w);
+	static void						s_blink_timeout(UT_Worker * w);	
 
-	UT_Timer *    m_worker;
-	UT_Timer *	  m_enabler;
+	UT_uint32						_getCursorBlinkTime() const;
+	UT_uint32						_getCursorBlinkTimeout() const;
+	bool							_getCanCursorBlink() const;
+
+	void							_erase();
+	void							_blink(bool bExplicit);
+
+	UT_sint32						m_xPoint;
+	UT_sint32						m_yPoint;
+	UT_uint32						m_iPointHeight;
+    // for bidi
+	UT_sint32						m_xPoint2;
+	UT_sint32						m_yPoint2;
+	UT_uint32						m_iPointHeight2;
+	bool							m_bPointDirection;
+	UT_RGBColor *					m_pClr;
+	GR_Graphics *					m_pG;
+
+	UT_uint32						m_iWindowWidth;
+	UT_uint32						m_iWindowHeight;
+	
+	UT_Timer *						m_worker;
+	UT_Timer *						m_enabler;
+	UT_Timer *						m_blinkTimeout;
 
 	// m_nDisableCount > 0 implies a disabled cursor.
 	// m_nDisableCount should never be negative.
-	UT_uint32	m_nDisableCount;
-	bool		m_bCursorBlink;
-	bool		m_bCursorIsOn;
-	bool		m_bPositionSet;
-	bool		m_bRecursiveDraw;
-	bool            m_bSplitCaret;
-	bool            m_bCaret1OnScreen;
-	bool            m_bCaret2OnScreen;
+	UT_uint32						m_nDisableCount;
+	bool							m_bCursorBlink;
+	bool							m_bCursorIsOn;
+	bool							m_bPositionSet;
+	bool							m_bRecursiveDraw;
+	bool						 	m_bSplitCaret;
+	bool							m_bCaret1OnScreen;
+	bool							m_bCaret2OnScreen;
 
-	UT_RGBColor     m_clrInsert;
-	UT_RGBColor     m_clrOverwrite;
+	UT_RGBColor						m_clrInsert;
+	UT_RGBColor						m_clrOverwrite;
 	
-	bool            m_insertMode;
-	bool            m_bRemote;
-	UT_RGBColor     m_clrRemote;
-	UT_UTF8String   m_sDocUUID;
-	UT_sint32       m_iCaretNumber;
+	bool							m_insertMode;
+	bool							m_bRemote;
+	UT_RGBColor						m_clrRemote;
+	UT_UTF8String					m_sDocUUID;
+	UT_sint32						m_iCaretNumber;
 };
 
 class GR_CaretDisabler

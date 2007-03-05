@@ -3,6 +3,7 @@
  * Authors: Patrick Lam
  *          Dom Lachowicz
  *          Tomas Frydrych
+ *          Marc Maurer <uwog@uwog.net>
  * Inspired by Mike Nordell (tamlin@algonet.se)
  *
  * This program is free software; you can redistribute it and/or
@@ -32,27 +33,6 @@ static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 #elif defined(WIN32)
 #include <windows.h>
 #endif
-
-UT_uint32 GR_Caret::getCursorBlinkTime () const
-{
-#ifdef XP_UNIX_TARGET_GTK
-	UT_uint32 blink;
-	GtkSettings * settings = gtk_settings_get_default ();
-
-	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, NULL);
-
-	return (blink/2);
-#elif defined(WIN32)
-	return GetCaretBlinkTime ();
-#else
-	return 600; // milliseconds
-#endif
-}
-
-bool GR_Caret::getCanCursorBlink () const
-{
-	return m_bCursorBlink;
-}
 
 // Description of m_enabler:
 // The problem is that a complicated draw operation will be somewhat
@@ -91,16 +71,21 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_work, this, UT_WorkerFactory::TIMER, outMode));
-	m_worker->set(getCursorBlinkTime ());
+	m_worker->set(_getCursorBlinkTime());
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode));
 	m_enabler->set(CURSOR_DELAY_TIME);
 	
+	m_blinkTimeout = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
+		(s_blink_timeout, this, UT_WorkerFactory::TIMER, outMode));
+	m_blinkTimeout->set(_getCursorBlinkTimeout());	
+
 	setBlink (false);
 }
 
-
+// TODO: fix this code duplication just for the extra sDocUUID (what 
+// is it doing here anyway? - MARCM
 GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
@@ -127,12 +112,18 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_work, this, UT_WorkerFactory::TIMER, outMode));
-	m_worker->set(getCursorBlinkTime ());
+	m_worker->set(_getCursorBlinkTime());
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode));
 	m_enabler->set(CURSOR_DELAY_TIME);
+
+	m_blinkTimeout = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
+		(s_blink_timeout, this, UT_WorkerFactory::TIMER, outMode));
+	m_blinkTimeout->set(_getCursorBlinkTimeout());
+
 	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount()) + 1;
+
 	setBlink (false);
 }
 
@@ -164,21 +155,69 @@ void GR_Caret::s_enable(UT_Worker * _w)
 		c->_blink(true); // blink again
 	else
 	{
-		c->_blink(true);
+		c->_blink(true); // ?? - MARCM
 		c->_blink(true);
 	}
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
 
+void GR_Caret::s_blink_timeout(UT_Worker * _w)
+{
+	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
+	if (c->isEnabled())
+		c->disable();
+}
+
+UT_uint32 GR_Caret::_getCursorBlinkTime() const
+{
+#ifdef XP_UNIX_TARGET_GTK
+	UT_uint32 blink;
+	GtkSettings * settings = gtk_settings_get_default ();
+
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, NULL);
+
+	return (blink/2);
+#elif defined(WIN32)
+	return GetCaretBlinkTime ();
+#else
+	return 600; // milliseconds
+#endif
+}
+
+UT_uint32 GR_Caret::_getCursorBlinkTimeout() const
+{
+#ifdef XP_UNIX_TARGET_GTK
+	UT_uint32 timeout = 0;
+	GtkSettings * settings = gtk_settings_get_default ();
+
+	// retrieves the blink timeout in seconds
+	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-timeout", &timeout, NULL);
+	return (timeout == 0 ? 2147483647 : timeout * 1000);
+#elif defined(WIN32)
+	// just use a wacko high number; we could also use -1 to denote infinite blinking, 
+	// but this is simpler, and roughly 25 days if you interpret this as milliseconds :)
+	return 2147483647; // not sure if there is a global windows setting for this
+#else
+	// just use a wacko high number; we could also use -1 to denote infinite blinking, 
+	// but this is simpler, and roughly 25 days if you interpret this as milliseconds :)
+	return 2147483647; 
+#endif
+}
+
+bool GR_Caret::_getCanCursorBlink() const
+{
+	return m_bCursorBlink;
+}
+
 void GR_Caret::setRemoteColor(UT_RGBColor clrRemote)
 {
-        m_clrRemote = clrRemote;
+	m_clrRemote = clrRemote;
 }
 
 UT_UTF8String GR_Caret::getUUID(void)
 {
-        return m_sDocUUID;
+	return m_sDocUUID;
 }
 
 
@@ -307,7 +346,7 @@ void GR_Caret::_blink(bool bExplicit)
 	// Blink if: (a) _blink explicitly called (not autoblink); or
 	//           (b) autoblink and caret blink enabled; or
 	//           (c) autoblink, caret blink disabled, caret is off
-	if (bExplicit || getCanCursorBlink () || !m_bCursorIsOn)
+	if (bExplicit || _getCanCursorBlink () || !m_bCursorIsOn)
 	{
 		m_bRecursiveDraw = true;
 		
@@ -511,4 +550,17 @@ void GR_Caret::forceDraw(void)
 {
 	_blink(true);
 }
+
+void GR_Caret::resetBlinkTimeout(void)
+{
+	// reset the blink timeout timer
+	m_blinkTimeout->stop();
+	m_blinkTimeout->start();
+	
+	// resume normal blinking if we previously hit the
+	// blink timeout
+	if (!isEnabled())
+		enable();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
