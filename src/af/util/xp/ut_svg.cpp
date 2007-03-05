@@ -159,7 +159,7 @@ static void _css_length (const char *str,GR_Graphics* pG,
 		}
 		else
 		{
-			*iDisplayLength = UT_convertToLogicalUnits(const_cast<char*>(str));
+			*iDisplayLength = UT_convertToLogicalUnits(str);
 		}
 		*iLayoutLength = UT_convertToLogicalUnits(str);
 	}

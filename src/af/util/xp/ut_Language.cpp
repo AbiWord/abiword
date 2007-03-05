@@ -222,7 +222,7 @@ void UT_Language_updateLanguageNames()
     
     for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
     {
-        s_Table[i].m_szLangName = const_cast<gchar *>(pSS->getValue(s_Table[i].m_nID));
+        s_Table[i].m_szLangName = pSS->getValue(s_Table[i].m_nID);
     }
 
     qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);

@@ -38,7 +38,7 @@ enum UT_LANGUAGE_DIR
 struct UT_LangRecord
 {
 	gchar * m_szLangCode;
-	gchar * m_szLangName;
+	const gchar * m_szLangName;
 	UT_uint32  m_nID;
     UT_LANGUAGE_DIR m_eDir;
 };

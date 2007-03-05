@@ -352,7 +352,7 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (strcmp(const_cast<char*>(name), "AbiStrings") == 0)
+	if (strcmp(name, "AbiStrings") == 0)
 	{
 		// we expect something of the form:
 		// <AbiStrings ver="1.0" language="en-US">...</AbiStrings>
@@ -362,11 +362,11 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp(const_cast<char*>(a[0]), "ver") == 0)
+			if (strcmp(a[0], "ver") == 0)
 			{
 				// TODO test version number
 			}
-			else if (strcmp(const_cast<char*>(a[0]), "language") == 0)
+			else if (strcmp(a[0], "language") == 0)
 			{
 				UT_DEBUGMSG(("Found strings for language [%s].\n",a[1]));
 				if (!setLanguage(a[1]))
@@ -376,7 +376,7 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 			a += 2;
 		}
 	}
-	else if (strcmp(const_cast<char*>(name), "Strings") == 0)
+	else if (strcmp(name, "Strings") == 0)
 	{
 		// we found a set of strings.  we expect something of the form:
 		// <Strings class="type" n0="v0" n1="v1" ... />
@@ -403,7 +403,7 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 			// require a value for each attribute keyword
 			g_warning("untranslated string '%s'\n", a[0]);
 #endif
-			if (strcmp(const_cast<char*>(a[0]), "class") == 0)
+			if (strcmp(a[0], "class") == 0)
 				continue;
 
 			if (!setValue(a[0], a[1]))

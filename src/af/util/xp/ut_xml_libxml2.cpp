@@ -275,7 +275,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   hdl.comment      = _comment;
   hdl.cdataBlock   = _cdata;
 
-  ctxt = xmlCreateMemoryParserCtxt (const_cast<char *>(buffer), static_cast<int>(length));
+  ctxt = xmlCreateMemoryParserCtxt (buffer, static_cast<int>(length));
   if (ctxt == NULL)
     {
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));

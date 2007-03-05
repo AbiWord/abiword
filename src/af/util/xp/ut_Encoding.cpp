@@ -270,7 +270,7 @@ UT_Encoding::UT_Encoding()
 
 		while (iCheckIndex < NrElements(s_Table))
 		{
-			gchar * szName = const_cast<gchar *>(pSS->getValue(s_Table[iCheckIndex].id));
+			const gchar * szName = pSS->getValue(s_Table[iCheckIndex].id);
 			gchar * szEnc;
 			UT_uint32 iAltIndex;
 			bool bFound = false;
