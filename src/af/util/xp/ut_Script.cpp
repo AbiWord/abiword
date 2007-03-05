@@ -154,7 +154,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForContents(const char * szBuf,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
+		const UT_ScriptSniffer * s = mSniffers->getNthItem (k);
 		if (s->recognizeContents(szBuf, iNumbytes))
 		{
 			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
@@ -187,7 +187,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForSuffix(const char * szSuffix)
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem(k));
+		const UT_ScriptSniffer * s = mSniffers->getNthItem(k);
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
@@ -218,7 +218,7 @@ const char * UT_ScriptLibrary::suffixesForType(UT_ScriptIdType ieft)
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer*>(mSniffers->getNthItem(k));
+		const UT_ScriptSniffer * s = mSniffers->getNthItem(k);
 		if (s->supportsType(ieft))
 		{
 			const char *szDummy;
@@ -275,7 +275,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
+		const UT_ScriptSniffer * s = mSniffers->getNthItem (k);
 		if (s->supportsType(ieft))
 			return s->constructScript(ppscript);
     }
@@ -292,9 +292,10 @@ bool UT_ScriptLibrary::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getNumScripts();
 	if (ndx < nrElements)
 	{
-		UT_ScriptSniffer * s = const_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (ndx));
+		const UT_ScriptSniffer * s = mSniffers->getNthItem (ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
 	return false;
 }
+

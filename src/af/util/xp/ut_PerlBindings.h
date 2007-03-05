@@ -42,12 +42,12 @@ public:
 	virtual ~UT_PerlScriptSniffer();
 
 	virtual bool recognizeContents (const char* szBuf, 
-									UT_uint32 iNumbytes);
-	virtual bool recognizeSuffix (const char* szSuffix);
+									UT_uint32 iNumbytes) const;
+	virtual bool recognizeSuffix (const char* szSuffix) const;
 	virtual bool getDlgLabels(const char** szDesc,
 							  const char** szSuffixList,
-							  UT_ScriptIdType* ft);
-	virtual UT_Error constructScript (UT_Script** ppscript);
+							  UT_ScriptIdType* ft) const;
+	virtual UT_Error constructScript (UT_Script** ppscript) const;
 };
 
 class ABI_EXPORT UT_PerlScript : public UT_Script

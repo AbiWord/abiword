@@ -47,17 +47,17 @@ public:
 	virtual ~UT_ScriptSniffer();
 	
 	// these you get for g_free
-	inline bool supportsType (UT_ScriptIdType type) { return m_type == type; }
+	inline bool supportsType (UT_ScriptIdType type) const { return m_type == type; }
 	inline UT_ScriptIdType getType() const { return m_type; }
 	
 	// these you must override these
 	virtual bool recognizeContents (const char * szBuf, 
-									UT_uint32 iNumbytes) = 0;
-	virtual bool recognizeSuffix (const char * szSuffix) = 0;
+									UT_uint32 iNumbytes) const = 0;
+	virtual bool recognizeSuffix (const char * szSuffix) const = 0;
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
-							   UT_ScriptIdType * ft) = 0;
-	virtual UT_Error constructScript (UT_Script ** ppscript) = 0;
+							   UT_ScriptIdType * ft) const = 0;
+	virtual UT_Error constructScript (UT_Script ** ppscript) const = 0;
 	
 protected:
        	UT_ScriptSniffer();

@@ -367,7 +367,7 @@ UT_PerlScriptSniffer::~UT_PerlScriptSniffer ()
 }
 
 bool UT_PerlScriptSniffer::recognizeContents (const char * szBuf, 
-											  UT_uint32 iNumbytes)
+											  UT_uint32 iNumbytes) const
 {
 	// this can obviously get better
 	if (NULL == strstr(szBuf, "perl"))
@@ -376,7 +376,7 @@ bool UT_PerlScriptSniffer::recognizeContents (const char * szBuf,
 	return true;
 }
 
-bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix)
+bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix) const
 {
 	if ( !g_ascii_strcasecmp ( szSuffix, ".perl" ) || !g_ascii_strcasecmp (szSuffix, ".pl" ) )
 		return true;
@@ -386,7 +386,7 @@ bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix)
 
 bool UT_PerlScriptSniffer::getDlgLabels (const char ** szDesc,
 					 const char ** szSuffixList,
-					 UT_ScriptIdType * ft)
+					 UT_ScriptIdType * ft) const
 {
 	*szDesc = "Perl Scripts (.perl, .pl)";
 	*szSuffixList = "*.perl; *.pl";
@@ -394,7 +394,7 @@ bool UT_PerlScriptSniffer::getDlgLabels (const char ** szDesc,
 	return true;
 }
 
-UT_Error UT_PerlScriptSniffer::constructScript(UT_Script** ppscript)
+UT_Error UT_PerlScriptSniffer::constructScript(UT_Script** ppscript) const
 {
 	*ppscript = new UT_PerlScript();
 	return UT_OK;
