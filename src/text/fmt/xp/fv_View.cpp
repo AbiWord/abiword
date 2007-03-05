@@ -118,6 +118,7 @@ public:
   virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
   {
 	  GR_Graphics *pG = static_cast<FV_View *>(pView)->getGraphics();
+
 	  if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
       {
 		  AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -127,6 +128,19 @@ public:
 			  return true;
 		  }
       }
+      
+	  if (
+	  		// I hope I have all the signals here that makes sense for re-enabling the caret blink
+	  		// after it was stopped by a cursor blink timeout timer - MARCM
+	  		(mask & AV_CHG_KEYPRESSED) || 
+	  		(mask & AV_CHG_TYPING) || 
+	  		(mask & AV_CHG_MOTION)
+	     )
+      {
+		  pG->getCaret()->resetBlinkTimeout();
+		  return true;
+      }
+
 	  return false;
   }
 
