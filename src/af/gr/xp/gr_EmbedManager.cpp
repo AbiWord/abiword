@@ -74,7 +74,7 @@ bool GR_EmbedView::getSnapShots(void)
   void * pHandle = NULL;
   const UT_ByteBuf * pPNG = NULL;
   const UT_ByteBuf * pSVG = NULL;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),const_cast<const UT_ByteBuf **>(&pPNG),&pToken,&pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pPNG,&pToken,&pHandle);
   if(!bFound)
   {
     m_bHasPNGSnapshot = false;    
@@ -87,7 +87,7 @@ bool GR_EmbedView::getSnapShots(void)
   }
   UT_UTF8String sPNGName = "snapshot-svg-";
   sName += m_sDataID;
-  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),const_cast<const UT_ByteBuf **>(&pSVG),&pToken,&pHandle);
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pSVG,&pToken,&pHandle);
   if(!bFound)
   {
     m_bHasSVGSnapshot = false;    
@@ -338,7 +338,7 @@ UT_sint32 GR_EmbedManager::getWidth(UT_sint32 uid)
   if( pEView->m_bHasPNGSnapshot)
   {
     UT_sint32 iWidth,iHeight = 0;
-    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+    UT_PNG_getDimensions(pEView->m_PNGBuf, iWidth,iHeight);
     iWidth = getGraphics()->tlu(iWidth);
     return iWidth;
   }
@@ -358,7 +358,7 @@ UT_sint32 GR_EmbedManager::getAscent(UT_sint32 uid)
   if( pEView->m_bHasPNGSnapshot)
   {
     UT_sint32 iWidth,iHeight = 0;
-    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+    UT_PNG_getDimensions(pEView->m_PNGBuf, iWidth,iHeight);
     iHeight = getGraphics()->tlu(iHeight);
     return iHeight;
   }
@@ -428,7 +428,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
     UT_sint32 iWidth,iHeight = 0;
     if((rec.height <= 0) || (rec.width <= 0))
     { 
-      UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+      UT_PNG_getDimensions(pEView->m_PNGBuf, iWidth,iHeight);
       iHeight = getGraphics()->tlu(iHeight);
       iWidth = getGraphics()->tlu(iWidth);
     }
@@ -437,7 +437,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
       iHeight = rec.height;
       iWidth = rec.width;
     }
-    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf),iWidth,iHeight);
+    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),pEView->m_PNGBuf,iWidth,iHeight);
     GR_Painter painter(getGraphics());
     painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
     return;
