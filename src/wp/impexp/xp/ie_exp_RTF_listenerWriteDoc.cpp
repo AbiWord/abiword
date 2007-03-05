@@ -1895,13 +1895,13 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 		m_pDocument->getStruxOfTypeFromPosition(m_posDoc,PTX_Block,&m_sdh);
 	}
 	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
-	fl_Layout * pL = const_cast<fl_Layout *>(reinterpret_cast<const fl_Layout *>(sfh));
+	const fl_Layout * pL = reinterpret_cast<const fl_Layout *>(sfh);
 	UT_return_val_if_fail(pL,NULL);
 	if(pL && pL->getType() != PTX_Block)
 	{
 	  UT_return_val_if_fail(0, NULL);
 	}
-	fl_BlockLayout* pBL = static_cast<fl_BlockLayout *>(pL);
+	const fl_BlockLayout* pBL = static_cast<const fl_BlockLayout *>(pL);
 	bool bDirection;
 	UT_sint32 x, y, x2, y2, height;
 	fp_Run * pRun = pBL->findPointCoords(m_posDoc,false,x,y,x2,y2,height,bDirection);

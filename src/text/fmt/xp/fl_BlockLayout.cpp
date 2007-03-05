@@ -3779,7 +3779,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 								UT_sint32& x,  UT_sint32& y,
 								UT_sint32& x2, UT_sint32& y2,
 								UT_sint32& height,
-								bool& bDirection)
+								bool& bDirection) const
 {
 	if (!getFirstContainer() || !m_pFirstRun)
 	{
