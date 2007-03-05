@@ -376,7 +376,7 @@ public:
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);
 	void	insertSectionBreak(void);
-	void	insertSymbol(UT_UCSChar c, gchar * symfont);
+	void	insertSymbol(UT_UCSChar c, const gchar * symfont);
 
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);

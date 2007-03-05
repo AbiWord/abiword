@@ -9361,11 +9361,11 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 			{
 			p_view = static_cast<FV_View *>(pJustFocussedView) ;
 			}
-		bool insertSymbol(UT_UCSChar Char, char *p_font_name)
+		bool insertSymbol(UT_UCSChar Char, const char *p_font_name)
 		{
 			UT_return_val_if_fail (p_view != NULL, false);
 
-			p_view->insertSymbol(Char, static_cast<gchar*>(p_font_name));
+			p_view->insertSymbol(Char, p_font_name);
 
 			return true;
 		}

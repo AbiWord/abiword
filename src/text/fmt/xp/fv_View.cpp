@@ -7597,7 +7597,7 @@ FV_View::getCurrentBlock(void)
 	return _findGetCurrentBlock();
 }
 
-void FV_View::insertSymbol(UT_UCSChar c, gchar * symfont)
+void FV_View::insertSymbol(UT_UCSChar c, const gchar * symfont)
 {
 
 	// First check to see if there is a selection already.
