@@ -42,14 +42,14 @@ moveCursorAbs(pView, target, where)
 			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
-				free(tmp);
+				g_free(tmp);
 			}
 			break;
 		case 'l': /* line */
 			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
-				free(tmp);
+				g_free(tmp);
 			}
 			break;
 		}
@@ -160,7 +160,7 @@ write(pView, pszText)
 		// printf("write\n");
 		UT_UCS4_cloneString_char(&text, pszText);
 		pView->cmdCharInsert(text, strlen(pszText));
-		free(text);
+		g_free(text);
 		RETVAL = true;
 	OUTPUT:
 		RETVAL
@@ -216,7 +216,7 @@ find(pView, pszText, matchCase)
 		bool bTmp;
 		pView->findSetMatchCase(matchCase);
 		RETVAL = pView->findNext(text, bTmp);
-		free(text);
+		g_free(text);
 	OUTPUT:
 		RETVAL
 
@@ -236,8 +236,8 @@ replace(pView, pszTextToFind, pszReplacement, matchCase)
 		pView->findSetFindString(textToFind);
 		pView->findSetReplaceString(replacement);
 		RETVAL = pView->findReplace(bTmp);
-		free(textToFind);
-		free(replacement);
+		g_free(textToFind);
+		g_free(replacement);
 	OUTPUT:
 		RETVAL
 
@@ -250,12 +250,12 @@ getSelectionText(pView)
 			UT_UCSChar* text;
 			pView->getSelectionText(text);
 			UT_uint32 size = UT_UCS4_strlen(text);
-			RETVAL = (char*) malloc(size);
+			RETVAL = (char*) g_try_malloc(size);
 			UT_UCS4_strcpy_to_char(RETVAL, text);
 		}
 		else
 		{
-			RETVAL = (char*) malloc(1);
+			RETVAL = (char*) g_try_malloc(1);
 			*RETVAL = '\0';
 		}
 
@@ -340,7 +340,7 @@ void
 close(pFrame)
 	XAP_Frame *pFrame
 	CODE:
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 
 		if (pFrame == pApp->getLastFocussedFrame())
 			pApp->clearLastFocussedFrame();
