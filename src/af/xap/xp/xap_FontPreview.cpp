@@ -79,7 +79,7 @@ void XAP_FontPreview::addOrReplaceVecProp(const gchar * pszProp,
 			break;
 	}
 	if(i < iCount)
-		m_vecProps.setNthItem(i+1, const_cast<void *>(static_cast<const void *>(pszVal)), NULL);
+		m_vecProps.setNthItem(i+1, static_cast<const void *>(pszVal), NULL);
 	else
 	{
 		m_vecProps.addItem(static_cast<const void *>(pszProp));

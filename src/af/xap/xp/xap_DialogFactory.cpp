@@ -46,7 +46,7 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
 	UT_sint32 i = 0;
 	for(i=0; i< nrElem; i++)
 	{
-	  m_vec_dlg_table.addItem(const_cast<_dlg_table *>(&pDlgTable[i]));
+	  m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
 }
 
@@ -135,7 +135,7 @@ XAP_Dialog * XAP_DialogFactory::justMakeTheDialog(XAP_Dialog_Id id)
 
 XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 {
-	_dlg_table * dlg = NULL;
+	const _dlg_table * dlg = NULL;
 	XAP_Dialog * pDialog = NULL;
 	UT_uint32 index;
 	

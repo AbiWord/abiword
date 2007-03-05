@@ -65,7 +65,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 
 	int count = 10;	// start with 10 and g_try_realloc if necessary
 	int k = 0;
-	char ** argv = (char **)UT_calloc(count,sizeof(char *));
+	const char ** argv = (const char **)UT_calloc(count,sizeof(char *));
 
 	enum _state { S_START, S_INTOKEN, S_INDQUOTE, S_INSQUOTE } state;
 	state = S_START;
@@ -73,7 +73,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 #define GrowArrayIfNecessary()								\
 	do	{	if (k==count)									\
 			{	int newsize = (count+10)*sizeof(char *);	\
-				argv = (char **)g_try_realloc(argv,newsize);	\
+				argv = (const char **)g_try_realloc(argv,newsize);	\
 				count += 10;								\
 		}} while (0)
 
@@ -147,7 +147,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 		return;
 	}
 
-	m_argv = const_cast<const char **>(argv);
+	m_argv = argv;
 	m_argc = k;
 
 #ifdef UT_DEBUG
