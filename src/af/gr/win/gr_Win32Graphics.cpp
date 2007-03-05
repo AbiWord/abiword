@@ -610,11 +610,11 @@ simple_exttextout:
 	}
 }
 
-void GR_Win32Graphics::setFont(GR_Font* pFont)
+void GR_Win32Graphics::setFont(const GR_Font* pFont)
 {
 	UT_ASSERT(pFont);	// TODO should we allow pFont == NULL?
 
-	GR_Win32Font* pWin32Font = static_cast<GR_Win32Font*>(pFont);
+	const GR_Win32Font* pWin32Font = static_cast<const GR_Win32Font*>(pFont);
 
 // TMN: This currently won't work since there is no way to tell
 // GR_Win32Graphics to "drop" a font. If a user of this class:
