@@ -116,7 +116,7 @@ class ABI_EXPORT GR_Font
 	   provide different implementation
 	   NB: it is essential that this function is fast
 	*/
-	virtual bool doesGlyphExist(UT_UCS4Char g);
+	virtual bool doesGlyphExist(UT_UCS4Char g) const;
 //
 // UT_Rect of glyph in Logical units.
 // rec.left = bearing Left (distance from origin to start)

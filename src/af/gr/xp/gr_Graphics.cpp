@@ -99,7 +99,7 @@ UT_sint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 #endif
 }
 
-bool GR_Font::doesGlyphExist(UT_UCS4Char g)
+bool GR_Font::doesGlyphExist(UT_UCS4Char g) const
 {
 	if(getCharWidthFromCache(g) == GR_CW_ABSENT)
 	{
@@ -1068,7 +1068,7 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 
 	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
 
-	GR_Font *pFont = const_cast<GR_Font*>(si.m_pFont);
+	const GR_Font *pFont = si.m_pFont;
 	
 	// make sure that the buffers are of sufficient size ...
 	if(si.m_iLength > pRI->m_iBufferSize) //buffer too small, reallocate
