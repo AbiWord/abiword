@@ -99,7 +99,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
+	const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG);
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 
 	{

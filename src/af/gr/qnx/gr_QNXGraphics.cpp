@@ -473,18 +473,18 @@ return m_iHeightCache;
 }
 
 //These versions take the font that we have provided
-UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
+UT_uint32 GR_QNXGraphics::getFontAscent(const GR_Font * fnt)
 {
-QNXFont *font = (QNXFont *) fnt;
+const QNXFont *font = (const QNXFont *) fnt;
 FontQueryInfo qinfo;
 	if(PfQueryFontInfoCx(m_pFontCx,font->getFont(),&qinfo) == -1)
 		return 0; 
 return (abs(qinfo.ascender) * getResolution() / getDeviceResolution());
 }
 
-UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
+UT_uint32 GR_QNXGraphics::getFontDescent(const GR_Font * fnt)
 {
-QNXFont *font = (QNXFont *) fnt;
+const QNXFont *font = (const QNXFont *) fnt;
 FontQueryInfo qinfo;
 	if(PfQueryFontInfoCx(m_pFontCx,font->getFont(),&qinfo) == -1)
 		return 0; 
@@ -492,9 +492,9 @@ return (qinfo.descender * getResolution() /getDeviceResolution());
 
 }
 
-UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
+UT_uint32 GR_QNXGraphics::getFontHeight(const GR_Font * fnt)
 {
-QNXFont *font = (QNXFont *) fnt;
+const QNXFont *font = (const QNXFont *) fnt;
 FontQueryInfo qinfo;
 	if(PfQueryFontInfoCx(m_pFontCx,font->getFont(),&qinfo) == -1)
 		return 0; 

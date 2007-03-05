@@ -376,8 +376,8 @@ protected:
 	void				_setDirection(UT_BidiCharType c) { m_iDirection = c; }
 	UT_BidiCharType		_getDirection(void) const { return m_iDirection; }
 	UT_BidiCharType		_getVisDirection(void) const { return m_iVisDirection; }
-	GR_Font *			_getFont(void) const;
-	void  				_setFont(GR_Font * f);
+	const GR_Font *			_getFont(void) const;
+	void  				_setFont(const GR_Font * f);
 	unsigned char		_getDecorations(void) const { return m_fDecorations; }
 	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
 	
@@ -449,7 +449,7 @@ private:
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;
 
-	GR_Font * 				m_pFont;
+	const GR_Font * 			m_pFont;
 
 	bool					m_bRecalcWidth;
 

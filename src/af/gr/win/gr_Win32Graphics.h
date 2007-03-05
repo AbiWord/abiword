@@ -255,9 +255,9 @@ public:
 									 UT_sint32 w, UT_sint32 h);
 	virtual void			fillRect(GR_Color3D c, UT_Rect &r);
     virtual void            polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
-	virtual UT_uint32		getFontAscent(GR_Font *);
-	virtual UT_uint32		getFontDescent(GR_Font *);
-	virtual UT_uint32		getFontHeight(GR_Font *);
+	virtual UT_uint32		getFontAscent(const GR_Font *);
+	virtual UT_uint32		getFontDescent(const GR_Font *);
+	virtual UT_uint32		getFontHeight(const GR_Font *);
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void		  saveRectangle(UT_Rect & r, UT_uint32 iIndx);

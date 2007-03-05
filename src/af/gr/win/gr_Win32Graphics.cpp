@@ -638,7 +638,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	}
 }
 
-UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
+UT_uint32 GR_Win32Graphics::getFontHeight(const GR_Font * fnt)
 {
 	private_FontReverter janitor_(*this, m_pFont);
 
@@ -654,7 +654,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight()
 	return (UT_uint32)(m_pFont->getHeight(m_hdc, m_printHDC));
 }
 
-UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
+UT_uint32 GR_Win32Graphics::getFontAscent(const GR_Font* fnt)
 {
 	private_FontReverter janitor_(*this, m_pFont);
 
@@ -669,7 +669,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent()
 	return (UT_uint32)(m_pFont->getAscent(m_hdc, m_printHDC));
 }
 
-UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
+UT_uint32 GR_Win32Graphics::getFontDescent(const GR_Font* fnt)
 {
 	private_FontReverter janitor_(*this, m_pFont);
 

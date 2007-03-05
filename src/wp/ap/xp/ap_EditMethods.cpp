@@ -4565,7 +4565,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCal
        UT_UTF8String sLatex;
        PD_Document * pDoc= pView->getDocument();
        bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
-						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+						    &pByteBuf,
 						    NULL, NULL);
 
        if(!bFoundLatexID)
@@ -10657,7 +10657,7 @@ Defun (dlgFmtPosImage)
 	UT_Dimension dim = DIM_IN;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
-		dim = UT_determineDimension(const_cast<char *>(pszRulerUnits));
+		dim = UT_determineDimension(pszRulerUnits);
 	}
 	pDialog->setPreferedUnits(dim);
 
@@ -10858,7 +10858,7 @@ UT_return_val_if_fail(pDialog, false);
 	UT_Dimension dim = DIM_IN;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
-		dim = UT_determineDimension(const_cast<char *>(pszRulerUnits));
+		dim = UT_determineDimension(pszRulerUnits);
 	}
 	pDialog->setPreferedUnits(dim);
 
@@ -12423,7 +12423,7 @@ Defun1(cycleInputMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
 	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_KeyBindings),
-					  const_cast<const gchar *>(szNextInputMode));
+					  szNextInputMode);
 
 	return bResult;
 }

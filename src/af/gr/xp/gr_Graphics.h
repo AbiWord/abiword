@@ -393,9 +393,9 @@ class ABI_EXPORT GR_Graphics
 	virtual void getCoverage(UT_NumberVector& coverage) = 0;
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
-	virtual UT_uint32 getFontAscent(GR_Font *)  = 0;
-	virtual UT_uint32 getFontDescent(GR_Font *) = 0;
-	virtual UT_uint32 getFontHeight(GR_Font *)  = 0;
+	virtual UT_uint32 getFontAscent(const GR_Font *)  = 0;
+	virtual UT_uint32 getFontDescent(const GR_Font *) = 0;
+	virtual UT_uint32 getFontHeight(const GR_Font *)  = 0;
 
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 

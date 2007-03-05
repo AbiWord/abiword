@@ -149,9 +149,9 @@ class GR_QNXGraphics : public GR_Graphics
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID ) ;
 
 	/* GR_Font versions of the above information */
-	virtual UT_uint32 	getFontAscent(GR_Font *);
-	virtual UT_uint32 	getFontDescent(GR_Font *);
-	virtual UT_uint32 	getFontHeight(GR_Font *);
+	virtual UT_uint32 	getFontAscent(const GR_Font *);
+	virtual UT_uint32 	getFontDescent(const GR_Font *);
+	virtual UT_uint32 	getFontHeight(const GR_Font *);
 	virtual void		setZoomPercentage(UT_uint32 iZoom);
 	//Need this in the textdrawing cb.
 	PgColor_t getCurrentPgColor() { return m_currentColor; };

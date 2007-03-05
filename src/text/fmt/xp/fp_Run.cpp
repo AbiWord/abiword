@@ -1110,7 +1110,7 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	return s_fgColor;
 }
 
-void fp_Run::_setFont(GR_Font * f)
+void fp_Run::_setFont(const GR_Font * f)
 {
 	m_pFont = f;
 
@@ -1120,7 +1120,7 @@ void fp_Run::_setFont(GR_Font * f)
 #endif
 }
 
-GR_Font * fp_Run::_getFont(void) const
+const GR_Font * fp_Run::_getFont(void) const
 {
 #ifdef DEBUG
 	if(m_pFont)

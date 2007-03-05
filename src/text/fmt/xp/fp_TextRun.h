@@ -82,7 +82,7 @@ public:
 	virtual bool			doesContainNonBlankData(void) const;
 	inline virtual bool isSuperscript(void) const;
 	inline virtual bool isSubscript(void) const;
-	GR_Font*				getFont(void) const
+	const GR_Font*				getFont(void) const
 		{ return _getFont(); }
 	const gchar *			getLanguage() const;
 

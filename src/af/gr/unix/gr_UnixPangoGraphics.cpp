@@ -2327,27 +2327,27 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight()
 	return getFontHeight(m_pPFont);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pFont)
+UT_uint32 GR_UnixPangoGraphics::getFontAscent(const GR_Font * pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
-	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	const GR_UnixPangoFont * pFP = static_cast<const GR_UnixPangoFont*>(pFont);
 	return pFP->getAscent();
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pFont)
+UT_uint32 GR_UnixPangoGraphics::getFontDescent(const GR_Font *pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
-	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	const GR_UnixPangoFont * pFP = static_cast<const GR_UnixPangoFont*>(pFont);
 	return pFP->getDescent();
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
+UT_uint32 GR_UnixPangoGraphics::getFontHeight(const GR_Font *pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
-	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	const GR_UnixPangoFont * pFP = static_cast<const GR_UnixPangoFont*>(pFont);
 	xxx_UT_DEBUGMSG(("Font Height Pango %d \n",pFP->getAscent() + pFP->getDescent()));
 	return pFP->getAscent() + pFP->getDescent();
 }

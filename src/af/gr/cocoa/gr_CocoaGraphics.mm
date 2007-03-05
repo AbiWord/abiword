@@ -747,10 +747,10 @@ void GR_CocoaGraphics::setFont(const GR_Font * pFont)
 	m_atsuStyle = m_pFont->makeAtsuStyle(m_fontForGraphics);
 }
 
-UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
+UT_uint32 GR_CocoaGraphics::getFontHeight(const GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return static_cast<UT_uint32>(lrint(ftluD(static_cast<XAP_CocoaFont*>(fnt)->getHeight())));
+	return static_cast<UT_uint32>(lrint(ftluD(static_cast<const XAP_CocoaFont*>(fnt)->getHeight())));
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
@@ -975,10 +975,10 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 }
 
 // returns in LU
-UT_uint32 GR_CocoaGraphics::getFontAscent(GR_Font * fnt)
+UT_uint32 GR_CocoaGraphics::getFontAscent(const GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return static_cast<UT_uint32>(lrint(ftluD(static_cast<XAP_CocoaFont*>(fnt)->getAscent())));
+	return static_cast<UT_uint32>(lrint(ftluD(static_cast<const XAP_CocoaFont*>(fnt)->getAscent())));
 }
 
 // returns in LU
@@ -988,10 +988,10 @@ UT_uint32 GR_CocoaGraphics::getFontAscent()
 }
 
 // returns in LU
-UT_uint32 GR_CocoaGraphics::getFontDescent(GR_Font * fnt)
+UT_uint32 GR_CocoaGraphics::getFontDescent(const GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	return static_cast<UT_uint32>(lrint(ftluD(static_cast<XAP_CocoaFont*>(fnt)->getDescent())));
+	return static_cast<UT_uint32>(lrint(ftluD(static_cast<const XAP_CocoaFont*>(fnt)->getDescent())));
 }
 
 UT_uint32 GR_CocoaGraphics::getFontDescent()

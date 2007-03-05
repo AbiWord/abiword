@@ -209,9 +209,9 @@ public:
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual UT_uint32 getFontAscent(const GR_Font *);
+	virtual UT_uint32 getFontDescent(const GR_Font *);
+	virtual UT_uint32 getFontHeight(const GR_Font *);
 
 	virtual void		fillRect(GR_Color3D c,
 								 UT_sint32 x, UT_sint32 y,
