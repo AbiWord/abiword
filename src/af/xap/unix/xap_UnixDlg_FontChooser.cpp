@@ -63,7 +63,7 @@
 		N_COLUMNS
 	};
 
-static gint searchTreeView(GtkTreeView* tv, char * compareText)
+static gint searchTreeView(GtkTreeView* tv, const char * compareText)
 {
        GtkTreeModel* model;
        GtkTreeIter iter;
@@ -822,7 +822,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_grab_focus(scrolledwindow1);
 
 	
-	gchar * text;
+	const gchar * text;
 	GtkTreeModel* model;
 	GtkTreeIter iter;
 
@@ -830,16 +830,16 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_styleList));
 	gtk_list_store_clear(GTK_LIST_STORE(model));
 	
-	text = const_cast<gchar *>(static_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular))); 
+	text = pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 
 	gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
-	text = const_cast<gchar *>(static_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic)));
+	text = pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic);
 	gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
-	text = const_cast<gchar *>(static_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold)));
+	text = pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold);
 	gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
-	text = const_cast<gchar *>(static_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic)));  
+	text = pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  
 	gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
 
@@ -852,7 +852,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 		int sz = XAP_EncodingManager::fontsizes_mapping.size();
 		for (int i = 0; i < sz; ++i)
 		{
-			text=const_cast<char*>(XAP_EncodingManager::fontsizes_mapping.nth2(i));
+			text = XAP_EncodingManager::fontsizes_mapping.nth2(i);
 			gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 			gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
 	    }
@@ -864,7 +864,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pFrame = static_cast<XAP_Frame *>(pFrame);
-	gchar* text;
+	const gchar* text;
 
 	// used similarly to convert between text and numeric arguments
 	static char sizeString[50];
@@ -903,7 +903,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		    fontHash.insert(fName,
 				    static_cast<const void *>(fName));
 
-		    text = const_cast<gchar*>(fName);
+		    text = fName;
 		    gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 		    gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
 		    
@@ -914,7 +914,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gint foundAt = 0;
 
 	// is this safe with an gchar * string?
-	foundAt = searchTreeView(GTK_TREE_VIEW(m_fontList), const_cast<char *>(getVal("font-family")));
+	foundAt = searchTreeView(GTK_TREE_VIEW(m_fontList), getVal("font-family"));
 
 	// select and scroll to font name
 	if (foundAt >= 0) {
@@ -955,7 +955,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
 	foundAt = searchTreeView(GTK_TREE_VIEW(m_sizeList), 
-				 const_cast<char *>(XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString)));
+				 XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString));
 
 	// select and scroll to size name
 	if (foundAt >= 0) {
