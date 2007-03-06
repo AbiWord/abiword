@@ -61,7 +61,7 @@ bool PD_Style::getProperty(const gchar * szName, const gchar *& szValue) const
 }
 
 
-bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue)
+bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -246,18 +246,18 @@ bool PD_Style::isCharStyle(void) const
 	return false;
 }
 
-bool PD_Style::isList(void)
+bool PD_Style::isList(void) const
 {
 	const char *szListStyle = NULL;
 	if (getPropertyExpand("list-style", szListStyle)) {
-		return g_ascii_strcasecmp(szListStyle, "None") != NULL;
+		return (g_ascii_strcasecmp(szListStyle, "None") != 0);
 	}
 	else {
 		return FALSE;
 	}
 }
 
-PD_Style * PD_Style::getBasedOn(void)
+PD_Style * PD_Style::getBasedOn(void) const
 {
 	if (m_pBasedOn)
 		return m_pBasedOn;
@@ -273,7 +273,7 @@ PD_Style * PD_Style::getBasedOn(void)
 	return m_pBasedOn;
 }
 
-PD_Style * PD_Style::getFollowedBy(void)
+PD_Style * PD_Style::getFollowedBy(void) const
 {
 	if (m_pFollowedBy)
 		return m_pFollowedBy;

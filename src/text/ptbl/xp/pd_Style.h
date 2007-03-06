@@ -45,17 +45,17 @@ public:
 	bool					getProperty(const gchar * szName, const gchar *& szValue) const;
 	const PP_PropertyType *	getPropertyType(const gchar * szName, tProperty_type Type) const;
 	bool					getAttribute(const gchar * szName, const gchar *& szValue) const;
-	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue);
+	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue) const;
 	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue);
 	
-	PD_Style *				getBasedOn(void);
-	PD_Style *				getFollowedBy(void);
+	PD_Style *				getBasedOn(void) const;
+	PD_Style *				getFollowedBy(void) const;
 
 	virtual bool			isUserDefined(void) const { return true; };
 	void					used(UT_sint32 count);
 	bool					isUsed(void) const;
 	bool					isCharStyle(void) const;
-	bool					isList(void);
+	bool					isList(void) const;
 	bool					isDisplayed(void) const { return m_bDisplayed; }
 
 	bool					addProperty(const gchar * szName, const gchar * szValue);
@@ -85,8 +85,9 @@ protected:
 	UT_sint32				m_iUsed;
 
 	// lazily-bound attribute caches to speed lookups
-	PD_Style *				m_pBasedOn;
-	PD_Style *				m_pFollowedBy;
+	// hence their mutability
+	mutable PD_Style *			m_pBasedOn;
+	mutable PD_Style *			m_pFollowedBy;
 };
 
 

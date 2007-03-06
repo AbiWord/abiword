@@ -262,7 +262,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = vecStyles.getNthItem(i);
-		if(isHeading(const_cast<PD_Style *>(pStyle)))
+		if(isHeading(pStyle))
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
@@ -280,7 +280,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = vecStyles.getNthItem(i);
-		if(pStyle && isList(const_cast<PD_Style *>(pStyle)))
+		if(pStyle && isList(pStyle))
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
@@ -298,7 +298,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = vecStyles.getNthItem(i);
-		if(pStyle && isFootnote(const_cast<PD_Style *>(pStyle)))
+		if(pStyle && isFootnote(pStyle))
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
@@ -316,7 +316,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = vecStyles.getNthItem(i);
-		if(pStyle && isUser(const_cast<PD_Style *>(pStyle)))
+		if(pStyle && isUser(pStyle))
 		{
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
@@ -356,7 +356,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 /*!
  * Returns true if the style is withinthe "Heading" type of styles.
  */
-bool Stylist_tree::isHeading(PD_Style * pStyle, UT_sint32 iDepth)
+bool Stylist_tree::isHeading(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
 	if(pStyle == NULL)
 	{
@@ -378,7 +378,7 @@ bool Stylist_tree::isHeading(PD_Style * pStyle, UT_sint32 iDepth)
 /*!
  * Returns true if the style is withinthe "List" type of styles.
  */
-bool Stylist_tree::isList(PD_Style * pStyle, UT_sint32 iDepth)
+bool Stylist_tree::isList(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
 	if(pStyle == NULL)
 	{
@@ -400,7 +400,7 @@ bool Stylist_tree::isList(PD_Style * pStyle, UT_sint32 iDepth)
 /*!
  * Returns true if the style is withinthe "Footnote/Endnote" type of styles.
  */
-bool Stylist_tree::isFootnote(PD_Style * pStyle, UT_sint32 iDepth)
+bool Stylist_tree::isFootnote(const PD_Style * pStyle, UT_sint32 iDepth) const
 {
 	if(pStyle == NULL)
 	{
@@ -421,7 +421,7 @@ bool Stylist_tree::isFootnote(PD_Style * pStyle, UT_sint32 iDepth)
 /*!
  * Returns true if the style is a userdefined style.
  */
-bool Stylist_tree::isUser(PD_Style * pStyle)
+bool Stylist_tree::isUser(const PD_Style * pStyle) const
 {
 	if(pStyle == NULL)
 	{

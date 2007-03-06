@@ -60,10 +60,10 @@ public:
 	void             buildStyles(PD_Document * pDoc);
 	UT_sint32        getNumStyles(void) const;
 	bool             getNameOfRow(UT_UTF8String &sName, UT_sint32 row);
-	bool             isHeading(PD_Style * pStyle, UT_sint32 iDepth=10);
-	bool             isList(PD_Style * pStyle, UT_sint32 iDepth=10);
-	bool             isFootnote(PD_Style * pStyle,UT_sint32 iDepth=10);
-	bool             isUser(PD_Style *pStyle);
+	bool             isHeading(const PD_Style * pStyle, UT_sint32 iDepth=10) const;
+	bool             isList(const PD_Style * pStyle, UT_sint32 iDepth=10) const;
+	bool             isFootnote(const PD_Style * pStyle,UT_sint32 iDepth=10) const;
+	bool             isUser(const PD_Style *pStyle) const;
 private:
 	UT_GenericVector<const PD_Style *>    m_vecAllStyles;
 	UT_GenericVector<Stylist_row *> m_vecStyleRows;
