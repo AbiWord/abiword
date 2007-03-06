@@ -72,7 +72,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 	UT_String sVal("");
 	FootnoteType iType = getBlock()->getTOCNumType();
 	pLayout->getStringFromFootnoteVal(sVal,iPage,iType);
-	char * psz = const_cast<char *>(sVal.c_str());
+	const char * psz = sVal.c_str();
 	bool bStop = false;
 	UT_sint32 i = 0;
 	sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');

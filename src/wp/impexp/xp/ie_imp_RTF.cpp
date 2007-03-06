@@ -3780,7 +3780,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 					if (error == UT_OK && pFG)
 					{
 						RTFProps_ImageProps imgProps;
-						UT_ByteBuf * buf;
+						const UT_ByteBuf * buf;
 						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 						ok = InsertImage (buf, fileName, imgProps);
 					}

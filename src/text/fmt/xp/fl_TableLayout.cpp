@@ -1945,7 +1945,7 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 			{
 				UT_sint32 iImageWidth;
 				UT_sint32 iImageHeight;
-				UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
+				const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
 				UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 				iWidth = pG->tlu(iImageWidth);
 				iHeight = pG->tlu(iImageHeight);

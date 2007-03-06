@@ -975,7 +975,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	{
 		pImage = new GR_UnixImage(NULL);
 
-		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
+		const UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
 		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
 
 		if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)

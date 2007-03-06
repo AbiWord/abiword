@@ -187,7 +187,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			{
 				UT_sint32 iImageWidth;
 				UT_sint32 iImageHeight;
-				UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
+				const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
 				UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 				iWidth = pG->tlu(iImageWidth);
 				iHeight = pG->tlu(iImageHeight);
@@ -1467,3 +1467,4 @@ static void s_border_properties (const gchar * border_color, const gchar * borde
 			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
 }
+

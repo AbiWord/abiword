@@ -45,7 +45,7 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 		if (bFoundDataID && pszDataID)
 		{
 			const char * pszMimeType = NULL;
-			bFoundDataID = pFL->getDocument()->getDataItemDataByName(const_cast<char*>(pszDataID), NULL,
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
 																	 reinterpret_cast<const void**>(&pszMimeType), NULL);
 	   
 			// figure out what type to create
@@ -74,7 +74,7 @@ FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 		if (bFoundDataID && pszDataID)
 		{
 			const char * pszMimeType = NULL;
-			bFoundDataID = pFL->getDocument()->getDataItemDataByName(const_cast<char*>(pszDataID), NULL,
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL,
 																	 reinterpret_cast<const void**>(&pszMimeType), NULL);
 	   
 			// figure out what type to create

@@ -148,8 +148,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		// TODO: the buffer. Confirm that.
 		pictData = NULL;
 
-		UT_ByteBuf * buf = NULL;
-		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		const UT_ByteBuf * buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 		imgProps.width = static_cast<UT_uint32>(pFG->getWidth ());
 		imgProps.height = static_cast<UT_uint32>(pFG->getHeight ());
 		// Not sure whether this is the right way, but first, we should

@@ -53,7 +53,7 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_ContainerLayout* p
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbPNG, NULL, NULL);
 		}
 	}
 
@@ -82,7 +82,7 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbPNG, NULL, NULL);
 		}
 	}
 
@@ -270,7 +270,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	*/
 	const char* mimetypePNG = NULL;
 	mimetypePNG = g_strdup("image/png");
-   	pDoc->createDataItem(szName, false, m_pbbPNG, static_cast<void *>(const_cast<char *>(mimetypePNG)), NULL);
+   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -313,7 +313,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	*/
 	const char* mimetypePNG = NULL;
 	mimetypePNG = g_strdup("image/png");
-   	pDoc->createDataItem(szName, false, m_pbbPNG, static_cast<void *>(const_cast<char *>(mimetypePNG)), NULL);
+   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -338,7 +338,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	return UT_OK;
 }
 
-bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
+bool FG_GraphicRaster::setRaster_PNG(const UT_ByteBuf* pBB)
 {
 	if (m_bOwnPNG)
 		DELETEP(m_pbbPNG);
@@ -350,7 +350,7 @@ bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
 	return UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
 }
 
-UT_ByteBuf* FG_GraphicRaster::getRaster_PNG(void)
+const UT_ByteBuf* FG_GraphicRaster::getRaster_PNG(void) const
 {
 	UT_ASSERT(m_pbbPNG);
 

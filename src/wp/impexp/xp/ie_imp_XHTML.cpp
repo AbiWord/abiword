@@ -1239,7 +1239,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		if (pfg == 0) break;
 
-		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
+		const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
 		X_CheckError(pBB);
 
 		char * mimetype = g_strdup ("image/png");

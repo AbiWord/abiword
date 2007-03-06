@@ -588,7 +588,7 @@ UT_Error IE_ImpGraphic::convertGraphic(UT_ByteBuf* pBB,
 	if (result != UT_OK)
 		return result;
 
-	UT_ByteBuf * graphic_bytebuf;
+	const UT_ByteBuf * graphic_bytebuf;
 
 	if (graphic->getType() == FGT_Raster) {
 		graphic_bytebuf = static_cast<FG_GraphicRaster *>(graphic)->getRaster_PNG();

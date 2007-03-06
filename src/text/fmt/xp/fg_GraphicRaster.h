@@ -54,14 +54,14 @@ public:
 									  PTStruxType iStruxType, 
 									  const char* szName);
 
-	bool				setRaster_PNG(UT_ByteBuf* pBB);
-	UT_ByteBuf*			getRaster_PNG(void);
+	bool				setRaster_PNG(const UT_ByteBuf* pBB);
+	const UT_ByteBuf*		getRaster_PNG(void) const;
 
 	virtual const char * getWidthProp(void);
 	virtual const char * getHeightProp(void);
 
 protected:
-	UT_ByteBuf* m_pbbPNG;
+	const UT_ByteBuf* m_pbbPNG;
 	bool m_bOwnPNG;
 
 	UT_sint32 m_iWidth, m_iHeight;

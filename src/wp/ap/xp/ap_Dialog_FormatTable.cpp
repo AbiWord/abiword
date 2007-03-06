@@ -248,7 +248,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	{
 		UT_sint32 iImageWidth;
 		UT_sint32 iImageHeight;
-		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 		m_pImage = static_cast<GR_Image *>(
 			pG->createNewImage( m_sImagePath.c_str(),
@@ -424,7 +424,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						{
 							UT_sint32 iImageWidth;
 							UT_sint32 iImageHeight;
-							UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+							const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 							m_pImage = static_cast<GR_Image *>(
 								pG->createNewImage( m_sImagePath.c_str(),
@@ -698,7 +698,7 @@ void AP_FormatTable_preview::draw(void)
 		const char * szName = pFG->getDataId();
 		if(pFG->getType() == FGT_Raster)
 		{
-			UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+			const UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									pBB,

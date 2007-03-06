@@ -59,7 +59,7 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 
    	if (error != UT_OK) return error;
    
-   	UT_ByteBuf * buf;
+   	const UT_ByteBuf * buf;
    	const char * mimetype = NULL;
 	if (pFG->getType() == FGT_Raster) {
 	   buf = (static_cast<FG_GraphicRaster*>(pFG))->getRaster_PNG();

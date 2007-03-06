@@ -4183,7 +4183,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 {
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
-	UT_ByteBuf * buf		= 0;
+	const UT_ByteBuf * buf		= 0;
 	char * mimetype = 0;
 
         UT_String propBuffer;
@@ -4333,7 +4333,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 {
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
-	UT_ByteBuf * buf		= 0;
+	const UT_ByteBuf * buf		= 0;
 	char * mimetype = 0;
 
   // suck the data into the ByteBuffer
