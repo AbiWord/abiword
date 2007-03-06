@@ -61,7 +61,7 @@ public:
 	bool				ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length);
 	bool				ins(UT_uint32 position, UT_uint32 length);
 	bool				del(UT_uint32 position, UT_uint32 amount);
-	bool				overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length);
+	bool				overwrite(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length);
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */

@@ -159,7 +159,7 @@ const UT_Byte * UT_ByteBuf::getPointer(UT_uint32 position) const
 	return m_pBuf+position;
 }
 
-bool UT_ByteBuf::overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length)
+bool UT_ByteBuf::overwrite(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length)
 {
 	// overwrite the current cells at the given position for the given length.
 

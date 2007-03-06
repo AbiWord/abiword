@@ -5266,7 +5266,7 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	const char * mimetypeGOChart = g_strdup(szMime);
 	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
 	UT_DEBUGMSG(("Chart text is... \n %s \n",sBuf.c_str()));
-	bool result = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
+	bool result = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,mimetypeGOChart, NULL);
 	if(!result)
 	{
 	    return result;
@@ -5385,7 +5385,7 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	}
 	atts[1] = sUID.utf8_str();
 	const char * mimetypeGOChart = g_strdup(szMime);
-	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
+	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,mimetypeGOChart, NULL);
 	UT_return_val_if_fail(bres,false)
 	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
@@ -5464,7 +5464,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	}
 	atts[1] = sUID.utf8_str();
 	const char * mimetypeGOChart = g_strdup(szMime);
-	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
+	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,mimetypeGOChart, NULL);
 	UT_return_val_if_fail(bres,false)
 	const gchar *cur_style = NULL;
 	getStyle(&cur_style);

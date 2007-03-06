@@ -231,7 +231,7 @@ public:
 	void                markAsDirty(void) { m_bDirty = true;}
 	bool                isDirty(void) const
 	    {  return m_bDirty;}
-	bool                doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip);
+	bool                doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip);
 	bool                isInNestedTable(void);
 	bool                containsNestedTables(void);
 	bool                isRepeated(void) const;

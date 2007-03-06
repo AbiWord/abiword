@@ -671,7 +671,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		// NOTE:but we need convert them to CPxx.:-(
 		else
 		{
-			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(const_cast<char*>(cpgname));
+			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(cpgname);
 			if(g_ascii_strncasecmp(codepage,"cp",2)==0 && UT_UCS4_isdigit(codepage[2]))
 			{
 				int cpg;
@@ -2299,14 +2299,14 @@ void IE_Exp_RTF::_write_stylesheets(void)
 
 		_write_style_fmt(pStyle);
 
-		const PD_Style * pStyleBasedOn =  reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getBasedOn());
+		const PD_Style * pStyleBasedOn =  reinterpret_cast<const PD_Style *> (pStyle->getBasedOn());
 		// TODO: Can this really return NULL?
 		if (pStyleBasedOn != NULL)
 		{
 			_rtf_keyword("sbasedon", _getStyleNumber(pStyleBasedOn));
 		}
 
-		const PD_Style * pStyleNext = reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getFollowedBy());
+		const PD_Style * pStyleNext = reinterpret_cast<const PD_Style *> (pStyle->getFollowedBy());
 		// TODO: Can this really return NULL?
 		if (pStyleNext != NULL)
 		{

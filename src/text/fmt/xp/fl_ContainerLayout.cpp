@@ -490,7 +490,7 @@ FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
 	{
 		pMyContainer = pMyContainer->myContainingLayout();
 	}
-	return const_cast<fl_DocSectionLayout *>(static_cast<const fl_DocSectionLayout *>(pMyContainer))->getDocLayout();
+	return static_cast<const fl_DocSectionLayout *>(pMyContainer)->getDocLayout();
 }
 
 void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)

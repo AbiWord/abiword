@@ -1405,7 +1405,7 @@ const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
     return is_default ? cpname : ret;
 }
 
-const char* XAP_EncodingManager::CodepageFromCharset(char *charset) const
+const char* XAP_EncodingManager::CodepageFromCharset(const char *charset) const
 {
     bool is_default;
     const char* ret = search_map(charset_name_to_MSCodepagename_map,charset,&is_default);

@@ -558,7 +558,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 /*! 
  * Returns true if the cell in a broken table overlaps the supplied clip Rect
  */
-bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip)
+bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip)
 {
 	fp_Page * pPage = NULL;
 	UT_Rect CellRect;
@@ -5019,7 +5019,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
     xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table Initial Y-offset %d \n",pDA->yoff));
 	UT_sint32 iCountCells = 0;
-	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());
+	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	fp_TableContainer * pBroke = const_cast<fp_TableContainer *>(this);
 	bool bDirtyOnly = pDA->bDirtyRunsOnly;
 	if(m_pFirstBrokenCell)

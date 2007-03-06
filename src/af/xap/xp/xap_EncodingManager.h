@@ -203,7 +203,7 @@ public:
 	/*
 	    This is convert charset to codepage.
 	*/
-	virtual const char* CodepageFromCharset(char *charset) const;
+	virtual const char* CodepageFromCharset(const char *charset) const;
 
 	/*
 	    returns charsetFromCodepage( getWinLanguageCode() )

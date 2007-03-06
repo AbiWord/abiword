@@ -369,7 +369,7 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 									k++;
 								if (k > 0)
 								{
-									m_currentDataItem.overwrite(actualLen, const_cast<UT_Byte *>(ss), k);
+									m_currentDataItem.overwrite(actualLen, ss, k);
 									actualLen += k;
 								}
 								
