@@ -710,7 +710,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 				if ((errorCode == UT_OK) && pGraphic) {
 					if (FGT_Raster == pGraphic->getType()) {
 
-						UT_ByteBuf * png = static_cast<FG_GraphicRaster *>(pGraphic)->getRaster_PNG();
+						const UT_ByteBuf * png = static_cast<FG_GraphicRaster *>(pGraphic)->getRaster_PNG();
 
 						UT_sint32 iImageWidth;
 						UT_sint32 iImageHeight;
