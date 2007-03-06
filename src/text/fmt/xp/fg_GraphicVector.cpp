@@ -53,7 +53,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* p
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbSVG), NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbSVG, NULL, NULL);
 		}
 	}
 
@@ -82,7 +82,7 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbSVG), NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbSVG, NULL, NULL);
 		}
 	}
 
@@ -333,7 +333,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 }
 
 
-bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
+bool FG_GraphicVector::setVector_SVG(const UT_ByteBuf* pBB)
 {
 	if (m_bOwnSVG)
 		DELETEP(m_pbbSVG);
@@ -347,7 +347,7 @@ bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 	return UT_SVG_getDimensions(pBB, 0, m_iWidth, m_iHeight, layoutWidth, layoutHeight);
 }
 
-UT_ByteBuf* FG_GraphicVector::getVector_SVG(void)
+const UT_ByteBuf* FG_GraphicVector::getVector_SVG(void) const
 {
 	UT_ASSERT(m_pbbSVG);
 

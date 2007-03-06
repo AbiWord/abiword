@@ -1875,14 +1875,14 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 
 	if (bRes)
 	{
-		fl_Layout * pL = const_cast<fl_Layout *>(static_cast<const fl_Layout *>(sfh));
+		const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
 		if(!pL)
 			return NULL;
 
 		switch (pL->getType())
 		{
 		case PTX_Block:
-			pBL = static_cast<fl_BlockLayout *>(pL);
+			pBL = static_cast<const fl_BlockLayout *>(pL);
 			while(pBL && !pBL->canContainPoint())
 			{
 				pBL = pBL->getPrevBlockInDocument();

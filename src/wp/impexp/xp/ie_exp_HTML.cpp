@@ -5064,7 +5064,7 @@ void s_HTML_Listener::_handleMath (PT_AttrPropIndex api)
 	{
 		const UT_ByteBuf * pByteBuf = NULL;
 		bFound = m_pDocument->getDataItemDataByName(szDataID, 
-													 const_cast<const UT_ByteBuf **>(&pByteBuf),
+													 &pByteBuf,
 													 NULL, NULL);
 		if(bFound)
 		{

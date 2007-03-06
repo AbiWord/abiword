@@ -55,14 +55,14 @@ public:
 									  PTStruxType iStruxType, 
 									  const char* szName);
 
-	bool				setVector_SVG(UT_ByteBuf* pBB);
-	UT_ByteBuf*			getVector_SVG(void);
+	bool				setVector_SVG(const UT_ByteBuf* pBB);
+	const UT_ByteBuf*		getVector_SVG(void) const;
 
 	virtual const char * getWidthProp(void);
 	virtual const char * getHeightProp(void);
 
 protected:
-	UT_ByteBuf* m_pbbSVG;
+	const UT_ByteBuf* m_pbbSVG;
 	bool m_bOwnSVG;
 
 	UT_sint32 m_iWidth, m_iHeight;
