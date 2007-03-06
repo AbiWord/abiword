@@ -109,7 +109,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 		pG->setFont(pFont);
 	}
 
@@ -264,7 +264,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 		getGraphics()->setFont(pFont);
 		iAscent = getGraphics()->getFontAscent();
 	}

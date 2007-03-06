@@ -64,9 +64,8 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
-									   pBlockAP,
-									   pSectionAP));
+	const GR_Font * pFont = pLayout->findFont(pSpanAP, pBlockAP,
+						  pSectionAP);
 
 	_setAscent(pG->getFontAscent(pFont));
 	_setDescent(pG->getFontDescent(pFont));
@@ -204,9 +203,8 @@ void fp_DummyRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
-									   pBlockAP,
-									   pSectionAP));
+	const GR_Font * pFont = pLayout->findFont(pSpanAP, pBlockAP,
+						   pSectionAP);
 
 	_setAscent(pG->getFontAscent(pFont));
 	_setDescent(pG->getFontDescent(pFont));
