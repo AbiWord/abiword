@@ -109,7 +109,7 @@ public:
 	                      }
 
 	void                setItem(GR_Item * i) {m_pItem = i;}
-	GR_Item *           getItem() const {return m_pItem;}
+	const GR_Item *           getItem() const {return m_pItem;}
 	
 
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
@@ -192,7 +192,7 @@ private:
 
 	bool                    m_bKeepWidths;
 
-	GR_Item *               m_pItem;
+	const GR_Item *               m_pItem;
 	GR_RenderInfo   *       m_pRenderInfo;
 };
 

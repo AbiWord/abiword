@@ -318,7 +318,7 @@ class GR_ShapingInfo
 				   UT_BidiCharType iVisDir,
 				   GRShapingResult eShapingRequired,
 				   const GR_Font * pFont,
-				   GR_Item * pItem)
+				   const GR_Item * pItem)
 		:m_Text(text), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
 		 m_eShapingRequired(eShapingRequired),
 	     m_pFont(pFont),

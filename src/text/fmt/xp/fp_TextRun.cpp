@@ -1244,7 +1244,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		// the split function created a copy of GR_Item in the render
 		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
 		// is destroyed)
-		pNew->m_pItem = const_cast<GR_Item *>(pNew->m_pRenderInfo->m_pItem);
+		pNew->m_pItem = pNew->m_pRenderInfo->m_pItem;
 	}
 	else
 	{
@@ -1416,11 +1416,13 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		// Last run on the line so clear to end.
 		if(isSelectionDraw())
 		{
-			UT_Rect * pRect = const_cast<UT_Rect *>(getGraphics()->getClipRect());
+			const UT_Rect *pRect = getGraphics()->getClipRect();
 			if(pRect)
 			{
-				pRect->width += getGraphics()->tlu(5); // uwog will hate me..
-				iExtra += getGraphics()->tlu(5); // But I just want it to work
+				UT_Rect r = *pRect;
+				r.width += getGraphics()->tlu(5); 
+				iExtra += getGraphics()->tlu(5); 
+				getGraphics()->setClipRect(&r);
 			}
 		}
 		else
