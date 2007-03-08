@@ -49,7 +49,7 @@ public:
     void                  setMode(FV_VisualDragMode iVisualDragMode);
 	FV_VisualDragMode      getVisualDragMode(void) const 
 		{ return m_iVisualDragMode;}
-	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
+	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
 	void                  mouseCut(UT_sint32 x, UT_sint32 y);
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
@@ -65,8 +65,12 @@ public:
 	  { return m_bNotDraggingImage;}
 	bool                  isDoingCopy(void)
 	  { return m_bDoingCopy;}
-private:
+	UT_Rect *             getCurFrame(void)
+	  { return &m_recCurFrame;}
+ protected:
+	void                  _mouseDrag(UT_sint32 x, UT_sint32 y);
 	FV_View *             m_pView;
+private:
 	FV_VisualDragMode     m_iVisualDragMode;
 	GR_Image *            m_pDragImage;
 	UT_sint32             m_iLastX;

@@ -60,6 +60,7 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "ap_FrameData.h"
+#include "ev_Mouse.h"
 
 #include "ie_types.h"
 #include "ie_imp.h"
@@ -389,9 +390,36 @@ s_drag_data_get_cb (GtkWidget        *widget,
 	formatList[1] = 0;
 
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
-
-	UT_DEBUGMSG(("DOM: s_drag_data_get_cb(%s)\n", targetName));
-
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
+	if(!pFrame)
+		return;
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(!pView)
+		return;
+	UT_DEBUGMSG(("UnixFrameImpl: s_drag_data_get_cb(%s)\n", targetName));
+	EV_EditMouseContext emc = pView->getLastMouseContext();
+	if(emc == EV_EMC_VISUALTEXTDRAG )
+	{
+		const UT_ByteBuf * pBuf = pView->getLocalBuf();
+		UT_DEBUGMSG(("pBuf %x \n",pBuf));
+		if(pBuf)
+			{
+				UT_DEBUGMSG((" data length %d \n", pBuf->getPointer(0)));
+			}
+		gtk_selection_data_set (selection,
+								selection->target,
+								8,
+								(guchar *) pBuf->getPointer(0),
+								pBuf->getLength());
+	}
+	if(emc == EV_EMC_IMAGE)
+	{
+		return;
+	}
+	if(emc == EV_EMC_POSOBJECT)
+	{
+		return;
+	}
 	if (pApp->getCurrentSelection((const char **)formatList, &data, &dataLen, &formatFound))
 		{
 			UT_DEBUGMSG(("DOM: s_drag_data_get_cb SUCCESS!\n"));
@@ -460,6 +488,9 @@ s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context,
 {
 	UT_DEBUGMSG(("DOM: dnd drop event\n"));
 	GdkAtom selection = gdk_drag_get_selection(context);
+
+	char *targetName = gdk_atom_name(selection);
+	UT_DEBUGMSG(("RealDrag and drop event: target in selection = %s \n", targetName));
 	gtk_drag_get_data (widget,context,selection,time);
 }
 

@@ -24,9 +24,13 @@
 
 class ABI_EXPORT FV_UnixVisualDrag : public FV_VisualDragText
 {
+
 public:
 	FV_UnixVisualDrag (FV_View * pView);
 	virtual ~FV_UnixVisualDrag();
+	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
+ private:
+	bool                  m_bDragOut;
 };
 
 #endif /* FV_UNIXVISUALDRAG_H */

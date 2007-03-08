@@ -769,6 +769,10 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 }
 
+const UT_ByteBuf * FV_View::getLocalBuf(void)
+{
+	return m_pLocalBuf;
+}
 //
 // This copies a range into a local buffer.
 //
@@ -9663,7 +9667,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			{
 				m_prevMouseContext = EV_EMC_POSOBJECT;;
 				xxx_UT_DEBUGMSG(("Over positioned object \n"));
-				return EV_EMC_POSOBJECT;;
+				return EV_EMC_POSOBJECT;
 			}
 		}
  

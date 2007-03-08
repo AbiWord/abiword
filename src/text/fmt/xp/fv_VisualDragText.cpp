@@ -163,6 +163,11 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+  _mouseDrag(x,y);
+}
+
+void FV_VisualDragText::_mouseDrag(UT_sint32 x, UT_sint32 y)
+{
  	  //
 	  // Don't try to drag the entire document.
 	  //

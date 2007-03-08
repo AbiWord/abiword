@@ -271,6 +271,9 @@ public:
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
+	void                setPrevMouseContext(EV_EditMouseContext  emc)
+	{m_prevMouseContext = emc;}
+
 	virtual void        updateLayout(void);
 	virtual void        rebuildLayout(void);
 	virtual void        remeasureCharsWithoutRebuild();
@@ -432,7 +435,7 @@ public:
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
 	FV_VisualDragText * getVisualText(void)
 	  { return &m_VisualDragText;}
-
+	const UT_ByteBuf * getLocalBuf(void);
 
 //---------
 //Visual Inline Image Drag stuff
