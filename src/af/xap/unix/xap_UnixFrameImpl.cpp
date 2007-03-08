@@ -59,8 +59,7 @@
 #include "xap_UnixClipboard.h"
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
-
-#include "fv_View.h"
+#include "ap_FrameData.h"
 
 #include "ie_types.h"
 #include "ie_imp.h"
@@ -264,6 +263,38 @@ s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 		}
 }
 
+static void s_pasteFile(const UT_UTF8String & file, XAP_Frame * pFrame)
+{
+	    if(!pFrame)
+			return;
+	    XAP_App * pApp = XAP_App::getApp();
+	    PD_Document * newDoc = new PD_Document(pApp);
+	    UT_Error err = newDoc->readFromFile(file.utf8_str(), IEFT_Unknown);
+	    if ( err != UT_OK )
+		{
+			UNREFP(newDoc);
+			return;
+		}
+		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+		// we'll share the same graphics context, which won't matter because
+		// we only use it to get font metrics and stuff and not actually draw
+		GR_Graphics *pGraphics = pView->getGraphics();
+	    // create a new layout and view object for the doc
+	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
+	    FV_View copyView(pApp,0,pDocLayout);
+
+	    pDocLayout->setView (&copyView);
+	    pDocLayout->fillLayouts();
+	    
+	    copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
+	    copyView.cmdCopy(); // copy the contents of the new document
+	    pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
+	    
+	    DELETEP(pDocLayout);
+	    UNREFP(newDoc);
+	    return ;
+} 
+
 static void
 s_loadUri (XAP_Frame * pFrame, const char * uri)
 {
@@ -283,7 +314,18 @@ s_loadUri (XAP_Frame * pFrame, const char * uri)
 		}
 	else
 		{
-			s_loadDocument (uri, pFrame);
+			bool bDoLoad = true;
+			if(pFrame)
+			{
+				AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+				if(pFrameData && pFrameData->m_bIsWidget)
+				{
+					bDoLoad =false;
+					s_pasteFile(uri,pFrame);
+				}
+			}
+			if(bDoLoad)
+				s_loadDocument (uri, pFrame);
 			return;
 		}
 }

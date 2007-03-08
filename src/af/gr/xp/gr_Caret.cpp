@@ -293,8 +293,10 @@ void GR_Caret::disable(bool bNoMulti)
 	if ((m_nDisableCount == 1) && m_bCursorIsOn)
 		_erase();
 
-	m_worker->stop();
-	m_enabler->stop();
+	if(m_worker)
+	  m_worker->stop();
+	if(m_enabler)
+	  m_enabler->stop();
 }
 
 /** Determines whether Abi is going to blink the caret or not.
