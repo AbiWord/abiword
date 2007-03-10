@@ -39,7 +39,8 @@ FV_UnixVisualDrag::~FV_UnixVisualDrag()
 void FV_UnixVisualDrag::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
      UT_DEBUGMSG(("Mouse drag x=%d y=%d \n",x,y));
-     if(x> 0 && x < m_pView->getWindowWidth())
+     bool bYOK = ( (y > 0) && (y < m_pView->getWindowHeight()));
+     if(!bYOK || (x> 0 && x < m_pView->getWindowWidth()))
      {
          m_bDragOut = false;
 	 _mouseDrag(x,y);
