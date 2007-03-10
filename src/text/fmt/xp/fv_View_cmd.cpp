@@ -5169,9 +5169,10 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	}
 
 	// This preserves the aspect ratio and limits the size of the images
-
-	sWidth =  UT_formatDimensionedValue(rat*dw,"in", NULL);
-	sHeight =  UT_formatDimensionedValue(rat*dh,"in", NULL);
+	dw = dw*rat;
+	dh = dh*rat;
+	sWidth =  UT_formatDimensionedValue(dw,"in", NULL);
+	sHeight =  UT_formatDimensionedValue(dh,"in", NULL);
 //
 // Create a dataid for the object
 //
@@ -5228,9 +5229,14 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
-	UT_sint32 ix = pRun->getX();
-	ix += pLine->getX();
-	xpos =  static_cast<double>(mouseX - pCol->getX())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	UT_sint32 iposx = mouseX - pCol->getX();
+        UT_sint32 iWidth = static_cast<UT_sint32>(dw*UT_LAYOUT_RESOLUTION);
+	UT_sint32 iColW = static_cast<UT_sint32>(maxW*UT_LAYOUT_RESOLUTION);
+	if((iposx + iWidth) > (pCol->getX() + iColW))
+	{
+	      iposx = pCol->getX() + iColW - iWidth;
+	}
+	xpos =  static_cast<double>(iposx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-col-xpos";
 	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
 	UT_String_setProperty(sFrameProps,sProp,sVal);
