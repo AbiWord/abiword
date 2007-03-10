@@ -410,6 +410,7 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
+	static EV_EditMethod_Fn fileInsertPositionedGraphic;
 	static EV_EditMethod_Fn fileInsertPageBackgroundGraphic;
 	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
@@ -879,6 +880,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileInsertPageBackgroundGraphic),	0,	""),
+	EV_EditMethod(NF(fileInsertPositionedGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				_A_,	""),
 	EV_EditMethod(NF(fileNewUsingTemplate),				_A_,	""),
 	EV_EditMethod(NF(fileOpen), 			_A_,	""),
@@ -3875,6 +3877,56 @@ Defun1(fileInsertGraphic)
 	ABIWORD_VIEW;
 
 	errorCode = pView->cmdInsertGraphic(pFG);
+	if (errorCode != UT_OK)
+	{
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+
+		FREEP(pNewFile);
+		DELETEP(pFG);
+		return false;
+	}
+
+	FREEP(pNewFile);
+	DELETEP(pFG);
+
+	return true;
+}
+
+Defun1(fileInsertPositionedGraphic)
+{
+	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	char* pNewFile = NULL;
+
+
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
+
+	if (!bOK || !pNewFile)
+		return false;
+
+	// we own storage for pNewFile and must g_free it.
+	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
+
+	FG_Graphic* pFG;
+
+	UT_Error errorCode;
+
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
+	if(errorCode != UT_OK || !pFG)
+	  {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+		FREEP(pNewFile);
+		return false;
+	  }
+
+	ABIWORD_VIEW;
+	UT_sint32 mouseX,mouseY;
+	pView->getMousePos(&mouseX,&mouseY);
+	errorCode = pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
 	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);

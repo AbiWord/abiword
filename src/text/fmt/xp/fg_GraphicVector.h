@@ -41,6 +41,7 @@ public:
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 	virtual const char * getDataId(void) const { return m_pszDataID;}
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName);
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 									  const PP_AttrProp * pSpanAP,
 									  UT_sint32 maxW, UT_sint32 maxH);

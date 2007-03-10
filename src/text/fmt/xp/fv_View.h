@@ -467,6 +467,7 @@ public:
 											const gchar ** attribs);
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
+	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY);
 
 // ----------------------
 
@@ -838,6 +839,7 @@ protected:
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
 	UT_Error			_insertGraphic(FG_Graphic*, const char*);
+	UT_Error			_insertGraphic(FG_Graphic*, const char*,PT_DocPosition pos);
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 

@@ -1103,7 +1103,6 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	pos = pBL->getPosition();
 	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
 	PT_DocPosition posFrame = pfFrame->getPos();
-//	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
 	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
 	insertParaBreakIfNeededAtPos(posFrame+2);
 

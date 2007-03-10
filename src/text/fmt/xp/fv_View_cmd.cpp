@@ -63,6 +63,7 @@
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 #include "fd_Field.h"
+#include "pf_Frag_Strux.h"
 
 #ifndef WITHOUT_SPELL
 #include "spell_manager.h"
@@ -5104,6 +5105,171 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	_updateInsertionPoint();
 
 	return errorCode;
+}
+
+
+UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY)
+{
+	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+	       _clearSelection();
+	}
+
+	/*
+	  Create a unique identifier for the data item.
+	*/
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
+	//
+	// Find a document position close to the requested position
+	//
+	PT_DocPosition pos = getDocPositionFromXY(mouseX,mouseY);
+	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
+	fp_Run *  pRun = NULL;
+	bool bEOL,bDir;
+	bEOL = false;
+	UT_sint32 x1,y1,x2,y2,iHeight;
+	if(pBlock)
+	{
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+	}
+	fp_Line * pLine = pRun->getLine();
+	if(pLine == NULL)
+	{
+	        return false;
+	}
+	//
+	// OK calculate all the properties of this image
+	//
+	UT_String sWidth;
+	UT_String sHeight;
+	double d = static_cast<double>(pFG->getWidth())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sWidth =  UT_formatDimensionedValue(d,"in", NULL);
+	d = static_cast<double>(pFG->getHeight())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sHeight =  UT_formatDimensionedValue(d,"in", NULL);
+//
+// Create a dataid for the object
+//
+	
+	const char * dataID = pFG->createDataItem(m_pDoc,s.utf8_str());
+	UT_String sFrameProps;
+	UT_String sProp;
+	UT_String sVal;
+	sProp = "frame-type";
+	sVal = "image";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Turn off the borders.
+//
+	sProp = "top-style";
+	sVal = "none";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "right-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "left-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "bot-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Set width/Height
+//
+	sProp = "frame-width";
+	sVal = sWidth;	   
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "frame-height";
+	sVal = sHeight;
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	double xpos = 0.0;
+	double ypos= 0.0;
+ 
+	sProp = "position-to";
+	sVal = "column-above-text";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	if(isInHdrFtr(pos))
+	{
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+		pos = getPoint();
+	}
+
+//
+// Now calculate the Y offset to the Column
+//
+	fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
+	ypos = static_cast<double>(mouseY)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sProp = "frame-col-ypos";
+	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "wrap-mode";
+	sVal = "wrapped-both";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_sint32 ix = pRun->getX();
+	ix += pLine->getX();
+	xpos =  static_cast<double>(mouseX - pCol->getX())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sProp = "frame-col-xpos";
+	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Wrapped Mode
+//
+	sProp = "wrap-mode";
+	sVal = "wrapped-both";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now define the Frame attributes strux
+//
+	const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+					  NULL,"props",NULL,NULL};
+	attributes[1] = dataID;
+	attributes[3] = sFrameProps.c_str();
+//
+// This should place the the frame strux immediately after the block containing
+// position posXY.
+// It returns the Frag_Strux of the new frame.
+//
+	fl_BlockLayout * pBL = pBlock;
+	if((pBL == NULL) || (pRun == NULL))
+	{
+	  return UT_ERROR;
+	}
+	fl_BlockLayout * pPrevBL = pBL;
+	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
+	{
+	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		pPrevBL = pBL;
+		pBL = pBL->getPrevBlockInDocument();
+	}
+	if(pBL == NULL)
+	{
+	        pBL = pPrevBL;
+	}
+	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
+	pos = pBL->getPosition();
+	pf_Frag_Strux * pfFrame = NULL;
+	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	PT_DocPosition posFrame = pfFrame->getPos();
+	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
+	insertParaBreakIfNeededAtPos(posFrame+2);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+	if(!isPointLegal())
+	{
+	      _makePointLegal();
+	}
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	return UT_OK;
 }
 
 /*!

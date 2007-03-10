@@ -294,6 +294,15 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	return UT_OK;
 }
 
+const char *  FG_GraphicRaster::createDataItem(PD_Document *pDoc, const char * szName)
+{
+	UT_return_val_if_fail(pDoc,NULL);
+	UT_ASSERT(szName);
+	const char* mimetypePNG = NULL;
+	mimetypePNG = g_strdup("image/png");
+   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetypePNG, NULL);
+	return szName;
+}
 
 /*!
  * Insert an image at the strux given. This will become the

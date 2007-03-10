@@ -67,6 +67,7 @@ public:
 	virtual const char * getHeightProp(void) = 0;
 	virtual GR_Image *     regenerateImage(GR_Graphics * pG) = 0;
 	virtual FG_Graphic *   clone(void) = 0;
+	virtual const char * createDataItem(PD_Document *pDoc, const char * szName) = 0;
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image* generateImage(GR_Graphics* pG,
 								   const PP_AttrProp * pSpanAP,
@@ -74,6 +75,7 @@ public:
 
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
+						   
 										   UT_uint32 iPos, const char* szName) = 0;
 	//  Attach the object to a strux for a background image for the strux
 	virtual UT_Error   	insertAtStrux(PD_Document* pDoc, 

@@ -229,6 +229,16 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 	return pImage;
 }
 
+
+const char *  FG_GraphicVector::createDataItem(PD_Document *pDoc, const char * szName)
+{
+	UT_return_val_if_fail(pDoc,NULL);
+	UT_ASSERT(szName);
+	char * mimetype = g_strdup("image/svg+xml");
+   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
+	return szName;
+}
+
 //
 //  We need to be able to add a representation of ourselves to an
 //  existing document.  This added representation can be used to

@@ -5370,6 +5370,39 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 }
 
 
+UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName,PT_DocPosition pos)
+{
+	UT_return_val_if_fail(pFG,UT_ERROR);
+	UT_ASSERT(szName);
+	PT_DocPosition posEOD,posBOD;
+	bool bRes;
+	bRes = getEditableBounds(true, posEOD);
+	bRes = getEditableBounds(false, posBOD);
+	bRes = false;
+	while(!isPointLegal(pos) && (pos <= posEOD))
+	{
+		pos++;
+	}
+	if(pos > posEOD)
+	{
+		while(!isPointLegal(pos) && pos >= posBOD)
+		{
+			pos--;
+		}
+		if(pos >= posBOD)
+			bRes = true;
+	}
+	else
+	{
+		bRes = true;
+	}
+	if(!bRes)
+		return UT_ERROR;
+
+	return pFG->insertIntoDocument(m_pDoc, m_pG->getDeviceResolution(), pos, szName);
+}
+
+
 void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 {
 	// Check to see if we're at the beginning of the line. If we
