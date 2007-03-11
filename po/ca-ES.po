@@ -3223,7 +3223,7 @@ msgstr "Vés a..."
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h.h:1235
 msgid "H&as label"
-msgstr "T&é etiqueta"
+msgstr "Té e&tiqueta"
 
 #
 #. DLG_FormatTOC_HeadingText
