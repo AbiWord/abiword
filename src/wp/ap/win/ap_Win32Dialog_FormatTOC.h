@@ -62,12 +62,12 @@ public:
 
 	AP_Win32Dialog_FormatTOC_Sheet();
 
-	virtual	void				_onCancel(); 
 	void						setContainer(AP_Win32Dialog_FormatTOC*	pData){m_pData=pData;};
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};
 	static int CALLBACK			s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 	void						_onInitDialog(HWND hwnd);
 	virtual void				cleanup(void);
+	virtual	void				_onOK();
 
 private:
 
@@ -90,6 +90,7 @@ private:
 
 	virtual	void				_onInitDialog();
 	virtual	void				_onApply(); 
+	virtual	void				_onOK(); 
 	
 	AP_Win32Dialog_FormatTOC*			m_pData;		
 	
@@ -114,6 +115,7 @@ private:
 
 	virtual	void				_onInitDialog();
 	virtual	void				_onApply(); 
+	virtual	void				_onOK(); 
 	void						getCtrlsValues ();
 	
 	AP_Win32Dialog_FormatTOC*			m_pData;		

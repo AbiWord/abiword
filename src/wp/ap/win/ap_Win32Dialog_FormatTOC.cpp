@@ -120,12 +120,15 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 {
 
 	UT_return_if_fail (pFrame);
+	RECT rect;
+	POINT pnt;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
 	m_pSheet = new AP_Win32Dialog_FormatTOC_Sheet();
 	m_pSheet->setContainer (this);	
 	m_pSheet->setApplyButton (true);
-	m_pSheet->setOkButton (false);	
+	m_pSheet->setOkButton (true);
+	m_pSheet->setCancelButton(false);
 	
 	m_pGeneral = new AP_Win32Dialog_FormatTOC_General();		
 	m_pGeneral->setContainer (this);	
@@ -139,6 +142,15 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 	m_pSheet->addPage(m_pLayout);
 	m_pSheet->runModeless(pWin32App, pFrame, AP_STRING_ID_DLG_FormatTOC_Title);	
 
+	GetWindowRect(GetDlgItem(m_pSheet->getHandle() ,IDCANCEL), &rect);	
+	pnt.x = rect.left;
+	pnt.y = rect.top;
+	ScreenToClient (m_pSheet->getHandle(), &pnt);
+
+	HWND hwndOK = GetDlgItem(m_pSheet->getHandle(),IDOK);
+	MoveWindow (hwndOK, 
+		pnt.x, pnt.y, rect.right - rect.left, rect.bottom - rect.top, true);
+
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 
@@ -149,6 +161,7 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 {
 	UT_UTF8String sVal, str_loc;	
 	UT_UTF8String sProp;
+	UT_String str;
 	HWND hwndCtrl = GetDlgItem (hWnd, nCtrlID);
 
 	switch (nCtrlID) 
@@ -175,10 +188,12 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 		sProp += sNum.c_str();
 	}
 
-	sVal = getNewStyle(sProp);
-	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	sVal = getNewStyle(sProp);	
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);	
 
-	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)str_loc.utf8_str());
+	SendMessage (hwndCtrl, WM_SETTEXT, 0, (LPARAM) 
+		(AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str())).c_str() );
+		
 	setTOCProperty(sProp,sVal);
 	applyTOCPropsToDoc ();
 
@@ -256,19 +271,19 @@ int CALLBACK AP_Win32Dialog_FormatTOC_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg, 
 }
 
 					  
-void AP_Win32Dialog_FormatTOC_Sheet::_onCancel()
-{
+void AP_Win32Dialog_FormatTOC_Sheet::_onOK()
+{	
 	getContainer()->destroy();
+	destroy();
 }
 
 void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
 {
-
-	// Cancel->Close
+	
 	const XAP_StringSet * pSS = getContainer()->getApp()->getStringSet();		
 
-	SendMessage(GetDlgItem(getHandle(),IDCANCEL), WM_SETTEXT, 0, 
-		(LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_Close)));
+	SendMessage(GetDlgItem(getHandle(),IDOK), WM_SETTEXT, 0,
+		(LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_OK)));
 }
 
 
@@ -480,6 +495,11 @@ void AP_Win32Dialog_FormatTOC_General::_onApply()
 	
 	getContainer()->setTOCProperty("toc-heading", sUTF8.utf8_str());
 	getContainer()->Apply();
+}
+
+void AP_Win32Dialog_FormatTOC_General::_onOK()
+{
+	_onApply();
 }
 
 
@@ -778,11 +798,14 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 
 void AP_Win32Dialog_FormatTOC_Layout::_onApply()
 {
-	
+
 	saveCtrlsValuesForDetailsLevel ();	
 	getContainer()->Apply(); /* Apply */
-
 	
 }
 
 
+void AP_Win32Dialog_FormatTOC_Layout::_onOK()
+{
+	_onApply();
+}
