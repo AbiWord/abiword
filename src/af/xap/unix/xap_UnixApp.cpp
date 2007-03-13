@@ -53,7 +53,7 @@
 #include "xap_UnixEncodingManager.h"
 
 #include "gr_UnixPangoGraphics.h"
-
+#include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
 
@@ -70,7 +70,8 @@ static UnixNull_Graphics * nullgraphics = NULL;
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName),
 	  m_dialogFactory(this),
-	  m_controlFactory()
+	  m_controlFactory(),
+	  m_szTmpFile(NULL)
 {
 #if FC_MINOR > 2
 	FcInit();
@@ -142,6 +143,23 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 XAP_UnixApp::~XAP_UnixApp()
 {
+	removeTmpFile();
+}
+
+void XAP_UnixApp::removeTmpFile(void)
+{
+	if(m_szTmpFile)
+	{
+		if(g_file_test(m_szTmpFile,G_FILE_TEST_EXISTS))
+		{
+		//
+		// Remove the tempfile if it exists
+		//
+			g_unlink(m_szTmpFile);
+			delete [] m_szTmpFile;
+		}
+	}
+	m_szTmpFile = NULL;
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)

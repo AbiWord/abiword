@@ -37,6 +37,7 @@ dcl(MSG_HistoryNoRestore, "AbiWord cannot restore version %d of the document bec
 dcl(MSG_HistoryConfirmSave, "You have to save changes to document %s before proceeding. Save now?")
 
 dcl(MSG_NoUndo, "This operation cannot be undone. Are you sure you want to proceed?")
+dcl(MSG_PasteOrLoad, "Do you want to paste this into your document? Answering \"No\" will open a new window with this file.")
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")

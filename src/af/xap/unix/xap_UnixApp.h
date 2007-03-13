@@ -101,7 +101,9 @@ public:
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
     virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
-
+    char **                          getTmpFile(void)
+	{ return &m_szTmpFile;}
+	void                            removeTmpFile(void);
 protected:
 	void							_setAbiSuiteLibDir();
 
@@ -116,7 +118,7 @@ protected:
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	class XAP_UnixHildonApp * 		m_pUnixHildonApp;
 #endif
-	
+    char *                     m_szTmpFile;
 };
 
 #endif /* XAP_UNIXAPP_H */

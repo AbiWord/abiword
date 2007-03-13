@@ -35,7 +35,7 @@
 #include <vector>
 
 #include "ap_Features.h"
-
+#include "ut_string.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_files.h"
@@ -336,6 +336,17 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 					bDoLoad =false;
 					s_pasteFile(uri,pFrame);
 				}
+				else
+				{
+					if(pFrame->showMessageBox(XAP_STRING_ID_MSG_PasteOrLoad,
+				       XAP_Dialog_MessageBox::b_YN,
+				       XAP_Dialog_MessageBox::a_YES)
+					   == XAP_Dialog_MessageBox::a_YES)
+					 {
+							bDoLoad =false;
+							s_pasteFile(uri,pFrame);
+					 }
+				}
 			}
 			if(bDoLoad)
 				s_loadDocument (uri, pFrame);
@@ -409,6 +420,22 @@ s_drag_data_get_cb (GtkWidget        *widget,
 	if(!pView)
 		return;
 	UT_DEBUGMSG(("UnixFrameImpl: s_drag_data_get_cb(%s)\n", targetName));
+	if(strcmp(targetName,"text/uri-list") == 0)
+	{
+		char * szName = *pApp->getTmpFile();
+		if(!szName)
+			return;
+		UT_sint32 iLen = strlen(szName);
+		UT_DEBUGMSG(("Gave name %s to Nautilus \n",szName));
+		gtk_selection_data_set (selection,
+								selection->target,
+								8,
+								(guchar *) szName,
+								iLen);
+
+		g_free(targetName);
+		return;
+	}
 	EV_EditMouseContext emc = pView->getLastMouseContext();
 	if(emc == EV_EMC_VISUALTEXTDRAG )
 	{
@@ -510,6 +537,8 @@ static void
 s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
+
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
 }
 
 static void

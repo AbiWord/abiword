@@ -104,6 +104,16 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							   GTK_BUTTONS_YES_NO,
 							   "%s",
 							   m_szMessage ) ;
+			if(m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
+			{
+			    gtk_dialog_set_default_response (GTK_DIALOG(message),
+							 GTK_RESPONSE_YES);
+			}
+			else
+		        {
+			    gtk_dialog_set_default_response (GTK_DIALOG(message),
+							 GTK_RESPONSE_NO);
+			}
 			break;
 
 		case b_YNC:

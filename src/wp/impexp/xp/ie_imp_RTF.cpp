@@ -1507,6 +1507,8 @@ UT_Error IE_Imp_RTF::_loadFile(GsfInput * fp)
 	m_newSectionFlagged = true;
 
 	m_szFileDirName = g_strdup (gsf_input_name (fp));
+	if(m_szFileDirName == NULL)
+		m_szFileDirName = g_strdup("/tmp");
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
