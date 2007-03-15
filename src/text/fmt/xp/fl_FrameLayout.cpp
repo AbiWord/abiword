@@ -829,8 +829,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // Position-to
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+	if((!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo)))
 	{
 		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
@@ -855,12 +854,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 
 // wrap-mode
-
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-	{
-		m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
-	}
-	else if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+	
+	if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
 	{
 		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	}
@@ -897,8 +892,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	// Wrap type
 	//
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
+	if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
 	{
 		m_bIsTightWrap = false;
 	}
@@ -913,8 +907,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // Xpos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+	if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
 	{
 		m_iXpos = 0;
 	}
@@ -925,8 +918,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("xpos for frame is %s \n",pszXpos));
 // Ypos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+	if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
 	{
 		m_iYpos = 0;
 	}
@@ -938,8 +930,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // ColXpos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
 	{
 		m_iXColumn = 0;
 	}
@@ -950,8 +941,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("ColXpos for frame is %s \n",pszColXpos));
 // colYpos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
 	{
 		m_iYColumn = 0;
 	}
@@ -964,8 +954,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // PageXpos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
 	{
 		m_iXPage = 0;
 	}
@@ -976,8 +965,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
 // PageYpos
 
-	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
-	   !pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
 	{
 		m_iYPage = 0;
 	}

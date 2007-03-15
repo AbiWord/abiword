@@ -44,8 +44,12 @@
 
 #ifdef XP_UNIX_TARGET_GTK
 #include "fv_UnixVisualDrag.h"
+#include "fv_UnixFrameEdit.h"
+#include "fv_UnixInlineImage.h"
 #else
 #include "fv_VisualDragText.h"
+#include "fv_FrameEdit.h"
+#include "fv_VisualInlineImage.h"
 #endif
 
 #define AUTO_SCROLL_MSECS	100
@@ -468,6 +472,7 @@ public:
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
 	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY);
+	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG);
 
 // ----------------------
 
@@ -992,7 +997,11 @@ private:
 	fv_PropCache        m_BlockProps;
 	fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
+#ifdef XP_UNIX_TARGET_GTK
+	FV_UnixFrameEdit    m_FrameEdit;
+#else
 	FV_FrameEdit        m_FrameEdit;
+#endif
 #ifdef XP_UNIX_TARGET_GTK
 	FV_UnixVisualDrag   m_VisualDragText;
 #else
@@ -1006,7 +1015,11 @@ private:
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
+#ifdef XP_UNIX_TARGET_GTK
+	FV_UnixVisualInlineImage  m_InlineImage;
+#else
 	FV_VisualInlineImage  m_InlineImage;
+#endif
 	bool                m_bInsertAtTablePending;
 	PT_DocPosition      m_iPosAtTable;
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;

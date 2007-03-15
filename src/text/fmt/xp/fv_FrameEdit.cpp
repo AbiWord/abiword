@@ -532,6 +532,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		dy = - diffy;
 		m_recCurFrame.left -= diffx;
 		m_recCurFrame.top -= diffy;
+		UT_DEBUGMSG(("Doing drag whole frame left %d top %d \n",m_recCurFrame.left, m_recCurFrame.top));
 		if(dx < 0)
 		{
 			expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
@@ -641,6 +642,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		newY += dy;
 		m_pFrameContainer->_setX(newX);
 		m_pFrameContainer->_setY(newY);
+		UT_DEBUGMSG(("Doing dragging existing frame left %d top %d \n",m_recCurFrame.left, m_recCurFrame.top));
 		if(expX.width > 0)
 		{
 			getGraphics()->setClipRect(&expX);

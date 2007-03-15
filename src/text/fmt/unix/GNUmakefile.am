@@ -24,4 +24,8 @@ noinst_LIBRARIES = libUnixFmt.a
 
 libUnixFmt_a_SOURCES = \
 	fv_UnixVisualDrag.cpp \
-	fv_UnixVisualDrag.h
+	fv_UnixVisualDrag.h \
+	fv_UnixFrameEdit.cpp \
+	fv_UnixFrameEdit.h \
+	fv_UnixInlineImage.cpp \
+	fv_UnixInlineImage.h

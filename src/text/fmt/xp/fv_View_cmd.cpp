@@ -5107,6 +5107,21 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	return errorCode;
 }
 
+UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG)
+{
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	bool bEOL = false;
+	_findPositionCoords(getPoint(), bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	UT_return_val_if_fail(pBlock,UT_ERROR);
+	return	cmdInsertPositionedGraphic(pFG,xCaret,yCaret);
+
+}
+
 
 UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY)
 {

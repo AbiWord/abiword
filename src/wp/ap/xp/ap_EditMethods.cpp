@@ -3924,9 +3924,7 @@ Defun1(fileInsertPositionedGraphic)
 	  }
 
 	ABIWORD_VIEW;
-	UT_sint32 mouseX,mouseY;
-	pView->getMousePos(&mouseX,&mouseY);
-	errorCode = pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
+	errorCode = pView->cmdInsertPositionedGraphic(pFG);
 	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
