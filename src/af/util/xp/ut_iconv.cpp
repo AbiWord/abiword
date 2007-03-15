@@ -375,7 +375,7 @@ char * UT_convert_cd(const char *str,
 		     UT_uint32 *bytes_read_arg,
 		     UT_uint32 *bytes_written_arg)
 {
-  if ( !UT_iconv_isValid ( cd ) || !str )
+  if ( !UT_iconv_isValid ( cd ) || !str || len < 0 )
     {
       return NULL ;
     }
@@ -387,11 +387,6 @@ char * UT_convert_cd(const char *str,
 
 	UT_uint32& bytes_read = bytes_read_arg ? *bytes_read_arg : bytes_read_local; 
 	UT_uint32& bytes_written = bytes_written_arg ? *bytes_written_arg : bytes_written_local;
-
-	if (len < 0)
-	  {
-	    len = strlen(str);
-	  }
 
 	const char* p = str;
 	size_t inbytes_remaining = len;
