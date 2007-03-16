@@ -22,8 +22,12 @@
 
 #include "ut_types.h"
 #include "xap_Frame.h"
-#include "fv_View.h"
-#include "fl_DocLayout.h"
+#include "ie_types.h"
+
+class AV_View;
+class ap_Scrollbar_ViewListener;
+class ap_ViewListener;
+class FL_DocLayout;
 
 class ABI_EXPORT AP_Frame : public XAP_Frame
 {
