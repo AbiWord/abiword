@@ -48,8 +48,6 @@
 #include "fv_UnixInlineImage.h"
 #else
 #include "fv_VisualDragText.h"
-#include "fv_FrameEdit.h"
-#include "fv_VisualInlineImage.h"
 #endif
 
 #define AUTO_SCROLL_MSECS	100
