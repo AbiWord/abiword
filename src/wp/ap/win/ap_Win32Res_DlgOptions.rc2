@@ -93,43 +93,49 @@
 
 // The sub-dialog for the General tab of the Preference dialog
 
-AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 229, 233
+AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Check s&pelling as you type",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,31,162,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,31,210,10
     CONTROL         "Check &grammar as you type",
                     AP_RID_DIALOG_OPTIONS_CHK_GrammarCheck,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,192,162,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,192,210,10
     CONTROL         "A&lways suggest corrections",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,138,162,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,138,210,10
     CONTROL         "Suggest from &main only",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,155,162,10
-    LTEXT           "User Interface", AP_RID_DIALOG_OPTIONS_STATIC_General,7,15,162,8
-    CONTROL         "Check s&pelling as you type", AP_RID_DIALOG_OPTIONS_CHK_HighLight,"Button",
-                    BS_AUTOCHECKBOX | WS_DISABLED |WS_TABSTOP,14,48,162,10
-    LTEXT           "Ignore Words", AP_RID_DIALOG_OPTIONS_STATIC_SpellIgnoreWords,8,69,162,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,155,210,10
+    LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_General,7,
+                    15,218,8
+    CONTROL         "Check s&pelling as you type",
+                    AP_RID_DIALOG_OPTIONS_CHK_HighLight,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,48,162,10
+    LTEXT           "Ignore Words",
+                    AP_RID_DIALOG_OPTIONS_STATIC_SpellIgnoreWords,8,69,217,8
     CONTROL         "Ignore words in &UPPERCASE",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,85,162,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,85,210,10
     CONTROL         "Ignore words with num&bers",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,102,162,10
-    LTEXT           "Dictionaries", AP_RID_DIALOG_OPTIONS_STATIC_SpellDictionaries,7,122,162,8
-    LTEXT           "Automatic Grammar Checking", AP_RID_DIALOG_OPTIONS_STATIC_Grammar,7,176,162,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,102,210,10
+    LTEXT           "Dictionaries",
+                    AP_RID_DIALOG_OPTIONS_STATIC_SpellDictionaries,7,122,162,
+                    8
+    LTEXT           "Automatic Grammar Checking",
+                    AP_RID_DIALOG_OPTIONS_STATIC_Grammar,7,176,212,8
 END
 
-AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 229, 233
+AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,66,24,12,
+	LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,66,24,12,
                     SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,66,49,75,
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,66,61,75,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Blinking cursor",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink,"Button",
@@ -140,43 +146,48 @@ BEGIN
                     127,8
     CONTROL         "Show Spash on Startup",
                     AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,131,205,10
-    CONTROL         "Allow Custom Toolbars",AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,131,228,10
+    CONTROL         "Allow Custom Toolbars",
+                    AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,48,175,10
     LTEXT           "Application Startup",
                     AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,115,127,8
-    CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,148,201,10
+    CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,148,228,10
     LTEXT           "User Interface Language",
-                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,191,87,8
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,106,189,113,200,
+                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,191,99,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,114,189, 105,200,
                     CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Change language when changing keyboard",
                     AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,210,206,8
-    LTEXT           "Language Settings",AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,
-                    10,175,127,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,210,240,8
+    LTEXT           "Language Settings",
+                    AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,10,175,208,8
 END
 
-AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 229, 233
+AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 251, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Auto Save", AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,
-                    15,202,10
-    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,71,29,30,12
+    CONTROL         "Auto Save",AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,80,29,30,12
     CONTROL         "Spin",AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,
                     "msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | 
-                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,98,31,8,8
-    LTEXT           "minutes",AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,113,
-                    32,95,8
-    LTEXT           "File extension:", AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,13,48,57,8,NOT WS_GROUP
-    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,72,46,25,12
-    LTEXT           "Interval:", AP_RID_DIALOG_OPTIONS_STATIC_Interval,14,31,57,8,NOT WS_GROUP
-    LTEXT           "Bi-Directional Options", AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions,7,75,186,8
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,109,31,8,8
+    LTEXT           "minutes",AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,120,
+                    31,95,8
+    LTEXT           "File extension:",
+                    AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,13,48,64,8,
+                    NOT WS_GROUP
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,80,46,25,12
+    LTEXT           "Interval:",AP_RID_DIALOG_OPTIONS_STATIC_Interval,14,31,
+                    65,8,NOT WS_GROUP
+    LTEXT           "Bi-Directional Options",
+                    AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions,7,75,186,8
     CONTROL         "Default to right-to-left direction of text",
                     AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,91,182,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,91,240,10
 END
 
 
