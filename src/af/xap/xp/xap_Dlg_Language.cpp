@@ -29,11 +29,17 @@
 #include "xap_Strings.h"   
 #include "xap_App.h"
 
+static bool is_utf8_encoding;
+
 static int s_compareQ(const void * a, const void * b)                           
 {                                                                               
 	const gchar ** A = (const gchar **)(a);                                              
-	const gchar ** B = (const gchar **)(b);                                   	
-	return g_utf8_collate(*A,*B);                                               
+	const gchar ** B = (const gchar **)(b);
+	
+	if (is_utf8_encoding)
+		return g_utf8_collate(*A,*B);
+	else
+		return g_ascii_strcasecmp(*A,*B);
 }       
 
 /*****************************************************************/
@@ -55,7 +61,9 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	UT_ASSERT(m_pLangTable);
 	m_iLangCount = m_pLangTable->getCount();
 	m_ppLanguages = new const gchar * [m_iLangCount];	
-	m_ppLanguagesCode = new const gchar * [m_iLangCount];
+	m_ppLanguagesCode = new const gchar * [m_iLangCount];	
+	
+	is_utf8_encoding = g_ascii_strcasecmp (XAP_App::getApp()->getDefaultEncoding(), "UTF-8") == 0;
 	
 	for(i=0; i<m_iLangCount; i++)                                           
 	{                                                                       
