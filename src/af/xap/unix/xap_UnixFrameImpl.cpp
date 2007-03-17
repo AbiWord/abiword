@@ -264,6 +264,7 @@ s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 	else
 		pNewFrame = pFrame;
 
+
 	UT_Error error = pNewFrame->loadDocument(file.utf8_str(), 0 /* IEFT_Unknown */);
 	if (error)
 		{
@@ -327,30 +328,22 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 		}
 	else
 		{
-			bool bDoLoad = true;
 			if(pFrame)
 			{
 				AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
 				if(pFrameData && pFrameData->m_bIsWidget)
 				{
-					bDoLoad =false;
+					s_pasteFile(uri,pFrame);
+				}
+				else if(pFrame->isDirty() || pFrame->getFilename()) 
+				{
 					s_pasteFile(uri,pFrame);
 				}
 				else
 				{
-					if(pFrame->showMessageBox(XAP_STRING_ID_MSG_PasteOrLoad,
-				       XAP_Dialog_MessageBox::b_YN,
-				       XAP_Dialog_MessageBox::a_YES)
-					   == XAP_Dialog_MessageBox::a_YES)
-					 {
-							bDoLoad =false;
-							s_pasteFile(uri,pFrame);
-					 }
+					s_loadDocument (uri, pFrame);
 				}
 			}
-			if(bDoLoad)
-				s_loadDocument (uri, pFrame);
-			return;
 		}
 }
 
