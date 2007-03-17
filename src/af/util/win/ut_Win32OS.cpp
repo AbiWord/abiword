@@ -346,7 +346,7 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * 
 		// (in practice this matters very little, because this only sets the initial name
 		// for the frame, which we immediately change once the windows is created)
 		auto_iconv aic (UT_LocaleInfo::system().getEncoding().utf8_str(), ucs2Internal());
-		WCHAR * ucs2str = (WCHAR*) UT_convert_cd(pszWindowName, -1, aic, NULL, NULL);
+		WCHAR * ucs2str = (WCHAR*) UT_convert_cd(pszWindowName, strlen(pszWindowName), aic, NULL, NULL);
 		
 		HWND hwnd = CreateWindowExW(dwExStyle, buff1, ucs2str, dwStyle,
 									x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
@@ -374,7 +374,7 @@ BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
 	if(!bForceANSI&& UT_IsWinNT())
 	{
 		auto_iconv aic("UTF-8", ucs2Internal());
-		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(lpString, -1, aic, NULL, NULL);
+		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(lpString, strlen(lpString), aic, NULL, NULL);
 		BOOL bRet = SetWindowTextW(hWnd, ucs2);
 		g_free(ucs2);
 		return bRet;
