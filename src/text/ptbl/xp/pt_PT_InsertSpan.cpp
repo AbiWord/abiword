@@ -40,7 +40,6 @@
 #include "px_CR_Strux.h"
 #include "fd_Field.h"
 #include "pp_Revision.h"
-#include "ut_uuid.h"
 #include "pd_Document.h"
 
 /****************************************************************/
@@ -157,8 +156,6 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// return true if successful.
 
 	pf_Frag_Text * pft = NULL;
-	PT_DocPosition newPos = pf->getPos();
-	uuid myUID;
 	switch (pf->getType())
 	{
 	default:
