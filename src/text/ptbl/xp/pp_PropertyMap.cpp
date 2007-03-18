@@ -366,7 +366,7 @@ void PP_PropertyMap::Line::reset ()
 
 PP_PropertyMap::Background::Background () :
 	m_t_background(background__unset),
-	m_color(256,256,256)
+	m_color(255,255,255)
 {
 	// 
 }
