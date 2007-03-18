@@ -324,7 +324,7 @@ static const char * s_prop_list[] = {
 	"text-indent",		"0in",
 	"vertical-align",	"baseline",
 	"widows",			"2",
-	"width"				"auto",
+	"width",			"auto",
 	0, 0
 };
 static const UT_uint32 s_PropListLen = NrElements(s_prop_list) - 2; /* don't include the zeros */
