@@ -531,7 +531,7 @@ s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
 
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
+//	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
 }
 
 static void
@@ -1693,11 +1693,14 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	// set geometry hints as the user requested
 	gint user_x = 0;
 	gint user_y = 0;
-	guint user_w = static_cast<guint>(app_w);
-	guint user_h = static_cast<guint>(app_h);
+	UT_uint32 uuser_w = static_cast<UT_uint32>(app_w);
+	UT_uint32 uuser_h = static_cast<UT_uint32>(app_h);
 	UT_uint32 user_f = 0;
 
-	pApp->getWinGeometry (&user_x, &user_y, &user_w, &user_h, &user_f);
+	pApp->getWinGeometry (&user_x, &user_y, &uuser_w, &uuser_h, &user_f);
+	// to avoid bad signedess warnings
+	gint user_w = static_cast<gint>(uuser_w);
+	gint user_h = static_cast<gint>(uuser_h);
 
 	UT_DEBUGMSG(("xap_UnixFrameImpl: user-width=%u, user-height=%u\n",
 				 static_cast<unsigned>(user_w),static_cast<unsigned>(user_h)));
@@ -1738,8 +1741,10 @@ void XAP_UnixFrameImpl::_setGeometry ()
 			user_h = static_cast<guint>(app_h);
 		}
 
-	if (user_w > USHRT_MAX) user_w = app_w;
-        if (user_h > USHRT_MAX) user_h = app_h;
+	if (user_w > USHRT_MAX) 
+		user_w = app_w;
+        if (user_h > USHRT_MAX) 
+		user_h = app_h;
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
@@ -1750,8 +1755,8 @@ void XAP_UnixFrameImpl::_setGeometry ()
 									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
 		GdkScreen *screen = gdk_screen_get_default ();
-		user_w = user_w < gdk_screen_get_width (screen) ? user_w : gdk_screen_get_width (screen);
-		user_h = user_h < gdk_screen_get_height (screen) ? user_h : gdk_screen_get_height (screen);
+		user_w = (user_w < gdk_screen_get_width (screen) ? user_w : gdk_screen_get_width (screen));
+		user_h = (user_h < gdk_screen_get_height (screen) ? user_h : gdk_screen_get_height (screen));
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
 
