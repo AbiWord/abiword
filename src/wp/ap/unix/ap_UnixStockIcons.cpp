@@ -159,7 +159,7 @@ static struct AbiStockEntry {
   { ABIWORD_EDIT_REMOVEFOOTER,						AP_MENU_ID_EDIT_REMOVEFOOTER, 
 	AP_STRING_ID_TOOLBAR_LABEL_EDIT_REMOVEFOOTER,	(const gchar **) tb_edit_removefooter_xpm },
   { NULL,											0,
-	NULL, 											NULL }
+	0, 											NULL }
 };
 
 /* 
@@ -212,7 +212,7 @@ static struct AbiStockMapping {
 
   { ABIWORD_SCRIPT_PLAY,			AP_MENU_ID_TOOLS_SCRIPTS,		GTK_STOCK_EXECUTE },
   { ABIWORD_FMT_STRIKE,				AP_MENU_ID_FMT_STRIKE,			GTK_STOCK_STRIKETHROUGH },
-  { NULL, 							NULL }
+  { NULL, 					0,					NULL }
 };
 
 /*!
