@@ -681,7 +681,15 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
 	pFrameImpl->focusIMOut();
-	return FALSE;
+	//
+	// FIXME: Return TRUE because of a bug in gtk2. If you return FALSE (like
+	// you really should) you get a superfluous expose event which causes the
+	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame) 
+	// for giving the helpful clue here. 
+    //
+	// Try it again for gtk2.2 to see if this bug is still present.
+	//
+	return TRUE;
 }
 
 gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
@@ -1108,7 +1116,7 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 //
 // Grab our pointer so we can do useful stuff.
 //
-	xxx_UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
+	UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
 	UT_Rect localCopy;
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();

@@ -42,7 +42,9 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual UT_RGBColor getColorSelForeground () const;
 
 	GtkWidget * getDrawingArea() const {return m_dArea;}
-	
+	static gboolean ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
+	static gboolean ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
+
  protected:
 	friend class AP_UnixFrame;
 	void _showOrHideStatusbar(void);

@@ -103,15 +103,16 @@ void AP_UnixFrameImpl::_showOrHideStatusbar()
 #endif
 }
 
-static void
-focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
+
+gboolean AP_UnixFrameImpl::ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
 {
   gtk_widget_grab_focus (drawing_area);
+  return TRUE;
 }
 
-static void
-focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
+gboolean AP_UnixFrameImpl::ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
 {
+  return TRUE;
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
@@ -184,7 +185,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_BUTTON_RELEASE_MASK |
 						    GDK_KEY_PRESS_MASK |
 						    GDK_KEY_RELEASE_MASK |
-						    GDK_ENTER_NOTIFY_MASK |
+						    GDK_ENTER_NOTIFY_MASK |  
+						    GDK_FOCUS_CHANGE_MASK |
 						    GDK_LEAVE_NOTIFY_MASK));
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
@@ -211,10 +213,16 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 #else
 	const char focus_out_event_name[] = "leave_notify_event";
 #endif
-	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(focus_in_event), this);
+	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(ap_focus_in_event), this);
 
+	g_signal_connect(G_OBJECT(m_dArea), focus_out_event_name, G_CALLBACK(ap_focus_out_event), this);
 
-	g_signal_connect(G_OBJECT(m_dArea), focus_out_event_name, G_CALLBACK(focus_out_event), this);
+	//
+	// Need this to fix screen flicker for abiwidget on focus in/out
+	//
+	g_signal_connect(G_OBJECT(m_dArea), "focus_in_event", G_CALLBACK(XAP_UnixFrameImpl::_fe::focus_in_event), this);
+	g_signal_connect(G_OBJECT(m_dArea), "focus_out_event", G_CALLBACK(XAP_UnixFrameImpl::_fe::focus_out_event), this);
+
 
 	// create a table for scroll bars, rulers, and drawing area
 

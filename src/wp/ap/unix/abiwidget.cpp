@@ -1968,9 +1968,8 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 	abi->priv->m_bMappedToScreen = true;
 	AP_UnixFrame * pFrame  = new AP_UnixFrame();
-
 	UT_ASSERT(pFrame);
-	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget);
+	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget); 
 	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame = pFrame;
 
