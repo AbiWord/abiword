@@ -74,8 +74,6 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		return false;
 	}
 
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
 	const std::vector<const char *>& names =
 		GR_UnixPangoGraphics::getAllFontNames();
 

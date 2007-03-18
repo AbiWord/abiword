@@ -131,8 +131,6 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		return false;
 	}
 
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
 	// clear anything that's already there
 	m_vecContents.clear();
 	freeStyles();
