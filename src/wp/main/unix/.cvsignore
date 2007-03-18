@@ -2,6 +2,7 @@ abi_ver.cpp
 GNUmakefile.in
 GNUmakefile
 .deps
+abiword
 AbiWord_d
 AbiWord_s
 AbiWord-2.6
