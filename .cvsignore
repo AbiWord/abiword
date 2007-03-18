@@ -8,4 +8,6 @@ aclocal.m4
 GNUmakefile
 configure.*.tmp
 config.status
-config.cache config.log
+config.cache 
+config.log
+*.pc
