@@ -788,7 +788,12 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 	if(m_bInMath && (tokenIndex != TT_MATH))
 	{
-		UT_return_if_fail(m_pMathBB);
+		if(!m_pMathBB)
+		{
+			UT_ASSERT_HARMLESS(m_pMathBB);
+			goto cleanup;
+		}
+
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<"), 1);
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(name), strlen(name)); //build the mathml
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
