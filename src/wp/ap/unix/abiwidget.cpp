@@ -626,8 +626,8 @@ private:
 		superscript_ = false;
 		font_size_ = 0.;
 		font_family_ = "";
-		can_undo_ = false;
-		can_redo_ = false;
+		can_undo_ = true;
+		can_redo_ = true;
 		is_dirty_ = false;
 		leftAlign_ = false;
 		rightAlign_ = false;
