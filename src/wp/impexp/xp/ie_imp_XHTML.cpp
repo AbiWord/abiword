@@ -2599,6 +2599,16 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 							verbatim = "subscript";
 						}
 				}
+			else if (strcmp (name, "display") == 0)
+				{
+					if (strcmp (value, "none") == 0)
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+							props += value;
+						}
+				}
 			else if ((strcmp (name, "color") == 0) || (strcmp (name, "background") == 0))
 				{
 					/* AbiWord uses rgb hex-sequence w/o the # prefix used by CSS
