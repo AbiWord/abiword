@@ -2775,6 +2775,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		const gchar * szP_TextPosition = 0;
 		const gchar * szP_Color = 0;
 		const gchar * szP_BgColor = 0;
+		const gchar * szP_Display = 0;
 
 		pAP->getProperty ("font-weight",     szP_FontWeight);
 		pAP->getProperty ("font-style",      szP_FontStyle);
@@ -2784,6 +2785,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		pAP->getProperty ("text-position",   szP_TextPosition);
 		pAP->getProperty ("color",           szP_Color);
 		pAP->getProperty ("bgcolor",         szP_BgColor);
+		pAP->getProperty ("display",         szP_Display);
 
 		if(first)
 			m_utf8_1 = "span style=\"";
@@ -2930,6 +2932,16 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					first = false;
 				}
 			}
+
+		if (szP_Display)
+		{
+			if (strcmp (szP_Display, "none") == 0)
+			{
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "display:none";
+				first = false;
+			}
+		}
 	}
 	
  class_only:
