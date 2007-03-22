@@ -1477,7 +1477,7 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 		setNewListType(save);
 		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(NOT_A_LIST));
 	}
-	else if(getNewListType() >= BULLETED_LIST)
+	else if(IS_BULLETED_LIST_TYPE(getNewListType()) )
 	{
 		styleChanged(1);
 		setNewListType(save);
@@ -1489,7 +1489,15 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 		styleChanged(2);
 	    setNewListType(save);
 		gtk_option_menu_set_history(  GTK_OPTION_MENU (m_wListTypeBox),2);
-		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(getNewListType()));
+		if(getNewListType() < OTHER_NUMBERED_LISTS)
+		{
+		    gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(getNewListType()));
+		}
+		else
+		{
+		    gint iMenu = static_cast<gint>(getNewListType()) - OTHER_NUMBERED_LISTS + BULLETED_LIST -1 ;
+		    gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(iMenu));
+		}
 	}
 
 	//

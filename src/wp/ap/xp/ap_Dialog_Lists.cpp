@@ -574,6 +574,13 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		m_iStartValue = 1;
 		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
 	}
+	else if( m_NewListType == ARABICNUMBERED_LIST)
+	{
+		strncpy( (gchar *) m_pszFont, font_family, 80);
+		strncpy( (gchar *) m_pszDecimal, (const gchar *) "", 80);
+		m_iStartValue = 1;
+		strncpy( (gchar *) m_pszDelim, (const gchar *) "%L", 80);
+	}
 	else if( m_NewListType < BULLETED_LIST)
 	{
 		strncpy( (gchar *) m_pszFont, (const gchar *) "NULL", 80);
