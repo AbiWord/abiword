@@ -52,7 +52,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_iBackgroundRedrawID = 999999;
     // change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
-	g_signal_connect_after (G_OBJECT(toplevel),
+	m_iBackgroundRedrawID = g_signal_connect_after (G_OBJECT(toplevel),
 							  "style-set",
 							  G_CALLBACK(ruler_style_changed),
 							  static_cast<gpointer>(this));
@@ -60,7 +60,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
-	if(m_iBackgroundRedrawID != 999999)
+	if(m_iBackgroundRedrawID != 0	)
 		g_source_remove(m_iBackgroundRedrawID);
 	while(m_pG && m_pG->isSpawnedRedraw())
 	{
