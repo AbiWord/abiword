@@ -1957,10 +1957,11 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// try to remember the previous file type
 	static IEFileType dflFileType = IEFT_Bogus;
 
+	// if a file format was given to us, then use that
 	if (ieft != NULL && *ieft != IEFT_Bogus)
 	  {
 		// have a pre-existing file format, try to default to that
-		UT_DEBUGMSG(("DOM: using filetype %d\n", *ieft));
+		UT_DEBUGMSG(("DOM: using given filetype %d\n", *ieft));
 		dflFileType = *ieft;
 	  }
 	else if (bSaveAs)
@@ -1987,13 +1988,16 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		const gchar * ftype = 0;
 
-		pPrefs->getPrefsValue (static_cast<const gchar *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, false);
+		// fetch the default save format
+		pPrefs->getPrefsValue (static_cast<const gchar *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, true);
 		if (ftype)
-			{
-				// load the default file format
-				dflFileType = IE_Exp::fileTypeForSuffix (ftype);
-				UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
-			}
+		{
+			// load the default file format
+			dflFileType = IE_Exp::fileTypeForSuffix (ftype);
+			UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
+		}
+		else
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	  }
 	else
 	  {
@@ -2630,7 +2634,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	IEFileType ieft = IEFT_Unknown;
+	IEFileType ieft = IEFT_Bogus; // IEFT_Bogus will let the file dialog fall back to the default format
 
 	//ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
 
