@@ -1900,22 +1900,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 #endif
 			pDialog->setSuggestFilename(true);
 		} else {
-			//
-			// If OLPC selection are set, set the path name to the users
-			// home directory.
-			// TODO Rob: remove this hack once the journal is working.
-			//
-			if(static_cast<AP_Frame *>(pFrame)->getDoWordSelections())
-			{
-				UT_UTF8String sHome = getenv("HOME");
-				sHome += "/";
-				pDialog->setCurrentPathname(sHome.utf8_str());
-				UT_DEBUGMSG(("Home directory set to %s \n",sHome.utf8_str()));
-			}
-			else
-			{
-				pDialog->setCurrentPathname(pFrame->getFilename());
-			}
+			pDialog->setCurrentPathname(pFrame->getFilename());
 			pDialog->setSuggestFilename(false);
 		}
 	}
