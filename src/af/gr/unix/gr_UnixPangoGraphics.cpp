@@ -2262,7 +2262,7 @@ void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
 	UT_return_if_fail( pFont && pFont->getType() == GR_FONT_UNIX_PANGO);
 
 	//PangoFont * pf = (PangoFont*) pFont;
-	m_pPFont = static_cast<const GR_UnixPangoFont*>(pFont);
+	m_pPFont = const_cast<GR_UnixPangoFont*>(static_cast<const GR_UnixPangoFont*>(pFont));
 
 	_setIsSymbol(false);
 	_setIsDingbat(false);
