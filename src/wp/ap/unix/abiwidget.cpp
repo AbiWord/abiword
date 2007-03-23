@@ -626,9 +626,14 @@ private:
 		superscript_ = false;
 		font_size_ = 0.;
 		font_family_ = "";
+		//
+		// set these to true so that after the initial load of a file
+		// singals will be emitted to turn the toolbar and menu item 
+		// insensitive
+		//
 		can_undo_ = true;
 		can_redo_ = true;
-		is_dirty_ = false;
+		is_dirty_ = true;
 		leftAlign_ = false;
 		rightAlign_ = false;
 		centerAlign_ = false;
