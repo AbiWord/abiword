@@ -2,7 +2,7 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2001-2004, 2007 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 #ifndef EV_COCOAMENU_H
 #define EV_COCOAMENU_H
 
+#include <stack>
 #import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
@@ -34,7 +35,6 @@
 #include "ev_Menu.h"
 #include "ev_Menu_Layouts.h"
 
-class UT_Stack;
 
 class AV_View;
 
@@ -95,12 +95,11 @@ private:
 	EV_CocoaFontTarget *	m_fontTarget;
 	XAP_CocoaAppMenu_Id		m_AppMenuCurrent;
 
-	UT_Stack *				m_menuStack;
+	std::stack<NSMenu*> *				m_menuStack;
 
 	void					MenuStack_clear();
-	bool					MenuStack_push(NSMenu * menu);
+	void					MenuStack_push(NSMenu * menu);
 	NSMenu *				MenuStack_pop();
-	NSMenu *				MenuStack_top() const;
 
 protected:
 	virtual bool			_doAddMenuItem(UT_uint32 layout_pos); // does nothing, returns false
