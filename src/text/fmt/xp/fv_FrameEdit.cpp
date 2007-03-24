@@ -160,13 +160,21 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 		pFE->getGraphics()->setClipRect(&pFE->m_recCurFrame);
 		pView->updateScreen(false);
 		pFE->getGraphics()->setClipRect(NULL);
+		UT_sint32 minScroll = pFE->getGraphics()->tlu(20);
 		if(bScrollUp)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y));
+		        UT_sint32 yscroll = abs(y);
+			if(yscroll < minScroll)
+			    yscroll = minScroll;
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( minScroll));
 		}
 		else if(bScrollDown)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight()));
+		        UT_sint32 yscroll = y - pView->getWindowHeight();
+			if(yscroll < minScroll)
+			    yscroll = minScroll;
+
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll));
 		}
 		if(bScrollLeft)
 		{
