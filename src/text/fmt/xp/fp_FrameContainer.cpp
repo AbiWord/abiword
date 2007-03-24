@@ -449,11 +449,32 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 	UT_sint32 iXhigh = iXlow + getFullWidth() ;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 	UT_sint32 iYhigh = iYlow + getFullHeight();
+	GR_Graphics * pG = pDA->pG;
 	if(getPage())
 	{
 		getPage()->expandDamageRect(iXlow,iYlow,getFullWidth(),getFullHeight());
-	}
 
+		//
+		// Only fill to the bottom of the viewed page.
+		//
+		UT_sint32 iFullHeight = getFullHeight();
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		UT_sint32 iMaxHeight = 0;
+		if(!pG->queryProperties(GR_Graphics::DGP_PAPER) && (getView()->getViewMode() != VIEW_PRINT))
+		{
+		        iMaxHeight = pDSL->getActualColumnHeight();
+		}
+		else
+		{
+		        iMaxHeight = getPage()->getHeight();
+		}
+		UT_sint32 iBot = getFullY()+iFullHeight;
+		if(iBot > iMaxHeight)
+		{
+		        iFullHeight = iFullHeight - (iBot-iMaxHeight);
+		}
+		iYhigh = iFullHeight;
+	}
 	_drawLine(m_lineTop,iXlow,iYlow,iXhigh,iYlow,pDA->pG); // top
 	_drawLine(m_lineRight,iXhigh,iYlow,iXhigh,iYhigh,pDA->pG); // right
 	_drawLine(m_lineBottom,iXlow,iYhigh,iXhigh,iYhigh,pDA->pG); // bottom
@@ -475,11 +496,34 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 	{
 	     return;
 	}
-
+	if(!getPage())
+	{
+	     return;
+	}
+	//
+	// Only fill to the bottom of the viewed page.
+	//
+	GR_Graphics * pG = pDA->pG;
+	UT_sint32 iFullHeight = getFullHeight();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	UT_sint32 iMaxHeight = 0;
+	if(!pG->queryProperties(GR_Graphics::DGP_PAPER) && (getView()->getViewMode() != VIEW_PRINT))
+	{
+	    iMaxHeight = pDSL->getActualColumnHeight();
+	}
+	else
+	{
+	    iMaxHeight = getPage()->getHeight();
+	}
+	UT_sint32 iBot = getFullY()+iFullHeight;
+	if(iBot > iMaxHeight)
+	{
+	    iFullHeight = iFullHeight - (iBot-iMaxHeight);
+	}
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
-	UT_Rect box(iXlow + pDA->pG->tlu(2), iYlow + pDA->pG->tlu(2), getFullWidth() - pDA->pG->tlu(4), getFullHeight() - pDA->pG->tlu(4));
+	UT_Rect box(iXlow + pDA->pG->tlu(2), iYlow + pDA->pG->tlu(2), getFullWidth() - pDA->pG->tlu(4), iFullHeight - pDA->pG->tlu(4));
 	getView()->drawSelectionBox(box, true);
 }
 
@@ -546,11 +590,28 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 
 		UT_sint32 x = pDA->xoff - m_iXpad;
 		UT_sint32 y = pDA->yoff - m_iYpad;
-		if(getPage())
+		getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
+
+		//
+		// Only fill to the bottom of the viewed page.
+		//
+		UT_sint32 iFullHeight = getFullHeight();
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		UT_sint32 iMaxHeight = 0;
+		if(!pG->queryProperties(GR_Graphics::DGP_PAPER) && (pView->getViewMode() != VIEW_PRINT))
 		{
-			getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
+		        iMaxHeight = pDSL->getActualColumnHeight();
 		}
-		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),getFullHeight());
+		else
+		{
+		        iMaxHeight = getPage()->getHeight();
+		}
+		UT_sint32 iBot = getFullY()+iFullHeight;
+		if(iBot > iMaxHeight)
+		{
+		        iFullHeight = iFullHeight - (iBot-iMaxHeight);
+		}
+		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),iFullHeight);
 	}
 	UT_uint32 count = countCons();
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
