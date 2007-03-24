@@ -259,19 +259,13 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 	
 	png_write_info(m_pPNG, m_pPNGInfo);
 	png_set_compression_level(m_pPNG,3); // 3 is much faster and keeps a reasonable size
-	UT_Byte* pngScanline = new UT_Byte[rowstride];
 	UT_DEBUGMSG(("COnverting pixbuf to png \n"));
 	for(UT_uint32 i =0; i < height; i++)
 	{
-		memmove(pngScanline,pBuf,rowstride);
-		png_write_row(m_pPNG, pngScanline);
+		png_write_row(m_pPNG, pBuf);
 		pBuf += rowstride;
 	}
-	UT_DEBUGMSG(("Conversion over \n"));
-
-	DELETEPV (pngScanline);		
-	png_write_end(m_pPNG, m_pPNGInfo);
-}
+	png_write_end(m_pPNG, m_pPNGInfo);}
 
 /*!
  * Massage the byte buffer into an array of strings that can be loaded by 
