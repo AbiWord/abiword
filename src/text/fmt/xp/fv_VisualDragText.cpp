@@ -127,15 +127,24 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 	{
 		bScrollRight = true;
 	}
+
 	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
 	{
+	        UT_sint32 minScroll = pView->getGraphics()->tlu(20);
+
 		if(bScrollUp)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y));
+		        UT_sint32 yscroll = abs(y);
+			if(yscroll < minScroll)
+			    yscroll = minScroll;
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( yscroll));
 		}
 		else if(bScrollDown)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight()));
+		        UT_sint32 yscroll = y - pView->getWindowHeight();
+			if(yscroll < minScroll)
+			    yscroll = minScroll;
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll));
 		}
 		if(bScrollLeft)
 		{
