@@ -5164,8 +5164,8 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	// Also get max width, height
 
 	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
-	double maxW = static_cast<double>(pDSL->getActualColumnWidth())*0.95/UT_LAYOUT_RESOLUTION;
-	double maxH = static_cast<double>(pDSL->getActualColumnHeight())*0.95/ UT_LAYOUT_RESOLUTION;
+	double maxW = static_cast<double>(pDSL->getActualColumnWidth())*0.5/UT_LAYOUT_RESOLUTION;
+	double maxH = static_cast<double>(pDSL->getActualColumnHeight())*0.5/ UT_LAYOUT_RESOLUTION;
 	//
 	// OK calculate all the properties of this image
 	//
@@ -5174,13 +5174,13 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	double rat = 1.0;
 	double dw = static_cast<double>(pFG->getWidth());
 	double dh = static_cast<double>(pFG->getHeight());
-	if(dw > maxW)
+	if(dw > maxW/2.)
 	{
-	    rat = maxW/dw;
+	     rat = maxW/dw;
 	}
-	if(dh*rat > maxH)
+	if(dh*rat > maxH/2.)
 	{
-	    rat = maxH/dh;
+	     rat = maxH/dh;
 	}
 
 	// This preserves the aspect ratio and limits the size of the images
