@@ -265,7 +265,8 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 		png_write_row(m_pPNG, pBuf);
 		pBuf += rowstride;
 	}
-	png_write_end(m_pPNG, m_pPNGInfo);}
+	png_write_end(m_pPNG, m_pPNGInfo);
+}
 
 /*!
  * Massage the byte buffer into an array of strings that can be loaded by 
