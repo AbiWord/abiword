@@ -47,16 +47,17 @@
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
 #include "ut_path.h"
-
 #include "ut_png.h"
 #include "ut_svg.h"
 #include "ut_misc.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
+#include "ie_impGraphic.h"
 
 #include "gr_UnixImage.h"
 #include "gr_Painter.h"
 #include "gr_UnixPangoGraphics.h"
+#include "ut_bytebuf.h"
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
@@ -126,8 +127,10 @@ static void s_delete_clicked(GtkWidget 	*widget,
 	dlg->onDeleteCancel();
 	gtk_main_quit();
 }
-
-#if 0
+//
+// re enable. Why was it ifdef'd out?
+//
+#if 1
 static gint s_preview_exposed(GtkWidget * /* widget */,
 			      GdkEventExpose * /* pExposeEvent */,
 			      gpointer ptr)
@@ -163,8 +166,11 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 {
 	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
-
-#if 0
+//
+// re eable.
+// Why was it if def'd out?
+//
+#if 1
 static void file_selection_changed  (GtkTreeSelection  *selection,
 				     gpointer           ptr)
 {
@@ -644,8 +650,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
 	gtk_widget_show(pulldown_hbox);
 	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
-
-#if 0
+	//
+	// reenabled image preview. Why was it ifdef'd out?
+	//
+#if 1
 	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
 		GtkWidget * preview = createDrawingArea ();
@@ -933,7 +941,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	int answer = 0;
 
 	FG_Graphic * pGraphic = 0;
-	UT_Error errorCode = UT_OK;
 	GR_Image *pImage = NULL;
 
 	double		scale_factor = 0.0;
@@ -945,60 +952,88 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	if (!file_name)
-	  {
+	{
 		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 	    goto Cleanup;
-	  }
+	}
 
 	// are we dealing with a file or directory here?
 	struct stat st;
-	if (!stat (file_name, &st)) {
-		if (!S_ISREG(st.st_mode)) {
+	if (!stat (file_name, &st)) 
+	{
+		if (!S_ISREG(st.st_mode)) 
+		{
 			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 			goto Cleanup;
 		}
 	}
-	else {
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+
+	GsfInput * input = NULL;
+	UT_DEBUGMSG(("file_name %s \n",file_name));
+	input = UT_go_file_open (file_name, NULL);
+	if (!input)
 		goto Cleanup;
-	}
+	char Buf[4097] = "";  // 4096+nul ought to be enough
+	UT_uint32 iNumbytes = UT_MIN(4096, gsf_input_size(input));
+	gsf_input_read(input, iNumbytes, (guint8 *)(Buf));
+	Buf[iNumbytes] = '\0';
 
-	// Build an Import Graphic based on file type
-	errorCode = IE_ImpGraphic::loadGraphic(file_name, IEGFT_Unknown, &pGraphic);
-	if ((errorCode != UT_OK) || !pGraphic)
-	  {
+	IEGraphicFileType ief = IE_ImpGraphic::fileTypeForContents(Buf,4096);
+	if((ief == IEGFT_Unknown) || (ief == IEGFT_Bogus))
+	{
+		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+			g_object_unref (G_OBJECT (input));
+			goto Cleanup;
+	}
+	g_object_unref (G_OBJECT (input));
+	input = UT_go_file_open (file_name, NULL);
+	size_t num_bytes = gsf_input_size(input);
+	UT_Byte * bytes = (UT_Byte *) gsf_input_read(input, num_bytes,NULL );
+	if(bytes == NULL)
+	{
+		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+			g_object_unref (G_OBJECT (input));
+			goto Cleanup;
+	}
+	UT_ByteBuf * pBB = new UT_ByteBuf();
+	pBB->append(bytes,num_bytes);
+	g_object_unref (G_OBJECT (input));
+	//
+	// OK load the data into a GdkPixbuf
+	//
+	bool bLoadFailed = false;
+	//
+	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB);
+	delete pBB;
+	if(pixbuf == NULL)
+	{
+		//
+		// Try a fallback loader here.
+		//
 		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		bLoadFailed = true;
 	    goto Cleanup;
-	  }
-
-	if ( FGT_Raster == pGraphic->getType () )
-	{
-		pImage = new GR_UnixImage(NULL);
-
-		const UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
-		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
-
-		if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
-		  scale_factor = 1.0;
-		else
-		  scale_factor = MIN( static_cast<double>(m_preview->allocation.width)/iImageWidth,
-				      static_cast<double>(m_preview->allocation.height)/iImageHeight);
-		
-		scaled_width  = static_cast<int>(scale_factor * iImageWidth);
-		scaled_height = static_cast<int>(scale_factor * iImageHeight);
-
-		pImage->convertFromBuffer(png, scaled_width, scaled_height);
-		
-		painter.drawImage(pImage,
-			       pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
-			       pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
-		
-		answer = 1;
 	}
+
+	pImage = new GR_UnixImage(NULL,pixbuf);
+
+	iImageWidth = gdk_pixbuf_get_width (pixbuf);
+	iImageHeight = gdk_pixbuf_get_height (pixbuf);
+	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
+		scale_factor = 1.0;
 	else
-	{
-	  UT_ASSERT_NOT_REACHED ();
-	}
+		scale_factor = MIN( static_cast<double>(m_preview->allocation.width)/iImageWidth,
+							static_cast<double>(m_preview->allocation.height)/iImageHeight);
+		
+	scaled_width  = static_cast<int>(scale_factor * iImageWidth);
+	scaled_height = static_cast<int>(scale_factor * iImageHeight);
+
+	static_cast<GR_UnixImage *>(pImage)->scale(scaled_width,scaled_height);	
+	painter.drawImage(pImage,
+					  pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
+					  pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
+		
+	answer = 1;
 	}
 	
  Cleanup:
@@ -1008,4 +1043,152 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	DELETEP(pGraphic);
 
 	return answer;
+}
+
+GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
+{
+	GdkPixbuf * pixbuf = NULL;
+	const char * pBC = reinterpret_cast<const char *>(pBB->getPointer(0));
+
+	UT_GenericVector<char*> vecStr;
+	UT_sint32 k =0;
+	UT_sint32 iBase =0;
+
+	//
+	// Find dimension line to start with.
+	//
+	UT_sint32 length = static_cast<UT_sint32>(pBB->getLength());
+	for(k =0; (*(pBC+k) != '"') &&( k < length); k++)
+		;
+
+	if(k >= length)
+	{
+		return NULL;
+	}
+
+	k++;
+	iBase = k;
+	for(k =k; (*(pBC+k) != '"') && (k < length); k++)
+		;
+	if(k >= length)
+	{
+		return NULL;
+	}
+
+	char * sz = NULL;
+	UT_sint32 kLen = k-iBase+1;
+	sz = static_cast<char *>(UT_calloc(kLen,sizeof(char)));
+	UT_sint32 i =0;
+
+	for(i=0; i< (kLen -1); i++)
+	{
+		*(sz+i) = *(pBC+iBase+i);
+	}
+	*(sz+i) = 0;
+	vecStr.addItem(sz);
+
+	//
+	// Now loop through all the lines until we get to "}" outside the
+	// '"'
+	while((*(pBC+k) != '}')  && (k < length) )
+	{
+		k++;
+
+		//
+		// Load a single string of data into our vector.
+		// 
+		if(*(pBC+k) =='"')
+		{
+			//
+			// Start of a line
+			//
+			k++;
+			iBase = k;
+			for(k =k; (*(pBC+k) != '"') && (k < length); k++) {}
+			if(k >= length)
+			{
+				return NULL;
+			}
+			sz = NULL;
+			kLen = k-iBase+1;
+			sz = static_cast<char *>(UT_calloc(kLen,sizeof(char)));
+			for(i=0; i<(kLen -1); i++)
+			{
+				*(sz+i) = *(pBC+iBase+i);
+			}
+			*(sz +i) = 0;
+			vecStr.addItem(sz);
+		}
+	}
+
+	if(k >= length)
+	{
+		for(i=0; i< static_cast<UT_sint32>(vecStr.getItemCount()); i++)
+		{
+			char * psz = vecStr.getNthItem(i);
+			FREEP(psz);
+		}
+		return NULL;
+	}
+
+	const char ** pszStr = static_cast<const char **>(UT_calloc(vecStr.getItemCount(),sizeof(char *)));
+	for(i=0; i< static_cast<UT_sint32>(vecStr.getItemCount()); i++)
+		pszStr[i] = vecStr.getNthItem(i);
+	pixbuf = gdk_pixbuf_new_from_xpm_data(pszStr);
+	DELETEP(pszStr);
+	return pixbuf;
+}
+
+GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::pixbufForByteBuf (UT_ByteBuf * pBB)
+{
+	if ( !pBB || !pBB->getLength() )
+		return NULL;
+
+	GdkPixbuf * pixbuf = NULL;
+
+	bool bIsXPM = false;
+	const char * szBuf = reinterpret_cast<const char *>(pBB->getPointer(0));
+	if((pBB->getLength() > 9) && (strncmp (szBuf, "/* XPM */", 9) == 0))
+	{
+		bIsXPM = true;
+	}
+
+	if(bIsXPM)
+	{
+		pixbuf = _loadXPM(pBB);
+	}
+	else
+	{
+		GError * err = 0;
+		GdkPixbufLoader * ldr = 0;
+
+		ldr = gdk_pixbuf_loader_new ();
+		if (!ldr)
+			{
+				UT_DEBUGMSG (("GdkPixbuf: couldn't create loader! WTF?\n"));
+				UT_ASSERT (ldr);
+				return NULL ;
+			}
+
+		if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
+											  static_cast<gsize>(pBB->getLength ()), &err) )
+			{
+				UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
+				g_error_free(err);
+				gdk_pixbuf_loader_close (ldr, NULL);
+				g_object_unref (G_OBJECT(ldr));
+				return NULL ;
+			}
+		
+		gdk_pixbuf_loader_close (ldr, NULL);
+		pixbuf = gdk_pixbuf_loader_get_pixbuf (ldr);
+
+		// ref before closing the loader
+		if ( pixbuf )
+			g_object_ref (G_OBJECT(pixbuf));
+
+		g_object_unref (G_OBJECT(ldr));
+	}
+
+	return pixbuf;
 }

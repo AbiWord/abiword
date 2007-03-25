@@ -26,8 +26,10 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
 #include "ut_vector.h"
-class XAP_Frame;
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
+class XAP_Frame;
+class UT_ByteBuf;
 /*****************************************************************/
 
 class XAP_UnixDialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
@@ -45,6 +47,8 @@ public:
 	void onDeleteCancel (void);
 
 protected:
+	GdkPixbuf *            pixbufForByteBuf (UT_ByteBuf * pBB);
+	GdkPixbuf *            _loadXPM(UT_ByteBuf * pBB);
 
 	bool					_run_gtk_main(XAP_Frame * pFrame,
 										  GtkWidget * filetypes_pulldown);
