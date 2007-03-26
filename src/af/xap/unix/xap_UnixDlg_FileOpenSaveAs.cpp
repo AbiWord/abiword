@@ -127,10 +127,7 @@ static void s_delete_clicked(GtkWidget 	*widget,
 	dlg->onDeleteCancel();
 	gtk_main_quit();
 }
-//
-// re enable. Why was it ifdef'd out?
-//
-#if 1
+
 static gint s_preview_exposed(GtkWidget * /* widget */,
 			      GdkEventExpose * /* pExposeEvent */,
 			      gpointer ptr)
@@ -140,7 +137,6 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 	dlg->previewPicture();
 	return FALSE;
 }
-#endif
 
 static void s_filetypechanged(GtkWidget * w, gpointer p)
 {
@@ -166,11 +162,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 {
 	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
-//
-// re eable.
-// Why was it if def'd out?
-//
-#if 1
+
 static void file_selection_changed  (GtkTreeSelection  *selection,
 				     gpointer           ptr)
 {
@@ -179,7 +171,6 @@ static void file_selection_changed  (GtkTreeSelection  *selection,
   UT_ASSERT(dlg);
   dlg->previewPicture();
 }
-#endif
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													 GtkWidget * filetypes_pulldown)
@@ -650,10 +641,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
 	gtk_widget_show(pulldown_hbox);
 	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
-	//
-	// reenabled image preview. Why was it ifdef'd out?
-	//
-#if 1
+
 	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
 		GtkWidget * preview = createDrawingArea ();
@@ -677,7 +665,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		g_signal_connect (preview, "expose_event",
 								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
 	}
-#endif
 
 	// pulldown label
 	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
@@ -685,13 +672,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 	gtk_widget_show(filetypes_label);
 
-	int VOFFSET = 0;
-	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-	  VOFFSET = 40;
-
 	GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vboxTmp);
-	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, VOFFSET);
+	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
 
 	// pulldown menu
@@ -701,7 +684,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// hack so that i can make this widget small vertically
 	vboxTmp = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vboxTmp);
-	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, VOFFSET);
+	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
 
 	//
