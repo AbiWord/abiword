@@ -221,6 +221,9 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 {
 	bool bFoundMultiByte = false;
 	gchar * szDup = NULL;
+	int length;
+	const void* ptr;
+	
 	if (szString && *szString)
 	{
 		UT_GrowBuf gb;
@@ -261,24 +264,32 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 				UT_ASSERT_HARMLESS(p[i] == 0);
 				delete[] fbdStr2;
 			}
-		}
-
-		UT_Wctomb wctomb_conv(XAP_App::getApp()->getDefaultEncoding());
-
-		char letter_buf[20];
-		int length;
-		for (int k=0; k<kLimit; k++)
+		}				
+		
+		if(strcmp(getEncoding(), XAP_App::getApp()->getDefaultEncoding())) 
 		{
-		    if (wctomb_conv.wctomb(letter_buf,length, p[k])) {
-			str.append(reinterpret_cast<const UT_Byte*>(&letter_buf[0]),length);
-		    };
+			UT_Wctomb wctomb_conv(XAP_App::getApp()->getDefaultEncoding());
+	
+			char letter_buf[20];
+			int length;
+			for (int k=0; k<kLimit; k++)
+			{
+			    if (wctomb_conv.wctomb(letter_buf,length, p[k])) {
+				str.append(reinterpret_cast<const UT_Byte*>(&letter_buf[0]),length);
+			    };
+			}
+			length = str.getLength();			
+			ptr = str.getPointer(0);
+		} else
+		{	
+			length = strlen(szString);
+			ptr = szString;
 		}
-		length = str.getLength();
 		szDup = static_cast<gchar *>(g_try_malloc(length+1));
 		if (!szDup)
-			return false;
-		memcpy(szDup,str.getPointer(0),length);
-		szDup[length]='\0';
+				return false;
+		memcpy(szDup,ptr,length);
+		szDup[length]='\0';	
 	}
 
     gchar* pOldValue = NULL;
