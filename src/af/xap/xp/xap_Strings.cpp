@@ -266,12 +266,11 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const gchar * szString)
 			}
 		}				
 		
-		if(strcmp(getEncoding(), XAP_App::getApp()->getDefaultEncoding())) 
+		if(strcmp(getEncoding(), "UTF-8"))
 		{
-			UT_Wctomb wctomb_conv(XAP_App::getApp()->getDefaultEncoding());
+			UT_Wctomb wctomb_conv(getEncoding());
 	
 			char letter_buf[20];
-			int length;
 			for (int k=0; k<kLimit; k++)
 			{
 			    if (wctomb_conv.wctomb(letter_buf,length, p[k])) {
