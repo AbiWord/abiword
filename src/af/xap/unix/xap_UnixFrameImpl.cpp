@@ -962,6 +962,7 @@ gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e
 
 gint XAP_UnixFrameImpl::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
 {
+	UT_DEBUGMSG(("Scroll event \n"));
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
@@ -1157,14 +1158,47 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 	return TRUE;
 }
 
+static bool bScrollWait = false;
+static UT_sint32 iExtraScroll = 0;
+
+class _ViewScroll
+{
+public:
+	_ViewScroll(AV_View * pView, UT_sint32 amount):
+		m_pView(pView),m_amount(amount)
+	{
+	}
+	AV_View * m_pView;
+	UT_sint32 m_amount;
+};
+
+static gboolean _actualScroll(gpointer data)
+{
+	_ViewScroll * pVS = reinterpret_cast<_ViewScroll *>(data);
+	AV_View * pView = pVS->m_pView;
+	UT_DEBUGMSG(("vScrollSchanged callback\n"));
+	if (pView)
+		pView->sendVerticalScrollEvent(pVS->m_amount+iExtraScroll);
+	iExtraScroll = 0;
+	bScrollWait = false;
+	delete pVS;
+	return FALSE;
+}
+
 void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+	if(bScrollWait)
+	{
+		iExtraScroll += static_cast<UT_sint32>(w->value);
+		return;
+	}
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-
-	if (pView)
-		pView->sendVerticalScrollEvent(static_cast<UT_sint32>(w->value));
+	_ViewScroll * pVS = new  _ViewScroll(pView,static_cast<UT_sint32>(w->value));
+	iExtraScroll = 0;
+	bScrollWait = true;
+	g_idle_add(_actualScroll, (gpointer) pVS);
 }
 
 void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
