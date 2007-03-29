@@ -1159,7 +1159,6 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 }
 
 static bool bScrollWait = false;
-static UT_sint32 iExtraScroll = 0;
 
 class _ViewScroll
 {
@@ -1176,10 +1175,9 @@ static gboolean _actualScroll(gpointer data)
 {
 	_ViewScroll * pVS = reinterpret_cast<_ViewScroll *>(data);
 	AV_View * pView = pVS->m_pView;
-	UT_DEBUGMSG(("vScrollSchanged callback\n"));
+	xxx_UT_DEBUGMSG(("vScrollSchanged callback\n"));
 	if (pView)
-		pView->sendVerticalScrollEvent(pVS->m_amount+iExtraScroll);
-	iExtraScroll = 0;
+		pView->sendVerticalScrollEvent(pVS->m_amount);
 	bScrollWait = false;
 	delete pVS;
 	return FALSE;
@@ -1190,13 +1188,11 @@ void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	if(bScrollWait)
 	{
-		iExtraScroll += static_cast<UT_sint32>(w->value);
 		return;
 	}
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
 	_ViewScroll * pVS = new  _ViewScroll(pView,static_cast<UT_sint32>(w->value));
-	iExtraScroll = 0;
 	bScrollWait = true;
 	g_idle_add(_actualScroll, (gpointer) pVS);
 }
