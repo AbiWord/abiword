@@ -59,7 +59,7 @@ XAP_Dialog * AP_Win32Dialog_New::static_constructor(XAP_DialogFactory * pFactory
 
 AP_Win32Dialog_New::AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id), _win32Dialog(this), m_hThisDlg(NULL), m_pFrame(NULL)
+	: AP_Dialog_New(pDlgFactory,id), m_hThisDlg(NULL), _win32Dialog(this), m_pFrame(NULL)
 {
 }
 
@@ -175,9 +175,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

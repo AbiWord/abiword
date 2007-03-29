@@ -245,7 +245,6 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 	DWORD dwTextLength, dwCounter, dwStart;
-	XAP_Frame * pFrame = getActiveFrame();
 
 	// before doing anything else, make sure that the main window is not entirely
 	// without focus

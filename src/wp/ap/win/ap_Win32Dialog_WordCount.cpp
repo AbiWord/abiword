@@ -325,10 +325,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 
 BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	XAP_Frame *	pFrame = getActiveFrame();
 
 	switch (wId)
 	{

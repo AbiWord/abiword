@@ -1630,8 +1630,6 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 */	
 UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 {		
-	const char * szDirectory = NULL;
-	const gchar * szStringSet = NULL;
 	UT_Vector* pVec = new UT_Vector();
 	UT_Language lang;	
 					
