@@ -632,7 +632,7 @@ void GR_Win32Graphics::setFont(const GR_Font* pFont)
 	if (m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo
 		|| pWin32Font->getPrimaryHDC() != m_hdc)
 	{
-		m_pFont = pWin32Font;
+		m_pFont = const_cast<GR_Win32Font*>(pWin32Font);
 		m_iFontAllocNo = pFont->getAllocNumber();
 		m_pFont->selectFontIntoDC(this, m_hdc);
 	}

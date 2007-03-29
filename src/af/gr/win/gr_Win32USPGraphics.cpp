@@ -587,7 +587,7 @@ UT_uint32 GR_Win32USPGraphics::getFontDescent()
 */
 void GR_Win32USPGraphics::setFont(const GR_Font* pFont)
 {
-	m_pFont = static_cast<const GR_Win32Font *>(pFont);
+	m_pFont = const_cast<GR_Win32Font *>(static_cast<const GR_Win32Font *>(pFont));
 
 	UT_ASSERT_HARMLESS(pFont);	// TODO should we allow pFont == NULL?
 
