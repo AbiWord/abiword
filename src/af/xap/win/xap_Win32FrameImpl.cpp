@@ -123,8 +123,8 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	m_pWin32Popup(NULL),
 	m_iBarHeight(0),
 	m_iStatusBarHeight(0),
-	m_iRealSizeWidth(0),
 	m_iRealSizeHeight(0),
+	m_iRealSizeWidth(0),
 	m_mouseWheelMessage(0),
 	m_iSizeWidth(0),
 	m_iSizeHeight(0)

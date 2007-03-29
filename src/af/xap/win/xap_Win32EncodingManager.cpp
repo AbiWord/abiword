@@ -65,7 +65,6 @@ void  XAP_Win32EncodingManager::initialize()
 	static char szSystemCodepage[64];
 	static char szLanguage[64];
 	static char szTerritory[64];
-	bool bNorwaySpecialCase = false;
 
 	NativeNonUnicodeEncodingName = Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
 	LanguageISOName = "en";

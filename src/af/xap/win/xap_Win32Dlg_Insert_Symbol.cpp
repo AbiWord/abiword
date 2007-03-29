@@ -140,7 +140,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 	// localize controls
 	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON,XAP_STRING_ID_DLG_Insert);
 	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON,XAP_STRING_ID_DLG_Close);
@@ -225,7 +225,6 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

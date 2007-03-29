@@ -63,8 +63,6 @@ void XAP_Win32Dialog_Encoding::runModal(XAP_Frame * pFrame)
 
 BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	localizeDialogTitle(XAP_STRING_ID_DLG_UENC_EncTitle);
 
 	// localize controls
@@ -95,10 +93,7 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	HWND hWndList = NULL; 
 	int nItem;
 
 	switch (wId)
