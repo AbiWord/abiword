@@ -429,7 +429,6 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing strings file.\n"));
-InvalidFileError:
 	m_parserState.m_parserStatus = false;			// cause parser driver to bail
 	return;
 }
