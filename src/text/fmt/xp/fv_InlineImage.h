@@ -83,6 +83,7 @@ public:
 	PP_AttrProp *         getImageAPFromXY(UT_sint32 x, UT_sint32 y);
 	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
 	void                  drawCursor(PT_DocPosition newPos);
+	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
 	UT_sint32             getGlobCount(void);

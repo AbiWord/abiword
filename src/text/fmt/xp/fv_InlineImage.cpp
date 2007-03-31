@@ -95,7 +95,10 @@ void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
 	m_iInlineDragMode = iEditMode;
 }
 
-void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
+static bool bScrollRunning = false;
+static UT_Worker * s_pScroll = NULL;
+
+void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);
 
@@ -160,6 +163,39 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 		pVis->m_pAutoScrollTimer->stop();
 		DELETEP(pVis->m_pAutoScrollTimer);
 	}
+	s_pScroll->stop();
+	delete s_pScroll;
+	s_pScroll = NULL;
+	bScrollRunning = false;
+}
+
+void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
+{
+	UT_return_if_fail(pWorker);
+	if(bScrollRunning)
+	{
+	    UT_DEBUGMSG(("Dropping InlineImage autoscroll !!!!!!! \n"));
+	    return;
+	}
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_VisualInlineImage * pVis = static_cast<FV_VisualInlineImage *>(pWorker->getInstanceData());
+	UT_return_if_fail(pVis);
+
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	s_pScroll = UT_WorkerFactory::static_constructor (_actuallyScroll,pVis, inMode, outMode);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pScroll)->set(1);
+	}
+	bScrollRunning = true;
+	s_pScroll->start();
 
 }
 

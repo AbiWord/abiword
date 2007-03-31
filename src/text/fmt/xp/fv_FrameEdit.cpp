@@ -124,10 +124,11 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 }
 
 
-void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
-{
-	UT_return_if_fail(pWorker);
+static bool bScrollRunning = false;
+static UT_Worker * s_pScroll = NULL;
 
+void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
+{
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
@@ -193,7 +194,39 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 		DELETEP(pFE->m_pAutoScrollTimer);
 
 	}
+	s_pScroll->stop();
+	delete s_pScroll;
+	s_pScroll = NULL;
+	bScrollRunning = false;
+}
 
+void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
+{
+	UT_return_if_fail(pWorker);
+	if(bScrollRunning)
+	{
+	    UT_DEBUGMSG(("Dropping FrameEditautoscroll !!!!!!! \n"));
+	    return;
+	}
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
+	UT_return_if_fail(pFE);
+
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	s_pScroll = UT_WorkerFactory::static_constructor (_actuallyScroll,pFE, inMode, outMode);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pScroll)->set(1);
+	}
+	bScrollRunning = true;
+	s_pScroll->start();
 }
 
 /*!

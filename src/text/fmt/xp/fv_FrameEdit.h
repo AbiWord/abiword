@@ -93,6 +93,7 @@ public:
 		{ return m_pFrameLayout;}
 	void                  setPointInside(void);
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
+	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  _beginGlob();
 	void                  _endGlob();
