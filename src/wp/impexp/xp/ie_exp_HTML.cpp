@@ -1781,7 +1781,11 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			{
 				if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
-				m_utf8_1  = "#";
+				if (*szValue != '#')
+					m_utf8_1  = "#";
+				else
+					m_utf8_1.clear();
+
 				m_utf8_1 += static_cast<const char *>(szValue);
 			}
 			else m_utf8_1 = static_cast<const char *>(szValue);
@@ -1789,9 +1793,13 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			styleNameValue (szName, m_utf8_1);
 		}
 		szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
-		if(!IS_TRANSPARENT_COLOR (szValue))
+		if(szValue && !IS_TRANSPARENT_COLOR (szValue))
 		{
-			m_utf8_1  = "#";
+			if (*szValue != '#')
+				m_utf8_1  = "#";
+			else
+				m_utf8_1.clear();
+
 			m_utf8_1 += static_cast<const char *>(szValue);
 
 			styleNameValue ("background-color", m_utf8_1);
@@ -2907,7 +2915,11 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		if (szP_Color)
 			if (!IS_TRANSPARENT_COLOR (szP_Color))
 			{
-				m_utf8_0  = "#";
+				if (*szP_Color != '#')
+					m_utf8_0  = "#";
+				else
+					m_utf8_0.clear();
+
 				m_utf8_0 += szP_Color;
 
 				if (!compareStyle ("color", m_utf8_0.utf8_str ()))
@@ -2921,7 +2933,11 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		if (szP_BgColor)
 			if (!IS_TRANSPARENT_COLOR (szP_BgColor))
 			{
-				m_utf8_0  = "#";
+				if (*szP_BgColor != '#')
+					m_utf8_0  = "#";
+				else
+					m_utf8_0.clear();
+
 				m_utf8_0 += szP_BgColor;
 
 				if (!compareStyle ("background", m_utf8_0.utf8_str ()))
@@ -5840,7 +5856,16 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 		{
 			if (value != "transparent")
 			{
-				value  = "#";
+				if(value.substr(0, 1) != "#")
+				{
+					value  = "#";
+				}
+				else
+				{
+					xxx_UT_DEBUGMSG(("HTML exporter: encountered RGB color with '#' prefixed\n"));
+					value.clear();
+				}
+
 				value += szValue;
 			}
 		}
