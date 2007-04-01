@@ -190,7 +190,8 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 	}
 	else
 	{
-		pFE->m_pAutoScrollTimer->stop();
+		if(pFE->m_pAutoScrollTimer)
+			pFE->m_pAutoScrollTimer->stop();
 		DELETEP(pFE->m_pAutoScrollTimer);
 
 	}
