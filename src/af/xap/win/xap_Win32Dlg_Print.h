@@ -56,6 +56,7 @@ protected:
 	UT_uint32               m_iOrigPrinter;
 	UT_uint32               m_iNewPrinter;
 	bool                    m_bClosed;
+	UT_String				m_docName;
 };
 
 #endif /* XAP_WIN32DIALOG_PRINT_H */

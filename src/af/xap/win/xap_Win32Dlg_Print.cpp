@@ -28,6 +28,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 #include "gr_Win32Graphics.h"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 static UINT CALLBACK s_PrintHookProc(
@@ -152,7 +153,8 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
-	m_DocInfo.lpszDocName = m_szDocumentPathname;
+	m_docName = AP_Win32App::s_fromUTF8ToWinLocale(m_szDocumentPathname);
+	m_DocInfo.lpszDocName = m_docName.c_str();
 	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
 	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pPersistPrintDlg->hDevMode);
