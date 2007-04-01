@@ -551,7 +551,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		
 		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			continue;
 		}
 
@@ -1096,11 +1096,16 @@ fl_BlockLayout::~fl_BlockLayout()
 			m_pLayout->removeBlockFromTOC(this);
 		}
 	}
-	UT_ASSERT(m_pLayout != NULL);
-	m_pLayout->notifyBlockIsBeingDeleted(this);
+
+	UT_ASSERT_HARMLESS(m_pLayout != NULL);
+	if(m_pLayout)
+	{
+		m_pLayout->notifyBlockIsBeingDeleted(this);
 #ifndef WITHOUT_SPELL
-	m_pLayout->dequeueBlockForBackgroundCheck(this);
+		m_pLayout->dequeueBlockForBackgroundCheck(this);
 #endif
+	}
+
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
@@ -1187,7 +1192,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	sfhEmbed = m_pDoc->getNthFmtHandle(sdhEmbed,m_pLayout->getLID());
 	if(	sfhEmbed == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return -1;
 	}
 	pEmbedCL = reinterpret_cast<fl_ContainerLayout *>(const_cast<void *>(sfhEmbed));
@@ -1197,7 +1202,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		pEmbedCL = NULL;
 		return -1;
 	}
@@ -1498,7 +1503,7 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 		pDSL = static_cast<fl_ContainerLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
@@ -1753,8 +1758,8 @@ void fl_BlockLayout::collapse(void)
 	xxx_UT_DEBUGMSG(("Block collapsed in collapsed %x \n",this));
 	m_bIsCollapsed = true;
 	m_iNeedsReformat = 0;
-	UT_ASSERT(getFirstContainer() == NULL);
-	UT_ASSERT(getLastContainer() == NULL);
+	UT_ASSERT_HARMLESS(getFirstContainer() == NULL);
+	UT_ASSERT_HARMLESS(getLastContainer() == NULL);
 }
 
 void fl_BlockLayout::purgeLayout(void)
@@ -2163,7 +2168,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 		
 		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			continue;
 		}
 		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
@@ -2360,7 +2365,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 		else
 		{
 			UT_DEBUGMSG(("Not implemented Yet \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
 	}
@@ -4091,12 +4096,12 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 			// if this assert fails, then this code needs to be fixed up. Tomas
 			UT_ASSERT_HARMLESS( pSL->getLastLayout() && pSL->getLastLayout()->getContainerType() == FL_CONTAINER_BLOCK );
 			fl_BlockLayout* pBlock = static_cast<fl_BlockLayout *>(pSL->getLastLayout());
-			UT_ASSERT(pBlock);
+			UT_return_val_if_fail(pBlock, NULL);
 			return static_cast<fp_Line *>(pBlock->getLastContainer());
 		}
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
@@ -4128,11 +4133,11 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 		UT_ASSERT_HARMLESS( pSL->getLastLayout() && pSL->getLastLayout()->getContainerType() == FL_CONTAINER_BLOCK );
 			
 		fl_BlockLayout* pBlock = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
-		UT_ASSERT(pBlock);
+		UT_return_val_if_fail(pBlock, NULL);
 		return static_cast<fp_Line *>(pBlock->getFirstContainer());
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
@@ -6435,7 +6440,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		// Note: That should be a fp_TextRun. If not, we'll keep going
 		// using the first run fully inside the span - but keep the
 		// assertion for alert in debug builds.
-		UT_ASSERT(pPrevRun);
+		UT_return_val_if_fail(pPrevRun,false);
 		UT_ASSERT(FPRUN_TEXT == pPrevRun->getType());
 		if (FPRUN_TEXT == pPrevRun->getType())
 		{
@@ -6994,7 +6999,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
 	fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(myContainingLayout());
-	UT_ASSERT(pSL);
+	UT_return_val_if_fail(pSL,false);
 	fl_BlockLayout* pNewBL = static_cast<fl_BlockLayout *>(pSL->insert(sdh, this, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
 	if(isHdrFtr())
 		pNewBL->setHdrFtr();
@@ -7167,7 +7172,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	// Now make sure this block still has an EOP Run.
 	if (m_pFirstRun) {
-		UT_ASSERT(pLastRun);
+		UT_return_val_if_fail(pLastRun,false);
 		// Create a new end-of-paragraph run and add it to the block.
 		fp_EndOfParagraphRun* pNewRun =
 			new fp_EndOfParagraphRun(this,   0, 0);
@@ -8138,7 +8143,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	m_iNeedsReformat = blockOffset;
@@ -8246,7 +8251,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		}
 
 		default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	updateEnclosingBlockIfNeeded();
@@ -8327,7 +8332,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				}
 				if(!pRun || pRun->getType() != FPRUN_IMAGE)
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					return false;
 				}
 				fp_ImageRun* pImageRun = static_cast<fp_ImageRun*>(pRun);
@@ -8363,7 +8368,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				}
 				if(!pRun || pRun->getType() != FPRUN_FIELD)
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					return false;
 				}
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
@@ -8399,7 +8404,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				}
 				if(!pRun || pRun->getType() != FPRUN_MATH)
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					return false;
 				}
 				fp_MathRun* pMathRun = static_cast<fp_MathRun*>(pRun);
@@ -8436,7 +8441,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				}
 				if(!pRun || pRun->getType() != FPRUN_EMBED)
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					return false;
 				}
 				fp_EmbedRun* pEmbedRun = static_cast<fp_EmbedRun*>(pRun);
@@ -8456,7 +8461,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	}
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 
@@ -8546,7 +8551,11 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = m_vecTabs.getNthItem(i);
-		UT_ASSERT(pTab);
+		if(!pTab)
+		{
+			UT_ASSERT_HARMLESS(pTab);
+			continue;
+		}
 
 		if (pTab->getPosition() > iMaxX)
 		{
@@ -8652,7 +8661,11 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i));
-		UT_ASSERT(pTab);
+		if(!pTab)
+		{
+			UT_ASSERT_HARMLESS(pTab);
+			continue;
+		}
 
 		if (pTab->getPosition() > iMaxX)
 		{
@@ -8662,7 +8675,11 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 		if (pTab->getPosition() > iStartX)
 		{
 			pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i>0?i-1:0));
-			UT_ASSERT(pTab);
+			if(!pTab)
+			{
+				UT_ASSERT_HARMLESS(pTab);
+				continue;
+			}
 
 			if(m_iDomDirection == UT_BIDI_RTL)
 			{
@@ -8705,7 +8722,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	{
 			xxx_UT_DEBUGMSG(("found tabstop indx=%d\n", iCountTabs - 1));
 			fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(iCountTabs - 1));
-			UT_ASSERT(pTab);
+			UT_return_val_if_fail(pTab,false);
 
 			iPosition = pTab->getPosition();
 			iType = pTab->getType();
@@ -9955,7 +9972,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 inline fl_BlockLayout * fl_BlockLayout::getParentItem(void)
 {
 	// TODO Again, more firendly.
-	UT_ASSERT(m_pAutoNum);
+	UT_return_val_if_fail(m_pAutoNum, NULL);
 
 	fl_AutoNum * pParent = m_pAutoNum->getActiveParent();
 	if (pParent)
@@ -9970,7 +9987,7 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	//
 	// Make the current block an element of the list before in the block nextList
 	//
-	UT_ASSERT(nextList);
+	UT_return_if_fail(nextList);
 	UT_GenericVector<const gchar*> va,vp;
 
 	nextList->getListPropertyVector( &vp);
@@ -10010,7 +10027,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	//
 	// Make the current block the next element of the list in the block prevList
 	//
-	UT_ASSERT(prevList);
+	UT_return_if_fail(prevList);
 	UT_GenericVector<const gchar*> va,vp;
 //
 // Defensive code. This should not happen
@@ -10081,11 +10098,8 @@ void fl_BlockLayout::transferListFlags(void)
 	//
 	// Transfer list flags from a block to the following list blocks
 	//
-	UT_ASSERT(getNext());
-	if(getNext() == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(getNext());
+
 	if(getNext()->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 		return;
@@ -10310,7 +10324,7 @@ inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInLis
 	fl_AutoNum * pAutoNum;
 	bool bMatchList = false;
 
-	UT_ASSERT(prevBlockInList);
+	UT_return_if_fail(prevBlockInList);
 
 	pAutoNum = prevBlockInList->getAutoNum();
 	while(pAutoNum && !bMatchList)
@@ -10337,7 +10351,7 @@ inline void fl_BlockLayout::_prependBlockToPrevList( fl_BlockLayout * nextBlockI
 	//
 	// Insert the current block to the list at the point before nextBlockInList
 	//
-	UT_ASSERT(nextBlockInList);
+	UT_return_if_fail(nextBlockInList);
 	m_pAutoNum = nextBlockInList->getAutoNum();
 	m_pAutoNum->prependItem(getStruxDocHandle(), nextBlockInList->getStruxDocHandle());
 }
