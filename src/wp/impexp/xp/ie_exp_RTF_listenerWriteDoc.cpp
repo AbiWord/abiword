@@ -246,7 +246,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	m_pDocument->getAttrProp(apiTOC,&pSectionAP);
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("field");
-	m_pie->_rtf_keyword("fdledit");
+	m_pie->_rtf_keyword("fldedit");
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("fldinst ");
