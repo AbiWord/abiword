@@ -1353,26 +1353,31 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    UT_String_setProperty(sProps,sProp,sVal);
 	  }
 	  bFound = m_pImageAP->getProperty("height",szHeight);
-	  if(!bFound)
+	  if(bFound)
 	  {
 	    sProp = "height";
 	    sVal = szHeight;
 	    UT_String_setProperty(sProps,sProp,sVal);
 	  }
-
 	  bFound = m_pImageAP->getProperty("title",szTitle);
+	  if(bFound)
+	  {
+	    sProp = "title";
+	    sVal = szTitle;
+	    UT_String_setProperty(sProps,sProp,sVal);
+	  }
 	  bFound = m_pImageAP->getProperty("alt",szDescription);
-	  sProps += "; height:";
-	  sProps += szHeight;
+	  if(bFound)
+	  {
+	    sProp = "alt";
+	    sVal = szTitle;
+	    UT_String_setProperty(sProps,sProp,sVal);
+	  }
 	  const gchar*	attributes[] = {
 	    "dataid", NULL,
-	    "title",NULL,
-	    "alt",NULL,
 	    PT_PROPS_ATTRIBUTE_NAME, NULL,
 	    NULL,NULL};
 	  attributes[1] = szDataID;
-	  attributes[3] = szTitle;
-	  attributes[5] = szDescription;
 	  if(m_bIsEmbedded)
 	  {
 	      sProp="embed-type";
@@ -1381,11 +1386,11 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  }
 	  if(sProps.size() > 0)
 	  {
-	    attributes[7] = sProps.c_str();
+	    attributes[3] = sProps.c_str();
 	  }
 	  else
 	  {
-	    attributes[6] = NULL;
+	    attributes[2] = NULL;
 	  }
 	  m_pView->_saveAndNotifyPieceTableChange();
 	  xxx_UT_DEBUGMSG(("Doing Insert Image at %d \n",m_pView->getPoint()));
