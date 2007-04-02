@@ -1175,7 +1175,7 @@ static gboolean _actualScroll(gpointer data)
 {
 	_ViewScroll * pVS = reinterpret_cast<_ViewScroll *>(data);
 	AV_View * pView = pVS->m_pView;
-	xxx_UT_DEBUGMSG(("vScrollSchanged callback\n"));
+	UT_DEBUGMSG(("vScrollSchanged callback\n"));
 	if (pView)
 		pView->sendVerticalScrollEvent(pVS->m_amount);
 	bScrollWait = false;
@@ -1188,6 +1188,7 @@ void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	if(bScrollWait)
 	{
+		UT_DEBUGMSG(("VScroll dropped!!! \n"));
 		return;
 	}
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();

@@ -52,9 +52,9 @@ public:
 
 private:
 
+	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB);
 	void _createPNGFromPixbuf(GdkPixbuf * pixbuf);
 	GdkPixbuf * _loadXPM(UT_ByteBuf * pBB);
-	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB);
 	UT_Error Initialize_PNG(void);
 
 	// PNG structures used

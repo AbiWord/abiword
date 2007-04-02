@@ -6794,7 +6794,9 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			{
 				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 				if (m_pAutoScrollTimer)
-					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+					{
+						m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+					}
 			}
 			else
 			{
@@ -6876,24 +6878,67 @@ endif
 	{
 		if(iNewPoint > getPoint())
 		{
-			iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_BOW, false);
+			iNewPointWord = getPoint();
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_BOW, false);
+			}
 			m_Selection.setSelectionAnchor(iNewPointWord);
-			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);
+			iNewPointWord = iNewPoint;
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+
+				iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);
+			}
 		}
 		else
 		{
-			iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_EOW_SELECT, false);
+			iNewPointWord = getPoint();
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_EOW_SELECT, false);
+			}
+
 			m_Selection.setSelectionAnchor(iNewPointWord);
-			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);
+			iNewPointWord = iNewPoint;
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);
+			}
 		}
 	}
 	else
 	{
 		if((getPoint() > m_Selection.getSelectionAnchor()) && (iNewPoint >=   m_Selection.getSelectionAnchor()))
 		{
-			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);	
+			iNewPointWord = iNewPoint;
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);	
+			}
 			iTmpPointWord = getSelectionAnchor();
-			iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_BOW, false);
+			if(!m_pDoc->isBlockAtPos(iTmpPointWord) &&
+			   !m_pDoc->isTableAtPos(iTmpPointWord) &&
+			   !m_pDoc->isCellAtPos(iTmpPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iTmpPointWord))
+			{
+					iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_BOW, false);
+			}
 			if(iTmpPointWord != getSelectionAnchor())
 			{
 				_clearSelection();
@@ -6910,9 +6955,22 @@ endif
 		}
 		else if ((getPoint() <= m_Selection.getSelectionAnchor()) && (iNewPoint <   m_Selection.getSelectionAnchor()))
 		{
-			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);	
+			iNewPointWord = iNewPoint;
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);	
+			}
 			iTmpPointWord = getSelectionAnchor();
-			iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_EOW_SELECT, false);
+			if(!m_pDoc->isBlockAtPos(iTmpPointWord) &&
+			   !m_pDoc->isTableAtPos(iTmpPointWord) &&
+			   !m_pDoc->isCellAtPos(iTmpPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iTmpPointWord))
+			{
+					iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_EOW_SELECT, false);
+			}
 			if(iTmpPointWord != getSelectionAnchor())
 			{
 				_clearSelection();
@@ -6921,7 +6979,14 @@ endif
 		}
 		else
 		{
-			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);			
+			iNewPointWord = iNewPoint;
+			if(!m_pDoc->isBlockAtPos(iNewPointWord) &&
+			   !m_pDoc->isTableAtPos(iNewPointWord) &&
+			   !m_pDoc->isCellAtPos(iNewPointWord) &&
+			   !m_pDoc->isEndTableAtPos(iNewPointWord))
+			{
+				iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);			
+			}
 			_clearSelection();
 			m_Selection.setSelectionAnchor(iNewPointWord);
 			iNewPointWord = _getDocPosFromPoint(iNewPointWord, FV_DOCPOS_EOW_SELECT, false);			
@@ -6959,7 +7024,9 @@ endif
 			{
 				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 				if (m_pAutoScrollTimer)
-					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+					{
+						m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+					}
 			}
 			else
 			{

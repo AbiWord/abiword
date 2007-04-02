@@ -415,26 +415,61 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	{
 		iLow++;
 	}
+	//
+	// Handle end effects of table selection.
+	//
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
-	if(!bDeleteTables)
+	PT_DocPosition iLowTable = 0;
+	PT_DocPosition iHighTable = 0;
+	if(!bDeleteTables && isInTable(iLow))
 	{
-		if(!isInTable(iLow-1) && (isInTable(iHigh+1) && !isInTable(iHigh+2)))
+		if(m_pDoc->isTableAtPos(iLow))
 		{
-			if(isInTable(iLow) && !isInTable(iLow-1))
-			{
-				iLow = iLow-1;
-			}
-			if(isInTable(iHigh+1) && !isInTable(iHigh+2))
-			{
-				iHigh = iHigh+1;
-			}
-			bDeleteTables = true;
+				iLowTable = iLow;
 		}
-		if(!bDeleteTables && (m_pDoc->isTableAtPos(iLow-1) && m_pDoc->isEndTableAtPos(iHigh-1)))
+		else if((iLow > 0) && m_pDoc->isTableAtPos(iLow-1))
 		{
-			bDeleteTables = true;
-			iLow--;
+				iLowTable = iLow-1;
+		}		
+		else if((iLow > 1) && m_pDoc->isTableAtPos(iLow-2))
+		{
+				iLowTable = iLow -2;
+		} 
+		else if((iLow > 2) &&  m_pDoc->isTableAtPos(iLow-3))
+		{
+				iLowTable = iLow -3;
 		}
+		if(iLowTable > 0)
+			iLow = iLowTable;
+	}
+	if(!bDeleteTables && isInTable(iHigh))
+	{
+			if(m_pDoc->isEndTableAtPos(iHigh))
+			{
+					iHighTable = iHigh+1;
+			}
+			if(m_pDoc->isEndTableAtPos(iHigh+1))
+			{
+					iHighTable = iHigh+2;
+			}
+			if(iHighTable > 0)
+				iHigh = iHighTable;
+	}
+	if(!bDeleteTables && (iLowTable > 0) && (iHighTable > 0))
+	{
+			iHigh = iHighTable;
+			iLow = iLowTable;
+			bDeleteTables = true;
+	}
+	else if(!bDeleteTables && !isInTable(iLow) && (iHighTable > 0))
+	{
+			iHigh = iHighTable;
+			bDeleteTables = true;
+	}
+	else if(!bDeleteTables && !isInTable(iHigh) && (iLowTable > 0))
+	{
+			iLow = iLowTable;
+			bDeleteTables = true;
 	}
 	if(!isInFrame(iLow) && isInFrame(iHigh))
 	{
@@ -2263,15 +2298,14 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	}
 }
 
-void FV_View::_autoScroll(UT_Worker * pWorker)
-{
-	UT_return_if_fail(pWorker);
+static bool bScrollRunning = false;
+static UT_Worker * s_pScroll = NULL;
 
-	// this is a static callback method and does not have a 'this' pointer.
+void FV_View::_actuallyScroll(UT_Worker * pWorker)
+{
 
 	FV_View * pView = static_cast<FV_View *>(pWorker->getInstanceData());
 	UT_return_if_fail(pView);
-
 	if(pView->getLayout()->getDocument()->isPieceTableChanging())
 	{
 		return;
@@ -2341,6 +2375,42 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 			}
 		}
 	}
+	s_pScroll->stop();
+	delete s_pScroll;
+	s_pScroll = NULL;
+	bScrollRunning = false;
+}
+
+void FV_View::_autoScroll(UT_Worker * pWorker)
+{
+	UT_return_if_fail(pWorker);
+	if(bScrollRunning)
+		{
+			UT_DEBUGMSG(("Dropping autoscroll !!!!!!! \n"));
+			return;
+		}
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_View * pView = static_cast<FV_View *>(pWorker->getInstanceData());
+	UT_return_if_fail(pView);
+	if(pView->getLayout()->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
+
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	s_pScroll = UT_WorkerFactory::static_constructor (_actuallyScroll,pView, inMode, outMode);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pScroll)->set(1);
+	}
+	bScrollRunning = true;
+	s_pScroll->start();
 }
 
 

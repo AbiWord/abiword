@@ -1214,11 +1214,25 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 			pContainer = pContainerUpper;
 		}
 	}
+	if(getContainerType() == FP_CONTAINER_CELL && (i == 0))
+	{
+	    fp_CellContainer *pCellCon = static_cast<fp_CellContainer *>(this);
+	    if((x < getX()) && (pCellCon->getLeftAttach() == 0) )
+	    {
+		fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
+		pos = pCL->getPosition(true)+1;
+		bBOL = true;
+		bEOL = false;
+		//		if((pCellCon->getTopAttach() == 0))
+		//  pos--;
+		return;
+	    } 
+	}
 	if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
+		UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
-		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
+		UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() ,
 								pos, bBOL, bEOL,isTOC);
