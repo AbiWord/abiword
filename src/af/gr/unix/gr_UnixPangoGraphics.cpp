@@ -741,9 +741,11 @@ UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_sint32 * height)
+UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
 {
-        if (height) *height = 0;
+        if (height) { 
+		*height = 0;
+	}
 	UT_sint32 w = measureString(&c, 0, 1, NULL, height);
 	return w;
 }
@@ -1997,7 +1999,7 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 											  int iCharOffset,
 											  int iLength,
 											  UT_GrowBufElement* pWidths,
-											  UT_sint32 * height)
+											  UT_uint32 * height)
 {
 	UT_UTF8String utf8;
 	UT_uint32 iWidth = 0;

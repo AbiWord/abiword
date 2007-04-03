@@ -390,7 +390,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	// Note: That's bogus.  measureString will give us the horizontal advance of "c",
 	// but we need the bounding box of "c" instead.  To get it, we should use with FreeType face->bbox,
 	// in windows we should use the (FIXME: find the right name, it was something as getCharABC(...)
-	UT_sint32 h1 = 0;
+	UT_uint32 h1 = 0;
 	UT_sint32 w1 = m_areagc->measureUnRemappedChar(c, &h1);
 
 	areaPainter.clearArea(0, 0, wwidth, wheight);

@@ -387,9 +387,9 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,
 									int num,
-									UT_GrowBufElement* pWidths, UT_sint32 *height = 0);
+									UT_GrowBufElement* pWidths, UT_uint32 *height = 0);
 
-	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_sint32 * Height = 0) = 0;
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0) = 0;
 	virtual void getCoverage(UT_NumberVector& coverage) = 0;
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
