@@ -31,6 +31,10 @@
 
 #include "xap_Draw_Symbol.h"
 
+
+static UT_UCSChar MaxWidthChar = 0;
+static UT_UCSChar MaxHeightChar = 0;
+
 XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 	: XAP_Preview(gc),
 	  m_areagc(NULL),
@@ -39,6 +43,8 @@ XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 	  m_drawHeight(0),
 	  m_drawareaWidth(0),
 	  m_drawareaHeight(0),
+	  m_start_base(0),
+	  m_start_nb_char(0),
 	  m_CurrentSymbol(UCS_SPACE),
 	  m_PreviousSymbol(UCS_SPACE),
 	  m_vCharSet(256),
@@ -70,23 +76,31 @@ void XAP_Draw_Symbol::setAreaSize( UT_uint32 width, UT_uint32 height)
 
 void XAP_Draw_Symbol::setFontString( void )
 {
-	setFontToGC(m_gc, m_drawWidth / 32, 14);	
+	setFontToGC(m_gc, m_drawWidth / 32, m_drawHeight / 7);	
 }
 
-void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize)
+void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable)
 {
 	UT_ASSERT(p_gc);
 	UT_ASSERT(MaxWidthAllowable);
+	UT_ASSERT(MaxHeightAllowable);
 
 	GR_Font* font = NULL;
 
-	bool SizeOK = false;
 
-	UT_UCSChar p_buffer[224];
-	for(int i = 0; i < 224; i++)
-		p_buffer[i] = i + 32;
+	// Estimate Pointsize
+	UT_sint32 PointSize = 32;
+	UT_sint32 LastPointSize = -1;
+	UT_sint32 UpperPointSize = -1;
+	UT_sint32 LowerPointSize = 1;
 
-	while (!SizeOK && (PointSize > 0))
+	// We try to find the Pointsize which is a bit smaller than
+	// MaxHeightAllowable and MaxWidthAllowable (W+HAllowable)
+	// we archieve that in two steps:
+	// 1. step: find a Pointsize which is bigger as W+HAllowable)
+	// 2. step: Iterate by taking halfe PointSize steps until we find
+	// the fitting one
+	while (1)
 	{
 		char temp[10];
 
@@ -104,33 +118,76 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			m_stFont = font->getFamily();
 		
 		p_gc->setFont(font);
-		
-		UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
 
-		if (MaxWidth < MaxWidthAllowable)
-			SizeOK = true;
-		else if (PointSize < 14 &&
-			 !strcmp(m_stFont.c_str(), "Standard Symbols L"))
+		p_gc->getCoverage(m_vCharSet);
+
+		if (PointSize == LastPointSize)
+			break;
+		
+		if (!MaxWidthChar)
 		{
-		    /* The Standard Symbol L font (or the way Pango handles it)
-		     * seems broken and cannot be scaled properly (it returns
-		     * the same metrics between 14-12pt, and after that we are
-		     * getting numbers that are all over the place).
-		     *
-		     * This HACK stops us reducing the font size all the way
-		     * to 0, but the metrics of the inserted characters is
-		     * still screwed up.
-		     */
-		    SizeOK = true;
-		}
-		else
+			UT_uint32 MaxWidth = 0;
+			UT_uint32 MaxHeight = 0;
+
+                        // this can take very long with large fonts
+		 	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+			{
+				UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
+				size_t nb_chars = static_cast<size_t>(m_vCharSet[i + 1]);
+
+				for (size_t j = m_start_base == i? m_start_nb_char: 0; j < nb_chars; j++)
+				{
+					UT_UCSChar c = base + j;
+				        UT_uint32 width, height;
+		   			p_gc->getMaxCharacterDimension(&c, 1, width, height);
+					if (width > MaxWidth) 
+					{
+						MaxWidth = width;
+						MaxWidthChar = c;
+					}
+						
+					if (height > MaxHeight) 
+					{
+						MaxHeight = height;
+						MaxHeightChar = c;
+					}
+				}
+			}
+	        }
+
+
+	        UT_uint32 width, height;
+		p_gc->getMaxCharacterDimension(&MaxWidthChar, 1, width, height);
+		UT_sint32 xdiff_temp = MaxWidthAllowable - width;
+		p_gc->getMaxCharacterDimension(&MaxHeightChar, 1, width, height);
+		UT_sint32 ydiff_temp = MaxHeightAllowable - height;
+
+		if (UpperPointSize < 0)
 		{
-			PointSize--;
-			UT_ASSERT(PointSize);
+			if (xdiff_temp < 0 || ydiff_temp < 0)
+				UpperPointSize = PointSize;
+			else if (PointSize > 72)
+				UpperPointSize = PointSize = 72;
+			else
+				PointSize *= 2;
 		}
+		if (UpperPointSize > 0)
+		{	LastPointSize = PointSize;
+		  	if (xdiff_temp < 0 || ydiff_temp < 0)
+				UpperPointSize = PointSize;
+			else
+				LowerPointSize = PointSize;
+
+			PointSize = LowerPointSize + (UpperPointSize - LowerPointSize) / 2;
+		}
+		if (!PointSize)
+		{
+			UT_ASSERT (PointSize);
+			break;
+	 	}
+
 	}
 
-	p_gc->getCoverage(m_vCharSet);
 }
 
 const char* XAP_Draw_Symbol::getSelectedFont()
@@ -141,21 +198,49 @@ const char* XAP_Draw_Symbol::getSelectedFont()
 void XAP_Draw_Symbol::setSelectedFont(const char *font)
 {
 	m_stFont = font;
+	m_CurrentSymbol = m_PreviousSymbol = UCS_SPACE;
+	m_start_base = 0;
+	m_start_nb_char = 0;
+	MaxWidthChar = 0;
+	MaxHeightChar = 0;
+
 	setFontString();
 	setFontStringarea();
-
-	m_CurrentSymbol = m_PreviousSymbol = UCS_SPACE;
 }
 
 void XAP_Draw_Symbol::setFontStringarea(void)
 {
-    int PointSize = 33;
-    do
-    {
-	PointSize--;
-	setFontToGC(m_areagc, m_drawareaWidth, PointSize);
-    }while (m_areagc->getFontHeight() > m_drawareaHeight &&
-	    PointSize > 6);
+	setFontToGC(m_areagc, m_drawareaWidth, m_drawareaHeight);
+}
+
+void XAP_Draw_Symbol::setRow (UT_uint32 row)
+{
+        UT_uint32 chars_needed = row * 32;
+	UT_uint32 chars = 0;
+	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
+	{
+		size_t numb = static_cast<size_t>(m_vCharSet[i + 1]);
+		if (chars + numb > chars_needed)
+		{
+			m_start_base = i;
+			m_start_nb_char = chars_needed - chars;
+			break;
+		}
+		chars += numb;
+	}
+	draw ();
+}
+
+UT_uint32 XAP_Draw_Symbol::getSymbolRows (void)
+{
+	UT_uint32 chars = 0;
+	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+	{
+		chars += static_cast<size_t>(m_vCharSet[i + 1]);
+	}
+
+	UT_uint32 rows = chars / 32 + (chars % 32? 1: 0);
+	return rows;
 }
 
 void XAP_Draw_Symbol::draw(void)
@@ -170,23 +255,17 @@ void XAP_Draw_Symbol::draw(void)
 	wheight = m_drawHeight;
 	UT_uint32 tmpw = wwidth / 32;
 	UT_uint32 tmph = wheight / 7;
-	yoff = wheight / 14;
-	xoff = wwidth / 64;
+	yoff = wheight / (2 * 7);
+	xoff = wwidth / (2 * 32);
 	painter.clearArea(0, 0, wwidth, wheight);
 	int pos = 0;
 
-	// FIXME This code needs rethink -- if I have a large Unicode font that
-	// contains thousands of glyphs, the loop below will attempt to draw every
-	// single one of them. For now, I am going to limit this to drawing 7 * 32
-	// chars, since the grid has 7*32 cells, but we should probably have a
-	// scroll bar in the symbol window and draw 7*32 chars depending on the
-	// position of the scrollbar.
-	for (i = 0; i < m_vCharSet.size(); i += 2)
+	for (i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
 		UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
 		size_t nb_chars = static_cast<size_t>(m_vCharSet[i + 1]);
 
-		for (UT_UCSChar j = base; j < base + nb_chars; ++j)
+		for (UT_UCSChar j = base + (m_start_base == i? m_start_nb_char: 0); j < base + nb_chars; ++j)
 		{
 			UT_sint32 w = m_gc->measureUnRemappedChar(j);
 
@@ -200,23 +279,23 @@ void XAP_Draw_Symbol::draw(void)
 			
 			++pos;
 			
-			if(pos > 7*32)
+			if(pos > 32 * 7)
 				break;
 		}
 		
-		if(pos > 7*32)
+		if(pos > 32 * 7)
 			break;
 	}
 
 	y = 0;
-	for(i = 0; i <= 6; i++)
+	for(i = 0; i <= 7; i++)
 	{
 		painter.drawLine(0, y, wwidth - m_areagc->tlu(1), y);
 		y += tmph;
 	}
 
 	x = 0;
-	for(i = 0; i <= 31; i++)
+	for(i = 0; i <= 32; i++)
 	{
 		painter.drawLine(x, 0, x, wheight - m_areagc->tlu(1));
 		x += tmpw;
@@ -229,14 +308,18 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 	index = iy * 32 + ix;
 	count = 0;
 	UT_DEBUGMSG(("calcSymbolFromCoords(x = [%u], y = [%u]) =", ix, iy));
-	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
+
+	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
-		count += m_vCharSet[i + 1];
+		count = m_vCharSet[i + 1];
+		if (i == m_start_base &&  count > m_start_nb_char)
+			index += m_start_nb_char;
 		if (count > index)
 		{
 			UT_DEBUGMSG((" %u\n", static_cast<UT_uint32>(m_vCharSet[i] + index - count + m_vCharSet[i + 1])));
-			return static_cast<UT_UCSChar>(m_vCharSet[i] + index - count + m_vCharSet[i + 1]);
+			return static_cast<UT_UCSChar>(m_vCharSet[i] + index);
 		}
+		index -= count;
 	}
 
 	return static_cast<UT_UCSChar>(0);
@@ -261,23 +344,22 @@ void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y
 {
 	UT_uint32 index = 0;
 
-	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
+	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
 		UT_uint32 base = static_cast<UT_uint32>(m_vCharSet[i]);
-		UT_uint32 size = static_cast<UT_uint32>(m_vCharSet[i + 1]);
+		UT_uint32 size =  static_cast<UT_uint32>(m_vCharSet[i + 1]);
 		
 		if (base + size > c)
 		{
-			index += c - base;
+			index += c - (i == m_start_base? base + m_start_nb_char: base);
 			break;
 		}
 		else
-			index += size;
+			index += size - (m_start_base == i? m_start_nb_char: 0);
 	}
 
 	x = index % 32;
 	y = index / 32;
-
 	UT_DEBUGMSG(("[%d] -> (%d, %d)\n", c, x, y));
 }
 
@@ -308,14 +390,15 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	// Note: That's bogus.  measureString will give us the horizontal advance of "c",
 	// but we need the bounding box of "c" instead.  To get it, we should use with FreeType face->bbox,
 	// in windows we should use the (FIXME: find the right name, it was something as getCharABC(...)
-	UT_sint32 w1 = m_areagc->measureUnRemappedChar(c);
+	UT_sint32 h1 = 0;
+	UT_sint32 w1 = m_areagc->measureUnRemappedChar(c, &h1);
 
 	areaPainter.clearArea(0, 0, wwidth, wheight);
 
 	if(w1 != GR_CW_ABSENT)
 	{
 		x = (m_drawareaWidth - w1) / 2;
-		y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
+		y = (m_drawareaHeight - h1) / 2;
 		areaPainter.drawChars(&c, 0, 1, x, y);
 	}
 			
@@ -353,6 +436,14 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 		painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
 	}
 	
+	// Redraw only the white box boundaries
+	// you do not notice the missing of the
+	// selected box
+	painter.drawLine(px, py, px1, py);
+	painter.drawLine(px, py1, px1, py1);
+	painter.drawLine(px, py, px, py1);
+	painter.drawLine(px1, py, px1, py1);
+
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
 	painter.fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));

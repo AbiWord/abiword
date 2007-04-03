@@ -45,12 +45,15 @@ public:
 	void						setSelectedFont(const char *font);
 	void						setFontString();
 	void						setFontStringarea();
-	void						setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize);
+	void						setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable);
 	void						setFontfont(GR_Font * font);
 	void						setWindowSize(UT_uint32 width, UT_uint32 height);
 	void						setAreaSize(UT_uint32 width, UT_uint32 height);
 	void						setAreaGc(GR_Graphics *);
+	void						setRow(UT_uint32 row);
+
 	const char*					getSelectedFont();
+	UT_uint32					getSymbolRows ();
 
     // where all the Symbol-specific drawing happens
 	
@@ -74,6 +77,8 @@ protected:
 	UT_uint32                   m_drawHeight;
 	UT_uint32                   m_drawareaWidth;
 	UT_uint32                   m_drawareaHeight;
+	size_t                      m_start_base;
+	size_t			    m_start_nb_char;
 
 	UT_UCSChar					m_CurrentSymbol;
 	UT_UCSChar					m_PreviousSymbol;
@@ -81,7 +86,7 @@ protected:
 private:
 
 	UT_NumberVector				m_vCharSet;
-	UT_String					m_stFont;
+	UT_String				m_stFont;
 };
 
 #endif /* XAP_Draw_Symbol_H */

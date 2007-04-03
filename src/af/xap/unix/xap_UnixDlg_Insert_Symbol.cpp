@@ -77,7 +77,6 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_windowMain = NULL;
 	m_SymbolMap = 	NULL;
 	m_InsertS_Font_list = NULL;
-	m_fontlist.clear();
 
 #ifndef USE_GUCHARMAP
 	m_areaCurrentSym = NULL;
@@ -128,8 +127,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
+	//XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	//UT_ASSERT(unixapp);
 	
 	UT_ASSERT(m_SymbolMap && m_SymbolMap->window);
 
@@ -172,18 +171,23 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
 		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
-		const gchar * buffer = g_strdup(DEFAULT_UNIX_SYMBOL_FONT);
-		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),buffer);
-		m_CurrentSymbol = ' ';
-		m_PreviousSymbol = ' ';
+		UT_UCSChar c = iDrawSymbol->calcSymbol(0, 0);
+		if (c)
+		{
+			m_PreviousSymbol = c;
+		        m_CurrentSymbol = c;
+			iDrawSymbol->calculatePosition(m_CurrentSymbol, m_ix, m_iy);
+		}
 		xap_UnixDlg_Insert_Symbol_first = 1;
 	}
 	else
 	{
 		iDrawSymbol->setSelectedFont(xap_Unix_Prev_Font.c_str());
 	}
-	// Show the top level dialog
 
+	_setScrolledWindow ();
+
+	// Show the top level dialog
 	gtk_widget_show(mainWindow);
 
 	// Put the current font in the entry box
@@ -233,11 +237,6 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 		xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
 	g_list_free(m_InsertS_Font_list);
 	
-	for(UT_uint32 i = 0; i < m_fontlist.getItemCount(); i++) 
-	{
-		g_free(m_fontlist.getNthItem(i));
-	}
-	m_fontlist.clear();
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
@@ -256,12 +255,53 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	iDrawSymbol->setSelectedFont( buffer && *buffer ? static_cast<const char *>(buffer) :
 		                                              "Symbol");
 	
+	// we get strange things if the previous Symbol does not exists in the
+	// new font. Reset it
+	UT_UCSChar c = iDrawSymbol->calcSymbol(0, 0);
+	if (c)
+	{
+		m_PreviousSymbol = c;
+	        m_CurrentSymbol = c;
+		iDrawSymbol->calculatePosition(m_CurrentSymbol, m_ix, m_iy);
+	}
+ 	
+	_setScrolledWindow ();
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else
 	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), buffer);
 #endif
 }
+void XAP_UnixDialog_Insert_Symbol::New_Row(void)
+{
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_return_if_fail(iDrawSymbol);
+
+	// FIXME rounding is better
+	UT_uint32 row = UT_uint32 (m_vadjust->value);
+
+	iDrawSymbol->setRow (row);
+}
+
+void XAP_UnixDialog_Insert_Symbol::Scroll_Event (int direction)
+{
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_return_if_fail(iDrawSymbol);
+
+	int update = 0;
+
+	if (direction && m_vadjust->upper > m_vadjust->value + 1)
+	{
+		m_vadjust->value += 1;
+	        gtk_adjustment_value_changed (m_vadjust);
+	}
+	else if (!direction && m_vadjust->lower <= m_vadjust->value - 1)
+ 	{
+		m_vadjust->value -= 1;
+	        gtk_adjustment_value_changed (m_vadjust);
+        }
+}
+
 
 /*****************************************************************/
 
@@ -300,6 +340,15 @@ static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 	dlg->New_Font();
 }
 
+static void s_new_row(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
+{
+	dlg->New_Row();
+}
+
+static void  s_scroll_event(GtkWidget * widget, GdkEventScroll * event, XAP_UnixDialog_Insert_Symbol * dlg)
+{
+	dlg->Scroll_Event (static_cast <int> (event->direction));
+}
 #ifdef USE_GUCHARMAP
 
 static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
@@ -314,6 +363,13 @@ static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_Un
 	dlg->SymbolMap_exposed();
 	return FALSE;
 }
+
+static gboolean s_size_request(GtkWidget * widget, GtkAllocation* req, XAP_UnixDialog_Insert_Symbol * dlg)
+{
+	dlg->setSymbolMap_size (req->width, req->height);
+	return FALSE;
+}
+
 
 static gboolean s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
@@ -359,6 +415,35 @@ void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
+void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 height)
+{
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_return_if_fail(iDrawSymbol);
+	UT_return_if_fail(m_windowMain);
+	UT_return_if_fail(m_SymbolMap);
+
+	
+	static UT_uint32 diff_width = 0; 
+	static UT_uint32 diff_height = 0;
+
+
+	// only in the beginnig we can measure the difference
+	// between window and drawingarea this show stay constant
+	if (!diff_width || !diff_height)
+	{
+		diff_width = m_windowMain->requisition.width - m_SymbolMap->allocation.width;
+		diff_height = m_windowMain->requisition.height - m_SymbolMap->allocation.height;
+	}
+	GtkRequisition diff;
+	diff.width = width - diff_width;
+	diff.height = height - diff_height;
+
+        // set new sizes
+        iDrawSymbol->setWindowSize(diff.width, diff.height);
+	iDrawSymbol->setFontString ();
+}
+
+
 //
 // This function allows the symbol to be selected via the keyboard
 //
@@ -366,51 +451,73 @@ void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 {
 	int move = 0;
+	UT_uint32 ix = m_ix;
+	UT_uint32 iy = m_iy;
 	UT_DEBUGMSG(("Current Symbol %x \n",m_CurrentSymbol));
 	switch (e->keyval)
 	{
 	case GDK_Up:
-		if(m_iy > 0)
+		if(iy > 0)
 		{
-			m_iy--;
+			iy--;
+		}
+		else
+		{
+			Scroll_Event (0);
 		}
 		move = -32;
 		break;
 	case GDK_Down:
-		if(m_iy < 6)
+		if(iy < 6)
 		{
-			m_iy++;
+			iy++;
+		}
+		else
+		{
+			Scroll_Event (1);
 		}
 		move = 32;
 		break;
 	case GDK_Left:
-		if(m_ix > 0)
+		if(ix > 0)
 		{
-			m_ix--;
+			ix--;
 		}
-		else if(m_iy > 0)
+		else if(iy > 0)
 		{
-			m_iy--;
-			m_ix= 31;
+			iy--;
+			ix = 31;
+		}
+		else
+		{
+			Scroll_Event (0);
+			ix = 31;
+			
 		}
 		move = -1;
 		break;
 	case GDK_Right:
-		if(m_ix < 31)
+		if(ix < 31)
 		{
-			m_ix++;
+			ix++;
 		}
-		else if(m_iy < 6)
+		else if(iy < 6)
 		{
-			m_iy++;
-			m_ix= 0;
+			iy++;
+			ix = 0;
+		}
+		else
+		{
+			Scroll_Event (1);
+			ix = 0;
+			
 		}
 		move = 1;
 		break;
 	case GDK_Return:
 		g_signal_stop_emission (G_OBJECT(m_windowMain), 
-								g_signal_lookup ("key_press_event", 
-												 G_OBJECT_TYPE (m_windowMain)), 0);
+			g_signal_lookup ("key_press_event", 
+			G_OBJECT_TYPE (m_windowMain)), 0);
 		event_Insert();
 		return TRUE ;
 		break;
@@ -420,9 +527,14 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 	{
 		XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 		UT_return_val_if_fail(iDrawSymbol,FALSE);
-		m_PreviousSymbol = m_CurrentSymbol;
-		m_CurrentSymbol = iDrawSymbol->calcSymbolFromCoords(m_ix, m_iy);
-		UT_DEBUGMSG(("m_CurrentSymbol %x \n",m_CurrentSymbol));
+		UT_UCSChar c = iDrawSymbol->calcSymbolFromCoords(ix, iy);
+		if (c)
+		{ m_PreviousSymbol = m_CurrentSymbol;
+		  m_CurrentSymbol = c;
+  		  UT_DEBUGMSG(("m_CurrentSymbol %x \n",m_CurrentSymbol));
+		  m_ix = ix;
+		  m_iy = iy;
+		}
 		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 		g_signal_stop_emission (G_OBJECT(m_windowMain), 
@@ -441,14 +553,18 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
-	m_PreviousSymbol = m_CurrentSymbol;
-	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
-	iDrawSymbol->calculatePosition(m_CurrentSymbol,m_ix,m_iy);
-	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+	UT_UCSChar c = iDrawSymbol->calcSymbol(x, y);
+	if (c)
+	{
+		m_PreviousSymbol = m_CurrentSymbol;
+	 	m_CurrentSymbol = c;
+		iDrawSymbol->calculatePosition(m_CurrentSymbol, m_ix, m_iy);
+		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
-	// double click should also insert the symbol
-	if(event->type == GDK_2BUTTON_PRESS)
-	    event_Insert();
+		// double click should also insert the symbol
+		if(event->type == GDK_2BUTTON_PRESS)
+			event_Insert();
+	}
 }
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
@@ -465,6 +581,7 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 	gtk_widget_add_events(pre, GDK_EXPOSURE_MASK);
 	gtk_widget_add_events(pre, GDK_ENTER_NOTIFY_MASK);
 	gtk_widget_add_events(pre, GDK_LEAVE_NOTIFY_MASK);
+	gtk_widget_add_events(pre, GDK_SCROLL_MASK);
 	return pre;
 }
 
@@ -480,10 +597,6 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	g_list_free( m_InsertS_Font_list);
-	for(UT_uint32 i = 0; i < m_fontlist.getItemCount(); i++) 
-		 g_free(m_fontlist.getNthItem(i));
-	m_fontlist.clear();
-
 	modeless_cleanup();
 	
 	// Just nuke this dialog
@@ -519,9 +632,21 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 #ifndef USE_GUCHARMAP
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
-	m_SymbolMap = _previewNew (608, 147);
-	gtk_box_pack_start(GTK_BOX(tmp), m_SymbolMap, FALSE, FALSE, 0);
-	
+	//
+	GtkWidget * hbox1 = gtk_hbox_new (FALSE, 4);
+	gtk_widget_show (hbox1);
+	gtk_box_pack_start(GTK_BOX(tmp), hbox1, TRUE, TRUE, 0);
+
+
+		
+        m_SymbolMap = _previewNew (608, 147);
+        gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
+
+	m_vadjust = GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 7, 0, 0, 7));
+	GtkWidget *vscroll = gtk_vscrollbar_new (m_vadjust);
+	gtk_widget_show (vscroll);
+        gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
+
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
 #else
@@ -564,26 +689,31 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		GR_UnixPangoGraphics::getAllFontNames();
 	
 	GList *glFonts = NULL;
-	UT_String currentfont;
-	UT_uint32 j = 0;
 
 	for (std::vector<const char *>::const_iterator i = names.begin(); 
 		 i != names.end(); i++)
 	{
 		const gchar * lgn = NULL;
 		lgn = *i;
-		
-		if((strstr(currentfont.c_str(),lgn)==NULL) ||
-		   (currentfont.size() !=strlen(lgn)) )
-		{
-			currentfont = lgn;
-			m_fontlist.addItem(static_cast<gchar*>(g_strdup(currentfont.c_str())));
-			glFonts = g_list_prepend(glFonts, m_fontlist.getNthItem(j));
-			j++;
-		}
+		glFonts = g_list_insert_sorted(glFonts, g_strdup(lgn), reinterpret_cast <gint (*)(const void*, const void*)> (strcmp));
 	}	
 
-	return g_list_reverse(glFonts);
+        UT_String lastfont;
+	for (GList *g = g_list_first (glFonts); g;)
+	{
+		if (lastfont == static_cast <const char *> (g->data))
+		{
+			g_free (g->data);
+			GList * gtmp = g;
+	       		g = g_list_next (g);
+			g_list_remove_link (gtmp, gtmp);
+			continue;
+		}
+		lastfont = static_cast <const char *> (g->data);
+	        g = g_list_next (g);
+        }
+
+	return glFonts;
 }
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
@@ -607,6 +737,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					 G_CALLBACK(s_dlg_response),
 					 static_cast<gpointer>(this));
 
+
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp
 	GtkEntry * blah = GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry);
@@ -628,6 +759,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 
 #ifndef USE_GUCHARMAP
 
+
 	// The event to choose the Symbol!
 	g_signal_connect(G_OBJECT(m_SymbolMap),
 					 "button_press_event",
@@ -645,6 +777,11 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					 "key_press_event",
 					 G_CALLBACK(s_keypressed),
 					 static_cast<gpointer>(this));
+
+	g_signal_connect(G_OBJECT(m_windowMain),
+					 "size-allocate",
+					 G_CALLBACK(s_size_request),
+					 static_cast<gpointer>(this));
 	
 	// the expose event of the m_SymbolMap
 	g_signal_connect(G_OBJECT(m_SymbolMap),
@@ -656,9 +793,39 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   "expose_event",
 					   G_CALLBACK(s_Symbolarea_exposed),
 					   static_cast<gpointer>(this));
+        // VScrollbar events
+	g_signal_connect(G_OBJECT(m_vadjust),
+	                                 "value-changed",
+					 GTK_SIGNAL_FUNC(s_new_row),
+		                         static_cast<gpointer>(this));
+        
+	// Mouse wheel events
+	g_signal_connect(G_OBJECT(m_SymbolMap),
+	                                 "scroll_event",
+					 GTK_SIGNAL_FUNC(s_scroll_event),
+		                         static_cast<gpointer>(this));
+
 #else
 	g_signal_connect (G_OBJECT (gucharmap_charmap_get_chartable (GUCHARMAP_CHARMAP (m_SymbolMap))), "activate",
 					  G_CALLBACK(s_charmap_activate), static_cast<gpointer>(this));
 #endif
 
+}
+
+void XAP_UnixDialog_Insert_Symbol::_setScrolledWindow (void)
+{
+	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+        UT_return_if_fail(iDrawSymbol);
+	UT_return_if_fail(m_vadjust);
+
+	UT_uint32 rows = iDrawSymbol->getSymbolRows () + 1;
+	rows = (rows <= 7? 1: rows - 7);
+	m_vadjust->lower = 0;
+	m_vadjust->upper = gdouble (rows);
+	m_vadjust->page_size = 1 + rows / 7;
+	m_vadjust->page_increment = 1;
+	m_vadjust->step_increment = 1;
+	gtk_adjustment_changed (m_vadjust);
+	m_vadjust->value = 0;
+	gtk_adjustment_value_changed (m_vadjust);
 }

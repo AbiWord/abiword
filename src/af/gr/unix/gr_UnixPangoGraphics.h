@@ -147,7 +147,7 @@ public:
 	static const char *    graphicsDescriptor(){return "Unix Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c);
+	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_sint32 * Height = 0);
 	
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									 int iCharOffset, int iLength,
@@ -158,7 +158,7 @@ public:
 									 UT_sint32 xoff, UT_sint32 yoff);
 
 	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
-										 int num,  UT_GrowBufElement* pWidths);
+										 int num,  UT_GrowBufElement* pWidths, UT_sint32 * Height = 0);
 	
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);

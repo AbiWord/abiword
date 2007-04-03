@@ -46,6 +46,10 @@ public:
 	void			event_Insert(void);
 	void			event_WindowDelete(void);
 	void			New_Font(void);
+	void			New_Row(void);
+	void 			Scroll_Event (int direction);
+	void			setSymbolMap_size (UT_uint32 width, UT_uint32 height);
+
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -70,11 +74,13 @@ private:
 	GList *     _getGlistFonts(void);
 	GtkWidget * _createComboboxWithFonts (void);
 	void        _connectSignals (void);
+	void        _setScrolledWindow (void);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 	GtkWidget * m_SymbolMap;
 	GtkWidget * m_fontcombo;	
+	GtkAdjustment * m_vadjust;
 	GList     * m_InsertS_Font_list;
 	UT_GenericVector<gchar*>   m_fontlist;
 

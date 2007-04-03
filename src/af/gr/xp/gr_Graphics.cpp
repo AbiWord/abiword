@@ -334,11 +334,13 @@ void GR_Graphics::setLineProperties ( double    inWidthPixels,
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length)
+void GR_Graphics::getMaxCharacterDimension(const UT_UCSChar*s, UT_uint32 Length, UT_uint32 &width, UT_uint32 &height)
 {
 	UT_GrowBufElement *pWidths = new UT_GrowBufElement[Length];
 
-	measureString(s, 0, Length, pWidths);
+
+	UT_sint32 MaxHeight = 0;
+	measureString(s, 0, Length, pWidths, &MaxHeight);
 
 	UT_sint32 MaxWidth = 0;
 
@@ -350,11 +352,12 @@ UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length
 
 	DELETEPV(pWidths);
 
-	return MaxWidth;
+	width = MaxWidth;
+	if (MaxHeight > 0) height = MaxHeight;
 }
 
 UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
-										 int num,  UT_GrowBufElement* pWidths)
+										 int num,  UT_GrowBufElement* pWidths, UT_sint32 *height)
 {
 	// Generic base class version defined in terms of measureUnRemappedChar().
 	// Platform versions can roll their own if it makes a performance difference.

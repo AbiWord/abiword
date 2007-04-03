@@ -741,9 +741,11 @@ UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_sint32 * height)
 {
-	return measureString(&c, 0, 1, NULL);
+        if (height) *height = 0;
+	UT_sint32 w = measureString(&c, 0, 1, NULL, height);
+	return w;
 }
 
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
@@ -1994,7 +1996,8 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 											  int iCharOffset,
 											  int iLength,
-											  UT_GrowBufElement* pWidths)
+											  UT_GrowBufElement* pWidths,
+											  UT_sint32 * height)
 {
 	UT_UTF8String utf8;
 	UT_uint32 iWidth = 0;
@@ -2033,6 +2036,9 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	PangoRectangle LR;
 	UT_uint32 iOffset = 0;
 	GList * l = pItems;
+
+	if (height)
+		*height = 0;
 	
 	while (l)
 	{
@@ -2056,6 +2062,9 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
 		iWidth += ptlu(LR.width + LR.x);
+		UT_uint32 h = ptlu(LR.height);
+		if (height && *height < h)
+			*height = h;
 
 		int * pLogOffsets = NULL;
 
@@ -2095,8 +2104,9 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 						 k < iOffset + (iEnd - (j + 1)) + 1;
 						 ++k)
 					{
-						pWidths[iOffset++] = iMyWidth / (iEnd - (j + 1) + 1);
+						pWidths[k] = iMyWidth / (iEnd - (j + 1) + 1);
 					}
+					iOffset += iEnd - (j + 1) + 1;
 				}
 				else
 				{
