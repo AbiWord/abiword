@@ -128,6 +128,49 @@ bool fp_Page::isEmpty(void) const
 	return false;
 }
 
+/*!
+ * Fill a vector with all the layouts referenced from this page.
+ */
+void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts){
+	fp_Column * pCol = NULL;
+	UT_uint32 i = 0;
+	fl_ContainerLayout * pPrevCL = NULL;
+	fl_ContainerLayout * pCurCL = NULL;
+	for(i= 0; i< m_vecColumnLeaders.getItemCount(); i++)
+	{
+		pCol = m_vecColumnLeaders.getNthItem(i);
+		while(pCol)
+		{
+			UT_uint32 j= 0;
+			fp_ContainerObject * pCon = NULL;
+			for(j = 0; j< pCol->countCons(); j++)
+			{
+				pCon = pCol->getNthCon(j);
+				if(pCon->getContainerType() == FP_CONTAINER_LINE)
+				{
+					pCurCL = static_cast<fl_ContainerLayout *>(static_cast<fp_Line *>(pCon)->getBlock());
+					if(pCurCL != pPrevCL)
+					{
+						pPrevCL = pCurCL;
+						AllLayouts.addItem(pPrevCL);
+					}
+				}
+				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					pCurCL = static_cast<fl_ContainerLayout *>(static_cast<fp_TableContainer *>(pCon)->getSectionLayout());
+					if(pCurCL != pPrevCL)
+					{
+						pPrevCL = pCurCL;
+						AllLayouts.addItem(pPrevCL);
+					}
+				}
+
+			}
+			pCol = pCol->getFollower();
+		}
+	}
+}
+
 bool fp_Page::isOnScreen(void)
 {
 	if(!m_pView)

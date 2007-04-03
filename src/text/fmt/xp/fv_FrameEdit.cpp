@@ -126,6 +126,7 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 
 static bool bScrollRunning = false;
 static UT_Worker * s_pScroll = NULL;
+static UT_sint32 iExtra = 0;
 
 void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 {
@@ -167,7 +168,7 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 		        UT_sint32 yscroll = abs(y);
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( minScroll));
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( minScroll +iExtra));
 		}
 		else if(bScrollDown)
 		{
@@ -175,7 +176,7 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
 
-			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll));
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll+iExtra));
 		}
 		if(bScrollLeft)
 		{
@@ -195,6 +196,7 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 		DELETEP(pFE->m_pAutoScrollTimer);
 
 	}
+	iExtra = 0;
 	s_pScroll->stop();
 	delete s_pScroll;
 	s_pScroll = NULL;
@@ -204,16 +206,17 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);
-	if(bScrollRunning)
-	{
-	    UT_DEBUGMSG(("Dropping FrameEditautoscroll !!!!!!! \n"));
-	    return;
-	}
-
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
 	UT_return_if_fail(pFE);
+	if(bScrollRunning)
+	{
+	    iExtra += pFE->getGraphics()->tlu(20);
+	    UT_DEBUGMSG(("Dropping FrameEditautoscroll !!!!!!! \n"));
+	    return;
+	}
+
 
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
@@ -227,6 +230,7 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 		static_cast<UT_Timer*>(s_pScroll)->set(1);
 	}
 	bScrollRunning = true;
+	iExtra = 0;
 	s_pScroll->start();
 }
 
@@ -1067,7 +1071,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 				   UT_String & sColYpos,
 				   UT_String & sPageXpos,
 				   UT_String & sPageYpos,
-				   fl_BlockLayout ** pCloseBL)
+				   fl_BlockLayout ** pCloseBL,
+				   fp_Page ** ppPage)
 {
 //
 // Find the block that contains (x,y). We'll insert the frame after
@@ -1218,6 +1223,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+		*ppPage = pPage;
 		return true;
 }
 
@@ -1259,7 +1265,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sWidth("");
 		UT_String sHeight("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
+		fp_Page * pPage = NULL;
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
 		pf_Frag_Strux * pfFrame = NULL;
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
@@ -1644,7 +1651,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sPageXpos("");
 		UT_String sPageYpos("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
+		fp_Page * pPage = NULL;
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
+
 		sProp = "xpos";
 		sVal = sXpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
@@ -1673,6 +1682,15 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		sProp = "frame-height";
 		sVal = sHeight;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		//
+		// Get all the blocks around the frame
+		//
+		UT_GenericVector<fl_ContainerLayout *> AllLayouts;
+		AllLayouts.clear();
+		UT_uint32 i = 0;
+		m_pFrameContainer->getPage()->getAllLayouts(AllLayouts);
+
+		fl_DocSectionLayout * pDSL = getFrameLayout()->getDocSectionLayout();
 
 		PT_DocPosition oldPoint = m_pView->getPoint();
 		PT_DocPosition oldFramePoint = m_pFrameLayout->getPosition(true);
@@ -1724,6 +1742,22 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		PP_AttrProp * p_AttrProp_Before = NULL;
 
 		getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
+		//
+		// Now collapse all the blocks around it.
+		//
+		for(i=0; i< AllLayouts.getItemCount();i++)
+		{
+		     fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
+		     pCL->collapse();
+		}
+		//
+		// Rebuild the page
+		//
+		pDSL->format();
+		//
+		// Frame has gone, now find out where to put it.
+		//
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
 
 		m_pFrameLayout = NULL;
 		posAtXY = pCloseBL->getPosition();

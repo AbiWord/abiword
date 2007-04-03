@@ -81,6 +81,19 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 		clearScreen();
 		m_pPage->removeFrameContainer(this);
 		getSectionLayout()->markAllRunsDirty();
+		
+		UT_GenericVector<fl_ContainerLayout *> AllLayouts;
+		AllLayouts.clear();
+		m_pPage->getAllLayouts(AllLayouts);
+		UT_uint32 i = 0;
+		for(i=0; i<AllLayouts.getItemCount(); i++)
+		{
+		      fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
+		      pCL->collapse();
+		      pCL->format();
+	        }
+		m_pPage->getOwningSection()->setNeedsSectionBreak(true,m_pPage);
+		
 	}
 	m_pPage = pPage;
 	if(pPage)

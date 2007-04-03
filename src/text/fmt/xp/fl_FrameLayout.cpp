@@ -372,25 +372,32 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
-	UT_GenericVector<fl_BlockLayout *> vecBlocks;
-	pFrameC->getBlocksAroundFrame(vecBlocks);
+	UT_GenericVector<fl_ContainerLayout *> AllLayouts;
+	AllLayouts.clear();
+	fp_Page * pPage = NULL;
 	UT_uint32 i = 0;
-	for(i=0; i< vecBlocks.getItemCount();i++)
+	if(pFrameC)
 	{
-	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
-	  pBL->collapse();
-	  xxx_UT_DEBUGMSG(("Collapse block %x \n",pBL));
+	    pPage = pFrameC->getPage();
+	    pPage->getAllLayouts(AllLayouts);
+	    for(i=0; i< AllLayouts.getItemCount();i++)
+	    {
+	         fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
+		 pCL->collapse();
+	    }
 	}
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
 	lookupProperties();
 	format();
-	for(i=0; i< vecBlocks.getItemCount();i++)
+	for(i=0; i< AllLayouts.getItemCount();i++)
 	{
-	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
-	  pBL->format();
-	  xxx_UT_DEBUGMSG(("Format block %x \n",pBL));
+	    fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
+	    pCL->format();
+	    xxx_UT_DEBUGMSG(("Format block %x \n",pBL));
+	    pCL->markAllRunsDirty();
 	}
+	getDocSectionLayout()->markAllRunsDirty();
 	return true;
 }
 

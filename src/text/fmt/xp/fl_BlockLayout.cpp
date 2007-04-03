@@ -1806,13 +1806,13 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 	}
 
 	pLine->setBlock(NULL);
-	pLine->remove();
 	if(pLine->getContainer() && bRemoveFromContainer)
 	{
 		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 		pVert->removeContainer(pLine);
 		pLine->setContainer(NULL);
 	}
+	pLine->remove();
 	xxx_UT_DEBUGMSG(("Removed line %x \n",pLine));
 	UT_ASSERT(findLineInBlock(pLine) == -1);
 

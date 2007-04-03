@@ -53,6 +53,7 @@ class PD_Document;
 class GR_Graphics;
 class FV_View;
 class GR_Image;
+class fp_Page;
 
 class ABI_EXPORT FV_FrameEdit
 {
@@ -88,7 +89,8 @@ public:
 					      UT_String & sColYpos,
 					      UT_String & sPageXpos,
 					      UT_String & sPageYpos,
-					      fl_BlockLayout ** pCloseBL);
+					      fl_BlockLayout ** pCloseBL,
+					      fp_Page ** pPage);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
 	void                  setPointInside(void);

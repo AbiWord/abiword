@@ -144,6 +144,8 @@ public:
 	fl_TOCLayout *      getLastMappedTOC(void)
 		{ return m_pLastMappedTOC;}
 	fg_FillType *       getFillType(void);
+	void                getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts);
+
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
