@@ -52,7 +52,7 @@ public:
 	HFONT       getDisplayFont(GR_Graphics * pGr);
 
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
-	UT_sint32	measureUnRemappedChar(UT_UCSChar c);
+	UT_sint32	measureUnRemappedChar(UT_UCSChar c, UT_uint32 * height = 0);
 	virtual GR_CharWidths* newFontWidths(void) const;
 //
 // UT_Rect of glyph in Logical units.
@@ -199,7 +199,7 @@ public:
 	virtual void			setFont(const GR_Font* pFont);
 	virtual void            clearFont(void) { m_pFont = NULL;}
 	virtual UT_uint32		getFontHeight();
-	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c);
+	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual void            getColor(UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();

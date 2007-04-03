@@ -693,7 +693,7 @@ void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
 	//UT_ASSERT(UT_TODO);
 }
 
-UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
 {
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::measureUnRemappedChar\n"));	
@@ -1923,7 +1923,7 @@ HFONT GR_Win32Font::getDisplayFont(GR_Graphics * pG)
 	return getFontFromCache(pixels, false, zoom);
 }
 
-UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c)
+UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c, UT_uint32 * height)
 {
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	// first of all, handle 0-width spaces ...
