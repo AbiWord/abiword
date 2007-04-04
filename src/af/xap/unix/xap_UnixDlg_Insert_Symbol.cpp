@@ -25,6 +25,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <string>
+#include <vector>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -48,15 +50,14 @@
 #include "xap_UnixDlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"
 
-#include <vector>
 
 /*****************************************************************/
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
 
-static UT_sint32 xap_UnixDlg_Insert_Symbol_first =0;
-static UT_String xap_Unix_Prev_Font;
+static UT_sint32 s_Insert_Symbol_first = 0;
+static std::string s_Prev_Font;
 
 #ifndef USE_GUCHARMAP
 static UT_UCSChar m_CurrentSymbol;
@@ -72,12 +73,11 @@ XAP_Dialog * XAP_UnixDialog_Insert_Symbol::static_constructor(XAP_DialogFactory 
 
 XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-	: XAP_Dialog_Insert_Symbol(pDlgFactory,id)
+	: XAP_Dialog_Insert_Symbol(pDlgFactory,id),
+	m_windowMain(NULL),
+	m_SymbolMap(NULL),
+	m_InsertS_Font_list(NULL)
 {
-	m_windowMain = NULL;
-	m_SymbolMap = 	NULL;
-	m_InsertS_Font_list = NULL;
-
 #ifndef USE_GUCHARMAP
 	m_areaCurrentSym = NULL;
 	m_unixGraphics = NULL;
@@ -89,6 +89,7 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 {
+	_deleteInsertedFontList();
 #ifndef USE_GUCHARMAP
 	DELETEP(m_unixGraphics);
 	DELETEP(m_unixarea);
@@ -164,11 +165,10 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail(iDrawSymbol);
 
 	// We use this code to insert the default font name into to static
-	// variable "m_Insert_Symbol_font" the first time this dialog is
 	// called. Afterwards it is just whatever was left from the last
 	// call.
 
-	if ( xap_UnixDlg_Insert_Symbol_first == 0)
+	if ( s_Insert_Symbol_first == 0)
 	{
 		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
 		UT_UCSChar c = iDrawSymbol->calcSymbol(0, 0);
@@ -178,11 +178,11 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 		        m_CurrentSymbol = c;
 			iDrawSymbol->calculatePosition(m_CurrentSymbol, m_ix, m_iy);
 		}
-		xap_UnixDlg_Insert_Symbol_first = 1;
+		s_Insert_Symbol_first = 1;
 	}
 	else
 	{
-		iDrawSymbol->setSelectedFont(xap_Unix_Prev_Font.c_str());
+		iDrawSymbol->setSelectedFont(s_Prev_Font.c_str());
 	}
 
 	_setScrolledWindow ();
@@ -191,8 +191,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	gtk_widget_show(mainWindow);
 
 	// Put the current font in the entry box
-	const char* iSelectedFont = g_strdup(iDrawSymbol->getSelectedFont());
-	xap_Unix_Prev_Font = iSelectedFont;
+	const char* iSelectedFont = iDrawSymbol->getSelectedFont();
+	s_Prev_Font = iSelectedFont;
 	UT_DEBUGMSG(("Selected Font at startup %s \n",iSelectedFont));
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
 					   iSelectedFont);
@@ -234,8 +234,8 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 // Save last font
 //
 	if (iDrawSymbol)
-		xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
-	g_list_free(m_InsertS_Font_list);
+		s_Prev_Font = iDrawSymbol->getSelectedFont();
+	_deleteInsertedFontList();
 	
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain);
@@ -287,8 +287,6 @@ void XAP_UnixDialog_Insert_Symbol::Scroll_Event (int direction)
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
-
-	int update = 0;
 
 	if (direction && m_vadjust->upper > m_vadjust->value + 1)
 	{
@@ -594,9 +592,23 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 
 #endif /* USE_GUCHARMAP */
 
+void XAP_UnixDialog_Insert_Symbol::_deleteInsertedFontList(void)
+{
+	if(m_InsertS_Font_list != NULL) { 
+		GList *l;
+        	for (l = m_InsertS_Font_list; l != NULL; l = l->next) {
+                	g_free(l->data);
+        	}
+        	g_list_free (m_InsertS_Font_list);
+		m_InsertS_Font_list = NULL;
+	}
+}
+
+
 void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
-	g_list_free( m_InsertS_Font_list);
+	UT_DEBUGMSG(("XAP_UnixDialog_Insert_Symbol::destroy()"));
+	_deleteInsertedFontList();
 	modeless_cleanup();
 	
 	// Just nuke this dialog
@@ -704,9 +716,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		if (lastfont == static_cast <const char *> (g->data))
 		{
 			g_free (g->data);
-			GList * gtmp = g;
-	       		g = g_list_next (g);
-			g_list_remove_link (gtmp, gtmp);
+			g = g_list_remove_link (g, g);
 			continue;
 		}
 		lastfont = static_cast <const char *> (g->data);
@@ -721,6 +731,8 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 	GtkWidget *fontcombo = gtk_combo_new();
 	gtk_widget_show(fontcombo);
 
+	// ensure we don't override this without freeing...
+	_deleteInsertedFontList();
 	m_InsertS_Font_list = _getGlistFonts ();
 	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
 

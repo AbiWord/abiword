@@ -72,6 +72,7 @@ private:
 
 	GtkWidget * _constructWindow(void);
 	GList *     _getGlistFonts(void);
+	void	    _deleteInsertedFontList(void);
 	GtkWidget * _createComboboxWithFonts (void);
 	void        _connectSignals (void);
 	void        _setScrolledWindow (void);
