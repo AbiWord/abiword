@@ -1793,7 +1793,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
-		UT_sint32 j = 0;
+		UT_uint32 j = 0;
 		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
 		for(i=0; i<count; i++)
 		{  

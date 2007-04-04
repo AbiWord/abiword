@@ -3362,7 +3362,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
-	UT_sint32 i = 0; // We really want this signed?
+	UT_uint32 i = 0; // We really want this signed?
 	
 	for(i = 0; i < 4; ++i)
 	{
@@ -3519,7 +3519,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	m_utf8_1 += "\"";
 
 
-	int nCols = m_TableHelper.getNumCols ();
+	unsigned int nCols = m_TableHelper.getNumCols ();
 	double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
 
 	double colWidth = 100.0 / static_cast<double>(nCols);
