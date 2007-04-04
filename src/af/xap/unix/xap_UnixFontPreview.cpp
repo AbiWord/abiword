@@ -43,7 +43,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 
 	XAP_App *pApp = XAP_App::getApp();
 	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
 
 	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }

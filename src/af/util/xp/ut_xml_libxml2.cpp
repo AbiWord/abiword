@@ -110,7 +110,7 @@ static void _errorSAXFunc(void *xmlp,
   {
     UT_DEBUGMSG(("nbsp found in stream errs %d \n",pXML->getNumMinorErrors()));
       pXML->incRecoveredErrors();
-      const char buffer []= {0xa0};
+      const char buffer []= { (char)0xa0};
       pXML->charData(buffer,1); 
   }
   else if(strstr(szErr,"not defined") != NULL)
