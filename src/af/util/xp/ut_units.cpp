@@ -128,7 +128,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6.0);		break;
 	case DIM_PT:	valueScaled = (inches * 72.0);	break;
-	case DIM_PX:    valueScaled = (inches * UT_LAYOUT_RESOLUTION); break;
+	case DIM_PX:    valueScaled = (inches * 72.0); break;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -188,7 +188,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 
 	case DIM_PX:
-		valueScaled = (valueInInches * UT_LAYOUT_RESOLUTION);
+		valueScaled = (valueInInches * 72);
 	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 	  break;
 
@@ -370,7 +370,7 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
     case DIM_PT: result = f / 72;   break;
     case DIM_CM: result = f / 2.54; break;
     case DIM_MM: result = f / 25.4; break;
-    case DIM_PX: result = f / UT_LAYOUT_RESOLUTION; break;
+    case DIM_PX: result = f / 72; break;
     default:
       UT_DEBUGMSG(("Unknown dimension type: %d", dim));
       UT_ASSERT_NOT_REACHED();
@@ -395,7 +395,7 @@ double UT_convertToPoints(const char* s)
 	  case DIM_IN: result = f * 72;        break;
 	  case DIM_CM: result = f * 72 / 2.54; break;
 	  case DIM_MM: result = f * 72 / 25.4; break;
-	  case DIM_PX: result = f * 72 / UT_LAYOUT_RESOLUTION; break;
+	  case DIM_PX: result = f ; break;
 	  default:
 	    UT_DEBUGMSG(("Unknown dimension type for: %s", s));
 	    UT_ASSERT_NOT_REACHED();
