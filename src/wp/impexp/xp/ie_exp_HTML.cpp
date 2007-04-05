@@ -3362,7 +3362,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
-	UT_uint32 i = 0; // We really want this signed?
+	UT_uint32 i = 0;
 	
 	for(i = 0; i < 4; ++i)
 	{
@@ -3445,7 +3445,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(i = 0; i < 4; ++i)
 		{
-			if((UT_uint32)i == iBMaxIndx || dB[i] == dB[iBMaxIndx] || sB[i].size() == 0)
+			if(i == iBMaxIndx || dB[i] == dB[iBMaxIndx] || sB[i].size() == 0)
 				continue;
 
 			switch(i)
@@ -3465,7 +3465,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(i = 0; i < 4; ++i)
 		{
-			if((UT_uint32)i == iSMaxIndx || sS[i] == sS[iSMaxIndx] || sS[i].size() == 0)
+			if(i == iSMaxIndx || sS[i] == sS[iSMaxIndx] || sS[i].size() == 0)
 				continue;
 
 			switch(i)
@@ -3485,7 +3485,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	{
 		for(i = 0; i < 4; ++i)
 		{
-			if((UT_uint32)i == iCMaxIndx  || sC[i] == sC[iCMaxIndx] || sC[i].size() == 0)
+			if(i == iCMaxIndx  || sC[i] == sC[iCMaxIndx] || sC[i].size() == 0)
 				continue;
 
 			switch(i)
