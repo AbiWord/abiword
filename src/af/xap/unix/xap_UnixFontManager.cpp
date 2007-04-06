@@ -87,7 +87,7 @@ UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 	return pVec;
 }
 
-static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
+static void buildFonts(XAP_UnixFontManager* pFM, FcPattern* fp, UT_GenericVector<XAP_UnixFont*>& vFonts)
 {
 	unsigned char* fontFile = NULL;
 	bool bold = false;
@@ -102,7 +102,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	{
 		// ok, and now what?  If we can not get the font file of the font, we can not print it!
 		UT_DEBUGMSG(("Unknown font file!!\n"));
-		return false;
+		return;
 	}
 	
 	if (FcPatternGetInteger(fp, FC_WEIGHT, 0, &weight) != FcResultMatch)
@@ -117,7 +117,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	size_t ffs = metricFile.size();
 	if ( !((ffs >= 4 && fontFile[ffs - 4] == '.') ||
 		   (ffs >= 5 && fontFile[ffs - 5] == '.') ))	// Separate check to avoid [-1]
-		return NULL;
+		return;
 
 	// handle '.font'
 	if (fontFile[ffs - 5] == '.')
@@ -137,9 +137,6 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	char* xlfd = reinterpret_cast<char*>(FcNameUnparse(fp));
 //	UT_String sXLFD = xlfd;
 //	UT_ASSERT(sXLFD.size() < 100);
-	// get the family of the font
-	unsigned char *family;
-	FcPatternGetString(fp, FC_FAMILY, 0, &family);
 
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
@@ -158,19 +155,31 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 		break;
 	}
 			
-	XAP_UnixFont* font = new XAP_UnixFont(pFM);
-	/* we try to open the font.  If we fail, we try to open it removing the bold/italic info, if we fail again, we don't try again */
-	if (!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, s) &&
-		!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, XAP_UnixFont::STYLE_NORMAL))
-	{
-		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", reinterpret_cast<char*>(fontFile), s));
-		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
-		delete font;
-		font = NULL;
-	}
+	unsigned char *family;
+	int id;
+
+        id = 0;
+	// get the families of the font
+        while (FcPatternGetString(fp, FC_FAMILY, id, &family) == FcResultMatch)
+        {
+	    
+		XAP_UnixFont* font = new XAP_UnixFont(pFM);
+		/* we try to open the font.  If we fail, we try to open it removing the bold/italic info, if we fail again, we don't try again */
+		if (!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, s) &&
+			!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.utf8_str(), reinterpret_cast<char*>(family), xlfd, XAP_UnixFont::STYLE_NORMAL))
+		{
+			UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", reinterpret_cast<char*>(fontFile), s));
+			font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
+			DELETEP(font);
+		}
+                else
+		{
+			vFonts.addItem(font);
+		}
+        	id++;
+        }
 		
 	free(xlfd);
-	return font;
 }
 
 /* add to the cache all the scalable fonts that we find */
@@ -180,29 +189,24 @@ bool XAP_UnixFontManager::scavengeFonts()
 		return true;
 	
 	FcFontSet* fs;
-	XAP_UnixFont* pFont;
-	
 	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
-
-    if (fs)
-    {
+	if (fs)
+	{
 		m_pFontSet = FcFontSetCreate();
-		
 		for (UT_sint32 j = 0; j < fs->nfont; j++)
 		{
-			// we want to create two fonts: one layout, and one device.
-
 			/* if the font file ends on .ttf, .pfa or .pfb we add it */
-			pFont = buildFont(this, fs->fonts[j]);
-
-			if (pFont)
-			{
+			UT_GenericVector<XAP_UnixFont*> vFonts;
+			buildFonts(this, fs->fonts[j], vFonts);
+			if (vFonts.size() > 0)
 				FcFontSetAdd(m_pFontSet, fs->fonts[j]);
-				_addFont(pFont,NULL);
-			}
+		        for (UT_uint32 i = 0; i < vFonts.size(); i++)
+        		{
+				XAP_UnixFont *pFont = vFonts.getNthItem(i);
+				_addFont(pFont, NULL);
+        		}
 		}
-
-    }
+	}
 
 	return true;
 }
