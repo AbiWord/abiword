@@ -678,7 +678,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		getGraphics()->setClipRect(NULL);
 
 		drawFrame(true);
-		UT_DEBUGMSG(("Draw frame finished \n"));
+		xxx_UT_DEBUGMSG(("Draw frame finished \n"));
 	}
 	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
 	{
@@ -688,7 +688,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		newY += dy;
 		m_pFrameContainer->_setX(newX);
 		m_pFrameContainer->_setY(newY);
-		UT_DEBUGMSG(("Doing dragging existing frame left %d top %d \n",m_recCurFrame.left, m_recCurFrame.top));
+		xxx_UT_DEBUGMSG(("Doing dragging existing frame left %d top %d \n",m_recCurFrame.left, m_recCurFrame.top));
 		if(expX.width > 0)
 		{
 			getGraphics()->setClipRect(&expX);

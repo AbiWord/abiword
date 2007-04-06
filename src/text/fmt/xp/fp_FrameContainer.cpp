@@ -485,8 +485,8 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 		if(iBot > iMaxHeight)
 		{
 		        iFullHeight = iFullHeight - (iBot-iMaxHeight);
+			iYhigh = iFullHeight;
 		}
-		iYhigh = iFullHeight;
 	}
 	_drawLine(m_lineTop,iXlow,iYlow,iXhigh,iYlow,pDA->pG); // top
 	_drawLine(m_lineRight,iXhigh,iYlow,iXhigh,iYhigh,pDA->pG); // right
