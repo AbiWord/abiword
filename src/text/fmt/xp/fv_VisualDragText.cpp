@@ -93,7 +93,7 @@ void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 	}
 }
 
-
+static UT_sint32 iExtra = 0;
 static bool bScrollRunning = false;
 static UT_Worker * s_pScroll = NULL;
 
@@ -141,14 +141,14 @@ void FV_VisualDragText::_actuallyScroll(UT_Worker * pWorker)
 		        UT_sint32 yscroll = abs(y);
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( yscroll));
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( yscroll) + iExtra);
 		}
 		else if(bScrollDown)
 		{
 		        UT_sint32 yscroll = y - pView->getWindowHeight();
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
-			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll));
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll) + iExtra);
 		}
 		if(bScrollLeft)
 		{
@@ -175,22 +175,25 @@ void FV_VisualDragText::_actuallyScroll(UT_Worker * pWorker)
 	delete s_pScroll;
 	s_pScroll = NULL;
 	bScrollRunning = false;
+	iExtra = 0;
 
 }
 
 void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 {
-	UT_return_if_fail(pWorker);
-	if(bScrollRunning)
-	{
-	    UT_DEBUGMSG(("Dropping VisualDragText autoscroll !!!!!!! \n"));
-	    return;
-	}
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_VisualDragText * pVis = static_cast<FV_VisualDragText *>(pWorker->getInstanceData());
 	UT_return_if_fail(pVis);
+	UT_return_if_fail(pWorker);
+	if(bScrollRunning)
+	{
+	    UT_DEBUGMSG(("Dropping VisualDragText autoscroll !!!!!!! \n"));
+	    FV_View * pView = pVis->m_pView;
+	    iExtra += pView->getGraphics()->tlu(20);
+	    return;
+	}
 
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
@@ -204,6 +207,7 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 		static_cast<UT_Timer*>(s_pScroll)->set(1);
 	}
 	bScrollRunning = true;
+	iExtra = 0;
 	s_pScroll->start();
 }
 

@@ -2358,11 +2358,11 @@ void FV_View::_actuallyScroll(UT_Worker * pWorker)
 
 			if (yPos < 0)
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));
+				pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_sint32>(-yPos));
 			}
 			else if ((static_cast<UT_uint32>(yPos)) >= (static_cast<UT_uint32>(pView->getWindowHeight())))
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yPos - pView->getWindowHeight()));
+				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_sint32>(yPos - pView->getWindowHeight()));
 			}
 
 			if (xPos < 0)

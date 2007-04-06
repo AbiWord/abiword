@@ -95,6 +95,7 @@ void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
 	m_iInlineDragMode = iEditMode;
 }
 
+static UT_sint32 iExtra = 0;
 static bool bScrollRunning = false;
 static UT_Worker * s_pScroll = NULL;
 
@@ -136,11 +137,11 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 	{
 		if(bScrollUp)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y));
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y)+iExtra);
 		}
 		else if(bScrollDown)
 		{
-			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight()));
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight())+iExtra);
 		}
 		if(bScrollLeft)
 		{
@@ -167,21 +168,24 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 	delete s_pScroll;
 	s_pScroll = NULL;
 	bScrollRunning = false;
+	iExtra = 0;
 }
 
 void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 {
 	UT_return_if_fail(pWorker);
-	if(bScrollRunning)
-	{
-	    UT_DEBUGMSG(("Dropping InlineImage autoscroll !!!!!!! \n"));
-	    return;
-	}
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_VisualInlineImage * pVis = static_cast<FV_VisualInlineImage *>(pWorker->getInstanceData());
 	UT_return_if_fail(pVis);
+	if(bScrollRunning)
+	{
+	    UT_DEBUGMSG(("Dropping InlineImage autoscroll !!!!!!! \n"));
+	    FV_View * pView = pVis->m_pView;
+	    iExtra += pView->getGraphics()->tlu(20);
+	    return;
+	}
 
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
@@ -196,6 +200,7 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 	}
 	bScrollRunning = true;
 	s_pScroll->start();
+	iExtra = 0;
 
 }
 
@@ -1425,8 +1430,8 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  UT_Rect newImgBounds = m_recCurFrame;
 	  const fp_PageSize & page = m_pView->getPageSize ();		
 	  double max_width = 0., max_height = 0.;
-	  max_width  = page.Width (DIM_PX);
-	  max_height = page.Height (DIM_PX);
+	  max_width  = page.Width (DIM_IN)*UT_LAYOUT_RESOLUTION;
+	  max_height = page.Height (DIM_IN)*UT_LAYOUT_RESOLUTION;
 		
 	  // some range checking stuff
 	  newImgBounds.width = abs(newImgBounds.width);
@@ -1468,8 +1473,8 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 	    {
 	      UT_LocaleTransactor t(LC_NUMERIC, "C");
-	      UT_UTF8String_sprintf(sWidth, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
-	      UT_UTF8String_sprintf(sHeight, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
+	      UT_UTF8String_sprintf(sWidth, "%fin", static_cast<double>(newImgBounds.width)/UT_LAYOUT_RESOLUTION);
+	      UT_UTF8String_sprintf(sHeight, "%fin", static_cast<double>(newImgBounds.height)/UT_LAYOUT_RESOLUTION);
 	    }
 	    properties[1] = sWidth.utf8_str();
 	    properties[3] = sHeight.utf8_str();
