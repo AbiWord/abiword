@@ -45,7 +45,8 @@ public:
 	UT_uint32							getNumCols(void);
 	float								getColumnWidth(void);
 	void								setColumnWidth(float columnWidth);
-	
+	double								getSpinIncr (void);
+	double								getSpinMin (void);
 	
 protected:
 

@@ -126,7 +126,6 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	m_pColWidthSpin = glade_xml_get_widget(xml, "sbColSize");
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColSpin), getNumCols());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pRowSpin), getNumRows());
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), getColumnWidth());
 
 	GtkWidget *rbAutoColSize = glade_xml_get_widget (xml, "rbAutoColSize");
 	s_auto_colsize_toggled (GTK_TOGGLE_BUTTON (rbAutoColSize), m_pColWidthSpin);
@@ -136,7 +135,14 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle,s);
 	abiDialogSetTitle(window, s.utf8_str());
+	// Units
+	gtk_label_set_text (GTK_LABEL (glade_xml_get_widget(xml, "lbInch")), UT_dimensionName(m_dim));
+	double spinstep = getSpinIncr ();
+	gtk_spin_button_set_increments (GTK_SPIN_BUTTON(m_pColWidthSpin), spinstep, spinstep * 5);
+	double spinmin = getSpinMin ();
+	gtk_spin_button_set_range (GTK_SPIN_BUTTON(m_pColWidthSpin), spinmin, spinmin * 1000);
 	
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), m_columnWidth);
 	// localize the strings in our dialog, and set tags for some widgets
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTableSize"), pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);

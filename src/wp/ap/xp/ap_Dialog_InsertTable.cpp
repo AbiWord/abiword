@@ -59,60 +59,92 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 
 void AP_Dialog_InsertTable::setColumnWidth(float columnWidth)
 {
-	if (m_dim != DIM_IN)								
-		m_columnWidth = UT_convertDimToInches(columnWidth, m_dim); 
-	else
-		m_columnWidth = columnWidth;
+	m_columnWidth = columnWidth;
 }
 
 
 #define SPIN_INCR_IN	0.1
-#define SPIN_INCR_CM	0.5
+#define SPIN_INCR_CM	0.1
 #define SPIN_INCR_MM	1.0
 #define SPIN_INCR_PI	6.0
 #define SPIN_INCR_PT	1.0
 #define SPIN_INCR_none	0.1
+double AP_Dialog_InsertTable::getSpinIncr(void)
+{
+       double dSpin = SPIN_INCR_PT;
+	switch (m_dim)
+	{
+	case DIM_IN:	
+		dSpin = SPIN_INCR_IN;	
+		break;
+
+	case DIM_CM:	
+		dSpin = SPIN_INCR_CM;	
+		break;
+
+	case DIM_MM:	
+		dSpin = SPIN_INCR_MM;	
+		break;
+
+	case DIM_PI:	
+		dSpin = SPIN_INCR_PI;
+		break;
+
+	case DIM_PT:	
+		dSpin = SPIN_INCR_PT;	
+		break;
+	default:
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	return dSpin;
+}
+
+
+#define SPIN_MIN_IN	0.1
+#define SPIN_MIN_CM	0.1
+#define SPIN_MIN_MM	1.0
+#define SPIN_MIN_PI	6.0
+#define SPIN_MIN_PT	1.0
+#define SPIN_MIN_none	0.1
+double AP_Dialog_InsertTable::getSpinMin (void)
+{
+       double dSpin = SPIN_MIN_PT;
+	switch (m_dim)
+	{
+	case DIM_IN:	
+		dSpin = SPIN_MIN_IN;	
+		break;
+
+	case DIM_CM:	
+		dSpin = SPIN_MIN_CM;	
+		break;
+
+	case DIM_MM:	
+		dSpin = SPIN_MIN_MM;	
+		break;
+
+	case DIM_PI:	
+		dSpin = SPIN_MIN_PI;
+		break;
+
+	case DIM_PT:	
+		dSpin = SPIN_MIN_PT;	
+		break;
+	default:
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	return dSpin;
+}
 
 // Does the table size spin
 void AP_Dialog_InsertTable::_doSpin(UT_sint32 amt, double& dValue)
 {
 	
 	// figure out which dimension and units to spin in
-	UT_Dimension dimSpin = m_dim;
-	double dSpinUnit = SPIN_INCR_PT;
-	double dMin = 0.0;
-	switch (dimSpin)
-	{
-	case DIM_IN:	
-		dSpinUnit = SPIN_INCR_IN;	
-		dMin = 0.1;
-		break;
-
-	case DIM_CM:	
-		dSpinUnit = SPIN_INCR_CM;	
-		dMin = 0.1;
-		break;
-
-	case DIM_MM:	
-		dSpinUnit = SPIN_INCR_MM;	
-		dMin = 1.0;
-		break;
-
-	case DIM_PI:	
-		dSpinUnit = SPIN_INCR_PI;
-		dMin = 6.0;
-		break;
-
-	case DIM_PT:	
-		dSpinUnit = SPIN_INCR_PT;	
-		dMin = 1.0;
-		break;
-	default:
-
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-
+	double dSpinUnit = getSpinIncr ();
+	double dMin = getSpinMin ();
 	// value is now in desired units, so change it
 	dValue +=  (dSpinUnit * static_cast<double>(amt));
 	if (dValue < dMin)
@@ -146,5 +178,5 @@ UT_uint32 AP_Dialog_InsertTable::getNumCols(void)
 
 float AP_Dialog_InsertTable::getColumnWidth(void)
 {
-	return m_columnWidth;
+	return UT_convertDimToInches(m_columnWidth, m_dim); 
 }
