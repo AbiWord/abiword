@@ -11711,9 +11711,9 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			UT_String tmp;
 			UT_String propBuffer;
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			for (UT_uint32 i = 0; i<pDialog->getNumCols(); i++)
 			{
-				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				UT_String_sprintf(tmp, "%fin/", pDialog->getColumnWidth());
 				propBuffer += tmp;
 			}
