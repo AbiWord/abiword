@@ -154,8 +154,12 @@ bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle sdh,
 			m_bFirstSection = false;
 			return true;
 		}
-		m_pPasteDocument->insertStrux(m_insPoint,PTX_Section,atts,props);
-		m_insPoint++;
+		//
+		// We don't actually paste in a section though. Since a paste 
+		// is not meant to insert a section break
+		//
+		//m_pPasteDocument->insertStrux(m_insPoint,PTX_Section,atts,props);
+		// m_insPoint++;
 		return true;
 	}
 	case PTX_SectionFootnote:

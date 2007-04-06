@@ -3023,6 +3023,7 @@ void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 */
 void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL)
 {
+        UT_return_if_fail(pAfter);
 	pNewSL->setNext(pAfter->getNext());
 	pNewSL->setPrev(pAfter);
 	if (pAfter->getNext())
