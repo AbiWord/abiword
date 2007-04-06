@@ -184,9 +184,9 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 	// this is a static callback method and does not have a 'this' pointer.
 
+	UT_return_if_fail(pWorker);
 	FV_VisualDragText * pVis = static_cast<FV_VisualDragText *>(pWorker->getInstanceData());
 	UT_return_if_fail(pVis);
-	UT_return_if_fail(pWorker);
 	if(bScrollRunning)
 	{
 	    UT_DEBUGMSG(("Dropping VisualDragText autoscroll !!!!!!! \n"));
