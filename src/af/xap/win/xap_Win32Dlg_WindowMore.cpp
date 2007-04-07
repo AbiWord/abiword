@@ -80,11 +80,8 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
 	{
 		XAP_Frame * f = m_pApp->getFrame(i);
-		if(!f)
-		{
-			UT_ASSERT_HARMLESS(f);
-			continue;
-		}
+		UT_continue_if_fail(f);
+
 		const char * s = f->getTitle(128);	// TODO: chop this down more? 
 		
 		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, s);

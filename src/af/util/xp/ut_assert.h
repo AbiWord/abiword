@@ -249,4 +249,9 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
  */
 #define UT_throw_if_fail(cond, val) if (!(cond)) { UT_ASSERT(cond); throw val; }
 
+/*!
+ * Continue if this condition fails
+ */
+#define UT_continue_if_fail(cond) if (!(cond)) { UT_ASSERT(cond); continue; }
+
 #endif /* UT_ASSERT_H */

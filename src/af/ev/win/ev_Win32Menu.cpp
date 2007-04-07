@@ -326,12 +326,8 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	{
 		
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		if(!pLayoutItem)
-		{
-			UT_ASSERT_HARMLESS(pLayoutItem);
-			continue;
-		}
-		
+		UT_continue_if_fail(pLayoutItem);
+
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);

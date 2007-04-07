@@ -585,11 +585,7 @@ bool EV_Win32Toolbar::synthesize(void)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		if(!pLayoutItem)
-		{
-			UT_ASSERT_HARMLESS(pLayoutItem);
-			continue;
-		}
+		UT_continue_if_fail(pLayoutItem);
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
@@ -856,15 +852,11 @@ bool EV_Win32Toolbar::synthesize(void)
 		for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 		{
 			EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-			if(!pLayoutItem)
-			{
-				UT_ASSERT_HARMLESS(pLayoutItem);
-				continue;
-			}
+			UT_continue_if_fail(pLayoutItem);
 
 			XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-			UT_ASSERT(pAction);
+			UT_continue_if_fail(pAction);
 
 			RECT r;
 			HWND hwndCtrl;
@@ -977,19 +969,11 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		if(!pLayoutItem)
-		{
-			UT_ASSERT_HARMLESS(pLayoutItem);
-			continue;
-		}
+		UT_continue_if_fail(pLayoutItem);
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-		if(!pAction)
-		{
-			UT_ASSERT_HARMLESS(pAction);
-			continue;
-		}
+		UT_continue_if_fail(pAction);
 
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
