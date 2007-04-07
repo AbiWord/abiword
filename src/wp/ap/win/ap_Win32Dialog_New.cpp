@@ -124,11 +124,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 
 			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
-			if(!uri)
-			{
-				UT_ASSERT_HARMLESS(uri);
-				continue;
-			}
+			UT_continue_if_fail(uri);
 
 			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
@@ -153,11 +149,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 
 			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
-			if(!uri)
-			{
-				UT_ASSERT_HARMLESS(uri);
-				continue;
-			}
+			UT_continue_if_fail(uri);
 
 			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );

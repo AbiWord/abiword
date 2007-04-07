@@ -1025,11 +1025,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		for(UT_uint32 i = 0; i < Revs.getItemCount(); ++i)
 		{
 			AD_Revision* pRev = Revs.getNthItem(i);
-			if(!pRev)
-			{
-				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-				continue;
-			}
+			UT_continue_if_fail(pRev);
 
 			s4 = pRev->getDescription();
 
@@ -1916,11 +1912,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 		for(UT_uint32 i = 0; i < RA.getRevisionsCount(); ++i)
 		{
 			const PP_Revision * pRev = RA.getNthRevision(i); // a revision found in our attribute
-			if(!pRev)
-			{
-				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-				continue;
-			}
+			UT_continue_if_fail(pRev);
 
 			UT_uint32 iId = pRev->getId();
 
@@ -1935,12 +1927,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 			}
 
 			AD_Revision * pRevTblItem = RevTbl.getNthItem(iIndx);
-			if(!pRevTblItem)
-			{
-				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-				continue;
-			}
-			
+			UT_continue_if_fail(pRevTblItem);			
 			
 			// the revisions in rtf are marked by a peculiar timestamp, which we now need
 			// to construct
@@ -2056,11 +2043,7 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 
 				if(bPara)
 				{
-					if(!sdh)
-					{
-						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-						continue;
-					}
+					UT_continue_if_fail(sdh);
 					
 					_write_parafmt(NULL, pRev, NULL,
 								   bStartedList, sdh, iCurrID, bIsListBlock, iNestLevel);

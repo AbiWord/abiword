@@ -377,23 +377,17 @@ void EV_CocoaMenu::buildAppMenu()
 	for (UT_uint32 k = 0; k < nrLabelItemsInLayout; k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
-		if (!pLayoutItem)
-			continue;
+		UT_continue_if_fail(pLayoutItem);
 		
 		EV_Menu_LayoutFlags flags = pLayoutItem->getMenuLayoutFlags();
 		
 		XAP_Menu_Id menuid = pLayoutItem->getMenuId();
 		
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
-		UT_ASSERT(pAction);
-		if (!pAction)
-			continue;
+		UT_continue_if_fail(pAction);
 		
 		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(menuid);
-		UT_ASSERT(pLabel);
-		if (!pLabel)
-			continue;
+		UT_continue_if_fail(pLabel);
 		
 		bool bNewAppMenuItem = false;
 		

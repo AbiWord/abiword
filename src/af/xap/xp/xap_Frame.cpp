@@ -655,11 +655,7 @@ void XAP_FrameImpl::_createToolbars(void)
 		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame,
 							      reinterpret_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
 							      reinterpret_cast<const char *>(m_szToolbarLabelSetName));
-		if(!pToolbar)
-		{
-			UT_ASSERT_HARMLESS(pToolbar);
-			continue;
-		}
+		UT_continue_if_fail(pToolbar);
 		bResult = pToolbar->synthesize();
 		UT_ASSERT(bResult);
 		

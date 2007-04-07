@@ -8551,11 +8551,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = m_vecTabs.getNthItem(i);
-		if(!pTab)
-		{
-			UT_ASSERT_HARMLESS(pTab);
-			continue;
-		}
+		UT_continue_if_fail(pTab);
 
 		if (pTab->getPosition() > iMaxX)
 		{
@@ -8661,11 +8657,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i));
-		if(!pTab)
-		{
-			UT_ASSERT_HARMLESS(pTab);
-			continue;
-		}
+		UT_continue_if_fail(pTab);
 
 		if (pTab->getPosition() > iMaxX)
 		{
@@ -8675,11 +8667,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 		if (pTab->getPosition() > iStartX)
 		{
 			pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(i>0?i-1:0));
-			if(!pTab)
-			{
-				UT_ASSERT_HARMLESS(pTab);
-				continue;
-			}
+			UT_continue_if_fail(pTab);
 
 			if(m_iDomDirection == UT_BIDI_RTL)
 			{

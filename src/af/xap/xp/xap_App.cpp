@@ -687,11 +687,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
 		{
 			XAP_Frame * f = pvClones->getNthItem(j);
-			if(!f)
-			{
-				UT_ASSERT_HARMLESS(f);
-				continue;
-			}
+			UT_continue_if_fail(f);
 
 			f->setViewNumber(j+1);
 
@@ -762,11 +758,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 				for (UT_uint32 j=0; j<count; j++)
 				{
 					f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
-					if(!f)
-					{
-						UT_ASSERT_HARMLESS(f);
-						continue;
-					}
+					UT_continue_if_fail(f);
 
 					f->setViewNumber(j+1);
 					f->updateTitle();
@@ -848,11 +840,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 		for (UT_uint32 j=0; j<count; j++)
 		{
 			f = pvClones->getNthItem(j);
-			if(!f)
-			{
-				UT_ASSERT_HARMLESS(f);
-				continue;
-			}
+			UT_continue_if_fail(f);
 
 			f->updateTitle();
 		}
@@ -896,11 +884,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 	for (UT_uint32 i=0; i<getFrameCount(); i++)
 	{
 		XAP_Frame * f = getFrame(i);
-		if(!f)
-		{
-			UT_ASSERT_HARMLESS(f);
-			continue;
-		}
+		UT_continue_if_fail(f);
 		const char * s = f->getFilename();
 
 		if (s && *s && (0 == g_ascii_strcasecmp(szFilename, s)))
