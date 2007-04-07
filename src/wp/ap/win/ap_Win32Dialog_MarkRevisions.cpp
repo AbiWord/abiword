@@ -181,9 +181,7 @@ static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
 
 BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	HWND h;
 
 	int n;

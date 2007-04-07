@@ -125,8 +125,8 @@ public:
 	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID,
 						const AP_Win32StatusBar * pSB) :
 		AP_StatusBarFieldListener(pStatusBarField),
-		m_nID(nID),
 		m_hWnd(hWnd),
+		m_nID(nID),
 		m_pSB(pSB)
 	{UT_ASSERT_HARMLESS( m_pSB );}
 	

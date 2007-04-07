@@ -621,9 +621,7 @@ AP_Win32Dialog_Options_General::~AP_Win32Dialog_Options_General()
 */	
 void AP_Win32Dialog_Options_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	AP_Dialog_Background *pColorDialog;
 	UT_RGBColor rgbColor;
@@ -762,7 +760,6 @@ AP_Win32Dialog_Options_Document::~AP_Win32Dialog_Options_Document()
 */	
 void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	BOOL bChecked;	
@@ -833,7 +830,6 @@ void AP_Win32Dialog_Options_Document::_onInitDialog()
 bool AP_Win32Dialog_Options_Document::isAutoSaveInRange()
 {
 	int iValue = GetDlgItemInt(getHandle(), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE);
-	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();		
 	char szTemp[10];
 	snprintf( szTemp, 10, "%d", iValue);	
 	

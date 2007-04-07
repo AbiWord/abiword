@@ -237,9 +237,7 @@ void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 
 BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

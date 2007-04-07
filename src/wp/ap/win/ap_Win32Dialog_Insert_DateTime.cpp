@@ -159,9 +159,7 @@ BOOL AP_Win32Dialog_Insert_DateTime::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 
 BOOL AP_Win32Dialog_Insert_DateTime::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-    WORD wNotifyCode = HIWORD(wParam);
     WORD wId = LOWORD(wParam);
-    HWND hWndCtrl = (HWND)lParam;
 
     switch (wId){
     case IDCANCEL:            // also AP_RID_DIALOG_DATETIME_BTN_CANCEL
