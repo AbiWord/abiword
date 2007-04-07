@@ -174,7 +174,7 @@ const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		IE_ImpGraphicSniffer *sniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		sc = sniffer->getSuffixConfidence();
-		while (sc && sc->suffix.empty()) {
+		while (sc && !sc->suffix.empty()) {
 			if (0 == g_ascii_strcasecmp(suffix, sc->suffix.c_str())) {
 				const IE_MimeConfidence *mc = sniffer->getMimeConfidence();
 				if (mc) {
