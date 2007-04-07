@@ -234,6 +234,8 @@ static void _png_flush(png_structp png_ptr)
 {
 }
 
+#if 0 //these don't seem to be used
+
 static void _png_warning(png_structp png_ptr, png_const_charp message)
 {
 }
@@ -241,6 +243,8 @@ static void _png_warning(png_structp png_ptr, png_const_charp message)
 static void _png_error(png_structp png_ptr, png_const_charp message)
 {
 }
+
+#endif
 
 bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 {

@@ -109,8 +109,6 @@ BOOL CALLBACK XAP_Win32Dialog_History::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPara
 
 BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	// set the window title
 	SetWindowText(hWnd, getWindowLabel());
 	
@@ -196,9 +194,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 BOOL XAP_Win32Dialog_History::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

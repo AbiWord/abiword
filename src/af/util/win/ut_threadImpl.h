@@ -50,7 +50,7 @@ class ABI_EXPORT UT_ThreadImpl
    */
   void start ()
     {
-      UT_Thread::Priority pri = mOwner->getPriority () ;
+      //UT_Thread::Priority pri = mOwner->getPriority () ;
 
       // the priority is ignored
 
@@ -58,7 +58,7 @@ class ABI_EXPORT UT_ThreadImpl
 	{
 	  //printf ( "thread create failed!!\n" ) ;
 	  //MessageBox( NULL, "thread create failed!!\n", NULL, MB_OK );
-	  UT_ASSERT(mThread != -1);
+	  UT_ASSERT_HARMLESS(mThread != -1);
 	}
     }
 
@@ -67,7 +67,7 @@ class ABI_EXPORT UT_ThreadImpl
    */
   void setPriority ( UT_Thread::Priority pri )
     {
-      UT_ASSERT(PRIORITIES_NOT_SUPPORTED);
+      UT_ASSERT_HARMLESS(PRIORITIES_NOT_SUPPORTED);
     }
 
   /*!
@@ -81,7 +81,7 @@ class ABI_EXPORT UT_ThreadImpl
 
   void join ()
   {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
   }
 
  private:

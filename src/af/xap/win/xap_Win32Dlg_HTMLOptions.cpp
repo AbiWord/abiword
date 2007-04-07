@@ -88,9 +88,7 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 
 BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

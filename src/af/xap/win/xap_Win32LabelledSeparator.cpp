@@ -65,7 +65,9 @@ static void AdaptSeparatorLength(HWND hwnd, const char* text, HFONT hFont)
 	// Provide the right font
 	LOGFONT logFont;
 	int status = GetObject(hFont, sizeof(LOGFONT), &logFont);
+	UT_return_if_fail(status);
 	HFONT hCtrlFont = CreateFontIndirect(&logFont);
+	UT_return_if_fail(hCtrlFont);
 
 	// Evaluate text size
 	int length = strlen(text);
@@ -116,6 +118,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 				SS_ETCHEDHORZ | WS_CHILD | WS_VISIBLE,
 				0, lpCreate->cy / 2, lpCreate->cx, LINE_HEIGHT,
 				hwnd, (HMENU) IDC_LINE_SEPARATOR, lpCreate->hInstance, NULL);
+			UT_ASSERT_HARMLESS(separator);
 			return 0;
 		}
 
