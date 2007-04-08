@@ -50,8 +50,8 @@ XAP_Dialog * AP_Win32Dialog_HdrFtr::static_constructor(XAP_DialogFactory * pFact
 AP_Win32Dialog_HdrFtr::AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_HdrFtr(pDlgFactory,id), 
-      _win32Dialog(this),
-      m_hThisDlg(NULL)
+      m_hThisDlg(NULL),
+      _win32Dialog(this)
 {
 
 }
@@ -121,7 +121,6 @@ BOOL AP_Win32Dialog_HdrFtr::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

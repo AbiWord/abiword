@@ -63,13 +63,13 @@ void  AP_Win32Dialog_Latex::activate(void)
 
 void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	UT_ASSERT(m_id == AP_DIALOG_ID_LATEX);
+	UT_return_if_fail(pFrame);
+	UT_return_if_fail(m_id == AP_DIALOG_ID_LATEX);
 
 	setDialog(this);
 	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_LATEX) );
 
-	UT_ASSERT((hWndDialog != NULL));
+	UT_return_if_fail((hWndDialog != NULL));
 	ShowWindow(hWndDialog, SW_SHOW);
 
 	m_pApp->rememberModelessId(m_id, this);		
@@ -181,10 +181,7 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 
 BOOL AP_Win32Dialog_Latex::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	XAP_Frame *	pFrame = getActiveFrame();
 
 	switch (wId)
 	{

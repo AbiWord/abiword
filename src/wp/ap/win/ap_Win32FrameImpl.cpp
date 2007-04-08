@@ -1343,7 +1343,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-
+			UT_return_val_if_fail(hdc, 0);
 			
 			UT_Rect r(pG->tlu(ps.rcPaint.left), pG->tlu(ps.rcPaint.top),
 					pG->tlu(ps.rcPaint.right-ps.rcPaint.left+1),

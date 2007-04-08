@@ -69,7 +69,7 @@ void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 	
-	UT_ASSERT(m_id == AP_DIALOG_ID_STYLIST);
+	UT_return_if_fail(m_id == AP_DIALOG_ID_STYLIST);
 
 	m_bIsModal = true;
 

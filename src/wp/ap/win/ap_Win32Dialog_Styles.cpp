@@ -935,8 +935,6 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 	
 	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, nSel);
 	
-	size_t nStyles = getDoc()->getStyleCount();							
-	
 	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
 	
 	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
@@ -959,8 +957,6 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 	
 	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, nSel);
 					
-	size_t nStyles = getDoc()->getStyleCount();							
-	
 	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);			
 	
 	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
