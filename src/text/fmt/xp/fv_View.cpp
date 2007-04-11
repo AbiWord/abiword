@@ -994,8 +994,8 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	{
 		return false;
 	}
-	bFound = pAP->getProperty("title",szTitle);
-	bFound = pAP->getProperty("alt",szDescription);
+	bFound = pAP->getAttribute("title",szTitle);
+	bFound = pAP->getAttribute("alt",szDescription);
 	UT_String sProps;
 	sProps += "width:";
 	sProps += szWidth;
@@ -1007,6 +1007,10 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 		PT_IMAGE_DESCRIPTION,NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL};
+	if(szTitle ==  0)
+		szTitle = "";
+	if(szDescription == 0)
+		szDescription = "";
 	attributes[1] = szDataID;
 	attributes[3] = szTitle;
 	attributes[5] = szDescription;

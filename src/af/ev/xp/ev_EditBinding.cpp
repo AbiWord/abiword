@@ -491,10 +491,70 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	return buf;
 }
 	
-bool EV_EditBindingMap::parseEditBinding(void)
+bool EV_EditBindingMap::parseEditBinding(void /*const char * szAscii*/)
 {
 	/* TODO here we import a binding from a primitive ascii format
 	** TODO or XML syntax.
 	*/
+  /*
+    The Ascii format is close to the definition in wp/ap/xp/ap_LB_Default.cpp
+Lines beginning with "//" are comments
+
+Each CR seperated lines define a set of bindings for a single mouse context or
+key stroke. Entries are seperated by commas. In creating the context, several
+modifiers can be used. Control, Alt, Shift, Control-Alt (C, A, S )
+
+The first token of each line determines whether the defintion is for mouse context (mse), Named Virtual Key (nvk), or keystroke (key).
+
+The definition of each set of bindings are always in the following order for
+mouse contexts.
+
+Up to to 6 buttons are available for the mouse. (B0, B1, B2, B3, B4, B5, B6)
+The follow contexts are available:
+
+Short cut       C++ enum
+=========       =========
+CU		EV_EMC_UNKNOWN
+CT		EV_EMC_TEXT
+CM		EV_EMC_MISSPELLEDTEXT
+CL		EV_EMC_LEFTOFTEXT
+CR		EV_EMC_RIGHTOFTEXT
+CI		EV_EMC_IMAGE
+CZ		EV_EMC_IMAGESIZE
+CF		EV_EMC_FIELD
+CH		EV_EMC_HYPERLINK
+CV		EV_EMC_REVISION
+CTV		EV_EMC_VLINE
+CTH		EV_EMC_HLINE
+CTF		EV_EMC_FRAME
+CVD		EV_EMC_VISUALTEXTDRAG
+CTC		EV_EMC_TOPCELL
+CTO		EV_EMC_TOC
+CPO		EV_EMC_POSOBJECT
+CMA		EV_EMC_MATH
+CEM		EV_EMC_EMBED
+
+mse, Button, context, click, dblclick, drag, dbldrag, release, double release
+
+The first 3 entries describe the combination of buttons and context, the six entries that follow are the names of the EditMethods that called for each invocation of the mouse button and context.
+
+So some examples are:
+
+mse, B0,      CU   ,        ,       , cursorDefault,  ,  ,
+mse, B0,     CEM   ,        ,       , btn0InlineImage ,  ,
+mse, B1,     CVD   , cutVisualText, copyVisualText, dragVisualText, dragVisualText, dragVisualText, pasteVisualText
+mse, B1, CVD C     ,copyVisualText,cutVisualText,dragVisualText,dragVisualText, pasteVisualText,pasteVisualText
+
+//
+// mse/NVK/Key
+// NVK, Key Name,    No modifier, S,     C,  S C,A , A S, A C, A C S
+//
+NVK, EV_NVK_BACKSPACE, delLeft,delLeft,delBOW,  ,   ,   ,    ,
+//
+// key, Key Value,    No modifier,   C,       A,    A C
+//
+key,    0x41,         insertData, selectAll,      , 
+  */
+
 	return false;
 }

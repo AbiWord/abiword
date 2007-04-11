@@ -10579,6 +10579,7 @@ Defun(setPosImage)
 // Get the dataID of the image.
 
 	const char * dataID = pImageRun->getDataId();
+	PP_AttrProp * pImageAP = const_cast<PP_AttrProp*>(pImageRun->getSpanAP());
 	UT_String sFrameProps;
 	UT_String sProp;
 	UT_String sVal;
@@ -10642,13 +10643,33 @@ Defun(setPosImage)
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
+	//
+	// Now the alt and title
+	//
+	const char * szTitle = NULL;
+	const char * szDescription = NULL;
+	bool bFound = pImageAP->getAttribute("title",szTitle);
+	if(!bFound)
+	{
+			szTitle = "";
+	}
+	bFound = pImageAP->getAttribute("alt",szDescription);
+	if(!bFound)
+	{
+			szDescription = "";
+	}
 //
 // Now define the Frame attributes strux
 //
-	const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
-					  NULL,"props",NULL,NULL};
+	const gchar * attributes[] = {PT_STRUX_IMAGE_DATAID,NULL,
+								  PT_PROPS_ATTRIBUTE_NAME, NULL,
+								  PT_IMAGE_TITLE,NULL,
+								  PT_IMAGE_DESCRIPTION,NULL,
+								  NULL,NULL};
 	attributes[1] = dataID;
 	attributes[3] = sFrameProps.c_str();
+	attributes[5] = szTitle;
+	attributes[7] = szDescription;
 //
 // This deletes the inline image and places a positioned image in it's place
 // It deals with the undo/general update issues.

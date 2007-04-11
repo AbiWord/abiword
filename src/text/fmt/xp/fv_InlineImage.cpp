@@ -1364,25 +1364,25 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    sVal = szHeight;
 	    UT_String_setProperty(sProps,sProp,sVal);
 	  }
-	  bFound = m_pImageAP->getProperty("title",szTitle);
-	  if(bFound)
+	  bFound = m_pImageAP->getAttribute("title",szTitle);
+	  if(!bFound)
 	  {
-	    sProp = "title";
-	    sVal = szTitle;
-	    UT_String_setProperty(sProps,sProp,sVal);
+	    szTitle = "";
 	  }
-	  bFound = m_pImageAP->getProperty("alt",szDescription);
-	  if(bFound)
+	  bFound = m_pImageAP->getAttribute("alt",szDescription);
+	  if(!bFound)
 	  {
-	    sProp = "alt";
-	    sVal = szTitle;
-	    UT_String_setProperty(sProps,sProp,sVal);
+	    szDescription = "";
 	  }
 	  const gchar*	attributes[] = {
 	    "dataid", NULL,
 	    PT_PROPS_ATTRIBUTE_NAME, NULL,
+	    PT_IMAGE_TITLE,NULL,
+	    PT_IMAGE_DESCRIPTION,NULL,
 	    NULL,NULL};
 	  attributes[1] = szDataID;
+	  attributes[5] = szTitle;
+	  attributes[7] = szDescription;
 	  if(m_bIsEmbedded)
 	  {
 	      sProp="embed-type";

@@ -1641,6 +1641,19 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			sVal = pszBackgroundColor;
 			UT_String_setProperty(sFrameProps,sProp,sVal);		
 		}
+		const char * szTitle = NULL;
+		const char * szDescription = NULL;
+		bool bFound = pSectionAP->getAttribute("title",szTitle);
+		if(!bFound)
+		{
+		    szTitle = "";
+		}
+		bFound = pSectionAP->getAttribute("alt",szDescription);
+		if(!bFound)
+		{
+		    szDescription = "";
+		}
+
 
 		UT_String sXpos("");
 		UT_String sYpos("");
@@ -1777,12 +1790,16 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 		else
 		{
-			atts = new const gchar * [5];
+			atts = new const gchar * [9];
 			atts[0] = PT_STRUX_IMAGE_DATAID;
 			atts[1] = pszDataID;
 			atts[2] = "props";
 			atts[3] = sFrameProps.c_str();
-			atts[4] =  NULL;
+			atts[4]  = PT_IMAGE_TITLE;
+			atts[5] = szTitle;
+			atts[6] = PT_IMAGE_DESCRIPTION;
+			atts[7] = szDescription;
+			atts[8] =  NULL;
 		}
 		pf_Frag_Strux * pfFrame = NULL;
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,atts,NULL,&pfFrame);
