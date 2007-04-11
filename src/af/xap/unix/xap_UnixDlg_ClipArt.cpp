@@ -288,7 +288,7 @@ next:
 	g_object_unref (G_OBJECT (this->store));
 	gtk_widget_hide (this->progress);
 
-	return FALSE;
+	return TRUE;
 }
 
 /**
