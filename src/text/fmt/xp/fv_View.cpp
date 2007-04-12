@@ -610,6 +610,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	for(i=0; i<iCount;i++)
 	{
 			pCaretProps = m_vecCarets.getNthItem(i);
+			pCaretProps->m_pCaret->resetBlinkTimeout();
 			if(pCaretProps->m_sDocUUID == sUUID)
 			{
 				if(iLen >= 0)
