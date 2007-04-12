@@ -38,6 +38,17 @@ GR_Painter::GR_Painter (GR_Graphics * pGr)
 	m_pGr->beginPaint ();
 }
 
+
+GR_Painter::GR_Painter (GR_Graphics * pGr, bool bCaret)
+	: m_pGr (pGr),
+		m_pCaretDisabler(NULL)
+{
+	UT_ASSERT (m_pGr);
+	if(bCaret)
+	  m_pCaretDisabler = NULL;
+	m_pGr->beginPaint ();
+}
+
 GR_Painter::~GR_Painter ()
 {
 	m_pGr->endPaint ();

@@ -28,6 +28,7 @@ class GR_Painter
 public:
 
 	GR_Painter (GR_Graphics * pGr);
+	GR_Painter (GR_Graphics * pGr, bool bCaret);
 	~GR_Painter ();
 
 	void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);

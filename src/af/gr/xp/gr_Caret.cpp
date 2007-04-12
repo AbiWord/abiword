@@ -326,26 +326,24 @@ void GR_Caret::_erase()
 
 void GR_Caret::_blink(bool bExplicit)
 {
-	if (m_bRecursiveDraw || !m_bPositionSet)
+        if(m_bRecursiveDraw)
+	{
+	    xxx_UT_DEBUGMSG(("Doing recursive blink! - abort \n"));
+	    return;
+	}
+        if (!m_bPositionSet)
 		return;
 
 	m_bRecursiveDraw = true;
-	GR_Painter painter (m_pG);
+	GR_Painter painter (m_pG,true);
 	m_bRecursiveDraw = false;
+
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
 	if (!bExplicit)
 	{ 
 		m_worker->stop(); m_worker->start();
 	}
-	if(m_bRemote)
-	  {
-	    xxx_UT_DEBUGMSG(("Remote Caret %x blink at x %d \n",this,m_xPoint));
-	  }
-	else
-	  {
-	    xxx_UT_DEBUGMSG(("Local Caret %x blink at x %d \n",this,m_xPoint));
-	  }
 
 	// Blink if: (a) _blink explicitly called (not autoblink); or
 	//           (b) autoblink and caret blink enabled; or
@@ -359,7 +357,6 @@ void GR_Caret::_blink(bool bExplicit)
 		if (m_bCursorIsOn)
 		{
 			m_pG->restoreRectangle(m_iCaretNumber*3+0);
-			xxx_UT_DEBUGMSG(("blink cursor turned off \n")); 
 
 			if(m_bSplitCaret)
 			{
@@ -426,6 +423,7 @@ void GR_Caret::_blink(bool bExplicit)
 			{
 				// draw the primary caret
 				xxx_UT_DEBUGMSG(("blink cursor turned on \n")); 
+
 				UT_sint32 x1 = m_xPoint + iDelta * m_pG->tlu(1);
 				UT_sint32 x2 = m_xPoint;
 				while(m_pG->_tduX(x1) == m_pG->_tduX(x2))
@@ -491,6 +489,7 @@ void GR_Caret::_blink(bool bExplicit)
 					m_pG->saveRectangle(r1,m_iCaretNumber*3+1);				
 
 					// draw the caret
+
 					painter.drawLine(m_xPoint2 - iDelta * m_pG->tlu(1),
 									 m_yPoint2 + m_pG->tlu(1), 
 									 m_xPoint2 - iDelta * m_pG->tlu(1),
