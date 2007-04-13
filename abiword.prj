@@ -1,4 +1,4 @@
-# Anjuta Version 1.2.4 
+# Anjuta Version 1.2.4a 
 Compatibility Level: 1 
 
 <PROJECT_DESCRIPTION_START>
@@ -22,7 +22,7 @@ Compatibility Level: 1
 
 props.file.type=project
 
-anjuta.version=1.2.4
+anjuta.version=1.2.4a
 anjuta.compatibility.level=1
 
 project.name=abiword
@@ -51,7 +51,7 @@ project.configure.options=
 anjuta.program.arguments=
 preferences.build.option.jobs=0
 preferences.build.option.silent=0
-preferences.build.option.autosave=0
+preferences.build.option.autosave=1
 preferences.make=make
 preferences.build.option.keep.going=1
 preferences.build.option.warn.undef=0
