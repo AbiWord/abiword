@@ -226,7 +226,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 {
 	// Don't call base method if user cancels encoding dialog
 	if (!(!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding)))
-		return UT_IE_COULDNOTWRITE;
+		return UT_SAVE_CANCELLED;
 
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
 	// TODO Only supports Windows so far.
