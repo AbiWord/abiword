@@ -254,11 +254,12 @@ bool IE_Exp::_closeFile(void)
 
 void IE_Exp::_abortFile(void)
 {
-	// abort the write.
-	// TODO close the file and do any restore and/or cleanup.
+	// abort the write
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	_closeFile();
-	return;
+
+	// then remove the unwanted file
+	(void)UT_go_file_remove (m_szFileName, NULL);
 }
 
 //////////////////////////////////////////////////////////////////

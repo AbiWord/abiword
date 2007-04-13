@@ -1178,6 +1178,30 @@ UT_go_file_create (char const *uri, GError **err)
 	return NULL;
 }
 
+gboolean
+UT_go_file_remove (char const *uri, GError **err)
+{
+	char *filename;
+
+	g_return_val_if_fail (uri != NULL, NULL);
+
+	filename = UT_go_filename_from_uri (uri);
+	if (filename) {
+		int result = remove (filename);
+		g_free (filename);
+		return (result == 0);
+	}
+
+
+#ifdef GOFFICE_WITH_GNOME
+	return (gnome_vfs_unlink (uri) == GNOME_VFS_OK);
+#else
+	g_set_error (err, gsf_output_error_id (), 0,
+		     "Invalid or non-supported URI");
+	return FALSE;
+#endif
+}
+
 /* ------------------------------------------------------------------------- */
 /* Adapted from gtkfilechooserdefault.c.  Unfortunately it is static there.  */
 
