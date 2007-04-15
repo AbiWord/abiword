@@ -101,6 +101,7 @@ public:
 
 	virtual EV_EditBindingMap *	getMap(const char * szName);
 	void                            loadBuiltin(void);
+	EV_EditBindingMap *            createMap(const char * szName);
 	void _loadChar(	EV_EditBindingMap*			pebm,
 			const ap_bs_Char*			pCharTable,
 			UT_uint32				cCharTable,

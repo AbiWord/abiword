@@ -183,6 +183,15 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 	return NULL;
 }
 
+
+EV_EditBindingMap * AP_BindingSet::createMap(const char * szName)
+{
+  c_lb * pc_lb = new c_lb(false,szName,NULL,NULL);
+  m_vecBindings.addItem(pc_lb);
+  pc_lb->m_pebm = new EV_EditBindingMap(m_pemc);
+  return pc_lb->m_pebm;
+}
+
 /*****************************************************************/
 
 void AP_BindingSet::_loadMouse(EV_EditBindingMap* pebm,
