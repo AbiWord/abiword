@@ -57,14 +57,13 @@
 /****************************************************************/
 c_lb::c_lb(bool bCycle, const char * name,  ap_LoadBindings_pFn pFn,	EV_EditBindingMap * pebm  ) : 
   m_bCanCycle(bCycle),
-  m_name(name),
   m_fn(pFn),
-  m_pebm(pebm),
-  m_bDuplicated(false)
+  m_pebm(pebm)
 {
+  m_name = g_strdup(name);
 }
 
-c_lb::c_lb(c_lb * pc_lb) : m_bDuplicated(true)
+c_lb::c_lb(c_lb * pc_lb)
 {
   m_bCanCycle = pc_lb->m_bCanCycle;
   m_name = g_strdup(pc_lb->m_name);
@@ -74,9 +73,9 @@ c_lb::c_lb(c_lb * pc_lb) : m_bDuplicated(true)
 
 c_lb::~c_lb(void)
 {
-  if(m_bDuplicated)
+
     FREEP(m_name);
-  DELETEP (m_pebm);
+    DELETEP (m_pebm);
 }
 
 

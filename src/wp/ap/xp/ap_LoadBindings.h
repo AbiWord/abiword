@@ -88,7 +88,6 @@ class c_lb
 	const char *				m_name;
 	ap_LoadBindings_pFn			m_fn;
 	EV_EditBindingMap *			m_pebm;			// must be deleted
-	bool m_bDuplicated;
 };
 
 /*****************************************************************/
