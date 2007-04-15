@@ -12474,7 +12474,8 @@ Defun1(cycleInputMode)
 
 	const char * szCurrentInputMode = pApp->getInputMode();
 	UT_return_val_if_fail (szCurrentInputMode, false);
-	const char * szNextInputMode = AP_BindingSet::s_getNextInCycle(szCurrentInputMode);
+	AP_BindingSet * pBSet = static_cast<AP_BindingSet *>(pApp->getBindingSet());
+	const char * szNextInputMode = pBSet->getNextInCycle(szCurrentInputMode);
 	if (!szNextInputMode)				// probably an error....
 		return false;
 

@@ -21,9 +21,12 @@
 #define AP_LOADBINDINGS_H
 #include "xap_LoadBindings.h"
 #include "ev_EditBits.h"
+#include "ut_vector.h"
+#include "ut_string.h"
+
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
-
+class AP_BindingSet;
 //////////////////////////////////////////////////////////////////
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 #  define FN_TEST_DUMP		"Test_Dump"
@@ -72,6 +75,22 @@ struct ap_bs_Char_Prefix
 	const char *		m_szMapName[EV_COUNT_EMS_NoShift];
 };
 
+
+typedef bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
+
+class c_lb
+{
+ public:
+  c_lb(c_lb * pc_lb);
+  c_lb(	bool bCycle,	const char * name, ap_LoadBindings_pFn fn, EV_EditBindingMap * pebm);
+  ~c_lb(void);
+	bool						m_bCanCycle;	// visible to CycleInputMode
+	const char *				m_name;
+	ap_LoadBindings_pFn			m_fn;
+	EV_EditBindingMap *			m_pebm;			// must be deleted
+	bool m_bDuplicated;
+};
+
 /*****************************************************************/
 
 class AP_BindingSet : public XAP_BindingSet
@@ -81,22 +100,24 @@ public:
 	virtual ~AP_BindingSet(void);
 
 	virtual EV_EditBindingMap *	getMap(const char * szName);
-
+	void                            loadBuiltin(void);
 	void _loadChar(	EV_EditBindingMap*			pebm,
-					const ap_bs_Char*			pCharTable,
-					UT_uint32					cCharTable,
-					const ap_bs_Char_Prefix*	pCharPrefixTable,
-					UT_uint32					cCharPrefixTable);
+			const ap_bs_Char*			pCharTable,
+			UT_uint32				cCharTable,
+			const ap_bs_Char_Prefix*	pCharPrefixTable,
+			UT_uint32			cCharPrefixTable);
 	void _loadNVK(	EV_EditBindingMap*			pebm,
-					const ap_bs_NVK*			pNVK,
-					UT_uint32					cNVK,
-					const ap_bs_NVK_Prefix*		pNVKPrefix,
-					UT_uint32					cNVKPrefix);
-	void _loadMouse(EV_EditBindingMap*			pebm,
-					const ap_bs_Mouse*			pMouseTable,
-					UT_uint32					cMouseTable);
+			const ap_bs_NVK*			pNVK,
+			UT_uint32				cNVK,
+			const ap_bs_NVK_Prefix*		pNVKPrefix,
+			UT_uint32			cNVKPrefix);
+	void _loadMouse(EV_EditBindingMap*		pebm,
+			const ap_bs_Mouse*		pMouseTable,
+			UT_uint32			cMouseTable);
 
-	static const char * s_getNextInCycle(const char * szCurrent);
+	const char * getNextInCycle(const char * szCurrent);
+ private:
+	UT_GenericVector<c_lb *>         m_vecBindings;
 };
 
 #endif /* AP_LOADBINDINGS_H */

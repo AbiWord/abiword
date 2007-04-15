@@ -149,6 +149,8 @@ public:
 
 	EV_EditMethodContainer *			getEditMethodContainer() const;
 	EV_EditBindingMap *				getBindingMap(const char * szName);
+	XAP_BindingSet *				getBindingSet(void)
+	{ return m_pBindingSet;}		/* the set of binding maps */
 	const EV_Menu_ActionSet *			getMenuActionSet() const;
 	const EV_Toolbar_ActionSet *			getToolbarActionSet() const;
 	const XAP_EncodingManager *			getEncodingManager() const;

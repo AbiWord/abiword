@@ -55,58 +55,44 @@
 
 /****************************************************************/
 /****************************************************************/
-
-typedef bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
-
-struct _lb
+c_lb::c_lb(bool bCycle, const char * name,  ap_LoadBindings_pFn pFn,	EV_EditBindingMap * pebm  ) : 
+  m_bCanCycle(bCycle),
+  m_name(name),
+  m_fn(pFn),
+  m_pebm(pebm),
+  m_bDuplicated(false)
 {
-	bool						m_bCanCycle;	// visible to CycleInputMode
-	const char *				m_name;
-	ap_LoadBindings_pFn			m_fn;
-	EV_EditBindingMap *			m_pebm;			// must be deleted
-};
+}
 
-static struct _lb s_lbTable[] =
+c_lb::c_lb(c_lb * pc_lb) : m_bDuplicated(true)
 {
-	{	true,  "default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
-	{   true,  "emacs",				ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
-	{   false, "emacsctrlx",			ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
+  m_bCanCycle = pc_lb->m_bCanCycle;
+  m_name = g_strdup(pc_lb->m_name);
+  m_fn = pc_lb->m_fn;
+  m_pebm = pc_lb->m_pebm;
+}
 
-	{	true,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
-	{	false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL	}, // vi Edit-Mode :-prefix key bindings
-	{	false, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL	}, // vi Edit-Mode c-prefix key bindings
-	{	false, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
-	{	false, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL	}, // vi Edit-Mode y-prefix key bindings
-	{	false, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL	}, // vi Edit-Mode r-prefix key bindings
-	{	false, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
+c_lb::~c_lb(void)
+{
+  if(m_bDuplicated)
+    FREEP(m_name);
+  DELETEP (m_pebm);
+}
 
-	{	false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
-	{	false, "deadacute",			ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
-	{	false, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL	},
-	{	false, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL	},
-	{	false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL	},
-	{	false, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL	},
-	{	false, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL	},
-	{	false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL	},
-	{	false, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL	},
-	{	false, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL	},
-	{	false, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL	},
-	{	false, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL	},
-};
 
 /****************************************************************/
 /****************************************************************/
 
-const char * AP_BindingSet::s_getNextInCycle(const char * szCurrent)
+const char * AP_BindingSet::getNextInCycle(const char * szCurrent)
 {
 	// find the next one in the table with CanCycle set from the given
 	// one.  wrap around if necessary.
 
 	int kMatch = -1;
-	int k;
+	UT_sint32 k;
 	
-	for (k=0; k<(int)NrElements(s_lbTable); k++)
-		if (g_ascii_strcasecmp(s_lbTable[k].m_name,szCurrent) == 0)
+	for (k=0; k<static_cast<UT_sint32>(m_vecBindings.getItemCount()); k++)
+	  if (g_ascii_strcasecmp(m_vecBindings.getNthItem(k)->m_name,szCurrent) == 0)
 		{
 			kMatch = k;
 			break;
@@ -115,12 +101,12 @@ const char * AP_BindingSet::s_getNextInCycle(const char * szCurrent)
 	if (kMatch == -1)
 		return NULL;
 
-	for (k=kMatch+1; k<(int)NrElements(s_lbTable); k++)
-		if (s_lbTable[k].m_bCanCycle)
-			return s_lbTable[k].m_name;
+	for (k=kMatch+1; k<static_cast<UT_sint32>(m_vecBindings.getItemCount()); k++)
+	  if (m_vecBindings.getNthItem(k)->m_bCanCycle)
+			return m_vecBindings.getNthItem(k)->m_name;
 	for (k=0; k<kMatch; k++)
-		if (s_lbTable[k].m_bCanCycle)
-			return s_lbTable[k].m_name;
+		if (m_vecBindings.getNthItem(k)->m_bCanCycle)
+			return m_vecBindings.getNthItem(k)->m_name;
 
 	return NULL;
 }
@@ -131,13 +117,41 @@ const char * AP_BindingSet::s_getNextInCycle(const char * szCurrent)
 AP_BindingSet::AP_BindingSet(EV_EditMethodContainer * pemc)
 	: XAP_BindingSet(pemc)
 {
+  loadBuiltin();
 }
 
 AP_BindingSet::~AP_BindingSet(void)
 {
-	for (UT_uint32 k=0; k<NrElements(s_lbTable); k++)
-		if (s_lbTable[k].m_pebm)
-			delete s_lbTable[k].m_pebm;
+        UT_VECTOR_PURGEALL(c_lb *, m_vecBindings);
+}
+
+void AP_BindingSet::loadBuiltin(void)
+{
+
+  m_vecBindings.addItem(new c_lb(true,"default",ap_LoadBindings_Default,NULL)); // stock AbiWord bindings
+  m_vecBindings.addItem(new c_lb(true,  "emacs",ap_LoadBindings_Emacs, NULL)); // emacs key bindings
+  m_vecBindings.addItem(new c_lb(false, "emacsctrlx",ap_LoadBindings_EmacsCtrlX, NULL)); // emacs ctrl-x key bindings
+
+  m_vecBindings.addItem(new c_lb(true,  "viEdit",ap_LoadBindings_viEdit,NULL)); // vi Edit-Mode bindings
+										  m_vecBindings.addItem(new c_lb(false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL)); // vi Edit-Mode :-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL)); // vi Edit-Mode c-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL)); // vi Edit-Mode d-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL)); // vi Edit-Mode y-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL)); // vi Edit-Mode r-prefix key bindings
+  m_vecBindings.addItem(new c_lb(false, "viInput",			ap_LoadBindings_viInput,			NULL)); // vi Input-Mode bindings
+  
+  m_vecBindings.addItem(new c_lb(false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL)); // subordinate maps for 'dead'
+  m_vecBindings.addItem(new c_lb(false, "deadacute",			ap_LoadBindings_DeadAcute,			NULL)); // key prefixes.
+  m_vecBindings.addItem(new c_lb(false, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL));
+  m_vecBindings.addItem(new c_lb(false, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL));
+m_vecBindings.addItem(new c_lb(false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL));
+ m_vecBindings.addItem(new c_lb(false, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL));
+ m_vecBindings.addItem(new c_lb(false, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL));
+ m_vecBindings.addItem(new c_lb(false, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL));
+ m_vecBindings.addItem(new c_lb(false, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL));
 }
 
 EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
@@ -149,21 +163,21 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 	// NOTE: the returned map should be treated as 'const' since
 	// NOTE: it is shared by all windows.
 	
-	for (UT_uint32 k=0; k<NrElements(s_lbTable); k++)
-		if (g_ascii_strcasecmp(szName,s_lbTable[k].m_name)==0)
+  for (UT_uint32 k=0; k< m_vecBindings.getItemCount(); k++)
+    if (g_ascii_strcasecmp(szName,m_vecBindings.getNthItem(k)->m_name)==0)
 		{
 			// we now share maps.  any given map is loaded exactly once.
 			// if we haven't loaded this map before, load it and remember
 			// it in our table.
 			
-			if (!s_lbTable[k].m_pebm)
+		  if (!m_vecBindings.getNthItem(k)->m_pebm)
 			{
-				s_lbTable[k].m_pebm = new EV_EditBindingMap(m_pemc);
-				if (!s_lbTable[k].m_pebm)
+				m_vecBindings.getNthItem(k)->m_pebm = new EV_EditBindingMap(m_pemc);
+				if (!m_vecBindings.getNthItem(k)->m_pebm)
 					return NULL;
-				(s_lbTable[k].m_fn)(this,s_lbTable[k].m_pebm);
+				(m_vecBindings.getNthItem(k)->m_fn)(this,m_vecBindings.getNthItem(k)->m_pebm);
 			}
-			return s_lbTable[k].m_pebm;
+			return m_vecBindings.getNthItem(k)->m_pebm;
 		}
 	
 	return NULL;
@@ -172,8 +186,8 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 /*****************************************************************/
 
 void AP_BindingSet::_loadMouse(EV_EditBindingMap* pebm,
-							   const ap_bs_Mouse* pMouseTable,
-							   UT_uint32 cMouseTable)
+			       const ap_bs_Mouse* pMouseTable,
+			       UT_uint32 cMouseTable)
 {
 	UT_uint32 k, m;
 
@@ -186,11 +200,11 @@ void AP_BindingSet::_loadMouse(EV_EditBindingMap* pebm,
 			}
 }
  
-void AP_BindingSet::_loadNVK(	EV_EditBindingMap*		pebm,
-								const ap_bs_NVK*		pNVK,
-								UT_uint32				cNVK,
-								const ap_bs_NVK_Prefix*	pNVKPrefix,
-								UT_uint32				cNVKPrefix)
+ void AP_BindingSet::_loadNVK(	EV_EditBindingMap*		pebm,
+				const ap_bs_NVK*		pNVK,
+				UT_uint32			cNVK,
+				const ap_bs_NVK_Prefix*	pNVKPrefix,
+				UT_uint32		         cNVKPrefix)
 {
 	UT_uint32 k, m;
 
@@ -221,11 +235,11 @@ void AP_BindingSet::_loadNVK(	EV_EditBindingMap*		pebm,
 			}
 }
 
-void AP_BindingSet::_loadChar(	EV_EditBindingMap*			pebm,
-								const ap_bs_Char*			pCharTable,
-								UT_uint32					cCharTable,
-								const ap_bs_Char_Prefix*	pCharPrefixTable,
-								UT_uint32					cCharPrefixTable)
+void AP_BindingSet::_loadChar(	EV_EditBindingMap*  pebm,
+				const ap_bs_Char*   pCharTable,
+				UT_uint32           cCharTable,
+				const ap_bs_Char_Prefix*  pCharPrefixTable,
+				UT_uint32		cCharPrefixTable)
 {
 	UT_uint32 k, m;
 
