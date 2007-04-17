@@ -5414,9 +5414,9 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			getDoc()->appendStyle(attribs);
 		}
 
-		FREEP(s); s = NULL;
-		FREEP(b); b = NULL;
-		FREEP(f); f = NULL;
+		FREEP(s);
+		FREEP(b);
+		FREEP(f);
 	}
 }
 
