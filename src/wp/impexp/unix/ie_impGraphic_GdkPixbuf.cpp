@@ -99,7 +99,7 @@ s_getSuffixInfo (void)
 		}
 		tmp = formatIter;
 		formatIter = formatIter->next;
-		g_slist_free1 (tmp);
+		g_slist_free_1 (tmp);
 	}
 
 	// null-terminator
@@ -589,7 +589,7 @@ const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
 		GSList *node;
 		node = formatIter;
 		formatIter = formatIter->next;
-		g_slist_free1 (node);
+		g_slist_free_1(node);
 	}
 
 	mimeConfidence = new IE_MimeConfidence[all_mime_types.size() + 1];
