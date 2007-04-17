@@ -1214,7 +1214,6 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 
 					FREEP(m_szBookMarkName);
-					m_szBookMarkName = NULL;
 				}
 			}
 		}
@@ -1805,7 +1804,6 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 			X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 			for(i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
 			FREEP(m_szBookMarkName);
-			m_szBookMarkName = NULL;
 		}
 		else if (m_parseState == _PS_Block)
 		{

@@ -47,7 +47,6 @@ fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt,
 fd_Field::~fd_Field(void)
 {
 	FREEP(m_szValue);
-	m_szValue = NULL;
 	FREEP(m_pParameter);
 }
 

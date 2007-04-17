@@ -13266,7 +13266,6 @@ void fv_PropCache::clearProps(void)
 {
 	xxx_UT_DEBUGMSG(("clearing props NumProps %d m_pszProps %x \n",m_iNumProps,m_pszProps));
 	FREEP(m_pszProps);
-	m_pszProps = NULL;
 	m_iNumProps = 0;
 	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }

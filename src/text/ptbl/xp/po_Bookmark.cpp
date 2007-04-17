@@ -38,7 +38,6 @@ po_Bookmark::po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt,
 po_Bookmark::~po_Bookmark(void)
 {
 	FREEP(m_pName);
-	m_pName = NULL;
 }
 
 void po_Bookmark::setBlock( fl_BlockLayout *pBlock)
