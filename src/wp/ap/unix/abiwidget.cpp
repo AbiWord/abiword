@@ -2159,7 +2159,7 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
 	g_return_val_if_fail (view != 0, FALSE);
-
+	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
 	// construct the call data
 	EV_EditMethodCallData calldata(data, (data ? strlen (data) : 0));
 	calldata.m_xPos = x;

@@ -1358,10 +1358,10 @@ UT_sint32 XAP_App::setInputMode(const char * szName)
 		// map not previously loaded -- we need to install it first
 
 		EV_EditBindingMap * pBindingMap = m_pApp->getBindingMap(szName);
-		UT_ASSERT(pBindingMap);
+		UT_return_val_if_fail(pBindingMap,-1);
 		bool bResult;
 		bResult = m_pInputModes->createInputMode(szName,pBindingMap);
-		UT_ASSERT(bResult);
+		UT_return_val_if_fail(bResult,-1);
 	}
 	
 	// note: derrived classes will need to update keyboard
