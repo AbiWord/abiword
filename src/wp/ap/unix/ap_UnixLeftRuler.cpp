@@ -60,8 +60,8 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
-	if(m_iBackgroundRedrawID != 0	)
-		g_source_remove(m_iBackgroundRedrawID);
+	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+	g_signal_handler_disconnect(G_OBJECT(toplevel),m_iBackgroundRedrawID);
 	while(m_pG && m_pG->isSpawnedRedraw())
 	{
 		UT_usleep(100);
