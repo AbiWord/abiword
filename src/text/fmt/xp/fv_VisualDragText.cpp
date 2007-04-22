@@ -168,7 +168,8 @@ void FV_VisualDragText::_actuallyScroll(UT_Worker * pWorker)
 	}
 	else
 	{
-		pVis->m_pAutoScrollTimer->stop();
+		if(pVis->m_pAutoScrollTimer)
+			pVis->m_pAutoScrollTimer->stop();
 		DELETEP(pVis->m_pAutoScrollTimer);
 	}
 	s_pScroll->stop();
