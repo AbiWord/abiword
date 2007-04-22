@@ -1501,12 +1501,12 @@ void fl_TOCLayout::_insertTOCContainer( fp_TOCContainer * pNewTOC)
 		{
 			pUpCon = pUPCL->getLastContainer();
 		}
-		UT_ASSERT(pUpCon);
+		UT_return_if_fail(pUpCon);
 	}
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
-		UT_ASSERT(pUpCon);
+		UT_return_if_fail(pUpCon);
 	}
 	if(pPrevL == NULL)
 	{
