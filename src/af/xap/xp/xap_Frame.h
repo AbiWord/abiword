@@ -111,7 +111,7 @@ public:
 	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
 	virtual void queue_resize() { m_pFrameImpl->_queue_resize(); }
 	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
-
+	void setPresentation(bool bPresentation) { m_pFrameImpl->_setPresentation(bPresentation);}
 	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(frame, szLayout, szLanguage); }
 	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }

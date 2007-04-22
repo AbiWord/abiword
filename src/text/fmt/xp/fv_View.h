@@ -605,7 +605,8 @@ public:
         void                removeCaret(UT_UTF8String & sDocUUID);
 	void                addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID);
 	void                setPointRemote(PT_DocPosition docPos);
-	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);	void		    fixInsertionPointCoords(void);
+	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);   
+	void		    fixInsertionPointCoords(void);
 
 // -----------------------
 	void                killBlink(void);

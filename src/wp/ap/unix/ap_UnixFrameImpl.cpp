@@ -9,6 +9,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "ap_UnixStatusBar.h"
 #include "ut_debugmsg.h"
+#include "ev_UnixMenuBar.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
@@ -298,6 +299,21 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	return m_wSunkenBox;
 }
 
+void AP_UnixFrameImpl::_setPresentation(bool bPresentation)
+{
+  if(bPresentation)
+  {
+    UT_DEBUGMSG(("Hiding Menu \n"));
+    gtk_widget_hide(m_pUnixMenu->getMenuBar());
+    UT_DEBUGMSG(("Hiding scrollbar \n"));
+      gtk_widget_hide(m_vScroll);
+  }
+  else
+  {
+    gtk_widget_show_all(m_pUnixMenu->getMenuBar());
+      gtk_widget_show_all(m_vScroll);
+  }
+}
 void AP_UnixFrameImpl::_setWindowIcon()
 {
 	// attach program icon to window

@@ -44,9 +44,8 @@ public:
 	virtual bool		refreshMenu(AV_View * pView);
     virtual void        destroy(void);
 
-#ifdef EMBEDDED_MENUBUTTON
     GtkWidget *         getMenuBar(void) const {return m_wMenuBar;}
-#endif
+
 protected:
 	GtkWidget *		m_wMenuBar;
 };

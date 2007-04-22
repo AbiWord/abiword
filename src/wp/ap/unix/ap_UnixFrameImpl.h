@@ -50,6 +50,9 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	void _showOrHideStatusbar(void);
 	void _showOrHideToolbars(void);
 
+	virtual void _setPresentation(bool bPresentation);
+
+
 	virtual void _refillToolbarsInFrameData();
 	void _bindToolbars(AV_View * pView);
 	void _createWindow();

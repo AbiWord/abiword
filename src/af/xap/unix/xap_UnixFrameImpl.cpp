@@ -1988,7 +1988,6 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 	return m_pUnixMenu;
 }
 
-
 void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 {
 	if (!GTK_IS_WINDOW(m_wTopLevelWindow)) return;
