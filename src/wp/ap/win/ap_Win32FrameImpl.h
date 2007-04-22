@@ -54,6 +54,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	void						_showOrHideToolbars(void);
 	void						_showOrHideStatusbar(void);
 
+	virtual void				_setPresentation(bool bPresentation);
+
 	virtual void 				_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn);
 	virtual void 				_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn);
 

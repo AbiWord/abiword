@@ -323,6 +323,11 @@ void AP_Win32FrameImpl::_showOrHideStatusbar(void)
 	pFrame->toggleStatusBar(bShowStatusBar);
 }
 
+void AP_Win32FrameImpl::_setPresentation(bool bPresentation)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+}
+
 /* helper methods for helper methods for _showDocument (meta-helper-methods?) :-)
  * called by AP_Frame::_replaceView which is called by AP_Frame::_showDocument 
  */
