@@ -29,7 +29,7 @@
 // NOTE: must match the EV_NVK_ definitions in the header
 // NOTE: file.
 
-static const char * s_Table[] =
+static const char * s_Abi_NVKTable[] =
 {	"",				// must be at index zero
 	"backspace",
 	"space",
@@ -102,22 +102,22 @@ static const char * s_Table[] =
 
 const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 {
-	UT_ASSERT((g_ascii_strcasecmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
-	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
+	UT_ASSERT((g_ascii_strcasecmp(s_Abi_NVKTable[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((NrElements(s_Abi_NVKTable) == EV_COUNT_NVK));
 
 	EV_EditVirtualKey evk = eb & ~EV_EKP_NAMEDKEY;
-	if (evk < NrElements(s_Table))
-		return s_Table[evk];
+	if (evk < NrElements(s_Abi_NVKTable))
+		return s_Abi_NVKTable[evk];
 	return 0;
 }
 
 EV_EditBits EV_NamedVirtualKey::getEB(const char * szName)
 {
-	UT_ASSERT((g_ascii_strcasecmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
-	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
+	UT_ASSERT((g_ascii_strcasecmp(s_Abi_NVKTable[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((NrElements(s_Abi_NVKTable) == EV_COUNT_NVK));
 
-	for (UT_uint32 k=1; k<NrElements(s_Table); k++)
-		if (g_ascii_strcasecmp(s_Table[k],szName)==0)
+	for (UT_uint32 k=1; k<NrElements(s_Abi_NVKTable); k++)
+		if (g_ascii_strcasecmp(s_Abi_NVKTable[k],szName)==0)
 			return EV_NamedKey(k);
 	return 0;
 }
