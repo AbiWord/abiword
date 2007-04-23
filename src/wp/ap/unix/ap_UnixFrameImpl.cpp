@@ -299,9 +299,9 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	return m_wSunkenBox;
 }
 
-void AP_UnixFrameImpl::_setPresentation(bool bPresentation)
+void AP_UnixFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
 {
-  if(bPresentation)
+  if(bHideMenuScroll)
   {
     UT_DEBUGMSG(("Hiding Menu \n"));
     gtk_widget_hide(m_pUnixMenu->getMenuBar());

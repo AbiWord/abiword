@@ -73,6 +73,7 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl)
 	  m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	  m_zoomType(z_PAGEWIDTH),
 	  m_pData(0),
+	  m_bHideMenuScroll(false),
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),

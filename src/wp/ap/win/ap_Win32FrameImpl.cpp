@@ -323,7 +323,7 @@ void AP_Win32FrameImpl::_showOrHideStatusbar(void)
 	pFrame->toggleStatusBar(bShowStatusBar);
 }
 
-void AP_Win32FrameImpl::_setPresentation(bool bPresentation)
+void AP_Win32FrameImpl::_hideMenuScroll(bool bHideMenuScroll)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
