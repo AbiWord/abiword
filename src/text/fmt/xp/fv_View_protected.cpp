@@ -4278,6 +4278,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 m_yScrollOffset,getWindowHeight()));
 	
 	GR_Painter painter(m_pG);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 
 	// CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
@@ -4329,13 +4330,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if (!bDirtyRunsOnly)
 	{
-		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT))
+		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 		{
 			// fill left margin
 			painter.fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight() + m_pG->tlu(1));
 		}
 
-		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT))
+		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 		{
 			// fill top margin
 			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
@@ -4483,7 +4484,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			m_pG->setColor(clr);
 
 			// one pixel border a
-			if(!isPreview() && (getViewMode() == VIEW_PRINT))
+			if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
@@ -4523,7 +4524,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				// In normal mode, the right margin is
 				// white (since the whole screen is white).
-				if(getViewMode() != VIEW_PRINT)
+				if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 				{
 					painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 				}
@@ -4536,7 +4537,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// fill separator below page
-			if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()))
+			if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()) &&  !pFrame->isMenuScrollHidden())
 			{
 				if(pPage->getNext() != NULL)
 				{
@@ -4551,7 +4552,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			// two pixel drop shadow
 
-			if(!isPreview() && (getViewMode() == VIEW_PRINT))
+			if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden() )
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
@@ -4589,7 +4590,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
 	
 			UT_RGBColor clrFillColor;
-			if (getViewMode() != VIEW_PRINT)
+			if ((getViewMode() != VIEW_PRINT) ||  pFrame->isMenuScrollHidden())
 			{
 				const gchar * pszTransparentColor = NULL;
 				this->getApp()->getPrefs()->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);

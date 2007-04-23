@@ -7920,8 +7920,13 @@ UT_sint32 FV_View::getPageViewSep(void) const
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
+	else if (pFrame->isMenuScrollHidden())
+	{
+			return 0;
+	}
 	else if (getViewMode() != VIEW_PRINT)
 	{
 		return m_pG->tlu(1);
@@ -7940,8 +7945,13 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	// return the amount of gray-space we draw to the left
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
+	else if (pFrame->isMenuScrollHidden())
+	{
+			return 0;
+	}
 	else
 #ifdef EMBEDDED_TARGET
 		return (int) (0.2 * fl_PAGEVIEW_MARGIN_X);
@@ -7955,8 +7965,13 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
+	else if (pFrame->isMenuScrollHidden())
+	{
+		return 0;
+	}
 	else
 #ifdef EMBEDDED_TARGET
 		return (int ) (0.2 * fl_PAGEVIEW_MARGIN_Y);

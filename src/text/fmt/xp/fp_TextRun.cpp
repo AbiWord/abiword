@@ -37,7 +37,7 @@
 #include "fv_View.h"
 #include "fb_Alignment.h"
 #include "fl_TableLayout.h"
-
+#include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -2312,6 +2312,14 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 #ifndef WITHOUT_SPELL
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, FL_SQUIGGLE_TYPE iSquiggle)
 {
+	if(_getView())
+	{
+			XAP_Frame * pFrame =  static_cast<XAP_Frame*>(_getView()->getParentData());
+			if(pFrame && pFrame->isMenuScrollHidden())
+			{
+					return;
+			}
+	}
 	if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)))
 	{
 		return;
