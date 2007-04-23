@@ -241,6 +241,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	//	+-----+---+
 		
 	// scroll bars
+	
 	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
@@ -305,13 +306,13 @@ void AP_UnixFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
   {
     UT_DEBUGMSG(("Hiding Menu \n"));
     gtk_widget_hide(m_pUnixMenu->getMenuBar());
-    UT_DEBUGMSG(("Hiding scrollbar \n"));
-      gtk_widget_hide(m_vScroll);
+    UT_DEBUGMSG(("Hiding scrollbar %x \n"));
+    gtk_widget_hide(m_vScroll);
   }
   else
   {
     gtk_widget_show_all(m_pUnixMenu->getMenuBar());
-      gtk_widget_show_all(m_vScroll);
+    gtk_widget_show_all(m_vScroll);
   }
 }
 void AP_UnixFrameImpl::_setWindowIcon()
@@ -342,6 +343,10 @@ void AP_UnixFrameImpl::_createWindow()
 		// TODO: noticable in the gnome build with a toolbar disabled)
 		_showOrHideToolbars();
 		_showOrHideStatusbar();
+	}
+	if(getFrame()->isMenuScrollHidden())
+	{
+	    _hideMenuScroll(true);
 	}
 }
 
@@ -387,7 +392,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	{
  		gtk_widget_hide(wScrollWidget);
 	}
- 	else
+ 	else if((wScrollWidget != m_vScroll) || !getFrame()->isMenuScrollHidden())
 	{
  		gtk_widget_show(wScrollWidget);
 	}
