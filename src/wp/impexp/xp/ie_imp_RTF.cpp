@@ -3783,6 +3783,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 			// Table-of-contents field
 			UT_DEBUGMSG (("RTF: TOC fieldinst not fully handled yet\n"));
 
+#if 0
 			if(!m_bParaWrittenForSection)
 			{
 				getDoc()->appendStrux(PTX_Block, NULL);
@@ -3796,6 +3797,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 			xmlField = g_strdup ("");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
+#endif
 		}
 		
 		break;

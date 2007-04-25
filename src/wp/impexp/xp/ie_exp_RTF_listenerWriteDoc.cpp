@@ -2231,6 +2231,51 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->_rtf_close_brace();
 			 return;
 		 }
+		 else if(strcmp(pszType,"meta_creator") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+  			 m_pie->write("AUTHOR ");
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
+		 else if(strcmp(pszType,"meta_date") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+  			 m_pie->write("CREATEDATE ");
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
+		 else if(strcmp(pszType,"meta_description") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+  			 m_pie->write("COMMENTS ");
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
+		 else if(strcmp(pszType,"meta_keywords") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+  			 m_pie->write("KEYWORDS ");
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
+		 else if(strcmp(pszType,"meta_title") == 0)
+		 {
+			 _writeFieldPreamble(pSpanAP);
+  			 m_pie->write("TITLE ");
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
+			 return;
+		 }
 		 else
 		 {
 			 UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
