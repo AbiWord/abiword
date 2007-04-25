@@ -3518,7 +3518,31 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 	case 'A':
 		if (strcmp (instr, "AUTHOR") == 0)
 		{
-			UT_DEBUGMSG (("RTF: AUTHOR fieldinst not handled yet\n"));
+			xmlField = g_strdup ("meta_creator");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		break;
+	case 'C':
+		if (strcmp (instr, "CREATEDATE") == 0)
+		{
+			xmlField = g_strdup ("meta_date");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		else if (strcmp (instr, "COMMENTS") == 0)
+		{
+			xmlField = g_strdup ("meta_description");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		break;
+	case 'D':
+		if (strcmp (instr, "DATE") == 0)
+		{
+			xmlField = g_strdup ("date");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		break;
 	case 'F':
@@ -3624,6 +3648,14 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 			UT_DEBUGMSG (("RTF: INCLUDEPICTURE fieldinst not handled yet\n"));
 		}
 		break;
+	case 'K':
+		if (strcmp (instr, "KEYWORDS") == 0)
+		{
+			xmlField = g_strdup ("meta_keywords");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		break;
 	case 'P':
 		if (strcmp (instr, "PAGE") == 0)
 		{
@@ -3661,6 +3693,12 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 		if (strcmp (instr, "SAVEDATE") == 0)
 		{
 			xmlField = g_strdup ("date_dfl");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		else if (strcmp (instr, "SUBJECT") == 0)
+		{
+			xmlField = g_strdup ("meta_subject");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3734,10 +3772,30 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 				isXML = (xmlField != NULL);
 			}
 		}
+		if (strcmp (instr, "TITLE") == 0)
+		{
+			xmlField = g_strdup ("meta_title");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
+		}
 		else if (strcmp (instr, "TOC") == 0)
 		{
 			// Table-of-contents field
-			UT_DEBUGMSG (("RTF: TOC fieldinst not handled yet\n"));
+			UT_DEBUGMSG (("RTF: TOC fieldinst not fully handled yet\n"));
+
+			if(!m_bParaWrittenForSection)
+			{
+				getDoc()->appendStrux(PTX_Block, NULL);
+				m_bParaWrittenForSection = true;
+			}
+
+			getDoc()->appendStrux(PTX_SectionTOC, NULL);
+			getDoc()->appendStrux(PTX_EndTOC, NULL);
+
+			// DAL: hack
+			xmlField = g_strdup ("");
+			UT_ASSERT_HARMLESS (xmlField);
+			isXML = (xmlField != NULL);
 		}
 		
 		break;
@@ -11239,15 +11297,15 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 				action = ACT_NONE;
 				break;
 			case RTF_KW_doccomm:
-				result = SkipCurrentGroup();
-				action = ACT_NONE;
+				result = PD_META_KEY_DESCRIPTION;
+				action = ACT_PCDATA;
 				break;		
 			case RTF_KW_hlinkbase:
 				result = SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_creatim:
-				result = SkipCurrentGroup();
+				metaDataKey = PD_META_KEY_DATE;
 				action = ACT_NONE;
 				break;
 			case RTF_KW_revtim:

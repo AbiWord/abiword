@@ -78,23 +78,22 @@ void fd_Field::setValue(const gchar* szValue)
 
 bool fd_Field::update(void)
 {
-
        // test it out
-       char testChars[256];
-       char martintestChar[256];
        m_updateCount++;
-       sprintf(testChars,
-	       "test field text (%d updates)",
-	       m_updateCount);
-       sprintf(martintestChar,
-	       "Martin field text (%d updates)",
-	       m_updateCount);
 
-       if (m_iFieldType == FD_Test)
+       if (m_iFieldType == FD_None)
+       {
+       }
+       else if (m_iFieldType == FD_Test)
        {
               UT_UCSChar testUCSFieldText[256];
+	      char testChars[256];
+	      sprintf(testChars,
+		      "test field text (%d updates)",
+		      m_updateCount);
+
 	      UT_UCS4_strcpy_char(testUCSFieldText,
-				 testChars);
+				  testChars);
 	      UT_uint32 len = UT_UCS4_strlen(testUCSFieldText);
 	      PT_DocPosition dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();
@@ -120,10 +119,20 @@ bool fd_Field::update(void)
 	      return returnValue;
        }
 
-       if (m_iFieldType == FD_MartinTest)
+       else if (m_iFieldType == FD_MartinTest)
        {
 
               UT_UCSChar testUCSFieldText[1024];
+	      char testChars[256];
+	      sprintf(testChars,
+		      "test field text (%d updates)",
+		      m_updateCount);
+
+	      char martintestChar[256];
+	      sprintf(martintestChar,
+		      "Martin field text (%d updates)",
+		      m_updateCount);
+
               //UT_UCSChar * curpos;
 	      char lineno[20];
 	      UT_UCS4_strcpy_char(testUCSFieldText,

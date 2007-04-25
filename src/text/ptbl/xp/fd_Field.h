@@ -39,6 +39,7 @@ class ABI_EXPORT fd_Field
     // TBD: convention for naming 
     typedef enum _FieldType 
 	{
+	        FD_None,
 		FD_Test,
 		FD_MartinTest,
 		FD_Time, 

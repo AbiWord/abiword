@@ -87,7 +87,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
     		case 'c':
@@ -99,7 +99,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
     			break;
     		case 'd':
@@ -147,7 +147,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
     		case 'e':
@@ -163,7 +163,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
     		case 'f':
@@ -183,7 +183,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
     		case 'l':
@@ -199,7 +199,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
     			break;
     		case 'm':
@@ -263,7 +263,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 		        break;
     		case 'n':
@@ -275,7 +275,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
     		case 'p':
@@ -299,7 +299,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
         		break;
 		    case 's':
@@ -341,7 +341,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
         		break;
     		case 'w':
@@ -353,7 +353,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		{
 		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
+		            fieldType = fd_Field::FD_None;
         		}
 				break;
 #if 0
@@ -378,7 +378,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     		default:
     			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
        		    //Better than segfaulting I figure
-	            fieldType = fd_Field::FD_Test;
+	            fieldType = fd_Field::FD_None;
     	}
         m_pField = new fd_Field(*this, pPT,fieldType, pszParam);
     }

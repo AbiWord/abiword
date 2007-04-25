@@ -2175,11 +2175,11 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(strcmp(pszType,"file_name") == 0)
 		 {
-		         m_pie->_rtf_open_brace();
-			 m_pie->_rtf_keyword("*");
-			 m_pie->_rtf_keyword("abifieldDfileDname"); // abiword extension for now.
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("FILENAME ");
 			 m_pie->_rtf_close_brace();
-			 UT_DEBUGMSG(("SEVIOR: File Name field here \n"));
+			 m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(strcmp(pszType,"app_ver") == 0)
