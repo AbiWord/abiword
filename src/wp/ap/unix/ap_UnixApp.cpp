@@ -1145,43 +1145,12 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
 
 bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
-	//
-	// Create a private visual to draw with
-	//
-	GdkVisual * vis = gdk_visual_get_system (); // don't delete this!
-	//
-	// Create a private color map to draw with.
-	//
-	GdkColormap*  visColorMap = gdk_colormap_new(vis,true);
-	//
-	// Create a private set of attributes for our GdkWindow
-	// 
-	GdkWindowAttr attributes;
-	attributes.title = NULL;
-	attributes.event_mask = 0;
-	attributes.x = 0;
-	attributes.y = 0;
-	attributes.width = iWidth;
-	attributes.height = iHeight;
-	attributes.wclass = 	GDK_INPUT_OUTPUT ;
-	attributes.visual = vis;
-	attributes.colormap = visColorMap;
-	attributes.window_type = GDK_WINDOW_CHILD;
-	attributes.cursor = NULL;
-	attributes.wmclass_name = NULL;
-	attributes.wmclass_class = NULL;
-	attributes.override_redirect = true;
+	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
 
-	gint attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_COLORMAP | GDK_WA_VISUAL;
-	GdkWindow*  pWindow = gdk_window_new (NULL, &attributes,
-                                             attributes_mask);
-#if 0
-	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
-#endif
-	GR_UnixAllocInfo ai(pWindow);
-	GR_UnixPangoGraphics * pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixPixmapAllocInfo ai(pPixmap);
 
-	pG->createCaret();
+	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*) GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
+
 	UT_Error error = UT_OK;
 	PD_Document * pNewDoc = new PD_Document(this);
 	error = pNewDoc->readFromFile(pszInFile,IEFT_Unknown, NULL);
@@ -1194,8 +1163,9 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	dg_DrawArgs da;
 	memset(&da, 0, sizeof(da));
 	da.pG = pG;
-	pPrevAbi->getView()->draw(0, &da);
 	GR_Painter * pPaint = new GR_Painter(pG);
+	pPaint->clearArea(0,0,pG->tlu(iWidth),pG->tlu(iHeight));
+	pPrevAbi->getView()->draw(0, &da);
 	UT_Rect r;
 	r.left = 0;
 	r.top = 0;
@@ -1206,11 +1176,6 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	static_cast<GR_UnixImage *>(pImage)->saveToPNG( pszPNGFile);
 	DELETEP(pImage);
 	DELETEP(pG);
-	delete pWindow;
-#if 0
-	delete pMap;
-#endif
-	delete visColorMap;
 	DELETEP(pPrevAbi); // This deletes pNewDoc
 	return true;
 }

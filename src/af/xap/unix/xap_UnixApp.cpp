@@ -123,6 +123,17 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		}
 #endif
 
+		bSuccess = pGF->registerClass(GR_UnixPangoPixmapGraphics::graphicsAllocator,
+									  GR_UnixPangoPixmapGraphics::graphicsDescriptor,
+									  GR_UnixPangoPixmapGraphics::s_getClassId());
+
+		if(bSuccess)
+		{
+			pGF->registerAsDefault(GR_UnixPangoPixmapGraphics::s_getClassId(), false);
+		}
+
+		UT_ASSERT( bSuccess );
+
 		/* We need to link UnixNull_Graphics because the AbiCommand
 		 * plugin uses it.
 		 *

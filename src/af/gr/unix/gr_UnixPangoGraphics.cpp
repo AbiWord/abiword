@@ -320,17 +320,26 @@ void GR_UnixPangoGraphics::init()
 	GdkDisplay * gDisplay = NULL;
 	GdkScreen *  gScreen = NULL;
 
-	if (m_pWin)
+	if (_getDrawable())
 	{
 		m_pColormap = gdk_rgb_get_colormap();
 		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
 
-		gDisplay = gdk_drawable_get_display(m_pWin);
-		gScreen = gdk_drawable_get_screen(m_pWin);
+		gDisplay = gdk_drawable_get_display(_getDrawable());
+		gScreen = gdk_drawable_get_screen(_getDrawable());
 
 		GdkDrawable * realDraw;
-		gdk_window_get_internal_paint_info (m_pWin, &realDraw,
+		if(GDK_IS_WINDOW((_getDrawable())))
+		{
+				gdk_window_get_internal_paint_info (_getDrawable(), &realDraw,
 											&m_iXoff, &m_iYoff);
+		}
+		else
+		{
+			    realDraw = _getDrawable();
+				m_iXoff = 0;
+				m_iYoff = 0;
+		}
 
 		//
 		// Martin's attempt to make double buffering work.with xft
@@ -686,7 +695,7 @@ void GR_UnixPangoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 										   GdkBitmap * mask)
 {
 	source
-		= gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
+		= gdk_pixmap_colormap_create_from_xpm_d(_getDrawable(),NULL,
 							&mask, NULL,
 							pXPM);
 }
@@ -729,7 +738,7 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-   	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
+   	gdk_draw_drawable(_getDrawable(), m_pGC, _getDrawable(), tdu(x_src), tdu(y_src),
    				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
 
@@ -2163,7 +2172,7 @@ void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idh = _tduR(r.height);
 
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   m_pWin,
+												   _getDrawable(),
 												   NULL,
 												   idx, idy, 0, 0,
 												   idw, idh);
@@ -2182,7 +2191,7 @@ void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 
 
 	if (p && r)
-		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
+		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
 						 idx, idy,
 						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }
@@ -2199,7 +2208,7 @@ GR_Image * GR_UnixPangoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
 	GdkColormap* cmp = gdk_colormap_get_system();
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   m_pWin,
+												   _getDrawable(),
 												   cmp,
 												   idx, idy, 0, 0,
 												   idw, idh);
@@ -2256,13 +2265,13 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
 	xDest = idx; yDest = idy;
 
 	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_draw_pixbuf (m_pWin, NULL, image,
+		gdk_draw_pixbuf (_getDrawable(), NULL, image,
 						 0, 0, xDest, yDest,
 						 iImageWidth, iImageHeight,
 						 GDK_RGB_DITHER_NORMAL,
 						 0, 0);
 	else
-		gdk_draw_pixbuf (m_pWin, m_pGC, image,
+		gdk_draw_pixbuf (_getDrawable(), m_pGC, image,
 						 0, 0, xDest, yDest,
 						 iImageWidth, iImageHeight,
 						 GDK_RGB_DITHER_NORMAL,
@@ -2801,7 +2810,7 @@ void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 	
-	gdk_draw_line(m_pWin, m_pGC, idx1, idy1, idx2, idy2);
+	gdk_draw_line(_getDrawable(), m_pGC, idx1, idy1, idx2, idy2);
 }
 
 void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
@@ -2907,7 +2916,7 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 
-	gdk_draw_line(m_pWin, m_pXORGC, idx1, idy1, idx2, idy2);
+	gdk_draw_line(_getDrawable(), m_pXORGC, idx1, idy1, idx2, idy2);
 }
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
@@ -2932,7 +2941,7 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		points[i].y = idy1 - 1;
 	}
 
-	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
+	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
 
 	FREEP(points);
 }
@@ -2946,7 +2955,7 @@ void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
 	UT_sint32 idw = _tduR(pRect->width);
 	UT_sint32 idh = _tduR(pRect->height);
 
-	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, idx, idy,
+	gdk_draw_rectangle(_getDrawable(), m_pXORGC, 1, idx, idy,
 			   idw, idh);
 }
 
@@ -3008,7 +3017,7 @@ void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32
 	UT_sint32 idy = _tduY(y);
 	UT_sint32 idw = _tduR(w);
 	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(m_pWin, m_pGC, 1, idx, idy, idw, idh);
+ 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
@@ -3107,7 +3116,7 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_s
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
 void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
@@ -3143,7 +3152,7 @@ void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 		UT_sint32 idy = _tduY(pts[i].y);
         points[i].y = idy;
     }
-	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
+	gdk_draw_polygon(_getDrawable(), m_pGC, 1, points, nPoints);
 	delete[] points;
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
@@ -4221,6 +4230,191 @@ void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
 }
 
 #endif
+
+
+/*!
+ * The GR_UnixPangoPixmapGraphics is used to draw onto an offscreen 
+ * buffer.
+ */
+
+GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
+	GR_UnixPangoGraphics(),
+	m_pPixmap(pix)
+{
+	init();
+}			
+
+GR_UnixPangoPixmapGraphics::~GR_UnixPangoPixmapGraphics(void)
+{
+	gdk_pixmap_unref (m_pPixmap);	
+}
+
+GR_Graphics *   GR_UnixPangoPixmapGraphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	UT_return_val_if_fail(info.getType() == GRID_UNIX_PANGO_PIXMAP,NULL);
+	xxx_UT_DEBUGMSG(("GR_UnixPangoPixmapGraphics::graphicsAllocator\n"));
+
+	GR_UnixPixmapAllocInfo &AI = (GR_UnixPixmapAllocInfo&)info;
+
+	return new GR_UnixPangoPixmapGraphics(AI.m_pix);
+}
+
+
+void GR_UnixPangoPixmapGraphics::init(void)
+{
+	UT_DEBUGMSG(("Initializing UnixPangoPixmapGraphics %x \n",this));
+	GdkDisplay * gDisplay = NULL;
+	GdkScreen *  gScreen = NULL;
+	UT_return_if_fail(_getDrawable());
+
+	m_pColormap = gdk_rgb_get_colormap();
+	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+
+	gDisplay = gdk_drawable_get_display(_getDrawable());
+	gScreen = gdk_drawable_get_screen(_getDrawable());
+
+	if(!gDisplay)
+		gDisplay = gdk_display_get_default();
+	if(!gScreen)
+		gScreen = gdk_screen_get_default();
+
+	GdkDrawable * realDraw;
+	realDraw = _getDrawable();
+	m_iXoff = 0;
+	m_iYoff = 0;
+	//
+	// Martin's attempt to make double buffering work.with xft
+	//
+	m_pGC = gdk_gc_new(realDraw);
+	m_pXORGC = gdk_gc_new(realDraw);
+	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+	m_Drawable = gdk_x11_drawable_get_xid(realDraw);
+
+	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
+								   m_pVisual, m_Colormap);
+			
+	gdk_gc_set_function(m_pXORGC, GDK_XOR);
+
+	GdkColor clrWhite;
+	clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+	gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
+	GdkColor clrBlack;
+	clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+	gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pGC, &clrBlack);
+
+	m_XftColor.color.red = clrBlack.red;
+	m_XftColor.color.green = clrBlack.green;
+	m_XftColor.color.blue = clrBlack.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = clrBlack.pixel;
+
+		// I only want to set CAP_NOT_LAST, but the call takes all
+		// arguments (and doesn't have a default value).  Set the
+		// line attributes to not draw the last pixel.
+
+		// We force the line width to be zero because the CAP_NOT_LAST
+		// stuff does not seem to work correctly when the width is set
+		// to one.
+
+	gdk_gc_set_line_attributes(m_pGC, 0,
+							   GDK_LINE_SOLID,
+							   GDK_CAP_NOT_LAST,
+							   GDK_JOIN_MITER);
+			
+	gdk_gc_set_line_attributes(m_pXORGC, 0,
+								   GDK_LINE_SOLID,
+								   GDK_CAP_NOT_LAST,
+								   GDK_JOIN_MITER);
+
+	// Set GraphicsExposes so that XCopyArea() causes an expose on
+	// obscured regions rather than just tiling in the default background.
+	gdk_gc_set_exposures(m_pGC, 1);
+	gdk_gc_set_exposures(m_pXORGC, 1);
+
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_cursor = GR_CURSOR_INVALID;
+	setCursor(GR_CURSOR_DEFAULT);
+	
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+
+	bool bGotResolution = false;
+	
+	if (gScreen && gDisplay)
+		{
+			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
+			UT_DEBUGMSG(("PangoPixmap init gScreen %x gDisplay %x Screen %d Display %x \n",gScreen,gDisplay,iScreen,disp));
+			m_pContext = pango_xft_get_context(disp, iScreen);
+			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+
+			FcPattern *pattern = FcPatternCreate();
+			if (pattern)
+			{
+				double dpi;
+				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+									  iScreen,
+									  pattern);
+
+				if(FcResultMatch == FcPatternGetDouble (pattern,
+														FC_DPI, 0, &dpi))
+				{
+					m_iDeviceResolution = (UT_uint32)round(dpi);
+					bGotResolution = true;
+				}
+
+				FcPatternDestroy (pattern);
+			}
+			
+			if (!bGotResolution)
+			{
+				// that didn't work. try getting it from the screen
+				m_iDeviceResolution =
+					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
+									 gdk_screen_get_width_mm (gScreen));
+			}
+
+			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
+						 m_iDeviceResolution));
+			
+		}
+#ifdef HAVE_PANGOFT2
+	else
+	{
+		m_iDeviceResolution = 72;
+		m_pFontMap = pango_ft2_font_map_new ();
+		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
+										  m_iDeviceResolution,
+										  m_iDeviceResolution);	
+		m_pContext = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap));
+		m_bOwnsFontMap = true;
+	}
+#endif
+}
+
+bool GR_UnixPangoPixmapGraphics::queryProperties(GR_Graphics::Properties gp) const
+{
+	switch (gp)
+	{
+		case DGP_SCREEN:
+			return false;
+		case DGP_OPAQUEOVERLAY:
+			return true;
+		case DGP_PAPER:
+			return true;
+		default:
+			UT_ASSERT(0);
+			return false;
+	}
+}
+
+GR_Graphics::Cursor GR_UnixPangoPixmapGraphics::getCursor(void) const
+{
+	return GR_CURSOR_DEFAULT;
+}
 
 static const UT_uint32 adobeDUni[/*202*/][2] =
 	{
