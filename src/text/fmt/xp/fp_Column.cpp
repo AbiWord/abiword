@@ -81,8 +81,11 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 		return;
 	}
 	m_iWidth = iWidth;
-	getSectionLayout()->setImageWidth(iWidth);
-	getFillType()->setWidth(getGraphics(),iWidth);
+	if(getContainerType() != FP_CONTAINER_COLUMN)
+	{
+	    getSectionLayout()->setImageWidth(iWidth);
+	    getFillType()->setWidth(getGraphics(),iWidth);
+	}
 
 	// TODO we really need to force a re-line-break operation on every block herein
 
@@ -133,12 +136,14 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 		}
 	}
 	m_iHeight = iHeight;
-	if(getContainerType() == FP_CONTAINER_CELL)
+	if(getContainerType() != FP_CONTAINER_COLUMN)
 	{
-	  getSectionLayout()->setImageHeight(getMaxHeight()); // was iHeight
+	  if(getContainerType() == FP_CONTAINER_CELL)
+	  {
+	      getSectionLayout()->setImageHeight(getMaxHeight()); // was iHeight
+	  }
+	  getFillType()->setHeight(getGraphics(),iHeight);
 	}
-	getFillType()->setHeight(getGraphics(),iHeight);
-
 }
 
 /*!

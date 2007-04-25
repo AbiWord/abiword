@@ -689,6 +689,8 @@ void fg_FillType::_regenerateImage(GR_Graphics * pG)
 	DELETEP(m_pImage);
 	m_pImage = m_pGraphic->regenerateImage(pG);
 	setWidthHeight(pG,m_iWidth,m_iHeight);
+	UT_Rect rec(0,0,m_iWidth,m_iHeight);
+	m_pImage->scaleImageTo(pG,rec);
 	m_iGraphicTick = m_pDocLayout->getGraphicTick();
 }
 
