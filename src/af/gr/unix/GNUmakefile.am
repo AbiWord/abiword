@@ -24,7 +24,8 @@ noinst_LIBRARIES = libGr_unix.a
 
 libGr_unix_a_SOURCES= gr_UnixPangoGraphics.cpp	\
 		      gr_UnixNullGraphics.cpp   \
-	              gr_UnixImage.cpp
+	              gr_UnixImage.cpp \
+	              gr_UnixPangoPixmapGraphics.cpp 
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
@@ -32,4 +33,5 @@ EXTRA_DIST = $(headers_DATA) Makefile
 noinst_HEADERS = \
 	gr_UnixImage.h \
 	gr_UnixPangoGraphics.h \
-	gr_UnixNullGraphics.h
+	gr_UnixNullGraphics.h \
+	gr_UnixPangoPixmapGraphics.h 

@@ -24,7 +24,8 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		gr_UnixGraphics.cpp	\
 			gr_UnixImage.cpp	\
-			gr_UnixNullGraphics.cpp
+			gr_UnixNullGraphics.cpp \
+			gr_UnixPangePixmapGraphics.cpp
 
 INCLUDES=		-I/usr/X11R6/include
 

@@ -111,6 +111,7 @@
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixPangoGraphics.h"
+#include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef ENABLE_BINRELOC
 #include "prefix.h"

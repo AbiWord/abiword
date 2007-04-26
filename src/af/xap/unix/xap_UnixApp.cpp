@@ -56,6 +56,7 @@
 #include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
+#include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef HAVE_GNOMEVFS
 #include <libgnomevfs/gnome-vfs.h>
