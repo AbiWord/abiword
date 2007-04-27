@@ -352,7 +352,8 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 {
 	UT_ASSERT(pEM);
-
+	if(!m_pebChar)
+	  return NULL;
 	// lookup the keyboard shortcut bound to pEM, if any
 
 	EV_EditModifierState ems = 0;
