@@ -134,6 +134,18 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 
 	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
 	UT_return_if_fail(pFE);
+	if(pFE->getFrameEditMode() != FV_FrameEdit_DRAG_EXISTING)
+	{
+		if(pFE->m_pAutoScrollTimer)
+			pFE->m_pAutoScrollTimer->stop();
+		DELETEP(pFE->m_pAutoScrollTimer);
+		iExtra = 0;
+		s_pScroll->stop();
+		delete s_pScroll;
+		s_pScroll = NULL;
+		bScrollRunning = false;
+		return;
+	}
 	FV_View * pView = pFE->m_pView;
 	UT_sint32 x = pFE->m_xLastMouse;
 	UT_sint32 y = pFE->m_yLastMouse;
@@ -141,13 +153,33 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 	bool bScrollUp = false;
 	bool bScrollLeft = false;
 	bool bScrollRight = false;
+	bool bStop = false;
 	if(y<=0)
 	{
-		bScrollUp = true;
+	  if(pView->getYScrollOffset() <= 10)
+	  {
+	      pView->setYScrollOffset(0);
+	      pView->updateScreen(false);
+	      bStop = true;
+	  }
+	  else
+	  {
+	      bScrollUp = true;
+	  }
 	}
 	else if( y >= pView->getWindowHeight())
 	{
+	  if((pView->getYScrollOffset()+pView->getWindowHeight()+10) >= pView->getLayout()->getHeight())
+	  {
+	      pView->setYScrollOffset(pView->getLayout()->getHeight() - pView->getWindowHeight());
+	      pView->updateScreen(false);
+	      bStop = true;
+	      UT_DEBUGMSG(("!!!!!!!!!!!!PLLLLLLLLLEEEEAAAASSSEEEEE STOOPPP!!!! \n"));
+	  }
+	  else
+	  {
 		bScrollDown = true;
+	  }
 	}
 	if(x <= 0)
 	{
@@ -157,7 +189,7 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 	{
 		bScrollRight = true;
 	}
-	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+	if(!bStop && (bScrollDown || bScrollUp || bScrollLeft || bScrollRight))
 	{
 		pFE->getGraphics()->setClipRect(&pFE->m_recCurFrame);
 		pView->updateScreen(false);
@@ -217,7 +249,7 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 	    return;
 	}
 
-
+	UT_DEBUGMSG(("_autoscroll started!! \n"));
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	s_pScroll = UT_WorkerFactory::static_constructor (_actuallyScroll,pFE, inMode, outMode);
@@ -547,11 +579,33 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		bool bScrollRight = false;
 		if(y<=0)
 		{
-			bScrollUp = true;
+		  if(m_pView->getYScrollOffset() <= 0)
+		    {
+		      m_pView->setYScrollOffset(0);
+		      m_pView->updateScreen(false);
+		      if(m_pAutoScrollTimer)
+			m_pAutoScrollTimer->stop();
+		      DELETEP(m_pAutoScrollTimer);
+		    }
+		  else
+		    {
+		      bScrollUp = true;
+		    }
 		}
 		else if( y >= m_pView->getWindowHeight())
 		{
-			bScrollDown = true;
+		  if(m_pView->getYScrollOffset() >= m_pView->getLayout()->getHeight())
+		  {
+		      m_pView->setYScrollOffset(m_pView->getLayout()->getHeight());
+		      m_pView->updateScreen(false);
+		      if(m_pAutoScrollTimer)
+			m_pAutoScrollTimer->stop();
+		      DELETEP(m_pAutoScrollTimer);
+		  }
+		  else
+		  {
+		      bScrollDown = true;
+		  }
 		}
 		if(x <= 0)
 		{
