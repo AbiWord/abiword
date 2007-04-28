@@ -2138,7 +2138,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
  * fp_VerticalContainer. It places the frames pointed to within the block at
  * the appropriate place on the appropriate page. Since we don't know where
  * this is until the lines in the block are placed in a column we have to 
- * wait until botht eh column and lines are placed on the page.
+ * wait until both the column and lines are placed on the page.
  *
  * pLastLine is the last line placed inthe column. If the frame should be 
  * placed after this line we don't place any frames that should be below 
@@ -2287,6 +2287,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN)
 		{
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
+			UT_sint32 iPrefPage = pFrameCon-> getPreferedPageNo();
 			//
 			// The frame container may not yet be created.
 			// 
@@ -2303,16 +2304,42 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				UT_return_val_if_fail(pLFirst,false);
 				fp_Page * pPageFirst = pLFirst->getPage();
 				UT_return_val_if_fail(pPageFirst,false);
+				UT_sint32 iPageFirst = getDocLayout()->findPage(pPageFirst);
+				UT_sint32 iPageLast = getDocLayout()->findPage(pPageLast);
 				fp_Page * pPage = pPageLast;
 				fp_Line * pLine = pLLast;
 				if(pPageFirst != pPageLast)
 				{
-					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
-					if(idFirst < idLast)
+					if((iPrefPage>= iPageFirst) && (iPrefPage <= iPageLast))
 					{
-						pPage = pPageFirst;
-						pLine = pLFirst;
+						pPage = getDocLayout()->getNthPage(iPrefPage);
+						if(iPageFirst ==  iPrefPage)
+						{
+							pLine = pLFirst;
+						}
+						else if (iPageLast == iPrefPage)
+						{
+							pLine = pLLast;
+						}
+						else
+						{
+							pLine = pLFirst;
+							while(pLine && pLine->getPage() != pPage)
+							{
+								pLine = static_cast<fp_Line *>(pLine->getNext());
+							}
+							UT_return_val_if_fail(pLine,false);
+						}
+					}
+					else
+					{
+						UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+						UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+						if(idFirst < idLast)
+						{
+							pPage = pPageFirst;
+							pLine = pLFirst;
+						}
 					}
 				}
 				fp_Container * pCol = pLine->getColumn();
@@ -2322,6 +2349,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
+					iPrefPage = getDocLayout()->findPage(pPage);
+					pFrameCon->setPreferedPageNo(iPrefPage);
 				}
 			}
 		}

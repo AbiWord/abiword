@@ -253,7 +253,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		while(pCol)
 		{
 			nWrapped += pCol->getNumWrapped();
-			pCol = static_cast<fp_Column *>(pCol->getNext());
+			pCol = static_cast<fp_Column *>(pCol->getFollower());
 		}
 	}
 	UT_sint32 nWrappedObjs = 0;

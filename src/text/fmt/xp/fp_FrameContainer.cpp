@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Patrick Lam <plam@mit.edu>
@@ -57,7 +58,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsAbove(true),
 	  m_bIsTopBot(false),
 	  m_bIsLeftWrapped(false),
-	  m_bIsRightWrapped(false)
+	  m_bIsRightWrapped(false),
+	  m_iPreferedPageNo(-1)
 {
 }
 
