@@ -16,16 +16,12 @@
 
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section num_columns="1" column_gap="0.25in">
-<p props="line-height:1.0; margin-top:0pt"><c props="lang:en-US"></c>$Id$</p>
-<p props="line-height:1.0; margin-top:0pt"></p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0">AbiSource Programmer Guidelines</p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0">Eric W. Sink, eric@abisource.com</p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0">AbiSource, Inc.</p>
-<p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
-<p props="text-align:center; margin-top:0pt; line-height:1.0">$Date$</p>
 <p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
 <p props="line-height:1.0; margin-top:0pt">1.  Generally, we use Hungarian notation and mixed-case names for variables.  Prefix integer variables with an i and pointer variables with a p.  For example, iNumColumns.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>

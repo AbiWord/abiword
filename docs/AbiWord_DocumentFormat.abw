@@ -18,15 +18,12 @@
 <section>
 <p><c props="font-size:18pt; font-weight:bold">It is my intention to keep this document in sync with the current state of the code.  Thus, this document does not yet describe the full feature set planned for version 1.0.  This document is current with version 0.7.14-2 of the code.</c></p>
 <p></p>
-<p><c props="font-family:courier; font-size:11pt">$Id$</c></p>
-<p></p>
 <p props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
 <p props="text-align:center"><c props="font-size:10pt">Version 1.0</c></p>
 <p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1999-2000 AbiSource, Inc., All Rights Reserved.</c></p>
 <p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c></p>
 <p props="text-align:center"><c props="font-family:courier">jeff@abisource.com</c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center"><c props="font-family:courier">$Date$</c></p>
 <p props="text-align:left"></p>
 <p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">1. Introduction</c></p>
 <p props="text-align:left"></p>

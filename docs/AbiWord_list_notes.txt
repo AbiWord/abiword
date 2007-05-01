@@ -1,5 +1,3 @@
-$Id$
-
 This is a quick note describing a proposed format/syntax
 for lists within AbiWord.  This should be considered to
 be a starting point for discussion, rather than a definitive

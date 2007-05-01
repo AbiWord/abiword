@@ -344,5 +344,3 @@ To get your name added to this list, see:
 
   http://www.abisource.com
   abiword-dev@abisource.com
-
-Last updated: $Date$

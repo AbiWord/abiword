@@ -17,12 +17,10 @@
 <section>
 <p><c props="font-weight:bold; font-size:18pt">THIS DOCUMENT IS OUT OF SYNC WI</c><c props="font-weight:bold; font-size:18pt"></c>TH THE CODE.  PLEASE IGNORE FOR NOW.</p>
 <p></p>
-<p><c props="font-family:courier; font-size:11pt">$Id$</c><c props="font-family:courier; font-size:11pt"></c></p>
 <p props="text-align:center"><c props="font-weight:bold; font-size:24pt">AbiWord SpellCheck Design Notes</c><c props="font-weight:bold; font-size:24pt"></c></p>
 <p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1998 AbiSource, Inc. All Rights Reserved.</c><c props="font-size:11pt"></c></p>
 <p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c><c props="font-style:italic"></c>, <c props="font-family:courier">jeff@abisource.com</c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center"><c props="font-family:courier">$Date$</c><c props="font-family:courier"></c></p>
 <p></p>
 <p props="margin-top:12pt"><c props="font-weight:bold">Introduction</c><c props="font-weight:bold"></c></p>
 <p props="margin-top:12pt">This document provides preliminary design notes for SpellChecker integration into AbiWord.</p>

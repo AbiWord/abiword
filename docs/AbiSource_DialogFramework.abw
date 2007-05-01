@@ -15,8 +15,6 @@
 </metadata>
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
 <section>
-<p><c props="font-family:Courier New; font-size:11pt">$Id$</c><c props="font-family:Courier New; font-size:11pt"></c></p>
-<p></p>
 <p props="text-align:center"><c props="font-weight:bold; font-size:24pt">AbiSource Dialog Framework</c><c props="font-weight:bold; font-size:24pt"></c></p>
 <p props="text-align:center">Version 1.0</p>
 <p props="text-align:center">Copyright (C) 1999 AbiSource, Inc., All Rights Reserved.</p>
@@ -24,7 +22,6 @@
 <p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c><c props="font-style:italic"></c></p>
 <p props="text-align:center"><c props="font-family:Courier New">jeff@abisource.com</c><c props="font-family:Courier New"></c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center">$Date$</p>
 <p></p>
 <p><c props="font-weight:bold">1.  Introduction</c><c props="font-weight:bold"></c></p>
 <p></p>

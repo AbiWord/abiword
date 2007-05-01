@@ -22,7 +22,6 @@
 <section>
 <p props="text-align:center"><c props="lang:en-US; font-weight:bold; font-size: 24 pt">Mac porting guidelines</c></p>
 <p props="text-align:center"><c props="lang:en-US">Hubert Figuière &lt;hfiguiere@teaser.fr&gt;</c></p>
-<p props="text-align:center"><c props="font-family:Courier; lang:en-US">Revision $Id$</c></p>
 <p style="Heading 1"><c style="Heading 1" props="lang:en-US">Platform</c></p>
 <p><c props="lang:en-US">Target platform for MacOS port is both MacOS 8.6 and higher, using CarbonLib 1.2.5, and MacOS X 10.0.x and higher, using Carbon, CoreGraphics and UNIX (target binary is Mach-O).</c></p>
 <p><c props="lang:en-US">Note: unless mentioned, everything that applies to MacOS 9 also applies to older supported version. This is just a writing simplification.</c></p>

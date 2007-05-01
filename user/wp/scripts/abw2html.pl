@@ -1,6 +1,4 @@
 #!/usr/bin/perl
-$id= ' $Id$ ';
-
 ###############################################################################
 # Copyright (C) 2001  AbiWord development Team
 # http://www.abisource.com
@@ -19,7 +17,6 @@ $id= ' $Id$ ';
 # GNU General Public License for more details.
 ###############################################################################
 ##
-## $Log$
 ## Revision 1.1  2001/03/07 16:15:35  dom
 ## CSS/HTML script from Gaetan RYCKEBOER
 ##

@@ -16,8 +16,6 @@
 <section>
 <p><c props="font-size:24pt">This document is obsolete as of the tree reorg which occurred between 0.5.3 and 0.5.4.  It will be revised as soon as possible.</c></p>
 <p></p>
-<p><c props="font-family:courier; font-size:11pt">$Id$</c></p>
-<p></p>
 <p props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord Source Overview</c></p>
 <p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1998-1999 AbiSource, Inc. All Rights Reserved.</c></p>
 <p props="text-align:center"></p>
@@ -25,7 +23,6 @@
 <p props="text-align:center"><c props="font-family:courier">jeff@abisource.com</c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
 <p props="text-align:center"></p>
-<p props="text-align:center"><c props="font-family:courier">$Date$</c></p>
 <p></p>
 <p props="margin-top:12pt"><c props="font-weight:bold">1.  Introduction</c></p>
 <p props="margin-top:12pt">This document gives an overview of the AbiWord source code. It is intended as a high level overview of the organization and the architecture of the AbiWord application and an overview of the cross-application framework that will be used as a basis for other applications in the AbiSuite family. Specific details on each portion of the source code will be given in other documents.</p>

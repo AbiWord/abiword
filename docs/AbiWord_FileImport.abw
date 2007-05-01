@@ -16,8 +16,6 @@
 
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section>
-<p><c props="lang:en-US; font-size:11pt; font-family:Courier New"></c><c props="font-family:Courier New; font-size:11pt">$Id$</c></p>
-<p></p>
 <p props="text-align:center"><c props="font-weight:bold; font-size:24pt">AbiSource File Import</c></p>
 <p props="text-align:center">Version 1.0</p>
 <p props="text-align:center">Copyright (C) 1999 AbiSource, Inc., All Rights Reserved.</p>
@@ -25,7 +23,6 @@
 <p props="text-align:center">Jeff Hostetler</p>
 <p props="text-align:center"><c props="font-family:Courier New">jeff@abisource.com</c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center">$Date$</p>
 <p></p>
 <p><c props="font-weight:bold">1.  Introduction</c></p>
 <p></p>

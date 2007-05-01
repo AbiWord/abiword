@@ -15,12 +15,10 @@
 <!--         Build_CompileDate = Apr 27 2000 -->
 
 <section column_gap="0.25in" num_columns="1" props="columns:1">
-<p><c props="font-family:courier; font-size:11pt">$Id$</c></p>
 <p props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord Layout Engine Design Overview</c></p>
 <p props="text-align:center"><c props="font-size:11pt">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</c></p>
 <p props="text-align:center"><c props="font-style:italic">Eric W. Sink</c>, <c props="font-family:courier">eric@abisource.com</c></p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center"><c props="font-family:courier">$Date$</c></p>
 <p></p>
 <p><c props="font-weight:bold">Introduction</c></p>
 <p>This document gives an overview of the architecture and design of the AbiWord text layout engine. <c props="color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">The sources for the engine live in the src/text/fmt/xp directory.</c></p>

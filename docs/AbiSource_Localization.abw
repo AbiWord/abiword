@@ -16,7 +16,6 @@
 
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section>
-<p style="Plain Text"><c props="lang:en-US"></c>$Id$</p>
 <p style="Plain Text">[Last updated at Build 0.5.5]</p>
 <p style="Plain Text"></p>
 <p style="Plain Text"></p>
@@ -27,7 +26,6 @@
 <p props="text-align:center"><c props="font-style:italic">Jeff Hostetler</c></p>
 <p style="Plain Text" props="text-align:center">jeff@abisource.com</p>
 <p props="text-align:center">AbiSource, Inc.</p>
-<p props="text-align:center">$Date$</p>
 <p></p>
 <p><c props="font-weight:bold">1.  Introduction</c></p>
 <p></p>
