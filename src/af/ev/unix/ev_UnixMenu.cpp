@@ -227,8 +227,8 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 
 	// append "..." to menu item if it raises a dialog
 	static char buf[128];
-	memset(buf,0,NrElements(buf));
-	strncpy(buf,szLabelName,NrElements(buf)-4);
+	memset(buf,0,G_N_ELEMENTS(buf));
+	strncpy(buf,szLabelName,G_N_ELEMENTS(buf)-4);
 	strcat(buf,"...");
 
 	data[0] = buf;
