@@ -1,10 +1,4 @@
 #!/sbin/sh
-########
-# Product: AbiWord
-# Fileset: AbiWord
-# configure
-# @(#) $Revision$
-########
 #
 #  HP-UX abiword SD configure script, written by Kevin Vajk
 #
@@ -14,7 +8,6 @@
 #  (I don't like editing config.iconv, but abiword doesn't seem to work
 #  without this, and thus far I don't have a better solution.)
 #
-########
 
 #  This next line (defining $TARGET) is edited by hpux.abiword.mkdepot.sh
 #  automatically, so please don't change its format.  (I know this is

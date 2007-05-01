@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright 1992, 1993, Geoff Kuenning, Granada Hills, CA
  * All rights reserved.
  *
@@ -65,6 +63,9 @@
 
 /*
  * $Log$
+ * Revision 1.2  2007/05/01 22:16:20  uwog
+ * 2 more redundant log lines
+ *
  * Revision 1.1  2001/04/15 16:01:24  tomas_f
  * moving to spell/xp
  *
