@@ -7923,7 +7923,7 @@ UT_sint32 FV_View::getPageViewSep(void) const
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
-	else if (pFrame->isMenuScrollHidden())
+	else if (pFrame && pFrame->isMenuScrollHidden())
 	{
 			return 0;
 	}
@@ -7948,7 +7948,7 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
-	else if (pFrame->isMenuScrollHidden())
+	else if (pFrame && pFrame->isMenuScrollHidden())
 	{
 			return 0;
 	}
@@ -7968,7 +7968,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
-	else if (pFrame->isMenuScrollHidden())
+	else if (pFrame && pFrame->isMenuScrollHidden())
 	{
 		return 0;
 	}
