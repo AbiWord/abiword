@@ -522,7 +522,7 @@ bool fp_MathRun::_updatePropValuesIfNeeded(void)
     }
   if(bDoUpdate)
     {
-      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
       UT_UTF8String sHeight,sWidth,sAscent,sDescent;
       UT_UTF8String_sprintf(sHeight,"%d",getHeight());
       pProps[0] = "height";

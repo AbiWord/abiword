@@ -563,7 +563,7 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
     }
   if(bDoUpdate)
     {
-      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  UT_UTF8String sHeight,sWidth,sAscent,sDescent;
       UT_UTF8String_sprintf(sHeight,"%fin",static_cast<double>(getHeight())/1440.);
