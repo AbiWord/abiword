@@ -11,7 +11,7 @@ include $(top_srcdir)/includes.mk
 
 noinst_LIBRARIES = libabiperl.a
 
-libabiperl_a_SOURCES = AbiWord.cpp
+nodist_libabiperl_a_SOURCES = AbiWord.cpp
 BUILT_SOURCES = AbiWord.cpp
 
 perldir = $(top_builddir)/src/bindings/perl
