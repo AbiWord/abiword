@@ -268,7 +268,7 @@ UT_Encoding::UT_Encoding()
 		UT_uint32 iCheckIndex = 0;
 		UT_uint32 iOkayIndex = 0;
 
-		while (iCheckIndex < NrElements(s_Table))
+		while (iCheckIndex < G_N_ELEMENTS(s_Table))
 		{
 			const gchar * szName = pSS->getValue(s_Table[iCheckIndex].id);
 			gchar * szEnc;

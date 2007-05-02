@@ -35,7 +35,7 @@
 #include "ap_LoadBindings.h"
 #include "ap_LB_Default.h"
 
-#define DEFLEN(x) UT_uint32 x ## _len = NrElements(x)
+#define DEFLEN(x) UT_uint32 x ## _len = G_N_ELEMENTS(x)
 
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 

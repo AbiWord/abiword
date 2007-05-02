@@ -381,7 +381,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 			// was already present.  Verify the value.
 			///////////////////////////////////////////////////////////////////
 
-			len = NrElements(buf);
+			len = G_N_ELEMENTS(buf);
 			eResult = RegQueryValueEx(hKeySuffix,NULL,NULL,&dType,(LPBYTE)buf,&len);
 
 			if ((eResult != ERROR_SUCCESS) || (dType != REG_SZ) || (len==0))
@@ -424,7 +424,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	///////////////////////////////////////////////////////////////////
 
 	bUpdateContentType = true;
-	len = NrElements(buf);
+	len = G_N_ELEMENTS(buf);
 	eResult = RegQueryValueEx(hKeySuffix,CONTENT_TYPE_KEY,NULL,&dType,(LPBYTE)buf,&len);
 	if ((eResult == ERROR_SUCCESS) && (dType == REG_SZ))
 	{
@@ -464,7 +464,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:
 		UT_ASSERT(hKeyFoo);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyFoo,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufOurFooValue)==0))
 			break;					// already has correct value, no need to overwrite.
@@ -499,7 +499,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyCommand);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyCommand,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ))
 		{
@@ -544,7 +544,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyDdeExec);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyDdeExec,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,VALUE_DDEEXEC_OPEN)==0))
 			break;						// already has correct value, no need to overwrite.
@@ -572,7 +572,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyApplication);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyApplication,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,szApplicationName)==0))
 			break;						// already has correct value, no need to overwrite.
@@ -600,7 +600,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyTopic);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyTopic,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,MY_DDE_TOPICNAME)==0))
 			break;						// already has correct value, no need to overwrite.
@@ -629,7 +629,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 
 	case X_ExistingKey:	
 		UT_ASSERT(hKeyDefaultIcon);
-		len = NrElements(buf);
+		len = G_N_ELEMENTS(buf);
 		eResult = RegQueryValueEx(hKeyDefaultIcon,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufDefaultIconValue)==0))
 			break;						// already has correct value, no need to overwrite.

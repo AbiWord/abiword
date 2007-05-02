@@ -459,7 +459,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		{ "margin-right",	&m_iRightMargin, },
 		{ "text-indent",	&m_iTextIndent,  }
 	};
-	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	for (UT_uint32 iRg = 0; iRg < G_N_ELEMENTS(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp =
@@ -762,7 +762,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		{ "margin-right",	&m_iRightMargin, },
 		{ "text-indent",	&m_iTextIndent,  }
 	};
-	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	for (UT_uint32 iRg = 0; iRg < G_N_ELEMENTS(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const gchar*>(mai.szProp), Property_type_size));

@@ -601,7 +601,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey)
 	// these are referenced by NVK_ symbol so that the cross
 	// platform code can properly refer to them.
 	
-	UT_ASSERT(nVirtKey <= NrElements(s_Table_NVK));
+	UT_ASSERT(nVirtKey <= G_N_ELEMENTS(s_Table_NVK));
 
 	return s_Table_NVK[nVirtKey];
 }

@@ -402,14 +402,14 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 
 	i = 0;
 
-	while (((i + 1) < NrElements(p)) && p[i] && p[i] != '%' && p[i+1] != 'L')
+	while (((i + 1) < G_N_ELEMENTS(p)) && p[i] && p[i] != '%' && p[i+1] != 'L')
 	{
 		// FIXME check the bounds to not overflow leftDelim
 		// Update: the arrays are now the same length to prevent overflows
 		leftDelim[i] = p[i];
 		i++;
 	}
-	if (i >= NrElements(p) || p[i] == '\0') {
+	if (i >= G_N_ELEMENTS(p) || p[i] == '\0') {
 //		UT_ASSERT(UT_NOT_REACHED);
 		UT_DEBUGMSG (("Hub: not a delim (SHOULD NOT HAPPEN)!!!\n"));
 		*insPoint = 0;
@@ -418,7 +418,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	leftDelim[i] = '\0';
 	i += 2;
 	rTmp = i;
-	while (i < NrElements(p) && p[i] || p[i] != '\0')
+	while (i < G_N_ELEMENTS(p) && p[i] || p[i] != '\0')
 	{
 		// FIXME check the bounds to not overflow rightDelim
 		// Update: the arrays are now the same length to prevent overflows

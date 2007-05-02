@@ -45,7 +45,7 @@ static struct XAP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = {
 /*****************************************************************/
   
 AP_Win32Toolbar_ControlFactory::AP_Win32Toolbar_ControlFactory()
-//	: XAP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
+//	: XAP_Toolbar_ControlFactory(G_N_ELEMENTS(s_ctl_table), s_ctl_table)
 	: XAP_Toolbar_ControlFactory(0,NULL)
 {
 }

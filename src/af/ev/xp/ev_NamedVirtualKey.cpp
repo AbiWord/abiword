@@ -103,10 +103,10 @@ static const char * s_Abi_NVKTable[] =
 const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 {
 	UT_ASSERT((g_ascii_strcasecmp(s_Abi_NVKTable[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
-	UT_ASSERT((NrElements(s_Abi_NVKTable) == EV_COUNT_NVK));
+	UT_ASSERT((G_N_ELEMENTS(s_Abi_NVKTable) == EV_COUNT_NVK));
 
 	EV_EditVirtualKey evk = eb & ~EV_EKP_NAMEDKEY;
-	if (evk < NrElements(s_Abi_NVKTable))
+	if (evk < G_N_ELEMENTS(s_Abi_NVKTable))
 		return s_Abi_NVKTable[evk];
 	return 0;
 }
@@ -114,9 +114,9 @@ const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 EV_EditBits EV_NamedVirtualKey::getEB(const char * szName)
 {
 	UT_ASSERT((g_ascii_strcasecmp(s_Abi_NVKTable[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
-	UT_ASSERT((NrElements(s_Abi_NVKTable) == EV_COUNT_NVK));
+	UT_ASSERT((G_N_ELEMENTS(s_Abi_NVKTable) == EV_COUNT_NVK));
 
-	for (UT_uint32 k=1; k<NrElements(s_Abi_NVKTable); k++)
+	for (UT_uint32 k=1; k<G_N_ELEMENTS(s_Abi_NVKTable); k++)
 		if (g_ascii_strcasecmp(s_Abi_NVKTable[k],szName)==0)
 			return EV_NamedKey(k);
 	return 0;

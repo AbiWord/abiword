@@ -269,7 +269,7 @@ const PP_Property * PP_lookupProperty(const gchar * name)
 {
 	PP_Property * prop = NULL;
 
-	prop = static_cast<PP_Property *>(bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare));
+	prop = static_cast<PP_Property *>(bsearch (name, _props, G_N_ELEMENTS(_props), sizeof (_props[0]), s_compare));
 
 	return prop;
 }
@@ -278,7 +278,7 @@ const PP_Property * PP_lookupProperty(const gchar * name)
 void PP_resetInitialBiDiValues(const gchar * pszValue)
 {
 	int i;
-	int count = NrElements(_props);
+	int count = G_N_ELEMENTS(_props);
 
 	for (i=0; i<count; i++)
 	{
@@ -305,7 +305,7 @@ void PP_resetInitialBiDiValues(const gchar * pszValue)
 void PP_setDefaultFontFamily(const char* pszFamily)
 {
 	static UT_String family(pszFamily);
-	PP_Property* prop = static_cast<PP_Property*>(bsearch ("font-family", _props, NrElements(_props), sizeof(_props[0]), s_compare));
+	PP_Property* prop = static_cast<PP_Property*>(bsearch ("font-family", _props, G_N_ELEMENTS(_props), sizeof(_props[0]), s_compare));
 	prop->m_pszInitial = const_cast<gchar*>(reinterpret_cast<const gchar*>(family.c_str()));
 }
 

@@ -64,7 +64,7 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginLayout(Name, Label, prefKey)		{ #Name, Label, prefKey, NrElements(s_ltTable_##Name), s_ltTable_##Name },
+#define BeginLayout(Name, Label, prefKey)		{ #Name, Label, prefKey, G_N_ELEMENTS(s_ltTable_##Name), s_ltTable_##Name },
 #define ToolbarItem(id)			/*nothing*/
 #define Spacer()				/*nothing*/
 #define EndLayout()				/*nothing*/
@@ -242,7 +242,7 @@ XAP_Toolbar_Factory::XAP_Toolbar_Factory(XAP_App * pApp)
 	: m_pApp(pApp)
 {
 	UT_uint32 i = 0;
-	UT_uint32 count = NrElements(s_ttTable);
+	UT_uint32 count = G_N_ELEMENTS(s_ttTable);
 //
 // FIXME: Put in check on preference
 //
@@ -540,7 +540,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 	}
 	DELETEP(pVec);
 	UT_uint32 j = 0;
-	count = NrElements(s_ttTable);
+	count = G_N_ELEMENTS(s_ttTable);
 	bFound = false;
 	for(j=0; !bFound &&( j < count); j++)
 	{
@@ -645,7 +645,7 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 //
 // Get number of toolbars hardwired into abiword.
 //
-	UT_uint32 numTB = NrElements(s_ttTable);  // NO toolabrs
+	UT_uint32 numTB = G_N_ELEMENTS(s_ttTable);  // NO toolabrs
 	UT_uint32 iTB,iLay;
 	for(iTB=0; iTB< numTB;iTB++)
 	{

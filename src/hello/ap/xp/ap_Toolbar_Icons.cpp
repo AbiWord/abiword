@@ -21,8 +21,6 @@
 #include "ut_string.h"
 #include "xap_Toolbar_Icons.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load all of the icons.
@@ -81,7 +79,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
 	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
 		return false;
 	
-	UT_uint32 kLimit = NrElements(s_itTable);
+	UT_uint32 kLimit = G_N_ELEMENTS(s_itTable);
 	UT_uint32 k;
 
 	for (k=0; k < kLimit; k++)

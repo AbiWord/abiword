@@ -39,14 +39,14 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 /*****************************************************************/
   
 AP_QNXDialogFactory::AP_QNXDialogFactory(XAP_App * pApp)
-	: XAP_DialogFactory((XAP_App *)pApp, NrElements(s_dlg_table), 
+	: XAP_DialogFactory((XAP_App *)pApp, G_N_ELEMENTS(s_dlg_table), 
 						(struct _dlg_table *)s_dlg_table)
 {
 }
 
 AP_QNXDialogFactory::AP_QNXDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
 	: XAP_DialogFactory((XAP_Frame *)pFrame, (XAP_App *)pApp, 
-						NrElements(s_dlg_table), (struct _dlg_table *)s_dlg_table)
+						G_N_ELEMENTS(s_dlg_table), (struct _dlg_table *)s_dlg_table)
 {
 }
 

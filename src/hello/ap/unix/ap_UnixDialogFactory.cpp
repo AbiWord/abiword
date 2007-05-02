@@ -35,17 +35,15 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 	
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************/
   
 AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_App * pApp)
-	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
+	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table)
 {
 }
 
 AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
-	: XAP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
+	: XAP_DialogFactory(pFrame, pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table)
 {
 }
 

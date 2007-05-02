@@ -177,8 +177,8 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	}
 
 	static char buf[128];
-	memset(buf,0,NrElements(buf));
-	strncpy(buf,szLabelName,NrElements(buf)-len);
+	memset(buf,0,G_N_ELEMENTS(buf));
+	strncpy(buf,szLabelName,G_N_ELEMENTS(buf)-len);
 
 	// append "..." to menu item if it raises a dialog
 	if (pAction->raisesDialog())
@@ -517,7 +517,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 				char bufMIF[128];
 				mif.cbSize = sizeof(mif);
 				mif.dwTypeData = bufMIF;
-				mif.cch = NrElements(bufMIF)-1;
+				mif.cch = G_N_ELEMENTS(bufMIF)-1;
 				mif.fMask = MIIM_STATE | MIIM_TYPE | MIIM_ID;
 				BOOL bPresent = GetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
 

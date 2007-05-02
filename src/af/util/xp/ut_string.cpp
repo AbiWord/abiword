@@ -500,7 +500,7 @@ UT_UCS2Char UT_UCS2_toupper(UT_UCS2Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc! -- does not seem to work :(*/
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 1)
         return c;
     return letter->other;
@@ -519,7 +519,7 @@ UT_UCS2Char UT_UCS2_tolower(UT_UCS2Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return c;
     return letter->other;
@@ -684,7 +684,7 @@ bool UT_UCS2_isupper(UT_UCS2Char c)
 	if(c < 127)
 		return isupper(c)!=0;
 
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(letter && letter->type == 1)
         return true;
     return false;
@@ -695,7 +695,7 @@ bool UT_UCS2_islower(UT_UCS2Char c)
 	if(c < 127)
 		return islower(c)!=0;
 
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return true;
     return false;
@@ -704,7 +704,7 @@ bool UT_UCS2_islower(UT_UCS2Char c)
 bool UT_UCS2_isspace(UT_UCS2Char c)
 {
 	// the whitespace table is small, so use linear search
-	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
+	for (UT_uint32 i = 0; i < G_N_ELEMENTS(whitespace_table); i++)
 	{
 		if(whitespace_table[i].high < c)
 			continue;
@@ -838,7 +838,7 @@ bool UT_UCS4_isupper(UT_UCS4Char c)
 	if(c < 127)
 		return isupper(c)!=0;
 
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(letter && letter->type == 1)
         return true;
     return false;
@@ -849,7 +849,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
 	if(c < 127)
 		return islower(c)!=0;
 
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return true;
     return false;
@@ -858,7 +858,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
 bool UT_UCS4_isspace(UT_UCS4Char c)
 {
 	// the whitespace table is small, so use linear search
-	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
+	for (UT_uint32 i = 0; i < G_N_ELEMENTS(whitespace_table); i++)
 	{
 		if(whitespace_table[i].high < c)
 			continue;
@@ -1059,7 +1059,7 @@ UT_UCS4Char UT_UCS4_toupper(UT_UCS4Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc! -- does not seem to work :(*/
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 1)
         return c;
     return letter->other;
@@ -1079,7 +1079,7 @@ UT_UCS4Char UT_UCS4_tolower(UT_UCS4Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, G_N_ELEMENTS(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return c;
     return letter->other;

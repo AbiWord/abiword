@@ -220,12 +220,12 @@ void UT_Language_updateLanguageNames()
     const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
     UT_return_if_fail(pSS);
     
-    for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+    for(UT_uint32 i = 0; i < G_N_ELEMENTS(s_Table); i++)
     {
         s_Table[i].m_szLangName = pSS->getValue(s_Table[i].m_nID);
     }
 
-    qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
+    qsort(&s_Table[0], G_N_ELEMENTS(s_Table), sizeof(UT_LangRecord), s_compareQ);
 }
 
 
@@ -246,7 +246,7 @@ UT_Language::UT_Language()
 
 UT_uint32 UT_Language::getCount()
 {
-	return (NrElements(s_Table));
+	return (G_N_ELEMENTS(s_Table));
 }
 
 const gchar * UT_Language::getNthLangCode(UT_uint32 n)
@@ -266,7 +266,7 @@ const UT_uint32 UT_Language::getNthId(UT_uint32 n)
 
 const gchar * UT_Language::getCodeFromName(const gchar * szName)
 {
-	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+	for(UT_uint32 i = 0; i < G_N_ELEMENTS(s_Table); i++)
 	{
 		// make the comparison case insensitive to cope with buggy systems 
 		if(!g_ascii_strcasecmp(szName, s_Table[i].m_szLangName))
@@ -281,7 +281,7 @@ const gchar * UT_Language::getCodeFromName(const gchar * szName)
 
 UT_uint32 UT_Language::getIndxFromCode(const gchar * szCode)
 {
-	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+	for(UT_uint32 i = 0; i < G_N_ELEMENTS(s_Table); i++)
 	{
 		// make the comparison case insensitive to cope with buggy systems 
 		if(!g_ascii_strcasecmp(szCode, s_Table[i].m_szLangCode))
@@ -298,7 +298,7 @@ UT_uint32 UT_Language::getIndxFromCode(const gchar * szCode)
 	{
 		*dash = 0;
 
-		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+		for(UT_uint32 i = 0; i < G_N_ELEMENTS(s_Table); i++)
 		{
 			// make the comparison case insensitive to cope with buggy systems 
 			if(!g_ascii_strcasecmp(szShortCode, s_Table[i].m_szLangCode))
@@ -369,7 +369,7 @@ UT_LANGUAGE_DIR UT_Language::getDirFromCode(const gchar * szCode)
 const UT_LangRecord * UT_Language::getLangRecordFromCode(const gchar * szCode)
 {
 	const UT_LangRecord * e = static_cast<UT_LangRecord *>(bsearch(szCode, s_Table,
-																   NrElements(s_Table),
+																   G_N_ELEMENTS(s_Table),
 																   sizeof(UT_LangRecord), s_compareB));
 	if(!e)
 	{
@@ -383,7 +383,7 @@ const UT_LangRecord * UT_Language::getLangRecordFromCode(const gchar * szCode)
 		{
 			*dash = 0;
 			e = static_cast<UT_LangRecord *>(bsearch(szShortCode, s_Table,
-													 NrElements(s_Table),
+													 G_N_ELEMENTS(s_Table),
 													 sizeof(UT_LangRecord), s_compareB));
 
 			if(e)

@@ -327,7 +327,7 @@ static const char * s_prop_list[] = {
 	"width",			"auto",
 	0, 0
 };
-static const UT_uint32 s_PropListLen = NrElements(s_prop_list) - 2; /* don't include the zeros */
+static const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't include the zeros */
 
 /*!	This function returns true if the given property is a valid CSS
   property.  It is based on the list in pp_Property.cpp, and, as such,
@@ -1421,7 +1421,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	{
 		const UT_UTF8String delimiter(s_Delimiter);
 		tagComment (delimiter);
-		for (UT_uint32 hdri = 0; hdri < NrElements(s_Header); hdri++)
+		for (UT_uint32 hdri = 0; hdri < G_N_ELEMENTS(s_Header); hdri++)
 		{
 			m_utf8_1 = s_Header[hdri];
 			tagComment (m_utf8_1);

@@ -1564,7 +1564,7 @@ static enum EUniCat categoriseUniChar(UT_UCS4Char c) {
 	// use linear search for the bottom (western part of the table, and bsearch for the
 	// rest
 
-	SCatRange * pUC = (SCatRange*)bsearch(&c, UniCharCats, NrElements(UniCharCats), sizeof(SCatRange),
+	SCatRange * pUC = (SCatRange*)bsearch(&c, UniCharCats, G_N_ELEMENTS(UniCharCats), sizeof(SCatRange),
 											  s_compare_unichar_cats);
 
 	if(pUC)

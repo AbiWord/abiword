@@ -2210,7 +2210,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		if(m_pView && m_pView->getViewMode() == VIEW_PRINT)
 		{
 			fp_ShadowContainer * hf[2] = { m_pHeader, m_pFooter };
-			for (UT_uint32 i = 0; i < NrElements(hf); i++)
+			for (UT_uint32 i = 0; i < G_N_ELEMENTS(hf); i++)
 			{
 				fp_ShadowContainer * p = hf[i];
 

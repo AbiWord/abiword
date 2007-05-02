@@ -80,8 +80,6 @@ static struct _lt s_ltTable[] =
 	
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 #undef BeginSet
 #undef ToolbarLabel
 #undef EndSet
@@ -95,7 +93,7 @@ static struct _lt s_ltTable[] =
 EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage)
 {
 	if (szLanguage && *szLanguage)
-		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
+		for (UT_uint32 k=0; k<G_N_ELEMENTS(s_ltTable); k++)
 			if (g_ascii_strcasecmp(szLanguage,s_ltTable[k].m_name)==0)
 				return (s_ltTable[k].m_fn)();
 
@@ -106,12 +104,12 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage)
 
 UT_uint32 AP_GetToolbarLabelSetLanguageCount(void)
 {
-	return NrElements(s_ltTable);
+	return G_N_ELEMENTS(s_ltTable);
 }
 
 const char * AP_GetNthToolbarLabelLanguageName(UT_uint32 ndx)
 {
-	UT_ASSERT(ndx < NrElements(s_ltTable));
+	UT_ASSERT(ndx < G_N_ELEMENTS(s_ltTable));
 
 	return s_ltTable[ndx].m_name;
 }

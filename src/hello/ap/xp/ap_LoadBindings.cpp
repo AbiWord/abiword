@@ -49,8 +49,6 @@ static struct _lb s_lbTable[] =
 	{	"default",			ap_LoadBindings_Default,			NULL	}, // stock AbiSuite bindings
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /****************************************************************/
 /****************************************************************/
 
@@ -61,7 +59,7 @@ AP_BindingSet::AP_BindingSet(EV_EditMethodContainer * pemc)
 
 AP_BindingSet::~AP_BindingSet(void)
 {
-	for (UT_uint32 k=0; k<NrElements(s_lbTable); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(s_lbTable); k++)
 		if (s_lbTable[k].m_pebm)
 			delete s_lbTable[k].m_pebm;
 }
@@ -75,7 +73,7 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 	// NOTE: the returned map should be treated as 'const' since
 	// NOTE: it is shared by all windows.
 	
-	for (UT_uint32 k=0; k<NrElements(s_lbTable); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(s_lbTable); k++)
 		if (g_ascii_strcasecmp(szName,s_lbTable[k].m_name)==0)
 		{
 			// we now share maps.  any given map is loaded exactly once.

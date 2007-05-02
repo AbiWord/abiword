@@ -116,7 +116,7 @@ static UT_sint32 s_compare(const void * a, const void * b)
 UT_uint32 UT_isOverstrikingChar(UT_UCSChar c)
 {
 	char_bounds * e;
-	if((e = static_cast<char_bounds *>(bsearch(&c, overstr_lut, NrElements(overstr_lut), sizeof(char_bounds), s_compare))))
+	if((e = static_cast<char_bounds *>(bsearch(&c, overstr_lut, G_N_ELEMENTS(overstr_lut), sizeof(char_bounds), s_compare))))
 	{
 		return e->dir;
 	}

@@ -111,15 +111,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 #endif
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
-
 EV_EditMethodContainer * AP_GetEditMethods(void)
 {
 	// Construct a container for all of the methods this application
 	// knows about.
 
-	return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
+	return new EV_EditMethodContainer(G_N_ELEMENTS(s_arrayEditMethods),s_arrayEditMethods);
 }
 
 #undef _D_

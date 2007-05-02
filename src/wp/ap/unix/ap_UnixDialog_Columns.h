@@ -87,7 +87,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
 		return false;
 
-	UT_uint32 kLimit = NrElements(s_itTable);
+	UT_uint32 kLimit = G_N_ELEMENTS(s_itTable);
 	UT_uint32 k;
 	UT_DEBUGMSG(("SEVIOR: Looking for %s \n",szName));
 	for (k=0; k < kLimit; k++)

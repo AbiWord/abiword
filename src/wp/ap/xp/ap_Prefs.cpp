@@ -121,7 +121,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	// since that will automatically happen in the case of values
 	// values read from preferences files.
 	UT_uint32 k;
-	for (k=0; k<NrElements(_t); k++)
+	for (k=0; k<G_N_ELEMENTS(_t); k++)
 	{
 		gchar *xp;
 		bool bDelete = true;

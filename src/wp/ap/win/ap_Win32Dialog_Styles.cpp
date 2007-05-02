@@ -237,7 +237,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{AP_RID_DIALOG_STYLES_TOP_BUTTON_CLOSE			, XAP_STRING_ID_DLG_Close}
 		};
 
-		for (int i = 0; i < NrElements(rgMapping); ++i)
+		for (int i = 0; i < G_N_ELEMENTS(rgMapping); ++i)
 		{
 			_win32Dialog.setControlText(rgMapping[i].controlId,
 										pSS->getValue(rgMapping[i].stringId));

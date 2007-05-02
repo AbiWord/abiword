@@ -128,7 +128,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_SPIN_INDENT_ALIGN	// non-UDS_SETBUDDYINT
 	};
 
-	for (i = 0; i < NrElements(rgSpinIDs); ++i)
+	for (i = 0; i < G_N_ELEMENTS(rgSpinIDs); ++i)
 	{
 		HWND hWndSpin = GetDlgItem(hWnd, rgSpinIDs[i]);
 		if (hWndSpin)
@@ -172,7 +172,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		{AP_RID_DIALOG_LIST_STATIC_FOLDING, AP_STRING_ID_DLG_Lists_FoldingLevelexp}
 	};
 
-	for (i = 0; i < NrElements(rgMapping); ++i)
+	for (i = 0; i < G_N_ELEMENTS(rgMapping); ++i)
 	{
 		_win32Dialog.setControlText(rgMapping[i].controlId,
 									pSS->getValue(rgMapping[i].stringId));
@@ -620,7 +620,7 @@ void AP_Win32Dialog_Lists::_fillTypeList()
 		AP_STRING_ID_DLG_Lists_Type_numbered
 	};
 
-	for (int i = 0; i < NrElements(rgIDs); ++i)
+	for (int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
 	{
 		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_TYPE,
 									pSS->getValue(rgIDs[i]));
@@ -675,11 +675,11 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 	{
 		case 1:	// bullet list
 			pIDs = rgBulletIDs;
-			nIDs = NrElements(rgBulletIDs);
+			nIDs = G_N_ELEMENTS(rgBulletIDs);
 			break;
 		case 2:	// numbered list
 			pIDs = rgNumberedIDs;
-			nIDs = NrElements(rgNumberedIDs);
+			nIDs = G_N_ELEMENTS(rgNumberedIDs);
 			break;
 	}
 
@@ -739,7 +739,7 @@ void AP_Win32Dialog_Lists::_fillFoldingList()
 		AP_STRING_ID_DLG_Lists_FoldingLevel4
 	};
 
-	for (int i = 0; i < NrElements(rgIDs); ++i)
+	for (int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
 	{
 		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_FOLDING,
 									pSS->getValue(rgIDs[i]));
@@ -823,7 +823,7 @@ void AP_Win32Dialog_Lists::_resetCustomValues()
 
 void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 {
-	for (int i = 0; i < NrElements(rgCustomIds); ++i)
+	for (int i = 0; i < G_N_ELEMENTS(rgCustomIds); ++i)
 	{
 		_win32Dialog.enableControl(rgCustomIds[i], bEnable);
 	}

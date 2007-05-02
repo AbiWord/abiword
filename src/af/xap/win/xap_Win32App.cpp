@@ -164,7 +164,7 @@ bool XAP_Win32App::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	m_pSlurp = new XAP_Win32Slurp(this);
 	m_pSlurp->connectSlurper();
 	char bufExePathname[4096];
-	GetModuleFileNameA(NULL,bufExePathname,NrElements(bufExePathname)); //!TODO Using ANSI function
+	GetModuleFileNameA(NULL,bufExePathname,G_N_ELEMENTS(bufExePathname)); //!TODO Using ANSI function
 
 	// TODO these are Application-Specific values.  Move them out of here.
 	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");

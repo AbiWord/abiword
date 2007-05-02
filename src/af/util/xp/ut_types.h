@@ -235,8 +235,6 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define UNREFP(p)		do { if (p) { (p)->unref(); (p)=NULL; } } while (0)
 #define CLONEP(p,q)		do { FREEP(p); if (q && *q) p = g_strdup(q); } while (0)
 
-#define NrElements(a)		((sizeof(a) / sizeof(a[0])))
-
 #define E2B(err)		((err) == UT_OK)
 
 /* This is a value from the private-use space of FriBidi */

@@ -108,7 +108,7 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 	if (!szID || !*szID )
 		return false;
 	UT_uint32 m;
-	UT_uint32 mLimit = NrElements(s_imTable);
+	UT_uint32 mLimit = G_N_ELEMENTS(s_imTable);
 
 	// Search the map for overloaded ID_LANG to iconname
 	for (m=0; m < mLimit; m++)
@@ -167,7 +167,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	if( g_ascii_strcasecmp(szName,"NoIcon") == 0)
 		return false;
 	
-	UT_uint32 kLimit = NrElements(s_itTable);
+	UT_uint32 kLimit = G_N_ELEMENTS(s_itTable);
 	UT_uint32 k;
 
 	// Search to match icon name with data

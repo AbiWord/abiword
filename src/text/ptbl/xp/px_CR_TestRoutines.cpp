@@ -57,7 +57,7 @@ static const char * s_CRNames[] = {
 void
 PX_ChangeRecord::__dump_type(FILE* fp) const
 {
-	UT_return_if_fail (NrElements(s_CRNames)==(PXT__LAST__-PXT__FIRST__));
+	UT_return_if_fail (G_N_ELEMENTS(s_CRNames)==(PXT__LAST__-PXT__FIRST__));
 	const char * szName = 
 		(((m_type >= PXT__FIRST__) && (m_type <= PXT__LAST__)) 
 		 ? s_CRNames[m_type+1] : "????????");

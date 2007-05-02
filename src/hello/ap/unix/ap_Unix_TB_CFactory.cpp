@@ -39,13 +39,11 @@ static struct XAP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = {
 	
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************/
 /*****************************************************************/
   
 AP_UnixToolbar_ControlFactory::AP_UnixToolbar_ControlFactory()
-	: XAP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
+	: XAP_Toolbar_ControlFactory(G_N_ELEMENTS(s_ctl_table), s_ctl_table)
 {
 }
 

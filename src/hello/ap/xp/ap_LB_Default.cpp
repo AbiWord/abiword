@@ -37,8 +37,6 @@
 
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 #define _S		| EV_EMS_SHIFT
 #define _C		| EV_EMS_CONTROL
 #define _A		| EV_EMS_ALT
@@ -489,10 +487,10 @@ const ap_bs_Char s_CharTable[] =
 
 bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
-	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
-	//pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
-	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),NULL,0);
-	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
+	pThis->_loadMouse(pebm,s_MouseTable,G_N_ELEMENTS(s_MouseTable));
+	//pThis->_loadNVK(pebm,s_NVKTable,G_N_ELEMENTS(s_NVKTable),s_NVKTable_P,G_N_ELEMENTS(s_NVKTable_P));
+	pThis->_loadNVK(pebm,s_NVKTable,G_N_ELEMENTS(s_NVKTable),NULL,0);
+	pThis->_loadChar(pebm,s_CharTable,G_N_ELEMENTS(s_CharTable),NULL,0);
 
 	return true;
 }

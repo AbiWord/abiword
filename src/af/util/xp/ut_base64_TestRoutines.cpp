@@ -42,13 +42,13 @@ static UT_TestStatus t_test_001(void)
 
 	// [1]
 	
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
-	if (!b1.ins(0,array1,NrElements(array1)))
+	if (!b1.ins(0,array1,G_N_ELEMENTS(array1)))
 		return UT_Test_SystemError;
-	if (b1.getLength() != NrElements(array1))
+	if (b1.getLength() != G_N_ELEMENTS(array1))
 		return UT_Test_SystemError;
 	
 	// [2]
@@ -70,7 +70,7 @@ static UT_TestStatus t_test_001(void)
 
 	const UT_Byte * p1 = b1.getPointer(0);
 	const UT_Byte * p3 = b3.getPointer(0);
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;
 
@@ -96,13 +96,13 @@ static UT_TestStatus t_test_002(void)
 
 	// [1]
 	
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
-	if (!b1.ins(0,array1,NrElements(array1)))
+	if (!b1.ins(0,array1,G_N_ELEMENTS(array1)))
 		return UT_Test_SystemError;
-	if (b1.getLength() != NrElements(array1))
+	if (b1.getLength() != G_N_ELEMENTS(array1))
 		return UT_Test_SystemError;
 	
 	// [2]
@@ -124,7 +124,7 @@ static UT_TestStatus t_test_002(void)
 
 	const UT_Byte * p1 = b1.getPointer(0);
 	const UT_Byte * p3 = b3.getPointer(0);
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;
 
@@ -151,13 +151,13 @@ static UT_TestStatus t_test_003(void)
 
 	// [1]
 	
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		array1[k] = static_cast<UT_Byte>(k & 0xff);
 
 	UT_ByteBuf b1;
-	if (!b1.ins(0,array1,NrElements(array1)))
+	if (!b1.ins(0,array1,G_N_ELEMENTS(array1)))
 		return UT_Test_SystemError;
-	if (b1.getLength() != NrElements(array1))
+	if (b1.getLength() != G_N_ELEMENTS(array1))
 		return UT_Test_SystemError;
 	
 	// [2]
@@ -179,7 +179,7 @@ static UT_TestStatus t_test_003(void)
 
 	const UT_Byte * p1 = b1.getPointer(0);
 	const UT_Byte * p3 = b3.getPointer(0);
-	for (k=0; (k<NrElements(array1)); k++)
+	for (k=0; (k<G_N_ELEMENTS(array1)); k++)
 		if (p1[k] != p3[k])
 			return UT_Test_Fail;
 

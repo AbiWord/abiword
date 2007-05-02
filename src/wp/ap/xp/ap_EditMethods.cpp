@@ -1237,7 +1237,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 	// Construct a container for all of the methods this application
 	// knows about.
 
-	return new EV_EditMethodContainer(NrElements(s_arrayEditMethods),s_arrayEditMethods);
+	return new EV_EditMethodContainer(G_N_ELEMENTS(s_arrayEditMethods),s_arrayEditMethods);
 }
 
 #undef _D_
@@ -7792,7 +7792,7 @@ UT_return_val_if_fail(pDialog, false);
 
 
 		props_out[k] = 0;						// put null after last pair.
-		UT_return_val_if_fail (k < NrElements(props_out), false);
+		UT_return_val_if_fail (k < G_N_ELEMENTS(props_out), false);
 		for(UT_uint32 i = 0; i<k; i= i+2 )
 			UT_DEBUGMSG(("SEVIOR: Props = %s: Values = %s \n",props_out[i],props_out[i+1]));
 		if (k > 0)								// if something changed

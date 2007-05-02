@@ -25,8 +25,6 @@
 #include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load the layout for each
@@ -78,7 +76,7 @@ struct _tt
 	EV_EditMouseContext			m_emc;
 };
 
-#define BeginLayout(Name,Cxt)	{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name, Cxt },
+#define BeginLayout(Name,Cxt)	{ #Name, G_N_ELEMENTS(s_ltTable_##Name), s_ltTable_##Name, Cxt },
 #define MenuItem(id)			/*nothing*/
 #define BeginSubMenu(id)		/*nothing*/
 #define BeginPopupMenu()		/*nothing*/
@@ -129,7 +127,7 @@ EV_Menu_Layout * AP_CreateMenuLayout(const char * szName)
 {
 	UT_ASSERT(szName && *szName);		// no defaults
 
-	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 		if (g_ascii_strcasecmp(szName,s_ttTable[k].m_name)==0)
 			return _ap_CreateMenuLayout(&s_ttTable[k]);
 
@@ -139,7 +137,7 @@ EV_Menu_Layout * AP_CreateMenuLayout(const char * szName)
 
 const char * AP_FindContextMenu(EV_EditMouseContext emc)
 {
-	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 		if (emc==s_ttTable[k].m_emc)
 			return s_ttTable[k].m_name;
 

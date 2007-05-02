@@ -168,9 +168,9 @@ bool ap_LoadBindings_viInput(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 	extern UT_uint32 MouseTable_len, NVKTable_P_len, CharTable_len;
 	pThis->_loadMouse(pebm,MouseTable,MouseTable_len);
 
-	pThis->_loadNVK(pebm,viIn_NVKTable,NrElements(viIn_NVKTable),NVKTable_P,NVKTable_P_len);
+	pThis->_loadNVK(pebm,viIn_NVKTable,G_N_ELEMENTS(viIn_NVKTable),NVKTable_P,NVKTable_P_len);
 
-	//pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),s_CharPrefixTable,NrElements(s_CharPrefixTable));
+	//pThis->_loadChar(pebm,s_CharTable,G_N_ELEMENTS(s_CharTable),s_CharPrefixTable,G_N_ELEMENTS(s_CharPrefixTable));
 	pThis->_loadChar(pebm,CharTable,CharTable_len,NULL,0);
 
 	return true;

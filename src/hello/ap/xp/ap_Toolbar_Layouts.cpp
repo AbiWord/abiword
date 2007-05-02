@@ -25,8 +25,6 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ap_Toolbar_Id.h"
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load the layout for each
@@ -69,7 +67,7 @@ struct _tt
 	struct _lt *				m_lt;
 };
 
-#define BeginLayout(Name)		{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name },
+#define BeginLayout(Name)		{ #Name, G_N_ELEMENTS(s_ltTable_##Name), s_ltTable_##Name },
 #define ToolbarItem(id)			/*nothing*/
 #define Spacer()				/*nothing*/
 #define EndLayout()				/*nothing*/
@@ -112,7 +110,7 @@ EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName)
 {
 	UT_ASSERT(szName && *szName);		// no defaults
 
-	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 		if (g_ascii_strcasecmp(szName,s_ttTable[k].m_name)==0)
 			return _ap_CreateToolbarLayout(&s_ttTable[k]);
 

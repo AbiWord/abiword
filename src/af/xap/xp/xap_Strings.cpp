@@ -340,7 +340,7 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
 
-	UT_uint32 kLimit = NrElements(s_map);
+	UT_uint32 kLimit = G_N_ELEMENTS(s_map);
 	UT_uint32 k;
 
 	// we use predefined IDs to access the strings, so there is no need to do
@@ -474,7 +474,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	{
 		// TODO should we promote this test to be production code
 		// TODO and maybe raise a message box ??
-		UT_uint32 kLimit = NrElements(s_map);
+		UT_uint32 kLimit = G_N_ELEMENTS(s_map);
 		UT_uint32 k;
 
 		for (k=0; k<kLimit; k++)

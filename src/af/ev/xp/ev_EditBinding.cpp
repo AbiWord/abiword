@@ -416,7 +416,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	// translate into displayable string
 	static char buf[128];
-	memset(buf,0,NrElements(buf));
+	memset(buf,0,G_N_ELEMENTS(buf));
 
 	if (ems&EV_EMS_CONTROL)
 		strcat(buf, "Ctrl+");

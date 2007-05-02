@@ -266,7 +266,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	HWND rgFontReceivers[] =
 		{ hwndOK, hwndURL, hwndStatic_Version, hwndStatic_Copyright };
 
-	for (int iWnd = 0; iWnd < NrElements(rgFontReceivers); ++iWnd)
+	for (int iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
 	{
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	}

@@ -94,7 +94,7 @@ void fp_Run::__dump(FILE * fp) const
 									  "Field", "FmtMark", "FieldStart",
 									  "FieldEnd", "EOP", "Bookmark",
 									  "Hyperlink", "DirectionMarker" };
-	UT_ASSERT(NrElements(s_names)==(FPRUN__LAST__-FPRUN__FIRST__));
+	UT_ASSERT(G_N_ELEMENTS(s_names)==(FPRUN__LAST__-FPRUN__FIRST__));
 	const char * szName = 
 		(((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) 
 		 ? s_names[m_iType-1] : "Unknown");

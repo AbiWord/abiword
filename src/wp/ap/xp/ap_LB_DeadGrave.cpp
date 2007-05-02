@@ -73,7 +73,7 @@ static struct ap_bs_Char s_CharTable[] =
 bool ap_LoadBindings_DeadGrave(AP_BindingSet * pThis,
 								  EV_EditBindingMap * pebm)
 {
-	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
+	pThis->_loadChar(pebm,s_CharTable,G_N_ELEMENTS(s_CharTable),NULL,0);
 	
 	return true;
 }

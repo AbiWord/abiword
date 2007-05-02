@@ -170,12 +170,12 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 		UT_uint32 k;
 		
 		fprintf(fp,"\n<Strings\tclass=\"XAP\"\n");
-		for (k=0; k<NrElements(s_mapXAP); k++)
+		for (k=0; k<G_N_ELEMENTS(s_mapXAP); k++)
 			s_dumpXMLpair(fp,s_mapXAP[k].szId,s_mapXAP[k].szString);
 		fprintf(fp,"/>\n");
 
 		fprintf(fp,"\n<Strings\tclass=\"AP\"\n");
-		for (k=0; k<NrElements(s_mapAP); k++)
+		for (k=0; k<G_N_ELEMENTS(s_mapAP); k++)
 			s_dumpXMLpair(fp,s_mapAP[k].szId,s_mapAP[k].szString);
 		fprintf(fp,"/>\n");
 	}
@@ -337,7 +337,7 @@ bool AP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
 	
-	UT_uint32 kLimit = NrElements(s_map);
+	UT_uint32 kLimit = G_N_ELEMENTS(s_map);
 	UT_uint32 k;
 
 	// we use predefined IDs to access the preferences, so there is no need to do
@@ -360,7 +360,7 @@ bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	{
 		// TODO should we promote this test to be production code
 		// TODO and maybe raise a message box ??
-		UT_uint32 kLimit = NrElements(s_map);
+		UT_uint32 kLimit = G_N_ELEMENTS(s_map);
 		UT_uint32 k;
 
 		for (k=0; k<kLimit; k++)

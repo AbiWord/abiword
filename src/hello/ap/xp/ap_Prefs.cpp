@@ -61,7 +61,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 #undef dcl
 	};
 
-	for (UT_uint32 k=0; k<NrElements(_t); k++)
+	for (UT_uint32 k=0; k<G_N_ELEMENTS(_t); k++)
 		if (!pScheme->setValue(_t[k].m_szKey, _t[k].m_szValue))
 			goto Failed;
 	

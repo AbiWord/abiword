@@ -193,7 +193,7 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginLayout(Name,Cxt)	{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name, Cxt },
+#define BeginLayout(Name,Cxt)	{ #Name, G_N_ELEMENTS(s_ltTable_##Name), s_ltTable_##Name, Cxt },
 #define MenuItem(id)			/*nothing*/
 #define BeginSubMenu(id)		/*nothing*/
 #define BeginPopupMenu()		/*nothing*/
@@ -238,7 +238,7 @@ XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 {
 	UT_uint32 k = 0;
 	m_vecTT.clear();
-	for (k=0; k<NrElements(s_ttTable); k++)
+	for (k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 	{
 		_vectt * pVectt = new _vectt(&s_ttTable[k]);
 		m_vecTT.addItem((void *) pVectt);
@@ -629,7 +629,7 @@ void XAP_Menu_Factory::resetMenusToDefault(void)
     UT_VECTOR_PURGEALL(_vectt *,m_vecTT);
 	m_vecTT.clear();
 	UT_uint32 k = 0;
-	for (k=0; k<NrElements(s_ttTable); k++)
+	for (k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 	{
 		_vectt * pVectt = new _vectt(&s_ttTable[k]);
 		m_vecTT.addItem((void *) pVectt);
