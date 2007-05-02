@@ -227,9 +227,14 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		return NULL;
 	}
 	m_iCountWrapPasses++;
-#if DEBUG
-	//UT_sint32 iPage = getDocLayout()->findPage(this);
-	xxx_UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
+#if 1
+	UT_sint32 iPage = getDocLayout()->findPage(this);
+	UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
+	if(getPrev())
+		{
+			iPage = getDocLayout()->findPage(getPrev());
+			UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
+		}
 #endif
 	if(m_iCountWrapPasses > 100)
         {
@@ -267,8 +272,28 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	if((nWrapped == 0) && (nWrappedObjs == 0))
 	{
-		xxx_UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
-		return NULL;
+		UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
+		fp_Page * pPrevPage = getPrev();
+		//
+		// In creating lines that correctly wrap frames on the previous page
+		// the next page may have inherited some partially broken lines. 
+		// The following code check for the this situation so it can be 
+		// fixed here.
+		//
+		if(pPrevPage && (pPrevPage->countAboveFrameContainers() > 0))
+		{
+				for(i=0; i< static_cast<UT_sint32>(pPrevPage->countAboveFrameContainers()); i++)
+				{
+						fp_FrameContainer * pFrame = pPrevPage->getNthAboveFrameContainer(i);
+						if(pFrame->isWrappingSet())
+						{
+								nWrappedObjs++;
+						}
+				}
+				
+		}
+		if(nWrappedObjs == 0)
+			return NULL;
 	}
 	bool bFormatAllWrapped = ((nWrapped > 0) && (nWrappedObjs == 0));
 	UT_GenericVector<_BL *> vecBL;
