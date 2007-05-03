@@ -444,7 +444,6 @@ ABI_LIBJPEG
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
 if test $peerconfig = "true"; then
     for i in . $PEERDIRS; do

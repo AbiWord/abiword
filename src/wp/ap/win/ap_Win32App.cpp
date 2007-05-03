@@ -915,7 +915,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 		return bSuccess;		
  		
  	// It's a bitmap
- 	if (stricmp(szFormat, AP_CLIPBOARD_BMP)==0)
+ 	if (g_ascii_strcasecmp(szFormat, AP_CLIPBOARD_BMP)==0)
 	{			
  		HBITMAP					hBitmap;
  		PBITMAPINFO 			bi;

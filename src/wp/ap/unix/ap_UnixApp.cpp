@@ -673,9 +673,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
-		// iLen includes the terminating '\0'
-		UT_ASSERT_HARMLESS(iLen == strnlen((const char *) pData, iLen) + 1);
-
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		bSuccess = pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
@@ -755,8 +752,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
-		UT_ASSERT_HARMLESS(iLen == strnlen((const char *) pData, iLen));
-		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
@@ -767,7 +762,6 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	// we failed to paste *anything.* try plaintext as a last-ditch effort
 	if(!bSuccess && m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound)) {
 		UT_DEBUGMSG(("DOM: pasting text as an absolute fallback (bug 7666)\n"));		
-		UT_ASSERT_HARMLESS(iLen == strnlen((const char *) pData, iLen));
 
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
