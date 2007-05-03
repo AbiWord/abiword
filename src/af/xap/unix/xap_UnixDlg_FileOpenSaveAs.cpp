@@ -618,7 +618,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									GTK_WINDOW(parent),
 									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+									(m_bSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN), GTK_RESPONSE_ACCEPT,
 									(gchar*)NULL)
 							);
 	xxx_UT_DEBUGMSG(("Have the filechooser now \n"));
