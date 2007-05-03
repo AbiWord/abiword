@@ -1,0 +1,14 @@
+CPPFLAGS = @ABI_CPPFLAGS@ @CPPFLAGS@ @ABI_OPENDOCUMENT_CPPFLAGS@ @PLATFORM_CPPFLAGS@ -I$(srcdir)/../../imp/xp -I$(srcdir)/../../exp/xp
+
+LDFLAGS = @LDFLAGS@ @ABI_OPENDOCUMENT_LDFLAGS@ @PLATFORM_LDFLAGS@
+
+noinst_LTLIBRARIES = libAbiOpenDocument_common.la
+
+libAbiOpenDocument_common_la_SOURCES=	ie_impexp_OpenDocument.cpp
+
+libAbiOpenDocument_common_la_LIBADD = @ABI_LIBS@
+
+libAbiOpenDocument_common_la_LDFLAGS = -no-undefined -module -avoid-version
+
+EXTRA_DIST = \
+	Makefile

@@ -1,0 +1,23 @@
+SUBDIRS = common imp exp
+
+plugindir = @ABI_PLUGIN_DIR@
+
+CPPFLAGS = @ABI_CPPFLAGS@ @CPPFLAGS@ @ABI_OPENDOCUMENT_CPPFLAGS@ @PLATFORM_CPPFLAGS@
+
+LDFLAGS = @LDFLAGS@ @ABI_OPENDOCUMENT_LDFLAGS@ @PLATFORM_LDFLAGS@
+
+plugin_LTLIBRARIES = libAbiOpenDocument.la
+
+libAbiOpenDocument_la_SOURCES =	dummy.c
+
+libAbiOpenDocument_la_LIBADD = @ABI_LIBS@ \
+	common/xp/libAbiOpenDocument_common.la \
+	imp/xp/libAbiOpenDocument_imp.la \
+	exp/xp/libAbiOpenDocument_exp.la
+
+libAbiOpenDocument_la_LDFLAGS = -no-undefined -module -avoid-version
+
+EXTRA_DIST = \
+	Makefile \
+	plugin.m4 \
+	dummy.c

@@ -1,0 +1,65 @@
+CPPFLAGS = @ABI_CPPFLAGS@ @CPPFLAGS@ @ABI_OPENDOCUMENT_CPPFLAGS@ @PLATFORM_CPPFLAGS@
+
+LDFLAGS = @LDFLAGS@ @ABI_OPENDOCUMENT_LDFLAGS@ @PLATFORM_LDFLAGS@
+
+noinst_LTLIBRARIES = libAbiOpenDocument_exp.la
+
+libAbiOpenDocument_exp_la_SOURCES=	ie_exp_OpenDocument.cpp \
+	ie_exp_OpenDocument_Sniffer.cpp \
+	ODe_AbiDocListener.cpp \
+	ODe_AbiDocListenerImpl.cpp \
+	ODe_AutomaticStyles.cpp \
+	ODe_AuxiliaryData.cpp \
+	ODe_Common.cpp \
+	ODe_DocumentData.cpp \
+	ODe_FontFaceDecls.cpp \
+	ODe_Frame_Listener.cpp \
+	ODe_HeadingSearcher_Listener.cpp \
+	ODe_ListLevelStyle.cpp \
+	ODe_Main_Listener.cpp \
+	ODe_ManifestWriter.cpp \
+	ODe_MetaDataWriter.cpp \
+	ODe_Note_Listener.cpp \
+	ODe_PicturesWriter.cpp \
+	ODe_SettingsWriter.cpp \
+	ODe_Style_List.cpp \
+	ODe_Style_MasterPage.cpp \
+	ODe_Style_PageLayout.cpp \
+	ODe_Styles.cpp \
+	ODe_Style_Style.cpp \
+	ODe_Table_Listener.cpp \
+	ODe_Text_Listener.cpp \
+	\
+	ie_exp_OpenDocument.h \
+	ie_exp_OpenDocument_Sniffer.h \
+	ODe_AbiDocListener.h \
+	ODe_AbiDocListenerImpl.h \
+	ODe_AutomaticStyles.h \
+	ODe_AuxiliaryData.h \
+	ODe_Common.h \
+	ODe_DocumentData.h \
+	ODe_FontFaceDecls.h \
+	ODe_Frame_Listener.h \
+	ODe_HeadingSearcher_Listener.h \
+	ODe_ListenerAction.h \
+	ODe_ListLevelStyle.h \
+	ODe_Main_Listener.h \
+	ODe_ManifestWriter.h \
+	ODe_MetaDataWriter.h \
+	ODe_Note_Listener.h \
+	ODe_PicturesWriter.h \
+	ODe_SettingsWriter.h \
+	ODe_Style_List.h \
+	ODe_Style_MasterPage.h \
+	ODe_Style_PageLayout.h \
+	ODe_Styles.h \
+	ODe_Style_Style.h \
+	ODe_Table_Listener.h \
+	ODe_Text_Listener.h
+
+libAbiOpenDocument_exp_la_LIBADD = @ABI_LIBS@
+
+libAbiOpenDocument_exp_la_LDFLAGS = -no-undefined -module -avoid-version
+
+EXTRA_DIST = \
+	Makefile
