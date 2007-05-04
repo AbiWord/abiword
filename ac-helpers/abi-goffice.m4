@@ -21,8 +21,8 @@
 
 AC_DEFUN([ABI_GOFFICE], [
 
-GOFFICE_VERSION_REQUIRED='0.3.1'
-goffice_modules="libgoffice-0.3 >= $GOFFICE_VERSION_REQUIRED"
+GOFFICE_VERSION_REQUIRED='0.4.0'
+goffice_modules="libgoffice-0.4 >= $GOFFICE_VERSION_REQUIRED"
 
 PKG_CHECK_MODULES(GOFFICE, [ $goffice_modules ], 
 [
