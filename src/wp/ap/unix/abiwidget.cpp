@@ -1133,6 +1133,34 @@ abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 	return abi_widget_invoke_ex (w,"fontSize",szSize,0,0);
 }
 
+extern "C" const gchar**
+abi_widget_get_font_names (AbiWidget * w)
+{
+	// this is annoying asc getAllFontNames() returns a lot of dupes
+	const std::vector<const char *> vFonts = GR_UnixPangoGraphics::getAllFontNames();
+
+	const gchar** fonts_ar = 
+		reinterpret_cast<const gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care
+	UT_uint32 i;
+	UT_uint32 actual_size = 0;
+	for	(i = 0; i < vFonts.size(); i++)
+	{
+		if (vFonts[i] != NULL && (*vFonts[i]) != '\0')
+		{
+			// check for dupes
+			UT_uint32 j;
+			for (j = 0; j < actual_size; j++)
+				if (strcmp(vFonts[i], fonts_ar[j]) == 0)
+					break;
+
+			if (j == actual_size)
+				fonts_ar[actual_size++] = vFonts[i];
+		}
+	}
+	fonts_ar[actual_size] = NULL;
+	return fonts_ar;
+}
+
 extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
