@@ -26,7 +26,7 @@
 #include "ODi_ListenerState.h"
 
 // AbiWord includes
-#include <ut_IntStrMap.h>
+#include "ut_IntStrMap.h"
 
 
 /**

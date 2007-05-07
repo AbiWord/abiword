@@ -26,7 +26,7 @@
 #ifndef _IE_IMP_OPENDOCUMENTSNIFFER_H_
 #define _IE_IMP_OPENDOCUMENTSNIFFER_H_
 
-#include <ie_imp.h>
+#include "ie_imp.h"
 
 class ABI_EXPORT IE_Imp_OpenDocument_Sniffer : public IE_ImpSniffer
 {

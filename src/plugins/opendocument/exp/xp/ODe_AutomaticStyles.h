@@ -24,7 +24,7 @@
 #define _ODE_AUTOMATICSTYLES_H_
 
 // AbiWord includes
-#include <ut_hash.h>
+#include "ut_hash.h"
 
 // External includes
 #include <gsf/gsf-output.h>

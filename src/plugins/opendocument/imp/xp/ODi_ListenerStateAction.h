@@ -23,9 +23,9 @@
 #define _ODI_LISTENERSTATEACTION_H_
 
 // AbiWord includes
-#include <ut_assert.h>
-#include <ut_string_class.h>
-#include <ut_types.h>
+#include "ut_assert.h"
+#include "ut_string_class.h"
+#include "ut_types.h"
 
 // Internal classes
 class ODi_ListenerState;

@@ -30,8 +30,8 @@
 #include "ODe_Common.h"
 
 // Abiword includes
-#include <ut_bytebuf.h>
-#include <pd_Document.h>
+#include "ut_bytebuf.h"
+#include "pd_Document.h"
 
 
 /**

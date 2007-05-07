@@ -23,8 +23,8 @@
 #define ODE_STYLE_LIST_H_
 
 // AbiWord includes
-#include <ut_hash.h>
-#include <ut_string_class.h>
+#include "ut_hash.h"
+#include "ut_string_class.h"
 
 // External includes
 #include <gsf/gsf-output.h>

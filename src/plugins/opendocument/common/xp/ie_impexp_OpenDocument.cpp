@@ -28,11 +28,12 @@
 
 // External includes
 #include <gsf/gsf-utils.h>
-#include <xap_Module.h>
+#include "ut_types.h"
+#include "xap_Module.h"
 
 // Internal includes
-#include "../../imp/xp/ie_imp_OpenDocument_Sniffer.h"
-#include "../../exp/xp/ie_exp_OpenDocument_Sniffer.h"
+#include "ie_imp_OpenDocument_Sniffer.h"
+#include "ie_exp_OpenDocument_Sniffer.h"
 
 
 /*****************************************************************************/

@@ -23,7 +23,7 @@
 #define _ODI_XMLRECORDER_H_
 
 // AbiWord includes
-#include <ut_vector.h>
+#include "ut_vector.h"
 
 
 /**

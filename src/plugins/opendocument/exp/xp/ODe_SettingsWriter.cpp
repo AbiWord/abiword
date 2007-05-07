@@ -29,7 +29,7 @@
 #include "ODe_Common.h"
 
 // Abiword includes
-#include <ut_types.h>
+#include "ut_types.h"
  
  
 bool ODe_SettingsWriter::writeSettings(PD_Document* pDoc, GsfOutfile* oo)

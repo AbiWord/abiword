@@ -31,9 +31,9 @@
 #include "ODi_ElementStack.h"
  
 // AbiWord includes
-#include <pd_Document.h>
-#include <ut_math.h>
-#include <ut_locale.h>
+#include "pd_Document.h"
+#include "ut_math.h"
+#include "ut_locale.h"
 
 // External includes
 #include <ctype.h>

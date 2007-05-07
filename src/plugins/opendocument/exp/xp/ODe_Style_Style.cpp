@@ -26,9 +26,9 @@
 #include "ODe_Common.h"
 
 // AbiWord includes
-#include <pp_AttrProp.h>
-#include <pt_Types.h>
-#include <ut_locale.h>
+#include "pp_AttrProp.h"
+#include "pt_Types.h"
+#include "ut_locale.h"
 
 // External includes
 #include <ctype.h>

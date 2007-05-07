@@ -28,9 +28,9 @@
 #include "ODi_ListenerState.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_stack.h>
-#include <ut_IntStrMap.h>
+#include "ut_types.h"
+#include "ut_stack.h"
+#include "ut_IntStrMap.h"
 
 // External includes
 #include <gsf/gsf.h>

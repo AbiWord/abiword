@@ -35,7 +35,7 @@
 #include "ODi_StartTag.h"
 
 // AbiWord includes
-#include <ut_assert.h>
+#include "ut_assert.h"
 
 
 /**

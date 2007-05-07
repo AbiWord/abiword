@@ -38,9 +38,9 @@
 #include "ODe_SettingsWriter.h"
 
 // Abiword includes
-#include <ut_assert.h>
-#include <ut_locale.h>
-#include <pd_Document.h>
+#include "ut_assert.h"
+#include "ut_locale.h"
+#include "pd_Document.h"
 
 // External includes
 #include <gsf/gsf-outfile.h>

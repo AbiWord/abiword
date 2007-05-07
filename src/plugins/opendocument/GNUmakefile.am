@@ -1,16 +1,19 @@
+
+include $(top_srcdir)/includes.mk
+
 SUBDIRS = common imp exp
 
-plugindir = @ABI_PLUGIN_DIR@
+plugindir = @ABIWORD_PLUGINSDIR@
 
-CPPFLAGS = @ABI_CPPFLAGS@ @CPPFLAGS@ @ABI_OPENDOCUMENT_CPPFLAGS@ @PLATFORM_CPPFLAGS@
-
-LDFLAGS = @LDFLAGS@ @ABI_OPENDOCUMENT_LDFLAGS@ @PLATFORM_LDFLAGS@
+INCLUDES = $(ABI_CFLAGS) @CPPFLAGS@ @PLATFORM_CFLAGS@ \
+	$(AF_INCLUDES) \
+	$(WP_INCLUDES)
 
 plugin_LTLIBRARIES = libAbiOpenDocument.la
 
 libAbiOpenDocument_la_SOURCES =	dummy.c
 
-libAbiOpenDocument_la_LIBADD = @ABI_LIBS@ \
+libAbiOpenDocument_la_LIBADD = $(OTHER_LIBS) \
 	common/xp/libAbiOpenDocument_common.la \
 	imp/xp/libAbiOpenDocument_imp.la \
 	exp/xp/libAbiOpenDocument_exp.la

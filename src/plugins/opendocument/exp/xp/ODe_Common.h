@@ -27,7 +27,7 @@
 
 
 // AbiWord includes
-#include <ut_types.h>
+#include "ut_types.h"
 
 // External includes
 #include <gsf/gsf-output.h>

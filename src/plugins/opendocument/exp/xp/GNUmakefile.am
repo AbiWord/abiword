@@ -1,6 +1,13 @@
-CPPFLAGS = @ABI_CPPFLAGS@ @CPPFLAGS@ @ABI_OPENDOCUMENT_CPPFLAGS@ @PLATFORM_CPPFLAGS@
 
-LDFLAGS = @LDFLAGS@ @ABI_OPENDOCUMENT_LDFLAGS@ @PLATFORM_LDFLAGS@
+include $(top_srcdir)/includes.mk
+
+INCLUDES = $(ABI_CFLAGS) @CPPFLAGS@ @PLATFORM_CFLAGS@ \
+	$(AF_INCLUDES) \
+	$(WP_INCLUDES) \
+	-I$(top_srcdir)/src/text/fmt/xp \
+	-I$(top_srcdir)/src/text/ptbl/xp
+
+LDFLAGS = @LDFLAGS@ @PLATFORM_LDFLAGS@
 
 noinst_LTLIBRARIES = libAbiOpenDocument_exp.la
 

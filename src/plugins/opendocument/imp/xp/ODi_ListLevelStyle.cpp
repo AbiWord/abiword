@@ -28,11 +28,11 @@
 #include "ODi_ListLevelStyleFormats.h"
 
 // AbiWord includes
-#include <pd_Document.h>
-#include <fp_types.h>
-#include <ut_string_class.h>
-#include <ut_units.h>
-#include <ut_locale.h>
+#include "pd_Document.h"
+#include "fp_types.h"
+#include "ut_string_class.h"
+#include "ut_units.h"
+#include "ut_locale.h"
 
 //External includes
 #include <stdlib.h>

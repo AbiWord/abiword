@@ -25,9 +25,9 @@
 #include "ODi_ListenerStateAction.h"
 
 // AbiWord includes
-#include <ut_assert.h>
-#include <ut_misc.h>
-#include <pd_Document.h>
+#include "ut_assert.h"
+#include "ut_misc.h"
+#include "pd_Document.h"
 
 
 /**

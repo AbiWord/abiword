@@ -26,9 +26,9 @@
 #include "ODi_Style_Style_Family.h"
 
 // AbiWord includes
-#include <ut_hash.h>
-#include <ut_vector.h>
-#include <ut_IntStrMap.h>
+#include "ut_hash.h"
+#include "ut_vector.h"
+#include "ut_IntStrMap.h"
 
 // Internal classes
 class ODi_FontFaceDecls;

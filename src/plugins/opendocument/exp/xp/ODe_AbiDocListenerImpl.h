@@ -26,8 +26,8 @@
 #define _ODE_ABIDOCLISTENERIMPL_H_
 
 // Abiword includes
-#include <ut_types.h>
-#include <fd_Field.h>
+#include "ut_types.h"
+#include "fd_Field.h"
 
 // Internal classes
 class ODe_ListenerAction;

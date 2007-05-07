@@ -25,7 +25,7 @@
 #include "ODe_AbiDocListenerImpl.h"
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include "ut_string_class.h"
 
 
 /**

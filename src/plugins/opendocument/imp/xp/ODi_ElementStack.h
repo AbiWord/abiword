@@ -23,8 +23,8 @@
 #define _ODI_ELEMENTSTACK_H_
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_vector.h>
+#include "ut_types.h"
+#include "ut_vector.h"
 
 // Internal classes
 class ODi_StartTag;

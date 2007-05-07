@@ -31,13 +31,13 @@
 #include "ODe_Main_Listener.h"
 
 // Abiword includes
-#include <pd_Document.h>
-#include <px_ChangeRecord.h>
-#include <px_CR_Span.h>
-#include <px_CR_Strux.h>
-#include <px_CR_Object.h>
-#include <ut_mbtowc.h>
-#include <ut_locale.h>
+#include "pd_Document.h"
+#include "px_ChangeRecord.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
+#include "px_CR_Object.h"
+#include "ut_mbtowc.h"
+#include "ut_locale.h"
 
 /**
  * Constructor

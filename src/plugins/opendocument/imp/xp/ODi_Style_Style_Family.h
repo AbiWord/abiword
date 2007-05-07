@@ -26,10 +26,10 @@
 #include "ODi_Style_Style.h"
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string_class.h>
-#include <ut_hash.h>
-#include <ut_IntStrMap.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
+#include "ut_hash.h"
+#include "ut_IntStrMap.h"
 
 // Internal classes
 class ODi_ElementStack;

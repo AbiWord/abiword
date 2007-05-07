@@ -29,9 +29,9 @@
 #include "ODe_ListenerAction.h"
 
 // Abiword includes
-#include <pl_Listener.h>
-#include <ut_vector.h>
-#include <ut_string_class.h>
+#include "pl_Listener.h"
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 // Internal classes
 class ODe_AbiDocListenerImpl;

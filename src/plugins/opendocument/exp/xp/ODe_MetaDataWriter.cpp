@@ -30,9 +30,9 @@
 #include "ODe_Common.h"
  
 // Abiword includes
-#include <ut_types.h>
-#include <ut_string_class.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_string_class.h"
+#include "pd_Document.h"
  
 // External includes
 #include <gsf/gsf-output-stdio.h>

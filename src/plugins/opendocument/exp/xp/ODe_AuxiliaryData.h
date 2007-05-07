@@ -23,8 +23,8 @@
 #define ODE_AUXILIARYDATA_H_
 
 // AbiWord includes
-#include <ut_vector.h>
-#include <ut_string_class.h>
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 
 /**

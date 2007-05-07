@@ -23,7 +23,7 @@
 #define _ODI_ABI_DATA_H_
 
 // AbiWord includes
-#include <ut_IntStrMap.h>
+#include "ut_IntStrMap.h"
 
 // External includes
 #include <gsf/gsf.h>

@@ -27,7 +27,7 @@
 #include "ODi_ListenerState.h"
 
 // AbiWord includes
-#include <ut_string_class.h>
+#include "ut_string_class.h"
 
 // Internal classes
 class ODi_Abi_Data;
