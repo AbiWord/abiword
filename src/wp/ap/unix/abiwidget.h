@@ -370,6 +370,7 @@ gint* iLength);
  gboolean abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y);
  gboolean abi_widget_set_font_name(AbiWidget * w, gchar * szFontName);
  gboolean abi_widget_set_font_size(AbiWidget * w, gchar * szFontsize);
+ gboolean abi_widget_set_font_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue);
  const gchar** abi_widget_get_font_names (AbiWidget * w);
 
 #ifdef HAVE_BONOBO

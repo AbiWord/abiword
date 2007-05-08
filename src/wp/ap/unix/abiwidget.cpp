@@ -1133,6 +1133,27 @@ abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 	return abi_widget_invoke_ex (w,"fontSize",szSize,0,0);
 }
 
+extern "C" gboolean
+abi_widget_set_font_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	// get the view
+	AP_UnixFrame * pFrame = reinterpret_cast<AP_UnixFrame *>(w->priv->m_pFrame);
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	g_return_val_if_fail(pView, FALSE );
+
+	// create the color property
+	gchar    m_pszColor[12];
+	snprintf(m_pszColor, 12, "%02x%02x%02x", red, green, blue);
+	const gchar * properties[] = { "color", m_pszColor, 0};
+
+	// set the color
+	return pView->setCharFormat(properties);
+}
+
 extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * w)
 {
