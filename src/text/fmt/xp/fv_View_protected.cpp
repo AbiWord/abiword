@@ -62,6 +62,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
+#include "ap_Strings.h"
 #include "fd_Field.h"
 
 #ifndef WITHOUT_SPELL

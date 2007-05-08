@@ -62,6 +62,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
+#include "ap_Strings.h"
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
 

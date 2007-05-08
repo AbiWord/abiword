@@ -20,8 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ut_string.h"
-#include "ap_Dialog_PageNumbers.h"
 #include "gr_Painter.h"
+#include "ap_Dialog_PageNumbers.h"
 
 AP_Dialog_PageNumbers::AP_Dialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
 					      XAP_Dialog_Id id)

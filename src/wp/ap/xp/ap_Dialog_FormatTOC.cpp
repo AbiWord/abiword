@@ -30,6 +30,7 @@
 #include "ap_Dialog_Id.h"
 
 #include "ap_Dialog_FormatTOC.h"
+#include "ap_Strings.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"

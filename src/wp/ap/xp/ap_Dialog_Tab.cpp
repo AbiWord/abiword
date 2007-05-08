@@ -39,7 +39,6 @@
 
 #include "ap_Dialog_Tab.h"
 #include "ap_Prefs_SchemeIds.h"
-#include "ap_Strings.h"
 #include "ap_TopRuler.h"		// for AP_TopRulerInfo
 
 

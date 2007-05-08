@@ -48,6 +48,7 @@
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
 #include "ap_Dialog_FormatFrame.h"
+#include "ap_Strings.h"
 #include "ut_png.h"
 #include "gr_Painter.h"
 

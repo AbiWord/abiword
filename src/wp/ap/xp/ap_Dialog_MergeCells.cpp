@@ -46,6 +46,7 @@
 #include "ut_timer.h"
 
 #include "ap_Dialog_MergeCells.h"
+#include "ap_Strings.h"
 
 AP_Dialog_MergeCells::AP_Dialog_MergeCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogmergecells"),

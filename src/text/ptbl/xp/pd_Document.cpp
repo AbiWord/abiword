@@ -56,6 +56,7 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 #include "ap_Prefs.h"
+#include "ap_Strings.h"
 #include "ut_units.h"
 #include "ut_string_class.h"
 #include "ut_sleep.h"

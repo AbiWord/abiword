@@ -53,6 +53,7 @@
 #include "fv_View.h"
 #include "fl_TOCLayout.h"
 #include "ap_Prefs.h"
+#include "ap_Strings.h"
 #include "xap_Frame.h"
 #include "gr_Painter.h"
 

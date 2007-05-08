@@ -31,7 +31,6 @@
 #include "xap_App.h"
 #include "ap_Dialog_InsertTable.h"
 #include "ap_Prefs_SchemeIds.h"
-#include "ap_Strings.h"
 
 AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoginsertable")

@@ -21,7 +21,6 @@
 
 #include "ap_Dialog_New.h"
 #include "ut_types.h"
-#include "ap_Strings.h"
 
 AP_Dialog_New::AP_Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent (pDlgFactory, id, "interface/dialognew"), 

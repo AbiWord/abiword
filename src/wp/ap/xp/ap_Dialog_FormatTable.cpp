@@ -48,6 +48,7 @@
 #include "ut_png.h"
 #include "gr_Painter.h"
 #include "ut_units.h"
+#include "ap_Strings.h"
 
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),

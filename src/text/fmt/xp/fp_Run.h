@@ -33,7 +33,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
-#include "ap_Strings.h"
+#include "xap_Strings.h"
 #include "fl_BlockLayout.h"
 #include "pp_Revision.h"
 #include "ut_string_class.h"
