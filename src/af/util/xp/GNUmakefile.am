@@ -129,7 +129,6 @@ noinst_HEADERS = \
 	ut_PropVector.h \
 	ut_queue.h \
 	ut_rand.h \
-	ut_regex.h \
 	ut_Script.h \
 	ut_stack.h \
 	ut_stringbuf.h \
