@@ -31,12 +31,6 @@ regtest
 	Regression testing tools (scripts, documents, and the like) reside
 	here.
 
-shots
-	Screen shots of AbiWord, XAP components, and comparable products,
-	used for feature-completeness purposes.  Not to be confused with
-	the screenshots used for documentation purposes, which reside
-	within the abiword-docs module along with the documentation text.
-
 test
 	Test files for AbiWord (not explicitly part of regression testing). 
 

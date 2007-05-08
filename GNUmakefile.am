@@ -33,9 +33,6 @@ pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 abiword-$(ABIWORD_SERIES).pc: $(pc_template)
 	cp $< abiword-$(ABIWORD_SERIES).pc
 
-# 'shots' are not distributed on purpose as they
-# should be removed from the source tree anyways.
-# - Rob
 EXTRA_DIST = 			\
 	docs			\
 	po			\
