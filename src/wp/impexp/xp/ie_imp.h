@@ -26,7 +26,6 @@
 #include "ie_types.h"
 
 #include "ut_IntStrMap.h"
-#include "ut_AbiObject.h"
 #include "ut_vector.h"
 #include "ut_string_class.h"
 #include "pd_Document.h"
@@ -48,7 +47,7 @@ class IE_Imp;
 /*!
  * IE_Imp defines the abstract base class for file importers.
  */
-class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
+class ABI_EXPORT IE_ImpSniffer
 {
 	friend class IE_Imp;
 	

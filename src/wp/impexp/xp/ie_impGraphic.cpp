@@ -87,8 +87,10 @@ void IE_ImpGraphic::unregisterAllImporters ()
 	{
 		pSniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		if (pSniffer)
-			pSniffer->unref();
+			delete pSniffer;
 	}
+
+	IE_IMP_GraphicSniffers.clear();
 }
 
 /*!

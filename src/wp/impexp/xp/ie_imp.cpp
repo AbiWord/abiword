@@ -289,8 +289,10 @@ void IE_Imp::unregisterAllImporters ()
 	{
 		pSniffer = IE_IMP_Sniffers.getNthItem(i);
 		if (pSniffer)
-			pSniffer->unref();
+			delete pSniffer;
 	}
+
+	IE_IMP_Sniffers.clear();
 }
 
 /*!

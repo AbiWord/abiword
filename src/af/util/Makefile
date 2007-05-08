@@ -79,7 +79,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_allocator.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_rand.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_AbiObject.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_iconv.$(OBJ_SUFFIX)		\

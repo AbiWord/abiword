@@ -21,7 +21,6 @@
 #define IE_MAILMERGE_H
 
 #include "ut_types.h"
-#include "ut_AbiObject.h"
 #include "ut_hash.h"
 #include "pd_Document.h"
 
@@ -30,7 +29,7 @@ typedef UT_sint32 IEMergeType;
 
 class IE_MailMerge;
 
-class ABI_EXPORT IE_MergeSniffer : public UT_AbiObject
+class ABI_EXPORT IE_MergeSniffer
 {
   friend class IE_MailMerge;
 

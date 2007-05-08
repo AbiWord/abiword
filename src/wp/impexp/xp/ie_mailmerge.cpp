@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * 
@@ -427,8 +429,10 @@ void IE_MailMerge::unregisterAllMergers ()
     {
 		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
-			pSniffer->unref();
-    }
+			delete pSniffer;
+	}
+
+	m_sniffers.clear();
 }
 
 /************************************************************************/

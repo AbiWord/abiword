@@ -22,7 +22,6 @@
 #define GR_CONTROL_H
 
 #include "ut_types.h"
-#include "ut_AbiObject.h"
 #include "ut_bytebuf.h"
 
 class AV_View;
@@ -35,7 +34,7 @@ class GR_Graphics;
  * by an embedded control inside of AbiWord. You have to ref & unref
  * the control properly
  */
-class ABI_EXPORT GR_Control : public UT_AbiObject 
+class ABI_EXPORT GR_Control
 {
 
  public:

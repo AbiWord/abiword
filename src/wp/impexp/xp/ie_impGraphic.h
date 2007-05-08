@@ -26,7 +26,6 @@
 #include "ut_types.h"
 #include "ie_types.h"
 #include "ie_imp.h"
-#include "ut_AbiObject.h"
 #include <string>
 #include <vector>
 
@@ -37,7 +36,7 @@ class IE_ImpGraphic;
 /*!
  * A small class to create graphic importers for us
  */
-class ABI_EXPORT IE_ImpGraphicSniffer : public UT_AbiObject
+class ABI_EXPORT IE_ImpGraphicSniffer
 {
 	friend class IE_ImpGraphic;
 	

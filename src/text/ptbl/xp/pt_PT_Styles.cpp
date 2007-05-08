@@ -359,6 +359,7 @@ bool pt_PieceTable::appendStyle(const gchar ** attributes)
 
 //
 // TODO: Learn how to use Dom's AbiObject instead of this hack.
+// Rob asks, as AbiObject is no more, is this still a hack?
 //
 
 		if (pStyle)

@@ -29,7 +29,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_worker.cpp		\
 		ut_idle.cpp		\
 		ut_bytebuf.cpp		\
-		ut_AbiObject.cpp	\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_iconv.cpp		\

@@ -25,7 +25,6 @@
 #include <stdio.h>
 
 #include "ut_IntStrMap.h"
-#include "ut_AbiObject.h"
 #include "ie_types.h"
 
 #include "ut_go_file.h"
@@ -42,7 +41,7 @@ class UT_ByteBuf;
 class IE_Exp;
 class IE_FieldUpdater;
 
-class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
+class ABI_EXPORT IE_ExpSniffer
 {
 	friend class IE_Exp;
 

@@ -27,7 +27,6 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_AbiObject.h"
 #include "ut_string_class.h"
 
 typedef UT_sint32 UT_ScriptIdType;
@@ -39,7 +38,7 @@ typedef UT_sint32 UT_ScriptIdType;
 class UT_Script;
 class UT_ScriptLibrary;
 
-class ABI_EXPORT UT_ScriptSniffer : public UT_AbiObject
+class ABI_EXPORT UT_ScriptSniffer
 {
   	friend class UT_ScriptLibrary;
 	

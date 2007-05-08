@@ -172,8 +172,10 @@ void IE_Exp::unregisterAllExporters ()
 	{
 		pSniffer = m_sniffers.getNthItem(i);
 		if (pSniffer)
-			pSniffer->unref();
+			delete pSniffer;
 	}
+
+	m_sniffers.clear();
 }
 
 /*****************************************************************/

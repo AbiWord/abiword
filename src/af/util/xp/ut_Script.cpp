@@ -138,7 +138,7 @@ void UT_ScriptLibrary::unregisterAllScripts ()
 	{
 		pSniffer = mSniffers->getNthItem(i);
 		if (pSniffer)
-			pSniffer->unref();
+			delete pSniffer;
     }
 
 	mSniffers->clear();

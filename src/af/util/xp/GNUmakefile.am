@@ -47,7 +47,6 @@ libUtil_xp_a_SOURCES= \
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\
 	ut_base64.cpp		\
-	ut_AbiObject.cpp	\
 	ut_base64_TestRoutines.cpp	\
 	ut_bytebuf.cpp		\
 	ut_decompress.cpp	\
@@ -95,7 +94,6 @@ EXTRA_DIST = $(headers_DATA) Makefile
 
 #headersdir = $(ABIWORD_HEADERSDIR)/util/xp
 noinst_HEADERS = \
-	ut_AbiObject.h \
 	ut_AdobeEncoding.h \
 	ut_allocator.h \
 	ut_assert.h \
