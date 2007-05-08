@@ -262,5 +262,5 @@ noinst_HEADERS = \
 	ap_Toolbar_Id.h \
 	ap_Toolbar_Id_List.h \
 	ap_Toolbar_Layouts_All.h \
-	ap_TopRuler.h \
-	ap_types.h 
+	ap_TopRuler.h
+

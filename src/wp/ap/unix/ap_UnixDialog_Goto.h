@@ -21,9 +21,7 @@
 #ifndef AP_UNIXDIALOG_GOTO_H
 #define AP_UNIXDIALOG_GOTO_H
 
-#include "ap_types.h"
 #include "ap_Dialog_Goto.h"
-
 #include "fv_View.h"
 
 class XAP_UnixFrame;

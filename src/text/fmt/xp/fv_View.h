@@ -29,7 +29,6 @@
 #include "xav_View.h"
 
 #include "pt_Types.h"
-#include "ap_types.h"
 #include "fp_types.h"
 #include "fl_Squiggles.h"
 #include "ev_EditBits.h"
@@ -94,6 +93,25 @@ class XAP_Prefs;
 class SpellChecker;
 
 class CellLine;
+
+typedef enum
+{
+	hori_left,
+	hori_mid,
+	hori_right,
+	vert_above,
+	vert_mid,
+	vert_below
+} AP_CellSplitType;
+
+
+typedef enum _AP_JumpTarget
+{
+	AP_JUMPTARGET_PAGE, 			// beginning of page
+	AP_JUMPTARGET_LINE,
+	AP_JUMPTARGET_BOOKMARK,
+	AP_JUMPTARGET_PICTURE // TODO
+} AP_JumpTarget;
 
 struct fv_ChangeState
 {

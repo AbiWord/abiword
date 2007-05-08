@@ -21,9 +21,9 @@
 #define AP_DIALOG_SPLITCELLS_H
 
 #include "ut_types.h"
+#include "fv_View.h"
 #include "xap_Dialog.h"
 #include "pt_Types.h"
-#include "ap_types.h"
 
 class UT_Timer;
 class UT_Worker;
