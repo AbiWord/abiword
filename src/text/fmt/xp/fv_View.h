@@ -29,7 +29,6 @@
 #include "xav_View.h"
 
 #include "pt_Types.h"
-#include "ie_types.h"
 #include "ap_types.h"
 #include "fp_types.h"
 #include "fl_Squiggles.h"
