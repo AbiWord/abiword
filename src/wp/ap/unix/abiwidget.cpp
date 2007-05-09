@@ -2303,3 +2303,19 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
 {
 	return abi_widget_save_with_type (w, fname, extension);
 }
+
+extern "C" gboolean 
+abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	// get the view
+	FV_View * pView = static_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	g_return_val_if_fail(pView, FALSE );
+
+	w->priv->m_pFrame->setZoomType(XAP_Frame::z_PERCENT);
+	w->priv->m_pFrame->quickZoom(zoom);
+	return TRUE;
+}
