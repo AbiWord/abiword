@@ -1142,14 +1142,13 @@ abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	// get the view
-	AP_UnixFrame * pFrame = reinterpret_cast<AP_UnixFrame *>(w->priv->m_pFrame);
-	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	g_return_val_if_fail(pView, FALSE );
 
 	// create the color property
-	gchar    m_pszColor[12];
-	snprintf(m_pszColor, 12, "%02x%02x%02x", red, green, blue);
-	const gchar * properties[] = { "color", m_pszColor, 0};
+	gchar pszColor[12];
+	snprintf(pszColor, 12, "%02x%02x%02x", red, green, blue);
+	const gchar * properties[] = { "color", pszColor, 0};
 
 	// set the color
 	return pView->setCharFormat(properties);
