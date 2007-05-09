@@ -149,8 +149,8 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 {
 #ifdef GDK_Escape
 	if (event->keyval == GDK_Escape) {
-		g_signal_emit_stop_by_name (G_OBJECT (widget), "key_press_event");
-		s_cancel_clicked ( widget, answer ) ;
+		g_signal_stop_emission_by_name (G_OBJECT (widget), "key_press_event");
+		s_dialog_response(widget, GTK_RESPONSE_CANCEL, answer);
 		return TRUE;
 	}
 #endif

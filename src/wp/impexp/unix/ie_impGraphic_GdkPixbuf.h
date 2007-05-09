@@ -39,6 +39,9 @@
 #include "fg_GraphicRaster.h"
 #include <png.h>
 
+#ifndef IE_IMPGRAPHIC_GDKPIXBUF_H
+#define IE_IMPGRAPHIC_GDKPIXBUF_H
+
 class ABI_EXPORT IE_ImpGraphic_GdkPixbuf : public IE_ImpGraphic
 {
 public:
@@ -78,3 +81,6 @@ public:
 							  IEGraphicFileType * ft);
 	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg);
 };
+
+#endif // IE_IMPGRAPHIC_GDKPIXBUF_H
+

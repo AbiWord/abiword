@@ -23,6 +23,9 @@
 
 #include "ev_EditEventMapper.h"
 
+#ifndef XAP_INPUTMODES_H
+#define XAP_INPUTMODES_H
+
 class ABI_EXPORT XAP_InputModes
 {
 public:
@@ -42,4 +45,6 @@ protected:
 	
 	UT_uint32						m_indexCurrentEventMap;
 };
+
+#endif // XAP_INPUTMODES_H
 

@@ -45,7 +45,7 @@
 #include <pango/pangoxft.h>
 
 #ifdef HAVE_PANGOFT2
-#include <pango/pangoft2.h>
+  #include <pango/pangoft2.h>
 #endif
 
 #include <math.h>
@@ -54,9 +54,9 @@
 #include <gdk/gdkx.h>
 
 #ifndef WITHOUT_PRINTING
-#include <libgnomeprint/gnome-print-pango.h>
-#include <libgnomeprint/gnome-print-paper.h>
-#include <libgnomeprintui/gnome-print-job-preview.h>
+  #include <libgnomeprint/gnome-print-pango.h>
+  #include <libgnomeprint/gnome-print-paper.h>
+  #include <libgnomeprintui/gnome-print-job-preview.h>
 #endif
 
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
