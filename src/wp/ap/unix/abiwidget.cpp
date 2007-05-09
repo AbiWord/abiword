@@ -643,7 +643,7 @@ private:
 		selectionCleared_ = false;
 		enterSelection_ = false;
 		leaveSelection_ = false;
-		tableState_ = false;
+		tableState_ = true;
 	}
 	bool bold_;
 	bool italic_;
