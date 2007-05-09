@@ -5,6 +5,7 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (C) 2007 One Laptop Per Child
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1134,7 +1135,7 @@ abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 }
 
 extern "C" gboolean
-abi_widget_set_font_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
+abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 {
 	g_return_val_if_fail ( w != NULL, FALSE );
 	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
