@@ -354,6 +354,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_zoom_whole (AbiWidget * w);
   gboolean abi_widget_zoom_width (AbiWidget * w);
   gboolean abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom);
+  guint32 abi_widget_get_zoom_percentage (AbiWidget * w);
 
   gboolean abi_widget_set_word_selections (AbiWidget * w, gboolean b);
   gboolean abi_widget_get_word_selections (AbiWidget * w);
