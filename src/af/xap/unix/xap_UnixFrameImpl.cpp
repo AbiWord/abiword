@@ -68,8 +68,8 @@
 #include "fg_Graphic.h"
 
 #ifdef HAVE_GNOMEVFS
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
+  #include <libgnomevfs/gnome-vfs.h>
+  #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #endif
 
 #ifdef HAVE_GCONF

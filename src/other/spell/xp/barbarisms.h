@@ -23,6 +23,9 @@
 
 #include "ut_string_class.h"
 
+#ifndef BARBARISMS_H
+#define BARBARISMS_H
+
 class BarbarismChecker : public UT_XML::Listener
 {
 public:	
@@ -52,3 +55,4 @@ private:
 	UT_String m_sLang;
 };
 
+#endif // BARBARISMS_H

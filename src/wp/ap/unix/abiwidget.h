@@ -28,9 +28,9 @@
 #include <gsf/gsf-output.h>
 
 #ifdef HAVE_BONOBO
-#include <libbonoboui.h>
-#include <bonobo/bonobo-macros.h>
-#include <bonobo/bonobo-object.h>
+  #include <libbonoboui.h>
+  #include <bonobo/bonobo-macros.h>
+  #include <bonobo/bonobo-object.h>
 #endif
 
 G_BEGIN_DECLS

@@ -40,8 +40,8 @@
 #include "ut_misc.h"
 #include "ut_locale.h"
 #ifdef ABI_OPT_PERL
-#include "ut_PerlBindings.h"
-#include "ut_Script.h"
+  #include "ut_PerlBindings.h"
+  #include "ut_Script.h"
 #endif
 #include "ut_unixDirent.h"
 #include "ut_sleep.h"
@@ -53,7 +53,7 @@
 #include "ap_UnixApp.h"
 
 #ifndef WITHOUT_SPELL
-#include "spell_manager.h"
+  #include "spell_manager.h"
 #endif
 
 #include "ap_Strings.h"
@@ -114,7 +114,7 @@
 #include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef ENABLE_BINRELOC
-#include "prefix.h"
+  #include "prefix.h"
 #endif // ENABLE_BINRELOC
 
 
@@ -129,22 +129,22 @@
 #include "ut_math.h"
 
 #ifndef WITHOUT_PRINTING
-#include <libart_lgpl/art_affine.h>
-#include <libgnomeprint/gnome-print.h>
+  #include <libart_lgpl/art_affine.h>
+  #include <libgnomeprint/gnome-print.h>
 #endif
 
 #ifdef HAVE_GNOMEUI
-#include <libgnome/libgnome.h>
-#include <libgnomeui/libgnomeui.h>
+  #include <libgnome/libgnome.h>
+  #include <libgnomeui/libgnomeui.h>
 #endif
 
 #ifdef HAVE_BONOBO
-#include <libbonoboui.h>
-#include <bonobo/bonobo-macros.h>
-#include <bonobo/bonobo-object.h>
-#include "ap_EditMethods.h"
-#include "abiwidget.h"
-static int mainBonobo(int argc, const char ** argv);
+  #include <libbonoboui.h>
+  #include <bonobo/bonobo-macros.h>
+  #include <bonobo/bonobo-object.h>
+  #include "ap_EditMethods.h"
+  #include "abiwidget.h"
+  static int mainBonobo(int argc, const char ** argv);
 #endif
 #ifdef LOGFILE
 static FILE * logfile;

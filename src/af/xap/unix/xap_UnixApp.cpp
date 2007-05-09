@@ -59,7 +59,7 @@
 #include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef HAVE_GNOMEVFS
-#include <libgnomevfs/gnome-vfs.h>
+  #include <libgnomevfs/gnome-vfs.h>
 #endif
 
 #include "gr_UnixNullGraphics.h"
