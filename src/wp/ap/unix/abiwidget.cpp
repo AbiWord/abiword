@@ -291,10 +291,6 @@ EM_VOID__BOOL(warpInsPtPrevScreen, moveto_prev_screen)
 EM_VOID__BOOL(warpInsPtRight, moveto_right)
 EM_INT_INT__BOOL(warpInsPtToXY, moveto_to_xy)
 
-EM_VOID__BOOL(zoom100, zoom_100)
-EM_VOID__BOOL(zoom200, zoom_200)
-EM_VOID__BOOL(zoom50, zoom_50)
-EM_VOID__BOOL(zoom75, zoom_75)
 EM_VOID__BOOL(zoomWhole, zoom_whole)
 EM_VOID__BOOL(zoomWidth, zoom_width)
 

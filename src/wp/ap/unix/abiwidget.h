@@ -176,10 +176,6 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod moveto_right;
     Abi_Int_Int__Bool_EditMethod moveto_to_xy;
 
-    Abi_Void__Bool_EditMethod zoom_100;
-    Abi_Void__Bool_EditMethod zoom_200;
-    Abi_Void__Bool_EditMethod zoom_50;
-    Abi_Void__Bool_EditMethod zoom_75;
     Abi_Void__Bool_EditMethod zoom_whole;
     Abi_Void__Bool_EditMethod zoom_width;
 
@@ -347,10 +343,6 @@ G_BEGIN_DECLS
   gboolean abi_widget_view_normal_layout (AbiWidget * w);
   gboolean abi_widget_view_online_layout (AbiWidget * w);
 
-  gboolean abi_widget_zoom_100 (AbiWidget * w);
-  gboolean abi_widget_zoom_200 (AbiWidget * w);
-  gboolean abi_widget_zoom_50 (AbiWidget * w);
-  gboolean abi_widget_zoom_75 (AbiWidget * w);
   gboolean abi_widget_zoom_whole (AbiWidget * w);
   gboolean abi_widget_zoom_width (AbiWidget * w);
   gboolean abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom);
