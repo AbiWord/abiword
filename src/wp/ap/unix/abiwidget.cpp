@@ -455,7 +455,7 @@ public:
 	
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
 	{
-		UT_ASSERT(pView == m_pView);
+		UT_return_val_if_fail(pView == m_pView, false);
 
 		if ((AV_CHG_FMTCHAR | AV_CHG_MOTION) & mask)
 		{
@@ -501,6 +501,8 @@ public:
 				FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
 
 			}
+
+			// TODO: is it me, or is this style code unfinished? - MARCM
 			const gchar * szStyle = NULL;
 			m_pView->getStyle(&szStyle);
 			if(szStyle == NULL)
@@ -510,10 +512,9 @@ public:
 				style_name_ = szStyle;
 				styleName(szStyle);
 			}
-			const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
-			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(AP_TOOLBAR_ID_INSERT_TABLE);
-			const gchar * sz = NULL;
-			bool b = (EV_TIS_ZERO == pAction->getToolbarItemState(pView,&sz));
+
+			// check if we are in a table or not
+			bool b = m_pView->isInTable();
 			FIRE_BOOL(b,tableState_,tableState);
 		}
 		if ((AV_CHG_ALL) & mask)
@@ -1887,10 +1888,6 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->moveto_right       = EM_NAME(warpInsPtRight);
 	abi_class->moveto_to_xy       = EM_NAME(warpInsPtToXY);
 	
-	abi_class->zoom_100   = EM_NAME(zoom100);
-	abi_class->zoom_200   = EM_NAME(zoom200);
-	abi_class->zoom_50    = EM_NAME(zoom50);
-	abi_class->zoom_75    = EM_NAME(zoom75);
 	abi_class->zoom_whole = EM_NAME(zoomWhole);
 	abi_class->zoom_width = EM_NAME(zoomWidth);
 
