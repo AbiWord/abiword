@@ -227,18 +227,18 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		return NULL;
 	}
 	m_iCountWrapPasses++;
-#if 1
+#if 0
 	UT_sint32 iPage = getDocLayout()->findPage(this);
 	UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
 	if(getPrev())
 		{
 			iPage = getDocLayout()->findPage(getPrev());
-			UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
+			xxx_UT_DEBUGMSG(("Prev page %x Prev page number %d Number Frames %d \n",getPrev(),iPage,getPrev()->countAboveFrameContainers() ));
 		}
 #endif
 	if(m_iCountWrapPasses > 100)
-        {
-	  UT_DEBUGMSG(("Number of wrapped passed = %d \n",m_iCountWrapPasses));
+    {
+	  xxx_UT_DEBUGMSG(("Number of wrapped passed = %d \n",m_iCountWrapPasses));
 	}
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
@@ -272,7 +272,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	if((nWrapped == 0) && (nWrappedObjs == 0))
 	{
-		UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
+		xxx_UT_DEBUGMSG(("page %x nWrapped %d nWrappedObjs %d does not need updating \n",this,nWrapped,nWrappedObjs));
 		fp_Page * pPrevPage = getPrev();
 		//
 		// In creating lines that correctly wrap frames on the previous page
@@ -350,6 +350,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						fp_Column * pFirstCol = static_cast<fp_Column *>(pFirst->getFirstContainer()->getColumn());
 						pBL = pFirst;
 						UT_GenericVector<fl_BlockLayout *> vecCollapse;
+						vecCollapse.addItem(pBL);
 						bLoop = true;
 						while(bLoop)
 						{

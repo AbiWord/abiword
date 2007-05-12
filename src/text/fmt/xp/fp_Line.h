@@ -174,6 +174,7 @@ public:
 	bool		recalculateFields(UT_uint32 iUpdateCount);
 	void		recalcHeight(fp_Run * pLast = NULL);
 	void		recalcMaxWidth(bool bDontClearIfNeeded = false);
+	void            setReformat(void);
 	void		coalesceRuns(void);
 
 	UT_sint32	calculateWidthOfLine(void);
@@ -206,8 +207,7 @@ public:
 		{ m_bIsWrapped = bWrapped;}
 	bool        isWrapped(void) const
 		{ return m_bIsWrapped;}
-	void        setSameYAsPrevious(bool bSameAsPrevious)
-		{ m_bIsSameYAsPrevious = bSameAsPrevious;}
+	void        setSameYAsPrevious(bool bSameAsPrevious);
 	bool        isSameYAsPrevious(void) const
 		{ return m_bIsSameYAsPrevious;}
 	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);

@@ -634,6 +634,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			}
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 			pNextLine = pNewLine;
+			m_iMaxLineWidth = pNextLine->getMaxWidth();
 			xxx_UT_DEBUGMSG(("!!!! Generated a new Line \n"));
 		}
 		else

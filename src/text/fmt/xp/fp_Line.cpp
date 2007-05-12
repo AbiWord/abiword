@@ -255,26 +255,52 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	{
 		recLeft.left = pPrev->getX() + pPrev->getMaxWidth() + xdiff;
 		recLeft.width = getX() + xdiff - recLeft.left;
+		if(recLeft.width < 0)
+		  {
+		    UT_DEBUGMSG(("Same Prev left width -ve!! %d \n",recLeft.width));
+		  }
 	}
 	else
 	{
 		recLeft.left = iLeftX + xdiff;
 		recLeft.width = pRec->left - recLeft.left;
+		if(recLeft.width < 0)
+		  {
+		    UT_DEBUGMSG(("RecLeft width -ve!! %d \n",recLeft.width));
+		  }
 	}
 	recRight.left = pRec->left + pRec->width;
 	fp_Line * pNext = static_cast<fp_Line *>(getNext());
 	if(pNext && pNext->isSameYAsPrevious())
 	{
 		recRight.width =  pNext->getX() - (getX() + getMaxWidth());
+		if(recRight.width < 0)
+		  {
+		    UT_DEBUGMSG(("Line %x Same Prev RecRight width -ve!! %d \n",this,recRight.width));
+		  }
 	}
 	else
 	{
 		iMaxWidth -= m_pBlock->getRightMargin();
 		recRight.width = iMaxWidth +xdiff - recRight.left;
+		if(recRight.width < 0)
+		  {
+		    UT_DEBUGMSG(("Line %x Not Same RecRight width -ve!! %d \n",this,recRight.width));
+		  }
 	}
 //	UT_ASSERT(recLeft.width >= 0);
 //	UT_ASSERT(recRight.width >= 0);
 	delete pRec;
+}
+
+void fp_Line::setSameYAsPrevious(bool bSameAsPrevious)
+{
+  if(getMaxWidth() > 9000 && bSameAsPrevious)
+    {
+      UT_DEBUGMSG(("Same as Previous with Max width %d \n",getMaxWidth())); 
+    }
+  xxx_UT_DEBUGMSG(("Line %x Same as Previous with Max width %d Same %d \n",this,getMaxWidth(),bSameAsPrevious)); 
+  m_bIsSameYAsPrevious = bSameAsPrevious;
 }
 
 /*!
@@ -379,6 +405,14 @@ bool fp_Line::isLastLineInBlock(void) const
 	return (m_pBlock->getLastContainer() == static_cast<const fp_Container *>(this));
 }
 
+/*!
+ * Mark containing block for reformat from the first run of the line.
+ */
+void fp_Line::setReformat(void)
+{
+  UT_sint32 iOff = getFirstRun()->getBlockOffset();
+  getBlock()->setNeedsReformat(getBlock(),iOff);
+}
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
 	if(iMaxWidth < 60) // This is hardwired to disallow -ve or too small values
@@ -388,7 +422,11 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 		iMaxWidth = 60;
 	}
 	m_iMaxWidth = iMaxWidth;
-	xxx_UT_DEBUGMSG(("Line %x MaxWidth %d \n",this,iMaxWidth));
+	xxx_UT_DEBUGMSG(("Line %x MaxWidth set %d SameY %d \n",this,iMaxWidth,isSameYAsPrevious()));
+	if(m_iMaxWidth > 9000 && isSameYAsPrevious())
+	  {
+	    UT_DEBUGMSG(("Found unlikely width set!!! \n"));
+	  }
 	m_iClearToPos = iMaxWidth;
 	m_iClearLeftOffset = getDescent();
 }
@@ -419,7 +457,7 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		return;
 	}
-	if(m_iMaxWidth  == 0 || (pContainer->getWidth() < m_iMaxWidth))
+	if(getMaxWidth()  == 0 || (pContainer->getWidth() < getMaxWidth()))
 	{
 		setMaxWidth(pContainer->getWidth());
 	}
@@ -1725,7 +1763,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 
 	UT_sint32 iXreal = 0;
 	if(iDomDirection == UT_BIDI_RTL)
-		iXreal = m_iMaxWidth - iWidth;
+	  iXreal = getMaxWidth() - iWidth;
 	else
 		iXreal = iWidth;
 
@@ -1749,7 +1787,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidth, UT_uint32 iIndxVisual, F
 
 	if(iDomDirection == UT_BIDI_RTL)
 	{
-		iWidth = m_iMaxWidth - iXreal;
+	  iWidth = getMaxWidth() - iXreal;
 	}
 	else
 	{
@@ -2194,7 +2232,7 @@ void fp_Line::layout(void)
 				eUseTabStop = USE_PREV_TABSTOP;
 
 			eWorkingDirection = WORK_BACKWARD;
-			iStartX = m_iMaxWidth;
+			iStartX = getMaxWidth();
 			break;
 
 		case FB_ALIGNMENT_CENTER:
@@ -2209,7 +2247,7 @@ void fp_Line::layout(void)
 			if(iDomDirection == UT_BIDI_RTL)
 			{
 				eWorkingDirection = WORK_BACKWARD;
-				iStartX = m_iMaxWidth;
+				iStartX = getMaxWidth();
 			}
 			else
 			{
@@ -2593,6 +2631,10 @@ void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 		clearScreen();
 	}
 	xxx_UT_DEBUGMSG(("SetX Line %x X %d \n",this,iX));
+	if(iX < m_iX)
+	  {
+	    UT_DEBUGMSG(("m_iX decreaed in value old %d new %d \n",m_iX,iX));
+	  }
 	m_iX = iX;
 }
 
@@ -2760,7 +2802,7 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	iTabStopPosition -= getX();
 
 	//has to be <=
-	if (iTabStopPosition <= m_iMaxWidth)
+	if (iTabStopPosition <= getMaxWidth())
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2770,9 +2812,9 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	}
 	else
 	{
-		UT_DEBUGMSG(("fp_Line::findNextTabStop: iStartX %d, m_iMaxWidth %d\n"
+		UT_DEBUGMSG(("fp_Line::findNextTabStop: iStartX %d, getMaxWidth %d\n"
 					 "			iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
+			     iStartX, getMaxWidth(),iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2788,7 +2830,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 	iTabStopPosition -= getX();
 
-	if (iTabStopPosition <= m_iMaxWidth)
+	if (iTabStopPosition <= getMaxWidth())
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2800,7 +2842,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	{
 		UT_DEBUGMSG(("fp_Line::findPrevTabStop: iStartX %d, m_iMaxWidth %d\n"
 					 "			iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition, static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
+			     iStartX, getMaxWidth(),iPosition, iTabStopPosition, static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2821,7 +2863,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		if(iBlockDir == UT_BIDI_LTR)
 			iX += m_pBlock->getTextIndent();
 	}
-
+	setSameYAsPrevious(false);
+	setWrapped(false);
 	setX(iX,bDontClearIfNeeded);
 
 	UT_ASSERT(iMaxWidth > 0);
@@ -2919,7 +2962,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		iMaxWidth = 60;
 	}
-	m_iMaxWidth = iMaxWidth;
+	setMaxWidth(iMaxWidth);
 }
 
 fp_Container*	fp_Line::getNextContainerInSection(void) const

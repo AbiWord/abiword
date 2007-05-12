@@ -2508,6 +2508,10 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	}
 	UT_Rect * pRec = pLine->getScreenRect();
 	m_iAccumulatedHeight = pRec->top;
+	UT_Rect * pVertRect = m_pVertContainer->getScreenRect();
+	UT_sint32 iYBotScreen = pVertRect->top + pVertRect->height;
+	xxx_UT_DEBUGMSG(("Initial m_iAccumulatedHeight %d iYBotScreen %d \n",m_iAccumulatedHeight,iYBotScreen));
+	delete pVertRect;
 	m_iAdditionalMarginAfter = 0;
 	UT_Rect rec;
 	rec.height = pRec->height;
@@ -2606,7 +2610,15 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			}
 		}
 		m_bSameYAsPrevious = false;
-		fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+		fp_Line * pNew = NULL;
+		if(m_iAccumulatedHeight <= iYBotScreen)
+		{
+			pNew = getNextWrappedLine(iX,iHeight,pPage);
+		}
+		else
+		{
+			pNew = static_cast<fp_Line *>(getNewContainer());
+		}
 		while(pNew && (pNew->getPrev() != pLine))
 		{
 			pNew = static_cast<fp_Line *>(pNew->getPrev());
@@ -2661,7 +2673,15 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			}
 			m_iAccumulatedHeight += iHeight;
 			m_bSameYAsPrevious = false;
-			fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+			fp_Line * pNew = NULL;
+			if(m_iAccumulatedHeight <= iYBotScreen)
+			{
+				pNew = getNextWrappedLine(iX,iHeight,pPage);
+			}
+			else
+			{
+				pNew = static_cast<fp_Line *>(getNewContainer());
+			}
 			while(pNew && static_cast<fp_Line *>(pNew->getPrev()) != pLine)
 			{
 				pNew = static_cast<fp_Line *>(pNew->getPrev());
@@ -2951,8 +2971,22 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
 	UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
 	UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
+	fp_Line * pLine = NULL;
 	UT_sint32 iXDiff = getLeftMargin();
 	UT_sint32 iMinR = m_pVertContainer->getWidth();
+	UT_Rect * pVertRect = m_pVertContainer->getScreenRect();
+	UT_sint32 iYBotScreen = pVertRect->top + pVertRect->height;
+	xxx_UT_DEBUGMSG(("Initial m_iAccumulatedHeight %d iYBotScreen %d \n",m_iAccumulatedHeight,iYBotScreen));
+	delete pVertRect;
+	if(m_iAccumulatedHeight > iYBotScreen)
+	{
+			pLine = static_cast<fp_Line *>(getNewContainer());
+			m_iAccumulatedHeight += iHeight;
+			pLine->setSameYAsPrevious(false);
+			m_bSameYAsPrevious = false;
+			return pLine;
+	}
+
 	iMinR -= getRightMargin();
 	UT_sint32 xoff,yoff;
 	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
@@ -2970,7 +3004,6 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			iXDiff += getTextIndent();
 		}
 	}
-	fp_Line * pLine = NULL;
 	if((iMinR - iX -xoff) < getMinWrapWidth())
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxW %d iX %d \n",iMaxW,iX));

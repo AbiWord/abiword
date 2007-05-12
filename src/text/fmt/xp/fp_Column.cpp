@@ -1625,7 +1625,23 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 				bTOC = true;
 			}
 #endif
+			fp_Line * pLine = NULL;
+			UT_sint32 iOldMaxWidth = 0;
+			if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+			{
+			    pLine =  static_cast<fp_Line *>(pContainer);
+			    iOldMaxWidth = pLine->getMaxWidth();
+			}
 			pNextContainer->insertContainer(pContainer);
+			//
+			// Max Line widths can change after a bump. If so
+			// we must reformat from the start of the line
+			//
+			if(pLine && (pLine->getMaxWidth() != iOldMaxWidth))
+			{
+			    UT_DEBUGMSG(("MaxWidthChanged from container bump \n"));
+			    pLine->setReformat();
+			}
 			if(bTOC)
 			{
 				//UT_sint32 iTOC = pNextContainer->findCon(pContainer);
