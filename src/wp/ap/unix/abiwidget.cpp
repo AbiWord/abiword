@@ -639,7 +639,7 @@ private:
 		justifyAlign_ = false;
 		style_name_ = "";
 		textSelected_ = false;
-		imageSelected_ = false;
+		imageSelected_ = true;
 		selectionCleared_ = false;
 		enterSelection_ = false;
 		leaveSelection_ = false;
