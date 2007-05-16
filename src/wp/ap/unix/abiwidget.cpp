@@ -379,6 +379,8 @@ enum {
 	SIGNAL_ENTER_SELECTION,
 	SIGNAL_LEAVE_SELECTION,
 	SIGNAL_TABLE_STATE,
+	SIGNAL_PAGE_COUNT,
+	SIGNAL_CURRENT_PAGE,
 	SIGNAL_LAST
 };
 
@@ -413,10 +415,15 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_SELECTION_CLEARED, "selection-cleared", signal_selection_cleared);
 	INSTALL_BOOL_SIGNAL(SIGNAL_ENTER_SELECTION, "enter-selection", signal_enter_selection);
 	INSTALL_BOOL_SIGNAL(SIGNAL_LEAVE_SELECTION, "leave-selection", signal_leave_selection);
+
 	INSTALL_BOOL_SIGNAL(SIGNAL_TABLE_STATE, "table-state", signal_table_state);
+
+	INSTALL_INT_SIGNAL(SIGNAL_PAGE_COUNT, "page-count", signal_page_count); // should be UINT32, but we really don't care atm
+	INSTALL_INT_SIGNAL(SIGNAL_CURRENT_PAGE, "current-page", signal_current_page); // should be UINT32, but we really don't care atm
 }
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
+#define FIRE_UINT32(query, var, fire) do { UT_sint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
 const gchar * sz = UT_getAttribute(prop, props_in); \
@@ -484,6 +491,15 @@ public:
 			}
 		}
 
+		if ((AV_CHG_MOTION | AV_CHG_PAGECOUNT) & mask)
+		{
+			UT_uint32 _page_count = m_pView->getLayout()->countPages();
+			UT_uint32 _current_page = m_pView->getCurrentPageNumForStatusBar();
+
+			FIRE_UINT32(_page_count, pageCount_, pageCount);
+			FIRE_UINT32(_current_page, currentPage_, currentPage);
+		}
+
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
 		{
 			// get current char properties from pView
@@ -501,8 +517,12 @@ public:
 				FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
 
 			}
+		}
 
-			// TODO: is it me, or is this style code unfinished? - MARCM
+/*
+		// TODO: is it me, or is this style code unfinished? - MARCM
+		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
+		{
 			const gchar * szStyle = NULL;
 			m_pView->getStyle(&szStyle);
 			if(szStyle == NULL)
@@ -512,20 +532,26 @@ public:
 				style_name_ = szStyle;
 				styleName(szStyle);
 			}
+		}
+*/
 
+		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
+		{
 			// check if we are in a table or not
 			bool b = m_pView->isInTable();
 			FIRE_BOOL(b,tableState_,tableState);
 		}
+
 		if ((AV_CHG_ALL) & mask)
 		{
 			FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
 			FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
 			FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
 		}
+
 		if (mask & AV_CHG_MOUSEPOS)
 		{
-		// The selection changed; now figure out if we do have a selection or not
+			// The selection changed; now figure out if we do have a selection or not
 			if (m_pView)
 			{
 				if (m_pView->isSelectionEmpty())
@@ -609,6 +635,8 @@ public:
 	virtual void enterSelection(bool value) {}
 	virtual void leaveSelection(bool value) {}
 	virtual void tableState(bool value) {}
+	virtual void pageCount(guint32 value) {}
+	virtual void currentPage(guint32 value) {}
 
 private:
 
@@ -644,6 +672,8 @@ private:
 		enterSelection_ = false;
 		leaveSelection_ = false;
 		tableState_ = true;
+		pageCount_ = 0;
+		currentPage_ = 0;
 	}
 	bool bold_;
 	bool italic_;
@@ -670,6 +700,8 @@ private:
 	bool enterSelection_;
 	bool leaveSelection_;
 	bool tableState_;
+	guint32 pageCount_;
+	guint32 currentPage_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
@@ -711,6 +743,8 @@ public:
 	virtual void enterSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ENTER_SELECTION], 0, (gboolean)value);}
 	virtual void leaveSelection(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEAVE_SELECTION], 0, (gboolean)value);}
 	virtual void tableState(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TABLE_STATE], 0, (gboolean)value);}
+	virtual void pageCount(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_PAGE_COUNT], 0, (guint32)value);}
+	virtual void currentPage(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CURRENT_PAGE], 0, (guint32)value);}
 
 private:
 	AbiWidget *         m_pWidget;
@@ -2318,3 +2352,47 @@ abi_widget_get_zoom_percentage (AbiWidget * w)
 
 	return w->priv->m_pFrame->getZoomPercentage();
 }
+
+extern "C" void
+abi_widget_set_find_string(AbiWidget * w, gchar * search_str)
+{
+	// TODO: implement me
+}
+
+extern "C" gchar*
+abi_widget_find_next(AbiWidget * w)
+{
+	// TODO: implement me
+	return 0;
+}
+
+extern "C" guint32
+abi_widget_get_page_count(AbiWidget * w)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	UT_return_val_if_fail(pView, 0);
+
+	FL_DocLayout* pLayout = pView->getLayout();
+	UT_return_val_if_fail(pLayout, 0);
+
+	return pLayout->countPages();
+}
+
+extern "C" guint32
+abi_widget_get_current_page_num(AbiWidget * w)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	UT_return_val_if_fail(pView, 0);
+
+	// there's also getCurrentPageNumber() we can use, but that is slower
+	return pView->getCurrentPageNumForStatusBar();
+}
+

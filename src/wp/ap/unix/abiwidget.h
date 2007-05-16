@@ -207,7 +207,8 @@ G_BEGIN_DECLS
     void (* signal_enter_selection) (AbiWidget * widget, gboolean value);
     void (* signal_leave_selection) (AbiWidget * widget, gboolean value);
     void (* signal_table_state) (AbiWidget * widget, gboolean value);
-
+    void (* signal_page_count) (AbiWidget * widget, guint32 value);
+    void (* signal_current_page) (AbiWidget * widget, guint32 value);
 
     AbiSignal sig_pad[20];
   };
@@ -336,6 +337,14 @@ G_BEGIN_DECLS
   gboolean abi_widget_moveto_prev_screen (AbiWidget * w);
   gboolean abi_widget_moveto_right (AbiWidget * w);
   gboolean abi_widget_moveto_to_xy (AbiWidget * w, gint32 x, gint32 y);
+
+  // search functions
+  void abi_widget_set_find_string (AbiWidget * w, gchar * search_str);
+  gchar* abi_widget_find_next (AbiWidget * w);
+
+  // document/page functions
+  guint32 abi_widget_get_page_count(AbiWidget * w);
+  guint32 abi_widget_get_current_page_num(AbiWidget * w);
 
   // view functions
   gboolean abi_widget_view_formatting_marks (AbiWidget * w);
