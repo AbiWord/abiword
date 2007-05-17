@@ -245,6 +245,9 @@ const char* UT_getFallBackStringSetLocale(const char* pLocale)
 	
 	// please keep these in alphabetical order
 
+	if (UT_stricmp(szLanguage,"ca")==0)
+		return "ca-ES";
+
 	if (UT_stricmp(szLanguage,"de")==0)
 		return "de-DE";
 	
