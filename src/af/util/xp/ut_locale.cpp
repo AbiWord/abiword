@@ -242,6 +242,9 @@ const char* UT_getFallBackStringSetLocale(const char* pLocale)
 	szLanguage[2]='\0';
 	
 	// please keep these in alphabetical order
+	
+	if (g_ascii_strcasecmp(szLanguage,"ca")==0)
+		return "ca-ES";
 
 	if (g_ascii_strcasecmp(szLanguage,"de")==0)
 		return "de-DE";
