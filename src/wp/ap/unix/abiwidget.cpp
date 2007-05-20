@@ -1185,15 +1185,14 @@ abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 	return pView->setCharFormat(properties);
 }
 
-extern "C" gchar**
+extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * w)
 {
-	// this is annoying as getAllFontNames() returns a lot of dupes; 
-	// we should fix abi_widget_get_font_names
+	// this is annoying asc getAllFontNames() returns a lot of dupes
 	const std::vector<const char *> vFonts = GR_UnixPangoGraphics::getAllFontNames();
 
-	gchar** fonts_ar = 
-		reinterpret_cast<gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care
+	const gchar** fonts_ar = 
+		reinterpret_cast<const gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care
 	UT_uint32 i;
 	UT_uint32 actual_size = 0;
 	for	(i = 0; i < vFonts.size(); i++)
