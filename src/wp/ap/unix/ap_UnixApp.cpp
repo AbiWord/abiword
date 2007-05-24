@@ -133,12 +133,12 @@
   #include <libgnomeprint/gnome-print.h>
 #endif
 
-#ifdef HAVE_GNOMEUI
+#ifdef WITH_GNOMEUI
   #include <libgnome/libgnome.h>
   #include <libgnomeui/libgnomeui.h>
 #endif
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
   #include <libbonoboui.h>
   #include <bonobo/bonobo-macros.h>
   #include <bonobo/bonobo-object.h>
@@ -173,7 +173,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
-#ifndef HAVE_BONOBO
+#ifndef WITH_BONOBO
     // hack to link abi_widget - thanks fjf
 	if(this == 0)
 		/*GtkWidget * pUn =*/ abi_widget_new_with_file("fred.abw");
@@ -1409,7 +1409,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #endif
 
 		if (have_display > 0) {
-#ifndef HAVE_GNOMEUI
+#ifndef WITH_GNOMEUI
 			gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 			Args.parsePoptOpts();
 #else
@@ -1435,7 +1435,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			fprintf(logfile,"g_object_get completed \n");
 #endif
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 #ifdef LOGFILE
 			fprintf(logfile,"About to init bonobo \n");
 #endif	  
@@ -1492,7 +1492,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 		if (have_display) {
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 			//
 			// Check to see if we've been activated as a control by OAF
 			//
@@ -1588,7 +1588,7 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 void AP_UnixApp::initPopt (AP_Args * Args)
 {
-#ifdef HAVE_GNOMEUI
+#ifdef WITH_GNOMEUI
 	UT_sint32 v = -1, i;
 
 	// stop at --version.
@@ -1922,7 +1922,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     abort();
 }
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 
 #include <gsf-gnome/gsf-input-bonobo.h>
 #include <gsf-gnome/gsf-output-bonobo.h>
@@ -2683,4 +2683,4 @@ static int mainBonobo(int argc, const char ** argv)
 										bonobo_AbiWidget_factory, NULL);
 }
 
-#endif /* HAVE_BONOBO */
+#endif /* WITH_BONOBO */

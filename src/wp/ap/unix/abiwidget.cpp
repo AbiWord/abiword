@@ -102,7 +102,7 @@ struct _AbiPrivData {
 	UT_UTF8String *      m_sMIMETYPE;
 	gint                 m_iContentLength;
 	gint                 m_iSelectionLength;
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
 };
@@ -1768,7 +1768,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
 #endif
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 	if(bBonobo)
 	{
 		if (GTK_OBJECT_CLASS(parent_class)->destroy)
@@ -2146,7 +2146,7 @@ abi_widget_get_frame ( AbiWidget * w )
   return w->priv->m_pFrame ;
 }
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
 extern "C" void
 abi_widget_set_Bonobo_uic(AbiWidget * w, BonoboUIComponent * uic)
 {

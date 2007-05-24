@@ -58,7 +58,7 @@
 #include <goffice/goffice.h>
 #include "gr_UnixPangoPixmapGraphics.h"
 
-#ifdef HAVE_GNOMEVFS
+#ifdef WITH_GNOMEVFS
   #include <libgnomevfs/gnome-vfs.h>
 #endif
 
@@ -184,7 +184,7 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 
 	libgoffice_init();
 
-#ifdef HAVE_GNOMEVFS
+#ifdef WITH_GNOMEVFS
 	gnome_vfs_init();
 #endif
 

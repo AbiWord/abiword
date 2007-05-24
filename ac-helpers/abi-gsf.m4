@@ -69,7 +69,7 @@ if test "$gnomevfs" = true ; then
 	[
 		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $gnomevfs_modules"
 	])
-	GNOMEVFS_CFLAGS="$GNOMEVFS_CFLAGS -DHAVE_GNOMEVFS=1"
+	GNOMEVFS_CFLAGS="$GNOMEVFS_CFLAGS -DWITH_GNOMEVFS=1"
 	abi_gnomevfs_message="yes ($abi_gnomevfs_message)"
 else
 	abi_gnomevfs_message="no ($abi_gnomevfs_message)"

@@ -38,7 +38,7 @@
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
-#ifdef HAVE_GNOMEVFS
+#ifdef WITH_GNOMEVFS
 #define GOFFICE_WITH_GNOME
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
@@ -47,7 +47,7 @@
 #include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
-#ifdef HAVE_GNOMEUI
+#ifdef WITH_GNOMEUI
 #include <libgnome/gnome-url.h>
 #endif
 
@@ -1584,7 +1584,7 @@ UT_go_url_encode (gchar const *text, int type)
 	return g_string_free (result, FALSE);
 }
 
-#ifndef HAVE_GNOMEUI
+#ifndef WITH_GNOMEUI
 static char *
 check_program (char const *prog)
 {
@@ -1608,7 +1608,7 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#ifdef HAVE_GNOMEUI
+#ifdef WITH_GNOMEUI
 	gnome_url_show (url, &err);
 	return err;
 #else

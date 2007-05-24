@@ -39,7 +39,7 @@
 #endif /* ABI_BUILD_TARGET */
 
 
-#ifndef HAVE_GNOMEUI
+#ifndef WITH_GNOMEUI
 // work around a linker bug. see bugzilla 8286
 extern unsigned char g_pngSidebar[];
 

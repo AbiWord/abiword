@@ -639,7 +639,7 @@ GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -
 
 ifeq ($(ABI_OPT_GNOMEVFS),1)
 GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
-GNOME_CFLAGS += -DHAVE_GNOMEVFS
+GNOME_CFLAGS += -DWITH_GNOMEVFS
 GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On
 endif
@@ -656,7 +656,7 @@ GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 # the bonobo target is known not to work properly yet
 ifeq ($(ABI_OPT_BONOBO),1)
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
-GNOME_CFLAGS    += -DHAVE_BONOBO
+GNOME_CFLAGS    += -DWITH_BONOBO
 GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox bonobox_print)
 ABI_OPTIONS+=Bonobo:On
 else

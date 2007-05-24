@@ -27,7 +27,7 @@
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
   #include <libbonoboui.h>
   #include <bonobo/bonobo-macros.h>
   #include <bonobo/bonobo-object.h>
@@ -382,7 +382,7 @@ G_BEGIN_DECLS
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
 
-#ifdef HAVE_BONOBO
+#ifdef WITH_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
   BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
 #endif

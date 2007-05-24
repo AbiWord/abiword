@@ -60,7 +60,7 @@ if test "$gnomeui" = true ; then
 	[
 		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $gnomeui_modules"		
 	])
-	GNOMEUI_CFLAGS="$GNOMEUI_CFLAGS -DHAVE_GNOMEUI=1"
+	GNOMEUI_CFLAGS="$GNOMEUI_CFLAGS -DWITH_GNOMEUI=1"
 	abi_gnomeui_message="yes ($abi_gnomeui_message)"
 else
 	abi_gnomeui_message="no ($abi_gnomeui_message)"
@@ -117,7 +117,7 @@ if test "$bonobo" = true ; then
 	[
 		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $bonobo_modules"
 	])
-	BONOBO_CFLAGS="$BONOBO_CFLAGS -DHAVE_BONOBO=1"
+	BONOBO_CFLAGS="$BONOBO_CFLAGS -DWITH_BONOBO=1"
 	abi_bonobo_message="yes ($abi_bonobo_message)"
 else
 	abi_bonobo_message="no ($abi_bonobo_message)"
