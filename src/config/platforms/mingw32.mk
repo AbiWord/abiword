@@ -87,27 +87,36 @@ ifdef ABI_OPT_PROF
 	# Level 3 is deprecated in most areas, for the systems used by the people who'd use it.
 endif
 
-ifeq ($(ABI_OPT_OPTIMIZE),1)
-#	No need to make more trouble for ourselves than necessary
-OPTIMIZER	+= -O2
-OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
-ABI_OPTIONS	+= Optimize:On
-ABI_OPT_DEBUG	= 0
-    ifeq ($(ABI_OPT_EXCLUSIVE_OPT),1)
-    OPTIMIZER := $(OPTIMIZER) -march=$(OS_REALARCH)
-    else
-#	As soon as 3.4+ is current and not candidate, gotta use mtune
-    OPTIMIZER := $(OPTIMIZER) -mcpu=$(OS_REALARCH)
-    endif
+#Use ABI_OPT_OPTIMIZE=0 to disable optimizations
+ifdef ABI_OPT_TINY
+	ifeq ($(ABI_OPT_TINY),1)
+	    OPTIMIZER	+= -Os -fno-default-inline -fno-inline
+	    else
+	    ifndef CXXFLAGS
+	#	No need to make more trouble for ourselves than necessary
+	    OPTIMIZER	+= 
+	    endif
+	endif	
 else
-    ifeq ($(ABI_OPT_TINY),1)
-    OPTIMIZER	+= -Os -fno-default-inline -fno-inline
-    else
-    ifndef CXXFLAGS
-#	No need to make more trouble for ourselves than necessary
-    OPTIMIZER	+= 
-    endif
-    endif
+	ifndef ABI_OPT_OPTIMIZE
+		OPTIMIZER	+= -O1
+	else
+		ifeq ($(ABI_OPT_OPTIMIZE),1)
+		#	No need to make more trouble for ourselves than necessary
+		OPTIMIZER	+= -O2 x
+		OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+		ABI_OPTIONS	+= Optimize:On
+		ABI_OPT_DEBUG	= 0
+		    ifeq ($(ABI_OPT_EXCLUSIVE_OPT),1)
+		    OPTIMIZER := $(OPTIMIZER) -march=$(OS_REALARCH)
+		    else
+		#	As soon as 3.4+ is current and not candidate, gotta use mtune
+		    OPTIMIZER := $(OPTIMIZER) -mtune=$(OS_REALARCH)
+		    endif
+		else
+		    
+		endif
+	endif	
 endif
 
 ifeq ($(ABI_OPT_DEBUG),1)
