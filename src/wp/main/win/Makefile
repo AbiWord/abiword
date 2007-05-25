@@ -65,7 +65,7 @@ endif
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
 ABI_APPLIBDEP=		$(LoadOrder)
 
-SHARED_LDFLAGS =	$(SHARED_FLAGS) -Wl,--dll -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,libAbiWord.dll.a
+EXE_LDFLAGS =  -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,libAbiWord.exe.a
 endif
 
 
@@ -84,9 +84,8 @@ ifeq ($(ABI_OPT_WINELIB), 1)
 	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) $(OBJDIR)/dummy.o $(EXTRA_LIBS) $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
 else
 	@echo Linking dynamic $(PROGRAM)
-	$(CCC) -o $(BINDIR)/libAbiWord.dll $(SHARED_LDFLAGS) $(CFLAGS) $(OBJDIR)/dummy.o  $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
-	@mv libAbiWord.dll.a $(LIBDIR)
-	$(CCC) -o $@ $(CFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) -L$(LIBDIR) -lAbiWord.dll $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS)
+	$(CCC) -o $@ $(CFLAGS)$(EXE_LDFLAGS) $(OBJDIR)/Win32Main.o $(OBJDIR)/Win32Mainrc.o $(LDFLAGS) -L$(LIBDIR) $(OS_LIBS) $(ABI_ZLIB_LIB) $(XLDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(ABI_ZLIB_LIB)
+	@mv libAbiWord.exe.a $(LIBDIR)
 endif
 else
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
