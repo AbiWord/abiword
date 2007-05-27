@@ -35,7 +35,7 @@
 #include "xap_Dlg_ListDocuments.h"
 #include "xap_CocoaDlg_ListDocuments.h"
 #import "xap_Cocoa_NSTableUtils.h"
-#import "XAP_GenericListChooser_Controller.h"
+#import "xap_GenericListChooser_Controller.h"
 
 /*****************************************************************/
 
