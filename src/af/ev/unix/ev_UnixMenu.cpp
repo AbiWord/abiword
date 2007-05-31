@@ -53,7 +53,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "ap_Menu_Id.h"
 // hack, icons are in wp
-#include "../../../wp/ap/unix/ap_UnixStockIcons.h"
+#include "ap_UnixStockIcons.h"
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #include <hildon-widgets/hildon-appview.h>
 #endif
