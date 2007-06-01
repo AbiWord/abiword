@@ -26,7 +26,7 @@
 
 // This header defines some functions for Cocoa dialogs,
 // like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+// #include "xap_CocoaDialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
