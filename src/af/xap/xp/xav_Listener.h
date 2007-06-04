@@ -72,8 +72,8 @@ typedef UT_uint32 AV_ChangeMask;
 #define AV_CHG_FRAMEDATA	(static_cast<AV_ChangeMask>(0x8000))		// frame-level preferences (pFrameData)
 #define AV_CHG_KEYPRESSED	(static_cast<AV_ChangeMask>(0x10000))		// A key was pressed
 #define AV_CHG_BLOCKCHECK	(static_cast<AV_ChangeMask>(0x20000))		// Checking a block in background
-#define AV_CHG_FOCUS	    (static_cast<AV_ChangeMask>(0x40000))		// Change of mouse position
-#define AV_CHG_MOUSEPOS	    (static_cast<AV_ChangeMask>(0x80000))		// Change of focus
+#define AV_CHG_FOCUS	    (static_cast<AV_ChangeMask>(0x40000))		// Change of focus
+#define AV_CHG_MOUSEPOS	    (static_cast<AV_ChangeMask>(0x80000))		// Change of mouse position
 #define AV_CHG_ALL			(static_cast<AV_ChangeMask>(0xFFFFFFFF))
 
 #define AV_CHG_SAVE			(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
