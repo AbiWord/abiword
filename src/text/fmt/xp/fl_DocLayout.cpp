@@ -52,7 +52,7 @@
 #include "ut_string.h"
 #include "xap_Frame.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
 
@@ -2332,7 +2332,7 @@ void FL_DocLayout::updateColor()
 
 #define BACKGROUND_CHECK_MSECS 100
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 /*!
  Toggle auto spell-checking state
  \param bSpell True if spell-checking should be enabled, false otherwise
@@ -2480,7 +2480,7 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 /*!
  Do background spell-check
  \param pWorker Worker object
@@ -2980,7 +2980,7 @@ FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 
 	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
-#endif // WITHOUT_SPELL
+#endif // ENABLE_SPELL
 
 /*!
  * This method appends a DocSectionLayout onto the linked list of SectionLayout's
@@ -3219,7 +3219,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
     // so the opton settings are reverted for use in the doclayout
     // (b = !b)
 	bool changed = false;
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_SpellCheckCaps), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
@@ -3307,7 +3307,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 void FL_DocLayout::recheckIgnoredWords()
 {
 	// recheck the whole doc
@@ -3931,7 +3931,7 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	pBlock->dequeueFromSpellCheck();
 #endif
 }

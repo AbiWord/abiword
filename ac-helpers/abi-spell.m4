@@ -21,33 +21,30 @@ AC_DEFUN([ABI_SPELL],[
 SPELL_CFLAGS=""
 SPELL_LIBS=""
 
-abi_spell=check
-
 AC_ARG_ENABLE(spellcheck,[  --disable-spellcheck    Disable spell-checking capabilities],[
 	case "${enableval}" in
-	   yes)	do_spell=true ;
-		SPELL_CFLAGS="" ;;
-	   no) do_spell=false ;
-		SPELL_CFLAGS="-DWITHOUT_SPELL" ;;
-	     *)	AC_MSG_ERROR(bad value ${enableval} for --disable-spell) ;;
+	   yes)	do_spell=true ;;
+	   no)	do_spell=false ;;
+	    *)	AC_MSG_ERROR(bad value ${enableval} for --disable-spell) ;;
 	esac
-],[	do_spell=undefined
-	SPELL_CFLAGS=""
+],[
+	do_spell=true
 ])
 
-AM_CONDITIONAL(WITH_SPELL, test x$do_spell != xfalse)
+AM_CONDITIONAL(ENABLE_SPELL, test x$do_spell != xfalse)
 
 if test x$do_spell != xfalse ; then
 	PKG_CHECK_MODULES(SPELL,[enchant >= 1.2.0], 
 	[
-	ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS enchant >= 1.2.0"
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS enchant >= 1.2.0"
  	])
+	SPELL_CFLAGS="$SPELL_CFLAGS -DENABLE_SPELL"
+	AC_DEFINE(WITH_ENCHANT, 1, [ Define if you have Enchant ])
 fi
 
 AM_CONDITIONAL(WITH_ENCHANT,[test x$do_spell != xfalse])
-AM_CONDITIONAL(WITH_ISPELL, [test /bin/false])
+AM_CONDITIONAL(WITH_ISPELL,[test /bin/false])
 
-AC_DEFINE(HAVE_ENCHANT, 1, [ Define if you have Enchant ])
 AC_SUBST(SPELL_CFLAGS)
 AC_SUBST(SPELL_LIBS)
  

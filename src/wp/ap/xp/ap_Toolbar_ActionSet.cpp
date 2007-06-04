@@ -81,7 +81,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"printPreview", AV_CHG_NONE,	NULL);
 
 	// AV_CHG_ALL doesn't seem right here. TODO!
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	_s(AP_TOOLBAR_ID_SPELLCHECK,	EV_TBIT_PushButton,		"dlgSpell",		AV_CHG_ALL,		ap_ToolbarGetState_Spelling);
 #endif
 	_s(AP_TOOLBAR_ID_IMG,			EV_TBIT_PushButton,		"fileInsertGraphic", AV_CHG_NONE,	NULL);

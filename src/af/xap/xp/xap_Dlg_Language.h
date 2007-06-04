@@ -33,7 +33,7 @@
 
 #include "xap_Dialog.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
 

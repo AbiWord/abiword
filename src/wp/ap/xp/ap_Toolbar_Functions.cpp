@@ -46,7 +46,7 @@
 #include "pd_Document.h"
 #include "ut_Script.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
 
@@ -178,7 +178,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	return s ;
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
 	//ABIWORD_VIEW;

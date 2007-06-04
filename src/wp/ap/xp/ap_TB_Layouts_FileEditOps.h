@@ -48,7 +48,7 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
 
 	Spacer()
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
 #endif
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)

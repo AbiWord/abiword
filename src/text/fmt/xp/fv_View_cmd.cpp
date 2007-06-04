@@ -66,7 +66,7 @@
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -5780,7 +5780,7 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, 
 	return errorCode;
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 								fl_PartOfBlock * ppPOB)
 {

@@ -24,7 +24,7 @@
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 
-#ifdef HAVE_ENCHANT
+#ifdef WITH_ENCHANT
 #include "enchant_checker.h"
 typedef EnchantChecker SpellCheckerClass;
 #else

@@ -157,7 +157,7 @@ bool XAP_Dialog_Language::getChangedLangProperty(const gchar ** pszLangProp) con
 */
 UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 {
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	SpellChecker * checker = SpellManager::instance().getInstance();
 	UT_Vector& vec= checker->getMapping();
 	DictionaryMapping * mapping;

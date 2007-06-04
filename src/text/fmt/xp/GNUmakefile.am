@@ -22,7 +22,7 @@ INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICO
 
 noinst_LIBRARIES = libFmt.a
 
-if WITH_SPELL
+if ENABLE_SPELL
 squigglesrc = 	fl_Squiggles.cpp
 endif
 

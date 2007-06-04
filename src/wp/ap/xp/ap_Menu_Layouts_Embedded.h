@@ -221,7 +221,7 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 		MenuItem(AP_MENU_ID_TOOLS_SPELL)
 #endif
 		MenuItem(AP_MENU_ID_FMT_LANGUAGE)

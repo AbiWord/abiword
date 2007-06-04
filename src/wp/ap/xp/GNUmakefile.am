@@ -25,7 +25,7 @@ INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 
 noinst_LIBRARIES = libWpAp_xp.a
 
-if WITH_SPELL
+if ENABLE_SPELL
 spellsrc=	ap_Dialog_Spell.cpp
 endif
 

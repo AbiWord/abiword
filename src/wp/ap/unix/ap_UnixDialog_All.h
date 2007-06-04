@@ -61,7 +61,7 @@
 #   include "ap_UnixDialog_PageSetup.h"
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Options.h"
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #	include "ap_UnixDialog_Spell.h"
 #endif
 #	include "ap_UnixDialog_Styles.h"
@@ -151,7 +151,7 @@
     DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_UnixDialog_Background, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break, 				FALSE)
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell, 				FALSE)
 #endif
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_UnixDialog_Styles, 				FALSE)

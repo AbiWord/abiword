@@ -103,7 +103,7 @@ public:
 	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;} 
 	void                incrementGraphicTick(void) { m_iGraphicTick++;}
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 #endif
@@ -165,7 +165,7 @@ public:
 	void        rebuildFromHere(fl_DocSectionLayout * pDSL);
 	void        updateColor();
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	bool		isPendingWordForSpell(void) const;
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 										   UT_sint32 iOffset, 
@@ -264,7 +264,7 @@ public:
 	void                recalculateTOCFields(void);
 	bool                updateTOCsOnBookmarkChange(const gchar * pBookmark);
 // --------------------------------------------------------------------
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getAutoGrammarCheck(void) const { return (hasBackgroundCheckReason(bgcrGrammar)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
@@ -278,7 +278,7 @@ public:
 	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	fl_BlockLayout *        getPendingBlockForGrammar(void)
 	  {
 	    return m_PendingBlockForGrammar;
@@ -328,7 +328,7 @@ public:
 
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	void				_toggleAutoSpell(bool bSpell);
 	void				_toggleAutoGrammar(bool bGrammar);
 #endif

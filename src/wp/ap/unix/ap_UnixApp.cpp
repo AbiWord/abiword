@@ -52,7 +52,7 @@
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
   #include "spell_manager.h"
 #endif
 

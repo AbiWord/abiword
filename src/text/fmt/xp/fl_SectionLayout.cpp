@@ -3261,7 +3261,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 		UT_DEBUGMSG(("Doing collapseBlock %x \n",pBlock));
 		if(pShadowBL)
 		{
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 			// In case we've never checked this one
 			if(pShadowBL->getContainerType() == FL_CONTAINER_BLOCK)
 			{

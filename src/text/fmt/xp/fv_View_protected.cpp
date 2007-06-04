@@ -65,7 +65,7 @@
 #include "ap_Strings.h"
 #include "fd_Field.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -4254,7 +4254,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	if(pBlock && pBlock->getSpellSquiggles()->get(getPoint() - pBlock->getPosition()))
 	{
 		if(m_prevMouseContext == EV_EMC_TEXT)
@@ -4662,7 +4662,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	{
 		_fixInsertionPointCoords(true);
 		m_pLayout->considerPendingSmartQuoteCandidate();
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 		_checkPendingWordForSpell();
 #endif
 	// So, if there is a selection now, we should disable the cursor; conversely,
@@ -4696,7 +4696,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 }
 
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 /*!
  Spell-check pending word
  If the IP does not touch the pending word, spell-check it.
@@ -5192,7 +5192,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	if (m_iInsPoint != posOld)
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 		_checkPendingWordForSpell();
 #endif
 		_clearIfAtFmtMark(posOld);
@@ -5494,7 +5494,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 }
 
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 // NB: returns a UCS string that the caller needs to FREEP
 UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 										fl_PartOfBlock* pPOB, UT_uint32 ndx)

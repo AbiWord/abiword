@@ -227,7 +227,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,0,1,	"alignJustify",		ap_GetState_BlockFmt,	NULL);
 
 	_s(AP_MENU_ID_TOOLS,			1,0,0,0,	NULL,				NULL,					NULL);
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	_s(AP_MENU_ID_TOOLS_SPELLING,	        1,0,0,0,	NULL,				NULL,				       NULL);
 	_s(AP_MENU_ID_TOOLS_SPELL,	        0,1,0,0,	"dlgSpell",		ap_GetState_Spelling,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELLPREFS, 0,1,0,0, "dlgSpellPrefs", NULL, NULL);
@@ -338,7 +338,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP_CREDITS, 0,0,0,0, "helpCredits", NULL, NULL);
 	_s(AP_MENU_ID_HELP_REPORT_BUG, 0,0,0,0, "helpReportBug", NULL, NULL);
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	_s(AP_MENU_ID_SPELL_SUGGEST_1,	0,0,0,0,	"spellSuggest_1",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
 	_s(AP_MENU_ID_SPELL_SUGGEST_2,	0,0,0,0,	"spellSuggest_2",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
 	_s(AP_MENU_ID_SPELL_SUGGEST_3,	0,0,0,0,	"spellSuggest_3",	ap_GetState_Suggest,	ap_GetLabel_Suggest);

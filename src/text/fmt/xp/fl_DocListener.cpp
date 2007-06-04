@@ -584,7 +584,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				return false;
 			}
 			// BUGBUG: this is *not* thread-safe, but should work for now
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 			if (m_bScreen)
 			{
 				UT_uint32 reason =  0;
@@ -611,7 +611,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 
 			// BUGBUG: this is *not* thread-safe, but should work for now
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 			if (m_bScreen)
 			{
 				UT_uint32 reason =  0;

@@ -35,7 +35,7 @@ noinst_LIBRARIES = libWpAp_unix.a
 
 gladedir=$(ABIWORD_GLADEDIR)
 
-if WITH_SPELL
+if ENABLE_SPELL
 spellglade=	ap_UnixDialog_Spell.glade
 endif
 
@@ -73,7 +73,7 @@ glade_DATA = $(spellglade)	\
 	ap_UnixDialog_Options.glade \
 	ap_UnixDialog_HdrFtr.glade
 
-if WITH_SPELL
+if ENABLE_SPELL
 spellsrc=	ap_UnixDialog_Spell.cpp
 endif
 

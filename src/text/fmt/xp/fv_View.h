@@ -341,7 +341,7 @@ public:
 
 	bool	processPageNumber(HdrFtrType hfType, const gchar ** atts);
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	bool	isTextMisspelled()const ;
 #endif
 	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete);
@@ -427,7 +427,7 @@ public:
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	SpellChecker * getDictForSelection ();
 #endif
 	void			extSelNextPrevLine(bool bNext);
@@ -498,7 +498,7 @@ public:
 	PD_DocumentRange * getNthSelection(UT_sint32 i);
 	UT_sint32          getNumSelections(void) const;
 	void            setSelectionMode(FV_SelectionMode selMode);
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 // ----------------------
 // Stuff for spellcheck context menu
 //
@@ -875,7 +875,7 @@ protected:
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	void				_checkPendingWordForSpell(void);
 #endif
 	

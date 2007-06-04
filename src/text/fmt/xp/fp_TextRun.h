@@ -29,7 +29,7 @@
 #include "pt_Types.h"
 #include "gr_RenderInfo.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
 #endif
 /*
@@ -52,7 +52,7 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	void				drawSquiggle(UT_uint32, UT_uint32,FL_SQUIGGLE_TYPE iSquiggle);
 #endif
 	bool					split(UT_uint32 iSplitOffset);
@@ -144,7 +144,7 @@ protected:
 
 	void					_drawInvisibleSpaces(UT_sint32, UT_sint32);
 	void					_drawInvisibles(UT_sint32, UT_sint32);
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right,FL_SQUIGGLE_TYPE iSquiggle);
 #endif
 	void					_getPartRect(UT_Rect* pRect,

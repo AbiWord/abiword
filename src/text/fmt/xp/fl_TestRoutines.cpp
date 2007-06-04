@@ -87,7 +87,7 @@ void __dump_ch(void)
 */
 void __dump_sq(void)
 {
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	if (FL_DocLayout::m_pDocLayout->isPendingWordForSpell())
 	{
 		fl_PartOfBlock* pPOB = FL_DocLayout::m_pDocLayout->getPendingWordForSpell();
@@ -103,7 +103,7 @@ void __dump_sq(void)
 	for (fl_SectionLayout * psl=FL_DocLayout::m_pDocLayout->getFirstSection(); (psl); psl=static_cast<fl_SectionLayout *>(psl->getNext()))
 	{
 		fprintf(stdout,"Section: %p [type %d]\n",(void*)psl,psl->getType());
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 		for (fl_BlockLayout * pBL=(fl_BlockLayout *) psl->getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
 			pBL->getSpellSquiggles()->__dump(stdout);
 #endif

@@ -63,7 +63,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   bool bLookupProperties)
 :	fp_Run(pBL,iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL),
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	m_bSpellSquiggled(false),
 	m_bGrammarSquiggled(false),
 #endif
@@ -263,7 +263,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
 	if(pszOldLanguage && (m_pLanguage != pszOldLanguage))
 	{
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
 		{
@@ -1943,7 +1943,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		_drawInvisibles(pDA->xoff, yTopOfRun);
 	}
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	// TODO: draw this underneath (ie, before) the text and decorations
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -2244,7 +2244,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		m_bSpellSquiggled = false;
@@ -2309,7 +2309,7 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 	_drawInvisibleSpaces(xoff,yoff);
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, FL_SQUIGGLE_TYPE iSquiggle)
 {
 	if(_getView())

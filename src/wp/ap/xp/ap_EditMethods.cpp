@@ -73,7 +73,7 @@
 #include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "ap_Dialog_Spell.h"
 #endif
 
@@ -220,12 +220,12 @@ public:
 	static EV_EditMethod_Fn contextRevision;
 	static EV_EditMethod_Fn contextTOC;
 	static EV_EditMethod_Fn contextText;
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	static EV_EditMethod_Fn contextMisspellText;
 #endif
 	static EV_EditMethod_Fn contextEmbedLayout;
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	static EV_EditMethod_Fn spellSuggest_1;
 	static EV_EditMethod_Fn spellSuggest_2;
 	static EV_EditMethod_Fn spellSuggest_3;
@@ -474,7 +474,7 @@ public:
 	static EV_EditMethod_Fn insFootnote;
 	static EV_EditMethod_Fn insEndnote;
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	static EV_EditMethod_Fn dlgSpell;
 	static EV_EditMethod_Fn dlgSpellPrefs;
 #endif
@@ -638,7 +638,7 @@ public:
 	static EV_EditMethod_Fn viewPrintLayout;
 	static EV_EditMethod_Fn viewWebLayout;
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	static EV_EditMethod_Fn toggleAutoSpell;
 #endif
 	
@@ -754,7 +754,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMath),			0,	""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 #endif
 	EV_EditMethod(NF(contextPosObject), 0, ""),
@@ -821,7 +821,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgOptions),			0,	""),
 	EV_EditMethod(NF(dlgParagraph), 		0,	""),
 	EV_EditMethod(NF(dlgPlugins), 			0,	""),
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	EV_EditMethod(NF(dlgSpell), 			0,	""),
 	EV_EditMethod(NF(dlgSpellPrefs), 		0,	""),
 #endif
@@ -1081,7 +1081,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(sortColsDescend),      0,  ""),
 	EV_EditMethod(NF(sortRowsAscend),       0,  ""),
 	EV_EditMethod(NF(sortRowsDescend),      0,  ""),
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	EV_EditMethod(NF(spellAdd), 			0,	""),
 	EV_EditMethod(NF(spellIgnoreAll),		0,	""),
 	EV_EditMethod(NF(spellSuggest_1),		0,	""),
@@ -1105,7 +1105,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(textToTable),			0,		""),
 	EV_EditMethod(NF(textToTableNoSpaces),		0,		""),
 	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
 #endif
 	EV_EditMethod(NF(toggleBold),			0,	""),
@@ -1374,7 +1374,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	bRunning = false;
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun1(toggleAutoSpell)
 {
 	CHECK_FRAME;
@@ -1762,7 +1762,7 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 			       fileName);
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 static void s_TellSpellDone(XAP_Frame * pFrame, bool bIsSelection)
 {
 	pFrame->showMessageBox(bIsSelection ? AP_STRING_ID_MSG_SpellSelectionDone : AP_STRING_ID_MSG_SpellDone,
@@ -4769,7 +4769,7 @@ Defun(contextMath)
 	return b;
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun(contextMisspellText)
 {
 	CHECK_FRAME;
@@ -4906,7 +4906,7 @@ Defun(contextHyperlink)
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 	if(pView->isTextMisspelled())
 		return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	else
@@ -4915,7 +4915,7 @@ Defun(contextHyperlink)
 
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
 {
 	ABIWORD_VIEW;
@@ -7332,7 +7332,7 @@ Defun1(go)
 
 /*****************************************************************/
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
    UT_return_val_if_fail(pView,false);
@@ -7525,7 +7525,7 @@ static bool s_doLangDlg(FV_View * pView)
 
 		if(k > 0 && pDialog->isMakeDocumentDefault() && strcmp(pLang, s))
 		{
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 			FL_DocLayout* pLayout = pView->getLayout();
 			
 			if(pLayout)
@@ -9531,7 +9531,7 @@ Defun1(dlgOptions)
 	return s_doOptionsDlg(pView);
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun1(dlgSpellPrefs)
 {
 	CHECK_FRAME;

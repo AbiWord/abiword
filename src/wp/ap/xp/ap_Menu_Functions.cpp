@@ -44,7 +44,7 @@
 #include "pd_Document.h"
 #include "ut_Script.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
 
@@ -298,7 +298,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 /*****************************************************************/
 /*****************************************************************/
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 {
   EV_Menu_ItemState s = EV_MIS_ZERO ;
@@ -524,7 +524,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	return s ;
 }
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest)
 {
 	ABIWORD_VIEW;

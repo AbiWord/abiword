@@ -35,7 +35,7 @@
 
 #include "ap_ML_ContextText.h"
 
-#ifndef WITHOUT_SPELL
+#ifdef ENABLE_SPELL
 #include "ap_ML_ContextSquiggle.h"
 #endif
 
