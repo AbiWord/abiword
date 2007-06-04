@@ -549,7 +549,7 @@ public:
 			FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
 		}
 
-		if (mask & AV_CHG_MOUSEPOS)
+		if (mask & AV_CHG_EMPTYSEL)
 		{
 			// The selection changed; now figure out if we do have a selection or not
 			if (m_pView)
@@ -566,7 +566,7 @@ public:
 				}
 				else 
 				{
-					if(m_pView->getLastMouseContext() == EV_EMC_POSOBJECT)
+					if(m_pView->getLastMouseContext() == EV_EMC_IMAGE)
 					{
 						FIRE_BOOL(true, imageSelected_, imageSelected);
 						selectionCleared_ = false;
@@ -1216,22 +1216,29 @@ abi_widget_get_font_names (AbiWidget * w)
 extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
+	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
+
 	if(abi->priv->m_szFilename)
 		g_free(abi->priv->m_szFilename);
 	abi->priv->m_szFilename = g_strdup(pszFile);
 	if(!abi->priv->m_bMappedToScreen)
 	{
+	  UT_DEBUGMSG(("Widget not mapped to screen yet, delaying file loading...\n"));
 	  abi->priv->m_bPendingFile = true;
 	  return FALSE;
 	}
 	if(abi->priv->m_iNumFileLoads > 0)
 	{
+		UT_DEBUGMSG(("abi->priv->m_iNumFileLoads > 0, canceling file loading...\n"));
 		return FALSE;
 	}
 
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
+	{
+		UT_DEBUGMSG(("No frame yet, canceling file loading...\n"));
 		return FALSE;
+	}
 	s_StartStopLoadingCursor( true, pFrame);
 //
 // First draw blank document
@@ -2216,30 +2223,45 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	EV_EditMethod          * method;
 	AV_View                * view;
 
+	UT_DEBUGMSG(("abi_widget_invoke_ex, methodname: %s\n", mthdName));
+
 	// lots of conditional returns - code defensively
 	g_return_val_if_fail (w != 0, FALSE);
 	g_return_val_if_fail (mthdName != 0, FALSE);
+
+	UT_DEBUGMSG(("1\n"));
 
 	// get the method container
 	XAP_App *pApp = XAP_App::getApp();
 	container = pApp->getEditMethodContainer();
 	g_return_val_if_fail (container != 0, FALSE);
 
+	UT_DEBUGMSG(("2\n"));
+
 	// get a handle to the actual EditMethod
 	method = container->findEditMethodByName (mthdName);
 	g_return_val_if_fail (method != 0, FALSE);
 
+	UT_DEBUGMSG(("3\n"));
+
 	// get a valid frame
 	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
+
+	UT_DEBUGMSG(("4\n"));
 
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
 	g_return_val_if_fail (view != 0, FALSE);
 	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
+
+	UT_DEBUGMSG(("5\n"));
+
 	// construct the call data
 	EV_EditMethodCallData calldata(data, (data ? strlen (data) : 0));
 	calldata.m_xPos = x;
 	calldata.m_yPos = y;
+
+	UT_DEBUGMSG(("6\n"));
 
 	// actually invoke
 	return (method->Fn(view, &calldata) ? TRUE : FALSE);
