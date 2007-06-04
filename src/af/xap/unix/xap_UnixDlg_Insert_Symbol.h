@@ -59,7 +59,7 @@ public:
 		  BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 		} ResponseId ;
 	
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	// callbacks can fire these events
 	void			SymbolMap_exposed( void);
 	void			Symbolarea_exposed( void);
@@ -85,7 +85,7 @@ private:
 	GList     * m_InsertS_Font_list;
 	UT_GenericVector<gchar*>   m_fontlist;
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	// private construction functions
 	GtkWidget * _previewNew(int w, int h);
 
@@ -94,7 +94,7 @@ private:
 	GR_UnixPangoGraphics * m_unixarea;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
-#endif /* USE_GUCHARMAP */
+#endif /* WITH_GUCHARMAP */
 };
 
 #endif /* XAP_UNIXDIALOG_INSERT_SYMBOL_H */

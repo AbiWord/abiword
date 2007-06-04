@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
 
-#ifdef USE_GUCHARMAP
+#ifdef WITH_GUCHARMAP
 #include <gucharmap/gucharmap.h>
 #endif
 
@@ -59,7 +59,7 @@
 static UT_sint32 s_Insert_Symbol_first = 0;
 static std::string s_Prev_Font;
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
 #endif
@@ -78,7 +78,7 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_SymbolMap(NULL),
 	m_InsertS_Font_list(NULL)
 {
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	m_areaCurrentSym = NULL;
 	m_unixGraphics = NULL;
 	m_unixarea = NULL;
@@ -90,7 +90,7 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 {
 	_deleteInsertedFontList();
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	DELETEP(m_unixGraphics);
 	DELETEP(m_unixarea);
 #endif
@@ -124,7 +124,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	abiSetupModelessDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_INSERT);
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
@@ -209,12 +209,12 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 					   DEFAULT_UNIX_SYMBOL_FONT);
 
 	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), DEFAULT_UNIX_SYMBOL_FONT);
-#endif /* USE_GUCHARMAP */
+#endif /* WITH_GUCHARMAP */
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 {
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
 #else
@@ -246,7 +246,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 {
 	const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
 
@@ -347,7 +347,7 @@ static void  s_scroll_event(GtkWidget * widget, GdkEventScroll * event, XAP_Unix
 {
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
-#ifdef USE_GUCHARMAP
+#ifdef WITH_GUCHARMAP
 
 static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
 {
@@ -590,7 +590,7 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 	    event_Insert();
 }
 
-#endif /* USE_GUCHARMAP */
+#endif /* WITH_GUCHARMAP */
 
 void XAP_UnixDialog_Insert_Symbol::_deleteInsertedFontList(void)
 {
@@ -641,7 +641,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now put the font combo box at the top of the dialog 
 	gtk_box_pack_start(GTK_BOX(hbox), m_fontcombo, FALSE, FALSE, 0);
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	//
@@ -769,7 +769,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
-#ifndef USE_GUCHARMAP
+#ifndef WITH_GUCHARMAP
 
 
 	// The event to choose the Symbol!

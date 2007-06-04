@@ -43,7 +43,7 @@ if test "x$test_cmap" = "xtrue" ; then
 fi
 
 if test "x$have_cmap" = "xtrue" ; then
-	GUCHARMAP_CFLAGS="$GUCHARMAP_CFLAGS -DUSE_GUCHARMAP"
+	GUCHARMAP_CFLAGS="$GUCHARMAP_CFLAGS -DWITH_GUCHARMAP"
 fi
 
 AC_SUBST(GUCHARMAP_CFLAGS)
