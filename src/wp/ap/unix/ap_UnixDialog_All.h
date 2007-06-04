@@ -90,7 +90,7 @@
 #   include "ap_UnixDialog_FormatTOC.h"
 #   include "ap_UnixDialog_MailMerge.h"
 #   include "ap_UnixDialog_Latex.h"
-#   ifndef WITHOUT_PRINTING
+#   ifdef ENABLE_PRINT
 #       include "xap_UnixDlg_Print.h"
 #       include "xap_UnixDlg_PrintPreview.h"
 #   endif
@@ -116,7 +116,7 @@
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt,				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs, 		FALSE)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs, 		FALSE)
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print, 				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,	XAP_UnixDialog_PrintPreview, 		FALSE)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs, 		FALSE)

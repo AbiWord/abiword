@@ -34,7 +34,7 @@
 
 #include <X11/Xft/Xft.h>
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-job.h>
 #endif
@@ -111,12 +111,12 @@ class GR_UnixAllocInfo : public GR_AllocInfo
 public:
  	GR_UnixAllocInfo(GdkWindow * win)
 		: m_win(win),
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 		  m_gpm (NULL),
 #endif
 		  m_bPreview (false), m_bPrinter (false){};
 	
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
 		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true){};
 #endif
@@ -124,7 +124,7 @@ public:
 	virtual bool isPrinterGraphics() const {return m_bPrinter;}
 
 	GdkWindow     * m_win;
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	GnomePrintJob * m_gpm;
 #endif
 	bool            m_bPreview;
@@ -377,7 +377,7 @@ private:
 	static int s_iMaxScript;
 };
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 
 /*!
     When printing, we need to combine pango with GnomePrint;
@@ -515,6 +515,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	double             m_width, m_height;
 	
 };
-#endif // ifndef WHITOUT_PRINTING
+#endif // ifdef ENABLE_PRINT
 
 #endif

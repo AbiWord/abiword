@@ -39,10 +39,10 @@ if WITH_SPELL
 spellglade=	ap_UnixDialog_Spell.glade
 endif
 
-if NOSTATUSBAR
-statusbar = 
-else
+if ENABLE_STATUSBAR
 statusbar = ap_UnixStatusBar.cpp
+else
+statusbar = 
 endif
 
 glade_DATA = $(spellglade)	\

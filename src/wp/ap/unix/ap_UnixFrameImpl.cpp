@@ -97,7 +97,7 @@ void AP_UnixFrameImpl::_refillToolbarsInFrameData()
 // Idem.
 void AP_UnixFrameImpl::_showOrHideStatusbar()
 {
-#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
+#ifdef ENABLE_STATUSBAR
 	XAP_Frame* pFrame = getFrame();
 	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar;
 	static_cast<AP_UnixFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
@@ -352,7 +352,7 @@ void AP_UnixFrameImpl::_createWindow()
 
 GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 {
-#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
+#ifdef ENABLE_STATUSBAR
 	XAP_Frame* pFrame = getFrame();
 	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(pFrame);
 	UT_ASSERT(pUnixStatusBar);

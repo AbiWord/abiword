@@ -128,7 +128,7 @@
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
   #include <libart_lgpl/art_affine.h>
   #include <libgnomeprint/gnome-print.h>
 #endif
@@ -1177,7 +1177,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 
 /*****************************************************************/
 /*****************************************************************/
-#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_SPLASH)
+#ifdef ENABLE_SPLASH
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixPangoGraphics * pUnixGraphics = NULL;
@@ -1519,7 +1519,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			}
 #endif
 
-#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_SPLASH)
+#ifdef ENABLE_SPLASH
 			// do we show the splash?
 			bool bShowSplash = Args.getShowSplash();
 		
@@ -1657,7 +1657,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
  	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 
 	{
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {
 			AP_Convert conv ;
@@ -1716,7 +1716,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	if (Args->m_iToThumb > 0) 
 	{
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {

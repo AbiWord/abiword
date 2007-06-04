@@ -109,7 +109,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 									  UnixNull_Graphics::s_getClassId());
 		UT_ASSERT( bSuccess );
 		
-#if !defined(WITHOUT_PRINTING)
+#ifdef ENABLE_PRINT
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
@@ -117,7 +117,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		
 		UT_ASSERT( bSuccess );
 		
-#if !defined(WITHOUT_PRINTING)
+#ifdef ENABLE_PRINT
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);

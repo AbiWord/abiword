@@ -1043,9 +1043,9 @@ ReturnTrue:
 
 /*****************************************************************/
 
-#define SPLASH 1
+#define ENABLE_SPLASH 1
 
-#if SPLASH
+#if ENABLE_SPLASH
 #include "gr_Graphics.h"
 #include "gr_Win32Graphics.h"
 #include "gr_Image.h"
@@ -1276,7 +1276,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		return 0;
 	}
 
-#ifdef SPLASH
+#ifdef ENABLE_SPLASH
 	if (bShowSplash && Args.getShowSplash())
 	{
 		_showSplash(hInstance, szAppName);

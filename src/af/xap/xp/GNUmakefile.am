@@ -28,17 +28,17 @@ endif
 
 noinst_LIBRARIES = libXap_xp.a
 
-if WITH_PRINTING
+if ENABLE_PRINT
 print_src = xap_Dlg_Print.cpp	\
 			xap_Dlg_PrintPreview.cpp
 else
 print_src =
 endif
 
-if NOSTATUSBAR
-statusbar =
-else
+if ENABLE_STATUSBAR
 statusbar = xap_StatusBar.cpp
+else
+statusbar =
 endif
 
 libXap_xp_a_SOURCES= $(print_src) \

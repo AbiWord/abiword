@@ -44,7 +44,7 @@ noinst_LIBRARIES = libXap_unix.a
 
 gladedir=$(ABIWORD_GLADEDIR)
 
-if WITH_PRINTING
+if ENABLE_PRINT
 print_src = xap_UnixDlg_PrintPreview.cpp	\
 			xap_UnixDlg_Print.cpp			
 else

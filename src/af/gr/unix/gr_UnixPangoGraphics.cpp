@@ -53,7 +53,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
   #include <libgnomeprint/gnome-print-pango.h>
   #include <libgnomeprint/gnome-print-paper.h>
   #include <libgnomeprintui/gnome-print-job-preview.h>
@@ -3318,7 +3318,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	double resRatio = 1.0;
 	
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	if(pG->canQuickPrint())
 	{
 		/* cast this safely */
@@ -3462,7 +3462,7 @@ bool GR_UnixPangoRenderInfo::isJustified() const
     return (m_pJustify != NULL);
 }
 
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 													 bool isPreview):
 	GR_UnixPangoGraphics(),

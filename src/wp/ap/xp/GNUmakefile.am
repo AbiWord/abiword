@@ -29,17 +29,17 @@ if WITH_SPELL
 spellsrc=	ap_Dialog_Spell.cpp
 endif
 
-if NOSPLASH
-splash= 
-else
+if ENABLE_SPLASH
 splash =	ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
+else
+splash= 
 endif
 
-if NOSTATUSBAR
-statusbar = 
-else
+if ENABLE_STATUSBAR
 statusbar = ap_StatusBar.cpp
+else
+statusbar = 
 endif
 
 libWpAp_xp_a_SOURCES=	$(spellsrc)		\

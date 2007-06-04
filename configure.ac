@@ -134,13 +134,13 @@ elif test "$print" = "undefined"; then
    print=true;
 fi
 
-if test $print = false ; then
-   AC_DEFINE(WITHOUT_PRINTING, 1, [Whether printing capabilities should be disabled])
+if test "$print" = "true" ; then
+   AC_DEFINE(ENABLE_PRINT, 1, [Whether printing capabilities should be disabled])
 fi
 
 AC_MSG_RESULT([${print}])
 
-AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
+AM_CONDITIONAL(ENABLE_PRINT, test "$print" = "true")
 
 AM_CONDITIONAL(BUILD_TTFTOOL,[test $PLATFORM = unix && test x$print != xfalse])
 

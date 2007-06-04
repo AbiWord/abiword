@@ -51,7 +51,7 @@ BeginLayout(Main,0)
 	
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 #endif
 		Separator()

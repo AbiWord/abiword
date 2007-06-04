@@ -8423,7 +8423,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	UT_return_val_if_fail (pView, false);
 
 	if (pView->getViewMode() != VIEW_PRINT
@@ -8571,7 +8571,7 @@ UT_return_val_if_fail(pDialog, false);
 
 static bool s_doPrintPreview(FV_View * pView)
 {
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9447,7 +9447,7 @@ UT_return_val_if_fail(pDialog, false);
 
 Defun1(print)
 {
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
@@ -9459,7 +9459,7 @@ Defun1(print)
 
 Defun1(printDirectly)
 {
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
@@ -9471,7 +9471,7 @@ Defun1(printDirectly)
 
 Defun1(printTB)
 {
-#ifndef WITHOUT_PRINTING
+#ifdef ENABLE_PRINT
 	CHECK_FRAME;
 // print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))

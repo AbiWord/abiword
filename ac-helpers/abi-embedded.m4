@@ -79,23 +79,23 @@ if test "$embedded" != "none"; then
    if test "$embedded_menubutton" = "true"; then
       AC_DEFINE(EMBEDDED_MENUBUTTON, 1, [Whether to use menubutton instead of menubar])
    fi
-
-   if test "$embedded_splash" = "true"; then
-      AC_DEFINE(EMBEDDED_SPLASH, 1, [Whether to include splashscreen])
-   fi
-
-   if test "$embedded_statusbar" = "true"; then
-      AC_DEFINE(EMBEDDED_STATUSBAR, 1, [Whether to include statusbar])
-   fi
 else
    # make sure we do not prevent statusbar and splash from building
    embedded_statusbar=true
    embedded_splash=true
 fi
 
+if test "$embedded_statusbar" = "true"; then
+   AC_DEFINE(ENABLE_STATUSBAR, 1, [Whether to include statusbar])
+fi
+
+if test "$embedded_splash" = "true"; then
+   AC_DEFINE(ENABLE_SPLASH, 1, [Whether to include splashscreen])
+fi
+
 AM_CONDITIONAL(EMBEDDED_HILDON, test "x$embedded" = "xEMBEDDED_TARGET_HILDON")
-AM_CONDITIONAL(NOSTATUSBAR, test "x$embedded_statusbar" = "xfalse")
-AM_CONDITIONAL(NOSPLASH, test "x$embedded_splash" = "xfalse")
+AM_CONDITIONAL(ENABLE_STATUSBAR, test "x$embedded_statusbar" = "xtrue")
+AM_CONDITIONAL(ENABLE_SPLASH, test "x$embedded_splash" = "xtrue")
 
 AC_SUBST(EMBEDDED_CFLAGS)
 AC_SUBST(EMBEDDED_LIBS)

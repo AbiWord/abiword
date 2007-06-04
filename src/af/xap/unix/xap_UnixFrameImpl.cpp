@@ -1577,7 +1577,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	// so that it will appear outside of the scrollbars.
 	m_wStatusBar = NULL;
 
-#if !defined(EMBEDDED_TARGET) || defined(EMBEDDED_STATUSBAR)
+#ifdef ENABLE_STATUSBAR
 	if(m_iFrameMode == XAP_NormalFrame)
 		m_wStatusBar = _createStatusBarWindow();
 #endif
