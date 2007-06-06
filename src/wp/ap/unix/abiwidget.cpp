@@ -1214,9 +1214,17 @@ abi_widget_get_font_names (AbiWidget * w)
 }
 
 extern "C" gboolean
-abi_widget_load_file(AbiWidget * abi, const char * pszFile)
+abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype)
 {
 	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
+
+	IEFileType ieft = IEFT_Unknown;
+	if (mimetype && *mimetype != '\0')
+	{
+		ieft = IE_Exp::fileTypeForMimetype(mimetype);
+		if(ieft == IEFT_Unknown)
+			ieft = IE_Exp::fileTypeForSuffix(mimetype);
+	}
 
 	if(abi->priv->m_szFilename)
 		g_free(abi->priv->m_szFilename);
@@ -1264,7 +1272,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 //Now load the file
 //
 	UT_DEBUGMSG(("ATTempting to load %s \n",abi->priv->m_szFilename));
-	/*bool res=*/ ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	/*bool res=*/ (pFrame->loadDocument(abi->priv->m_szFilename, ieft, true) == UT_OK);
 	s_StartStopLoadingCursor( false, pFrame);
 	abi->priv->m_bPendingFile = false;
 	abi->priv->m_iNumFileLoads += 1;
@@ -1286,8 +1294,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	}
 	PD_Document *pDoc = pView->getDocument();
 	xxx_UT_DEBUGMSG(("Document from view is %x \n",pDoc));
-	IEFileType ieft  = pDoc->getLastOpenedType();
-	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n",ieft));
+	// check that we could open the document as the type we assumed it was
+	// TODO: is this really needed?
+	ieft  = pDoc->getLastOpenedType();
+	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n", ieft));
 	if(ieft < 0)
 	{
 		ieft =  IE_Exp::fileTypeForSuffix(".abw");
@@ -1385,7 +1395,7 @@ static gint s_abi_widget_load_file(gpointer p)
   if(abi->priv->m_bPendingFile)
   {
 	char * pszFile = g_strdup(abi->priv->m_szFilename);
-	abi_widget_load_file(abi, pszFile);
+	abi_widget_load_file(abi, pszFile, NULL); // Ugly! s_abi_widget_load_file should be removed - MARCM
 	g_free(pszFile);
   }
   return FALSE;

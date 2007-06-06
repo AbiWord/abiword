@@ -237,7 +237,7 @@ G_BEGIN_DECLS
   // file handing functions
   gboolean abi_widget_file_open (AbiWidget * w);
   gboolean abi_widget_file_save (AbiWidget * w);
-  gboolean abi_widget_load_file(AbiWidget * abi, const char * pszFile);
+  gboolean abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype);
   gboolean abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input);
   gboolean abi_widget_save_immediate (AbiWidget * w);
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
