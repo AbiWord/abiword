@@ -247,7 +247,7 @@ endif
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater
-DEFINES		+= -D_WIN32_IE=0x0400 -DSUPPORTS_UT_IDLE -DENABLE_SPELL
+DEFINES		+= -D_WIN32_IE=0x0400 -DSUPPORTS_UT_IDLE -DENABLE_SPELL -DENABLE_PRINT
 OS_CFLAGS += -fvtable-thunks  # required for compiling ole dragndrop
 
 # Shared library flags
