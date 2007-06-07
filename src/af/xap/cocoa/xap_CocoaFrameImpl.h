@@ -88,6 +88,8 @@ public:
 	virtual void 				_setFullScreen(bool isFullScreen) {}
 	virtual bool				_updateTitle();
 	virtual UT_sint32			_setInputMode(const char * szName);
+	virtual void _hideMenuScroll(bool bHideMenuScroll)
+		{ UT_ASSERT(UT_NOT_IMPLEMENTED); }
 	virtual void                _nullUpdate () const;
 	virtual void                _setCursor(GR_Graphics::Cursor c) {}
 
