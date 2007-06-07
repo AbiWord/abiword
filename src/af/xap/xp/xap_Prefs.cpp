@@ -78,6 +78,7 @@ XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const gchar * szSchemeName)
 {
 	m_pPrefs = pPrefs;
 	m_uTick = 0;
+	m_bValidSortedKeys = false;
 
 	if (szSchemeName && *szSchemeName)
 		m_szName = g_strdup(szSchemeName);
@@ -130,6 +131,7 @@ bool XAP_PrefsScheme::setValue(const gchar * szKey, const gchar * szValue)
 	{
 		// otherwise, need to add a new entry
 		m_hash.insert(szKey, g_strdup(szValue));
+		m_bValidSortedKeys = false;
 	}
 
 	m_pPrefs->_markPrefChange( szKey );
@@ -190,28 +192,31 @@ bool XAP_PrefsScheme::getValueBool(const gchar * szKey, bool * pbValue) const
 	}
 }
 
-bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue) const
+bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue)
 {
 	if (k >= static_cast<UT_uint32>(m_hash.size()))
 		return false;
 //
 // Output prefs in alphabetic Order.
 //
-	UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
-	UT_return_val_if_fail( vecD, false );
-	
-	UT_GenericVector<const char*> vecKeys(vecD->getItemCount(), 4, true);
-	UT_uint32 i=0;
-	vecKeys.clear();
-	for(i=0; i< vecD->getItemCount(); i++)
-	{
-		vecKeys.addItem(vecD->getNthItem(i)->c_str());
-	}
-	vecKeys.qsort(compareStrings);
-	delete vecD;
+
+	if (!m_bValidSortedKeys) {
+		UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
+		UT_GenericVector<const char*> vecKeys(vecD->getItemCount(), 4, true);
+		UT_uint32 i=0;
+		m_sortedKeys.clear();
+		for(i=0; i< vecD->getItemCount(); i++)
+		{
+			m_sortedKeys.addItem(vecD->getNthItem(i)->c_str());
+		}
+		m_sortedKeys.qsort(compareStrings);
+		m_bValidSortedKeys = true;
+		delete vecD;
+	}	
+		
 	const char * szKey = NULL;
 	const char * szValue = NULL;
-	szKey = vecKeys.getNthItem(k);
+	szKey = m_sortedKeys.getNthItem(k);
 	szValue = m_hash.pick(szKey);
 	if(szValue && *szValue)
 	{

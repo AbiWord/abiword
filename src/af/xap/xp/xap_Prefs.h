@@ -121,11 +121,13 @@ public:
 	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
 	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
 	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
-	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue) const;
+	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue);
 	
 protected:
 	gchar *			m_szName;
 	UT_GenericStringMap<gchar*> m_hash;
+	UT_GenericVector<const gchar*> m_sortedKeys;
+	bool				m_bValidSortedKeys;
 	XAP_Prefs *			m_pPrefs;
 	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };

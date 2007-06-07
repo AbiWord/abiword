@@ -31,6 +31,7 @@
 #include "ut_vector.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#include "ut_hash.h"
 
 class XAP_App;
 
@@ -129,6 +130,7 @@ protected:
 
 private:
 	UT_GenericVector<gchar*>	m_vecStringsXAP;
+	UT_StringPtrMap  			m_hash;
 
 	struct
 	{

@@ -94,7 +94,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	pbmih->biClrUsed		= nrColors;	// should we verify that they are all actually used ??
 	pbmih->biClrImportant	= 0;
 
-	UT_StringPtrMap hash(61);
+	UT_StringPtrMap hash(256);
 	UT_RGBColor color(0,0,0);
 	
 	// walk thru the palette

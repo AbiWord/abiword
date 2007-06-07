@@ -1332,6 +1332,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // list of styles to the combo box.
 //
 // Try this....
+	SendMessage(hwndCombo, WM_SETREDRAW, FALSE, 0);
 	SendMessage(hwndCombo, CB_RESETCONTENT, 0 , 0);
 
 	SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,
@@ -1370,6 +1371,8 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 // Don't need this anymore and we don't like memory leaks in abi
 //
+	SendMessage(hwndCombo, WM_SETREDRAW, TRUE, 0);
+	InvalidateRect (hwndCombo, NULL, true);
 	delete pStyleC;
 //
 // I think we've finished!

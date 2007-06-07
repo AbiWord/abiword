@@ -178,7 +178,7 @@ const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 //////////////////////////////////////////////////////////////////
 
 XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
-	: XAP_StringSet(pApp,NULL),
+	: XAP_StringSet(pApp,NULL), m_hash (2048),
 	  m_vecStringsXAP(XAP_STRING_ID__LAST__ - XAP_STRING_ID__FIRST__ + 1, 4, true)
 {
 	m_pFallbackStringSet = NULL;
@@ -340,15 +340,26 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
 
-	UT_uint32 kLimit = G_N_ELEMENTS(s_map);
-	UT_uint32 k;
+	 		
+	gchar* id;
+ 	
+ 	// Build a hash table the first time that the function is called
+ 	if (m_hash.size() == 0) {
+ 		UT_uint32 k, kLimit = G_N_ELEMENTS(s_map);
+ 		
+		for (k=0; k<kLimit; k++) { 			
+ 			id = g_ascii_strdown (s_map[k].szName, -1);
+ 			m_hash.insert (id, (UT_uint32 *) (k + 1));
+ 			FREEP(id);
+ 		}
+ 	} 	
+ 	
+ 	id = g_ascii_strdown (szId, -1); 	
+ 	UT_uint32 pick = (UT_uint32) m_hash.pick (id);	
+ 	FREEP(id);
 
-	// we use predefined IDs to access the strings, so there is no need to do
-	// case-insensitive comparison (and it is costing us lot of time, particularly at
-	// startup).
-	for (k=0; k<kLimit; k++)
-		if (strcmp(s_map[k].szName,szId) == 0)
-			return XAP_DiskStringSet::setValue(s_map[k].id,szString);
+	if (pick != 0)
+		return setValue(s_map[pick - 1].id, szString);	
 
 	// TODO should we promote this message to a message box ??
 	UT_DEBUGMSG(("Unknown ID in string file [%s=\"%s\"]\n",szId,szString));

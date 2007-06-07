@@ -1367,7 +1367,7 @@ void GR_Win32USPGraphics::setPrintDC(HDC dc)
 		// since this is a printer DC we have to delete it once not needed
 		// the win32 graphics does not delete the printer dc, which is a bug in the pure
 		// win32 graphics class, but exactly what we need here.
-		if(m_printHDC)
+		if(m_printHDC && m_printHDC != m_defPrintHDC)
 			DeleteDC(m_printHDC);
 		
 		m_printHDC = dc;

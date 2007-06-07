@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "xap_Toolbar_Icons.h"
+#include "ut_assert.h"
 
 /*****************************************************************
 ******************************************************************
@@ -91,8 +92,33 @@ static struct _im s_imTable[] =
 ******************************************************************
 *****************************************************************/
 
+#ifdef DEBUG
+AP_Toolbar_Icons iconsdebug;
+#endif
+
 AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 {
+#ifdef DEBUG
+
+	// Check that the lists are in alphabetically order 
+	UT_uint32 range = G_N_ELEMENTS(s_imTable);
+	UT_sint32 cmp;
+	UT_uint32 i;
+	
+	for (i = 1; i < range; i++) 
+	{
+		cmp = g_ascii_strcasecmp( s_imTable[i].m_id, s_imTable[i-1].m_id);
+		UT_ASSERT(cmp > 0);
+	}	
+	
+	range = G_N_ELEMENTS(s_itTable);	
+	for (i = 1; i < range; i++) 
+	{
+		cmp = g_ascii_strcasecmp( s_itTable[i].m_name, s_itTable[i-1].m_name);
+		UT_ASSERT(cmp > 0);
+	}	
+	
+#endif
 }
 
 AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
@@ -100,25 +126,32 @@ AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
 }
 
 
-
 bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName)
 {
 	bool bIDFound = false;
 	
 	if (!szID || !*szID )
-		return false;
-	UT_uint32 m;
-	UT_uint32 mLimit = G_N_ELEMENTS(s_imTable);
-
-	// Search the map for overloaded ID_LANG to iconname
-	for (m=0; m < mLimit; m++)
+		return false;	
+	
+	UT_uint32 range = G_N_ELEMENTS(s_imTable);
+	UT_sint32 middle, right = range - 1, left = 0;
+	UT_sint32 cmp;
+	
+	while (left <= right)
 	{
-		if (g_ascii_strcasecmp(szID, s_imTable[m].m_id ) == 0)
-		{
+		middle = (left + right) >> 1;
+		cmp = g_ascii_strcasecmp(szID, s_imTable[middle].m_id);
+		
+		if (cmp == 0) {
 			bIDFound = true;
-			*pName = s_imTable[m].m_iconname;
+			*pName = s_imTable[middle].m_iconname;
 			break;
 		}
+
+		if (cmp >  0)
+			left = middle + 1;
+		else
+			right = middle - 1;
 	}
 
 	// Search the toolbariconmap for ID to iconname
@@ -131,19 +164,30 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 		
 		if (pLast)
 			*pLast = '\0';
-				
-		for (m=0; m < mLimit; m++)
-		{
-			if (g_ascii_strcasecmp(szBaseID, s_imTable[m].m_id ) == 0)
-			{
+
+		right = range - 1;
+		left = 0;
+			
+		while (left <= right)
+		{	
+			middle = (left + right) >> 1;
+			cmp = g_ascii_strcasecmp(szBaseID, s_imTable[middle].m_id);
+			
+			if (cmp == 0) {
 				bIDFound = true;
-				*pName = s_imTable[m].m_iconname;
+				*pName = s_imTable[middle].m_iconname;
 				break;
 			}
-		}		
+	
+			if (cmp >  0)
+				left = middle + 1;
+			else
+				right = middle - 1;
+		}	
 	}
 	return bIDFound;
 }
+
 
 
 
@@ -160,26 +204,32 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	
 	bool bIDFound = _findIconNameForID(szID, &szName);
 
-
 	if( !bIDFound )
 		return false;
 
 	if( g_ascii_strcasecmp(szName,"NoIcon") == 0)
-		return false;
-	
-	UT_uint32 kLimit = G_N_ELEMENTS(s_itTable);
-	UT_uint32 k;
+		return false;	
+  	
+	UT_uint32 range = G_N_ELEMENTS(s_itTable);
+	UT_sint32 middle, right = range - 1, left = 0;
+	UT_sint32 cmp;
 
-	// Search to match icon name with data
-	for (k=0; k < kLimit; k++)
+	while (left <= right)
 	{
-		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
-		{
-			*pIconData = s_itTable[k].m_staticVariable;
-			*pSizeofData = s_itTable[k].m_sizeofVariable;
+		middle = (left + right) >> 1;		
+		cmp = g_ascii_strcasecmp(szName,s_itTable[middle].m_name);
+
+		if (cmp == 0) {
+			*pIconData = s_itTable[middle].m_staticVariable;
+			*pSizeofData = s_itTable[middle].m_sizeofVariable;		
 			return true;
 		}
-	}
+		
+		if (cmp >  0)
+			left = middle + 1;
+		else
+			right = middle - 1;
+  	}
 
 	// Not found - no icon available.
 	return false;

@@ -47,6 +47,8 @@
 #include <w32api.h>
 #endif
 
+UT_uint32 GR_Win32Graphics::s_iInstanceCount = 0;
+HDC GR_Win32Graphics::m_defPrintHDC = NULL;
 
 #define LOG_WIN32_EXCPT(msg)                                                  \
 {                                                                             \
@@ -159,7 +161,13 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
 	m_hwnd = hwnd;
 
 	// init the print HDC with one for the default printer
-	m_printHDC = UT_GetDefaultPrinterDC();
+	
+	if (m_defPrintHDC == NULL) {
+		m_defPrintHDC = UT_GetDefaultPrinterDC();
+	}
+	
+	m_printHDC = m_defPrintHDC;
+	s_iInstanceCount++;
 
 	if(m_printHDC)
 	{
@@ -202,6 +210,7 @@ GR_Win32Graphics::~GR_Win32Graphics()
 {
 	_destroyFonts ();
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
+	s_iInstanceCount--;
 		
 	/* Release saved bitmaps */
 	HBITMAP hBit;
@@ -225,9 +234,13 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	delete m_pArPens;
 
 	DELETEP(m_pFontGUI);
-
-	if(m_printHDC)
+	
+	if(m_printHDC && m_printHDC != m_defPrintHDC)
 		DeleteDC(m_printHDC);
+	
+	if (s_iInstanceCount == 0)
+		DeleteDC(m_defPrintHDC);
+
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const

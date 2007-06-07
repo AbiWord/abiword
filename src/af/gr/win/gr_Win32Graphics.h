@@ -305,6 +305,8 @@ protected:
 	UT_uint32               m_iPrintDCFontAllocNo;
 	HDC						m_hdc;
 	HDC                     m_printHDC;
+	static HDC				m_defPrintHDC;
+	static UT_uint32		s_iInstanceCount;
 	HWND 					m_hwnd;
 	const DOCINFO *			m_pDocInfo;
 	bool					m_bPrint;
