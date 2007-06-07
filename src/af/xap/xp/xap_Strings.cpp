@@ -178,7 +178,7 @@ const gchar * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 //////////////////////////////////////////////////////////////////
 
 XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
-	: XAP_StringSet(pApp,NULL), m_hash (2048),
+	: XAP_StringSet(pApp,NULL), 
 	  m_vecStringsXAP(XAP_STRING_ID__LAST__ - XAP_STRING_ID__FIRST__ + 1, 4, true)
 {
 	m_pFallbackStringSet = NULL;
@@ -341,7 +341,7 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 		return true;
 
 	 		
-	gchar* id;
+	gchar const* id;
  	
  	// Build a hash table the first time that the function is called
  	if (m_hash.size() == 0) {
@@ -349,17 +349,17 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
  		
 		for (k=0; k<kLimit; k++) { 			
  			id = g_ascii_strdown (s_map[k].szName, -1);
- 			m_hash.insert (id, (UT_uint32 *) (k + 1));
+ 			m_hash[ std::string(id) ] = k + 1;
  			FREEP(id);
  		}
  	} 	
  	
  	id = g_ascii_strdown (szId, -1); 	
- 	UT_uint32 pick = (UT_uint32) m_hash.pick (id);	
+	std::map<std::string, UT_uint32>::iterator  iter = m_hash.find( id );
  	FREEP(id);
 
-	if (pick != 0)
-		return setValue(s_map[pick - 1].id, szString);	
+	if (iter != m_hash.end())
+		return setValue(s_map[iter->second - 1].id, szString);	
 
 	// TODO should we promote this message to a message box ??
 	UT_DEBUGMSG(("Unknown ID in string file [%s=\"%s\"]\n",szId,szString));

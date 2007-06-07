@@ -20,6 +20,9 @@
 #ifndef XAP_STRINGS_H
 #define XAP_STRINGS_H
 
+#include <map>
+#include <string>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -31,7 +34,6 @@
 #include "ut_vector.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
-#include "ut_hash.h"
 
 class XAP_App;
 
@@ -130,7 +132,7 @@ protected:
 
 private:
 	UT_GenericVector<gchar*>	m_vecStringsXAP;
-	UT_StringPtrMap  			m_hash;
+	std::map<std::string, UT_uint32> 	m_hash;
 
 	struct
 	{
