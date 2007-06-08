@@ -24,6 +24,10 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <glib.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkmain.h>

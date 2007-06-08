@@ -23,6 +23,7 @@
 #define NOSERVICE
 #define NOIME
 #define NOMCX
+
 #include <windows.h>
 #include <winspool.h>
 

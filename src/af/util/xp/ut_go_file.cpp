@@ -21,6 +21,10 @@
  * USA
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #if 0
 #include <goffice/goffice-config.h>
 #include <glib/gi18n-lib.h>

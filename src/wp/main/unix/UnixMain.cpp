@@ -19,6 +19,10 @@
 
 #ifndef ABI_OPT_WIDGET
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_UnixApp.h"
 
 int main(int argc, const char ** argv)

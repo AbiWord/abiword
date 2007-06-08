@@ -21,6 +21,10 @@
 #ifndef GR_UNIX_PANGOGRAPHICS_H
 #define GR_UNIX_PANGOGRAPHICS_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <vector>
 
 #include "ut_types.h"

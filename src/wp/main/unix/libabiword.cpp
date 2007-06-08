@@ -18,6 +18,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Args.h"
 #include "ap_UnixApp.h"
 #include "libabiword.h"

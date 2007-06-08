@@ -20,6 +20,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_exception.h"
 #include "ut_vector.h"
 #include "ut_assert.h"

@@ -25,6 +25,10 @@
 
 /* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

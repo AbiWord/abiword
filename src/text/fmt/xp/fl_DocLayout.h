@@ -20,6 +20,10 @@
 #ifndef DOCLAYOUT_H
 #define DOCLAYOUT_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"

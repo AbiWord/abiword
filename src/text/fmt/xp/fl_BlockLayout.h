@@ -23,6 +23,10 @@
 #ifndef FL_BLOCKLAYOUT_H
 #define FL_BLOCKLAYOUT_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef FMT_TEST
 #include <stdio.h>
 #endif

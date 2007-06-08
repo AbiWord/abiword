@@ -18,6 +18,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"

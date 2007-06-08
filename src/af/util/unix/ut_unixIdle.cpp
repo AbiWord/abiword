@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifndef XP_TARGET_COCOA
 #include <glib.h>
 #else 

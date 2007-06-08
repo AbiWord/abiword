@@ -22,6 +22,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
 #include "gr_Painter.h"

@@ -19,6 +19,10 @@
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include "ut_test.h"
