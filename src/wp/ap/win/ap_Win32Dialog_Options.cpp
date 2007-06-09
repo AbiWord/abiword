@@ -423,7 +423,7 @@ void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 		stRetVal = pLang;
 	}				
 	else
-		stRetVal.clear();
+		stRetVal = m_curLang;
 }
 
 void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
