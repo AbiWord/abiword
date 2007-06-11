@@ -42,6 +42,10 @@
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
+#ifdef WITH_GSF_INPUT_HTTP
+#include <gsf/gsf-input-http.h>
+#endif
+
 #ifdef WITH_GNOMEVFS
 #define GOFFICE_WITH_GNOME
 #include <libgnomevfs/gnome-vfs-utils.h>
@@ -917,6 +921,12 @@ UT_go_shell_arg_to_uri (const char *arg)
 			return UT_go_url_simplify (arg);
 		}
 	}
+#elif defined(WITH_GSF_INPUT_HTTP)
+	{
+		if (g_ascii_strncasecmp (arg, "http://", strlen ("http://")) == 0) {
+			return UT_go_url_simplify (arg);
+		}
+	}
 #endif
 
 	/* Just assume it's a filename.  */
@@ -1100,6 +1110,23 @@ UT_go_file_open_impl (char const *uri, GError **err)
 
 #ifdef GOFFICE_WITH_GNOME
 	return gsf_input_gnomevfs_new (uri, err);
+#elif defined(WITH_GSF_INPUT_HTTP)
+	{
+		GsfInput *http = gsf_input_http_new (uri, err);
+		
+		if (http != NULL) {
+			GsfInput *result;
+			gsf_off_t size;
+
+			/* guarantee that file descriptors will be seekable */
+			size = gsf_input_size (http);
+			result = gsf_input_memory_new_clone (gsf_input_read (http, size, NULL), size);
+
+			g_object_unref (G_OBJECT (http));
+
+			return result;
+		}
+	}
 #else
 	g_set_error (err, gsf_input_error (), 0,
 		     "Invalid or non-supported URI");
@@ -1187,7 +1214,7 @@ UT_go_file_remove (char const *uri, GError **err)
 {
 	char *filename;
 
-	g_return_val_if_fail (uri != NULL, NULL);
+	g_return_val_if_fail (uri != NULL, FALSE);
 
 	filename = UT_go_filename_from_uri (uri);
 	if (filename) {
