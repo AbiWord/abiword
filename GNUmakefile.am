@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I ac-helpers
 
 if WITH_SYSTEM_GOFFICE
 SUBDIRS = src user
