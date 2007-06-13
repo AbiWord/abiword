@@ -1,7 +1,0 @@
-
-include $(top_srcdir)/includes.mk
-
-SUBDIRS = xp
-
-EXTRA_DIST = \
-	Makefile
