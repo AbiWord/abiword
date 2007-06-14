@@ -607,7 +607,11 @@ case "$PLATFORM" in
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )
-       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
+       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) 
+       if test ! -z $ABI_MACSDK_ROOT ; then 
+         AC_MSG_RESULT([  Using SDK in $ABI_MACSDK_ROOT ])
+       fi
+       ;;
 esac
 
 case "$embedded" in

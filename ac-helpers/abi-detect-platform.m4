@@ -97,7 +97,7 @@ AC_SUBST(EPATH_WV_BUILD_FLAGS)
 # 
 # convenience option for building with fink installed...
 # 
-AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
+AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OS X)],[
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/sw/include"
 		LDFLAGS="$LDFLAGS -L/sw/lib"
@@ -109,7 +109,7 @@ AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
 # 
 # convenience option for building with darwin ports installed...
 # 
-AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAGS (Mac OSX)],[
+AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAGS (Mac OS X)],[
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/opt/local/include"
 		LDFLAGS="$LDFLAGS -L/opt/local/lib"
@@ -118,14 +118,25 @@ AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAG
 	fi
 ])
 
-# convenience option for building with the abiports...
+# convenience option for building with the abiportssdk...
 # 
-AC_ARG_WITH(abiports,[  --with-abiports       add /opt/abi/... to CPP/LDFLAGS (Mac OSX)],[
-        if test "x$withval" = "xyes"; then
+AC_ARG_WITH(abiportssdk,[  --with-abiportssdk=SDK_ROOT     add /opt/abi/... to CPP/LDFLAGS and SDK usage (Mac OS X only)],[
+        if test "x$withval" != "xno"; then
+		if test "x$withval" = xyes ; then
+			_sdk_root=/Developer/SDKs
+		else
+			_sdk_root=$withval
+		fi
+		dnl SDK has to be set very early. It is Mac specific.
+		CPPFLAGS="-isysroot $_sdk_root/AbiMacOSX.sdk $CPPFLAGS"
+		LDFLAGS="-isysroot $_sdk_root/AbiMacOSX.sdk -Wl,-syslibroot,$_sdk_root/AbiMacOSX.sdk $LDFLAGS"
+
                 CPPFLAGS="$CPPFLAGS -I/opt/abi/include"
                 LDFLAGS="$LDFLAGS -L/opt/abi/lib"
-		PKG_CONFIG_PATH=/opt/abi/lib/pkgconfig:$PKG_CONFIG_PATH
+		PKG_CONFIG_PATH=$_sdk_root/AbiMacOSX.sdk/opt/abi/lib/pkgconfig:$PKG_CONFIG_PATH
 		export PKG_CONFIG_PATH
+		ABI_MACSDK_ROOT=$_sdk_root
+		AC_SUBST(ABI_MACSDK_ROOT)
         fi
 ])
 
