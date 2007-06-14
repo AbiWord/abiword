@@ -23,12 +23,15 @@
 #define IE_EXP_H
 
 #include <stdio.h>
+#include <map>
+#include <string>
 
-#include "ut_IntStrMap.h"
 #include "ie_types.h"
 
 #include "ut_go_file.h"
 #include <gsf/gsf-output.h>
+
+#include "ut_string_class.h"
 
 class PD_Document;
 class PD_DocumentRange;
@@ -182,7 +185,7 @@ protected:
 	bool				m_error;
 
 public:
-	const UT_UTF8String * getProperty (const char * key) {
+	const std::string & getProperty (const std::string & key) {
 		return m_props_map[key];
 	}
 
@@ -196,7 +199,7 @@ private:
 
 	bool				m_bCancelled;
 
-	UT_UTF8Hash			m_props_map;
+	std::map<std::string, std::string>	m_props_map;
 
 	UT_Confidence_t		m_fidelity;
 	IE_FieldUpdater  *  m_fieldUpdater;

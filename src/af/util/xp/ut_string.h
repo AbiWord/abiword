@@ -21,6 +21,8 @@
 #ifndef UT_STRING_H
 #define UT_STRING_H
 
+#include <map>
+#include <string>
 #include <string.h>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
@@ -154,6 +156,12 @@ ABI_EXPORT UT_UCS4Char *     UT_UCS4_strnrev(UT_UCS4Char * dest, UT_uint32 n);
 
 ABI_EXPORT UT_UCS4Char		 UT_UCS4_tolower(UT_UCS4Char c);
 ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);
+
+
+ABI_EXPORT void UT_parse_attributes(const char * attributes,
+									std::map<std::string, std::string> & map);
+ABI_EXPORT void UT_parse_properties(const char * props,
+									std::map<std::string, std::string> & map);
 
 
 #ifdef WIN32

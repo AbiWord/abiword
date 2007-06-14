@@ -144,22 +144,20 @@ UT_uint32 IE_Exp_AbiWord_1::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 
 void IE_Exp_AbiWord_1::_setupFile()
 {
-  const UT_UTF8String * prop = 0;
-  
-  // allow people to override this on the command line or otherwise
-  prop = getProperty ("compress");
-  if (prop)
-	  m_bIsCompressed = UT_parseBool (prop->utf8_str (), m_bIsCompressed);
-
-  if (m_bIsCompressed)
-	  {
-		  GsfOutput * gzip = gsf_output_gzip_new(getFp (), NULL);
-		  m_output = gzip;
-	  }
-  else
-	  {
-		  m_output = 0;
-	  }
+	// allow people to override this on the command line or otherwise
+	const std::string & prop = (getProperty ("compress"));
+	if (!prop.empty())
+		m_bIsCompressed = UT_parseBool(prop.c_str (), m_bIsCompressed);
+	
+	if (m_bIsCompressed)
+	{
+		GsfOutput * gzip = gsf_output_gzip_new(getFp (), NULL);
+		m_output = gzip;
+	}
+	else
+	{
+		m_output = 0;
+	}
 }
 
 static void close_gsf_handle(GsfOutput * output)

@@ -215,8 +215,8 @@ void IE_Exp::populateFields()
 
 void IE_Exp::setProps (const char * props)
 {
-	m_props_map.clear ();
-	m_props_map.parse_properties (props);
+	m_props_map.clear();
+	UT_parse_properties(props, m_props_map);
 }
 
 GsfOutput* IE_Exp::openFile(const char * szFilename)

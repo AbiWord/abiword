@@ -58,7 +58,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_Encoding.cpp     	\
 		ut_thread.cpp		\
 		ut_decompress.cpp	\
-		ut_IntStrMap.cpp	\
                 ut_crc32.cpp		\
 		ut_uuid.cpp		\
 		ut_go_file.cpp \

@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
+ * Copyright (C) 2007 Hubert Figuiere
  * Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
  * Copyright (C) 2002,2004 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
@@ -307,8 +308,8 @@ static UT_UTF8String s_string_to_url (const UT_UTF8String & str)
 
 static const char * s_prop_list[] = {
 	"background-color",	"transparent",
-	"color",			0,
-	"font-family",		0,
+	"color",			"",
+	"font-family",		"",
 	"font-size",		"medium",
 	"font-style",		"normal",
 	"font-variant",		"normal",
@@ -319,7 +320,7 @@ static const char * s_prop_list[] = {
 	"margin-right",		"0pt",
 	"margin-top",		"0pt",
 	"orphans",			"2",
-	"text-align",		0,
+	"text-align",		"",
 	"text-decoration",	"none",
 	"text-indent",		"0in",
 	"vertical-align",	"baseline",
@@ -424,7 +425,8 @@ private:
 
 	PD_Style *		m_style;
 
-	UT_UTF8Hash		m_map;
+	typedef std::map<std::string, std::string> map_type;
+	map_type m_map;
 
 	s_StyleTree (s_StyleTree * parent, const char * name, PD_Style * style);
 public:
@@ -458,7 +460,7 @@ public:
 	const UT_UTF8String & class_name () const { return m_class_name; }
 	const UT_UTF8String & class_list () const { return m_class_list; }
 
-	const UT_UTF8String * lookup (const UT_UTF8String & prop_name);
+	const std::string & lookup (const std::string & prop_name) const;
 
 private:
 	void	styleCheck (PT_AttrPropIndex api);
@@ -785,20 +787,18 @@ bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 	if (( key == 0) || ( value == 0)) return false;
 	if ((*key == 0) || (*value == 0)) return false;
 
-	UT_UTF8String css_name(key);
+	std::string css_name(key);
 
-	const UT_UTF8String * css_value = 0;
+	std::string css_value;
 
 	if (m_StyleTreeInline)
-		css_value = const_cast<s_StyleTree *>(m_StyleTreeInline)->lookup (css_name);
-	if (m_StyleTreeBlock && !css_value)
-		css_value = const_cast<s_StyleTree *>(m_StyleTreeBlock)->lookup (css_name);
-	if (m_StyleTreeBody  && !css_value)
-		css_value = const_cast<s_StyleTree *>(m_StyleTreeBody)->lookup (css_name);
+		css_value = m_StyleTreeInline->lookup (css_name);
+	if (m_StyleTreeBlock && css_value.empty())
+		css_value = m_StyleTreeBlock->lookup (css_name);
+	if (m_StyleTreeBody  && css_value.empty())
+		css_value = m_StyleTreeBody->lookup (css_name);
 
-	if (!css_value) return false;
-
-	return (*css_value == value);
+	return (css_value == value);
 }
 
 void s_HTML_Listener::tagRaw (UT_UTF8String & content)
@@ -5883,12 +5883,13 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 			}
 		}
 		
-		const UT_UTF8String * cascade_value = lookup (name);
-		if (cascade_value)
-			if (value == *cascade_value)
+		const std::string & cascade_value = lookup (name.utf8_str());
+		if (!cascade_value.empty())
+			if (cascade_value == value)
 				continue;
 
-		m_map.ins (name, value);
+		m_map.insert(map_type::value_type(name.utf8_str(), 
+										  value.utf8_str()));
 	}
 	if ((m_style_name == "Heading 1") ||
 		(m_style_name == "Heading 2") ||
@@ -5896,7 +5897,7 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 		(m_style_name == "Section Heading") ||
 		(m_style_name == "Chapter Heading"))
 	{
-		m_map.ins ("page-break-after", "avoid");
+		m_map.insert(map_type::value_type("page-break-after", "avoid"));
 	}
 }
 
@@ -5912,9 +5913,11 @@ s_StyleTree::s_StyleTree (PD_Document * pDocument) :
 		m_class_list(""),
 		m_style(0)
 {
-	if (!m_map.ins (s_prop_list))
+	const char ** ptr = s_prop_list;
+	while(*ptr) 
 	{
-		UT_DEBUGMSG(("failed to add CSS defaults to map in root style-tree element!\n"));
+		m_map.insert(map_type::value_type(*ptr, *(ptr+1)));
+		ptr += 2;
 	}
 }
 
@@ -5975,7 +5978,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 	pDoc->getStyle (style_name, &style);
 	if (!style) return false;
 
-	s_StyleTree * parent = 0;
+	s_StyleTree * parent = NULL;
 
 	PD_Style * basis = style->getBasedOn ();
 
@@ -5984,8 +5987,8 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
 		strcmp(style_name, parent_name) != 0)
 	{
-		parent = const_cast<s_StyleTree *>(find (basis));
-		if (parent == 0)
+		parent = const_cast<s_StyleTree*>(find (basis));
+		if (parent == NULL)
 		{
 			const gchar * basis_name = 0;
 			basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, basis_name);
@@ -6000,11 +6003,12 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 			{
 				if (!add (basis_name, pDoc)) return false;
 
-				parent = const_cast<s_StyleTree *>(find (basis));
+				parent = const_cast<s_StyleTree*>(find (basis));
 			}
 		}
 	}
-	else parent = this;
+	else 
+		parent = this;
 
 	if (!parent) {
 		UT_ASSERT_NOT_REACHED();
@@ -6091,16 +6095,10 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 		}
 		listener->styleOpen (selector);
 
-		UT_uint32 count = m_map.count ();
-
-		for (UT_uint32 index = 0; index < count; index++)
-		{
-			const UT_UTF8String * key   = 0;
-			const UT_UTF8String * value = 0;
-
-			m_map.pair (index, key, value);
-
-			listener->styleNameValue (key->utf8_str (), *value);
+		for (map_type::const_iterator iter = m_map.begin();
+			 iter != m_map.end(); iter++) {
+			listener->styleNameValue((*iter).first.c_str(), 
+									 (*iter).second.c_str());
 		}
 		listener->styleClose ();
 	}
@@ -6110,16 +6108,15 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 	}
 }
 
-const UT_UTF8String * s_StyleTree::lookup (const UT_UTF8String & prop_name)
+const std::string & s_StyleTree::lookup (const std::string & prop_name) const
 {
-	const UT_UTF8String * prop_value = 0;
+	map_type::const_iterator prop_iter = m_map.find(prop_name);
 
-	prop_value = m_map[prop_name];
+	if (prop_iter == m_map.end() && m_parent) {
+		return m_parent->lookup (prop_name);
+	}
 
-	if (!prop_value && m_parent)
-		prop_value = m_parent->lookup (prop_name);
-
-	return prop_value;
+	return (*prop_iter).second;
 }
 
 void s_StyleTree::styleCheck (PT_AttrPropIndex api)
@@ -6253,7 +6250,8 @@ private:
 
 	UT_UTF8String	m_utf8;
 	UT_UTF8String	m_root;
-	UT_UTF8Hash		m_hash;
+	typedef std::map<std::string, std::string> hash_type;
+	hash_type		m_hash;
 	UT_NumberStack	m_mode;
 };
 
@@ -6263,9 +6261,9 @@ s_TemplateHandler::s_TemplateHandler (PD_Document * pDocument, IE_Exp_HTML * pie
 		m_cdata(false),
 		m_empty(false)
 {
-	const UT_UTF8String * prop = m_pie->getProperty ("href-prefix");
-	if (prop)
-		m_root = *prop;
+	const std::string & prop = m_pie->getProperty ("href-prefix");
+	if (!prop.empty())
+		m_root = prop;
 }
 
 s_TemplateHandler::~s_TemplateHandler ()
@@ -6429,37 +6427,37 @@ void s_TemplateHandler::ProcessingInstruction (const gchar * target, const gchar
 	else if ((m_utf8 == "comment-replace") && echo ())
 	{
 		m_hash.clear ();
-		m_hash.parse_attributes (data);
+		UT_parse_attributes(data, m_hash);
 
-		const UT_UTF8String * sz_property = m_hash["property"];
-		const UT_UTF8String * sz_comment  = m_hash["comment"];
+		const std::string & sz_property(m_hash["property"]);
+		const std::string & sz_comment(m_hash["comment"]);
 
-		if (sz_property && sz_comment)
+		if (sz_property.size() && sz_comment.size())
 		{
 #ifdef HTML_META_SUPPORTED
 			UT_UTF8String creator = "";
 #endif /* HTML_META_SUPPORTED */
-			const UT_UTF8String * prop = 0;
+			std::string prop;
 
-			if (*sz_property == "meta::creator")
+			if (sz_property == "meta::creator")
 			{
 #ifdef HTML_META_SUPPORTED
 				m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, creator);
 
 				if (creator.byteLength ())
-					prop = &creator;
+					prop = creator.utf8_str();
 #endif /* HTML_META_SUPPORTED */
 			}
 			else
 			{
-				prop = m_pie->getProperty (sz_property->utf8_str ());
+				prop = m_pie->getProperty (sz_property.c_str());
 			}
-			if (prop)
+			if (!prop.empty())
 			{
 				const UT_UTF8String DD("$$");
 
-				m_utf8 = *sz_comment;
-				m_utf8.escape (DD, *prop);
+				m_utf8 = sz_comment.c_str();
+				m_utf8.escape (DD, prop.c_str());
 
 				m_pie->write ("<!--", 4);
 				m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
@@ -6469,41 +6467,42 @@ void s_TemplateHandler::ProcessingInstruction (const gchar * target, const gchar
 	}
 	else if ((m_utf8 == "menuitem") && echo ())
 	{
-		m_hash.clear ();
-		m_hash.parse_attributes (data);
+		m_hash.clear();
+		UT_parse_attributes(data, m_hash);
 
-		const UT_UTF8String * sz_property = m_hash["property"];
-		const UT_UTF8String * sz_class    = m_hash["class"];
-		const UT_UTF8String * sz_href     = m_hash["href"];
-		const UT_UTF8String * sz_label    = m_hash["label"];
+		const std::string sz_property = m_hash["property"];
+		const std::string sz_class    = m_hash["class"];
+		std::string sz_href     = m_hash["href"];
+		const std::string sz_label    = m_hash["label"];
 
-		if (sz_property && sz_class && sz_href && sz_label)
+		if (sz_property.size() && sz_class.size() 
+			&& sz_href.size() && sz_label.size())
 		{
-			const char * href = sz_href->utf8_str ();
+			const char * href = sz_href.c_str();
 
 			if (*href == '$')
 			{
 				m_utf8  = m_root;
 				m_utf8 += href + 1;
 
-				m_hash.ins ("href", m_utf8);
+				m_hash["href"] =  m_utf8.utf8_str();
 
-				sz_href = m_hash["href"];
+				sz_href = m_utf8.utf8_str();
 			}
 
-			const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+			const std::string & prop = m_pie->getProperty(sz_property.c_str());
 
-			bool ne = (prop ? (*prop != *sz_class) : true);
+			bool ne = (prop != sz_class);
 
 			m_utf8  = "<td class=\"";
-			m_utf8 += *sz_class;
+			m_utf8 += sz_class;
 			if (ne)
 			{
 				m_utf8 += "\"><a href=\"";
-				m_utf8 += *sz_href;
+				m_utf8 += sz_href;
 			}
 			m_utf8 += "\"><div>";
-			m_utf8 += *sz_label;
+			m_utf8 += sz_label;
 			m_utf8 += "</div>";
 			if (ne)
 			{
@@ -6645,14 +6644,11 @@ bool s_TemplateHandler::condition (const gchar * data) const
 		var.assign (data, ne - data);
 		value = ne + 2;
 	}
-	const UT_UTF8String * prop = m_pie->getProperty (var.utf8_str ());
+	const std::string & prop = m_pie->getProperty (var.utf8_str ());
 
 	bool match;
 
-	if (prop)
-		match = (*prop == value);
-	else
-		match = (*value == 0);
+	match = (prop == value);
 
 	return (eq ? match : !match);
 }
@@ -6868,41 +6864,41 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	                                     indicates max line length (default MAX_LINE_LEN)
 	*/
 
-	const UT_UTF8String * prop = 0;
+	std::string prop;
 
 	prop = getProperty ("html4");
-	if (prop)
-		m_exp_opt.bIs4 = UT_parseBool (prop->utf8_str (), m_exp_opt.bIs4);
+	if (!prop.empty())
+		m_exp_opt.bIs4 = UT_parseBool (prop.c_str (), m_exp_opt.bIs4);
 
 	prop = getProperty ("php-includes");
-	if (prop)
-		m_exp_opt.bIsAbiWebDoc = UT_parseBool (prop->utf8_str (), m_exp_opt.bIsAbiWebDoc);
+	if (!prop.empty())
+		m_exp_opt.bIsAbiWebDoc = UT_parseBool (prop.c_str (), m_exp_opt.bIsAbiWebDoc);
 
 	prop = getProperty ("declare-xml");
-	if (prop)
-		m_exp_opt.bDeclareXML = UT_parseBool (prop->utf8_str (), m_exp_opt.bDeclareXML);
+	if (!prop.empty())
+		m_exp_opt.bDeclareXML = UT_parseBool (prop.c_str (), m_exp_opt.bDeclareXML);
 
 	prop = getProperty ("use-awml");
-	if (prop)
-		m_exp_opt.bAllowAWML = UT_parseBool (prop->utf8_str (), m_exp_opt.bAllowAWML);
+	if (!prop.empty())
+		m_exp_opt.bAllowAWML = UT_parseBool (prop.c_str (), m_exp_opt.bAllowAWML);
 
 	prop = getProperty ("embed-css");
-	if (prop)
-		m_exp_opt.bEmbedCSS = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedCSS);
+	if (!prop.empty())
+		m_exp_opt.bEmbedCSS = UT_parseBool (prop.c_str (), m_exp_opt.bEmbedCSS);
 
 	prop = getProperty ("abs-units");
-	if (prop)
-		m_exp_opt.bAbsUnits = UT_parseBool (prop->utf8_str (), m_exp_opt.bAbsUnits);
+	if (!prop.empty())
+		m_exp_opt.bAbsUnits = UT_parseBool (prop.c_str (), m_exp_opt.bAbsUnits);
 
 	prop = getProperty ("compact");
-	if (prop)
+	if (!prop.empty())
 	{
-		UT_sint32 iLen = atoi(prop->utf8_str());
+		UT_sint32 iLen = atoi(prop.c_str());
 		if(iLen != 0)
 			m_exp_opt.iCompact = (UT_uint32)iLen;
 		else
 		{
-			m_exp_opt.iCompact = (UT_uint32)UT_parseBool (prop->utf8_str (), (bool)m_exp_opt.iCompact);
+			m_exp_opt.iCompact = (UT_uint32)UT_parseBool (prop.c_str (), (bool)m_exp_opt.iCompact);
 			if(m_exp_opt.iCompact)
 				m_exp_opt.iCompact = MAX_LINE_LEN;
 		}
@@ -6910,25 +6906,27 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	
 
 	prop = getProperty ("link-css");
-	if (prop)
+	if (!prop.empty())
 	{
 		m_exp_opt.bEmbedCSS = false;
 		m_exp_opt.bLinkCSS = true;
-		m_sLinkCSS = *prop;
+		m_sLinkCSS = prop;
 	}
 	
 	prop = getProperty ("class-only");
-	if (prop && !g_ascii_strcasecmp("yes",prop->utf8_str()))
+	if (!prop.empty() && !g_ascii_strcasecmp("yes",prop.c_str()))
 	{
 		m_exp_opt.bClassOnly = true;
 	}
 
 	prop = getProperty ("title");
-	if(prop)
+	if(!prop.empty())
 	{
 		m_sTitle.clear();
+		// FIXME: less optimal -- hub
+		UT_UTF8String utf8prop(prop.c_str());
 		
-		UT_UTF8Stringbuf::UTF8Iterator propIt = prop->getIterator();
+		UT_UTF8Stringbuf::UTF8Iterator propIt = utf8prop.getIterator();
 
 		UT_UCS4Char c = UT_UTF8Stringbuf::charCode(propIt.current());
 		bool bToken = false;
@@ -6987,11 +6985,11 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 		
 
 	prop = getProperty ("embed-images");
-	if (prop)
-		m_exp_opt.bEmbedImages = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedImages);
+	if (!prop.empty())
+		m_exp_opt.bEmbedImages = UT_parseBool(prop.c_str(), m_exp_opt.bEmbedImages);
 
 	prop = getProperty ("html-template");
-	if (!prop)
+	if (prop.empty())
 		return _writeDocument (false, false);
 
 	/* template mode...
@@ -7014,7 +7012,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_XML parser;
 	parser.setExpertListener (&TH);
 
-	UT_Error err = parser.parse (prop->utf8_str ());
+	UT_Error err = parser.parse (prop.c_str ());
 
 	return err;
 }

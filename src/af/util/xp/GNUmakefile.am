@@ -85,7 +85,6 @@ libUtil_xp_a_SOURCES= \
 	$(THREAD_OBJ)		\
 	ut_xml.cpp		\
 	ut_html.cpp		\
-	ut_IntStrMap.cpp \
         ut_crc32.cpp \
 	ut_uuid.cpp \
 	ut_go_file.cpp
@@ -113,7 +112,6 @@ noinst_HEADERS = \
 	ut_html.h \
 	ut_iconv.h \
 	ut_idle.h \
-	ut_IntStrMap.h \
 	ut_Language.h \
 	ut_locale.h \
 	ut_math.h \

@@ -812,11 +812,11 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 	UT_UCSChar c;
 
 	if (!m_bExplicitlySetEncoding) {
-		const UT_UTF8String * prop;
+		std::string prop;
 
 		prop = getProperty ("encoding");
-		if (prop) {
-			_setEncoding (prop->utf8_str());
+		if (!prop.empty()) {
+			_setEncoding (prop.c_str());
 		}
 	}
 

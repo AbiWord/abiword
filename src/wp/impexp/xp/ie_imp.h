@@ -25,7 +25,8 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
-#include "ut_IntStrMap.h"
+#include <map>
+
 #include "ut_vector.h"
 #include "ut_string_class.h"
 #include "pd_Document.h"
@@ -214,7 +215,7 @@ public:
 	virtual UT_Error _loadFile (GsfInput * input) = 0;
 
 public:
-	const UT_UTF8String * getProperty (const char * key) {
+	const std::string & getProperty (const char * key) {
 		return m_props_map[key];
 	}
 
@@ -225,7 +226,8 @@ public:
 	bool m_bStylesOnly;
 	bool m_bDocProps;
 
-	UT_UTF8Hash   m_props_map;
+	typedef std::map<std::string, std::string> map_type;
+	map_type m_props_map;
 
 	UT_Confidence_t m_fidelity;
 };

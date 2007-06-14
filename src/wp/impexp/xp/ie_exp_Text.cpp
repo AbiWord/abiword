@@ -201,11 +201,9 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 PL_Listener * IE_Exp_Text::_constructListener(void)
 {
 	if (!m_bExplicitlySetEncoding) {
-		const UT_UTF8String * prop;
-
-		prop = getProperty ("encoding");
-		if (prop) {
-			_setEncoding (prop->utf8_str());
+		const std::string & prop = getProperty ("encoding");
+		if (!prop.empty()) {
+			_setEncoding (prop.c_str());
 		}
 	}
 

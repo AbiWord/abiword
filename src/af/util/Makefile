@@ -111,7 +111,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_IntStrMap.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_crc32.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_uuid.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_go_file.$(OBJ_SUFFIX) \

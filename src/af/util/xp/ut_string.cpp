@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <algorithm>
+
 #ifdef __QNXNTO__
 #include <strings.h>
 #endif
@@ -1326,6 +1328,272 @@ bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
   return true;
 }
 
+static const char * s_pass_name (const char *& csstr, char end)
+{
+	const char * name_end = csstr;
+	
+	while (*csstr)
+	{
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			if (UT_UCS4_isspace (ucs4))
+			{
+				name_end = csstr;
+				break;
+			}
+			while (static_cast<unsigned char>(*++csstr) & 0x80)
+				;
+			continue;
+		}
+		else if ((isspace (static_cast<int>(u))) || (*csstr == end))
+		{
+			name_end = csstr;
+			break;
+		}
+		csstr++;
+	}
+	return name_end;
+}
+
+
+static const char * s_pass_value (const char *& csstr)
+{
+	const char * value_end = csstr;
+	
+	bool bQuoted = false;
+	while (*csstr)
+	{
+		bool bSpace = false;
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			
+			if (!bQuoted)
+				if (UT_UCS4_isspace (ucs4))
+				{
+					bSpace = true;
+					break;
+				}
+			while (static_cast<unsigned char>(*++csstr) & 0x80)
+				;
+			if (!bSpace) 
+				value_end = csstr;
+			continue;
+		}
+		else if ((*csstr == '\'') || (*csstr == '"'))
+		{
+			bQuoted = (bQuoted ? false : true);
+		}
+		else if (*csstr == ';')
+		{
+			if (!bQuoted)
+			{
+				csstr++;
+				break;
+			}
+		}
+		else if (!bQuoted && isspace (static_cast<int>(u))) 
+			bSpace = true;
+		
+		csstr++;
+		if (!bSpace) 
+			value_end = csstr;
+	}
+	return value_end;
+}
+
+
+static const char * s_pass_string (const char *& csstr_ptr)
+{
+	if (*csstr_ptr == 0) 
+		return 0;
+	
+	const char * csstr = csstr_ptr;
+	
+	char quote = 0;
+	
+	if ((*csstr == '\'') || (*csstr == '"')) 
+		quote = *csstr;
+
+	bool valid = true;
+	bool skip = false;
+
+	while (true)
+	{
+		unsigned char u = static_cast<unsigned char>(*++csstr);
+		
+		if ((u & 0xc0) == 0x80) 
+			continue; // trailing byte
+		if (u == 0)
+		{
+			valid = false;
+			break;
+		}
+		if (skip)
+		{
+			skip = false;
+			continue;
+		}
+		if (*csstr == quote)
+		{
+			++csstr;
+			break;
+		}
+		if (*csstr == '\\') 
+			skip = true;
+	}
+	if (valid)
+	{
+		csstr_ptr = csstr;
+		csstr--;
+	}
+	else
+	{
+		csstr = csstr_ptr;
+	}
+	return csstr; // points to end quote on success, and to start quote on failure
+}
+
+static void s_pass_whitespace (const char *& csstr)
+{
+	while (*csstr)
+	{
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			if (UT_UCS4_isspace (ucs4))
+			{
+				while (static_cast<unsigned char>(*++csstr) & 0x80) 
+					;
+				continue;
+			}
+		}
+		else if (isspace (static_cast<int>(u)))
+		{
+			csstr++;
+			continue;
+		}
+		break;
+	}
+}
+
+
+void UT_parse_attributes(const char * attributes,
+						 std::map<std::string, std::string> & map)
+{
+	if ( attributes == 0) 
+		return;
+	if (*attributes == 0) 
+		return;
+
+	const char * atstr = attributes;
+
+	std::string name;
+	std::string value;
+
+	while (*atstr)
+	{
+		s_pass_whitespace (atstr);
+		
+		const char * name_start = atstr;
+		const char * name_end   = s_pass_name (atstr, '=');
+		
+		if (*atstr != '=') 
+			break; // whatever we have, it's not a name="value" pair
+		if (name_start == name_end) 
+			break; // ?? stray equals?
+
+		name.clear();
+		std::copy(name_start, name_end, name.begin());
+
+		atstr++;
+		
+		if ((*atstr != '\'') && (*atstr != '"')) 
+			break; // whatever we have, it's not a name="value" pair
+
+		const char * value_start = atstr;
+		const char * value_end   = s_pass_string (atstr);
+
+		if (value_start == value_end) 
+			break; // ?? no value...
+
+		value_start++;
+
+		value.clear();
+		std::copy(value_start, value_end, value.begin());
+
+		map[name] = value;
+	}
+}
+
+
+void UT_parse_properties(const char * properties,
+									std::map<std::string, std::string> & map)
+{
+	if ( properties == 0) 
+		return;
+	if (*properties == 0) 
+		return;
+	
+	const char * csstr = properties;
+	
+	std::string name;
+	std::string value;
+	
+	bool bSkip = false;
+	
+	while (*csstr)
+	{
+		if (bSkip)
+		{
+			if (*csstr == ';')
+				bSkip = false;
+			++csstr;
+			continue;
+		}
+		s_pass_whitespace (csstr);
+		
+		const char * name_start = csstr;
+		const char * name_end   = s_pass_name (csstr, ':');
+		
+		if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
+		if (name_start == name_end) // ?? stray colon?
+		{
+			bSkip = true;
+			continue;
+		}
+		std::copy(name_start, name_end, name.begin());
+		
+		s_pass_whitespace (csstr);
+		if (*csstr != ':') // whatever we have, it's not a "name:value;" pair
+		{
+			bSkip = true;
+			continue;
+		}
+		
+		csstr++;
+		s_pass_whitespace (csstr);
+		
+		if (*csstr == 0) 
+			break; // whatever we have, it's not a "name:value;" pair
+		
+		const char * value_start = csstr;
+		const char * value_end   = s_pass_value (csstr);
+		
+		if (value_start == value_end) // ?? no value...
+		{
+			bSkip = true;
+			continue;
+		}
+		std::copy(value_start, value_end, value.begin());
+		
+		map[name] = value;
+	}
+}
 
 /*
  this one prints floating point value but using dot as fractional separator
