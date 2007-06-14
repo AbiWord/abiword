@@ -228,6 +228,7 @@ UT_String& UT_String::operator+=(const char* rhs)
 	return *this;
 }
 
+
 UT_String& UT_String::operator+=(char rhs)
 {
 	char cs = rhs;
@@ -753,6 +754,17 @@ UT_UTF8String &	UT_UTF8String::operator=(const char * rhs)
   return *this;
 }
 
+UT_UTF8String &	UT_UTF8String::operator=(const std::string & rhs)
+{
+  // treat null string assignment as a clear
+  if (rhs.size() == 0)
+    pimpl->clear();
+  else
+    pimpl->assign (rhs.c_str());
+
+  return *this;
+}
+
 UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)
 {
 	if (this != &rhs) {
@@ -773,6 +785,12 @@ UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
 {
 	UT_return_val_if_fail(rhs && *rhs, *this);
 	pimpl->append (rhs);
+	return *this;
+}
+
+UT_UTF8String& UT_UTF8String::operator+=(const std::string& rhs)
+{
+	pimpl->append(rhs.c_str());
 	return *this;
 }
 

@@ -200,11 +200,13 @@ public:
 	UT_UTF8String	substr(size_t iStart, size_t nChars) const;
 
 	UT_UTF8String &	operator=(const char *          rhs);
+	UT_UTF8String &	operator=(const std::string &   rhs);
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
 
 	UT_UTF8String &	operator+=(const UT_UCS4Char     rhs);
 	UT_UTF8String &	operator+=(const char *          rhs);
+	UT_UTF8String &	operator+=(const std::string &   rhs);
 	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
 	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);	
 
