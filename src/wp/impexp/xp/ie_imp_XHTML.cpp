@@ -653,9 +653,9 @@ UT_Error IE_Imp_XHTML::_loadFile(GsfInput * input)
 			{
 				char buf[1024];
 
-				gsf_input_read (input, UT_MIN(size, sizeof(buf)), (guint8*)buf);
+				gsf_input_read (input, std::min(size, static_cast<gsf_off_t>(sizeof(buf))), (guint8*)buf);
 				
-				is_xml = recognizeXHTML (buf, UT_MIN(size, sizeof(buf)));
+				is_xml = recognizeXHTML (buf, std::min(size, static_cast<gsf_off_t>(sizeof(buf))));
 			}
 	}
 
