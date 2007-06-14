@@ -170,15 +170,3 @@ SUFFIXES=.mm
 .mm.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
 
-# MacOS X resource compiling
-# TODO add autoconf macros to detect Rez, ResMerger and other stuff. 
-#      currently we use the hardcode locations
-if WITH_MACOSX
-REZ             = /Developer/Tools/Rez
-RESMERGER       = /Developer/Tools/ResMerger
-ABI_MACREZ_INCS= -i $(top_builddir)/src/af/xap/mac
-ABI_MACREZ_OPTS= $(ABI_MACREZ_INCS) -d REZ_CARBON -F Carbon -F HIToolbox -useDF
-
-%.rsrc: %.r
-	$(REZ) -o $@ $(ABI_MACREZ_INCS) $(ABI_MACREZ_OPTS) $<
-endif
