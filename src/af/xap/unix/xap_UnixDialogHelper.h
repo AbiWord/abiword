@@ -20,9 +20,13 @@
 #ifndef UT_DIALOGHELPER_H
 #define UT_DIALOGHELPER_H
 
+
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <glade/glade.h>
+
+#include <functional>
+
 #include "ut_types.h"
 #include "ut_string_class.h"
 #include "xap_Strings.h"
@@ -48,7 +52,8 @@ class XAP_Dialog;
 
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
-void connectFocusModelessOther(GtkWidget *widget,const XAP_App *pApp,gboolean (*other_function)(void) );
+void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp, 
+	std::pointer_to_unary_function<int, gboolean> *other_function);
 bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
 												   
 // This is a very thin message box; only use it for startup errors

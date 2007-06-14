@@ -132,11 +132,12 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
 }
 
 
-static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,gboolean (*other_function)(void) )
+static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,
+	std::pointer_to_unary_function<int, gboolean> *other_function)
 {
       XAP_App *pApp=static_cast<XAP_App *>(g_object_get_data(G_OBJECT(widget), "pApp"));
       XAP_Frame *pFrame= pApp->getLastFocussedFrame();
-      if(pFrame ==static_cast<XAP_Frame *>(NULL)) 
+      if(pFrame == static_cast<XAP_Frame *>(NULL)) 
       {
              UT_uint32 nframes =  pApp->getFrameCount();
              if(nframes > 0 && nframes < 10)
@@ -148,12 +149,13 @@ static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event
 	            return FALSE;
 	      }
       }
-      if(pFrame == static_cast<XAP_Frame *>(NULL)) return FALSE;
+      if(pFrame == static_cast<XAP_Frame *>(NULL)) 
+	return FALSE;
       AV_View * pView = pFrame->getCurrentView();
       if(pView!= NULL)
       {
             pView->focusChange(AV_FOCUS_MODELESS);
-            (*other_function)();
+            (*other_function)(0);
       }
       return FALSE;
 }
@@ -174,7 +176,7 @@ void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 }
 
 void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp, 
-			       gboolean(*other_function)(void))
+			       std::pointer_to_unary_function<int, gboolean> *other_function)
 {
       g_object_set_data(G_OBJECT(widget), "pApp",
 					  const_cast<void *>(static_cast<const void *>(pApp)));

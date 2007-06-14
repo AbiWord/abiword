@@ -153,7 +153,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 	return FALSE;
 }
 
-static gboolean s_update (void)
+static gboolean s_update (int /*unused*/)
 {
 	if( Current_Dialog->isDirty())
 	        return TRUE;
@@ -224,12 +224,13 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 {
+	static std::pointer_to_unary_function<int, gboolean> s_update_fun = std::ptr_fun(s_update);
 	_constructWindow ();
 	UT_ASSERT (m_wMainWindow);
 	clearDirty();
 
 	abiSetupModelessDialog(GTK_DIALOG(m_wMainWindow), pFrame, this, BUTTON_APPLY);
-	connectFocusModelessOther (GTK_WIDGET (m_wMainWindow), m_pApp, (gboolean (*)(void)) s_update);
+	connectFocusModelessOther (GTK_WIDGET (m_wMainWindow), m_pApp, &s_update_fun);
 
 	// Populate the dialog
 	updateDialog();
