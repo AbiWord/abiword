@@ -101,6 +101,8 @@ AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/sw/include"
 		LDFLAGS="$LDFLAGS -L/sw/lib"
+		PKG_CONFIG_PATH=/sw/lib/pkgconfig:$PKG_CONFIG_PATH
+		export PKG_CONFIG_PATH
 	fi
 ])
 
@@ -111,6 +113,8 @@ AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAG
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/opt/local/include"
 		LDFLAGS="$LDFLAGS -L/opt/local/lib"
+		PKG_CONFIG_PATH=/opt/local/lib/pkgconfig:$PKG_CONFIG_PATH
+		export PKG_CONFIG_PATH
 	fi
 ])
 
@@ -120,6 +124,8 @@ AC_ARG_WITH(abiports,[  --with-abiports       add /opt/abi/... to CPP/LDFLAGS (M
         if test "x$withval" = "xyes"; then
                 CPPFLAGS="$CPPFLAGS -I/opt/abi/include"
                 LDFLAGS="$LDFLAGS -L/opt/abi/lib"
+		PKG_CONFIG_PATH=/opt/abi/lib/pkgconfig:$PKG_CONFIG_PATH
+		export PKG_CONFIG_PATH
         fi
 ])
 
