@@ -57,6 +57,7 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "fv_View.h"
+#include "fv_FrameEdit.h"
 #include "xad_Document.h"
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
@@ -454,6 +455,20 @@ s_drag_data_get_cb (GtkWidget        *widget,
 	}
 	if(emc == EV_EMC_POSOBJECT)
 	{
+		UT_DEBUGMSG(("Dragging positioned object \n"));
+		FV_FrameEdit * fvFrame  = pView->getFrameEdit();
+		const UT_ByteBuf * pBuf = NULL;
+		fvFrame->getPNGImage(&pBuf);
+		if(pBuf)
+		{
+			UT_DEBUGMSG(("Got data of length %d \n",pBuf->getLength()));
+				gtk_selection_data_set (selection,
+										selection->target,
+										8,
+										(guchar *) pBuf->getPointer(0),
+										pBuf->getLength());
+
+		}
 		return;
 	}
 	if (pApp->getCurrentSelection((const char **)formatList, &data, &dataLen, &formatFound))

@@ -29,8 +29,10 @@ class ABI_EXPORT FV_UnixFrameEdit : public FV_FrameEdit
 public:
 
 	FV_UnixFrameEdit (FV_View * pView);
-	~FV_UnixFrameEdit ();
+	virtual ~FV_UnixFrameEdit ();
+	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
 private:
+	bool                  m_bDragOut;
 };
 
 #endif /* FV_UNIXFRAME_EDIT_H */

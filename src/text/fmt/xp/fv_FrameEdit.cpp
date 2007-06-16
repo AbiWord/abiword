@@ -54,7 +54,9 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_yLastMouse(1),
 	  m_iFirstEverX(0),
 	  m_iFirstEverY(0),
-	  m_iGlobCount(0)
+	  m_iGlobCount(0),
+	  m_iInitialFrameX(0),
+	  m_iInitialFrameY(0)
 {
 	UT_ASSERT_HARMLESS(pView);
 }
@@ -280,6 +282,7 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 	if((abs(m_xLastMouse - m_iFirstEverX) + abs(m_yLastMouse - m_iFirstEverY)) <
 		getGraphics()->tlu(3))
 	{
+	  UT_DEBUGMSG(("Not dragged enough - return 1 \n"));
 		return 1;
 	}
 	return 10;
@@ -305,8 +308,12 @@ void  FV_FrameEdit::_endGlob(void)
 	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
 }
 
-
 void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
+{
+  _mouseDrag(x,y);
+}
+
+void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	if(!m_bFirstDragDone)
 	{
@@ -1053,6 +1060,8 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iFrameEditMode = FV_FrameEdit_DRAG_EXISTING;
 				m_iInitialDragX = m_recCurFrame.left;
 				m_iInitialDragY = m_recCurFrame.top;
+				m_iInitialFrameX = m_pFrameContainer->getFullX();
+				m_iInitialFrameY = m_pFrameContainer->getFullY();
 			}
 			if(getGraphics() && getGraphics()->getCaret())
 			{
@@ -1281,6 +1290,19 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		return true;
 }
 
+//
+// Abort the current drag
+//
+//
+void FV_FrameEdit::abortDrag(void)
+{
+  UT_DEBUGMSG(("Doing Abort Drag \n"));
+  m_xLastMouse = m_iFirstEverX;
+  m_yLastMouse = m_iFirstEverY;
+  mouseRelease(m_iInitialDragX,m_iInitialDragY);
+  getView()->updateScreen(false);
+}
+
 void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
 //
@@ -1424,6 +1446,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
 			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			m_pFrameContainer->_setX(m_iInitialFrameX);
+			m_pFrameContainer->_setY(m_iInitialFrameY);
+			m_iInitialFrameX = 0;
+			m_iInitialFrameY = 0;
 			drawFrame(false);
 			m_pFrameLayout = NULL;
 			m_pFrameContainer = NULL;
@@ -1447,6 +1473,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			while(m_iGlobCount > 0)
 				_endGlob();
 			m_pView->warpInsPtToXY(x,y,true);
+			UT_DEBUGMSG(("Completed small drag \n"));
 			return;
 		}
 //
@@ -1974,6 +2001,26 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_bFirstDragDone = false;
 }
 
+/*
+ * Return the bytebuf of the image for this.
+ */
+const char * FV_FrameEdit::getPNGImage(const UT_ByteBuf ** ppByteBuf )
+{
+
+//  Frame Image
+      const PP_AttrProp* pSectionAP = NULL;
+      m_pFrameLayout->getAP(pSectionAP);
+      
+      const char * pszDataID = NULL;
+      pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
+      if(!pszDataID)
+      {
+	  *ppByteBuf = NULL;
+	  return NULL;
+      }
+      m_pView->getDocument()->getDataItemDataByName(pszDataID,ppByteBuf,NULL,NULL);
+      return pszDataID;
+}
 
 /*!
  * This method deletes the current selected frame

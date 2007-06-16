@@ -62,18 +62,21 @@ class ABI_EXPORT FV_FrameEdit
 public:
 
 	FV_FrameEdit (FV_View * pView);
-	~FV_FrameEdit ();
+	virtual ~FV_FrameEdit ();
 	PD_Document *         getDoc(void) const;
 	FL_DocLayout *        getLayout(void) const;
 	GR_Graphics *         getGraphics(void) const ;
+	FV_View *             getView(void)
+	{ return m_pView;}
 	bool                  isActive(void) const;
+	void                  abortDrag(void);
 	UT_sint32             haveDragged(void) const;
     void                  setMode(FV_FrameEditMode iEditMode);
 	FV_FrameEditMode      getFrameEditMode(void) const 
 		{ return m_iFrameEditMode;}
 	FV_FrameEditDragWhat  getFrameEditDragWhat(void) const 
 		{ return m_iDraggingWhat;}
-	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
+	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
@@ -93,6 +96,7 @@ public:
 					      fp_Page ** pPage);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
+	const char *          getPNGImage(const UT_ByteBuf ** ppByteBuf);
 	void                  setPointInside(void);
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _actuallyScroll(UT_Worker * pTimer);
@@ -101,6 +105,9 @@ public:
 	void                  _endGlob();
 	UT_sint32             getGlobCount(void);
         bool                  isImageWrapper(void) const;  	
+protected:
+	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
+
 private:
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;
@@ -124,6 +131,9 @@ private:
 	UT_sint32             m_iFirstEverX;
 	UT_sint32             m_iFirstEverY;
 	UT_sint32             m_iGlobCount;
+	//
+	UT_sint32             m_iInitialFrameX;
+	UT_sint32             m_iInitialFrameY;
 };
 
 #endif /* FV_FRAME_EDIT_H */

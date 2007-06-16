@@ -14565,8 +14565,8 @@ Defun(dragVisualText)
 	       fp_Run * pRun = pBL->findPointCoords(posHigh,bEOL,x1,x2,y1,y2,height,bDir);
 	       if(pRun->getType() == FPRUN_IMAGE)
 	       {
-		 FV_VisualDragText * pVis = pView->getVisualText();
-		 pVis->abortDrag();
+			   FV_VisualDragText * pVis = pView->getVisualText();
+			   pVis->abortDrag();
 	       }
 	     }
 	}
