@@ -47,7 +47,7 @@ public:
 	virtual void			setUpdateCounter( UT_uint32 );
 	virtual void			event_Update(void);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
-	void *					pGetWindowHandle( void ) { return (void*)m_hWnd; }
+	HWND					pGetWindowHandle(void) { return m_hWnd; }
 	
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

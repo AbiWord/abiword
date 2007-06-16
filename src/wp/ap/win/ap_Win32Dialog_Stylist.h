@@ -41,6 +41,7 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	static BOOL CALLBACK 	s_treeProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual void            setStyleInGUI(void);
+	HWND 					pGetWindowHandle(void) { return m_hWnd; }	
 protected:
 	HWND                    m_hWnd;
 

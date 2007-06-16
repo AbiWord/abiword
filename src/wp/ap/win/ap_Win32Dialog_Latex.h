@@ -39,6 +39,7 @@ public:
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
+	HWND					pGetWindowHandle( void ) { return m_hDlg; }
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

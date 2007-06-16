@@ -33,6 +33,7 @@ public:
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void            destroy(void);
+	HWND					pGetWindowHandle( void ) { return m_hwndDlg; }
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	

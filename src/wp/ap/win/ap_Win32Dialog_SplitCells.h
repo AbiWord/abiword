@@ -39,6 +39,7 @@ public:
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	HWND					pGetWindowHandle( void ) { return m_hwndDlg; }
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
