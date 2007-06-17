@@ -1474,7 +1474,7 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 	{
 		if( m_IdTable[ iCounter ].id != -1 )
 		{
-			hWnd = m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
+			hWnd = (HWND) m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
 
 			if( hWnd && IsDialogMessage( hWnd, msg ) )
 				return true;

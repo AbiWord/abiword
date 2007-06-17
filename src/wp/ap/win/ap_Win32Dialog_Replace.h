@@ -38,7 +38,7 @@ public:
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-	HWND					pGetWindowHandle(void) { return m_hWnd; }
+	virtual void *			pGetWindowHandle(void) { return (void *) m_hWnd; }
 
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);

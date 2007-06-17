@@ -44,7 +44,7 @@ public:
 	void					setSelectedRow (int row);
 	int 					getSelectedRow (void);
 
-	virtual HWND			pGetWindowHandle( void ) { return m_hWnd; }
+	virtual  void * 		pGetWindowHandle( void ) { return (void *)  m_hWnd; }
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
