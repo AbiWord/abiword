@@ -98,8 +98,7 @@ AP_Toolbar_Icons iconsdebug;
 
 AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 {
-#ifdef DEBUG
-
+#if defined(DEBUG) && !XAP_DONT_INLINE_XPM
 	// Check that the lists are in alphabetically order 
 	UT_uint32 range = G_N_ELEMENTS(s_imTable);
 	UT_sint32 cmp;
@@ -117,7 +116,6 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 		cmp = g_ascii_strcasecmp( s_itTable[i].m_name, s_itTable[i-1].m_name);
 		UT_ASSERT(cmp > 0);
 	}	
-	
 #endif
 }
 
