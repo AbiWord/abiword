@@ -33,8 +33,10 @@ class ABI_EXPORT FV_UnixVisualInlineImage : public FV_VisualInlineImage
 public:
 
 	FV_UnixVisualInlineImage (FV_View * pView);
-	~FV_UnixVisualInlineImage();
+	virtual ~FV_UnixVisualInlineImage();
+	virtual void mouseDrag(UT_sint32 x, UT_sint32 y);
 private:
+	bool    m_bDragOut;
 };
 
 #endif /* FV_UNIXVISUALINLINEIMAGE_H */

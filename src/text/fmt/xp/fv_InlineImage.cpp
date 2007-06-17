@@ -205,7 +205,14 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 
 }
 
+
 void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
+{
+  _mouseDrag(x,y);
+}
+
+
+void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	GR_Graphics * pG = getGraphics();
 
@@ -833,6 +840,12 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	}
 }
 
+const char * FV_VisualInlineImage::getPNGImage(const UT_ByteBuf ** pBuf)
+{
+        m_pView->getDocument()->getDataItemDataByName(m_sDataId.utf8_str(),pBuf,NULL,NULL);
+	return m_sDataId.utf8_str();
+}
+
 void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
@@ -873,6 +886,10 @@ void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 		}
 		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
 		{
+		        if(pRun->getType() == FPRUN_IMAGE)
+			{
+			    m_sDataId = static_cast<fp_ImageRun *>(pRun)->getDataId();
+			}
 		        posLow = pBlock->getPosition() + pRun->getBlockOffset();
 			// we've found an image: do not move the view, just select the image and exit
 			m_pView->cmdSelect(posLow,posLow+1);
@@ -985,6 +1002,13 @@ void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		return;
 	}
 	drawImage();
+}
+
+
+void FV_VisualInlineImage::abortDrag(void)
+{
+  cleanUP();
+  m_pView->cmdUndo(1);
 }
 
 void FV_VisualInlineImage::cleanUP(void)

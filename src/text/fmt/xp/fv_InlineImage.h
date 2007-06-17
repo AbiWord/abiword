@@ -53,6 +53,7 @@ class GR_Graphics;
 class GR_Image;
 class FV_View;
 class PP_AttrProp;
+class UT_ByteBuf;
 
 class ABI_EXPORT FV_VisualInlineImage
 {
@@ -61,10 +62,12 @@ class ABI_EXPORT FV_VisualInlineImage
 public:
 
 	FV_VisualInlineImage (FV_View * pView);
-	~FV_VisualInlineImage();
+	virtual ~FV_VisualInlineImage();
 	PD_Document *         getDoc(void) const;
 	FL_DocLayout *        getLayout(void) const;
 	GR_Graphics *         getGraphics(void) const ;
+	FV_View *             getView(void)
+	{ return m_pView;}
 	bool                  isActive(void) const;
     void                      setMode(FV_InlineDragMode iInlineDragMode);
 	FV_InlineDragMode     getInlineDragMode(void) const 
@@ -74,7 +77,8 @@ public:
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage);
 	FV_InlineDragWhat     mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
-	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
+	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
+	void                  _mouseDrag(UT_sint32 x, UT_sint32 y);
 	void                  mouseCut(UT_sint32 x, UT_sint32 y);
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
@@ -90,6 +94,8 @@ public:
 	void                  _beginGlob();
 	void                  _endGlob();
 	void                  cleanUP(void);
+	void                  abortDrag(void);
+	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
 private:
 	FV_View *             m_pView;
 	FV_InlineDragMode     m_iInlineDragMode;
@@ -120,6 +126,7 @@ private:
 	UT_UTF8String         m_sCopyName;
 	bool                  m_bIsEmbedded;
 	bool				  m_bEmbedCanResize;
+	UT_UTF8String         m_sDataId;
 };
 
 #endif /* FV_VISUALINLINEIMAGE_H */
