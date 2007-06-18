@@ -44,6 +44,15 @@ OSVERSIONINFO& UT_GetWinVersion(void)
 }
 
 /*!
+ Return true if we're running on Windows Vista, false otherwise
+ */
+bool UT_IsWinVista(void)
+{
+	return (UT_GetWinVersion().dwPlatformId == VER_PLATFORM_WIN32_NT
+		 && UT_GetWinVersion().dwMajorVersion >= 6);
+}
+
+/*!
  Return true if we're running on Windows NT, false otherwise
  */
 bool UT_IsWinNT(void)

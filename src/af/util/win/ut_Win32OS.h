@@ -25,6 +25,7 @@
 #include "ut_types.h"
 
 OSVERSIONINFO& UT_GetWinVersion(void);
+bool UT_IsWinVista(void);
 bool UT_IsWinNT(void);
 bool UT_IsWin2K(void);
 bool UT_IsWin95(void);
