@@ -279,7 +279,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case IDCANCEL:	// also AP_RID_DIALOG_LIST_BTN_CLOSE
-		_win32Dialog.showWindow(SW_HIDE);
+		destroy ();
 		return 1;
 
 	case AP_RID_DIALOG_LIST_BTN_APPLY:
@@ -398,6 +398,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 		setAnswer(AP_Dialog_Lists::a_QUIT);
 		EndDialog(m_hThisDlg, 0);
 		m_hThisDlg = 0;
+		modeless_cleanup();
 		return;
 	}
 
