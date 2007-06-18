@@ -25,6 +25,7 @@
 #include "xap_Types.h"
 #include "ev_Menu.h"
 #include "ut_misc.h"
+#include <vector>
 //#include "ap_Win32FrameImpl.h"
 
 class AV_View;
@@ -70,8 +71,9 @@ public:
 
 protected:
 
-	bool						_isAMenuBar(XAP_Menu_Id	id,HMENU hMenu);
-	HBITMAP	static				_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor color);	
+	static bool					_isAMenuBar(XAP_Menu_Id	id,HMENU hMenu);
+	static HBITMAP				_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor color);	
+	void		 				_setBitmapforID(HMENU hMenu, XAP_Menu_Id id, UINT cmd);
 
 	XAP_Win32App *				m_pWin32App;
 	const EV_EditEventMapper *	m_pEEM;
@@ -82,6 +84,7 @@ protected:
 	UT_Vector					m_vecItems;
 	bool						m_bTrack;
 	UINT                        m_iDIR;
+	std::vector <HBITMAP>		m_vechBitmaps;
 
 };
 

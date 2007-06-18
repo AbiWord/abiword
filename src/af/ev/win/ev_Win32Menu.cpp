@@ -16,6 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
+/*
+	In versions previous to Windows Vista we use owner-draw menus. 
+	In Vista we use SetMenuItemBitmaps that is more powerful that previous Windows editions
+*/
 
 #include <windows.h>
 #include <stdio.h>
@@ -42,6 +47,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "ap_Win32App.h"
+#include "ut_Win32OS.h"
 
 #define SPACE_ICONTEXT	4	// Pixels between the icon and the text
 
@@ -261,6 +267,13 @@ EV_Win32Menu::~EV_Win32Menu()
 {	
 	// we let the derived classes handle destruction of m_myMenu if appropriate.
 	// TODO: this is never colld
+	
+	HBITMAP	hBitmap;
+	for (std::vector<HBITMAP>::const_iterator i = m_vechBitmaps.begin(); 
+		 i != m_vechBitmaps.end(); i++)
+	{	    
+	    DeleteObject (*i);
+	}
 		
 }
 
@@ -384,8 +397,14 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 							
 						if (!m_bTrack && stack.getDepth()==2)
 							AppendMenu(m, flags,u, szLabelName);
-						else
-							AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
+						else {
+							if (UT_IsWinVista()) {
+								AppendMenu(m, flags|MF_STRING,u, szLabelName);
+								_setBitmapforID(m, id, u);
+							}
+							else
+								AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
+						}
 					}		
 						
 				}
@@ -398,8 +417,13 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						item->pMenu= this;						
 						strcpy (item->szText, szLabelName);
 						m_vecItems.addItem(item);
-
-						AppendMenu(m, MF_OWNERDRAW , u, (const char*) item);
+						
+						if (UT_IsWinVista()) {
+							AppendMenu(m, MF_STRING, u, szLabelName);
+							_setBitmapforID (m, id, u);
+						}
+						else
+							AppendMenu(m, MF_OWNERDRAW, u, (const char*) item);
 					}
 				}
 
@@ -564,7 +588,13 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 					strcpy (item->szText, szLabelName);					
 					m_vecItems.addItem(item);
 					//UT_DEBUGMSG(("Menu adding menu->%s\n",szLabelName));
-					AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);					
+										
+					if (UT_IsWinVista()) {
+						AppendMenu(m, MF_STRING, cmd, szLabelName);
+						_setBitmapforID(m, id, cmd);
+					}
+					else
+						AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);
 				}
 				
 				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
@@ -647,6 +677,19 @@ HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor colo
 	AP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), x,y, &color, pBitmaps->szName,	&hBitmap);					
 	
 	return hBitmap; 
+}
+
+// Sets the Bitmap in Windows Vista
+void EV_Win32Menu::_setBitmapforID (HMENU hMenu, XAP_Menu_Id id, UINT cmd)
+{
+	DWORD dwColor = GetSysColor (COLOR_MENU);
+	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
+	HBITMAP hBitmap =  EV_Win32Menu::_loadBitmap(id, 255, 255, Color);
+							
+	if (hBitmap != NULL) {
+		SetMenuItemBitmaps (hMenu, cmd, MF_BYCOMMAND, hBitmap, hBitmap);		
+		m_vechBitmaps.push_back (hBitmap);
+	}
 }
 
 /*
