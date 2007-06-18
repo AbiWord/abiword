@@ -109,7 +109,7 @@ AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OS X)],
 # 
 # convenience option for building with darwin ports installed...
 # 
-AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAGS (Mac OS X)],[
+AC_ARG_WITH(darwinports,[  --with-darwinports          add /opt/local/... to CPP/LDFLAGS (Mac OS X)],[
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/opt/local/include"
 		LDFLAGS="$LDFLAGS -L/opt/local/lib"
