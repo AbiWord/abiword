@@ -90,6 +90,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 void XAP_Win32Dialog_Insert_Symbol::destroy(void)
 {
+	modeless_cleanup();
 	DestroyWindow(m_hDlg);
 }
 
@@ -230,7 +231,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	{
 	case XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON:
 		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-		ShowWindow(hWnd, SW_HIDE);
+		destroy();
 		return 1;
 
 	case XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON:
