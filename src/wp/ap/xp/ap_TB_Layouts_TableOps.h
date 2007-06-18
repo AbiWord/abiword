@@ -59,14 +59,5 @@ BeginLayout(TableOps, AP_STRING_ID_TB_Table, AP_PREF_KEY_TableBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_VIEW_SHOWPARA)
 	ToolbarItem(AP_TOOLBAR_ID_HELP)
 
-	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_LISTS_NUMBERS)
-	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
-
-	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
-	ToolbarItem(AP_TOOLBAR_ID_INDENT)
 
 EndLayout()
