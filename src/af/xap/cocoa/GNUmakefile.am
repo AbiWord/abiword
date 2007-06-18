@@ -19,56 +19,57 @@
 
 include $(top_srcdir)/includes.mk
 
+CXXFLAGS += -x objective-c++
 INCLUDES= @GLIB_CFLAGS@ $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
 
 noinst_LIBRARIES = libXap_cocoa.a
 
 libXap_cocoa_a_SOURCES =		\
-	xap_CocoaApp.mm			\
-	xap_CocoaAppImpl.mm		\
-	xap_CocoaAppController.mm	\
-	xap_CocoaAbiConversions.mm \
-	xap_CocoaAssert.mm \
-	xap_CocoaClipboard.mm		\
-	xap_CocoaDialog_Utilities.mm	\
-	xap_CocoaDlg_Print.mm	\
-	xap_CocoaDlg_PrintPreview.mm	\
-	xap_CocoaDlg_About.mm		\
-	xap_CocoaDlg_DocComparison.mm		\
-	xap_CocoaDlg_Encoding.mm		\
-	xap_CocoaDlg_FileOpenSaveAs.mm	\
-	xap_CocoaDlg_FontChooser.mm \
-	xap_CocoaDlg_History.mm \
-	xap_CocoaDlg_HTMLOptions.mm \
-	xap_CocoaDlg_Image.mm \
-	xap_CocoaDlg_Insert_Symbol.mm \
-	xap_CocoaDlg_Language.mm \
-	xap_CocoaDlg_ListDocuments.mm \
-	xap_CocoaDlg_MessageBox.mm	\
-	xap_CocoaDlg_Password.mm	\
-	xap_CocoaDlg_PluginManager.mm	\
-	xap_CocoaDlg_WindowMore.mm	\
-	xap_CocoaDlg_Zoom.mm	\
-	xap_CocoaEncodingManager.mm	\
-	xap_CocoaFont.mm		\
-	xap_CocoaFrame.mm		\
-	xap_CocoaFrameImpl.mm		\
-	xap_CocoaModule.mm		\
-	xap_CocoaPlugin.mm		\
-	xap_CocoaTimer.mm		\
-	xap_CocoaToolbarWindow.mm	\
-	xap_CocoaToolbar_Icons.mm	\
-	xap_CocoaToolPalette.mm	\
-	xap_CocoaToolProvider.mm \
-	xap_CocoaWidget.mm	\
-	xap_CocoaWindow.mm		\
-	xap_CocoaTextView.mm	\
-	xap_Cocoa_NSTableUtils.mm	\
-	xap_Cocoa_ResourceIDs.mm	\
-	xap_FrameNSWindow.mm		\
-	xap_GenericListChooser_Controller.mm	\
-	xap_PrintingDelegate.mm		\
-	xap_PrintingNSView.mm
+	xap_CocoaApp.cpp			\
+	xap_CocoaAppImpl.cpp		\
+	xap_CocoaAppController.cpp	\
+	xap_CocoaAbiConversions.cpp \
+	xap_CocoaAssert.cpp \
+	xap_CocoaClipboard.cpp		\
+	xap_CocoaDialog_Utilities.cpp	\
+	xap_CocoaDlg_Print.cpp	\
+	xap_CocoaDlg_PrintPreview.cpp	\
+	xap_CocoaDlg_About.cpp		\
+	xap_CocoaDlg_DocComparison.cpp		\
+	xap_CocoaDlg_Encoding.cpp		\
+	xap_CocoaDlg_FileOpenSaveAs.cpp	\
+	xap_CocoaDlg_FontChooser.cpp \
+	xap_CocoaDlg_History.cpp \
+	xap_CocoaDlg_HTMLOptions.cpp \
+	xap_CocoaDlg_Image.cpp \
+	xap_CocoaDlg_Insert_Symbol.cpp \
+	xap_CocoaDlg_Language.cpp \
+	xap_CocoaDlg_ListDocuments.cpp \
+	xap_CocoaDlg_MessageBox.cpp	\
+	xap_CocoaDlg_Password.cpp	\
+	xap_CocoaDlg_PluginManager.cpp	\
+	xap_CocoaDlg_WindowMore.cpp	\
+	xap_CocoaDlg_Zoom.cpp	\
+	xap_CocoaEncodingManager.cpp	\
+	xap_CocoaFont.cpp		\
+	xap_CocoaFrame.cpp		\
+	xap_CocoaFrameImpl.cpp		\
+	xap_CocoaModule.cpp		\
+	xap_CocoaPlugin.cpp		\
+	xap_CocoaTimer.cpp		\
+	xap_CocoaToolbarWindow.cpp	\
+	xap_CocoaToolbar_Icons.cpp	\
+	xap_CocoaToolPalette.cpp	\
+	xap_CocoaToolProvider.cpp \
+	xap_CocoaWidget.cpp	\
+	xap_CocoaWindow.cpp		\
+	xap_CocoaTextView.cpp	\
+	xap_Cocoa_NSTableUtils.cpp	\
+	xap_Cocoa_ResourceIDs.cpp	\
+	xap_FrameNSWindow.cpp		\
+	xap_GenericListChooser_Controller.cpp	\
+	xap_PrintingDelegate.cpp		\
+	xap_PrintingNSView.cpp
 
 EXTRA_DIST = \
 	xap_GenericListChooser_Controller.nib \

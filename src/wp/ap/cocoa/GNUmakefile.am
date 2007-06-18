@@ -19,6 +19,7 @@
 
 include $(top_srcdir)/includes.mk
 
+CXXFLAGS += -x objective-c++ 
 INCLUDES = \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	@GMODULE_CFLAGS@ $(OTHER_INCLUDES) $(ICONV_INCLUDES)
@@ -26,61 +27,61 @@ INCLUDES = \
 noinst_LIBRARIES = libWpAp_cocoa.a
 
 libWpAp_cocoa_a_SOURCES=\
-	ap_CocoaApp.mm		\
-	ap_CocoaAppImpl.mm		\
-	ap_CocoaClipboard.mm	\
-	ap_CocoaDialogFactory.mm	\
-	ap_CocoaDialog_Background.mm	\
-	ap_CocoaDialog_Break.mm	\
-	ap_CocoaDialog_Columns.mm	\
-	ap_CocoaDialog_Field.mm	\
-	ap_CocoaDialog_FormatFrame.mm	\
-	ap_CocoaDialog_FormatFootnotes.mm	\
-	ap_CocoaDialog_FormatTOC.mm	\
-	ap_CocoaDialog_FormatTable.mm	\
-	ap_CocoaDialog_Goto.mm	\
-	ap_CocoaDialog_HdrFtr.mm	\
-	ap_CocoaDialog_Insert_DateTime.mm	\
-	ap_CocoaDialog_InsertBookmark.mm	\
-	ap_CocoaDialog_InsertHyperlink.mm	\
-	ap_CocoaDialog_InsertTable.mm	\
-	ap_CocoaDialog_Latex.mm	\
-	ap_CocoaDialog_Lists.mm	\
-	ap_CocoaDialog_ListRevisions.mm	\
-	ap_CocoaDialog_MailMerge.mm	\
-	ap_CocoaDialog_MarkRevisions.mm	\
-	ap_CocoaDialog_MergeCells.mm	\
-	ap_CocoaDialog_MetaData.mm	\
-	ap_CocoaDialog_New.mm	\
-	ap_CocoaDialog_Options.mm	\
-	ap_CocoaDialog_Spell.mm	\
-	ap_CocoaDialog_SplitCells.mm	\
-	ap_CocoaDialog_Styles.mm	\
-	ap_CocoaDialog_Stylist.mm	\
-	ap_CocoaDialog_Paragraph.mm	\
-	ap_CocoaDialog_PageNumbers.mm	\
-	ap_CocoaDialog_PageSetup.mm	\
-	ap_CocoaDialog_Replace.mm	\
-	ap_CocoaDialog_Tab.mm	\
-	ap_CocoaDialog_ToggleCase.mm	\
-	ap_CocoaDialog_WordCount.mm	\
-	ap_CocoaFrame.mm		\
-	ap_CocoaFrameImpl.mm		\
-	ap_CocoaLeftRuler.mm		\
-	ap_CocoaPlugin.mm		\
-	ap_CocoaPrefs.mm		\
-	ap_Cocoa_ResourceIDs.mm	\
-	ap_CocoaSplash.mm		\
-	ap_CocoaStatusBar.mm		\
-	ap_CocoaTool.mm \
-	ap_CocoaToolbar_StyleCombo.mm	\
-	ap_CocoaToolbar_FontCombo.mm	\
-	ap_CocoaToolbar_SizeCombo.mm	\
-	ap_CocoaToolbar_ZoomCombo.mm	\
-	ap_CocoaTopRuler.mm		\
-	ap_CocoaViewListener.mm		\
-	ap_Cocoa_TB_CFactory.mm		\
-	ap_PrintingDelegate.mm
+	ap_CocoaApp.cpp		\
+	ap_CocoaAppImpl.cpp		\
+	ap_CocoaClipboard.cpp	\
+	ap_CocoaDialogFactory.cpp	\
+	ap_CocoaDialog_Background.cpp	\
+	ap_CocoaDialog_Break.cpp	\
+	ap_CocoaDialog_Columns.cpp	\
+	ap_CocoaDialog_Field.cpp	\
+	ap_CocoaDialog_FormatFrame.cpp	\
+	ap_CocoaDialog_FormatFootnotes.cpp	\
+	ap_CocoaDialog_FormatTOC.cpp	\
+	ap_CocoaDialog_FormatTable.cpp	\
+	ap_CocoaDialog_Goto.cpp	\
+	ap_CocoaDialog_HdrFtr.cpp	\
+	ap_CocoaDialog_Insert_DateTime.cpp	\
+	ap_CocoaDialog_InsertBookmark.cpp	\
+	ap_CocoaDialog_InsertHyperlink.cpp	\
+	ap_CocoaDialog_InsertTable.cpp	\
+	ap_CocoaDialog_Latex.cpp	\
+	ap_CocoaDialog_Lists.cpp	\
+	ap_CocoaDialog_ListRevisions.cpp	\
+	ap_CocoaDialog_MailMerge.cpp	\
+	ap_CocoaDialog_MarkRevisions.cpp	\
+	ap_CocoaDialog_MergeCells.cpp	\
+	ap_CocoaDialog_MetaData.cpp	\
+	ap_CocoaDialog_New.cpp	\
+	ap_CocoaDialog_Options.cpp	\
+	ap_CocoaDialog_Spell.cpp	\
+	ap_CocoaDialog_SplitCells.cpp	\
+	ap_CocoaDialog_Styles.cpp	\
+	ap_CocoaDialog_Stylist.cpp	\
+	ap_CocoaDialog_Paragraph.cpp	\
+	ap_CocoaDialog_PageNumbers.cpp	\
+	ap_CocoaDialog_PageSetup.cpp	\
+	ap_CocoaDialog_Replace.cpp	\
+	ap_CocoaDialog_Tab.cpp	\
+	ap_CocoaDialog_ToggleCase.cpp	\
+	ap_CocoaDialog_WordCount.cpp	\
+	ap_CocoaFrame.cpp		\
+	ap_CocoaFrameImpl.cpp		\
+	ap_CocoaLeftRuler.cpp		\
+	ap_CocoaPlugin.cpp		\
+	ap_CocoaPrefs.cpp		\
+	ap_Cocoa_ResourceIDs.cpp	\
+	ap_CocoaSplash.cpp		\
+	ap_CocoaStatusBar.cpp		\
+	ap_CocoaTool.cpp \
+	ap_CocoaToolbar_StyleCombo.cpp	\
+	ap_CocoaToolbar_FontCombo.cpp	\
+	ap_CocoaToolbar_SizeCombo.cpp	\
+	ap_CocoaToolbar_ZoomCombo.cpp	\
+	ap_CocoaTopRuler.cpp		\
+	ap_CocoaViewListener.cpp		\
+	ap_Cocoa_TB_CFactory.cpp		\
+	ap_PrintingDelegate.cpp
 
 EXTRA_DIST = \
 	$(headers_DATA) \

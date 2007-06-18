@@ -33,6 +33,8 @@ noinst_PROGRAMS = AbiWord
 
 DEFS = @DEFS@
 
+# not CXXFLAGS because passed to the linker it will fail
+CPPFLAGS += -x objective-c++
 INCLUDES =  \
 	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
@@ -40,7 +42,7 @@ INCLUDES =  \
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-AbiWord_SOURCES = abi_ver.cpp CocoaMain.mm
+AbiWord_SOURCES = abi_ver.cpp CocoaMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) 
 

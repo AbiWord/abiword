@@ -19,16 +19,17 @@
 
 include $(top_srcdir)/includes.mk
 
+CXXFLAGS += -x objective-c++
 INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	
 
 noinst_LIBRARIES = libEv_cocoa.a
 
 libEv_cocoa_a_SOURCES=		\
-	 ev_CocoaKeyboard.mm		\
-	 ev_CocoaMenu.mm		\
-	 ev_CocoaMouse.mm		\
-	 ev_CocoaToolbar.mm		\
-	 ev_CocoaToolbar_ViewListener.mm
+	 ev_CocoaKeyboard.cpp		\
+	 ev_CocoaMenu.cpp		\
+	 ev_CocoaMouse.cpp		\
+	 ev_CocoaToolbar.cpp		\
+	 ev_CocoaToolbar_ViewListener.cpp
 
 EXTRA_DIST = $(headers_DATA)
 

@@ -18,6 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
+CXXFLAGS+= -x objective-c++
 INCLUDES= $(PLATFORM_CFLAGS) \
 	$(AF_INCLUDES) $(ICONV_INCLUDES)
 
@@ -25,8 +26,8 @@ INCLUDES= $(PLATFORM_CFLAGS) \
 noinst_LIBRARIES = libGr_cocoa.a
 
 libGr_cocoa_a_SOURCES=\
-	gr_CocoaGraphics.mm	\
-	gr_CocoaImage.mm
+	gr_CocoaGraphics.cpp	\
+	gr_CocoaImage.cpp
 
 EXTRA_DIST = $(headers_DATA)
 
