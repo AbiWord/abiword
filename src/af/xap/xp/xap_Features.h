@@ -62,8 +62,6 @@
 
 /*
 	Tell if we must not ask before exiting AbiWord (quit)
-	
-	On MacOS X, this is true.
  */
 #ifndef XAP_DONT_CONFIRM_QUIT
 # define XAP_DONT_CONFIRM_QUIT 0

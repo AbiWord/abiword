@@ -27,8 +27,6 @@
 
 #define XAP_SINGLE_XAPAPP 1
 
-#define XAP_DONT_CONFIRM_QUIT 1
-
 #define XAP_DONT_INLINE_XPM 1
 
 
