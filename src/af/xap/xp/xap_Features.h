@@ -41,7 +41,7 @@
 
 
 
-/*
+/**
 	Quartz don't like XOR drawing. So choose an alternate method.
 	But since X11 don't like altenate method, we have to keep XOR in the code.
 	
@@ -51,7 +51,7 @@
 # define XAP_DONTUSE_XOR 0
 #endif
 
-/*
+/**
 	On MacOS (X), apps can be open without any window so we should allow this.
 	This require some heavy changes to the framework. Disabled by default.
  */
@@ -60,7 +60,7 @@
 #endif
 
 
-/*
+/**
 	Tell if we must not ask before exiting AbiWord (quit)
  */
 #ifndef XAP_DONT_CONFIRM_QUIT
@@ -68,7 +68,7 @@
 #endif
 
 
-/*
+/**
 	Define to 1 if you don't inline XPMs into code but load them from disk files.
 	MacOS X store them as PNG inside the bundle.
 	
@@ -78,7 +78,7 @@
 # define XAP_DONT_INLINE_XPM 0
 #endif
 
-/*
+/**
     Define to 1 if Preferences should be under Tool
     XAP_PREFSMENU_UNDER_TOOLS
 */
