@@ -251,10 +251,10 @@ Frédéric CELLA <fcella@mahj.org>			French
 Philippe Duperron <duperron@mail.dotcom.fr>	 	French
 Kenneth Christiansen <kenneth@gnu.org>			Danish
 Jesús Corrius <jesus@softcatala.org>			Catalan
-Joaquín Cuenca Abela <cuenca@celium.net>		Castellan
-Javier Yáñez <javier@cibal.es>				Castellan
-Luis Miguel García <ktech@wanadoo.es>			Castellan
-Francisco Javier F. Serrador <serrador@arrakis.es>	Castellan
+Joaquín Cuenca Abela <cuenca@celium.net>		Castilian	
+Javier Yáñez <javier@cibal.es>				Castilian	
+Luis Miguel García <ktech@wanadoo.es>			Castilian	
+Francisco Javier F. Serrador <serrador@arrakis.es>	Castilian
 Tamas Decsi <tamas@pressflex.com>			Hungarian
 Vadim Frolov <vadim@krug.uch.net>			Ukrainian (uk-UA)
 Olexij Tkatchenko <ot@parcs.de>				Ukrainian (uk-UA)
