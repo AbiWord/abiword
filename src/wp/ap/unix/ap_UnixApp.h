@@ -112,7 +112,7 @@ public:
 
 protected:	// JCA: Why in the hell we have so many (any) protected
 		// variables?
-#ifndef EMBEDDED_TARGET
+#ifdef ENABLE_SPLASH
 	static GR_Image*		_showSplash(UT_uint32);
 #endif
 	XAP_StringSet *			m_pStringSet;

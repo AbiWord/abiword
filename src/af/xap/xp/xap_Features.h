@@ -26,6 +26,9 @@
 #ifndef __XAP_FEATURES_H__
 #define __XAP_FEATURES_H__
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #ifdef XP_TARGET_COCOA
 # include "xap_CocoaFeatures.h"

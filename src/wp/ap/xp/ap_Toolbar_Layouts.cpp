@@ -20,6 +20,9 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "ap_Features.h"
 #include "ut_types.h"
@@ -337,6 +340,9 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 	if(bFound)
 	{
 		return pLayout;
+	} 
+	else {
+		fprintf (stderr, "%s:%s: Layout `%s' not found\n", __FILE__, __FUNCTION__, szName);
 	}
 	return NULL;
 }

@@ -24,9 +24,12 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
-
 // for gtk_label_parse_uline - nothing we can do about this...
 #undef GTK_DISABLE_DEPRECATED
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>

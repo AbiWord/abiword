@@ -22,8 +22,11 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
-
 #undef GTK_DISABLE_DEPRECATED
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include "ut_string.h"

@@ -21,6 +21,10 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <popt.h>
 
 class AP_Args;

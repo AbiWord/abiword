@@ -77,7 +77,7 @@ if test "$embedded" != "none"; then
    AC_DEFINE_UNQUOTED(EMBEDDED_TARGET, $embedded, [Whether we are building for embedded device])
 
    if test "$embedded_menubutton" = "true"; then
-      AC_DEFINE(EMBEDDED_MENUBUTTON, 1, [Whether to use menubutton instead of menubar])
+      AC_DEFINE(ENABLE_MENUBUTTON, 1, [Whether to use menubutton instead of menubar])
    fi
 else
    # make sure we do not prevent statusbar and splash from building

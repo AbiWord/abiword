@@ -27,6 +27,10 @@
 #ifndef AP_PREFS_SCHEMEIDS_H
 #define AP_PREFS_SCHEMEIDS_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Features.h"
 
 //////////////////////////////////////////////////////////////////////////////

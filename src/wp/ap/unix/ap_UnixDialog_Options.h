@@ -22,6 +22,10 @@
 #ifndef AP_UNIXDIALOG_OPTIONS_H
 #define AP_UNIXDIALOG_OPTIONS_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Dialog_Options.h"
 
 class XAP_UnixFrame;

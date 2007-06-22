@@ -23,6 +23,10 @@
 #ifndef XAP_UNIXFRAMEIMPL_H
 #define XAP_UNIXFRAMEIMPL_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkadjustment.h>
 #include <gdk/gdktypes.h>

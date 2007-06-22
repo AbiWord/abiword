@@ -24,6 +24,9 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -551,7 +554,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 					FREEP(dup);
 				}
 
-#ifndef EMBEDDED_MENUBUTTON
+#ifndef ENABLE_MENUBUTTON
 				if ((keyCode != GDK_VoidSymbol) && !isPopup)
 				  {
 					  // bind to top level if parent is top level
@@ -953,7 +956,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
 	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
-#elif defined (EMBEDDED_MENUBUTTON)
+#elif defined (ENABLE_MENUBUTTON)
 	m_wMenuBar = gtk_menu_new ();
 #else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
@@ -979,7 +982,7 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
-#ifdef EMBEDDED_MENUBUTTON
+#ifdef ENABLE_MENUBUTTON
 	m_wMenuBar = gtk_menu_new();
 #else
 	m_wMenuBar = gtk_menu_bar_new();

@@ -28,6 +28,10 @@
 #ifndef XAP_UNIXAPP_H
 #define XAP_UNIXAPP_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <unistd.h>
 #include <sys/stat.h>
 #include "xap_App.h"

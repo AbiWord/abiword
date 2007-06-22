@@ -24,6 +24,10 @@
 #ifndef AP_DIALOG_OPTIONS_H
 #define AP_DIALOG_OPTIONS_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"

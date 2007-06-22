@@ -21,6 +21,10 @@
 #ifndef __AP_FEATURES_H__
 #define __AP_FEATURES_H__
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xap_Features.h"
 
 /*

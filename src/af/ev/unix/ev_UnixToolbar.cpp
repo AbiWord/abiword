@@ -25,6 +25,10 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <gtk/gtk.h>
 #include <goffice/gtk/go-combo-box.h>
 #include <goffice/gtk/go-combo-color.h>
@@ -57,7 +61,7 @@
 #include "ap_UnixStockIcons.h"
 #include "ev_UnixFontCombo.h"
 
-#ifdef EMBEDDED_MENUBUTTON
+#ifdef ENABLE_MENUBUTTON
 #include "ev_UnixMenuBar.h"
 #endif
 
@@ -177,7 +181,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 											  NULL, NULL, NULL);
 }
 
-#ifdef EMBEDDED_MENUBUTTON
+#ifdef ENABLE_MENUBUTTON
 static void
 menubutton_show_cb (GtkWidget *widget, gpointer data)
 {
@@ -1080,7 +1084,7 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_Spacer:
 				break;
 
-#ifdef EMBEDDED_MENUBUTTON
+#ifdef ENABLE_MENUBUTTON
 			case EV_TBIT_MenuButton:
 			{
 				GtkWidget * wMenu = NULL;

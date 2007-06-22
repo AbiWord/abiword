@@ -36,6 +36,10 @@
 #ifndef AP_UNIXDIALOG_ALL_H
 #define AP_UNIXDIALOG_ALL_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #   include "xap_UnixDlg_About.h"
 #   include "xap_UnixDlg_ClipArt.h"
 #	include "xap_UnixDlg_MessageBox.h"

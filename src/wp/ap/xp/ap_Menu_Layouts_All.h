@@ -25,6 +25,10 @@
 ******************************************************************
 *****************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // Include each menu layout that we want to build.
 
 #if defined (EMBEDDED_TARGET) && EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON

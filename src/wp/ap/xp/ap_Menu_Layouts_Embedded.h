@@ -19,6 +19,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Features.h"
 #ifdef APF_MENU_LAYOUTS_EMBEDDED_MENU
 #  include APF_MENU_LAYOUTS_EMBEDDED_MENU
