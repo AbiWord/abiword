@@ -1,7 +1,7 @@
 # 
-# Copyright (C) 2002-2006 Quico Llach, Jordi Mas, Mireia Farrús, Jesús Corrius
+# Copyright (C) 2002-2007 Quico Llach, Jordi Mas, Mireia Farrús, Jesús Corrius
 # 
-# Última actualització: 22 de novembre de 2006
+# Última actualització: 23 de juny de 2007
 # 	
 # 	Translated by 
 # 	
@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-23 20:28+0100\n"
-"PO-Revision-Date: 2006-11-22 20:30+0100\n"
+"POT-Creation-Date: 2007-06-21 07:59+0200\n"
+"PO-Revision-Date: 2007-06-23 16:07+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team:  <ca@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1277,7 +1277,7 @@ msgstr "Permet les barres d'eines personalitzades"
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:495
 msgid "Allow formatting using styles only"
-msgstr "Permet només al formatatge l'ús d'estils"
+msgstr "Permet la formatació només amb l'ús dels estils"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:497
@@ -1307,7 +1307,7 @@ msgstr "Aplica"
 #: po/tmp/ap_String_Id.h.h:506
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr ""
-"Aplica al text seleccionat el formatatge del paràgraf que s'ha copiat "
+"Aplica al text seleccionat la formatació del paràgraf que s'ha copiat "
 "anteriorment"
 
 #. DLG_Lists_Apply_Current
@@ -2551,7 +2551,7 @@ msgstr "Capçalera diferent a l'última pàgina"
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:981
 msgid "Disable all formatting commands, except styles"
-msgstr "Bloca totes les ordres de formatatge excepte els estils"
+msgstr "Inhabilita totes les ordres de formatació excepte els estils"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:983
@@ -2683,9 +2683,9 @@ msgstr "Edita el peu de pàgina de la pàgina actual"
 msgid "Edit the Header on the current page"
 msgstr "Edita la capçalera de la pàgina actual"
 
+#
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h.h:1036
-#
 msgid "Embedded"
 msgstr "Incrustat"
 
@@ -3092,7 +3092,7 @@ msgstr "Imposa el text de DAE"
 #. TB_Format
 #: po/tmp/ap_String_Id.h.h:1186
 msgid "Format"
-msgstr "Formata"
+msgstr "Formatació"
 
 #
 #. MENU_STATUSLINE_FMT_EMBED
@@ -4093,7 +4093,7 @@ msgstr "Mida màxima de la columna"
 #. TOOLBAR_TOOLTIP_MENU
 #: po/tmp/ap_String_Id.h.h:1572
 msgid "Menu"
-msgstr ""
+msgstr "Menú"
 
 #
 #. DLG_MergeCells_Above
@@ -5650,7 +5650,7 @@ msgstr "Mostra..."
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2178
 msgid "Show/hide formatting marks"
-msgstr "Mostra o amaga les marques de formatatge"
+msgstr "Mostra o amaga les marques de formatació"
 
 #
 #. TB_Simple
@@ -6196,7 +6196,7 @@ msgstr "Tabulacions i numeració de pàgines"
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2387
 msgid "Te&xt Formatting"
-msgstr "&Formatatge del text"
+msgstr "&Formatació del text"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:2389
@@ -7098,9 +7098,9 @@ msgstr "Xinès tradicional, Windows 950"
 msgid "Choose document from the list:"
 msgstr "Escolliu un document de la llista:"
 
+#
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h.h:169
-#
 msgid "Clear Background"
 msgstr "Suprimeix el color de fons"
 
@@ -7112,7 +7112,7 @@ msgstr "Fitxer d'imatges"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Clip Art could not be loaded"
-msgstr ""
+msgstr "No s'ha pogut carregar el fitxer d'imatges"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:175
@@ -7174,9 +7174,9 @@ msgstr "Capçalera de continguts"
 msgid "Copies: "
 msgstr "Còpies: "
 
+#
 #. LANG_COP_EG
 #: po/tmp/xap_String_Id.h.h:201
-#
 msgid "Coptic"
 msgstr "Copte"
 
@@ -7512,9 +7512,9 @@ msgstr "Frisó"
 msgid "From: "
 msgstr "De: "
 
+#
 #. LANG_GL
 #: po/tmp/xap_String_Id.h.h:349
-#
 msgid "Galician (Galego)"
 msgstr "Gallec"
 
@@ -7883,11 +7883,11 @@ msgstr "Letó"
 msgid "Lithuanian"
 msgstr "Lituà"
 
+#
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h.h:502
-#
 msgid "Loading Clip Art"
-msgstr "S'estan carregant els fitxer d'imatges"
+msgstr "S'està carregant el fitxer d'imatges"
 
 #
 #. LANG_MK
@@ -8582,7 +8582,7 @@ msgstr "Urdu"
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:813
 msgid "Urdu (Pakistan)"
-msgstr ""
+msgstr "Urdú (Pakistan)"
 
 #
 #. LANG_UZ_UZ
