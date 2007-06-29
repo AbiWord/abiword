@@ -920,7 +920,7 @@ bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-		if((pfs->getStruxType() == PTX_EndFootnote) || (pfs->getStruxType() == PTX_EndEndnote) || (pfs->getStruxType() == PTX_EndTOC))
+		if((pfs->getStruxType() == PTX_EndFootnote) || (pfs->getStruxType() == PTX_EndEndnote) || (pfs->getStruxType() == PTX_EndTOC) || (pfs->getStruxType() == PTX_EndAnnotation))
 		{
 			return true;
 		}
@@ -934,7 +934,7 @@ bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-		if((pfs->getStruxType() == PTX_SectionFootnote) || (pfs->getStruxType() == PTX_SectionEndnote) || (pfs->getStruxType() == PTX_SectionTOC))
+		if((pfs->getStruxType() == PTX_SectionFootnote) || (pfs->getStruxType() == PTX_SectionEndnote) || (pfs->getStruxType() == PTX_SectionTOC) || (pfs->getStruxType() == PTX_SectionAnnotation))
 		{
 			return true;
 		}

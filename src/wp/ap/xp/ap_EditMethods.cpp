@@ -466,6 +466,7 @@ public:
 	static EV_EditMethod_Fn zoomIn;
 	static EV_EditMethod_Fn zoomOut;
 
+	static EV_EditMethod_Fn insAnnotation;
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
@@ -925,6 +926,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
 	EV_EditMethod(NF(importStyles),			0,	""),
+	EV_EditMethod(NF(insAnnotation),			0,		""),
 	EV_EditMethod(NF(insBreak), 		0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
@@ -10442,6 +10444,15 @@ Defun1(insFootnote)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
 	return pView->insertFootnote(true);
+}
+
+
+Defun1(insAnnotation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	return pView->insertAnnotation(0);
 }
 
 

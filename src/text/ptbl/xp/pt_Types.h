@@ -81,14 +81,16 @@ typedef enum _PTStruxType
 	PTX_SectionCell,     	// 5
 	PTX_SectionFootnote, 	// 6
 	PTX_SectionMarginnote, 	// 7
-	PTX_SectionFrame,      	// 8
-	PTX_SectionTOC,			// 9
-	PTX_EndCell,          	// 10
+	PTX_SectionAnnotation,  // 8
+	PTX_SectionFrame,      	// 9
+	PTX_SectionTOC,			// 10
+	PTX_EndCell,          	// 11
 	PTX_EndTable,
-    PTX_EndFootnote,
-    PTX_EndMarginnote,
-    PTX_EndEndnote,
-    PTX_EndFrame,
+        PTX_EndFootnote,
+        PTX_EndMarginnote,
+        PTX_EndEndnote,
+	PTX_EndAnnotation,
+        PTX_EndFrame,
 	PTX_EndTOC,
 	PTX_StruxDummy
 } PTStruxType;

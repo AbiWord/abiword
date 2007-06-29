@@ -9680,7 +9680,7 @@ void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
-	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
+	UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos = 0;
 	bool bBOL = false;
@@ -9816,7 +9816,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
 			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
 			{
-				xxx_UT_DEBUGMSG(("getcontext: Looking at Table \n"));
+				UT_DEBUGMSG(("getcontext: Looking at Table \n"));
 				UT_sint32 iLeft = pCell->getLeftPos();
 				UT_sint32 iRight = pCell->getRightPos();
 				UT_sint32 iTop = pCell->getStartY();
@@ -9870,7 +9870,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				iRight += col_x + offx;
 				iTop += col_y +  offy;
 				iBot += col_y + offy;
-				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
+				UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
 					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
@@ -11972,6 +11972,41 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 		return true;
 	}
 	return false;
+}
+
+
+bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
+{
+	// can only apply an Annotation to an FL_SECTION_DOC or a Table
+	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
+	if(pBlock == NULL)
+	{
+		return false;
+	}
+	fl_SectionLayout * pSL =  pBlock->getSectionLayout();
+
+	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
+		return false;
+	if(getHyperLinkRun(getPoint()) != NULL)
+	{
+		return false;
+	}
+	if(m_FrameEdit.isActive())
+	{
+	        return false;
+	}
+//
+// Do this first
+//
+	if(m_pDoc->isTOCAtPos(getPoint()-1))
+	{
+		if(getPoint() ==2 || (pSL->getPosition(true) >= (getPoint() -2)))
+		{
+			return false;
+		}
+		setPoint(getPoint()-1);
+	}
+	return true;
 }
 
 bool FV_View::insertFootnote(bool bFootnote)

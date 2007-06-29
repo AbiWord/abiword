@@ -541,6 +541,7 @@ public:
 // ----------------------
 // Stuff for edittable Footnote/Endnotes
 //
+	bool	            insertAnnotation(UT_sint32 iAnnotation);
 	bool	            insertFootnote(bool bFootnote);
 	bool	            insertFootnoteSection(bool bFootnote,const gchar * enpid);
 	bool                isInFootnote(PT_DocPosition pos);
