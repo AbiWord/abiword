@@ -53,7 +53,7 @@ CC		= gcc
 CCC		= g++
 RANLIB	= ranlib
 AR		= ar cr $@
-RC		= windres
+RC		= windres $(RCFLAGS) 
 
 # Suffixes
 OBJ_SUFFIX	= o
