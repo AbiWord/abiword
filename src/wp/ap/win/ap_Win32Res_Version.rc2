@@ -44,19 +44,7 @@
 #define _VB 0
 #endif
 
-// normally found in <winver.h> included by <windows.h>
-// FILEFLAGS
 #define VS_FF_NORMAL            0x00000000L  // ok I made this one up
-#define VS_FF_DEBUG             0x00000001L
-#define VS_FF_PRERELEASE        0x00000002L
-// FILEOS
-#define VOS_NT                  0x00040000L
-#define VOS__WINDOWS32          0x00000004L
-#define VOS_NT_WINDOWS32        0x00040004L
-// FILETYPE
-#define VFT_APP                 0x00000001L
-#define VFT_DLL                 0x00000002L
-
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION _VM,_VN,_VI,_VB
