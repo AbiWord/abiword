@@ -647,6 +647,11 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	{ m_bIgnoreSignals = false;}
 	void                    setClean(void)
 	{ _setClean();}
+
+	void					setCoalescingMask(bool mask)
+	{ m_bCoalescingMask = mask; }
+	bool					isCoalescingMasked()
+	{ return m_bCoalescingMask; }
 protected:
 	virtual ~PD_Document();
 
@@ -729,6 +734,8 @@ private:
     UT_sint32               m_iCRCounter;
 	mutable UT_sint32       m_iUpdateCount;
 	bool                    m_bIgnoreSignals;
+
+	bool					m_bCoalescingMask;
 };
 
 #endif /* PD_DOCUMENT_H */

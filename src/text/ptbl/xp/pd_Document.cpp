@@ -114,7 +114,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bVDND(false),
 	  m_iCRCounter(0),
 	  m_iUpdateCount(0),
-	  m_bIgnoreSignals(false)
+	  m_bIgnoreSignals(false),
+	  m_bCoalescingMask(false)
 {
 	m_pApp = pApp;
 	

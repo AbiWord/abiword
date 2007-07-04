@@ -590,18 +590,21 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
                                    blockOffset, pField);
 	UT_return_val_if_fail (pcr, false);
 
-	if (!bAddChangeRec || _canCoalesceInsertSpan(pcr))
 	{
-		if (bAddChangeRec)
-			m_history.coalesceHistory(pcr);
+		bool canCoalesce = _canCoalesceInsertSpan(pcr);
+		if (!bAddChangeRec || (canCoalesce && !m_pDocument->isCoalescingMasked()))
+		{
+			if (canCoalesce)
+				m_history.coalesceHistory(pcr);
 
-		m_pDocument->notifyListeners(pfs,pcr);
-		delete pcr;
-	}
-	else
-	{
-		m_history.addChangeRecord(pcr);
-		m_pDocument->notifyListeners(pfs,pcr);
+			m_pDocument->notifyListeners(pfs,pcr);
+			delete pcr;
+		}
+		else
+		{
+			m_history.addChangeRecord(pcr);
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
 	}
 
 	bSuccess = true;

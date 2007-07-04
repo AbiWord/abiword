@@ -634,9 +634,10 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 
 	bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 
-	if (!bAddChangeRec || _canCoalesceDeleteSpan(pcr))
+	bool canCoalesce = _canCoalesceDeleteSpan(pcr);
+	if (!bAddChangeRec || (canCoalesce && !m_pDocument->isCoalescingMasked()))
 	{
-		if (bAddChangeRec)
+		if (canCoalesce)
 			m_history.coalesceHistory(pcr);
 
 		m_pDocument->notifyListeners(pfs,pcr);
