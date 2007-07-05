@@ -50,6 +50,8 @@
 #include "ut_Win32OS.h"
 
 #define SPACE_ICONTEXT	4	// Pixels between the icon and the text
+#define BITMAP_WITDH	16
+#define BITMAP_HEIGHT	16
 
 
 /*
@@ -222,23 +224,8 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
     SystemParametersInfoA(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICSA), &ncm, 0);
 	m_hFont = CreateFontIndirectA(&ncm.lfMenuFont);	
 
-	m_nBitmapCX = m_nBitmapCY = 24;	// Default value overwritten later
-
-	UT_RGBColor color;
-	HBITMAP hBitmap = EV_Win32Menu::_loadBitmap(s_bitmaps[0].id, m_nBitmapCX, m_nBitmapCY, color);
-	
-	if (hBitmap)	/* Default size for bitmaps*/
-	{
-		BITMAP bitmap;
-		
-		if (GetObjectA(hBitmap, sizeof(BITMAP), &bitmap))
-		{
-			m_nBitmapCX = bitmap.bmWidth+2;
-			m_nBitmapCY = bitmap.bmHeight+2;
-		}
-
-		DeleteObject(hBitmap);
-	}						
+	m_nBitmapCX = BITMAP_WITDH + 2;
+	m_nBitmapCY = BITMAP_HEIGHT + 2;
 
 	UT_return_if_fail( m_pMenuLabelSet );
 	
@@ -660,7 +647,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 /*
 	Caller should DeleteObject the handle returned	
 */
-HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor color)
+HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBColor color)
 {
 	
 	HBITMAP hBitmap = NULL;
@@ -674,7 +661,7 @@ HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor colo
 
 	if (!pBitmaps->id) return hBitmap;	
 
-	AP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), x,y, &color, pBitmaps->szName,	&hBitmap);					
+	AP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), width, height, &color, pBitmaps->szName,	&hBitmap);					
 	
 	return hBitmap; 
 }
@@ -684,7 +671,7 @@ void EV_Win32Menu::_setBitmapforID (HMENU hMenu, XAP_Menu_Id id, UINT cmd)
 {
 	DWORD dwColor = GetSysColor (COLOR_MENU);
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
-	HBITMAP hBitmap =  EV_Win32Menu::_loadBitmap(id, 255, 255, Color);
+	HBITMAP hBitmap =  EV_Win32Menu::_loadBitmap(id, BITMAP_WITDH, BITMAP_HEIGHT, Color);
 							
 	if (hBitmap != NULL) {
 		SetMenuItemBitmaps (hMenu, cmd, MF_BYCOMMAND, hBitmap, hBitmap);		
@@ -806,7 +793,6 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
     COLORREF crText;    
     COLORREF crBkgnd;   
 	DWORD dwColor;
-	int x = 255, y=255;									
 	RECT rect;
 	UT_String sTextRight, sTextLeft;
 	HBITMAP hBitmap;	
@@ -845,7 +831,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	dwColor = GetSysColor(colorID);
 	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
-	hBitmap =  EV_Win32Menu::_loadBitmap(item->id,  x, y, Color);			
+	hBitmap =  EV_Win32Menu::_loadBitmap(item->id, BITMAP_WITDH, BITMAP_HEIGHT, Color);
 
 	if (hBitmap)	
 	{
@@ -922,9 +908,9 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		SelectObject(hdcMem,(void *)hBitmap);				
 
 		if(m_iDIR)
-			BitBlt(lpdis->hDC, lpdis->rcItem.right - 20, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
+			BitBlt(lpdis->hDC, lpdis->rcItem.right - 20, lpdis->rcItem.top+1, BITMAP_WITDH, BITMAP_HEIGHT, hdcMem, 0, 0, SRCCOPY );
 		else
-			BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
+			BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, BITMAP_WITDH, BITMAP_HEIGHT, hdcMem, 0, 0, SRCCOPY );
 		
 		DeleteDC(hdcMem);					
 				

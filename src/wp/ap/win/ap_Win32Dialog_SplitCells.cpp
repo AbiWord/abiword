@@ -38,8 +38,9 @@
 
 #define GWL(hwnd)		(AP_Win32Dialog_SplitCells*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_SplitCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
-#define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
 
+#define BITMAP_WITDH	15
+#define BITMAP_HEIGHT	15
 
 
 XAP_Dialog * AP_Win32Dialog_SplitCells::static_constructor(XAP_DialogFactory * pFactory,
@@ -133,11 +134,11 @@ BOOL CALLBACK AP_Win32Dialog_SplitCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
-HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int x, int y, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
 {
 	HBITMAP hBitmap = NULL;
 	
-	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);	
+	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width, height, &color,	pName,	&hBitmap);	
 				
 	SendDlgItemMessage(hWnd,  nId, 
         	            BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);				
@@ -179,12 +180,12 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	y = rect.bottom - rect.top,
 	
 	// Load the bitmaps into the dialog box								
-    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_LEFT, "SPLITLEFT",  x, y, Color);
-	m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID, "SPLITVERTMID", x, y, Color);
-    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT, "SPLITRIGHT", x, y, Color);
-    m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE, "SPLITABOVE", x, y, Color);
-	m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID, "SPLITHORIMID", x, y, Color);
-    m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_BELOW, "SPLITBELOW", x, y, Color);
+    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_LEFT, "SPLITLEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+	m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID, "SPLITVERTMID", BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_RIGHT, "SPLITRIGHT", BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_ABOVE, "SPLITABOVE", BITMAP_WITDH, BITMAP_HEIGHT, Color);
+	m_hBitmapAbove = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_HORIMID, "SPLITHORIMID", BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapBelow = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_BELOW, "SPLITBELOW", BITMAP_WITDH, BITMAP_HEIGHT, Color);
 	
 	setAllSensitivities();
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	

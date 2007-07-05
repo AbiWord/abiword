@@ -20,8 +20,11 @@
 #ifndef UT_GO_FILE_H
 #define UT_GO_FILE_H
 
+
+
 #include <glib.h>
 #include <gsf/gsf.h>
+#include <glib/gerror.h>
 #include <time.h>
 
 G_BEGIN_DECLS
@@ -98,3 +101,4 @@ gint UT_go_utf8_collate_casefold (const char *a, const char *b);
 G_END_DECLS
 
 #endif /* UT_GO_FILE_H */
+//#endif

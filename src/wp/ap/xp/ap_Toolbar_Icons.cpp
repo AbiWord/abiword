@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copryight (C) 2003-2004 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -23,6 +23,7 @@
 #include "ap_Features.h"
 #include "ut_types.h"
 #include "ut_string.h"
+
 #include "xap_Toolbar_Icons.h"
 #include "ut_assert.h"
 
@@ -61,7 +62,7 @@ static struct _it s_itTable[] =
 };
 
 #undef DefineToolbarIcon
-#endif	
+#endif
 
 /*****************************************************************
 ******************************************************************
@@ -79,7 +80,7 @@ struct _im
 
 static struct _im s_imTable[] =
 {
-		
+
 #include "ap_Toolbar_Iconmap.h"
 
 };
@@ -94,29 +95,73 @@ static struct _im s_imTable[] =
 
 #ifdef DEBUG
 AP_Toolbar_Icons iconsdebug;
+
+#if defined (WIN32)
+#include "xap_Win32Toolbar_Icons.h"
+#endif
+
 #endif
 
 AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 {
 #if defined(DEBUG) && !XAP_DONT_INLINE_XPM
-	// Check that the lists are in alphabetically order 
+	// Check that the lists are in alphabetically order
 	UT_uint32 range = G_N_ELEMENTS(s_imTable);
 	UT_sint32 cmp;
 	UT_uint32 i;
-	
-	for (i = 1; i < range; i++) 
+
+	for (i = 1; i < range; i++)
 	{
 		cmp = g_ascii_strcasecmp( s_imTable[i].m_id, s_imTable[i-1].m_id);
 		UT_ASSERT(cmp > 0);
 	}	
 	
-	range = G_N_ELEMENTS(s_itTable);	
-	for (i = 1; i < range; i++) 
+	range = G_N_ELEMENTS(s_itTable);
+	for (i = 1; i < range; i++)
 	{
 		cmp = g_ascii_strcasecmp( s_itTable[i].m_name, s_itTable[i-1].m_name);
 		UT_ASSERT(cmp > 0);
-	}	
+	}
 #endif
+
+/*
+	Define this variable when you want to convert the XPM files into BMP. 
+	
+	* The resulting BMP files should be copied into	the src/wp/ap/win/ToolbarIcons
+	* The bitmap definitions should go to ap_Win32Res_Icons.rc2
+	* The bitmaps ID should go to ap_Win32Resources.rc2
+	* The mapping name -> resource id structure should go to xap_Win32Toolbar_Icons.cpp
+	
+*/
+//#define __EXPORT_XPM_TO_BMP 1
+#ifdef __EXPORT_XPM_TO_BMP
+#if defined(DEBUG) && !XAP_DONT_INLINE_XPM && defined (WIN32)
+
+	char szID[1024];
+	char szIDlow[1024];
+
+	for (i = 0; i < range; i++)	{
+		strcpy (szID, s_imTable[i].m_id);
+		strcpy (szIDlow, s_imTable[i].m_id);
+		strlwr (szIDlow);
+		
+		if (AP_Win32Toolbar_Icons::saveBitmap (s_imTable[i].m_id)) {
+			UT_DEBUGMSG(("AP_RID_TI_%s BITMAP DISCARDABLE \"../../../wp/ap/win/ToolBarIcons/%s.bmp\"\n",
+				szID, szIDlow));
+		}		
+	}
+	
+	UT_DEBUGMSG(("Identifiers ---\n"));
+	for (i = 0; i < range; i++)
+		UT_DEBUGMSG(("#define AP_RID_TI_%s %u\n",  s_imTable[i].m_id, 3000 + i));
+	
+	UT_DEBUGMSG(("Mapping structure ---\n"));
+	for (i = 0; i < range; i++)
+			UT_DEBUGMSG(("\"%s\", AP_RID_TI_%s,\n",   s_imTable[i].m_id, s_imTable[i].m_id));	
+
+#endif
+#endif
+
 }
 
 AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
@@ -127,19 +172,19 @@ AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
 bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName)
 {
 	bool bIDFound = false;
-	
+
 	if (!szID || !*szID )
-		return false;	
-	
+		return false;
+
 	UT_uint32 range = G_N_ELEMENTS(s_imTable);
 	UT_sint32 middle, right = range - 1, left = 0;
 	UT_sint32 cmp;
-	
+
 	while (left <= right)
 	{
 		middle = (left + right) >> 1;
 		cmp = g_ascii_strcasecmp(szID, s_imTable[middle].m_id);
-		
+
 		if (cmp == 0) {
 			bIDFound = true;
 			*pName = s_imTable[middle].m_iconname;
@@ -155,33 +200,33 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 	// Search the toolbariconmap for ID to iconname
 	if(!bIDFound)
 	{
-		//	Format: ICONNAME_LANGCODE where LANGCODE code can be _XX (_yi) or _XXXA (_caES)					
+		//	Format: ICONNAME_LANGCODE where LANGCODE code can be _XX (_yi) or _XXXA (_caES)
 		char szBaseID[300];
-		strcpy(szBaseID,szID);		
+		strcpy(szBaseID,szID);
 		char *pLast = strrchr(szBaseID, '_');
-		
+
 		if (pLast)
 			*pLast = '\0';
 
 		right = range - 1;
 		left = 0;
-			
+
 		while (left <= right)
-		{	
+		{
 			middle = (left + right) >> 1;
 			cmp = g_ascii_strcasecmp(szBaseID, s_imTable[middle].m_id);
-			
+
 			if (cmp == 0) {
 				bIDFound = true;
 				*pName = s_imTable[middle].m_iconname;
 				break;
 			}
-	
+
 			if (cmp >  0)
 				left = middle + 1;
 			else
 				right = middle - 1;
-		}	
+		}
 	}
 	return bIDFound;
 }
@@ -199,30 +244,30 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	// This is a static function.
 	if (!szID || !*szID )
 		return false;
-	
+
 	bool bIDFound = _findIconNameForID(szID, &szName);
 
 	if( !bIDFound )
 		return false;
 
 	if( g_ascii_strcasecmp(szName,"NoIcon") == 0)
-		return false;	
-  	
+		return false;
+
 	UT_uint32 range = G_N_ELEMENTS(s_itTable);
 	UT_sint32 middle, right = range - 1, left = 0;
 	UT_sint32 cmp;
 
 	while (left <= right)
 	{
-		middle = (left + right) >> 1;		
+		middle = (left + right) >> 1;
 		cmp = g_ascii_strcasecmp(szName,s_itTable[middle].m_name);
 
 		if (cmp == 0) {
 			*pIconData = s_itTable[middle].m_staticVariable;
-			*pSizeofData = s_itTable[middle].m_sizeofVariable;		
+			*pSizeofData = s_itTable[middle].m_sizeofVariable;
 			return true;
 		}
-		
+
 		if (cmp >  0)
 			left = middle + 1;
 		else

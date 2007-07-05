@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "xap_Toolbar_Icons.h"
+#include <windows.h>
 
 /*****************************************************************/
 
@@ -31,6 +32,18 @@ class AP_Win32Toolbar_Icons : public AP_Toolbar_Icons
 public:
 	AP_Win32Toolbar_Icons(void);
 	~AP_Win32Toolbar_Icons(void);
+
+#if defined (DEBUG)
+	static bool getBitmapForIconFromXPM(HWND hwnd,
+									UT_uint32 maxWidth,
+									UT_uint32 maxHeight,
+									UT_RGBColor * pColor,
+									const char * szIconName,
+									HBITMAP * pBitmap);
+									
+	static bool saveBitmap (const char *szFilename);
+										
+#endif
 
 	static bool getBitmapForIcon(HWND hwnd,
 									UT_uint32 maxWidth,

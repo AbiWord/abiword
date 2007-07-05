@@ -47,7 +47,7 @@ public:
 	virtual void                setBorderThicknessInGUI(UT_UTF8String & sThick) { UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); };
 	virtual void *				pGetWindowHandle( void ) {  return (void *) m_hwndDlg; }
 	
-	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
+	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int width, int height, UT_RGBColor Color);
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);

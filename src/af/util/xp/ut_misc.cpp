@@ -1054,7 +1054,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 
 		char * semi = NULL;
 		const char * p = pProps;
- 		while((semi = strchr(p, ';')))
+ 		while((semi = (char *) strchr(p, ';')))
 		{
 			*semi = 0;
 			p = semi + 1;
@@ -1075,7 +1075,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 			if(pProps[i] == 0)
 			{
 				pPropsArray[j++] = pStart;
-				char * colon = strchr(pStart, ':');
+				char * colon = (char *)  strchr(pStart, ':');
 				UT_return_val_if_fail( colon,NULL );
 				*colon = 0;
 				pPropsArray[j++] = colon + 1;

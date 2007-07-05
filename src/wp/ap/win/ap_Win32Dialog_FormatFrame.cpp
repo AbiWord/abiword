@@ -36,6 +36,8 @@
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Toolbar_Icons.h"
 
+#define BITMAP_WITDH	15
+#define BITMAP_HEIGHT	15
 
 #define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
@@ -145,11 +147,11 @@ BOOL CALLBACK AP_Win32Dialog_FormatFrame::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 	}
 }
 
-HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName, int x, int y, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
 {
 	HBITMAP hBitmap = NULL;
 	
-	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);					
+	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);					
 	SendDlgItemMessage(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);	
 	return hBitmap; 
 }
@@ -199,10 +201,10 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	
 	
 	/* Load the bitmaps into the dialog box */								
-    m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, "FT_LINEBOTTOM",  x, y, Color);
-    m_hBitmapTop = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_TOP, "FT_LINETOP",  x, y, Color);
-    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, "FT_LINERIGHT",  x, y, Color);
-    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, "FT_LINELEFT",  x, y, Color); 
+    m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, "FT_LINEBOTTOM",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapTop = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_TOP, "FT_LINETOP",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
     
 	/* Preview*/
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_STATIC_PREVIEW);	
