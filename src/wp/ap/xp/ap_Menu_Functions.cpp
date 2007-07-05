@@ -1586,6 +1586,38 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 
 }
 
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	if(pView->isSelectionEmpty())
+	{
+		return EV_MIS_Gray;
+	}
+	PT_DocPosition point = pView->getPoint();
+	PT_DocPosition anchor = pView->getSelectionAnchor();
+	if((pView->getHyperLinkRun(point) != NULL) || (pView->getHyperLinkRun(anchor) != NULL))
+	{
+		return EV_MIS_Gray;
+	}
+	else if((pView->getEmbedDepth(point) > 0) || (pView->getEmbedDepth(anchor) > 0))
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->getFrameEdit()->isActive())
+	{
+	        return EV_MIS_Gray;
+	}
+	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(point) && !pView->isInFrame(point)  && !pView->isInFrame(anchor) 
+		&& !pView->isTOCSelected())
+	{
+		return EV_MIS_ZERO;
+	}
+	return EV_MIS_Gray;
+
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 {
 	ABIWORD_VIEW;
