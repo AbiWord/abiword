@@ -162,7 +162,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_TEXTBOX)
 		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
-
+		
 		Separator()
 
 		MenuItem(AP_MENU_ID_INSERT_HEADER)
@@ -171,9 +171,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
 		MenuItem(AP_MENU_ID_INSERT_HYPERLINK)
 		MenuItem(AP_MENU_ID_INSERT_TABLEOFCONTENTS)	
-#ifdef DEBUG
-		MenuItem(AP_MENU_ID_INSERT_ANNOTATION)
-#endif
         MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
@@ -294,7 +291,17 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
 #endif	
 		EndSubMenu()
-	
+
+// RIVERA
+#ifdef DEBUG
+		BeginSubMenu(AP_MENU_ID_TOOLS_ANNOTATIONS)
+			MenuItem(AP_MENU_ID_INSERT_ANNOTATION)
+			MenuItem(AP_MENU_ID_INSERT_ANNOTATION_FROMSEL)
+			Separator()
+			MenuItem(AP_MENU_ID_TOGGLE_ANNOTATIONS_DRAWER)
+		EndSubMenu()
+#endif
+
 	    Separator()
 
 #if !XP_SIMPLE_MENU

@@ -3838,6 +3838,7 @@ UT_return_val_if_fail(pDialog, false);
 	return ret;
 }
 
+
 Defun1(fileInsertGraphic)
 {
 	CHECK_FRAME;
@@ -10446,12 +10447,15 @@ Defun1(insFootnote)
 	return pView->insertFootnote(true);
 }
 
-
 Defun1(insAnnotation)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
+	
+	// RIVERA
+	UT_DEBUGMSG(("insAnnotation: inserting\n"));
+
 	return pView->insertAnnotation(0);
 }
 

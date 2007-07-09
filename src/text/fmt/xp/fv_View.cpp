@@ -12006,6 +12006,44 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
 		}
 		setPoint(getPoint()-1);
 	}
+	
+	// RIVERA
+	// return true;
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	{
+		_deleteSelection(); // Should be copied first to be used as annotations' content
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
+	_makePointLegal();
+	const gchar ** props_in = NULL;
+	getCharFormat(&props_in);
+	
+	// add field for annotation reference
+	// first, make up an id for this annotation.
+	// (annotations' ids should be independant of foot/endnotes' ids)
+	UT_String annotpid;
+	UT_return_val_if_fail(m_pDoc, false);
+	UT_uint32 pid = m_pDoc->getUID(UT_UniqueId::Annotation);
+	UT_String_sprintf(annotpid,"%d",pid);
+	const gchar* attrs[] = {
+		"annotation-id", annotpid.c_str(),
+		NULL, NULL
+	};
+	UT_DEBUGMSG(("insAnnotation: assigned id %s\n",attrs[1]));
+	
+	//	Apply the character style at insertion point and insert the Annotation reference
+	
+	
+	// TODO check the debug message "DEBUG: PieceTable changing don't redraw"
+	// TODO place annotation mark
+	// TODO popup annotation edit window
+	
+	
 	return true;
 }
 
@@ -12045,7 +12083,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
-		_deleteSelection();
+		_deleteSelection();  // TODO use this text as content of footnote instead of simply deleting it...
 	}
 	else if(m_FrameEdit.isActive())
 	{
@@ -12081,7 +12119,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	PT_DocPosition FanchEnd;
 	PT_DocPosition FbodyEnd;
 
-	const gchar *cur_style;
+	const gchar *cur_style;  // TODO variable cur_style not used? delete it?
 	getStyle(&cur_style);
 
 	bool bCreatedFootnoteSL = false;
@@ -12290,7 +12328,7 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 // will make all the text inside the footnote section invisible so that only
 // we can place the footnote section inside the block containing the reference.
 //
-	UT_DEBUGMSG(("insertFootnoetSection: about to insert footnote section at %d\n",pointBreak));
+	UT_DEBUGMSG(("insertFootnoteSection: about to insert footnote section at %d\n",pointBreak));
 	if(bFootnote)
 	{
 		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);

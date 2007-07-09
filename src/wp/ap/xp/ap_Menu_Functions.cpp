@@ -723,6 +723,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_LATEXEQUATION:
 	case AP_MENU_ID_EDIT_COPY:
+	// RIVERA
+	case AP_MENU_ID_INSERT_ANNOTATION_FROMSEL:
 		if (pView->isSelectionEmpty())
 			s = EV_MIS_Gray;
 		break;
@@ -1591,7 +1593,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-	if(pView->isSelectionEmpty())
+	if(pView->isSelectionEmpty()) // Only create annotations from selection??
 	{
 		return EV_MIS_Gray;
 	}

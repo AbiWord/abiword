@@ -197,6 +197,8 @@ class ABI_EXPORT UT_UniqueId
 		List = 0,
 		Footnote,
 		Endnote,
+		// RIVERA
+		Annotation,
 		HeaderFtr,
 		Image,
 		Math,
