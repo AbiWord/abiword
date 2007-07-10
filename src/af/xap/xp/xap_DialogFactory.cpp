@@ -59,12 +59,11 @@ XAP_DialogFactory::~XAP_DialogFactory(void)
 bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
+	UT_return_val_if_fail(pIndex, false);
 
-	UT_ASSERT(pIndex);
-
-	for (UT_uint32 k=0; (k < m_vec_dlg_table.getItemCount()); k++)
+	for (UT_uint32 k=0; k < m_vec_dlg_table.getItemCount(); k++)
 	{
-	        if (m_vec_dlg_table.getNthItem(k)->m_id == id)
+		if (m_vec_dlg_table.getNthItem(k)->m_id == id)
 		{
 			*pIndex = k;
 			return true;
@@ -77,38 +76,41 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 XAP_Dialog_Id XAP_DialogFactory::getNextId(void)
 {
-        UT_uint32 i = m_vec_dlg_table.getItemCount()-1;
-	UT_sint32 id = static_cast<UT_sint32>(m_vec_dlg_table.getNthItem(i)->m_id);
-	return static_cast<XAP_Dialog_Id>(id+1);
-
+	if (m_vec_dlg_table.getItemCount() > 0)
+	{
+		const _dlg_table* pTable = m_vec_dlg_table.getNthItem(m_vec_dlg_table.getItemCount()-1);
+		UT_return_val_if_fail(pTable, 0);
+		UT_sint32 id = static_cast<UT_sint32>(pTable->m_id);
+		return static_cast<XAP_Dialog_Id>(id+1);
+	}
+	return static_cast<XAP_Dialog_Id>(0);
 }
 
 XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType)
 {
-  _dlg_table * pDlgTable = new _dlg_table;
-  pDlgTable->m_id = getNextId();
-  pDlgTable->m_type = iDialogType;
-  pDlgTable->m_pfnStaticConstructor = pStaticConstructor;
-  pDlgTable->m_tabbed = FALSE;
-  m_vec_dlg_table.addItem(pDlgTable);
-  m_vecDynamicTable.addItem(pDlgTable);
-  return pDlgTable->m_id;
+	_dlg_table * pDlgTable = new _dlg_table;
+	pDlgTable->m_id = getNextId();
+	pDlgTable->m_type = iDialogType;
+	pDlgTable->m_pfnStaticConstructor = pStaticConstructor;
+	pDlgTable->m_tabbed = FALSE;
+	m_vec_dlg_table.addItem(pDlgTable);
+	m_vecDynamicTable.addItem(pDlgTable);
+	return pDlgTable->m_id;
 }
 
 void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
 {
-  UT_uint32 i = 0;
-  for(i=0; i< m_vecDialogs.getItemCount(); i++)
-  {
-      const XAP_Dialog * pDialog = reinterpret_cast<const XAP_Dialog *>(m_vecDialogs.getNthItem(i));
-      if(pDialog && pDialog->getDialogId() == id)
-      {
-	  m_vecDialogs.deleteNthItem(i);
-	  m_vecDialogIds.deleteNthItem(i);
-	  delete pDialog;
-	  return;
-      }
-  }
+	for (UT_sint32 i = 0; i < m_vecDialogs.getItemCount(); i++)
+	{
+		const XAP_Dialog * pDialog = reinterpret_cast<const XAP_Dialog *>(m_vecDialogs.getNthItem(i));
+		if(pDialog && pDialog->getDialogId() == id)
+		{
+			m_vecDialogs.deleteNthItem(i);
+			m_vecDialogIds.deleteNthItem(i);
+			delete pDialog;
+			return;
+		}
+	}
 }
 
 /*****************************************************************/
