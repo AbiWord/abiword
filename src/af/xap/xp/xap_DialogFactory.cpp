@@ -43,10 +43,9 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
 {
 	UT_ASSERT(pApp);
 
-	UT_sint32 i = 0;
-	for(i=0; i< nrElem; i++)
+	for (UT_sint32 i = 0; i < nrElem; i++)
 	{
-	  m_vec_dlg_table.addItem(&pDlgTable[i]);
+		m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
 }
 
@@ -290,8 +289,10 @@ bool XAP_DialogFactory::registerNotebookPage(XAP_Dialog_Id dialog, const XAP_Not
 {
 	// check that widget is unique for dialog
 	std::pair<NotebookPagesIter, NotebookPagesIter> bounds = s_mapNotebookPages.equal_range(dialog);
-	while (bounds.first != bounds.second) {
-		if (bounds.first->second == page) {
+	while (bounds.first != bounds.second)
+	{
+		if (bounds.first->second == page)
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return FALSE;
 		}
@@ -308,9 +309,11 @@ bool XAP_DialogFactory::registerNotebookPage(XAP_Dialog_Id dialog, const XAP_Not
 bool XAP_DialogFactory::unregisterNotebookPage(XAP_Dialog_Id dialog, const XAP_NotebookDialog::Page * page)
 {
 	std::pair<NotebookPagesIter, NotebookPagesIter> bounds = s_mapNotebookPages.equal_range(dialog);
-	while (bounds.first != bounds.second) {
+	while (bounds.first != bounds.second)
+	{
 		// widget per dialog must be unique, that's made sure in registerNotebookPage.
-		if (bounds.first->second == page) {
+		if (bounds.first->second == page)
+		{
 			s_mapNotebookPages.erase(bounds.first);
 			return TRUE;
 		}
@@ -325,7 +328,8 @@ bool XAP_DialogFactory::unregisterNotebookPage(XAP_Dialog_Id dialog, const XAP_N
 void XAP_DialogFactory::addPages(XAP_NotebookDialog * pDialog, XAP_Dialog_Id id)
 {
 	std::pair<NotebookPagesIter, NotebookPagesIter> bounds = s_mapNotebookPages.equal_range(id);
-	while (bounds.first != bounds.second) {
+	while (bounds.first != bounds.second)
+	{
 		pDialog->addPage(bounds.first->second);
 		bounds.first++;
 	}
