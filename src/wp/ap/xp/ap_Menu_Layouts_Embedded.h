@@ -133,10 +133,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
 #endif
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
-		// RIVERA
-		MenuItem(AP_MENU_ID_INSERT_ANNOTATION)
-		MenuItem(AP_MENU_ID_INSERT_ANNOTATION_FROMSEL)
-	
+		
 		Separator()
 
 		MenuItem(AP_MENU_ID_INSERT_HEADER)
@@ -269,6 +266,16 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
 #endif	
 		EndSubMenu()
+
+		// RIVERA
+#ifdef DEBUG
+		BeginSubMenu(AP_MENU_ID_TOOLS_ANNOTATIONS)
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT)
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL)
+			Separator()
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER)
+		EndSubMenu()
+#endif
 	
 	    Separator()
 

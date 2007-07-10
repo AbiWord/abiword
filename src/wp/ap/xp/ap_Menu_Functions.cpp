@@ -724,7 +724,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	case AP_MENU_ID_EDIT_LATEXEQUATION:
 	case AP_MENU_ID_EDIT_COPY:
 	// RIVERA
-	case AP_MENU_ID_INSERT_ANNOTATION_FROMSEL:
+	case AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL:
 		if (pView->isSelectionEmpty())
 			s = EV_MIS_Gray;
 		break;
