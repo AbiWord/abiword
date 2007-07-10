@@ -92,7 +92,8 @@ protected:
 	UT_Vector			m_vecDialogs;
 	UT_NumberVector		m_vecDialogIds;
 
-	UT_uint32						m_nrElementsDlgTable;
+	UT_uint32			m_nrElementsDlgTable;
+	UT_sint32			m_iMaxDlgId;
 	UT_GenericVector<const _dlg_table *>	m_vec_dlg_table;			/* a Vector of elements */
 	UT_GenericVector<_dlg_table *>	m_vecDynamicTable;			/* a Vector of elements */
 

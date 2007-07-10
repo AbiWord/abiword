@@ -39,12 +39,14 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
   : m_pApp(pApp),
 	m_pFrame(pFrame),
 	m_dialogType(XAP_DLGT_APP_PERSISTENT),
-	m_nrElementsDlgTable(nrElem)
+	m_nrElementsDlgTable(nrElem),
+	m_iMaxDlgId(-1)
 {
 	UT_ASSERT(pApp);
-
+	
 	for (UT_sint32 i = 0; i < nrElem; i++)
 	{
+		if (m_iMaxDlgId < pDlgTable[i].m_id)		m_iMaxDlgId = pDlgTable[i].m_id;
 		m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
 }
@@ -75,14 +77,9 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 XAP_Dialog_Id XAP_DialogFactory::getNextId(void)
 {
-	if (m_vec_dlg_table.getItemCount() > 0)
-	{
-		const _dlg_table* pTable = m_vec_dlg_table.getNthItem(m_vec_dlg_table.getItemCount()-1);
-		UT_return_val_if_fail(pTable, 0);
-		UT_sint32 id = static_cast<UT_sint32>(pTable->m_id);
-		return static_cast<XAP_Dialog_Id>(id+1);
-	}
-	return static_cast<XAP_Dialog_Id>(0);
+	// TODO: Check for overflow?  (In case we ever try to have as many dialogs as Word...)
+	m_iMaxDlgId++;
+	return static_cast<XAP_Dialog_Id>(m_iMaxDlgId);
 }
 
 XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType)
@@ -190,7 +187,6 @@ CreateItPersistent:
 	{
 		// see if we already have an instance of this object in our vector.
 		// if so, just return it.  otherwise, create a fresh one and remember it.
-		
 		UT_sint32 indexVec = m_vecDialogIds.findItem(index+1);
 		if (indexVec < 0)				// not present, create new object and add it to vector
 		{
