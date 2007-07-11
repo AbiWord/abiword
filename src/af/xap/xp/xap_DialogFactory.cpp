@@ -42,8 +42,9 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
 	m_nrElementsDlgTable(nrElem)
 {
 	UT_ASSERT(pApp);
+	UT_sint32 i;
 	
-	for (UT_sint32 i = 0; i < nrElem; i++)
+	for (i = 0; i < nrElem; i++)
 	{
 		m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
