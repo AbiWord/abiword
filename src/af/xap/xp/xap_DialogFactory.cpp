@@ -48,7 +48,7 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
 		m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
 	
-#ifdef _DEBUG
+#ifdef DEBUG
 	// getNextId() assumes that the last item is the greater. We should
 	//  keep greater ID always the latest on ap_[PLATFORM]Dialog_All.h	
 	UT_sint32 greatest = 0;
