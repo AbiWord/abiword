@@ -39,16 +39,29 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
   : m_pApp(pApp),
 	m_pFrame(pFrame),
 	m_dialogType(XAP_DLGT_APP_PERSISTENT),
-	m_nrElementsDlgTable(nrElem),
-	m_iMaxDlgId(-1)
+	m_nrElementsDlgTable(nrElem)
 {
 	UT_ASSERT(pApp);
 	
 	for (UT_sint32 i = 0; i < nrElem; i++)
 	{
-		if (m_iMaxDlgId < pDlgTable[i].m_id)		m_iMaxDlgId = pDlgTable[i].m_id;
 		m_vec_dlg_table.addItem(&pDlgTable[i]);
 	}
+	
+#ifdef _DEBUG
+	// getNextId() assumes that the last item is the greater. We should
+	//  keep greater ID always the latest on ap_[PLATFORM]Dialog_All.h	
+	UT_sint32 greatest = 0;
+	for(i=0; i< nrElem; i++)
+	{
+		if (pDlgTable[i].m_id > greatest)
+			greatest = pDlgTable[i].m_id;
+	}
+	
+	if (nrElem)
+		UT_ASSERT(greatest == pDlgTable[nrElem - 1].m_id);
+#endif
+
 }
 
 XAP_DialogFactory::~XAP_DialogFactory(void)
@@ -77,9 +90,9 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 XAP_Dialog_Id XAP_DialogFactory::getNextId(void)
 {
-	// TODO: Check for overflow?  (In case we ever try to have as many dialogs as Word...)
-	m_iMaxDlgId++;
-	return static_cast<XAP_Dialog_Id>(m_iMaxDlgId);
+       UT_uint32 i = m_vec_dlg_table.getItemCount()-1;
+	UT_sint32 id = static_cast<UT_sint32>(m_vec_dlg_table.getNthItem(i)->m_id);
+	return static_cast<XAP_Dialog_Id>(id+1);
 }
 
 XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType)
