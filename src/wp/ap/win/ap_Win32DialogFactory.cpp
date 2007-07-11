@@ -42,13 +42,7 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 
 /*****************************************************************/
 /*****************************************************************/
-  
-AP_Win32DialogFactory::AP_Win32DialogFactory(XAP_App * pApp)
-	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table)
-{
-}
-
-AP_Win32DialogFactory::AP_Win32DialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
+AP_Win32DialogFactory::AP_Win32DialogFactory(XAP_App * pApp, XAP_Frame * pFrame)
 	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table, pFrame)
 {
 }
