@@ -125,7 +125,8 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 #endif
 
 /*
-	Define this variable when you want to convert the XPM files into BMP. 
+	Define EXPORT_XPM_TO_BMP 1 and remark #define XAP_DONT_INLINE_XPM 1
+	at xap_Win32Features.h when you want to convert the XPM files into BMP.
 	
 	* The resulting BMP files should be copied into	the src/wp/ap/win/ToolbarIcons
 	* The bitmap definitions should go to ap_Win32Res_Icons.rc2
@@ -133,10 +134,8 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 	* The mapping name -> resource id structure should go to xap_Win32Toolbar_Icons.cpp
 	
 */
-//#define __EXPORT_XPM_TO_BMP 1
-#ifdef __EXPORT_XPM_TO_BMP
-#if defined(DEBUG) && !XAP_DONT_INLINE_XPM && defined (WIN32)
 
+#ifdef EXPORT_XPM_TO_BMP
 	char szID[1024];
 	char szIDlow[1024];
 
@@ -159,7 +158,6 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 	for (i = 0; i < range; i++)
 			UT_DEBUGMSG(("\"%s\", AP_RID_TI_%s,\n",   s_imTable[i].m_id, s_imTable[i].m_id));	
 
-#endif
 #endif
 
 }

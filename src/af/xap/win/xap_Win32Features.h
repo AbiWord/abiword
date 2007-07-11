@@ -23,8 +23,6 @@
 
 #define XAP_PREFSMENU_UNDER_TOOLS 1
 
-#ifndef DEBUG
 #define XAP_DONT_INLINE_XPM 1
-#endif
 
 #endif

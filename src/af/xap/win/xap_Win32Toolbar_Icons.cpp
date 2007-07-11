@@ -211,7 +211,7 @@ AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
-#if defined(DEBUG)
+#if defined(EXPORT_XPM_TO_BMP)
 #include <stdio.h>
 
 bool AP_Win32Toolbar_Icons::saveBitmap (const char *szFilename)
@@ -388,7 +388,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
 	return true;
 }
 
-#if defined(DEBUG)
+#if defined(EXPORT_XPM_TO_BMP)
 
 bool AP_Win32Toolbar_Icons::getBitmapForIconFromXPM(HWND hwnd,
 												UT_uint32 maxWidth,

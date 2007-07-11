@@ -33,7 +33,7 @@ public:
 	AP_Win32Toolbar_Icons(void);
 	~AP_Win32Toolbar_Icons(void);
 
-#if defined (DEBUG)
+#if defined (EXPORT_XPM_TO_BMP)
 	static bool getBitmapForIconFromXPM(HWND hwnd,
 									UT_uint32 maxWidth,
 									UT_uint32 maxHeight,
