@@ -263,6 +263,7 @@ G_BEGIN_DECLS
     void (* signal_table_state) (AbiWidget * widget, gboolean value);
     void (* signal_page_count) (AbiWidget * widget, guint32 value);
     void (* signal_current_page) (AbiWidget * widget, guint32 value);
+    void (* signal_zoom_percentage) (AbiWidget * widget, gint32 value);
 
     AbiSignal sig_pad[20];
   };

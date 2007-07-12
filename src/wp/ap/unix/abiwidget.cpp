@@ -437,6 +437,7 @@ enum {
 	SIGNAL_TABLE_STATE,
 	SIGNAL_PAGE_COUNT,
 	SIGNAL_CURRENT_PAGE,
+	SIGNAL_ZOOM_PERCENTAGE,
 	SIGNAL_LAST
 };
 
@@ -477,10 +478,12 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 
 	INSTALL_INT_SIGNAL(SIGNAL_PAGE_COUNT, "page-count", signal_page_count); // should be UINT32, but we really don't care atm
 	INSTALL_INT_SIGNAL(SIGNAL_CURRENT_PAGE, "current-page", signal_current_page); // should be UINT32, but we really don't care atm
+
+	INSTALL_INT_SIGNAL(SIGNAL_ZOOM_PERCENTAGE, "zoom", signal_zoom_percentage);
 }
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
-#define FIRE_UINT32(query, var, fire) do { UT_sint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
+#define FIRE_SINT32(query, var, fire) do { UT_sint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
 const gchar * sz = UT_getAttribute(prop, props_in); \
@@ -555,8 +558,8 @@ public:
 			UT_uint32 _page_count = m_pView->getLayout()->countPages();
 			UT_uint32 _current_page = m_pView->getCurrentPageNumForStatusBar();
 
-			FIRE_UINT32(_page_count, pageCount_, pageCount);
-			FIRE_UINT32(_current_page, currentPage_, currentPage);
+			FIRE_SINT32(_page_count, pageCount_, pageCount); // should be UINT32 ofcourse
+			FIRE_SINT32(_current_page, currentPage_, currentPage); // should be UINT32 ofcourse
 		}
 
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
@@ -606,6 +609,10 @@ public:
 			FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
 			FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
 			FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
+
+			XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+			UT_return_val_if_fail(pFrame, false);
+			FIRE_SINT32(pFrame->getZoomPercentage(), zoomPercentage_, zoomPercentage); // surely there is a better signal for this than AV_CHG_ALL
 		}
 
 		if (mask & AV_CHG_EMPTYSEL)
@@ -697,6 +704,7 @@ public:
 	virtual void tableState(bool value) {}
 	virtual void pageCount(guint32 value) {}
 	virtual void currentPage(guint32 value) {}
+	virtual void zoomPercentage(gint32 value) {}
 
 private:
 
@@ -735,6 +743,7 @@ private:
 		tableState_ = true;
 		pageCount_ = 0;
 		currentPage_ = 0;
+		zoomPercentage_ = 0;
 	}
 	bool bold_;
 	bool italic_;
@@ -764,6 +773,7 @@ private:
 	bool tableState_;
 	guint32 pageCount_;
 	guint32 currentPage_;
+	gint32 zoomPercentage_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
@@ -808,6 +818,7 @@ public:
 	virtual void tableState(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TABLE_STATE], 0, (gboolean)value);}
 	virtual void pageCount(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_PAGE_COUNT], 0, (guint32)value);}
 	virtual void currentPage(guint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CURRENT_PAGE], 0, (guint32)value);}
+	virtual void zoomPercentage(gint32 value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ZOOM_PERCENTAGE], 0, (gint32)value);}
 
 private:
 	AbiWidget *         m_pWidget;
