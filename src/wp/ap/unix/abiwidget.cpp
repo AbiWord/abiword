@@ -193,6 +193,51 @@ return GET_CLASS (w)->p (w, str); \
 /**************************************************************************/
 /**************************************************************************/
 
+// custom gclosure marchallers
+
+void
+g_cclosure_user_marshal_VOID__INT_INT_INT (GClosure     *closure,
+                                           GValue       *return_value,
+                                           guint         n_param_values,
+                                           const GValue *param_values,
+                                           gpointer      invocation_hint,
+                                           gpointer      marshal_data)
+{
+  typedef void (*GMarshalFunc_VOID__INT_INT_INT) (gpointer     data1,
+                                                  gint         arg_1,
+                                                  gint         arg_2,
+                                                  gint         arg_3,
+                                                  gpointer     data2);
+  register GMarshalFunc_VOID__INT_INT_INT callback;
+  register GCClosure *cc = (GCClosure*) closure;
+  register gpointer data1, data2;
+
+  g_return_if_fail (n_param_values == 4);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_VOID__INT_INT_INT) (marshal_data ? marshal_data : cc->callback);
+
+  callback (data1,
+            g_marshal_value_peek_int (param_values + 1),
+            g_marshal_value_peek_int (param_values + 2),
+            g_marshal_value_peek_int (param_values + 3),
+            data2);
+}
+
+
+
+/**************************************************************************/
+/**************************************************************************/
+
 // Here we define our EditMethods which will later be mapped back onto
 // Our AbiWidgetClass' member functions
 
@@ -353,6 +398,16 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 									  g_cclosure_marshal_VOID__STRING, \
 									  G_TYPE_NONE, 1, G_TYPE_STRING); } while(0)
 
+#define INSTALL_COLOR_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_user_marshal_VOID__INT_INT_INT, \
+									  G_TYPE_NONE, 3, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT); } while(0)
+
 enum {
 	SIGNAL_BOLD,
 	SIGNAL_ITALIC,
@@ -363,6 +418,7 @@ enum {
 	SIGNAL_BOTTOMLINE,
 	SIGNAL_SUPERSCRIPT,
 	SIGNAL_SUBSCRIPT,
+	SIGNAL_COLOR,
 	SIGNAL_CAN_UNDO,
 	SIGNAL_CAN_REDO,
 	SIGNAL_FONT_SIZE,
@@ -397,6 +453,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_BOTTOMLINE, "bottomline", signal_bottomline);
 	INSTALL_BOOL_SIGNAL(SIGNAL_SUPERSCRIPT, "superscript", signal_superscript);
 	INSTALL_BOOL_SIGNAL(SIGNAL_SUBSCRIPT, "subscript", signal_subscript);
+	INSTALL_COLOR_SIGNAL(SIGNAL_COLOR, "color", signal_color);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_UNDO, "can-undo", signal_can_undo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_REDO, "can-redo", signal_can_redo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_IS_DIRTY, "is-dirty", signal_is_dirty);
@@ -444,6 +501,8 @@ fire(var); \
 
 #define FIRE_STRING_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
 
+#define FIRE_COLOR_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { UT_RGBColor val(0,0,0); UT_parseColor(sz, val); if (val != var) { var = val; fire(val); } } } while(0) 
+
 #define TOOLBAR_DELAY 1000 /* in milliseconds */
 
 class Stateful_ViewListener : public AV_Listener
@@ -484,9 +543,9 @@ public:
 				FIRE_BOOL_CHARFMT("text-decoration", "bottomline", true, bottomline_, bottomline);
 				FIRE_BOOL_CHARFMT("text-position", "superscript", true, superscript_, superscript);
 				FIRE_BOOL_CHARFMT("text-position", "subscript", true, subscript_, subscript);
+				FIRE_COLOR_CHARFMT("color", color_, color);
 
 				FIRE_DOUBLE_CHARFMT("font-size", font_size_, font_size);
-				
 				FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
 			}
 		}
@@ -619,6 +678,7 @@ public:
 	virtual void bottomline(bool value) {}
 	virtual void subscript(bool value) {}
 	virtual void superscript(bool value) {}
+	virtual void color(UT_RGBColor value) {}
 	virtual void font_size(double value) {}
 	virtual void font_family(const char * value) {}
 	virtual void can_undo(bool value) {}
@@ -651,6 +711,7 @@ private:
 		bottomline_ = false;
 		subscript_ = false;
 		superscript_ = false;
+		color_ = UT_RGBColor(0,0,0);
 		font_size_ = 0.;
 		font_family_ = "";
 		//
@@ -684,6 +745,7 @@ private:
 	bool bottomline_;
 	bool subscript_;
 	bool superscript_;
+	UT_RGBColor color_;
 	double font_size_;
 	UT_UTF8String font_family_;
 	bool can_undo_;
@@ -727,6 +789,7 @@ public:
 	virtual void bottomline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOTTOMLINE], 0, (gboolean)value);}
 	virtual void subscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUBSCRIPT], 0, (gboolean)value);}
 	virtual void superscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUPERSCRIPT], 0, (gboolean)value);}
+	virtual void color(UT_RGBColor value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_COLOR], 0, (int)value.m_red, (int)value.m_grn, (int)value.m_blu);}
 	virtual void font_size(double value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_SIZE], 0, value);}
 	virtual void font_family(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
 	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
