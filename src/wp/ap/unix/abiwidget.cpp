@@ -1037,7 +1037,7 @@ abi_widget_set_show_margin(AbiWidget * abi, gboolean gb)
 	pView->setViewMode(pView->getViewMode());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 	{
-		UT_uint32 iZoom =  pView->calculateZoomPercentForPageHeight();
+		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
 		pFrame->quickZoom(iZoom);
 	}
 	return gb;
