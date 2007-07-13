@@ -18,6 +18,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #import <Cocoa/Cocoa.h>
 #ifdef DEBUG
 #import <Foundation/NSDebug.h>

@@ -126,6 +126,7 @@ enum {
   SELECTION,
   CONTENT_LENGTH,
   SELECTION_LENGTH,
+  SHADOW_TYPE,
   ARG_LAST
 };
 
@@ -1549,6 +1550,12 @@ static void abi_widget_get_prop (GObject  *object,
 			g_value_set_int(arg,abi->priv->m_iSelectionLength);
 			break;
 		}
+	    case SHADOW_TYPE:
+		{
+			AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(abi->priv->m_pFrame->getFrameImpl());
+			g_value_set_int (arg, pFrameImpl->getShadowType());
+			break;
+		}
 	    default:
 			break;
 	}
@@ -1619,6 +1626,14 @@ static void abi_widget_set_prop (GObject  *object,
 		case MIMETYPE:
 		{
 			*(abi->priv->m_sMIMETYPE) = g_value_get_string(arg);
+			break;
+		}  
+		case SHADOW_TYPE:
+		{
+			AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(abi->priv->m_pFrame->getFrameImpl());
+			int shadow = g_value_get_int (arg);
+			pFrameImpl->setShadowType((GtkShadowType) shadow);
+			break;
 		}  
 	    default:
 			break;
@@ -2101,6 +2116,14 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
+
+  g_object_class_install_property(gobject_class,
+								  SHADOW_TYPE,
+								  g_param_spec_int("shadow_type", NULL, NULL,
+													   (int) GTK_SHADOW_NONE,
+													   (int) GTK_SHADOW_ETCHED_OUT,
+													   (int) GTK_SHADOW_IN,
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
   _abi_widget_class_install_signals (abi_class);
 }

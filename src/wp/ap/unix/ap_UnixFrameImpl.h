@@ -41,6 +41,9 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;
 
+	GtkShadowType getShadowType () { return gtk_frame_get_shadow_type (GTK_FRAME (m_wSunkenBox)); }
+	void setShadowType (GtkShadowType shadow) { gtk_frame_set_shadow_type (GTK_FRAME (m_wSunkenBox), shadow); }
+
 	GtkWidget * getDrawingArea() const {return m_dArea;}
 	static gboolean ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
 	static gboolean ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
