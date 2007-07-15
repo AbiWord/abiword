@@ -194,6 +194,11 @@ public:
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value) = 0;
 	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
 
+	// RIVERA
+	// TODO Those methods must deal somehow with annotation ids
+	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value) = 0;
+	virtual bool getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
+	
 	// history tracking
 	void            addRecordToHistory(const AD_VersionData & v);
 	void            purgeHistory();

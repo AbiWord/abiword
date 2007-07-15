@@ -180,6 +180,21 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   return found;
 }
 
+// RIVERA
+void PD_Document::setAnnotationProp ( const UT_String & key,
+									const UT_UTF8String & value )
+{
+	return; // TODO something!
+}
+bool PD_Document::getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const
+{
+	bool found = true;//false;
+	outProp = "Dummy value";
+	
+	return found;
+}
+
+
 UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 {
   const UT_UTF8String * val = m_mailMergeMap.pick ( key );

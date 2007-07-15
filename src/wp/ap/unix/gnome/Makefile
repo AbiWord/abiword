@@ -48,6 +48,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_HdrFtr.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_MetaData.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Annotation.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_NautilusView.$(OBJ_SUFFIX) 
 
 
@@ -75,6 +76,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.cpp  \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_MetaData.cpp  \
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Annotation.cpp  \
 			ap_NautilusView.cpp 
 
 

@@ -161,6 +161,7 @@ noinst_HEADERS = \
 	ap_Args.h \
 	ap_Clipboard.h \
 	ap_Convert.h \
+	ap_Dialog_Annotation.h \
 	ap_Dialog_Background.h \
 	ap_Dialog_Break.h \
 	ap_Dialog_Columns.h \
@@ -183,6 +184,7 @@ noinst_HEADERS = \
 	ap_Dialog_MarkRevisions.h \
 	ap_Dialog_MergeCells.h \
 	ap_Dialog_MetaData.h \
+	ap_Dialog_Annotation.h \
 	ap_Dialog_New.h \
 	ap_Dialog_Options.h \
 	ap_Dialog_PageNumbers.h \

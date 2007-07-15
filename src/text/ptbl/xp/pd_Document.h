@@ -536,6 +536,10 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
 	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
 
+	// RIVERA
+	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value);
+	virtual bool getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const;
+
 	UT_GenericStringMap<UT_UTF8String*> & getMetaData () { return m_metaDataMap ; }
 
 	// document-level property handling functions

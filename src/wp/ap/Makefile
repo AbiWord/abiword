@@ -56,6 +56,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MarkRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_ListRevisions.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MetaData.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Annotation.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_MailMerge.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)		\
@@ -129,6 +130,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_MetaData.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Annotation.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_NautilusView.$(OBJ_SUFFIX)
 endif
 endif

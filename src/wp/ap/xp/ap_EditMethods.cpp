@@ -95,6 +95,8 @@
 #include "ap_Dialog_HdrFtr.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Dialog_InsertHyperlink.h"
+// RIVERA
+#include "ap_Dialog_Annotation.h"
 #include "ap_Dialog_MetaData.h"
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
@@ -674,6 +676,9 @@ public:
 	static EV_EditMethod_Fn purgeAllRevisions;
 	static EV_EditMethod_Fn startNewRevision;
 	
+	//RIVERA
+    static EV_EditMethod_Fn dlgInsertAnnotation;
+	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
 	static EV_EditMethod_Fn sortRowsAscend;
@@ -816,10 +821,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
 	EV_EditMethod(NF(dlgColumns),			0,	""),
 	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
-	EV_EditMethod(NF(dlgFmtPosImage), 			0, ""),
+	EV_EditMethod(NF(dlgFmtPosImage), 		0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
+	EV_EditMethod(NF(dlgInsertAnnotation), 	0, ""),
 	EV_EditMethod(NF(dlgLanguage),			0,	""),
 	EV_EditMethod(NF(dlgMetaData), 			0, ""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,	""),
@@ -837,7 +843,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgWordCount), 		0,	""),
 	EV_EditMethod(NF(dlgZoom),				0,	""),
 	EV_EditMethod(NF(doBullets),			0,	""),
-	EV_EditMethod(NF(doEscape),			0,	""),
+	EV_EditMethod(NF(doEscape),				0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
 	EV_EditMethod(NF(dragFrame), 			0,	""),
@@ -3376,6 +3382,98 @@ Defun(dlgMetaData)
   pDialogFactory->releaseDialog(pDialog);
 
   return true ;
+}
+
+// RIVERA
+Defun(dlgInsertAnnotation)
+{
+	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, false);
+	
+	pFrame->raise();
+	
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	
+	AP_Dialog_Annotation * pDialog
+		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
+	UT_return_val_if_fail (pDialog, false);
+	
+	// get the properties
+	
+	PD_Document * pDocument = pView->getDocument();
+	
+	UT_UTF8String prop ( "" ) ;
+	
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_TITLE, prop ) )
+		pDialog->setTitle ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_SUBJECT, prop ) )
+		pDialog->setSubject ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_CREATOR, prop ) )
+		pDialog->setAuthor ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_PUBLISHER, prop ) )
+		pDialog->setPublisher ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_CONTRIBUTOR, prop ) )
+		pDialog->setCoAuthor ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_TYPE, prop ) )
+		pDialog->setCategory ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_KEYWORDS, prop ) )
+		pDialog->setKeywords ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_LANGUAGE, prop ) )
+		pDialog->setLanguages ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_SOURCE, prop ) )
+		pDialog->setSource ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_RELATION, prop ) )
+		pDialog->setRelation ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_COVERAGE, prop ) )
+		pDialog->setCoverage ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_RIGHTS, prop ) )
+		pDialog->setRights ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_DESCRIPTION, prop ) )
+		pDialog->setDescription ( prop ) ;
+	
+	// run the dialog
+	
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
+	
+	if (bOK)
+    {
+		// reset the props
+		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_SUBJECT, pDialog->getSubject() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_PUBLISHER, pDialog->getPublisher() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_CONTRIBUTOR, pDialog->getCoAuthor() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_TYPE, pDialog->getCategory() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_KEYWORDS, pDialog->getKeywords() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_LANGUAGE, pDialog->getLanguages() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_SOURCE, pDialog->getSource() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_RELATION, pDialog->getRelation() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_COVERAGE, pDialog->getCoverage() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
+		pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
+		
+		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+		{
+			pApp->getFrame(i)->updateTitle ();
+		}	  
+		
+		// TODO: set the document as dirty when something changed
+    }
+	
+	// release the dialog
+	
+	pDialogFactory->releaseDialog(pDialog);
+	
+	return true ;
 }
 
 Defun(fileNewUsingTemplate)
