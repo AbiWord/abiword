@@ -54,18 +54,8 @@ public:
 	  }
 	
 	DCL_PROP(Title)
-	DCL_PROP(Subject)
 	DCL_PROP(Author)
-	DCL_PROP(Publisher)
-	DCL_PROP(CoAuthor)
-	DCL_PROP(Category)
-	DCL_PROP(Keywords)
-	DCL_PROP(Languages)
 	DCL_PROP(Description)
-	DCL_PROP(Source)
-	DCL_PROP(Relation)
-	DCL_PROP(Coverage)
-	DCL_PROP(Rights)
 
  protected:
 	

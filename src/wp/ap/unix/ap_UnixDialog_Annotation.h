@@ -48,18 +48,8 @@ class AP_UnixDialog_Annotation: public AP_Dialog_Annotation
 
  	GtkWidget * m_windowMain;
 	GtkWidget * m_entryTitle;
-	GtkWidget * m_entrySubject;
 	GtkWidget * m_entryAuthor;
-	GtkWidget * m_entryPublisher;
-	GtkWidget * m_entryCoAuthor;
-	GtkWidget * m_entryCategory;
-	GtkWidget * m_entryKeywords;
-	GtkWidget * m_entryLanguages;
 	GtkWidget * m_textDescription;
-	GtkWidget * m_entrySource;
-	GtkWidget * m_entryRelation;
-	GtkWidget * m_entryCoverage;
-	GtkWidget * m_entryRights;
 };
 
 #endif /* AP_UNIXDIALOG_ANNOTATION_H */

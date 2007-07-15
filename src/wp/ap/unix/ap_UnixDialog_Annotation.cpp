@@ -94,17 +94,7 @@ void AP_UnixDialog_Annotation::eventOK ()
 	const char * txt = NULL ;
 	
 	GRAB_ENTRY_TEXT(Title);
-	GRAB_ENTRY_TEXT(Subject);
 	GRAB_ENTRY_TEXT(Author);
-	GRAB_ENTRY_TEXT(Publisher);  
-	GRAB_ENTRY_TEXT(CoAuthor);
-	GRAB_ENTRY_TEXT(Category);
-	GRAB_ENTRY_TEXT(Keywords);
-	GRAB_ENTRY_TEXT(Languages);
-	GRAB_ENTRY_TEXT(Source);
-	GRAB_ENTRY_TEXT(Relation);
-	GRAB_ENTRY_TEXT(Coverage);
-	GRAB_ENTRY_TEXT(Rights);
 	
 	GtkTextIter start, end;
 	
@@ -142,18 +132,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_Annotation");
 	m_entryTitle = glade_xml_get_widget(xml, "enTitle");
-	m_entrySubject = glade_xml_get_widget(xml, "enSubject");
 	m_entryAuthor = glade_xml_get_widget(xml, "enAuthor");
-	m_entryPublisher = glade_xml_get_widget(xml, "enPublisher");
-	m_entryCoAuthor = glade_xml_get_widget(xml, "enContributors");
-	m_entryCategory = glade_xml_get_widget(xml, "enCategory");
-	m_entryKeywords = glade_xml_get_widget(xml, "enKeywords");
-	m_entryLanguages = glade_xml_get_widget(xml, "enLanguages");
 	m_textDescription = glade_xml_get_widget(xml, "tvDescription");
-	m_entrySource = glade_xml_get_widget(xml, "enSource");
-	m_entryRelation = glade_xml_get_widget(xml, "enRelation");
-	m_entryCoverage = glade_xml_get_widget(xml, "enCoverage");
-	m_entryRights = glade_xml_get_widget(xml, "enRights");
 	
 	// set the dialog title
 	UT_UTF8String s;
@@ -162,24 +142,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
 	localizeLabel(glade_xml_get_widget(xml, "lbTitle"), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbSubject"), pSS, AP_STRING_ID_DLG_Annotation_Subject_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbAuthor"), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbPublisher"), pSS, AP_STRING_ID_DLG_Annotation_Publisher_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbContributors"), pSS, AP_STRING_ID_DLG_Annotation_CoAuthor_LBL);
-
-	localizeLabel(glade_xml_get_widget(xml, "lbCategory"), pSS, AP_STRING_ID_DLG_Annotation_Category_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbKeywords"), pSS, AP_STRING_ID_DLG_Annotation_Keywords_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbLanguages"), pSS, AP_STRING_ID_DLG_Annotation_Languages_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
-
-	localizeLabel(glade_xml_get_widget(xml, "lbSource"), pSS, AP_STRING_ID_DLG_Annotation_Source_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbRelation"), pSS, AP_STRING_ID_DLG_Annotation_Relation_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbCoverage"), pSS, AP_STRING_ID_DLG_Annotation_Coverage_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbRights"), pSS, AP_STRING_ID_DLG_Annotation_Rights_LBL);
-	
-	localizeLabel(glade_xml_get_widget(xml, "lbGeneral_Tab"), pSS, AP_STRING_ID_DLG_Annotation_TAB_General);
-	localizeLabel(glade_xml_get_widget(xml, "lbSummary_Tab"), pSS, AP_STRING_ID_DLG_Annotation_TAB_Summary);
-	localizeLabel(glade_xml_get_widget(xml, "lbPermissions_Tab"), pSS, AP_STRING_ID_DLG_Annotation_TAB_Permission);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;
@@ -191,17 +155,7 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	}
 	
 	SET_ENTRY_TXT(Title)
-	SET_ENTRY_TXT(Subject)
 	SET_ENTRY_TXT(Author)
-	SET_ENTRY_TXT(Publisher)
-	SET_ENTRY_TXT(CoAuthor)
-	SET_ENTRY_TXT(Category)
-	SET_ENTRY_TXT(Keywords)
-	SET_ENTRY_TXT(Languages)
-	SET_ENTRY_TXT(Source)
-	SET_ENTRY_TXT(Relation)
-	SET_ENTRY_TXT(Coverage)
-	SET_ENTRY_TXT(Rights)
 	
 	#undef SET_ENTRY_TXT
 	

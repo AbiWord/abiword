@@ -677,7 +677,7 @@ public:
 	static EV_EditMethod_Fn startNewRevision;
 	
 	//RIVERA
-    static EV_EditMethod_Fn dlgInsertAnnotation;
+    static EV_EditMethod_Fn dlgAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
@@ -814,6 +814,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(deleteTable),   		0,	""),
 	EV_EditMethod(NF(dlgAbout), 			_A_, ""),
+	EV_EditMethod(NF(dlgAnnotation),		0, ""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
 	EV_EditMethod(NF(dlgBullets),			0,	""),
@@ -825,7 +826,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
-	EV_EditMethod(NF(dlgInsertAnnotation), 	0, ""),
 	EV_EditMethod(NF(dlgLanguage),			0,	""),
 	EV_EditMethod(NF(dlgMetaData), 			0, ""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,	""),
@@ -3385,7 +3385,7 @@ Defun(dlgMetaData)
 }
 
 // RIVERA
-Defun(dlgInsertAnnotation)
+Defun(dlgAnnotation)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
@@ -3414,28 +3414,8 @@ Defun(dlgInsertAnnotation)
 	
 	if ( pDocument->getAnnotationProp ( PD_META_KEY_TITLE, prop ) )
 		pDialog->setTitle ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_SUBJECT, prop ) )
-		pDialog->setSubject ( prop ) ;
 	if ( pDocument->getAnnotationProp ( PD_META_KEY_CREATOR, prop ) )
 		pDialog->setAuthor ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_PUBLISHER, prop ) )
-		pDialog->setPublisher ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_CONTRIBUTOR, prop ) )
-		pDialog->setCoAuthor ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_TYPE, prop ) )
-		pDialog->setCategory ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_KEYWORDS, prop ) )
-		pDialog->setKeywords ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_LANGUAGE, prop ) )
-		pDialog->setLanguages ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_SOURCE, prop ) )
-		pDialog->setSource ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_RELATION, prop ) )
-		pDialog->setRelation ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_COVERAGE, prop ) )
-		pDialog->setCoverage ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_RIGHTS, prop ) )
-		pDialog->setRights ( prop ) ;
 	if ( pDocument->getAnnotationProp ( PD_META_KEY_DESCRIPTION, prop ) )
 		pDialog->setDescription ( prop ) ;
 	
@@ -3448,17 +3428,7 @@ Defun(dlgInsertAnnotation)
     {
 		// reset the props
 		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_SUBJECT, pDialog->getSubject() ) ;
 		pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_PUBLISHER, pDialog->getPublisher() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_CONTRIBUTOR, pDialog->getCoAuthor() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_TYPE, pDialog->getCategory() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_KEYWORDS, pDialog->getKeywords() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_LANGUAGE, pDialog->getLanguages() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_SOURCE, pDialog->getSource() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_RELATION, pDialog->getRelation() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_COVERAGE, pDialog->getCoverage() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
 		pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
 		
 		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
