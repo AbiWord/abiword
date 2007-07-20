@@ -107,12 +107,9 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 
 UT_uint32 AP_Frame::getZoomPercentage(void)
 {
-	if(!m_pData) //this can happen when calling dlgZoom from AbiCommand
-	{
-		UT_ASSERT_HARMLESS(m_pData);
-		return 100; //this seems like the sanest default
-	}
-
+	// !m_pData can happen when calling dlgZoom from AbiCommand; 
+	// !m_pG can happen when called from an uninitialized abiwidget
+	UT_return_val_if_fail(m_pData && static_cast<AP_FrameData*>(m_pData)->m_pG, 100); // 100 seems like the sanest default
 	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
 }
 
