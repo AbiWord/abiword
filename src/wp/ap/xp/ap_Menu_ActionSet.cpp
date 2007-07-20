@@ -261,7 +261,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	// RIVERA
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,	0,1,0,0,	"insAnnotation",		ap_GetState_InAnnotation,					NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,0,0,0,	"pviewAnnotation"/*for popup testing only*/,	NULL/*ap_GetState_Selection*/,					NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,0,0,0,	NULL/*"pviewAnnotation" for popup testing only*/,	NULL/*ap_GetState_Selection*/,					NULL);
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER,	0,1,0,0,	"dlgAnnotation"/*for dlg testing only*/,	NULL,					NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
