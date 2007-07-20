@@ -6110,12 +6110,17 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 
 const std::string & s_StyleTree::lookup (const std::string & prop_name) const
 {
+	static std::string empty;
 	map_type::const_iterator prop_iter = m_map.find(prop_name);
 
-	if (prop_iter == m_map.end() && m_parent) {
-		return m_parent->lookup (prop_name);
+	if (prop_iter == m_map.end()) {
+		if(m_parent) {
+			return m_parent->lookup (prop_name);
+		}
+		else {
+			return empty;
+		}
 	}
-
 	return (*prop_iter).second;
 }
 
