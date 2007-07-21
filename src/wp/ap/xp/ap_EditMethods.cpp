@@ -95,8 +95,6 @@
 #include "ap_Dialog_HdrFtr.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Dialog_InsertHyperlink.h"
-// RIVERA
-#include "ap_Dialog_Annotation.h"
 #include "ap_Dialog_MetaData.h"
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
@@ -146,6 +144,10 @@
 #include "ut_path.h"
 #include "ie_mailmerge.h"
 #include "gr_Painter.h"
+
+// RIVERA
+#include "ap_Dialog_Annotation.h"
+#include "ap_Preview_Annotation.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -468,7 +470,6 @@ public:
 	static EV_EditMethod_Fn zoomIn;
 	static EV_EditMethod_Fn zoomOut;
 
-	static EV_EditMethod_Fn insAnnotation;
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
@@ -677,7 +678,9 @@ public:
 	static EV_EditMethod_Fn startNewRevision;
 	
 	//RIVERA
-    static EV_EditMethod_Fn dlgAnnotation;
+    static EV_EditMethod_Fn insAnnotation;
+	static EV_EditMethod_Fn dlgAnnotation;
+	static EV_EditMethod_Fn pviewAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
@@ -932,7 +935,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
 	EV_EditMethod(NF(importStyles),			0,	""),
-	EV_EditMethod(NF(insAnnotation),			0,		""),
+	EV_EditMethod(NF(insAnnotation),			0,	""),
 	EV_EditMethod(NF(insBreak), 		0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
@@ -1024,10 +1027,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pasteSpecial), 		0,	""),
 	EV_EditMethod(NF(pasteVisualText), 		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
-	EV_EditMethod(NF(printDirectly), 0, ""),
-	EV_EditMethod(NF(printPreview), 0, ""),
+	EV_EditMethod(NF(printDirectly),		0,	""),
+	EV_EditMethod(NF(printPreview),			0,	""),
 	EV_EditMethod(NF(printTB),				0,	""),
 	EV_EditMethod(NF(purgeAllRevisions),	0,	""),
+	EV_EditMethod(NF(pviewAnnotation),		0,	""),
 
 	// q
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
@@ -3421,12 +3425,14 @@ Defun(dlgAnnotation)
 	
 	// run the dialog
 	
+	UT_DEBUGMSG(("dlgAnnotation: Drawing annotation dialog...\n"));
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
 	
 	if (bOK)
     {
 		// reset the props
+		
 		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
 		pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
 		pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
@@ -3445,6 +3451,16 @@ Defun(dlgAnnotation)
 	
 	return true ;
 }
+
+Defun(pviewAnnotation)
+{
+	UT_DEBUGMSG(("pviewAnnotation: Previewing annotation...\n"));
+	AP_Preview_Annotation * pPview;
+	pPview = new AP_Preview_Annotation();
+	pPview->draw();
+	return true;
+}
+
 
 Defun(fileNewUsingTemplate)
 {
@@ -10515,13 +10531,13 @@ Defun1(insFootnote)
 	return pView->insertFootnote(true);
 }
 
+// RIVERA
 Defun1(insAnnotation)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
 	
-	// RIVERA
 	UT_DEBUGMSG(("insAnnotation: inserting\n"));
 
 	return pView->insertAnnotation(0);

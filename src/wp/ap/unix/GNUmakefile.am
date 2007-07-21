@@ -115,6 +115,7 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_MetaData.cpp		\
 	ap_UnixDialog_MailMerge.cpp		\
 	ap_UnixPrefs.cpp			\
+	ap_UnixPreview_Annotation.cpp	\
 	ap_UnixToolbar_FontCombo.cpp	\
 	ap_UnixToolbar_SizeCombo.cpp	\
 	ap_UnixToolbar_StyleCombo.cpp	\
@@ -186,6 +187,7 @@ noinst_HEADERS = \
 	ap_UnixFrameImpl.h \
 	ap_UnixLeftRuler.h \
 	ap_UnixPrefs.h \
+	ap_UnixPreview_Annotation.h \
 	ap_UnixStatusBar.h \
 	ap_UnixStockIcons.h \
 	ap_UnixToolbar_Control_All.h \
