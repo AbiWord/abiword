@@ -152,4 +152,32 @@ private:
 };
 
 
+class ABI_EXPORT fl_AnnotationLayout : public fl_EmbedLayout
+{
+	friend class fl_DocListener;
+	friend class fp_FootnoteContainer;
+
+public:
+	fl_AnnotationLayout(FL_DocLayout* pLayout, 
+					  fl_DocSectionLayout * pDocSL, 
+					  PL_StruxDocHandle sdh, 
+					  PT_AttrPropIndex ap, 
+					  fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_AnnotationLayout();
+
+	virtual void		     format(void);
+	virtual void             collapse(void);
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	UT_uint32                getAnnotationPID(void) const
+		{return m_iAnnotationPID;}
+protected:
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
+private:
+	void                     _createAnnotationContainer(void);
+	void                     _insertAnnotationContainer(fp_Container * pNewFC);
+	void                     _localCollapse();
+	UT_uint32                m_iAnnotationPID;
+};
+
+
 #endif /* FOOTNOTELAYOUT_H */

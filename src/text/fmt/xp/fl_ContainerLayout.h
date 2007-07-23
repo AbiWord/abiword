@@ -37,7 +37,8 @@ typedef enum _fl_ContainerType
 	FL_CONTAINER_TABLE,
 	FL_CONTAINER_CELL,
 	FL_CONTAINER_FRAME,
-	FL_CONTAINER_TOC
+        FL_CONTAINER_TOC,
+	FL_CONTAINER_ANNOTATION
 } fl_ContainerType;
 
 // this enum is used here and by the run classes
