@@ -50,6 +50,7 @@ struct dg_DrawArgs;
 class fl_CharWidths;
 class fd_Field;
 class fp_HyperlinkRun;
+class fp_AnnotationRun;
 
 struct fp_RunSplitInfo
 {
@@ -90,6 +91,12 @@ enum FP_RUN_TYPE
 	FPRUN__LAST__					= 18
 };
 
+enum FP_HYPERLINK_TYPE
+{
+    HYPERLINK_NORMAL =1,
+    HYPERLINK_ANNOTATION = 2
+};
+
 // specifies how setX should handle screen clearing
 enum FPRUN_CLEAR_SCREEN
 {
@@ -114,6 +121,7 @@ enum FPRUN_CLEAR_SCREEN
 		fp_FieldEndRun
 		fp_BookmarkRun
 		fp_HyperlinkRun
+		fp_AnnotationRun
 		fp_DummyRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
@@ -719,6 +727,9 @@ class ABI_EXPORT fp_HyperlinkRun : public fp_Run
 public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	~fp_HyperlinkRun();
+	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
+	{ return HYPERLINK_NORMAL;}
+
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
 
@@ -746,7 +757,7 @@ public:
 	// for the purposes of linebreaking, just whitespace
 	virtual bool doesContainNonBlankData(void) const { return false; }
 	
-private:
+protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
@@ -762,6 +773,18 @@ private:
 	gchar *	  	m_pTarget;
 };
 
+
+
+class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
+{
+public:
+	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	~fp_AnnotationRun();
+	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
+	{
+		return HYPERLINK_ANNOTATION;
+	}
+};
 
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {

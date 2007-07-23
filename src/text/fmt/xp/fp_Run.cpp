@@ -2876,7 +2876,9 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 								  UT_uint32 iOffsetFirst,
 								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
+	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK),
+  m_bIsStart(false),
+  m_pTarget(NULL)
 {
 	_setLength(1);
 	_setDirty(false);

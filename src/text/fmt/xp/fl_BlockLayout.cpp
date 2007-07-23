@@ -5049,6 +5049,67 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 }
 
 
+bool	fl_BlockLayout::_doInsertAnnotationRun(PT_BlockOffset blockOffset)
+{
+	bool bResult = false;
+	
+	if(!isContainedByTOC())
+	{
+		fp_AnnotationRun * pNewRun =  new fp_AnnotationRun(this, blockOffset, 1);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+
+		if (bResult)
+		{
+			// if this is the start of the Annotation, we need to mark all the runs
+			// till the end of it
+			// if this is because of an insert operation, the end run is already
+			// in place, because we insert them in that order; if it is because of
+			// append, ther is no end run, but then this is the last run; the other
+			// runs will get marked as they get appended (inside fp_Run::insertRun...)
+			// any Annotation run will not get its m_pHyperlink set, so that
+			// runs that follow it would not be marked
+
+			if(pNewRun->isStartOfHyperlink())
+			{
+				fp_Run * pRun = pNewRun->getNextRun();
+				UT_ASSERT(pRun);
+				// when loading a document the opening hyperlink run is initially followed
+				// by ENDOFPARAGRAPH run; we do not want to set this one
+				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
+				{
+					pRun->setHyperlink(pNewRun);
+					pRun = pRun->getNextRun();
+				}
+			}
+			else
+			{
+				//
+				// clear out any hyperlinks
+				//
+				fp_Run * pRun = pNewRun->getNextRun();
+				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+				{
+					pRun->setHyperlink(NULL);
+					pRun = pRun->getNextRun();
+				}
+			}
+			//_breakLineAfterRun(pNewRun);
+		}
+	}
+	else
+	{
+		fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+	}
+	
+
+	return bResult;
+
+}
+
+
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_FieldStartRun(this,blockOffset, 1);
@@ -8117,6 +8178,11 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		_doInsertHyperlinkRun(blockOffset);
 		return true;
 
+	case PTO_Annotation:
+		xxx_UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
+		_doInsertAnnotationRun(blockOffset);
+		return true;
+
 	case PTO_Math:
 		xxx_UT_DEBUGMSG(("Populate:InsertMathML:\n"));
 		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
@@ -8184,6 +8250,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
 		blockOffset = pcro->getBlockOffset();
 		_doInsertHyperlinkRun(blockOffset);
+		break;
+
+	}
+
+
+	case PTO_Annotation:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertAnnotationRun(blockOffset);
 		break;
 
 	}
@@ -8316,6 +8392,15 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 			break;
 		}
 
+
+		case PTO_Annotation:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Annotation:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset,1);
+			break;
+		}
+
 		default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -8378,6 +8463,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	{
 	case PTO_Bookmark:
 	case PTO_Hyperlink:
+	case PTO_Annotation:
 		return true;
 	case PTO_Image:
 	{
