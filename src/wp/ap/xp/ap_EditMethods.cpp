@@ -10540,7 +10540,16 @@ Defun1(insAnnotation)
 	
 	UT_DEBUGMSG(("insAnnotation: inserting\n"));
 
-	return pView->insertAnnotation(0);
+	
+	// API is:
+	// Annuotation Number,
+	// UT_UTF8String pointer containing text to be inserted
+	// Boolean to determine whether to place the current selection into an annotation.
+	//
+	UT_sint32 iAnnotation = 0;
+	UT_UTF8String * psText = NULL;
+	bool bReplaceSelection = false;
+	return pView->insertAnnotation(iAnnotation,psText,bReplaceSelection);
 }
 
 

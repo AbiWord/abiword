@@ -11975,7 +11975,14 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 }
 
 
-bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
+/*!
+ * Insert annotation number iAnnotation across the current selection.
+ * The text of the annotation is contained in pStr.
+ * If pstr is NULL default text is inserted.
+ * If bReplace is true, the current selection is cut and placed into
+ * an annotation.
+ */
+bool FV_View::insertAnnotation(UT_sint32 iAnnotation, UT_UTF8String * pStr, bool bReplace)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
 	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
@@ -12006,44 +12013,146 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
 		}
 		setPoint(getPoint()-1);
 	}
-	
-	// RIVERA
-	// return true;
-	_saveAndNotifyPieceTableChange();
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+	PT_DocPosition iPointOrig = posStart;
+	PT_DocPosition iAnchorOrig = m_Selection.getSelectionAnchor();
+
+	if (m_Selection.getSelectionAnchor() < posStart)
+	{
+		posStart = m_Selection.getSelectionAnchor();
+	}
+	else
+	{
+		posEnd = m_Selection.getSelectionAnchor();
+	}
+
+	// Hack for bug 2940
+	if (posStart == 1) posStart++;
+
+	// the selection has to be within a single block
+	// we could implement hyperlinks spaning arbitrary part of the document
+	// but then we could not use <a href=> </a> in the output and
+	// I see no obvious need for hyperlinks to span more than a single block
+	fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
+	fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+//
+// Only allow annotations within a single block - for now
+//
+	if(pBl1 != pBl2)
+	{
+		return false;
+	}
+	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
+	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
+		return false;
+//
+// Under sum1 induced conditions posEnd could give the same block pointer
+// despite being past the end of the block. This extra fail-safe code
+// prevents this.
+//
+	if((pBl1->getPosition() + pBl1->getLength() -1) < posEnd)
+	{
+		return false;
+	}
+	const gchar * pAttr[4];
+	pAttr[0] = "Annotation";
+	UT_UTF8String sNum;
+	UT_UTF8String_sprintf(sNum,"%d",iAnnotation);
+	pAttr[1] = sNum.utf8_str();
+	pAttr[2] = 0;
+	pAttr[3] = 0;
+	//
+	// First set up a glob
+	//
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	//
+	// Cut out current selection.
+	//
+	if(bReplace)
 	{
-		_deleteSelection(); // Should be copied first to be used as annotations' content
+		copyToLocal(posStart,posEnd);
+		_deleteSelection();
+		posEnd = posStart;
 	}
-	else if(m_FrameEdit.isActive())
+	//
+	// Now insert the Hyperlink-lke field
+	//
+
+	// Now insert the annotation end run, so that we can use it as a stop
+	// after inserting the start run when marking the runs in between
+	// as a hyperlink
+	bool bRet = m_pDoc->insertObject(posEnd, PTO_Annotation, NULL, NULL);
+	if(bRet)
 	{
-	       m_FrameEdit.setPointInside();
+		const gchar ** pProps = 0;
+		bRet = m_pDoc->insertObject(posStart, PTO_Annotation, pAttr, pProps);
 	}
-	_makePointLegal();
-	const gchar ** props_in = NULL;
-	getCharFormat(&props_in);
-	
-	// add field for annotation reference
-	// first, make up an id for this annotation.
-	// (annotations' ids should be independant of foot/endnotes' ids)
-	UT_String annotpid;
-	UT_return_val_if_fail(m_pDoc, false);
-	UT_uint32 pid = m_pDoc->getUID(UT_UniqueId::Annotation);
-	UT_String_sprintf(annotpid,"%d",pid);
-	const gchar* attrs[] = {
-		"annotation-id", annotpid.c_str(),
-		NULL, NULL
+
+	//
+	// We insert the annotations struxes right after the annotation start
+	//
+	PT_DocPosition posAnnotation = posStart+1;
+	const gchar* ann_attrs[4];
+	ann_attrs[0] = "annotation-id";
+	ann_attrs[1] = sNum.utf8_str();
+	ann_attrs[2] = 0;
+	ann_attrs[3] = 0;
+	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
+				  "normal",
+				  NULL,
+				  NULL
 	};
-	UT_DEBUGMSG(("insAnnotation: assigned id %s\n",attrs[1]));
+	//
+	//
+	// OK now insert the Annotation struxes
+	//
+	m_pDoc->insertStrux(posAnnotation,PTX_SectionAnnotation,ann_attrs,NULL);
+ 	m_pDoc->insertStrux(posAnnotation+1,PTX_Block,block_atts,NULL);
+	m_pDoc->insertStrux(posAnnotation+2,PTX_EndAnnotation,NULL,NULL);
+	//
+	// OK now Insert the text into the annotation strux
+	//
+	if(bReplace)
+	{
+		//
+		// Paste in the selected text
+		//
+		_pasteFromLocalTo(posAnnotation+2);
+		_clearSelection();
+	}
+	else
+	{
+		UT_UTF8String sTmp;
+		if(pStr == NULL)	
+		{
+			sTmp = "Annotation";
+		}
+		else
+		{
+			sTmp = *pStr;
+		}
 	
-	//	Apply the character style at insertion point and insert the Annotation reference
-	
-	
-	// TODO check the debug message "DEBUG: PieceTable changing don't redraw"
-	// TODO place annotation mark
-	// TODO popup annotation edit window
-	
-	
+		UT_UCS4String sUCS4(sTmp.utf8_str());
+		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
+		// because we have inserted two objects, 3 struxes and text 
+		// around the selection boundaries the original insetion point and 
+		// selection anchor
+		// are now shifted, so we need to fix them
+		posEnd += 4 + sUCS4.length();
+		setPoint(posStart+1);
+		m_Selection.setSelectionAnchor(posEnd);
+	}
+	// Signal piceTable is stable again and close off the glob
+
+	_restorePieceTableState();
+	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->enableListUpdates();
+
 	return true;
 }
 
