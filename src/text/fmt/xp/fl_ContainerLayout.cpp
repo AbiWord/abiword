@@ -227,6 +227,8 @@ const char * fl_ContainerLayout::getContainerString(void)
 		return "FL_CONTAINER_FRAME";
 	case FL_CONTAINER_TOC:
 		return "FL_CONTAINER_TOC";
+	case FL_CONTAINER_ANNOTATION:
+		return "FL_CONTAINER_ANNOTATION";
 	default:
 		return "NOT_IMPLEMENTED";
 	}
@@ -613,6 +615,14 @@ fl_BlockLayout* fl_ContainerLayout::getNextBlockInDocument(void) const
 				goto next_is_null;
 			}
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_ANNOTATION)
+		{
+			pNext = pNext->getNext();
+			if(pNext == NULL)
+			{
+				goto next_is_null;
+			}
+		}
 		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			pNext = pNext->getNext();
@@ -694,6 +704,10 @@ fl_BlockLayout* fl_ContainerLayout::getPrevBlockInDocument(void) const
 			pPrev = pPrev->getLastLayout();
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_ANNOTATION)
 		{
 			pPrev = pPrev->getLastLayout();
 		}
@@ -852,6 +866,16 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	{
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
 		pL = static_cast<fl_ContainerLayout *>(new fl_FootnoteLayout(getDocLayout(), 
+					  pDSL, 
+					  sdh, indexAP, this));
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
+		break;
+	}
+	case FL_CONTAINER_ANNOTATION:
+	{
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		pL = static_cast<fl_ContainerLayout *>(new fl_AnnotationLayout(getDocLayout(), 
 					  pDSL, 
 					  sdh, indexAP, this));
 		if (pPrev)

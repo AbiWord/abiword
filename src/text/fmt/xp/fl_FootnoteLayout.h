@@ -155,7 +155,7 @@ private:
 class ABI_EXPORT fl_AnnotationLayout : public fl_EmbedLayout
 {
 	friend class fl_DocListener;
-	friend class fp_FootnoteContainer;
+	friend class fp_AnnotationContainer;
 
 public:
 	fl_AnnotationLayout(FL_DocLayout* pLayout, 

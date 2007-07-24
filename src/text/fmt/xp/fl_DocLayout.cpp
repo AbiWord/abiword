@@ -152,6 +152,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	strncpy(m_szCurrentTransparentColor,
 			static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent), 9);
 	m_vecFootnotes.clear();
+	m_vecAnnotations.clear();
 	m_vecEndnotes.clear();
 
 }
@@ -972,6 +973,105 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 			{
 				pos++;
 			} 
+		}
+	}
+	return pos;
+}
+
+
+
+/*!
+ * This simply returns the number of footnotes in the document.
+ */
+UT_uint32 FL_DocLayout::countAnnotations(void)
+{
+	return m_vecAnnotations.getItemCount();
+}
+/*!
+ * Add a footnote layout to the vector remembering them.
+ */
+void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
+{
+	m_vecAnnotations.addItem(pFL);
+}
+
+/*!
+ * get a pointer to the Nth footnote layout in the vector remembering them.
+ */
+fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
+{
+	UT_ASSERT(i>=0);
+	if(i >= static_cast<UT_sint32>(m_vecAnnotations.getItemCount()))
+	{
+		return NULL;
+	}
+	else
+	{
+		return m_vecAnnotations.getNthItem(i);
+	}
+}
+
+/*!
+ * Remove a foonote layout from the Vector.
+ */
+void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
+{
+	UT_sint32 i = m_vecAnnotations.findItem(pFL);
+	if(i< 0)
+	{
+		return;
+	}
+	m_vecAnnotations.deleteNthItem(i);
+}
+
+/*!
+ * This method returns the footnote layout associated with the input PID
+ */
+fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
+{
+	UT_sint32 i = 0;
+	fl_AnnotationLayout * pTarget = NULL;
+ 	fl_AnnotationLayout * pFL = NULL;
+	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	{
+		pFL = getNthAnnotation(i);
+		if(pFL->getAnnotationPID() == annpid)
+		{
+			pTarget = pFL;
+			break;
+		}
+	}
+	return pTarget;
+}
+/*!
+ * This returns the position of the Annotation in the vector of annotations. This is useful
+ * for calculating the annotionation positioning it in a annotation 
+ * section
+ */
+UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
+{
+	UT_sint32 i =0;
+	UT_sint32 pos = 0;
+	fl_AnnotationLayout * pTarget = findAnnotationLayout(annpid);
+ 	fl_AnnotationLayout * pAL = NULL;
+	if(pTarget== NULL)
+	{
+		return 0;
+	}
+	PT_DocPosition posTarget = pTarget->getDocPosition();
+	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
+	fp_Container * pCon = pTarget->getFirstContainer();
+	fp_Page * pPageTarget = NULL;
+	if(pCon)
+	{
+		pPageTarget = pCon->getPage();
+	}
+	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	{
+		pAL = getNthAnnotation(i);
+		if(pAL->getDocPosition() < posTarget)
+		{
+		    pos++;
 		}
 	}
 	return pos;
