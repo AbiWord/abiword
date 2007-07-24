@@ -1065,6 +1065,8 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
  * (a) It encounters a strux first.
  * (b) It encounters an end hyperlink first
  * (c) It encounters the begin of document
+ *
+ * FIXME!! Should this code work for annotations too?
  */
 pf_Frag *    pt_PieceTable::_findPrevHyperlink(pf_Frag * pfStart)
 {
