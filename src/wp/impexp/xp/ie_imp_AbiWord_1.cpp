@@ -245,6 +245,8 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 #define TT_TOC             34 //<toc> (Table of Contents
 #define TT_MATH            35 //<math> Math Run
 #define TT_EMBED            36 //<embed> Generic Embeded Run
+#define TT_ANN             37 //<ann> Annotate region
+#define TT_ANNOTATE        38 //<annotate> Annotation content
 
 
 /*
@@ -267,6 +269,8 @@ static struct xmlToIdMapping s_Tokens[] =
 {
 	{	"a",			TT_HYPERLINK	},
 	{	"abiword",		TT_DOCUMENT		},
+	{	"ann",		    TT_ANN  		},
+	{	"annotate",		TT_ANNOTATE		},
 	{	"awml",			TT_DOCUMENT		},
 	{	"bookmark",		TT_BOOKMARK		},
 	{	"br",			TT_BREAK		},
@@ -400,6 +404,30 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
+		goto cleanup;
+	}
+	case TT_ANNOTATE:
+	{
+		// Annotations are contained inside a Block
+		X_VerifyParseState(_PS_Block);
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+
+		// Don't check for id on the footnote. It should match an id on
+        // a footnote reference field.
+
+		// Do we Need to set the min Unique id now???
+#if 0
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("footnote-id", atts));
+		bool bOK = true;
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id+1);
+		}
+#endif
+		X_CheckError(appendStrux(PTX_SectionAnnotation,atts));
+		xxx_UT_DEBUGMSG(("FInished Append Annotation strux \n"));
 		goto cleanup;
 	}
 	case TT_ENDNOTE:
@@ -544,6 +572,11 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Hyperlink,atts));
+		goto cleanup;
+
+	case TT_ANN:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_Annotation,atts));
 		goto cleanup;
 
 	case TT_FIELD:
@@ -940,6 +973,13 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		m_parseState = _PS_Block;
 		return;
 
+	case TT_ANNOTATE:
+		X_VerifyParseState(_PS_Sec);
+		X_CheckError(appendStrux(PTX_EndAnnotation,NULL));
+		xxx_UT_DEBUGMSG(("FInished Append End annotation strux \n"));
+		m_parseState = _PS_Block;
+		return;
+
 	case TT_ENDNOTE:
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(appendStrux(PTX_EndEndnote,NULL));
@@ -1026,6 +1066,13 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		// we append another Hyperlink Object, but with no attributes
 		X_CheckError(appendObject(PTO_Hyperlink,NULL));
+		return;
+
+	case TT_ANN:						// not a container, so we don't pop stack
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		// we append another Hyperlink Object, but with no attributes
+		X_CheckError(appendObject(PTO_Annotation,NULL));
 		return;
 
 		return;
