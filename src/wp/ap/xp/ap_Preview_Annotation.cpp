@@ -20,16 +20,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <glib.h>
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_Preview_Annotation.h"
 
-// standard font preview string
+// default annotation preview values
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Annotation test"
+#define PREVIEW_ENTRY_DEFAULT_BKGCOLOR	"FFEB92"
 
 AP_Preview_Annotation::AP_Preview_Annotation()
 {
-	m_pColorBackground      = NULL;
+	m_pColorBackground      = PREVIEW_ENTRY_DEFAULT_BKGCOLOR;
 	m_pFontPreview          = NULL;
 	m_width					= PREVIEW_WIDTH;
 	m_height				= PREVIEW_HEIGHT;
@@ -40,10 +42,10 @@ AP_Preview_Annotation::AP_Preview_Annotation()
 AP_Preview_Annotation::~AP_Preview_Annotation(void)
 {
 	FREEP(m_drawString);
-	DELETEP(m_pFontPreview);
+	//DELETEP(m_pFontPreview);
 }
 
-void AP_Preview_Annotation::_createFontPreviewFromGC(GR_Graphics * gc,
+void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc,
 											   UT_uint32 width,
 											   UT_uint32 height)
 {
@@ -88,17 +90,39 @@ void AP_Preview_Annotation::addOrReplaceVecProp(const gchar * pszProp,
 	return;
 }
 
-void AP_Preview_Annotation::setFontFamily(const gchar * pFontFamily)
+void AP_Preview_Annotation::_updateDrawString()
 {
-	addOrReplaceVecProp("font-family",pFontFamily);
+	FREEP(m_drawString);
+	UT_UCS4_cloneString_char (&m_drawString,
+							  g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL)
+							  );
+	m_pFontPreview->setDrawString(m_drawString);
 }
 
-void AP_Preview_Annotation::setText(const gchar * pFontFamily)
+/*void AP_Preview_Annotation::setFontFamily(const gchar * pFontFamily)
 {
-	UT_return_if_fail(pFontFamily);
-	FREEP(m_drawString);
-	UT_UCS4_cloneString_char (&m_drawString, pFontFamily);
-	m_pFontPreview->setDrawString(m_drawString);
+	addOrReplaceVecProp("font-family",pFontFamily);
+}*/
+
+void AP_Preview_Annotation::setTitle(const gchar * pTitle)
+{
+	UT_return_if_fail(pTitle);
+	m_pTitle = g_strdup(pTitle);
+	_updateDrawString();
+}
+
+void AP_Preview_Annotation::setAuthor(const gchar * pAuthor)
+{
+	UT_return_if_fail(pAuthor);
+	m_pAuthor = g_strdup(pAuthor);
+	_updateDrawString();
+}
+
+void AP_Preview_Annotation::setDescription(const gchar * pDescription)
+{
+	UT_return_if_fail(pDescription);
+	m_pDescription = g_strdup(pDescription);
+	_updateDrawString();
 }
 
 void AP_Preview_Annotation::draw()

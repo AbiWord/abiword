@@ -145,9 +145,10 @@
 #include "ie_mailmerge.h"
 #include "gr_Painter.h"
 
-// RIVERA
+// RIVERA last one must be removed!
 #include "ap_Dialog_Annotation.h"
 #include "ap_Preview_Annotation.h"
+#include "ap_UnixPreview_Annotation.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -3452,12 +3453,29 @@ Defun(dlgAnnotation)
 	return true ;
 }
 
+// TODO contains Unix specific code, should be moved/modified
 Defun(pviewAnnotation)
 {
+	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, false);
+
+	pFrame->raise();
+
 	UT_DEBUGMSG(("pviewAnnotation: Previewing annotation...\n"));
 	AP_Preview_Annotation * pPview;
-	pPview = new AP_Preview_Annotation();
+	pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100);
+	pPview->setTitle("Annotation title");
+	pPview->setAuthor("Author");
+	pPview->setDescription("Annotation description");
 	pPview->draw();
+	
 	return true;
 }
 

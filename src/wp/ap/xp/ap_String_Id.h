@@ -811,7 +811,7 @@ dcl(DLG_ListRevisions_Label1, "Existing revisions:")
 dcl(DLG_ListRevisions_LevelZero, "(All revisions visible)")
 
 // RIVERA
-dcl(DLG_Annotation_Title, "Document Properties")
+dcl(DLG_Annotation_Title, "Edit Annotation")
 dcl(DLG_Annotation_Title_LBL, "Title:")
 dcl(DLG_Annotation_Author_LBL, "Author:")
 dcl(DLG_Annotation_Description_LBL, "Description:")

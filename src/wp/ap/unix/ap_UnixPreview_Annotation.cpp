@@ -34,8 +34,8 @@ AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_Frame * pFrame, UT_sint
 	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);   
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
 	
-	m_pDrawingArea = createDrawingArea ();
-	 gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	m_pDrawingArea = createDrawingArea();
+	gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 
 	gtk_widget_show_all(m_pPreviewWindow);
@@ -45,7 +45,7 @@ AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_Frame * pFrame, UT_sint
 	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
 	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
 
-	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }
 
 AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)

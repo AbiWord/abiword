@@ -37,7 +37,7 @@ public:
 protected:
 private:
 	// parent frame
-	XAP_Frame *			m_pFrame;
+	XAP_Frame *				m_pFrame;
 	GtkWidget * 			m_pPreviewWindow;
 	GtkWidget * 			m_pDrawingArea;
 	UT_sint32				m_left;

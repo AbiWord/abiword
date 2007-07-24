@@ -34,26 +34,29 @@
 
 class AP_Preview_Annotation
 {
-public:
-	AP_Preview_Annotation();	
-	virtual ~AP_Preview_Annotation(void);
-	
-	void							addOrReplaceVecProp(const gchar * pszProp,
-														const gchar * pszVal);
-	void							setFontFamily(const gchar * pFontFamily);
-	void							setText(const gchar * pFontFamily);
-	void							draw(void);
-protected:
-		void                            _createFontPreviewFromGC(GR_Graphics * gc,
-																 UT_uint32 width,
-																 UT_uint32 height);
-	const gchar *                m_pColorBackground;
-	UT_sint32						m_width;
-	UT_sint32						m_height;
-private:
+	public:
+		AP_Preview_Annotation();
+		virtual ~AP_Preview_Annotation(void);
+		
+		void							addOrReplaceVecProp(const gchar * pszProp,
+															const gchar * pszVal);
+		void							setTitle(const gchar * pTitle);
+		void							setAuthor(const gchar * pAuthor);
+		void							setDescription(const gchar * pDescription);
+		void							draw(void);
+	protected:
+		void                            _createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+		void							_updateDrawString();
+		const gchar *					m_pColorBackground;
+		UT_sint32						m_width;
+		UT_sint32						m_height;
+	private:
+		gchar *							m_pTitle;
+		gchar *							m_pAuthor;
+		gchar *							m_pDescription;
 		XAP_Preview_FontPreview *       m_pFontPreview;
-	UT_UCSChar *                    m_drawString;
-	UT_Vector						m_vecProps;
+		UT_UCSChar *                    m_drawString;
+		UT_Vector						m_vecProps;
 };
 
 #endif /* AP_PREVIEW_ANNOTATION_H */
