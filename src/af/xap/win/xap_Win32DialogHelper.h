@@ -51,6 +51,15 @@ public:
 		m_hDlg(0)
 	{
 	}
+	
+	// for plugin dialogs  - they have their own runModal due to differing hInstance values
+	// (DLL instead of Abi main executable)
+	// Makes more sense to share this code rather than use bare WinAPI in plugins when possible
+	XAP_Win32DialogHelper(XAP_Win32Dialog* p_dialog, HWND hDlg)
+	:	m_pDialog(p_dialog),
+		m_hDlg(hDlg)
+	{
+	}
 
 
 public:
