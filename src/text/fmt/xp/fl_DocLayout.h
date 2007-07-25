@@ -265,6 +265,9 @@ public:
 	fl_AnnotationLayout * getNthAnnotation(UT_sint32 i);
 	UT_sint32           getAnnotationVal(UT_uint32 footpid);
 	fl_AnnotationLayout * findAnnotationLayout(UT_uint32 footpid);
+	bool                displayAnnotations(void);
+	void                setDisplayAnnotations(bool bDisplayAnnotations);
+
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------
@@ -420,6 +423,7 @@ private:
 	UT_GenericVector<GR_EmbedManager *> m_vecQuickPrintEmbedManager;
 	GR_Graphics *       m_pQuickPrintGraphics;
 	bool                m_bIsQuickPrint;
+	bool                m_bDisplayAnnotations;
 };
 
 #endif /* DOCLAYOUT_H */

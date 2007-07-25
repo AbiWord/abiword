@@ -379,25 +379,6 @@ void fp_AnnotationContainer::clearScreen(void)
 	{
 		return;
 	}
-	// FIXME in fp_Page
-#if 0
-	UT_sint32 pos = getPage()->findAnnotationContainer(this);
-	if(pos == 0)
-	{
-		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_RGBColor * pBGColor = getFillType()->getColor();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-//		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 diff = 0; // FIXME make a property
-		UT_sint32 xoff,yoff;
-		getPage()->getScreenOffsets(this,xoff,yoff);
-		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
-		UT_sint32 xoffEnd = xoff + width;
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
-	}
-#endif
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -443,41 +424,11 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	//
-	// FIXME
-	//
-#if 0
-	UT_sint32 pos = getPage()->findAnnotationContainer(this);
-	xxx_UT_DEBUGMSG(("fp_Annotation:draw: pos %d \n",pos));
-	if(pos == 0)
-	{
-		UT_RGBColor black(0,0,0);
-		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-//		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 diff = 0; // FIXME make a property
-		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 width = (getPage()->getWidth() - iLeftMargin -iRightMargin)/3;
-		UT_sint32 xoffEnd = pDA->xoff + width;
+	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	FL_DocLayout * pDL = pAL->getDocLayout();
+	if(!pDL->displayAnnotations())
+	  return;
 
-		UT_sint32 yline = pDA->yoff;
-		pDA->pG->setColor(black);
-		pDA->pG->setLineProperties(pDA->pG->tlu(1),
-									 GR_Graphics::JOIN_MITER,
-									 GR_Graphics::CAP_PROJECTING,
-									 GR_Graphics::LINE_SOLID);
-
-		UT_sint32 iLineThick = pDSL->getAnnotationLineThickness();
-		iLineThick = UT_MAX(1,iLineThick);
-		pDA->pG->setLineWidth(iLineThick);
-		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
-		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-
-		GR_Painter painter (pDA->pG);
-		painter.drawLine(xoffStart, yline, xoffEnd, yline);
-	}
-#endif
 	xxx_UT_DEBUGMSG(("Annotation: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
 //
@@ -493,7 +444,7 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
 	}
-    _drawBoundaries(pDA);
+	_drawBoundaries(pDA);
 }
 
 fp_Container * fp_AnnotationContainer::getNextContainerInSection() const
@@ -593,7 +544,7 @@ void fp_AnnotationContainer::layout(void)
 	fp_Page * pPage = getPage();
 	if(pPage)
 	{
-		pPage->footnoteHeightChanged();
+		pPage->annotationHeightChanged();
 	}
 }
 

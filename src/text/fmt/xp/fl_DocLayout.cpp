@@ -128,7 +128,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bFinishedInitialCheck(false),
     m_iPrevPos(0),
     m_pQuickPrintGraphics(NULL),
-    m_bIsQuickPrint(false)
+    m_bIsQuickPrint(false),
+    m_bDisplayAnnotations(false)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -2890,6 +2891,17 @@ void FL_DocLayout::queueAll(UT_uint32 iReason)
 			}
 		}
 	}
+}
+
+
+void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
+{
+  m_bDisplayAnnotations = bDisplayAnnotations;
+}
+
+bool FL_DocLayout::displayAnnotations(void)
+{
+  return m_bDisplayAnnotations;
 }
 
 /*!

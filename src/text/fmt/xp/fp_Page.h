@@ -33,11 +33,13 @@ class fp_Column;
 class fp_Container;
 class fp_ShadowContainer;
 class fp_FootnoteContainer;
+class fp_AnnotationContainer;
 class fp_FrameContainer;
 class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
 class fl_FootnoteLayout;
+class fl_AnnotationLayout;
 class fl_FrameLayout;
 class FV_View;
 class GR_Graphics;
@@ -122,6 +124,17 @@ public:
 	void                clearScreenFootnotes(void);
 	UT_sint32           getFootnoteHeight(void);
 
+
+	// Annotation functions.
+	void 				annotationHeightChanged(void);
+	UT_uint32			countAnnotationContainers(void) const;
+	fp_AnnotationContainer* getNthAnnotationContainer(UT_sint32 n) const; 
+	bool				insertAnnotationContainer(fp_AnnotationContainer * pFC);
+	void				removeAnnotationContainer(fp_AnnotationContainer * pFC);
+	UT_sint32           findAnnotationContainer(fp_AnnotationContainer * pFC);
+	void                clearScreenAnnotations(void);
+	UT_sint32           getAnnotationHeight(void);
+
 	// Frame functions.
 	void 				frameHeightChanged(void);
 	UT_uint32			countAboveFrameContainers(void) const;
@@ -157,6 +170,7 @@ protected:
 	void				_reformat(void);
 	void				_reformatColumns(void);
 	void				_reformatFootnotes(void);
+	void				_reformatAnnotations(void);
 
 private:
 	// don't allow copying
@@ -181,6 +195,7 @@ private:
 	fp_ShadowContainer* m_pHeader;
 
 	UT_GenericVector<fp_FootnoteContainer *> m_vecFootnotes;
+	UT_GenericVector<fp_AnnotationContainer *> m_vecAnnotations;
 	fg_FillType         m_FillType;
 	UT_GenericVector<fp_FrameContainer *> m_vecAboveFrames;
 	UT_GenericVector<fp_FrameContainer *> m_vecBelowFrames;

@@ -73,6 +73,11 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	m_rDamageRect.top = 0;
 	m_rDamageRect.width = 0;
 	m_rDamageRect.height = 0;
+	m_vecFootnotes.clear();
+	m_vecAnnotations.clear();
+	m_vecAboveFrames.clear();
+	m_vecBelowFrames.clear();
+
 	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
 }
 
@@ -121,7 +126,7 @@ fg_FillType * fp_Page::getFillType(void)
 
 bool fp_Page::isEmpty(void) const
 {
-	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0) && (m_vecAboveFrames.getItemCount() == 0) && (m_vecBelowFrames.getItemCount() == 0))
+	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0) && (m_vecAnnotations.getItemCount() == 0) && (m_vecAboveFrames.getItemCount() == 0) && (m_vecBelowFrames.getItemCount() == 0))
 	{
 		return true;
 	}
@@ -763,13 +768,21 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		avail -= pFC->getHeight();
 	}
+	if(getDocLayout()->displayAnnotations())
+	{
+			for(i=0; i< static_cast<UT_sint32>(countAnnotationContainers()); i++)
+			{
+					fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
+					avail -= pAC->getHeight();
+			}
+	}
 	return avail;
 }
 
 /*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 
- * height given to footnotes.
+ * height given to footnotes and annotations.
 */  
 UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 {
@@ -802,12 +815,20 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 		}
 	}
 //
-// Now subtract the footnotes on this page too
+// Now subtract the footnotes and annotations on this page too
 //
 	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		avail -= pFC->getHeight();
+	}
+	if(getDocLayout()->displayAnnotations())
+	{
+			for(i=0; i< static_cast<UT_sint32>(countAnnotationContainers()); i++)
+			{
+					fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
+					avail -= pAC->getHeight();
+			}
 	}
 	return avail;
 
@@ -1126,6 +1147,27 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		pFC->draw(&da);
 	}
 
+	// draw annotations
+	if(getDocLayout()->displayAnnotations())
+	{
+			count = m_vecAnnotations.getItemCount();
+			for (i=0; i<count; i++)
+			{
+					fp_AnnotationContainer* pAC = m_vecAnnotations.getNthItem(i);
+					dg_DrawArgs da = *pDA;
+					if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+					   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+					{
+							fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+							fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+							da.yoff -= pFirstSectionLayout->getTopMargin();
+					}
+					da.xoff += pAC->getX();
+					da.yoff += pAC->getY();
+					pAC->draw(&da);
+			}
+	}
+
 	// draw Above Frames
 	count = m_vecAboveFrames.getItemCount();
 	for (i=0; i<count; i++)
@@ -1291,6 +1333,18 @@ bool fp_Page::breakPage(void)
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 	}
 	iY =+ iFootnoteHeight;
+
+		
+	// we need the height of the annotations on this page, to deduct.
+	if(getDocLayout()->displayAnnotations())
+	{
+		    UT_sint32 iAnnotationHeight = 0;
+			for (i = 0; i < countAnnotationContainers(); i++)
+			{
+					iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
+			}
+			iY =+ iAnnotationHeight;
+	}
 
 	for (i=0; i<count; i++)
 	{
@@ -1565,7 +1619,9 @@ void fp_Page::_reformat(void)
 {
 	// this is naive, because columns can cause the footnotes
 	// to change pages.  But it'll do for now.
-	_reformatColumns(); _reformatFootnotes();
+	_reformatColumns(); 
+	_reformatFootnotes();
+	_reformatAnnotations();
 }
 
 void fp_Page::_reformatColumns(void)
@@ -1595,11 +1651,11 @@ void fp_Page::_reformatColumns(void)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 	}
-
+	UT_uint32 iAnnotationHeight = getAnnotationHeight();
 	for (i = 0; i < count; i++)
 	{
 #if 0
-		if (iY >= (static_cast<UT_sint32>(getHeight() - iBottomMargin - iFootnoteHeight)))
+		if (iY >= (static_cast<UT_sint32>(getHeight() - iBottomMargin - iFootnoteHeight -AnnotationHeight)))
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
 //			m_pOwner->markForRebuild();
@@ -1658,7 +1714,7 @@ void fp_Page::_reformatColumns(void)
 			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
-			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY - iFootnoteHeight);
+			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY - iFootnoteHeight - iAnnotationHeight);
 			pTmpCol->setWidth(iColWidth);
 
 			if(pSL->getColumnOrder())
@@ -1782,6 +1838,7 @@ void fp_Page::_reformatFootnotes(void)
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	UT_uint32 pageHeight = getHeight() - iBottomMargin;
+	pageHeight -= getAnnotationHeight();
 	UT_uint32 iFootnoteHeight = 0;
 	UT_uint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
@@ -1804,6 +1861,75 @@ void fp_Page::_reformatFootnotes(void)
 
 		pFC->setY(pageHeight);
 		pageHeight += getNthFootnoteContainer(i)->getHeight();
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Annotations
+//////////////////////////////////////////////////////////////////////////////
+
+void fp_Page::clearScreenAnnotations(void)
+{
+	UT_sint32 i =0;
+	for (i = 0; i < static_cast<UT_sint32>(countAnnotationContainers()); i++)
+	{
+		getNthAnnotationContainer(i)->clearScreen();
+	}
+}
+
+UT_sint32 fp_Page::getAnnotationHeight(void)
+{
+	if(!getDocLayout()->displayAnnotations())
+	{
+			return 0;
+	}
+	UT_uint32 iAnnotationHeight = 0;
+	UT_uint32 i = 0;
+	for (i = 0; i < countAnnotationContainers(); i++)
+	{
+		iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
+	}
+	return iAnnotationHeight;
+}
+
+void fp_Page::_reformatAnnotations(void)
+{
+	if(m_vecColumnLeaders.getItemCount() == 0)
+	{
+//
+// Page is being deleted.
+//
+		return;
+	}
+	if(!getDocLayout()->displayAnnotations())
+		return;
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+	UT_uint32 pageHeight = getHeight() - iBottomMargin;
+	UT_uint32 iAnnotationHeight = 0;
+	UT_uint32 i = 0;
+	for (i = 0; i < countAnnotationContainers(); i++)
+	{
+		iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
+	}
+
+	pageHeight -= iAnnotationHeight;
+	xxx_UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iAnnotationHeight));
+	for (i = 0; i < countAnnotationContainers(); i++)
+	{
+		fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
+		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
+
+		if(m_pView->getViewMode() == VIEW_NORMAL &&
+		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+			pAC->setX(m_pView->getTabToggleAreaWidth());
+		else
+			pAC->setX(pSL->getLeftMargin());
+
+		pAC->setY(pageHeight);
+		pageHeight += getNthAnnotationContainer(i)->getHeight();
 	}
 }
 
@@ -1949,6 +2075,28 @@ void fp_Page::footnoteHeightChanged(void)
 	else
 	{
 		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from footnoteheight changed. \n"));
+		m_pOwner->markForRebuild();
+//
+// FIXME see if this code works instead
+//
+//		m_pOwner->setNeedsSectionBreak(true,getPrev());
+		UT_ASSERT(0);
+	}
+}
+
+
+
+void fp_Page::annotationHeightChanged(void)
+{
+	clearScreenAnnotations();
+	m_pOwner->setNeedsSectionBreak(true,getPrev());
+	if(breakPage())
+	{
+		_reformat();
+	}
+	else
+	{
+		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from annotationheight changed. \n"));
 		m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
@@ -2340,6 +2488,50 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 			}
 		}
 	}
+
+//
+// Now look in annotations
+//
+	if(getDocLayout()->displayAnnotations())
+	{
+			fp_AnnotationContainer * pAC = NULL;
+			for (i=0; i<static_cast<UT_sint32>(countAnnotationContainers()); i++)
+			{
+					pAC = getNthAnnotationContainer(i);
+					if (pAC->getFirstContainer())
+					{
+							if ((x >= pAC->getX())
+								&& (x < (pAC->getX() + pAC->getWidth()))
+								&& (y >= pAC->getY())
+								&& (y < (pAC->getY() + pAC->getHeight()))
+								)
+						    {
+									pAC->mapXYToPosition(x - pAC->getX(), y - pAC->getY(), pos, bBOL, bEOL,isTOC);
+									return;
+							}
+							
+							iDist = pAC->distanceFromPoint(x, y);
+							if (iDist < iMinDist)
+							{
+									iMinDist = iDist;
+									pMinDist = static_cast<fp_VerticalContainer *>(pAC);
+							}
+							
+							if ( (y >= pAC->getY())
+								 && (y < (pAC->getY() + pAC->getHeight()))) 
+							{
+									if (iDist < iMinXDist)
+									{
+											iMinXDist = iDist;
+											pMinXDist = static_cast<fp_VerticalContainer *>(pAC);
+									}
+							}
+					}
+			}
+	}
+
+
+
 	if (pMinXDist)
 	{
 		pMinXDist->mapXYToPosition(x - pMinXDist->getX(), y - pMinXDist->getY(), pos, bBOL, bEOL,isTOC);
@@ -2527,6 +2719,18 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 	{
 		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
 		pFC->markDirtyOverlappingRuns(*pMyFrameRect);
+	}
+
+
+	// Now Annotations
+	if(getDocLayout()->displayAnnotations())
+	{
+			count = m_vecAnnotations.getItemCount();
+			for (i=0; i<count; i++)
+			{
+					fp_AnnotationContainer* pAC = m_vecAnnotations.getNthItem(i);
+					pAC->markDirtyOverlappingRuns(*pMyFrameRect);
+			}
 	}
 
 	// Now Frames
@@ -2723,6 +2927,91 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 			fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
 			pFC->clearScreen();
 			pFL->markAllRunsDirty();
+		}
+		_reformat();
+		return;
+	}
+	return;
+}
+
+
+
+// Annotation methods
+
+UT_uint32 fp_Page::countAnnotationContainers(void) const
+{
+	return m_vecAnnotations.getItemCount();
+}
+
+UT_sint32 fp_Page::findAnnotationContainer(fp_AnnotationContainer * pAC)
+{
+	UT_sint32 i = m_vecAnnotations.findItem(pAC);
+	return i;
+}
+
+fp_AnnotationContainer* fp_Page::getNthAnnotationContainer(UT_sint32 n) const 
+{
+	return m_vecAnnotations.getNthItem(n);
+} 
+
+bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
+{
+	UT_uint32 i =0;
+	UT_sint32 j = findAnnotationContainer(pAC);
+	if(j >= 0)
+	{
+		return false;
+	}
+	UT_uint32 loc =0;
+	UT_sint32 fVal = pAC->getValue();
+	fp_AnnotationContainer * pFTemp = NULL;
+	for(i=0; i< m_vecAnnotations.getItemCount();i++)
+	{
+		pFTemp = m_vecAnnotations.getNthItem(i);
+		if(fVal < pFTemp->getValue())
+		{
+			loc = i;
+			break;
+		}
+	}
+	if(pFTemp == NULL)
+	{
+		m_vecAnnotations.addItem(pAC);
+	}
+	else if( i>= m_vecAnnotations.getItemCount())
+	{
+		m_vecAnnotations.addItem(pAC);
+	}
+	else
+	{
+		m_vecAnnotations.insertItemAt(pAC, loc);
+	}
+	if(pAC)
+	{
+		pAC->setPage(this);
+	}
+	if(getDocLayout()->displayAnnotations())
+	{
+		_reformat();
+	}
+	return true;
+}
+
+void fp_Page::removeAnnotationContainer(fp_AnnotationContainer * pAC)
+{
+	UT_sint32 ndx = m_vecAnnotations.findItem(pAC);
+	if(ndx>=0)
+	{
+		m_vecAnnotations.deleteNthItem(ndx);
+		if(getDocLayout()->displayAnnotations())
+		{
+				for(ndx=0; ndx < static_cast<UT_sint32>(countAnnotationContainers());ndx++)
+				{			
+						fp_AnnotationContainer * pAC = getNthAnnotationContainer(ndx);
+						fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pAC->getSectionLayout());
+						pAC->clearScreen();
+						pAL->markAllRunsDirty();
+				}
 		}
 		_reformat();
 		return;
