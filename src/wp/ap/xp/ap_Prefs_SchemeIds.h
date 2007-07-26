@@ -55,6 +55,9 @@
 #define AP_PREF_KEY_AutoGrammarCheck		    "AutoGrammarCheck"			/* enable automatic grammar check {0,1} */
 #define AP_PREF_DEFAULT_AutoGrammarCheck  		"1"
 
+#define AP_PREF_KEY_DisplayAnnotations		    "DisplayAnnotations"			/* enable display of annotations (0,1) */
+#define AP_PREF_DEFAULT_DisplayAnnotations  		"0"
+
 #define AP_PREF_KEY_SpellCheckCaps					"SpellCheckCaps"			/* enable checking CAPITALIZED words {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckCaps				"1"
 

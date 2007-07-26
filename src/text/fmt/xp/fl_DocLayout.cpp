@@ -1060,7 +1060,6 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
 		return 0;
 	}
 	PT_DocPosition posTarget = pTarget->getDocPosition();
-	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
 	fp_Container * pCon = pTarget->getFirstContainer();
 	fp_Page * pPageTarget = NULL;
 	if(pCon)
@@ -3420,6 +3419,16 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		{
 			pDocLayout->updateColor();
 		}
+	}
+
+	// Display Annotations
+
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	changed = changed || (b != pDocLayout->m_bDisplayAnnotations);
+	if(b != pDocLayout->m_bDisplayAnnotations || (pDocLayout->m_iGraphicTick < 2))
+	{
+		pDocLayout->m_bDisplayAnnotations = b;
+		pDocLayout->formatAll();
 	}
 }
 
