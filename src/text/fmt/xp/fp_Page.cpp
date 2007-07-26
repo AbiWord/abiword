@@ -2954,6 +2954,21 @@ fp_AnnotationContainer* fp_Page::getNthAnnotationContainer(UT_sint32 n) const
 	return m_vecAnnotations.getNthItem(n);
 } 
 
+UT_uint32 fp_Page::getAnnotationPos(UT_uint32 pid)
+{
+	fp_AnnotationContainer * pACon = NULL;
+	UT_uint32 i = 0;
+	for(i = 0; i< countAnnotationContainers(); i++)
+	{
+			pACon = getNthAnnotationContainer(i);
+			if(!pACon)
+				return 0;
+			if(pid == pACon->getPID())
+				return i;
+	}
+	return 0;
+}
+
 bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
 {
 	UT_uint32 i =0;

@@ -388,6 +388,12 @@ void fp_AnnotationContainer::clearScreen(void)
 	}
 }
 	
+UT_uint32 fp_AnnotationContainer::getPID(void)
+{
+        fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	return pAL->getAnnotationPID();
+}
+
 void fp_AnnotationContainer::setContainer(fp_Container * pContainer)
 {
 	if (pContainer == getContainer())

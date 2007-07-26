@@ -77,6 +77,7 @@ public:
 	virtual fp_Page *   getPage(void) { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
+	UT_uint32           getPID(void);
 private:
 	fp_Page * m_pPage;
 };

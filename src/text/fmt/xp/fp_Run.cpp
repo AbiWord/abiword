@@ -1101,9 +1101,19 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 
 		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
-	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && 
+			(m_pHyperlink->getHyperlinkType() ==  HYPERLINK_NORMAL))
 	{
 		s_fgColor = _getView()->getColorHyperLink();
+	}
+	else if(m_pHyperlink && (m_pHyperlink->getHyperlinkType() == HYPERLINK_ANNOTATION))
+	{
+			if(getBlock()->getDocLayout()->displayAnnotations())
+			{
+				s_fgColor =	_getView()->getColorAnnotation(this);
+			}
+			else
+				return _getColorFG();
 	}
 	else
 		return _getColorFG();

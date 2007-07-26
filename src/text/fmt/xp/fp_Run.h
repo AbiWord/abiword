@@ -343,6 +343,7 @@ public:
 	bool                 isSelectionDraw(void) const;
 	PT_DocPosition       posSelLow(void) const;
     PT_DocPosition       posSelHigh(void) const;
+	UT_RGBColor			_getColorFG(void) const { return m_pColorFG; }
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -357,7 +358,6 @@ protected:
 	// By convention, _getFoo and _setFoo have no side effects.
 	// They can easily be inlined by a smart compiler.
 	UT_RGBColor			_getColorPG(void) const { return m_pColorPG; }
-	UT_RGBColor			_getColorFG(void) const { return m_pColorFG; }
 	UT_RGBColor			_getColorHL(void) const { return m_pColorHL; }
 	void				_setColorFG(UT_RGBColor c) { m_pColorFG = c; }
 	void				_setColorHL(UT_RGBColor c) { m_pColorHL = c; }

@@ -134,6 +134,7 @@ public:
 	UT_sint32           findAnnotationContainer(fp_AnnotationContainer * pFC);
 	void                clearScreenAnnotations(void);
 	UT_sint32           getAnnotationHeight(void);
+	UT_uint32           getAnnotationPos( UT_uint32 pid);
 
 	// Frame functions.
 	void 				frameHeightChanged(void);

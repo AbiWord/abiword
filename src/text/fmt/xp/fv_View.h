@@ -739,6 +739,7 @@ public:
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
 	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
+	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const; 
 	UT_RGBColor			getColorRevisions(int rev) const { 
 		if (rev < 0) rev = 9;
 		if (rev > 9) rev = 9;
@@ -999,6 +1000,7 @@ private:
 	UT_RGBColor         m_colorRevisions[10];
 	UT_RGBColor			m_colorHdrFtr;
 	UT_RGBColor			m_colorColumnLine;
+	UT_RGBColor         m_colorAnnotations[10];
 
 	UT_uint32 m_countDisable; // cursor disable count
 	bool                m_bDragTableLine;
