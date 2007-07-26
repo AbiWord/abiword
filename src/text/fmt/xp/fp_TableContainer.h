@@ -143,9 +143,11 @@ public:
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
-	bool                containsFootnoteReference(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
+	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
+	bool                containsAnnotations(void);
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns);
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
@@ -361,6 +363,8 @@ fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
+	bool                containsAnnotations(void);
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);

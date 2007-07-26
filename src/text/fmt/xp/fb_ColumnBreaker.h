@@ -55,6 +55,7 @@ private:
 							int iMaxColHeight, int iWorkingColHeight,
 							int iContainerMarginAfter);
 	fp_Container * _getNext(fp_Container * pCon);
+	bool           _displayAnnotations(void);
 	fp_Page *             m_pStartPage;
 	bool                  m_bStartFromStart;
 	bool                  m_bReBreak;

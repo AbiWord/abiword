@@ -28,7 +28,7 @@
 fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 				   UT_uint32 iOffsetFirst, 
 				   UT_uint32 iLen ) : 
-  fp_HyperlinkRun(pBL,iOffsetFirst,1)
+  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0)
 {
     UT_ASSERT(pBL);
 	_setLength(1);
@@ -71,12 +71,14 @@ fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 		//so that when a run gets inserted after this one, its m_pHyperlink is
 		//set correctly
 		_setHyperlink(this);
+		m_iPID = atoi(m_pTarget);
 	}
 	else
 	{
 		m_bIsStart = false;
 		m_pTarget = NULL;
 		_setHyperlink(NULL);
+		m_iPID =0;
 	}
 
 }

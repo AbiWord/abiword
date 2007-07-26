@@ -784,6 +784,10 @@ public:
 	{
 		return HYPERLINK_ANNOTATION;
 	}
+	UT_uint32 getPID(void)
+	{return m_iPID;}
+ private:
+	UT_uint32 m_iPID;
 };
 
 class ABI_EXPORT fp_ImageRun : public fp_Run
