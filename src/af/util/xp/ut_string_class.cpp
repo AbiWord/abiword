@@ -1184,6 +1184,10 @@ UT_UCS4String UT_UTF8String::ucs4_str ()
 	return ucs4string;
 }
 
+bool operator<(const UT_UTF8String& s1, const UT_UTF8String& s2)
+{
+	return strcmp(s1.utf8_str(), s2.utf8_str()) < 0;
+}
 bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2)
 {
 	return strcmp(s1.utf8_str(), s2.utf8_str()) == 0;

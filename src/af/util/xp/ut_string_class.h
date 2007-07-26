@@ -274,6 +274,7 @@ private:
 	class UT_UTF8Stringbuf * pimpl;
 };
 
+ABI_EXPORT bool operator<(const UT_UTF8String& s1, const UT_UTF8String& s2);
 ABI_EXPORT bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2);
 ABI_EXPORT bool operator!=(const UT_UTF8String& s1, const UT_UTF8String& s2);
 ABI_EXPORT bool operator==(const UT_UTF8String& s1, const char * s2);
