@@ -69,6 +69,7 @@
 #include "ap_Strings.h"
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
+#include "fp_FootnoteContainer.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -4607,9 +4608,59 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 		return false;
 	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: msg [%s]\n",pH1->getTarget()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
-	UT_UTF8String url = pH1->getTarget();
-	url.decodeURL();
-	pFrame->setStatusMessage(url.utf8_str());
+	if(pH1->getHyperlinkType() ==  HYPERLINK_NORMAL)
+	{
+	  UT_UTF8String url = pH1->getTarget();
+	  url.decodeURL();
+	  pFrame->setStatusMessage(url.utf8_str());
+	}
+	else
+	{
+	    fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pH1);
+	    UT_DEBUGMSG(("HOVERING over an annotation PID %d \n",pAnn->getPID()));
+	    fp_Page * pPage = pAnn->getLine()->getPage();
+	    if(!pPage)
+	        return false;
+	    UT_uint32 i =0;
+	    bool bFound = false;
+	    fp_AnnotationContainer * pACon = NULL;
+	    for(i=0; i<pPage->countAnnotationContainers();i++)
+	    {
+		pACon = pPage->getNthAnnotationContainer(i);
+		if(pAnn->getPID() == pACon->getPID())
+		{
+		    bFound = true;
+		    break;
+		}
+	    }
+	    if(!bFound)
+	      return false;
+	    fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
+	    PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	    PL_StruxDocHandle sdhEnd = NULL;
+	    getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+
+	    UT_return_val_if_fail(sdhEnd != NULL, false);
+	    PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	    PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
+	    //
+	    // RiveraE Put your pop up code HERE!!!
+	    // Replace this code with hooks to your pop up
+	    //
+	    // You can copy and paste text from the posStart,posEnd into your popup. The code below
+	    // just extract the text and loses any markup.
+	    //
+	    UT_GrowBuf buffer;
+	    fl_BlockLayout * block; 
+
+	    block = m_pLayout->findBlockAtPosition(posStart+1);
+	    if (block)
+	    {
+		block->getBlockBuf(&buffer);
+	    }
+	    UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
+	    UT_DEBUGMSG(("text in annotation is %s \n",str.utf8_str()));
+	  }
 	return true;
 }
 
