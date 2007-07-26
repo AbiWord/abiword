@@ -84,6 +84,8 @@ const char * fp_ContainerObject::getContainerString(void)
 		return "FP_CONTAINER_ENDNOTE";
 	case FP_CONTAINER_FOOTNOTE:
 		return "FP_CONTAINER_FOOTNOTE";
+	case FP_CONTAINER_ANNOTATION:
+		return "FP_CONTAINER_ANNOTATION";
 	case FP_CONTAINER_COLUMN_POSITIONED:
 		return "FP_CONTAINER_COLUMN_POSITIONED";
 	case FP_CONTAINER_COLUMN_SHADOW:
@@ -116,6 +118,7 @@ bool fp_ContainerObject::isColumnType(void) const
 	  || (m_iConType == FP_CONTAINER_FRAME)
 	  || (m_iConType == FP_CONTAINER_COLUMN_POSITIONED)
 	  || (m_iConType == FP_CONTAINER_FOOTNOTE)
+	  || (m_iConType == FP_CONTAINER_ANNOTATION)
 	  ;
   return b;
 }
@@ -300,6 +303,10 @@ fp_Page * fp_Container::getPage(void) const
 	{
 		return static_cast<fp_FootnoteContainer *>(pCon)->getPage();
 	}
+	if(pCon->getContainerType() == FP_CONTAINER_ANNOTATION)
+	{
+		return static_cast<fp_AnnotationContainer *>(pCon)->getPage();
+	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
@@ -379,7 +386,7 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	
 	UT_return_val_if_fail(pColumnC,false);
 	fl_DocSectionLayout * pDSL = NULL;
-	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE)
+	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE || pColumnC->getContainerType() != FP_CONTAINER_ANNOTATION)
 	{
 		if(pColumnC->getContainerType() == FP_CONTAINER_FRAME)
 		{
@@ -403,11 +410,17 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 			}
 		}
 	}
-	else
+	else if (pColumnC->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{
 		fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(pColumnC);
 		fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
 		pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
+	}
+	else if (pColumnC->getContainerType() == FP_CONTAINER_ANNOTATION)
+	{
+		fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(pColumnC);
+		fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pAC->getSectionLayout());
+		pDSL = static_cast<fl_DocSectionLayout *>(pAL->myContainingLayout());
 	}
 	UT_return_val_if_fail(pDSL,false);
 	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);

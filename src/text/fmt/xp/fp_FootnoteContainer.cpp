@@ -343,8 +343,7 @@ fp_AnnotationContainer::~fp_AnnotationContainer()
 void fp_AnnotationContainer::setPage(fp_Page * pPage)
 {
   //
-  // FIXME in fp_Page
-#if 0
+
 	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
 	{
 		clearScreen();
@@ -360,7 +359,6 @@ void fp_AnnotationContainer::setPage(fp_Page * pPage)
 	{
 		getFillType()->setParent(NULL);
 	}
-#endif
 }
 
 /*! 

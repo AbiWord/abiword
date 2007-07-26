@@ -189,7 +189,6 @@ UT_sint32 fp_VerticalContainer::getY(void) const
 		{
 			pDSL =  static_cast<fl_DocSectionLayout *>(pSL->getDocSectionLayout());
 		}
-//		if((pSL->getContainerType() == FL_CONTAINER_DOCSECTION) || (pSL->getContainerType() == FL_CONTAINER_FOOTNOTE))
 		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
 			return m_iY - pDSL->getTopMargin();
@@ -571,6 +570,15 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		       yoff -= pDSL->getTopMargin();
 		}
 	}
+	if(pCon && pCon->getContainerType() == FP_CONTAINER_ANNOTATION && 
+	   getPage()->getDocLayout()->displayAnnotations())
+	{
+	        if(getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
+		{
+		       fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		       yoff -= pDSL->getTopMargin();
+		}
+	}
 }
 
 
@@ -789,6 +797,19 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		xoff += col_x;
 		yoff += col_y;
 	        if(pFC->getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
+		{
+		       fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		       yoff -= pDSL->getTopMargin();
+		}
+	}
+	else if(pCon->getContainerType() == FP_CONTAINER_ANNOTATION)
+	{
+		fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(pCon);
+		pAC->getPage()->getScreenOffsets(pAC, col_x, col_y);
+
+		xoff += col_x;
+		yoff += col_y;
+	        if(pAC->getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
 		{
 		       fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
 		       yoff -= pDSL->getTopMargin();
@@ -1814,6 +1835,9 @@ void fp_Column::layout(void)
 
 		// ignore footnotes
 		if (pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			continue;
+		// ignore annotations
+		if (pContainer->getContainerType() == FP_CONTAINER_ANNOTATION)
 			continue;
 
 		xxx_UT_DEBUGMSG(("Column Layout: Container %d Container %x Type %d \n",i,pContainer,pContainer->getContainerType()));

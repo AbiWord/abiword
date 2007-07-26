@@ -609,8 +609,6 @@ fl_AnnotationLayout::~fl_AnnotationLayout()
 void fl_AnnotationLayout::_createAnnotationContainer(void)
 {
 	lookupProperties();
-	// FIXME: Implement this!
-#if 0
 	fp_AnnotationContainer * pAnnotationContainer = new fp_AnnotationContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pAnnotationContainer);
 	setLastContainer(pAnnotationContainer);
@@ -627,7 +625,6 @@ void fl_AnnotationLayout::_createAnnotationContainer(void)
 	UT_sint32 iWidth = pCon->getPage()->getWidth();
 	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
 	pAnnotationContainer->setWidth(iWidth);
-#endif
 }
 
 /*!
@@ -638,7 +635,7 @@ void fl_AnnotationLayout::_createAnnotationContainer(void)
 */
 fp_Container* fl_AnnotationLayout::getNewContainer(fp_Container *)
 {
-	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
+	UT_DEBUGMSG(("Creating new Annotation container\n"));
 	_createAnnotationContainer();
 	m_bIsOnPage = false;
 	return static_cast<fp_Container *>(getLastContainer());
@@ -660,7 +657,7 @@ void fl_AnnotationLayout::_insertAnnotationContainer(fp_Container * pNewAC)
 		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
 //
-// Code to find the Line that contains the footnote reference
+// Code to find the Line that contains the Annotation reference
 //
 			PT_DocPosition posFL = getDocPosition() - 1;
 			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
@@ -697,15 +694,13 @@ void fl_AnnotationLayout::_insertAnnotationContainer(fp_Container * pNewAC)
 	pNewAC->setContainer(NULL);
 
 	// need to put onto page as well, in the appropriate place.
-//	UT_ASSERT(pPage);
-// FIXME implement this
-#if 0
+	UT_ASSERT(pPage);
+
 	if(pPage)
 	{
-		pPage->insertAnnotationContainer(static_cast<fp_AnnotationContainer*>(pNewFC));
+		pPage->insertAnnotationContainer(static_cast<fp_AnnotationContainer*>(pNewAC));
 		m_bIsOnPage = true;
 	}
-#endif
 }
 
 
@@ -792,11 +787,10 @@ void fl_AnnotationLayout::collapse(void)
 	{
 //
 // Remove it from the page.
-// FIXME Implement this!
-#if 0
+//
 		if(pAC->getPage())
 		{
-			pAC->getPage()->removeAnnotationContainer(pFC);
+			pAC->getPage()->removeAnnotationContainer(pAC);
 			pAC->setPage(NULL);
 		}
 //
@@ -812,7 +806,6 @@ void fl_AnnotationLayout::collapse(void)
 			pAC->getNext()->setPrev(pPrev);
 		}
 		delete pAC;
-#endif
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
