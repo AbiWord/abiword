@@ -281,6 +281,8 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_EndFrame 
 			  || pfs->getStruxType()==PTX_SectionFootnote 
 			  || pfs->getStruxType()==PTX_EndFootnote 
+			  || pfs->getStruxType()==PTX_SectionAnnotation 
+			  || pfs->getStruxType()==PTX_EndAnnotation 
 			  || pfs->getStruxType()==PTX_SectionEndnote 
 			  || pfs->getStruxType()==PTX_EndEndnote
 			  || pfs->getStruxType()==PTX_SectionTOC 
@@ -409,6 +411,24 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 	case PTX_EndFootnote:
         //
         // deleting Footnotes is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+
+
+	case PTX_SectionAnnotation:
+        //
+        // deleting Annotations is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_EndAnnotation:
+        //
+        // deleting Annotations is a multi-step process that can't make 
         // assumptions
         // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
