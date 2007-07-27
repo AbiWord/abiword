@@ -740,6 +740,7 @@ public:
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
 	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
 	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const; 
+	UT_RGBColor			getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const; 
 	UT_RGBColor			getColorRevisions(int rev) const { 
 		if (rev < 0) rev = 9;
 		if (rev > 9) rev = 9;

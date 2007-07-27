@@ -747,6 +747,16 @@ UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 	return m_colorAnnotations[pos];
 }
 
+
+UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
+{
+
+	UT_uint32 pos = pPage->getAnnotationPos(pid);
+	if(pos > 9)
+		pos = 9;
+	return m_colorAnnotations[pos];
+}
+
 void FV_View::replaceGraphics(GR_Graphics * pG)
 {
 	if(m_pG)

@@ -1064,6 +1064,16 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	UT_return_val_if_fail(pView, s_fgColor);
 	bool bShow = pView->isShowRevisions();
 	
+	if(getBlock()->getDocLayout()->displayAnnotations())
+	{
+		if(getLine() && getLine()->getContainer() && getLine()->getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION)
+		{
+				fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(getLine()->getContainer());
+				UT_uint32 pid = pAC->getPID();
+				s_fgColor =	_getView()->getColorAnnotation(pAC->getPage(),pid);
+				return s_fgColor;
+		}
+	}
 	if(m_pRevisions && bShow)
 	{
 		bool bMark = pView->isMarkRevisions();
