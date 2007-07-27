@@ -418,7 +418,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		// Do we Need to set the min Unique id now???
 #if 0
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("footnote-id", atts));
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotate-id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
@@ -427,7 +427,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		}
 #endif
 		X_CheckError(appendStrux(PTX_SectionAnnotation,atts));
-		xxx_UT_DEBUGMSG(("FInished Append Annotation strux \n"));
+		UT_DEBUGMSG(("FInished Append Annotation strux \n"));
 		goto cleanup;
 	}
 	case TT_ENDNOTE:
@@ -576,6 +576,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 	case TT_ANN:
 		X_VerifyParseState(_PS_Block);
+		UT_DEBUGMSG(("Annotation object found \n"));
 		X_CheckError(appendObject(PTO_Annotation,atts));
 		goto cleanup;
 
@@ -976,7 +977,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_ANNOTATE:
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(appendStrux(PTX_EndAnnotation,NULL));
-		xxx_UT_DEBUGMSG(("FInished Append End annotation strux \n"));
+		UT_DEBUGMSG(("FInished Append End annotation strux \n"));
 		m_parseState = _PS_Block;
 		return;
 
@@ -1071,6 +1072,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_ANN:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
+		UT_DEBUGMSG(("End of annotation region \n"));
 		// we append another Hyperlink Object, but with no attributes
 		X_CheckError(appendObject(PTO_Annotation,NULL));
 		return;

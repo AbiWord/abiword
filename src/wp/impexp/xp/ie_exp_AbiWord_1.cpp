@@ -342,6 +342,7 @@ void s_AbiWord_1_Listener::_closeAnnotation(void)
 {
 	if (!m_bInAnnotation)
 		return;
+	UT_DEBUGMSG(("Doing close annotation object method \n"));
     _closeSpan();
 	m_pie->write("</ann>");
     m_bInAnnotation = false;
@@ -974,25 +975,25 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					bool bFound = false;
 					UT_uint32 k = 0;
 
-					while(pAP->getNthAttribute(k++, pName, pValue))
+					while(!bFound && pAP->getNthAttribute(k++, pName, pValue))
 					{
 						bFound = (0 == g_ascii_strncasecmp(pName,"Annotation",10));
-						if(bFound)
-							break;
 					}
 
 					if(bFound)
 					{
 						//this is the start of the Annotation
    						_openTag("ann", "",false, api,pcr->getXID(),true);
+						UT_DEBUGMSG(("Doing open annotation object \n"));
    						m_bInAnnotation = true;
    					}
    					else
    					{
+						UT_DEBUGMSG(("Doing close annotation object \n"));
    						_closeAnnotation();
    					}
 
-
+					
    					return true;
 
    				}
@@ -1084,10 +1085,12 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 	case PTX_SectionAnnotation:
 		{
-			_closeSpan();
-            _closeField();
+			// spans and field have been closed by the annotation
+			//			_closeSpan();
+            // _closeField();
 			// We may have to close hyperlinks but I hope not.
 			//            _closeHyperlink();
+			UT_DEBUGMSG(("Found start annotation strux \n"));
 			m_bInBlock = false;
 			_openTag("annotate","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
@@ -1166,6 +1169,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		}
 	case PTX_EndAnnotation:
 		{
+			UT_DEBUGMSG(("End of annotation strux \n"));
 			_closeSpan();
             _closeField();
 			// Lets not close out hyperlinks to start with
@@ -1220,7 +1224,6 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
             _closeField();
 			_closeHyperlink();
-			_closeAnnotation();
 			_closeBlock();
 			_openTag("p","",false,pcr->getIndexAP(),pcr->getXID());
 			m_bInBlock = true;
