@@ -88,4 +88,5 @@ fp_AnnotationRun::~fp_AnnotationRun()
 {
 	if(m_pTarget)
 		delete [] m_pTarget;
+	m_pTarget = NULL;
 }

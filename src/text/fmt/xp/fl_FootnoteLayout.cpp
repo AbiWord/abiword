@@ -569,8 +569,8 @@ fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout,
 					 sdh, 
 					 indexAP, 
 					 pMyContainerLayout, 
-					 FL_SECTION_FOOTNOTE,
-					 FL_CONTAINER_FOOTNOTE,
+					 FL_SECTION_ANNOTATION,
+					 FL_CONTAINER_ANNOTATION,
 					 PTX_SectionAnnotation),
 	  m_iAnnotationPID(0)
 {

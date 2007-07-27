@@ -726,7 +726,7 @@ class ABI_EXPORT fp_HyperlinkRun : public fp_Run
 {
 public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	~fp_HyperlinkRun();
+	virtual ~fp_HyperlinkRun();
 	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
 	{ return HYPERLINK_NORMAL;}
 
@@ -779,7 +779,7 @@ class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
 {
 public:
 	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	~fp_AnnotationRun();
+	virtual ~fp_AnnotationRun();
 	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
 	{
 		return HYPERLINK_ANNOTATION;

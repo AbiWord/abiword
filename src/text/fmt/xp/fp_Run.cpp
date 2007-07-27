@@ -2941,6 +2941,7 @@ fp_HyperlinkRun::~fp_HyperlinkRun()
 {
 	if(m_pTarget)
 		delete [] m_pTarget;
+	m_pTarget = NULL;
 }
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,

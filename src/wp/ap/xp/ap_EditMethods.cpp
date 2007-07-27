@@ -3450,6 +3450,20 @@ Defun(dlgAnnotation)
 	
 	pDialogFactory->releaseDialog(pDialog);
 	
+	//
+	// Set the preference to enable annotations display
+	//
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, false);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	b = !b;
+	gchar szBuffer[2] = {0,0};
+	szBuffer[0] = ((b)==true ? '1' : '0');
+	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
+	pView->updateScreen(false);
 	return true ;
 }
 

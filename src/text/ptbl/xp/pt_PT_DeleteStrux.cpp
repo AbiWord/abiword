@@ -114,11 +114,13 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_SectionFrame:
 	case PTX_SectionCell:
 	case PTX_SectionFootnote:
+	case PTX_SectionAnnotation:
 	case PTX_SectionTOC:
 	case PTX_EndCell:
 	case PTX_EndTable:
 	case PTX_EndFootnote:
 	case PTX_EndEndnote:
+	case PTX_EndAnnotation:
 	case PTX_EndFrame:
 	case PTX_EndTOC:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);

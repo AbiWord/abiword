@@ -2944,6 +2944,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
 			getContainer()->getContainerType() == FP_CONTAINER_TOC ||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
@@ -2975,6 +2976,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
 			getContainer()->getContainerType() == FP_CONTAINER_TOC||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - getGraphics()->tlu(2);

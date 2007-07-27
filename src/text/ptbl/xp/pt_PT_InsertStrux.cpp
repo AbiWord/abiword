@@ -270,6 +270,10 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_SectionFootnote(this, indexAP);
 		break;
 
+	case PTX_SectionAnnotation:
+		pfs = new pf_Frag_Strux_SectionAnnotation(this, indexAP);
+		break;
+
 
 	case PTX_SectionEndnote:
 		pfs = new pf_Frag_Strux_SectionEndnote(this, indexAP);
@@ -300,6 +304,9 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 	case PTX_EndFootnote:
 		pfs = new pf_Frag_Strux_SectionEndFootnote(this, indexAP);
+		break;
+	case PTX_EndAnnotation:
+		pfs = new pf_Frag_Strux_SectionEndAnnotation(this, indexAP);
 		break;
 	case PTX_EndEndnote:
 		pfs = new pf_Frag_Strux_SectionEndEndnote(this, indexAP);
