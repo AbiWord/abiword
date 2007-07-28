@@ -9766,7 +9766,7 @@ void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
-	UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
+	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos = 0;
 	bool bBOL = false;

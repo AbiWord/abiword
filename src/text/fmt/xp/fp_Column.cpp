@@ -863,6 +863,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
+	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	pNewContainer->clearScreen();
 	xxx_UT_DEBUGMSG(("Insert  Container after CS %x in column %x \n",pNewContainer,this));
 	insertConAt(pNewContainer, 0);
@@ -888,6 +889,7 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
 	UT_return_val_if_fail(pNewContainer,false);
+	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 	if(pNewContainer->getContainer() != NULL)
 	{
 		pNewContainer->clearScreen();
@@ -912,6 +914,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 {
 	UT_ASSERT(pAfterContainer);
 	UT_ASSERT(pNewContainer);
+	UT_ASSERT(pNewContainer->getContainerType() != FP_CONTAINER_ANNOTATION);
 
 	UT_sint32 count = countCons();
 	UT_sint32 ndx = findCon(pAfterContainer);

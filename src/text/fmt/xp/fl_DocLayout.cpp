@@ -3429,6 +3429,10 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	{
 		pDocLayout->m_bDisplayAnnotations = b;
 		pDocLayout->formatAll();
+		if(pDocLayout->getView())
+		{
+		    pDocLayout->getView()->updateScreen(false);
+		}
 	}
 }
 

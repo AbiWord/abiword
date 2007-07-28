@@ -520,6 +520,7 @@ public:
 	static EV_EditMethod_Fn fontSizeIncrease;
 	static EV_EditMethod_Fn fontSizeDecrease;
 	static EV_EditMethod_Fn toggleBold;
+	static EV_EditMethod_Fn toggleDisplayAnnotations;
 	static EV_EditMethod_Fn toggleHidden;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -1129,6 +1130,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleBottomline), 	0,	""),
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
+	EV_EditMethod(NF(toggleDisplayAnnotations), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
 	EV_EditMethod(NF(toggleDomDirectionDoc),	0,	""),
 	EV_EditMethod(NF(toggleDomDirectionSect),	0,	""),
@@ -3450,21 +3452,7 @@ Defun(dlgAnnotation)
 	
 	pDialogFactory->releaseDialog(pDialog);
 	
-	//
-	// Set the preference to enable annotations display
-	//
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_return_val_if_fail(pPrefs, false);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-	UT_return_val_if_fail(pScheme, false);
-	bool b = false;
-	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
-	b = !b;
-	gchar szBuffer[2] = {0,0};
-	szBuffer[0] = ((b)==true ? '1' : '0');
-	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
-	pView->updateScreen(false);
-	return true ;
+	return true;
 }
 
 // TODO contains Unix specific code, should be moved/modified
@@ -10578,10 +10566,90 @@ Defun1(insAnnotation)
 	// UT_UTF8String pointer containing text to be inserted
 	// Boolean to determine whether to place the current selection into an annotation.
 	//
-	UT_sint32 iAnnotation = 0;
-	UT_UTF8String * psText = NULL;
-	bool bReplaceSelection = false;
-	return pView->insertAnnotation(iAnnotation,psText,bReplaceSelection);
+
+	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, false);
+	
+	pFrame->raise();
+	
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	
+	AP_Dialog_Annotation * pDialog
+		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
+	UT_return_val_if_fail (pDialog, false);
+	
+	// get the properties
+	
+	PD_Document * pDocument = pView->getDocument();
+	
+	UT_UTF8String prop ( "" ) ;
+	
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_TITLE, prop ) )
+		pDialog->setTitle ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_CREATOR, prop ) )
+		pDialog->setAuthor ( prop ) ;
+	if ( pDocument->getAnnotationProp ( PD_META_KEY_DESCRIPTION, prop ) )
+		pDialog->setDescription ( prop ) ;
+	
+	// run the dialog
+	
+	UT_DEBUGMSG(("dlgAnnotation: Drawing annotation dialog...\n"));
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
+	
+	if (bOK)
+    {
+		// reset the props
+		
+		//		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
+		//pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
+		//pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
+		
+		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+		{
+			pApp->getFrame(i)->updateTitle ();
+		}	  
+		
+		UT_sint32 iAnnotation = 1;
+		UT_UTF8String psText = pDialog->getDescription() ;
+		bool bReplaceSelection = false;
+		pView->insertAnnotation(iAnnotation,&psText,bReplaceSelection);
+		// TODO: set the document as dirty when something changed
+
+    }
+
+
+	return true;
+}
+
+
+Defun1(toggleDisplayAnnotations)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	
+	UT_DEBUGMSG(("Changing annotation display\n"));
+	
+	//
+	// Set the preference to enable annotations display
+	//
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, false);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	b = !b;
+	gchar szBuffer[2] = {0,0};
+	szBuffer[0] = ((b)==true ? '1' : '0');
+	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
+	return true ;
 }
 
 

@@ -750,7 +750,7 @@ void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const gchar *pszAnnotationPID = NULL;
-	if(!pSectionAP->getAttribute("Annotation",pszAnnotationPID))
+	if(!pSectionAP->getAttribute("annotation-id",pszAnnotationPID))
 	{
 		m_iAnnotationPID = 0;
 	}

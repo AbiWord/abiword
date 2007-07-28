@@ -658,7 +658,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pLastContainerToKeep)
 		{
 			while(pLastContainerToKeep && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )
-			      && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION && _displayAnnotations()))
+			      && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION))
 			{
 				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
 			}
@@ -684,7 +684,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		{
 			xxx_UT_DEBUGMSG(("Container %x is in Column %x Type %d numCons %d \n",pCurContainer,pCurColumn,pCurContainer->getContainerType(),pCurColumn->countCons()));
 			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE  || 
-			   (pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION && _displayAnnotations()) )
+			   (pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION) )
 			{
 //
 // Skip this. It doesn't go in this column at all.
