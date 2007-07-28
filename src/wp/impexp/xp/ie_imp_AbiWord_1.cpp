@@ -417,15 +417,13 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         // a footnote reference field.
 
 		// Do we Need to set the min Unique id now???
-#if 0
 		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotate-id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id+1);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Annotation, id+1);
 		}
-#endif
 		X_CheckError(appendStrux(PTX_SectionAnnotation,atts));
 		UT_DEBUGMSG(("FInished Append Annotation strux \n"));
 		goto cleanup;

@@ -10615,7 +10615,7 @@ Defun1(insAnnotation)
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
-		UT_sint32 iAnnotation = 1;
+		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 		UT_UTF8String psText = pDialog->getDescription() ;
 		bool bReplaceSelection = false;
 		pView->insertAnnotation(iAnnotation,&psText,bReplaceSelection);
