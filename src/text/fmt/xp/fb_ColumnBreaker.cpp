@@ -220,7 +220,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		while (pCurContainer)
 		{
 			xxx_UT_DEBUGMSG(("curContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
-			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE || ((pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION) && _displayAnnotations()))
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE || ((pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION)))
 			{
 //
 // skip this! We've already taken it's height into account.
