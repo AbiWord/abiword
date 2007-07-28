@@ -1309,14 +1309,28 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		GR_Painter painter(pG);
-		pG->setColor(_getView()->getColorHyperLink());
-		pG->setLineProperties(pG->tluD(1.0),
+		if(m_pHyperlink->getHyperlinkType() == HYPERLINK_NORMAL)
+		{
+				GR_Painter painter(pG);
+				pG->setColor(_getView()->getColorHyperLink());
+				pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
-		painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+				painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+		}
+		else
+		{
+				GR_Painter painter(pG);
+				pG->setColor(_getView()->getColorAnnotation(this));
+				pG->setLineProperties(pG->tluD(1.0),
+								GR_Graphics::JOIN_MITER,
+								GR_Graphics::CAP_PROJECTING,
+								GR_Graphics::LINE_ON_OFF_DASH);
+				
+				painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+		}
 	}
 
 	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
