@@ -454,6 +454,23 @@ Section "OPML"
 	End:
 SectionEnd
 
+Section "Microsoft Office OpenXML"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenXML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing Microsoft Office OpenXML Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping Microsoft Office OpenXML Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenXML.dll"
+  
+	End:
+SectionEnd
+
 Section "T602"
 	SectionIn 2
 
@@ -791,6 +808,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\AbiWML.dll"
 	Delete "$INSTDIR\AbiWordPerfect.dll"
 	Delete "$INSTDIR\AbiXSLFO.dll"
+	Delete "$INSTDIR\AbiOpenXML.dll"
 
 	Delete "$INSTDIR\..\bin\libwpd-0.8.dll"
 
