@@ -35,9 +35,17 @@ AP_Preview_Annotation::AP_Preview_Annotation()
 	m_pFontPreview          = NULL;
 	m_width					= PREVIEW_WIDTH;
 	m_height				= PREVIEW_HEIGHT;
+	m_pTitle				= "";
+	m_pAuthor				= "";
+	m_pDescription			= "";
 	
 	UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
+
+/*AP_Preview_Annotation::AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
+{
+	UT_DEBUGMSG(("AP_Preview_Annotation: WARNING Preview annotation not implemented for this platform\n"));
+}*/
 
 AP_Preview_Annotation::~AP_Preview_Annotation(void)
 {
@@ -50,7 +58,7 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc,
 											   UT_uint32 height)
 {
 	UT_ASSERT(gc);
-	UT_DEBUGMSG(("Annotation preview created!\n"));
+	UT_DEBUGMSG(("AP_Preview_Annotation: Annotation preview created!\n"));
 	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
 	UT_return_if_fail(m_pFontPreview);
 	
@@ -108,25 +116,23 @@ void AP_Preview_Annotation::setTitle(const gchar * pTitle)
 {
 	UT_return_if_fail(pTitle);
 	m_pTitle = g_strdup(pTitle);
-	_updateDrawString();
 }
 
 void AP_Preview_Annotation::setAuthor(const gchar * pAuthor)
 {
 	UT_return_if_fail(pAuthor);
 	m_pAuthor = g_strdup(pAuthor);
-	_updateDrawString();
 }
 
 void AP_Preview_Annotation::setDescription(const gchar * pDescription)
 {
 	UT_return_if_fail(pDescription);
 	m_pDescription = g_strdup(pDescription);
-	_updateDrawString();
 }
 
 void AP_Preview_Annotation::draw()
 {
+	_updateDrawString();
 	if (m_pFontPreview)
 		m_pFontPreview->draw();
 }

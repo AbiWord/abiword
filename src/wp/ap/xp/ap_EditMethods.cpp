@@ -681,7 +681,6 @@ public:
 	
 	//RIVERA
     static EV_EditMethod_Fn insAnnotation;
-	static EV_EditMethod_Fn dlgAnnotation;
 	static EV_EditMethod_Fn pviewAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
@@ -819,7 +818,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(deleteTable),   		0,	""),
 	EV_EditMethod(NF(dlgAbout), 			_A_, ""),
-	EV_EditMethod(NF(dlgAnnotation),		0, ""),
 	EV_EditMethod(NF(dlgBackground),		0,	""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
 	EV_EditMethod(NF(dlgBullets),			0,	""),
@@ -3391,71 +3389,7 @@ Defun(dlgMetaData)
   return true ;
 }
 
-// RIVERA
-Defun(dlgAnnotation)
-{
-	CHECK_FRAME;
-	UT_return_val_if_fail (pAV_View, false);
-	FV_View * pView = static_cast<FV_View *>(pAV_View);
-	
-	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	UT_return_val_if_fail(pFrame, false);
-	
-	XAP_App * pApp = XAP_App::getApp();
-	UT_return_val_if_fail (pApp, false);
-	
-	pFrame->raise();
-	
-	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
-	
-	AP_Dialog_Annotation * pDialog
-		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
-	UT_return_val_if_fail (pDialog, false);
-	
-	// get the properties
-	
-	PD_Document * pDocument = pView->getDocument();
-	
-	UT_UTF8String prop ( "" ) ;
-	
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_TITLE, prop ) )
-		pDialog->setTitle ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_CREATOR, prop ) )
-		pDialog->setAuthor ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_DESCRIPTION, prop ) )
-		pDialog->setDescription ( prop ) ;
-	
-	// run the dialog
-	
-	UT_DEBUGMSG(("dlgAnnotation: Drawing annotation dialog...\n"));
-	pDialog->runModal(pFrame);
-	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
-	
-	if (bOK)
-    {
-		// reset the props
-		
-		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
-		pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
-		
-		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
-		{
-			pApp->getFrame(i)->updateTitle ();
-		}	  
-		
-		// TODO: set the document as dirty when something changed
-    }
-	
-	// release the dialog
-	
-	pDialogFactory->releaseDialog(pDialog);
-	
-	return true;
-}
-
-// TODO contains Unix specific code, should be moved/modified
+// TODO to be removed
 Defun(pviewAnnotation)
 {
 	CHECK_FRAME;
@@ -10551,7 +10485,6 @@ Defun1(insFootnote)
 	return pView->insertFootnote(true);
 }
 
-// RIVERA
 Defun1(insAnnotation)
 {
 	CHECK_FRAME;
@@ -10560,14 +10493,12 @@ Defun1(insAnnotation)
 	
 	UT_DEBUGMSG(("insAnnotation: inserting\n"));
 
-	
 	// API is:
-	// Annuotation Number,
+	// Annotation Number,
 	// UT_UTF8String pointer containing text to be inserted
 	// Boolean to determine whether to place the current selection into an annotation.
 	//
 
-	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	
@@ -10583,46 +10514,41 @@ Defun1(insAnnotation)
 		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
 	UT_return_val_if_fail (pDialog, false);
 	
-	// get the properties
+	// set initial annotation properties
 	
-	PD_Document * pDocument = pView->getDocument();
-	
-	UT_UTF8String prop ( "" ) ;
-	
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_TITLE, prop ) )
-		pDialog->setTitle ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_CREATOR, prop ) )
-		pDialog->setAuthor ( prop ) ;
-	if ( pDocument->getAnnotationProp ( PD_META_KEY_DESCRIPTION, prop ) )
-		pDialog->setDescription ( prop ) ;
+	pDialog->setTitle("New annotation");
+	pDialog->setAuthor("Author");
+	pDialog->setDescription("annotation description") ;
 	
 	// run the dialog
 	
-	UT_DEBUGMSG(("dlgAnnotation: Drawing annotation dialog...\n"));
+	UT_DEBUGMSG(("insAnnotation: Drawing annotation dialog...\n"));
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
 	
 	if (bOK)
     {
-		// reset the props
-		
-		//		pDocument->setAnnotationProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
-		//pDocument->setAnnotationProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
-		//pDocument->setAnnotationProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
-		
 		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
 		{
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
 		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
-		UT_UTF8String psText = pDialog->getDescription() ;
+		UT_UTF8String pTitle = pDialog->getTitle();
+		UT_UTF8String pAuthor = pDialog->getAuthor();
+		UT_UTF8String pDescr = pDialog->getDescription();
 		bool bReplaceSelection = false;
-		pView->insertAnnotation(iAnnotation,&psText,bReplaceSelection);
+		pView->insertAnnotation(iAnnotation,
+								&pTitle,
+								&pAuthor,
+								&pDescr,
+								bReplaceSelection);
 		// TODO: set the document as dirty when something changed
 
     }
 
+	// release the dialog
+	pDialogFactory->releaseDialog(pDialog);
 
 	return true;
 }

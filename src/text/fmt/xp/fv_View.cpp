@@ -12068,9 +12068,14 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
  * If bReplace is true, the current selection is cut and placed into
  * an annotation.
  */
-bool FV_View::insertAnnotation(UT_sint32 iAnnotation, UT_UTF8String * pStr, bool bReplace)
+bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
+							   UT_UTF8String * pTitle, // TODO store pTitle and pAuthor fields as well
+							   UT_UTF8String * pAuthor,
+							   UT_UTF8String * pDescr,
+							   bool bReplace)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
+	// TODO allow applying to empty selection (cursor position)
 	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
 	if(pBlock == NULL)
 	{
@@ -12165,7 +12170,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation, UT_UTF8String * pStr, bool
 		posEnd = posStart;
 	}
 	//
-	// Now insert the Hyperlink-lke field
+	// Now insert the Hyperlink-like field
 	//
 
 	// Now insert the annotation end run, so that we can use it as a stop
@@ -12213,13 +12218,13 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation, UT_UTF8String * pStr, bool
 	else
 	{
 		UT_UTF8String sTmp;
-		if(pStr == NULL)	
+		if(pDescr == NULL)	
 		{
 			sTmp = "Annotation";
 		}
 		else
 		{
-			sTmp = *pStr;
+			sTmp = *pDescr;
 		}
 	
 		UT_UCS4String sUCS4(sTmp.utf8_str());

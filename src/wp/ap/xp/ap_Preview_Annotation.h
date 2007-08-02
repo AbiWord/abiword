@@ -36,6 +36,7 @@ class AP_Preview_Annotation
 {
 	public:
 		AP_Preview_Annotation();
+		//AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
 		virtual ~AP_Preview_Annotation(void);
 		
 		void							addOrReplaceVecProp(const gchar * pszProp,

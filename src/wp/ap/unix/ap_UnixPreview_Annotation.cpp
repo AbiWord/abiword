@@ -27,6 +27,8 @@
 AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: AP_Preview_Annotation()
 {
+	UT_DEBUGMSG(("AP_UnixPreview_Annotation: Preview annotation for Unix platform\n"));
+		
 	m_pFrame = static_cast<XAP_Frame *>(pFrame);
 	m_left = left;
 	m_top = top;

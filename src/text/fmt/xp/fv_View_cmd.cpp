@@ -90,6 +90,9 @@
 #include "ev_Mouse.h"
 #include "fv_View.h"
 
+// RIVERA TODO replace this unix platform line
+#include "ap_UnixPreview_Annotation.h"
+
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
@@ -4643,23 +4646,34 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	    UT_return_val_if_fail(sdhEnd != NULL, false);
 	    PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
 	    PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
-	    //
-	    // RiveraE Put your pop up code HERE!!!
-	    // Replace this code with hooks to your pop up
-	    //
-	    // You can copy and paste text from the posStart,posEnd into your popup. The code below
-	    // just extract the text and loses any markup.
-	    //
-	    UT_GrowBuf buffer;
+	    
+		// preview annotation
+	    
+		UT_GrowBuf buffer;
 	    fl_BlockLayout * block; 
-
+		
 	    block = m_pLayout->findBlockAtPosition(posStart+1);
 	    if (block)
 	    {
-		block->getBlockBuf(&buffer);
+			block->getBlockBuf(&buffer);
 	    }
 	    UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
-	    UT_DEBUGMSG(("text in annotation is %s \n",str.utf8_str()));
+	    UT_DEBUGMSG(("cmdHyperlinkStatusBar: Description in annotation is \"%s\" \n",str.utf8_str()));
+		
+		XAP_App * pApp = XAP_App::getApp();
+		UT_return_val_if_fail (pApp, false);
+		
+		pFrame->raise();
+		
+		UT_DEBUGMSG(("cmdHyperlinkStatusBar: Previewing annotation...\n"));
+		AP_Preview_Annotation * pPview;
+		pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100); // TODO modify this unix line
+		pPview->setTitle("n/a");
+		pPview->setAuthor("n/a");
+		pPview->setDescription(str.utf8_str());
+		pPview->draw();
+		// TODO write close on mouse out
+		
 	  }
 	return true;
 }

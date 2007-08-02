@@ -433,7 +433,7 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	if(!pDL->displayAnnotations())
 	  return;
 
-	UT_DEBUGMSG(("Annotation: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	UT_DEBUGMSG(("Annotation: Drawing unbroken annotation %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
 	UT_DEBUGMSG(("Annotation: Drawing PDA->xoff %d, pDA->yoff  %d \n",pDA->xoff,pDA->yoff));
 
