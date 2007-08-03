@@ -559,9 +559,11 @@ public:
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
 	
+	// RIVERA
 	bool				m_bAnnotationPreviewActive;
 	AP_Preview_Annotation * m_pAnnotationPview;
 	void				killAnnotationPreview();
+	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	
 // ----------------------
 

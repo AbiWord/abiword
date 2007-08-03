@@ -259,10 +259,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
 	
 	// RIVERA
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,	0,1,0,0,	"insAnnotation",		ap_GetState_InAnnotation,					NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,0,0,0,	"pviewAnnotation"/*for popup testing only*/,	NULL/*ap_GetState_Selection*/,					NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER,	0,1,0,0,	"toggleDisplayAnnotations"/*for dlg testing only*/,	NULL,	NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS,				1,0,0,0,	NULL,						NULL,								NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,			0,1,0,0,	"insAnnotation",			ap_GetState_InAnnotation/*TODO should not need selection*/,NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotation"/*TODO differenciate from above*/,ap_GetState_InAnnotation,			NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER,	0,1,0,0,	"toggleDisplayAnnotations",	NULL,								NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);

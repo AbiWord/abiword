@@ -4679,6 +4679,51 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	return true;
 }
 
+bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
+{
+	UT_DEBUGMSG(("ANNOTATION EDITED!!!!!!!!!!!!\n"));
+	/*
+	 fp_Page * pPage = pAnn->getLine()->getPage();
+	    if(!pPage)
+	 return false;
+	    UT_uint32 i =0;
+	    bool bFound = false;
+	    fp_AnnotationContainer * pACon = NULL;
+	    for(i=0; i<pPage->countAnnotationContainers();i++)
+	    {
+			pACon = pPage->getNthAnnotationContainer(i);
+			if(pAnn->getPID() == pACon->getPID())
+			{
+				bFound = true;
+				break;
+			}
+	    }
+	    if(!bFound)
+	 return false;
+	    fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
+	    PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	    PL_StruxDocHandle sdhEnd = NULL;
+	    getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+	 
+	    UT_return_val_if_fail(sdhEnd != NULL, false);
+	    PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	    PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
+	    
+	 // preview annotation
+	    
+	 UT_GrowBuf buffer;
+	    fl_BlockLayout * block; 
+	 
+	    block = m_pLayout->findBlockAtPosition(posStart+1);
+	    if (block)
+	    {
+			block->getBlockBuf(&buffer);
+	    }
+	    UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
+	    UT_DEBUGMSG(("cmdHyperlinkStatusBar: Description in annotation is \"%s\" \n",str.utf8_str()));
+	 */
+	return true;
+}
 
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 {

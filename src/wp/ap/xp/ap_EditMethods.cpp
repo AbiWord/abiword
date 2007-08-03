@@ -10498,6 +10498,9 @@ Defun1(insAnnotation)
 	// UT_UTF8String pointer containing text to be inserted
 	// Boolean to determine whether to place the current selection into an annotation.
 	//
+	
+	// TODO to make it cleaner annotation first should be created with default values and then call
+	//		pView->cmdEditAnnotationWithDialog(<Annotation ID>)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -13626,7 +13629,24 @@ Defun(hyperlinkJump)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	
+	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
+	{
+		UT_DEBUGMSG(("hyperlinkJump: Normal hyperlink jump\n"));
+		pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	}
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+	{
+		// This is the behaveour when double clicking an annotation hypermark
+		UT_DEBUGMSG(("hyperlinkJump: Hyperlink annotation (no jump) edit dialog\n"));
+		fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun *>(pHRun);
+		pView->cmdEditAnnotationWithDialog(pARun->getPID());
+	}
+	
 	return true;
 }
 
@@ -13636,6 +13656,7 @@ Defun(hyperlinkJumpPos)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
+	UT_DEBUGMSG(("hyperlinkJumpPos\n"));
 	pView->cmdHyperlinkJump(pView->getPoint());
 	return true;
 }
