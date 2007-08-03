@@ -4667,14 +4667,15 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 		
 		UT_DEBUGMSG(("cmdHyperlinkStatusBar: Previewing annotation...\n"));
 		AP_Preview_Annotation * pPview;
-		pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100); // TODO modify this unix line
+		pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100/*pACon->getX(),pACon->getY()+pACon->getHeight()*/); // TODO modify this unix line
+		m_pAnnotationPview = pPview;
+		m_bAnnotationPreviewActive = true;
 		pPview->setTitle("n/a");
 		pPview->setAuthor("n/a");
 		pPview->setDescription(str.utf8_str());
 		pPview->draw();
-		// TODO write close on mouse out
-		
-	  }
+
+	}
 	return true;
 }
 

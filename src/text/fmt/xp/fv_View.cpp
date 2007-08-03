@@ -309,7 +309,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_colorAnnotations[7] = UT_RGBColor(4,133,195);
 	m_colorAnnotations[8] = UT_RGBColor(7,18,195);
 	m_colorAnnotations[9] = UT_RGBColor(255,0,0);	// catch-all
-
+	
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 
@@ -9777,6 +9777,14 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
+	
+	// RIVERA
+	if ((m_bAnnotationPreviewActive==true) && (m_pAnnotationPview != NULL))
+	{
+		// kill the annotation preview popup, if needed a new one will be created below
+		killAnnotationPreview();
+	}
+	
 	if(getPoint() == 0) // We haven't loaded any layouts yet
 	{
 		return EV_EMC_UNKNOWN;
@@ -10037,19 +10045,18 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-
+	
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		if(m_prevMouseContext != EV_EMC_HYPERLINK)
 		{
-			UT_DEBUGMSG(("Mouse context is chaned to hyperlink \n"));
+			UT_DEBUGMSG(("Mouse context is changed to hyperlink \n"));
 		}
 		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}
-
-
+	
 	if(!isSelectionEmpty())
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
@@ -12245,6 +12252,14 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	m_pDoc->enableListUpdates();
 
 	return true;
+}
+
+// RIVERA
+void FV_View::killAnnotationPreview()
+{
+	UT_DEBUGMSG(("killAnnotationPreview: Deleting annotation preview...\n"));
+	delete m_pAnnotationPview;
+	m_bAnnotationPreviewActive = false;
 }
 
 bool FV_View::insertFootnote(bool bFootnote)

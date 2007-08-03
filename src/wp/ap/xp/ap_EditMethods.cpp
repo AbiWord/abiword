@@ -145,7 +145,7 @@
 #include "ie_mailmerge.h"
 #include "gr_Painter.h"
 
-// RIVERA last one must be removed!
+// RIVERA TODO last one should be changed to something platform independant
 #include "ap_Dialog_Annotation.h"
 #include "ap_Preview_Annotation.h"
 #include "ap_UnixPreview_Annotation.h"

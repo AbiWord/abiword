@@ -48,6 +48,9 @@
 #include "fv_VisualDragText.h"
 #endif
 
+// RIVERA TODO replace this unix platform line
+#include "ap_UnixPreview_Annotation.h"
+
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -555,6 +558,11 @@ public:
 	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
+	
+	bool				m_bAnnotationPreviewActive;
+	AP_Preview_Annotation * m_pAnnotationPview;
+	void				killAnnotationPreview();
+	
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
