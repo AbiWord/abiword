@@ -979,7 +979,7 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 	return pos;
 }
 
-
+// Annotation methods
 
 /*!
  * This simply returns the number of footnotes in the document.
