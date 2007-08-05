@@ -30,18 +30,24 @@ class GR_UnixPangoGraphics;
 class AP_UnixPreview_Annotation : public AP_Preview_Annotation
 {
 public:
-	AP_UnixPreview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
+  AP_UnixPreview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixPreview_Annotation(void);
-	
-	GR_UnixPangoGraphics * 		m_gc;
+
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy(void);
+	virtual void			activate(void);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+
 protected:
+	void _constructWindow(void);
 private:
 	// parent frame
-	XAP_Frame *				m_pFrame;
+	GR_UnixPangoGraphics * 		m_gc;
 	GtkWidget * 			m_pPreviewWindow;
 	GtkWidget * 			m_pDrawingArea;
-	UT_sint32				m_left;
-	UT_sint32				m_top;
 };
 
 #endif /* AP_UNIXPREVIEW_ANNOTATION_H */

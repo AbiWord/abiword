@@ -48,9 +48,6 @@
 #include "fv_VisualDragText.h"
 #endif
 
-// RIVERA TODO replace this unix platform line
-#include "ap_UnixPreview_Annotation.h"
-
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -292,6 +289,7 @@ public:
 	void                getMousePos(UT_sint32 * x, UT_sint32 * y);
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
+	EV_EditMouseContext _getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	void                setPrevMouseContext(EV_EditMouseContext  emc)
 	{m_prevMouseContext = emc;}
@@ -559,9 +557,10 @@ public:
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
 	
-	// RIVERA
-	bool				m_bAnnotationPreviewActive;
-	AP_Preview_Annotation * m_pAnnotationPview;
+	bool                isAnnotationPreviewActive(void)
+	{ return m_bAnnotationPreviewActive;}
+	void                setAnnotationPreviewActive(bool b)
+	{ m_bAnnotationPreviewActive = b;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	
@@ -1059,6 +1058,7 @@ private:
 	PT_DocPosition      m_iPosAtTable;
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;
 	UT_UTF8String       m_sDocUUID;
+	bool				m_bAnnotationPreviewActive;
 };
 
 #endif /* FV_VIEW_H */

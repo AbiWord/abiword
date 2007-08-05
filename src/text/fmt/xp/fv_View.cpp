@@ -84,6 +84,9 @@
 #include "fp_FrameContainer.h"
 #include "xap_EncodingManager.h"
 #include "gr_Painter.h"
+#include "xap_DialogFactory.h"
+#include "ap_Preview_Annotation.h"
+#include "ap_Dialog_Id.h"
 
 #include "pp_Revision.h"
 
@@ -283,7 +286,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iGrabCell(0),
 		m_InlineImage(this),
 		m_bInsertAtTablePending(false),
-		m_iPosAtTable(0)
+		m_iPosAtTable(0),
+		m_bAnnotationPreviewActive(false)
 {
 	if(m_pDoc)
 		m_sDocUUID = m_pDoc->getMyUUIDString();
@@ -9764,7 +9768,22 @@ void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
 	*y = m_iMouseY;
 }
 
+
+
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
+{
+	EV_EditMouseContext emc = _getMouseContext(xPos,yPos);
+
+	if ( m_bAnnotationPreviewActive  && (emc != EV_EMC_HYPERLINK))
+	{
+		// kill the annotation preview popup
+		killAnnotationPreview();
+		m_bAnnotationPreviewActive = false;
+	}
+	return emc;
+}
+
+EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
@@ -9777,13 +9796,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
-	
-	// RIVERA
-	if ((m_bAnnotationPreviewActive==true) && (m_pAnnotationPview != NULL))
-	{
-		// kill the annotation preview popup, if needed a new one will be created below
-		killAnnotationPreview();
-	}
 	
 	if(getPoint() == 0) // We haven't loaded any layouts yet
 	{
@@ -12114,8 +12126,6 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	PT_DocPosition iPointOrig = posStart;
-	PT_DocPosition iAnchorOrig = m_Selection.getSelectionAnchor();
 
 	if (m_Selection.getSelectionAnchor() < posStart)
 	{
@@ -12258,8 +12268,17 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 void FV_View::killAnnotationPreview()
 {
 	UT_DEBUGMSG(("killAnnotationPreview: Deleting annotation preview...\n"));
-	delete m_pAnnotationPview;
-	m_bAnnotationPreviewActive = false;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+
+	AP_Preview_Annotation * pPview
+		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(	AP_DIALOG_ID_ANNOTATION_PREVIEW));
+	UT_ASSERT(pPview);
+    pDialogFactory->releaseDialog(pPview);
+	pPview->destroy();
+	setAnnotationPreviewActive(false);
 }
 
 bool FV_View::insertFootnote(bool bFootnote)

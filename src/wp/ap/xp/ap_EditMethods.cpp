@@ -144,11 +144,13 @@
 #include "ut_path.h"
 #include "ie_mailmerge.h"
 #include "gr_Painter.h"
+#include "fp_FootnoteContainer.h"
+
 
 // RIVERA TODO last one should be changed to something platform independant
 #include "ap_Dialog_Annotation.h"
 #include "ap_Preview_Annotation.h"
-#include "ap_UnixPreview_Annotation.h"
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -3405,12 +3407,6 @@ Defun(pviewAnnotation)
 	pFrame->raise();
 
 	UT_DEBUGMSG(("pviewAnnotation: Previewing annotation...\n"));
-	AP_Preview_Annotation * pPview;
-	pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100);
-	pPview->setTitle("Annotation title");
-	pPview->setAuthor("Author");
-	pPview->setDescription("Annotation description");
-	pPview->draw();
 	
 	return true;
 }
@@ -13681,8 +13677,77 @@ Defun(hyperlinkStatusBar)
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
 
-	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
-	return true;
+	UT_sint32 xpos = pCallData->m_xPos;
+	UT_sint32 ypos = pCallData->m_yPos;
+	PT_DocPosition  pos = pView->getDocPositionFromXY(xpos,ypos);
+	fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pos));
+	if(!pHRun)
+		return false;
+	if(pHRun->getHyperlinkType() ==  HYPERLINK_NORMAL)
+	{
+			pView->cmdHyperlinkStatusBar(xpos, ypos);
+			return true;
+	}
+	if(pView->isAnnotationPreviewActive())
+		return true;
+
+	fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pHRun);
+	fp_Page * pPage = pAnn->getLine()->getPage();
+	if(!pPage)
+		return false;
+	UT_uint32 i =0;
+	bool bFound = false;
+	fp_AnnotationContainer * pACon = NULL;
+	for(i=0; i<pPage->countAnnotationContainers();i++)
+	{
+			pACon = pPage->getNthAnnotationContainer(i);
+			if(pAnn->getPID() == pACon->getPID())
+			{
+				bFound = true;
+				break;
+			}
+	}
+	if(!bFound)
+		return false;
+	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	pView->getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+
+	UT_return_val_if_fail(sdhEnd != NULL, false);
+	//	PT_DocPosition posStart = pView->getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	//	PT_DocPosition posEnd = pView->getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
+	    
+	// preview annotation
+	    
+	UT_GrowBuf buffer;
+	fl_BlockLayout * block = pAL->getNextBlockInDocument();
+	block->getBlockBuf(&buffer);
+	UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
+
+	//	XAP_App * pApp = XAP_App::getApp();
+	//	UT_return_val_if_fail (pApp, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Preview_Annotation * pPview
+		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(	AP_DIALOG_ID_ANNOTATION_PREVIEW));
+		
+	UT_DEBUGMSG(("Previewing annotation text %d \n",str.utf8_str()));
+	pPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
+	pPview->runModeless(pFrame);
+	pView->setAnnotationPreviewActive(true);
+	pPview->setTitle("n/a");
+	pPview->setAuthor("n/a");
+	pPview->setDescription(str.utf8_str());
+	pPview->draw();
+
+	return true;	
 }
 
 static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView,

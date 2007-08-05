@@ -24,17 +24,21 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_Preview_Annotation.h"
+#include "fv_View.h"
+#include "xap_Frame.h"
 
 // default annotation preview values
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Annotation test"
 #define PREVIEW_ENTRY_DEFAULT_BKGCOLOR	"FFEB92"
 
-AP_Preview_Annotation::AP_Preview_Annotation()
+AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id): XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	m_pColorBackground      = PREVIEW_ENTRY_DEFAULT_BKGCOLOR;
 	m_pFontPreview          = NULL;
 	m_width					= PREVIEW_WIDTH;
 	m_height				= PREVIEW_HEIGHT;
+	m_left = 0;
+	m_top = 0;
 	m_pTitle				= "";
 	m_pAuthor				= "";
 	m_pDescription			= "";
@@ -137,3 +141,21 @@ void AP_Preview_Annotation::draw()
 		m_pFontPreview->draw();
 }
 
+void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
+{
+	notifyActiveFrame(getActiveFrame());
+}
+
+/*!
+ * Set the left and top positions of the popup. These are the mouse
+ * coordinates in device units.
+ */
+void  AP_Preview_Annotation::setXY(UT_sint32 x, UT_sint32 y)
+{
+  m_left = x - PREVIEW_WIDTH/2;
+  m_top = y;
+  if(m_top < 0)
+    m_top = 0;
+  if(m_left < 0)
+    m_left = 0;
+}

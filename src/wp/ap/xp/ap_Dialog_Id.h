@@ -68,6 +68,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_FORMAT_TOC,	
 	AP_DIALOG_ID_MAILMERGE,
 	AP_DIALOG_ID_LATEX, /*Insert and modify a latex based equation */
+	AP_DIALOG_ID_ANNOTATION_PREVIEW,
 #if 0
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
 #endif

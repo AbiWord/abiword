@@ -32,25 +32,30 @@
 #define PREVIEW_WIDTH 400
 #define PREVIEW_HEIGHT 75
 
-class AP_Preview_Annotation
+class AP_Preview_Annotation : public XAP_Dialog_Modeless
 {
 	public:
-		AP_Preview_Annotation();
+		AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 		//AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
 		virtual ~AP_Preview_Annotation(void);
 		
-		void							addOrReplaceVecProp(const gchar * pszProp,
+		void			addOrReplaceVecProp(const gchar * pszProp,
 															const gchar * pszVal);
-		void							setTitle(const gchar * pTitle);
-		void							setAuthor(const gchar * pAuthor);
-		void							setDescription(const gchar * pDescription);
-		void							draw(void);
+		void			setTitle(const gchar * pTitle);
+		void			setAuthor(const gchar * pAuthor);
+		void   			setDescription(const gchar * pDescription);
+		void	       		draw(void);
+		void                    setXY(UT_sint32 x, UT_sint32 y);                              
 	protected:
 		void                            _createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 		void							_updateDrawString();
 		const gchar *					m_pColorBackground;
-		UT_sint32						m_width;
-		UT_sint32						m_height;
+		UT_sint32				m_width;
+		UT_sint32				m_height;
+		UT_sint32				m_left;
+		UT_sint32				m_top;
+		void            ConstructWindowName(void);
+		void            setActiveFrame(XAP_Frame *pFrame);
 	private:
 		gchar *							m_pTitle;
 		gchar *							m_pAuthor;
