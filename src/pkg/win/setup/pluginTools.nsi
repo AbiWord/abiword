@@ -171,7 +171,24 @@ Section "Equation Editor"
 SectionEnd
 
 
+SubSection /e "Collaboration Tools"
+Section "AbiCollab Real-Time Collaboration"
+	SectionIn 1 2
 
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiCollab.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiCollab Collaboration Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiCollab Collaboration Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiCollab.dll"
+  
+	End:
+SectionEnd
+SubSectionEnd
 
 SubSection /e "Mechanics and Grammar Tools"
 
@@ -470,6 +487,9 @@ Section "Uninstall"
 
 	; AbiBabelfish
 	Delete "$INSTDIR\AbiBabelfish.dll"
+	
+	; AbiCollab
+	Delete "$INSTDIR\AbiCollab.dll"
 
 	; AbiFreeTranslation
 	Delete "$INSTDIR\AbiFreeTranslation.dll"
