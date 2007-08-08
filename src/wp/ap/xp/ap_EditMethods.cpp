@@ -13692,41 +13692,13 @@ Defun(hyperlinkStatusBar)
 		return true;
 
 	fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pHRun);
-	fp_Page * pPage = pAnn->getLine()->getPage();
-	if(!pPage)
+	UT_UTF8String sText;
+	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
+	if(!b)
 		return false;
-	UT_uint32 i =0;
-	bool bFound = false;
-	fp_AnnotationContainer * pACon = NULL;
-	for(i=0; i<pPage->countAnnotationContainers();i++)
-	{
-			pACon = pPage->getNthAnnotationContainer(i);
-			if(pAnn->getPID() == pACon->getPID())
-			{
-				bFound = true;
-				break;
-			}
-	}
-	if(!bFound)
-		return false;
-	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
-	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = NULL;
-	pView->getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 
-	UT_return_val_if_fail(sdhEnd != NULL, false);
-	//	PT_DocPosition posStart = pView->getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
-	//	PT_DocPosition posEnd = pView->getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
-	    
 	// preview annotation
-	    
-	UT_GrowBuf buffer;
-	fl_BlockLayout * block = pAL->getNextBlockInDocument();
-	block->getBlockBuf(&buffer);
-	UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
 
-	//	XAP_App * pApp = XAP_App::getApp();
-	//	UT_return_val_if_fail (pApp, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -13738,13 +13710,13 @@ Defun(hyperlinkStatusBar)
 	AP_Preview_Annotation * pPview
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(	AP_DIALOG_ID_ANNOTATION_PREVIEW));
 		
-	UT_DEBUGMSG(("Previewing annotation text %d \n",str.utf8_str()));
+	UT_DEBUGMSG(("Previewing annotation text %d \n",sText.utf8_str()));
 	pPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pPview->runModeless(pFrame);
 	pView->setAnnotationPreviewActive(true);
-	pPview->setTitle("n/a");
-	pPview->setAuthor("n/a");
-	pPview->setDescription(str.utf8_str());
+	//	pPview->setTitle("n/a");
+	// pPview->setAuthor("n/a");
+	pPview->setDescription(sText.utf8_str());
 	pPview->draw();
 
 	return true;	
