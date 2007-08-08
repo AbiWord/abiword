@@ -537,8 +537,6 @@ void XAP_Preview_FontPreview::setVecProperties( const UT_Vector * vFontProps)
 const gchar * XAP_Preview_FontPreview::getVal(const gchar * szProp)
 {
 	UT_sint32 i = m_vecProps->getItemCount();
-	if(i <= 0)
-		return NULL;
 	UT_sint32 j;
 	const gchar * pszV = NULL;
 	for(j= 0; j<i ;j=j+2)
@@ -547,7 +545,7 @@ const gchar * XAP_Preview_FontPreview::getVal(const gchar * szProp)
 		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
 			break;
 	}
-	if( j < i )
+	if((i > 0)&&(j < i))
 		return  (const gchar *) m_vecProps->getNthItem(j+1);
 	else
 		return NULL;

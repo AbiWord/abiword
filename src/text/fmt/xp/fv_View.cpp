@@ -9797,6 +9797,18 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
 	
+/*<<<<<<< .mine TODO check
+	// RIVERA kill annotation preview on change of mouse context
+	if ((m_prevMouseContext != EV_EMC_HYPERLINK) &&
+		(m_bAnnotationPreviewActive==true) &&
+		(m_pAnnotationPview != NULL))
+	{
+		UT_DEBUGMSG(("getMouseContext: Deleting annotation preview...\n"));
+		killAnnotationPreview();
+	}
+	
+=======*/
+	
 	if(getPoint() == 0) // We haven't loaded any layouts yet
 	{
 		return EV_EMC_UNKNOWN;
@@ -12341,6 +12353,11 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 // RIVERA
 void FV_View::killAnnotationPreview()
 {
+/*<<<<<<< .mine TODO check
+	if(m_bAnnotationPreviewActive)
+		delete m_pAnnotationPview;
+	m_bAnnotationPreviewActive = false;
+=======*/
 	UT_DEBUGMSG(("killAnnotationPreview: Deleting annotation preview...\n"));
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 	XAP_DialogFactory * pDialogFactory

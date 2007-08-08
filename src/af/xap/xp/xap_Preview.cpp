@@ -31,6 +31,13 @@ XAP_Preview::XAP_Preview(GR_Graphics * gc) :
 	// maybe later we'll need scroll offsets
 }
 
+// protected constructor
+XAP_Preview::XAP_Preview() :
+m_iWindowHeight(0), m_iWindowWidth(0)
+{
+	//UT_ASSERT(gc); -> requires setting of gc after creation
+}
+
 XAP_Preview::~XAP_Preview()
 {
 }

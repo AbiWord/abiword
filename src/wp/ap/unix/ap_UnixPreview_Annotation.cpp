@@ -67,7 +67,7 @@ void  AP_UnixPreview_Annotation::_constructWindow(void)
         XAP_App::getApp()->rememberModelessId( getDialogId(), static_cast<XAP_Dialog_Modeless *>(this));
 	UT_DEBUGMSG(("Contructing Window width %d height %d left %d right %d \n",m_width,m_height,m_left,m_top));
 	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);   
-	gtk_widget_set_size_request(m_pPreviewWindow, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+	gtk_widget_set_size_request(m_pPreviewWindow, PREVIEW_DEFAULT_WIDTH, PREVIEW_DEFAULT_HEIGHT);
 	
 	m_pDrawingArea = createDrawingArea();
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);

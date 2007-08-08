@@ -24,45 +24,53 @@
 #include "ut_types.h"
 #endif
 #include "ut_string.h"
-#include "ut_vector.h"
+//#include "ut_vector.h"
 #include "gr_Graphics.h"
-#include "xap_Dlg_FontChooser.h"
+#include "xap_Preview.h"
+#include "xap_Dialog.h"
 
-// some hardcoded values for the preview window size
-#define PREVIEW_WIDTH 400
-#define PREVIEW_HEIGHT 75
+// default annotation preview values
+#define PREVIEW_DEFAULT_WIDTH 320
+#define PREVIEW_DEFAULT_HEIGHT 160
 
-class AP_Preview_Annotation : public XAP_Dialog_Modeless
+class AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_Modeless
 {
-	public:
-		AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-		//AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
-		virtual ~AP_Preview_Annotation(void);
-		
-		void			addOrReplaceVecProp(const gchar * pszProp,
-															const gchar * pszVal);
-		void			setTitle(const gchar * pTitle);
-		void			setAuthor(const gchar * pAuthor);
-		void   			setDescription(const gchar * pDescription);
-		void	       		draw(void);
-		void                    setXY(UT_sint32 x, UT_sint32 y);                              
-	protected:
-		void                            _createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
-		void							_updateDrawString();
-		const gchar *					m_pColorBackground;
-		UT_sint32				m_width;
-		UT_sint32				m_height;
-		UT_sint32				m_left;
-		UT_sint32				m_top;
-		void            ConstructWindowName(void);
-		void            setActiveFrame(XAP_Frame *pFrame);
-	private:
-		gchar *							m_pTitle;
-		gchar *							m_pAuthor;
-		gchar *							m_pDescription;
-		XAP_Preview_FontPreview *       m_pFontPreview;
-		UT_UCSChar *                    m_drawString;
-		UT_Vector						m_vecProps;
+public:
+	//AP_Preview_Annotation();
+	AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	//AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
+	virtual ~AP_Preview_Annotation(void);
+	
+	void		setTitle(const gchar * pTitle);
+	void		setAuthor(const gchar * pAuthor);
+	void		setDescription(const gchar * pDescription);
+	void		setAnnotationID(UT_uint32 aID);
+	UT_uint32	getAnnotationID();
+	
+	void		draw(void);
+	void		clearScreen(void);
+	void        setXY(UT_sint32 x, UT_sint32 y);                              
+	
+protected:
+	void			_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+	UT_sint32		m_width;
+	UT_sint32		m_height;
+	UT_sint32		m_left;
+	UT_sint32		m_top;
+	void            ConstructWindowName(void);
+	void            setActiveFrame(XAP_Frame *pFrame);
+	UT_RGBColor		m_clrBackground;
+	
+private:
+	UT_uint32			m_iAID;
+	gchar *				m_pTitle;
+	gchar *				m_pAuthor;
+	gchar *				m_pDescription;
+	UT_UCSChar *		m_drawString;
+	GR_Font *			m_pFont;
+	UT_sint32			m_iAscent;
+	UT_sint32			m_iDescent;
+	UT_sint32			m_iHeight;
 };
 
 #endif /* AP_PREVIEW_ANNOTATION_H */
