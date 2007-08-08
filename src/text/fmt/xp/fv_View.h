@@ -542,11 +542,6 @@ public:
 // ----------------------
 // Stuff for edittable Footnote/Endnotes
 //
-	bool				insertAnnotation(UT_sint32 iAnnotation,
-										 UT_UTF8String * pTitle,
-										 UT_UTF8String * pAuthor,
-										 UT_UTF8String * pDescr,
-										 bool bReplace);
 	bool	            insertFootnote(bool bFootnote);
 	bool	            insertFootnoteSection(bool bFootnote,const gchar * enpid);
 	bool                isInFootnote(PT_DocPosition pos);
@@ -556,14 +551,27 @@ public:
 	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
-	
+	//
+	// ----------------------------------
+	// Stuff for Annotaions
+	//	
+	bool				insertAnnotation(UT_sint32 iAnnotation,
+										 UT_UTF8String * pTitle,
+										 UT_UTF8String * pAuthor,
+										 UT_UTF8String * pDescr,
+										 bool bReplace);
+	bool                getAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
+	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
+    bool                setAnnotationRichText(UT_uint32 iAnnotaion, UT_UTF8String &sRTF);
+
 	bool                isAnnotationPreviewActive(void)
 	{ return m_bAnnotationPreviewActive;}
 	void                setAnnotationPreviewActive(bool b)
 	{ m_bAnnotationPreviewActive = b;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
-	
+	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);

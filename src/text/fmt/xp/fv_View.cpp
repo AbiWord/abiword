@@ -12079,6 +12079,80 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 	return false;
 }
 
+fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation)
+{
+	fl_AnnotationLayout * pAnn = 	m_pLayout->findAnnotationLayout(iAnnotation);
+	return pAnn;
+}
+/*!
+ * Return the plain text content of the annotation specified by iAnnotaion
+ * Content is returned in UT_UTF8String sText.
+ * Returns true if a valid annotation was found with valid content.
+ */
+bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+{
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	UT_GrowBuf buffer;
+	fl_BlockLayout * block; 
+	
+	block = m_pLayout->findBlockAtPosition(posStart+1);
+	while(block && (static_cast<fl_AnnotationLayout *>(block->myContainingLayout()) == pAL))
+	{
+			UT_GrowBuf tmp;
+			block->getBlockBuf(&tmp);
+			buffer.append(tmp.getPointer(0),tmp.getLength());
+			tmp.truncate(0);
+			block = block->getNextBlockInDocument();
+	}
+	sText.appendUCS4(reinterpret_cast<const UT_UCS4Char *>( buffer.getPointer(0)),buffer.getLength());
+	return true;
+}
+
+/*!
+ * Set the content of the annotation to the plain text supplied by
+ *  UT_UTF8String sText.
+ * Returns true if a valid annotation was found with valid content.
+ */
+bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+{
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+	
+	UT_return_val_if_fail(sdhEnd != NULL, false);
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd); 
+	//
+	// First set up a glob
+	//
+	m_pDoc->beginUserAtomicGlob();
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	//
+	// Cut out current content
+	//
+	UT_uint32 iRealDeleteCount2;
+	PP_AttrProp * pAttrProp_Before = NULL;
+	m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
+	//
+	// Insert the new text
+	//
+	m_pDoc->insertSpan(posStart+1, sText.ucs4_str().ucs4_str(),sText.ucs4_str().size(),pAttrProp_Before);
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	return true;
+
+}
 
 /*!
  * Insert annotation number iAnnotation across the current selection.

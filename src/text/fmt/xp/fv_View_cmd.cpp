@@ -4626,32 +4626,21 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 
 bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 {
-	
-	UT_DEBUGMSG(("cmdEditAnnotationWithDialog...\n"));
-	fp_Page * pPage = getCurrentPage();
-	if(!pPage)
+        if( m_bAnnotationPreviewActive)
 	{
-		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: FAILED no page found\n"));
-		return false;
+	   // kill the annotation preview popup
+	    killAnnotationPreview();
+	    m_bAnnotationPreviewActive = false;
+	   
 	}
-	UT_uint32 i = 0;
-	bool bFound = false;
-	fp_AnnotationContainer * pACon = NULL;
-	for(i=0; i<pPage->countAnnotationContainers();i++)
-	{
-		pACon = pPage->getNthAnnotationContainer(i);
-		if(aID == pACon->getPID())
-		{
-			bFound = true;
-			break;
-		}
-	}
-	if(!bFound)
-	{
-		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: FAILED annotation \"%d\" not found\n",aID));
-		return false;
-	}
-		
+  //
+  // Get the text fromt he annotation
+  //
+
+	UT_UTF8String sText;
+	bool b = getAnnotationText(aID,sText);
+	if(!b)
+	  return false;
 	// edit annotation
 	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
@@ -4670,30 +4659,10 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	UT_return_val_if_fail (pDialog, false);
 	
 	// set initial annotation properties
-	
-	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
-	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = NULL;
-	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
-	
-	UT_return_val_if_fail(sdhEnd != NULL, false);
-	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
-	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
-	
-	UT_GrowBuf buffer;
-	fl_BlockLayout * block; 
-	
-	block = m_pLayout->findBlockAtPosition(posStart+1);
-	if (block)
-	{
-		block->getBlockBuf(&buffer);
-	}
-	UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
-	
 	// TODO add support for all fields
 	pDialog->setTitle("n/a");
 	pDialog->setAuthor("n/a");
-	pDialog->setDescription(str.utf8_str());
+	pDialog->setDescription(sText.utf8_str());
 	
 	// run the dialog
 	
@@ -4702,28 +4671,20 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
 	
 	if (bOK)
-    {
-		// TODO save changements
+	{
+		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation \"%d\" edited \n",aID));
 		
-		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation \"%d\" edited (not really yet)\n",aID));
-		
-		/*for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
 		{
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
-		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 		UT_UTF8String pTitle = pDialog->getTitle();
 		UT_UTF8String pAuthor = pDialog->getAuthor();
 		UT_UTF8String pDescr = pDialog->getDescription();
 		bool bReplaceSelection = false;
-		pView->insertAnnotation(iAnnotation,
-								&pTitle,
-								&pAuthor,
-								&pDescr,
-								bReplaceSelection);*/
-		// TODO: set the document as dirty when something changed
-    }
+		b = setAnnotationText(aID,pDescr);
+	}
 	
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
