@@ -105,49 +105,28 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
 void AP_Preview_Annotation::draw(void)
 {
 	UT_UCS4_cloneString_char (&m_drawString,
-							  g_strconcat(m_pTitle, " (", m_pAuthor, "):", m_pDescription, NULL)
+							  g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL)
 							  );
 	
 	//
-	// Get text decorations.
+	// Text decorations.
 	//
 	bool isUnder,isOver,isStrike;
 	
-	/*const gchar * pDecor = getVal("text-decoration");
-	if(pDecor)
-	{
-		isUnder = (NULL != strstr(pDecor,));
-		isOver = (NULL != strstr(pDecor,));
-		isStrike = (NULL != strstr(pDecor,));
-	}
-	else
-	{*/
 		isUnder = false;	// "underline"
 		isOver = false;		// "overline"
 		isStrike = false;	// "line-through"
-	//}
 	
 	//
-	// Do foreground and background colors.
+	// Foreground and background colors.
 	//
 	UT_RGBColor FGcolor(0,0,0);
-	/*const char * pszFGColor = getVal("color");
-	if(pszFGColor)
-		UT_parseColor(getVal("color"),FGcolor);*/
 	UT_RGBColor BGcolor(m_clrBackground);
-	/*const char * pszBGColor = getVal("bgcolor");
-	if(pszBGColor && strcmp(pszBGColor,"transparent") != 0)
-		UT_parseColor(getVal("bgcolor"),BGcolor);*/
+	
 	//
-	// Get the font and bold/italic- ness
+	// Get the font and features
 	//
-	//GR_Font * pFont;
-	/*const char* pszFamily	= getVal();
-	const char* pszStyle	= getVal();
-	const char* pszVariant	= getVal();
-	const char* pszWeight	= getVal();
-	const char* pszStretch	= getVal();
-	const char* pszSize		= getVal();*/
+	
 	// "font-family"
 	const char * pszFamily = "Times New Roman";
 	
@@ -202,8 +181,6 @@ void AP_Preview_Annotation::draw(void)
 	//
 	GR_Painter painter(m_gc);
 	
-	//if(pszBGColor)
-		//MAYBEpainter.fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
 	//
 	// Do the draw chars at last!
 	//

@@ -683,7 +683,6 @@ public:
 	
 	//RIVERA
     static EV_EditMethod_Fn insAnnotation;
-	static EV_EditMethod_Fn pviewAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
@@ -1033,7 +1032,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(printPreview),			0,	""),
 	EV_EditMethod(NF(printTB),				0,	""),
 	EV_EditMethod(NF(purgeAllRevisions),	0,	""),
-	EV_EditMethod(NF(pviewAnnotation),		0,	""),
 
 	// q
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
@@ -3390,27 +3388,6 @@ Defun(dlgMetaData)
 
   return true ;
 }
-
-// TODO to be removed
-Defun(pviewAnnotation)
-{
-	CHECK_FRAME;
-	UT_return_val_if_fail (pAV_View, false);
-	FV_View * pView = static_cast<FV_View *>(pAV_View);
-
-	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	UT_return_val_if_fail(pFrame, false);
-
-	XAP_App * pApp = XAP_App::getApp();
-	UT_return_val_if_fail (pApp, false);
-
-	pFrame->raise();
-
-	UT_DEBUGMSG(("pviewAnnotation: Previewing annotation...\n"));
-	
-	return true;
-}
-
 
 Defun(fileNewUsingTemplate)
 {
@@ -10516,8 +10493,8 @@ Defun1(insAnnotation)
 	// set initial annotation properties
 	
 	pDialog->setTitle("New annotation");
-	pDialog->setAuthor("Author");
-	pDialog->setDescription("annotation description") ;
+	pDialog->setAuthor("");
+	pDialog->setDescription("") ;
 	
 	// run the dialog
 	
@@ -13688,10 +13665,25 @@ Defun(hyperlinkStatusBar)
 			pView->cmdHyperlinkStatusBar(xpos, ypos);
 			return true;
 	}
-	if(pView->isAnnotationPreviewActive())
-		return true;
-
+	
 	fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pHRun);
+
+	// avoid unneeded redrawings
+	// check BOTH if we are already previewing an annotation, and that it is indeed the annotation we want
+	if((pView->isAnnotationPreviewActive()) &&
+	   (pView->getActivePreviewAnnotation()->getAnnotationID() == pAnn->getPID()))
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
+		return true; // should be false? think not
+	}
+	
+	// kill previous preview if needed (it is not the same annotation as it would have been detected above)
+	if (pView->isAnnotationPreviewActive())
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar: Deleting previous annotation preview...\n"));
+		pView->killAnnotationPreview();
+	}
+	
 	UT_UTF8String sText;
 	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
 	if(!b)
@@ -13707,17 +13699,20 @@ Defun(hyperlinkStatusBar)
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
-	AP_Preview_Annotation * pPview
-		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(	AP_DIALOG_ID_ANNOTATION_PREVIEW));
+	AP_Preview_Annotation * pAnnPview
+		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
 		
 	UT_DEBUGMSG(("Previewing annotation text %d \n",sText.utf8_str()));
-	pPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
-	pPview->runModeless(pFrame);
+	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
+	pAnnPview->runModeless(pFrame);
+	
 	pView->setAnnotationPreviewActive(true);
-	//	pPview->setTitle("n/a");
-	// pPview->setAuthor("n/a");
-	pPview->setDescription(sText.utf8_str());
-	pPview->draw();
+	pView->setActivePreviewAnnotation(pAnnPview); // this one is also needed to decide when to redraw the preview
+	
+	pAnnPview->setTitle("n/a");	// if those files ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	pAnnPview->setAuthor("n/a");
+	pAnnPview->setDescription(sText.utf8_str());
+	pAnnPview->draw();
 
 	return true;	
 }

@@ -4621,107 +4621,25 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 	  url.decodeURL();
 	  pFrame->setStatusMessage(url.utf8_str());
 	}
-/* <<<<<<< .mine TODO check
-	else
-	{
-	    fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pH1);
-	    UT_DEBUGMSG(("cmdHyperlinkStatusBar: HOVERING over an annotation PID %d \n",pAnn->getPID()));
-		
-		// avoid unneeded redrawings
-		if ((m_bAnnotationPreviewActive) &&
-			(m_pAnnotationPview->getAnnotationID()==pAnn->getPID())) // if its not que same annotation, kill it?
-		{
-			UT_DEBUGMSG(("cmdHyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
-			return true; // should be false? think not
-		}
-		
-	    fp_Page * pPage = pAnn->getLine()->getPage();
-	    if(!pPage)
-	        return false;
-	    UT_uint32 i =0;
-	    bool bFound = false;
-	    fp_AnnotationContainer * pACon = NULL;
-	    for(i=0; i<pPage->countAnnotationContainers();i++)
-	    {
-		pACon = pPage->getNthAnnotationContainer(i);
-		if(pAnn->getPID() == pACon->getPID())
-		{
-		    bFound = true;
-		    break;
-		}
-	    }
-	    if(!bFound)
-	      return false;
-	    fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pACon->getSectionLayout());
-	    PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
-	    PL_StruxDocHandle sdhEnd = NULL;
-	    getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 
-	    UT_return_val_if_fail(sdhEnd != NULL, false);
-	    PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
-	    PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd) -1; // Just before end strux
-	    
-		// preview annotation
-	    
-		UT_GrowBuf buffer;
-	    fl_BlockLayout * block; 
-		
-	    block = m_pLayout->findBlockAtPosition(posStart+1);
-	    if (block)
-	    {
-			block->getBlockBuf(&buffer);
-	    }
-	    UT_UCS4String str(reinterpret_cast<const UT_UCS4Char *>(buffer.getPointer(0)),buffer.getLength());
-	    UT_DEBUGMSG(("cmdHyperlinkStatusBar: Description in annotation is \"%s\"\n",str.utf8_str()));
-		
-		XAP_App * pApp = XAP_App::getApp();
-		UT_return_val_if_fail (pApp, false);
-		
-		pFrame->raise();
-		
-		UT_DEBUGMSG(("cmdHyperlinkStatusBar: Previewing annotation...\n"));
-		AP_Preview_Annotation * pPview;
-		pPview = new AP_UnixPreview_Annotation(pFrame, 100, 100); // TODO modify this unix line
-		
-		// kill previous preview if needed (it is not the same annotation as it would be detected above)
-		if (m_bAnnotationPreviewActive==true)
-		{
-			UT_DEBUGMSG(("cmdHyperlinkStatusBar: Deleting previous annotation preview...\n"));
-			killAnnotationPreview();
-		}
-		
-		// flag as active
-		m_pAnnotationPview = pPview;
-		m_bAnnotationPreviewActive = true;
-		
-		pPview->setTitle("n/a");
-		pPview->setAuthor("n/a");
-		pPview->setDescription(str.utf8_str());
-		pPview->setAnnotationID(pAnn->getPID());
-		pPview->draw();
-
-	}
-=======*/
 	return true;
 }
 
 bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 {
-        if( m_bAnnotationPreviewActive)
-	{
-	   // kill the annotation preview popup
-	    killAnnotationPreview();
-	    m_bAnnotationPreviewActive = false;
-	   
-	}
-  //
-  // Get the text fromt he annotation
-  //
+	// kill the annotation preview popup is needed
+	if(isAnnotationPreviewActive())
+		killAnnotationPreview();
 
+	//
+	// Get the text fromt he annotation
+	//
+
+	// TODO maybe we should not exit if annotation is not present (ex. auto-generated annotations may become not be editable!)
 	UT_UTF8String sText;
 	bool b = getAnnotationText(aID,sText);
 	if(!b)
-	  return false;
+		return false;
 	// edit annotation
 	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
@@ -4753,7 +4671,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	
 	if (bOK)
 	{
-		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation \"%d\" edited \n",aID));
+		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation id(\"%d\") edited \n",aID));
 		
 		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
 		{
@@ -4765,6 +4683,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 		UT_UTF8String pDescr = pDialog->getDescription();
 		bool bReplaceSelection = false;
 		b = setAnnotationText(aID,pDescr);
+		// TODO implement other fields as well
 	}
 	
 	// release the dialog

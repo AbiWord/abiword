@@ -48,6 +48,9 @@
 #include "fv_VisualDragText.h"
 #endif
 
+// RIVERA
+#include "ap_Preview_Annotation.h"
+
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -565,10 +568,10 @@ public:
 	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
     bool                setAnnotationRichText(UT_uint32 iAnnotaion, UT_UTF8String &sRTF);
 
-	bool                isAnnotationPreviewActive(void)
-	{ return m_bAnnotationPreviewActive;}
-	void                setAnnotationPreviewActive(bool b)
-	{ m_bAnnotationPreviewActive = b;}
+	bool                isAnnotationPreviewActive(void) { return m_bAnnotationPreviewActive;}
+	void                setAnnotationPreviewActive(bool b) { m_bAnnotationPreviewActive = b;}
+	AP_Preview_Annotation * getActivePreviewAnnotation() { return m_pAnnotationPview;}
+	void					setActivePreviewAnnotation(AP_Preview_Annotation * pAnnotationPview) { m_pAnnotationPview = pAnnotationPview;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
@@ -1067,6 +1070,7 @@ private:
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;
 	UT_UTF8String       m_sDocUUID;
 	bool				m_bAnnotationPreviewActive;
+	AP_Preview_Annotation * m_pAnnotationPview;
 };
 
 #endif /* FV_VIEW_H */
