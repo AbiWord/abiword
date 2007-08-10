@@ -9774,11 +9774,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	EV_EditMouseContext emc = _getMouseContext(xPos,yPos);
 
-	if ( m_bAnnotationPreviewActive  && (emc != EV_EMC_HYPERLINK))
+	if (isAnnotationPreviewActive() && (emc != EV_EMC_HYPERLINK))
 	{
 		// kill the annotation preview popup
+		UT_DEBUGMSG(("getMouseContext: Deleting previous annotation preview...\n"));
 		killAnnotationPreview();
-		m_bAnnotationPreviewActive = false;
 	}
 	return emc;
 }

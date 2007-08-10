@@ -13671,7 +13671,7 @@ Defun(hyperlinkStatusBar)
 	// avoid unneeded redrawings
 	// check BOTH if we are already previewing an annotation, and that it is indeed the annotation we want
 	if((pView->isAnnotationPreviewActive()) &&
-	   (pView->getActivePreviewAnnotation()->getAnnotationID() == pAnn->getPID()))
+	   (pView->getActivePreviewAnnotationID() == pAnn->getPID()))
 	{
 		UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
 		return true; // should be false? think not
@@ -13702,12 +13702,12 @@ Defun(hyperlinkStatusBar)
 	AP_Preview_Annotation * pAnnPview
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
 		
-	UT_DEBUGMSG(("Previewing annotation text %d \n",sText.utf8_str()));
+	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);
 	
 	pView->setAnnotationPreviewActive(true);
-	pView->setActivePreviewAnnotation(pAnnPview); // this one is also needed to decide when to redraw the preview
+	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
 	
 	pAnnPview->setTitle("n/a");	// if those files ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
 	pAnnPview->setAuthor("n/a");

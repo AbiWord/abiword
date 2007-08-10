@@ -4627,7 +4627,7 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 
 bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 {
-	// kill the annotation preview popup is needed
+	// kill the annotation preview popup if needed
 	if(isAnnotationPreviewActive())
 		killAnnotationPreview();
 
