@@ -683,6 +683,7 @@ public:
 	
 	//RIVERA
     static EV_EditMethod_Fn insAnnotation;
+    static EV_EditMethod_Fn editAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
@@ -861,11 +862,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// e
 
+	EV_EditMethod(NF(editAnnotation),		0,	""),
 	EV_EditMethod(NF(editEmbed),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
-	EV_EditMethod(NF(editLatexAtPos),			0,	""),
-	EV_EditMethod(NF(editLatexEquation),			0,	""),
+	EV_EditMethod(NF(editLatexAtPos),		0,	""),
+	EV_EditMethod(NF(editLatexEquation),	0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
 	EV_EditMethod(NF(endDragVline),			0,	""),
@@ -4923,14 +4925,27 @@ Defun(contextHyperlink)
 	// move the IP so actions have the right context
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
-
+	
+	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL) // normal hyperlinks
 #ifdef ENABLE_SPELL
-	if(pView->isTextMisspelled())
-		return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-	else
+		if(pView->isTextMisspelled())
+			return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+		else
 #endif
-		return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-
+			return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION) // annotations
+#ifdef ENABLE_SPELL
+		if(pView->isTextMisspelled())
+			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+		else
+#endif
+			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	
+	
 }
 
 #ifdef ENABLE_SPELL
@@ -10529,7 +10544,6 @@ Defun1(insAnnotation)
 	return true;
 }
 
-
 Defun1(toggleDisplayAnnotations)
 {
 	CHECK_FRAME;
@@ -10554,6 +10568,19 @@ Defun1(toggleDisplayAnnotations)
 	return true ;
 }
 
+Defun1(editAnnotation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	UT_DEBUGMSG(("editAnnotation\n"));
+
+	fp_AnnotationRun * pA = static_cast<fp_AnnotationRun *>(pView->getHyperLinkRun(pView->getPoint()));
+	UT_ASSERT(pA);
+	
+	pView->cmdEditAnnotationWithDialog(pA->getPID());
+	return true;
+}
 
 Defun1(insTOC)
 {

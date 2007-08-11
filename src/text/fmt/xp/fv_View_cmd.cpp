@@ -4689,9 +4689,15 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
 	
-	return true;
-	
+	return true;	
 }
+
+/*bool FV_View::cmdEditAnnotationWithDialog(PT_DocPosition pos)
+{
+	fp_AnnotationRun * pA = static_cast<fp_HyperlinkRun *>(getHyperLinkRun(pos));
+	UT_ASSERT(pA);
+	return cmdEditAnnotationWithDialog(pA->getPID());
+}*/
 
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 {

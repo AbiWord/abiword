@@ -784,8 +784,7 @@ public:
 	{
 		return HYPERLINK_ANNOTATION;
 	}
-	UT_uint32 getPID(void)
-	{return m_iPID;}
+	UT_uint32 getPID(void) { return m_iPID;}
  private:
 	UT_uint32 m_iPID;
 };

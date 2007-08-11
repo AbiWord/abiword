@@ -10399,6 +10399,13 @@ void FV_View::setCursorToContext()
 	case EV_EMC_HYPERLINKMISSPELLED:
 		cursor = GR_Graphics::GR_CURSOR_LINK;
 		break;
+	// RIVERA
+	case EV_EMC_ANNOTATIONTEXT:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	case EV_EMC_ANNOTATIONMISSPELLED:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
 	case EV_EMC_VLINE:
 		UT_DEBUGMSG(("setCursor: Set to VLINE_DRAG \n"));
 		cursor = GR_Graphics::GR_CURSOR_VLINE_DRAG;

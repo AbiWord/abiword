@@ -264,6 +264,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotation"/*TODO differenciate from above*/,ap_GetState_InAnnotation,			NULL);
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER,	0,1,0,0,	"toggleDisplayAnnotations",	NULL,								NULL);
 	
+	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_HyperlinkOK,			NULL);
+	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
+	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
+	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_TableOK, NULL);
