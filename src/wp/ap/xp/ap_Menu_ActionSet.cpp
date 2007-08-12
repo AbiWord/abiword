@@ -260,8 +260,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	
 	// RIVERA
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS,				1,0,0,0,	NULL,						NULL,								NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,			0,1,0,0,	"insAnnotation",			ap_GetState_InAnnotation/*TODO should not need selection*/,NULL);
-	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotation"/*TODO differenciate from above*/,ap_GetState_InAnnotation,			NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,			0,1,0,0,	"insAnnotation",			ap_GetState_InAnnotation/*TODO selection should be optional*/,NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotationFromSel"		,ap_GetState_InAnnotation,			NULL);
 	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DRAWER,	0,1,0,0,	"toggleDisplayAnnotations",	NULL,								NULL);
 	
 	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_HyperlinkOK,			NULL);

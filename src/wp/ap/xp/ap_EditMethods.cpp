@@ -683,6 +683,7 @@ public:
 	
 	//RIVERA
     static EV_EditMethod_Fn insAnnotation;
+    static EV_EditMethod_Fn insAnnotationFromSel;
     static EV_EditMethod_Fn editAnnotation;
 	
 	static EV_EditMethod_Fn sortColsAscend;
@@ -937,13 +938,14 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(hyperlinkJumpPos),     0,      ""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
-	EV_EditMethod(NF(importStyles),			0,	""),
-	EV_EditMethod(NF(insAnnotation),			0,	""),
-	EV_EditMethod(NF(insBreak), 		0,		""),
+	EV_EditMethod(NF(importStyles),			0,		""),
+	EV_EditMethod(NF(insAnnotation),		0,		""),
+	EV_EditMethod(NF(insAnnotationFromSel),	0,		""),
+	EV_EditMethod(NF(insBreak),				0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
-	EV_EditMethod(NF(insField), 		0,		""),
-	EV_EditMethod(NF(insFile), 0, ""),
+	EV_EditMethod(NF(insField),				0,		""),
+	EV_EditMethod(NF(insFile),				0,		""),
 	EV_EditMethod(NF(insFootnote),			0,		""),
 	EV_EditMethod(NF(insMailMerge), 		0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
@@ -10542,6 +10544,11 @@ Defun1(insAnnotation)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return true;
+}
+
+Defun1(insAnnotationFromSel)
+{
+	// TODO implement
 }
 
 Defun1(toggleDisplayAnnotations)
