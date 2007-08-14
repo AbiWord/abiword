@@ -337,6 +337,8 @@ public:
 	// the users backs.
 	bool        deleteFollowingIfAtInsPoint() const;
 
+	bool        displayAnnotations(void);
+
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);
@@ -785,8 +787,25 @@ public:
 		return HYPERLINK_ANNOTATION;
 	}
 	UT_uint32 getPID(void) { return m_iPID;}
+	const char * getValue(void);
+
+	virtual bool canBreakAfter(void) const;
+	virtual bool canBreakBefore(void) const;
+
+ protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_recalcWidth(void);
+	bool                    _setValue(void);
+	virtual bool _letPointPass(void) const;
+	virtual bool _canContainPoint(void) const;
+    virtual void _lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP,
+								   GR_Graphics * pG);
  private:
-	UT_uint32 m_iPID;
+	UT_uint32               m_iPID;
+	UT_UTF8String           m_sValue;
 };
 
 class ABI_EXPORT fp_ImageRun : public fp_Run

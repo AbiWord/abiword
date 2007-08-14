@@ -23,18 +23,25 @@
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
+#include "fp_Page.h"
+#include "fp_Line.h"
+#include "fv_View.h"
+#include "gr_Graphics.h"
+#include "gr_Painter.h"
+#include "gr_DrawArgs.h"
+
 #include <string.h>
 
 fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 				   UT_uint32 iOffsetFirst, 
 				   UT_uint32 iLen ) : 
-  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0)
+  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue("")
 {
     UT_ASSERT(pBL);
 	_setLength(1);
 	_setDirty(false);
 	_setWidth(0);
-	_setRecalcWidth(false);
+	_setRecalcWidth(true);
 	
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
@@ -80,6 +87,7 @@ fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 		_setHyperlink(NULL);
 		m_iPID =0;
 	}
+	lookupProperties();
 
 }
 
@@ -89,4 +97,202 @@ fp_AnnotationRun::~fp_AnnotationRun()
 	if(m_pTarget)
 		delete [] m_pTarget;
 	m_pTarget = NULL;
+}
+
+
+void fp_AnnotationRun::_draw(dg_DrawArgs* pDA)
+{
+        if(!displayAnnotations())
+	  return;
+	if(!m_bIsStart)
+	  return;
+
+	GR_Graphics * pG = pDA->pG;
+
+	UT_sint32 xoff = 0, yoff = 0;
+	GR_Painter painter(pG);
+
+	// need screen locations of this run
+
+	getLine()->getScreenOffsets(this, xoff, yoff);
+
+	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
+
+	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
+
+//
+// Sevior was here
+//		UT_sint32 iFillTop = iYdraw;
+	UT_sint32 iFillTop = iYdraw+1;
+	UT_sint32 iFillHeight = getAscent() + getDescent();
+
+	FV_View* pView = _getView();
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+
+	UT_ASSERT(iSel1 <= iSel2);
+	bool bIsInTOC = getBlock()->isContainedByTOC();
+	if (
+	    isInSelectedTOC() || (!bIsInTOC && (
+						/* pView->getFocus()!=AV_FOCUS_NONE && */
+						(iSel1 <= iRunBase)
+						&& (iSel2 > iRunBase)))
+	    )
+	{
+	    UT_RGBColor color(_getView()->getColorSelBackground());			
+	    pG->setColor(_getView()->getColorAnnotation(this));
+	    painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+
+	}
+	else
+        {
+	    Fill(getGraphics(),pDA->xoff, iFillTop, getWidth(), iFillHeight);
+	    pG->setColor(_getColorFG());
+	}
+	pG->setFont(_getFont());
+	pG->setColor(_getView()->getColorAnnotation(this));
+	UT_DEBUGMSG(("Drawing string m_sValue %s \n",m_sValue.utf8_str()));
+	painter.drawChars(m_sValue.ucs4_str().ucs4_str(), 0,m_sValue.ucs4_str().size(), pDA->xoff,iYdraw, NULL);
+//
+// Draw underline/overline/strikethough
+//
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
+	                                                 //character dirt
+	drawDecors( xoff, yTopOfRun,pG);
+
+}
+
+void fp_AnnotationRun::_lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP,
+									GR_Graphics * pG)
+{
+
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG);
+	if(pFont == NULL)
+	{
+	    pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics());
+	    UT_ASSERT_HARMLESS(pFont);
+	}
+
+	if (pFont != _getFont())
+	{
+	    _setFont(pFont);
+	    _setAscent(getGraphics()->getFontAscent(pFont));
+	    _setDescent(getGraphics()->getFontDescent(pFont));
+	    _setHeight(getGraphics()->getFontHeight(pFont));
+	}
+}
+
+
+
+void fp_AnnotationRun::_clearScreen(bool bFullLineHeightRect)
+{
+        if(getWidth() == 0)
+	  return;
+	//	UT_ASSERT(!isDirty());
+
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_sint32 xoff = 0, yoff = 0;
+
+	// need to clear full height of line, in case we had a selection
+	getLine()->getScreenOffsets(this, xoff, yoff);
+	UT_sint32 iLineHeight = getLine()->getHeight();
+	Fill(getGraphics(), xoff, yoff, getWidth(), iLineHeight);
+}
+
+bool fp_AnnotationRun::_recalcWidth(void)
+{
+    if(!displayAnnotations())
+    {
+        if(getWidth() == 0)
+	    return false;
+	_setWidth(0);
+	clearScreen();
+	markAsDirty();
+	if(getLine())
+	{
+	    getLine()->setNeedsRedraw();
+	}
+	if(getBlock())
+	{
+	    getBlock()->setNeedsRedraw();
+	}
+	return true;
+    }
+    if(!m_bIsStart)
+    {
+	_setWidth(0);
+	return false;;
+    }
+    _setValue();
+    getGraphics()->setFont(_getFont());
+    UT_sint32 iNewWidth = 0;
+    if(m_sValue.size() > 0)
+    {
+	iNewWidth = getGraphics()->measureString(m_sValue.ucs4_str().ucs4_str(),
+						 0,
+						 m_sValue.ucs4_str().size(),
+						 NULL);
+    }
+    if (iNewWidth != getWidth())
+    {
+	clearScreen();
+	markAsDirty();
+	if(getLine())
+	  {
+	    getLine()->setNeedsRedraw();
+	  }
+	if(getBlock())
+	  {
+	    getBlock()->setNeedsRedraw();
+	  }
+	_setWidth(iNewWidth);
+
+	return true;
+    }
+
+    return false;
+}
+
+const char * fp_AnnotationRun::getValue(void)
+{
+  return m_sValue.utf8_str();
+}
+
+
+bool fp_AnnotationRun::canBreakAfter(void) const
+{
+	return true;
+}
+
+bool fp_AnnotationRun::canBreakBefore(void) const
+{
+	return true;
+}
+
+bool fp_AnnotationRun::_letPointPass(void) const
+{
+	return true;
+}
+
+bool fp_AnnotationRun::_canContainPoint(void) const
+{
+	return false;
+}
+
+bool fp_AnnotationRun::_setValue(void)
+{
+  if(!getLine())
+    return false;
+  if(!getLine()->getPage())
+    return false;
+  UT_uint32 pos = getLine()->getPage()->getAnnotationPos(getPID())+1; 
+  UT_String tmp;
+  UT_String_sprintf(tmp,"(%d)",pos);
+  m_sValue = tmp.c_str();
 }

@@ -8703,6 +8703,25 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 				bResult |= bSizeChanged;
 			}
 		}
+		//
+		// See if Annotation has changed
+		//
+		if (pRun->getType() == FPRUN_HYPERLINK)
+		{
+				fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+				fp_AnnotationRun * pARun = NULL;
+				if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+				{
+						pARun = static_cast<fp_AnnotationRun *>(pHRun);
+						UT_sint32 iWidth = pARun->getWidth();
+						pARun->recalcWidth();
+						if(iWidth != pARun->getWidth())
+						{
+								bResult |= true;
+						}
+				}				
+		}
+
 		//				else if(pRun->isField() == true)
 		//	{
 		//		 bResult = pRun->getField()->update();

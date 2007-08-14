@@ -509,6 +509,15 @@ fp_Run::_findPrevPropertyRun(void) const
 	return pRun;
 }
 
+bool fp_Run::displayAnnotations(void)
+{
+	if(!getBlock())
+		return false;
+	if(!getBlock()->getDocLayout())
+		return false;
+	return getBlock()->getDocLayout()->displayAnnotations();
+}
+
 /*!
   Inherit attribute properties from previous Run
 
