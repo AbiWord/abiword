@@ -267,7 +267,7 @@ public:
 	fl_AnnotationLayout * findAnnotationLayout(UT_uint32 footpid);
 	bool                displayAnnotations(void);
 	void                setDisplayAnnotations(bool bDisplayAnnotations);
-
+	bool                collapseAnnotations(void);
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------

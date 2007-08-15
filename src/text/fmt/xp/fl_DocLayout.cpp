@@ -982,14 +982,36 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 // Annotation methods
 
 /*!
- * This simply returns the number of footnotes in the document.
+ * This simply returns the number of annotations in the document.
  */
 UT_uint32 FL_DocLayout::countAnnotations(void)
 {
 	return m_vecAnnotations.getItemCount();
 }
+
 /*!
- * Add a footnote layout to the vector remembering them.
+ * Collapse all the blocks containing Annotations. This is useful for
+ * when we toggle displaying/hiding annotations.
+ */
+bool  FL_DocLayout::collapseAnnotations(void)
+{
+  fl_AnnotationLayout * pFL = NULL;
+  fl_BlockLayout * pBL = NULL;
+  UT_uint32 i = 0;
+  for(i= 0; i<countAnnotations(); i++)
+  {
+      pFL = getNthAnnotation(i);
+      if(pFL)
+      {
+	pBL = static_cast<fl_BlockLayout *>(pFL->getPrev());
+	  if(pBL)
+	    pBL->collapse();
+      }
+  }
+  return true;
+}
+/*!
+ * Add a annotation layout to the vector remembering them.
  */
 void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 {
@@ -997,7 +1019,7 @@ void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 }
 
 /*!
- * get a pointer to the Nth footnote layout in the vector remembering them.
+ * get a pointer to the Nth annotation layout in the vector remembering them.
  */
 fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
 {
@@ -1013,7 +1035,7 @@ fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
 }
 
 /*!
- * Remove a foonote layout from the Vector.
+ * Remove an annotation layout from the Vector.
  */
 void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 {
@@ -1026,7 +1048,7 @@ void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 }
 
 /*!
- * This method returns the footnote layout associated with the input PID
+ * This method returns the annotation layout associated with the input PID
  */
 fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
 {
@@ -3428,6 +3450,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	if(b != pDocLayout->m_bDisplayAnnotations || (pDocLayout->m_iGraphicTick < 2))
 	{
 		pDocLayout->m_bDisplayAnnotations = b;
+		pDocLayout->collapseAnnotations();
 		pDocLayout->formatAll();
 		if(pDocLayout->getView())
 		{
