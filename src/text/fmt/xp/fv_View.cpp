@@ -9475,7 +9475,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				pInfo->m_yBottomMargin = pPage->getHeight() - pFC->getFullY() - pFC->getFullHeight();
 			}
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
-			UT_DEBUGMSG(("In getLeftRulerInfo pCell %x pTab %x \n",pCell,pTab));
+			xxx_UT_DEBUGMSG(("In getLeftRulerInfo pCell %x pTab %x \n",pCell,pTab));
 			UT_sint32 col = pCell->getLeftAttach();
 			UT_sint32 numrows = pTab->getNumRows();
 			UT_sint32 i =0;
