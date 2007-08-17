@@ -1235,9 +1235,9 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	}
 	if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
-		UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
-		UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
+		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() ,
 								pos, bBOL, bEOL,isTOC);

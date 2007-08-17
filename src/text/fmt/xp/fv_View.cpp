@@ -9816,7 +9816,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
 			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
 			{
-				UT_DEBUGMSG(("getcontext: Looking at Table \n"));
+				xxx_UT_DEBUGMSG(("getcontext: Looking at Table \n"));
 				UT_sint32 iLeft = pCell->getLeftPos();
 				UT_sint32 iRight = pCell->getRightPos();
 				UT_sint32 iTop = pCell->getStartY();
@@ -9870,7 +9870,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				iRight += col_x + offx;
 				iTop += col_y +  offy;
 				iBot += col_y + offy;
-				UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
+				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
 					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
