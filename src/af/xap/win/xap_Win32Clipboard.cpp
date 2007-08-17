@@ -45,8 +45,10 @@ bool XAP_Win32Clipboard::openClipboard(HWND hWnd)
 	{
 		UINT k = 0;
 		UINT f;
+		/*
 		while ( (f=EnumClipboardFormats(k++)) )
 			UT_DEBUGMSG(("Clipboard contains format [%d]\n",f));
+		*/
 	}
 #endif /* DEBUG */
 
