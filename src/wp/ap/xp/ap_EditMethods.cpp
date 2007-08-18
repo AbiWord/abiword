@@ -4699,7 +4699,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 	if (!szContextMenuName)
 		return false;
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
-									   xPos,yPos);
+											xPos,yPos);
 	return res;
 }
 
@@ -4947,7 +4947,7 @@ Defun(contextHyperlink)
 #endif
 			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	
-	
+	return false; // to avoid compilation warnings (should never be reached)
 }
 
 #ifdef ENABLE_SPELL
@@ -10002,7 +10002,7 @@ Defun1(viewRuler)
 	UT_return_val_if_fail(pFrame, false);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-UT_return_val_if_fail(pFrameData, false);
+	UT_return_val_if_fail(pFrameData, false);
 	// don't do anything if fullscreen
 	if (pFrameData->m_bIsFullScreen)
 	  return false;
@@ -10549,6 +10549,7 @@ Defun1(insAnnotation)
 Defun1(insAnnotationFromSel)
 {
 	// TODO implement
+	return false;
 }
 
 Defun1(toggleDisplayAnnotations)
@@ -10556,8 +10557,6 @@ Defun1(toggleDisplayAnnotations)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	
-	UT_DEBUGMSG(("Changing annotation display\n"));
 	
 	//
 	// Set the preference to enable annotations display
@@ -10569,6 +10568,7 @@ Defun1(toggleDisplayAnnotations)
 	bool b = false;
 	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
 	b = !b;
+	UT_DEBUGMSG(("toggleDisplayAnnotations: Changing annotation display to %s\n",(b ? "true" : "false")));
 	gchar szBuffer[2] = {0,0};
 	szBuffer[0] = ((b)==true ? '1' : '0');
 	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
@@ -13737,8 +13737,6 @@ Defun(hyperlinkStatusBar)
 		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
 		
 	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
-	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
-	pAnnPview->runModeless(pFrame);
 	
 	pView->setAnnotationPreviewActive(true);
 	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
@@ -13746,6 +13744,20 @@ Defun(hyperlinkStatusBar)
 	pAnnPview->setTitle("n/a");	// if those files ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
 	pAnnPview->setAuthor("n/a");
 	pAnnPview->setDescription(sText.utf8_str());
+	
+	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
+	pAnnPview->runModeless(pFrame);
+	
+	UT_sint32 xoff = 0, yoff = 0;
+	//fp_Run * pRun = pView->getHyperLinkRun(pos);
+	pHRun->getLine()->getOffsets(pHRun, xoff, yoff); //TODO try getting container's screen offset... ->getContainer()
+	// Sevior's infamous + 1....
+	yoff += pHRun->getLine()->getAscent() - pHRun->getAscent() + 1;
+	UT_DEBUGMSG(("hyperlinkStatusBar: xypos %d %d\n",xpos,ypos));
+	UT_DEBUGMSG(("hyperlinkStatusBar: setXY %d %d\n",pG->tdu(xpos),pG->tdu(ypos)));
+	UT_DEBUGMSG(("hyperlinkStatusBar: pRungetxy %d %d\n",pHRun->getX(),pHRun->getY()));
+	UT_DEBUGMSG(("hyperlinkStatusBar: getScreenOffsets %d %d\n",xoff,yoff));
+	
 	pAnnPview->draw();
 
 	return true;	

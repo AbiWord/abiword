@@ -40,10 +40,11 @@ AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)
 
 void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 {
+	UT_DEBUGMSG(("Preview Annotation runModeless %x \n",this));
 	if(!m_pPreviewWindow)
 	  _constructWindow();
+	draw();
 	gtk_widget_show(m_pPreviewWindow);
-
 }
 
 void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame *pFrame)
@@ -53,8 +54,9 @@ void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_UnixPreview_Annotation::activate(void)
 {
+	UT_DEBUGMSG(("Preview Annotation activate %x \n",this));
 	UT_ASSERT (m_pPreviewWindow);
-	gdk_window_raise (m_pPreviewWindow->window);
+	gdk_window_raise(m_pPreviewWindow->window);
 }
 
 XAP_Dialog * AP_UnixPreview_Annotation::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)

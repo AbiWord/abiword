@@ -29,21 +29,6 @@
 #include "xap_Frame.h"
 
 // RIVERA
-/*AP_Preview_Annotation::AP_Preview_Annotation() : XAP_Preview(),
-m_pFont(NULL),
-m_iAscent(0),
-m_iDescent(0),
-m_iHeight(0)
-{
-	UT_setColor(m_clrBackground,255,247,177);
-	m_width					= PREVIEW_DEFAULT_WIDTH;
-	m_height				= PREVIEW_DEFAULT_HEIGHT;
-	m_pTitle				= "n/a";
-	m_pAuthor				= "n/a";
-	m_pDescription			= "n/a";
-}*/
-
-// MARTIN
 AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id): XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	UT_setColor(m_clrBackground,255,247,177);
@@ -55,12 +40,6 @@ AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP
 	m_pAuthor				= "n/a";
 	m_pDescription			= "n/a";
 }
-
-
-/*AP_Preview_Annotation::AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
-{
-	UT_DEBUGMSG(("AP_Preview_Annotation: WARNING Preview annotation not implemented for this platform\n"));
-}*/
 
 AP_Preview_Annotation::~AP_Preview_Annotation()
 {
@@ -229,6 +208,7 @@ void AP_Preview_Annotation::clearScreen(void)
 
 void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
 {
+	UT_DEBUGMSG(("AP_Preview_Annotation: setActiveFrame\n"));
 	notifyActiveFrame(getActiveFrame());
 }
 
@@ -244,4 +224,5 @@ void  AP_Preview_Annotation::setXY(UT_sint32 x, UT_sint32 y)
     m_top = 0;
   if(m_left < 0)
     m_left = 0;
+  UT_DEBUGMSG(("AP_Preview_Annotation: setXY top %d, left %d\n",m_top,m_left));
 }

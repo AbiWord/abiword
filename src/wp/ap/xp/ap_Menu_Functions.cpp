@@ -1202,7 +1202,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	  else
 	    s = EV_MIS_ZERO;
 	  break;
-
+	
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -1618,6 +1618,22 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 	}
 	return EV_MIS_Gray;
 
+}
+
+// RIVERA
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	XAP_App *pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, EV_MIS_Gray);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)

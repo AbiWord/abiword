@@ -36,9 +36,7 @@
 class AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_Modeless
 {
 public:
-	//AP_Preview_Annotation();
 	AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	//AP_Preview_Annotation(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
 	virtual ~AP_Preview_Annotation(void);
 	
 	void		setTitle(const gchar * pTitle);
@@ -50,6 +48,7 @@ public:
 	void		draw(void);
 	void		clearScreen(void);
 	void        setXY(UT_sint32 x, UT_sint32 y);                              
+	void        setActiveFrame(XAP_Frame *pFrame);
 	
 protected:
 	void			_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
@@ -58,7 +57,6 @@ protected:
 	UT_sint32		m_left;
 	UT_sint32		m_top;
 	void            ConstructWindowName(void);
-	void            setActiveFrame(XAP_Frame *pFrame);
 	UT_RGBColor		m_clrBackground;
 	
 private:

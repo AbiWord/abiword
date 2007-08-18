@@ -571,7 +571,6 @@ public:
 	void				setActivePreviewAnnotationID(UT_uint32 iID) { m_iAnnPviewID = iID;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
-	//bool				cmdEditAnnotationWithDialog(PT_DocPosition pos);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
 // ----------------------
 
