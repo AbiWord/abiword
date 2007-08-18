@@ -85,6 +85,8 @@ EXTRA_DIST = \
 	$(icodata) \
 	$(rc2data) \
 	Makefile
+	
+SUBDIRS = ToolbarIcons
 
 #headersdir = $(ABIWORD_HEADERSDIR)/ap/win
 noinst_HEADERS = \
