@@ -4636,10 +4636,17 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	//
 
 	// TODO maybe we should not exit if annotation is not present (ex. auto-generated annotations may become not be editable!)
-	UT_UTF8String sText;
+	UT_UTF8String sText("");
+	UT_UTF8String sTitle("");
+	UT_UTF8String sAuthor("");
 	bool b = getAnnotationText(aID,sText);
 	if(!b)
 		return false;
+	
+	// Optional fields
+	getAnnotationTitle(aID,sTitle);
+	getAnnotationAuthor(aID,sAuthor);
+	
 	// edit annotation
 	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
@@ -4659,8 +4666,8 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	
 	// set initial annotation properties
 	// TODO add support for all fields
-	pDialog->setTitle("n/a");
-	pDialog->setAuthor("n/a");
+	pDialog->setTitle(sTitle.utf8_str());
+	pDialog->setAuthor(sAuthor.utf8_str());
 	pDialog->setDescription(sText.utf8_str());
 	
 	// run the dialog
@@ -4678,12 +4685,15 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
+		UT_UTF8String pDescr = pDialog->getDescription();
 		UT_UTF8String pTitle = pDialog->getTitle();
 		UT_UTF8String pAuthor = pDialog->getAuthor();
-		UT_UTF8String pDescr = pDialog->getDescription();
 		bool bReplaceSelection = false;
 		b = setAnnotationText(aID,pDescr);
-		// TODO implement other fields as well
+		
+		// Optional fields
+		setAnnotationTitle(aID,pTitle);
+		setAnnotationAuthor(aID,pAuthor);
 	}
 	
 	// release the dialog

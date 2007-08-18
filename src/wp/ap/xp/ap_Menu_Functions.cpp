@@ -1593,7 +1593,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-	if(pView->isSelectionEmpty()) // Only create annotations from selection??
+	if((id==AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL) &&
+	   (pView->isSelectionEmpty()))
 	{
 		return EV_MIS_Gray;
 	}

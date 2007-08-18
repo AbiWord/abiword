@@ -12161,6 +12161,34 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 
 }
 
+// TODO getters and setters to implement/change/add as judged necessary
+bool FV_View::getAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+{
+	// TODO implement
+	UT_DEBUGMSG(("getAnnotationTitle: not implemented\n"));
+	sTitle = "n/a";
+	return true;
+}
+bool FV_View::setAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+{
+	// TODO implement
+	UT_DEBUGMSG(("setAnnotationTitle: not implemented\n"));
+	return true;
+}
+bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+{
+	// TODO implement
+	UT_DEBUGMSG(("getAnnotationAuthor: not implemented\n"));
+	sAuthor = "n/a";
+	return true;
+}
+bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+{
+	// TODO implement
+	UT_DEBUGMSG(("setAnnotationAuthor: not implemented\n"));
+	return true;
+}
+
 /*!
  * Insert annotation number iAnnotation across the current selection.
  * The text of the annotation is contained in pStr.

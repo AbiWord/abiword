@@ -10481,75 +10481,71 @@ Defun1(insAnnotation)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
 	
-	UT_DEBUGMSG(("insAnnotation: inserting\n"));
-
 	// API is:
 	// Annotation Number,
 	// UT_UTF8String pointer containing text to be inserted
 	// Boolean to determine whether to place the current selection into an annotation.
 	//
 	
-	// TODO to make it cleaner annotation first should be created with default values and then call
-	//		pView->cmdEditAnnotationWithDialog(<Annotation ID>)
-
-	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	UT_return_val_if_fail(pFrame, false);
+	UT_DEBUGMSG(("insAnnotation: inserting\n"));
 	
-	XAP_App * pApp = XAP_App::getApp();
-	UT_return_val_if_fail (pApp, false);
+	//
+	// First create the annotation => then open an edit dialog
+	//
 	
-	pFrame->raise();
+	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 	
-	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	// Default values
+	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
+	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
 	
-	AP_Dialog_Annotation * pDialog
-		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
-	UT_return_val_if_fail (pDialog, false);
+	pView->insertAnnotation(iAnnotation,
+							&pTitle,
+							&pAuthor,
+							&pDescr,
+							false); // TODO this line is the only difference with insAnnotationFromSel below, code should me merged
 	
-	// set initial annotation properties
+	// Open edit annotation dialog
+	pView->cmdEditAnnotationWithDialog(iAnnotation);
 	
-	pDialog->setTitle("New annotation");
-	pDialog->setAuthor("");
-	pDialog->setDescription("") ;
+	// TODO: set the document as dirty when something changed
 	
-	// run the dialog
-	
-	UT_DEBUGMSG(("insAnnotation: Drawing annotation dialog...\n"));
-	pDialog->runModal(pFrame);
-	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
-	
-	if (bOK)
-    {
-		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
-		{
-			pApp->getFrame(i)->updateTitle ();
-		}	  
-		
-		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
-		UT_UTF8String pTitle = pDialog->getTitle();
-		UT_UTF8String pAuthor = pDialog->getAuthor();
-		UT_UTF8String pDescr = pDialog->getDescription();
-		bool bReplaceSelection = false;
-		pView->insertAnnotation(iAnnotation,
-								&pTitle,
-								&pAuthor,
-								&pDescr,
-								bReplaceSelection);
-		// TODO: set the document as dirty when something changed
-
-    }
-
-	// release the dialog
-	pDialogFactory->releaseDialog(pDialog);
-
 	return true;
 }
 
+// RIVERA
 Defun1(insAnnotationFromSel)
 {
-	// TODO implement
-	return false;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	
+	UT_DEBUGMSG(("insAnnotationFromSel: inserting\n"));
+	
+	//
+	// First create the annotation => then open an edit dialog
+	//
+	
+	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
+	
+	// Default values
+	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
+	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	
+	pView->insertAnnotation(iAnnotation,
+							&pTitle,
+							&pAuthor,
+							&pDescr,
+							true);
+	
+	// Open edit annotation dialog
+	pView->cmdEditAnnotationWithDialog(iAnnotation);
+	
+	// TODO: set the document as dirty when something changed
+		
+	return true;
 }
 
 Defun1(toggleDisplayAnnotations)
@@ -13718,11 +13714,17 @@ Defun(hyperlinkStatusBar)
 		pView->killAnnotationPreview();
 	}
 	
-	UT_UTF8String sText;
+	UT_UTF8String sText("");
+	UT_UTF8String sTitle("");
+	UT_UTF8String sAuthor("");
 	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
 	if(!b)
 		return false;
-
+	
+	// Optional fields
+	pView->getAnnotationTitle(pAnn->getPID(),sTitle);
+	pView->getAnnotationAuthor(pAnn->getPID(),sAuthor);
+	
 	// preview annotation
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -13741,9 +13743,11 @@ Defun(hyperlinkStatusBar)
 	pView->setAnnotationPreviewActive(true);
 	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
 	
-	pAnnPview->setTitle("n/a");	// if those files ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
-	pAnnPview->setAuthor("n/a");
 	pAnnPview->setDescription(sText.utf8_str());
+	
+	// Optional fields
+	pAnnPview->setTitle(sTitle.utf8_str());	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	pAnnPview->setAuthor(sAuthor.utf8_str());
 	
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);
