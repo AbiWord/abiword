@@ -45,7 +45,7 @@ EXTRA_DIST = \
 	$(headers_DATA)
 
 dist-hook:
-	rm -rf `find $(distdir)/stock -name CVS`
+	rm -rf `find $(distdir)/stock -name .svn`
 
 #headersdir = $(ABIWORD_HEADERSDIR)/ev/unix
 noinst_HEADERS = \

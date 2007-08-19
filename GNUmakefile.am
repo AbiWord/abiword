@@ -63,8 +63,8 @@ DISTCLEANFILES = \
 	abiword-$(ABIWORD_SERIES).pc
 
 dist-hook:
-	rm -rf `find $(distdir)/docs -name CVS`
-	rm -rf `find $(distdir)/po -name CVS`
+	rm -rf `find $(distdir)/docs -name .svn`
+	rm -rf `find $(distdir)/po -name .svn`
 
 test: check
 
