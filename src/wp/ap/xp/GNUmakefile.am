@@ -153,7 +153,7 @@ EXTRA_DIST = \
 	$(headers_DATA)
 
 dist-hook:
-	rm -rf `find $(distdir)/ToolbarIcons -name CVS`
+	rm -rf `find $(distdir)/ToolbarIcons -name .svn`
 
 #headersdir = $(ABIWORD_HEADERSDIR)/ap/xp
 noinst_HEADERS = \

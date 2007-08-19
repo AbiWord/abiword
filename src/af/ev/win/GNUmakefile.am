@@ -44,4 +44,4 @@ noinst_HEADERS = \
 	ev_Win32Toolbar_ViewListener.h
 
 dist-hook:
-	rm -rf `find $(distdir)/bmp -name CVS`
+	rm -rf `find $(distdir)/bmp -name .svn`

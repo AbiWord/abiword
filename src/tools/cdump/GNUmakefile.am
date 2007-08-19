@@ -23,4 +23,4 @@ EXTRA_DIST = \
 	Makefile
 
 dist-hook:
-	rm -rf `find $(distdir)/win -name CVS`
+	rm -rf `find $(distdir)/win -name .svn`
