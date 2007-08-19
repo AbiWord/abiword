@@ -22,7 +22,6 @@ EXTRA_DIST = \
 	edit_removefooter.bmp \
 	edit_removeheader.bmp \
 	edit_undo.bmp \
-	filelist.txt \
 	file_new.bmp \
 	file_open.bmp \
 	file_print.bmp \
