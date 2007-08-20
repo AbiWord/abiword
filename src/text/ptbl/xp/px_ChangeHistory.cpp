@@ -34,13 +34,13 @@
 // the first undo item is at ...[m_undoPosition-1]
 // the first redo item is at ...[m_undoPosition] if present.
 
-px_ChangeHistory::px_ChangeHistory(pt_PieceTable * pPT): 
-  m_undoPosition(0),
-  m_savePosition(0),
-  m_pPT(pPT),
-  m_iAdjustOffset(0),
-  m_bOverlap(false),
-  m_iMinUndo(0)
+px_ChangeHistory::px_ChangeHistory(pt_PieceTable * pPT)
+	: m_undoPosition(0),
+	m_savePosition(0),
+	m_pPT(pPT),
+	m_iAdjustOffset(0),
+	m_bOverlap(false),
+	m_iMinUndo(0)
 {
 }
 
@@ -63,16 +63,15 @@ void px_ChangeHistory::clearHistory()
 	m_iMinUndo = 0;
 }
 
-
 void px_ChangeHistory::_invalidateRedo(void)
 {
 	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
 	UT_return_if_fail (m_undoPosition <= kLimit);
-	UT_sint32 k = 0;
+
 	UT_sint32 i = m_undoPosition - m_iAdjustOffset;
-	for (k = m_undoPosition- m_iAdjustOffset; k < kLimit; k++)
+	for (UT_sint32 k = m_undoPosition - m_iAdjustOffset; k < kLimit; k++)
 	{
-		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(i);
+		PX_ChangeRecord * pcrTemp = m_vecChangeRecords.getNthItem(i);
 		if (!pcrTemp)
 			break;
 		if (pcrTemp->isFromThisDoc())
@@ -156,7 +155,7 @@ UT_sint32 px_ChangeHistory::getSavePosition(void) const
 
 UT_uint32 px_ChangeHistory::getUndoPos(void) const
 {
-        return (m_undoPosition - m_iAdjustOffset);
+	return (m_undoPosition - m_iAdjustOffset);
 }
 
 void px_ChangeHistory::setSavePosition(UT_sint32 savePosition)
@@ -164,13 +163,12 @@ void px_ChangeHistory::setSavePosition(UT_sint32 savePosition)
 	m_savePosition = savePosition;
 }
 
-
 bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 {
 	if (m_bOverlap)
 	{
-	        *ppcr = NULL;
-	        return false;
+		*ppcr = NULL;
+		return false;
 	}
 
 	bool bGotOne = false;
@@ -181,12 +179,12 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	{
 		if ((m_undoPosition - m_iAdjustOffset) <= m_iMinUndo)
 		{
-			if(bStatic)
+			if (bStatic)
 				m_iAdjustOffset = iAdjust;
 			return false;
 		}
 		
-		pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
+		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
 		UT_return_val_if_fail(pcr, false); // just bail out, everything seems wrong
 		
 		//
@@ -211,13 +209,12 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	{
 	    pcr->setAdjustment(0);
 	    PT_DocPosition pos = pcr->getPosition();
-	    UT_sint32 i = m_iAdjustOffset-1;
-	    UT_sint32 iAdj= 0;
-	    PT_DocPosition low,high;
-	    getCRRange(pcr,low,high);
-	    for(i=i; i>=0;i--)
+	    UT_sint32 iAdj = 0;
+	    PT_DocPosition low, high;
+	    getCRRange(pcr, low, high);
+	    for (UT_sint32 i = m_iAdjustOffset-1; i>=0;i--)
 	    {
-			pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
+			pcr = m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
 			if (!pcr->isFromThisDoc())
 			{
 			    if (doesOverlap(pcr,low,high))
@@ -255,7 +252,7 @@ bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) co
 	if (static_cast<UT_sint32>(iAdjIdx) <= m_iMinUndo)
 		return false;
 	
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(iAdjust-iAdjIdx-1);
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(iAdjust-iAdjIdx-1);
 	UT_return_val_if_fail(pcr, false);
 	
 	*ppcr = pcr;
@@ -270,7 +267,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	if (m_bOverlap)
 		return false;
 	
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
 	UT_return_val_if_fail(pcr, false);
 
 	// leave records from external documents in place so we can correct
@@ -292,7 +289,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	
 	while (pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset > 0))
 	{
-	    pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
+	    pcr = m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 	    m_iAdjustOffset--;
 	    bIncrementAdjust = true;
 	    xxx_UT_DEBUGMSG(("AdjustOffset decremented -1 %d ", m_iAdjustOffset));
@@ -308,11 +305,11 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	    UT_sint32 iAdj = 0;
 	    for (UT_sint32 i = m_iAdjustOffset; i >= 1;i--)
 	    {
-			pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-i);
+			pcr = m_vecChangeRecords.getNthItem(m_undoPosition-i);
 			if (!pcr->isFromThisDoc())
 			{
 			    m_bOverlap = doesOverlap(pcr,low,high);
-			    if(m_bOverlap)
+			    if (m_bOverlap)
 			    {
 					*ppcr = NULL;
 					return false;
@@ -348,24 +345,24 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 bool px_ChangeHistory::didUndo(void)
 {
 	xxx_UT_DEBUGMSG((" Doing Undo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
-	if(m_bOverlap)
+	if (m_bOverlap)
 	{
 	    clearHistory();
 	    return false;
 	}
 	if (m_undoPosition == 0)
 		return false;
-	if ((m_undoPosition -m_iAdjustOffset) <= m_iMinUndo)
+	if ((m_undoPosition - m_iAdjustOffset) <= m_iMinUndo)
 		return false;
 
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
 
 
-	if(pcr && !pcr->isFromThisDoc())
-	  return true;
-	if(m_iAdjustOffset == 0)
-	  m_undoPosition--;
-	pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
+	if (pcr && !pcr->isFromThisDoc())
+		return true;
+	if (m_iAdjustOffset == 0)
+		m_undoPosition--;
+	pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
 	if (pcr && !pcr->getPersistance())
 	{
 		UT_return_val_if_fail(m_savePosition > 0,false);
@@ -377,14 +374,14 @@ bool px_ChangeHistory::didUndo(void)
 bool px_ChangeHistory::didRedo(void)
 {
 	xxx_UT_DEBUGMSG((" Doing didRedo void in PT undopos %d savePos pos %d iAdjustOffset %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
-	if(m_bOverlap)
+	if (m_bOverlap)
 	{
 	    clearHistory();
 	    return false;
 	}
 	if ((m_undoPosition - m_iAdjustOffset) >= static_cast<UT_sint32>(m_vecChangeRecords.getItemCount()))
 		return false;
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 
 	// leave records from external documents in place so we can correct
 
@@ -410,7 +407,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	// coalesce this record with the current undo record.
 
 	UT_sint32 iAdj = m_iAdjustOffset;
-	PX_ChangeRecord * pcrUndo = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-1);
+	PX_ChangeRecord * pcrUndo = m_vecChangeRecords.getNthItem(m_undoPosition-1);
 	UT_return_if_fail (pcrUndo);
 	UT_return_if_fail (pcr->getType() == pcrUndo->getType());
 

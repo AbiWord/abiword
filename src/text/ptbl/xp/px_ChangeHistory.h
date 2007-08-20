@@ -64,7 +64,7 @@ public:
 	void					setSavePosition(UT_sint32 savePosition);
 	UT_sint32				getSavePosition(void) const;
 
-	UT_uint32                               getUndoPos(void) const;
+	UT_uint32				getUndoPos(void) const;
 
 	bool					getUndo(PX_ChangeRecord ** ppcr, bool bStatic=false) const;
 	bool					getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
@@ -89,7 +89,7 @@ protected:
 	void					_invalidateRedo(void);
 	void					_invalidateHistory(void);
 
-	UT_Vector				m_vecChangeRecords;
+	UT_GenericVector<PX_ChangeRecord *>		m_vecChangeRecords;
 	UT_sint32				m_undoPosition;
 	UT_sint32				m_savePosition;
 	pt_PieceTable *         m_pPT;
