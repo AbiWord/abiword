@@ -69,9 +69,9 @@ CPPSRCS=		pd_Document.cpp			\
 			px_CR_SpanChange.cpp		\
 			px_CR_Strux.cpp			\
 			px_CR_StruxChange.cpp		\
-		        px_CR_Style.cpp         \
-      			px_CR_DocProp.cpp         \
-      			px_CR_DataItem.cpp         \
+			px_CR_Style.cpp         \
+			px_CR_DocProp.cpp         \
+			px_CR_DataItem.cpp         \
 			px_CR_TestRoutines.cpp          \
 			px_CH_TestRoutines.cpp          \
 			fd_Field.cpp			\
