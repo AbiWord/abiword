@@ -350,16 +350,13 @@ bool px_ChangeHistory::didUndo(void)
 	    clearHistory();
 	    return false;
 	}
-	if (m_undoPosition == 0)
-		return false;
-	if ((m_undoPosition - m_iAdjustOffset) <= m_iMinUndo)
-		return false;
+	
+	UT_return_val_if_fail(m_undoPosition > 0, false);
+	UT_return_val_if_fail(m_undoPosition - m_iAdjustOffset > m_iMinUndo, false);
 
 	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
+	UT_return_val_if_fail(pcr && pcr->isFromThisDoc(), false);
 
-
-	if (pcr && !pcr->isFromThisDoc())
-		return true;
 	if (m_iAdjustOffset == 0)
 		m_undoPosition--;
 	pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
