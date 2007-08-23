@@ -92,6 +92,8 @@ EXTRA_DIST = \
 
 all-local: $(ALL_LOCAL_DEPS)
 
+install-exec-local: $(INSTALL_EXEC_LOCAL_DEPS)
+
 abiword_plugins = $(top_builddir)/../abiword-plugins
 
 ltsubdir = .libs/
