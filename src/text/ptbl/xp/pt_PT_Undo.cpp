@@ -560,16 +560,6 @@ bool pt_PieceTable::canDo(bool bUndo) const
 	return m_history.canDo(bUndo);
 }
 
-bool pt_PieceTable::getNthUndo(PX_ChangeRecord ** ppcr, UT_sint32 iUndo) const
-{
-        if(iUndo > static_cast<UT_sint32>(undoCount(true)))
-	{
-	       return false;
-	}
-	m_history.getNthUndo(ppcr, iUndo);
-	return true;
-}
-
 UT_uint32 pt_PieceTable::undoCount(bool bUndo) const
 {
   if(bUndo)
