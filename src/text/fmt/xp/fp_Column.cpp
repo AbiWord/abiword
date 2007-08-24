@@ -570,7 +570,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		       yoff -= pDSL->getTopMargin();
 		}
 	}
-	if(pCon && pCon->getContainerType() == FP_CONTAINER_ANNOTATION && 
+	if(pCon && getPage() && (pCon->getContainerType() == FP_CONTAINER_ANNOTATION) && 
 	   getPage()->getDocLayout()->displayAnnotations())
 	{
 	        if(getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
