@@ -1188,7 +1188,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	  return;
 	}
 	fl_BlockLayout * pPrevBL = pBL;
-	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
+	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ANNOTATION) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
 	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
 		pPrevBL = pBL;
@@ -3793,6 +3793,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			if((pCL->getContainerType() == FL_CONTAINER_HDRFTR) ||
 			   (pCL->getContainerType() == FL_CONTAINER_SHADOW) ||
 			   (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+			   (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) ||
 			   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
 			{
 				m_pDoc->enableListUpdates();
@@ -9073,7 +9074,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Clear the rest of the info
 //
 	memset(pInfo,0,sizeof(*pInfo));
-	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
+	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ANNOTATION || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		fp_Column* pColumn = NULL;
 		fl_DocSectionLayout* pDSL = NULL;
@@ -9120,7 +9121,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
-		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE  || pSection->getContainerType() == FL_CONTAINER_ANNOTATION )
 		{
 			pInfo->m_iCurrentColumn = 0;
 			pInfo->m_iNumColumns = 1;
@@ -9478,6 +9479,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 
 		bool isFootnote = false;
+		bool isAnnotation = false;
 		bool isEndnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
 		fp_Page * pPage =  pRun->getLine()->getPage();
@@ -9505,6 +9507,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			isEndnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_ANNOTATION)
+		{
+			pSection = pPage->getOwningSection();
+			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			isAnnotation = true;
+			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
+		}
 		else
 		{
 			pSection = pPage->getOwningSection();
@@ -9512,7 +9521,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
-		if ((isFootnote || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
+		if ((isFootnote || isAnnotation || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -9722,6 +9731,7 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 		}
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+		   (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)||
 		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
 		{
 			pBlock = pBlock->getEnclosingBlock();
@@ -10958,6 +10968,7 @@ FV_View::countWords(void)
                                 {
                                         fl_ContainerType t = l->getContainerType();
                                         if ((t == FL_CONTAINER_FOOTNOTE) ||
+                                            (t == FL_CONTAINER_ANNOTATION)||
                                             (t == FL_CONTAINER_ENDNOTE))
                                         {
                                                 wCount.words_no_hdrftr--;
@@ -11158,6 +11169,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
 	  return true;
   }
   if((pfs->getStruxType() == PTX_EndFootnote) || 
+     (pfs->getStruxType() == PTX_EndAnnotation)|| 
      (pfs->getStruxType() == PTX_EndEndnote) || 
      (pfs->getStruxType() == PTX_Block) )
   {
@@ -11180,6 +11192,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
 	  }
 	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndAnnotation) || 
 		 (pfs->getStruxType() == PTX_EndEndnote) || 
 		 (pfs->getStruxType() == PTX_Block) )
 	  {
@@ -11837,7 +11850,9 @@ UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
 	while(!bStop && pCL)
 	{
 		count++;
-		bStop = ((pCL->getContainerType() != FL_CONTAINER_FOOTNOTE) && (pCL->getContainerType() != FL_CONTAINER_ENDNOTE));
+		bStop = ((pCL->getContainerType() != FL_CONTAINER_FOOTNOTE) && 
+				 (pCL->getContainerType() != FL_CONTAINER_ENDNOTE) && 
+				 (pCL->getContainerType() != FL_CONTAINER_ANNOTATION));
 		pCL = static_cast<fl_ContainerLayout *>(pCL->myContainingLayout());
 	}
 	return count;
@@ -11893,6 +11908,36 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 			else if( pClosest->getDocPosition() < pFL->getDocPosition())
 			{
 				pClosest = pFL;
+			}
+		}
+	}
+	return pClosest;
+}
+
+
+
+/*!
+ * This method returns the closest annotation before or that contains the 
+ * requested doc position. If the is no annnotation before the doc position, NULL
+ * is returned.
+ */
+fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos)
+{
+	fl_AnnotationLayout * pAL = NULL;
+	fl_AnnotationLayout * pClosest = NULL;
+	UT_sint32 i = 0;
+	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countAnnotations());i++)
+	{
+		pAL = m_pLayout->getNthAnnotation(i);
+		if(pAL->getDocPosition() <= pos)
+		{
+			if(pClosest == NULL)
+			{
+				pClosest = pAL;
+			}
+			else if( pClosest->getDocPosition() < pAL->getDocPosition())
+			{
+				pClosest = pAL;
 			}
 		}
 	}
@@ -12080,6 +12125,36 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 		return false;
 	}
 	if((pFL->getDocPosition() <= pos) && ((pFL->getDocPosition() + pFL->getLength()) > pos))
+	{
+		return true;
+	}
+	return false;
+}
+
+
+/*!
+ * Returns true if the current insertion point is inside a annotation.
+ */
+bool FV_View::isInAnnotation(void)
+{
+	return isInAnnotation(getPoint());
+}
+
+/*!
+ * Returns true if the requested position is inside a endnote.
+ */
+bool FV_View::isInAnnotation(PT_DocPosition pos)
+{
+	fl_AnnotationLayout * pAL = getClosestAnnotation(pos);
+	if(pAL == NULL)
+	{
+		return false;
+	}
+	if(!pAL->isEndFootnoteIn())
+	{
+		return false;
+	}
+	if((pAL->getDocPosition() <= pos) && ((pAL->getDocPosition() + pAL->getLength()) > pos))
 	{
 		return true;
 	}
@@ -13067,7 +13142,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	}
 	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
 	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
-	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION))
 	{
 		pBL = pBL->getEnclosingBlock();
 		if(pBL == NULL)

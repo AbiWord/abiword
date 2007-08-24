@@ -895,6 +895,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   {
 	  return EV_TIS_Gray;
   }
+  else if(pView->isInAnnotation())
+  {
+	  return EV_TIS_Gray;
+  }
   else if(pView->isInEndnote())
   {
 	  return EV_TIS_Gray;

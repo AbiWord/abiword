@@ -408,7 +408,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInAnnotation())
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInFootnote(pView->getSelectionAnchor()))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInAnnotation(pView->getSelectionAnchor()))
   {
     s = EV_MIS_Gray;
   }
@@ -421,6 +429,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
     s = EV_MIS_Gray;
   }
   else if(pView->isInTable() && (pView->getPoint() > 3) && pView->isInFootnote(pView->getPoint()-2))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInTable() && (pView->getPoint() > 3) && pView->isInAnnotation(pView->getPoint()-2))
   {
     s = EV_MIS_Gray;
   }
@@ -1519,6 +1531,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->isInAnnotation())
+	{
+		return EV_MIS_Gray;
+	}
 	else if(pView->isInEndnote())
 	{
 		return EV_MIS_Gray;
@@ -1579,7 +1595,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	{
 	        return EV_MIS_Gray;
 	}
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
+	if(!pView->isInFootnote() && !pView->isInAnnotation() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1612,7 +1628,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 	{
 	        return EV_MIS_Gray;
 	}
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(point) && !pView->isInFrame(point)  && !pView->isInFrame(anchor) 
+	if(!pView->isInFootnote() &&!pView->isInAnnotation() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(point) && !pView->isInFrame(point)  && !pView->isInFrame(anchor) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1708,6 +1724,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 		return EV_MIS_Gray;
 	}
 	if(pView->isInFootnote(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInAnnotation())
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInAnnotation(pView->getSelectionAnchor()))
 	{
 		return EV_MIS_Gray;
 	}

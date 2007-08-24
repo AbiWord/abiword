@@ -548,8 +548,11 @@ public:
 	bool                isInFootnote(void);
 	bool                isInEndnote(PT_DocPosition pos);
 	bool                isInEndnote(void);
+	bool                isInAnnotation(PT_DocPosition pos);
+	bool                isInAnnotation(void);
 	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
+	fl_AnnotationLayout *  getClosestAnnotation(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
 	//
 	// ----------------------------------
