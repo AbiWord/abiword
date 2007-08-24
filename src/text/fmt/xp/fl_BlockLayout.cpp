@@ -3354,6 +3354,14 @@ void fl_BlockLayout::format()
 					setUpdatableField(true);
 				}
 			}
+			if(pRun->getType() == FPRUN_HYPERLINK)
+			{
+				fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+				if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+				{
+					setUpdatableField(true);
+				}
+			}
 			if(pRun == pRunToStartAt)
 				bDoit = true;
 			if(bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
@@ -5228,6 +5236,10 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
+UT_sint32	fl_BlockLayout::getTextIndent(void) const
+{
+	return m_iTextIndent;
+}
 
 bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {

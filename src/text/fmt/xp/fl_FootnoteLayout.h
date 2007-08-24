@@ -37,6 +37,8 @@
 // The fl_FootnoteLayout lives after each block.
 
 // Need to do cursor navigation between blocks
+class fp_AnnotationRun;
+
 class ABI_EXPORT fl_EmbedLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
@@ -164,7 +166,7 @@ public:
 					  PT_AttrPropIndex ap, 
 					  fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_AnnotationLayout();
-
+	fp_AnnotationRun *           getAnnotationRun(void);
 	virtual void		     format(void);
 	virtual void             collapse(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);

@@ -32,6 +32,7 @@
 #include "fl_BlockLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
+#include "fp_Run.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "fp_FootnoteContainer.h"
@@ -102,6 +103,10 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	else if(getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote,&sdhEnd);
+	}
+	else if(getContainerType() == FL_CONTAINER_ANNOTATION)
+	{
+		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation,&sdhEnd);
 	}
 	else
 	{
@@ -581,7 +586,7 @@ fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout,
 fl_AnnotationLayout::~fl_AnnotationLayout()
 {
 	// NB: be careful about the order of these
-	xxx_UT_DEBUGMSG(("Deleting Footlayout %x \n",this));
+	UT_DEBUGMSG(("Deleting Annotationlayout %x \n",this));
 	_purgeLayout();
 	fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(getFirstContainer());
 	while(pAC)
@@ -778,6 +783,53 @@ void fl_AnnotationLayout::_localCollapse(void)
 	}
 	m_bNeedsReformat = true;
 }
+
+fp_AnnotationRun *  fl_AnnotationLayout::getAnnotationRun(void)
+{
+        PT_DocPosition posFL = getDocPosition() - 1;
+	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(m_pLayout->findBlockAtPosition(posFL));
+
+	// get the owning container
+	if(pPrevL != NULL)
+	{
+		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+//
+// Code to find the Line that contains the Annotation reference
+//
+			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pPrevL);
+			fp_Run * pRun = pBL->getFirstRun();
+			PT_DocPosition posBL = pBL->getPosition();
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun && (pRun->getType() == FPRUN_HYPERLINK))
+			{
+			    fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+			    if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+			    {
+				fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun * >(pHRun);
+				if(pARun->getPID() == getAnnotationPID())
+				{
+				    return pARun;
+				}
+			    }
+			}
+			else
+			{
+			    return NULL;
+			}
+		}
+		else
+	        {
+		    return NULL;
+		}
+	}
+	return NULL;
+}
+	
 
 void fl_AnnotationLayout::collapse(void)
 {

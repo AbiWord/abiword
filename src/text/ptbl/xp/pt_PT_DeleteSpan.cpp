@@ -176,6 +176,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						
 					case PTX_SectionEndnote:
 					case PTX_SectionFootnote:
+					case PTX_SectionAnnotation:
 					case PTX_SectionFrame:
 					case PTX_SectionTOC:
 						bHasEndStrux = true;
@@ -186,6 +187,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_Section:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
+				    case PTX_EndAnnotation:
 				    case PTX_EndFrame:
 					case PTX_EndTOC:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
@@ -288,6 +290,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 									break;
 								case PTX_SectionFootnote:
 									if(eStrux2Type != PTX_EndFootnote)
+										continue;
+									break;
+								case PTX_SectionAnnotation:
+									if(eStrux2Type != PTX_EndAnnotation)
 										continue;
 									break;
 								case PTX_SectionFrame:
@@ -805,6 +811,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 //
 		return true;
 	case PTX_SectionFootnote:
+	case PTX_SectionAnnotation:
 	case PTX_SectionEndnote:
 	{
 //
@@ -817,6 +824,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	}
  	case PTX_EndFootnote:	
  	case PTX_EndEndnote:	
+ 	case PTX_EndAnnotation:	
  	{
 //
 // Get the actual block strux container for the endnote. 
@@ -1254,8 +1262,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	}
 	bool bPrevWasFootnote = false;
 	UT_sint32 iLoopCount = -1;
-	while (length > 0)
+	while (length >=0)
 	{
+	        if(length == 0 && iFootnoteCount <= 0)
+		  break;
 		iLoopCount++;
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
@@ -1840,7 +1850,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
         		    bool bStart = false;
 				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				    {
-		    			if(!strcmp(pszHname, "Annotation"))
+				      if((strcmp(pszHname, "annotation") == 0) ||(strcmp(pszHname, "Annotation") == 0) )
 				    	{
 				    		bStart = true;
 		    				break;

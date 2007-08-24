@@ -5389,27 +5389,22 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 {
 	fp_HyperlinkRun * pH1 = _getHyperlinkInRange(pos1, pos1);
-
 	UT_return_val_if_fail(pH1,false);
+	fp_AnnotationRun  * pAR = NULL;
+	UT_uint32 iRunLen = 1;
+	if(pH1->getHyperlinkType() ==  HYPERLINK_ANNOTATION)
+	{
+			pAR = static_cast<fp_AnnotationRun *>(pH1);
+			fl_AnnotationLayout * pAL = getLayout()->findAnnotationLayout(pAR->getPID());
+			UT_return_val_if_fail(pAL,false);
+			iRunLen = pAL->getLength();
+			
+	}
 
 	if (!isSelectionEmpty())
 		_clearSelection();
 
 	pos1 = pH1->getBlock()->getPosition(false) + pH1->getBlockOffset();
-
-	// now reset the hyperlink member for the runs that belonged to this
-	// hyperlink
-
-	fp_Run * pRun = pH1->getNextRun();
-	UT_ASSERT_HARMLESS(pRun);
-	while(pRun && pRun->getHyperlink() != NULL)
-	{
-		UT_DEBUGMSG(("fv_View::_deleteHyperlink: reseting run 0x%x\n", pRun));
-		pRun->setHyperlink(NULL);
-		pRun = pRun->getNextRun();
-	}
-
-	UT_ASSERT_HARMLESS(pRun);
 
 	// Signal PieceTable Change
 	if(bSignal)
@@ -5419,11 +5414,13 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 				pos1));
 
 	UT_uint32 iRealDeleteCount;
+	m_pDoc->beginUserAtomicGlob();
+	m_pDoc->deleteSpan(pos1,pos1 + iRunLen,NULL, iRealDeleteCount);
 
-	m_pDoc->deleteSpan(pos1,pos1 + 1,NULL, iRealDeleteCount);
 	// TODO -- add proper revision handling using iRealDeleteCount
 
 	// Signal PieceTable Changes have finished
+	m_pDoc->endUserAtomicGlob();
 	if(bSignal)
 	{
 		_restorePieceTableState();

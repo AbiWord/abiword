@@ -1016,6 +1016,16 @@ bool  FL_DocLayout::collapseAnnotations(void)
 void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 {
 	m_vecAnnotations.addItem(pFL);
+	UT_uint32 i = 0;
+	for(i=0; i<countAnnotations();i++)
+	{
+	    fl_AnnotationLayout * pAL = getNthAnnotation(i);
+	    fp_AnnotationRun * pARun = pAL->getAnnotationRun();
+	    if(pARun)
+	    {
+		pARun->recalcValue();
+	    }
+	}
 }
 
 /*!
@@ -1045,6 +1055,17 @@ void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 		return;
 	}
 	m_vecAnnotations.deleteNthItem(i);
+	if(isLayoutDeleting())
+	  return;
+	for(i=0; i<countAnnotations();i++)
+	{
+	    fl_AnnotationLayout * pAL = getNthAnnotation(i);
+	    fp_AnnotationRun * pARun = pAL->getAnnotationRun();
+	    if(pARun)
+	    {
+		pARun->recalcValue();
+	    }
+	}
 }
 
 /*!

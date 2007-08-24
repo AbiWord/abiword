@@ -205,6 +205,11 @@ void fp_AnnotationRun::_clearScreen(bool bFullLineHeightRect)
 	Fill(getGraphics(), xoff, yoff, getWidth(), iLineHeight);
 }
 
+void fp_AnnotationRun::recalcValue(void)
+{
+  _recalcWidth();
+}
+
 bool fp_AnnotationRun::_recalcWidth(void)
 {
     if(!displayAnnotations())

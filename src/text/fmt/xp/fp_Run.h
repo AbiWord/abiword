@@ -788,7 +788,7 @@ public:
 	}
 	UT_uint32 getPID(void) { return m_iPID;}
 	const char * getValue(void);
-
+    void         recalcValue(void);
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 
