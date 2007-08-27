@@ -80,6 +80,9 @@ public:
 	UT_uint32           getPID(void);
 private:
 	fp_Page * m_pPage;
+	UT_sint32 m_iLabelWidth;
+	UT_sint32 m_iXLabel;
+	UT_sint32 m_iYLabel;
 };
 
 

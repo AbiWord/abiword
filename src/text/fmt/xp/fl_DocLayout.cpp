@@ -981,6 +981,16 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 
 // Annotation methods
 
+
+static UT_sint32 compareLayouts(const void * ppCL1, const void * ppCL2)
+{
+  void * v1 = const_cast<void *>(ppCL1);
+  void * v2 = const_cast<void *>(ppCL2);
+  fl_ContainerLayout ** pCL1 = reinterpret_cast<fl_ContainerLayout **>(v1);
+  fl_ContainerLayout ** pCL2 = reinterpret_cast<fl_ContainerLayout **>(v2);
+  return static_cast<UT_sint32>((*pCL1)->getPosition(true)) - static_cast<UT_sint32>((*pCL2)->getPosition(true));
+}
+
 /*!
  * This simply returns the number of annotations in the document.
  */
@@ -1005,17 +1015,24 @@ bool  FL_DocLayout::collapseAnnotations(void)
       {
 	pBL = static_cast<fl_BlockLayout *>(pFL->getPrev());
 	  if(pBL)
+	    {
+	      pBL->collapse();
+	    }
+	  pBL = static_cast<fl_BlockLayout *>(pFL->getFirstLayout());
+	  if(pBL)
 	    pBL->collapse();
       }
   }
   return true;
 }
+
 /*!
  * Add a annotation layout to the vector remembering them.
  */
 void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 {
 	m_vecAnnotations.addItem(pFL);
+	m_vecAnnotations.qsort(compareLayouts);
 	UT_uint32 i = 0;
 	for(i=0; i<countAnnotations();i++)
 	{
@@ -1057,7 +1074,8 @@ void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 	m_vecAnnotations.deleteNthItem(i);
 	if(isLayoutDeleting())
 	  return;
-	for(i=0; i<countAnnotations();i++)
+	m_vecAnnotations.qsort(compareLayouts);
+	for(i=0; i<static_cast<UT_sint32>(countAnnotations());i++)
 	{
 	    fl_AnnotationLayout * pAL = getNthAnnotation(i);
 	    fp_AnnotationRun * pARun = pAL->getAnnotationRun();
@@ -1096,27 +1114,18 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
 {
 	UT_sint32 i =0;
 	UT_sint32 pos = 0;
-	fl_AnnotationLayout * pTarget = findAnnotationLayout(annpid);
  	fl_AnnotationLayout * pAL = NULL;
-	if(pTarget== NULL)
-	{
-		return 0;
-	}
-	PT_DocPosition posTarget = pTarget->getDocPosition();
-	fp_Container * pCon = pTarget->getFirstContainer();
-	fp_Page * pPageTarget = NULL;
-	if(pCon)
-	{
-		pPageTarget = pCon->getPage();
-	}
 	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
 	{
 		pAL = getNthAnnotation(i);
-		if(pAL->getDocPosition() < posTarget)
+		if(pAL->getAnnotationPID() == annpid)
 		{
-		    pos++;
+		        pos = i;
+			break;
 		}
 	}
+	if(pos != i)
+	  pos = -1;
 	return pos;
 }
 

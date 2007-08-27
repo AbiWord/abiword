@@ -791,6 +791,9 @@ public:
     void         recalcValue(void);
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
+	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
+    void         cleanDraw(dg_DrawArgs*);
+	UT_sint32    calcWidth(void);
 
  protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -806,6 +809,7 @@ public:
  private:
 	UT_uint32               m_iPID;
 	UT_UTF8String           m_sValue;
+	UT_sint32               m_iRealWidth;
 };
 
 class ABI_EXPORT fp_ImageRun : public fp_Run

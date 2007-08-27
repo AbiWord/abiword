@@ -801,7 +801,7 @@ fp_AnnotationRun *  fl_AnnotationLayout::getAnnotationRun(void)
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pPrevL);
 			fp_Run * pRun = pBL->getFirstRun();
 			PT_DocPosition posBL = pBL->getPosition();
-			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) <= posFL))
 			{
 				pRun = pRun->getNextRun();
 			}
@@ -861,6 +861,7 @@ void fl_AnnotationLayout::collapse(void)
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	m_bIsOnPage = false;
 }
 
 

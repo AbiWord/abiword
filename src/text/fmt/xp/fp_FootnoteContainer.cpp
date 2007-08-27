@@ -36,7 +36,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
-
+#include "fp_Run.h"
 /*!
   Create Footnote container
   \param iType Container type
@@ -324,7 +324,10 @@ void fp_FootnoteContainer::layout(void)
  */
 fp_AnnotationContainer::fp_AnnotationContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_ANNOTATION, pSectionLayout),
-	  m_pPage(NULL)
+	  m_pPage(NULL),
+	  m_iLabelWidth(0),
+	  m_iXLabel(0),
+	  m_iYLabel(0)
 {
 }
 
@@ -376,6 +379,27 @@ void fp_AnnotationContainer::clearScreen(void)
 	if(getPage() == NULL)
 	{
 		return;
+	}
+	if(getColumn() && (getHeight() != 0))
+	{
+		if(getPage() == NULL)
+		{
+			return;
+		}
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		if(pDSL == NULL)
+		{
+			return;
+		}
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 iWidth = getPage()->getWidth();
+		iWidth = iWidth - iLeftMargin - iRightMargin;
+		UT_sint32 xoff,yoff;
+		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
@@ -430,6 +454,7 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	}
 	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
 	FL_DocLayout * pDL = pAL->getDocLayout();
+	m_iLabelWidth = 0;
 	if(!pDL->displayAnnotations())
 	  return;
 
@@ -447,6 +472,22 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 		da.xoff = pDA->xoff + pContainer->getX();
+		if(i == 0)
+		{
+		        fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+			fp_AnnotationRun * pAR = pAL->getAnnotationRun();
+			if(pAR)
+			{		
+			    m_iLabelWidth = pAR->getWidth();
+      			    da.xoff = pDA->xoff + pContainer->getX() - m_iLabelWidth;
+			    fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			    da.yoff = pDA->yoff + pContainer->getY() + pLine->getAscent();
+			    m_iXLabel = da.xoff;
+			    m_iYLabel = da.yoff;
+			    pAR->draw(&da);
+			    da.xoff = pDA->xoff + pContainer->getX();
+			}
+		}
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
 	}

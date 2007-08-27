@@ -788,6 +788,16 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh,pPrev, static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
 		}
+		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_ANNOTATION))
+		{
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh,pPrev, static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
+			fp_Container * pFirstC = pL->getFirstContainer();
+			//
+			// This sets indent for a annotation label.
+			//
+			if(pFirstC)
+			  pFirstC->recalcMaxWidth(true);
+		}
 		else
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));

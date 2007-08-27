@@ -448,7 +448,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	UT_sint32 iBottomMargin = m_iBottomMargin;
 	UT_sint32 iLeftMargin = m_iLeftMargin;
 	UT_sint32 iRightMargin = m_iRightMargin;
-	UT_sint32 iTextIndent = m_iTextIndent;
+	UT_sint32 iTextIndent = getTextIndent();
 	
 	struct MarginAndIndent_t
 	{
@@ -481,10 +481,10 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 			m_iLeftMargin = 0;
 		}
 		
-		if(m_iTextIndent < 0)
+		if(getTextIndent() < 0)
 		{
 			// shuv the whole thing to the left
-			m_iLeftMargin -= m_iTextIndent;
+			m_iLeftMargin -= getTextIndent();
 		}
 
 		// igonre right margin
@@ -564,7 +564,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	
 	
 	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
-	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != m_iTextIndent ||
+	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != getTextIndent() ||
 	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
 	{
 		collapse();
@@ -781,10 +781,10 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			m_iLeftMargin = 0;
 		}
 		
-		if(m_iTextIndent < 0)
+		if(getTextIndent() < 0)
 		{
 			// shuv the whole thing to the left
-			m_iLeftMargin -= m_iTextIndent;
+			m_iLeftMargin -= getTextIndent();
 		}
 
 		// igonre right margin
@@ -2034,7 +2034,6 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	UT_ASSERT(pFirst && pFirst->countRuns() == 0);
 
 	pFirst->addRun(m_pFirstRun);
-
 	// only do the line layout if this block is not hidden ...
  	FV_View * pView = getView();
 
@@ -3738,6 +3737,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 	}
 #endif
 	UT_ASSERT(findLineInBlock(pLine) >= 0);
+	pLine->recalcMaxWidth(true);
 	return static_cast<fp_Container *>(pLine);
 }
 
@@ -5238,6 +5238,18 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 UT_sint32	fl_BlockLayout::getTextIndent(void) const
 {
+	fl_ContainerLayout * pCL = myContainingLayout();
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) && ((pCL->getFirstLayout() == NULL) || (pCL->getFirstLayout() == this)))
+	{
+			fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pCL);
+			fp_AnnotationRun * pAR = pAL->getAnnotationRun();
+			if(pAR)
+			{
+				    if(pAR->getRealWidth() == 0)
+						pAR->recalcValue();
+					return m_iTextIndent+pAR->getRealWidth();
+			}
+	}
 	return m_iTextIndent;
 }
 
@@ -8752,8 +8764,8 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
-  	if(m_iTextIndent < 0)
-		iMinLeft += m_iTextIndent;
+  	if(getTextIndent() < 0)
+		iMinLeft += getTextIndent();
 	UT_ASSERT(iStartX >= iMinLeft);
 #endif
 	
@@ -8860,8 +8872,8 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
-	if(m_iTextIndent < 0)
-		iMinLeft += m_iTextIndent;
+	if(getTextIndent() < 0)
+		iMinLeft += getTextIndent();
 	
 	UT_ASSERT(iStartX >= iMinLeft);
 #endif

@@ -417,7 +417,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         // a footnote reference field.
 
 		// Do we Need to set the min Unique id now???
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotate-id", atts));
+		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotation-id", atts));
 		bool bOK = true;
 		if(pszId)
 		{

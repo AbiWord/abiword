@@ -35,7 +35,7 @@
 fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 				   UT_uint32 iOffsetFirst, 
 				   UT_uint32 iLen ) : 
-  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue("")
+  fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue(""),m_iRealWidth(0)
 {
     UT_ASSERT(pBL);
 	_setLength(1);
@@ -207,7 +207,11 @@ void fp_AnnotationRun::_clearScreen(bool bFullLineHeightRect)
 
 void fp_AnnotationRun::recalcValue(void)
 {
-  _recalcWidth();
+    _recalcWidth();
+    if(!displayAnnotations())
+    {
+        m_iRealWidth = calcWidth();
+    }
 }
 
 bool fp_AnnotationRun::_recalcWidth(void)
@@ -216,7 +220,6 @@ bool fp_AnnotationRun::_recalcWidth(void)
     {
         if(getWidth() == 0)
 	    return false;
-	_setWidth(0);
 	clearScreen();
 	markAsDirty();
 	if(getLine())
@@ -227,6 +230,7 @@ bool fp_AnnotationRun::_recalcWidth(void)
 	{
 	    getBlock()->setNeedsRedraw();
 	}
+	_setWidth(0);
 	return true;
     }
     if(!m_bIsStart)
@@ -234,16 +238,9 @@ bool fp_AnnotationRun::_recalcWidth(void)
 	_setWidth(0);
 	return false;;
     }
-    _setValue();
-    getGraphics()->setFont(_getFont());
-    UT_sint32 iNewWidth = 0;
-    if(m_sValue.size() > 0)
-    {
-	iNewWidth = getGraphics()->measureString(m_sValue.ucs4_str().ucs4_str(),
-						 0,
-						 m_sValue.ucs4_str().size(),
-						 NULL);
-    }
+    UT_sint32 iNewWidth = calcWidth();
+    m_iRealWidth = iNewWidth;
+
     if (iNewWidth != getWidth())
     {
 	clearScreen();
@@ -257,11 +254,25 @@ bool fp_AnnotationRun::_recalcWidth(void)
 	    getBlock()->setNeedsRedraw();
 	  }
 	_setWidth(iNewWidth);
-
 	return true;
     }
-
     return false;
+}
+
+UT_sint32 fp_AnnotationRun::calcWidth(void)
+{
+    UT_sint32 iNewWidth;
+    _setValue();
+    getGraphics()->setFont(_getFont());
+    if(m_sValue.size() > 0)
+    {
+	iNewWidth = getGraphics()->measureString(m_sValue.ucs4_str().ucs4_str(),
+						 0,
+						 m_sValue.ucs4_str().size(),
+						 NULL);
+    }
+    UT_ASSERT(iNewWidth > 0);
+    return iNewWidth;
 }
 
 const char * fp_AnnotationRun::getValue(void)
@@ -292,11 +303,7 @@ bool fp_AnnotationRun::_canContainPoint(void) const
 
 bool fp_AnnotationRun::_setValue(void)
 {
-  if(!getLine())
-    return false;
-  if(!getLine()->getPage())
-    return false;
-  UT_uint32 pos = getLine()->getPage()->getAnnotationPos(getPID())+1; 
+  UT_uint32 pos = getBlock()->getDocLayout()->getAnnotationVal(getPID()) + 1;
   UT_String tmp;
   UT_String_sprintf(tmp,"(%d)",pos);
   m_sValue = tmp.c_str();
