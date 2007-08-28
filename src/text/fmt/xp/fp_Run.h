@@ -369,7 +369,7 @@ protected:
 	void				_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void				_setHeight(UT_sint32 iHeight)
 							{ m_iHeight = iHeight;}
-	void				_setWidth(UT_sint32 iWidth)
+	virtual void		_setWidth(UT_sint32 iWidth)
                         	{ m_iWidth = iWidth; }
 
 	// use these with great care -- most of the time we need to use
@@ -800,6 +800,7 @@ public:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_recalcWidth(void);
 	bool                    _setValue(void);
+	virtual void            _setWidth(UT_sint32 iWidth);
 	virtual bool _letPointPass(void) const;
 	virtual bool _canContainPoint(void) const;
     virtual void _lookupProperties(const PP_AttrProp * pSpanAP,

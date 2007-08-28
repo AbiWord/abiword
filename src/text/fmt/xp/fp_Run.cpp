@@ -1331,14 +1331,21 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-				GR_Painter painter(pG);
-				pG->setColor(_getView()->getColorAnnotation(this));
-				pG->setLineProperties(pG->tluD(1.0),
-								GR_Graphics::JOIN_MITER,
-								GR_Graphics::CAP_PROJECTING,
-								GR_Graphics::LINE_ON_OFF_DASH);
+			if(displayAnnotations() || pG->queryProperties(GR_Graphics::DGP_SCREEN))
+			{
+					GR_Painter painter(pG);
+					pG->setColor(_getView()->getColorAnnotation(this));
+					pG->setLineProperties(pG->tluD(1.0),
+										  GR_Graphics::JOIN_MITER,
+										  GR_Graphics::CAP_PROJECTING,
+										  GR_Graphics::LINE_ON_OFF_DASH);
 				
-				painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+					painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+					pG->setLineProperties(pG->tluD(1.0),
+										  GR_Graphics::JOIN_MITER,
+										  GR_Graphics::CAP_PROJECTING,
+										  GR_Graphics::LINE_SOLID);
+			}	
 		}
 	}
 

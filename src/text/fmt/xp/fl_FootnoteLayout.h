@@ -30,6 +30,8 @@
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 
+class fl_BlockLayout;
+
 // We have one fl_FootnoteLayout for each footnote.  They all
 // get physically placed at the bottom of the fp_Page in their own
 // little container.  
@@ -74,6 +76,7 @@ public:
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
+	fl_BlockLayout *         getContainingBlock(void);
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }

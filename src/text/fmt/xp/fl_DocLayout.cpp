@@ -1013,14 +1013,14 @@ bool  FL_DocLayout::collapseAnnotations(void)
       pFL = getNthAnnotation(i);
       if(pFL)
       {
-	pBL = static_cast<fl_BlockLayout *>(pFL->getPrev());
+	  pBL = pFL->getContainingBlock();
 	  if(pBL)
-	    {
+	  {
 	      pBL->collapse();
-	    }
+	  }
 	  pBL = static_cast<fl_BlockLayout *>(pFL->getFirstLayout());
 	  if(pBL)
-	    pBL->collapse();
+	      pBL->collapse();
       }
   }
   return true;

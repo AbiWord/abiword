@@ -85,6 +85,24 @@ PT_DocPosition fl_EmbedLayout::getDocPosition(void)
 }
 
 /*!
+ * Return the block that contains this Embedded layout 
+ */
+fl_BlockLayout * fl_EmbedLayout::getContainingBlock(void)
+{
+  fl_ContainerLayout * pCL = getPrev();
+  while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+  {
+      pCL = pCL->getPrev();
+  }
+  if(pCL == NULL)
+      return NULL;
+  fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
+  while(pBL && pBL->getPosition(true) > getDocPosition())
+      pBL = pBL->getPrevBlockInDocument();
+  return pBL;
+}
+
+/*!
  * This method returns the length of the footnote. This is such that 
  * getDocPosition() + getLength() is one value beyond the the EndFootnote
  * strux

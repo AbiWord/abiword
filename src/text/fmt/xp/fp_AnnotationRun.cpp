@@ -205,6 +205,12 @@ void fp_AnnotationRun::_clearScreen(bool bFullLineHeightRect)
 	Fill(getGraphics(), xoff, yoff, getWidth(), iLineHeight);
 }
 
+void fp_AnnotationRun::_setWidth(UT_sint32 iWidth)
+{
+  UT_DEBUGMSG(("Annotation width set to %d \n",iWidth));
+  fp_Run::_setWidth(iWidth);
+}
+
 void fp_AnnotationRun::recalcValue(void)
 {
     _recalcWidth();
