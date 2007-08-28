@@ -1231,15 +1231,48 @@ abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 extern "C" gboolean
 abi_widget_set_font_name(AbiWidget * w, gchar * szName)
 {
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	g_return_val_if_fail ( szName, false );
+	
 	return abi_widget_invoke_ex (w,"fontFamily",szName,0,0);
 }
 
 extern "C" gboolean
 abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 {
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+
+	g_return_val_if_fail ( szSize, false );	
+	
 	return abi_widget_invoke_ex (w,"fontSize",szSize,0,0);
 }
 
+extern "C" gboolean
+abi_widget_set_style(AbiWidget * w, gchar * szName)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );	
+	
+	g_return_val_if_fail ( szName, false );
+	
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
+	g_return_val_if_fail(pFrame, false);
+
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	g_return_val_if_fail(pView, false);
+	
+	bool res = pView->setStyle(szName, false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR); // I stole this mask from ap_EditMethods; looks weird to me though - MARCM
+	
+	return res;
+}
+	
 extern "C" gboolean
 abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 {

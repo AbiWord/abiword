@@ -433,6 +433,9 @@ G_BEGIN_DECLS
   gboolean abi_widget_set_font_size(AbiWidget * w, gchar * szFontsize);
   const gchar** abi_widget_get_font_names (AbiWidget * w);
 
+  // style functions
+  gboolean abi_widget_set_style(AbiWidget * w, char* szName);
+
   // generic editmethod invocation hooks
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
