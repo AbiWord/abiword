@@ -6309,7 +6309,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 			curPos	 += iLenToCopy;
 		}
 
-		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
 	}
 
 	UT_ASSERT(curPos == pos2);
