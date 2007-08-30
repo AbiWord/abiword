@@ -3507,6 +3507,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->disableListUpdates();
 
 		_deleteSelection();
+
 		_generalUpdate();
 
 		// restore updates and clean up dirty lists

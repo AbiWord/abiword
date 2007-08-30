@@ -380,6 +380,7 @@ void fp_AnnotationContainer::clearScreen(void)
 	{
 		return;
 	}
+	fp_Container * pCon = NULL;
 	if(getColumn() && (getHeight() != 0))
 	{
 		if(getPage() == NULL)
@@ -396,12 +397,14 @@ void fp_AnnotationContainer::clearScreen(void)
 		UT_sint32 iWidth = getPage()->getWidth();
 		iWidth = iWidth - iLeftMargin - iRightMargin;
 		UT_sint32 xoff,yoff;
-		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
+		pCon = static_cast<fp_Container *>(getNthCon(0));
+		if(pCon == NULL)
+		  return;
+		getScreenOffsets(pCon,xoff,yoff);
 		UT_sint32 srcX = getX();
 		UT_sint32 srcY = getY();
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoff-m_iLabelWidth,yoff,iWidth,getHeight());
 	}
-	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
 	{
@@ -482,6 +485,7 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
       			    da.xoff = pDA->xoff + pContainer->getX() - m_iLabelWidth;
 			    fp_Line * pLine = static_cast<fp_Line *>(pContainer);
 			    da.yoff = pDA->yoff + pContainer->getY() + pLine->getAscent();
+			    da.bDirtyRunsOnly = false;
 			    m_iXLabel = da.xoff;
 			    m_iYLabel = da.yoff;
 			    pAR->draw(&da);
