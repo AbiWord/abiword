@@ -45,6 +45,7 @@
 #include "pd_Document.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
+#include "ie_impGraphic.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_UnixApp.h"
 #include "ut_sleep.h"
@@ -1271,6 +1272,41 @@ abi_widget_set_style(AbiWidget * w, gchar * szName)
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR); // I stole this mask from ap_EditMethods; looks weird to me though - MARCM
 	
 	return res;
+}
+
+extern "C" gboolean
+abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
+{
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );		
+	
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
+	g_return_val_if_fail(pFrame, false);
+
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	g_return_val_if_fail(pView, false);	
+	
+	g_return_val_if_fail(szFile, false);
+
+	IEGraphicFileType iegft = IEGFT_Unknown;
+
+	// we own storage for pNewFile and must g_free it.
+	UT_DEBUGMSG(("abi_widget_insert_image: loading [%s]\n", szFile));
+
+	FG_Graphic* pFG = NULL;
+	UT_Error errorCode;
+	errorCode = IE_ImpGraphic::loadGraphic(szFile, iegft, &pFG);
+	if (errorCode != UT_OK || !pFG)
+		return false;
+
+	errorCode = (positioned ? pView->cmdInsertPositionedGraphic(pFG) : pView->cmdInsertGraphic(pFG));
+	if (errorCode != UT_OK)
+	{
+		DELETEP(pFG);
+		return false;
+	}
+	DELETEP(pFG);
 }
 	
 extern "C" gboolean

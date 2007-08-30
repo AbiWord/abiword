@@ -436,6 +436,9 @@ G_BEGIN_DECLS
   // style functions
   gboolean abi_widget_set_style(AbiWidget * w, char* szName);
 
+  // image functions
+  gboolean abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned);
+
   // generic editmethod invocation hooks
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
