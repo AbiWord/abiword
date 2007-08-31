@@ -9232,15 +9232,8 @@ void fl_BlockLayout::remItemFromList(void)
 		}
 		if (currLevel == 0)
 		{
-#ifndef __MRC__
 			const gchar * attribs[] = {	"listid", lid,
 										"level", buf, NULL, NULL };
-#else
-			const gchar * attribs[] = {	"listid", NULL,
-											"level", NULL, NULL, NULL };
-			attribs [1] = lid;
-			attribs [3] = buf;
-#endif
 
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 
@@ -9249,15 +9242,8 @@ void fl_BlockLayout::remItemFromList(void)
 		}
 		else
 		{
-#ifndef __MRC__
 			const gchar * attribs[] = {	"listid", lid,
 											"level", buf,NULL,NULL };
-#else
-			const gchar * attribs[] = {	"listid", NULL,
-											"level", NULL, NULL, NULL };
-			attribs [1] = lid;
-			attribs [3] = buf;
-#endif
 
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 

@@ -74,11 +74,7 @@ public:
 								 const char * szMenuLabel,
 								 const char * szStatusMsg);
 	bool				addLabel(EV_Menu_Label *pLabel);
-#ifdef __MRC__
-	EV_Menu_Label *		getLabel(XAP_Menu_Id id);
-#else
 	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
-#endif
 	XAP_Menu_Id         getFirst(void) { return m_first;}
 	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);

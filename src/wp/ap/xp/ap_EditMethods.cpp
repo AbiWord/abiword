@@ -11471,15 +11471,7 @@ UT_return_val_if_fail(pDialog, false);
 			strcpy(buf3, "ltr");
 			strcpy(buf4, "left");
 		}
-#ifndef __MRC__ 		/* column-order */
 		const gchar * properties[] = { "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
-#else
-		const gchar * properties[] = { "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
-		properties [1] = buf;
-		properties [3] = buf2;
-		properties [5] = buf3;
-		properties [7] = buf4;
-#endif
 
 		UT_sint32 num_in_props = sizeof(properties)/sizeof(gchar *);
 		UT_sint32 num_out_props = num_in_props;

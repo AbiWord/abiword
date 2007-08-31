@@ -204,13 +204,8 @@ void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
        {    
              pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	     PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-#ifndef __MRC__
 	     const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField,docPos,pAppIndex,
 														   pfs->getXID());
-#else
-	     PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField,docPos,pAppIndex,
-													 pfs->getXID());
-#endif
 	     m_pPieceTable->getDocument()->notifyListeners(pfs, pcr);
 	     delete pcr;
        }

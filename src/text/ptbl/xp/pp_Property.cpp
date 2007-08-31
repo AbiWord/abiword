@@ -249,9 +249,6 @@ static PP_Property _props[] =
 	{ "wrap-mode",             "above-text",      false, NULL, PP_LEVEL_FRAME} 
 };
 
-#ifdef __MRC__
-extern "C"
-#endif
 static int s_compare (const void * a, const void * b)
 {
   const PP_Property * prop;

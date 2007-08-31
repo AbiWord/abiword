@@ -46,9 +46,6 @@ typedef gchar gchar;
 #include "ut_xml.h"
 #include "xap_EncodingManager.h"
 
-#ifdef __MRC__
-extern "C" {
-#endif
 
 static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
@@ -105,9 +102,6 @@ static void _default (void * userData, const gchar * buffer, int length)
   pXML->defaultData (static_cast<const char *>(buffer), length);
 }
 
-#ifdef __MRC__
-};
-#endif
 
 UT_Error UT_XML::parse (const char * szFilename)
 {

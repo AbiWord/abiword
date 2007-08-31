@@ -39,9 +39,6 @@
 #endif
 #define gchar xmlChar
 
-#ifdef __MRC__
-extern "C" {
-#endif
 
 static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
@@ -144,9 +141,6 @@ static void _fatalErrorSAXFunc(void *xmlp,
 
 }
 
-#ifdef __MRC__
-};
-#endif
 
 UT_Error UT_XML::parse (const char * szFilename)
 {

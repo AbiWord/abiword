@@ -264,22 +264,11 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	szProps += "; height:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
-#ifndef __MRC__
 	const gchar*	attributes[] = {
 		"dataid", szName,
 		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 		NULL, NULL
 	};
-#else
-	// MrCPP does not like the above
-	const gchar * attributes[] = {
-		"dataid", NULL,
-		PT_PROPS_ATTRIBUTE_NAME, NULL,
-	   	NULL, NULL
-	};
-	attributes [1] = szName;
-	attributes [3] = szProps;
-#endif
 
 
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
@@ -318,22 +307,11 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	szProps += "; height:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
-#ifndef __MRC__
 	const gchar*	attributes[] = {
 		PT_STRUX_IMAGE_DATAID, szName,
 		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 	   	NULL, NULL
 	};
-#else
-	// MrCPP does not like the above
-	const gchar * attributes[] = {
-		PT_STRUX_IMAGE_DATAID, NULL,
-		PT_PROPS_ATTRIBUTE_NAME, NULL,
-	   	NULL, NULL
-	};
-	attributes [1] = szName;
-	attributes [3] = szProps;
-#endif
 
 	pDoc->changeStruxFmt(PTC_AddFmt,iPos,iPos,attributes,NULL,iStruxType);
 

@@ -55,10 +55,6 @@ UT_HTML::~UT_HTML ()
 	// 
 }
 
-#ifdef __MRC__
-extern "C" {
-#endif
-
 static void _startElement (void * userData, const gchar * name, const gchar ** atts)
 {
 	UT_HTML * pXML = static_cast<UT_HTML *>(userData);
@@ -113,9 +109,6 @@ static void _fatalErrorSAXFunc (void *ctx, const char *msg, ...)
 	UT_DEBUGMSG(("libxml2/html: fatal: %s", errorMessage.c_str()));
 }
 
-#ifdef __MRC__
-};
-#endif
 
 UT_Error UT_HTML::parse (const char * szFilename)
 {

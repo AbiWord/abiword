@@ -297,9 +297,6 @@ static struct colorToRGBMapping s_Colors[] =
 	{ "yellowgreen",		154, 205,  50 }
 };
 
-#ifdef __MRC__
-extern "C" {
-#endif
 
 static int color_compare (const void * a, const void * b)
 {
@@ -309,9 +306,6 @@ static int color_compare (const void * a, const void * b)
   return g_ascii_strcasecmp (name, id->m_name);
 }
 
-#ifdef __MRC__
-};
-#endif
 
 static int x_hexDigit(char c)
 {
