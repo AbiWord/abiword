@@ -465,7 +465,6 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_CENTER_ALIGN, "center-align", signal_center_align);
 	INSTALL_BOOL_SIGNAL(SIGNAL_JUSTIFY_ALIGN, "justify-align", signal_justify_align);
 
-
 	INSTALL_DOUBLE_SIGNAL(SIGNAL_FONT_SIZE, "font-size", signal_font_size);
 	INSTALL_STRING_SIGNAL(SIGNAL_FONT_FAMILY, "font-family", signal_font_family);
 	INSTALL_STRING_SIGNAL(SIGNAL_STYLE_NAME, "style-name", signal_style_name);
@@ -486,6 +485,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 
 #define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
 #define FIRE_SINT32(query, var, fire) do { UT_sint32 val = (query); if (val != var) { var = val; fire(val); } } while(0)
+#define FIRE_UTF8STRING(query, var, fire) do { const UT_UTF8String& val = (query); if (val != var) { var = val; fire(val.utf8_str()); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
 const gchar * sz = UT_getAttribute(prop, props_in); \
@@ -555,6 +555,16 @@ public:
 			}
 		}
 
+		if ((AV_CHG_FMTSTYLE | AV_CHG_MOTION) & mask)
+		{
+			// check the current style
+			const gchar * szStyle = NULL;
+			m_pView->getStyle(&szStyle);
+			if (szStyle == NULL)
+				szStyle = "None";
+			FIRE_UTF8STRING(szStyle, style_name_, styleName);				
+		}
+
 		if ((AV_CHG_MOTION | AV_CHG_PAGECOUNT) & mask)
 		{
 			UT_uint32 _page_count = m_pView->getLayout()->countPages();
@@ -579,25 +589,8 @@ public:
 				FIRE_BOOL_CHARFMT("text-align", "right", false, rightAlign_, rightAlign);
 				FIRE_BOOL_CHARFMT("text-align", "center", false, centerAlign_, centerAlign);
 				FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
-
 			}
 		}
-
-/*
-		// TODO: is it me, or is this style code unfinished? - MARCM
-		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
-		{
-			const gchar * szStyle = NULL;
-			m_pView->getStyle(&szStyle);
-			if(szStyle == NULL)
-				szStyle = "None";
-			if (strcmp(style_name_.utf8_str(), szStyle) != 0)
-			{
-				style_name_ = szStyle;
-				styleName(szStyle);
-			}
-		}
-*/
 
 		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
 		{
