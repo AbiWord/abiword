@@ -664,13 +664,17 @@ void FL_DocLayout::fillLayouts(void)
 			fl_ContainerLayout * pCL = pLastSec->getLastLayout();
 			fl_BlockLayout * pBL = NULL;
 			bool bRebreak = false;
-			if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
 			{
 		              pBL = static_cast<fl_BlockLayout *>(pCL);
 			}
-			else
+			else if(pCL)
 			{
 		              pBL = pCL->getPrevBlockInDocument();
+			}
+			else
+			{
+				UT_ASSERT_HARMLESS(pCL);
 			}
 			if(pBL)
 			{
