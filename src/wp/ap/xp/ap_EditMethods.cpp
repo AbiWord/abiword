@@ -153,7 +153,7 @@
 **	 EOL	end of line
 **	 BOW	beginning of word
 **	 EOW	end of word
-**	 BOW	beginning of sentence
+**	 BOS	beginning of sentence
 **	 EOS	end of sentence
 **	 BOB	beginning of block
 **	 EOB	end of block
