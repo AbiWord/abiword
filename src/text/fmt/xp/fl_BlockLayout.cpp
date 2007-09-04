@@ -9569,6 +9569,8 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	vp.addItem("text-indent");	vp.addItem(pszIndent);
 	vp.addItem("field-font"); 	vp.addItem(fFont);
 	vp.addItem("list-style"); 	vp.addItem(style);
+	vp.addItem("list-delim");	vp.addItem(lDelim);
+	vp.addItem("list-decimal");	vp.addItem(lDecimal);
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 
 	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc, getView());
