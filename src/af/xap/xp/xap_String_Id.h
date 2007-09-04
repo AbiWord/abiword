@@ -422,6 +422,7 @@ dcl(LANG_UR, 								"Urdu")
 dcl(LANG_UZ_UZ, 							"Uzbek")
 dcl(LANG_VI_VN, 							"Vietnamese")
 dcl(LANG_CY_GB, 							"Welsh")
+dcl(LANG_WO_SN, 							"Wolof (Senegal)")
 dcl(LANG_YI,								"Yiddish")
 
 

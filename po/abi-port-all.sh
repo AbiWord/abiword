@@ -37,4 +37,4 @@ echo ""
 ./abi-extract.pl -N ko
 ./abi-extract.pl -N ne-NP
 ./abi-extract.pl -N ur
-
+./abi-extract.pl -N wo-SN
