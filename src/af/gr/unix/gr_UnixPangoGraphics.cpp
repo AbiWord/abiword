@@ -1787,29 +1787,115 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 	UT_uint32 iExtraSpace = RI.m_iJustificationAmount;
 	UT_uint32 iPoints     = RI.m_iJustificationPoints;
 
-	UT_return_if_fail( RI.m_pText );
-	UT_TextIterator & text = *RI.m_pText;
+	UT_return_if_fail(RI.m_pText);
 	
-	for(UT_sint32 i = 0; text.getStatus() == UTIter_OK && i < RI.m_iLength; ++text, ++i)
+	UT_TextIterator & text = *RI.m_pText;
+	UT_sint32 iGlyphCount  = RI.m_pGlyphs->num_glyphs;
+	UT_BidiCharType iDir   =
+		RI.m_iVisDir % 2 ? UT_BIDI_RTL : UT_BIDI_LTR;
+
+	// Split into two big loops to avoid all the LTR/RTL logic inside -- if
+	// you make changes to one branch, please make sure to do the same to the
+	// other.
+	
+	UT_sint32 i; // glyph index
+	UT_sint32 j; // text index
+	
+	if (iDir == UT_BIDI_LTR)
 	{
-		UT_UCS4Char c = text.getChar();
+		i = 0;
+		j = 0;
 		
-		if(c == UCS_SPACE)
+		while (text.getStatus() == UTIter_OK &&
+			   i < iGlyphCount &&
+			   j < RI.m_iLength)
 		{
-			UT_uint32 iSpace = iExtraSpace/iPoints;
-			iExtraSpace -= iSpace;
-			iPoints--;
-
-			RI.m_pJustify[i] = ltpu(iSpace);
-
-			// TODO here we need to add this amount the pango metrics
-			RI.m_pGlyphs->glyphs[i].geometry.width += RI.m_pJustify[i];
+			UT_UCS4Char c = text.getChar();
+		
+			if(c == UCS_SPACE)
+			{
 			
-			if(!iPoints)
+				UT_uint32 iSpace = iExtraSpace/iPoints;
+				iExtraSpace -= iSpace;
+				iPoints--;
+
+				RI.m_pJustify[i] = ltpu(iSpace);
+
+				// add this amount the pango metrics
+				RI.m_pGlyphs->glyphs[i].geometry.width += RI.m_pJustify[i];
+			
+				if(!iPoints)
+					break;
+			}
+
+
+			// skip over any glyphs that belong to the current character
+			// LTR run, the glyphs and the text are in the same order,
+			// and logical offsets are increasing
+			UT_sint32 iOffset = RI.m_pLogOffsets[i++];
+		
+			while (RI.m_pLogOffsets[i] == iOffset && i < iGlyphCount)
+				++i;
+
+			if (i >= iGlyphCount)
 				break;
+		
+			// if the glyph cluster represents more characters than its
+			// length, we have to advance the iterator accordingly
+			UT_sint32 iDiff = RI.m_pLogOffsets[i] - iOffset;
+		
+			text += iDiff;
+			j += iDiff;
 		}
 	}
+	else
+	{
+		i = iGlyphCount - 1;
+		j = 0;
+		
+		while (text.getStatus() == UTIter_OK &&
+			   i >= 0 &&
+			   j < RI.m_iLength)
+		{
+			UT_UCS4Char c = text.getChar();
+		
+			if(c == UCS_SPACE)
+			{
+			
+				UT_uint32 iSpace = iExtraSpace/iPoints;
+				iExtraSpace -= iSpace;
+				iPoints--;
 
+				RI.m_pJustify[i] = ltpu(iSpace);
+
+				// add this amount the pango metrics
+				RI.m_pGlyphs->glyphs[i].geometry.width += RI.m_pJustify[i];
+			
+				if(!iPoints)
+					break;
+			}
+
+
+			// skip over any glyphs that belong to the current character
+			// RTL run, so the glyphs are in reversed order of the text,
+			// and logical offsets are decreesing
+			UT_sint32 iOffset = RI.m_pLogOffsets[i--];
+		
+			while (RI.m_pLogOffsets[i] == iOffset && i >= 0)
+				--i;
+
+			if (i < 0)
+				break;
+		
+			// if the glyph cluster represents more characters than its
+			// length, we have to advance the iterator accordingly
+			UT_sint32 iDiff = iOffset - RI.m_pLogOffsets[i];
+		
+			text += iDiff;
+			j += iDiff;
+		}
+	}
+	
 	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
