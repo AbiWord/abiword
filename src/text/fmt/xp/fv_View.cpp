@@ -8732,7 +8732,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
  \param col will be set to the cell to the property value, if the requested property exists
  \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellProperty(gchar * szPropName, gchar * &szPropValue)
+bool FV_View::getCellProperty(const gchar * szPropName, gchar * &szPropValue)
 {
 	PT_DocPosition posCell = getPoint();
 	if (!isSelectionEmpty())

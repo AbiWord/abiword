@@ -709,7 +709,7 @@ public:
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot);
 	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
-	bool				getCellProperty(gchar * szPropName, gchar * &szPropValue);
+	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue);
 	bool	            setTableFormat(const gchar * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
 	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps);
