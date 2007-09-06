@@ -2392,7 +2392,7 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 
 bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
-	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
+	UT_return_val_if_fail(m_pGraphics && m_pFont && m_pItem, false);
 
 	UT_ASSERT_HARMLESS(!pri);
 	if(!pri)

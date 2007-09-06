@@ -1248,7 +1248,10 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		// the split function created a copy of GR_Item in the render
 		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
 		// is destroyed)
-		pNew->m_pItem = pNew->m_pRenderInfo->m_pItem;
+		if(pNew->m_pRenderInfo)
+		{
+			pNew->m_pItem = pNew->m_pRenderInfo->m_pItem;
+		}
 	}
 	else
 	{
