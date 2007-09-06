@@ -242,8 +242,8 @@ void XAP_Win32Dialog_PluginManager::refreshPluginList()
 void XAP_Win32Dialog_PluginManager::refreshPluginInfo()
 {	
 
-	char *pName, *pAutor, *pDesc, *pVersion;
-	pName = pAutor = pDesc = pVersion ="";
+	const char *pName, *pAuthor, *pDesc, *pVersion;
+	pName = pAuthor = pDesc = pVersion ="";
 	XAP_Module* pModule = NULL;
 
 	if (m_curSelection!=LB_ERR)
@@ -257,7 +257,7 @@ void XAP_Win32Dialog_PluginManager::refreshPluginInfo()
 		if( mi )
 		{
 		    pName = mi->name;
-		    pAutor = mi->author;
+		    pAuthor = mi->author;
 		    pDesc = mi->desc;
 		    pVersion = mi->version;
 		}
@@ -265,6 +265,6 @@ void XAP_Win32Dialog_PluginManager::refreshPluginInfo()
 	
 	setControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_NAME, pName);
     setControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_DESCRIPTION, pDesc);
-	setControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR, pAutor);
+	setControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR, pAuthor);
 	setControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_VERSION, pVersion);	
 }
