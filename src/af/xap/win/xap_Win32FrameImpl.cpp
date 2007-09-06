@@ -128,6 +128,11 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	m_iStatusBarHeight(0),
 	m_iRealSizeHeight(0),
 	m_iRealSizeWidth(0),
+	m_iWindowStateBeforeFS(SW_SHOWNORMAL),
+	m_iWindowXBeforeFS(0),
+	m_iWindowYBeforeFS(0),
+	m_iWindowHeightBeforeFS(0),
+	m_iWindowWidthBeforeFS(0),
 	m_mouseWheelMessage(0),
 	m_iSizeWidth(0),
 	m_iSizeHeight(0)
@@ -472,6 +477,27 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 			// Assume we were at Normal (non-maximized) state
 			m_iWindowStateBeforeFS = SW_SHOWNORMAL;
 		}
+
+		// Save window dimensions, as well
+		RECT rc;
+
+		if(!GetWindowRect(hwndFrame, &rc))
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// try to pick some sane defaults that will work with any monitor
+			m_iWindowXBeforeFS = 0;
+			m_iWindowYBeforeFS = 0;
+			m_iWindowHeightBeforeFS = 400;
+			m_iWindowWidthBeforeFS = 400;
+		}
+		else
+		{
+			m_iWindowXBeforeFS = rc.left;
+			m_iWindowYBeforeFS = rc.top;
+			m_iWindowHeightBeforeFS = rc.bottom - rc.top;
+			m_iWindowWidthBeforeFS = rc.right - rc.left;
+		}
+		
 	}
 
 	// Add or remove title-bar and border
@@ -483,6 +509,32 @@ void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 	ShowWindow(hwndFrame, SW_HIDE);
 
 	ShowWindow(hwndFrame, isFullScreen ? SW_SHOWMAXIMIZED : m_iWindowStateBeforeFS);
+
+	// TODO: does the following code work well with multiple monitors?
+	if(isFullScreen)
+	{
+		int width = GetSystemMetrics(SM_CXSCREEN);
+		int height = GetSystemMetrics(SM_CYSCREEN);
+
+		if((height > 0) && (width > 0))
+		{
+			if(!SetWindowPos(hwndFrame, 0, 0, 0, width, height, 0))
+			{
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+	else
+	{
+		if(!SetWindowPos(hwndFrame, 0, m_iWindowXBeforeFS, m_iWindowYBeforeFS, m_iWindowWidthBeforeFS, m_iWindowHeightBeforeFS, 0))
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
 
 	UpdateWindow(hwndFrame);
 }
