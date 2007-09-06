@@ -374,7 +374,7 @@ struct field
 //
 typedef struct
 {
-	char * m_name;
+	const char * m_name;
 	Doc_Field_t m_id;
 } Doc_Field_Mapping_t;
 
@@ -712,7 +712,7 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (GsfInput * input)
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 															 UT_uint32 iNumbytes)
 {
-	char * magic	= 0;
+	const char * magic	= 0;
 	int magicoffset = 0;
 
 	magic = "Microsoft Word 6.0 Document";
@@ -979,8 +979,8 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 #endif
 
 static const struct {
-  char * metadata_key;
-  char * abi_metadata_name;
+  const char * metadata_key;
+  const char * abi_metadata_name;
 } metadata_names[] = {
   { GSF_META_NAME_TITLE, PD_META_KEY_TITLE },
   { GSF_META_NAME_DESCRIPTION, PD_META_KEY_DESCRIPTION },

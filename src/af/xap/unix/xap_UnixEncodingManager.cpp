@@ -78,7 +78,7 @@ bool prepped_table = 0;
 
 /*read an alias file for the locales*/
 static void
-read_aliases (char *file)
+read_aliases (const char *file)
 {
   FILE *fp;
   char buf[256];

@@ -517,8 +517,8 @@ static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,co
 
 struct _map
 {
-	char* key;
-	char* value;
+	const char* key;
+	const char* value;
 };
 static const char* search_map(const _map* m,const char* key,bool* is_default = NULL)
 {

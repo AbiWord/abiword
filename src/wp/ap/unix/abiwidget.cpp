@@ -1300,6 +1300,7 @@ abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 		return false;
 	}
 	DELETEP(pFG);
+	return true;
 }
 	
 extern "C" gboolean

@@ -38,7 +38,7 @@
 class PD_Document;
 
 struct ABI_EXPORT xmlToIdMapping {
-  char *m_name;
+  const char *m_name;
   int m_type;
 };
 

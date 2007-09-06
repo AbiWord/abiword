@@ -110,7 +110,7 @@ XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructo
 
 void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
 {
-	for (UT_sint32 i = 0; i < m_vecDialogs.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < m_vecDialogs.getItemCount(); i++)
 	{
 		const XAP_Dialog * pDialog = reinterpret_cast<const XAP_Dialog *>(m_vecDialogs.getNthItem(i));
 		if(pDialog && pDialog->getDialogId() == id)

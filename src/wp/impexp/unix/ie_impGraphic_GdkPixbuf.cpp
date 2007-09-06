@@ -665,16 +665,16 @@ bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 						  const char ** pszSuffixList,
 						  IEGraphicFileType * ft)
 {
-	static gchar *suffixString = "";
+	static gchar *suffixString = NULL;
 
-	if (!*suffixString) {
+	if (!suffixString) {
 		const SuffixInfo *suffixInfo = s_getSuffixInfo ();
 		const gchar 	**suffixIter = suffixInfo->suffixes;
-		gchar		 	*tmp = "";
+		gchar		 	*tmp = NULL;
 		while (*suffixIter) {
 			tmp = suffixString;
 			suffixString = g_strdup_printf ("%s*.%s;", suffixString, *suffixIter);
-			if (*tmp) {
+			if (tmp) {
 				g_free (tmp);
 			}
 			suffixIter++;

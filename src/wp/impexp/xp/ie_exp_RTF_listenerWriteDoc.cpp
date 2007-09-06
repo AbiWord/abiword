@@ -1384,7 +1384,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
         if (have_style) 
 		{
             int styleID = m_pie->_getStyleNumber(styleSzValue);
-            char* styleType = "s";
+            const char* styleType = "s";
             
             //get the style from the styleName
             PD_Style* pStyle = NULL;

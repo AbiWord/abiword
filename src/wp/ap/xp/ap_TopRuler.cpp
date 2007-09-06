@@ -3220,7 +3220,8 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 
 	if (!bDelete)
 	{
-		char * sz = NULL, sz1[2];
+		const char * sz = NULL; 
+		char sz1[2];
 		sz1[0] = static_cast<char>(iLeader) + '0'; sz1[1] = 0;
 
 		switch(m_draggingTabType)

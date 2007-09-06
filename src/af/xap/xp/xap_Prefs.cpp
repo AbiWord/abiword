@@ -33,7 +33,7 @@
 #include "xap_Prefs.h"
 
 struct xmlToIdMapping {
-	char *m_name;
+	const char *m_name;
 	int m_type;
 };
 

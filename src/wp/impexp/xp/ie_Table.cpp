@@ -319,6 +319,7 @@ ie_Table::ie_Table(PD_Document * pDoc) :
 
 ie_Table::ie_Table(void) :
 	m_pDoc(NULL),
+	m_bNewRow(false),
 	m_sdhLastCell(NULL)
 {
 	m_sLastTable.push(NULL);

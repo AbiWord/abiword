@@ -76,7 +76,7 @@ class fl_AutoNum;
  */
 #define CPNAME_OR_FALLBACK(destination,name,fallbackname) \
 {  \
-	static char* cpname = NULL; \
+	static const char* cpname = NULL; \
 	if (!cpname)    \
 	{       \
 		UT_iconv_t cd = UT_iconv_open(name,name);     \
@@ -7007,7 +7007,7 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 
 bool IE_Imp_RTF::ApplySectionAttributes()
 {
-	gchar* pProps = "props";
+	const gchar* pProps = "props";
 	UT_String propBuffer;
 	UT_String tempBuffer;
 	UT_String szHdrID;
@@ -10586,9 +10586,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	bool status = true;
 	int nesting = 1;
 	unsigned char ch;
-	char * styleTypeP = "P";
-	char * styleTypeC = "C";
-	char * styleType = styleTypeP;
+	const char * styleTypeP = "P";
+	const char * styleTypeC = "C";
+	const char * styleType = styleTypeP;
 	
 	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
@@ -11250,7 +11250,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	bool paramUsed = false;	
 	int nested = 0;
 	bool result;
-	char * metaDataKey;
+	const char * metaDataKey;
 	UT_UTF8String metaDataProp;
 	enum {
 		ACT_NONE,

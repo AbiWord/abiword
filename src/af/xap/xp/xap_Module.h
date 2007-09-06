@@ -53,11 +53,11 @@
 // this and for all of our required functions
 extern "C" {
 	typedef ABI_EXPORT struct XAP_ModuleInfo {
-		char * name;
-		char * desc;
-		char * version;
-		char * author;
-		char * usage;
+		const char * name;
+		const char * desc;
+		const char * version;
+		const char * author;
+		const char * usage;
 	};
 }
 

@@ -4598,11 +4598,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCal
 	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
 	const gchar * pszLatexID = NULL;
 	pSpanAP->getAttribute("latexid",pszLatexID);
-	if(pszLatexID == NULL)
-	{
-	  return false;
-	}
-	if(pszLatexID == "")
+	if(pszLatexID == NULL || *pszLatexID == 0)
 	{
 	  return false;
 	}
@@ -9563,7 +9559,7 @@ Defun1(dlgSpellPrefs)
 /*****************************************************************/
 
 /* the array below is a HACK. FIXME */
-static gchar* s_TBPrefsKeys [] = {
+static const gchar* s_TBPrefsKeys [] = {
 #if XP_SIMPLE_TOOLBAR
 	AP_PREF_KEY_SimpleBarVisible,
 #else	
@@ -9603,7 +9599,7 @@ _viewTBx(AV_View* pAV_View, int num)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_return_val_if_fail (pScheme, false);
 
-	pScheme->setValueBool(static_cast<gchar*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
+	pScheme->setValueBool(s_TBPrefsKeys[num], pFrameData->m_bShowBar[num]);
 
 	//	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	//	pView->draw(NULL);

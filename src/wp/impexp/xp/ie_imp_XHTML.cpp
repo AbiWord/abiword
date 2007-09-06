@@ -112,7 +112,7 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
 	UT_uint32 iBytesScanned = 0 ;
 	const char *p ;
-	char *magic ;
+	const char *magic ;
 	p = szBuf ;
 	while( iLinesToRead-- )
 	{
@@ -606,7 +606,7 @@ static bool recognizeXHTML (const char * szBuf, UT_uint32 iNumbytes)
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
 	UT_uint32 iBytesScanned = 0 ;
 	const char *p ;
-	char *magic ;
+	const char *magic ;
 	p = szBuf ;
 	while( iLinesToRead-- )
 	{

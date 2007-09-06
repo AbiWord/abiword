@@ -102,8 +102,8 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 
 	struct _table
 	{
-		gchar *		m_szKey;
-		gchar *		m_szValue;
+		const gchar *		m_szKey;
+		const gchar *		m_szValue;
 	};
 
 	struct _table _t[] =
@@ -123,7 +123,7 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	UT_uint32 k;
 	for (k=0; k<G_N_ELEMENTS(_t); k++)
 	{
-		gchar *xp;
+		const gchar *xp;
 		bool bDelete = true;
 
 		// do not decode empty strings
