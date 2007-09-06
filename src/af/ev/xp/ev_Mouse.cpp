@@ -31,6 +31,7 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
+#include "ev_MouseListener.h"
 
 EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM):
 	m_clickState(0),
@@ -80,3 +81,26 @@ bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 	return true;
 }
 
+void EV_Mouse::signal(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos)
+{
+	for (std::vector<EV_MouseListener*>::iterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+	{
+		EV_MouseListener* pListener = *it;
+		if (pListener)
+			pListener->signalMouse(eb, xPos, yPos);
+	}
+}
+
+UT_sint32 EV_Mouse::registerListener(EV_MouseListener* pListener)
+{
+	UT_return_val_if_fail(pListener, -1);
+	m_listeners.push_back(pListener); // TODO: look for gaps that we can reuse, caused by unregister calls - MARCM
+	return m_listeners.size()-1;
+}
+
+void EV_Mouse::unregisterListener(UT_sint32 iListenerId)
+{
+	UT_return_if_fail(iListenerId >= 0);
+	UT_return_if_fail(iListenerId >= static_cast<UT_sint32>(m_listeners.size()));	
+	m_listeners[iListenerId] = NULL;
+}

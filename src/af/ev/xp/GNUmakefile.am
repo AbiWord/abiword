@@ -53,6 +53,7 @@ noinst_HEADERS = \
 	ev_Menu_Labels.h \
 	ev_Menu_Layouts.h \
 	ev_Mouse.h \
+	ev_MouseListener.h \
 	ev_NamedVirtualKey.h \
 	ev_Toolbar_Actions.h \
 	ev_Toolbar_Control.h \
