@@ -10070,13 +10070,13 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
 			{
 				m_prevMouseContext = EV_EMC_IMAGESIZE;
-				UT_DEBUGMSG(("Set ImageSize Context  \n"));
+				xxx_UT_DEBUGMSG(("Set ImageSize Context  \n"));
 				return EV_EMC_IMAGESIZE;
 			}
 			else
 			{
 				m_prevMouseContext = EV_EMC_IMAGE;
-				UT_DEBUGMSG(("Set Image Context \n"));
+				xxx_UT_DEBUGMSG(("Set Image Context \n"));
 				return EV_EMC_IMAGE;
 			}
 		}
