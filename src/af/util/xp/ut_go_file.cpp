@@ -63,9 +63,9 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <io.h>
+#include <fcntl.h>
 #endif
 
-#include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
