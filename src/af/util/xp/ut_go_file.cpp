@@ -65,6 +65,7 @@
 #include <io.h>
 #endif
 
+#include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -1091,6 +1092,9 @@ UT_go_file_open_impl (char const *uri, GError **err)
 	}
 
 	if (is_fd_uri (uri, &fd)) {
+#if defined G_OS_WIN32
+		setmode (fd, O_BINARY);
+#endif
 		int fd2 = dup (fd);
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "rb") : NULL;
 		GsfInput *result;
@@ -1172,6 +1176,9 @@ UT_go_file_create_impl (char const *uri, GError **err)
 	}
 
 	if (is_fd_uri (uri, &fd)) {
+#if defined G_OS_WIN32
+		setmode (fd, O_BINARY);
+#endif
 		int fd2 = dup (fd);
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "wb") : NULL;
 		GsfOutput *result = fil ? gsf_output_stdio_new_FILE (uri, fil, FALSE) : NULL;
