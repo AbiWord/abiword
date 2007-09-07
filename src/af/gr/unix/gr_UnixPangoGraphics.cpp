@@ -23,6 +23,7 @@
 #endif
 
 #include "gr_UnixPangoGraphics.h"
+#include "gr_Painter.h"
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
@@ -493,7 +494,7 @@ GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 
 void GR_UnixPangoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
@@ -741,7 +742,7 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
    	gdk_draw_drawable(_getDrawable(), m_pGC, _getDrawable(), tdu(x_src), tdu(y_src),
    				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }

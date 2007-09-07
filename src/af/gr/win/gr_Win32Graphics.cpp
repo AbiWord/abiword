@@ -29,6 +29,7 @@
 
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
+#include "gr_Painter.h"
 #include <xap_Win32App.h>
 
 #include <xap_Win32Res_Cursors.rc2>
@@ -1027,7 +1028,7 @@ void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	{
 		return;
 	}
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 
 	setExposePending(true);
 	ScrollWindowEx(m_hwnd, ddx, ddy, NULL, NULL, NULL, 0, SW_INVALIDATE);
@@ -1049,7 +1050,7 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	r.right = r.left + width;
 	r.bottom = r.top + height;
 	
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	
 	setExposePending(true);
 	ScrollWindowEx(m_hwnd, (x_dest - x_src), (y_dest - y_src),

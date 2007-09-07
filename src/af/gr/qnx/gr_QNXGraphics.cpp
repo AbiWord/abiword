@@ -29,6 +29,7 @@
 #include "gr_QNXGraphics.h"
 #include "gr_QNXImage.h"
 #include "gr_CharWidths.h"
+#include "gr_Painter.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -733,7 +734,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	PhPoint_t offset;
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	UT_sint32 ddx = -tdu(newX - getPrevXOffset());
 	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
 	setPrevYOffset(newY);
@@ -800,7 +801,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	GR_CaretDisabler caretDisabler(getCaret());
+	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	PhPoint_t shift,offset;
 	PhRect_t rect;
 	PhRect_t dst_rect;

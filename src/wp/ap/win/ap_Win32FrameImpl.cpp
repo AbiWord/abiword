@@ -24,6 +24,7 @@
 #include "ut_Win32Timer.h"
 #include "ut_Win32OS.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Painter.h"
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
 #include "ap_Win32StatusBar.h"
@@ -1344,7 +1345,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			FV_View * pFV = static_cast<FV_View *>(pView);
 			GR_Graphics * pG = pFV->getGraphics();
 
-			GR_CaretDisabler caretDisabler(pG->getCaret());
+			GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 			
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
