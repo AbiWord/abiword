@@ -2399,39 +2399,27 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	g_return_val_if_fail (w != 0, FALSE);
 	g_return_val_if_fail (mthdName != 0, FALSE);
 
-	UT_DEBUGMSG(("1\n"));
-
 	// get the method container
 	XAP_App *pApp = XAP_App::getApp();
 	container = pApp->getEditMethodContainer();
 	g_return_val_if_fail (container != 0, FALSE);
 
-	UT_DEBUGMSG(("2\n"));
-
 	// get a handle to the actual EditMethod
 	method = container->findEditMethodByName (mthdName);
 	g_return_val_if_fail (method != 0, FALSE);
 
-	UT_DEBUGMSG(("3\n"));
-
 	// get a valid frame
 	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
-
-	UT_DEBUGMSG(("4\n"));
 
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
 	g_return_val_if_fail (view != 0, FALSE);
 	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
 
-	UT_DEBUGMSG(("5\n"));
-
 	// construct the call data
 	EV_EditMethodCallData calldata(data, (data ? strlen (data) : 0));
 	calldata.m_xPos = x;
 	calldata.m_yPos = y;
-
-	UT_DEBUGMSG(("6\n"));
 
 	// actually invoke
 	return (method->Fn(view, &calldata) ? TRUE : FALSE);
