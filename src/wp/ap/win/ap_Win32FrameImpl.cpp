@@ -1345,7 +1345,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			FV_View * pFV = static_cast<FV_View *>(pView);
 			GR_Graphics * pG = pFV->getGraphics();
 
-			GR_Painter caretDisablerPainter(m_pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
+			GR_Painter caretDisablerPainter(pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 			
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
