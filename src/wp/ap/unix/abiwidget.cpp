@@ -42,6 +42,7 @@
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
 #include "ap_FrameData.h"
+#include "ap_FrameListener.h"
 #include "pd_Document.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
@@ -82,6 +83,7 @@
 /**************************************************************************/
 /**************************************************************************/
 
+class AbiWidget_FrameListener;
 class AbiWidget_ViewListener;
 
 // Our widget's private storage data
@@ -97,6 +99,7 @@ struct _AbiPrivData {
 	bool                 m_bMappedEventProcessed;
     bool                 m_bUnlinkFileAfterLoad;
 	gint                 m_iNumFileLoads;
+	AbiWidget_FrameListener * m_pFrameListener;
 	AbiWidget_ViewListener * m_pViewListener;
 	bool                 m_bShowMargin;
 	bool                 m_bWordSelections;
@@ -514,16 +517,27 @@ class Stateful_ViewListener : public AV_Listener
 {
 public:
 	Stateful_ViewListener(AV_View * pView)
-		: m_pView(static_cast<FV_View *>(pView))
+		: m_pView(static_cast<FV_View *>(pView)),
+		m_lid((AV_ListenerId)-1)
 	{
 		init();
+		
+		AV_ListenerId lid;
+		if (pView->addListener(this, &lid))
+		{
+			m_lid = lid;
+		}
+		else
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	virtual ~Stateful_ViewListener(void)
 	{
-		m_pView->removeListener(m_lid);
+		// re-enable this when we are also properly notified if the view is killed under us - MARCM
+		//if (m_lid != (AV_ListenerId)-1)
+		//	m_pView->removeListener(m_lid);
 	}
-	
+
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		UT_return_val_if_fail(pView == m_pView, false);
@@ -664,11 +678,6 @@ public:
 		// i don't feel like creating a new type if i don't have to. this is semantically
 		// similar enough that i don't care
 		return AV_LISTENER_PLUGIN;
-	}
-
-	void setLID(AV_ListenerId lid)
-	{
-		m_lid = lid;
 	}
 
 	virtual void bold(bool value) {}
@@ -831,24 +840,62 @@ static void _abi_widget_releaseListener(AbiWidget *widget)
 
 static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
 {
+	g_return_val_if_fail(pView, false);
+	
 	// hook up a FV_View listener to the widget. This will let the widget
 	// fire GObject signals when things in the view change
 	AbiPrivData * private_data = (AbiPrivData *)widget->priv;
 	_abi_widget_releaseListener(widget);
 	
 	private_data->m_pViewListener = new AbiWidget_ViewListener(widget, pView);
-	UT_ASSERT(private_data->m_pViewListener);
-
-	AV_ListenerId lid;
-	bool bResult = pView->addListener(static_cast<AV_Listener *>(private_data->m_pViewListener), &lid);
-	UT_ASSERT(bResult);
-	private_data->m_pViewListener->setLID(lid);
+	g_return_val_if_fail(private_data->m_pViewListener, false);
 
 	// notify the listener that a new view has been bound
 	private_data->m_pViewListener->notify(pView, AV_CHG_ALL);
 
-	return bResult;
+	return true;
 }
+
+class AbiWidget_FrameListener : public AP_FrameListener
+{
+public:
+	AbiWidget_FrameListener(AbiWidget * pWidget)
+		: m_pWidget(pWidget),
+		m_iListenerId(-1)
+	{
+		if (pWidget && pWidget->priv && pWidget->priv->m_pFrame)
+		{
+			UT_DEBUGMSG(("Registering AbiWidget_FrameListener listener\n"));
+			m_iListenerId = pWidget->priv->m_pFrame->registerListener(this);
+		}
+		else
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+	
+	~AbiWidget_FrameListener()
+	{
+		// TODO: unregister
+	}
+	
+	virtual void signalFrame(AP_FrameSignal signal)
+	{
+		switch (signal)
+		{
+			case APF_ReplaceDocument:
+				UT_DEBUGMSG(("Replace document signalled\n"));
+				break;
+			case APF_ReplaceView:
+				UT_DEBUGMSG(("Replace view signalled\n"));
+				if (m_pWidget->priv->m_pFrame->getCurrentView() && m_pWidget->priv->m_bMappedToScreen)
+					_abi_widget_bindListenerToView(m_pWidget, m_pWidget->priv->m_pFrame->getCurrentView());
+				break;
+		}
+	}
+	
+private:
+	AbiWidget *         m_pWidget;
+	UT_sint32			m_iListenerId;
+};
 
 /**************************************************************************/
 /**************************************************************************/
@@ -1081,8 +1128,6 @@ abi_widget_file_open(AbiWidget * abi)
 	//
 	_abi_widget_releaseListener(abi);
 	abi_widget_invoke(abi,"fileOpen");
-	AP_UnixFrame * pFrame = static_cast<AP_UnixFrame *>(abi->priv->m_pFrame);
-	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
 	
 	PD_Document *pDoc = pView->getDocument();
@@ -1421,10 +1466,6 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetyp
 	  abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
 
-	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
-	// todo: or whenever the frame changes its view, such as a document load
-	UT_DEBUGMSG(("About to bind listener to view \n"));
-	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 	{
@@ -1497,10 +1538,6 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 	abi->priv->m_bPendingFile = false;
 	abi->priv->m_iNumFileLoads += 1;
 
-	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
-	// todo: or whenever the frame changes its view, such as a document load
-	UT_DEBUGMSG(("About to bind listener to view \n"));
-	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 	{
@@ -1786,6 +1823,8 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_bMappedEventProcessed = false;
 	priv->m_bUnlinkFileAfterLoad = false;
 	priv->m_iNumFileLoads = 0;
+	priv->m_pFrameListener = NULL;
+	priv->m_pViewListener = NULL;
 	priv->m_bShowMargin = true;
 	priv->m_bWordSelections = true;
 	priv->m_sMIMETYPE = new UT_UTF8String("");
@@ -1911,6 +1950,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 	if(abi->priv) 
 		{
 			_abi_widget_releaseListener(abi);
+			// TODO: release the frame listener
 			bBonobo = pApp->isBonoboRunning();
 			if(abi->priv->m_pFrame)
 				{
@@ -2236,8 +2276,8 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	XAP_App::getApp()->rememberFrame ( pFrame ) ;
 	XAP_App::getApp()->rememberFocussedFrame ( pFrame ) ;
 
-	//_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
-
+	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
+	
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
 #endif
