@@ -134,8 +134,19 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
   gtk_widget_show(m_entry);
 
-  if ( getHyperlink() != NULL )
-    gtk_entry_set_text ( GTK_ENTRY(m_entry), getHyperlink() ) ;
+  const gchar * hyperlink = getHyperlink();
+
+  if (hyperlink && *hyperlink)
+  {
+    if (*hyperlink == '#')
+    {
+      gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink + 1) ;
+    }
+    else
+    {
+      gtk_entry_set_text ( GTK_ENTRY(m_entry), hyperlink ) ;
+    }
+  }
 
   // the bookmark list
   m_swindow  = gtk_scrolled_window_new(NULL, NULL);
@@ -163,14 +174,6 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   	  gtk_clist_append (GTK_CLIST (m_clist), const_cast<gchar **>(reinterpret_cast<const gchar **>(&m_pBookmarks[i])));
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
-
-  const gchar * hyperlink = getHyperlink();
-  if (hyperlink)
-  {
-	gtk_entry_set_text(GTK_ENTRY(m_entry), hyperlink);
-// TODO uncomment line below when bug 920 gets fixed.
-//	gtk_editable_select_region (GTK_EDITABLE(m_entry), 0, -1);
-  }
 }
 
 GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
