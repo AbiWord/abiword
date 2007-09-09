@@ -1363,6 +1363,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetyp
 		if(ieft == IEFT_Unknown)
 			ieft = IE_Exp::fileTypeForSuffix(mimetype);
 	}
+	UT_DEBUGMSG(("Will use ieft %d to load file\n", ietf));
 
 	if(abi->priv->m_szFilename)
 		g_free(abi->priv->m_szFilename);
