@@ -201,6 +201,7 @@ noinst_HEADERS = \
 	ap_EmbeddedFeatures.h \
 	ap_Features.h \
 	ap_FrameData.h \
+	ap_FrameListener.h \
 	ap_Frame.h \
 	ap_LB_DeadAbovedot.h \
 	ap_LB_DeadAcute.h \

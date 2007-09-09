@@ -571,7 +571,10 @@ UT_Error AP_Frame::_replaceDocument(AD_Document * pDoc)
 	XAP_Frame::tZoomType iZoomType;
 	UT_uint32 iZoom = getNewZoom(&iZoomType);
 	setZoomType(iZoomType);
-	return _showDocument(iZoom);
+	UT_Error res = _showDocument(iZoom);
+	// notify our listeners
+	_signal(APF_ReplaceDocument);
+	return res;
 }
 
 UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
@@ -840,4 +843,31 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		pFrameImpl->notifyViewChanged(m_pView);
 	}
 	DELETEP(pReplacedView);
+	
+	// notify our listeners
+	_signal(APF_ReplaceView);
+}
+
+UT_sint32 AP_Frame::registerListener(AP_FrameListener* pListener)
+{
+	UT_return_val_if_fail(pListener, -1);
+	m_listeners.push_back(pListener); // TODO: look for gaps that we can reuse, caused by unregister calls - MARCM
+	return m_listeners.size()-1;
+}
+
+void AP_Frame::unregisterListener(UT_sint32 iListenerId)
+{
+	UT_return_if_fail(iListenerId >= 0);
+	UT_return_if_fail(iListenerId >= static_cast<UT_sint32>(m_listeners.size()));	
+	m_listeners[iListenerId] = NULL;
+}
+
+void AP_Frame::_signal(AP_FrameSignal sig)
+{
+	for (std::vector<AP_FrameListener*>::iterator it = m_listeners.begin(); it != m_listeners.end(); it++)
+	{
+		AP_FrameListener* pListener = *it;
+		if (pListener)
+			pListener->signalFrame(sig);
+	}
 }

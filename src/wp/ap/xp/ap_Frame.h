@@ -20,9 +20,11 @@
 #ifndef AP_FRAME_H
 #define AP_FRAME_H
 
+#include <vector>
 #include "ut_types.h"
 #include "xap_Frame.h"
 #include "ie_types.h"
+#include "ap_FrameListener.h"
 
 class AV_View;
 class ap_Scrollbar_ViewListener;
@@ -58,7 +60,9 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	bool                        getDoWordSelections(void) const
 	{ return m_bWordSelections;}
 
-	  
+	UT_sint32					registerListener(AP_FrameListener* pListener);
+	void						unregisterListener(UT_sint32 iListenerId);
+	
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
@@ -87,8 +91,11 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_sint32 _getDocumentAreaWidth() = 0;
 	virtual UT_sint32 _getDocumentAreaHeight() = 0;
 
+	void _signal(AP_FrameSignal sig);
+
  private:
 	bool    m_bShowMargin;
 	bool    m_bWordSelections;
+	std::vector<AP_FrameListener*> m_listeners;	
 };
 #endif // AP_FRAME_H
