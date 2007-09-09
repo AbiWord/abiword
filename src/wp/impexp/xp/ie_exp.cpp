@@ -398,7 +398,10 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 IEFileType IE_Exp::fileTypeForMimetype(const char * szMimetype)
 {
 	if (!szMimetype)
+	{
+		UT_DEBUGMSG(("fileTypeForMimetype() no mimetype specified, defaulting to suffix .abw\n"));
 		return IE_Exp::fileTypeForSuffix(".abw");
+	}
 
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
@@ -444,7 +447,10 @@ IEFileType IE_Exp::fileTypeForMimetype(const char * szMimetype)
 IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
+	{
+		UT_DEBUGMSG(("fileTypeForSuffix() no suffix specified, defaulting to suffix .abw\n"));
 		return IE_Exp::fileTypeForSuffix(".abw");
+	}
 
 	// to alert us to bugs like 9571
 	UT_ASSERT_HARMLESS( *szSuffix == '.' );
