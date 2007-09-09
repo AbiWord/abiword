@@ -1404,9 +1404,9 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetyp
 	IEFileType ieft = IEFT_Unknown;
 	if (mimetype && *mimetype != '\0')
 	{
-		ieft = IE_Exp::fileTypeForMimetype(mimetype);
+		ieft = IE_Imp::fileTypeForMimetype(mimetype);
 		if(ieft == IEFT_Unknown)
-			ieft = IE_Exp::fileTypeForSuffix(mimetype);
+			ieft = IE_Imp::fileTypeForSuffix(mimetype);
 	}
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
@@ -1480,11 +1480,11 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetyp
 	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n", ieft));
 	if(ieft < 0)
 	{
-		ieft =  IE_Exp::fileTypeForSuffix(".abw");
+		ieft =  IE_Imp::fileTypeForSuffix(".abw");
 	}
 	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
 	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
-	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+	*(abi->priv->m_sMIMETYPE) =  IE_Imp::descriptionForFileType(ieft);
 
 	return TRUE;
 }
