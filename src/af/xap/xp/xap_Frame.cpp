@@ -110,6 +110,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	m_zoomType(f->m_zoomType),
 	m_pData(0),
+	m_bHideMenuScroll(f->m_bHideMenuScroll),
 	m_iIdAutoSaveTimer(0),
 	m_iAutoSavePeriod(f->m_iAutoSavePeriod),
 	m_bBackupRunning(false),
