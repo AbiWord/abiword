@@ -25,6 +25,7 @@
 class ABI_EXPORT EV_MouseListener
 {
 public:
+	virtual ~EV_MouseListener() {}
 	// coordinates are in layout units
 	virtual void signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos) = 0;
 };
