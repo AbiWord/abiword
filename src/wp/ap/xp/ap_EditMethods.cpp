@@ -13729,8 +13729,9 @@ Defun(hyperlinkStatusBar)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-
-	pFrame->raise();
+	
+	// PLEASE DOOOON'T UNCOMMENT THIS EVIL LINE (unexpectedly will hide the pop-up)
+	//pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
@@ -13740,9 +13741,11 @@ Defun(hyperlinkStatusBar)
 		
 	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
 	
+	// flags
 	pView->setAnnotationPreviewActive(true);
 	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
 	
+	// Fields
 	pAnnPview->setDescription(sText.utf8_str());
 	
 	// Optional fields
@@ -13752,18 +13755,18 @@ Defun(hyperlinkStatusBar)
 	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
 	pAnnPview->runModeless(pFrame);
 	
-	UT_sint32 xoff = 0, yoff = 0;
+	//UT_sint32 xoff = 0, yoff = 0;
 	//fp_Run * pRun = pView->getHyperLinkRun(pos);
-	pHRun->getLine()->getOffsets(pHRun, xoff, yoff); //TODO try getting container's screen offset... ->getContainer()
+	//pHRun->getLine()->getOffsets(pHRun, xoff, yoff); //TODO try getting container's screen offset... ->getContainer()
 	// Sevior's infamous + 1....
-	yoff += pHRun->getLine()->getAscent() - pHRun->getAscent() + 1;
+	//yoff += pHRun->getLine()->getAscent() - pHRun->getAscent() + 1;
 	UT_DEBUGMSG(("hyperlinkStatusBar: xypos %d %d\n",xpos,ypos));
 	UT_DEBUGMSG(("hyperlinkStatusBar: setXY %d %d\n",pG->tdu(xpos),pG->tdu(ypos)));
-	UT_DEBUGMSG(("hyperlinkStatusBar: pRungetxy %d %d\n",pHRun->getX(),pHRun->getY()));
-	UT_DEBUGMSG(("hyperlinkStatusBar: getScreenOffsets %d %d\n",xoff,yoff));
+	//UT_DEBUGMSG(("hyperlinkStatusBar: pRungetxy %d %d\n",pHRun->getX(),pHRun->getY()));
+	//UT_DEBUGMSG(("hyperlinkStatusBar: getScreenOffsets %d %d\n",xoff,yoff));
 	
 	pAnnPview->draw();
-
+	
 	return true;	
 }
 

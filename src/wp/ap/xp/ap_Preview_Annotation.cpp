@@ -83,9 +83,9 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
+	
 	UT_UCS4_cloneString_char (&m_drawString,
-							  g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL)
-							  );
+							  g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL));
 	
 	//
 	// Text decorations.
@@ -193,7 +193,20 @@ void AP_Preview_Annotation::draw(void)
 	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
 					 m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
 	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
+	
+	// somehow this gets ignored...
+	//activate();
 }
+
+/*void AP_Preview_Annotation::activate(void)
+{
+	UT_DEBUGMSG(("AP_Preview_Annotation: no activate implementation\n"));
+}*/
+
+/*void AP_Preview_Annotation::_bringToTop(void)
+{
+	UT_DEBUGMSG(("AP_Preview_Annotation: no _bringToTop\n"));
+}*/
 
 void AP_Preview_Annotation::clearScreen(void)
 {
@@ -209,7 +222,8 @@ void AP_Preview_Annotation::clearScreen(void)
 void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AP_Preview_Annotation: setActiveFrame\n"));
-	notifyActiveFrame(getActiveFrame());
+	//notifyActiveFrame(getActiveFrame());
+	notifyActiveFrame(pFrame);
 }
 
 /*!

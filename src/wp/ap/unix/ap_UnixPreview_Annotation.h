@@ -39,13 +39,14 @@ public:
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-
-
-	void _constructWindow(void);
+	void					_constructWindow(void);
+	
+/*protected:
+	void	_bringToTop(void);*/
+	
 private:
 	// parent frame
-	GR_UnixPangoGraphics * 		m_gc;
+	GR_UnixPangoGraphics * 	m_gc;
 	GtkWidget * 			m_pPreviewWindow;
 	GtkWidget * 			m_pDrawingArea;
 };

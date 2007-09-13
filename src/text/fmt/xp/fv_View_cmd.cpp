@@ -90,8 +90,7 @@
 #include "ev_Mouse.h"
 #include "fv_View.h"
 
-// RIVERA TODO replace the unix platform line
-#include "ap_UnixPreview_Annotation.h"
+// RIVERA
 #include "ap_Dialog_Annotation.h"
 #include "xap_Dialog.h"
 #include "xap_DialogFactory.h"
