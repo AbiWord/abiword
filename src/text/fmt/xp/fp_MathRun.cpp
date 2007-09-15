@@ -69,13 +69,13 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
-  UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x run is % uid is %d \n",pSpanAP,this,m_iMathUID));
+  xxx_UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x run is % uid is %d \n",pSpanAP,this,m_iMathUID));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
 	const gchar * pszFontSize = NULL;
 	pSpanAP->getProperty("font-size", pszFontSize);
-	UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
+	xxx_UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
 
 // Load this into MathView
 
@@ -93,7 +93,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		 m_iMathUID = -1;
 	     }
 	     m_iMathUID = -1;
-	     UT_DEBUGMSG(("---Recoved from QuickPrint!! \n"));
+	     xxx_UT_DEBUGMSG(("---Recoved from QuickPrint!! \n"));
 	}
 	getBlockAP(pBlockAP);
 
@@ -101,9 +101,10 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG);
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
-	  UT_DEBUGMSG(("---Doing a QuickPrint!! \n"));
+	  xxx_UT_DEBUGMSG(("---Doing a QuickPrint!! \n"));
 	     if(m_iMathUID >= 0 && getMathManager())
 	     {
+	       xxx_UT_DEBUGMSG(("MathRun Old Width = %d Ascent = %d Descent = %d \n",getWidth(),getAscent(),getDescent())); 
 		 getMathManager()->releaseEmbedView(m_iMathUID);
 		 m_iMathUID = -1;
 	     }
@@ -116,7 +117,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if (pFont != _getFont())
 	{
-	  UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
+	  xxx_UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
 	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
@@ -131,7 +132,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
 	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
-	  UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
+	  xxx_UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
@@ -150,7 +151,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  iDescent = getMathManager()->getDescent(m_iMathUID);
 	}
 	m_iPointHeight = iAscent + iDescent;
-	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
+	xxx_UT_DEBUGMSG(("MathRun _lookupProps Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
 	fp_Page * p = NULL;
@@ -182,6 +183,12 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(iDescent < 0)
 	{
 	  iDescent = 0;
+	}
+	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+	  xxx_UT_DEBUGMSG(("---Doing a QuickPrint!! -CHECK \n"));
+	  //	  UT_ASSERT(getAscent() == iAscent);
+	  //UT_ASSERT(getDescent() == iDescent);
 	}
 	_setAscent(iAscent);
 	_setDescent(iDescent);
@@ -400,6 +407,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iLineHeight = getLine()->getHeight();
 	GR_Painter painter(pG);
 	bool bIsSelected = false;
+
 	if ( !pG->queryProperties(GR_Graphics::DGP_PAPER) && ( isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
@@ -424,11 +432,17 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 	  rec.top -= getAscent();
 	}
+	xxx_UT_DEBUGMSG(("LineHeigt %d MathRun Height %d\n",getLine()->getHeight(),getHeight()));
 	if(getBlock()->getDocLayout()->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
-	  {
-	    UT_DEBUGMSG(("!! Doing a draw in QuickPrint !! \n"));
-	  }
-	UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.width,rec.height)); 
+	{
+	    xxx_UT_DEBUGMSG(("!! Doing a draw in QuickPrint !! \n"));
+	    // FIXME
+	    // FIXME!!! This number should be removed once we work out
+	    // What is really going wrong
+	    // Don't understand the reason for this but it make things a bit better
+	    rec.top -= 92;
+	}
+	xxx_UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.width,rec.height)); 
 	getMathManager()->render(m_iMathUID,rec);
 	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && pG->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
