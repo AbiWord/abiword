@@ -1034,8 +1034,14 @@ static const struct {
 };
 static const gsize nr_metadata_names = G_N_ELEMENTS(metadata_names);
 
+struct DocAndLid
+{
+	PD_Document *doc;
+	int lid;
+};
+
 static void
-cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
+cb_print_property (char const *name, GsfDocProp const *prop, DocAndLid * doc)
 {
   GValue const *val = gsf_doc_prop_get_val  (prop);
 
@@ -1047,7 +1053,32 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 			  char const * abi_metadata_name = metadata_names[i].abi_metadata_name;
 			
 			  if(abi_metadata_name != NULL) {
-				  char * tmp = g_strdup_value_contents (val);
+				  const char * encoding = wvLIDToCodePageConverter(doc->lid);
+				  char *tmp;
+
+				  if (G_VALUE_HOLDS(val, G_TYPE_STRING))
+					  {
+						  // special-case strings. it seems that g_value_get_string()
+						  // and g_strdup_value_contents() may return different things
+						  // check with document from bug 11148
+						  const char * contents = g_value_get_string(val);
+						  
+						  if (encoding && *encoding)
+							  {
+								  tmp = g_convert_with_fallback(contents, -1, "UTF-8", encoding, "?", NULL, NULL, NULL);
+							  }
+						  else
+							  {
+								  tmp = g_strdup(contents);
+							  }
+						  
+					  }
+				  else
+					  {
+						  // coerce into a string
+						  tmp = g_strdup_value_contents(val);
+					  }
+
 				  char * meta = tmp;
 				  // strip beginning and ending quotes
 				  if(meta && strcmp(meta,"\"\"")) { // ignore '""' props
@@ -1058,7 +1089,7 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 						  meta[len - 1] = '\0';
 					  }
 					  if (*meta) {
-						  doc->setMetaDataProp(abi_metadata_name, meta);
+						  doc->doc->setMetaDataProp(abi_metadata_name, meta);
 					  }
 				  }
 				  g_free (tmp);			  
@@ -1070,6 +1101,7 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 
 static void print_summary_stream (GsfInfile * msole,
 								  const char * stream_name,
+								  int lid,
 								  PD_Document * doc)
 {
   GsfInput * stream = gsf_infile_child_by_name (msole, stream_name);
@@ -1082,10 +1114,15 @@ static void print_summary_stream (GsfInfile * msole,
       g_warning ("Error getting metadata for %s: %s", stream_name, err->message);
       g_error_free (err);
       err = NULL;
-    } else
-      gsf_doc_meta_data_foreach (meta_data,
-								 (GHFunc) cb_print_property, doc);
-    
+    } else {
+		DocAndLid dil;
+
+		dil.doc = doc;
+		dil.lid = lid;
+		gsf_doc_meta_data_foreach (meta_data,
+								   (GHFunc) cb_print_property, &dil);
+    }
+
     g_object_unref (meta_data);
     g_object_unref (G_OBJECT (stream));
   }
@@ -1093,8 +1130,8 @@ static void print_summary_stream (GsfInfile * msole,
 
 void IE_Imp_MsWord_97::_handleMetaData(wvParseStruct *ps)
 {
-	print_summary_stream (GSF_INFILE(ps->ole_file), "\05SummaryInformation", getDoc());
-	print_summary_stream (GSF_INFILE(ps->ole_file), "\05DocumentSummaryInformation", getDoc());
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05SummaryInformation", ps->fib.lid, getDoc());
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05DocumentSummaryInformation", ps->fib.lid, getDoc());
 }
 
 UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
