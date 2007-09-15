@@ -4222,14 +4222,6 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 				m_utf8_1 = "";
 				break;
 
-			case UCS_LQUOTE:
-			case UCS_RQUOTE:
-				/* Smart quotes get translated back into normal quotes
-				 */
-				m_utf8_1 += "'";
-				m_bCellHasData = true;
-				break;
-
 			case UCS_LDBLQUOTE:
 				m_utf8_1 += "&ldquo;";
 				m_bCellHasData = true;
@@ -4240,9 +4232,23 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 				m_bCellHasData = true;
 				break;
 
-			case UCS_EN_DASH: // TODO: isn't there a better way?
+			case UCS_LQUOTE:
+				m_utf8_1 += "&#145;";
+				m_bCellHasData = true;
+				break;
+
+			case UCS_RQUOTE:
+				m_utf8_1 += "&#146;";
+				m_bCellHasData = true;
+				break;
+
+			case UCS_EN_DASH:
+				m_utf8_1 += "&#150;";
+				m_bCellHasData = true;
+				break;
+
 			case UCS_EM_DASH:
-				m_utf8_1 += "-";
+				m_utf8_1 += "&#151;";
 				m_bCellHasData = true;
 				break;
 
