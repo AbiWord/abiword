@@ -2349,7 +2349,7 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
-	UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
+	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
 	UT_sint32 idx = _tduX(xDest);
 	UT_sint32 idy = _tduY(yDest);
 
@@ -3791,6 +3791,7 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	
 	xoff = _tduX(xoff);
 	yoff = scale_ydir(_tduY(yoff + getFontAscent(m_pPFont)));
+	// yoff = scale_ydir(_tduY(yoff));
 
 	UT_return_if_fail( m_gpc );
 
@@ -3899,7 +3900,6 @@ void GR_UnixPangoPrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 {
 	if (!m_bStartPage)
 		return;
-
 	gnome_print_moveto (m_gpc, scale_xdir (tdu(x1)), scale_ydir (tdu(y1)));
 	gnome_print_lineto (m_gpc, scale_xdir (tdu(x2)), scale_ydir (tdu(y2)));
 	gnome_print_stroke (m_gpc);

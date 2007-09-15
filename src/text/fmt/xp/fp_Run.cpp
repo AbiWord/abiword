@@ -185,15 +185,28 @@ UT_sint32 fp_Run::getWidth() const
 UT_uint32 fp_Run::getAscent() const
 {
 	if(isHidden() == FP_VISIBLE)
+	{
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
+		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			return static_cast<UT_uint32>(static_cast<float>(m_iAscent)*72./96.);
+		}
 		return m_iAscent;
-
+	}
 	return 0;
 }
 
 UT_uint32 fp_Run::getDescent() const
 {
 	if(isHidden() == FP_VISIBLE)
+	{
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
+		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			return static_cast<UT_uint32>(static_cast<float>(m_iDescent)*72./96.);
+		}
 		return m_iDescent;
+	}
 
 	return 0;
 }
@@ -1512,7 +1525,6 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 	}
 
 	GR_Painter painter(pG);
-
 	const UT_sint32 old_LineWidth = m_iLineWidth;
 	UT_sint32 cur_linewidth = pG->tlu(1) + UT_MAX(pG->tlu(10),static_cast<UT_sint32>(getAscent())-pG->tlu(10))/8;
 //
@@ -1546,6 +1558,7 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 		if(b_Underline)
 		{
 			iDrop = yoff + getAscent() + getDescent()/3 + pG->tlu(1);
+			xxx_UT_DEBUGMSG(("underline getAscent() %d getDescent() %d tlu 1 %d \n",getAscent(),getDescent(), pG->tlu(1)));
 			setUnderlineXoff( xoff);
 			setMaxUnderline(iDrop);
 		}
@@ -1576,7 +1589,8 @@ or overline set the underline and overline locations with the current data.
 		}
  	      if (b_Underline)
 	      {
-			  iDrop = yoff + getAscent() + m_iDescent/3;
+			  iDrop = yoff + getAscent() + getDescent()/3;
+			  xxx_UT_DEBUGMSG(("underline getAscent() %d getDescent() %d m_iDescent  %d \n",getAscent(),getDescent(),m_iDescent));
 			  if(!P_Run->isUnderline())
 			  {
 				  setUnderlineXoff( xoff);
@@ -1638,6 +1652,7 @@ is drawn later.
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
+				 xxx_UT_DEBUGMSG(("Underlining y-logical %d \n",iDrop));
 				 painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else

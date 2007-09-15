@@ -49,14 +49,14 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_OH(oh)
 {
         m_pDocLayout = getBlock()->getDocLayout();
-	UT_DEBUGMSG((" -----MathRun created %x Object Pointer is %x \n",this,oh));
+	xxx_UT_DEBUGMSG((" -----MathRun created %x Object Pointer is %x \n",this,oh));
 	lookupProperties(getGraphics());
 }
 
 fp_MathRun::~fp_MathRun(void)
 {
   getMathManager()->releaseEmbedView(m_iMathUID);
-  UT_DEBUGMSG(("Deleting Math Object!!!!!!!!!!!! \n"));
+  xxx_UT_DEBUGMSG(("Deleting Math Object!!!!!!!!!!!! \n"));
 }
 
 GR_EmbedManager * fp_MathRun::getMathManager(void)
@@ -433,15 +433,6 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	  rec.top -= getAscent();
 	}
 	xxx_UT_DEBUGMSG(("LineHeigt %d MathRun Height %d\n",getLine()->getHeight(),getHeight()));
-	if(getBlock()->getDocLayout()->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
-	{
-	    xxx_UT_DEBUGMSG(("!! Doing a draw in QuickPrint !! \n"));
-	    // FIXME
-	    // FIXME!!! This number should be removed once we work out
-	    // What is really going wrong
-	    // Don't understand the reason for this but it make things a bit better
-	    rec.top -= 92;
-	}
 	xxx_UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.width,rec.height)); 
 	getMathManager()->render(m_iMathUID,rec);
 	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && pG->queryProperties(GR_Graphics::DGP_SCREEN)  )
