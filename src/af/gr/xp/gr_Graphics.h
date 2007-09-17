@@ -398,6 +398,8 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontAscent(const GR_Font *)  = 0;
 	virtual UT_uint32 getFontDescent(const GR_Font *) = 0;
 	virtual UT_uint32 getFontHeight(const GR_Font *)  = 0;
+	virtual double    getResolutionRatio(void)
+	{return 1.0;}
 
 	void         getMaxCharacterDimension (const UT_UCSChar*s, UT_uint32 Length, UT_uint32 &width, UT_uint32 &height);
 

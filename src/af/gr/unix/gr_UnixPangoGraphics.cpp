@@ -3617,7 +3617,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	m_iDeviceResolution = 72; // hardcoded in GnomePrint
 	m_dResRatio = static_cast<double>(m_iDeviceResolution)/
 		static_cast<double>(m_iScreenResolution);
-
 	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
 				 m_iScreenResolution, m_iDeviceResolution));
 

@@ -189,7 +189,7 @@ UT_uint32 fp_Run::getAscent() const
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
-			return static_cast<UT_uint32>(static_cast<float>(m_iAscent)*72./96.);
+			return static_cast<UT_uint32>(static_cast<double>(m_iAscent)*getGraphics()->getResolutionRatio());
 		}
 		return m_iAscent;
 	}
@@ -203,7 +203,7 @@ UT_uint32 fp_Run::getDescent() const
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
-			return static_cast<UT_uint32>(static_cast<float>(m_iDescent)*72./96.);
+			return static_cast<UT_uint32>(static_cast<double>(m_iDescent)*getGraphics()->getResolutionRatio());
 		}
 		return m_iDescent;
 	}
