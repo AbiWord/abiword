@@ -40,6 +40,8 @@
 
 #include "pd_Document.h"
 
+#include <gsf/gsf-output-impl.h>
+
 static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 
 /*****************************************************************/
@@ -219,6 +221,11 @@ void IE_Exp::setProps (const char * props)
 	UT_parse_properties(props, m_props_map);
 }
 
+GsfOutput* IE_Exp::_openFile(const char *szFilename)
+{
+	return UT_go_file_create(szFilename, NULL);
+}
+
 GsfOutput* IE_Exp::openFile(const char * szFilename)
 {
 	UT_return_val_if_fail(!m_fp, false);
@@ -228,7 +235,12 @@ GsfOutput* IE_Exp::openFile(const char * szFilename)
 	m_szFileName = g_new(char, strlen(szFilename) + 1);
 	strcpy(m_szFileName, szFilename);
 
-	return UT_go_file_create(szFilename, NULL);
+	GsfOutput* file = _openFile(szFilename);
+	if (file) {
+		gsf_output_set_name (file, szFilename);
+	}
+
+	return file;
 }
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
