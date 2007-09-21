@@ -73,6 +73,14 @@ void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 	}
 	return;
 }
+
+/*!
+ * Returns true if Annotations are to be display
+ */
+bool fb_ColumnBreaker::_displayAnnotations(void)
+{
+  return m_pDocSec->getDocLayout()->displayAnnotations();
+}
 	
 /*!
   Layout sections on pages
@@ -212,7 +220,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		while (pCurContainer)
 		{
 			xxx_UT_DEBUGMSG(("curContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
-			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE || ((pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION)))
 			{
 //
 // skip this! We've already taken it's height into account.
@@ -280,7 +288,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					pCurContainer = _getNext(pCurContainer);
 					continue;
 				}
-				// Excellent.  If we have a footnote, we can start deducting
+				// Excellent.  If we have a footnote or annotation, we can start deducting
 				// from the working height if the footnote container is not on
 				// this page.
 				if (pCurLine->containsFootnoteReference())
@@ -288,6 +296,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
 
 					// OK get a vector of the footnote containers in this line.
+				 
 					UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
 					fp_Page *pCurPage = pCurColumn->getPage();
@@ -304,6 +313,29 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
 					iWorkingColHeight += iFootnoteHeight;
 				}
+				if(pCurLine->containsAnnotations() && _displayAnnotations())
+				  {
+					// Ok.  Now, deduct the proper amount from iMaxColHeight.
+
+					// OK get a vector of the Annotation containers in this line.
+				 
+					UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
+					pCurLine->getAnnotationContainers(&vecAnnotations);
+					fp_Page *pCurPage = pCurColumn->getPage();
+					// Now loop through all these and add them to the height.
+					UT_sint32 i =0;
+					for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+					{
+						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
+						if(pAC && ((pAC->getPage() == NULL) || (pAC->getPage() != pCurPage)))
+						{
+							iFootnoteHeight += pAC->getHeight();
+						}				
+					}	
+					UT_DEBUGMSG(("got Total section height %d\n", iFootnoteHeight));
+					iWorkingColHeight += iFootnoteHeight;
+
+				  }
 			}
 
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
@@ -625,7 +657,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
 		{
-			while(pLastContainerToKeep && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE ))
+			while(pLastContainerToKeep && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_FOOTNOTE )
+			      && (pLastContainerToKeep->getContainerType() == FP_CONTAINER_ANNOTATION))
 			{
 				pLastContainerToKeep = pLastContainerToKeep->getPrevContainerInSection();
 			}
@@ -650,7 +683,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		while (pCurContainer)
 		{
 			xxx_UT_DEBUGMSG(("Container %x is in Column %x Type %d numCons %d \n",pCurContainer,pCurColumn,pCurContainer->getContainerType(),pCurColumn->countCons()));
-			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE  || 
+			   (pCurContainer->getContainerType() == FP_CONTAINER_ANNOTATION) )
 			{
 //
 // Skip this. It doesn't go in this column at all.
@@ -710,7 +744,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 			}
 //
-// Now make sure footnotes are on the same page as the reference.
+// Now make sure footnotes and annotations are on the same page as the reference.
 //
 			if(pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
@@ -744,6 +778,40 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 								{
 									myPage->removeFootnoteContainer(pFC);
 									pCurPage->insertFootnoteContainer(pFC);
+								}
+							}
+						}
+					}
+
+				}
+				if(pCurLine->containsAnnotations() && _displayAnnotations())
+				{
+					// OK get a vector of the footnote containers in this line.
+					UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
+					pCurLine->getAnnotationContainers(&vecAnnotations);
+				
+					// Now loop through all these and check they're on this
+					// page. If not add them.
+					fp_Page * pCurPage = pCurColumn->getPage();
+					UT_ASSERT(pCurPage);
+					UT_sint32 i =0;
+					for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+					{
+						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
+						if(pAC != NULL)
+						{
+							fp_Page * myPage = pAC->getPage();
+							xxx_UT_DEBUGMSG(("Annotation %x is on Page %x \n",pAC,myPage));
+							if(myPage != pCurPage)
+							{
+								if(myPage == NULL)
+								{
+									pCurPage->insertAnnotationContainer(pAC);
+								}
+								else
+								{
+									myPage->removeAnnotationContainer(pAC);
+									pCurPage->insertAnnotationContainer(pAC);
 								}
 							}
 						}
@@ -790,6 +858,38 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 								{
 									myPage->removeFootnoteContainer(pFC);
 									pCurPage->insertFootnoteContainer(pFC);
+								}
+							}
+						}
+					}
+					if(pCurTable->containsAnnotations())
+					{
+						// OK get a vector of the footnote containers in this line.
+						UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
+						pCurTable->getAnnotationContainers(&vecAnnotations);
+						
+					// Now loop through all these and check they're on this
+					// page. If not add them.
+						fp_Page * pCurPage = pCurColumn->getPage();
+						UT_ASSERT(pCurPage);
+						UT_sint32 i =0;
+						for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+						{
+							xxx_UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
+							fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
+							fp_Page * myPage = pAC->getPage();
+							xxx_UT_DEBUGMSG(("Annotation %x is on Page %x \n",pAC,myPage));
+							if(myPage != pCurPage)
+							{
+								xxx_UT_DEBUGMSG((" Moving anchor from %x to %x \n",myPage,pCurPage));
+								if(myPage == NULL)
+								{
+									pCurPage->insertAnnotationContainer(pAC);
+								}
+								else
+								{
+									myPage->removeAnnotationContainer(pAC);
+									pCurPage->insertAnnotationContainer(pAC);
 								}
 							}
 						}

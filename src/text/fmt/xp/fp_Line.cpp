@@ -2620,6 +2620,72 @@ bool fp_Line::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*> * pv
 	return bFound;
 }
 
+
+
+bool fp_Line::containsAnnotations(void)
+{
+	fp_Run * pRun = NULL;
+	UT_sint32 i =0;
+	bool bFound = false;
+	for(i=0; (i< countRuns()) && !bFound; i++)
+	{
+		pRun = getRunFromIndex(static_cast<UT_uint32>(i));
+		if(pRun->getType() == FPRUN_HYPERLINK)
+		{
+			fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+			if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION )
+			{
+			        fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun *>(pHRun);
+				UT_uint32 iPID = pARun->getPID();
+				if(iPID > 0)
+				{
+				     bFound = true;
+				     break;
+				}
+			}
+		}
+	}
+	return bFound;
+}
+
+bool fp_Line::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*> * pvecAnns)
+{
+	fp_Run * pRun = NULL;
+	UT_uint32 i =0;
+	bool bFound = false;
+	fp_AnnotationContainer * pAC = NULL;
+	PT_DocPosition posStart = getBlock()->getPosition();
+	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
+	posStart += getFirstRun()->getBlockOffset();
+	for(i=0; (i< static_cast<UT_uint32>(countRuns())); i++)
+	{
+		pRun = getRunFromIndex(i);
+		if(pRun->getType() == FPRUN_HYPERLINK)
+		{
+			fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+			if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION )
+			{
+			        fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun *>(pHRun);
+				UT_uint32 iPID = pARun->getPID();
+				if(iPID > 0)
+				{
+				      fl_AnnotationLayout * pAL = getBlock()->getDocLayout()->findAnnotationLayout(pARun->getPID());
+				
+				      UT_ASSERT(pAL);
+				      xxx_UT_DEBUGMSG(("Pos of Annotation %d start of run %d end of run %d \n",pAL->getDocPosition(),posStart,posEnd));
+				      if(pAL && pAL->getDocPosition()>= posStart && pAL->getDocPosition() <= posEnd)
+				      {
+					   pAC = reinterpret_cast<fp_AnnotationContainer *>(pAL->getFirstContainer());
+					   bFound = true;
+					   pvecAnns->addItem(pAC);
+				      }
+				}
+			}
+		}
+	}
+	return bFound;
+}
+
 void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 {
 	if (m_iX == iX)
@@ -2878,6 +2944,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
 			getContainer()->getContainerType() == FP_CONTAINER_TOC ||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
@@ -2909,6 +2976,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
 			getContainer()->getContainerType() == FP_CONTAINER_TOC||
 			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION||
 			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - getGraphics()->tlu(2);

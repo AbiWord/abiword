@@ -107,6 +107,7 @@ libWpAp_xp_a_SOURCES=	$(spellsrc)		\
 		ap_Menu_LabelSet.cpp		\
 		ap_Menu_Layouts.cpp		\
 		ap_Prefs.cpp			\
+		ap_Preview_Annotation.cpp	\
 		ap_Preview_Paragraph.cpp	\
 		ap_Preview_Abi.cpp		\
 		ap_Ruler.cpp			\
@@ -161,6 +162,7 @@ noinst_HEADERS = \
 	ap_Args.h \
 	ap_Clipboard.h \
 	ap_Convert.h \
+	ap_Dialog_Annotation.h \
 	ap_Dialog_Background.h \
 	ap_Dialog_Break.h \
 	ap_Dialog_Columns.h \
@@ -183,6 +185,7 @@ noinst_HEADERS = \
 	ap_Dialog_MarkRevisions.h \
 	ap_Dialog_MergeCells.h \
 	ap_Dialog_MetaData.h \
+	ap_Dialog_Annotation.h \
 	ap_Dialog_New.h \
 	ap_Dialog_Options.h \
 	ap_Dialog_PageNumbers.h \
@@ -246,6 +249,7 @@ noinst_HEADERS = \
 	ap_Prefs.h \
 	ap_Prefs_SchemeIds.h \
 	ap_Preview_Abi.h \
+	ap_Preview_Annotation.h \
 	ap_Preview_Paragraph.h \
 	ap_Ruler.h \
 	ap_StatusBar.h \

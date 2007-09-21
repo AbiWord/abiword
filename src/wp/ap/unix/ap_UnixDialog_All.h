@@ -86,6 +86,8 @@
 #   include "ap_UnixDialog_MetaData.h"
 #   include "ap_UnixDialog_MarkRevisions.h"
 #   include "ap_UnixDialog_ListRevisions.h"
+#   include "ap_UnixDialog_Annotation.h"
+#   include "ap_UnixPreview_Annotation.h"
 #   include "ap_UnixDialog_MergeCells.h"
 #   include "ap_UnixDialog_SplitCells.h"
 #   include "ap_UnixDialog_FormatTable.h"
@@ -179,6 +181,7 @@
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_UnixDialog_MarkRevisions, 		FALSE)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_UnixDialog_ListRevisions, 		FALSE)
+	DeclareDialog(AP_DIALOG_ID_ANNOTATION,		AP_UnixDialog_Annotation, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_UnixDialog_InsertTable, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_UnixDialog_SplitCells, 			FALSE)
@@ -188,6 +191,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,		AP_UnixDialog_FormatTOC, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_LATEX,		    AP_UnixDialog_Latex, 				FALSE)
+	DeclareDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW,	AP_UnixPreview_Annotation, 				FALSE)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File, 		FALSE)
 #endif

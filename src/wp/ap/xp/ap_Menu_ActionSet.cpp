@@ -171,7 +171,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,0,	"insSymbol",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_TABLEOFCONTENTS,	0,0,0,0,	"insTOC",	ap_GetState_TOCOK, NULL);
-	_s(AP_MENU_ID_INSERT_ANNOTATION,	0,0,0,0,	"insAnnotation",		ap_GetState_InAnnotation,					NULL);
 	_s(AP_MENU_ID_INSERT_FOOTNOTE,	0,0,0,0,	"insFootnote",		ap_GetState_InFootnote,					NULL);
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,0,	"insEndnote",		ap_GetState_InFootnote,					NULL);
 	_s(AP_MENU_ID_INSERT_HEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
@@ -258,6 +257,16 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_AUTO, 0,0,1,0, "toggleAutoRevision",ap_GetState_AutoRevision,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
+	
+	// RIVERA
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS,				1,0,0,0,	NULL,						NULL,								NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT,			0,1,0,0,	"insAnnotation",			ap_GetState_InAnnotation,			NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL,	0,1,0,0,	"insAnnotationFromSel",		ap_GetState_InAnnotation,			NULL);
+	_s(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY,	0,0,1,0,	"toggleDisplayAnnotations",	ap_GetState_ToggleAnnotations,		NULL);
+	
+	_s(AP_MENU_ID_GOTO_ANNOTATION,					0,0,0,0,	"hyperlinkJumpPos",			ap_GetState_HyperlinkOK,			NULL);
+	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
+	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, NULL, NULL);

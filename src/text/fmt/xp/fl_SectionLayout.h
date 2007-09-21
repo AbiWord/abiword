@@ -35,7 +35,8 @@ typedef enum _SectionType
 	FL_SECTION_FOOTNOTE,
 	FL_SECTION_MARGINNOTE,
 	FL_SECTION_FRAME,
-	FL_SECTION_TOC
+	FL_SECTION_TOC,
+	FL_SECTION_ANNOTATION
 } SectionType;
 
 
@@ -71,6 +72,7 @@ class fl_BlockLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
 class fl_FootnoteLayout;
+class fl_AnnotationLayout;
 class fb_LineBreaker;
 class fp_ShadowContainer;
 class fp_Column;
@@ -225,6 +227,7 @@ public:
 	virtual void        setLastContainer(fp_Container * pCon);
 	
 	fl_FootnoteLayout  *       getFootnoteLayout(UT_uint32 footnotePID);
+	fl_AnnotationLayout  *       getAnnotationLayout(UT_uint32 footnotePID);
 
 
 	virtual void        markAllRunsDirty(void);
@@ -265,6 +268,15 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+
+
+	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
 	fl_HdrFtrSectionLayout*         getHeader(void);

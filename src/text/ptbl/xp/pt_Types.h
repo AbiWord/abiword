@@ -97,7 +97,7 @@ typedef enum _PTStruxType
 
 //! PTObjectType tells the sub-type of an FragObject.
 
-typedef enum _PTObjectType { PTO_Image = 0, PTO_Field, PTO_Bookmark, PTO_Hyperlink, PTO_Math, PTO_Embed } PTObjectType;
+typedef enum _PTObjectType { PTO_Image = 0, PTO_Field, PTO_Bookmark, PTO_Hyperlink, PTO_Math, PTO_Embed,PTO_Annotation } PTObjectType;
 
 //! PieceTable states
 typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;

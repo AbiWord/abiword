@@ -36,7 +36,7 @@
 #include "fl_FootnoteLayout.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
-
+#include "fp_Run.h"
 /*!
   Create Footnote container
   \param iType Container type
@@ -312,6 +312,290 @@ void fp_FootnoteContainer::layout(void)
 	if(pPage)
 	{
 		pPage->footnoteHeightChanged();
+	}
+}
+
+
+
+/*!
+  Create Annotation container
+  \param iType Container type
+  \param pSectionLayout Section layout type used for this container
+ */
+fp_AnnotationContainer::fp_AnnotationContainer(fl_SectionLayout* pSectionLayout) 
+	: fp_VerticalContainer(FP_CONTAINER_ANNOTATION, pSectionLayout),
+	  m_pPage(NULL),
+	  m_iLabelWidth(0),
+	  m_iXLabel(0),
+	  m_iYLabel(0)
+{
+}
+
+/*!
+  Destruct container
+  \note The Containers in vector of the container are not
+        destructed. They are owned by the logical hierarchy (i.e.,
+		the fl_Container classes like fl_BlockLayout), not the physical
+        hierarchy.
+ */
+fp_AnnotationContainer::~fp_AnnotationContainer()
+{
+	m_pPage = NULL;
+}
+
+void fp_AnnotationContainer::setPage(fp_Page * pPage)
+{
+  //
+
+	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
+	{
+		clearScreen();
+		m_pPage->removeAnnotationContainer(this);
+		getSectionLayout()->markAllRunsDirty();
+	}
+	m_pPage = pPage;
+	if(pPage)
+	{
+		getFillType()->setParent(pPage->getFillType());
+	}
+	else
+	{
+		getFillType()->setParent(NULL);
+	}
+}
+
+/*! 
+ * This method returns the value of the Annotation reference (or anchor)
+ */
+UT_sint32 fp_AnnotationContainer::getValue(void)
+{
+	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	FL_DocLayout * pDL = pAL->getDocLayout();
+	return pDL->getAnnotationVal(pAL->getAnnotationPID());
+}
+
+void fp_AnnotationContainer::clearScreen(void)
+{
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	fp_Container * pCon = NULL;
+	if(getColumn() && (getHeight() != 0))
+	{
+		if(getPage() == NULL)
+		{
+			return;
+		}
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		if(pDSL == NULL)
+		{
+			return;
+		}
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 iWidth = getPage()->getWidth();
+		iWidth = iWidth - iLeftMargin - iRightMargin;
+		UT_sint32 xoff,yoff;
+		pCon = static_cast<fp_Container *>(getNthCon(0));
+		if(pCon == NULL)
+		  return;
+		getScreenOffsets(pCon,xoff,yoff);
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoff-m_iLabelWidth,yoff,iWidth,getHeight());
+	}
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	{
+		pCon = static_cast<fp_Container *>(getNthCon(i));
+		pCon->clearScreen();
+	}
+}
+	
+UT_uint32 fp_AnnotationContainer::getPID(void)
+{
+        fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	return pAL->getAnnotationPID();
+}
+
+void fp_AnnotationContainer::setContainer(fp_Container * pContainer)
+{
+	if (pContainer == getContainer())
+	{
+		return;
+	}
+
+	if (getContainer() && (pContainer != NULL))
+	{
+		clearScreen();
+	}
+	fp_Container::setContainer(pContainer);
+}
+
+fl_DocSectionLayout * fp_AnnotationContainer::getDocSectionLayout(void)
+{
+	fl_AnnotationLayout * pFL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	fl_ContainerLayout * pDSL = pFL->myContainingLayout();
+	while(pDSL && pDSL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pDSL = pDSL->myContainingLayout();
+	}
+	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
+	return static_cast<fl_DocSectionLayout *>(pDSL);
+}
+
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
+void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
+{
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	FL_DocLayout * pDL = pAL->getDocLayout();
+	m_iLabelWidth = 0;
+	if(!pDL->displayAnnotations())
+	  return;
+
+	UT_DEBUGMSG(("Annotation: Drawing unbroken annotation %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+
+	UT_DEBUGMSG(("Annotation: Drawing PDA->xoff %d, pDA->yoff  %d \n",pDA->xoff,pDA->yoff));
+
+//
+// Only draw the lines in the clipping region.
+//
+	dg_DrawArgs da = *pDA;
+
+	UT_uint32 count = countCons();
+	for (UT_uint32 i = 0; i<count; i++)
+	{
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+		da.xoff = pDA->xoff + pContainer->getX();
+		if(i == 0)
+		{
+		        fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+			fp_AnnotationRun * pAR = pAL->getAnnotationRun();
+			if(pAR)
+			{		
+			    m_iLabelWidth = pAR->getWidth();
+      			    da.xoff = pDA->xoff + pContainer->getX() - m_iLabelWidth;
+			    fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			    da.yoff = pDA->yoff + pContainer->getY() + pLine->getAscent();
+			    da.bDirtyRunsOnly = false;
+			    m_iXLabel = da.xoff;
+			    m_iYLabel = da.yoff;
+			    pAR->draw(&da);
+			    da.xoff = pDA->xoff + pContainer->getX();
+			}
+		}
+		da.yoff = pDA->yoff + pContainer->getY();
+		pContainer->draw(&da);
+	}
+	_drawBoundaries(pDA);
+}
+
+fp_Container * fp_AnnotationContainer::getNextContainerInSection() const
+{
+
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	fl_ContainerLayout * pNext = pCL->getNext();
+	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pNext = pNext->getNext();
+	}
+	if(pNext)
+	{
+		return pNext->getFirstContainer();
+	}
+	return NULL;
+}
+
+
+fp_Container * fp_AnnotationContainer::getPrevContainerInSection() const
+{
+
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	fl_ContainerLayout * pPrev = pCL->getPrev();
+	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pPrev = pPrev->getPrev();
+	}
+	if(pPrev)
+	{
+		return pPrev->getLastContainer();
+	}
+	return NULL;
+}
+
+void fp_AnnotationContainer::layout(void)
+{
+	_setMaxContainerHeight(0);
+	UT_sint32 iY = 0, iPrevY = 0;
+	iY= 0;
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	UT_sint32 iMaxFootHeight = 0;
+	iMaxFootHeight = pDSL->getActualColumnHeight();
+	iMaxFootHeight -= getGraphics()->tlu(20)*3;
+	UT_uint32 iCountContainers = countCons();
+	fp_Container *pContainer, *pPrevContainer = NULL;
+	for (UT_uint32 i=0; i < iCountContainers; i++)
+	{
+		pContainer = static_cast<fp_Container*>(getNthCon(i));
+//
+// This is to speedup redraws.
+//
+		if(pContainer->getHeight() > _getMaxContainerHeight())
+			_setMaxContainerHeight(pContainer->getHeight());
+
+		if(pContainer->getY() != iY)
+		{
+			pContainer->clearScreen();
+		}
+			
+		pContainer->setY(iY);
+
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+		//iY +=  0.5;
+		if(iY > iMaxFootHeight)
+		{
+			iY = iMaxFootHeight;
+		}
+		else
+		{
+			if (pPrevContainer)
+			{
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			}
+		}
+		pPrevContainer = pContainer;
+		iPrevY = iY;
+	}
+
+	// Correct height position of the last line
+	if (pPrevContainer)
+	{
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
+	}
+
+	if (getHeight() == iY)
+	{
+		return;
+	}
+
+	setHeight(iY);
+//	UT_ASSERT(pPage);
+	fp_Page * pPage = getPage();
+	if(pPage)
+	{
+		pPage->annotationHeightChanged();
 	}
 }
 

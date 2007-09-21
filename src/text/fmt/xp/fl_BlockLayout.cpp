@@ -448,7 +448,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	UT_sint32 iBottomMargin = m_iBottomMargin;
 	UT_sint32 iLeftMargin = m_iLeftMargin;
 	UT_sint32 iRightMargin = m_iRightMargin;
-	UT_sint32 iTextIndent = m_iTextIndent;
+	UT_sint32 iTextIndent = getTextIndent();
 	
 	struct MarginAndIndent_t
 	{
@@ -481,10 +481,10 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 			m_iLeftMargin = 0;
 		}
 		
-		if(m_iTextIndent < 0)
+		if(getTextIndent() < 0)
 		{
 			// shuv the whole thing to the left
-			m_iLeftMargin -= m_iTextIndent;
+			m_iLeftMargin -= getTextIndent();
 		}
 
 		// igonre right margin
@@ -564,7 +564,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	
 	
 	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
-	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != m_iTextIndent ||
+	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != getTextIndent() ||
 	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
 	{
 		collapse();
@@ -781,10 +781,10 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			m_iLeftMargin = 0;
 		}
 		
-		if(m_iTextIndent < 0)
+		if(getTextIndent() < 0)
 		{
 			// shuv the whole thing to the left
-			m_iLeftMargin -= m_iTextIndent;
+			m_iLeftMargin -= getTextIndent();
 		}
 
 		// igonre right margin
@@ -1127,7 +1127,7 @@ void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
 bool fl_BlockLayout::isEmbeddedType(void)
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) )
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION ) )
 	{
 		return true;
 	}
@@ -1145,6 +1145,7 @@ bool fl_BlockLayout::isNotTOCable(void)
 	fl_ContainerLayout * pCL = myContainingLayout();
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE 
 			   || pCL->getContainerType() == FL_CONTAINER_ENDNOTE 
+			   || pCL->getContainerType() == FL_CONTAINER_ANNOTATION 
 			   || pCL->getContainerType() == FL_CONTAINER_HDRFTR 
 			   || pCL->getContainerType() == FL_CONTAINER_TOC 
 			   || pCL->getContainerType() == FL_CONTAINER_SHADOW
@@ -1390,7 +1391,7 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 		return;
 	}
 	fl_ContainerLayout * pCL = myContainingLayout();
-	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) );
 	fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
 	if(!pFL->isEndFootnoteIn())
 	{
@@ -1402,9 +1403,13 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
 	}
-	else
+	else if(pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+	}
+	else if(pCL->getContainerType() == FL_CONTAINER_ANNOTATION)
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 	}
 
 	UT_return_if_fail(sdhEnd != NULL);
@@ -1435,7 +1440,7 @@ fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void)
 		return NULL;
 	}
 	fl_ContainerLayout * pCL = myContainingLayout();
-	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) );
 	fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
 	if(!pFL->isEndFootnoteIn())
 	{
@@ -1447,9 +1452,13 @@ fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
 	}
-	else
+	else if(pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+	}
+	else if(pCL->getContainerType() == FL_CONTAINER_ANNOTATION)
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
 	}
 
 	UT_return_val_if_fail(sdhEnd != NULL,NULL);
@@ -1485,6 +1494,11 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 	else if	(getSectionLayout()->getType() == FL_SECTION_ENDNOTE)
 	{
 		pDSL = static_cast<fl_EndnoteLayout *>(getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
+	else if	(getSectionLayout()->getType() == FL_SECTION_ANNOTATION)
+	{
+		pDSL = static_cast<fl_AnnotationLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
 	else if (getSectionLayout()->getType() == FL_SECTION_HDRFTR)
@@ -2020,7 +2034,6 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	UT_ASSERT(pFirst && pFirst->countRuns() == 0);
 
 	pFirst->addRun(m_pFirstRun);
-
 	// only do the line layout if this block is not hidden ...
  	FV_View * pView = getView();
 
@@ -3340,6 +3353,14 @@ void fl_BlockLayout::format()
 					setUpdatableField(true);
 				}
 			}
+			if(pRun->getType() == FPRUN_HYPERLINK)
+			{
+				fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+				if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+				{
+					setUpdatableField(true);
+				}
+			}
 			if(pRun == pRunToStartAt)
 				bDoit = true;
 			if(bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
@@ -3609,10 +3630,10 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 			else
 			{
 				fp_Container * ppPrev = static_cast<fp_Container *>(pPrevCon);
-				if(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FRAME) ))
+				if(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE)  || (ppPrev->getContainerType() == FP_CONTAINER_ANNOTATION) || (ppPrev->getContainerType() == FP_CONTAINER_FRAME) ))
 				{
 					fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(ppPrev->getSectionLayout());
-					while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)|| (pCL->getContainerType() == FL_CONTAINER_FRAME)))
+					while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)|| (pCL->getContainerType() == FL_CONTAINER_FRAME)))
 					{
 						pCL = pCL->getPrev();
 					}
@@ -3658,7 +3679,8 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 			//
 			fl_ContainerLayout * pCL = getNext();
 			while(pCL && ((pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
-						  || (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE))
+						  || (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+						  || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION))
 				  )
 			{
 				pCL = pCL->getNext();
@@ -3715,6 +3737,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 	}
 #endif
 	UT_ASSERT(findLineInBlock(pLine) >= 0);
+	pLine->recalcMaxWidth(true);
 	return static_cast<fp_Container *>(pLine);
 }
 
@@ -5049,6 +5072,67 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 }
 
 
+bool	fl_BlockLayout::_doInsertAnnotationRun(PT_BlockOffset blockOffset)
+{
+	bool bResult = false;
+	
+	if(!isContainedByTOC())
+	{
+		fp_AnnotationRun * pNewRun =  new fp_AnnotationRun(this, blockOffset, 1);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+
+		if (bResult)
+		{
+			// if this is the start of the Annotation, we need to mark all the runs
+			// till the end of it
+			// if this is because of an insert operation, the end run is already
+			// in place, because we insert them in that order; if it is because of
+			// append, ther is no end run, but then this is the last run; the other
+			// runs will get marked as they get appended (inside fp_Run::insertRun...)
+			// any Annotation run will not get its m_pHyperlink set, so that
+			// runs that follow it would not be marked
+
+			if(pNewRun->isStartOfHyperlink())
+			{
+				fp_Run * pRun = pNewRun->getNextRun();
+				UT_ASSERT(pRun);
+				// when loading a document the opening hyperlink run is initially followed
+				// by ENDOFPARAGRAPH run; we do not want to set this one
+				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
+				{
+					pRun->setHyperlink(pNewRun);
+					pRun = pRun->getNextRun();
+				}
+			}
+			else
+			{
+				//
+				// clear out any hyperlinks
+				//
+				fp_Run * pRun = pNewRun->getNextRun();
+				while(pRun && (pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+				{
+					pRun->setHyperlink(NULL);
+					pRun = pRun->getNextRun();
+				}
+			}
+			//_breakLineAfterRun(pNewRun);
+		}
+	}
+	else
+	{
+		fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+	}
+	
+
+	return bResult;
+
+}
+
+
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_FieldStartRun(this,blockOffset, 1);
@@ -5152,6 +5236,22 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
+UT_sint32	fl_BlockLayout::getTextIndent(void) const
+{
+	fl_ContainerLayout * pCL = myContainingLayout();
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) && ((pCL->getFirstLayout() == NULL) || (pCL->getFirstLayout() == this)))
+	{
+			fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(pCL);
+			fp_AnnotationRun * pAR = pAL->getAnnotationRun();
+			if(pAR)
+			{
+				    if(pAR->getRealWidth() == 0)
+						pAR->recalcValue();
+					return m_iTextIndent+pAR->getRealWidth();
+			}
+	}
+	return m_iTextIndent;
+}
 
 bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
@@ -7367,6 +7467,10 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 		{
 			getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
 		}
+		else if(pEmbedCL->getContainerType() == FL_CONTAINER_ANNOTATION)
+		{
+			getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+		}
 		else if( pEmbedCL->getContainerType() == FL_CONTAINER_TOC)
 		{
 			getDocument()->getNextStruxOfType(sdhStart,PTX_EndTOC, &sdhEnd);
@@ -7391,7 +7495,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 {
 	UT_ASSERT(iType == FL_SECTION_DOC || iType == FL_SECTION_HDRFTR
 			  || iType == FL_SECTION_TOC
-			  || iType == FL_SECTION_FOOTNOTE || iType == FL_SECTION_ENDNOTE);
+			  || iType == FL_SECTION_FOOTNOTE 
+			  || iType == FL_SECTION_ENDNOTE
+			  || iType == FL_SECTION_ANNOTATION);
 
 	_assertRunListIntegrity();
 
@@ -7407,6 +7513,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	UT_ASSERT(iType != FL_SECTION_DOC || pcrx->getStruxType() == PTX_Section);
 	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
 	UT_ASSERT(iType != FL_SECTION_FOOTNOTE || pcrx->getStruxType() == PTX_SectionFootnote);
+	UT_ASSERT(iType != FL_SECTION_ANNOTATION || pcrx->getStruxType() == PTX_SectionAnnotation);
 	getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
 
 //
@@ -7516,6 +7623,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		break;
 	}
 	case FL_SECTION_ENDNOTE:
+	case FL_SECTION_ANNOTATION:
 	case FL_SECTION_FOOTNOTE:
 	{
 		// Most of the time, we would insert a new section
@@ -7527,9 +7635,13 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		{
 			pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_FOOTNOTE));
 		}
-		else
+		else if (iType == FL_SECTION_ENDNOTE)
 		{
 			pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_ENDNOTE));
+		}
+		else if (iType == FL_SECTION_ANNOTATION)
+		{
+			pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_ANNOTATION));
 		}
 //
 // Need to find the DocSectionLayout associated with this.
@@ -7604,7 +7716,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 
 	fl_SectionLayout* pOldSL = m_pSectionLayout;
 
-	if ((iType == FL_SECTION_FOOTNOTE) || (iType == FL_SECTION_ENDNOTE))
+	if ((iType == FL_SECTION_FOOTNOTE) || (iType == FL_SECTION_ENDNOTE) || (iType == FL_SECTION_ANNOTATION))
 	{
 //
 // Now update the position pointer in the view
@@ -7642,8 +7754,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	{
 		pLastCL = pCL->getPrev();
 	}
-	while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
-		  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)))
+	while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) 
+				  || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
+				  || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)))
 	{
 		pLastCL = pCL;
 		pCL = pCL->getNext();
@@ -7657,6 +7770,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		//
 		if((iType== FL_SECTION_HDRFTR) && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE 
 										 || pCL->getContainerType() == FL_CONTAINER_ENDNOTE 
+										 || pCL->getContainerType() == FL_CONTAINER_ANNOTATION 
 										 || pCL->getContainerType() == FL_CONTAINER_TOC 
 										 ||   pCL->getContainerType() == FL_CONTAINER_FRAME))
 		{
@@ -7692,6 +7806,11 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 					setDocSectionLayout(pDDSL);
 			}
 			if(pCL->getContainerType() == FL_CONTAINER_ENDNOTE)
+			{
+				static_cast<fl_EndnoteLayout *>(pCL)->
+					setDocSectionLayout(pDDSL);
+			}
+			if(pCL->getContainerType() == FL_CONTAINER_ANNOTATION)
 			{
 				static_cast<fl_EndnoteLayout *>(pCL)->
 					setDocSectionLayout(pDDSL);
@@ -7732,7 +7851,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // In the case of Header/Footer sections we must now format this stuff to create
 // the shadows.
 //
-	if(iType == FL_SECTION_HDRFTR || iType == FL_SECTION_FOOTNOTE)
+	if(iType == FL_SECTION_HDRFTR || iType == FL_SECTION_FOOTNOTE || iType == FL_SECTION_ANNOTATION)
 	{
 		if(pszNewID)
 		{
@@ -8117,6 +8236,11 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		_doInsertHyperlinkRun(blockOffset);
 		return true;
 
+	case PTO_Annotation:
+		xxx_UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
+		_doInsertAnnotationRun(blockOffset);
+		return true;
+
 	case PTO_Math:
 		xxx_UT_DEBUGMSG(("Populate:InsertMathML:\n"));
 		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
@@ -8184,6 +8308,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
 		blockOffset = pcro->getBlockOffset();
 		_doInsertHyperlinkRun(blockOffset);
+		break;
+
+	}
+
+
+	case PTO_Annotation:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Hyperlink:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertAnnotationRun(blockOffset);
 		break;
 
 	}
@@ -8316,6 +8450,15 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 			break;
 		}
 
+
+		case PTO_Annotation:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Annotation:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset,1);
+			break;
+		}
+
 		default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -8378,6 +8521,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	{
 	case PTO_Bookmark:
 	case PTO_Hyperlink:
+	case PTO_Annotation:
 		return true;
 	case PTO_Image:
 	{
@@ -8583,6 +8727,25 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 				bResult |= bSizeChanged;
 			}
 		}
+		//
+		// See if Annotation has changed
+		//
+		if (pRun->getType() == FPRUN_HYPERLINK)
+		{
+				fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+				fp_AnnotationRun * pARun = NULL;
+				if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+				{
+						pARun = static_cast<fp_AnnotationRun *>(pHRun);
+						UT_sint32 iWidth = pARun->getWidth();
+						pARun->recalcWidth();
+						if(iWidth != pARun->getWidth())
+						{
+								bResult |= true;
+						}
+				}				
+		}
+
 		//				else if(pRun->isField() == true)
 		//	{
 		//		 bResult = pRun->getField()->update();
@@ -8601,8 +8764,8 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
-  	if(m_iTextIndent < 0)
-		iMinLeft += m_iTextIndent;
+  	if(getTextIndent() < 0)
+		iMinLeft += getTextIndent();
 	UT_ASSERT(iStartX >= iMinLeft);
 #endif
 	
@@ -8709,8 +8872,8 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
-	if(m_iTextIndent < 0)
-		iMinLeft += m_iTextIndent;
+	if(getTextIndent() < 0)
+		iMinLeft += getTextIndent();
 	
 	UT_ASSERT(iStartX >= iMinLeft);
 #endif

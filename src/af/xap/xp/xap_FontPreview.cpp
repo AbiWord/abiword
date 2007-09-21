@@ -65,12 +65,6 @@ void XAP_FontPreview::addOrReplaceVecProp(const gchar * pszProp,
 {
 	UT_sint32 iCount = m_vecProps.getItemCount();
 	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		m_vecProps.addItem(static_cast<const void *>(pszProp));
-		m_vecProps.addItem(static_cast<const void *>(pszVal));
-		return;
-	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
@@ -78,7 +72,7 @@ void XAP_FontPreview::addOrReplaceVecProp(const gchar * pszProp,
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
-	if(i < iCount)
+	if((iCount > 0)&&(i < iCount))
 		m_vecProps.setNthItem(i+1, static_cast<const void *>(pszVal), NULL);
 	else
 	{

@@ -54,6 +54,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Dialog_InsertHyperlink.cpp	\
 		ap_Dialog_MarkRevisions.cpp	\
 		ap_Dialog_ListRevisions.cpp	\
+		ap_Dialog_Annotation.cpp	\
 		ap_Dialog_MergeCells.cpp	\
 		ap_Dialog_SplitCells.cpp	\
 		ap_Dialog_MailMerge.cpp		\
@@ -89,6 +90,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Menu_LabelSet.cpp		\
 		ap_Menu_Layouts.cpp		\
 		ap_Prefs.cpp			\
+		ap_Preview_Annotation.cpp	\
 		ap_Preview_Paragraph.cpp	\
 		ap_Preview_Abi.cpp		\
 		ap_Ruler.cpp			\

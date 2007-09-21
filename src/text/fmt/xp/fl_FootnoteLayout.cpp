@@ -32,6 +32,7 @@
 #include "fl_BlockLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
+#include "fp_Run.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "fp_FootnoteContainer.h"
@@ -84,6 +85,24 @@ PT_DocPosition fl_EmbedLayout::getDocPosition(void)
 }
 
 /*!
+ * Return the block that contains this Embedded layout 
+ */
+fl_BlockLayout * fl_EmbedLayout::getContainingBlock(void)
+{
+  fl_ContainerLayout * pCL = getPrev();
+  while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+  {
+      pCL = pCL->getPrev();
+  }
+  if(pCL == NULL)
+      return NULL;
+  fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
+  while(pBL && pBL->getPosition(true) > getDocPosition())
+      pBL = pBL->getPrevBlockInDocument();
+  return pBL;
+}
+
+/*!
  * This method returns the length of the footnote. This is such that 
  * getDocPosition() + getLength() is one value beyond the the EndFootnote
  * strux
@@ -102,6 +121,10 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	else if(getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote,&sdhEnd);
+	}
+	else if(getContainerType() == FL_CONTAINER_ANNOTATION)
+	{
+		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation,&sdhEnd);
 	}
 	else
 	{
@@ -556,6 +579,309 @@ void fl_FootnoteLayout::collapse(void)
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
+
+/************************************************************************/
+
+fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout, 
+									 fl_DocSectionLayout* pDocSL, 
+									 PL_StruxDocHandle sdh, 
+									 PT_AttrPropIndex indexAP, 
+									 fl_ContainerLayout * pMyContainerLayout)
+ 	: fl_EmbedLayout(pLayout, 
+					 pDocSL, 
+					 sdh, 
+					 indexAP, 
+					 pMyContainerLayout, 
+					 FL_SECTION_ANNOTATION,
+					 FL_CONTAINER_ANNOTATION,
+					 PTX_SectionAnnotation),
+	  m_iAnnotationPID(0)
+{
+	m_pLayout->addAnnotation(this);
+	_createAnnotationContainer();
+}
+
+fl_AnnotationLayout::~fl_AnnotationLayout()
+{
+	// NB: be careful about the order of these
+	UT_DEBUGMSG(("Deleting Annotationlayout %x \n",this));
+	_purgeLayout();
+	fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(getFirstContainer());
+	while(pAC)
+	{
+		fp_AnnotationContainer * pNext = static_cast<fp_AnnotationContainer *>(pAC->getNext());
+		if(pAC == static_cast<fp_AnnotationContainer *>(getLastContainer()))
+		{
+			pNext = NULL;
+		}
+		delete pAC;
+		pAC = pNext;
+	}
+
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
+
+	UT_return_if_fail( m_pLayout );
+	m_pLayout->removeAnnotation(this);
+}
+
+/*!
+ * This method creates a new footnote with its properties initially set
+ * from the Attributes/properties of this Layout
+ */
+void fl_AnnotationLayout::_createAnnotationContainer(void)
+{
+	lookupProperties();
+	fp_AnnotationContainer * pAnnotationContainer = new fp_AnnotationContainer(static_cast<fl_SectionLayout *>(this));
+	setFirstContainer(pAnnotationContainer);
+	setLastContainer(pAnnotationContainer);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	UT_return_if_fail(pDSL != NULL);
+
+	fp_Container * pCon = pCL->getLastContainer();
+	UT_return_if_fail(pCon);
+	UT_sint32 iWidth = pCon->getPage()->getWidth();
+	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
+	pAnnotationContainer->setWidth(iWidth);
+}
+
+/*!
+  Create a new Annotation container.
+  \param If pPrevAnnotation is non-null place the new cell after this in the linked
+          list, otherwise just append it to the end.
+  \return The newly created Annotation container
+*/
+fp_Container* fl_AnnotationLayout::getNewContainer(fp_Container *)
+{
+	UT_DEBUGMSG(("Creating new Annotation container\n"));
+	_createAnnotationContainer();
+	m_bIsOnPage = false;
+	return static_cast<fp_Container *>(getLastContainer());
+}
+
+void fl_AnnotationLayout::_insertAnnotationContainer(fp_Container * pNewAC)
+{
+	UT_DEBUGMSG(("inserting annotation container into container list\n"));
+	fl_ContainerLayout * pUPCL = myContainingLayout();
+	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(m_pLayout->findBlockAtPosition(getDocPosition()-1));
+	fp_Container * pPrevCon = NULL;
+	fp_Container * pUpCon = NULL;
+	fp_Page * pPage = NULL;
+
+	// get the owning container
+	if(pPrevL != NULL)
+	{
+		pPrevCon = pPrevL->getLastContainer();
+		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+//
+// Code to find the Line that contains the Annotation reference
+//
+			PT_DocPosition posFL = getDocPosition() - 1;
+			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pPrevL);
+			fp_Run * pRun = pBL->getFirstRun();
+			PT_DocPosition posBL = pBL->getPosition();
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun && pRun->getLine())
+			{
+				pPrevCon = static_cast<fp_Container *>(pRun->getLine());
+			}
+		}
+		if(pPrevCon == NULL)
+		{
+			pPrevCon = pPrevL->getLastContainer();
+		}
+		pUpCon = pPrevCon->getContainer();
+	}
+	else
+	{
+		pUpCon = pUPCL->getLastContainer();
+	}
+	if(pPrevCon)
+	{
+		pPage = pPrevCon->getPage();
+	}
+	else
+	{
+		pPage = pUpCon->getPage();
+	}
+	pNewAC->setContainer(NULL);
+
+	// need to put onto page as well, in the appropriate place.
+	UT_ASSERT(pPage);
+
+	if(pPage)
+	{
+		pPage->insertAnnotationContainer(static_cast<fp_AnnotationContainer*>(pNewAC));
+		m_bIsOnPage = true;
+	}
+}
+
+
+void fl_AnnotationLayout::format(void)
+{
+	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
+	if(getFirstContainer() == NULL)
+	{
+		getNewContainer();
+	}
+	if(!m_bIsOnPage)
+	{
+		_insertAnnotationContainer(getFirstContainer());
+	}
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	
+	while (pBL)
+	{
+		pBL->format();
+		UT_sint32 count = 0;
+		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		{
+			UT_DEBUGMSG(("Error formatting a block try again \n"));
+			count = count + 1;
+			pBL->format();
+			if(count > 3)
+			{
+				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
+				break;
+			}
+		}
+		pBL = pBL->getNext();
+	}
+	static_cast<fp_AnnotationContainer *>(getFirstContainer())->layout();
+	m_bNeedsFormat = false;
+	m_bNeedsReformat = false;
+}
+
+
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
+{
+	UT_return_if_fail(pSectionAP);
+	// I can't think of any properties we need for now.
+	// If we need any later, we'll add them. -PL
+	const gchar *pszAnnotationPID = NULL;
+	if(!pSectionAP->getAttribute("annotation-id",pszAnnotationPID))
+	{
+		m_iAnnotationPID = 0;
+	}
+	else
+	{
+		m_iAnnotationPID = atoi(pszAnnotationPID);
+	}
+}
+
+void fl_AnnotationLayout::_localCollapse(void)
+{
+	// ClearScreen on our Cell. One Cell per layout.
+	fp_AnnotationContainer *pAC = static_cast<fp_AnnotationContainer *>(getFirstContainer());
+	if (pAC)
+	{
+		pAC->clearScreen();
+	}
+
+	// get rid of all the layout information for every containerLayout
+	fl_ContainerLayout*	pCL = getFirstLayout();
+	while (pCL)
+	{
+		pCL->collapse();
+		pCL = pCL->getNext();
+	}
+	m_bNeedsReformat = true;
+}
+
+fp_AnnotationRun *  fl_AnnotationLayout::getAnnotationRun(void)
+{
+        PT_DocPosition posFL = getDocPosition() - 1;
+	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(m_pLayout->findBlockAtPosition(posFL));
+
+	// get the owning container
+	if(pPrevL != NULL)
+	{
+		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+//
+// Code to find the Line that contains the Annotation reference
+//
+			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pPrevL);
+			fp_Run * pRun = pBL->getFirstRun();
+			PT_DocPosition posBL = pBL->getPosition();
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) <= posFL))
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun && (pRun->getType() == FPRUN_HYPERLINK))
+			{
+			    fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pRun);
+			    if(pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+			    {
+				fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun * >(pHRun);
+				if(pARun->getPID() == getAnnotationPID())
+				{
+				    return pARun;
+				}
+			    }
+			}
+			else
+			{
+			    return NULL;
+			}
+		}
+		else
+	        {
+		    return NULL;
+		}
+	}
+	return NULL;
+}
+	
+
+void fl_AnnotationLayout::collapse(void)
+{
+	_localCollapse();
+	fp_AnnotationContainer *pAC = static_cast<fp_AnnotationContainer *>(getFirstContainer());
+	if (pAC)
+	{
+//
+// Remove it from the page.
+//
+		if(pAC->getPage())
+		{
+			pAC->getPage()->removeAnnotationContainer(pAC);
+			pAC->setPage(NULL);
+		}
+//
+// remove it from the linked list.
+//
+		fp_AnnotationContainer * pPrev = static_cast<fp_AnnotationContainer *>(pAC->getPrev());
+		if(pPrev)
+		{
+			pPrev->setNext(pAC->getNext());
+		}
+		if(pAC->getNext())
+		{
+			pAC->getNext()->setPrev(pPrev);
+		}
+		delete pAC;
+	}
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
+	m_bIsOnPage = false;
+}
+
 
 
 /************************************************************************/

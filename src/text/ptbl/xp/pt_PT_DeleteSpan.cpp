@@ -176,6 +176,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						
 					case PTX_SectionEndnote:
 					case PTX_SectionFootnote:
+					case PTX_SectionAnnotation:
 					case PTX_SectionFrame:
 					case PTX_SectionTOC:
 						bHasEndStrux = true;
@@ -186,6 +187,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_Section:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
+				    case PTX_EndAnnotation:
 				    case PTX_EndFrame:
 					case PTX_EndTOC:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
@@ -288,6 +290,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 									break;
 								case PTX_SectionFootnote:
 									if(eStrux2Type != PTX_EndFootnote)
+										continue;
+									break;
+								case PTX_SectionAnnotation:
+									if(eStrux2Type != PTX_EndAnnotation)
 										continue;
 									break;
 								case PTX_SectionFrame:
@@ -805,6 +811,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 //
 		return true;
 	case PTX_SectionFootnote:
+	case PTX_SectionAnnotation:
 	case PTX_SectionEndnote:
 	{
 //
@@ -817,6 +824,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	}
  	case PTX_EndFootnote:	
  	case PTX_EndEndnote:	
+ 	case PTX_EndAnnotation:	
  	{
 //
 // Get the actual block strux container for the endnote. 
@@ -951,8 +959,9 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 	
 	//
 // First we want to handle hyperlinks. If we delete all the text within
-// a hyperlink, then we should also delete the start and end point of the
-// hyperlink.
+// a hyperlink or annotation, then we should also delete the start 
+// and end point of the
+// hyperlink or annotation.
 //
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
@@ -995,7 +1004,7 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 		{
 //
 // OK these frags are entirely contained by dpos1  and dpos2
-// OK now look to see if there is a hyperlink just before and after these
+// OK now look to see if there is a hyperlink or annotation just before and after these
 //
 			if(pf_End->getType() != pf_Frag::PFT_Object)
 			{
@@ -1018,6 +1027,7 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 				pf_Frag_Object *pFO = static_cast<pf_Frag_Object *>(pf_First);
 				bool bFoundBook = false;
 				bool bFoundHype = false;
+				bool bFoundAnn = false;
 				if(pFO->getObjectType() == PTO_Bookmark)
 				{
 					bFoundBook = true;
@@ -1025,6 +1035,10 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 				if(pFO->getObjectType() == PTO_Hyperlink)
 				{
 					bFoundHype = true;
+				}
+				if(pFO->getObjectType() == PTO_Annotation)
+				{
+					bFoundAnn = true;
 				}
 				if(pf_End && (pf_End->getType() == pf_Frag::PFT_Object) && (pf_End != pf_First))
 				{
@@ -1041,6 +1055,14 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 					{
 //
 // Found a Hyperlink which will have all contents deleted so delte it too
+//
+						dpos1--;
+						dpos2++;
+					}
+					else if(pFO->getObjectType() == PTO_Annotation && bFoundAnn)
+					{
+//
+// Found a Annotation which will have all contents deleted so delte it too
 //
 						dpos1--;
 						dpos2++;
@@ -1240,8 +1262,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	}
 	bool bPrevWasFootnote = false;
 	UT_sint32 iLoopCount = -1;
-	while (length > 0)
+	while (length >=0)
 	{
+	        if(length == 0 && iFootnoteCount <= 0)
+		  break;
 		iLoopCount++;
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
@@ -1587,7 +1611,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 			UT_return_val_if_fail (bResult, false);
 		}
 		break;
-		// the bookmark and hyperlink objects require specxial treatment; since
+		// the bookmark, hyperlink and annotation objects require specxial treatment; since
 		// they come in pairs, we have to ensure that both are deleted together
 		// so we have to find the other part of the pair, delete it, adjust the
 		// positional variables and the delete the one we were originally asked
@@ -1784,6 +1808,124 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 									bResult2 =
 											_deleteObjectWithNotify(posComrade,pOb,0,1,
 									  							pfsContainer2,0,0);
+
+									if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
+									{
+										// the endmarker was inside of the segment we are working
+										// so we have to adjust the length
+										length--;
+									}
+
+									break;
+								}
+							}
+							pF = pF->getNext();
+				    	}
+					}
+				}
+				break;
+
+				//
+				// When deleting either the start or end of annotation we have to deleted
+				// the content of the annotation as well.
+				// We have to always delete the start marker first; this is
+				// so that in the case of undo the endmarker would be restored
+				// first, because the mechanism that marks runs between them
+				// as a hyperlink depents on the end-marker being in place before
+				// the start marker
+				case PTO_Annotation:
+				{
+					bool bFoundStrux2;
+					PT_DocPosition posComrade;
+					pf_Frag_Strux * pfsContainer2 = NULL;
+
+					pf_Frag * pF;
+
+		    		const PP_AttrProp * pAP = NULL;
+				    pO->getPieceTable()->getAttrProp(pO->getIndexAP(),&pAP);
+				    UT_return_val_if_fail (pAP, false);
+				    const gchar* pszHref = NULL;
+				    const gchar* pszHname  = NULL;
+		            UT_uint32 k = 0;
+        		    bool bStart = false;
+				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))
+				    {
+				      if((strcmp(pszHname, "annotation") == 0) ||(strcmp(pszHname, "Annotation") == 0) )
+				    	{
+				    		bStart = true;
+		    				break;
+				    	}
+				    }
+
+					if(!bStart)
+					{
+						// in this case we are looking for the start marker
+						// and so we delete it and then move on
+				    	pF = pO->getPrev();
+				    	while(pF)
+				    	{
+							if(pF->getType() == pf_Frag::PFT_Object)
+							{
+								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+								if(pOb->getObjectType() == PTO_Annotation)
+								{
+									posComrade = getFragPosition(pOb);
+									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+									UT_return_val_if_fail (bFoundStrux2, false);
+
+									bResult2 =
+											_deleteObjectWithNotify(posComrade,pOb,0,1,
+										  							pfsContainer2,0,0);
+
+									// now adjusting the positional variables
+									if(posComrade <= dpos1)
+										// delete before the start of the segement we are working on
+										dpos1--;
+									else
+									{
+										// we are inside that section
+										length--;
+									}
+									break;
+								}
+							}
+							pF = pF->getPrev();
+				    	}
+						bResult
+							= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+										  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+
+					}
+					else
+					{
+						// in this case we are looking for the end marker,
+						// so we have to be carefult the get rid of the start
+						// marker first
+				    	pF = pO->getNext();
+				    	while(pF)
+				    	{
+							if(pF->getType() == pf_Frag::PFT_Object)
+							{
+								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
+								if(pOb->getObjectType() == PTO_Annotation)
+								{
+									posComrade = getFragPosition(pOb);
+									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
+									UT_return_val_if_fail (bFoundStrux2, false);
+					                // delete the original start marker
+									bResult
+										= _deleteObjectWithNotify(dpos1,pO,fragOffset_First,lengthThisStep,
+													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+
+									// now adjusting the positional variables
+									posComrade--;
+
+									bResult2 =
+											_deleteObjectWithNotify(posComrade,pOb,0,1,
+									  							pfsContainer2,0,0);
+
+									// FIXME!! Need to work out how to delete the content of the annotation
+									// at this point
 
 									if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
 									{

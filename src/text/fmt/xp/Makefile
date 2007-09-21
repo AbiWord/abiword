@@ -60,6 +60,7 @@ CPPSRCS=		fv_View.cpp			\
 			fg_GraphicRaster.cpp		\
 			fg_GraphicVector.cpp		\
 			fp_FieldListLabelRun.cpp	\
+			fp_AnnotationRun.cpp	\
 			fp_FieldTableSumRun.cpp	\
 			fp_FieldTOCNum.cpp	\
 			fp_DirectionMarkerRun.cpp   \

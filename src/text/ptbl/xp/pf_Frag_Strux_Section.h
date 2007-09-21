@@ -173,6 +173,24 @@ public:
 
 
 /*!
+ pf_Frag_Strux_SectionAnnotation represents structure information for
+ a Annotation section in the document.
+*/
+
+class pf_Frag_Strux_SectionAnnotation : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionAnnotation(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionAnnotation();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
  pf_Frag_Strux_SectionMarginnote represents structure information for
  a header/footer section in the document.
 */
@@ -237,6 +255,24 @@ public:
 	pf_Frag_Strux_SectionEndFootnote(pt_PieceTable * pPT,
 						  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_SectionEndFootnote();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndAnnotation represents structure information for
+ the end of a Annotation section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndAnnotation : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndAnnotation(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndAnnotation();
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;

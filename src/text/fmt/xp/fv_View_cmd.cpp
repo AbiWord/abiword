@@ -69,6 +69,7 @@
 #include "ap_Strings.h"
 #include "fd_Field.h"
 #include "pf_Frag_Strux.h"
+#include "fp_FootnoteContainer.h"
 
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
@@ -88,6 +89,12 @@
 #include "ap_Dialog_SplitCells.h"
 #include "ev_Mouse.h"
 #include "fv_View.h"
+
+// RIVERA
+#include "ap_Dialog_Annotation.h"
+#include "xap_Dialog.h"
+#include "xap_DialogFactory.h"
+#include "ap_Dialog_Id.h"
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -3499,6 +3506,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->disableListUpdates();
 
 		_deleteSelection();
+
 		_generalUpdate();
 
 		// restore updates and clean up dirty lists
@@ -4607,12 +4615,92 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 		return false;
 	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: msg [%s]\n",pH1->getTarget()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
-	UT_UTF8String url = pH1->getTarget();
-	url.decodeURL();
-	pFrame->setStatusMessage(url.utf8_str());
+	if(pH1->getHyperlinkType() ==  HYPERLINK_NORMAL)
+	{
+	  UT_UTF8String url = pH1->getTarget();
+	  url.decodeURL();
+	  pFrame->setStatusMessage(url.utf8_str());
+	}
+
 	return true;
 }
 
+bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
+{
+	// kill the annotation preview popup if needed
+	if(isAnnotationPreviewActive())
+		killAnnotationPreview();
+
+	//
+	// Get the text fromt he annotation
+	//
+
+	// TODO maybe we should not exit if annotation is not present (ex. auto-generated annotations may become not be editable!)
+	UT_UTF8String sText("");
+	UT_UTF8String sTitle("");
+	UT_UTF8String sAuthor("");
+	bool b = getAnnotationText(aID,sText);
+	if(!b)
+		return false;
+	
+	// Optional fields
+	getAnnotationTitle(aID,sTitle);
+	getAnnotationAuthor(aID,sAuthor);
+	
+	// edit annotation
+	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	XAP_App * pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, false);
+	
+	pFrame->raise();
+	
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+	
+	AP_Dialog_Annotation * pDialog
+		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
+	UT_return_val_if_fail (pDialog, false);
+	
+	// set initial annotation properties
+	// TODO add support for all fields
+	pDialog->setTitle(sTitle.utf8_str());
+	pDialog->setAuthor(sAuthor.utf8_str());
+	pDialog->setDescription(sText.utf8_str());
+	
+	// run the dialog
+	
+	UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Drawing annotation dialog...\n"));
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
+	
+	if (bOK)
+	{
+		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation id(\"%d\") edited \n",aID));
+		
+		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+		{
+			pApp->getFrame(i)->updateTitle ();
+		}	  
+		
+		UT_UTF8String pDescr = pDialog->getDescription();
+		UT_UTF8String pTitle = pDialog->getTitle();
+		UT_UTF8String pAuthor = pDialog->getAuthor();
+		bool bReplaceSelection = false;
+		b = setAnnotationText(aID,pDescr);
+		
+		// Optional fields
+		setAnnotationTitle(aID,pTitle);
+		setAnnotationAuthor(aID,pAuthor);
+	}
+	
+	// release the dialog
+	pDialogFactory->releaseDialog(pDialog);
+	
+	return true;	
+}
 
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 {

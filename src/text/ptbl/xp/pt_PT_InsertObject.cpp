@@ -333,6 +333,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	switch(pto)
 	{
 		case PTO_Hyperlink:
+		case PTO_Annotation:
 		case PTO_Image:
 	        case PTO_Math:
 	        case PTO_Embed:

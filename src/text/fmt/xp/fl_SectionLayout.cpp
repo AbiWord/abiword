@@ -542,7 +542,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 //
 		fl_ContainerLayout* pCL = pPrevL->getNext();
 	//
-	// BUT!!! Don't move the immediate Footnotes or Endnotes
+	// BUT!!! Don't move the immediate Footnotes, Endnotes or Annotations
 	//
 		fl_ContainerLayout * pLastCL = pPrevL;
 
@@ -551,7 +551,8 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 			pCL = pCL->getNext();
 		}
 		while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
-					  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)))
+					  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)||
+					  (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)))
 		{
 			pLastCL = pCL;
 			pCL = pCL->getNext();
@@ -1029,6 +1030,32 @@ fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 	if(bFound)
 	{
 		return pFL;
+	}
+	return NULL;
+}
+
+
+fl_AnnotationLayout * fl_DocSectionLayout::getAnnotationLayout(UT_uint32 pid)
+{
+	fl_ContainerLayout * pCL = getFirstLayout();
+	fl_AnnotationLayout * pAL = NULL;
+	bool bFound = false;
+	while(pCL && !bFound)
+	{
+		if(pCL->getContainerType() == FL_CONTAINER_ANNOTATION)
+		{
+			pAL = static_cast<fl_AnnotationLayout *>(pCL);
+			if(pAL->getAnnotationPID() == pid)
+			{
+				bFound = true;
+				break;
+			}
+		}
+		pCL = pCL->getNext();
+	}
+	if(bFound)
+	{
+		return pAL;
 	}
 	return NULL;
 }
@@ -2732,6 +2759,11 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 			if(pBCur->getContainerType() == FL_CONTAINER_FOOTNOTE)
 			{
 				static_cast<fl_FootnoteLayout *>(pBCur)->
+					setDocSectionLayout(pPrevSL);
+			}
+			if(pBCur->getContainerType() == FL_CONTAINER_ANNOTATION)
+			{
+				static_cast<fl_AnnotationLayout *>(pBCur)->
 					setDocSectionLayout(pPrevSL);
 			}
 			if(pBCur->getContainerType() == FL_CONTAINER_ENDNOTE)
@@ -4903,6 +4935,45 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 	fl_ContainerLayout * pNewCL = NULL;
 	fl_DocSectionLayout * pCol = static_cast<fl_DocSectionLayout *>(myContainingLayout());
 	pNewCL = pCol->insert(sdh,pFootnote,pcrx->getIndexAP(), FL_CONTAINER_FOOTNOTE);
+	
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	pfnBindHandles(sdh,lid,sfhNew);
+
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
+	return true;
+}
+
+
+bool fl_DocSectionLayout::bl_doclistener_insertAnnotation(fl_ContainerLayout* pFootnote,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	fl_ContainerLayout * pNewCL = NULL;
+	fl_DocSectionLayout * pCol = static_cast<fl_DocSectionLayout *>(myContainingLayout());
+	pNewCL = pCol->insert(sdh,pFootnote,pcrx->getIndexAP(), FL_CONTAINER_ANNOTATION);
 	
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries

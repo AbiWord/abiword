@@ -128,7 +128,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bFinishedInitialCheck(false),
     m_iPrevPos(0),
     m_pQuickPrintGraphics(NULL),
-    m_bIsQuickPrint(false)
+    m_bIsQuickPrint(false),
+    m_bDisplayAnnotations(false)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -152,6 +153,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	strncpy(m_szCurrentTransparentColor,
 			static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent), 9);
 	m_vecFootnotes.clear();
+	m_vecAnnotations.clear();
 	m_vecEndnotes.clear();
 
 }
@@ -978,6 +980,156 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 			} 
 		}
 	}
+	return pos;
+}
+
+// Annotation methods
+
+
+static UT_sint32 compareLayouts(const void * ppCL1, const void * ppCL2)
+{
+  void * v1 = const_cast<void *>(ppCL1);
+  void * v2 = const_cast<void *>(ppCL2);
+  fl_ContainerLayout ** pCL1 = reinterpret_cast<fl_ContainerLayout **>(v1);
+  fl_ContainerLayout ** pCL2 = reinterpret_cast<fl_ContainerLayout **>(v2);
+  return static_cast<UT_sint32>((*pCL1)->getPosition(true)) - static_cast<UT_sint32>((*pCL2)->getPosition(true));
+}
+
+/*!
+ * This simply returns the number of annotations in the document.
+ */
+UT_uint32 FL_DocLayout::countAnnotations(void)
+{
+	return m_vecAnnotations.getItemCount();
+}
+
+/*!
+ * Collapse all the blocks containing Annotations. This is useful for
+ * when we toggle displaying/hiding annotations.
+ */
+bool  FL_DocLayout::collapseAnnotations(void)
+{
+  fl_AnnotationLayout * pFL = NULL;
+  fl_BlockLayout * pBL = NULL;
+  UT_uint32 i = 0;
+  for(i= 0; i<countAnnotations(); i++)
+  {
+      pFL = getNthAnnotation(i);
+      if(pFL)
+      {
+	  pBL = pFL->getContainingBlock();
+	  if(pBL)
+	  {
+	      pBL->collapse();
+	  }
+	  pBL = static_cast<fl_BlockLayout *>(pFL->getFirstLayout());
+	  if(pBL)
+	      pBL->collapse();
+      }
+  }
+  return true;
+}
+
+/*!
+ * Add a annotation layout to the vector remembering them.
+ */
+void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
+{
+	m_vecAnnotations.addItem(pFL);
+	m_vecAnnotations.qsort(compareLayouts);
+	UT_uint32 i = 0;
+	for(i=0; i<countAnnotations();i++)
+	{
+	    fl_AnnotationLayout * pAL = getNthAnnotation(i);
+	    fp_AnnotationRun * pARun = pAL->getAnnotationRun();
+	    if(pARun)
+	    {
+		pARun->recalcValue();
+	    }
+	}
+}
+
+/*!
+ * get a pointer to the Nth annotation layout in the vector remembering them.
+ */
+fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
+{
+	UT_ASSERT(i>=0);
+	if(i >= static_cast<UT_sint32>(m_vecAnnotations.getItemCount()))
+	{
+		return NULL;
+	}
+	else
+	{
+		return m_vecAnnotations.getNthItem(i);
+	}
+}
+
+/*!
+ * Remove an annotation layout from the Vector.
+ */
+void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
+{
+	UT_sint32 i = m_vecAnnotations.findItem(pFL);
+	if(i< 0)
+	{
+		return;
+	}
+	m_vecAnnotations.deleteNthItem(i);
+	if(isLayoutDeleting())
+	  return;
+	m_vecAnnotations.qsort(compareLayouts);
+	for(i=0; i<static_cast<UT_sint32>(countAnnotations());i++)
+	{
+	    fl_AnnotationLayout * pAL = getNthAnnotation(i);
+	    fp_AnnotationRun * pARun = pAL->getAnnotationRun();
+	    if(pARun)
+	    {
+		pARun->recalcValue();
+	    }
+	}
+}
+
+/*!
+ * This method returns the annotation layout associated with the input PID
+ */
+fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
+{
+	UT_sint32 i = 0;
+	fl_AnnotationLayout * pTarget = NULL;
+ 	fl_AnnotationLayout * pFL = NULL;
+	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	{
+		pFL = getNthAnnotation(i);
+		if(pFL->getAnnotationPID() == annpid)
+		{
+			pTarget = pFL;
+			break;
+		}
+	}
+	return pTarget;
+}
+/*!
+ * This returns the position of the Annotation in the vector of annotations. This is useful
+ * for calculating the annotionation positioning it in a annotation 
+ * section
+ */
+UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
+{
+	UT_sint32 i =0;
+	UT_sint32 pos = 0;
+ 	fl_AnnotationLayout * pAL = NULL;
+	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	{
+		pAL = getNthAnnotation(i);
+		if(pAL->getAnnotationPID() == annpid)
+		{
+		        pos = i;
+			break;
+		}
+	}
+	if(pos != i)
+	  pos = -1;
 	return pos;
 }
 
@@ -2796,6 +2948,17 @@ void FL_DocLayout::queueAll(UT_uint32 iReason)
 	}
 }
 
+
+void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
+{
+  m_bDisplayAnnotations = bDisplayAnnotations;
+}
+
+bool FL_DocLayout::displayAnnotations(void)
+{
+  return m_bDisplayAnnotations;
+}
+
 /*!
  * Set the next block to be grammar checked. It won't actually get checked
  * until the insertPoint leaves this block.
@@ -3311,6 +3474,21 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
 		{
 			pDocLayout->updateColor();
+		}
+	}
+
+	// Display Annotations
+
+	pPrefs->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	changed = changed || (b != pDocLayout->m_bDisplayAnnotations);
+	if(b != pDocLayout->m_bDisplayAnnotations || (pDocLayout->m_iGraphicTick < 2))
+	{
+		pDocLayout->m_bDisplayAnnotations = b;
+		pDocLayout->collapseAnnotations();
+		pDocLayout->formatAll();
+		if(pDocLayout->getView())
+		{
+		    pDocLayout->getView()->updateScreen(false);
 		}
 	}
 }

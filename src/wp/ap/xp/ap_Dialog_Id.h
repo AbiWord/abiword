@@ -54,6 +54,8 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_HDRFTR, /* change the doc's bg color */
 	AP_DIALOG_ID_INSERTBOOKMARK,
 	AP_DIALOG_ID_INSERTHYPERLINK,
+	// RIVERA
+	AP_DIALOG_ID_ANNOTATION,
 	AP_DIALOG_ID_METADATA,
 	AP_DIALOG_ID_MARK_REVISIONS,
 	AP_DIALOG_ID_LIST_REVISIONS,
@@ -66,6 +68,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_FORMAT_TOC,	
 	AP_DIALOG_ID_MAILMERGE,
 	AP_DIALOG_ID_LATEX, /*Insert and modify a latex based equation */
+	AP_DIALOG_ID_ANNOTATION_PREVIEW,
 #if 0
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
 #endif

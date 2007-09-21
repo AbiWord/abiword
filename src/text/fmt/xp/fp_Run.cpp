@@ -522,6 +522,15 @@ fp_Run::_findPrevPropertyRun(void) const
 	return pRun;
 }
 
+bool fp_Run::displayAnnotations(void)
+{
+	if(!getBlock())
+		return false;
+	if(!getBlock()->getDocLayout())
+		return false;
+	return getBlock()->getDocLayout()->displayAnnotations();
+}
+
 /*!
   Inherit attribute properties from previous Run
 
@@ -1077,6 +1086,16 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	UT_return_val_if_fail(pView, s_fgColor);
 	bool bShow = pView->isShowRevisions();
 	
+	if(getBlock()->getDocLayout()->displayAnnotations())
+	{
+		if(getLine() && getLine()->getContainer() && getLine()->getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION)
+		{
+				fp_AnnotationContainer * pAC = static_cast<fp_AnnotationContainer *>(getLine()->getContainer());
+				UT_uint32 pid = pAC->getPID();
+				s_fgColor =	_getView()->getColorAnnotation(pAC->getPage(),pid);
+				return s_fgColor;
+		}
+	}
 	if(m_pRevisions && bShow)
 	{
 		bool bMark = pView->isMarkRevisions();
@@ -1114,9 +1133,19 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 
 		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
-	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	else if(m_pHyperlink && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && 
+			(m_pHyperlink->getHyperlinkType() ==  HYPERLINK_NORMAL))
 	{
 		s_fgColor = _getView()->getColorHyperLink();
+	}
+	else if(m_pHyperlink && (m_pHyperlink->getHyperlinkType() == HYPERLINK_ANNOTATION))
+	{
+			if(getBlock()->getDocLayout()->displayAnnotations())
+			{
+				s_fgColor =	_getView()->getColorAnnotation(this);
+			}
+			else
+				return _getColorFG();
 	}
 	else
 		return _getColorFG();
@@ -1303,14 +1332,35 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		GR_Painter painter(pG);
-		pG->setColor(_getView()->getColorHyperLink());
-		pG->setLineProperties(pG->tluD(1.0),
+		if(m_pHyperlink->getHyperlinkType() == HYPERLINK_NORMAL)
+		{
+				GR_Painter painter(pG);
+				pG->setColor(_getView()->getColorHyperLink());
+				pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
-		painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+				painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+		}
+		else
+		{
+			if(displayAnnotations() || pG->queryProperties(GR_Graphics::DGP_SCREEN))
+			{
+					GR_Painter painter(pG);
+					pG->setColor(_getView()->getColorAnnotation(this));
+					pG->setLineProperties(pG->tluD(1.0),
+										  GR_Graphics::JOIN_MITER,
+										  GR_Graphics::CAP_PROJECTING,
+										  GR_Graphics::LINE_ON_OFF_DASH);
+				
+					painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+					pG->setLineProperties(pG->tluD(1.0),
+										  GR_Graphics::JOIN_MITER,
+										  GR_Graphics::CAP_PROJECTING,
+										  GR_Graphics::LINE_SOLID);
+			}	
+		}
 	}
 
 	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
@@ -2892,7 +2942,9 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 								  UT_uint32 iOffsetFirst,
 								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
+	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK),
+  m_bIsStart(false),
+  m_pTarget(NULL)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -2945,6 +2997,7 @@ fp_HyperlinkRun::~fp_HyperlinkRun()
 {
 	if(m_pTarget)
 		delete [] m_pTarget;
+	m_pTarget = NULL;
 }
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,

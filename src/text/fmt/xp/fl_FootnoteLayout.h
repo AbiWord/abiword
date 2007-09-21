@@ -30,6 +30,8 @@
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 
+class fl_BlockLayout;
+
 // We have one fl_FootnoteLayout for each footnote.  They all
 // get physically placed at the bottom of the fp_Page in their own
 // little container.  
@@ -37,6 +39,8 @@
 // The fl_FootnoteLayout lives after each block.
 
 // Need to do cursor navigation between blocks
+class fp_AnnotationRun;
+
 class ABI_EXPORT fl_EmbedLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
@@ -72,6 +76,7 @@ public:
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
+	fl_BlockLayout *         getContainingBlock(void);
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
@@ -149,6 +154,34 @@ private:
 	void                     _localCollapse();
 
 	UT_uint32                m_iEndnotePID;
+};
+
+
+class ABI_EXPORT fl_AnnotationLayout : public fl_EmbedLayout
+{
+	friend class fl_DocListener;
+	friend class fp_AnnotationContainer;
+
+public:
+	fl_AnnotationLayout(FL_DocLayout* pLayout, 
+					  fl_DocSectionLayout * pDocSL, 
+					  PL_StruxDocHandle sdh, 
+					  PT_AttrPropIndex ap, 
+					  fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_AnnotationLayout();
+	fp_AnnotationRun *           getAnnotationRun(void);
+	virtual void		     format(void);
+	virtual void             collapse(void);
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	UT_uint32                getAnnotationPID(void) const
+		{return m_iAnnotationPID;}
+protected:
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
+private:
+	void                     _createAnnotationContainer(void);
+	void                     _insertAnnotationContainer(fp_Container * pNewFC);
+	void                     _localCollapse();
+	UT_uint32                m_iAnnotationPID;
 };
 
 

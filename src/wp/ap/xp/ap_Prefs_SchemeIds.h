@@ -55,6 +55,9 @@
 #define AP_PREF_KEY_AutoGrammarCheck		    "AutoGrammarCheck"			/* enable automatic grammar check {0,1} */
 #define AP_PREF_DEFAULT_AutoGrammarCheck  		"1"
 
+#define AP_PREF_KEY_DisplayAnnotations		    "DisplayAnnotations"			/* enable display of annotations (0,1) */
+#define AP_PREF_DEFAULT_DisplayAnnotations  		"0"
+
 #define AP_PREF_KEY_SpellCheckCaps					"SpellCheckCaps"			/* enable checking CAPITALIZED words {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckCaps				"1"
 
@@ -174,6 +177,27 @@
 
 #define AP_PREF_KEY_LockStyles "LockStyles"
 #define AP_PREF_DEFAULT_LockStyles "0"
+
+#define AP_PREF_KEY_ColorForAnnotation1				"ColorAnnotation1"
+#define AP_PREF_DEFAULT_ColorForAnnotation1			"ab04fe"
+#define AP_PREF_KEY_ColorForAnnotation2				"ColorAnnotation2"
+#define AP_PREF_DEFAULT_ColorForAnnotation2			"ab1477"
+#define AP_PREF_KEY_ColorForAnnotation3				"ColorAnnotation3"
+#define AP_PREF_DEFAULT_ColorForAnnotation3			"ff9708"
+#define AP_PREF_KEY_ColorForAnnotation4				"ColorAnnotation4"
+#define AP_PREF_DEFAULT_ColorForAnnotation4			"9eb345"
+#define AP_PREF_KEY_ColorForAnnotation5				"ColorAnnotation5"
+#define AP_PREF_DEFAULT_ColorForAnnotation5			"0fb305"
+#define AP_PREF_KEY_ColorForAnnotation6				"ColorAnnotation6"
+#define AP_PREF_DEFAULT_ColorForAnnotation6			"08b3f8"
+#define AP_PREF_KEY_ColorForAnnotation7				"ColorAnnotation7"
+#define AP_PREF_DEFAULT_ColorForAnnotation7			"04cec3"
+#define AP_PREF_KEY_ColorForAnnotation8				"ColorAnnotation8"
+#define AP_PREF_DEFAULT_ColorForAnnotation8			"0485c3"
+#define AP_PREF_KEY_ColorForAnnotation9				"ColorAnnotation9"
+#define AP_PREF_DEFAULT_ColorForAnnotation9			"0712c3"
+#define AP_PREF_KEY_ColorForAnnotation10				"ColorAnnotation10"
+#define AP_PREF_DEFAULT_ColorForAnnotation10			"ff0000"
 
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl

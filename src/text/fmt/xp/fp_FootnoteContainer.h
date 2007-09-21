@@ -60,6 +60,32 @@ private:
 };
 
 
+class ABI_EXPORT fp_AnnotationContainer : public fp_VerticalContainer
+{
+public:
+	fp_AnnotationContainer(fl_SectionLayout* pSectionLayout);
+	virtual ~fp_AnnotationContainer();
+	UT_sint32           getValue(void);
+	void				layout(void);
+	virtual bool        isVBreakable(void) {return false;}
+	virtual void		clearScreen(void);
+	virtual void		draw(dg_DrawArgs*);
+	virtual void		draw(GR_Graphics*) {}
+	virtual void        setContainer(fp_Container * pContainer);
+	virtual fp_Container * getNextContainerInSection(void) const;
+	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual fp_Page *   getPage(void) { return m_pPage;}
+	void                setPage(fp_Page * pPage);
+	fl_DocSectionLayout * getDocSectionLayout(void);
+	UT_uint32           getPID(void);
+private:
+	fp_Page * m_pPage;
+	UT_sint32 m_iLabelWidth;
+	UT_sint32 m_iXLabel;
+	UT_sint32 m_iYLabel;
+};
+
+
 class ABI_EXPORT fp_EndnoteContainer : public fp_VerticalContainer
 {
 public:

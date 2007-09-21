@@ -144,6 +144,13 @@
 #include "ut_path.h"
 #include "ie_mailmerge.h"
 #include "gr_Painter.h"
+#include "fp_FootnoteContainer.h"
+
+
+// RIVERA TODO last one should be changed to something platform independant
+#include "ap_Dialog_Annotation.h"
+#include "ap_Preview_Annotation.h"
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -466,7 +473,6 @@ public:
 	static EV_EditMethod_Fn zoomIn;
 	static EV_EditMethod_Fn zoomOut;
 
-	static EV_EditMethod_Fn insAnnotation;
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
@@ -516,6 +522,7 @@ public:
 	static EV_EditMethod_Fn fontSizeIncrease;
 	static EV_EditMethod_Fn fontSizeDecrease;
 	static EV_EditMethod_Fn toggleBold;
+	static EV_EditMethod_Fn toggleDisplayAnnotations;
 	static EV_EditMethod_Fn toggleHidden;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -674,6 +681,11 @@ public:
 	static EV_EditMethod_Fn purgeAllRevisions;
 	static EV_EditMethod_Fn startNewRevision;
 	
+	//RIVERA
+    static EV_EditMethod_Fn insAnnotation;
+    static EV_EditMethod_Fn insAnnotationFromSel;
+    static EV_EditMethod_Fn editAnnotation;
+	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
 	static EV_EditMethod_Fn sortRowsAscend;
@@ -816,7 +828,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
 	EV_EditMethod(NF(dlgColumns),			0,	""),
 	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
-	EV_EditMethod(NF(dlgFmtPosImage), 			0, ""),
+	EV_EditMethod(NF(dlgFmtPosImage), 		0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
@@ -837,7 +849,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgWordCount), 		0,	""),
 	EV_EditMethod(NF(dlgZoom),				0,	""),
 	EV_EditMethod(NF(doBullets),			0,	""),
-	EV_EditMethod(NF(doEscape),			0,	""),
+	EV_EditMethod(NF(doEscape),				0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
 	EV_EditMethod(NF(dragFrame), 			0,	""),
@@ -851,11 +863,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// e
 
+	EV_EditMethod(NF(editAnnotation),		0,	""),
 	EV_EditMethod(NF(editEmbed),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
-	EV_EditMethod(NF(editLatexAtPos),			0,	""),
-	EV_EditMethod(NF(editLatexEquation),			0,	""),
+	EV_EditMethod(NF(editLatexAtPos),		0,	""),
+	EV_EditMethod(NF(editLatexEquation),	0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
 	EV_EditMethod(NF(endDragVline),			0,	""),
@@ -925,13 +938,14 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(hyperlinkJumpPos),     0,      ""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
-	EV_EditMethod(NF(importStyles),			0,	""),
-	EV_EditMethod(NF(insAnnotation),			0,		""),
-	EV_EditMethod(NF(insBreak), 		0,		""),
+	EV_EditMethod(NF(importStyles),			0,		""),
+	EV_EditMethod(NF(insAnnotation),		0,		""),
+	EV_EditMethod(NF(insAnnotationFromSel),	0,		""),
+	EV_EditMethod(NF(insBreak),				0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
-	EV_EditMethod(NF(insField), 		0,		""),
-	EV_EditMethod(NF(insFile), 0, ""),
+	EV_EditMethod(NF(insField),				0,		""),
+	EV_EditMethod(NF(insFile),				0,		""),
 	EV_EditMethod(NF(insFootnote),			0,		""),
 	EV_EditMethod(NF(insMailMerge), 		0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
@@ -1018,8 +1032,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pasteSpecial), 		0,	""),
 	EV_EditMethod(NF(pasteVisualText), 		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
-	EV_EditMethod(NF(printDirectly), 0, ""),
-	EV_EditMethod(NF(printPreview), 0, ""),
+	EV_EditMethod(NF(printDirectly),		0,	""),
+	EV_EditMethod(NF(printPreview),			0,	""),
 	EV_EditMethod(NF(printTB),				0,	""),
 	EV_EditMethod(NF(purgeAllRevisions),	0,	""),
 
@@ -1118,6 +1132,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleBottomline), 	0,	""),
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
+	EV_EditMethod(NF(toggleDisplayAnnotations), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
 	EV_EditMethod(NF(toggleDomDirectionDoc),	0,	""),
 	EV_EditMethod(NF(toggleDomDirectionSect),	0,	""),
@@ -3838,6 +3853,7 @@ UT_return_val_if_fail(pDialog, false);
 	return ret;
 }
 
+
 Defun1(fileInsertGraphic)
 {
 	CHECK_FRAME;
@@ -4679,7 +4695,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 	if (!szContextMenuName)
 		return false;
 	bool res =	pFrame->runModalContextMenu(pView,szContextMenuName,
-									   xPos,yPos);
+											xPos,yPos);
 	return res;
 }
 
@@ -4907,14 +4923,27 @@ Defun(contextHyperlink)
 	// move the IP so actions have the right context
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
-
+	
+	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL) // normal hyperlinks
 #ifdef ENABLE_SPELL
-	if(pView->isTextMisspelled())
-		return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-	else
+		if(pView->isTextMisspelled())
+			return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+		else
 #endif
-		return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-
+			return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION) // annotations
+#ifdef ENABLE_SPELL
+		if(pView->isTextMisspelled())
+			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+		else
+#endif
+			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	
+	return false; // to avoid compilation warnings (should never be reached)
 }
 
 #ifdef ENABLE_SPELL
@@ -9972,7 +10001,7 @@ Defun1(viewRuler)
 	UT_return_val_if_fail(pFrame, false);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-UT_return_val_if_fail(pFrameData, false);
+	UT_return_val_if_fail(pFrameData, false);
 	// don't do anything if fullscreen
 	if (pFrameData->m_bIsFullScreen)
 	  return false;
@@ -10445,15 +10474,115 @@ Defun1(insFootnote)
 	return pView->insertFootnote(true);
 }
 
-
 Defun1(insAnnotation)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	return pView->insertAnnotation(0);
+	
+	// API is:
+	// Annotation Number,
+	// UT_UTF8String pointer containing text to be inserted
+	// Boolean to determine whether to place the current selection into an annotation.
+	//
+	
+	UT_DEBUGMSG(("insAnnotation: inserting\n"));
+	
+	//
+	// First create the annotation => then open an edit dialog
+	//
+	
+	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
+	
+	// Default values
+	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
+	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	
+	pView->insertAnnotation(iAnnotation,
+							&pTitle,
+							&pAuthor,
+							&pDescr,
+							false); // TODO this line is the only difference with insAnnotationFromSel below, code should me merged
+	
+	// Open edit annotation dialog
+	pView->cmdEditAnnotationWithDialog(iAnnotation);
+	
+	// TODO: set the document as dirty when something changed
+	
+	return true;
 }
 
+// RIVERA
+Defun1(insAnnotationFromSel)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	
+	UT_DEBUGMSG(("insAnnotationFromSel: inserting\n"));
+	
+	//
+	// First create the annotation => then open an edit dialog
+	//
+	
+	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
+	
+	// Default values
+	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
+	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	
+	pView->insertAnnotation(iAnnotation,
+							&pTitle,
+							&pAuthor,
+							&pDescr,
+							true);
+	
+	// Open edit annotation dialog
+	pView->cmdEditAnnotationWithDialog(iAnnotation);
+	
+	// TODO: set the document as dirty when something changed
+		
+	return true;
+}
+
+Defun1(toggleDisplayAnnotations)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	
+	//
+	// Set the preference to enable annotations display
+	//
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, false);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	b = !b;
+	UT_DEBUGMSG(("toggleDisplayAnnotations: Changing annotation display to %s\n",(b ? "true" : "false")));
+	gchar szBuffer[2] = {0,0};
+	szBuffer[0] = ((b)==true ? '1' : '0');
+	pScheme->setValue(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations),szBuffer);
+	return true ;
+}
+
+Defun1(editAnnotation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	UT_DEBUGMSG(("editAnnotation\n"));
+
+	fp_AnnotationRun * pA = static_cast<fp_AnnotationRun *>(pView->getHyperLinkRun(pView->getPoint()));
+	UT_ASSERT(pA);
+	
+	pView->cmdEditAnnotationWithDialog(pA->getPID());
+	return true;
+}
 
 Defun1(insTOC)
 {
@@ -13494,7 +13623,24 @@ Defun(hyperlinkJump)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	
+	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
+	{
+		UT_DEBUGMSG(("hyperlinkJump: Normal hyperlink jump\n"));
+		pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	}
+	
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+	{
+		// This is the behaveour when double clicking an annotation hypermark
+		UT_DEBUGMSG(("hyperlinkJump: Hyperlink annotation (no jump) edit dialog\n"));
+		fp_AnnotationRun * pARun = static_cast<fp_AnnotationRun *>(pHRun);
+		pView->cmdEditAnnotationWithDialog(pARun->getPID());
+	}
+	
 	return true;
 }
 
@@ -13504,6 +13650,7 @@ Defun(hyperlinkJumpPos)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
+	UT_DEBUGMSG(("hyperlinkJumpPos\n"));
 	pView->cmdHyperlinkJump(pView->getPoint());
 	return true;
 }
@@ -13528,8 +13675,90 @@ Defun(hyperlinkStatusBar)
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
 
-	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
-	return true;
+	UT_sint32 xpos = pCallData->m_xPos;
+	UT_sint32 ypos = pCallData->m_yPos;
+	PT_DocPosition  pos = pView->getDocPositionFromXY(xpos,ypos);
+	fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pos));
+	if(!pHRun)
+		return false;
+	if(pHRun->getHyperlinkType() ==  HYPERLINK_NORMAL)
+	{
+			pView->cmdHyperlinkStatusBar(xpos, ypos);
+			return true;
+	}
+	
+	fp_AnnotationRun * pAnn = static_cast<fp_AnnotationRun *>(pHRun);
+
+	// avoid unneeded redrawings
+	// check BOTH if we are already previewing an annotation, and that it is indeed the annotation we want
+	if((pView->isAnnotationPreviewActive()) &&
+	   (pView->getActivePreviewAnnotationID() == pAnn->getPID()))
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
+		return true; // should be false? think not
+	}
+	
+	// kill previous preview if needed (it is not the same annotation as it would have been detected above)
+	if (pView->isAnnotationPreviewActive())
+	{
+		UT_DEBUGMSG(("hyperlinkStatusBar: Deleting previous annotation preview...\n"));
+		pView->killAnnotationPreview();
+	}
+	
+	UT_UTF8String sText("");
+	UT_UTF8String sTitle("");
+	UT_UTF8String sAuthor("");
+	bool b = pView->getAnnotationText(pAnn->getPID(),sText);
+	if(!b)
+		return false;
+	
+	// Optional fields
+	pView->getAnnotationTitle(pAnn->getPID(),sTitle);
+	pView->getAnnotationAuthor(pAnn->getPID(),sAuthor);
+	
+	// preview annotation
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	// PLEASE DOOOON'T UNCOMMENT THIS EVIL LINE (unexpectedly will hide the pop-up)
+	//pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Preview_Annotation * pAnnPview
+		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION_PREVIEW));
+		
+	UT_DEBUGMSG(("hyperlinkStatusBar: Previewing annotation text %s \n",sText.utf8_str()));
+	
+	// flags
+	pView->setAnnotationPreviewActive(true);
+	pView->setActivePreviewAnnotationID(pAnn->getPID()); // this one is also needed to decide when to redraw the preview
+	
+	// Fields
+	pAnnPview->setDescription(sText.utf8_str());
+	
+	// Optional fields
+	pAnnPview->setTitle(sTitle.utf8_str());	// if those fields ar to be hidden it should be at the GUI level (inside AP_Preview_Annotation)
+	pAnnPview->setAuthor(sAuthor.utf8_str());
+	
+	pAnnPview->setXY(pG->tdu(xpos),pG->tdu(ypos));
+	pAnnPview->runModeless(pFrame);
+	
+	//UT_sint32 xoff = 0, yoff = 0;
+	//fp_Run * pRun = pView->getHyperLinkRun(pos);
+	//pHRun->getLine()->getOffsets(pHRun, xoff, yoff); //TODO try getting container's screen offset... ->getContainer()
+	// Sevior's infamous + 1....
+	//yoff += pHRun->getLine()->getAscent() - pHRun->getAscent() + 1;
+	UT_DEBUGMSG(("hyperlinkStatusBar: xypos %d %d\n",xpos,ypos));
+	UT_DEBUGMSG(("hyperlinkStatusBar: setXY %d %d\n",pG->tdu(xpos),pG->tdu(ypos)));
+	//UT_DEBUGMSG(("hyperlinkStatusBar: pRungetxy %d %d\n",pHRun->getX(),pHRun->getY()));
+	//UT_DEBUGMSG(("hyperlinkStatusBar: getScreenOffsets %d %d\n",xoff,yoff));
+	
+	pAnnPview->draw();
+	
+	return true;	
 }
 
 static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView,

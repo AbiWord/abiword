@@ -84,6 +84,9 @@
 #include "fp_FrameContainer.h"
 #include "xap_EncodingManager.h"
 #include "gr_Painter.h"
+#include "xap_DialogFactory.h"
+#include "ap_Preview_Annotation.h"
+#include "ap_Dialog_Id.h"
 
 #include "pp_Revision.h"
 
@@ -283,7 +286,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iGrabCell(0),
 		m_InlineImage(this),
 		m_bInsertAtTablePending(false),
-		m_iPosAtTable(0)
+		m_iPosAtTable(0),
+		m_bAnnotationPreviewActive(false)
 {
 	if(m_pDoc)
 		m_sDocUUID = m_pDoc->getMyUUIDString();
@@ -298,6 +302,18 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_colorRevisions[8] = UT_RGBColor(7,18,195);
 	m_colorRevisions[9] = UT_RGBColor(255,0,0);	// catch-all
 
+	//
+	m_colorAnnotations[0] = UT_RGBColor(171,4,254);
+	m_colorAnnotations[1] = UT_RGBColor(171,20,119);
+	m_colorAnnotations[2] = UT_RGBColor(255,151,8);
+	m_colorAnnotations[3] = UT_RGBColor(158,179,69);
+	m_colorAnnotations[4] = UT_RGBColor(15,179,5);
+	m_colorAnnotations[5] = UT_RGBColor(8,179,248);
+	m_colorAnnotations[6] = UT_RGBColor(4,206,195);
+	m_colorAnnotations[7] = UT_RGBColor(4,133,195);
+	m_colorAnnotations[8] = UT_RGBColor(7,18,195);
+	m_colorAnnotations[9] = UT_RGBColor(255,0,0);	// catch-all
+	
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 
@@ -377,6 +393,48 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if (pApp->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[9]);
+	}
+
+
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation1), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[0]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation2), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[1]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation3), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[2]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation4), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[3]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation5), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[4]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation6), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[5]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation7), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[6]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation8), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[7]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation9), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[8]);
+	}
+	if (pApp->getPrefsValue(static_cast<const gchar *>(AP_PREF_KEY_ColorForAnnotation10), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorAnnotations[9]);
 	}
 
 	// initialize prefs listener
@@ -671,6 +729,38 @@ UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
 	return m_colorGrammarSquiggle;
 }
 
+
+UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
+{
+	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	fp_AnnotationRun * pARun = NULL;
+	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION)
+	{
+			pARun = static_cast<fp_AnnotationRun *>(pHRun);
+	}
+	else
+	{
+			return pRun->_getColorFG();
+	}
+	fp_Page * pPage = pARun->getLine()->getPage();
+	if(!pPage)
+			return pRun->_getColorFG();
+	UT_uint32 pos = pPage->getAnnotationPos(pARun->getPID());
+	if(pos > 9)
+		pos = 9;
+	return m_colorAnnotations[pos];
+}
+
+
+UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
+{
+
+	UT_uint32 pos = pPage->getAnnotationPos(pid);
+	if(pos > 9)
+		pos = 9;
+	return m_colorAnnotations[pos];
+}
+
 void FV_View::replaceGraphics(GR_Graphics * pG)
 {
 	if(m_pG)
@@ -821,8 +911,6 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
 	DELETEP(pDocLayout);
 	UNREFP(pDoc);
 }
-
-
 
 /*!
  * Logic for determining what state the Image and cursor should be in.
@@ -1098,7 +1186,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	  return;
 	}
 	fl_BlockLayout * pPrevBL = pBL;
-	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
+	while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ANNOTATION) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)))
 	{
 	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
 		pPrevBL = pBL;
@@ -3703,6 +3791,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			if((pCL->getContainerType() == FL_CONTAINER_HDRFTR) ||
 			   (pCL->getContainerType() == FL_CONTAINER_SHADOW) ||
 			   (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+			   (pCL->getContainerType() == FL_CONTAINER_ANNOTATION) ||
 			   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
 			{
 				m_pDoc->enableListUpdates();
@@ -8983,7 +9072,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Clear the rest of the info
 //
 	memset(pInfo,0,sizeof(*pInfo));
-	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
+	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ANNOTATION || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		fp_Column* pColumn = NULL;
 		fl_DocSectionLayout* pDSL = NULL;
@@ -9030,7 +9119,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
-		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE  || pSection->getContainerType() == FL_CONTAINER_ANNOTATION )
 		{
 			pInfo->m_iCurrentColumn = 0;
 			pInfo->m_iNumColumns = 1;
@@ -9388,6 +9477,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 
 		bool isFootnote = false;
+		bool isAnnotation = false;
 		bool isEndnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
 		fp_Page * pPage =  pRun->getLine()->getPage();
@@ -9415,6 +9505,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			isEndnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_ANNOTATION)
+		{
+			pSection = pPage->getOwningSection();
+			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			isAnnotation = true;
+			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
+		}
 		else
 		{
 			pSection = pPage->getOwningSection();
@@ -9422,7 +9519,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
-		if ((isFootnote || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
+		if ((isFootnote || isAnnotation || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -9632,6 +9729,7 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 		}
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+		   (pCL->getContainerType() == FL_CONTAINER_ANNOTATION)||
 		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
 		{
 			pBlock = pBlock->getEnclosingBlock();
@@ -9678,7 +9776,23 @@ void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
 	*y = m_iMouseY;
 }
 
+
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
+{
+	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
+	EV_EditMouseContext emc = _getMouseContext(xPos,yPos);
+
+	if (isAnnotationPreviewActive() && (emc != EV_EMC_HYPERLINK))
+	{
+		// kill the annotation preview popup
+		UT_DEBUGMSG(("getMouseContext: Deleting previous annotation preview...\n"));
+		killAnnotationPreview();
+	}
+	return emc;
+}
+
+
+EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
@@ -9691,6 +9805,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
+	
 	if(getPoint() == 0) // We haven't loaded any layouts yet
 	{
 		return EV_EMC_UNKNOWN;
@@ -9951,19 +10066,18 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-
+	
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		if(m_prevMouseContext != EV_EMC_HYPERLINK)
 		{
-			UT_DEBUGMSG(("Mouse context is chaned to hyperlink \n"));
+			UT_DEBUGMSG(("Mouse context is changed to hyperlink \n"));
 		}
 		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}
-
-
+	
 	if(!isSelectionEmpty())
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
@@ -10292,6 +10406,13 @@ void FV_View::setCursorToContext()
 		cursor = GR_Graphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_HYPERLINKMISSPELLED:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	// RIVERA
+	case EV_EMC_ANNOTATIONTEXT:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	case EV_EMC_ANNOTATIONMISSPELLED:
 		cursor = GR_Graphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_VLINE:
@@ -10846,6 +10967,7 @@ FV_View::countWords(void)
                                 {
                                         fl_ContainerType t = l->getContainerType();
                                         if ((t == FL_CONTAINER_FOOTNOTE) ||
+                                            (t == FL_CONTAINER_ANNOTATION)||
                                             (t == FL_CONTAINER_ENDNOTE))
                                         {
                                                 wCount.words_no_hdrftr--;
@@ -11046,6 +11168,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
 	  return true;
   }
   if((pfs->getStruxType() == PTX_EndFootnote) || 
+     (pfs->getStruxType() == PTX_EndAnnotation)|| 
      (pfs->getStruxType() == PTX_EndEndnote) || 
      (pfs->getStruxType() == PTX_Block) )
   {
@@ -11068,6 +11191,7 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
 	  }
 	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndAnnotation) || 
 		 (pfs->getStruxType() == PTX_EndEndnote) || 
 		 (pfs->getStruxType() == PTX_Block) )
 	  {
@@ -11725,7 +11849,9 @@ UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
 	while(!bStop && pCL)
 	{
 		count++;
-		bStop = ((pCL->getContainerType() != FL_CONTAINER_FOOTNOTE) && (pCL->getContainerType() != FL_CONTAINER_ENDNOTE));
+		bStop = ((pCL->getContainerType() != FL_CONTAINER_FOOTNOTE) && 
+				 (pCL->getContainerType() != FL_CONTAINER_ENDNOTE) && 
+				 (pCL->getContainerType() != FL_CONTAINER_ANNOTATION));
 		pCL = static_cast<fl_ContainerLayout *>(pCL->myContainingLayout());
 	}
 	return count;
@@ -11781,6 +11907,36 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 			else if( pClosest->getDocPosition() < pFL->getDocPosition())
 			{
 				pClosest = pFL;
+			}
+		}
+	}
+	return pClosest;
+}
+
+
+
+/*!
+ * This method returns the closest annotation before or that contains the 
+ * requested doc position. If the is no annnotation before the doc position, NULL
+ * is returned.
+ */
+fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos)
+{
+	fl_AnnotationLayout * pAL = NULL;
+	fl_AnnotationLayout * pClosest = NULL;
+	UT_sint32 i = 0;
+	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countAnnotations());i++)
+	{
+		pAL = m_pLayout->getNthAnnotation(i);
+		if(pAL->getDocPosition() <= pos)
+		{
+			if(pClosest == NULL)
+			{
+				pClosest = pAL;
+			}
+			else if( pClosest->getDocPosition() < pAL->getDocPosition())
+			{
+				pClosest = pAL;
 			}
 		}
 	}
@@ -11975,9 +12131,153 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 }
 
 
-bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
+/*!
+ * Returns true if the current insertion point is inside a annotation.
+ */
+bool FV_View::isInAnnotation(void)
+{
+	return isInAnnotation(getPoint());
+}
+
+/*!
+ * Returns true if the requested position is inside a endnote.
+ */
+bool FV_View::isInAnnotation(PT_DocPosition pos)
+{
+	fl_AnnotationLayout * pAL = getClosestAnnotation(pos);
+	if(pAL == NULL)
+	{
+		return false;
+	}
+	if(!pAL->isEndFootnoteIn())
+	{
+		return false;
+	}
+	if((pAL->getDocPosition() <= pos) && ((pAL->getDocPosition() + pAL->getLength()) > pos))
+	{
+		return true;
+	}
+	return false;
+}
+
+fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation)
+{
+	fl_AnnotationLayout * pAnn = 	m_pLayout->findAnnotationLayout(iAnnotation);
+	return pAnn;
+}
+/*!
+ * Return the plain text content of the annotation specified by iAnnotaion
+ * Content is returned in UT_UTF8String sText.
+ * Returns true if a valid annotation was found with valid content.
+ */
+bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+{
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	UT_GrowBuf buffer;
+	fl_BlockLayout * block; 
+	
+	block = m_pLayout->findBlockAtPosition(posStart+1);
+	while(block && (static_cast<fl_AnnotationLayout *>(block->myContainingLayout()) == pAL))
+	{
+			UT_GrowBuf tmp;
+			block->getBlockBuf(&tmp);
+			buffer.append(tmp.getPointer(0),tmp.getLength());
+			tmp.truncate(0);
+			block = block->getNextBlockInDocument();
+	}
+	sText.appendUCS4(reinterpret_cast<const UT_UCS4Char *>( buffer.getPointer(0)),buffer.getLength());
+	return true;
+}
+
+/*!
+ * Set the content of the annotation to the plain text supplied by
+ *  UT_UTF8String sText.
+ * Returns true if a valid annotation was found with valid content.
+ */
+bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
+{
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+	
+	UT_return_val_if_fail(sdhEnd != NULL, false);
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd); 
+	//
+	// First set up a glob
+	//
+	m_pDoc->beginUserAtomicGlob();
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	//
+	// Cut out current content
+	//
+	UT_uint32 iRealDeleteCount2;
+	PP_AttrProp * pAttrProp_Before = NULL;
+	m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
+	//
+	// Insert the new text
+	//
+	m_pDoc->insertSpan(posStart+1, sText.ucs4_str().ucs4_str(),sText.ucs4_str().size(),pAttrProp_Before);
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	return true;
+
+}
+
+// TODO getters and setters to implement/change/add as judged necessary
+bool FV_View::getAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+{
+	// TODO implement
+	UT_DEBUGMSG(("getAnnotationTitle: not implemented\n"));
+	sTitle = "n/a";
+	return true;
+}
+bool FV_View::setAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+{
+	// TODO implement
+	UT_DEBUGMSG(("setAnnotationTitle: not implemented\n"));
+	return true;
+}
+bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+{
+	// TODO implement
+	UT_DEBUGMSG(("getAnnotationAuthor: not implemented\n"));
+	sAuthor = "n/a";
+	return true;
+}
+bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+{
+	// TODO implement
+	UT_DEBUGMSG(("setAnnotationAuthor: not implemented\n"));
+	return true;
+}
+
+/*!
+ * Insert annotation number iAnnotation across the current selection.
+ * The text of the annotation is contained in pStr.
+ * If pstr is NULL default text is inserted.
+ * If bReplace is true, the current selection is cut and placed into
+ * an annotation.
+ */
+bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
+							   UT_UTF8String * pTitle, // TODO store pTitle and pAuthor fields as well
+							   UT_UTF8String * pAuthor,
+							   UT_UTF8String * pDescr,
+							   bool bReplace)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
+	// TODO allow applying to empty selection (cursor position)
 	fl_BlockLayout * pBlock =  _findBlockAtPosition(getPoint());
 	if(pBlock == NULL)
 	{
@@ -12006,7 +12306,161 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation)
 		}
 		setPoint(getPoint()-1);
 	}
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (m_Selection.getSelectionAnchor() < posStart)
+	{
+		posStart = m_Selection.getSelectionAnchor();
+	}
+	else
+	{
+		posEnd = m_Selection.getSelectionAnchor();
+	}
+
+	// Hack for bug 2940
+	if (posStart == 1) posStart++;
+
+	// the selection has to be within a single block
+	// we could implement hyperlinks spaning arbitrary part of the document
+	// but then we could not use <a href=> </a> in the output and
+	// I see no obvious need for hyperlinks to span more than a single block
+	fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
+	fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+//
+// Only allow annotations within a single block - for now
+//
+	if(pBl1 != pBl2)
+	{
+		return false;
+	}
+	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
+	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
+		return false;
+//
+// Under sum1 induced conditions posEnd could give the same block pointer
+// despite being past the end of the block. This extra fail-safe code
+// prevents this.
+//
+	if((pBl1->getPosition() + pBl1->getLength() -1) < posEnd)
+	{
+		return false;
+	}
+	const gchar * pAttr[4];
+	pAttr[0] = "Annotation";
+	UT_UTF8String sNum;
+	UT_UTF8String_sprintf(sNum,"%d",iAnnotation);
+	pAttr[1] = sNum.utf8_str();
+	pAttr[2] = 0;
+	pAttr[3] = 0;
+	//
+	// First set up a glob
+	//
+	m_pDoc->beginUserAtomicGlob();
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	//
+	// Cut out current selection.
+	//
+	if(bReplace)
+	{
+		copyToLocal(posStart,posEnd);
+		_deleteSelection();
+		posEnd = posStart;
+	}
+	//
+	// Now insert the Hyperlink-like field
+	//
+
+	// Now insert the annotation end run, so that we can use it as a stop
+	// after inserting the start run when marking the runs in between
+	// as a hyperlink
+	bool bRet = m_pDoc->insertObject(posEnd, PTO_Annotation, NULL, NULL);
+	if(bRet)
+	{
+		const gchar ** pProps = 0;
+		bRet = m_pDoc->insertObject(posStart, PTO_Annotation, pAttr, pProps);
+	}
+
+	//
+	// We insert the annotations struxes right after the annotation start
+	//
+	PT_DocPosition posAnnotation = posStart+1;
+	const gchar* ann_attrs[4];
+	ann_attrs[0] = "annotation-id";
+	ann_attrs[1] = sNum.utf8_str();
+	ann_attrs[2] = 0;
+	ann_attrs[3] = 0;
+	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
+				  "normal",
+				  NULL,
+				  NULL
+	};
+	//
+	//
+	// OK now insert the Annotation struxes
+	//
+	m_pDoc->insertStrux(posAnnotation,PTX_SectionAnnotation,ann_attrs,NULL);
+ 	m_pDoc->insertStrux(posAnnotation+1,PTX_Block,block_atts,NULL);
+	m_pDoc->insertStrux(posAnnotation+2,PTX_EndAnnotation,NULL,NULL);
+	//
+	// OK now Insert the text into the annotation strux
+	//
+	if(bReplace)
+	{
+		//
+		// Paste in the selected text
+		//
+		_pasteFromLocalTo(posAnnotation+2);
+		_clearSelection();
+	}
+	else
+	{
+		UT_UTF8String sTmp;
+		if(pDescr == NULL)	
+		{
+			sTmp = "Annotation";
+		}
+		else
+		{
+			sTmp = *pDescr;
+		}
+	
+		UT_UCS4String sUCS4(sTmp.utf8_str());
+		bRet = m_pDoc->insertSpan(posAnnotation+2, sUCS4.ucs4_str(),sUCS4.length(),NULL);
+		// because we have inserted two objects, 3 struxes and text 
+		// around the selection boundaries the original insetion point and 
+		// selection anchor
+		// are now shifted, so we need to fix them
+		posEnd += 4 + sUCS4.length();
+		setPoint(posStart+1);
+		m_Selection.setSelectionAnchor(posEnd);
+	}
+	// Signal piceTable is stable again and close off the glob
+
+	_restorePieceTableState();
+	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->enableListUpdates();
+
 	return true;
+}
+
+// RIVERA
+void FV_View::killAnnotationPreview()
+{
+	UT_DEBUGMSG(("killAnnotationPreview: Deleting annotation preview...\n"));
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Preview_Annotation * pPview
+		= static_cast<AP_Preview_Annotation *>(pDialogFactory->requestDialog(	AP_DIALOG_ID_ANNOTATION_PREVIEW));
+	UT_ASSERT(pPview);
+    pDialogFactory->releaseDialog(pPview);
+	pPview->destroy();
+	setAnnotationPreviewActive(false);
 }
 
 bool FV_View::insertFootnote(bool bFootnote)
@@ -12045,7 +12499,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
-		_deleteSelection();
+		_deleteSelection();  // TODO use this text as content of footnote instead of simply deleting it...
 	}
 	else if(m_FrameEdit.isActive())
 	{
@@ -12081,7 +12535,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	PT_DocPosition FanchEnd;
 	PT_DocPosition FbodyEnd;
 
-	const gchar *cur_style;
+	const gchar *cur_style;  // TODO variable cur_style not used? delete it?
 	getStyle(&cur_style);
 
 	bool bCreatedFootnoteSL = false;
@@ -12290,7 +12744,7 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 // will make all the text inside the footnote section invisible so that only
 // we can place the footnote section inside the block containing the reference.
 //
-	UT_DEBUGMSG(("insertFootnoetSection: about to insert footnote section at %d\n",pointBreak));
+	UT_DEBUGMSG(("insertFootnoteSection: about to insert footnote section at %d\n",pointBreak));
 	if(bFootnote)
 	{
 		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);
@@ -12687,7 +13141,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	}
 	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
 	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
-	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION))
 	{
 		pBL = pBL->getEnclosingBlock();
 		if(pBL == NULL)

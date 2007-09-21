@@ -180,6 +180,21 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   return found;
 }
 
+// RIVERA TODO not working and may not be needed
+void PD_Document::setAnnotationProp ( const UT_String & key,
+									const UT_UTF8String & value )
+{
+	return; // TODO something!
+}
+bool PD_Document::getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const
+{
+	bool found = true;//false;
+	outProp = "Dummy value";
+	
+	return found;
+}
+
+
 UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 {
   const UT_UTF8String * val = m_mailMergeMap.pick ( key );
@@ -1135,7 +1150,7 @@ bool PD_Document::repairDoc(void)
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-			if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+			if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote)  && (pfs->getStruxType() != PTX_EndAnnotation) )
 			{
 				pf_Frag * pfNext = pf->getNext();
 				if(pfNext && ((pfNext->getType() ==  pf_Frag::PFT_Text) || (pfNext->getType() ==  pf_Frag::PFT_Object) || (pfNext->getType() ==  pf_Frag::PFT_FmtMark)))
@@ -1208,7 +1223,7 @@ bool PD_Document::checkForSuspect(void)
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndAnnotation) )
 		{
 			//
 			// Append a block!
@@ -2263,6 +2278,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 			szStrux = "Footnote";
 		else if(pfs->getStruxType() == PTX_EndFootnote)
 			szStrux = "End Footnote";
+		else if(pfs->getStruxType() == PTX_SectionAnnotation)
+			szStrux = "Annotation";
+		else if(pfs->getStruxType() == PTX_EndAnnotation)
+			szStrux = "End Annotation";
 		else if(pfs->getStruxType() == PTX_SectionEndnote)
 			szStrux = "Endnote";
 		else if(pfs->getStruxType() == PTX_EndEndnote)
@@ -5512,7 +5531,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 	if(pF->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndCell) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndAnnotation) && (pfs->getStruxType() != PTX_EndCell) )
 		{
 			//
 			// Append a block!
@@ -5599,7 +5618,7 @@ bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 	if(pF->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote)  && (pfs->getStruxType() != PTX_EndAnnotation) )
 		{
 			//
 			// Append a block!
@@ -5620,7 +5639,7 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 	if(pF->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndAnnotation) )
 		{
 			//
 			// Append a block!
@@ -5869,6 +5888,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				pst = PTX_EndCell; break;
 			case PTX_SectionFootnote:
 				pst = PTX_EndFootnote; break;
+			case PTX_SectionAnnotation:
+				pst = PTX_EndAnnotation; break;
 		    case PTX_SectionMarginnote:
 				pst = PTX_EndMarginnote; break;
 			case PTX_SectionFrame:

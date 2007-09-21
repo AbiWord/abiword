@@ -50,6 +50,7 @@ struct dg_DrawArgs;
 class fl_CharWidths;
 class fd_Field;
 class fp_HyperlinkRun;
+class fp_AnnotationRun;
 
 struct fp_RunSplitInfo
 {
@@ -90,6 +91,12 @@ enum FP_RUN_TYPE
 	FPRUN__LAST__					= 18
 };
 
+enum FP_HYPERLINK_TYPE
+{
+    HYPERLINK_NORMAL =1,
+    HYPERLINK_ANNOTATION = 2
+};
+
 // specifies how setX should handle screen clearing
 enum FPRUN_CLEAR_SCREEN
 {
@@ -114,6 +121,7 @@ enum FPRUN_CLEAR_SCREEN
 		fp_FieldEndRun
 		fp_BookmarkRun
 		fp_HyperlinkRun
+		fp_AnnotationRun
 		fp_DummyRun
 
 	As far as the formatter's concerned, each subclass behaves somewhat
@@ -329,12 +337,15 @@ public:
 	// the users backs.
 	bool        deleteFollowingIfAtInsPoint() const;
 
+	bool        displayAnnotations(void);
+
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);
 	bool                 isSelectionDraw(void) const;
 	PT_DocPosition       posSelLow(void) const;
     PT_DocPosition       posSelHigh(void) const;
+	UT_RGBColor			_getColorFG(void) const { return m_pColorFG; }
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -349,7 +360,6 @@ protected:
 	// By convention, _getFoo and _setFoo have no side effects.
 	// They can easily be inlined by a smart compiler.
 	UT_RGBColor			_getColorPG(void) const { return m_pColorPG; }
-	UT_RGBColor			_getColorFG(void) const { return m_pColorFG; }
 	UT_RGBColor			_getColorHL(void) const { return m_pColorHL; }
 	void				_setColorFG(UT_RGBColor c) { m_pColorFG = c; }
 	void				_setColorHL(UT_RGBColor c) { m_pColorHL = c; }
@@ -359,7 +369,7 @@ protected:
 	void				_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void				_setHeight(UT_sint32 iHeight)
 							{ m_iHeight = iHeight;}
-	void				_setWidth(UT_sint32 iWidth)
+	virtual void		_setWidth(UT_sint32 iWidth)
                         	{ m_iWidth = iWidth; }
 
 	// use these with great care -- most of the time we need to use
@@ -718,7 +728,10 @@ class ABI_EXPORT fp_HyperlinkRun : public fp_Run
 {
 public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	~fp_HyperlinkRun();
+	virtual ~fp_HyperlinkRun();
+	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
+	{ return HYPERLINK_NORMAL;}
+
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
 
@@ -746,7 +759,7 @@ public:
 	// for the purposes of linebreaking, just whitespace
 	virtual bool doesContainNonBlankData(void) const { return false; }
 	
-private:
+protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
 											  const PP_AttrProp * pSectionAP,
@@ -762,6 +775,43 @@ private:
 	gchar *	  	m_pTarget;
 };
 
+
+
+class ABI_EXPORT fp_AnnotationRun : public fp_HyperlinkRun
+{
+public:
+	fp_AnnotationRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	virtual ~fp_AnnotationRun();
+	virtual FP_HYPERLINK_TYPE    getHyperlinkType(void)
+	{
+		return HYPERLINK_ANNOTATION;
+	}
+	UT_uint32 getPID(void) { return m_iPID;}
+	const char * getValue(void);
+    void         recalcValue(void);
+	virtual bool canBreakAfter(void) const;
+	virtual bool canBreakBefore(void) const;
+	UT_sint32    getRealWidth(void) const {return m_iRealWidth;}
+    void         cleanDraw(dg_DrawArgs*);
+	UT_sint32    calcWidth(void);
+
+ protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
+	virtual bool			_recalcWidth(void);
+	bool                    _setValue(void);
+	virtual void            _setWidth(UT_sint32 iWidth);
+	virtual bool _letPointPass(void) const;
+	virtual bool _canContainPoint(void) const;
+    virtual void _lookupProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP,
+								   GR_Graphics * pG);
+ private:
+	UT_uint32               m_iPID;
+	UT_UTF8String           m_sValue;
+	UT_sint32               m_iRealWidth;
+};
 
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {

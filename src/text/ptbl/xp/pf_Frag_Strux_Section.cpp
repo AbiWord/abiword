@@ -92,6 +92,18 @@ pf_Frag_Strux_SectionFootnote::~pf_Frag_Strux_SectionFootnote()
 {
 }
 
+
+pf_Frag_Strux_SectionAnnotation::pf_Frag_Strux_SectionAnnotation(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionAnnotation,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_SectionAnnotation;
+}
+
+pf_Frag_Strux_SectionAnnotation::~pf_Frag_Strux_SectionAnnotation()
+{
+}
+
 pf_Frag_Strux_SectionMarginnote::pf_Frag_Strux_SectionMarginnote(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
@@ -123,6 +135,19 @@ pf_Frag_Strux_SectionEndFootnote::pf_Frag_Strux_SectionEndFootnote(pt_PieceTable
 }
 
 pf_Frag_Strux_SectionEndFootnote::~pf_Frag_Strux_SectionEndFootnote()
+{
+}
+
+
+
+pf_Frag_Strux_SectionEndAnnotation::pf_Frag_Strux_SectionEndAnnotation(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_EndAnnotation,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_EndAnnotation;
+}
+
+pf_Frag_Strux_SectionEndAnnotation::~pf_Frag_Strux_SectionEndAnnotation()
 {
 }
 

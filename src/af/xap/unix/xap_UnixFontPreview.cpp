@@ -35,11 +35,12 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
 	
 	m_pDrawingArea = createDrawingArea ();
-	 gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 
 	gtk_widget_show_all(m_pPreviewWindow);
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);
+	UT_DEBUGMSG(("gtk_window_move left %d top %d \n",m_left,m_top));
 
 	XAP_App *pApp = XAP_App::getApp();
 	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);

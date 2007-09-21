@@ -408,7 +408,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInAnnotation())
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInFootnote(pView->getSelectionAnchor()))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInAnnotation(pView->getSelectionAnchor()))
   {
     s = EV_MIS_Gray;
   }
@@ -421,6 +429,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
     s = EV_MIS_Gray;
   }
   else if(pView->isInTable() && (pView->getPoint() > 3) && pView->isInFootnote(pView->getPoint()-2))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInTable() && (pView->getPoint() > 3) && pView->isInAnnotation(pView->getPoint()-2))
   {
     s = EV_MIS_Gray;
   }
@@ -723,6 +735,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_LATEXEQUATION:
 	case AP_MENU_ID_EDIT_COPY:
+	// RIVERA
+	case AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL:
 		if (pView->isSelectionEmpty())
 			s = EV_MIS_Gray;
 		break;
@@ -1200,7 +1214,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	  else
 	    s = EV_MIS_ZERO;
 	  break;
-
+	
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -1517,6 +1531,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->isInAnnotation())
+	{
+		return EV_MIS_Gray;
+	}
 	else if(pView->isInEndnote())
 	{
 		return EV_MIS_Gray;
@@ -1577,7 +1595,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	{
 	        return EV_MIS_Gray;
 	}
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
+	if(!pView->isInFootnote() && !pView->isInAnnotation() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
@@ -1591,7 +1609,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-	if(pView->isSelectionEmpty())
+	if((id==AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL) &&
+	   (pView->isSelectionEmpty()))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1609,13 +1628,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 	{
 	        return EV_MIS_Gray;
 	}
-	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(point) && !pView->isInFrame(point)  && !pView->isInFrame(anchor) 
+	if(!pView->isInFootnote() &&!pView->isInAnnotation() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(point) && !pView->isInFrame(point)  && !pView->isInFrame(anchor) 
 		&& !pView->isTOCSelected())
 	{
 		return EV_MIS_ZERO;
 	}
 	return EV_MIS_Gray;
 
+}
+
+// RIVERA
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	XAP_App *pApp = XAP_App::getApp();
+	UT_return_val_if_fail (pApp, EV_MIS_Gray);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail (pPrefs, EV_MIS_Gray);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_return_val_if_fail(pScheme, EV_MIS_Gray);
+	bool b = false;
+	pScheme->getValueBool(static_cast<const gchar *>(AP_PREF_KEY_DisplayAnnotations), &b );
+	return (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
@@ -1689,6 +1724,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 		return EV_MIS_Gray;
 	}
 	if(pView->isInFootnote(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInAnnotation())
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInAnnotation(pView->getSelectionAnchor()))
 	{
 		return EV_MIS_Gray;
 	}

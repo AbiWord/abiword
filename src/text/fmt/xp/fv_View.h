@@ -289,6 +289,7 @@ public:
 	void                getMousePos(UT_sint32 * x, UT_sint32 * y);
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
+	EV_EditMouseContext _getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	void                setPrevMouseContext(EV_EditMouseContext  emc)
 	{m_prevMouseContext = emc;}
@@ -541,16 +542,44 @@ public:
 // ----------------------
 // Stuff for edittable Footnote/Endnotes
 //
-	bool	            insertAnnotation(UT_sint32 iAnnotation);
 	bool	            insertFootnote(bool bFootnote);
 	bool	            insertFootnoteSection(bool bFootnote,const gchar * enpid);
 	bool                isInFootnote(PT_DocPosition pos);
 	bool                isInFootnote(void);
 	bool                isInEndnote(PT_DocPosition pos);
 	bool                isInEndnote(void);
+	bool                isInAnnotation(PT_DocPosition pos);
+	bool                isInAnnotation(void);
 	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
 	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
+	fl_AnnotationLayout *  getClosestAnnotation(PT_DocPosition pos);
 	UT_sint32           getEmbedDepth(PT_DocPosition pos);
+	//
+	// ----------------------------------
+	// Stuff for Annotaions
+	//	
+	bool				insertAnnotation(UT_sint32 iAnnotation,
+										 UT_UTF8String * pTitle,
+										 UT_UTF8String * pAuthor,
+										 UT_UTF8String * pDescr,
+										 bool bReplace);
+	bool                getAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
+	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
+    bool                setAnnotationRichText(UT_uint32 iAnnotaion, UT_UTF8String &sRTF);
+	// TODO getters and setters to implement/change/add as judged necessary
+	bool                getAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle);
+	bool                setAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle);
+	bool                getAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor);
+	bool                setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor);
+
+	bool                isAnnotationPreviewActive(void) { return m_bAnnotationPreviewActive;}
+	void                setAnnotationPreviewActive(bool b) { m_bAnnotationPreviewActive = b;}
+	UT_uint32			getActivePreviewAnnotationID() { return m_iAnnPviewID;}
+	void				setActivePreviewAnnotationID(UT_uint32 iID) { m_iAnnPviewID = iID;}
+	void				killAnnotationPreview();
+	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
+	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
@@ -739,6 +768,8 @@ public:
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
 	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
+	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const; 
+	UT_RGBColor			getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const; 
 	UT_RGBColor			getColorRevisions(int rev) const { 
 		if (rev < 0) rev = 9;
 		if (rev > 9) rev = 9;
@@ -999,6 +1030,7 @@ private:
 	UT_RGBColor         m_colorRevisions[10];
 	UT_RGBColor			m_colorHdrFtr;
 	UT_RGBColor			m_colorColumnLine;
+	UT_RGBColor         m_colorAnnotations[10];
 
 	UT_uint32 m_countDisable; // cursor disable count
 	bool                m_bDragTableLine;
@@ -1042,6 +1074,8 @@ private:
 	PT_DocPosition      m_iPosAtTable;
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;
 	UT_UTF8String       m_sDocUUID;
+	bool				m_bAnnotationPreviewActive;
+	UT_uint32			m_iAnnPviewID;
 };
 
 #endif /* FV_VIEW_H */

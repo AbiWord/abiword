@@ -59,6 +59,7 @@ libFmt_a_SOURCES= $(squigglesrc)	\
 	fp_TextRun.cpp			\
 	fp_TestRoutines.cpp		\
 	fp_FieldListLabelRun.cpp	\
+	fp_AnnotationRun.cpp	\
 	fp_FieldTableSumRun.cpp	\
 	fp_FieldTOCNum.cpp	\
 	fp_DirectionMarkerRun.cpp \

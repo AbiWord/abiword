@@ -120,10 +120,10 @@ BeginLayout(Main,0)
 	BeginSubMenu(AP_MENU_ID_VIEW)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
 		MenuItem(AP_MENU_ID_VIEW_WEB)
-	  MenuItem(AP_MENU_ID_VIEW_PRINT)
+		MenuItem(AP_MENU_ID_VIEW_PRINT)
 #if !XP_SIMPLE_MENU        
 		MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
-	  Separator()
+		Separator()
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
 			MenuItem(AP_MENU_ID_VIEW_TB_1)
 			MenuItem(AP_MENU_ID_VIEW_TB_2)
@@ -137,8 +137,8 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_VIEW_LOCKSTYLES)
 #endif
       
-    MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
-	  Separator()
+		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
+		Separator()
 
 #if !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
@@ -162,7 +162,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_TEXTBOX)
 		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
-
+		
 		Separator()
 
 		MenuItem(AP_MENU_ID_INSERT_HEADER)
@@ -171,9 +171,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
 		MenuItem(AP_MENU_ID_INSERT_HYPERLINK)
 		MenuItem(AP_MENU_ID_INSERT_TABLEOFCONTENTS)	
-#ifdef DEBUG
-		MenuItem(AP_MENU_ID_INSERT_ANNOTATION)
-#endif
         MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
@@ -196,7 +193,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
-    MenuItem(AP_MENU_ID_FMT_IMAGE)
+		MenuItem(AP_MENU_ID_FMT_IMAGE)
 #if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
@@ -236,13 +233,13 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR)
 		EndSubMenu()
 
-    BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
-      MenuItem(AP_MENU_ID_FMT_DIRECTION_DOCD_RTL)
-      MenuItem(AP_MENU_ID_FMT_DIRECTION_SD_RTL)
-      MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
-      MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
-      MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
-    EndSubMenu()
+		BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
+			MenuItem(AP_MENU_ID_FMT_DIRECTION_DOCD_RTL)
+			MenuItem(AP_MENU_ID_FMT_DIRECTION_SD_RTL)
+			MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
+			MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
+			MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
+		EndSubMenu()
         
 #if !XP_SIMPLE_MENU        
 		Separator()
@@ -294,7 +291,17 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
 #endif	
 		EndSubMenu()
-	
+
+		// RIVERA
+#ifdef DEBUG
+		BeginSubMenu(AP_MENU_ID_TOOLS_ANNOTATIONS)
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT)
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_INSERT_FROMSEL)
+			Separator()
+			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY)
+		EndSubMenu()
+#endif
+
 	    Separator()
 
 #if !XP_SIMPLE_MENU
@@ -313,7 +320,7 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_TABLE)
 
-    		BeginSubMenu(AP_MENU_ID_TABLE_INSERT)
+		BeginSubMenu(AP_MENU_ID_TABLE_INSERT)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_TABLE)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER)
@@ -352,16 +359,16 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
-                BeginSubMenu(AP_MENU_ID_TABLE_TEXTTOTABLE)
-		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_ALL)
-		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_NOSPACES)
-                EndSubMenu()
+		BeginSubMenu(AP_MENU_ID_TABLE_TEXTTOTABLE)
+			MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_ALL)
+			MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_NOSPACES)
+		EndSubMenu()
 #if DEBUG
 	    BeginSubMenu(AP_MENU_ID_TABLE_SORT)
-	       MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)
-	       MenuItem(AP_MENU_ID_TABLE_SORTROWSDESCEND)
-	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
-	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
+			MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)
+			MenuItem(AP_MENU_ID_TABLE_SORTROWSDESCEND)
+			MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
+			MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
 #endif
 #if !XP_SIMPLE_MENU

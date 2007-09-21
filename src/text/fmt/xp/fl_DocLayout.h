@@ -72,6 +72,7 @@ class fl_PartOfBlock;
 class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
+class fl_AnnotationLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
 class GR_EmbedManager;
@@ -253,6 +254,20 @@ public:
 		{ return m_bPlaceAtDocEnd;}
 	bool                getPlaceEndAtSecEnd(void) const
 		{ return m_bPlaceAtSecEnd;}
+// --------------------------------------------------------------------
+// Annotation Methods
+// fl_DocLAyout stores this Vector of Anntations to speed things up and
+// to provide convience routines for other classes and methods
+//
+	UT_uint32           countAnnotations(void);
+	void                addAnnotation(fl_AnnotationLayout * pAL);
+	void                removeAnnotation(fl_AnnotationLayout * pAL);
+	fl_AnnotationLayout * getNthAnnotation(UT_sint32 i);
+	UT_sint32           getAnnotationVal(UT_uint32 footpid);
+	fl_AnnotationLayout * findAnnotationLayout(UT_uint32 footpid);
+	bool                displayAnnotations(void);
+	void                setDisplayAnnotations(bool bDisplayAnnotations);
+	bool                collapseAnnotations(void);
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------
@@ -383,6 +398,7 @@ private:
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
 	UT_GenericVector<fl_FootnoteLayout *> m_vecFootnotes;
+	UT_GenericVector<fl_AnnotationLayout *> m_vecAnnotations;
 	UT_GenericVector<fl_EndnoteLayout *> m_vecEndnotes;
 	FootnoteType        m_FootnoteType;
 	UT_sint32           m_iFootnoteVal;
@@ -407,6 +423,7 @@ private:
 	UT_GenericVector<GR_EmbedManager *> m_vecQuickPrintEmbedManager;
 	GR_Graphics *       m_pQuickPrintGraphics;
 	bool                m_bIsQuickPrint;
+	bool                m_bDisplayAnnotations;
 };
 
 #endif /* DOCLAYOUT_H */

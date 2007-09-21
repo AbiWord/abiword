@@ -37,7 +37,6 @@ class GR_Graphics;
 class ABI_EXPORT XAP_Preview
 {
 public:
-
 	XAP_Preview(GR_Graphics * gc);
 	virtual ~XAP_Preview(void);
 
@@ -56,6 +55,7 @@ public:
 	virtual void			onLeftButtonDown(UT_sint32 x, UT_sint32 y) {  };
 
 protected:
+	XAP_Preview();
 	GR_Graphics *		m_gc;
 	
 private:

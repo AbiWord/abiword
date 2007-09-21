@@ -46,6 +46,7 @@ statusbar =
 endif
 
 glade_DATA = $(spellglade)	\
+	ap_UnixDialog_Annotation.glade	\
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_FormatTOC.glade \
@@ -82,6 +83,7 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixAppImpl.cpp			\
 	ap_UnixClipboard.cpp		\
 	ap_UnixDialogFactory.cpp		\
+	ap_UnixDialog_Annotation.cpp		\
 	ap_UnixDialog_Break.cpp		\
 	ap_UnixDialog_InsertTable.cpp	\
 	ap_UnixDialog_FormatTable.cpp	\
@@ -113,6 +115,7 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_MetaData.cpp		\
 	ap_UnixDialog_MailMerge.cpp		\
 	ap_UnixPrefs.cpp			\
+	ap_UnixPreview_Annotation.cpp	\
 	ap_UnixToolbar_FontCombo.cpp	\
 	ap_UnixToolbar_SizeCombo.cpp	\
 	ap_UnixToolbar_StyleCombo.cpp	\
@@ -144,6 +147,7 @@ noinst_HEADERS = \
 	ap_UnixAppImpl.h \
 	ap_UnixClipboard.h \
 	ap_UnixDialog_All.h \
+	ap_UnixDialog_Annotation.h \
 	ap_UnixDialog_Background.h \
 	ap_UnixDialog_Break.h \
 	ap_UnixDialog_Columns.h \
@@ -183,6 +187,7 @@ noinst_HEADERS = \
 	ap_UnixFrameImpl.h \
 	ap_UnixLeftRuler.h \
 	ap_UnixPrefs.h \
+	ap_UnixPreview_Annotation.h \
 	ap_UnixStatusBar.h \
 	ap_UnixStockIcons.h \
 	ap_UnixToolbar_Control_All.h \
