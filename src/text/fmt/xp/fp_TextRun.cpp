@@ -231,6 +231,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (_getFont() != pFont)
 	{
 		_setFont(pFont);
+		pG->setFont(_getFont());
 		_setAscent(pG->getFontAscent(pFont));
 		_setDescent(pG->getFontDescent(pFont));
 		_setHeight(pG->getFontHeight(pFont));
@@ -252,9 +253,10 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			bChanged = true;
 		}
 	}
-
-	pG->setFont(_getFont());
-
+	else
+	{
+		pG->setFont(_getFont());
+	}
 	//set the language member
 	UT_Language lls;
 	const gchar * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);

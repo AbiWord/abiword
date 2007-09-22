@@ -3724,17 +3724,17 @@ UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight()
 	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight())*m_dResRatio);
 }
 
-UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent(GR_Font * fnt)
+UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent(const GR_Font * fnt)
 {
 	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent(fnt))*m_dResRatio);
 }
 
-UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent(GR_Font * fnt )
+UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent(const GR_Font * fnt )
 {
 	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent(fnt))*m_dResRatio);
 }
 
-UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(GR_Font * fnt)
+UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(const GR_Font * fnt)
 {
 	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight(fnt))*m_dResRatio);
 }
