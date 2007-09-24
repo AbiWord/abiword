@@ -29,6 +29,7 @@
 #include "xap_App.h"
 #include "xap_Strings.h"
 #include "xap_Frame.h"
+#include "ut_misc.h"
 
 #include "gr_UnixPangoGraphics.h"
 
@@ -138,7 +139,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	UT_DEBUGMSG(("Output file name %s \n",szFileName));
 	if(!portrait && !m_bIsPreview)
 	  {
-	      if(strstr(szFileName,"pdf")!=NULL)
+	    if(strstr(UT_pathSuffix(szFileName),"pdf")!= NULL)
 	      {
 		UT_DEBUGMSG(("Doing pdf workaround \n"));
 		const GnomePrintUnit *unit =
