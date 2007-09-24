@@ -169,8 +169,9 @@ fp_Run::~fp_Run()
 UT_sint32 fp_Run::getHeight() const
 {
 	if(isHidden() == FP_VISIBLE)
+	{
 		return m_iHeight;
-	
+	}
 	return 0;
 }
 
@@ -187,7 +188,7 @@ UT_uint32 fp_Run::getAscent() const
 	if(isHidden() == FP_VISIBLE)
 	{
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
-		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER) && (getType() != FPRUN_IMAGE))
 		{
 			return static_cast<UT_uint32>(static_cast<double>(m_iAscent)*getGraphics()->getResolutionRatio());
 		}
@@ -3639,10 +3640,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			yoff += static_cast<fl_DocSectionLayout *>(getBlock()->getDocSectionLayout())->getTopMargin();
 		}
 	}
-	
 
-//
-// Sevior's infamous + 1....
 	yoff += getLine()->getAscent() - getAscent() + 1;
 
 	// clip drawing to the page
