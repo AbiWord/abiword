@@ -473,9 +473,9 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
 	
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual UT_uint32 getFontAscent(const GR_Font *);
+	virtual UT_uint32 getFontDescent(const GR_Font *);
+	virtual UT_uint32 getFontHeight(const GR_Font *);
 	virtual double    getResolutionRatio(void)
 	{ return _getResolutionRatio();}
 	GnomePrintContext * getGnomePrintContext(void) { return m_gpc;}
@@ -486,6 +486,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 											  double mrgnRight,
 											  double width, double height,
 											  int copies, bool portrait);
+	void   setPdfWorkaround(void)
+	{ m_bPdfLandscapeWorkaround = true;}
 
   protected:
 	double  _getResolutionRatio(void)
@@ -519,7 +521,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	GnomePrintJob     *m_gpm;
 	GnomePrintContext *m_gpc;
 	double             m_width, m_height;
-	
+	bool              m_bPdfLandscapeWorkaround;
 };
 #endif // ifdef ENABLE_PRINT
 

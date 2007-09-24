@@ -52,6 +52,7 @@ protected:
 	GR_Graphics::ColorSpace		  colorSpace;
 	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;
+	bool                          m_bPdfWorkAround;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */
