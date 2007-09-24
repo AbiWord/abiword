@@ -1,3 +1,4 @@
+
 /* AbiSource Application Framework
  * Copyright (C) 2003 Dom Lachowicz
  * 
@@ -43,7 +44,8 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id),
 	  m_pPrintGraphics (NULL),
-	  m_bIsPreview(false)
+	  m_bIsPreview(false),
+	  m_bPdfWorkAround(false)
 {
 }
 
@@ -94,7 +96,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
 
 	portrait = pView->getPageSize().isPortrait();
-	
+	m_bPdfWorkAround = false;		
+		
 	width = pView->getPageSize().Width (DIM_MM);
 	height = pView->getPageSize().Height (DIM_MM);
 
@@ -109,13 +112,14 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gpd = gnome_print_dialog_new (job,
 				      reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)),
 				      GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
+	GnomePrintConfig * cfg = gnome_print_job_get_config (job);
 
 	/* sorry about the ugly C-style cast -- ignore the "_Active Page" too */
 	gnome_print_dialog_construct_range_page(GNOME_PRINT_DIALOG(gpd),
 											GNOME_PRINT_RANGE_ALL| GNOME_PRINT_RANGE_RANGE | GNOME_PRINT_RANGE_SELECTION,
 											m_nFirstPage, m_nLastPage,
 											reinterpret_cast<const guchar *>("_Active Page"), reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges)));
-	
+
 
 	switch (abiRunModalDialog (GTK_DIALOG(gpd), pFrame, this, GNOME_PRINT_DIALOG_RESPONSE_PRINT, false))
 	{
@@ -130,9 +134,24 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_answer = a_CANCEL; 
 		return;
 	}
+	const char * szFileName = reinterpret_cast<const char *>(gnome_print_config_get(cfg,reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_OUTPUT_FILENAME)));
+	UT_DEBUGMSG(("Output file name %s \n",szFileName));
+	if(!portrait && !m_bIsPreview)
+	  {
+	      if(strstr(szFileName,"pdf")!=NULL)
+	      {
+		UT_DEBUGMSG(("Doing pdf workaround \n"));
+		const GnomePrintUnit *unit =
+		gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
+		m_bPdfWorkAround = true;		
+	      }
+	  }
 
 	gnome_print_dialog_get_copies(GNOME_PRINT_DIALOG(gpd), &copies, &collate);
 	range = gnome_print_dialog_get_range_page(GNOME_PRINT_DIALOG(gpd), &first, &end);
+	
 
 	m_gpm = GNOME_PRINT_JOB(g_object_ref(G_OBJECT(job))); //gnome_print_job_new (gnome_print_dialog_get_config (GNOME_PRINT_DIALOG(gpd)));
 
@@ -163,6 +182,8 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 	UT_return_if_fail(m_pPrintGraphics);
 	
 	m_pPrintGraphics->setColorSpace(m_cColorSpace);
+	if(m_bPdfWorkAround)
+	  static_cast<GR_UnixPangoPrintGraphics *>(m_pPrintGraphics)->setPdfWorkaround();
 	m_answer = a_OK;
 }
 

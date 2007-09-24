@@ -3564,7 +3564,8 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 	m_bStartPrint (false),
 	m_bStartPage (false),
 	m_gpm (gpm),
-	m_gpc (NULL)
+	m_gpc (NULL),
+	m_bPdfLandscapeWorkaround(false)
 {
 	_constructorCommon();
 
@@ -3574,6 +3575,10 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 
 	const GnomePrintUnit *from;
 	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("Pt"));
+	double ww,hh;
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), &ww, &from);
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), &hh, &from);
+	UT_DEBUGMSG(("Print construct cfg %x set Width set %f Height %f \n",cfg,ww,hh));
 
 	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), &m_width, &from);
 	gnome_print_convert_distance (&m_width, from, to);
@@ -3582,6 +3587,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 	gnome_print_convert_distance (&m_height, from, to);
 	m_height = getDeviceResolution()*m_height/72.;
 	m_width = getDeviceResolution()*m_width/72.;
+	UT_DEBUGMSG(("Constructor 1 width %f height %f \n",m_width,m_height));
 }
 
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
@@ -3597,9 +3603,11 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 	m_gpm(NULL),
 	m_gpc(ctx),
 	m_width(inWidthDevice),
-	m_height(inHeightDevice)
+	m_height(inHeightDevice),
+	m_bPdfLandscapeWorkaround(false)
 {
 	_constructorCommon();
+	UT_DEBUGMSG(("Constructor 2 width %d height %f \n",m_width,m_height));
 }
 
 void GR_UnixPangoPrintGraphics::_constructorCommon()
@@ -3674,15 +3682,23 @@ GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
 	{
 		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
 		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
+		UT_DEBUGMSG(("Portrait Setup Width set %f Height %f \n",width,height));
 
 		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R0"));
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R0"));
 	}
 	else
 	{
 		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), height, unit);
-		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), width, unit);
 
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), width, unit);
+		//		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+		
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_WIDTH),height,unit);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_HEIGHT),width,unit);
 		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+
 	}
 
 	return cfg;
@@ -3743,10 +3759,11 @@ UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
 {
 	double height;
 
-	if (isPortrait())
+	if (isPortrait() || m_bPdfLandscapeWorkaround )
 		height = m_height;
 	else
 		height = m_width;
+
 	return static_cast<UT_sint32>(height - static_cast<double>(in));
 }
 

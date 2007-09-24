@@ -486,6 +486,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 											  double mrgnRight,
 											  double width, double height,
 											  int copies, bool portrait);
+	void   setPdfWorkaround(void)
+	{ m_bPdfLandscapeWorkaround = true;}
 
   protected:
 	double  _getResolutionRatio(void)
@@ -519,7 +521,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	GnomePrintJob     *m_gpm;
 	GnomePrintContext *m_gpc;
 	double             m_width, m_height;
-	
+	bool              m_bPdfLandscapeWorkaround;
 };
 #endif // ifdef ENABLE_PRINT
 
