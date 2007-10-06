@@ -83,10 +83,8 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
-	
-	UT_UCS4_cloneString_char (&m_drawString,
-							  g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL));
-	
+	m_drawString = g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL);
+
 	//
 	// Text decorations.
 	//
@@ -152,8 +150,8 @@ void AP_Preview_Annotation::draw(void)
 	UT_sint32 iWinWidth = m_gc->tlu(getWindowWidth());
 	UT_sint32 iWinHeight = m_gc->tlu(getWindowHeight());
 	UT_sint32 iTop = (iWinHeight - m_iHeight)/2;
-	UT_sint32 len = UT_UCS4_strlen(m_drawString);
-	UT_sint32 twidth = m_gc->measureString(m_drawString,0,len,NULL);
+	UT_sint32 len = m_drawString.size();
+	UT_sint32 twidth = m_gc->measureString(m_drawString.ucs4_str(),0,len,NULL);
 	UT_sint32 iLeft = (iWinWidth - twidth)/2;
 	//
 	// Fill the background color
@@ -164,7 +162,7 @@ void AP_Preview_Annotation::draw(void)
 	// Do the draw chars at last!
 	//
 	m_gc->setColor(FGcolor);
-	painter.drawChars(m_drawString, 0, len, iLeft, iTop);
+	painter.drawChars(m_drawString.ucs4_str(), 0, len, iLeft, iTop);
 	
 	//
 	// Do the decorations

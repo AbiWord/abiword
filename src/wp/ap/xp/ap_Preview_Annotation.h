@@ -66,7 +66,7 @@ private:
 	gchar *				m_pTitle;
 	gchar *				m_pAuthor;
 	gchar *				m_pDescription;
-	UT_UCSChar *		m_drawString;
+	UT_UCS4String			m_drawString;
 	GR_Font *			m_pFont;
 	UT_sint32			m_iAscent;
 	UT_sint32			m_iDescent;
