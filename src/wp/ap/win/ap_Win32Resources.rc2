@@ -74,6 +74,7 @@
 #define AP_RID_DIALOG_FORMATTOC_GENERAL			245	// Property Page
 #define AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS	246	// Property Page
 #define AP_RID_DIALOG_LATEX						247
+#define AP_RID_DIALOG_ANNOTATION				248
 
 // Bitmaps IDs
 #define AP_RID_TI_1COLUMN 3000
@@ -257,3 +258,4 @@
 #include "ap_Win32Res_SplitCells.rc2"
 #include "ap_Win32Res_DlgFormatTOC.rc2"
 #include "ap_Win32Res_DlgLatex.rc2"
+#include "ap_Win32Res_DlgAnnotation.rc2"

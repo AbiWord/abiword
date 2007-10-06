@@ -86,6 +86,7 @@
 #endif
 	// ... add new dialogs here ...
 #	include "ap_Win32Dialog_Stylist.h"
+#	include "ap_Win32Dialog_Annotation.h"
 
 #else
 
@@ -156,6 +157,7 @@
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
 #endif
  	// ... also add new dialogs here ...
+ 	DeclareDialog(AP_DIALOG_ID_ANNOTATION, 	AP_Win32Dialog_Annotation)
 	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_Win32Dialog_Stylist)
 	DeclareDialog(AP_DIALOG_ID_LATEX,	    AP_Win32Dialog_Latex)
 	// Remember to place the dialog box with the higher ID
