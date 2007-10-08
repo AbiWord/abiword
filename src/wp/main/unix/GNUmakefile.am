@@ -32,10 +32,9 @@ INCLUDES = \
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-# Remove version number for stable release
-bin_PROGRAMS = abiword-2.5
-abiword_2_5_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
-abiword_2_5_SOURCES = abi_ver.cpp UnixMain.cpp
+bin_PROGRAMS = abiword
+abiword_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+abiword_SOURCES = abi_ver.cpp UnixMain.cpp
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
