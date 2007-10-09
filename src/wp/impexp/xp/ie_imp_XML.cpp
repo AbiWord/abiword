@@ -203,7 +203,8 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens()
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL),
+	  m_currentRevisionId(0), m_currentRevisionTime(0), m_currentRevisionVersion(0), m_tokens()
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_return_if_fail(pApp);
