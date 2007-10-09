@@ -27,6 +27,7 @@
 #include "fv_View.h"
 #include "ap_EditMethods.h"
 #include "xap_App.h"
+#include "ut_misc.h"
 
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-input-stdio.h>
@@ -59,8 +60,11 @@ public:
 
   virtual UT_Error _writeDocument(void)
   {
+    const GnomePrintUnit *unit =
+      gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
     UT_Error exit_status = UT_ERROR;
-    
+    bool portrait = true;
+    double width,height;
     GnomePrintJob *job = NULL;
     GnomePrintConfig *config = NULL;
     FL_DocLayout *pDocLayout = NULL;
@@ -108,7 +112,20 @@ public:
     printView->getLayout()->fillLayouts();
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();
-        
+    portrait = printView->getPageSize().isPortrait();
+    if(!portrait && (mFormat == BACKEND_PDF))
+    {
+ 		
+      width = printView->getPageSize().Width (DIM_MM);
+      height = printView->getPageSize().Height (DIM_MM);
+      gnome_print_config_set_length (config, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
+      gnome_print_config_set_length (config, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
+    }
+    else if(!portrait)
+    {
+	gnome_print_config_set (config, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+
+    }
     s_actuallyPrint (getDoc(), print_graphics,
 		     printView, getFileName(), 
 		     1, true, 

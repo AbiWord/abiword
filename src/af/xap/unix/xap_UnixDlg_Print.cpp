@@ -135,11 +135,11 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_answer = a_CANCEL; 
 		return;
 	}
-	const char * szFileName = reinterpret_cast<const char *>(gnome_print_config_get(cfg,reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_OUTPUT_FILENAME)));
-	UT_DEBUGMSG(("Output file name %s \n",szFileName));
+	const char * szBackend = reinterpret_cast<const char *>(gnome_print_config_get(cfg,reinterpret_cast<const guchar*>("Printer")));
+	UT_DEBUGMSG(("Backend is %s \n",szBackend));
 	if(!portrait && !m_bIsPreview)
 	  {
-	    if(strstr(UT_pathSuffix(szFileName),"pdf")!= NULL)
+	    if(strcmp(szBackend,"PDF")== 0)
 	      {
 		UT_DEBUGMSG(("Doing pdf workaround \n"));
 		const GnomePrintUnit *unit =
