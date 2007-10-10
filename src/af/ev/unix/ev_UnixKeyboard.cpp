@@ -157,8 +157,13 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 
-	/* delete_surrounding commits a 0 length string in some IMs */
-	if (!len)
+	/* 
+	do some sanity checking, since:
+	- delete_surrounding commits a 0 length string in some IMs
+	- some IMs state a length of 1, while the text being "" (for example the 
+	Amharic IM for keystrokes that have no secondary character (eg. shift-R)
+	*/
+	if (!text || *text == '\0' || !len)
 		return true;
 
 	UT_UCS4String ucs (text, len);
