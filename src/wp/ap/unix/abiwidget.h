@@ -400,6 +400,7 @@ G_BEGIN_DECLS
   // document/page functions
   guint32 abi_widget_get_page_count(AbiWidget * w);
   guint32 abi_widget_get_current_page_num(AbiWidget * w);
+  void abi_widget_set_current_page(AbiWidget * w, guint32 curpage);
 
   // view functions
   gboolean abi_widget_view_formatting_marks (AbiWidget * w);
