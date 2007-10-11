@@ -5264,18 +5264,28 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	//
 	UT_String sWidth;
 	UT_String sHeight;
+	double ratw = 1.0;
+	double rath = 1.0;
 	double rat = 1.0;
 	double dw = static_cast<double>(pFG->getWidth());
 	double dh = static_cast<double>(pFG->getHeight());
+	
 	if(dw > maxW/2.)
 	{
-	     rat = maxW/dw;
+	     ratw = maxW/dw;
 	}
-	if(dh*rat > maxH/2.)
+	if(dh > maxH/2.)
 	{
-	     rat = maxH/dh;
+	     rath = maxH/dh;
 	}
-
+	if(ratw < rath)
+	{
+	    rat = ratw;
+	}
+	else
+	{
+	    rat = rath;
+	}
 	// This preserves the aspect ratio and limits the size of the images
 	dw = dw*rat;
 	dh = dh*rat;
@@ -5337,16 +5347,24 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
-	UT_sint32 iposx = mouseX - pCol->getX();
         UT_sint32 iWidth = static_cast<UT_sint32>(dw*UT_LAYOUT_RESOLUTION);
-	UT_sint32 iColW = static_cast<UT_sint32>(maxW*UT_LAYOUT_RESOLUTION);
+	UT_sint32 iposx = mouseX - pCol->getX() - iWidth/2;
+	UT_sint32 iColW = static_cast<UT_sint32>(maxW*2.*UT_LAYOUT_RESOLUTION);
 	if((iposx + iWidth) > (pCol->getX() + iColW))
 	{
-	      iposx = pCol->getX() + iColW - iWidth;
+	  iposx = iColW - iWidth - pCol->getX();
 	}
+	if(iposx < pCol->getX())
+	{
+	      iposx = 0;
+	}
+
+	UT_DEBUGMSG(("iposx %d pCol->getX() %d \n",iposx,pCol->getX()));
 	xpos =  static_cast<double>(iposx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	sProp = "frame-col-xpos";
-	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+
+        sProp = "frame-col-xpos";
+        sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+        UT_DEBUGMSG((" %s %s \n",sProp.c_str(),sVal.c_str()));
 	UT_String_setProperty(sFrameProps,sProp,sVal);
 //
 // Wrapped Mode

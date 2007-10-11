@@ -1180,7 +1180,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		*pCloseBL = pBL;
 		posAtXY = pBL->getPosition();
 
-		// don't left widths and heights be too big
+		// don't let widths and heights be too big
 
 		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
@@ -1215,7 +1215,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		}
 		else if(finalColx + iColx + m_recCurFrame.width - xp > pPage->getWidth())
 		{
-			x -= finalColx + iColx + m_recCurFrame.width -xp - pPage->getWidth();
+		  //			x -= finalColx + iColx + m_recCurFrame.width -xp - pPage->getWidth();
+		  x = pPage->getWidth() - m_recCurFrame.width;
 		}
 		finalColx = x - iColx;
 
@@ -1226,7 +1227,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		}
 		else if (finalColy + iColy - yp+  m_recCurFrame.height  > pPage->getHeight())
 		{
-			y -= finalColy + iColy -yp + m_recCurFrame.height - pPage->getHeight();
+		  //			y -= finalColy + iColy -yp + m_recCurFrame.height - pPage->getHeight();
+		        y = pPage->getHeight() - m_recCurFrame.height;
 		}
 		finalColy = y - iColy;
 
