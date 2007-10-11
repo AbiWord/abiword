@@ -1400,7 +1400,7 @@ extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype)
 {
 	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
-
+	
 	IEFileType ieft = IEFT_Unknown;
 	if (mimetype && *mimetype != '\0')
 	{
@@ -2601,6 +2601,27 @@ abi_widget_get_page_count(AbiWidget * w)
 	UT_return_val_if_fail(pLayout, 0);
 
 	return pLayout->countPages();
+}
+
+extern "C" void
+abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
+{
+	g_return_if_fail ( w != NULL );
+	g_return_if_fail ( IS_ABI_WIDGET(w) );
+	g_return_if_fail ( w->priv->m_pFrame );
+	
+	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	UT_return_if_fail( pView );
+	
+	FL_DocLayout* pLayout = pView->getLayout();
+	UT_return_if_fail( pLayout );
+	
+	g_return_if_fail( curpage <= pLayout->countPages() );	// page are not zero-based, so <= in stead of <
+
+	UT_DEBUGMSG(("Telling the view to jump to page %u!\n", curpage));
+	
+	UT_UCS4String pageUCS4Str( UT_UTF8String_sprintf( "%u", curpage ).utf8_str(), 0 );
+	pView->gotoTarget( AP_JUMPTARGET_PAGE, (UT_UCSChar*) pageUCS4Str.ucs4_str() );
 }
 
 extern "C" guint32
