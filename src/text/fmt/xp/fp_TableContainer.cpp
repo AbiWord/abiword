@@ -1313,6 +1313,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
 	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
 	fp_Page * pPage = pBroke->getPage();
+	
 	if(pPage == NULL)
 	{
 //
@@ -1408,7 +1409,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
 		PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
 		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
-
 		UT_RGBColor white(255,255,255);
 		if (m_bDrawLeft)
 		{
