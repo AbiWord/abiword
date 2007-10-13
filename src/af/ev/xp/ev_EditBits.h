@@ -76,7 +76,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_AVAIL			  ((EV_EditMouseContext) 0x000000003)
 
 #define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>27)
-
+#define EV_EMC_FromNumber(n)			(((n)<<27)&EV_EMC__MASK__)
 
 typedef UT_uint32 EV_EditModifierState;								/* may be ORed */
 #define EV_EMS__MASK__			((EV_EditModifierState) 0x07000000)

@@ -26,13 +26,6 @@
 #include "ut_types.h"
 #include "ev_EditBits.h"
 
-class ABI_EXPORT EV_NamedVirtualKey
-{
-public:
-	static const char *	getName(EV_EditBits eb);
-	static EV_EditBits	getEB(const char * szName);
-};
-
 // EV_NVK_'s are named virtual keys.
 // NOTE: the list below must contiguous and
 // NOTE: match the list in ev_NamedVirtualKey.cpp.

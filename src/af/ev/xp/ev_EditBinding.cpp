@@ -68,8 +68,13 @@ class ev_EB_MouseTable
 public:
 	ev_EB_MouseTable()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 
 	~ev_EB_MouseTable()
 		{
@@ -88,8 +93,12 @@ class ev_EB_NVK_Table
 public:
 	ev_EB_NVK_Table()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 	~ev_EB_NVK_Table()
 		{
 			for (UT_sint32 i=0; i < static_cast<UT_sint32>(EV_COUNT_NVK); i++)
@@ -106,8 +115,12 @@ class ev_EB_Char_Table
 public:
 	ev_EB_Char_Table()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 	~ev_EB_Char_Table()
 		{
 			for (UT_sint32 i=0; i < 256; i++)
@@ -154,6 +167,65 @@ EV_EditBindingMap::~EV_EditBindingMap()
 
 	if (m_pebChar)
 		delete m_pebChar;
+}
+
+void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ) {
+	
+	// first check if we even know the specified method
+	EV_EditMethod* method = m_pemc->findEditMethodByName( szMethodName );
+	if (method) {
+		
+		// search in mouse contexts
+		for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
+			if (m_pebMT[button]) {
+				for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
+					for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
+						for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
+							if (bindingUsesMethod( m_pebMT[button]->m_peb[op][mod][context], method )) {
+								EV_EditBits eb = 0;
+								switch (button) {
+									case 0: eb |= EV_EMB_BUTTON0; break;
+									case 1: eb |= EV_EMB_BUTTON1; break;
+									case 2: eb |= EV_EMB_BUTTON2; break;
+									case 3: eb |= EV_EMB_BUTTON3; break;
+									case 4: eb |= EV_EMB_BUTTON4; break;
+									case 5: eb |= EV_EMB_BUTTON5; break;
+								}
+								eb |= EV_EMO_FromNumber( op+1 );
+								eb |= EV_EMS_FromNumber( mod );
+								eb |= EV_EMC_FromNumber( context+1 );
+								
+								list.push_back( eb );
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// search in NVK's
+		for (UT_uint32 nvk=0; nvk<sizeof(m_pebNVK->m_peb)/sizeof(m_pebNVK->m_peb[0]); ++nvk) {
+			for (UT_uint32 mod=0; mod<sizeof(m_pebNVK->m_peb[0])/sizeof(m_pebNVK->m_peb[0][0]); ++mod) {
+				if (bindingUsesMethod( m_pebNVK->m_peb[nvk][mod], method )) {
+					list.push_back( EV_EMS_FromNumberNoShift(mod) | nvk | EV_EKP_NAMEDKEY );
+				}
+			}
+		}
+		
+		// search in keypresses
+		for (UT_uint32 key=0; key<sizeof(m_pebChar->m_peb)/sizeof(m_pebChar->m_peb[0]); ++key) {
+			for (UT_uint32 mod=0; mod<sizeof(m_pebChar->m_peb[0])/sizeof(m_pebChar->m_peb[0][0]); ++mod) {
+				if (bindingUsesMethod( m_pebChar->m_peb[key][mod], method )) {
+					list.push_back( EV_EMS_FromNumberNoShift(mod) | key | EV_EKP_PRESS );
+				}
+			}
+		}
+	}
+}
+
+bool EV_EditBindingMap::bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method ) {
+	
+	return binding && binding->getType()==EV_EBT_METHOD && binding->getMethod()==method;
 }
 
 EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
@@ -347,6 +419,18 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 	}
 	UT_ASSERT(0);
 	return 0;
+}
+
+void EV_EditBindingMap::resetAll()
+{
+	// NOTE: this to me seems like a memory leak,
+	// but since removeBinding is so seemingly easy with leaking
+	// memory as well, I just copy it's MO.
+	for (size_t i=0; i<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++i) {
+		m_pebMT[i]->reset();
+	}
+	m_pebNVK->reset();
+	m_pebChar->reset();
 }
 
 const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const

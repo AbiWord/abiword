@@ -27,6 +27,7 @@
 #include "ut_vector.h"
 #include "ev_EditBits.h"
 #include "ev_EditMethod.h"
+#include <vector>
 
 typedef UT_uint32 EV_EditBindingType;
 #define EV_EBT_METHOD			((EV_EditBindingType) 0x1) /* final method */
@@ -77,6 +78,12 @@ public:
 	bool				setBinding(EV_EditBits eb, EV_EditBinding * peb);
 	bool				removeBinding(EV_EditBits eb);
 	bool				parseEditBinding(void);
+	
+						// clears the entire map of ALL bindings
+	void				resetAll();	// --foddex
+						// adds all editbits that are a short cut for the specified command name
+						// to the specified list. does NOT explicitly clear the list!
+	void 				findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ); // --foddex
 
 	const char *		getShortcutFor(const EV_EditMethod * pEM) const;
 
@@ -86,6 +93,8 @@ protected:
 	ev_EB_MouseTable *			m_pebMT[EV_COUNT_EMB];
 	ev_EB_NVK_Table *			m_pebNVK;
 	ev_EB_Char_Table *			m_pebChar;
+	
+	bool				bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method );
 };
 
 /*****************************************************************/
