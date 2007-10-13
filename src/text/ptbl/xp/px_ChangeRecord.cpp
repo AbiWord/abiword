@@ -38,6 +38,11 @@
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 
+// after 2.5 this should be changed to #include pd_Document.h
+#include "xap_App.h"
+#include "ut_uuid.h"
+#include "pd_Document.h"
+
 /*!
   Create change record
   \param type Change record type
@@ -55,9 +60,10 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_iXID(iXID),
 	m_iCRNumber(0),
 	m_pDoc(NULL),
-	m_bIsLocal(true),
 	m_iAdjust(0)
 {
+	// bulletproofing
+	memset(&m_MyDocUUID, 0, sizeof(m_MyDocUUID));
 }
 
 /*!
@@ -69,20 +75,56 @@ PX_ChangeRecord::~PX_ChangeRecord()
 
 bool PX_ChangeRecord::setCRNumber(void) const
 {
-	if(m_pDoc == NULL)
-	{
-	    UT_ASSERT(0);
-	    return false;
-	}
-	m_iCRNumber = m_pDoc->getNextCRNumber();
-	UT_DEBUGMSG(("!!!!!!!!!!Created CR ID number %d\n", m_iCRNumber));
-	return true;
+  if(m_pDoc == NULL)
+  {
+      UT_ASSERT(0);
+      return false;
+  }
+  m_iCRNumber = m_pDoc->getNextCRNumber();
+  UT_DEBUGMSG(("!!!!!!!!!!Created CR ID number %d Doc UUID %s \n",m_iCRNumber,getDocUUID()));
+  return true;
+}
+
+PD_Document * PX_ChangeRecord::getDocument(void) const
+{
+  return m_pDoc;
 }
 
 void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
 {
-	m_pDoc = const_cast<PD_Document *>(pDoc);
-	m_bIsLocal = (m_pDoc->getOrigDocUUID() == m_pDoc->getMyUUID());
+  m_pDoc = const_cast<PD_Document *>(pDoc);
+  m_pDoc->getMyUUID()->toBinary(m_MyDocUUID);
+}
+
+const char * PX_ChangeRecord::getDocUUID() const
+{
+	static char s[37];
+
+	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return NULL;
+	
+	return s;
+}
+
+/*!
+ * returns true if local UUID is the same as the document users UUID. Useful 
+ * for AbiCollab
+ */
+bool PX_ChangeRecord::isFromThisDoc(void) const
+{
+  if(!m_pDoc)
+    return false;
+  UT_UTF8String sDoc;
+  m_pDoc->getOrigDocUUID()->toString(sDoc);
+  static char s[37];
+
+  if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return false;
+  xxx_UT_DEBUGMSG(("Orig UUID %s \n",sDoc.utf8_str()));
+  xxx_UT_DEBUGMSG(("CR Doc UUID %s \n",s));
+  bool b=  (strcmp(sDoc.utf8_str(),s) == 0);
+  xxx_UT_DEBUGMSG((" bool %d \n",b));
+  return b;
 }
 
 void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const

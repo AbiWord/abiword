@@ -22,6 +22,7 @@
 #define PX_CHANGERECORD_H
 
 #include "ut_types.h"
+#include "ut_uuid.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
@@ -82,16 +83,15 @@ public:
 	virtual PX_ChangeRecord* reverse(void) const;
 	PXType					getRevType(void) const;
 	UT_sint32               getCRNumber(void) const
-		{ return m_iCRNumber;}
-	UT_uint32               getXID() const
-		{return m_iXID;}
+	  { return m_iCRNumber;}
+	UT_uint32               getXID() const {return m_iXID;}
+
+	const char *            getDocUUID() const;
 	
-	PD_Document *           getDocument(void) const
-		{ return m_pDoc; }
+	PD_Document *           getDocument(void) const;
 	void                    setDocument(const PD_Document * pDoc) const;
 	bool                    setCRNumber(void) const;
-	bool                    isFromThisDoc(void) const
-		{ return m_bIsLocal; }
+	bool                    isFromThisDoc(void) const;
 	void                    setAdjustment(UT_sint32 iAdj) const;
 	UT_sint32               getAdjustment(void) const;
 #ifdef PT_TEST
@@ -114,7 +114,7 @@ protected:
 mutable	 UT_sint32			m_iCRNumber;
 mutable  PD_Document *		m_pDoc;
 private:
-	mutable bool			m_bIsLocal;
+	mutable	struct uuid		m_MyDocUUID;
 	mutable UT_sint32		m_iAdjust;
 };
 #endif /* PX_CHANGERECORD_H */
