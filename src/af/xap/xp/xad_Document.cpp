@@ -617,13 +617,16 @@ const char * AD_Document::getOrigDocUUIDString() const
 /*!
     Get the UID of the users of this document represented as a string (this
     function is primarily for exporters)
+	
+	NOTE: don't make this a static variable, as this value might change over
+	the life of the document
 */
-const char * AD_Document::getMyUUIDString() const
+UT_UTF8String AD_Document::getMyUUIDString() const
 {
-	UT_return_val_if_fail(m_pMyUUID, NULL);
-	static UT_UTF8String s;
+	UT_return_val_if_fail(m_pMyUUID, "");
+	UT_UTF8String s;
 	m_pMyUUID->toString(s);
-	return s.utf8_str();
+	return s;
 }
 
 ///////////////////////////////////////////////////////////////////

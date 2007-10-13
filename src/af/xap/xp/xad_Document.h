@@ -228,7 +228,7 @@ public:
 	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getOrigDocUUID()const {return m_pOrigUUID;};
 	void            setMyUUID(const char * u);
-	const char *    getMyUUIDString()const;
+	UT_UTF8String   getMyUUIDString()const;
 	const UT_UUID * getMyUUID()const {return m_pMyUUID;};
 
 	UT_UUID *       getNewUUID()   const;
