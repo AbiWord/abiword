@@ -68,8 +68,13 @@ class ev_EB_MouseTable
 public:
 	ev_EB_MouseTable()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 
 	~ev_EB_MouseTable()
 		{
@@ -88,8 +93,12 @@ class ev_EB_NVK_Table
 public:
 	ev_EB_NVK_Table()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 	~ev_EB_NVK_Table()
 		{
 			for (UT_sint32 i=0; i < static_cast<UT_sint32>(EV_COUNT_NVK); i++)
@@ -106,8 +115,12 @@ class ev_EB_Char_Table
 public:
 	ev_EB_Char_Table()
 		{
-			memset(m_peb,0,sizeof(m_peb));
+			reset();
 		};
+	void reset()
+		{
+			memset(m_peb,0,sizeof(m_peb));
+		}
 	~ev_EB_Char_Table()
 		{
 			for (UT_sint32 i=0; i < 256; i++)
@@ -156,6 +169,152 @@ EV_EditBindingMap::~EV_EditBindingMap()
 		delete m_pebChar;
 }
 
+static EV_EditBits MakeMouseEditBits( UT_uint32 button, UT_uint32 op, UT_uint32 mod, UT_uint32 context ) {
+	
+	EV_EditBits eb = 0;
+	switch (button) {
+		case 0: eb |= EV_EMB_BUTTON0; break;
+		case 1: eb |= EV_EMB_BUTTON1; break;
+		case 2: eb |= EV_EMB_BUTTON2; break;
+		case 3: eb |= EV_EMB_BUTTON3; break;
+		case 4: eb |= EV_EMB_BUTTON4; break;
+		case 5: eb |= EV_EMB_BUTTON5; break;
+		default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
+	}
+	eb |= EV_EMO_FromNumber( op+1 );
+	eb |= EV_EMS_FromNumber( mod );
+	switch (context) {
+		case 0: eb |= EV_EMC_UNKNOWN; break;
+		case 1: eb |= EV_EMC_TEXT; break;
+		case 2: eb |= EV_EMC_LEFTOFTEXT; break;
+		case 3: eb |= EV_EMC_MISSPELLEDTEXT; break;
+		case 4: eb |= EV_EMC_IMAGE; break;
+		case 5: eb |= EV_EMC_IMAGESIZE; break;
+		case 6: eb |= EV_EMC_FIELD; break;
+		case 7: eb |= EV_EMC_HYPERLINK; break;
+		case 8: eb |= EV_EMC_RIGHTOFTEXT; break;
+		case 9: eb |= EV_EMC_REVISION; break;
+		case 10: eb |= EV_EMC_VLINE; break;
+		case 11: eb |= EV_EMC_HLINE; break;
+		case 12: eb |= EV_EMC_FRAME; break;
+		case 13: eb |= EV_EMC_VISUALTEXTDRAG; break;
+		case 14: eb |= EV_EMC_TOPCELL; break;
+		case 15: eb |= EV_EMC_TOC; break;
+		case 16: eb |= EV_EMC_POSOBJECT; break;
+		case 17: eb |= EV_EMC_MATH; break;
+		case 18: eb |= EV_EMC_EMBED; break;
+		default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
+	}
+	return eb;
+}
+
+static EV_EditBits MakeNVKEditBits( UT_uint32 mod, UT_uint32 nvk ) {
+
+	return EV_EMS_FromNumberNoShift(mod) | nvk | EV_EKP_NAMEDKEY;
+}
+				
+static EV_EditBits MakeKeyPressEditBits( UT_uint32 mod, UT_uint32 key ) {
+	
+	return EV_EMS_FromNumberNoShift(mod) | key | EV_EKP_PRESS;
+}
+
+void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map ) {
+	
+	// loop through mouse contexts
+	for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
+		if (m_pebMT[button]) {
+			for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
+				for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
+					for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
+						EV_EditBinding* binding = m_pebMT[button]->m_peb[op][mod][context];
+						if (binding && binding->getType()==EV_EBT_METHOD) {
+							map.insert( 
+								std::map<EV_EditBits,const char*>::value_type( 
+									MakeMouseEditBits( button, op, mod, context ),
+									binding->getMethod()->getName() )
+							);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// loop through NVK's
+	for (UT_uint32 nvk=0; nvk<sizeof(m_pebNVK->m_peb)/sizeof(m_pebNVK->m_peb[0]); ++nvk) {
+		for (UT_uint32 mod=0; mod<sizeof(m_pebNVK->m_peb[0])/sizeof(m_pebNVK->m_peb[0][0]); ++mod) {
+			EV_EditBinding* binding = m_pebNVK->m_peb[nvk][mod];
+			if (binding && binding->getType()==EV_EBT_METHOD) {
+				map.insert( 
+					std::map<EV_EditBits,const char*>::value_type( 
+						MakeNVKEditBits( mod, nvk ),
+						binding->getMethod()->getName() )
+				);
+			}
+		}
+	}
+	
+	// loop through keypresses
+	for (UT_uint32 key=0; key<sizeof(m_pebChar->m_peb)/sizeof(m_pebChar->m_peb[0]); ++key) {
+		for (UT_uint32 mod=0; mod<sizeof(m_pebChar->m_peb[0])/sizeof(m_pebChar->m_peb[0][0]); ++mod) {
+			EV_EditBinding* binding = m_pebChar->m_peb[key][mod];
+			if (binding && binding->getType()==EV_EBT_METHOD) {
+				map.insert( 
+					std::map<EV_EditBits,const char*>::value_type( 
+						MakeKeyPressEditBits( mod, key ),
+						binding->getMethod()->getName() )
+				);
+			}	
+		}
+	}
+}
+
+void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ) {
+	
+	// first check if we even know the specified method
+	EV_EditMethod* method = m_pemc->findEditMethodByName( szMethodName );
+	if (method) {
+		
+		// search in mouse contexts
+		for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
+			if (m_pebMT[button]) {
+				for (UT_uint32 op=0; op<sizeof(m_pebMT[0]->m_peb)/sizeof(m_pebMT[0]->m_peb[0]); ++op) {
+					for (UT_uint32 mod=0; mod<sizeof(m_pebMT[0]->m_peb[0])/sizeof(m_pebMT[0]->m_peb[0][0]); ++mod) {
+						for (UT_uint32 context=0; context<sizeof(m_pebMT[0]->m_peb[0][0])/sizeof(m_pebMT[0]->m_peb[0][0][0]); ++context) {
+							if (bindingUsesMethod( m_pebMT[button]->m_peb[op][mod][context], method )) {
+								list.push_back( MakeMouseEditBits( button, op, mod, context ) );
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// search in NVK's
+		for (UT_uint32 nvk=0; nvk<sizeof(m_pebNVK->m_peb)/sizeof(m_pebNVK->m_peb[0]); ++nvk) {
+			for (UT_uint32 mod=0; mod<sizeof(m_pebNVK->m_peb[0])/sizeof(m_pebNVK->m_peb[0][0]); ++mod) {
+				if (bindingUsesMethod( m_pebNVK->m_peb[nvk][mod], method )) {
+					list.push_back( MakeNVKEditBits( mod, nvk ) );
+				}
+			}
+		}
+		
+		// search in keypresses
+		for (UT_uint32 key=0; key<sizeof(m_pebChar->m_peb)/sizeof(m_pebChar->m_peb[0]); ++key) {
+			for (UT_uint32 mod=0; mod<sizeof(m_pebChar->m_peb[0])/sizeof(m_pebChar->m_peb[0][0]); ++mod) {
+				if (bindingUsesMethod( m_pebChar->m_peb[key][mod], method )) {
+					list.push_back( MakeKeyPressEditBits( mod, key ) );
+				}
+			}
+		}
+	}
+}
+
+bool EV_EditBindingMap::bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method ) {
+	
+	return binding && binding->getType()==EV_EBT_METHOD && binding->getMethod()==method;
+}
+
 EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 {
 	// this handles keyboard (nvk and char) and mouse.
@@ -169,8 +328,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
-		UT_return_val_if_fail(n_emc != 0, 0);
-		return p->m_peb[n_emo][n_ems][n_emc-1];
+		return p->m_peb[n_emo][n_ems][n_emc];
 
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
@@ -250,12 +408,11 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
-		UT_return_val_if_fail(n_emc != 0, 0);
-		if (p->m_peb[n_emo][n_ems][n_emc-1]) {
+		if (p->m_peb[n_emo][n_ems][n_emc]) {
 			delete peb;
 			return false;
 		}
-		p->m_peb[n_emo][n_ems][n_emc-1] = peb;
+		p->m_peb[n_emo][n_ems][n_emc] = peb;
 		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
@@ -319,8 +476,7 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
-		UT_return_val_if_fail(n_emc != 0, 0);
-		p->m_peb[n_emo][n_ems][n_emc-1] = 0;
+		p->m_peb[n_emo][n_ems][n_emc] = 0;
 		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
@@ -347,6 +503,18 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 	}
 	UT_ASSERT(0);
 	return 0;
+}
+
+void EV_EditBindingMap::resetAll()
+{
+	// NOTE: this to me seems like a memory leak,
+	// but since removeBinding is so seemingly easy with leaking
+	// memory as well, I just copy it's MO.
+	for (size_t i=0; i<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++i) {
+		m_pebMT[i]->reset();
+	}
+	m_pebNVK->reset();
+	m_pebChar->reset();
 }
 
 const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const

@@ -122,7 +122,7 @@ public:
 	bool 					Fn(AV_View * pView, EV_EditMethodCallData * pCallData) const;
 
 	EV_EditMethodType		getType() const;
-	inline const char *		getName() const;
+	const char *			getName() const;
 	const char *			getDescription() const;
 
 protected:

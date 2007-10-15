@@ -38,19 +38,6 @@ EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
 {
 	UT_ASSERT(ppEM);
 
-#if 0
-	{
-		char *context[]= { "", "Text", "LeftOfText", "RightOfText", "Image", "ImageSize" };
-		char *ops[]    = { "", "Click", "DblClick", "Drag", "DblDrag", "Release", "DblRelease" };
-		char *keys[]   = { "", "Shift", "Control", "ShiftControl", "Alt", "ShiftAlt", "ControlAlt" "ShiftControlAlt" };
-		UT_DEBUGMSG(("Mouse: [context %s][op %s][button %d][keys %s]\n",
-					 context[EV_EMC_ToNumber(eb)],
-					 ops[EV_EMO_ToNumber(eb)],
-					 EV_EMB_ToNumber(eb)-1,
-					 keys[EV_EMS_ToNumber(eb)]));
-	}
-#endif
-				 
 	if (!m_pebmInProgress)
 		m_pebmInProgress = m_pebmTopLevel;
 
