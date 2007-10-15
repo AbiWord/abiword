@@ -338,9 +338,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		// Application Startup
 		tmp = WID ("lblApplicationStartup");
 		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_AppStartup);
-		m_checkbuttonShowSplash = WID ("chkShowSplash");
-		localizeButtonUnderline (m_checkbuttonShowSplash, pSS,
-					 AP_STRING_ID_DLG_Options_Label_ShowSplash);
 #endif
 
 		m_checkbuttonAutoLoadPlugins = WID ("chkAutoLoadPlugins");
@@ -570,10 +567,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-	case id_SHOWSPLASH:
-		return m_checkbuttonShowSplash;
-#endif
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
 
@@ -676,9 +669,6 @@ DEFINE_GET_SET_BOOL(GrammarCheck)
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
 
 DEFINE_GET_SET_BOOL(AutoSaveFile)
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-DEFINE_GET_SET_BOOL(ShowSplash)
-#endif
 	
 // dummy implementations. XP pref backend isn't very smart.
 #define DEFINE_GET_SET_BOOL_DUMMY(Bool)					\

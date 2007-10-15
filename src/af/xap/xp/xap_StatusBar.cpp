@@ -28,6 +28,7 @@
 /* This allows for up to two concurrently active status bars, since
  * the splash screen may still be active when the application's
  * principal status bar registers...
+ * - FIXME: this can be removed, as I killed off the splash screen - MARCM
  */
 static XAP_StatusBar * s_SB1 = 0;
 static XAP_StatusBar * s_SB2 = 0;

@@ -71,7 +71,6 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaPlugin.cpp		\
 	ap_CocoaPrefs.cpp		\
 	ap_Cocoa_ResourceIDs.cpp	\
-	ap_CocoaSplash.cpp		\
 	ap_CocoaStatusBar.cpp		\
 	ap_CocoaTool.cpp \
 	ap_CocoaToolbar_StyleCombo.cpp	\
@@ -150,7 +149,6 @@ noinst_HEADERS = \
 	ap_CocoaPlugin.h \
 	ap_CocoaPrefs.h \
 	ap_Cocoa_ResourceIDs.h \
-	ap_CocoaSplash.h \
 	ap_CocoaStatusBar.h \
 	ap_CocoaToolbar_Control_All.h \
 	ap_CocoaToolbar_FontCombo.h \

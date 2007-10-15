@@ -262,7 +262,6 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	defn(Switch_Ruler,					AP_PreferenceScheme::bo_Ruler);
 	defn(Switch_SaveScheme,				AP_PreferenceScheme::bo_SaveScheme);
 	defn(Switch_ScreenColor,			AP_PreferenceScheme::bo_ScreenColor);
-	defn(Switch_Splash,					AP_PreferenceScheme::bo_Splash);
 	defn(Switch_StatusBar,				AP_PreferenceScheme::bo_StatusBar);
 	defn(Switch_SuggestCorrections,		AP_PreferenceScheme::bo_SuggestCorrections);
 	defn(Switch_ToolbarExtra,			AP_PreferenceScheme::bo_ToolbarExtra);
@@ -309,7 +308,6 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	LocalizeControl(oBox_General,					pSS, AP_STRING_ID_DLG_Options_Label_General);
 	LocalizeControl(oBox_Ignore,					pSS, AP_STRING_ID_DLG_Options_Label_Ignore);
 
-	LocalizeControl(oSwitch_Splash,					pSS, AP_STRING_ID_DLG_Options_Label_ShowSplash);
 	LocalizeControl(oSwitch_Plugins,				pSS, AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins);
 	LocalizeControl(oSwitch_SaveScheme,				pSS, AP_STRING_ID_DLG_Options_Label_PrefsAutoSave);
 	LocalizeControl(oLabel_CurrentPreferences,		pSS, AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme);

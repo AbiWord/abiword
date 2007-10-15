@@ -22,5 +22,3 @@
  */
 
 #import <Foundation/Foundation.h>
-
-extern NSString*	AP_COCOA_SPLASH_RESOURCE_NAME;

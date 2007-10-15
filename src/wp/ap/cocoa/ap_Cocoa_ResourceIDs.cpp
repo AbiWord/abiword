@@ -22,7 +22,3 @@
  */
 
 #import "ap_Cocoa_ResourceIDs.h"
-
-
-
-NSString*	AP_COCOA_SPLASH_RESOURCE_NAME = @"splash";

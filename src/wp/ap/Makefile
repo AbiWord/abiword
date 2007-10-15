@@ -219,9 +219,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_Dialog_Stylist.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)		
+		$(OBJDIR)/ap_Dialog_Stylist.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

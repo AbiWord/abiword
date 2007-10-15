@@ -163,13 +163,6 @@
 #define AP_PREF_DEFAULT_DefaultDirectionRtl         "1"
 #endif
 
-#define AP_PREF_KEY_ShowSplash     "ShowSplash"
-#ifdef EMBEDDED_TARGET
-#define AP_PREF_DEFAULT_ShowSplash "0"
-#else
-#define AP_PREF_DEFAULT_ShowSplash "1"
-#endif
-
 #define AP_PREF_KEY_DefaultSaveFormat "DefaultSaveFormat"
 #define AP_PREF_DEFAULT_DefaultSaveFormat ".abw"
 #define AP_PREF_KEY_CloseOnLastDoc "CloseOnLastDoc"
@@ -233,7 +226,6 @@ dcl(AlwaysPromptEncoding)
 
 dcl(SpellDirectory)
 dcl(StringSetDirectory)
-dcl(ShowSplash)
 
 dcl(DefaultDirectionRtl)
 dcl(LockStyles)

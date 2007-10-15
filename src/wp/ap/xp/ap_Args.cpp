@@ -48,7 +48,6 @@ const char * AP_Args::m_sToFormat = NULL;
 const char * AP_Args::m_sPrintTo = NULL;
 int    AP_Args::m_iVerbose = 1;
 const char * AP_Args::m_sPlugin = NULL;
-int    AP_Args::m_iNosplash = 0;
 const char * AP_Args::m_sFile = NULL;
 int    AP_Args::m_iVersion = 0;
 int    AP_Args::m_iHelp = 0;
@@ -68,7 +67,7 @@ const char * AP_Args::m_sName = NULL; // name of output file
 const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail by default
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), poptcon(NULL), m_bShowSplash(true), m_pApp(pApp)
+	: XArgs (pArgs), poptcon(NULL), m_pApp(pApp)
 {
 	pApp->initPopt (this);
 }
@@ -180,11 +179,6 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	if(!res)
 		return false;
 
-	if (m_sToFormat || m_sPrintTo || m_iNosplash || m_sPlugin)
-	{
-	    m_bShowSplash = false;
-	}
-
 	return true;
 }
 
@@ -192,7 +186,6 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 
 const struct poptOption AP_Args::const_opts[] =
 	{{"geometry", 'g', POPT_ARG_STRING, &m_sGeometry, 0, "Set initial frame geometry", "GEOMETRY"},
-	 {"nosplash", 'n', POPT_ARG_NONE,   &m_iNosplash, 0, "Do not show splash screen", NULL},
 #ifdef ABI_OPT_PERL
 	 {"script", 's', POPT_ARG_STRING, &m_sScript, 0, "Execute FILE as script", "FILE"},
 #endif

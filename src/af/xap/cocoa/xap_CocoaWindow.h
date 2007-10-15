@@ -38,7 +38,7 @@ public:
 	enum WindowStyle
 	{
 		ws_Normal = 0,
-		ws_Raw, // i.e., no decorations; use by toolbar window & splash window
+		ws_Raw, // i.e., no decorations; use by toolbar window
 		ws_Frame,
 		ws_Panel
 	};
