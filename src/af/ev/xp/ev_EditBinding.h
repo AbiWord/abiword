@@ -84,6 +84,9 @@ public:
 						// adds all editbits that are a short cut for the specified command name
 						// to the specified list. does NOT explicitly clear the list!
 	void 				findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ); // --foddex
+						// adds all known editbits and their commands to the specified map
+						// does NOT explicitly clear the map!
+	void				getAll( std::map<EV_EditBits,const char*>& map ); // --foddex
 
 	const char *		getShortcutFor(const EV_EditMethod * pEM) const;
 
