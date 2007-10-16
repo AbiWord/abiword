@@ -105,9 +105,25 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_App.cpp			\
 		ap_TopRuler.cpp
 
+GENCPPSRCS=     $(OBJDIR)/ap_wp_sidebar.cpp
+
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
+
+ifeq ($(ABISOURCE_LICENSED_TRADEMARKS),1)
+
+$(OBJDIR)/ap_wp_sidebar.cpp: sidebar_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
+	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+
+else
+
+$(OBJDIR)/ap_wp_sidebar.cpp: sidebar.png $(BINDIR)/cdump$(EXE_SUFFIX)
+	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) ./sidebar.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+
+endif
 
