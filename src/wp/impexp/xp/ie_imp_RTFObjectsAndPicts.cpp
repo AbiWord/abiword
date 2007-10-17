@@ -602,6 +602,8 @@ public:
 	UT_sint32        m_iFramePositionTo;
 	bool             m_bCleared;
 	UT_sint32        m_iFrameWrapMode;
+    UT_sint32        m_iBackgroundColor;
+	UT_sint32	     m_iFillType;
 };
 
 
@@ -617,7 +619,9 @@ RTFProps_FrameProps::RTFProps_FrameProps(void):
 	m_iFrameType(-1),
 	m_iFramePositionTo(-1),
 	m_bCleared(true),
-	m_iFrameWrapMode(3)
+	m_iFrameWrapMode(3),
+	m_iBackgroundColor(0),
+	m_iFillType(0)
 {
 }
 
@@ -635,6 +639,8 @@ void RTFProps_FrameProps::clear(void)
 	m_iFramePositionTo =1;
 	m_bCleared= true;
 	m_iFrameWrapMode=3;
+	m_iBackgroundColor= 0;
+	m_iFillType = 0;
 }
 
 
@@ -668,6 +674,16 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 	{
 		ival = atoi(propValue->utf8_str());
 		m_iBotPad = ival;
+	}
+	else if(strcmp(propName->utf8_str(),"fillColor")== 0)
+	{
+		ival = atoi(propValue->utf8_str());
+		m_iBackgroundColor = ival;
+	}
+	else if(strcmp(propName->utf8_str(),"fillType")== 0)
+	{
+		ival = atoi(propValue->utf8_str());
+		m_iFillType = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"shapeType")== 0)
 	{
@@ -1103,7 +1119,24 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		sV = "wrapped-both";
 	}
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
-
+	if(frame.m_iBackgroundColor > 0)
+	{
+		sP = "bg-style";
+		if(frame.m_iFillType == 0)
+		{
+			sV = "solid";
+		}
+		else
+		{
+			sV = "none";
+		}
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP="bgcolor";
+		UT_UTF8String_sprintf(sV, "%06x",frame.m_iBackgroundColor);
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP="background-color";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+	}
 	{
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
 

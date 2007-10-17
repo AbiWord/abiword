@@ -473,6 +473,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"field", false, false, NO_CONTEXT, RTF_KW_field }, 
 	{"file", false, false, NO_CONTEXT, RTF_KW_file }, 
 	{"filetbl", false, false, NO_CONTEXT, RTF_KW_filetbl }, 
+	{"fillColor", false, false, NO_CONTEXT, RTF_KW_fillColor }, 
 	{"fittext", true, false, NO_CONTEXT, RTF_KW_fittext }, /* 2000 */ 
 	{"fldalt", false, false, NO_CONTEXT, RTF_KW_fldalt }, 
 	{"flddirty", false, false, NO_CONTEXT, RTF_KW_flddirty }, 
