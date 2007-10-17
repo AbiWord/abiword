@@ -249,7 +249,7 @@ public:
 	GR_Graphics *					newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
 	virtual GR_Graphics *				newDefaultScreenGraphics() const = 0;
 	
-	virtual UT_sint32				setInputMode(const char * szName);
+	virtual UT_sint32				setInputMode(const char * szName, bool bForce=false);
 	const char *					getInputMode() const;
 	EV_EditEventMapper *				getEditEventMapper() const;
 	bool						addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
