@@ -169,8 +169,8 @@ EV_EditBindingMap::~EV_EditBindingMap()
 		delete m_pebChar;
 }
 
-static EV_EditBits MakeMouseEditBits( UT_uint32 button, UT_uint32 op, UT_uint32 mod, UT_uint32 context ) {
-	
+static EV_EditBits MakeMouseEditBits( UT_uint32 button, UT_uint32 op, UT_uint32 mod, UT_uint32 context )
+{	
 	EV_EditBits eb = 0;
 	switch (button) {
 		case 0: eb |= EV_EMB_BUTTON0; break;
@@ -208,18 +208,18 @@ static EV_EditBits MakeMouseEditBits( UT_uint32 button, UT_uint32 op, UT_uint32 
 	return eb;
 }
 
-static EV_EditBits MakeNVKEditBits( UT_uint32 mod, UT_uint32 nvk ) {
-
+static EV_EditBits MakeNVKEditBits( UT_uint32 mod, UT_uint32 nvk ) 
+{
 	return EV_EMS_FromNumberNoShift(mod) | nvk | EV_EKP_NAMEDKEY;
 }
 				
-static EV_EditBits MakeKeyPressEditBits( UT_uint32 mod, UT_uint32 key ) {
-	
+static EV_EditBits MakeKeyPressEditBits( UT_uint32 mod, UT_uint32 key ) 
+{	
 	return EV_EMS_FromNumberNoShift(mod) | key | EV_EKP_PRESS;
 }
 
-void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map ) {
-	
+void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map ) 
+{	
 	// loop through mouse contexts
 	for (UT_uint32 button=0; button<sizeof(m_pebMT)/sizeof(m_pebMT[0]); ++button) {
 		if (m_pebMT[button]) {
@@ -269,8 +269,8 @@ void EV_EditBindingMap::getAll( std::map<EV_EditBits,const char*>& map ) {
 	}
 }
 
-void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ) {
-	
+void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_EditBits>& list ) 
+{	
 	// first check if we even know the specified method
 	EV_EditMethod* method = m_pemc->findEditMethodByName( szMethodName );
 	if (method) {
@@ -310,8 +310,8 @@ void EV_EditBindingMap::findEditBits( const char* szMethodName, std::vector<EV_E
 	}
 }
 
-bool EV_EditBindingMap::bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method ) {
-	
+bool EV_EditBindingMap::bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method ) 
+{	
 	return binding && binding->getType()==EV_EBT_METHOD && binding->getMethod()==method;
 }
 
@@ -441,8 +441,10 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			if (!m_pebChar)
 			{
 				m_pebChar = new ev_EB_Char_Table();
-				if (!m_pebChar)
+				if (!m_pebChar) {
+					delete peb;
 					return false;
+				}
 			}
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
@@ -534,32 +536,41 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	/* we lookup the table in decreasing order to be able to catch lowercase
 	 BEFORE uppercase. Uppercase = Shift modifier. That is the rule */
-	for (i=255; (i >= 0) && !bChar; i--)
-		for (j=0; j < EV_COUNT_EMS_NoShift; j++)
-			if (m_pebChar->m_peb[i][j])
+	if (m_pebChar) 
+	{
+		for (i=255; (i >= 0) && !bChar; i--)
+		{
+			for (j=0; j < EV_COUNT_EMS_NoShift; j++)
 			{
-				// only check non-null entries
-				pEB = m_pebChar->m_peb[i][j];
-
-				if ((pEB->getType() == EV_EBT_METHOD) && 
-					(pEB->getMethod() == pEM))
+				if (m_pebChar->m_peb[i][j])
 				{
-					// bingo
-					bChar = true;
-					shortcut = i;
+					// only check non-null entries
+					pEB = m_pebChar->m_peb[i][j];
 
-					ems = EV_EMS_FromNumberNoShift(j);
-					break;
+					if ((pEB->getType() == EV_EBT_METHOD) && 
+						(pEB->getMethod() == pEM))
+					{
+						// bingo
+						bChar = true;
+						shortcut = i;
+
+						ems = EV_EMS_FromNumberNoShift(j);
+						break;
+					}
 				}
 			}
-
+		}
+	}
+	
 	bool bNVK = false;
 
-	if (!bChar)
+	if (!bChar && m_pebNVK)
 	{
 		// then search NVKs
 		for (i=0; (i < static_cast<UT_sint32>(EV_COUNT_NVK)) && !bNVK; i++)
+		{
 			for (j=0; j < EV_COUNT_EMS; j++)
+			{
 				if (m_pebNVK->m_peb[i][j])
 				{
 					// only check non-null entries
@@ -576,6 +587,8 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 						break;
 					}
 				}
+			}
+		}
 	}
 	
 	
