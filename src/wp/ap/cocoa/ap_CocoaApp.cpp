@@ -84,7 +84,6 @@
 #include "ap_CocoaFrame.h"
 #include "ap_CocoaFrameImpl.h"
 #include "ap_CocoaPrefs.h"
-#include "ap_CocoaSplash.h"
 #include "ap_Convert.h"
 #include "ap_LoadBindings.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -1017,20 +1016,6 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 		delete pMyCocoaApp;
 		return -1;	// make this something standard?
 	}
-
-	// do we show the app&splash?
-  	bool bShowSplash = Args.getShowSplash();
-
-    const XAP_Prefs * pPrefs = pMyCocoaApp->getPrefs();
-	UT_ASSERT(pPrefs);
-    bool bSplashPref = true;
-    if (pPrefs && 
-		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-	{
-		bShowSplash = bShowSplash && bSplashPref;
-	}
-    
-    if (bShowSplash) AP_CocoaSplash::instance ();
 
 	// Step 2: Handle all non-window args.
 

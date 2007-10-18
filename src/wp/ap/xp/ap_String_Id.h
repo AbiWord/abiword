@@ -411,8 +411,6 @@ dcl(DLG_Options_Label_WithExtension,		"With extension:")
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")
 
-dcl(DLG_Options_Label_ShowSplash, "Show the AbiWord splash screen on application startup")
-
 dcl(DLG_Options_Label_CheckAutoLoadPlugins, "Automatically load all plugins found")
 
 dcl(DLG_Options_Label_ViewShowHide, 	"Show...")

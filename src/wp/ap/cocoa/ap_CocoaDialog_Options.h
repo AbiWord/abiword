@@ -110,7 +110,6 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 		CDO_Switch_Ruler,
 		CDO_Switch_SaveScheme,
 		CDO_Switch_ScreenColor,
-		CDO_Switch_Splash,
 		CDO_Switch_StatusBar,
 		CDO_Switch_SuggestCorrections,
 		CDO_Switch_ToolbarExtra,
@@ -198,7 +197,6 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 	IBOutlet NSButton *			oSwitch_Ruler;
 	IBOutlet NSButton *			oSwitch_SaveScheme;
 	IBOutlet NSButton *			oSwitch_ScreenColor;
-	IBOutlet NSButton *			oSwitch_Splash;
 	IBOutlet NSButton *			oSwitch_StatusBar;
 	IBOutlet NSButton *			oSwitch_SuggestCorrections;
 	IBOutlet NSButton *			oSwitch_ToolbarExtra;

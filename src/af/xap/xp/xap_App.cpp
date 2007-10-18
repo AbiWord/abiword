@@ -1343,13 +1343,15 @@ EV_EditEventMapper * XAP_App::getEditEventMapper(void) const
 	return m_pInputModes->getCurrentMap();
 }
 
-UT_sint32 XAP_App::setInputMode(const char * szName)
+UT_sint32 XAP_App::setInputMode(const char * szName, bool bForce)
 {
 	UT_uint32 i;
 	
+	UT_DEBUGMSG(("XAP_App::setInputMode: %s %d\n", szName, bForce));
+	
 	UT_return_val_if_fail(m_pInputModes,-1);
 	const char * szCurrentName = m_pInputModes->getCurrentMapName();
-	if (g_ascii_strcasecmp(szName,szCurrentName) == 0)
+	if (!bForce && (g_ascii_strcasecmp(szName,szCurrentName) == 0))
 		return -1;					// already set, no change required
 
 	EV_EditEventMapper * p = m_pInputModes->getMapByName(szName);
@@ -1375,6 +1377,10 @@ UT_sint32 XAP_App::setInputMode(const char * szName)
 	for (i = 0; i < getFrameCount(); i++) {
 		getFrame(i)->getCurrentView()->notifyListeners(AV_CHG_INPUTMODE);
 	}
+	
+	// rebuild menu's
+	UT_DEBUGMSG(("XAP_App::setInputMode:: rebuilding menu's!"));
+	rebuildMenus();
 	
 	return (bStatus);
 }

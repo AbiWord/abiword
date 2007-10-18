@@ -479,6 +479,7 @@ typedef enum {
 	RTF_KW_field,
 	RTF_KW_file,
 	RTF_KW_filetbl,
+	RTF_KW_fillColor,
 	RTF_KW_fittext,
 	RTF_KW_fldalt,
 	RTF_KW_flddirty,

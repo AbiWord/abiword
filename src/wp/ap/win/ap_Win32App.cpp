@@ -1048,163 +1048,10 @@ ReturnTrue:
 
 /*****************************************************************/
 
-#define ENABLE_SPLASH 1
-
-#if ENABLE_SPLASH
-#include "gr_Graphics.h"
-#include "gr_Win32Graphics.h"
-#include "gr_Image.h"
-#include "ut_bytebuf.h"
-#include "ut_png.h"
-
-static HWND hwndSplash = NULL;
-static GR_Image * pSplash = NULL;
-static char s_SplashWndClassName[256];
-
-static void _hideSplash(void)
-{
-	if (hwndSplash)
-	{
-		DestroyWindow(hwndSplash);
-		hwndSplash = NULL;
-	}
-	
-	DELETEP(pSplash);
-}
-
-static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    PAINTSTRUCT ps;
-    HDC hdc;
-    
-    switch (message) 
-	{
-    case WM_CREATE:
-        // Set the timer for the specified number of ms
-        SetTimer(hWnd, 0, 2000, NULL);  
-        break;
-
-#if 0		
-	// Handle the palette messages in case 
-	// another app takes over the palette
-    case WM_PALETTECHANGED:
-        if ((HWND) wParam == hWnd)
-            return 0;
-    case WM_QUERYNEWPALETTE:
-        InvalidateRect(hWnd, NULL, FALSE);
-		UpdateWindow(hWnd);
-		return TRUE;
-#endif     
-
-    // Destroy the window if... 
-    case WM_LBUTTONDOWN:      // ...the user pressed the left mouse button
-    case WM_RBUTTONDOWN:      // ...the user pressed the right mouse button
-    case WM_TIMER:            // ...the timer timed out
-        _hideSplash();		  // Close the window
-        break;
-        
-        // Draw the window
-    case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
-		{
-			GR_Win32AllocInfo ai(hdc, hwndSplash);
-			
-			GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
-			{
-				GR_Painter GP(pG);
-
-				GP.drawImage(pSplash, 0, 0);
-			}
-
-			DELETEP(pG);
-		}
-        EndPaint(hWnd, &ps);
-        break;
-        
-    default:
-        return (UT_DefWindowProc(hWnd, message, wParam, lParam));
-    }
-    return (0);
-}
-
-static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
-{
-	hwndSplash = NULL;
-	pSplash = NULL;
-
-	UT_ByteBuf* pBB = NULL;
-	const char * szFile = NULL;
-
-	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
-	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
-
-	pBB = new UT_ByteBuf();
-	if (
-		(szFile && szFile[0] && (pBB->insertFromFile(0, szFile)))
-		|| (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
-		)
-	{
-		// NB: can't access 'this' members from a static member function
-		ATOM a;
-	
-		sprintf(s_SplashWndClassName, "%sSplash", szAppName /* app->getApplicationName() */);
-
-		a = UT_RegisterClassEx(0L, _SplashWndProc, hInstance,
-							   LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32)),
-							   LoadCursor(NULL, IDC_ARROW), (HBRUSH) GetStockObject(NULL_BRUSH),
-							   LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16)),
-							   NULL, s_SplashWndClassName);
-		UT_ASSERT_HARMLESS(a);
-
-		// get the extents of the desktop window
-		RECT rect;
-		GetWindowRect(GetDesktopWindow(), &rect);
-
-		// get splash size
-		UT_sint32 iSplashWidth;
-		UT_sint32 iSplashHeight;
-		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
-
-		// create a centered window the size of our bitmap
-		hwndSplash = UT_CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,s_SplashWndClassName, 
-								  NULL, WS_POPUP | WS_BORDER,
-								  (rect.right  / 2) - (iSplashWidth  / 2) - 1, // subtract 1 pixel to account for WS_BORDER
-								  (rect.bottom / 2) - (iSplashHeight / 2) - 1, // subtract 1 pixel to account for WS_BORDER
-								  iSplashWidth + 2, // must add 2 to window size, WS_BORDER takes up one pixel on each side
-								  iSplashHeight + 2, // must add 2 to window size, WS_BORDER takes up one pixel on each side
-								  NULL, NULL, hInstance, NULL);
-		UT_ASSERT_HARMLESS(hwndSplash);
-    
-		if (hwndSplash) 
-		{
-			// create image first
-			GR_Win32AllocInfo ai(GetDC(hwndSplash), hwndSplash);
-			
-			GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
-			
-			pSplash = pG->createNewImage("splash", pBB, pG->tlu(iSplashWidth), pG->tlu(iSplashHeight));
-			DELETEP(pG);
-			
-			// now bring the window up front & center
-			ShowWindow(hwndSplash, SW_SHOWNORMAL);
-			UpdateWindow(hwndSplash);
-		}
-	}
-
-	DELETEP(pBB);
-
-	return pSplash;
-}
-#endif
-
-/*****************************************************************/
-
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	bool bShowApp = true;
-	bool bShowSplash = true;
-	bool bSplashPref = true;
 	BOOL bInitialized = FALSE; 
 	
 	// this is a static function and doesn't have a 'this' pointer.
@@ -1249,14 +1096,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	Args.parsePoptOpts();
 	pMyWin32App->initialize();
   
-	// Consider the user saved preferences for the Splash Screen
-   	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
-	UT_ASSERT_HARMLESS(pPrefs);
-    if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-	{
-		bShowSplash = bSplashPref;
-	}
-
 	// Step 2: Handle all non-window args.
 	// process args (calls common arg handler, which then calls platform specific)
 	// As best I understand, it returns true to continue and show window, or
@@ -1280,14 +1119,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		delete pMyWin32App;
 		return 0;
 	}
-
-#ifdef ENABLE_SPLASH
-	if (bShowSplash && Args.getShowSplash())
-	{
-		_showSplash(hInstance, szAppName);
-	}
-#endif	
-
 }
 //
 // This block is controlled by the Structured Exception Handle

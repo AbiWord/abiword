@@ -18,8 +18,6 @@
 
 include $(top_srcdir)/includes.mk
 
-CLEANFILES=ap_wp_splash.cpp ap_wp_sidebar.cpp
-
 INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 	  $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
@@ -27,13 +25,6 @@ noinst_LIBRARIES = libWpAp_xp.a
 
 if ENABLE_SPELL
 spellsrc=	ap_Dialog_Spell.cpp
-endif
-
-if ENABLE_SPLASH
-splash =	ap_wp_splash.cpp		\
-		ap_wp_sidebar.cpp
-else
-splash= 
 endif
 
 if ENABLE_STATUSBAR
@@ -123,9 +114,6 @@ libWpAp_xp_a_SOURCES=	$(spellsrc)		\
 		$(statusbar)			\
 		$(BUILT_SOURCES)
 
-nodist_libWpAp_xp_a_SOURCES = 	$(splash)
-
-
 if CROSS_COMPILING
 CDUMP=
 CDUMPAPP=$(top_builddir)/src/tools/cdump/xp/cdump.pl
@@ -133,12 +121,6 @@ else
 CDUMP=$(top_srcdir)/src/tools/cdump/xp/cdump.c
 CDUMPAPP=$(top_builddir)/src/tools/cdump/xp/cdump
 endif
-
-ap_wp_splash.cpp: $(CDUMP) $(srcdir)/splash.png
-	$(CDUMPAPP) $(srcdir)/splash.png g_pngSplash > ap_wp_splash.cpp
-
-ap_wp_sidebar.cpp: $(CDUMP) $(srcdir)/sidebar.png
-	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
 
 EXTRA_DIST = \
 	Makefile \
@@ -148,8 +130,6 @@ EXTRA_DIST = \
 	margin.png \
 	orient-horizontal.xpm \
 	orient-vertical.xpm \
-	sidebar.png \
-	splash.png \
 	$(headers_DATA)
 
 dist-hook:

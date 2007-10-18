@@ -64,8 +64,6 @@ public:
  	SET_GATHER			(SpellNumbers,		bool );
  	SET_GATHER			(SpellInternet,		bool );
 
- 	SET_GATHER			(ShowSplash,	bool);
-
 	SET_GATHER			(SmartQuotesEnable, bool );
  	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
  	SET_GATHER			(PrefsAutoSave,		bool );
@@ -151,7 +149,6 @@ public:
 
 	PtWidget_t * m_wChooseColorForTransparent;
 	PtWidget_t * m_wCheckWhiteTransparent;
-	PtWidget_t * m_checkbuttonShowSplash;
 
     PtWidget_t * m_checkbuttonOtherDirectionRtl;
 	PtWidget_t * m_checkbuttonOtherHebrewContextGlyphs;

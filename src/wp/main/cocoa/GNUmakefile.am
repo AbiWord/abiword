@@ -60,8 +60,7 @@ EXTRA_DIST = \
 #	$(top_srcdir)/src/af/xap/cocoa/xap_CocoaToolbarWindow.nib \
 #	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaDialog_Break.nib \
 #	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaDialog_MetaData.nib \
-#	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaFrame.nib \
-#	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaSplash.nib
+#	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaFrame.nib
 #
 #PROGRAM_BUNDLE=AbiWord.app/Contents
 #PROGRAM_BUNDLE_BIN=$(PROGRAM_BUNDLE)/MacOS

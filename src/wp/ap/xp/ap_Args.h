@@ -41,7 +41,6 @@ public:
 	/* Parse options. */
 	void parsePoptOpts ();
 
-	bool getShowSplash() const { return m_bShowSplash; }
 	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs(bool & bSuccessful);
 
@@ -64,7 +63,6 @@ public:
 	static int	  m_iVerbose;
 	static int	  m_iShow;
 	static const char * m_sPlugin;
-	static int    m_iNosplash;
 	static const char * m_sFile;
 	static int    m_iVersion;
 	static int    m_iHelp;
@@ -77,7 +75,6 @@ public:
 
 	static const char * m_sFileExtension;
 private:
-	bool          m_bShowSplash;
 	AP_App*       m_pApp;
 };
 

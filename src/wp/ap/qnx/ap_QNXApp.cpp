@@ -409,114 +409,6 @@ bool AP_QNXApp::canPasteFromClipboard(void)
 }
 
 /*****************************************************************/
-/*****************************************************************/
-
-static void * wSplash = NULL;
-static GR_Image * pSplashImage = NULL;
-static GR_QNXGraphics * pQNXGraphics = NULL;
-static bool firstExpose = false;
-static UT_uint32 splashTimeoutValue = 0;
-
-static int s_hideSplash(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	if (wSplash) {
-		PtDestroyWidget((PtWidget_t *)wSplash);
-		wSplash = NULL;
-		DELETEP(pQNXGraphics);
-		DELETEP(pSplashImage);
-	}
-	return Pt_CONTINUE;
-}
-
-static int s_drawingarea_expose(PtWidget_t *widget, PhTile_t *damage) {
-
-	if (pQNXGraphics && pSplashImage) {
-		GR_Painter painter(pQNXGraphics);
-		painter.drawImage(pSplashImage, 0, 0);
-
-		// on the first full paint of the image, start a 2 second timer
-		if (!firstExpose) {
-			PtArg_t args[1];
-			PtSetArg(&args[0], Pt_ARG_TIMER_INITIAL, splashTimeoutValue, 0);
-			PtWidget_t *timer = PtCreateWidget(PtTimer, widget, 1, args);
-			PtAddCallback(timer, Pt_CB_TIMER_ACTIVATE, s_hideSplash, NULL);
-			PtRealizeWidget(timer);
-			firstExpose = true;
-		}
-	}
-
-	return Pt_CONTINUE;
-}
-
-// szFile is optional; a NULL pointer will use the default splash screen.
-// The delay is how long the splash should stay on screen in milliseconds.
-static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
-{
-	wSplash = spwin;
-	pSplashImage = NULL;
-
-	UT_ByteBuf* pBB = NULL;
-
-	// use a default if they haven't specified anything
-	const char * szFile = "splash.png";
-
-	// store value for use by the expose event, which attaches the timer
-	splashTimeoutValue = delay;
-	
-	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
-	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
-
-	pBB = new UT_ByteBuf();
-	if ((pBB->insertFromFile(0, szFile)) || 
-        (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof)))
-	{
-		PtArg_t	args[10];
-		int     n = 0;
-
-		// get splash size
-		UT_sint32 iSplashWidth;
-		UT_sint32 iSplashHeight;
-		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
-
-		// create a centered window the size of our image
-		PtSetArg(&args[n++], Pt_ARG_WIDTH, iSplashWidth, 0);
-		PtSetArg(&args[n++], Pt_ARG_HEIGHT, iSplashHeight, 0);
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 
-				 0, 
-				Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_TITLE | Ph_WM_RENDER_MENU);
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 
-				0,
-				Ph_WM_CLOSE | Ph_WM_RESIZE | Ph_WM_HIDE | Ph_WM_MAX);
-		PtSetResources(spwin, n, args);
-		UT_QNXCenterWindow(NULL, spwin);
-
-		// create a frame to add depth
-
-		// create a drawing area
-		n = 0;
-		PtSetArg(&args[n++], Pt_ARG_WIDTH, iSplashWidth, 0);
-		PtSetArg(&args[n++], Pt_ARG_HEIGHT, iSplashHeight, 0);
-		PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_drawingarea_expose, 1);
-		PtWidget_t *da = PtCreateWidget(PtRaw, spwin, n, args);
-		PtAddEventHandler(da, Ph_EV_BUT_RELEASE, s_hideSplash, NULL);
-
-		// create image context
-		// TODO: find an XAP_App pointer for the following call:
-		//pQNXGraphics = new GR_QNXGraphics(spwin, da, 0);
-		GR_QNXAllocInfo ai(spwin, da, 0);
-		pQNXGraphics = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
-		
-		pSplashImage = pQNXGraphics->createNewImage("splash", pBB, pQNXGraphics->tlu(iSplashWidth), pQNXGraphics->tlu(iSplashHeight));
-
-		PtRealizeWidget(spwin);
-	}
-
-	DELETEP(pBB);
-
-	return pSplashImage;
-}
-
-/*****************************************************************/
 AP_QNXApp * gQNXApp = NULL; 
 PtWidget_t	*gTimerWidget = NULL;
 
@@ -603,22 +495,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	PtRealizeWidget(gTimerWidget);
 
 	
- // do we show the app&splash?
- bool bShowSplash = Args.getShowSplash();
-
- const XAP_Prefs * pPrefs = pMyQNXApp->getPrefs();
- UT_ASSERT(pPrefs);
- bool bSplashPref = true;
- if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-  {
-  	bShowSplash = bShowSplash && bSplashPref;
-  }
-	if (bShowSplash) {
-		_showSplash(spwin, 1500);
-	}
-	else {
-		PtDestroyWidget(spwin);
-	}
+        PtDestroyWidget(spwin);
 
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should

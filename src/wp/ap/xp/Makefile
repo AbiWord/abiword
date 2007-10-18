@@ -104,8 +104,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_App.cpp			\
 		ap_TopRuler.cpp
 
-GENCPPSRCS=	$(OBJDIR)/ap_wp_splash.cpp	\
-		$(OBJDIR)/ap_wp_sidebar.cpp
+GENCPPSRCS=     $(OBJDIR)/ap_wp_sidebar.cpp
 
 TARGETS=		$(OBJS)
 
@@ -115,19 +114,11 @@ build:: $(TARGETS)
 
 ifeq ($(ABISOURCE_LICENSED_TRADEMARKS),1)
 
-$(OBJDIR)/ap_wp_splash.cpp: splash_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
-	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump$(EXE_SUFFIX) splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
-
 $(OBJDIR)/ap_wp_sidebar.cpp: sidebar_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
 	$(BINDIR)/cdump$(EXE_SUFFIX) sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 else
-
-$(OBJDIR)/ap_wp_splash.cpp: splash.png $(BINDIR)/cdump$(EXE_SUFFIX)
-	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump$(EXE_SUFFIX) ./splash.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
 
 $(OBJDIR)/ap_wp_sidebar.cpp: sidebar.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp

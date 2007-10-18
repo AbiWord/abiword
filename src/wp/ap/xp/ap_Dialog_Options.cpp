@@ -118,9 +118,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
-#endif
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	
 // Not implemented for UNIX or Win32. No need for it.
@@ -366,12 +363,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_UNPRINTABLE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-		case id_SHOWSPLASH:
-			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ShowSplash,
-					_gatherShowSplash());
-			break;
-#endif
+
 		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
 					_gatherAllowCustomToolbars());
@@ -486,11 +478,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-	//-------------ShowSplash
-	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_ShowSplash,&b))
-		_setShowSplash (b);
-#endif
+
 	// ------------ View
 	if (pPrefs->getPrefsValue((gchar*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
@@ -747,8 +735,6 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 
 	// TODO: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ScreenColor			].m_original = bValue;
 
-	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_ShowSplash,							&bValue))
-		m_BOData[bo_Splash			].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,						&bValue))
 		m_BOData[bo_StatusBar		].m_original = bValue;
 
@@ -988,10 +974,6 @@ void AP_PreferenceScheme::saveChanges()
 
 	// TODO: m_pPrefsScheme->setValueBool("", m_BOData[bo_ScreenColor				].m_current);
 
-	bo = bo_Splash;
-	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
-		m_pPrefsScheme->setValueBool( AP_PREF_KEY_ShowSplash,						 m_BOData[bo].m_current);
-
 	bo = bo_StatusBar;
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
 		m_pPrefsScheme->setValueBool( AP_PREF_KEY_StatusBarVisible,					 m_BOData[bo].m_current);
@@ -1177,7 +1159,6 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValueBool( AP_PREF_KEY_RulerVisible,						&(m_BOData[bo_Ruler				].m_default));
 	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SaveScheme			].m_default));
 	// TODO: pScheme->getValueBool("",&(m_BOData[bo_ScreenColor			].m_default));
-	pScheme->getValueBool( AP_PREF_KEY_ShowSplash,							&(m_BOData[bo_Splash			].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,					&(m_BOData[bo_StatusBar			].m_default));
 	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SuggestCorrections	].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_ExtraBarVisible,						&(m_BOData[bo_ToolbarExtra		].m_default));
