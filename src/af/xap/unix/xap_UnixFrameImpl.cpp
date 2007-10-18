@@ -1833,6 +1833,9 @@ void XAP_UnixFrameImpl::_setGeometry ()
  */
 void XAP_UnixFrameImpl::_rebuildMenus(void)
 {
+	// no menu? then nothing to rebuild!
+	if (!m_pUnixMenu) return;
+
 	// destroy old menu
 	m_pUnixMenu->destroy();
 	DELETEP(m_pUnixMenu);
