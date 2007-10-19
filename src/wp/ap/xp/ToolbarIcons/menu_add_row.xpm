@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_add_row_xpm[] = {
+static const char * menu_add_row_xpm[] = {
 "16 16 25 1",
 " 	c None",
 ".	c #000000",

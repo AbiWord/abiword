@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_SplitAbove_xpm[] = {
+static const char * tb_SplitAbove_xpm[] = {
 "42 48 4 1",
 " 	c None",
 ".	c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char *tb_edit_removeheader_xpm[] = {
+static const char *tb_edit_removeheader_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "    24    24       52            1",
 /* colors */

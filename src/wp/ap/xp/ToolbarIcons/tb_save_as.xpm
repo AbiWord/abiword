@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_save_as_xpm[] = {
+static const char * tb_save_as_xpm[] = {
 "24 24 96 2",
 "  	c None",
 ". 	c #000000",

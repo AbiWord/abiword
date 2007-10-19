@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_add_column_xpm[] = {
+static const char * tb_add_column_xpm[] = {
 "24 24 26 1",
 " 	c None",
 ".	c #000000",

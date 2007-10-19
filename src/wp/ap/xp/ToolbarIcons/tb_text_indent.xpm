@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_text_indent_xpm[] = {
+static const char * tb_text_indent_xpm[] = {
 "24 24 69 1",
 " 	c None",
 ".	c #000000",

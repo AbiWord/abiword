@@ -1,5 +1,5 @@
 /* XPM */
-static char *tb_smiley[] = {
+static const char *tb_smiley[] = {
 /* width height num_colors chars_per_pixel */
 "    24    24       3            1",
 /* colors */

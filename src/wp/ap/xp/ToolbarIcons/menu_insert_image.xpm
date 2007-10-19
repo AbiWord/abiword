@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_insert_image_xpm[] = {
+static const char * menu_insert_image_xpm[] = {
 "16 16 94 2",
 "  	c None",
 ". 	c #000000",

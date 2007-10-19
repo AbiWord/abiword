@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_edit_editheader_xpm[] = {
+static const char * tb_edit_editheader_xpm[] = {
 "24 24 43 1",
 " 	c None",
 ".	c #00FF00",

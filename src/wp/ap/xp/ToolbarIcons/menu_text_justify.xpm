@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_text_justify_xpm[] = {
+static const char * menu_text_justify_xpm[] = {
 "16 16 43 1",
 " 	c None",
 ".	c #000000",

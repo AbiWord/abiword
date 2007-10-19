@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_MergeLeft_xpm[] = {
+static const char * tb_MergeLeft_xpm[] = {
 "32 32 6 1",
 " 	c None",
 ".	c #000000",

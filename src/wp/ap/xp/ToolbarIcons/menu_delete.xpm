@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_delete_xpm[] = {
+static const char * menu_delete_xpm[] = {
 "16 16 152 2",
 "  	c None",
 ". 	c #0E0E0E",
