@@ -7,7 +7,7 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<AbiStrings ver="1.0" language="ayc">
+<AbiStrings ver="1.0" language="ayc-BO">
 
 <Strings    class="XAP"
 DLG_ABOUT_Title="%sta"
