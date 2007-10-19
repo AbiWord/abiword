@@ -2640,6 +2640,18 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
+
+void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
+{
+  m_bDisplayAnnotations = bDisplayAnnotations;
+}
+
+bool FL_DocLayout::displayAnnotations(void)
+{
+  return m_bDisplayAnnotations;
+}
+
+
 #ifdef ENABLE_SPELL
 /*!
  Do background spell-check
@@ -2949,15 +2961,6 @@ void FL_DocLayout::queueAll(UT_uint32 iReason)
 }
 
 
-void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
-{
-  m_bDisplayAnnotations = bDisplayAnnotations;
-}
-
-bool FL_DocLayout::displayAnnotations(void)
-{
-  return m_bDisplayAnnotations;
-}
 
 /*!
  * Set the next block to be grammar checked. It won't actually get checked
