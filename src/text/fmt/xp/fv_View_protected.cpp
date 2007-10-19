@@ -5299,8 +5299,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 		}
 
-		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock || pBlock);
-		if(!pRun || pRun->getType()!=FPRUN_BOOKMARK || !pBlock || !pBlock)
+		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock[0] && pBlock[1]);
+		if(!pRun || pRun->getType()!=FPRUN_BOOKMARK || !pBlock[0] || !pBlock[1])
 			return false;
 
 		// Signal PieceTable Change
