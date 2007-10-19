@@ -10398,7 +10398,7 @@ void fl_BlockLayout::_createListLabel(void)
 	bool bHaveBlockAtt = pView->getCharFormat(&blockatt,true,getPosition());
 #endif
 #if 1
-	gchar * tagatt[3] = {"list-tag",NULL,NULL};
+	const gchar * tagatt[3] = {"list-tag",NULL,NULL};
 	gchar tagID[12];
 
 	UT_return_if_fail(m_pDoc);
