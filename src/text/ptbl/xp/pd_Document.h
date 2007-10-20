@@ -643,6 +643,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	void                    setVDNDinProgress(bool b) {m_bVDND = b;}
 	bool                    isVDNDinProgress() const {return m_bVDND;}
+	UT_sint32               getCRNumber() const { return m_iCRCounter; }
 	UT_sint32               getNextCRNumber(void);
     void                    getAllViews(UT_GenericVector<AV_View *> * vecViews);
 	void                    ignoreSignals(void)
