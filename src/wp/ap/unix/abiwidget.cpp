@@ -106,6 +106,7 @@ struct _AbiPrivData {
 	UT_UTF8String *      m_sMIMETYPE;
 	gint                 m_iContentLength;
 	gint                 m_iSelectionLength;
+	UT_UCS4String *		 m_sSearchText;	
 #ifdef WITH_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -1830,6 +1831,7 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_sMIMETYPE = new UT_UTF8String("");
 	priv->m_iContentLength = 0;
 	priv->m_iSelectionLength = 0;
+	priv->m_sSearchText = new UT_UCS4String("");
 	abi->priv = priv;
 
 	// this isn't really needed, since each widget is
@@ -1970,6 +1972,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 				}
 			g_free (abi->priv->m_szFilename);
 			delete abi->priv->m_sMIMETYPE;
+			delete abi->priv->m_sSearchText;
 			g_free (abi->priv);
 			abi->priv = NULL;
 		}
@@ -2574,17 +2577,39 @@ abi_widget_get_zoom_percentage (AbiWidget * w)
 	return w->priv->m_pFrame->getZoomPercentage();
 }
 
+static FV_View* 
+_get_fv_view(AbiWidget* w)
+{
+	AV_View* v = w->priv->m_pFrame->getCurrentView();
+	g_return_val_if_fail(v!=0, NULL);
+	return static_cast<FV_View*>( v );
+}
+
 extern "C" void
 abi_widget_set_find_string(AbiWidget * w, gchar * search_str)
 {
-	// TODO: implement me
+	*w->priv->m_sSearchText = UT_UTF8String(search_str).ucs4_str();	// ucs4_str returns object instance
+	FV_View* v = _get_fv_view(w);
+	g_return_if_fail(v!=0);
+	v->findSetFindString( w->priv->m_sSearchText->ucs4_str() );
 }
 
-extern "C" gchar*
+extern "C" gboolean
 abi_widget_find_next(AbiWidget * w)
 {
-	// TODO: implement me
-	return 0;
+	FV_View* v = _get_fv_view(w);
+	g_return_val_if_fail(v!=0,false);
+	bool doneWithEntireDoc = false;
+	return v->findNext(doneWithEntireDoc);
+}
+
+extern "C" gboolean
+abi_widget_find_prev(AbiWidget * w)
+{
+	FV_View* v = _get_fv_view(w);
+	g_return_val_if_fail(v!=0,false);
+	bool doneWithEntireDoc = false;
+	return v->findPrev(doneWithEntireDoc);
 }
 
 extern "C" guint32
