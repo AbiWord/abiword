@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_text_direction_ltr_xpm[] = {
+static const char * tb_text_direction_ltr_xpm[] = {
 "24 24 83 1",
 " 	c None",
 ".	c #000000",

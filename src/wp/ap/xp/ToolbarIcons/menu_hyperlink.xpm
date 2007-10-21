@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_hyperlink_xpm[] = {
+static const char * menu_hyperlink_xpm[] = {
 "16 16 121 2",
 "  	c None",
 ". 	c #000000",

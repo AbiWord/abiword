@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_hyperlink_xpm[] = {
+static const char * tb_hyperlink_xpm[] = {
 "24 24 295 2",
 "  	c None",
 ". 	c #33343D",

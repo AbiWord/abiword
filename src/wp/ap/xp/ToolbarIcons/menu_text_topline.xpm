@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_text_topline_xpm[] = {
+static const char * menu_text_topline_xpm[] = {
 "16 16 37 1",
 " 	c None",
 ".	c #3A3A3A",

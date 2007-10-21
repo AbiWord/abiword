@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_para_12before_xpm[] = {
+static const char * tb_para_12before_xpm[] = {
 "24 24 40 1",
 " 	c None",
 ".	c #000000",

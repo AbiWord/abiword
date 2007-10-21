@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_LineLeft_xpm[] = {
+static const char * tb_LineLeft_xpm[] = {
 "15 15 3 1",
 " 	c None",
 ".	c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_remove_graphic_xpm[] = {
+static const char * tb_remove_graphic_xpm[] = {
 "24 24 25 1",
 " 	c None",
 ".	c #FC0505",

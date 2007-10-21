@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_SplitHoriMid_xpm[] = {
+static const char * tb_SplitHoriMid_xpm[] = {
 "50 41 4 1",
 " 	c None",
 ".	c #000000",

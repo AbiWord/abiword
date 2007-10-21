@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_split_cells_xpm[] = {
+static const char * tb_split_cells_xpm[] = {
 "24 24 6 1",
 " 	g None",
 ".	g #000000",

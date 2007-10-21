@@ -1,5 +1,5 @@
 /* XPM */
-static char *menu_search_replace_xpm[] = {
+static const char *menu_search_replace_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "    16    16       76            2",
 /* colors */

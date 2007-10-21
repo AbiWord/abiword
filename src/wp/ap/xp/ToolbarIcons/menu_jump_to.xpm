@@ -1,5 +1,5 @@
 /* XPM */
-static char *menu_jump_to_xpm[] = {
+static const char *menu_jump_to_xpm[] = {
 /* width height num_colors chars_per_pixel */
 "    16    16       57            1",
 /* colors */

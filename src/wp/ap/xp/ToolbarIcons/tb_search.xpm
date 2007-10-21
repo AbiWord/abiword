@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_search_xpm[] = {
+static const char * tb_search_xpm[] = {
 "24 24 208 2",
 "  	c None",
 ". 	c #000000",

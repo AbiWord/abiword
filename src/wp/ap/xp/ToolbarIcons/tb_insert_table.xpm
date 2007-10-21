@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_insert_table_xpm[] = {
+static const char * tb_insert_table_xpm[] = {
 "24 24 32 1",
 " 	c None",
 ".	c #000000",

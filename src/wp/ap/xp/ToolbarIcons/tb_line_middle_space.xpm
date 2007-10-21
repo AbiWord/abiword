@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_line_middle_space_xpm[] = {
+static const char * tb_line_middle_space_xpm[] = {
 "24 24 37 1",
 " 	c None",
 ".	c #000000",

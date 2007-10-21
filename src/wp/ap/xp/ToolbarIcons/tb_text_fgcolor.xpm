@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_text_fgcolor_xpm[] = {
+static const char * tb_text_fgcolor_xpm[] = {
 "22 22 37 1",
 " 	c None",
 ".	c #A99859",

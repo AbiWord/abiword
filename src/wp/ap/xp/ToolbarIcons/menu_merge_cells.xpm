@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_merge_cells_xpm[] = {
+static const char * menu_merge_cells_xpm[] = {
 "16 16 8 1",
 " 	g None",
 ".	g #000000",

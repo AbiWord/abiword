@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_merge_cells_xpm[] = {
+static const char * tb_merge_cells_xpm[] = {
 "24 24 8 1",
 " 	g None",
 ".	g #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char *tb_anchor[] = {
+static const char *tb_anchor[] = {
 /* width height num_colors chars_per_pixel */
 "    20    20       16            1",
 /* colors */

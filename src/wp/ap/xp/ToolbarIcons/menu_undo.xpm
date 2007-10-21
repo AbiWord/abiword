@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_undo_xpm[] = {
+static const char * menu_undo_xpm[] = {
 "16 16 35 1",
 " 	c None",
 ".	c #000000",

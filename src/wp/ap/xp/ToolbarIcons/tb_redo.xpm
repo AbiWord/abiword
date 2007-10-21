@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_redo_xpm[] = {
+static const char * tb_redo_xpm[] = {
 "24 24 39 1",
 " 	c None",
 ".	c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_insert_bookmark_xpm[] = {
+static const char * menu_insert_bookmark_xpm[] = {
 "16 16 27 1",
 " 	c None",
 ".	c #000000",
