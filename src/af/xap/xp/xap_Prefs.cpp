@@ -25,6 +25,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <vector>
+
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 #include "ut_string.h"
@@ -1693,7 +1695,7 @@ bool XAP_FontSettings::isOnExcludeList (const char * name) const
 		return false;
 
 	std::vector<UT_UTF8String>::const_iterator i =
-		find(m_vecFonts.begin(), m_vecFonts.end(), name);
+		std::find(m_vecFonts.begin(), m_vecFonts.end(), name);
 
 	return i != m_vecFonts.end();
 }
