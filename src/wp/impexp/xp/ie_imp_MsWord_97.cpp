@@ -5385,7 +5385,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 
 			// also handle the followed-by, since that only applies to
 			// paragraph style
-			if(pSTD->istdNext != istdNil)
+			if(pSTD->istdNext != istdNil && pSTD->istdNext<iCount)
 			{
 				attribs[iOffset++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
 				const char * t = s_translateStyleId(pSTD->istdNext);
