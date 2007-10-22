@@ -52,7 +52,7 @@ typedef guint32		UT_uint32;
 typedef gint32		    UT_sint32;
 
 typedef guint64 UT_uint64;
-typedef gint64 UT_sing64;
+typedef gint64 UT_sint64;
 
 /*!
  * Confidence heuristic datatype normalized to the range
