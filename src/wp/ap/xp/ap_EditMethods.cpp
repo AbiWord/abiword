@@ -27,13 +27,16 @@
 
 #ifdef WIN32
 #include <io.h>
+#else
+// this ansi header is not available on Windows.
+// needed for close()
+#include <unistd.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "xap_Features.h"
 #include "ap_Features.h"
