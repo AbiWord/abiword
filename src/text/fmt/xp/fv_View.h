@@ -971,7 +971,7 @@ private:
 	fl_BlockLayout *	_findGetCurrentBlock(void);
 	PT_DocPosition		_findGetCurrentOffset(void);
 	UT_UCSChar *		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
-	UT_UCSChar *		_findGetPrevBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
+	UT_UCSChar *		_findGetPrevBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset, UT_sint32& endIndex);
 
 	bool				m_bReverseFind;
 	bool				m_bWholeWord;

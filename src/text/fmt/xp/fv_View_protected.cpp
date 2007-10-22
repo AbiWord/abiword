@@ -2670,7 +2670,8 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 
 	// Now we use the prefix function (stored as an array) to search
 	// through the document text.
-	while ((buffer = _findGetPrevBlockBuffer(&block, &offset)))
+	UT_sint32 endIndex = 0;
+	while ((buffer = _findGetPrevBlockBuffer(&block, &offset, endIndex)))
 	{
 		UT_sint32 foundAt = -1;
 		UT_uint32 i = UT_MIN(offset, UT_UCS4_strlen(buffer));
@@ -2689,7 +2690,7 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 		UT_uint32 t = 0;
 		UT_UCSChar currentChar;
 
-		while ((i > 0 ))
+		while ((i > endIndex ))
 		{
 			t = 0;
 			currentChar = buffer[i];
@@ -2945,8 +2946,10 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 
 UT_UCSChar*
 FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
-								 PT_DocPosition* pOffset)
+								 PT_DocPosition* pOffset,
+								 UT_sint32& endIndex)
 {
+	endIndex = 0;
 	UT_return_val_if_fail(m_pLayout && pBlock && *pBlock && pOffset,NULL);
 
 	fl_BlockLayout* newBlock = NULL;
@@ -3029,7 +3032,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	// so, we need to size our length accordingly
 	if (m_wrappedEnd && (newBlock->getPosition(false) <= m_startPosition))
 	{
-		blockStart = m_startPosition - (newBlock->getPosition(true));
+		endIndex = (m_startPosition - (newBlock->getPosition(true))) - 2;
 	}
 
 	if(blockStart >= pBuffer.getLength())
