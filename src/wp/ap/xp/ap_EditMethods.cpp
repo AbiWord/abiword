@@ -27,6 +27,10 @@
 
 #ifdef WIN32
 #include <io.h>
+#else
+// this ansi header is not available on Windows.
+// needed for close()
+#include <unistd.h>
 #endif
 
 #include <stdio.h>

@@ -342,7 +342,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 		return pLayout;
 	} 
 	else {
-		fprintf (stderr, "%s:%s: Layout `%s' not found\n", __FILE__, __FUNCTION__, szName);
+		fprintf (stderr, "%s:%d: Layout `%s' not found\n", __FILE__, __LINE__, szName);
 	}
 	return NULL;
 }
