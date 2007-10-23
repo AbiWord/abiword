@@ -309,7 +309,7 @@ bool XAP_DialogFactory::registerNotebookPage(XAP_Dialog_Id dialog, const XAP_Not
 		bounds.first++;
 	}
 
-	s_mapNotebookPages.insert(std::make_pair(dialog, page));
+	s_mapNotebookPages.insert(NotebookPages::value_type(dialog, page));
 	return TRUE;
 }
 

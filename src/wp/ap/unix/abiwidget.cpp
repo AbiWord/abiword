@@ -2591,6 +2591,7 @@ abi_widget_set_find_string(AbiWidget * w, gchar * search_str)
 	*w->priv->m_sSearchText = UT_UTF8String(search_str).ucs4_str();	// ucs4_str returns object instance
 	FV_View* v = _get_fv_view(w);
 	g_return_if_fail(v!=0);
+	v->findSetStartAtInsPoint();
 	v->findSetFindString( w->priv->m_sSearchText->ucs4_str() );
 }
 
@@ -2600,7 +2601,9 @@ abi_widget_find_next(AbiWidget * w)
 	FV_View* v = _get_fv_view(w);
 	g_return_val_if_fail(v!=0,false);
 	bool doneWithEntireDoc = false;
-	return v->findNext(doneWithEntireDoc);
+	bool res = v->findNext(doneWithEntireDoc);
+	v->findSetStartAtInsPoint();
+	return res;
 }
 
 extern "C" gboolean
@@ -2609,7 +2612,9 @@ abi_widget_find_prev(AbiWidget * w)
 	FV_View* v = _get_fv_view(w);
 	g_return_val_if_fail(v!=0,false);
 	bool doneWithEntireDoc = false;
-	return v->findPrev(doneWithEntireDoc);
+	bool res = v->findPrev(doneWithEntireDoc);
+	v->findSetStartAtInsPoint();
+	return res;
 }
 
 extern "C" guint32
