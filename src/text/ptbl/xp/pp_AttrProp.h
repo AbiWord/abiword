@@ -81,7 +81,7 @@ public:
 	// terminated by a null name.
 
 	bool	setAttributes(const gchar ** attributes);
-	bool    setAttributes(const UT_GenericVector<gchar*> * pVector);
+	bool    setAttributes(const UT_GenericVector<const gchar*> * pVector);
 	bool	setProperties(const gchar ** properties);
 	bool	setProperties(const UT_GenericVector<gchar*> * pVector);
 

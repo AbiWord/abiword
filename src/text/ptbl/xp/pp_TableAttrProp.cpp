@@ -143,7 +143,7 @@ bool pp_TableAttrProp::createAP(const gchar ** attributes,
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const UT_GenericVector<gchar*> * pVector,
+bool pp_TableAttrProp::createAP(const UT_GenericVector<const gchar*> * pVector,
 								   UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;

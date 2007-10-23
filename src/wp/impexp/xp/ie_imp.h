@@ -210,7 +210,7 @@ public:
 	virtual bool appendObject (PTObjectType pto, const gchar ** attribs,
 					   const gchar ** props = NULL);
 	virtual bool appendFmt(const gchar ** attributes);
-	virtual bool appendFmt(const UT_GenericVector<gchar*>* pVecAttributes);
+	virtual bool appendFmt(const UT_GenericVector<const gchar*>* pVecAttributes);
 
 	virtual UT_Error _loadFile (GsfInput * input) = 0;
 

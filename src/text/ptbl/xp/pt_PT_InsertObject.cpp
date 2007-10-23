@@ -268,19 +268,19 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 		}
 	    }
 	}
-	UT_GenericVector<gchar*>  Atts;
+	UT_GenericVector<const gchar*>  Atts;
 	Atts.clear();
 	if(attributes)
 	{
 		for(i=0; attributes[i] != 0; i++)
 		{
-		    Atts.addItem(static_cast<gchar *>(const_cast<char *>(attributes[i])));
+		    Atts.addItem(attributes[i]);
 		}
 	}
 	if(sProps.size() > 0)
 	{
-	    Atts.addItem(static_cast<gchar *>("props"));
-	    Atts.addItem(static_cast<gchar *>(const_cast<char *>(sProps.utf8_str())));
+	    Atts.addItem("props");
+	    Atts.addItem(sProps.utf8_str());
 	}
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(&Atts,&indexAP))

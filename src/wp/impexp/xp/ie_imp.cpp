@@ -169,7 +169,7 @@ bool IE_Imp::appendFmt(const gchar ** attributes)
 	return bRes;
 }
 
-bool IE_Imp::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
+bool IE_Imp::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
 {
 	bool bRes;
 

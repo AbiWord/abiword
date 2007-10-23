@@ -146,7 +146,7 @@ protected:
     bool            m_bWhiteSignificant;
     bool            m_bWasSpace;
 
-    UT_GenericVector<gchar*> m_vecInlineFmt;
+    UT_GenericVector<const gchar*> m_vecInlineFmt;
     UT_NumberStack		m_nstackFmtStartIndex;
 
     UT_ByteBuf		m_currentDataItem;
