@@ -2690,14 +2690,14 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 		UT_uint32 t = 0;
 		UT_UCSChar currentChar;
 
-		while ((i > endIndex ))
+		while (i!=UT_uint32(-1))
 		{
 			t = 0;
 			currentChar = buffer[i];
 			UT_UCS4Char cPlainQuote = s_smartQuoteToPlain(currentChar);
 
 			if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
-			while (((m_sFind[t] == currentChar)||(m_sFind[t] == cPlainQuote))&& ( t <= m))
+			while (((m_sFind[t] == currentChar)||(m_sFind[t] == cPlainQuote))&& (t < m))
 			{
 				t++;
 				currentChar = buffer[i + t];
@@ -2727,7 +2727,7 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 		}
 
 		// Select region of matching string if found
-		if (foundAt > 0)
+		if (foundAt >= 0)
 		{
 
 			UT_DEBUGMSG(("Found pos: %d", (block)->getPosition(false)+ foundAt));
@@ -2962,8 +2962,9 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 
 	// Check early for completion, from where we left off last, and
 	// bail if we are now at or past the start position
-	if (m_wrappedEnd
-		&& _BlockOffsetToPos(*pBlock, *pOffset) <= m_startPosition)
+	UT_uint32 blockOffsetToPos = _BlockOffsetToPos(*pBlock, *pOffset);
+	UT_DEBUGMSG(("m_wrappedEnd=%d blockOffsetToPos=%d m_startPosition=%d\n",m_wrappedEnd,blockOffsetToPos,m_startPosition));
+	if (m_wrappedEnd && (blockOffsetToPos <= m_startPosition))
 	{
 		// We're done
 		return NULL;
@@ -3004,7 +3005,6 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		// Re-assign the buffer contents for our new block
 		pBuffer.truncate(0);
 		// The offset starts at end of block
-		newOffset = pBuffer.getLength();
 		blockStart = 0;
 		if (!newBlock->getBlockBuf(&pBuffer))
 		{
@@ -3013,6 +3013,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 			UT_ASSERT_HARMLESS(0);
 			return NULL;
 		}
+		newOffset = pBuffer.getLength();
 		if(pBuffer.getLength() == 0)
 		{
 			goto get_new_block;
@@ -3032,7 +3033,19 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	// so, we need to size our length accordingly
 	if (m_wrappedEnd && (newBlock->getPosition(false) <= m_startPosition))
 	{
-		endIndex = (m_startPosition - (newBlock->getPosition(true))) - 2;
+		// Check for completion now, if we are now at or past the start position
+		blockOffsetToPos = _BlockOffsetToPos(newBlock, newOffset);
+		UT_DEBUGMSG(("(2) m_wrappedEnd=%d blockOffsetToPos=%d m_startPosition=%d\n",m_wrappedEnd,blockOffsetToPos,m_startPosition));
+		if (blockOffsetToPos <= m_startPosition)
+		{
+			// We're done
+			UT_DEBUGMSG(("(2) PrevSearch completed\n"));
+			return NULL;
+		}
+		else
+		{
+			endIndex = (m_startPosition - (newBlock->getPosition(false)));
+		}		
 	}
 
 	if(blockStart >= pBuffer.getLength())
