@@ -4310,23 +4310,31 @@ void FV_View::cmdRedo(UT_uint32 count)
 	PT_DocPosition posEnd = 0;
 	getEditableBounds(true, posEnd);
 	bool bOK = true;
+	bool bMoved = false;
 	while(bOK && !isPointLegal() && (getPoint() < posEnd))
 	{
 		bOK = _charMotion(true,1);
+		bMoved = true;
 	}
 	if(getPoint() > posEnd)
 	{
 		setPoint(posEnd);
+		bMoved = true;
 	}
 
 	bOK = true;
 	while(bOK && !isPointLegal() && (getPoint() > 2))
 	{
 		bOK = _charMotion(false,1);
+		bMoved = true;
+	}
+	if(!bMoved)
+	{
+		bOK = _charMotion(true,1);
+		bOK = _charMotion(false,1);
 	}
 
 	setCursorToContext();
-
 	_updateInsertionPoint();
 	notifyListeners(AV_CHG_ALL);
 }
