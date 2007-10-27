@@ -21,6 +21,9 @@
 #include "config.h"
 #endif
 
+#include <limits>
+#include <algorithm>
+
 #ifndef XP_TARGET_COCOA
 #include <gtk/gtk.h>
 #else
@@ -82,6 +85,12 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	  for other platforms.
 	*/
 	stop();
+
+	// typeof() is an extension. might break on non gcc. 
+	iMilliseconds = std::min(iMilliseconds, 
+							   static_cast<UT_uint32>(
+								   std::numeric_limits<typeof(m_iMilliseconds)>::max()
+								   ));
 
 #ifndef XP_TARGET_COCOA
 	m_iGtkTimerId = g_timeout_add_full(0, iMilliseconds, _Timer_Proc, this, NULL);
