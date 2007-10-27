@@ -175,7 +175,7 @@ Section "$(TITLE_section_abi)" section_abi
 		${EndIf}
 	${EndIf}
 
-	; Actually peform the installation
+	; Actually perform the installation
 	${If} $R0 == 1
 		; Install main executable
 		File "${PROGRAMEXE}"

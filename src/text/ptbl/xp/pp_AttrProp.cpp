@@ -165,7 +165,7 @@ bool	PP_AttrProp::setAttributes(const gchar ** attributes)
  *
  * \param attributes A UT_Vector of strings, read in (attribute, value) form.
  */
-bool PP_AttrProp::setAttributes(const UT_GenericVector<gchar*> * pVector)
+bool PP_AttrProp::setAttributes(const UT_GenericVector<const gchar*> * pVector)
 {
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)

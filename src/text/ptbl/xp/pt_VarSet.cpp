@@ -136,7 +136,7 @@ bool pt_VarSet::storeAP(const gchar ** attributes, PT_AttrPropIndex * papi)
 	return false;
 }
 
-bool pt_VarSet::storeAP(const UT_GenericVector<gchar*>* pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const UT_GenericVector<const gchar*>* pVecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())

@@ -318,7 +318,7 @@ bool pt_PieceTable::appendFmt(const gchar ** attributes)
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
+bool pt_PieceTable::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading, false);

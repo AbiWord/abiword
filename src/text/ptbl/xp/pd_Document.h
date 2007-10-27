@@ -285,7 +285,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
 											   bool bSkipEmbededSections);
 	bool					appendFmt(const gchar ** attributes);
-	bool					appendFmt(const UT_GenericVector<gchar*> * pVecAttributes);
+	bool					appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const gchar ** attributes);
 	bool					appendFmtMark(void);

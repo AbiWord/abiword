@@ -94,7 +94,7 @@ public:
 
 	virtual bool  appendStrux(PTStruxType pts, const gchar ** attributes);
 	virtual bool  appendFmt( const gchar ** attributes);
-	virtual bool  appendFmt(const UT_GenericVector<gchar*> * pVecAttributes);
+	virtual bool  appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
 	virtual bool  appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	virtual bool  appendObject(PTObjectType pto, const gchar ** attributes);
 

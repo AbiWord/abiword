@@ -2204,7 +2204,7 @@ bool IE_Imp_XHTML::appendFmt( const gchar ** attributes)
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<gchar*>* pVecAttributes)
+bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<const gchar*>* pVecAttributes)
 {
 	if(!m_addedPTXSection)
 		{
@@ -2218,12 +2218,13 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<gchar*>* pVecAttributes)
 		{
 			if(pVecAttributes->getItemCount() >= 2)
 			{
-				gchar * pszProp = pVecAttributes->getNthItem(0);
-				gchar * pszVal = pVecAttributes->getNthItem(1);
+				const gchar * pszProp = pVecAttributes->getNthItem(0);
+				const gchar * pszVal = pVecAttributes->getNthItem(1);
 				if(strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
 				{
-					const_cast<UT_GenericVector<gchar*>*>(pVecAttributes)->deleteNthItem(0);
-					const_cast<UT_GenericVector<gchar*>*>(pVecAttributes)->deleteNthItem(0);
+					// FIXME: this is butt ugly !!!!
+					const_cast<UT_GenericVector<const gchar*>*>(pVecAttributes)->deleteNthItem(0);
+					const_cast<UT_GenericVector<const gchar*>*>(pVecAttributes)->deleteNthItem(0);
 				}
 				if(pVecAttributes->getItemCount() == 0)
 				{
@@ -2239,8 +2240,8 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<gchar*>* pVecAttributes)
 			UT_uint32 i = 0;
 			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
 				{
-					UT_String sProp = static_cast<char *>(pVecAttributes->getNthItem(i));
-					UT_String sVal = static_cast<char *>(pVecAttributes->getNthItem(i));
+					UT_String sProp = pVecAttributes->getNthItem(i);
+					UT_String sVal = pVecAttributes->getNthItem(i);
 					UT_String_setProperty(sPropString,sProp,sVal);
 				}
 			attributes[1] = sPropString.c_str();

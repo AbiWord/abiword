@@ -1229,7 +1229,7 @@ bool PD_Document::appendFmt(const gchar ** attributes)
 	return m_pPieceTable->appendFmt(attributes);
 }
 
-bool PD_Document::appendFmt(const UT_GenericVector<gchar*> * pVecAttributes)
+bool PD_Document::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();

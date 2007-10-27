@@ -427,8 +427,9 @@ void IE_Imp_XML::_popInlineFmt(void)
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
 	for (k = end; k >= (UT_uint32)start; k--)
 	{
-		const gchar * p = static_cast<gchar *>(m_vecInlineFmt.getNthItem(k-1));
+		const gchar * p = m_vecInlineFmt.getNthItem(k-1);
 		m_vecInlineFmt.deleteNthItem(k-1);
+		// FIXME: let's pray that nobody assigned a literal to this.
 		if (p)
 			g_free(const_cast<void *>(static_cast<const void *>(p)));
 	}

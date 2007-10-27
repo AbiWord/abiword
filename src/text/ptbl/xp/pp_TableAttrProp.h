@@ -46,7 +46,7 @@ public:
 									 const gchar ** properties,
 									 UT_uint32 * pSubscript);
 
-	bool					createAP(const UT_GenericVector<gchar*>* pVector,
+	bool					createAP(const UT_GenericVector<const gchar*>* pVector,
 									 UT_uint32 * pSubscript);
 
 	bool					findMatch(const PP_AttrProp * pMatch,
