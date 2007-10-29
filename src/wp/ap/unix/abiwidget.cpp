@@ -1373,7 +1373,7 @@ extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * w)
 {
 	// this is annoying asc getAllFontNames() returns a lot of dupes
-	const std::vector<const char *> vFonts = GR_UnixPangoGraphics::getAllFontNames();
+	const std::vector<const char *>& vFonts = GR_UnixPangoGraphics::getAllFontNames();
 
 	const gchar** fonts_ar = 
 		reinterpret_cast<const gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care
@@ -2461,7 +2461,9 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
 
 	// construct the call data
-	EV_EditMethodCallData calldata(data, (data ? strlen (data) : 0));
+	UT_UCS4String ucs4String = data ? UT_UTF8String(data).ucs4_str() : UT_UCS4String();
+	const UT_UCSChar* actualData = data ? ucs4String.ucs4_str() : NULL;
+	EV_EditMethodCallData calldata(actualData, (actualData ? ucs4String.size() : 0));
 	calldata.m_xPos = x;
 	calldata.m_yPos = y;
 
