@@ -363,8 +363,8 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		bool b = drawImage();
 		if(!b)
 		{
-		  cleanUP();
-		  return;
+			cleanUP();
+			return;
 		}
 		m_iLastX = x;
 		m_iLastY = y;
@@ -638,13 +638,13 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
 		{
-		  dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
-		  m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
+			dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
+			m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
 		}
 		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
 		{
-		  dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
-		  m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
+			dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
+			m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
 		}
 		if(expX.width > 0)
 		{
@@ -664,10 +664,10 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		//
 		if(m_screenCache != NULL)
 		{
-		  prevRect.left -= pG->tlu(1);
-		  prevRect.top -= pG->tlu(1);
-		  painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
-		  DELETEP(m_screenCache);
+			prevRect.left -= pG->tlu(1);
+			prevRect.top -= pG->tlu(1);
+			painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
+			DELETEP(m_screenCache);
 		}
 		//
 		// Save the current screen
