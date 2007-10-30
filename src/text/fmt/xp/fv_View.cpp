@@ -13462,23 +13462,6 @@ bool FV_View::isImageSelected(void)
 	return false;
 }
 
-void FV_View::startImageResizing(UT_sint32 xPos, UT_sint32 yPos)
-{
-	m_ixResizeOrigin = xPos;
-	m_iyResizeOrigin = yPos;
-	m_bIsResizingImage = true;
-}
-
-void FV_View::stopImageResizing()
-{
-	m_bIsResizingImage = false;
-}
-
-bool FV_View::isResizingImage()
-{
-	return m_bIsResizingImage;
-}
-
 void FV_View::getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
 {
 	xOrigin = m_ixResizeOrigin;
