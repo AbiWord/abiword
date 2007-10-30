@@ -238,7 +238,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
 		m_selImageRect(-1,-1,-1,-1),
-		m_iImageSelBoxSize(10), // in device units!
 		m_imageSelCursor(GR_Graphics::GR_CURSOR_IBEAM),
 		m_ixResizeOrigin(0),
 		m_iyResizeOrigin(0),
@@ -12921,7 +12920,7 @@ UT_Rect FV_View::getImageSelRect()
 */
 UT_sint32 FV_View::getImageSelInfo()
 {
-	return getGraphics()->tlu(m_iImageSelBoxSize);
+	return getGraphics()->tlu(m_InlineImage.getImageSelBoxSize());
 }
 
 GR_Graphics::Cursor FV_View::getImageSelCursor()

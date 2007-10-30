@@ -971,7 +971,6 @@ private:
 
 	// properties for image selection
 	UT_Rect				m_selImageRect;
-	UT_uint32			m_iImageSelBoxSize;  // in device units!
 	GR_Graphics::Cursor	m_imageSelCursor;
 	UT_sint32			m_ixResizeOrigin;
 	UT_sint32			m_iyResizeOrigin;
