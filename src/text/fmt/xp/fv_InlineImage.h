@@ -96,6 +96,7 @@ public:
 	void                  cleanUP(void);
 	void                  abortDrag(void);
 	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
+	UT_sint32             getImageSelBoxSize() const; // in device units!
 private:
 	FV_View *             m_pView;
 	FV_InlineDragMode     m_iInlineDragMode;

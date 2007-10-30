@@ -35,7 +35,7 @@
 #include "ev_Mouse.h"
 #include "ut_locale.h"
 
-#define FRAME_HANDLE_SIZE 6
+#define FRAME_HANDLE_SIZE 24
 
 #define MIN_DRAG_PIXELS 8
 
@@ -1070,7 +1070,7 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	{
 	  return;
 	}
-	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
+	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE);
 	UT_sint32 iLeft = m_recCurFrame.left;
 	UT_sint32 iRight = m_recCurFrame.left + m_recCurFrame.width;
 	UT_sint32 iTop = m_recCurFrame.top;
@@ -1508,4 +1508,9 @@ bool FV_VisualInlineImage::drawImage(void)
 	xxx_UT_DEBUGMSG(("Draw Inline image \n"));
 	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
 	return true;
+}
+
+UT_sint32 FV_VisualInlineImage::getImageSelBoxSize() const
+{
+	return FRAME_HANDLE_SIZE;
 }
