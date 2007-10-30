@@ -13468,16 +13468,6 @@ void FV_View::getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
 	yOrigin = m_iyResizeOrigin;
 }
 
-void FV_View::setCurImageSel(UT_Rect r)
-{
-	m_curImageSel = r;
-}
-
-UT_Rect FV_View::getCurImageSel()
-{
-	return m_curImageSel;
-}
-
 #if XAP_DONTUSE_XOR
 void FV_View::setCurImageSelCache(GR_Image* cache)
 {
@@ -13489,11 +13479,6 @@ GR_Image* FV_View::getCurImageSelCache()
 	return m_curImageSelCache;
 }
 #endif
-
-bool FV_View::isDraggingImage()
-{
-	return m_bIsDraggingImage;
-}
 
 #ifdef ENABLE_SPELL
 SpellChecker * FV_View::getDictForSelection ()

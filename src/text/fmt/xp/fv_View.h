@@ -787,15 +787,12 @@ public:
 	UT_Rect				getImageSelRect();
 	UT_sint32			getImageSelInfo();
 	GR_Graphics::Cursor getImageSelCursor();
-	void				setCurImageSel(UT_Rect r);
-	UT_Rect				getCurImageSel();
 #if XAP_DONTUSE_XOR
 	void				setCurImageSelCache(GR_Image* cache);
 	GR_Image* 			getCurImageSelCache();
 #endif
 	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
-	bool				isDraggingImage();
 	bool                isImageSelected(void);
 
 //
