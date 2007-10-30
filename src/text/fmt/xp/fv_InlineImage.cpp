@@ -35,7 +35,7 @@
 #include "ev_Mouse.h"
 #include "ut_locale.h"
 
-#define FRAME_HANDLE_SIZE 24
+#define FRAME_HANDLE_SIZE 10
 
 #define MIN_DRAG_PIXELS 8
 
