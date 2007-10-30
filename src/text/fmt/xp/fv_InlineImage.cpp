@@ -215,473 +215,474 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	GR_Graphics * pG = getGraphics();
-
-  if(m_iDraggingWhat == FV_Inline_DragWholeImage)
-  {
-        if(m_iInlineDragMode  == FV_InlineDrag_NOT_ACTIVE)
-        {
-	  m_iFirstEverX = x;
-	  m_iFirstEverY = y;
-	  m_iInlineDragMode  = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
-	  xxx_UT_DEBUGMSG(("Initial call for drag -1\n"));
-	  return;
-	}
-	if((m_iFirstEverX == 0) && (m_iFirstEverY == 0))
+	if(m_iDraggingWhat == FV_Inline_DragWholeImage)
 	{
-	  m_iFirstEverX = x;
-	  m_iFirstEverY = y;
-	  m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
-	  xxx_UT_DEBUGMSG(("Initial call for drag -2 \n"));
-	}
-	if(m_iInlineDragMode == FV_InlineDrag_WAIT_FOR_MOUSE_DRAG)
-	{
-          float diff = sqrt((static_cast<float>(x) - static_cast<float>(m_iFirstEverX))*(static_cast<float>(x) - static_cast<float>(m_iFirstEverX)) +
-                              (static_cast<float>(y) - static_cast<float>(m_iFirstEverY))*(static_cast<float>(y) - static_cast<float>(m_iFirstEverY)));
-          if(diff < static_cast<float>(pG->tlu(MIN_DRAG_PIXELS)))
-          {
-	    xxx_UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
-            //
-            // Have to drag 4 pixels before initiating the drag
-            //
-            return;
-          }
-	  else
-	  {
-	    m_iInlineDragMode = FV_InlineDrag_START_DRAGGING;	    
-	  }
-        }
-	m_bFirstDragDone = true;
-	if((m_iInlineDragMode != FV_InlineDrag_DRAGGING) && (m_iInlineDragMode != FV_InlineDrag_WAIT_FOR_MOUSE_DRAG) && !m_bDoingCopy)
-	{
-//
-// Haven't started the drag yet so create our image and cut the text.
-//
-	  _beginGlob();
-	  mouseCut(m_iFirstEverX,m_iFirstEverY);
-	  m_bTextCut = true;
-	}
-	clearCursor();
-	m_iInlineDragMode = FV_InlineDrag_DRAGGING;
-	xxx_UT_DEBUGMSG(("x = %d y = %d width \n",x,y));
-	bool bScrollDown = false;
-	bool bScrollUp = false;
-	bool bScrollLeft = false;
-	bool bScrollRight = false;
-	m_xLastMouse = x;
-	m_yLastMouse = y;
-	if(y<=0)
-	{
-		bScrollUp = true;
-	}
-	else if( y >= m_pView->getWindowHeight())
-	{
-		bScrollDown = true;
-	}
-	if(x <= 0)
-	{
-		bScrollLeft = true;
-	}
-	else if(x >= m_pView->getWindowWidth())
-	{
-		bScrollRight = true;
-	}
-	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
-	{
-		if(m_pAutoScrollTimer != NULL)
+    	if(m_iInlineDragMode  == FV_InlineDrag_NOT_ACTIVE)
 		{
+			m_iFirstEverX = x;
+			m_iFirstEverY = y;
+			m_iInlineDragMode  = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
+			xxx_UT_DEBUGMSG(("Initial call for drag -1\n"));
 			return;
 		}
-		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
-		m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
-		m_pAutoScrollTimer->start();
-		return;
-	}
-	UT_sint32 dx = 0;
-	UT_sint32 dy = 0;
-	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
-	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = pG->tlu(3);
-	dx = x - m_iLastX;
-	dy = y - m_iLastY;
-	m_recCurFrame.left += dx;
-	m_recCurFrame.top += dy;
-	if(dx < 0)
-	{
-		expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
-		expX.width = -dx + 2*iext;
-		if(dy > 0)
+		if((m_iFirstEverX == 0) && (m_iFirstEverY == 0))
 		{
-			expX.top -=  iext;
-			expX.height += dy + 2*iext;
+			m_iFirstEverX = x;
+			m_iFirstEverY = y;
+			m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
+			xxx_UT_DEBUGMSG(("Initial call for drag -2 \n"));
+		}
+		if(m_iInlineDragMode == FV_InlineDrag_WAIT_FOR_MOUSE_DRAG)
+		{
+			float diff = sqrt(
+				(static_cast<float>(x) - static_cast<float>(m_iFirstEverX))*(static_cast<float>(x) - static_cast<float>(m_iFirstEverX)) +
+				(static_cast<float>(y) - static_cast<float>(m_iFirstEverY))*(static_cast<float>(y) - static_cast<float>(m_iFirstEverY))
+							  );
+			if(diff < static_cast<float>(pG->tlu(MIN_DRAG_PIXELS)))
+			{
+				xxx_UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
+				//
+				// Have to drag 4 pixels before initiating the drag
+				//
+				return;
+			}
+			else
+			{
+				m_iInlineDragMode = FV_InlineDrag_START_DRAGGING;	    
+			}
+		}
+		m_bFirstDragDone = true;
+		if((m_iInlineDragMode != FV_InlineDrag_DRAGGING) && (m_iInlineDragMode != FV_InlineDrag_WAIT_FOR_MOUSE_DRAG) && !m_bDoingCopy)
+		{
+			//
+			// Haven't started the drag yet so create our image and cut the text.
+			//
+			_beginGlob();
+			mouseCut(m_iFirstEverX,m_iFirstEverY);
+			m_bTextCut = true;
+		}
+		clearCursor();
+		m_iInlineDragMode = FV_InlineDrag_DRAGGING;
+		xxx_UT_DEBUGMSG(("x = %d y = %d width \n",x,y));
+		bool bScrollDown = false;
+		bool bScrollUp = false;
+		bool bScrollLeft = false;
+		bool bScrollRight = false;
+		m_xLastMouse = x;
+		m_yLastMouse = y;
+		if(y<=0)
+		{
+			bScrollUp = true;
+		}
+		else if( y >= m_pView->getWindowHeight())
+		{
+			bScrollDown = true;
+		}
+		if(x <= 0)
+		{
+			bScrollLeft = true;
+		}
+		else if(x >= m_pView->getWindowWidth())
+		{
+			bScrollRight = true;
+		}
+		if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+		{
+			if(m_pAutoScrollTimer != NULL)
+			{
+				return;
+			}
+			m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
+			m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+			m_pAutoScrollTimer->start();
+			return;
+		}
+		UT_sint32 dx = 0;
+		UT_sint32 dy = 0;
+		UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+		UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+		UT_sint32 iext = pG->tlu(3);
+		dx = x - m_iLastX;
+		dy = y - m_iLastY;
+		m_recCurFrame.left += dx;
+		m_recCurFrame.top += dy;
+		if(dx < 0)
+		{
+			expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
+			expX.width = -dx + 2*iext;
+			if(dy > 0)
+			{
+				expX.top -=  iext;
+				expX.height += dy + 2*iext;
+			}
+			else
+			{
+				expX.top -=  iext;
+				expX.height += (-dy + 2*iext);
+			}
 		}
 		else
 		{
-			expX.top -=  iext;
-			expX.height += (-dy + 2*iext);
+			expX.left = m_recCurFrame.left - dx - iext;
+			expX.width = dx + 2*iext;
+			if(dy > 0)
+			{
+				expX.top -=  iext;
+				expX.height += dy + 2*iext;
+			}
+			else
+			{
+				expX.top -= iext;
+				expX.height += (-dy + 2*iext);
+			}
 		}
-	}
-	else
-	{
-		expX.left = m_recCurFrame.left - dx - iext;
-		expX.width = dx + 2*iext;
-		if(dy > 0)
+		expY.left -= iext;
+		expY.width += 2*iext;
+		if(dy < 0)
 		{
-			expX.top -=  iext;
-			expX.height += dy + 2*iext;
+			expY.top = m_recCurFrame.top + m_recCurFrame.height -iext;
+			expY.height = -dy + 2*iext;
 		}
 		else
 		{
-			expX.top -= iext;
-			expX.height += (-dy + 2*iext);
+			expY.top = m_recCurFrame.top - dy - iext;
+			expY.height = dy + 2*iext;
 		}
-	}
-	expY.left -= iext;
-	expY.width += 2*iext;
-	if(dy < 0)
-	{
-		expY.top = m_recCurFrame.top + m_recCurFrame.height -iext;
-		expY.height = -dy + 2*iext;
-	}
-	else
-	{
-		expY.top = m_recCurFrame.top - dy - iext;
-		expY.height = dy + 2*iext;
-	}
 
-	if(expX.width > 0)
-	{
-		pG->setClipRect(&expX);
-		m_pView->updateScreen(false);
+		if(expX.width > 0)
+		{
+			pG->setClipRect(&expX);
+			m_pView->updateScreen(false);
+		}
+		if(expY.height > 0)
+		{
+			pG->setClipRect(&expY);
+			m_pView->updateScreen(false);
+		}
+		pG->setClipRect(NULL);
+		bool b = drawImage();
+		if(!b)
+		{
+		  cleanUP();
+		  return;
+		}
+		m_iLastX = x;
+		m_iLastY = y;
+		pG->setClipRect(NULL);
+		PT_DocPosition posAtXY = getPosFromXY(x,y);
+		m_pView->_setPoint(posAtXY);
+		//m_pView->_fixInsertionPointCoords();
+		drawCursor(posAtXY);
 	}
-	if(expY.height > 0)
+	else
 	{
-		pG->setClipRect(&expY);
-		m_pView->updateScreen(false);
-	}
-	pG->setClipRect(NULL);
-	bool b = drawImage();
-	if(!b)
-	{
-	  cleanUP();
-	  return;
-	}
-	m_iLastX = x;
-	m_iLastY = y;
-	pG->setClipRect(NULL);
-	PT_DocPosition posAtXY = getPosFromXY(x,y);
-	m_pView->_setPoint(posAtXY);
-//	m_pView->_fixInsertionPointCoords();
-	drawCursor(posAtXY);
-  }
-  else
-  {
         m_iInlineDragMode = FV_InlineDrag_RESIZE;
-	if(!m_bFirstDragDone)
-	{
-		m_iFirstEverX = x;
-		m_iFirstEverY = y;
-	}
-	m_bFirstDragDone = true;
-	UT_sint32 diffx = 0;
-	UT_sint32 diffy = 0;
-	UT_sint32 dx = 0;
-	UT_sint32 dy = 0;
-	UT_Rect prevRect = m_recCurFrame;
-	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
-	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-	UT_sint32 iext = pG->tlu(3);
-	m_xLastMouse = x;
-	m_yLastMouse = y;
-	switch (m_iDraggingWhat)
-	{
-	case FV_Inline_DragTopLeftCorner:
-		diffx = m_recCurFrame.left - x;
-		diffy = m_recCurFrame.top - y;
-		m_recCurFrame.left -= diffx;
-		m_recCurFrame.top -= diffy;
-		dx = -diffx;
-		dy = -diffy;
-		m_recCurFrame.width += diffx;
-		m_recCurFrame.height += diffy;
-		if(diffx < 0)
+		if(!m_bFirstDragDone)
 		{
-			expX.left = m_recCurFrame.left + diffx -iext;
-			expX.width = -diffx + iext;
+			m_iFirstEverX = x;
+			m_iFirstEverY = y;
+		}
+		m_bFirstDragDone = true;
+		UT_sint32 diffx = 0;
+		UT_sint32 diffy = 0;
+		UT_sint32 dx = 0;
+		UT_sint32 dy = 0;
+		UT_Rect prevRect = m_recCurFrame;
+		UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+		UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+		UT_sint32 iext = pG->tlu(3);
+		m_xLastMouse = x;
+		m_yLastMouse = y;
+		switch (m_iDraggingWhat)
+		{
+		case FV_Inline_DragTopLeftCorner:
+			diffx = m_recCurFrame.left - x;
+			diffy = m_recCurFrame.top - y;
+			m_recCurFrame.left -= diffx;
+			m_recCurFrame.top -= diffy;
+			dx = -diffx;
+			dy = -diffy;
+			m_recCurFrame.width += diffx;
+			m_recCurFrame.height += diffy;
+			if(diffx < 0)
+			{
+				expX.left = m_recCurFrame.left + diffx -iext;
+				expX.width = -diffx + iext;
+				if(diffy > 0)
+				{
+					expX.top -=  diffy + iext;
+					expX.height += diffy + 2*iext;
+				}
+				else
+				{
+					expX.top -=  iext;
+					expX.height += (-diffy + 2*iext);
+				}
+			}
+			if(diffy < 0)
+			{
+				expY.top = m_recCurFrame.top + diffy - iext;
+				expY.height = -diffy + 2*iext;
+			}
+			if(m_recCurFrame.width < 0)
+			{
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
+			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
+			}
+			break;
+		case FV_Inline_DragTopRightCorner:
+			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
+			diffy = m_recCurFrame.top - y;
+			m_recCurFrame.top -= diffy;
+			dy = -diffy;
+			m_recCurFrame.width -= diffx;
+			m_recCurFrame.height += diffy;
+			if(diffx > 0)
+			{
+				expX.left = m_recCurFrame.left + m_recCurFrame.width;
+				expX.width = diffx + iext;
+				if(diffy > 0)
+				{
+					expX.top -=  iext;
+					expX.height += diffy + 2*iext;
+				}
+				else
+				{
+					expX.top -=  iext;
+					expX.height += (-diffy + 2*iext);
+				}
+			}
+			if(diffy < 0)
+			{
+				expY.top = m_recCurFrame.top + diffy - iext;
+				expY.height = -diffy + iext;
+			}
+			if(m_recCurFrame.width < 0)
+			{
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
+			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
+			}
+			break;
+		case FV_Inline_DragBotLeftCorner:
+			diffx = m_recCurFrame.left - x;
+			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
+			m_recCurFrame.left -= diffx;
+			dx = -diffx;
+			m_recCurFrame.width += diffx;
+			m_recCurFrame.height -= diffy;
+			if(diffx < 0)
+			{
+				expX.left = m_recCurFrame.left + diffx -iext;
+				expX.width = -diffx + iext;
+				if(diffy > 0)
+				{
+					expX.top -=  diffy + iext;
+					expX.height += diffy + 2*iext;
+				}
+				else
+				{
+					expX.top -=  iext;
+					expX.height += (-diffy + 2*iext);
+				}
+			}
 			if(diffy > 0)
 			{
-				expX.top -=  diffy + iext;
-				expX.height += diffy + 2*iext;
+				expY.top = m_recCurFrame.top + m_recCurFrame.height - iext;
+				expY.height = diffy + 2*iext;
 			}
-			else
+			if(m_recCurFrame.width < 0)
 			{
-				expX.top -=  iext;
-				expX.height += (-diffy + 2*iext);
-			}
-		}
-		if(diffy < 0)
-		{
-			expY.top = m_recCurFrame.top + diffy - iext;
-			expY.height = -diffy + 2*iext;
-		}
-		if(m_recCurFrame.width < 0)
-		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
-		}
-		if(m_recCurFrame.height < 0)
-		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
-		}
-		break;
-	case FV_Inline_DragTopRightCorner:
-		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-		diffy = m_recCurFrame.top - y;
-		m_recCurFrame.top -= diffy;
-		dy = -diffy;
-		m_recCurFrame.width -= diffx;
-		m_recCurFrame.height += diffy;
-		if(diffx > 0)
-		{
-			expX.left = m_recCurFrame.left + m_recCurFrame.width;
-			expX.width = diffx + iext;
-			if(diffy > 0)
-			{
-				expX.top -=  iext;
-				expX.height += diffy + 2*iext;
-			}
-			else
-			{
-				expX.top -=  iext;
-				expX.height += (-diffy + 2*iext);
-			}
-		}
-		if(diffy < 0)
-		{
-			expY.top = m_recCurFrame.top + diffy - iext;
-			expY.height = -diffy + iext;
-		}
-		if(m_recCurFrame.width < 0)
-		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
-		}
-		if(m_recCurFrame.height < 0)
-		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
-		}
-		break;
-	case FV_Inline_DragBotLeftCorner:
-		diffx = m_recCurFrame.left - x;
-		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-		m_recCurFrame.left -= diffx;
-		dx = -diffx;
-		m_recCurFrame.width += diffx;
-		m_recCurFrame.height -= diffy;
-		if(diffx < 0)
-		{
-			expX.left = m_recCurFrame.left + diffx -iext;
-			expX.width = -diffx + iext;
-			if(diffy > 0)
-			{
-				expX.top -=  diffy + iext;
-				expX.height += diffy + 2*iext;
-			}
-			else
-			{
-				expX.top -=  iext;
-				expX.height += (-diffy + 2*iext);
-			}
-		}
-		if(diffy > 0)
-		{
-			expY.top = m_recCurFrame.top + m_recCurFrame.height - iext;
-			expY.height = diffy + 2*iext;
-		}
-		if(m_recCurFrame.width < 0)
-		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
 
-		}
-		if(m_recCurFrame.height < 0)
-		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
-		}
-		break;
-	case FV_Inline_DragBotRightCorner:
-		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-		m_recCurFrame.width -= diffx;
-		m_recCurFrame.height -= diffy;
-		if(diffx > 0)
-		{
-			expX.left = m_recCurFrame.left + m_recCurFrame.width;
-			expX.width = diffx + iext;
+			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
+			}
+			break;
+		case FV_Inline_DragBotRightCorner:
+			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
+			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
+			m_recCurFrame.width -= diffx;
+			m_recCurFrame.height -= diffy;
+			if(diffx > 0)
+			{
+				expX.left = m_recCurFrame.left + m_recCurFrame.width;
+				expX.width = diffx + iext;
+				if(diffy > 0)
+				{
+					expX.top -=  iext;
+					expX.height += diffy + 2*iext;
+				}
+				else
+				{
+					expX.top -=  iext;
+					expX.height += (-diffy + 2*iext);
+				}
+			}
 			if(diffy > 0)
 			{
-				expX.top -=  iext;
-				expX.height += diffy + 2*iext;
+				expY.top = m_recCurFrame.top + m_recCurFrame.height;
+				expY.height = diffy + iext;
 			}
-			else
+			if(m_recCurFrame.width < 0)
 			{
-				expX.top -=  iext;
-				expX.height += (-diffy + 2*iext);
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
 			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
+			}
+			break;
+		case FV_Inline_DragLeftEdge:
+			diffx = m_recCurFrame.left - x;
+			m_recCurFrame.left -= diffx;
+			dx = -diffx;
+			m_recCurFrame.width += diffx;
+			if(diffx < 0)
+			{
+				expX.left = m_recCurFrame.left + diffx - iext;
+				expX.width = -diffx + iext;
+				expX.top -=  iext;
+				expX.height += 2*iext;
+			}
+			if(m_recCurFrame.width < 0)
+			{
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragRightEdge;
+			}
+			break;
+		case FV_Inline_DragRightEdge:
+			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
+			m_recCurFrame.width -= diffx;
+			if(diffx > 0)
+			{
+				expX.left = m_recCurFrame.left + m_recCurFrame.width;
+				expX.width = diffx + iext;
+				expX.top -=  iext;
+				expX.height += 2*iext;
+			}
+			if(m_recCurFrame.width < 0)
+			{
+				m_recCurFrame.left = x;
+				m_recCurFrame.width = -m_recCurFrame.width;
+				m_iDraggingWhat =  FV_Inline_DragLeftEdge;
+			}
+			break;
+		case FV_Inline_DragTopEdge:
+			diffy = m_recCurFrame.top - y;
+			m_recCurFrame.top -= diffy;
+			dy = -diffy;
+			m_recCurFrame.height += diffy;
+			if(diffy < 0)
+			{
+				expY.top = m_recCurFrame.top + diffy - iext;
+				expY.height = -diffy + iext;
+				expY.left -= iext;
+				expY.width += 2*iext;
+			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragBotEdge;
+			}
+			break;
+		case FV_Inline_DragBotEdge:
+			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
+			m_recCurFrame.height -= diffy;
+			if(diffy > 0)
+			{
+				expY.top = m_recCurFrame.top + m_recCurFrame.height;
+				expY.height = diffy + iext;
+				expY.left -= iext;
+				expY.width += 2*iext;
+				xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
+			}
+			if(m_recCurFrame.height < 0)
+			{
+				m_recCurFrame.top = y;
+				m_recCurFrame.height = -m_recCurFrame.height;
+				m_iDraggingWhat =  FV_Inline_DragTopEdge;
+			}
+			break;
+		default:
+			break;
 		}
-		if(diffy > 0)
+
+		// don't left widths and heights be too big
+		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
 		{
-			expY.top = m_recCurFrame.top + m_recCurFrame.height;
-			expY.height = diffy + iext;
+		  dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
+		  m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
 		}
-		if(m_recCurFrame.width < 0)
+		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
 		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
+		  dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
+		  m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
 		}
-		if(m_recCurFrame.height < 0)
+		if(expX.width > 0)
 		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
+			pG->setClipRect(&expX);
+			m_pView->updateScreen(false);
 		}
-		break;
-	case FV_Inline_DragLeftEdge:
-		diffx = m_recCurFrame.left - x;
-		m_recCurFrame.left -= diffx;
-		dx = -diffx;
-		m_recCurFrame.width += diffx;
-		if(diffx < 0)
+		if(expY.height > 0)
 		{
-			expX.left = m_recCurFrame.left + diffx - iext;
-			expX.width = -diffx + iext;
-			expX.top -=  iext;
-			expX.height += 2*iext;
-		}
-		if(m_recCurFrame.width < 0)
-		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragRightEdge;
-		}
-		break;
-	case FV_Inline_DragRightEdge:
-		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-		m_recCurFrame.width -= diffx;
-		if(diffx > 0)
-		{
-			expX.left = m_recCurFrame.left + m_recCurFrame.width;
-			expX.width = diffx + iext;
-			expX.top -=  iext;
-			expX.height += 2*iext;
-		}
-		if(m_recCurFrame.width < 0)
-		{
-			m_recCurFrame.left = x;
-			m_recCurFrame.width = -m_recCurFrame.width;
-			m_iDraggingWhat =  FV_Inline_DragLeftEdge;
-		}
-		break;
-	case FV_Inline_DragTopEdge:
-		diffy = m_recCurFrame.top - y;
-		m_recCurFrame.top -= diffy;
-		dy = -diffy;
-		m_recCurFrame.height += diffy;
-		if(diffy < 0)
-		{
-			expY.top = m_recCurFrame.top + diffy - iext;
-			expY.height = -diffy + iext;
-			expY.left -= iext;
-			expY.width += 2*iext;
-		}
-		if(m_recCurFrame.height < 0)
-		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragBotEdge;
-		}
-		break;
-	case FV_Inline_DragBotEdge:
-		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-		m_recCurFrame.height -= diffy;
-		if(diffy > 0)
-		{
-			expY.top = m_recCurFrame.top + m_recCurFrame.height;
-			expY.height = diffy + iext;
-			expY.left -= iext;
-			expY.width += 2*iext;
+			pG->setClipRect(&expY);
 			xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
+			m_pView->updateScreen(false);
 		}
-		if(m_recCurFrame.height < 0)
+		pG->setClipRect(NULL);
+		GR_Painter painter(pG);
+		//
+		// Clear the previous line.
+		//
+		if(m_screenCache != NULL)
 		{
-			m_recCurFrame.top = y;
-			m_recCurFrame.height = -m_recCurFrame.height;
-			m_iDraggingWhat =  FV_Inline_DragTopEdge;
+		  prevRect.left -= pG->tlu(1);
+		  prevRect.top -= pG->tlu(1);
+		  painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
+		  DELETEP(m_screenCache);
 		}
-		break;
-	default:
-	  break;
-	}
-	// don't left widths and heights be too big
+		//
+		// Save the current screen
+		//
+		UT_Rect rCache = m_recCurFrame;
+		rCache.left -= pG->tlu(1);
+		rCache.top -= pG->tlu(1);
+		rCache.width += pG->tlu(2);
+		rCache.height += pG->tlu(2);
+		m_screenCache = painter.genImageFromRectangle(rCache);
 
-	double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
-	{
-	  dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
-	  m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
+		// Draw new image box
+		UT_Rect box(m_recCurFrame.left, m_recCurFrame.top - pG->tlu(1), m_recCurFrame.width - pG->tlu(1), m_recCurFrame.height - pG->tlu(1));
+		m_pView->drawSelectionBox(box, false);
 	}
-	if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
-	{
-	  dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
-	  m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
-	}
-	if(expX.width > 0)
-	{
-	        pG->setClipRect(&expX);
-		m_pView->updateScreen(false);
-	}
-	if(expY.height > 0)
-	{
-	        pG->setClipRect(&expY);
-		xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
-		m_pView->updateScreen(false);
-	}
-	pG->setClipRect(NULL);
-	GR_Painter painter(pG);
-	//
-	// Clear the previous line.
-	//
-	if(m_screenCache != NULL)
-	{
-	  prevRect.left -= pG->tlu(1);
-	  prevRect.top -= pG->tlu(1);
-	  painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
-	  DELETEP(m_screenCache);
-	}
-	//
-	// Save the current screen
-	//
-	UT_Rect rCache = m_recCurFrame;
-	rCache.left -= pG->tlu(1);
-	rCache.top -= pG->tlu(1);
-	rCache.width += pG->tlu(2);
-	rCache.height += pG->tlu(2);
-	m_screenCache = painter.genImageFromRectangle(rCache);
-
-	// Draw new image box
-	UT_Rect box(m_recCurFrame.left, m_recCurFrame.top - pG->tlu(1), m_recCurFrame.width - pG->tlu(1), m_recCurFrame.height - pG->tlu(1));
-	m_pView->drawSelectionBox(box, false);
-  }
 }
 
 void FV_VisualInlineImage::clearCursor(void)
