@@ -796,9 +796,6 @@ public:
 	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
 	bool				isDraggingImage();
-	void				startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
-	void				drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos);
-	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
 	bool                isImageSelected(void);
 
 //
