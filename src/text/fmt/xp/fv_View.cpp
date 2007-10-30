@@ -10081,9 +10081,6 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -10148,9 +10145,6 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	case FPRUN_IMAGE:
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -10605,9 +10599,6 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 
 	case FPRUN_IMAGE:
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -13360,16 +13351,6 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 	}
 }
 
-void FV_View::setImageSelRect(UT_Rect r)
-{
-	m_selImageRect = r;
-}
-
-UT_Rect FV_View::getImageSelRect()
-{
-	return m_selImageRect;
-}
-
 /*! Returns the size of the image selection boxes
 */
 UT_sint32 FV_View::getImageSelInfo()
@@ -13461,24 +13442,6 @@ bool FV_View::isImageSelected(void)
 	}
 	return false;
 }
-
-void FV_View::getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
-{
-	xOrigin = m_ixResizeOrigin;
-	yOrigin = m_iyResizeOrigin;
-}
-
-#if XAP_DONTUSE_XOR
-void FV_View::setCurImageSelCache(GR_Image* cache)
-{
-	m_curImageSelCache = cache;
-}
-
-GR_Image* FV_View::getCurImageSelCache()
-{
-	return m_curImageSelCache;
-}
-#endif
 
 #ifdef ENABLE_SPELL
 SpellChecker * FV_View::getDictForSelection ()
