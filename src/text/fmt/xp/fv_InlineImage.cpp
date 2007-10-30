@@ -427,14 +427,12 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
 			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
 			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
 		}
 		break;
@@ -469,14 +467,12 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
 			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
 		}
 		break;
@@ -511,7 +507,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 			m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
 
 		}
@@ -519,7 +514,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
 			m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
 		}
 		break;
@@ -552,14 +546,12 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
 			m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
 			m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
 		}
 		break;
@@ -579,7 +571,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_W);
 			m_iDraggingWhat =  FV_Inline_DragRightEdge;
 		}
 		break;
@@ -597,7 +588,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_E);
 			m_iDraggingWhat =  FV_Inline_DragLeftEdge;
 		}
 		break;
@@ -617,7 +607,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_S);
 			m_iDraggingWhat =  FV_Inline_DragBotEdge;
 		}
 		break;
@@ -636,7 +625,6 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			pG->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_N);
 			m_iDraggingWhat =  FV_Inline_DragTopEdge;
 		}
 		break;
