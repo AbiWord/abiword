@@ -261,6 +261,9 @@ EM_VOID__BOOL(selectBlock, select_block)
 EM_VOID__BOOL(selectLine, select_line)
 EM_VOID__BOOL(selectWord, select_word)
 
+EM_VOID__BOOL(fileSave, file_save)
+EM_VOID__BOOL(saveImmediate, save_immediate)
+
 EM_VOID__BOOL(undo, undo)
 EM_VOID__BOOL(redo, redo)
 
@@ -1144,15 +1147,15 @@ abi_widget_file_open(AbiWidget * abi)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
+abi_widget_get_content(AbiWidget * w, char * extention_or_mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -1187,15 +1190,15 @@ abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
+abi_widget_get_selection(AbiWidget * w, gchar * extention_or_mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -2051,6 +2054,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->select_word   = EM_NAME(selectWord);	
 
 	abi_class->file_open   = abi_widget_file_open;
+	abi_class->file_save   = EM_NAME(fileSave);	
+	abi_class->save_immediate   = EM_NAME(saveImmediate);	
 	
 	abi_class->undo = EM_NAME(undo);
 	abi_class->redo = EM_NAME(redo);
@@ -2480,12 +2485,6 @@ abi_widget_draw (AbiWidget * w)
 	}
 }
 
-extern "C" gboolean
-abi_widget_save ( AbiWidget * w, const char * fname )
-{
-  return abi_widget_save_with_type ( w, fname, ".abw" ) ;
-}
-
 static IEFileType getImportFileType(const char * szSuffixOrMime)
 {
   IEFileType ieft = IEFT_Unknown;
@@ -2506,8 +2505,8 @@ static IEFileType getImportFileType(const char * szSuffixOrMime)
 }
 
 extern "C" gboolean 
-abi_widget_save_with_type ( AbiWidget * w, const char * fname,
-							const char * extension )
+abi_widget_save ( AbiWidget * w, const char * fname,
+							const char * extension_or_mimetype )
 {
   g_return_val_if_fail ( w != NULL, FALSE );
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
@@ -2518,7 +2517,7 @@ abi_widget_save_with_type ( AbiWidget * w, const char * fname,
 	  return false;
   PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = getImportFileType (extension);
+  IEFileType ieft = getImportFileType (extension_or_mimetype ? extension_or_mimetype : ".abw");
   if (ieft == IEFT_Unknown)
 	  ieft = getImportFileType (".abw");
 

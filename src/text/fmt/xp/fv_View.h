@@ -752,26 +752,8 @@ public:
 	//
 	// image selection && resizing && dragging functions
 	//
-	void				setImageSelRect(UT_Rect r);
-	UT_Rect				getImageSelRect();
 	UT_sint32			getImageSelInfo();
 	GR_Graphics::Cursor getImageSelCursor();
-	void				setCurImageSel(UT_Rect r);
-	UT_Rect				getCurImageSel();
-#if XAP_DONTUSE_XOR
-	void				setCurImageSelCache(GR_Image* cache);
-	GR_Image* 			getCurImageSelCache();
-#endif
-	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
-	void				startImageResizing(UT_sint32 xPos, UT_sint32 yPos);
-	void				stopImageResizing();
-	bool				isResizingImage();
-	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
-	bool				isDraggingImage();
-	void				startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
-	void				drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos);
-	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
-
 	bool                isImageSelected(void);
 
 //

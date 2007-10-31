@@ -35,8 +35,65 @@
 #include "gr_Painter.h"
 #include "xap_App.h"
 
+/*
+ *	FV_Base
+ */
+
+FV_Base::FV_Base( FV_View* pView )
+: m_pView( pView )
+, m_iGlobCount(0)
+{
+}
+
+FV_Base::~FV_Base()
+{
+}
+
+PD_Document * FV_Base::getDoc(void) const
+{
+	return m_pView->getDocument();
+}
+
+FL_DocLayout * FV_Base::getLayout(void) const
+{
+	return m_pView->getLayout();
+}
+
+GR_Graphics * FV_Base::getGraphics(void) const
+{
+	return m_pView->getGraphics();
+}
+
+void FV_Base::_beginGlob(void)
+{
+	getDoc()->beginUserAtomicGlob();
+	m_iGlobCount++;
+	UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
+}
+
+void FV_Base::_endGlob(void)
+{
+	getDoc()->endUserAtomicGlob();
+	m_iGlobCount--;
+	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
+}
+
+UT_sint32 FV_Base::getGlobCount()
+{
+	return m_iGlobCount;
+}
+
+void FV_Base::mouseDrag(UT_sint32 x, UT_sint32 y)
+{
+  _mouseDrag(x,y);
+}
+
+/*
+ *	FV_FrameEdit
+ */
+
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
-	: m_pView (pView), 
+	: FV_Base (pView), 
 	  m_iFrameEditMode(FV_FrameEdit_NOT_ACTIVE),
 	  m_pFrameLayout(NULL),
 	  m_pFrameContainer(NULL),
@@ -54,7 +111,6 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_yLastMouse(1),
 	  m_iFirstEverX(0),
 	  m_iFirstEverY(0),
-	  m_iGlobCount(0),
 	  m_iInitialFrameX(0),
 	  m_iInitialFrameY(0)
 {
@@ -86,21 +142,6 @@ void FV_FrameEdit::setPointInside(void)
 bool FV_FrameEdit::isActive(void) const
 {
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
-}
-
-PD_Document * FV_FrameEdit::getDoc(void) const
-{
-	return m_pView->getDocument();
-}
-
-FL_DocLayout * FV_FrameEdit::getLayout(void) const
-{
-	return m_pView->getLayout();
-}
-
-GR_Graphics * FV_FrameEdit::getGraphics(void) const
-{
-	return m_pView->getGraphics();
 }
 
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
@@ -286,31 +327,6 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 		return 1;
 	}
 	return 10;
-}
-
-UT_sint32 FV_FrameEdit::getGlobCount()
-{
-	return m_iGlobCount;
-}
-
-void  FV_FrameEdit::_beginGlob(void)
-{
-	getDoc()->beginUserAtomicGlob();
-	m_iGlobCount++;
-	UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
-}
-
-
-void  FV_FrameEdit::_endGlob(void)
-{
-	getDoc()->endUserAtomicGlob();
-	m_iGlobCount--;
-	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
-}
-
-void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
-{
-  _mouseDrag(x,y);
 }
 
 void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)

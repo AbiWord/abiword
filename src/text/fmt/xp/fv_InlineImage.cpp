@@ -40,7 +40,7 @@
 #define MIN_DRAG_PIXELS 8
 
 FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
-	: m_pView (pView), 
+	: FV_Base(pView), 
 	  m_iInlineDragMode(FV_InlineDrag_NOT_ACTIVE),
 	  m_pDragImage(NULL),
 	  m_iLastX(0),
@@ -59,7 +59,6 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
 	  m_iDraggingWhat( FV_Inline_DragNothing ),
-	  m_iGlobCount(0),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
 	  m_bFirstDragDone(false),
@@ -83,11 +82,6 @@ FV_VisualInlineImage::~FV_VisualInlineImage()
 bool FV_VisualInlineImage::isActive(void) const
 {
 	return (FV_InlineDrag_NOT_ACTIVE != m_iInlineDragMode);
-}
-
-GR_Graphics * FV_VisualInlineImage::getGraphics(void) const
-{
-	return m_pView->getGraphics();
 }
 
 void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
@@ -204,13 +198,6 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 	iExtra = 0;
 
 }
-
-
-void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
-{
-  _mouseDrag(x,y);
-}
-
 
 void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
@@ -889,37 +876,6 @@ void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 	m_pView->cmdCharDelete(true,1);
 	m_pView->updateScreen(false);
 	drawImage();
-}
-
-
-UT_sint32 FV_VisualInlineImage::getGlobCount()
-{
-	return m_iGlobCount;
-}
-
-void  FV_VisualInlineImage::_beginGlob(void)
-{
-	getDoc()->beginUserAtomicGlob();
-	m_iGlobCount++;
-	xxx_UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
-}
-
-
-void  FV_VisualInlineImage::_endGlob(void)
-{
-	getDoc()->endUserAtomicGlob();
-	m_iGlobCount--;
-	xxx_UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
-}
-
-PD_Document *    FV_VisualInlineImage::getDoc(void) const
-{
-	return m_pView->getDocument();
-}
-
-FL_DocLayout *   FV_VisualInlineImage::getLayout(void) const
-{
-        return m_pView->getLayout();
 }
 
 void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)

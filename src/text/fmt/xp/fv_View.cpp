@@ -9967,9 +9967,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -10034,9 +10031,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	case FPRUN_IMAGE:
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -10066,7 +10060,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
 		
-			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
+			FV_InlineDragWhat dragWhat = m_InlineImage.getInlineDragWhat();
+			if (dragWhat!=FV_Inline_DragNothing && dragWhat!=FV_Inline_DragWholeImage)
 			{
 				m_prevMouseContext = EV_EMC_IMAGESIZE;
 				xxx_UT_DEBUGMSG(("Set ImageSize Context  \n"));
@@ -10484,9 +10479,6 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 
 	case FPRUN_IMAGE:
 		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
 			// check if this image is selected
 			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
 	
@@ -12906,16 +12898,6 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 	}
 }
 
-void FV_View::setImageSelRect(UT_Rect r)
-{
-	m_selImageRect = r;
-}
-
-UT_Rect FV_View::getImageSelRect()
-{
-	return m_selImageRect;
-}
-
 /*! Returns the size of the image selection boxes
 */
 UT_sint32 FV_View::getImageSelInfo()
@@ -12926,66 +12908,6 @@ UT_sint32 FV_View::getImageSelInfo()
 GR_Graphics::Cursor FV_View::getImageSelCursor()
 {
 	return m_imageSelCursor;
-}
-
-/*! Returns true if the given coords are in an image selection box, false otherwise.
-
-    \param cur -- Will be set to the appropriate mouse cursor, if the given xPos and yPos are 
-                  in a selection box. Will be left unchanged otherwise
-    \param xPos -- x position to check
-    \param xPos -- y position to check
-*/
-bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
-{
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_NW; // North West
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_N; // North
-		return true;
-	}
-	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_NE; // North East
-		return true;
-	}
-	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_E; // East
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SE; // South East
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_S; // South
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SW; // South West
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_W; // West
-		return true;
-	}
-	
-	return false;
 }
 
 /*!
@@ -13007,180 +12929,6 @@ bool FV_View::isImageSelected(void)
 	}
 	return false;
 }
-
-void FV_View::startImageResizing(UT_sint32 xPos, UT_sint32 yPos)
-{
-	m_ixResizeOrigin = xPos;
-	m_iyResizeOrigin = yPos;
-	m_bIsResizingImage = true;
-}
-
-void FV_View::stopImageResizing()
-{
-	m_bIsResizingImage = false;
-}
-
-bool FV_View::isResizingImage()
-{
-	return m_bIsResizingImage;
-}
-
-void FV_View::getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
-{
-	xOrigin = m_ixResizeOrigin;
-	yOrigin = m_iyResizeOrigin;
-}
-
-void FV_View::setCurImageSel(UT_Rect r)
-{
-	m_curImageSel = r;
-}
-
-UT_Rect FV_View::getCurImageSel()
-{
-	return m_curImageSel;
-}
-
-#if XAP_DONTUSE_XOR
-void FV_View::setCurImageSelCache(GR_Image* cache)
-{
-	m_curImageSelCache = cache;
-}
-
-GR_Image* FV_View::getCurImageSelCache()
-{
-	return m_curImageSelCache;
-}
-#endif
-
-bool FV_View::isDraggingImage()
-{
-	return m_bIsDraggingImage;
-}
-
-void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
-{
-	UT_ASSERT(pRun);
-	m_pDraggedImageRun = pRun;
-	
-	UT_sint32 xoff = 0, yoff = 0;
-	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
-
-	// Sevior's infamous + 1....
-	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + m_pG->tlu(1);				
-	
-	// Set the image size in the image selection rect
-	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
-	
-	// Set the current image position to the original image position
-	m_curImageSel = m_dragImageRect;
-	
-	m_ixDragOrigin = xPos;
-	m_iyDragOrigin = yPos;
-	
-	m_bIsDraggingImage = true;
-}
-
-void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
-{
-	UT_ASSERT(m_pDraggedImageRun);
-	GR_Image * pImage = (static_cast<fp_ImageRun *>(m_pDraggedImageRun))->getImage();
-	UT_ASSERT(pImage);
-
-	GR_Painter painter(getGraphics());
-
-	// calculate the new image boundaries
-	UT_Rect bounds = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
-	
-	/*
-	
-	Now we need to intelligently calculate which parts of the view we need to redraw.
-	See the following picture:
-	
-	+--------+
-	|***1****|  <- Old Image Position
-	|---+--------+
-	|***|        |
-	|*2*|  New   |
-	|***| Image  |
-	+---|Position|
-	    |        |
-	    +--------+
-	
-	* = denotes an area that needs to be redrawn
-	
-	We see that there are two squares that need to be redrawn, square 1 and square 2. The code
-	below calculates those positions and redraws them.
-	
-	*/
-	
-	UT_Rect clipRect;
-	
-	// redraw the 1st square
-	clipRect = UT_Rect( 
-						m_curImageSel.left,
-						(m_curImageSel.top <= bounds.top ? m_curImageSel.top : bounds.top + bounds.height),
-						m_curImageSel.width,
-						abs(bounds.top - m_curImageSel.top)
-					  );
-	draw(&clipRect);
-	
-	// redraw the 2nd square
-	clipRect = UT_Rect( 
-						(m_curImageSel.left <= bounds.left ? m_curImageSel.left : bounds.left + bounds.width),
-						UT_MAX(m_curImageSel.top, bounds.top),
-						abs(bounds.left - m_curImageSel.left),
-						m_curImageSel.height - abs(bounds.top - m_curImageSel.top)
-					  );
-	draw(&clipRect);
-	
-	painter.drawImage(pImage, bounds.left, bounds.top);
-	m_curImageSel = bounds;
-}
-
-void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
-{
-	m_bIsDraggingImage = false;
-	
-	// clear the last dragged image
-	draw(&m_curImageSel);	
-	
-	//
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-
-	// Turn off list updates
-
-	m_pDoc->disableListUpdates();
-
-	// turn off immediate layout of table
-
-	m_pDoc->setDontImmediatelyLayout(true);
-
-	
-	m_pDoc->beginUserAtomicGlob();
-			
-	PT_DocPosition pos = getDocPositionFromXY(xPos, yPos);
-		
-	cmdCut();
-	moveInsPtTo(pos);
-	cmdPaste();
-	
-	// Allow updates
-
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
-	m_pDoc->setDontImmediatelyLayout(false);
-	_generalUpdate();
-	
-	m_pDoc->endUserAtomicGlob();
-}
-
-
 
 #ifdef ENABLE_SPELL
 SpellChecker * FV_View::getDictForSelection ()
