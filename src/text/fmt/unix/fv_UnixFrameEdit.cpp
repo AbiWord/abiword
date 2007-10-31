@@ -49,7 +49,7 @@ void FV_UnixFrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	 _mouseDrag(x,y);
 	 return;
      }
-     if(FV_FrameEdit_DragWholeFrame != getFrameEditDragWhat())
+     if(FV_DragWhole != getDragWhat())
      {
          m_bDragOut = false;
 	 _mouseDrag(x,y);

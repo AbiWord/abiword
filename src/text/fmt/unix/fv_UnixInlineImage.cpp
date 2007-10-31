@@ -52,7 +52,7 @@ void FV_UnixVisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 	 _mouseDrag(x,y);
 	 return;
      }
-     if(FV_Inline_DragWholeImage != getInlineDragWhat())
+     if(FV_DragWhole != getDragWhat())
      {
          m_bDragOut = false;
 	 _mouseDrag(x,y);

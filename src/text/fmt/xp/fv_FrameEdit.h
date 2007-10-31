@@ -34,19 +34,19 @@ typedef enum _FV_FrameEditMode
 	FV_FrameEdit_EXISTING_SELECTED
 } FV_FrameEditMode;
 
-typedef enum _FV_FrameEditDragWhat
+typedef enum _FV_DragWhat
 {
-	FV_FrameEdit_DragNothing,
-    FV_FrameEdit_DragTopLeftCorner,
-    FV_FrameEdit_DragTopRightCorner,
-    FV_FrameEdit_DragBotLeftCorner,
-    FV_FrameEdit_DragBotRightCorner,
-    FV_FrameEdit_DragLeftEdge,
-    FV_FrameEdit_DragTopEdge,
-    FV_FrameEdit_DragRightEdge,
-    FV_FrameEdit_DragBotEdge,
-    FV_FrameEdit_DragWholeFrame
-} FV_FrameEditDragWhat;
+	FV_DragNothing,
+    FV_DragTopLeftCorner,
+    FV_DragTopRightCorner,
+    FV_DragBotLeftCorner,
+    FV_DragBotRightCorner,
+    FV_DragLeftEdge,
+    FV_DragTopEdge,
+    FV_DragRightEdge,
+    FV_DragBotEdge,
+    FV_DragWhole
+} FV_DragWhat;
 
 class FL_DocLayout;
 class PD_Document;
@@ -66,9 +66,14 @@ public:
 	PD_Document *			getDoc(void) const;
 	FL_DocLayout *			getLayout(void) const;
 	GR_Graphics *			getGraphics(void) const;
-	inline FV_View *		getView(void) { return m_pView;}
+	inline FV_View *		getView(void) 
+		{ return m_pView;}
 	UT_sint32				getGlobCount(void);
 	void          			mouseDrag(UT_sint32 x, UT_sint32 y);	// non virtual calling virtual _mouseDrag
+	FV_DragWhat				getDragWhat(void) const 
+		{ return m_iDraggingWhat; }
+	void					setDragWhat( FV_DragWhat iDragWhat )
+		{ m_iDraggingWhat = iDragWhat; }
 
 protected:
 	FV_View *				m_pView;
@@ -76,6 +81,9 @@ protected:
 	void					_beginGlob();
 	void					_endGlob();
 	virtual void			_mouseDrag(UT_sint32 x, UT_sint32 y) = 0;
+										
+private:
+	FV_DragWhat				m_iDraggingWhat;	// made private on purpose
 };
 
 class ABI_EXPORT FV_FrameEdit : public FV_Base
@@ -92,11 +100,9 @@ public:
     void                  setMode(FV_FrameEditMode iEditMode);
 	FV_FrameEditMode      getFrameEditMode(void) const 
 		{ return m_iFrameEditMode;}
-	FV_FrameEditDragWhat  getFrameEditDragWhat(void) const 
-		{ return m_iDraggingWhat;}
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
-	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
+	FV_DragWhat           mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  drawFrame(bool bWithHandles);
 	void                  deleteFrame(fl_FrameLayout * pFL = NULL);
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
@@ -127,7 +133,6 @@ private:
 	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
 	fp_FrameContainer *   m_pFrameContainer;
-	FV_FrameEditDragWhat  m_iDraggingWhat;
 	UT_sint32             m_iLastX;
 	UT_sint32             m_iLastY;
 	UT_Rect               m_recCurFrame;
