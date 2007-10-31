@@ -199,13 +199,6 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 
 }
 
-
-void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
-{
-  _mouseDrag(x,y);
-}
-
-
 void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	GR_Graphics * pG = getGraphics();

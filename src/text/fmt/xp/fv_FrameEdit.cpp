@@ -83,6 +83,11 @@ UT_sint32 FV_Base::getGlobCount()
 	return m_iGlobCount;
 }
 
+void FV_Base::mouseDrag(UT_sint32 x, UT_sint32 y)
+{
+  _mouseDrag(x,y);
+}
+
 /*
  *	FV_FrameEdit
  */
@@ -322,11 +327,6 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 		return 1;
 	}
 	return 10;
-}
-
-void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
-{
-  _mouseDrag(x,y);
 }
 
 void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)

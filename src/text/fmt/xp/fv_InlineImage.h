@@ -73,8 +73,6 @@ public:
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage);
 	FV_InlineDragWhat     mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
-	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
-	void                  _mouseDrag(UT_sint32 x, UT_sint32 y);
 	void                  mouseCut(UT_sint32 x, UT_sint32 y);
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
@@ -90,6 +88,8 @@ public:
 	void                  abortDrag(void);
 	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
 	UT_sint32             getImageSelBoxSize() const; // in device units!
+protected:
+	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
 private:
 	FV_InlineDragMode     m_iInlineDragMode;
 	GR_Image *            m_pDragImage;

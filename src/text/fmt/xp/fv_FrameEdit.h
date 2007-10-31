@@ -63,17 +63,19 @@ class ABI_EXPORT FV_Base
 public:
 	FV_Base( FV_View* pView );
 	virtual ~FV_Base();
-	PD_Document *         getDoc(void) const;
-	FL_DocLayout *        getLayout(void) const;
-	GR_Graphics *         getGraphics(void) const;
-	inline FV_View *      getView(void) { return m_pView;}
-	UT_sint32             getGlobCount(void);
+	PD_Document *			getDoc(void) const;
+	FL_DocLayout *			getLayout(void) const;
+	GR_Graphics *			getGraphics(void) const;
+	inline FV_View *		getView(void) { return m_pView;}
+	UT_sint32				getGlobCount(void);
+	void          			mouseDrag(UT_sint32 x, UT_sint32 y);	// non virtual calling virtual _mouseDrag
 
 protected:
-	FV_View *             m_pView;
-	UT_sint32             m_iGlobCount;
-	void                  _beginGlob();
-	void                  _endGlob();
+	FV_View *				m_pView;
+	UT_sint32				m_iGlobCount;
+	void					_beginGlob();
+	void					_endGlob();
+	virtual void			_mouseDrag(UT_sint32 x, UT_sint32 y) = 0;
 };
 
 class ABI_EXPORT FV_FrameEdit : public FV_Base
@@ -92,7 +94,6 @@ public:
 		{ return m_iFrameEditMode;}
 	FV_FrameEditDragWhat  getFrameEditDragWhat(void) const 
 		{ return m_iDraggingWhat;}
-	virtual void          mouseDrag(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
@@ -118,9 +119,10 @@ public:
 	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
     bool                  isImageWrapper(void) const;  	
+
 protected:
 	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
-
+	
 private:
 	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
