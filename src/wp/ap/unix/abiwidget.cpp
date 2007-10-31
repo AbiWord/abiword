@@ -261,6 +261,9 @@ EM_VOID__BOOL(selectBlock, select_block)
 EM_VOID__BOOL(selectLine, select_line)
 EM_VOID__BOOL(selectWord, select_word)
 
+EM_VOID__BOOL(fileSave, file_save)
+EM_VOID__BOOL(saveImmediate, save_immediate)
+
 EM_VOID__BOOL(undo, undo)
 EM_VOID__BOOL(redo, redo)
 
@@ -2051,6 +2054,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->select_word   = EM_NAME(selectWord);	
 
 	abi_class->file_open   = abi_widget_file_open;
+	abi_class->file_save   = EM_NAME(fileSave);	
+	abi_class->save_immediate   = EM_NAME(saveImmediate);	
 	
 	abi_class->undo = EM_NAME(undo);
 	abi_class->redo = EM_NAME(redo);
