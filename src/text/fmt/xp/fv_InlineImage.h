@@ -79,11 +79,8 @@ private:
 	GR_Image *            m_pDragImage;
 	UT_sint32             m_iLastX;
 	UT_sint32             m_iLastY;
-	UT_Rect               m_recCurFrame;
 	UT_sint32             m_iInitialOffX;
 	UT_sint32             m_iInitialOffY;
-	UT_sint32             m_iFirstEverX;
-	UT_sint32             m_iFirstEverY;
 	bool                  m_bTextCut;
 	GR_Image *            m_pDocUnderCursor;
 	bool                  m_bCursorDrawn;
@@ -91,13 +88,10 @@ private:
 
 	// autoscroll stuff
 	UT_Timer *			  m_pAutoScrollTimer;
-	UT_sint32			  m_xLastMouse;
-	UT_sint32			  m_yLastMouse;
 
 	bool                  m_bDoingCopy;
 	PP_AttrProp *         m_pImageAP;
 	GR_Image *            m_screenCache;
-	bool                  m_bFirstDragDone;
 	UT_UTF8String         m_sCopyName;
 	bool                  m_bIsEmbedded;
 	bool				  m_bEmbedCanResize;

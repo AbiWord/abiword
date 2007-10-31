@@ -34,8 +34,7 @@
 #include "xap_Frame.h"
 #include "ev_Mouse.h"
 #include "ut_locale.h"
-
-#define FRAME_HANDLE_SIZE 10
+#include "fp_FrameContainer.h"
 
 #define MIN_DRAG_PIXELS 8
 
@@ -45,22 +44,16 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_pDragImage(NULL),
 	  m_iLastX(0),
 	  m_iLastY(0),
-	  m_recCurFrame(0,0,0,0),
 	  m_iInitialOffX(0),
 	  m_iInitialOffY(0),
-	  m_iFirstEverX(0),
-	  m_iFirstEverY(0),
 	  m_bTextCut(false),
 	  m_pDocUnderCursor(NULL),
 	  m_bCursorDrawn(false),
 	  m_recCursor(0,0,0,0),
 	  m_pAutoScrollTimer(NULL),
-	  m_xLastMouse(1),
-	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
-	  m_bFirstDragDone(false),
 	  m_bIsEmbedded(false)
 {
 	UT_ASSERT_HARMLESS(pView);
@@ -363,275 +356,14 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 	else
 	{
         m_iInlineDragMode = FV_InlineDrag_RESIZE;
-		if(!m_bFirstDragDone)
-		{
-			m_iFirstEverX = x;
-			m_iFirstEverY = y;
-		}
-		m_bFirstDragDone = true;
-		UT_sint32 diffx = 0;
-		UT_sint32 diffy = 0;
+		UT_Rect prevRect = m_recCurFrame;
 		UT_sint32 dx = 0;
 		UT_sint32 dy = 0;
-		UT_Rect prevRect = m_recCurFrame;
 		UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 		UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
-		UT_sint32 iext = pG->tlu(3);
-		m_xLastMouse = x;
-		m_yLastMouse = y;
-		switch (getDragWhat())
-		{
-		case FV_DragTopLeftCorner:
-			diffx = m_recCurFrame.left - x;
-			diffy = m_recCurFrame.top - y;
-			m_recCurFrame.left -= diffx;
-			m_recCurFrame.top -= diffy;
-			dx = -diffx;
-			dy = -diffy;
-			m_recCurFrame.width += diffx;
-			m_recCurFrame.height += diffy;
-			if(diffx < 0)
-			{
-				expX.left = m_recCurFrame.left + diffx -iext;
-				expX.width = -diffx + iext;
-				if(diffy > 0)
-				{
-					expX.top -=  diffy + iext;
-					expX.height += diffy + 2*iext;
-				}
-				else
-				{
-					expX.top -=  iext;
-					expX.height += (-diffy + 2*iext);
-				}
-			}
-			if(diffy < 0)
-			{
-				expY.top = m_recCurFrame.top + diffy - iext;
-				expY.height = -diffy + 2*iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragTopRightCorner );
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragBotLeftCorner );
-			}
-			break;
-		case FV_DragTopRightCorner:
-			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-			diffy = m_recCurFrame.top - y;
-			m_recCurFrame.top -= diffy;
-			dy = -diffy;
-			m_recCurFrame.width -= diffx;
-			m_recCurFrame.height += diffy;
-			if(diffx > 0)
-			{
-				expX.left = m_recCurFrame.left + m_recCurFrame.width;
-				expX.width = diffx + iext;
-				if(diffy > 0)
-				{
-					expX.top -=  iext;
-					expX.height += diffy + 2*iext;
-				}
-				else
-				{
-					expX.top -=  iext;
-					expX.height += (-diffy + 2*iext);
-				}
-			}
-			if(diffy < 0)
-			{
-				expY.top = m_recCurFrame.top + diffy - iext;
-				expY.height = -diffy + iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragTopLeftCorner );
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragBotRightCorner );
-			}
-			break;
-		case FV_DragBotLeftCorner:
-			diffx = m_recCurFrame.left - x;
-			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-			m_recCurFrame.left -= diffx;
-			dx = -diffx;
-			m_recCurFrame.width += diffx;
-			m_recCurFrame.height -= diffy;
-			if(diffx < 0)
-			{
-				expX.left = m_recCurFrame.left + diffx -iext;
-				expX.width = -diffx + iext;
-				if(diffy > 0)
-				{
-					expX.top -=  diffy + iext;
-					expX.height += diffy + 2*iext;
-				}
-				else
-				{
-					expX.top -=  iext;
-					expX.height += (-diffy + 2*iext);
-				}
-			}
-			if(diffy > 0)
-			{
-				expY.top = m_recCurFrame.top + m_recCurFrame.height - iext;
-				expY.height = diffy + 2*iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragBotRightCorner );
-
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragTopLeftCorner );
-			}
-			break;
-		case FV_DragBotRightCorner:
-			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-			m_recCurFrame.width -= diffx;
-			m_recCurFrame.height -= diffy;
-			if(diffx > 0)
-			{
-				expX.left = m_recCurFrame.left + m_recCurFrame.width;
-				expX.width = diffx + iext;
-				if(diffy > 0)
-				{
-					expX.top -=  iext;
-					expX.height += diffy + 2*iext;
-				}
-				else
-				{
-					expX.top -=  iext;
-					expX.height += (-diffy + 2*iext);
-				}
-			}
-			if(diffy > 0)
-			{
-				expY.top = m_recCurFrame.top + m_recCurFrame.height;
-				expY.height = diffy + iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragBotLeftCorner );
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragTopRightCorner );
-			}
-			break;
-		case FV_DragLeftEdge:
-			diffx = m_recCurFrame.left - x;
-			m_recCurFrame.left -= diffx;
-			dx = -diffx;
-			m_recCurFrame.width += diffx;
-			if(diffx < 0)
-			{
-				expX.left = m_recCurFrame.left + diffx - iext;
-				expX.width = -diffx + iext;
-				expX.top -=  iext;
-				expX.height += 2*iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragRightEdge );
-			}
-			break;
-		case FV_DragRightEdge:
-			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
-			m_recCurFrame.width -= diffx;
-			if(diffx > 0)
-			{
-				expX.left = m_recCurFrame.left + m_recCurFrame.width;
-				expX.width = diffx + iext;
-				expX.top -=  iext;
-				expX.height += 2*iext;
-			}
-			if(m_recCurFrame.width < 0)
-			{
-				m_recCurFrame.left = x;
-				m_recCurFrame.width = -m_recCurFrame.width;
-				setDragWhat( FV_DragLeftEdge );
-			}
-			break;
-		case FV_DragTopEdge:
-			diffy = m_recCurFrame.top - y;
-			m_recCurFrame.top -= diffy;
-			dy = -diffy;
-			m_recCurFrame.height += diffy;
-			if(diffy < 0)
-			{
-				expY.top = m_recCurFrame.top + diffy - iext;
-				expY.height = -diffy + iext;
-				expY.left -= iext;
-				expY.width += 2*iext;
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragBotEdge );
-			}
-			break;
-		case FV_DragBotEdge:
-			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
-			m_recCurFrame.height -= diffy;
-			if(diffy > 0)
-			{
-				expY.top = m_recCurFrame.top + m_recCurFrame.height;
-				expY.height = diffy + iext;
-				expY.left -= iext;
-				expY.width += 2*iext;
-				xxx_UT_DEBUGMSG(("expY.top %d expY.height %d \n",expY.top,expY.height));
-			}
-			if(m_recCurFrame.height < 0)
-			{
-				m_recCurFrame.top = y;
-				m_recCurFrame.height = -m_recCurFrame.height;
-				setDragWhat( FV_DragTopEdge );
-			}
-			break;
-		default:
-			break;
-		}
-
-		// don't left widths and heights be too big
-		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
-		{
-			dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
-			m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
-		}
-		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
-		{
-			dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
-			m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
-		}
+		FV_Base::_doMouseDrag( x, y, dx, dy, expX, expY );
+		_checkDimensions();
+		
 		if(expX.width > 0)
 		{
 			pG->setClipRect(&expX);
@@ -1036,7 +768,6 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	bool bRight = (iRight - ires < x) && (x < iRight + ires);
 	bool bTop = (iTop - ires < y) && (y < iTop + ires);
 	bool bBot = (iBot - ires < y) && (y < iBot + ires);
-
 //
 // Not resizeable embedded object
 //
@@ -1065,7 +796,6 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	{
 		setDragWhat( FV_DragBotLeftCorner );
 	}
-
 //
 // Bot Right
 //

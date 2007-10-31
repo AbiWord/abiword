@@ -68,6 +68,7 @@ CPPSRCS=		fv_View.cpp			\
 			fv_VisualDragText.cpp \
 			fv_Selection.cpp \
 			fv_InlineImage.cpp \
+			fv_Base.cpp \
 			fp_MathRun.cpp \
 			fp_EmbedRun.cpp \
 
@@ -78,10 +79,4 @@ TARGETS=		$(LIBRARY)
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
-
-
-
-
-
-
 
