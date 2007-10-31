@@ -22,6 +22,7 @@
 
 #include "pt_Types.h"
 #include "fl_FrameLayout.h"
+#include "fv_Base.h"
 
 typedef enum _FV_FrameEditMode
 {
@@ -33,58 +34,6 @@ typedef enum _FV_FrameEditMode
 	FV_FrameEdit_DRAG_EXISTING,
 	FV_FrameEdit_EXISTING_SELECTED
 } FV_FrameEditMode;
-
-typedef enum _FV_DragWhat
-{
-	FV_DragNothing,
-    FV_DragTopLeftCorner,
-    FV_DragTopRightCorner,
-    FV_DragBotLeftCorner,
-    FV_DragBotRightCorner,
-    FV_DragLeftEdge,
-    FV_DragTopEdge,
-    FV_DragRightEdge,
-    FV_DragBotEdge,
-    FV_DragWhole
-} FV_DragWhat;
-
-class FL_DocLayout;
-class PD_Document;
-class GR_Graphics;
-class FV_View;
-class GR_Image;
-class fp_Page;
-
-/**
- * Base class for (currently) FV_FrameEdit and FV_VisualInlineImage
- */
-class ABI_EXPORT FV_Base
-{
-public:
-	FV_Base( FV_View* pView );
-	virtual ~FV_Base();
-	PD_Document *			getDoc(void) const;
-	FL_DocLayout *			getLayout(void) const;
-	GR_Graphics *			getGraphics(void) const;
-	inline FV_View *		getView(void) 
-		{ return m_pView;}
-	UT_sint32				getGlobCount(void);
-	void          			mouseDrag(UT_sint32 x, UT_sint32 y);	// non virtual calling virtual _mouseDrag
-	FV_DragWhat				getDragWhat(void) const 
-		{ return m_iDraggingWhat; }
-	void					setDragWhat( FV_DragWhat iDragWhat )
-		{ m_iDraggingWhat = iDragWhat; }
-
-protected:
-	FV_View *				m_pView;
-	UT_sint32				m_iGlobCount;
-	void					_beginGlob();
-	void					_endGlob();
-	virtual void			_mouseDrag(UT_sint32 x, UT_sint32 y) = 0;
-										
-private:
-	FV_DragWhat				m_iDraggingWhat;	// made private on purpose
-};
 
 class ABI_EXPORT FV_FrameEdit : public FV_Base
 {
@@ -135,20 +84,14 @@ private:
 	fp_FrameContainer *   m_pFrameContainer;
 	UT_sint32             m_iLastX;
 	UT_sint32             m_iLastY;
-	UT_Rect               m_recCurFrame;
 	UT_sint32             m_iInitialDragX;
 	UT_sint32             m_iInitialDragY;
-	bool                  m_bFirstDragDone;
 	bool                  m_bInitialClick;
 	GR_Image *            m_pFrameImage;
 
 	// autoscroll stuff
 	UT_Timer *			  m_pAutoScrollTimer;
-	UT_sint32			  m_xLastMouse;
-	UT_sint32			  m_yLastMouse;
 
-	UT_sint32             m_iFirstEverX;
-	UT_sint32             m_iFirstEverY;
 	//
 	UT_sint32             m_iInitialFrameX;
 	UT_sint32             m_iInitialFrameY;

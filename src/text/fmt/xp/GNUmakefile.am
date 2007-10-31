@@ -73,6 +73,7 @@ libFmt_a_SOURCES= $(squigglesrc)	\
 	fv_VisualDragText.cpp \
 	fv_InlineImage.cpp \
 	fv_Selection.cpp \
+	fv_Base.cpp\
 	fp_MathRun.cpp \
 	fp_EmbedRun.cpp
 
@@ -122,4 +123,5 @@ noinst_HEADERS = \
 	fv_InlineImage.h \
 	fv_Selection.h \
 	fv_View.h \
-	fv_VisualDragText.h
+	fv_VisualDragText.h \
+	fv_Base.h
