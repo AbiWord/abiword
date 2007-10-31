@@ -23,6 +23,7 @@
 #include "pt_Types.h"
 #include "fl_FrameLayout.h"
 #include "ut_string_class.h"
+#include "fv_FrameEdit.h" // for FV_Base
 
 
 typedef enum _FV_InlineDragMode
@@ -55,19 +56,14 @@ class FV_View;
 class PP_AttrProp;
 class UT_ByteBuf;
 
-class ABI_EXPORT FV_VisualInlineImage
+class ABI_EXPORT FV_VisualInlineImage : public FV_Base
 {
 	friend class fv_View;
 
 public:
 
 	FV_VisualInlineImage (FV_View * pView);
-	virtual ~FV_VisualInlineImage();
-	PD_Document *         getDoc(void) const;
-	FL_DocLayout *        getLayout(void) const;
-	GR_Graphics *         getGraphics(void) const ;
-	FV_View *             getView(void)
-	{ return m_pView;}
+	~FV_VisualInlineImage();
 	bool                  isActive(void) const;
     void                      setMode(FV_InlineDragMode iInlineDragMode);
 	FV_InlineDragMode     getInlineDragMode(void) const 
@@ -98,7 +94,6 @@ public:
 	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
 	UT_sint32             getImageSelBoxSize() const; // in device units!
 private:
-	FV_View *             m_pView;
 	FV_InlineDragMode     m_iInlineDragMode;
 	GR_Image *            m_pDragImage;
 	UT_sint32             m_iLastX;

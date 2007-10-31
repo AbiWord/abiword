@@ -40,7 +40,7 @@
 #define MIN_DRAG_PIXELS 8
 
 FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
-	: m_pView (pView), 
+	: FV_Base(pView), 
 	  m_iInlineDragMode(FV_InlineDrag_NOT_ACTIVE),
 	  m_pDragImage(NULL),
 	  m_iLastX(0),
@@ -83,11 +83,6 @@ FV_VisualInlineImage::~FV_VisualInlineImage()
 bool FV_VisualInlineImage::isActive(void) const
 {
 	return (FV_InlineDrag_NOT_ACTIVE != m_iInlineDragMode);
-}
-
-GR_Graphics * FV_VisualInlineImage::getGraphics(void) const
-{
-	return m_pView->getGraphics();
 }
 
 void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
@@ -910,16 +905,6 @@ void  FV_VisualInlineImage::_endGlob(void)
 	getDoc()->endUserAtomicGlob();
 	m_iGlobCount--;
 	xxx_UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
-}
-
-PD_Document *    FV_VisualInlineImage::getDoc(void) const
-{
-	return m_pView->getDocument();
-}
-
-FL_DocLayout *   FV_VisualInlineImage::getLayout(void) const
-{
-        return m_pView->getLayout();
 }
 
 void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)

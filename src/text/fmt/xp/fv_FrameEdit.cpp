@@ -35,8 +35,34 @@
 #include "gr_Painter.h"
 #include "xap_App.h"
 
+FV_Base::FV_Base( FV_View* pView )
+: m_pView( pView )
+{
+}
+
+FV_Base::~FV_Base()
+{
+}
+
+PD_Document * FV_Base::getDoc(void) const
+{
+	return m_pView->getDocument();
+}
+
+FL_DocLayout * FV_Base::getLayout(void) const
+{
+	return m_pView->getLayout();
+}
+
+GR_Graphics * FV_Base::getGraphics(void) const
+{
+	return m_pView->getGraphics();
+}
+
+
+
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
-	: m_pView (pView), 
+	: FV_Base (pView), 
 	  m_iFrameEditMode(FV_FrameEdit_NOT_ACTIVE),
 	  m_pFrameLayout(NULL),
 	  m_pFrameContainer(NULL),
@@ -86,21 +112,6 @@ void FV_FrameEdit::setPointInside(void)
 bool FV_FrameEdit::isActive(void) const
 {
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
-}
-
-PD_Document * FV_FrameEdit::getDoc(void) const
-{
-	return m_pView->getDocument();
-}
-
-FL_DocLayout * FV_FrameEdit::getLayout(void) const
-{
-	return m_pView->getLayout();
-}
-
-GR_Graphics * FV_FrameEdit::getGraphics(void) const
-{
-	return m_pView->getGraphics();
 }
 
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)

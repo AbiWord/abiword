@@ -55,19 +55,31 @@ class FV_View;
 class GR_Image;
 class fp_Page;
 
-class ABI_EXPORT FV_FrameEdit
+/**
+ * Base class for (currently) FV_FrameEdit and FV_VisualInlineImage
+ */
+class ABI_EXPORT FV_Base
+{
+public:
+	FV_Base( FV_View* pView );
+	virtual ~FV_Base();
+	PD_Document *         getDoc(void) const;
+	FL_DocLayout *        getLayout(void) const;
+	GR_Graphics *         getGraphics(void) const;
+	inline FV_View *      getView(void) { return m_pView;}
+
+protected:
+	FV_View *             m_pView;
+};
+
+class ABI_EXPORT FV_FrameEdit : public FV_Base
 {
 	friend class fv_View;
 
 public:
 
 	FV_FrameEdit (FV_View * pView);
-	virtual ~FV_FrameEdit ();
-	PD_Document *         getDoc(void) const;
-	FL_DocLayout *        getLayout(void) const;
-	GR_Graphics *         getGraphics(void) const ;
-	FV_View *             getView(void)
-	{ return m_pView;}
+	~FV_FrameEdit ();
 	bool                  isActive(void) const;
 	void                  abortDrag(void);
 	UT_sint32             haveDragged(void) const;
@@ -109,7 +121,6 @@ protected:
 	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
 
 private:
-	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
 	fp_FrameContainer *   m_pFrameContainer;
