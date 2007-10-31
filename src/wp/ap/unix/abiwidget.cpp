@@ -1147,15 +1147,15 @@ abi_widget_file_open(AbiWidget * abi)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content(AbiWidget * w, char * extention_or_mimetype, gint * iLength)
+abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const char * exp_props, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -1168,7 +1168,7 @@ abi_widget_get_content(AbiWidget * w, char * extention_or_mimetype, gint * iLeng
 	if(view == NULL)
 		return NULL;
 	PD_Document * doc = view->getDocument () ;
-	UT_Error result = const_cast<PD_Document*>(doc)->saveAs(GSF_OUTPUT(sink),ieft, true);
+	UT_Error result = const_cast<PD_Document*>(doc)->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? NULL : exp_props));
 	if(result != UT_OK)
 		return NULL;
 	gsf_output_close(GSF_OUTPUT(sink));
@@ -1190,15 +1190,15 @@ abi_widget_get_content(AbiWidget * w, char * extention_or_mimetype, gint * iLeng
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_selection(AbiWidget * w, gchar * extention_or_mimetype, gint * iLength)
+abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -1398,16 +1398,16 @@ abi_widget_get_font_names (AbiWidget * w)
 }
 
 extern "C" gboolean
-abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype)
+abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * extension_or_mimetype)
 {
 	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
 	
 	IEFileType ieft = IEFT_Unknown;
-	if (mimetype && *mimetype != '\0')
+	if (extension_or_mimetype && *extension_or_mimetype != '\0')
 	{
-		ieft = IE_Imp::fileTypeForMimetype(mimetype);
+		ieft = IE_Imp::fileTypeForMimetype(extension_or_mimetype);
 		if(ieft == IEFT_Unknown)
-			ieft = IE_Imp::fileTypeForSuffix(mimetype);
+			ieft = IE_Imp::fileTypeForSuffix(extension_or_mimetype);
 	}
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
@@ -1631,7 +1631,7 @@ static void abi_widget_get_prop (GObject  *object,
 	    case CONTENT:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_content(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			gchar * bytes = abi_widget_get_content(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , NULL,  &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
@@ -2485,28 +2485,8 @@ abi_widget_draw (AbiWidget * w)
 	}
 }
 
-static IEFileType getImportFileType(const char * szSuffixOrMime)
-{
-  IEFileType ieft = IEFT_Unknown;
-
-  if(szSuffixOrMime && *szSuffixOrMime) {
-    IE_Imp::fileTypeForMimetype(szSuffixOrMime);
-    if(ieft == IEFT_Unknown) {
-      UT_String suffix;
-
-      if(*szSuffixOrMime != '.')
-		  suffix = ".";
-      suffix += szSuffixOrMime;
-      ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
-    }
-  }
-
-  return ieft;
-}
-
 extern "C" gboolean 
-abi_widget_save ( AbiWidget * w, const char * fname,
-							const char * extension_or_mimetype )
+abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_mimetype, const char * exp_props)
 {
   g_return_val_if_fail ( w != NULL, FALSE );
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
@@ -2528,12 +2508,11 @@ abi_widget_save ( AbiWidget * w, const char * fname,
           ieft = IE_Exp::fileTypeForSuffix(".abw");
   *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
-  return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+  return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE ) ;
 }
 
 extern "C" gboolean 
-abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output,
-						 const char * extension )
+abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype )
 {
   g_return_val_if_fail ( w != NULL, FALSE );
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );

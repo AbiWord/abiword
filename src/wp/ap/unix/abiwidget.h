@@ -292,11 +292,11 @@ G_BEGIN_DECLS
   // file handing functions
   gboolean abi_widget_file_open (AbiWidget * w);
   gboolean abi_widget_file_save (AbiWidget * w);
-  gboolean abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype);
+  gboolean abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * mimetype);
   gboolean abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input);
-  gboolean abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_mime_type );
+  gboolean abi_widget_save ( AbiWidget * w, const gchar * fname, const gchar * extension_or_mimetype,  const gchar * exp_props );
   gboolean abi_widget_save_immediate (AbiWidget * w);
-  gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mime_type );
+  gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const gchar * extension_or_mimetype );
 
   // paragraph modification functions
   gboolean abi_widget_align_center (AbiWidget * w);
@@ -333,8 +333,8 @@ G_BEGIN_DECLS
   gboolean abi_widget_delete_left (AbiWidget * w);
   gboolean abi_widget_delete_right (AbiWidget * w);
 
-  gchar * abi_widget_get_content (AbiWidget * w, gchar * extention_or_mimetype, gint* iLength);
-  gchar * abi_widget_get_selection (AbiWidget * w, gchar * extention_or_mimetype, gint* iLength);
+  gchar * abi_widget_get_content (AbiWidget * w, const gchar * extention_or_mimetype, const gchar * exp_props, gint* iLength);
+  gchar * abi_widget_get_selection (AbiWidget * w, const gchar * extention_or_mimetype, gint* iLength);
     
   // selection functions
   gboolean abi_widget_select_bob (AbiWidget * w);
