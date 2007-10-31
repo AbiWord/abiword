@@ -1566,6 +1566,7 @@ void UT_parse_properties(const char * properties,
 			bSkip = true;
 			continue;
 		}
+		name.resize(name_end - name_start);
 		std::copy(name_start, name_end, name.begin());
 		
 		s_pass_whitespace (csstr);
@@ -1589,6 +1590,7 @@ void UT_parse_properties(const char * properties,
 			bSkip = true;
 			continue;
 		}
+		value.resize(value_end - value_start);
 		std::copy(value_start, value_end, value.begin());
 		
 		map[name] = value;
