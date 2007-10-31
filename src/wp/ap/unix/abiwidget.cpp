@@ -1144,15 +1144,15 @@ abi_widget_file_open(AbiWidget * abi)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
+abi_widget_get_content(AbiWidget * w, char * extention_or_mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -1187,15 +1187,15 @@ abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
+abi_widget_get_selection(AbiWidget * w, gchar * extention_or_mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+		ieft = IE_Exp::fileTypeForSuffix(extention_or_mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
