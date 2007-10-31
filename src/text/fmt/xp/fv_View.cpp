@@ -10174,7 +10174,8 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
 		
-			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
+			FV_InlineDragWhat dragWhat = m_InlineImage.getInlineDragWhat();
+			if (dragWhat!=FV_Inline_DragNothing && dragWhat!=FV_Inline_DragWholeImage)
 			{
 				m_prevMouseContext = EV_EMC_IMAGESIZE;
 				xxx_UT_DEBUGMSG(("Set ImageSize Context  \n"));
@@ -13361,66 +13362,6 @@ UT_sint32 FV_View::getImageSelInfo()
 GR_Graphics::Cursor FV_View::getImageSelCursor()
 {
 	return m_imageSelCursor;
-}
-
-/*! Returns true if the given coords are in an image selection box, false otherwise.
-
-    \param cur -- Will be set to the appropriate mouse cursor, if the given xPos and yPos are 
-                  in a selection box. Will be left unchanged otherwise
-    \param xPos -- x position to check
-    \param xPos -- y position to check
-*/
-bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
-{
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_NW; // North West
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_N; // North
-		return true;
-	}
-	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_NE; // North East
-		return true;
-	}
-	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_E; // East
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SE; // South East
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_S; // South
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SW; // South West
-		return true;
-	}
-
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
-	{
-		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_W; // West
-		return true;
-	}
-	
-	return false;
 }
 
 /*!

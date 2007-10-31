@@ -785,7 +785,6 @@ public:
 	//
 	UT_sint32			getImageSelInfo();
 	GR_Graphics::Cursor getImageSelCursor();
-	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
 	bool                isImageSelected(void);
 
 //
