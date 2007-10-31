@@ -166,12 +166,9 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod edit_footer;
 
     Abi_Void__Bool_EditMethod file_open;
-    Abi_Void__Bool_EditMethod file_save;
 
     Abi_Void__Bool_EditMethod remove_header;
     Abi_Void__Bool_EditMethod remove_footer;
-    
-    Abi_Void__Bool_EditMethod save_immediate;
     
     Abi_Void__Bool_EditMethod select_bob;
     Abi_Void__Bool_EditMethod select_bod;
@@ -293,7 +290,6 @@ G_BEGIN_DECLS
   gboolean abi_widget_file_open (AbiWidget * w);
   gboolean abi_widget_load_file(AbiWidget * abi, const char * pszFile, const char * mimetype);
   gboolean abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input);
-  gboolean abi_widget_save_immediate (AbiWidget * w);
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
   gboolean abi_widget_save_with_type ( AbiWidget * w, const char * fname, const char * extension_or_mime_type );
   gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mime_type );
