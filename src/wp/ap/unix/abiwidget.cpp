@@ -2480,12 +2480,6 @@ abi_widget_draw (AbiWidget * w)
 	}
 }
 
-extern "C" gboolean
-abi_widget_save ( AbiWidget * w, const char * fname )
-{
-  return abi_widget_save_with_type ( w, fname, ".abw" ) ;
-}
-
 static IEFileType getImportFileType(const char * szSuffixOrMime)
 {
   IEFileType ieft = IEFT_Unknown;
@@ -2506,8 +2500,8 @@ static IEFileType getImportFileType(const char * szSuffixOrMime)
 }
 
 extern "C" gboolean 
-abi_widget_save_with_type ( AbiWidget * w, const char * fname,
-							const char * extension )
+abi_widget_save ( AbiWidget * w, const char * fname,
+							const char * extension_or_mimetype )
 {
   g_return_val_if_fail ( w != NULL, FALSE );
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
@@ -2518,7 +2512,7 @@ abi_widget_save_with_type ( AbiWidget * w, const char * fname,
 	  return false;
   PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = getImportFileType (extension);
+  IEFileType ieft = getImportFileType (extension_or_mimetype ? extension_or_mimetype : ".abw");
   if (ieft == IEFT_Unknown)
 	  ieft = getImportFileType (".abw");
 
