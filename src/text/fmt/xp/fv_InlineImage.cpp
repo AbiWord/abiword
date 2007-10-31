@@ -58,7 +58,6 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_xLastMouse(1),
 	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
-	  m_iDraggingWhat( FV_Inline_DragNothing ),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
 	  m_bFirstDragDone(false),
@@ -202,7 +201,7 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	GR_Graphics * pG = getGraphics();
-	if(m_iDraggingWhat == FV_Inline_DragWholeImage)
+	if(getDragWhat() == FV_DragWhole)
 	{
     	if(m_iInlineDragMode  == FV_InlineDrag_NOT_ACTIVE)
 		{
@@ -380,9 +379,9 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		UT_sint32 iext = pG->tlu(3);
 		m_xLastMouse = x;
 		m_yLastMouse = y;
-		switch (m_iDraggingWhat)
+		switch (getDragWhat())
 		{
-		case FV_Inline_DragTopLeftCorner:
+		case FV_DragTopLeftCorner:
 			diffx = m_recCurFrame.left - x;
 			diffy = m_recCurFrame.top - y;
 			m_recCurFrame.left -= diffx;
@@ -415,16 +414,16 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
+				setDragWhat( FV_DragTopRightCorner );
 			}
 			if(m_recCurFrame.height < 0)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
+				setDragWhat( FV_DragBotLeftCorner );
 			}
 			break;
-		case FV_Inline_DragTopRightCorner:
+		case FV_DragTopRightCorner:
 			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 			diffy = m_recCurFrame.top - y;
 			m_recCurFrame.top -= diffy;
@@ -455,16 +454,16 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
+				setDragWhat( FV_DragTopLeftCorner );
 			}
 			if(m_recCurFrame.height < 0)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
+				setDragWhat( FV_DragBotRightCorner );
 			}
 			break;
-		case FV_Inline_DragBotLeftCorner:
+		case FV_DragBotLeftCorner:
 			diffx = m_recCurFrame.left - x;
 			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 			m_recCurFrame.left -= diffx;
@@ -495,17 +494,17 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragBotRightCorner;
+				setDragWhat( FV_DragBotRightCorner );
 
 			}
 			if(m_recCurFrame.height < 0)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragTopLeftCorner;
+				setDragWhat( FV_DragTopLeftCorner );
 			}
 			break;
-		case FV_Inline_DragBotRightCorner:
+		case FV_DragBotRightCorner:
 			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 			m_recCurFrame.width -= diffx;
@@ -534,16 +533,16 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragBotLeftCorner;
+				setDragWhat( FV_DragBotLeftCorner );
 			}
 			if(m_recCurFrame.height < 0)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragTopRightCorner;
+				setDragWhat( FV_DragTopRightCorner );
 			}
 			break;
-		case FV_Inline_DragLeftEdge:
+		case FV_DragLeftEdge:
 			diffx = m_recCurFrame.left - x;
 			m_recCurFrame.left -= diffx;
 			dx = -diffx;
@@ -559,10 +558,10 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragRightEdge;
+				setDragWhat( FV_DragRightEdge );
 			}
 			break;
-		case FV_Inline_DragRightEdge:
+		case FV_DragRightEdge:
 			diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 			m_recCurFrame.width -= diffx;
 			if(diffx > 0)
@@ -576,10 +575,10 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.left = x;
 				m_recCurFrame.width = -m_recCurFrame.width;
-				m_iDraggingWhat =  FV_Inline_DragLeftEdge;
+				setDragWhat( FV_DragLeftEdge );
 			}
 			break;
-		case FV_Inline_DragTopEdge:
+		case FV_DragTopEdge:
 			diffy = m_recCurFrame.top - y;
 			m_recCurFrame.top -= diffy;
 			dy = -diffy;
@@ -595,10 +594,10 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragBotEdge;
+				setDragWhat( FV_DragBotEdge );
 			}
 			break;
-		case FV_Inline_DragBotEdge:
+		case FV_DragBotEdge:
 			diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 			m_recCurFrame.height -= diffy;
 			if(diffy > 0)
@@ -613,7 +612,7 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 			{
 				m_recCurFrame.top = y;
 				m_recCurFrame.height = -m_recCurFrame.height;
-				m_iDraggingWhat =  FV_Inline_DragTopEdge;
+				setDragWhat( FV_DragTopEdge );
 			}
 			break;
 		default:
@@ -921,14 +920,14 @@ void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	{
 	        m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
 		setDragType(x,y,false); // was true
-		if(FV_Inline_DragNothing == m_iDraggingWhat)
+		if(FV_DragNothing ==  getDragWhat())
 		{
 		  cleanUP();
 		  m_pView->warpInsPtToXY(x,y,true);
 		}
 		else
 		{
-			if( m_iDraggingWhat != FV_Inline_DragWholeImage)
+			if( getDragWhat() != FV_DragWhole)
 			{
 				m_iInlineDragMode = FV_InlineDrag_RESIZE;
 			}
@@ -959,7 +958,7 @@ void FV_VisualInlineImage::abortDrag(void)
 void FV_VisualInlineImage::cleanUP(void)
 {
   m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
-  m_iDraggingWhat = FV_Inline_DragNothing;
+  setDragWhat( FV_DragNothing );
   DELETEP(m_pDragImage);
   DELETEP(m_pDocUnderCursor);
   DELETEP(m_screenCache);
@@ -1043,28 +1042,28 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 //
 	if (m_bIsEmbedded && !m_bEmbedCanResize)
 	{
-		m_iDraggingWhat = FV_Inline_DragWholeImage;
+		setDragWhat( FV_DragWhole );
 	}
 //
 // top left
 //
 	else if((iLeft < x) && (x < iLeft + ires) && (iTop < y) && (y < iTop + ires))
 	{
-		m_iDraggingWhat = FV_Inline_DragTopLeftCorner;
+		setDragWhat( FV_DragTopLeftCorner );
 	}
 //
 // top Right
 //
 	else if((iRight - ires < x) && (x < iRight) && (iTop < y) && (y < iTop + ires))
 	{
-		m_iDraggingWhat = FV_Inline_DragTopRightCorner;
+		setDragWhat( FV_DragTopRightCorner );
 	}
 //
 // bot left
 //
 	else if((iLeft < x) && (x < iLeft + ires) && (iBot > y) && (y > iBot - ires))
 	{
-		m_iDraggingWhat = FV_Inline_DragBotLeftCorner;
+		setDragWhat( FV_DragBotLeftCorner );
 	}
 
 //
@@ -1072,46 +1071,46 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 //
 	else if((iRight - ires < x) && (x < iRight) && (iBot > y) && (y > iBot - ires))
 	{
-		m_iDraggingWhat = FV_Inline_DragBotRightCorner;
+		setDragWhat( FV_DragBotRightCorner );
 	}
 //
 // top Edge
 //
 	else if( bX && bTop)
 	{
-		m_iDraggingWhat = FV_Inline_DragTopEdge;
+		setDragWhat( FV_DragTopEdge );
 	}
 //
 // left Edge
 //
 	else if(bLeft && bY)
 	{
-		m_iDraggingWhat = FV_Inline_DragLeftEdge;
+		setDragWhat( FV_DragLeftEdge );
 	}
 //
 // right Edge
 //
 	else if(bRight && bY)
 	{
-		m_iDraggingWhat = FV_Inline_DragRightEdge;
+		setDragWhat( FV_DragRightEdge );
 	}
 //
 // bot Edge
 //
 	else if(bBot && bX)
 	{
-		m_iDraggingWhat = FV_Inline_DragBotEdge;
+		setDragWhat( FV_DragBotEdge );
 	}
 	else
 	{
 		if( bX && bY)
 		{
-			m_iDraggingWhat = FV_Inline_DragWholeImage;
+			setDragWhat( FV_DragWhole );
 			xxx_UT_DEBUGMSG(("Dragging Whole Image \n"));
 		}
 		else
 		{
-			m_iDraggingWhat = FV_Inline_DragNothing;
+			setDragWhat( FV_DragNothing );
 			return;
 		}
 	}
@@ -1122,7 +1121,7 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	m_iLastX = x;
 	m_iLastY = y;
 	xxx_UT_DEBUGMSG(("Initial width %d height %d \n",m_recCurFrame.width,m_recCurFrame.height));
-	xxx_UT_DEBUGMSG((" Dragging What %d \n",m_iDraggingWhat));
+	xxx_UT_DEBUGMSG((" Dragging What %d \n",getDragWhat()));
 	m_pView->setCursorToContext();
 }
 
@@ -1173,7 +1172,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	  }
 	}
 	m_iInlineDragMode= FV_InlineDrag_START_DRAGGING;
-	m_iDraggingWhat = FV_Inline_DragWholeImage;
+	setDragWhat( FV_DragWhole );
 	getImageFromSelection(x,y);
 	m_pView->m_prevMouseContext = EV_EMC_IMAGESIZE;
 	m_pView->setCursorToContext();
@@ -1269,7 +1268,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	     }
 	}
 	m_bFirstDragDone = false;
-	if(FV_Inline_DragWholeImage == m_iDraggingWhat)
+	if(FV_DragWhole ==  getDragWhat())
 	{
 	  PT_DocPosition posAtXY = getPosFromXY(x,y);
 	  m_pView->setPoint(posAtXY);

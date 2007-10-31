@@ -2517,9 +2517,16 @@ abi_widget_save ( AbiWidget * w, const char * fname,
 	  return false;
   PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = getImportFileType (extension_or_mimetype ? extension_or_mimetype : ".abw");
-  if (ieft == IEFT_Unknown)
-	  ieft = getImportFileType (".abw");
+  IEFileType ieft = IEFT_Unknown;
+  if (extension_or_mimetype && *extension_or_mimetype != '\0')
+  {
+        ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
+        if(IEFT_Unknown == ieft)
+                ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
+  }
+  if (IEFT_Unknown == ieft)
+          ieft = IE_Exp::fileTypeForSuffix(".abw");
+  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
   return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }
@@ -2537,9 +2544,16 @@ abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output,
 	  return false;
   PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = getImportFileType (extension);
-  if (ieft == IEFT_Unknown)
-	  ieft = getImportFileType (".abw");
+  IEFileType ieft = IEFT_Unknown;
+  if (extension_or_mimetype && *extension_or_mimetype != '\0')
+  {
+        ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
+        if(IEFT_Unknown == ieft)
+                ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
+  }
+  if (IEFT_Unknown == ieft)
+          ieft = IE_Exp::fileTypeForSuffix(".abw");
+  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
   return ( static_cast<PD_Document*>(doc)->saveAs ( output, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }

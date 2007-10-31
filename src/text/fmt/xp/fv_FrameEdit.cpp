@@ -42,6 +42,7 @@
 FV_Base::FV_Base( FV_View* pView )
 : m_pView( pView )
 , m_iGlobCount(0)
+, m_iDraggingWhat( FV_DragNothing)
 {
 }
 
@@ -97,7 +98,6 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_iFrameEditMode(FV_FrameEdit_NOT_ACTIVE),
 	  m_pFrameLayout(NULL),
 	  m_pFrameContainer(NULL),
-	  m_iDraggingWhat( FV_FrameEdit_DragNothing),
 	  m_iLastX(0),
 	  m_iLastY(0),
 	  m_recCurFrame(0,0,0,0),
@@ -146,7 +146,7 @@ bool FV_FrameEdit::isActive(void) const
 
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 {
-        UT_DEBUGMSG(("Frame Edit mode set to %d \n",iEditMode));
+    UT_DEBUGMSG(("Frame Edit mode set to %d \n",iEditMode));
 	if(iEditMode == FV_FrameEdit_NOT_ACTIVE)
 	{
 		m_pFrameLayout = NULL;
@@ -154,7 +154,7 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 		DELETEP(m_pFrameImage);
 		m_recCurFrame.width = 0;
 		m_recCurFrame.height = 0;
-		m_iDraggingWhat = FV_FrameEdit_DragNothing;
+		setDragWhat( FV_DragNothing );
 		m_iLastX = 0;
 		m_iLastY = 0;
 	}
@@ -346,9 +346,9 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 	UT_sint32 iext = getGraphics()->tlu(3);
 	m_xLastMouse = x;
 	m_yLastMouse = y;
-	switch (m_iDraggingWhat)
+	switch (getDragWhat())
 	{
-	case FV_FrameEdit_DragTopLeftCorner:
+	case FV_DragTopLeftCorner:
 		diffx = m_recCurFrame.left - x;
 		diffy = m_recCurFrame.top - y;
 		m_recCurFrame.left -= diffx;
@@ -381,18 +381,16 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
-			m_iDraggingWhat =  FV_FrameEdit_DragTopRightCorner;
+			setDragWhat( FV_DragTopRightCorner );
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
-			m_iDraggingWhat =  FV_FrameEdit_DragBotLeftCorner;
+			setDragWhat( FV_DragBotLeftCorner );
 		}
 		break;
-	case FV_FrameEdit_DragTopRightCorner:
+	case FV_DragTopRightCorner:
 		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 		diffy = m_recCurFrame.top - y;
 		m_recCurFrame.top -= diffy;
@@ -423,18 +421,16 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
-			m_iDraggingWhat =  FV_FrameEdit_DragTopLeftCorner;
+			setDragWhat( FV_DragTopLeftCorner );
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
-			m_iDraggingWhat =  FV_FrameEdit_DragBotRightCorner;
+			setDragWhat( FV_DragBotRightCorner );
 		}
 		break;
-	case FV_FrameEdit_DragBotLeftCorner:
+	case FV_DragBotLeftCorner:
 		diffx = m_recCurFrame.left - x;
 		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 		m_recCurFrame.left -= diffx;
@@ -465,19 +461,16 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
-			m_iDraggingWhat =  FV_FrameEdit_DragBotRightCorner;
-
+			setDragWhat( FV_DragBotRightCorner );
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
-			m_iDraggingWhat =  FV_FrameEdit_DragTopLeftCorner;
+			setDragWhat( FV_DragTopLeftCorner );
 		}
 		break;
-	case FV_FrameEdit_DragBotRightCorner:
+	case FV_DragBotRightCorner:
 		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 		m_recCurFrame.width -= diffx;
@@ -506,18 +499,16 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
-			m_iDraggingWhat =  FV_FrameEdit_DragBotLeftCorner;
+			setDragWhat( FV_DragBotLeftCorner );
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
-			m_iDraggingWhat =  FV_FrameEdit_DragTopRightCorner;
+			setDragWhat( FV_DragTopRightCorner );
 		}
 		break;
-	case FV_FrameEdit_DragLeftEdge:
+	case FV_DragLeftEdge:
 		diffx = m_recCurFrame.left - x;
 		m_recCurFrame.left -= diffx;
 		dx = -diffx;
@@ -533,11 +524,10 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_W);
-			m_iDraggingWhat =  FV_FrameEdit_DragRightEdge;
+			setDragWhat( FV_DragRightEdge );
 		}
 		break;
-	case FV_FrameEdit_DragRightEdge:
+	case FV_DragRightEdge:
 		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 		m_recCurFrame.width -= diffx;
 		if(diffx > 0)
@@ -551,11 +541,10 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_E);
-			m_iDraggingWhat =  FV_FrameEdit_DragLeftEdge;
+			setDragWhat( FV_DragLeftEdge );
 		}
 		break;
-	case FV_FrameEdit_DragTopEdge:
+	case FV_DragTopEdge:
 		diffy = m_recCurFrame.top - y;
 		m_recCurFrame.top -= diffy;
 		dy = -diffy;
@@ -571,11 +560,10 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_S);
-			m_iDraggingWhat =  FV_FrameEdit_DragBotEdge;
+			setDragWhat( FV_DragBotEdge );
 		}
 		break;
-	case FV_FrameEdit_DragBotEdge:
+	case FV_DragBotEdge:
 		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 		m_recCurFrame.height -= diffy;
 		if(diffy > 0)
@@ -590,11 +578,10 @@ void FV_FrameEdit::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
-			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_N);
-			m_iDraggingWhat =  FV_FrameEdit_DragTopEdge;
+			setDragWhat( FV_DragTopEdge );
 		}
 		break;
-	case FV_FrameEdit_DragWholeFrame:
+	case FV_DragWhole:
 	{
 		bool bScrollDown = false;
 		bool bScrollUp = false;
@@ -854,7 +841,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		}
 		m_iLastX = x;
 		m_iLastY = y;
-		m_iDraggingWhat = FV_FrameEdit_DragWholeFrame;
+		setDragWhat( FV_DragWhole );
 		return;	
 	}
 	if(!isActive())
@@ -875,7 +862,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		}
 		m_iLastX = x;
 		m_iLastY = y;
-		m_iDraggingWhat = FV_FrameEdit_DragWholeFrame;
+		setDragWhat( FV_DragWhole );
 		return;
 	}
 	//
@@ -920,67 +907,67 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 //
 	if((iLeft < x) && (x < iLeft + ires) && (iTop < y) && (y < iTop + ires))
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragTopLeftCorner;
+		setDragWhat( FV_DragTopLeftCorner );
 	}
 //
 // top Right
 //
 	else if((iRight - ires < x) && (x < iRight) && (iTop < y) && (y < iTop + ires))
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragTopRightCorner;
+		setDragWhat( FV_DragTopRightCorner );
 	}
 //
 // bot left
 //
 	else if((iLeft < x) && (x < iLeft + ires) && (iBot > y) && (y > iBot - ires))
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragBotLeftCorner;
+		setDragWhat( FV_DragBotLeftCorner );
 	}
 //
 // Bot Right
 //
 	else if((iRight - ires < x) && (x < iRight) && (iBot > y) && (y > iBot - ires))
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
+		setDragWhat( FV_DragBotRightCorner );
 	}
 //
 // top Edge
 //
 	else if( bX && bTop)
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragTopEdge;
+		setDragWhat( FV_DragTopEdge );
 	}
 //
 // left Edge
 //
 	else if(bLeft && bY)
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragLeftEdge;
+		setDragWhat( FV_DragLeftEdge );
 	}
 //
 // right Edge
 //
 	else if(bRight && bY)
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragRightEdge;
+		setDragWhat( FV_DragRightEdge );
 	}
 //
 // bot Edge
 //
 	else if(bBot && bX)
 	{
-		m_iDraggingWhat = FV_FrameEdit_DragBotEdge;
+		setDragWhat( FV_DragBotEdge );
 	}
 	else
 	{
 		if( bX && bY)
 		{
-			m_iDraggingWhat = FV_FrameEdit_DragWholeFrame;
+			setDragWhat( FV_DragWhole );
 			xxx_UT_DEBUGMSG(("Dragging Whole Frame \n"));
 		}
 		else
 		{
-			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			setDragWhat( FV_DragNothing );
 			return;
 		}
 	}
@@ -997,7 +984,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	m_iInitialDragX = iLeft;
 	m_iInitialDragY = iTop;
 	xxx_UT_DEBUGMSG(("Initial width %d \n",m_recCurFrame.width));
-	xxx_UT_DEBUGMSG((" Dragging What %d \n",m_iDraggingWhat));
+	xxx_UT_DEBUGMSG((" Dragging What %d \n",getDragWhat()));
 	m_pView->setCursorToContext();
 	if(getGraphics() && getGraphics()->getCaret())
 	{
@@ -1026,7 +1013,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	{
 		setDragType(x,y,true);
 		UT_DEBUGMSG(("Was Existing Selected now %d \n",getFrameEditMode()));
-		if(FV_FrameEdit_DragNothing == m_iDraggingWhat)
+		if(FV_DragNothing == getDragWhat())
 		{
 			m_bFirstDragDone = false;
 			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
@@ -1058,7 +1045,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 			m_pView->setCursorToContext();
 			m_recCurFrame.width = 0;
 			m_recCurFrame.height = 0;
-			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			setDragWhat( FV_DragNothing );
 			m_iLastX = 0;
 			m_iLastY = 0;
 			while(m_iGlobCount > 0)
@@ -1067,7 +1054,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		}
 		else
 		{
-			if( m_iDraggingWhat != FV_FrameEdit_DragWholeFrame)
+			if( getDragWhat() != FV_DragWhole)
 			{
 				m_iFrameEditMode = FV_FrameEdit_RESIZE_EXISTING;
 			}
@@ -1116,7 +1103,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		m_iLastY = y;
 		m_iInitialDragX = m_recCurFrame.left;
 		m_iInitialDragY = m_recCurFrame.top;
-		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
+		setDragWhat( FV_DragBotRightCorner );
 		m_bFirstDragDone = false;
 		m_bInitialClick = true;
 		if(getGraphics() && getGraphics()->getCaret())
@@ -1463,7 +1450,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		if(haveDragged() < 10)
 		{
 			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
-			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			setDragWhat( FV_DragNothing );
 			m_pFrameContainer->_setX(m_iInitialFrameX);
 			m_pFrameContainer->_setY(m_iInitialFrameY);
 			m_iInitialFrameX = 0;
@@ -2109,7 +2096,7 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 	DELETEP(m_pFrameImage);
 	m_recCurFrame.width = 0;
 	m_recCurFrame.height = 0;
-	m_iDraggingWhat = FV_FrameEdit_DragNothing;
+	setDragWhat( FV_DragNothing );
 	m_iLastX = 0;
 	m_iLastY = 0;
 
@@ -2121,9 +2108,9 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 /*!
  * Method to deal with mouse coordinates.
  */
-FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
+FV_DragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
 {
-	return getFrameEditDragWhat();
+	return getDragWhat();
 }
 
 void FV_FrameEdit::drawFrame(bool bWithHandles)
@@ -2141,7 +2128,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
 	da.xoff = xPage + m_pFrameContainer->getX();
 	da.yoff = yPage + m_pFrameContainer->getY();
-	if((m_pFrameImage == NULL) || (m_iDraggingWhat != FV_FrameEdit_DragWholeFrame) )
+	if((m_pFrameImage == NULL) || (getDragWhat() != FV_DragWhole) )
 	{
 //		m_pFrameContainer->clearScreen();
 		m_pFrameContainer->draw(&da);
@@ -2149,7 +2136,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		{
 			m_pFrameContainer->drawHandles(&da);
 		}
-		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
+		if(getDragWhat() == FV_DragWhole)
 		{
 			GR_Painter painter (getGraphics());
 			if(m_pFrameLayout->getFrameType() == FL_FRAME_TEXTBOX_TYPE)

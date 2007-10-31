@@ -168,7 +168,7 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels (const char ** pszDesc,
 	return true;
 }
 
-UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME (const char * szMimeType)
+UT_Confidence_t IE_Exp_HTML4_Sniffer::supportsMIME (const char * szMimeType)
 {
 	if(!strcmp(szMimeType, "text/html"))
 		return UT_CONFIDENCE_PERFECT;

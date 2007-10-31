@@ -36,20 +36,6 @@ typedef enum _FV_InlineDragMode
 	FV_InlineDrag_START_DRAGGING
 } FV_InlineDragMode;
 
-typedef enum _FV_InlineDragWhat
-{
-	FV_Inline_DragNothing,
-    FV_Inline_DragTopLeftCorner,
-    FV_Inline_DragTopRightCorner,
-    FV_Inline_DragBotLeftCorner,
-    FV_Inline_DragBotRightCorner,
-    FV_Inline_DragLeftEdge,
-    FV_Inline_DragTopEdge,
-    FV_Inline_DragRightEdge,
-    FV_Inline_DragBotEdge,
-    FV_Inline_DragWholeImage
-} FV_InlineDragWhat;
-
 class GR_Graphics;
 class GR_Image;
 class FV_View;
@@ -68,10 +54,8 @@ public:
     void                      setMode(FV_InlineDragMode iInlineDragMode);
 	FV_InlineDragMode     getInlineDragMode(void) const 
 		{ return m_iInlineDragMode;}
-	FV_InlineDragWhat     getInlineDragWhat(void) const 
-		{ return       m_iDraggingWhat;;}
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage);
-	FV_InlineDragWhat     mouseMotion(UT_sint32 x, UT_sint32 y);
+	FV_DragWhat           mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseCut(UT_sint32 x, UT_sint32 y);
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
@@ -111,7 +95,6 @@ private:
 	UT_sint32			  m_yLastMouse;
 
 	bool                  m_bDoingCopy;
-	FV_InlineDragWhat     m_iDraggingWhat;
 	PP_AttrProp *         m_pImageAP;
 	GR_Image *            m_screenCache;
 	bool                  m_bFirstDragDone;

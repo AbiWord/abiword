@@ -10060,8 +10060,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
 		
-			FV_InlineDragWhat dragWhat = m_InlineImage.getInlineDragWhat();
-			if (dragWhat!=FV_Inline_DragNothing && dragWhat!=FV_Inline_DragWholeImage)
+			FV_DragWhat dragWhat = m_InlineImage.getDragWhat();
+			if (dragWhat!=FV_DragNothing && dragWhat!=FV_DragWhole)
 			{
 				m_prevMouseContext = EV_EMC_IMAGESIZE;
 				xxx_UT_DEBUGMSG(("Set ImageSize Context  \n"));
@@ -10232,35 +10232,35 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_IMAGESIZE:
 		xxx_UT_DEBUGMSG(("Imagesize context \n"));
-		if(m_InlineImage.getInlineDragWhat() == FV_Inline_DragTopLeftCorner)
+		if(m_InlineImage.getDragWhat() == FV_DragTopLeftCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopRightCorner)
+		else if(m_InlineImage.getDragWhat() ==FV_DragTopRightCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotLeftCorner)
+		else if(m_InlineImage.getDragWhat() ==FV_DragBotLeftCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotRightCorner)
+		else if(m_InlineImage.getDragWhat() ==FV_DragBotRightCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragLeftEdge)
+		else if(m_InlineImage.getDragWhat() ==FV_DragLeftEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopEdge)
+		else if(m_InlineImage.getDragWhat() ==FV_DragTopEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragRightEdge)
+		else if(m_InlineImage.getDragWhat() ==FV_DragRightEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
-		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotEdge)
+		else if(m_InlineImage.getDragWhat() ==FV_DragBotEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
 		}
@@ -10309,39 +10309,39 @@ void FV_View::setCursorToContext()
 		{
 			cursor = GR_Graphics::GR_CURSOR_CROSSHAIR;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopLeftCorner)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragTopLeftCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopRightCorner)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragTopRightCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotLeftCorner)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragBotLeftCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotRightCorner)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragBotRightCorner)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragLeftEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragTopEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragRightEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
-		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
+		else if(m_FrameEdit.getDragWhat() ==FV_DragBotEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
 		}
-		else if(m_FrameEdit.isActive() && m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragWholeFrame)
+		else if(m_FrameEdit.isActive() && m_FrameEdit.getDragWhat() ==FV_DragWhole)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		}
