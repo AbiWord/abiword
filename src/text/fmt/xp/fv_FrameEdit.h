@@ -67,9 +67,13 @@ public:
 	FL_DocLayout *        getLayout(void) const;
 	GR_Graphics *         getGraphics(void) const;
 	inline FV_View *      getView(void) { return m_pView;}
+	UT_sint32             getGlobCount(void);
 
 protected:
 	FV_View *             m_pView;
+	UT_sint32             m_iGlobCount;
+	void                  _beginGlob();
+	void                  _endGlob();
 };
 
 class ABI_EXPORT FV_FrameEdit : public FV_Base
@@ -113,10 +117,7 @@ public:
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
-	void                  _beginGlob();
-	void                  _endGlob();
-	UT_sint32             getGlobCount(void);
-        bool                  isImageWrapper(void) const;  	
+    bool                  isImageWrapper(void) const;  	
 protected:
 	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
 
@@ -141,7 +142,6 @@ private:
 
 	UT_sint32             m_iFirstEverX;
 	UT_sint32             m_iFirstEverY;
-	UT_sint32             m_iGlobCount;
 	//
 	UT_sint32             m_iInitialFrameX;
 	UT_sint32             m_iInitialFrameY;

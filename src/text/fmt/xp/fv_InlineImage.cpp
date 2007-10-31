@@ -59,7 +59,6 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
 	  m_iDraggingWhat( FV_Inline_DragNothing ),
-	  m_iGlobCount(0),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
 	  m_bFirstDragDone(false),
@@ -884,27 +883,6 @@ void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 	m_pView->cmdCharDelete(true,1);
 	m_pView->updateScreen(false);
 	drawImage();
-}
-
-
-UT_sint32 FV_VisualInlineImage::getGlobCount()
-{
-	return m_iGlobCount;
-}
-
-void  FV_VisualInlineImage::_beginGlob(void)
-{
-	getDoc()->beginUserAtomicGlob();
-	m_iGlobCount++;
-	xxx_UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
-}
-
-
-void  FV_VisualInlineImage::_endGlob(void)
-{
-	getDoc()->endUserAtomicGlob();
-	m_iGlobCount--;
-	xxx_UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
 }
 
 void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)

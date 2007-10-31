@@ -86,9 +86,6 @@ public:
 	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
-	UT_sint32             getGlobCount(void);
-	void                  _beginGlob();
-	void                  _endGlob();
 	void                  cleanUP(void);
 	void                  abortDrag(void);
 	const char *          getPNGImage(const UT_ByteBuf ** pBuf);
@@ -115,7 +112,6 @@ private:
 
 	bool                  m_bDoingCopy;
 	FV_InlineDragWhat     m_iDraggingWhat;
-	UT_sint32             m_iGlobCount;
 	PP_AttrProp *         m_pImageAP;
 	GR_Image *            m_screenCache;
 	bool                  m_bFirstDragDone;

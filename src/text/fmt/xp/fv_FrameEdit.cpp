@@ -35,8 +35,13 @@
 #include "gr_Painter.h"
 #include "xap_App.h"
 
+/*
+ *	FV_Base
+ */
+
 FV_Base::FV_Base( FV_View* pView )
 : m_pView( pView )
+, m_iGlobCount(0)
 {
 }
 
@@ -59,7 +64,28 @@ GR_Graphics * FV_Base::getGraphics(void) const
 	return m_pView->getGraphics();
 }
 
+void FV_Base::_beginGlob(void)
+{
+	getDoc()->beginUserAtomicGlob();
+	m_iGlobCount++;
+	UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
+}
 
+void FV_Base::_endGlob(void)
+{
+	getDoc()->endUserAtomicGlob();
+	m_iGlobCount--;
+	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
+}
+
+UT_sint32 FV_Base::getGlobCount()
+{
+	return m_iGlobCount;
+}
+
+/*
+ *	FV_FrameEdit
+ */
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: FV_Base (pView), 
@@ -80,7 +106,6 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_yLastMouse(1),
 	  m_iFirstEverX(0),
 	  m_iFirstEverY(0),
-	  m_iGlobCount(0),
 	  m_iInitialFrameX(0),
 	  m_iInitialFrameY(0)
 {
@@ -297,26 +322,6 @@ UT_sint32 FV_FrameEdit::haveDragged(void) const
 		return 1;
 	}
 	return 10;
-}
-
-UT_sint32 FV_FrameEdit::getGlobCount()
-{
-	return m_iGlobCount;
-}
-
-void  FV_FrameEdit::_beginGlob(void)
-{
-	getDoc()->beginUserAtomicGlob();
-	m_iGlobCount++;
-	UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
-}
-
-
-void  FV_FrameEdit::_endGlob(void)
-{
-	getDoc()->endUserAtomicGlob();
-	m_iGlobCount--;
-	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
 }
 
 void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
