@@ -34,8 +34,7 @@
 #include "xap_Frame.h"
 #include "ev_Mouse.h"
 #include "ut_locale.h"
-
-#define FRAME_HANDLE_SIZE 10
+#include "fp_FrameContainer.h"
 
 #define MIN_DRAG_PIXELS 8
 
@@ -769,7 +768,6 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	bool bRight = (iRight - ires < x) && (x < iRight + ires);
 	bool bTop = (iTop - ires < y) && (y < iTop + ires);
 	bool bBot = (iBot - ires < y) && (y < iBot + ires);
-
 //
 // Not resizeable embedded object
 //
@@ -798,7 +796,6 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	{
 		setDragWhat( FV_DragBotLeftCorner );
 	}
-
 //
 // Bot Right
 //
