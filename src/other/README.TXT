@@ -8,9 +8,3 @@ incorporate it.
 spell
 	The ISPELL spell checker.
 
-libmswordview
-	TODO
-	
-libword8
-	TODO
-	 
