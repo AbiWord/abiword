@@ -22,7 +22,7 @@ if EMBEDDED_HILDON
 SUBDIRS = hildon
 endif
 
-DIST_SUBDIRS = gnome hildon
+DIST_SUBDIRS = hildon
 
 INCLUDES= \
 	-DPREFIX=\""$(prefix)"\"			\
