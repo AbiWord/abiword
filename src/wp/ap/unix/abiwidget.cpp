@@ -1941,32 +1941,32 @@ abi_widget_destroy_gtk (GtkObject *object)
 	XAP_App *pApp = XAP_App::getApp();
 	bool bKillApp = false;
 
-	if(abi->priv) 
+	if (abi->priv) 
+	{
+		_abi_widget_releaseListener(abi);
+		// TODO: release the frame listener
+		if(abi->priv->m_pFrame)
 		{
-			_abi_widget_releaseListener(abi);
-			// TODO: release the frame listener
-			if(abi->priv->m_pFrame)
-				{
 #ifdef LOGFILE
-					fprintf(getlogfile(),"frame count before forgetting = %d \n",pApp->getFrameCount());
+			fprintf(getlogfile(),"frame count before forgetting = %d \n",pApp->getFrameCount());
 #endif
-					if(pApp->getFrameCount() <= 1)
-						{
-							bKillApp = true;
-						}
-					pApp->forgetFrame(abi->priv->m_pFrame);
-					abi->priv->m_pFrame->close();
-					delete abi->priv->m_pFrame;
+			if(pApp->getFrameCount() <= 1)
+			{
+				bKillApp = true;
+			}
+			pApp->forgetFrame(abi->priv->m_pFrame);
+			abi->priv->m_pFrame->close();
+			delete abi->priv->m_pFrame;
 #ifdef LOGFILE
-					fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
+			fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
 #endif
-				}
-			g_free (abi->priv->m_szFilename);
-			delete abi->priv->m_sMIMETYPE;
-			delete abi->priv->m_sSearchText;
-			g_free (abi->priv);
-			abi->priv = NULL;
 		}
+		g_free (abi->priv->m_szFilename);
+		delete abi->priv->m_sMIMETYPE;
+		delete abi->priv->m_sSearchText;
+		g_free (abi->priv);
+		abi->priv = NULL;
+	}
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
