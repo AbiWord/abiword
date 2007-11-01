@@ -598,12 +598,8 @@ endif
 
 ifeq ($(ABI_NATIVE),unix)
 
-# ABI_OPT_BONOBO turns on ABI_OPT_GNOME
-# But we should build without gnome by default
+# we build without gnome by default
 ABI_OPT_GNOME = 0
-ifeq ($(ABI_OPT_BONOBO),1)
-	ABI_OPT_GNOME = 1
-endif
 
 # ABI_OPT_GNOME_DIRECT_PRINT enables "Print directly" command for
 # gnome port
@@ -611,7 +607,6 @@ endif
 #ABI_OPT_GNOME_DIRECT_PRINT = 1
 ifeq ($(ABI_OPT_GNOME),1)
 	ABI_OPT_GNOME_DIRECT_PRINT = 1
-	ABI_OPT_BONOBO = 1
 endif
 
 # This next bit is ugly so I'll explain my rationale:
@@ -652,16 +647,6 @@ GNOME_CFLAGS += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ;
 GNOME_CFLAGS += -DHAVE_NAUTILUS
 GNOME_LIBS   += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --libs ; fi)
 GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
-
-# the bonobo target is known not to work properly yet
-ifeq ($(ABI_OPT_BONOBO),1)
-GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
-GNOME_CFLAGS    += -DWITH_BONOBO
-GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox bonobox_print)
-ABI_OPTIONS+=Bonobo:On
-else
-ABI_OPTIONS+=Bonobo:Off
-endif
 
 #ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)
 GNOME_CFLAGS    +=	-DHAVE_GNOME_DIRECT_PRINT

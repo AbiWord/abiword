@@ -74,63 +74,6 @@ AM_CONDITIONAL(WITH_GNOMEUI, test "x$gnomeui" = "xtrue")
 
 ])
 
-
-
-AC_DEFUN([ABI_BONOBO], [
-
-BONOBO_REQUIRED_VERSION='2.0'
-
-bonobo=false
-BONOBO_CFLAGS=""
-BONOBO_LIBS=""
-
-bonobo_modules="libbonoboui-2.0 >= $BONOBO_REQUIRED_VERSION"
-
-AC_ARG_ENABLE(bonobo,[  --enable-bonobo    Build bonobo widget ],
-[
-	if test "x$enableval" = "xyes"; then
-		if test "$PLATFORM" != unix; then
-			AC_MSG_ERROR([sorry: --enable-bonobo supported only on UNIX platforms])
-		fi
-		PKG_CHECK_EXISTS([$bonobo_modules], 
-		[
-			bonobo=true
-			abi_bonobo_message="as requested"
-		], [
-			abi_bonobo_message=">= $BONOBO_REQUIRED_VERSION not fulfilled"
-		])
-	else
-		abi_bonobo_message="as requested"
-	fi
-], [
-	PKG_CHECK_EXISTS([$bonobo_modules], 
-	[
-		bonobo=false
-		abi_bonobo_message="off by default"
-	], [
-		abi_bonobo_message=">= $BONOBO_REQUIRED_VERSION not fulfilled"
-	])
-])
-
-if test "$bonobo" = true ; then
-	PKG_CHECK_MODULES(BONOBO,[ $bonobo_modules ],
-	[
-		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $bonobo_modules"
-	])
-	BONOBO_CFLAGS="$BONOBO_CFLAGS -DWITH_BONOBO=1"
-	abi_bonobo_message="yes ($abi_bonobo_message)"
-else
-	abi_bonobo_message="no ($abi_bonobo_message)"
-fi
-
-#BONOBO_CFLAGS="-DBONOBO_DISABLE_DEPRECATED $BONOBO_CFLAGS"
-AC_SUBST(BONOBO_CFLAGS)
-AC_SUBST(BONOBO_LIBS)
-	
-AM_CONDITIONAL(WITH_BONOBO, test "x$bonobo" = "xtrue")
-
-])
-
 # 
 # end: abi/ac-helpers/abi-gnome.m4
 # 
