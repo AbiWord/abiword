@@ -72,11 +72,7 @@
  *
  * Not stymied by the hoopla and fanfare surrounding their earlier 
  * achievements, the two decided to actually make AbiWord's main frame
- * an instance of this AbiWidget. Following that, Martin undertook the
- * ordeal of exposing this Widget via a Bonobo interface (after first
- * inventing Bonobo, of course) so that other applications such as
- * Ximian Evolution could seamlessly embed instances of AbiWord inside
- * of themselves.
+ * an instance of this AbiWidget.
  *
  */
 
@@ -107,9 +103,6 @@ struct _AbiPrivData {
 	gint                 m_iContentLength;
 	gint                 m_iSelectionLength;
 	UT_UCS4String *		 m_sSearchText;	
-#ifdef WITH_BONOBO
-	BonoboUIComponent    * m_uic;
-#endif
 };
 
 /**************************************************************************/
@@ -1946,14 +1939,12 @@ abi_widget_destroy_gtk (GtkObject *object)
 
 	// order of deletion is important here
 	XAP_App *pApp = XAP_App::getApp();
-	bool bBonobo = false;
 	bool bKillApp = false;
 
 	if(abi->priv) 
 		{
 			_abi_widget_releaseListener(abi);
 			// TODO: release the frame listener
-			bBonobo = pApp->isBonoboRunning();
 			if(abi->priv->m_pFrame)
 				{
 #ifdef LOGFILE
@@ -1979,20 +1970,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
-#endif
-
-#ifdef WITH_BONOBO
-	if(bBonobo)
-	{
-		if (GTK_OBJECT_CLASS(parent_class)->destroy)
-			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
-	// chain up
-		BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
-		if(bKillApp)
-		{
-			bonobo_main_quit();
-		}
-	}
 #endif
 }
 
@@ -2367,20 +2344,6 @@ abi_widget_get_frame ( AbiWidget * w )
   return w->priv->m_pFrame ;
 }
 
-#ifdef WITH_BONOBO
-extern "C" void
-abi_widget_set_Bonobo_uic(AbiWidget * w, BonoboUIComponent * uic)
-{
-	w->priv->m_uic = uic;
-}
-
-extern "C" BonoboUIComponent *
-abi_widget_get_Bonobo_uic(AbiWidget * w)
-{
-	return 	w->priv->m_uic;
-}
-
-#endif
 /**
  * abi_widget_invoke()
  *
