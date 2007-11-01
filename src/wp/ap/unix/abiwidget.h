@@ -82,12 +82,6 @@ G_BEGIN_DECLS
 /**************************************************************************/
 /**************************************************************************/
 
-#ifdef WITH_BONOBO
-  #include <libbonoboui.h>
-  #include <bonobo/bonobo-macros.h>
-  #include <bonobo/bonobo-object.h>
-#endif
-
 #define ABI_TYPE_WIDGET        (abi_widget_get_type ())
 #define ABI_WIDGET(obj)        (GTK_CHECK_CAST((obj), ABI_TYPE_WIDGET, AbiWidget))
 #define IS_ABI_WIDGET(obj)     (GTK_CHECK_TYPE((obj), ABI_TYPE_WIDGET))
@@ -442,11 +436,6 @@ G_BEGIN_DECLS
   // generic editmethod invocation hooks
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
-
-#ifdef WITH_BONOBO
-  void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
-  BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
-#endif
 
 #ifdef ABIWORD_INTERNAL
   /* these functions are used by abiword internally and really aren't exported to the rest of the world */

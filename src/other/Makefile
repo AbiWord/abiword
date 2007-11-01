@@ -23,11 +23,5 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		spell
 
-# libmswordview
-
-# The functionality of libmswordview is now in the wv/ module
-# proper.
-
-
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
