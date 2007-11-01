@@ -112,20 +112,20 @@ struct _AbiPrivData {
 // Our widget's arguments. 
 //
 enum {
-  ARG_0,
-  CURSOR_ON,
-  UNLINK_AFTER_LOAD,
-  VIEWPARA,
-  VIEWPRINTLAYOUT,
-  VIEWNORMALLAYOUT,
-  VIEWWEBLAYOUT,
-  MIMETYPE,
-  CONTENT,
-  SELECTION,
-  CONTENT_LENGTH,
-  SELECTION_LENGTH,
-  SHADOW_TYPE,
-  ARG_LAST
+	ARG_0,
+	CURSOR_ON,
+	UNLINK_AFTER_LOAD,
+	VIEWPARA,
+	VIEWPRINTLAYOUT,
+	VIEWNORMALLAYOUT,
+	VIEWWEBLAYOUT,
+	MIMETYPE,
+	CONTENT,
+	SELECTION,
+	CONTENT_LENGTH,
+	SELECTION_LENGTH,
+	SHADOW_TYPE,
+	ARG_LAST
 };
 
 // our parent class
@@ -202,34 +202,34 @@ g_cclosure_user_marshal_VOID__INT_INT_INT (GClosure     *closure,
                                            gpointer      invocation_hint,
                                            gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__INT_INT_INT) (gpointer     data1,
-                                                  gint         arg_1,
-                                                  gint         arg_2,
-                                                  gint         arg_3,
-                                                  gpointer     data2);
-  register GMarshalFunc_VOID__INT_INT_INT callback;
-  register GCClosure *cc = (GCClosure*) closure;
-  register gpointer data1, data2;
+	typedef void (*GMarshalFunc_VOID__INT_INT_INT) (gpointer     data1,
+	                                                gint         arg_1,
+	                                                gint         arg_2,
+	                                                gint         arg_3,
+	                                                gpointer     data2);
+	register GMarshalFunc_VOID__INT_INT_INT callback;
+	register GCClosure *cc = (GCClosure*) closure;
+	register gpointer data1, data2;
 
-  g_return_if_fail (n_param_values == 4);
+	g_return_if_fail (n_param_values == 4);
 
-  if (G_CCLOSURE_SWAP_DATA (closure))
-    {
-      data1 = closure->data;
-      data2 = g_value_peek_pointer (param_values + 0);
-    }
-  else
-    {
-      data1 = g_value_peek_pointer (param_values + 0);
-      data2 = closure->data;
-    }
-  callback = (GMarshalFunc_VOID__INT_INT_INT) (marshal_data ? marshal_data : cc->callback);
+	if (G_CCLOSURE_SWAP_DATA (closure))
+	{
+		data1 = closure->data;
+		data2 = g_value_peek_pointer (param_values + 0);
+	}
+	else
+	{
+	    data1 = g_value_peek_pointer (param_values + 0);
+	    data2 = closure->data;
+	}
+	callback = (GMarshalFunc_VOID__INT_INT_INT) (marshal_data ? marshal_data : cc->callback);
 
-  callback (data1,
-            g_marshal_value_peek_int (param_values + 1),
-            g_marshal_value_peek_int (param_values + 2),
-            g_marshal_value_peek_int (param_values + 3),
-            data2);
+	callback (data1,
+	        g_marshal_value_peek_int (param_values + 1),
+	        g_marshal_value_peek_int (param_values + 2),
+	        g_marshal_value_peek_int (param_values + 3),
+	        data2);
 }
 
 
@@ -1456,8 +1456,8 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 	abi->priv->m_iNumFileLoads += 1;
 	if(abi->priv->m_bUnlinkFileAfterLoad)
 	{
-	  remove(pszFile);
-	  abi->priv->m_bUnlinkFileAfterLoad = false;
+		remove(pszFile);
+		abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
 
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
@@ -1555,34 +1555,34 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 
 static gint s_abi_widget_load_file(gpointer p)
 {
-  AbiWidget * abi = (AbiWidget *) p;
+	AbiWidget * abi = (AbiWidget *) p;
 
-  if(!abi->priv->m_bMappedToScreen)
-  {
-	abi_widget_map_to_screen(abi);
-	return TRUE;
-  }
-  if(abi->priv->m_bPendingFile)
-  {
-	char * pszFile = g_strdup(abi->priv->m_szFilename);
-	abi_widget_load_file(abi, pszFile, NULL); // Ugly! s_abi_widget_load_file should be removed - MARCM
-	g_free(pszFile);
-  }
-  return FALSE;
+	if(!abi->priv->m_bMappedToScreen)
+	{
+		abi_widget_map_to_screen(abi);
+		return TRUE;
+	}
+	if(abi->priv->m_bPendingFile)
+	{
+		char * pszFile = g_strdup(abi->priv->m_szFilename);
+		abi_widget_load_file(abi, pszFile, NULL); // Ugly! s_abi_widget_load_file should be removed - MARCM
+		g_free(pszFile);
+	}
+	return FALSE;
 }
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 {
-  AbiWidget * abi = ABI_WIDGET(p);
+	AbiWidget * abi = ABI_WIDGET(p);
 
-  if(!abi->priv->m_bMappedEventProcessed)
-  {
-	  abi->priv->m_bMappedEventProcessed = true;
-//
-// Can't load until this event has finished propagating
-//
-	  g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
-  }
+	if(!abi->priv->m_bMappedEventProcessed)
+	{
+		abi->priv->m_bMappedEventProcessed = true;
+		//
+		// Can't load until this event has finished propagating
+		//
+		g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
+	}
 }
 
 //
@@ -1613,7 +1613,7 @@ static void abi_widget_get_prop (GObject  *object,
 						IEFileType ieft  = pDoc->getLastOpenedType();
 						if(ieft < 0)
 						{
-								ieft =  IE_Exp::fileTypeForSuffix(".abw");
+							ieft =  IE_Exp::fileTypeForSuffix(".abw");
 						}
 						*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 					}
@@ -1673,10 +1673,10 @@ static void abi_widget_set_prop (GObject  *object,
 								 const GValue *arg,
 								 GParamSpec *pspec)
 {
-  g_return_if_fail (object != 0);
+	g_return_if_fail (object != 0);
 
-  AbiWidget * abi = ABI_WIDGET (object);
-  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	AbiWidget * abi = ABI_WIDGET (object);
+	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"setArg %d\n",arg_id);
@@ -1700,18 +1700,18 @@ static void abi_widget_set_prop (GObject  *object,
 		}
 	    case VIEWPARA:
 		{
-		  abi_klazz->view_formatting_marks (abi);
-		  break;
+			abi_klazz->view_formatting_marks (abi);
+			break;
 		}
 	    case VIEWPRINTLAYOUT:
 		{
-		  abi_klazz->view_print_layout (abi);
-		  break;
+			abi_klazz->view_print_layout (abi);
+			break;
 		}
 	    case VIEWNORMALLAYOUT:
 		{
-		  abi_klazz->view_normal_layout (abi);
-		  break;
+			abi_klazz->view_normal_layout (abi);
+			break;
 		}
 	    case VIEWWEBLAYOUT:
 	    {
@@ -1752,14 +1752,14 @@ abi_widget_size_request (GtkWidget      *widget,
 	requisition->height = ABI_DEFAULT_HEIGHT;
 
 	if (ABI_WIDGET(widget)->child)
-	  {
+	{
 		GtkRequisition child_requisition;
-      
+
 		gtk_widget_size_request (ABI_WIDGET(widget)->child, &child_requisition);
 
 		requisition->width = child_requisition.width;
 		requisition->height = child_requisition.height;
-	  }
+	}
 }
 
 //
@@ -1769,13 +1769,13 @@ static void
 abiwidget_add(GtkContainer *container,
 	      GtkWidget    *widget)
 {
-  g_return_if_fail (container != NULL);
-  g_return_if_fail (widget != NULL);
+	g_return_if_fail (container != NULL);
+	g_return_if_fail (widget != NULL);
 
-  if (GTK_CONTAINER_CLASS (parent_class)->add)
-	  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
+	if (GTK_CONTAINER_CLASS (parent_class)->add)
+		GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
 
-  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+	ABI_WIDGET(container)->child = GTK_BIN (container)->child;
 }
 
 //
@@ -1785,13 +1785,13 @@ static void
 abiwidget_remove (GtkContainer *container,
 		  GtkWidget    *widget)
 {
-  g_return_if_fail (container != NULL);
-  g_return_if_fail (widget != NULL);
+	g_return_if_fail (container != NULL);
+	g_return_if_fail (widget != NULL);
 
-  if (GTK_CONTAINER_CLASS (parent_class)->remove)
-    GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
+	if (GTK_CONTAINER_CLASS (parent_class)->remove)
+		GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
 
-  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+	ABI_WIDGET(container)->child = GTK_BIN (container)->child;
 }
 
 //
@@ -1800,10 +1800,10 @@ abiwidget_remove (GtkContainer *container,
 static GtkType
 abiwidget_child_type (GtkContainer *container)
 {
-  if (!GTK_BIN (container)->child)
-    return GTK_TYPE_WIDGET;
-  else
-    return G_TYPE_NONE;
+	if (!GTK_BIN (container)->child)
+		return GTK_TYPE_WIDGET;
+
+	return G_TYPE_NONE;
 }
 
 static void
@@ -1831,8 +1831,8 @@ abi_widget_init (AbiWidget * abi)
 	// guaranteed to be created with g_new0 and we just
 	// want everything to be 0/NULL/FALSE anyway right now
 	// but i'm keeping it around anyway just in case that changes
-  GTK_WIDGET_SET_FLAGS (abi, GTK_CAN_FOCUS | GTK_RECEIVES_DEFAULT |GTK_CAN_DEFAULT );
-  GTK_WIDGET_UNSET_FLAGS (abi, GTK_NO_WINDOW);
+	GTK_WIDGET_SET_FLAGS (abi, GTK_CAN_FOCUS | GTK_RECEIVES_DEFAULT |GTK_CAN_DEFAULT );
+	GTK_WIDGET_UNSET_FLAGS (abi, GTK_NO_WINDOW);
 }
 
 static void
@@ -1899,12 +1899,12 @@ abi_widget_realize (GtkWidget * widget)
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.window_type = GDK_WINDOW_CHILD;
 	attributes.event_mask = gtk_widget_get_events (widget) | 
-	  GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK |
-	  GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
-	  GDK_POINTER_MOTION_HINT_MASK | GDK_ENTER_NOTIFY_MASK |
-	  GDK_LEAVE_NOTIFY_MASK |
-	  GDK_FOCUS_CHANGE_MASK |
-	  GDK_STRUCTURE_MASK;
+						GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK |
+						GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
+						GDK_POINTER_MOTION_HINT_MASK | GDK_ENTER_NOTIFY_MASK |
+						GDK_LEAVE_NOTIFY_MASK |
+						GDK_FOCUS_CHANGE_MASK |
+						GDK_STRUCTURE_MASK;
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
 	
@@ -2132,28 +2132,28 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  VIEWPARA,
 								  g_param_spec_boolean("view-para",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  VIEWPRINTLAYOUT,
 								  g_param_spec_boolean("view-print-layout",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  VIEWNORMALLAYOUT,
 								  g_param_spec_boolean("view-normal-layout",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
 								  g_param_spec_boolean("view-web-layout",
 													   NULL,
@@ -2161,7 +2161,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  MIMETYPE,
 								  g_param_spec_string("mimetype",
 													   NULL,
@@ -2169,7 +2169,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  CONTENT,
 								  g_param_spec_string("content",
 													   NULL,
@@ -2177,7 +2177,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  SELECTION,
 								  g_param_spec_string("selection",
 													   NULL,
@@ -2185,7 +2185,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  CONTENT_LENGTH,
 								  g_param_spec_string("content_length",
 													   NULL,
@@ -2193,7 +2193,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
- g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  SELECTION_LENGTH,
 								  g_param_spec_string("selection_length",
 													   NULL,
@@ -2201,7 +2201,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
-  g_object_class_install_property(gobject_class,
+	g_object_class_install_property(gobject_class,
 								  SHADOW_TYPE,
 								  g_param_spec_int("shadow_type", NULL, NULL,
 													   (int) GTK_SHADOW_NONE,
@@ -2209,7 +2209,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   (int) GTK_SHADOW_IN,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
-  _abi_widget_class_install_signals (abi_class);
+	_abi_widget_class_install_signals (abi_class);
 }
 
 static void
@@ -2232,14 +2232,14 @@ abi_widget_construct (AbiWidget * abi, const char * file)
 extern "C" void 
 abi_widget_map_to_screen(AbiWidget * abi)
 {
-  g_return_if_fail (abi != 0);
-  UT_DEBUGMSG(("Doing map_to_screen \n"));
-  GtkWidget * widget = GTK_WIDGET(abi);
-  if(abi->priv->m_bMappedToScreen)
-  {
-	  return;
-  }
-  // now we can set up Abi inside of this GdkWindow
+	g_return_if_fail (abi != 0);
+	UT_DEBUGMSG(("Doing map_to_screen \n"));
+	GtkWidget * widget = GTK_WIDGET(abi);
+	if(abi->priv->m_bMappedToScreen)
+	{
+		return;
+	}
+	// now we can set up Abi inside of this GdkWindow
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget about to map_to_screen \n");
@@ -2266,11 +2266,11 @@ abi_widget_map_to_screen(AbiWidget * abi)
 extern "C" void 
 abi_widget_turn_on_cursor(AbiWidget * abi)
 {
-	if(abi->priv->m_pFrame)
+	if (abi->priv->m_pFrame)
 	{
 		g_return_if_fail (abi != 0);
 		FV_View * pV = static_cast<FV_View*>(abi->priv->m_pFrame->getCurrentView());
-		if(pV)
+		if (pV)
 			pV->focusChange(AV_FOCUS_HERE);
 	}
 }
@@ -2280,8 +2280,10 @@ abi_widget_get_type (void)
 {
 	static GType abi_type = 0;
 
-	if (!abi_type){
-		GTypeInfo info = {
+	if (!abi_type)
+	{
+		GTypeInfo info =
+		{
 			sizeof (AbiWidgetClass),
 			NULL,
 			NULL,
@@ -2292,9 +2294,9 @@ abi_widget_get_type (void)
 			0,
 			(GInstanceInitFunc)abi_widget_init,
 		};
-		
+
 		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiWidget",
-										   &info, (GTypeFlags)0);
+								   &info, (GTypeFlags)0);
 	}
 	
 	return abi_type;
@@ -2340,8 +2342,8 @@ abi_widget_new_with_file (const gchar * file)
 extern "C" XAP_Frame * 
 abi_widget_get_frame ( AbiWidget * w )
 {
-  g_return_val_if_fail ( w != NULL, NULL ) ;
-  return w->priv->m_pFrame ;
+	g_return_val_if_fail ( w != NULL, NULL ) ;
+	return w->priv->m_pFrame ;
 }
 
 /**
@@ -2366,7 +2368,7 @@ abi_widget_get_frame ( AbiWidget * w )
 extern "C" gboolean
 abi_widget_invoke (AbiWidget * w, const char * mthdName)
 {
-  return abi_widget_invoke_ex ( w, mthdName, NULL, 0, 0 ) ;
+	return abi_widget_invoke_ex ( w, mthdName, NULL, 0, 0 ) ;
 }
 
 /**
@@ -2438,12 +2440,12 @@ extern "C" void
 abi_widget_draw (AbiWidget * w)
 {
 	// obtain a valid view
-	if(w->priv->m_pFrame)
+	if (w->priv->m_pFrame)
 	{
 		// obtain a valid view
 		g_return_if_fail (w != NULL);
 		FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-		if(view)
+		if (view)
 			view->draw();
 	}
 }
@@ -2451,53 +2453,53 @@ abi_widget_draw (AbiWidget * w)
 extern "C" gboolean 
 abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_mimetype, const char * exp_props)
 {
-  g_return_val_if_fail ( w != NULL, FALSE );
-  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-  g_return_val_if_fail ( fname != NULL, FALSE );
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( fname != NULL, FALSE );
 
-  FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-  if(view == NULL)
-	  return false;
-  PD_Document * doc = view->getDocument () ;
+	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	if(view == NULL)
+		return false;
+	PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = IEFT_Unknown;
-  if (extension_or_mimetype && *extension_or_mimetype != '\0')
-  {
-        ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-        if(IEFT_Unknown == ieft)
-                ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-  }
-  if (IEFT_Unknown == ieft)
-          ieft = IE_Exp::fileTypeForSuffix(".abw");
-  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+	IEFileType ieft = IEFT_Unknown;
+	if (extension_or_mimetype && *extension_or_mimetype != '\0')
+	{
+		ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
+		if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
+	}
+	if (IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(".abw");
+	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
-  return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE ) ;
+	return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE ) ;
 }
 
 extern "C" gboolean 
 abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype )
 {
-  g_return_val_if_fail ( w != NULL, FALSE );
-  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-  g_return_val_if_fail ( output != NULL, FALSE );
+	g_return_val_if_fail ( w != NULL, FALSE );
+	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	g_return_val_if_fail ( output != NULL, FALSE );
 
-  FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-  if(view == NULL)
-	  return false;
-  PD_Document * doc = view->getDocument () ;
+	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+	if(view == NULL)
+		return false;
+	PD_Document * doc = view->getDocument () ;
 
-  IEFileType ieft = IEFT_Unknown;
-  if (extension_or_mimetype && *extension_or_mimetype != '\0')
-  {
-        ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-        if(IEFT_Unknown == ieft)
-                ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-  }
-  if (IEFT_Unknown == ieft)
-          ieft = IE_Exp::fileTypeForSuffix(".abw");
-  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+	IEFileType ieft = IEFT_Unknown;
+	if (extension_or_mimetype && *extension_or_mimetype != '\0')
+	{
+		ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
+		if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
+	}
+	if (IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(".abw");
+	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
-  return ( static_cast<PD_Document*>(doc)->saveAs ( output, ieft ) == UT_OK ? TRUE : FALSE ) ;
+	return ( static_cast<PD_Document*>(doc)->saveAs ( output, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }
 
 extern "C" gboolean 
