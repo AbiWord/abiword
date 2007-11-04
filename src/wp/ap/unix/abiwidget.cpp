@@ -36,6 +36,7 @@
 #include <gsf/gsf-utils.h>
 
 #include "gr_UnixPangoGraphics.h"
+#include "gr_Painter.h"
 
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
@@ -88,21 +89,18 @@ class AbiWidget_ViewListener;
 // About that here
 
 struct _AbiPrivData {
-	AP_UnixFrame         * m_pFrame;
-	char           * m_szFilename;
-	bool                 m_bMappedToScreen;
-	bool                 m_bPendingFile;
-	bool                 m_bMappedEventProcessed;
-    bool                 m_bUnlinkFileAfterLoad;
-	gint                 m_iNumFileLoads;
-	AbiWidget_FrameListener * m_pFrameListener;
-	AbiWidget_ViewListener * m_pViewListener;
-	bool                 m_bShowMargin;
-	bool                 m_bWordSelections;
-	UT_UTF8String *      m_sMIMETYPE;
-	gint                 m_iContentLength;
-	gint                 m_iSelectionLength;
-	UT_UCS4String *		 m_sSearchText;	
+	PD_Document*				m_pDoc;
+	AP_UnixFrame*				m_pFrame;
+	bool						m_bMappedToScreen;
+    bool						m_bUnlinkFileAfterLoad;
+	AbiWidget_FrameListener*	m_pFrameListener;
+	AbiWidget_ViewListener*		m_pViewListener;
+	bool						m_bShowMargin;
+	bool						m_bWordSelections;
+	UT_UTF8String *				m_sMIMETYPE;
+	gint						m_iContentLength;
+	gint						m_iSelectionLength;
+	UT_UCS4String *				m_sSearchText;	
 };
 
 /**************************************************************************/
@@ -131,7 +129,7 @@ enum {
 // our parent class
 static GtkBinClass * parent_class = 0;
 
-static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
+static gboolean s_abi_widget_map_cb(GObject * w, gpointer p);
 
 /**************************************************************************/
 /**************************************************************************/
@@ -211,7 +209,7 @@ g_cclosure_user_marshal_VOID__INT_INT_INT (GClosure     *closure,
 	register GCClosure *cc = (GCClosure*) closure;
 	register gpointer data1, data2;
 
-	g_return_if_fail (n_param_values == 4);
+	UT_return_if_fail (n_param_values == 4);
 
 	if (G_CCLOSURE_SWAP_DATA (closure))
 	{
@@ -834,7 +832,7 @@ static void _abi_widget_releaseListener(AbiWidget *widget)
 
 static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
 {
-	g_return_val_if_fail(pView, false);
+	UT_return_val_if_fail(pView, false);
 	
 	// hook up a FV_View listener to the widget. This will let the widget
 	// fire GObject signals when things in the view change
@@ -842,7 +840,7 @@ static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
 	_abi_widget_releaseListener(widget);
 	
 	private_data->m_pViewListener = new AbiWidget_ViewListener(widget, pView);
-	g_return_val_if_fail(private_data->m_pViewListener, false);
+	UT_return_val_if_fail(private_data->m_pViewListener, false);
 
 	// notify the listener that a new view has been bound
 	private_data->m_pViewListener->notify(pView, AV_CHG_ALL);
@@ -1050,32 +1048,37 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 	}
 }
 
-
-extern "C" gboolean
-abi_widget_set_show_margin(AbiWidget * abi, gboolean gb)
+static gboolean
+_abi_widget_set_show_margin(AbiWidget * abi, gboolean bShowMargin)
 {
-	bool b = static_cast<bool>(gb);
-	if(abi->priv->m_bShowMargin == b)
-		return gb;
-	abi->priv->m_bShowMargin = b;
-	if(!abi->priv->m_bMappedToScreen)
-	{
-		return gb;
-	}
+	abi->priv->m_bShowMargin = bShowMargin;
+	
+	if (!abi->priv->m_bMappedToScreen)
+		return true;
+	
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
-		return gb;
+	UT_return_val_if_fail(pFrame, false);
+
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	if(!pView)
-		return gb;
-	static_cast<AP_Frame *>(pFrame)->setShowMargin(b);
+	UT_return_val_if_fail(pFrame, false);
+	
+	static_cast<AP_Frame *>(pFrame)->setShowMargin(bShowMargin);
 	pView->setViewMode(pView->getViewMode());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 	{
 		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
 		pFrame->quickZoom(iZoom);
 	}
-	return gb;
+	
+	return true;
+}
+
+extern "C" gboolean
+abi_widget_set_show_margin(AbiWidget * abi, gboolean bShowMargin)
+{
+	if (abi->priv->m_bShowMargin == bShowMargin)
+		return true;
+	return _abi_widget_set_show_margin(abi, bShowMargin);
 }
 
 
@@ -1264,11 +1267,11 @@ abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 extern "C" gboolean
 abi_widget_set_font_name(AbiWidget * w, gchar * szName)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
-	g_return_val_if_fail ( szName, false );
+	UT_return_val_if_fail ( szName, false );
 	
 	return abi_widget_invoke_ex (w,"fontFamily",szName,0,0);
 }
@@ -1276,11 +1279,11 @@ abi_widget_set_font_name(AbiWidget * w, gchar * szName)
 extern "C" gboolean
 abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
-	g_return_val_if_fail ( szSize, false );	
+	UT_return_val_if_fail ( szSize, false );	
 	
 	return abi_widget_invoke_ex (w,"fontSize",szSize,0,0);
 }
@@ -1288,17 +1291,17 @@ abi_widget_set_font_size(AbiWidget * w, gchar * szSize)
 extern "C" gboolean
 abi_widget_set_style(AbiWidget * w, gchar * szName)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );	
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );	
 	
-	g_return_val_if_fail ( szName, false );
+	UT_return_val_if_fail ( szName, false );
 	
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
-	g_return_val_if_fail(pFrame, false);
+	UT_return_val_if_fail(pFrame, false);
 
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	g_return_val_if_fail(pView, false);
+	UT_return_val_if_fail(pView, false);
 	
 	bool res = pView->setStyle(szName, false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR); // I stole this mask from ap_EditMethods; looks weird to me though - MARCM
@@ -1309,17 +1312,17 @@ abi_widget_set_style(AbiWidget * w, gchar * szName)
 extern "C" gboolean
 abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );		
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );		
 	
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
-	g_return_val_if_fail(pFrame, false);
+	UT_return_val_if_fail(pFrame, false);
 
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	g_return_val_if_fail(pView, false);	
+	UT_return_val_if_fail(pView, false);	
 	
-	g_return_val_if_fail(szFile, false);
+	UT_return_val_if_fail(szFile, false);
 
 	IEGraphicFileType iegft = IEGFT_Unknown;
 
@@ -1345,13 +1348,13 @@ abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 extern "C" gboolean
 abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	// get the view
 	FV_View * pView = static_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-	g_return_val_if_fail(pView, FALSE );
+	UT_return_val_if_fail(pView, FALSE );
 
 	// create the color property
 	gchar pszColor[12];
@@ -1395,6 +1398,8 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 {
 	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
 	
+	UT_return_val_if_fail(abi && abi->priv, false);
+	
 	IEFileType ieft = IEFT_Unknown;
 	if (extension_or_mimetype && *extension_or_mimetype != '\0')
 	{
@@ -1404,73 +1409,46 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 	}
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
-	if(abi->priv->m_szFilename)
-		g_free(abi->priv->m_szFilename);
-	abi->priv->m_szFilename = g_strdup(pszFile);
-	if(!abi->priv->m_bMappedToScreen)
+	bool res = false;
+	if (abi->priv->m_bMappedToScreen)
 	{
-	  UT_DEBUGMSG(("Widget not mapped to screen yet, delaying file loading...\n"));
-	  abi->priv->m_bPendingFile = true;
-	  return FALSE;
+		UT_return_val_if_fail(abi->priv->m_pFrame, FALSE);
+		AP_UnixFrame * pFrame = abi->priv->m_pFrame;
+
+		s_StartStopLoadingCursor( true, pFrame);
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+
+		UT_DEBUGMSG(("Attempting to load %s \n", pszFile));
+		res = (pFrame->loadDocument(pszFile, ieft, true) == UT_OK);
+		
+		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+		abi->priv->m_pDoc = pView->getDocument();
+		
+		s_StartStopLoadingCursor( false, pFrame);
 	}
-	if(abi->priv->m_iNumFileLoads > 0)
+	else
 	{
-		UT_DEBUGMSG(("abi->priv->m_iNumFileLoads > 0, canceling file loading...\n"));
-		return FALSE;
+		UT_DEBUGMSG(("Attempting to load %s \n", pszFile));
+		// FIXME: DELETEP(abi->priv->m_pDoc);
+
+		abi->priv->m_pDoc = new PD_Document(XAP_App::getApp());
+		abi->priv->m_pDoc->readFromFile(pszFile, ieft);		
 	}
 
-	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
-	{
-		UT_DEBUGMSG(("No frame yet, canceling file loading...\n"));
-		return FALSE;
-	}
-	s_StartStopLoadingCursor( true, pFrame);
-//
-// First draw blank document
-//
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-	UT_return_val_if_fail(pFrameData, false);
-	pFrameData->m_pViewMode = VIEW_NORMAL;
-	pFrameData->m_bShowRuler = false;
-	pFrameData->m_bIsWidget = true;
-	if(abi->priv->m_bShowMargin)
-		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
-	else
-		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
-	if(abi->priv->m_bWordSelections)
-		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(true);
-	else
-		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(false);
-
-	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
-	pFrame->toggleRuler(false);
-	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-//
-//Now load the file
-//
-	UT_DEBUGMSG(("ATTempting to load %s \n",abi->priv->m_szFilename));
-	/*bool res=*/ (pFrame->loadDocument(abi->priv->m_szFilename, ieft, true) == UT_OK);
-	s_StartStopLoadingCursor( false, pFrame);
-	abi->priv->m_bPendingFile = false;
-	abi->priv->m_iNumFileLoads += 1;
-	if(abi->priv->m_bUnlinkFileAfterLoad)
+	if (abi->priv->m_bUnlinkFileAfterLoad)
 	{
 		remove(pszFile);
 		abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
+	
+	UT_DEBUGMSG(("FIXME: set mimetype after loading!\n"));
+	
+/*	
 
-	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
-	{
-		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
-		pFrame->quickZoom(iZoom);
-	}
-	PD_Document *pDoc = pView->getDocument();
-	xxx_UT_DEBUGMSG(("Document from view is %x \n",pDoc));
+	xxx_UT_DEBUGMSG(("Document from view is %x \n", m_pDoc));
 	// check that we could open the document as the type we assumed it was
 	// TODO: is this really needed?
-	ieft  = pDoc->getLastOpenedType();
+	ieft = pDoc->getLastOpenedType();
 	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n", ieft));
 	if(ieft < 0)
 	{
@@ -1478,59 +1456,36 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 	}
 	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
 	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
-	*(abi->priv->m_sMIMETYPE) =  IE_Imp::descriptionForFileType(ieft);
+	*(abi->priv->m_sMIMETYPE) = IE_Imp::descriptionForFileType(ieft);
+*/
 
-	return TRUE;
+	return res;
 }
 
 extern "C" gboolean
 abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 {
-	if(abi->priv->m_szFilename)
-		g_free(abi->priv->m_szFilename);
-	abi->priv->m_szFilename = g_strdup(gsf_input_name (input));
-	if(!abi->priv->m_bMappedToScreen)
-	{
-	  abi->priv->m_bPendingFile = true;
-	  return FALSE;
-	}
-	if(abi->priv->m_iNumFileLoads > 0)
-	{
-		return FALSE;
-	}
+	UT_DEBUGMSG(("abi_widget_load_file_from_gsf()\n"));
+	
+	UT_return_val_if_fail(abi && abi->priv, false);
+	UT_return_val_if_fail(input, false);
+	UT_return_val_if_fail(abi->priv->m_bMappedToScreen, false);
+	
+	// you shouldn't load a file unless we are mapped to the screen
+	// NOTE: hopefully this restriction will be removed some day - MARCM
+	UT_return_val_if_fail(abi->priv->m_bMappedToScreen, false);
+	UT_return_val_if_fail(abi->priv->m_pFrame, FALSE);
 
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
-		return FALSE;
+	
 	s_StartStopLoadingCursor( true, pFrame);
-//
-// First draw blank document
-//
-	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-	UT_return_val_if_fail(pFrameData, false);
-	pFrameData->m_pViewMode = VIEW_NORMAL;
-	pFrameData->m_bShowRuler = false;
-	pFrameData->m_bIsWidget = true;
-	if(abi->priv->m_bShowMargin)
-		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
-	else
-		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
-	if(abi->priv->m_bWordSelections)
-		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(true);
-	else
-		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(false);
-
-	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
-	pFrame->toggleRuler(false);
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 //
 //Now load the file
 //
-	UT_DEBUGMSG(("ATTempting to load %s \n",abi->priv->m_szFilename));
+
 	/*bool res=*/ ( UT_OK == pFrame->loadDocument(input,IEFT_Unknown));
 	s_StartStopLoadingCursor( false, pFrame);
-	abi->priv->m_bPendingFile = false;
-	abi->priv->m_iNumFileLoads += 1;
 
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
@@ -1553,36 +1508,74 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 	return TRUE;
 }
 
-static gint s_abi_widget_load_file(gpointer p)
+static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
 {
-	AbiWidget * abi = (AbiWidget *) p;
+	UT_DEBUGMSG(("s_abi_widget_map_cb()\n"));
+	
+	UT_return_val_if_fail (p != 0, true);
+	AbiWidget* abi = reinterpret_cast<AbiWidget*>(p);
 
-	if(!abi->priv->m_bMappedToScreen)
-	{
-		abi_widget_map_to_screen(abi);
-		return TRUE;
-	}
-	if(abi->priv->m_bPendingFile)
-	{
-		char * pszFile = g_strdup(abi->priv->m_szFilename);
-		abi_widget_load_file(abi, pszFile, NULL); // Ugly! s_abi_widget_load_file should be removed - MARCM
-		g_free(pszFile);
-	}
-	return FALSE;
-}
+	if (abi->priv->m_bMappedToScreen)
+		return false;
+	
+	// now we can set up Abi inside of this GdkWindow
+	GtkWidget * widget = GTK_WIDGET(abi);
 
-static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
-{
-	AbiWidget * abi = ABI_WIDGET(p);
+#ifdef LOGFILE
+	fprintf(getlogfile(),"AbiWidget about to map_to_screen \n");
+	fprintf(getlogfile(),"AbiWidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
+#endif
 
-	if(!abi->priv->m_bMappedEventProcessed)
+	// we can show stuff on screen now: use the pango graphics class
+	XAP_App::getApp()->getGraphicsFactory()->registerAsDefault(GRID_UNIX_PANGO, true);
+	
+	// construct a new frame and view
+	AP_UnixFrame * pFrame  = new AP_UnixFrame();
+	UT_return_val_if_fail(pFrame, false);
+	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget); 
+	pFrame->initialize(XAP_NoMenusWindowLess);
+	abi->priv->m_pFrame = pFrame;
+
+	// setup our frame
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_return_val_if_fail(pFrameData, true);
+	pFrameData->m_bIsWidget = true;
+	pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
+
+	XAP_App::getApp()->rememberFrame ( pFrame ) ;
+	XAP_App::getApp()->rememberFocussedFrame ( pFrame ) ;
+
+	// start listening for interesting signals
+	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
+
+	if (abi->priv->m_pDoc)
 	{
-		abi->priv->m_bMappedEventProcessed = true;
-		//
-		// Can't load until this event has finished propagating
-		//
-		g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
+		UT_DEBUGMSG(("Loading document that was opened before we were mapped to screen\n"));
+		pFrame->loadDocument(abi->priv->m_pDoc);
 	}
+	else
+	{
+		// we currenly don't have any loaded document; just start with a blank document 
+		pFrame->loadDocument(NULL, IEFT_Unknown, true);
+	}
+	
+	// setup our view
+	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
+	UT_return_val_if_fail(pView, true);
+
+	pFrame->toggleRuler(false);
+	_abi_widget_set_show_margin(abi, abi->priv->m_bShowMargin); // this will also zoom to our previously set zoom factor; no need to zoom manually
+	pFrame->setDoWordSelections(abi->priv->m_bWordSelections);
+	pView->setViewMode(VIEW_NORMAL);
+	
+	// yay, we're done
+	abi->priv->m_bMappedToScreen = true;
+
+#ifdef LOGFILE
+	fprintf(getlogfile(),"AbiWidget After Finished s_abi_widget_map_cb ref_count %d \n",G_OBJECT(abi)->ref_count);
+#endif
+		
+	return false;
 }
 
 //
@@ -1673,7 +1666,7 @@ static void abi_widget_set_prop (GObject  *object,
 								 const GValue *arg,
 								 GParamSpec *pspec)
 {
-	g_return_if_fail (object != 0);
+	UT_return_if_fail (object != 0);
 
 	AbiWidget * abi = ABI_WIDGET (object);
 	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
@@ -1769,8 +1762,8 @@ static void
 abiwidget_add(GtkContainer *container,
 	      GtkWidget    *widget)
 {
-	g_return_if_fail (container != NULL);
-	g_return_if_fail (widget != NULL);
+	UT_return_if_fail (container != NULL);
+	UT_return_if_fail (widget != NULL);
 
 	if (GTK_CONTAINER_CLASS (parent_class)->add)
 		GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
@@ -1785,8 +1778,8 @@ static void
 abiwidget_remove (GtkContainer *container,
 		  GtkWidget    *widget)
 {
-	g_return_if_fail (container != NULL);
-	g_return_if_fail (widget != NULL);
+	UT_return_if_fail (container != NULL);
+	UT_return_if_fail (widget != NULL);
 
 	if (GTK_CONTAINER_CLASS (parent_class)->remove)
 		GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
@@ -1810,17 +1803,14 @@ static void
 abi_widget_init (AbiWidget * abi)
 {
 	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
+	priv->m_pDoc = NULL;
 	priv->m_pFrame = NULL;
-	priv->m_szFilename = NULL;
 	priv->m_bMappedToScreen = false;
-	priv->m_bPendingFile = false;
-	priv->m_bMappedEventProcessed = false;
 	priv->m_bUnlinkFileAfterLoad = false;
-	priv->m_iNumFileLoads = 0;
 	priv->m_pFrameListener = NULL;
 	priv->m_pViewListener = NULL;
-	priv->m_bShowMargin = true;
-	priv->m_bWordSelections = true;
+	priv->m_bShowMargin = false;
+	priv->m_bWordSelections = false;
 	priv->m_sMIMETYPE = new UT_UTF8String("");
 	priv->m_iContentLength = 0;
 	priv->m_iSelectionLength = 0;
@@ -1841,9 +1831,9 @@ abi_widget_size_allocate (GtkWidget     *widget,
 {
 	AbiWidget *abi;
 	
-	g_return_if_fail (widget != NULL);
-	g_return_if_fail (IS_ABI_WIDGET (widget));
-	g_return_if_fail (allocation != NULL);
+	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (IS_ABI_WIDGET (widget));
+	UT_return_if_fail (allocation != NULL);
 
 	GtkAllocation child_allocation;
 	widget->allocation = *allocation;
@@ -1886,8 +1876,8 @@ abi_widget_realize (GtkWidget * widget)
 	// we *must* ensure that we get a GdkWindow to draw into
 	// this here is just boilerplate GTK+ code
 
-	g_return_if_fail (widget != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(widget));
+	UT_return_if_fail (widget != NULL);
+	UT_return_if_fail (IS_ABI_WIDGET(widget));
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 	abi = ABI_WIDGET(widget);
@@ -1920,10 +1910,9 @@ abi_widget_realize (GtkWidget * widget)
 	// connect a signal handler to load files after abiword is in a stable
 	// state.
 	//
-	g_signal_connect_after(G_OBJECT(widget),"map_event", 
+	g_signal_connect_after(G_OBJECT(widget),"map", 
 			       G_CALLBACK (s_abi_widget_map_cb),
 			       (gpointer) abi);
-	abi_widget_map_to_screen( abi);
 }
 
 static void
@@ -1931,8 +1920,8 @@ abi_widget_destroy_gtk (GtkObject *object)
 {
 	AbiWidget * abi;
 	
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
+	UT_return_if_fail (object != NULL);
+	UT_return_if_fail (IS_ABI_WIDGET(object));
 
 	// here we g_free any self-created data
 	abi = ABI_WIDGET(object);
@@ -1961,7 +1950,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 			fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
 #endif
 		}
-		g_free (abi->priv->m_szFilename);
 		delete abi->priv->m_sMIMETYPE;
 		delete abi->priv->m_sSearchText;
 		g_free (abi->priv);
@@ -2218,8 +2206,7 @@ abi_widget_construct (AbiWidget * abi, const char * file)
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
 
-	if (file)
-		abi->priv->m_szFilename = g_strdup (file);
+	UT_DEBUGMSG(("FIXME: allow loading the file on construction\n"));
 		
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
@@ -2230,45 +2217,11 @@ abi_widget_construct (AbiWidget * abi, const char * file)
 /**************************************************************************/
 
 extern "C" void 
-abi_widget_map_to_screen(AbiWidget * abi)
-{
-	g_return_if_fail (abi != 0);
-	UT_DEBUGMSG(("Doing map_to_screen \n"));
-	GtkWidget * widget = GTK_WIDGET(abi);
-	if(abi->priv->m_bMappedToScreen)
-	{
-		return;
-	}
-	// now we can set up Abi inside of this GdkWindow
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"AbiWidget about to map_to_screen \n");
-	fprintf(getlogfile(),"AbiWidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
-#endif
-
-	abi->priv->m_bMappedToScreen = true;
-	AP_UnixFrame * pFrame  = new AP_UnixFrame();
-	UT_ASSERT(pFrame);
-	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget); 
-	pFrame->initialize(XAP_NoMenusWindowLess);
-	abi->priv->m_pFrame = pFrame;
-
-	XAP_App::getApp()->rememberFrame ( pFrame ) ;
-	XAP_App::getApp()->rememberFocussedFrame ( pFrame ) ;
-
-	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
-	
-#ifdef LOGFILE
-	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
-#endif
-}
-
-extern "C" void 
 abi_widget_turn_on_cursor(AbiWidget * abi)
 {
 	if (abi->priv->m_pFrame)
 	{
-		g_return_if_fail (abi != 0);
+		UT_return_if_fail (abi != 0);
 		FV_View * pV = static_cast<FV_View*>(abi->priv->m_pFrame->getCurrentView());
 		if (pV)
 			pV->focusChange(AV_FOCUS_HERE);
@@ -2331,7 +2284,7 @@ abi_widget_new_with_file (const gchar * file)
 {
 	AbiWidget * abi;
 
-	g_return_val_if_fail (file != 0, 0);
+	UT_return_val_if_fail (file != 0, 0);
 
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, file);
@@ -2342,7 +2295,7 @@ abi_widget_new_with_file (const gchar * file)
 extern "C" XAP_Frame * 
 abi_widget_get_frame ( AbiWidget * w )
 {
-	g_return_val_if_fail ( w != NULL, NULL ) ;
+	UT_return_val_if_fail ( w != NULL, NULL ) ;
 	return w->priv->m_pFrame ;
 }
 
@@ -2405,24 +2358,24 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	UT_DEBUGMSG(("abi_widget_invoke_ex, methodname: %s\n", mthdName));
 
 	// lots of conditional returns - code defensively
-	g_return_val_if_fail (w != 0, FALSE);
-	g_return_val_if_fail (mthdName != 0, FALSE);
+	UT_return_val_if_fail (w != 0, FALSE);
+	UT_return_val_if_fail (mthdName != 0, FALSE);
 
 	// get the method container
 	XAP_App *pApp = XAP_App::getApp();
 	container = pApp->getEditMethodContainer();
-	g_return_val_if_fail (container != 0, FALSE);
+	UT_return_val_if_fail (container != 0, FALSE);
 
 	// get a handle to the actual EditMethod
 	method = container->findEditMethodByName (mthdName);
-	g_return_val_if_fail (method != 0, FALSE);
+	UT_return_val_if_fail (method != 0, FALSE);
 
 	// get a valid frame
-	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
+	UT_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
 
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
-	g_return_val_if_fail (view != 0, FALSE);
+	UT_return_val_if_fail (view != 0, FALSE);
 	xxx_UT_DEBUGMSG(("Data to invoke %s \n",data));
 
 	// construct the call data
@@ -2443,7 +2396,7 @@ abi_widget_draw (AbiWidget * w)
 	if (w->priv->m_pFrame)
 	{
 		// obtain a valid view
-		g_return_if_fail (w != NULL);
+		UT_return_if_fail (w != NULL);
 		FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 		if (view)
 			view->draw();
@@ -2453,9 +2406,9 @@ abi_widget_draw (AbiWidget * w)
 extern "C" gboolean 
 abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_mimetype, const char * exp_props)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( fname != NULL, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( fname != NULL, FALSE );
 
 	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	if(view == NULL)
@@ -2479,9 +2432,9 @@ abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_m
 extern "C" gboolean 
 abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype )
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( output != NULL, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( output != NULL, FALSE );
 
 	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	if(view == NULL)
@@ -2505,9 +2458,9 @@ abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extensi
 extern "C" gboolean 
 abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	w->priv->m_pFrame->setZoomType(XAP_Frame::z_PERCENT);
 	w->priv->m_pFrame->quickZoom(zoom);
@@ -2517,9 +2470,9 @@ abi_widget_set_zoom_percentage (AbiWidget * w, guint32 zoom)
 extern "C" guint32 
 abi_widget_get_zoom_percentage (AbiWidget * w)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	return w->priv->m_pFrame->getZoomPercentage();
 }
@@ -2528,7 +2481,7 @@ static FV_View*
 _get_fv_view(AbiWidget* w)
 {
 	AV_View* v = w->priv->m_pFrame->getCurrentView();
-	g_return_val_if_fail(v!=0, NULL);
+	UT_return_val_if_fail(v!=0, NULL);
 	return static_cast<FV_View*>( v );
 }
 
@@ -2537,7 +2490,7 @@ abi_widget_set_find_string(AbiWidget * w, gchar * search_str)
 {
 	*w->priv->m_sSearchText = UT_UTF8String(search_str).ucs4_str();	// ucs4_str returns object instance
 	FV_View* v = _get_fv_view(w);
-	g_return_if_fail(v!=0);
+	UT_return_if_fail(v!=0);
 	v->findSetStartAtInsPoint();
 	v->findSetFindString( w->priv->m_sSearchText->ucs4_str() );
 }
@@ -2546,7 +2499,7 @@ extern "C" gboolean
 abi_widget_find_next(AbiWidget * w)
 {
 	FV_View* v = _get_fv_view(w);
-	g_return_val_if_fail(v!=0,false);
+	UT_return_val_if_fail(v!=0,false);
 	bool doneWithEntireDoc = false;
 	bool res = v->findNext(doneWithEntireDoc);
 	v->findSetStartAtInsPoint();
@@ -2557,7 +2510,7 @@ extern "C" gboolean
 abi_widget_find_prev(AbiWidget * w)
 {
 	FV_View* v = _get_fv_view(w);
-	g_return_val_if_fail(v!=0,false);
+	UT_return_val_if_fail(v!=0,false);
 	bool doneWithEntireDoc = false;
 	bool res = v->findPrev(doneWithEntireDoc);
 	v->findSetStartAtInsPoint();
@@ -2567,9 +2520,9 @@ abi_widget_find_prev(AbiWidget * w)
 extern "C" guint32
 abi_widget_get_page_count(AbiWidget * w)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	UT_return_val_if_fail(pView, 0);
@@ -2583,9 +2536,9 @@ abi_widget_get_page_count(AbiWidget * w)
 extern "C" void
 abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 {
-	g_return_if_fail ( w != NULL );
-	g_return_if_fail ( IS_ABI_WIDGET(w) );
-	g_return_if_fail ( w->priv->m_pFrame );
+	UT_return_if_fail ( w != NULL );
+	UT_return_if_fail ( IS_ABI_WIDGET(w) );
+	UT_return_if_fail ( w->priv->m_pFrame );
 	
 	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	UT_return_if_fail( pView );
@@ -2593,7 +2546,7 @@ abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 	FL_DocLayout* pLayout = pView->getLayout();
 	UT_return_if_fail( pLayout );
 	
-	g_return_if_fail( curpage <= pLayout->countPages() );	// page are not zero-based, so <= in stead of <
+	UT_return_if_fail( curpage <= pLayout->countPages() );	// page are not zero-based, so <= in stead of <
 
 	UT_DEBUGMSG(("Telling the view to jump to page %u!\n", curpage));
 	
@@ -2604,9 +2557,9 @@ abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 extern "C" guint32
 abi_widget_get_current_page_num(AbiWidget * w)
 {
-	g_return_val_if_fail ( w != NULL, FALSE );
-	g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
-	g_return_val_if_fail ( w->priv->m_pFrame, FALSE );
+	UT_return_val_if_fail ( w != NULL, FALSE );
+	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pFrame, FALSE );
 
 	FV_View * pView = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 	UT_return_val_if_fail(pView, 0);
