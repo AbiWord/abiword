@@ -1545,8 +1545,6 @@ static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
 	XAP_App::getApp()->rememberFrame ( pFrame ) ;
 	XAP_App::getApp()->rememberFocussedFrame ( pFrame ) ;
 
-	// start listening for interesting signals
-	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
 
 	if (abi->priv->m_pDoc)
 	{
@@ -1563,6 +1561,10 @@ static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
 	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
 	UT_return_val_if_fail(pView, true);
 
+	// start listening for interesting signals
+	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
+	_abi_widget_bindListenerToView(abi, pView);
+	
 	pFrame->toggleRuler(false);
 	_abi_widget_set_show_margin(abi, abi->priv->m_bShowMargin); // this will also zoom to our previously set zoom factor; no need to zoom manually
 	pFrame->setDoWordSelections(abi->priv->m_bWordSelections);
