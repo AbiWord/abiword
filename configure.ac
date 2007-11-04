@@ -546,7 +546,6 @@ AC_CONFIG_FILES([
  src/wp/ap/cocoa/GNUmakefile
  src/wp/ap/qnx/GNUmakefile
  src/wp/ap/unix/GNUmakefile
- src/wp/ap/unix/gnome/GNUmakefile
  src/wp/ap/unix/hildon/GNUmakefile
  src/wp/ap/win/GNUmakefile
  src/wp/ap/win/ToolbarIcons/GNUmakefile

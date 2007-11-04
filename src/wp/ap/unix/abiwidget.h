@@ -271,7 +271,6 @@ G_BEGIN_DECLS
   void        abi_widget_turn_on_cursor(AbiWidget * widget);
   void        abi_widget_draw(AbiWidget * w);
 
-  void abi_widget_map_to_screen(AbiWidget * abi);
   void abi_widget_set_property(GObject  *object,
 			       guint	arg_id,
 			       const GValue *arg,
@@ -409,7 +408,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_set_word_selections (AbiWidget * w, gboolean b);
   gboolean abi_widget_get_word_selections (AbiWidget * w);
 
-  gboolean abi_widget_set_show_margin (AbiWidget * w, gboolean b);
+  gboolean abi_widget_set_show_margin (AbiWidget * w, gboolean bShowMargin);
   gboolean abi_widget_get_show_margin (AbiWidget * w);
 
   // header/footer functions
