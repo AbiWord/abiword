@@ -88,7 +88,23 @@ class AbiWidget_ViewListener;
 // Their GTK+ or GNOME XAP equivalents, so we don't need to worry
 // About that here
 
-struct _AbiPrivData {
+struct _AbiPrivData
+{
+public:
+	_AbiPrivData()
+		: m_pDoc(NULL),
+		m_pFrame(NULL),
+		m_bMappedToScreen(false),
+		m_bUnlinkFileAfterLoad(false),
+		m_pFrameListener(NULL),
+		m_pViewListener(NULL),
+		m_bShowMargin(false),
+		m_bWordSelections(false),
+		m_iContentLength(0),
+		m_iSelectionLength(0),
+		m_sSearchText(new UT_UCS4String(""))
+	{}
+
 	PD_Document*				m_pDoc;
 	AP_UnixFrame*				m_pFrame;
 	bool						m_bMappedToScreen;
@@ -97,10 +113,9 @@ struct _AbiPrivData {
 	AbiWidget_ViewListener*		m_pViewListener;
 	bool						m_bShowMargin;
 	bool						m_bWordSelections;
-	UT_UTF8String *				m_sMIMETYPE;
 	gint						m_iContentLength;
 	gint						m_iSelectionLength;
-	UT_UCS4String *				m_sSearchText;	
+	UT_UCS4String *				m_sSearchText;
 };
 
 /**************************************************************************/
@@ -117,7 +132,6 @@ enum {
 	VIEWPRINTLAYOUT,
 	VIEWNORMALLAYOUT,
 	VIEWWEBLAYOUT,
-	MIMETYPE,
 	CONTENT,
 	SELECTION,
 	CONTENT_LENGTH,
@@ -1125,16 +1139,46 @@ abi_widget_file_open(AbiWidget * abi)
 	//
 	_abi_widget_releaseListener(abi);
 	abi_widget_invoke(abi,"fileOpen");
-	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
 	
-	PD_Document *pDoc = pView->getDocument();
-	IEFileType ieft  = pDoc->getLastOpenedType();
-	if(ieft < 0)
-	{
-		ieft =  IE_Exp::fileTypeForSuffix(".abw");
-	}
-	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 	return TRUE;
+}
+
+static IEFileType
+s_abi_widget_get_file_type(AbiWidget * w, const char * extension_or_mimetype, bool bImport)
+{
+	IEFileType ieft = IEFT_Unknown;
+	if (extension_or_mimetype && *extension_or_mimetype != '\0')
+	{
+		ieft = bImport ? IE_Imp::fileTypeForMimetype(extension_or_mimetype)
+			: IE_Exp::fileTypeForMimetype(extension_or_mimetype);
+			
+		if (IEFT_Unknown == ieft)
+			ieft = bImport ? IE_Imp::fileTypeForSuffix(extension_or_mimetype)
+				: IE_Exp::fileTypeForSuffix(extension_or_mimetype);
+		
+		if (IEFT_Unknown == ieft)
+			ieft = bImport ? IE_Imp::fileTypeForSuffix(".abw")
+				: IE_Exp::fileTypeForSuffix(".abw");
+	}
+	else if (w && w->priv)
+	{
+		if (w->priv->m_pDoc)
+		{
+			ieft = w->priv->m_pDoc->getLastOpenedType();
+			if (ieft == IEFT_Bogus || ieft == IEFT_Unknown)
+				ieft = bImport ? IE_Imp::fileTypeForSuffix(".abw")
+					: IE_Exp::fileTypeForSuffix(".abw");
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			ieft = IEFT_Unknown;
+		}
+	}
+	else
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	
+	return ieft;
 }
 
 /*!
@@ -1145,26 +1189,16 @@ abi_widget_file_open(AbiWidget * abi)
 extern "C" gchar *
 abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const char * exp_props, gint * iLength)
 {
+	UT_return_val_if_fail(w && w->priv, NULL);
+	UT_return_val_if_fail(w->priv->m_pDoc, NULL);
+
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, false);
+
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
-
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(".abw");
-	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-
-
-	XAP_Frame * pFrame = w->priv->m_pFrame;
-	if(!pFrame)
-		return NULL;
-	FV_View * view = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
-	if(view == NULL)
-		return NULL;
-	PD_Document * doc = view->getDocument () ;
-	UT_Error result = const_cast<PD_Document*>(doc)->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? NULL : exp_props));
+	
+	UT_Error result = w->priv->m_pDoc->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? NULL : exp_props));
 	if(result != UT_OK)
 		return NULL;
 	gsf_output_close(GSF_OUTPUT(sink));
@@ -1188,40 +1222,38 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 extern "C" gchar *
 abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gint * iLength)
 {
+	UT_return_val_if_fail(w && w->priv, NULL);
+	UT_return_val_if_fail(w->priv->m_pDoc, NULL);	
+
+	XAP_Frame * pFrame = w->priv->m_pFrame;
+	UT_return_val_if_fail(w->priv->m_pFrame, NULL); // TODO: remove this restriction
+
+	FV_View * pView = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
+	UT_return_val_if_fail(pView, NULL); // TODO: remove this restriction
+
+	if (pView->isSelectionEmpty())
+		return NULL;
+	
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, false);
+	
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 
-	IEFileType ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-	if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(".abw");
-	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-
-	XAP_Frame * pFrame = w->priv->m_pFrame;
-	if(!pFrame)
-		return NULL;
-	FV_View * view = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
-	if(view == NULL)
-		return NULL;
-	PD_Document * doc = view->getDocument () ;
-	if(view->isSelectionEmpty())
-		return NULL;
-	PT_DocPosition low = view->getSelectionAnchor();
-	PT_DocPosition high = view->getPoint();
-	if(high < low)
+	PT_DocPosition low = pView->getSelectionAnchor();
+	PT_DocPosition high = pView->getPoint();
+	if (high < low)
 	{
 			PT_DocPosition swap = low;
 			low = high;
 			high = swap;
 	}
-	PD_DocumentRange * pDocRange = new 	PD_DocumentRange(doc,low,high);
+	PD_DocumentRange * pDocRange = new PD_DocumentRange(w->priv->m_pDoc, low, high);
 	UT_ByteBuf buf;
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;	
 	IEFileType newFileType;
-	errorCode = IE_Exp::constructExporter(doc,GSF_OUTPUT(sink), ieft, &pie, &newFileType);
+	errorCode = IE_Exp::constructExporter(w->priv->m_pDoc, GSF_OUTPUT(sink), ieft, &pie, &newFileType);
 	if (errorCode)
 		return NULL;
 	pie->copyToBuffer(pDocRange,&buf);
@@ -1400,13 +1432,7 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 	
 	UT_return_val_if_fail(abi && abi->priv, false);
 	
-	IEFileType ieft = IEFT_Unknown;
-	if (extension_or_mimetype && *extension_or_mimetype != '\0')
-	{
-		ieft = IE_Imp::fileTypeForMimetype(extension_or_mimetype);
-		if(ieft == IEFT_Unknown)
-			ieft = IE_Imp::fileTypeForSuffix(extension_or_mimetype);
-	}
+	IEFileType ieft = s_abi_widget_get_file_type(abi, extension_or_mimetype, true);
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
 	bool res = false;
@@ -1440,24 +1466,6 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 		remove(pszFile);
 		abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
-	
-	UT_DEBUGMSG(("FIXME: set mimetype after loading!\n"));
-	
-/*	
-
-	xxx_UT_DEBUGMSG(("Document from view is %x \n", m_pDoc));
-	// check that we could open the document as the type we assumed it was
-	// TODO: is this really needed?
-	ieft = pDoc->getLastOpenedType();
-	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n", ieft));
-	if(ieft < 0)
-	{
-		ieft =  IE_Imp::fileTypeForSuffix(".abw");
-	}
-	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
-	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
-	*(abi->priv->m_sMIMETYPE) = IE_Imp::descriptionForFileType(ieft);
-*/
 
 	return res;
 }
@@ -1478,34 +1486,13 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	
+	bool res = false;
 	s_StartStopLoadingCursor( true, pFrame);
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-//
-//Now load the file
-//
-
-	/*bool res=*/ ( UT_OK == pFrame->loadDocument(input,IEFT_Unknown));
+	res = (pFrame->loadDocument(input,IEFT_Unknown) == UT_OK);
 	s_StartStopLoadingCursor( false, pFrame);
 
-	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
-	{
-		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
-		pFrame->quickZoom(iZoom);
-	}
-	PD_Document *pDoc = pView->getDocument();
-	xxx_UT_DEBUGMSG(("Document from view is %x \n",pDoc));
-	IEFileType ieft  = pDoc->getLastOpenedType();
-	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n",ieft));
-	if(ieft < 0)
-	{
-		ieft =  IE_Exp::fileTypeForSuffix(".abw");
-	}
-	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
-	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
-	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-
-	return TRUE;
+	return res;
 }
 
 static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
@@ -1561,6 +1548,9 @@ static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
 	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
 	UT_return_val_if_fail(pView, true);
 
+	if (!abi->priv->m_pDoc)
+		abi->priv->m_pDoc = pView->getDocument();
+	
 	// start listening for interesting signals
 	abi->priv->m_pFrameListener = new AbiWidget_FrameListener(abi);
 	_abi_widget_bindListenerToView(abi, pView);
@@ -1596,37 +1586,17 @@ static void abi_widget_get_prop (GObject  *object,
 			g_value_set_boolean(arg,(gboolean) abi->priv->m_bUnlinkFileAfterLoad);
 			break;
 		}
-	    case MIMETYPE:
-		{
-			if(abi->priv->m_sMIMETYPE->size() == 0)
-			{
-				    if(abi->priv->m_pFrame)
-					{
-						FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
-						
-						PD_Document *pDoc = pView->getDocument();
-						IEFileType ieft  = pDoc->getLastOpenedType();
-						if(ieft < 0)
-						{
-							ieft =  IE_Exp::fileTypeForSuffix(".abw");
-						}
-						*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-					}
-			}
-			g_value_set_string(arg,(gchar *) abi->priv->m_sMIMETYPE->utf8_str());
-			break;
-		}
 	    case CONTENT:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_content(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , NULL,  &i);
+			gchar * bytes = abi_widget_get_content(abi, NULL, NULL, &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
 	    case SELECTION:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_selection(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			gchar * bytes = abi_widget_get_selection(abi, NULL, &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
@@ -1713,11 +1683,6 @@ static void abi_widget_set_prop (GObject  *object,
 			abi_klazz->view_online_layout (abi);
 			break;
 		}
-		case MIMETYPE:
-		{
-			*(abi->priv->m_sMIMETYPE) = g_value_get_string(arg);
-			break;
-		}  
 		case SHADOW_TYPE:
 		{
 			AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(abi->priv->m_pFrame->getFrameImpl());
@@ -1804,20 +1769,7 @@ abiwidget_child_type (GtkContainer *container)
 static void
 abi_widget_init (AbiWidget * abi)
 {
-	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
-	priv->m_pDoc = NULL;
-	priv->m_pFrame = NULL;
-	priv->m_bMappedToScreen = false;
-	priv->m_bUnlinkFileAfterLoad = false;
-	priv->m_pFrameListener = NULL;
-	priv->m_pViewListener = NULL;
-	priv->m_bShowMargin = false;
-	priv->m_bWordSelections = false;
-	priv->m_sMIMETYPE = new UT_UTF8String("");
-	priv->m_iContentLength = 0;
-	priv->m_iSelectionLength = 0;
-	priv->m_sSearchText = new UT_UCS4String("");
-	abi->priv = priv;
+	abi->priv = new AbiPrivData();
 
 	// this isn't really needed, since each widget is
 	// guaranteed to be created with g_new0 and we just
@@ -1952,7 +1904,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 			fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
 #endif
 		}
-		delete abi->priv->m_sMIMETYPE;
 		delete abi->priv->m_sSearchText;
 		g_free (abi->priv);
 		abi->priv = NULL;
@@ -2146,14 +2097,6 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
 								  g_param_spec_boolean("view-web-layout",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-
-	g_object_class_install_property(gobject_class,
-								  MIMETYPE,
-								  g_param_spec_string("mimetype",
 													   NULL,
 													   NULL,
 													   FALSE,
@@ -2410,25 +2353,11 @@ abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_m
 {
 	UT_return_val_if_fail ( w != NULL, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+	UT_return_val_if_fail ( w->priv->m_pDoc, FALSE );
 	UT_return_val_if_fail ( fname != NULL, FALSE );
 
-	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-	if(view == NULL)
-		return false;
-	PD_Document * doc = view->getDocument () ;
-
-	IEFileType ieft = IEFT_Unknown;
-	if (extension_or_mimetype && *extension_or_mimetype != '\0')
-	{
-		ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-		if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-	}
-	if (IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(".abw");
-	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-
-	return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE ) ;
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, false);
+	return static_cast<AD_Document*>(w->priv->m_pDoc)->saveAs ( fname, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props) ) == UT_OK ? TRUE : FALSE;
 }
 
 extern "C" gboolean 
@@ -2438,23 +2367,8 @@ abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extensi
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( output != NULL, FALSE );
 
-	FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
-	if(view == NULL)
-		return false;
-	PD_Document * doc = view->getDocument () ;
-
-	IEFileType ieft = IEFT_Unknown;
-	if (extension_or_mimetype && *extension_or_mimetype != '\0')
-	{
-		ieft = IE_Exp::fileTypeForMimetype(extension_or_mimetype);
-		if(IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(extension_or_mimetype);
-	}
-	if (IEFT_Unknown == ieft)
-		ieft = IE_Exp::fileTypeForSuffix(".abw");
-	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
-
-	return ( static_cast<PD_Document*>(doc)->saveAs ( output, ieft ) == UT_OK ? TRUE : FALSE ) ;
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, false);
+	return w->priv->m_pDoc->saveAs(output, ieft) == UT_OK ? TRUE : FALSE;
 }
 
 extern "C" gboolean 
