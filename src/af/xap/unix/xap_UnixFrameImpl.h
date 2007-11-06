@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2002 William Lachance 
+ * Copyright (C) 2002 William Lachance
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,7 +53,7 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
  public:
 	XAP_UnixFrameImpl(XAP_Frame *pFrame);
 	friend class XAP_Frame;
-	
+
 	virtual ~XAP_UnixFrameImpl();
 
 	GtkWidget * getTopLevelWindow() const;
@@ -76,7 +76,7 @@ protected:
 
 	GtkWidget * 		    m_wSunkenBox;
 	GtkWidget *		    m_wStatusBar;
-	
+
 	GtkWidget *		    m_wTopLevelWindow;
 	EV_UnixMenuBar *	    m_pUnixMenu;
 
@@ -92,7 +92,7 @@ protected:
 
 	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
 	virtual void _initialize();
-	
+
 	virtual void _setWindowIcon() = 0; // should eventually be handled be the inherited helper
 
 	virtual GtkWidget * _createDocumentWindow() = 0;
@@ -102,7 +102,7 @@ protected:
 	void _createIMContext(GdkWindow* w);
 	UT_sint32 _setInputMode(const char * szName);
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
-	
+
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *pFrame,
@@ -112,7 +112,7 @@ protected:
 	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
 					  UT_sint32 x, UT_sint32 y);
 	void setTimeOfLastEvent(guint32 eventTime);
-	
+
 	virtual void _queue_resize();
 	virtual void _rebuildMenus(void);
 	virtual void _rebuildToolbar(UT_uint32 ibar);
@@ -175,6 +175,9 @@ protected:
 
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	AP_UnixDialogFactory        m_dialogFactory;
+
+	UT_uint32                   m_iPreeditLen;
+	UT_uint32                   m_iPreeditStart;
 };
 #endif /* XAP_UNIXFRAME_H */
 

@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2002 William Lachance 
+ * Copyright (C) 2002 William Lachance
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
   /*
-  * Port to Maemo Development Platform 
+  * Port to Maemo Development Platform
   * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
   */
 
@@ -105,7 +105,7 @@ struct DragInfo {
 
 	DragInfo()
 		: entries(NULL), count(0)
-	{		
+	{
 	}
 
 	~DragInfo()
@@ -160,7 +160,7 @@ static DragInfo * s_getDragInfo ()
 		dragInfo.addEntry((*iter).c_str(), 0, TARGET_DOCUMENT);
 		iter++;
 	}
-	
+
 	// image types
 	mimeTypes = IE_ImpGraphic::getSupportedMimeTypes();
 	iter = mimeTypes.begin();
@@ -212,7 +212,7 @@ static int s_mapMimeToUriType (const char * uri)
 			target = dragInfo->entries[i].info;
 			break;
 		}
-	
+
 	g_free (mimeType);
 	return target;
 }
@@ -263,7 +263,7 @@ static void
 s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
 	XAP_Frame * pNewFrame = 0;
-	if (pFrame->isDirty() || pFrame->getFilename() || 
+	if (pFrame->isDirty() || pFrame->getFilename() ||
 		(pFrame->getViewNumber() > 0))
 		pNewFrame = XAP_App::getApp()->newFrame ();
 	else
@@ -273,7 +273,7 @@ s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 	UT_Error error = pNewFrame->loadDocument(file.utf8_str(), 0 /* IEFT_Unknown */);
 	if (error)
 		{
-			// TODO: warn user that we couldn't open that file		 
+			// TODO: warn user that we couldn't open that file
 			// TODO: we crash if we just delete this without putting something
 			// TODO: in it, so let's go ahead and open an untitled document
 			// TODO: for now.
@@ -304,15 +304,15 @@ static void s_pasteFile(const UT_UTF8String & file, XAP_Frame * pFrame)
 
 	    pDocLayout->setView (&copyView);
 	    pDocLayout->fillLayouts();
-	    
+
 	    copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
 	    copyView.cmdCopy(); // copy the contents of the new document
 	    pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
-	    
+
 	    DELETEP(pDocLayout);
 	    UNREFP(newDoc);
 	    return ;
-} 
+}
 
 static void
 s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
@@ -335,12 +335,12 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 		{
 			if(pFrame)
 			{
-				AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+				AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 				if(pFrameData && pFrameData->m_bIsWidget)
 				{
 					s_pasteFile(uri,pFrame);
 				}
-				else if(pFrame->isDirty() || pFrame->getFilename()) 
+				else if(pFrame->isDirty() || pFrame->getFilename())
 				{
 					s_pasteFile(uri,pFrame);
 				}
@@ -484,7 +484,7 @@ s_drag_data_get_cb (GtkWidget        *widget,
 	g_free (targetName);
 }
 
-static void 
+static void
 s_dndDropEvent(GtkWidget        *widget,
 				 GdkDragContext   *context,
 				 gint              x,
@@ -504,21 +504,21 @@ s_dndDropEvent(GtkWidget        *widget,
 	char *targetName = gdk_atom_name(selection_data->target);
 	UT_DEBUGMSG(("JK: target in selection = %s \n", targetName));
 
-	if (info == TARGET_URI_LIST) 
+	if (info == TARGET_URI_LIST)
 	{
 		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
 		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
 		s_loadUriList (pFrame, rawChar,x,y);
-	} 
-	else if (info == TARGET_DOCUMENT) 
+	}
+	else if (info == TARGET_DOCUMENT)
 	{
 		UT_DEBUGMSG(("JK: Document target as data buffer\n"));
 		s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
 	}
-	else if (info == TARGET_IMAGE) 
+	else if (info == TARGET_IMAGE)
 	{
 		UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
-	  
+
 		UT_DEBUGMSG(("JK: Image target\n"));
 		bytes->append (selection_data->data, selection_data->length);
 		s_loadImage (bytes, pFrame, pView,x,y);
@@ -534,7 +534,7 @@ s_dndDropEvent(GtkWidget        *widget,
 }
 
 static void
-s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context, 
+s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context,
 					   gint x, gint y, guint time, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd drop event\n"));
@@ -580,7 +580,7 @@ void XAP_UnixFrameImpl::dragText()
 #endif
 }
 
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_wTopLevelWindow(NULL),
@@ -594,12 +594,14 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
-	m_dialogFactory(XAP_App::getApp(), pFrame)
+	m_dialogFactory(XAP_App::getApp(), pFrame),
+	m_iPreeditLen (0),
+	m_iPreeditStart (0)
 {
 }
 
-XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
-{ 	
+XAP_UnixFrameImpl::~XAP_UnixFrameImpl()
+{
 	if(m_bDoZoomUpdate) {
 		g_source_remove(m_iZoomUpdateID);
 	}
@@ -632,7 +634,7 @@ void XAP_UnixFrameImpl::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,g
 
 gint XAP_UnixFrameImpl::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-	return FALSE; 
+	return FALSE;
 }
 
 gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
@@ -669,7 +671,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_return_val_if_fail(pFrameImpl,FALSE);
 	xxx_UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
-	
+
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
@@ -681,12 +683,12 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 	//
 	// FIXME: Return TRUE because of a bug in gtk2. If you return FALSE (like
 	// you really should) you get a superfluous expose event which causes the
-	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame) 
-	// for giving the helpful clue here. 
+	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame)
+	// for giving the helpful clue here.
     //
 	// Try it again for gtk2.2 to see if this bug is still present.
 	//
-	return TRUE; 
+	return TRUE;
 }
 
 gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
@@ -703,8 +705,8 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 	//
 	// FIXME: Return TRUE because of a bug in gtk2. If you return FALSE (like
 	// you really should) you get a superfluous expose event which causes the
-	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame) 
-	// for giving the helpful clue here. 
+	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame)
+	// for giving the helpful clue here.
     //
 	// Try it again for gtk2.2 to see if this bug is still present.
 	//
@@ -718,7 +720,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
- 
+
 	gtk_grab_add(w);
 
 	pUnixFrameImpl->resetIMContext ();
@@ -734,7 +736,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	{
 		XAP_UnixHildonApp * pThis =
 			static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
-		
+
 		UT_return_val_if_fail( pThis, FALSE );
 
 		UT_DEBUGMSG(("Hildon button_press_event: pThis 0x%x\n",
@@ -743,7 +745,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 		hildon_gtk_im_context_show(pThis->getIMContext());
 	}
 #endif
-	
+
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
 	return 1;
@@ -872,7 +874,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 
 		// don't need this for quickZoom
 #if 0
-		pUnixFrameImpl->_startViewAutoUpdater(); 
+		pUnixFrameImpl->_startViewAutoUpdater();
 #endif
 		pView->setWindowSize(iNewWidth, iNewHeight);
 		pFrame->quickZoom(); // was update zoom
@@ -1000,7 +1002,7 @@ gint XAP_UnixFrameImpl::_fe::key_release_event(GtkWidget* w, GdkEventKey* e)
 
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
-	    xxx_UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
+	    UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
 		pUnixFrameImpl->queueIMReset ();
 	    return 0;
 	}
@@ -1021,8 +1023,8 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 			return 0;
 
 		// ... else, stop this signal
-		g_signal_stop_emission (G_OBJECT(w), 
-								g_signal_lookup ("key_press_event", 
+		g_signal_stop_emission (G_OBJECT(w),
+								g_signal_lookup ("key_press_event",
 												 G_OBJECT_TYPE (w)), 0);
 		return 1;
 	}
@@ -1062,8 +1064,8 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 		return 0;
 
 	// ... else, stop this signal
-	g_signal_stop_emission (G_OBJECT(w), 
-							g_signal_lookup ("key_press_event", 
+	g_signal_stop_emission (G_OBJECT(w),
+							g_signal_lookup ("key_press_event",
 											 G_OBJECT_TYPE (w)), 0);
 	return 1;
 }
@@ -1403,7 +1405,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 
 	if (m_wStatusBar)
 		gdk_window_set_cursor(m_wStatusBar->window, cursor);
-	
+
 	gdk_cursor_unref(cursor);
 }
 
@@ -1462,9 +1464,9 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 			g_error_free (err);
 		}
 	}
-	
+
 	bool bResult;
-	
+
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -1474,19 +1476,19 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
 		if ( wmIcon )
 			gtk_window_set_icon(GTK_WINDOW(m_wTopLevelWindow), wmIcon);
-		
+
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
-		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");		
-		
+		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
+
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
-		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);		
-		
+		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
+
 	}
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
+	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this);
 
 	_setGeometry ();
 
@@ -1506,29 +1508,29 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
-					   dragInfo->entries, 
-					   dragInfo->count, 
+					   dragInfo->entries,
+					   dragInfo->count,
 					   GDK_ACTION_COPY);
 
 	gtk_drag_dest_add_text_targets (m_wTopLevelWindow);
 
-	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
 					  "drag_data_received",
-					  G_CALLBACK (s_dndDropEvent), 
-					  static_cast<gpointer>(this));	
-  	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
-					  "drag_drop",
-					  G_CALLBACK (s_dndRealDropEvent), 
+					  G_CALLBACK (s_dndDropEvent),
 					  static_cast<gpointer>(this));
-	
-  	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
-					  "drag_end",
-					  G_CALLBACK (s_dndDragEnd), 
+  	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
+					  "drag_drop",
+					  G_CALLBACK (s_dndRealDropEvent),
 					  static_cast<gpointer>(this));
 
-	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
+  	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
+					  "drag_end",
+					  G_CALLBACK (s_dndDragEnd),
+					  static_cast<gpointer>(this));
+
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
 					  "drag_begin",
-					  G_CALLBACK (s_dndDragBegin), 
+					  G_CALLBACK (s_dndDragBegin),
 					  static_cast<gpointer>(this));
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow), "drag_data_get",
 					  G_CALLBACK (s_drag_data_get_cb), this);
@@ -1600,8 +1602,8 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 		m_wStatusBar = _createStatusBarWindow();
 #endif
-	
-	if (m_wStatusBar) 
+
+	if (m_wStatusBar)
 	{
 		gtk_widget_show(m_wStatusBar);
 		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
@@ -1618,11 +1620,11 @@ void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
 	xxx_UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
 				 w, this));
-	
+
 	m_imContext = gtk_im_multicontext_new();
 	gtk_im_context_set_use_preedit (m_imContext, FALSE); // show alternate preedit stuff in a separate window or somesuch
 	gtk_im_context_set_client_window(m_imContext, w);
-	g_signal_connect(G_OBJECT(m_imContext), "commit", 
+	g_signal_connect(G_OBJECT(m_imContext), "commit",
 					 G_CALLBACK(_imCommit_cb), this);
 	g_signal_connect (m_imContext, "preedit_changed",
 					  G_CALLBACK (_imPreeditChanged_cb), this);
@@ -1634,27 +1636,35 @@ void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 
 void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
 {
-	UT_DEBUGMSG(("Preedit Changed\n"));
+	gchar *text;
+	gint   len = 0;
+	gint   pos;
+	guint  insPt;
 
-#if 0
-	gchar *preedit_string;
-	gint cursor_pos;
-	
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
 	gtk_im_context_get_preedit_string (context,
-									   &preedit_string, NULL,
-									   &cursor_pos);
-	entry->preedit_length = strlen (preedit_string);
-	cursor_pos = CLAMP (cursor_pos, 0, g_utf8_strlen (preedit_string, -1));
-	entry->preedit_cursor = cursor_pos;
-	g_free (preedit_string);
-	
-	gtk_entry_recompute (entry);
-#endif
+									   &text, NULL,
+									   &pos);
+
+	if (!text || !(len = strlen (text)))
+		return;
+
+	insPt = pView->getInsPoint ();
+
+	pImpl->_imCommit (context, text);
+
+	pImpl->m_iPreeditStart = insPt;
+	pImpl->m_iPreeditLen = g_utf8_strlen (text, -1);
+
+	UT_DEBUGMSG(("Preedit Changed, text %s, len %d (%d), pos %d\n",
+				 text, len, pImpl->m_iPreeditLen, pos));
 }
 
 gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
 {
-	UT_DEBUGMSG(("Retrieve Surrounding\n"));
+	xxx_UT_DEBUGMSG(("Retrieve Surrounding\n"));
 
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
 	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
@@ -1683,6 +1693,7 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 
 gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
 {
+	xxx_UT_DEBUGMSG(("Delete Surrounding\n"));
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
 	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
 
@@ -1706,14 +1717,27 @@ void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpoin
 // Actual keyboard commit should be done here.
 void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 {
-	xxx_UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
-				 imc, this));
-				
 	XAP_Frame* pFrame = getFrame();
-	AV_View * pView   = pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View*>(getFrame()->getCurrentView ());
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
 
+	if (m_iPreeditLen)
+		{
+			/* delete previous pre-edit */
+			xxx_UT_DEBUGMSG(("deleting preedit from %d, len %d\n",
+						 m_iPreeditStart,
+						 m_iPreeditLen));
+			pView->moveInsPtTo (m_iPreeditStart);
+			pView->cmdCharDelete (true, m_iPreeditLen);
+
+			m_iPreeditLen = 0;
+		}
+
 	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0), text, strlen(text));
+
+	xxx_UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x, text %s, len %d\n<<<<<<<<<<<<<<<<<<\n",
+				 imc, this, text, strlen(text)));
+
 }
 
 GtkIMContext * XAP_UnixFrameImpl::getIMContext()
@@ -1732,7 +1756,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp ());
 	pApp->getGeometry (&app_x, &app_y, &app_w, &app_h, &app_f);
 	// (ignore app_x, app_y & app_f since the WM will set them for us just fine)
-	  
+
 	// This is now done with --geometry parsing.
 	if (app_w == 0 || app_w > USHRT_MAX) app_w = 760;
         if (app_h == 0 || app_h > USHRT_MAX) app_h = 520;
@@ -1791,9 +1815,9 @@ void XAP_UnixFrameImpl::_setGeometry ()
 			user_h = static_cast<guint>(app_h);
 		}
 
-	if (user_w > USHRT_MAX) 
+	if (user_w > USHRT_MAX)
 		user_w = app_w;
-        if (user_h > USHRT_MAX) 
+        if (user_h > USHRT_MAX)
 		user_h = app_h;
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
@@ -1824,7 +1848,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 
 	// Remember geometry settings for next time
 	pApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
-			
+
 }
 
 /*!
@@ -1839,7 +1863,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 	// destroy old menu
 	m_pUnixMenu->destroy();
 	DELETEP(m_pUnixMenu);
-	
+
 	// build new one.
 	m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(),
 					 m_szMenuLayoutName,
@@ -1890,7 +1914,7 @@ bool XAP_UnixFrameImpl::_raise()
 {
 	UT_ASSERT(m_wTopLevelWindow);
 	if (GTK_IS_WINDOW (m_wTopLevelWindow))
-		gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));	
+		gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));
 	return true;
 }
 
@@ -1933,7 +1957,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	// WL_REFACTOR: we DON'T want to do this
 	m_pUnixPopup = new EV_UnixMenuPopup(static_cast<XAP_UnixApp*>(XAP_App::getApp()),
 										pFrame, szMenuName, m_szMenuLabelSetName);
-	
+
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
 		// Add our InputMethod selection item to the popup menu, UNLESS WE'RE DOING A PRESENTATION Borrowed
@@ -1946,7 +1970,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 				menuitem = gtk_separator_menu_item_new ();
 				gtk_widget_show (menuitem);
 				gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-				
+
 				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 				menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_XIM_Methods));
@@ -1954,10 +1978,10 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 				gtk_widget_show (menuitem);
 				submenu = gtk_menu_new ();
 				gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu);
-		
+
 				gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-				
-				gtk_im_multicontext_append_menuitems(GTK_IM_MULTICONTEXT(m_imContext), 
+
+				gtk_im_multicontext_append_menuitems(GTK_IM_MULTICONTEXT(m_imContext),
 													 GTK_MENU_SHELL(submenu));
 		}
 		// the popup will steal the mouse and so we won't get the
