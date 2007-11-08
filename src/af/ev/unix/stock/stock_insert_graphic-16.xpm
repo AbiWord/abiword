@@ -1,5 +1,5 @@
 /* XPM */
-static char * stock_insert_graphic_16_xpm[] = {
+static const char * stock_insert_graphic_16_xpm[] = {
 "16 16 23 1",
 " 	c None",
 ".	c #000000",

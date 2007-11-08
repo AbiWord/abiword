@@ -1,5 +1,5 @@
 /* XPM */
-static char * menu_split_cells_xpm[] = {
+static const char * menu_split_cells_xpm[] = {
 "16 16 7 1",
 " 	g None",
 ".	g #000000",

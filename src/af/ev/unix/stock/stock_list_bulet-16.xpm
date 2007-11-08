@@ -1,5 +1,5 @@
 /* XPM */
-static char * stock_list_bulet_16_xpm[] = {
+static const char * stock_list_bulet_16_xpm[] = {
 "16 16 41 1",
 " 	c None",
 ".	c #000000",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_insert_fields_16_xpm[] = {
+static const char * tb_insert_fields_16_xpm[] = {
 "16 16 43 1",
 " 	c None",
 ".	c #000000",

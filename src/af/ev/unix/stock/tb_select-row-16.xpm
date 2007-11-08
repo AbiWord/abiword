@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_select_row_16_xpm[] = {
+static const char * tb_select_row_16_xpm[] = {
 "16 16 13 1",
 " 	c None",
 ".	c #000000",

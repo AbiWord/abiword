@@ -1,5 +1,5 @@
 /* XPM */
-static char * stock_form_time_field_16_xpm[] = {
+static const char * stock_form_time_field_16_xpm[] = {
 "16 16 66 1",
 " 	c None",
 ".	c #000000",
