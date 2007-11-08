@@ -83,11 +83,11 @@ GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
 
 GR_UnixImage::~GR_UnixImage()
 {
-	UT_return_if_fail(m_image);
-	GObject * obj = G_OBJECT(m_image);
-	UT_ASSERT(obj->ref_count == 1);
-	g_object_unref(G_OBJECT(m_image));
-
+	if(m_image != NULL)
+	{
+		UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+		g_object_unref(G_OBJECT(m_image));
+	}
 }
 
 GR_Image::GRType GR_UnixImage::getType(void) const
