@@ -1532,15 +1532,19 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 //
 	PL_StruxDocHandle secSDH = NULL;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+#if DEBUG
 	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
 	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+#endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+#if DEBUG
 	if(secSDH != NULL)
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
 		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	
 	}
+#endif
 	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,NULL));
 //
@@ -3254,14 +3258,18 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 //
 	PL_StruxDocHandle secSDH = NULL;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+#if DEBUG
 	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
 	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+#endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+#if DEBUG
 	if(secSDH != NULL)
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
 		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	}
+#endif
 //
 // Handle special case of not putting a table immediately after an end text box 
 //
@@ -4696,7 +4704,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 		UT_UTF8String pDescr = pDialog->getDescription();
 		UT_UTF8String pTitle = pDialog->getTitle();
 		UT_UTF8String pAuthor = pDialog->getAuthor();
-		bool bReplaceSelection = false;
+//		bool bReplaceSelection = false;
 		b = setAnnotationText(aID,pDescr);
 		
 		// Optional fields
@@ -5953,6 +5961,11 @@ void FV_View::cmdContextIgnoreAll(void)
 	UT_GrowBuf pgb(1024);
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
+	if(!bRes) 
+	{
+		UT_WARNINGMSG(("getBlockBuf() failed in %s:%d",
+					   __FILE__, __LINE__));
+	}
 
 	const UT_UCSChar * pBuf;
 	UT_sint32 iLength, iPTLength, iBlockPos;
@@ -5992,6 +6005,11 @@ void FV_View::cmdContextAdd(void)
 	UT_GrowBuf pgb(1024);
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
+	if(!bRes) 
+	{
+		UT_WARNINGMSG(("getBlockBuf() failed in %s:%d",
+					   __FILE__, __LINE__));
+	}
 
 	const UT_UCSChar * pBuf;
 	UT_sint32 iLength, iPTLength, iBlockPos;

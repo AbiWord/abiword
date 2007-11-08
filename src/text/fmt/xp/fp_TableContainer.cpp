@@ -326,8 +326,7 @@ bool fp_CellContainer::containsNestedTables(void)
  */
 void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
 {
-	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
-	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
+	UT_ASSERT(static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout())->getContainerType() == FL_CONTAINER_TABLE);
 	fp_Column * pCol = NULL;
 	UT_sint32 col_y =0;
 	UT_sint32 col_x =0;
@@ -339,11 +338,13 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	if(pBroke && (pBroke->getContainer()->getContainerType() == FP_CONTAINER_CELL))
 	{
 		bIsNested = true;
+#if DEBUG
 		if(pBroke->getYBreak() > 0)
 		{
 			fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
 			UT_DEBUGMSG(("Broken nested table y %d ybreak %d height %d prev Y %d height %d yBreak %d \n",pBroke->getY(),pBroke->getYBreak(),pBroke->getHeight(),pPrev->getY(),pPrev->getHeight(),pPrev->getYBreak()));
 		}
+#endif
 	}
 	UT_sint32 offx = 0;
 	UT_sint32 offy = 0;

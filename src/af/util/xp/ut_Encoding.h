@@ -31,7 +31,7 @@
 
 struct enc_entry
 {
-	gchar ** encs;
+	gchar const ** encs;
 	const gchar * desc;
 	UT_uint32  id;
 };

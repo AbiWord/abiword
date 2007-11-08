@@ -1033,9 +1033,7 @@ void fl_EndnoteLayout::format(void)
 	{
 		getDocSectionLayout()->completeBreakSection();
 	}
-	fp_EndnoteContainer * pECon = static_cast<fp_EndnoteContainer *>(getFirstContainer());
 	UT_ASSERT(getFirstContainer()->getPage());
-	UT_ASSERT(pECon->getPage());
 }
 
 

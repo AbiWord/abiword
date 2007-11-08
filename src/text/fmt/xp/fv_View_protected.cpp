@@ -988,6 +988,11 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		bool bRes = getEditableBounds(false, iPos);
 		UT_ASSERT(bRes);
+		if(!bRes) 
+		{
+			UT_WARNINGMSG(("getEditableBounds() failed in %s:%d",
+						   __FILE__,__LINE__));
+		}
 		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
 		if(pDSL)
 		{
@@ -1055,6 +1060,11 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		bool bRes = getEditableBounds(true, iPos);
 		UT_ASSERT(bRes);
+		if(!bRes) 
+		{
+			UT_WARNINGMSG(("getEditableBounds() failed in %s:%d",
+						   __FILE__, __LINE__));
+		}
 	}
 	break;
 
@@ -1118,6 +1128,11 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			// EOD
 			bool bRes = getEditableBounds(true, iPos);
 			UT_ASSERT(bRes);
+			if(!bRes) 
+			{
+				UT_WARNINGMSG(("getEditableBounds() failed in %s:%d",
+							   __FILE__, __LINE__));
+			}
 		}
 	}
 	break;
@@ -5547,6 +5562,11 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		UT_GrowBuf pgb(1024);
 		bool bRes = pBL->getBlockBuf(&pgb);
 		UT_ASSERT(bRes);
+		if(!bRes) 
+		{
+			UT_WARNINGMSG(("getBlockBuf() failed in %s:%d",
+						   __FILE__, __LINE__));
+		}
 
 		UT_UCS4String stMisspelledWord;
 		// convert smart quote apostrophe to ASCII single quote to be

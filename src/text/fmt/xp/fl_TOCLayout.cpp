@@ -1403,8 +1403,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
-	UT_ASSERT(pDSL != NULL);
+	UT_ASSERT(pCL);
 
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
@@ -2301,9 +2300,8 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		{
-			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
-			UT_ASSERT(pL->getType() == PTX_Block);
-			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
+			UT_ASSERT(static_cast<const fl_Layout *>(sfh)->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(sfh)));
 		}
 		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 		UT_uint32 len = pcrs->getLength();
@@ -2318,9 +2316,8 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
 
 		{
-			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
-			UT_ASSERT(pL->getType() == PTX_Block);
-			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
+			UT_ASSERT(static_cast<const fl_Layout *>(sfh)->getType() == PTX_Block);
+			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(sfh)));
 		}
 		PT_BlockOffset blockOffset = pcro->getBlockOffset();
 

@@ -1234,6 +1234,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			
 			bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
 			UT_ASSERT(bres);
+			if(!bres)
+			{
+				UT_WARNINGMSG(("getAttrProp() failed in %s:%d",
+							   __FILE__, __LINE__));
+			}
 			PL_StruxDocHandle sdh = pL->getStruxDocHandle();
 	
 			const gchar* pszSectionType = NULL;
@@ -1350,6 +1355,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			
 			bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
 			UT_ASSERT(bres);
+			if(!bres)
+			{
+				UT_WARNINGMSG(("getAttrProp() failed in %s:%d",
+							   __FILE__, __LINE__));
+			}
 	
 			const gchar* pszHFSectionType = NULL;
 			pHFAP->getAttribute("type", pszHFSectionType);

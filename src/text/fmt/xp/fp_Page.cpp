@@ -653,11 +653,14 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
 	if(pNewFirstCon->getContainerType() == FP_CONTAINER_LINE)
-	  {
-	    fp_Line * pFLine = static_cast<fp_Line *>(pNewFirstCon);
-	    UT_ASSERT(pFLine->getBlock() && (pFLine->getBlock()->findLineInBlock(pFLine) >= 0));
+	{
+#if DEBUG
+		fp_Line * pFLine = static_cast<fp_Line *>(pNewFirstCon);
+		UT_ASSERT(pFLine->getBlock() && 
+				  (pFLine->getBlock()->findLineInBlock(pFLine) >= 0));
 	    //	    UT_ASSERT(!pFLine-isEmpty());
-	  }
+#endif
+	}
 	return pNewFirstCon;
 }
 
@@ -1548,10 +1551,8 @@ void fp_Page::updateColumnX()
 	if (count == 0)
 		return;
 
-	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fp_Column * pLastCol = NULL;
-	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
-	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+	UT_ASSERT(m_pOwner == getNthColumnLeader(0)->getDocSectionLayout());
 
 
 	UT_sint32 iLeftMargin = 0;
@@ -2108,10 +2109,8 @@ void fp_Page::annotationHeightChanged(void)
 
 void fp_Page::columnHeightChanged(fp_Column* pCol)
 {
-	fp_Column* pLeader = pCol->getLeader();
 	xxx_UT_DEBUGMSG(("SEVIOR: Column height changed \n"));
-	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
-	UT_ASSERT(ndx >= 0);
+	UT_ASSERT(m_vecColumnLeaders.findItem(pCol->getLeader()) >= 0);
 	if(breakPage())
 	{
 		_reformat();

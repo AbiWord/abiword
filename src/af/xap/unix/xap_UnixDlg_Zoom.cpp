@@ -129,8 +129,8 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
   
     // attach a new graphics context to the drawing area
-    XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-    UT_ASSERT(unixapp);
+	//   XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+    //UT_ASSERT(unixapp);
     
 	// HACK : we call this TWICE so it generates an update on the buttons to
 	// HACK : trigger a preview

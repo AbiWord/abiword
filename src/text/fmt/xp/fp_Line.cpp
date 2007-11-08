@@ -1276,7 +1276,9 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 		
 		UT_sint32 xoffLine, yoffLine;
+#if DEBUG
 		UT_sint32 oldheight = getHeight();
+#endif
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		

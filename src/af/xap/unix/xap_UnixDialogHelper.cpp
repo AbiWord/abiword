@@ -252,7 +252,7 @@ struct fix_label_data {
     int depth;
     GtkWidget     *topwindow;
     GtkWidget     *accel_ctrl;
-    gchar         *accel_sig;
+    const gchar         *accel_sig;
     GtkAccelGroup *accel_group;
 }; 
 
@@ -354,7 +354,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 	gpointer accel_group;
 	GtkWidget *w, *accel_tie;
  
-	char *dbg_str;
+	const char *dbg_str;
  
 	UT_ASSERT(widget && _data);
 

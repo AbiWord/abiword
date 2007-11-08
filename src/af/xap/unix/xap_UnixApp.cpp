@@ -244,11 +244,11 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 {
 	/* return a pointer to a static buffer */
 	
-	char * szAbiDir = ".AbiSuite";
+	const char * szAbiDir = ".AbiSuite";
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 	
-	char * szHome = getenv("HOME");
+	const char * szHome = getenv("HOME");
 	if (!szHome || !*szHome)
 		szHome = "./";
 	
