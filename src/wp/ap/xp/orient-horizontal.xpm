@@ -1,5 +1,5 @@
 /* XPM */
-static char * orient_horizontal_xpm[] = {
+static const char * orient_horizontal_xpm[] = {
 "48 48 11 1",
 " 	c None",
 ".	c #000000",
