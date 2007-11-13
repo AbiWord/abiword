@@ -100,7 +100,7 @@ UT_Confidence_t IE_Exp_RTF_Sniffer::supportsMIME (const char * szMIME)
 {
 	if (strcmp (szMIME, IE_MIMETYPE_RTF) == 0)
 		{
-			return UT_CONFIDENCE_GOOD;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	return UT_CONFIDENCE_ZILCH;
 }
