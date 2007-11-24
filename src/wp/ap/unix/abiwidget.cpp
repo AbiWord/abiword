@@ -5,6 +5,7 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (C) 2007 Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 One Laptop Per Child
  *
  * This program is free software; you can redistribute it and/or
@@ -2406,19 +2407,28 @@ abi_widget_set_find_string(AbiWidget * w, gchar * search_str)
 {
 	*w->priv->m_sSearchText = UT_UTF8String(search_str).ucs4_str();	// ucs4_str returns object instance
 	FV_View* v = _get_fv_view(w);
-	UT_return_if_fail(v!=0);
-	v->findSetStartAtInsPoint();
+	UT_return_if_fail(v);
 	v->findSetFindString( w->priv->m_sSearchText->ucs4_str() );
 }
 
 extern "C" gboolean
-abi_widget_find_next(AbiWidget * w)
+abi_widget_find_next(AbiWidget * w, gboolean sel_start)
 {
 	FV_View* v = _get_fv_view(w);
-	UT_return_val_if_fail(v!=0,false);
+	UT_return_val_if_fail(v, false);
+	if (!sel_start || v->isSelectionEmpty())
+	{
+		v->findSetStartAtInsPoint();
+	}
+	else
+	{
+		PT_DocPosition start = std::min(v->getPoint(), v->getSelectionAnchor());
+		v->cmdUnselectSelection();
+		v->setPoint(start);
+		v->findSetStartAt(start);
+	}
 	bool doneWithEntireDoc = false;
 	bool res = v->findNext(doneWithEntireDoc);
-	v->findSetStartAtInsPoint();
 	return res;
 }
 
@@ -2426,10 +2436,10 @@ extern "C" gboolean
 abi_widget_find_prev(AbiWidget * w)
 {
 	FV_View* v = _get_fv_view(w);
-	UT_return_val_if_fail(v!=0,false);
+	UT_return_val_if_fail(v, false);
 	bool doneWithEntireDoc = false;
-	bool res = v->findPrev(doneWithEntireDoc);
 	v->findSetStartAtInsPoint();
+	bool res = v->findPrev(doneWithEntireDoc);
 	return res;
 }
 
