@@ -386,7 +386,7 @@ G_BEGIN_DECLS
 
   // search functions
   void abi_widget_set_find_string (AbiWidget * w, gchar * search_str);
-  gboolean abi_widget_find_next (AbiWidget * w);
+  gboolean abi_widget_find_next (AbiWidget * w, gboolean sel_start);
   gboolean abi_widget_find_prev (AbiWidget * w);
 
   // document/page functions

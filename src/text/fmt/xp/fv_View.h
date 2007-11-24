@@ -603,6 +603,7 @@ public:
 
 	bool			findAgain(void);
 
+	void			findSetStartAt(PT_DocPosition pos);
 	void			findSetStartAtInsPoint(void);
 
 	bool			findNext(bool& bDoneEntireDocument);
