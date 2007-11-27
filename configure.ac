@@ -529,9 +529,11 @@ AC_CONFIG_FILES([
  src/pkg/GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
+ src/pkg/linux/apkg/abiword.apspec
  src/pkg/maemo/GNUmakefile
  src/pkg/maemo/abiword.desktop
  src/pkg/maemo/com.abisource.abiword.service
+ src/pkg/maemo/debian/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -587,7 +589,6 @@ AC_CONFIG_FILES([
  src/bindings/GNUmakefile
  src/bindings/perl/GNUmakefile
  src/bindings/perl/examples/GNUmakefile
- src/pkg/linux/apkg/abiword.apspec
  user/GNUmakefile
  user/wp/GNUmakefile
  user/wp/scripts/GNUmakefile
