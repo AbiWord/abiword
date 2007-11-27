@@ -1289,6 +1289,18 @@ UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
 {
 }
 
+void UT_UCS4String::_loadUtf8(const char * utf8_str, size_t bytelength)
+{
+	UT_UCS4Char ucs4;
+	do {
+		ucs4 = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
+		if (ucs4) {
+			pimpl->append (&ucs4, 1);
+		}
+	} while(ucs4 != 0);
+}
+
+
 /* construct from a string in UTF-8 format
  */
 UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */)
@@ -1298,11 +1310,13 @@ UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == ze
 		if (utf8_str == 0 || *utf8_str == '\0') return;
 		bytelength = strlen (utf8_str);
 	}
-	while (true) {
-		UT_UCS4Char ucs4 = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
-		if (ucs4 == 0) break; // end-of-string
-		pimpl->append (&ucs4, 1);
-	}
+	_loadUtf8(utf8_str, bytelength);
+}
+
+UT_UCS4String::UT_UCS4String(const std::string & str /* zero-terminated utf-8 encoded */)
+	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
+{
+	_loadUtf8(str.c_str(), str.size());
 }
 
 /* construct from a string in UTF-8 format

@@ -329,6 +329,7 @@ public:
 	/* construct from a string in UTF-8 format
 	 */
 	UT_UCS4String(const char * utf8_str, size_t bytelength = 0 /* 0 == zero-terminate */);
+	UT_UCS4String(const std::string & str /* zero-terminated utf-8 encoded */);
 
 	/* construct from a string in UTF-8 format
 	 * if (strip_whitespace == true) replace all white space sequences with a single UCS_SPACE
@@ -369,6 +370,7 @@ public:
 	const char * utf8_str ();
 
 private:
+	void _loadUtf8(const char * utf8_str, size_t bytelength); // implementation detail for the UTF-8 constructor
 	class UT_StringImpl<UT_UCS4Char>* pimpl;
 };
 
