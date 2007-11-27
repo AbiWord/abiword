@@ -54,10 +54,7 @@ public:
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 	
 protected:
-	bool _raise();
-	bool _updateTitle();
-	void _setFullScreen(bool changeToFullScreen);
-	void _createTopLevelWindow(void);
+	GtkWidget *  _createInternalWindow(void);
 };
 #endif /* AP_UNIXHILDONFRAMEIMPL_H */
 

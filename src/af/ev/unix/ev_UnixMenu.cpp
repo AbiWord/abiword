@@ -58,7 +58,7 @@
 // hack, icons are in wp
 #include "ap_UnixStockIcons.h"
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include <hildon-widgets/hildon-appview.h>
+#include <hildon/hildon-window.h>
 #endif
 
 #define ACTIVATE_ACCEL "activate"
@@ -955,7 +955,8 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 	// Just create, don't show the menu bar yet.  It is later added and shown
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
 	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
-	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
+	m_wMenuBar = gtk_menu_new ();
+    hildon_window_set_menu (HILDON_WINDOW (wWidget), GTK_MENU (m_wMenuBar));
 #elif defined (ENABLE_MENUBUTTON)
 	m_wMenuBar = gtk_menu_new ();
 #else

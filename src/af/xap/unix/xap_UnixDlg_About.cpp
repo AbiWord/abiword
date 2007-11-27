@@ -79,11 +79,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 
 	// Get the GtkWindow of the parent frame
 	// TODO fix that in hildon frame impl
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
-#else	
-	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
-#endif	
 
 	dlg = gtk_about_dialog_new();
 	gtk_about_dialog_set_url_hook(onAboutDialogActivate, NULL, NULL);

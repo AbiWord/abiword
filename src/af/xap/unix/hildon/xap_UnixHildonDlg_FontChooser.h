@@ -25,7 +25,7 @@
 #define XAP_UNIXHILDONDIALOG_FONTCHOOSER_H
 
 #include "xap_App.h"
-#include "xap_UnixFontManager.h"
+//#include "xap_UnixFontManager.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 
@@ -46,7 +46,7 @@ public:
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
-	XAP_UnixFontManager * 	m_fontManager;
+	//XAP_UnixFontManager * 	m_fontManager;
 	
 	GtkWidget* 				m_Widget;
 	
@@ -80,7 +80,7 @@ protected:
 	
 	// a temporary font to hold dynamically allocated "rented"
 	// fonts between style changes
-	XAP_UnixFontHandle * 	m_lastFont;
+	//XAP_UnixFontHandle * 	m_lastFont;
 
 	// parent frame
 	XAP_Frame *			m_pFrame;

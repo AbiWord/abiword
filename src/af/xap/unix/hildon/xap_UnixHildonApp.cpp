@@ -34,10 +34,14 @@
 // something wrong with these headers -- they need to be included after our own
 // header
 #include <log-functions.h>
-#include <hildon-widgets/hildon-app.h>
+#include <hildon/hildon-program.h>
 
 bool XAP_UnixHildonApp::s_bInitDone      = false;
 bool XAP_UnixHildonApp::s_bRestoreNeeded = false;
+
+static void s_topmost_changed_cb (HildonProgram *program,
+								  GParamSpec *property_param,
+								  gpointer data);
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
 static gint osso_rpc_event_cb (const gchar     *interface,
@@ -46,16 +50,13 @@ static gint osso_rpc_event_cb (const gchar     *interface,
                                gpointer         data,
                                osso_rpc_t      *retval);
 
-static void osso_exit_event_cb (gboolean die_now, gpointer data);
-
 /*****************************************************************/
 XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs, szAppName),
 	  m_pOsso(NULL),
-	  m_pHildonAppWidget(NULL),
+	  m_pHildonProgram(NULL),
 	  m_imContext(NULL),
-	  m_bHibernate(false),
-	  m_bTopmost(false)
+	  m_bHibernate(false)
 {
 }
 
@@ -115,13 +116,6 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey,
 		osso_log (LOG_ERR, "Could not set callback for receiving messages");
 	}
 
-	
-	ret = osso_application_set_exit_cb(m_pOsso, osso_exit_event_cb, this);
-	if (ret != OSSO_OK)
-	{
-		osso_log (LOG_ERR, "Could not set exit callback\n");
-	}
-	
 	return XAP_UnixApp::initialize(szKeyBindingsKey,szKeyBindingsDefaultValue);
 }
 
@@ -147,408 +141,26 @@ void XAP_UnixHildonApp::processStartupQueue()
 
 
 /*!
-    Because of the peculiar way hildon handles windows and views, we need a
-    custom function for the delete_event
-*/
-static gint s_delete_event(GtkWidget * w,
-						   GdkEvent * /*event*/,
-						   gpointer /*data*/)
-{
-	XAP_UnixHildonApp * pThis =
-		static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w), "user_data"));
-	UT_return_val_if_fail( pThis, FALSE );
-
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	XAP_UnixFrameImpl * pFrameImpl
-		= static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
-	
-	XAP_Frame* pFrame = pFrameImpl->getFrame();
-	XAP_UnixHildonApp * pApp =
-		static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
-
-	if(pApp->isBonoboRunning())
-		return FALSE;
-
-	UT_uint32 iFrameCount = pApp->getFrameCount();
-	
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-
-	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
-
-	// was "closeWindow", TRUE, FALSE
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-	UT_ASSERT(pEM);
-
-	if (pEM)
-	{
-		if (pEM->Fn(pFrame->getCurrentView(),NULL))
-		{
-			// returning FALSE means destroy the window, continue along the
-			// chain of Gtk destroy events
-			
-			// with hildon, our frames are not proper windows, but behave more
-			// like tabs in a single window. Pressing the 'close' button,
-			// however, closes the main window, not the individual tab. So, if
-			// there are frames left, we must return true to stop the processing
-			// chain. We also have to update the window title
-			
-			if(iFrameCount > 1)
-			{
-				// switch the main window to a different view
-				GtkWidget * pHildonAppWidget = pApp->getHildonAppWidget();
-				UT_return_val_if_fail( pHildonAppWidget, TRUE );
-
-				pFrame = pApp->getFrame(0);
-				UT_return_val_if_fail( pFrame, TRUE );
-
-				pFrameImpl =
-					static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-				UT_return_val_if_fail( pFrameImpl, TRUE );
-				
-				hildon_app_set_appview(HILDON_APP(pHildonAppWidget),
-									   HILDON_APPVIEW(pFrameImpl->getTopLevelWindow()));
-				
-				return TRUE;
-			}
-			else
-				return FALSE;
-		}
-	}
-
-	// returning TRUE means do NOT destroy the window; halt the message
-	// chain so it doesn't see destroy
-	return TRUE;
-}
-
-/*!
-   HildonAppViews, which represent our frames, do not receive focus_in and _out
-   events; intstead those events are caught by HildonApp; consequently our event
-   handler needs to call the frame handler implemented in XAP_UnixFrameImpl
-*/
-static gboolean s_focus_in_event(GtkWidget *w,
-								 GdkEvent *event,
-								 gpointer user_data)
-{
-	XAP_UnixHildonApp * pThis
-		= static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w), "user_data"));
-	UT_return_val_if_fail( pThis, FALSE );
-
-	UT_DEBUGMSG(("\n===========================\nHildonApp focus_in_event: pThis 0x%x\n=========================\n",
-				 pThis));
-
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-	
-	return XAP_UnixFrameImpl::_fe::focus_in_event(GTK_WIDGET(pHView),
-												  event, user_data);
-}
-
-static gboolean s_focus_out_event(GtkWidget *w,GdkEvent *event,
-								  gpointer user_data)
-{
-	XAP_UnixHildonApp * pThis
-		= static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w),
-															"user_data"));
-	UT_return_val_if_fail( pThis, FALSE );
-
-	UT_DEBUGMSG(("\n===========================\nHildonApp focus_out_event: pThis 0x%x\n=========================\n",
-				 pThis));
-
-	
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	return XAP_UnixFrameImpl::_fe::focus_out_event(GTK_WIDGET(pHView),
-												   event, user_data);
-}
-
-
-static gint s_key_press_event(GtkWidget* w, GdkEventKey* event)
-{
-	XAP_UnixHildonApp * pThis
-		= static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w),
-															"user_data"));
-	UT_return_val_if_fail( pThis, FALSE );
-
-	UT_DEBUGMSG(("\n===\nHildonApp key_press_event: pThis 0x%x\n===\n",
-				 pThis));
-	
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	return XAP_UnixFrameImpl::_fe::key_press_event(GTK_WIDGET(pHView),
-												   event);
-}
-
-static gint s_key_release_event(GtkWidget* w, GdkEventKey* event)
-{
-	XAP_UnixHildonApp * pThis
-		= static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w),
-															"user_data"));
-	UT_return_val_if_fail( pThis, FALSE );
-
-	UT_DEBUGMSG(("\n===\nHildonApp key_release_event: pThis 0x%x\n===\n",
-				 pThis));
-	
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	return XAP_UnixFrameImpl::_fe::key_release_event(GTK_WIDGET(pHView),
-													 event);
-}
-
-/*!
-    All input from the virtual keyboard operates on the HildonApp widget; the
-    individual frames do not get any signals. Consequently, we create one shared
-    input context for all our frames in the XAP_UnixHildonApp and register
-    callbacks for it from here; we then forward all events to the normal
-    callbacks implemented in XAP_UnixFrameImp.
-*/
-static void s_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
-{
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_if_fail( pThis );
-
-	HildonAppView * pHView
-		= hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_if_fail( pHView );
-
-	XAP_UnixFrameImpl * pFrameImpl
-		= static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView),
-															 "user_data"));
-	UT_return_if_fail( pFrameImpl );
-
-	XAP_UnixFrameImpl::_imPreeditChanged_cb (context, (gpointer)pFrameImpl);
-}
-
-static gint s_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
-{
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_val_if_fail( pThis, FALSE );
-
-	HildonAppView * pHView =
-		hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	XAP_UnixFrameImpl * pFrameImpl =
-		static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView),
-														   "user_data"));
-	UT_return_val_if_fail( pFrameImpl, FALSE );
-
-	return XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (context,
-														 (gpointer)pFrameImpl);
-}
-
-static gint s_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
-{
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_val_if_fail( pThis, FALSE );
-
-	HildonAppView * pHView =
-		hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_val_if_fail( pHView, FALSE );
-
-	XAP_UnixFrameImpl * pFrameImpl =
-		static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView),
-														   "user_data"));
-	UT_return_val_if_fail( pFrameImpl, FALSE );
-
-	return XAP_UnixFrameImpl::_imDeleteSurrounding_cb (slave, offset, n_chars,
-													   (gpointer)pFrameImpl);
-}
-
-static void s_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
-{
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_if_fail( pThis );
-
-	HildonAppView * pHView =
-		hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
-	UT_return_if_fail( pHView );
-
-	XAP_UnixFrameImpl * pFrameImpl =
-		static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView),
-														   "user_data"));
-	UT_return_if_fail( pFrameImpl );
-
-	XAP_UnixFrameImpl::_imCommit_cb (imc, text, (gpointer)pFrameImpl);
-}
-
-static void s_topmost_lose_cb(HildonApp *hildonapp, gpointer data)
-{
-	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-lose %%%%%%%%%%%%%%%%%%\n"));
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_if_fail( pThis );
-
-	// because it takes us something like 9s to start up, we will only
-	// hibernated if the m_bHibernate flag is set. We set this flag in response
-	// to low memory signal and clear it every time we get awaken from
-	// hibernation
-	if(pThis->getHibernate())
-	{
-		pThis->saveState(false);
-		hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), TRUE);
-	}
-
-	pThis->setTopmost(false);
-}
-
-static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
-{
-	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-acquire %%%%%%%%%%%%%%%%%%\n"));
-	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
-	UT_return_if_fail( pThis );
-
-	pThis->setTopmost(true);
-	
-	const char * pUntitled = "Untitled%d";
-	const XAP_StringSet * pSS = pThis->getStringSet();
-	if(pSS)
-	{
-		const char * p = pSS->getValue(XAP_STRING_ID_UntitledDocument);
-		if(p && *p)
-			pUntitled = p;
-	}
-	
-	for(UT_uint32 i = 0; i < pThis->getFrameCount(); ++i)
-	{
-		XAP_Frame * pFrame = pThis->getFrame(i);
-		if(!pFrame)
-		{
-			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-			continue;
-		}
-
-		AD_Document * pDoc = pFrame->getCurrentDoc();
-		if(!pDoc)
-		{
-			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-			continue;
-		}
-		
-		const char * pName = pFrame->getFilename();
-		if(pName && *pName)
-		{
-			// for now, only do this for untitled docs use the localised name
-			// for Untitled and compare len-2 chars (there is %d at the end of
-			// the string)
-			if(!strncmp(pName, pUntitled, strlen(pUntitled)-2))
-			{
-				const char * p = strstr(pName, "HIBERNATED.abw");
-
-				// this was an untitled doc before we lost focus; make it look
-				// like it still is
-				if(p)
-				{
-					pDoc->clearFilename();
-					pDoc->forceDirty();
-					pFrame->updateTitle();
-				}
-			}
-		}
-	}
-	
-	// it would be better to do this in conditional fashion, after the user
-	// modified the document, but this will do for now
-	hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), FALSE);
-}
-
-/*!
-    This methods returns an instance of HildonApp widget; there is only one
+    This methods returns an instance of HildonProgram object; there is only one
     instance of it for the applicaiton, and it is created by this function when
     it is first called.
 */
-GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
+GObject *  XAP_UnixHildonApp::getHildonProgram() const
 {
-	if(!m_pHildonAppWidget)
+	if(!m_pHildonProgram)
 	{
-		m_pHildonAppWidget = hildon_app_new();
-		UT_return_val_if_fail( m_pHildonAppWidget, NULL );
+		m_pHildonProgram = G_OBJECT (hildon_program_get_instance ());
+		UT_return_val_if_fail (m_pHildonProgram, NULL);
 
-		hildon_app_set_killable(HILDON_APP(m_pHildonAppWidget), FALSE);
-		hildon_app_set_autoregistration(HILDON_APP(m_pHildonAppWidget), TRUE);
-		hildon_app_set_title(HILDON_APP(m_pHildonAppWidget), getApplicationTitleForTitleBar());
-		hildon_app_set_two_part_title(HILDON_APP(m_pHildonAppWidget), TRUE);
-
-		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "user_data",
-						  const_cast<XAP_UnixHildonApp*>(this)); 
-	
-		gtk_window_set_role(GTK_WINDOW(m_pHildonAppWidget), "topLevelWindow");		
-		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "toplevelWindow",
-						  m_pHildonAppWidget);
-
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "realize",
-						 G_CALLBACK(XAP_UnixFrameImpl::_fe::realize), NULL);
-
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "unrealize",
-						 G_CALLBACK(XAP_UnixFrameImpl::_fe::unrealize), NULL);
-
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "size_allocate",
-						 G_CALLBACK(XAP_UnixFrameImpl::_fe::sizeAllocate), NULL);
-		
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "delete_event",
-						 G_CALLBACK(s_delete_event), NULL);
-		
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "destroy",
-						 G_CALLBACK(XAP_UnixFrameImpl::_fe::destroy), NULL);
-
-
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "focus_in_event",
-						 G_CALLBACK(s_focus_in_event), NULL);
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "focus_out_event",
-						 G_CALLBACK(s_focus_out_event), NULL);
-
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "topmost-status-lose",
-						 G_CALLBACK(s_topmost_lose_cb),
-						 const_cast<XAP_UnixHildonApp*>(this));
-		
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "topmost-status-acquire",
-						 G_CALLBACK(s_topmost_acquire_cb),
-						 const_cast<XAP_UnixHildonApp*>(this));
-
-		gtk_widget_realize(m_pHildonAppWidget);
-
-		m_imContext = gtk_im_multicontext_new();
-		gtk_im_context_set_use_preedit (m_imContext, FALSE); 
-		gtk_im_context_set_client_window(m_imContext,
-										 m_pHildonAppWidget->window);
-		
-		g_signal_connect(G_OBJECT(m_imContext), "commit", 
-						 G_CALLBACK(s_imCommit_cb),
-						 const_cast<XAP_UnixHildonApp*>(this));
-		
-		g_signal_connect (m_imContext, "preedit_changed",
-						  G_CALLBACK (s_imPreeditChanged_cb),
-						  const_cast<XAP_UnixHildonApp*>(this));
-		
-		g_signal_connect (m_imContext, "retrieve_surrounding",
-						  G_CALLBACK (s_imRetrieveSurrounding_cb),
-						  const_cast<XAP_UnixHildonApp*>(this));
-		
-		g_signal_connect (m_imContext, "delete_surrounding",
-						  G_CALLBACK (s_imDeleteSurrounding_cb),
+		g_object_set_data(m_pHildonProgram, "user_data",
 						  const_cast<XAP_UnixHildonApp*>(this));
 
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "key_press_event",
-						 G_CALLBACK(s_key_press_event),
-						 NULL);
-		
-		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "key_release_event",
-						 G_CALLBACK(s_key_release_event),
-						 NULL);
-		
+		g_signal_connect (m_pHildonProgram, "notify::is-topmost",
+				G_CALLBACK (s_topmost_changed_cb),
+				const_cast<XAP_UnixHildonApp*>(this));
 	}
 
-	return m_pHildonAppWidget;
+	return m_pHildonProgram;
 }
 
 
@@ -603,6 +215,100 @@ void XAP_UnixHildonApp::clearStateInfo()
 	UT_ASSERT_HARMLESS( ret == OSSO_OK );
 }
 
+bool XAP_UnixHildonApp::isTopmost(void) const
+{
+	return hildon_program_get_is_topmost (HILDON_PROGRAM (m_pHildonProgram));
+}
+
+static void
+_topmost_lose (XAP_UnixHildonApp *app,
+		 HildonProgram *program)
+{
+	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-lose %%%%%%%%%%%%%%%%%%\n"));
+
+	// because it takes us something like 9s to start up, we will only
+	// hibernated if the m_bHibernate flag is set. We set this flag in response
+	// to low memory signal and clear it every time we get awaken from
+	// hibernation
+	if(app->getHibernate())
+	{
+		app->saveState(false);
+		hildon_program_set_can_hibernate (HILDON_PROGRAM (program), TRUE);
+	}
+}
+
+static void 
+_topmost_acquire (XAP_UnixHildonApp *app,
+		 HildonProgram *program)
+{
+	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-acquire %%%%%%%%%%%%%%%%%%\n"));
+	const char * pUntitled = "Untitled%d";
+	const XAP_StringSet * pSS = app->getStringSet();
+	if(pSS)
+	{
+		const char * p = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+		if(p && *p)
+			pUntitled = p;
+	}
+	
+	for(UT_uint32 i = 0; i < app->getFrameCount(); ++i)
+	{
+		XAP_Frame * pFrame = app->getFrame(i);
+		if(!pFrame)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+
+		AD_Document * pDoc = pFrame->getCurrentDoc();
+		if(!pDoc)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
+		const char * pName = pFrame->getFilename();
+		if(pName && *pName)
+		{
+			// for now, only do this for untitled docs use the localised name
+			// for Untitled and compare len-2 chars (there is %d at the end of
+			// the string)
+			if(!strncmp(pName, pUntitled, strlen(pUntitled)-2))
+			{
+				const char * p = strstr(pName, "HIBERNATED.abw");
+
+				// this was an untitled doc before we lost focus; make it look
+				// like it still is
+				if(p)
+				{
+					pDoc->clearFilename();
+					pDoc->forceDirty();
+					pFrame->updateTitle();
+				}
+			}
+		}
+	}
+	
+	// it would be better to do this in conditional fashion, after the user
+	// modified the document, but this will do for now
+	hildon_program_set_can_hibernate (HILDON_PROGRAM (program), FALSE);
+}
+
+static void
+s_topmost_changed_cb (HildonProgram *program,
+		GParamSpec *property_param,
+		gpointer data)
+{
+	XAP_UnixHildonApp *pApp;
+	g_return_if_fail (data != NULL);
+	pApp = static_cast<XAP_UnixHildonApp *>(data);
+
+	if (hildon_program_get_is_topmost (program))
+		_topmost_lose(pApp, program);
+	else
+		_topmost_acquire(pApp, program);
+}
+
 
 /* Depending on the state of hw, do something */
 static void 
@@ -648,8 +354,6 @@ osso_hw_event_cb (osso_hw_state_t *state,
 			if(!pApp->isTopmost())
 			{
 				pApp->saveState(false);
-				hildon_app_set_killable(HILDON_APP(pApp->getHildonAppWidget()),
-										TRUE);
 			}
 		}
 		else
@@ -716,11 +420,4 @@ static gint osso_rpc_event_cb (const gchar     *interface,
 	
 	return OSSO_OK;
 }
-
-
-static void osso_exit_event_cb (gboolean /*die_now*/, gpointer /*data*/)
-{
-	UT_DEBUGMSG(("osso_exit_event_cb() called\n"));
-}
-
 

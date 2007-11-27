@@ -58,7 +58,7 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 
 	virtual void _refillToolbarsInFrameData();
 	void _bindToolbars(AV_View * pView);
-	void _createWindow();
+	virtual void _createWindow();
 
 	virtual GtkWidget * _createDocumentWindow();
 	virtual GtkWidget * _createStatusBarWindow();

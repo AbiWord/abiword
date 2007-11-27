@@ -47,29 +47,27 @@ public:
 
 	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 
-	GtkWidget *  getHildonAppWidget() const;
 	GtkIMContext * getIMContext() const {return m_imContext;}
+	GObject * getHildonProgram() const;
 
 	void         processStartupQueue();
 	virtual void clearStateInfo();
 
 	void setHibernate(bool b){m_bHibernate = b;}
 	bool getHibernate(void)const {return m_bHibernate;}
+	bool isTopmost(void)const;
 
-	void setTopmost(bool b) {m_bTopmost = b;}
-	bool isTopmost() const {return m_bTopmost;}
-	
 protected:
 	virtual bool _saveState(XAP_StateData & sd);
 	virtual bool _retrieveState(XAP_StateData & sd);
 
 private:
 	osso_context_t *       m_pOsso;
-	mutable GtkWidget *    m_pHildonAppWidget;
+	mutable GObject *      m_pHildonProgram;
 	mutable GtkIMContext * m_imContext;
 	bool                   m_bHibernate;
-	bool                   m_bTopmost;
-	
+
+
 public:
 	static bool s_bInitDone;
 	static bool s_bRestoreNeeded;
