@@ -129,7 +129,7 @@
 
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
-#if defined (EMBEDDED_TARGET)
+#if defined (EMBEDDED_TARGET) && EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"Embedded"		/* values in BeginLayout() */
 #elif XP_SIMPLE_TOOLBAR
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"SimpleOps"		/* values in BeginLayout() */

@@ -66,7 +66,7 @@
 #endif
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include "hildon-widgets/hildon-appview.h"
+#include <hildon/hildon-window.h>
 #endif
 
 #define PROP_HANDLER_ID "handler-id"
@@ -1142,12 +1142,10 @@ bool EV_UnixToolbar::synthesize(void)
 	}
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	
 	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
-	gtk_box_pack_end(GTK_BOX(HILDON_APPVIEW(wTLW)->vbox), m_wToolbar, FALSE, FALSE, 0);
-	gtk_widget_show_all(m_wToolbar);	
-	gtk_widget_show_all(wTLW);			
-
+	hildon_window_add_toolbar (HILDON_WINDOW (wTLW), GTK_TOOLBAR (m_wToolbar));
+	gtk_widget_show_all(m_wToolbar);
+	gtk_widget_show_all(wTLW);
 #else
 	GtkBox * wBox = _getContainer();
 

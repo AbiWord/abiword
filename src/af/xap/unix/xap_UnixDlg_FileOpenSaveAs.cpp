@@ -63,7 +63,7 @@
 #include "ut_bytebuf.h"
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon/hildon-file-chooser-dialog.h>
 #endif
 
 
@@ -602,9 +602,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	GtkWidget * wHildonView = gtk_widget_get_parent(parent);
-
-	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(wHildonView),
+	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(parent),
 							(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
 							);
 	

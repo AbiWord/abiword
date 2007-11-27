@@ -1441,6 +1441,11 @@ XAP_DialogFactory * XAP_UnixFrameImpl::_getDialogFactory(void)
 	return &m_dialogFactory;
 }
 
+GtkWidget *  XAP_UnixFrameImpl::_createInternalWindow (void)
+{
+	return gtk_window_new(GTK_WINDOW_TOPLEVEL);
+}
+
 // TODO: split me up into smaller pieces/subfunctions
 void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 {
@@ -1469,7 +1474,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		m_wTopLevelWindow = _createInternalWindow ();
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     XAP_App::getApp()->getApplicationTitleForTitleBar());
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);

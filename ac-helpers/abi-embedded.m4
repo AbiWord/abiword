@@ -50,7 +50,7 @@ AC_ARG_ENABLE(embedded,[  --enable-embedded=generic|hildon|poky    Include embed
    fi
    case "${enableval}" in
 	hildon) 
-	  PKG_CHECK_MODULES(HILDON, hildon-libs hildon-fm dbus-1 libosso libosso-gsf-1, [], [AC_MSG_ERROR([Hildon dependencies not satisfied.])])
+	  PKG_CHECK_MODULES(HILDON, hildon-1 hildon-fm-2 dbus-1 libosso, [], [AC_MSG_ERROR([Hildon dependencies not satisfied.])])
 	  EMBEDDED_CFLAGS="$EMBEDDED_CFLAGS $HILDON_CFLAGS"
 	  EMBEDDED_LIBS="$EMBEDDED_LIBS $HILDON_LIBS"
 	  embedded=EMBEDDED_TARGET_HILDON

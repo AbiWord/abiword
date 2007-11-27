@@ -231,14 +231,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::configure_event), NULL);
 
 	// focus and XIM related
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	const char focus_out_event_name[] = "focus-out-event";
-#else
-	const char focus_out_event_name[] = "leave_notify_event";
-#endif
 	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(ap_focus_in_event), this);
-
-	g_signal_connect(G_OBJECT(m_dArea), focus_out_event_name, G_CALLBACK(ap_focus_out_event), this);
+	g_signal_connect(G_OBJECT(m_dArea), "leave_notify_event", G_CALLBACK(ap_focus_out_event), this);
 
 	//
 	// Need this to fix screen flicker for abiwidget on focus in/out
@@ -351,11 +345,7 @@ void AP_UnixFrameImpl::_createWindow()
 {
 	_createTopLevelWindow();
 	
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	gtk_widget_show_all(gtk_widget_get_parent(getTopLevelWindow()));
-#else
 	gtk_widget_show(getTopLevelWindow());
-#endif
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{

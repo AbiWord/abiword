@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include <hildon-widgets/hildon-font-selection-dialog.h>
+#include <hildon/hildon-font-selection-dialog.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

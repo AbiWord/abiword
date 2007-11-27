@@ -626,11 +626,8 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	
 	// Get the GtkWindow of the parent frame
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	GtkWidget * parentWindow = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
-#else	
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
-#endif	
+
 	if(GTK_IS_WINDOW(parentWindow) != TRUE)
 		parentWindow  = gtk_widget_get_parent(parentWindow);
 	GtkWidget *popup;

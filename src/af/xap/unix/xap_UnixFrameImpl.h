@@ -88,7 +88,7 @@ protected:
 	virtual bool _raise();
 	virtual bool _show();
 
-	virtual void _createTopLevelWindow(void);
+	virtual GtkWidget *  _createInternalWindow (void);
 
 	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
 	virtual void _initialize();
@@ -98,6 +98,7 @@ protected:
 	virtual GtkWidget * _createDocumentWindow() = 0;
 	virtual GtkWidget * _createStatusBarWindow() = 0;
 
+	void _createTopLevelWindow(void);
 	bool _updateTitle();
 	void _createIMContext(GdkWindow* w);
 	UT_sint32 _setInputMode(const char * szName);
