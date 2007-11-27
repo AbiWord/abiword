@@ -218,7 +218,6 @@ ABI_GUCHARMAP
 ABI_XFT_QUICK
 ABI_GSF
 ABI_GOFFICE
-ABI_BONOBO
 ABI_GNOMEVFS
 ABI_GNOMEUI
 
@@ -672,7 +671,6 @@ cat <<EOF
   goffice:                ${abi_goffice_message}
   gnome-vfs:              ${abi_gnomevfs_message}
   gnome-ui:               ${abi_gnomeui_message}
-  bonobo (deprecated):    ${abi_bonobo_message}
   libabiword:             ${abi_lib_message}
   binreloc:               ${br_cv_binreloc}
 
