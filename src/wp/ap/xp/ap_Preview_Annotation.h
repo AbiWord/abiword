@@ -20,11 +20,10 @@
 #ifndef AP_PREVIEW_ANNOTATION_H
 #define AP_PREVIEW_ANNOTATION_H
 
+#include <string>
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_string.h"
-//#include "ut_vector.h"
 #include "gr_Graphics.h"
 #include "xap_Preview.h"
 #include "xap_Dialog.h"
@@ -63,9 +62,10 @@ protected:
 	
 private:
 	UT_uint32			m_iAID;
-	gchar *				m_pTitle;
-	gchar *				m_pAuthor;
-	gchar *				m_pDescription;
+	// assume that these strings are always UTF8
+	std::string			m_pTitle;
+	std::string			m_pAuthor;
+	std::string			m_pDescription;
 	UT_UCS4String			m_drawString;
 	GR_Font *			m_pFont;
 	UT_sint32			m_iAscent;

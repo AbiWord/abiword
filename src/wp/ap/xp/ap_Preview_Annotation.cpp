@@ -29,16 +29,17 @@
 #include "xap_Frame.h"
 
 // RIVERA
-AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id): XAP_Dialog_Modeless(pDlgFactory,id)
+AP_Preview_Annotation::AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id)
+	: XAP_Dialog_Modeless(pDlgFactory,id),
+	m_width(PREVIEW_DEFAULT_WIDTH),
+	m_height(PREVIEW_DEFAULT_HEIGHT),
+	m_left(0),
+	m_top(0),
+	m_clrBackground(255, 247, 177),
+	m_pTitle("n/a"),
+	m_pAuthor("n/a"),
+	m_pDescription("n/a")
 {
-	UT_setColor(m_clrBackground,255,247,177);
-	m_width					= PREVIEW_DEFAULT_WIDTH;
-	m_height				= PREVIEW_DEFAULT_HEIGHT;
-	m_left = 0;
-	m_top = 0;
-	m_pTitle				= "n/a";
-	m_pAuthor				= "n/a";
-	m_pDescription			= "n/a";
 }
 
 AP_Preview_Annotation::~AP_Preview_Annotation()
@@ -49,17 +50,17 @@ AP_Preview_Annotation::~AP_Preview_Annotation()
 void AP_Preview_Annotation::setTitle(const gchar * pTitle)
 {
 	UT_return_if_fail(pTitle);
-	m_pTitle = g_strdup(pTitle);
+	m_pTitle = pTitle;
 }
 void AP_Preview_Annotation::setAuthor(const gchar * pAuthor)
 {
 	UT_return_if_fail(pAuthor);
-	m_pAuthor = g_strdup(pAuthor);
+	m_pAuthor = pAuthor;
 }
 void AP_Preview_Annotation::setDescription(const gchar * pDescription)
 {
 	UT_return_if_fail(pDescription);
-	m_pDescription = g_strdup(pDescription);
+	m_pDescription = pDescription;
 }
 void AP_Preview_Annotation::setAnnotationID(UT_uint32 aID)
 {
@@ -83,7 +84,7 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
-	m_drawString = g_strconcat(m_pTitle, " (", m_pAuthor, "): ", m_pDescription, NULL);
+	m_drawString = m_pTitle + " (" + m_pAuthor + "): " + m_pDescription;
 
 	//
 	// Text decorations.
