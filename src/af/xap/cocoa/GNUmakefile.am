@@ -72,7 +72,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_PrintingNSView.cpp
 
 EXTRA_DIST = \
-	xap_GenericListChooser_Controller.nib \
+	xap_GenericListChooser_Controller.nib/*.nib \
 	$(headers_DATA)
 
 #headersdir = $(ABIWORD_HEADERSDIR)/xap/cocoa
