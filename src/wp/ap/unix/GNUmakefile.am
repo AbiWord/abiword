@@ -144,6 +144,7 @@ headersdir = $(ABIWORD_HEADERSDIR)
 headers_DATA = abiwidget.h 
 
 noinst_HEADERS = \
+	ap_DocView.h \
 	ap_UnixApp.h \
 	ap_UnixAppImpl.h \
 	ap_UnixClipboard.h \
