@@ -131,6 +131,7 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_Latex.cpp 		\
 	ap_UnixStockIcons.cpp 		\
 	abiwidget.cpp			\
+	ap_DocView.cpp			\
 	$(statusbar)
 
 EXTRA_DIST = \

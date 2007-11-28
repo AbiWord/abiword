@@ -25,6 +25,7 @@
 #include "ap_UnixFrame.h"
 #include "ie_types.h"
 #include "xap_UnixFrameImpl.h"
+#include "ap_DocView.h"
 
 
 class XAP_UnixApp;

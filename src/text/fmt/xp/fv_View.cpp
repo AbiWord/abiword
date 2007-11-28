@@ -2149,6 +2149,64 @@ void FV_View:: getTextInDocument(UT_GrowBuf & buf)
 	}
 }
 
+/*!
+ * This method returns the bounds of a line, given an offset.
+ */
+	bool FV_View::getLineBounds(PT_DocPosition pos, PT_DocPosition *start, PT_DocPosition *end)
+{
+	fl_BlockLayout *pBlock = NULL;
+	fp_Run *pRun = NULL;
+	UT_sint32 x, y;
+	UT_uint32 height;
+	UT_sint32 x2, y2;
+	bool bDirection;
+	_findPositionCoords(pos, FALSE, x, y, x2, y2, height, bDirection, &pBlock, &pRun);
+	if (!pRun) return FALSE;
+fp_Line *line = pRun->getLine();
+	PT_DocPosition blockpos = pBlock->getPosition();
+	if (start)
+	{
+		*start = blockpos + line->getFirstRun()->getBlockOffset();
+	}
+	if (end)
+	{
+		fp_Run *lastrun = line->getLastRun();
+		*end = blockpos + lastrun->getBlockOffset() + lastrun->getLength();
+	}
+	return TRUE;
+}
+
+UT_UCSChar FV_View::getChar(PT_DocPosition pos, UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint32 *height)
+{
+  if (x || y || height)
+  {
+  UT_sint32 fp_x, fp_y;
+  UT_uint32 fp_height;
+  UT_sint32 x2, y2;
+  bool bDirection;
+    _findPositionCoords(pos, FALSE, fp_x, fp_y, x2, y2, fp_height, bDirection, NULL, NULL);
+    if (x) *x = fp_x;
+    if (y) *y = fp_y;
+    if (height) *height = fp_height;
+  }
+
+  pt_PieceTable *piece = getDocument()->getPieceTable();
+  pf_Frag *p;
+  PT_BlockOffset offset;
+  UT_UCSChar ret;
+  if (piece->getFragFromPosition(pos, &p, &offset))
+  {
+    if (p->getType() == 0) // PFT_Text)
+    {
+      pf_Frag_Text *pt = reinterpret_cast<pf_Frag_Text *>(p);
+      PT_BufIndex bi = pt->getBufIndex();
+      const UT_UCSChar *c = piece->getPointer(bi);
+      ret = c[offset];
+    }
+  }
+  if (ret && width) *width = getGraphics()->measureUnRemappedChar(ret);
+  return ret;
+}
 
 /*!
  * Goes through the document and reformats any paragraphs that need this.
@@ -6385,16 +6443,23 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 
 	while(pBlock && curPos < pos2)
 	{
+		buffer.truncate(0);
 		pBlock->getBlockBuf(&buffer);
 
+		if (curPos < pBlock->getPosition(FALSE)) curPos = pBlock->getPosition(FALSE);
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
 		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
-		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
+		if(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
 			offset	 += iLenToCopy;
 			buff_ptr += iLenToCopy;
 			curPos	 += iLenToCopy;
+			if (curPos < pos2)
+			{
+				*buff_ptr++ = '\n';
+				curPos++;
+			}
 		}
 
 		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());

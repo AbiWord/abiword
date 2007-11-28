@@ -197,7 +197,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
 
 	// create a drawing area in the for our document window.
-	m_dArea = createDrawingArea ();
+	m_dArea = ap_DocView_new();
+	setupDrawingArea(m_dArea);
 	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
 	UT_DEBUGMSG(("!!! drawing area m_dArea created! %x for %x \n",m_dArea,this));
 	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed

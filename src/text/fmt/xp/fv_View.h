@@ -313,6 +313,8 @@ public:
 	void            getTextInCurrentBlock(UT_GrowBuf & buf);
 	void            getTextInCurrentSection(UT_GrowBuf & buf);
 	void            getTextInDocument(UT_GrowBuf & buf);
+	bool            getLineBounds(PT_DocPosition pos, PT_DocPosition *start, PT_DocPosition *end);
+	UT_UCSChar getChar(PT_DocPosition pos, UT_sint32 *x = NULL, UT_sint32 *y = NULL, UT_uint32 *width = NULL, UT_uint32 *height = NULL);
 
 // ----------------------
 	FL_DocLayout*	getLayout() const;

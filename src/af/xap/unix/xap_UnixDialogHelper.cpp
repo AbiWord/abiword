@@ -1093,9 +1093,17 @@ GtkWidget *createDrawingArea ()
   GtkWidget *area;
   
   area = gtk_drawing_area_new ();
-  gtk_widget_set_double_buffered(area, FALSE);
 
+  setupDrawingArea(area);
   return area;
+}
+
+/*!
+ * Performs setup as needed for a drawing area
+ */
+void setupDrawingArea (GtkWidget *area)
+{
+  gtk_widget_set_double_buffered(area, FALSE);
 }
 
 /*!
