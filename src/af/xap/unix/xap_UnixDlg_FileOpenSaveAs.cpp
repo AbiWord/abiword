@@ -231,10 +231,9 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				continue;
 	
 			// We append the suffix of the default type, so the user doesn't
-				// have to.  This is adapted from the Windows front-end code
+			// have to.  This is adapted from the Windows front-end code
 			// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
 			// If, however, the user doesn't want suffixes, they don't have to have them.  
-	
 			{
 				//UT_uint32 end = g_strv_length(m_szSuffixes);
 	
@@ -262,28 +261,33 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						}
 					}
 				}
-				bool wantSuffix = true;
 				
+				bool wantSuffix = true;
 				XAP_Prefs *pPrefs= XAP_App::getApp()->getPrefs();
-	
 				pPrefs->getPrefsValueBool(static_cast<const gchar *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
-	
 				UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 
-#if 0	
-				struct stat buf;
-				// do not want suffix for directory names
-				err = stat(szDialogFilename, &buf);
-				if ((err == 0) && (S_ISDIR(buf.st_mode)))
-					wantSuffix = false;
-#endif
-	
-				// if the file doesn't have a suffix already, and the file type
-				// is normal (special types are negative, like auto detect),
-				// and the user wants extensions, slap a suffix on it.   
-				if ((!UT_pathSuffix(szDialogFilename)) && 
-					(nFileType > 0) && wantSuffix)                                
-					{                                                       
+				if (nFileType > 0) // 0 means autodetect
+				{
+					if (UT_pathSuffix(szDialogFilename))
+					{
+						// warn if we have a suffix that doesn't match the selected file type
+						IE_ExpSniffer* pSniffer = IE_Exp::snifferForFileType(m_nTypeList[nIndex]);
+						if (pSniffer && !pSniffer->recognizeSuffix(UT_pathSuffix(szDialogFilename)))
+						{
+							UT_UTF8String msg;
+							const XAP_StringSet * pSS = m_pApp->getStringSet();
+							pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExtensionDoesNotMatch, msg);
+							if (pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO) != XAP_Dialog_MessageBox::a_YES)
+								goto ContinueLoop;
+						}
+						szFinalPathname = g_strdup(szDialogFilename);
+					}
+					else if (wantSuffix)                                
+					{
+						// if the file doesn't have a suffix already, and the file type
+						// is normal (special types are negative, like auto detect),
+						// and the user wants extensions, slap a suffix on it.						
 						// add suffix based on selected file type       
 						UT_UTF8String suffix (IE_Exp::preferredSuffixForFileType(m_nTypeList[nIndex]));
 						UT_uint32 length = strlen(szDialogFilename) + suffix.size() + 1;
@@ -291,20 +295,23 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
 						
 						if (szFinalPathname)                            						
-							{                                               
-								char * p = szFinalPathname;             
-								strcpy(p,szDialogFilename);             
-								strcat(p,suffix.utf8_str());                     
-							}                                               
-						
-					}                                                       
-				else                                                    
-					{                                                       
-						// the file type is special (auto detect)       
-						// set to plain name, and let the auto detector in the
-						// exporter figure it out                       
+						{                                               
+							char * p = szFinalPathname;             
+							strcpy(p,szDialogFilename);             
+							strcat(p,suffix.utf8_str());                     
+						}                                               
+					}
+					else
 						szFinalPathname = g_strdup(szDialogFilename);
-					}                                                       
+				}
+				else                                                    
+				{                                                       
+					// the file type is special (auto detect)       
+					// set to plain name, and let the auto detector in the
+					// exporter figure it out                       
+					szFinalPathname = g_strdup(szDialogFilename);
+				}                                                       
+
 				// g_free szDialogFilename since it's been put into szFinalPathname (with
 				// or without changes) and it's invalid (missing an extension which
 				// might have been appended)                            
@@ -314,14 +321,9 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 			szFinalPathnameCopy = g_strdup(szFinalPathname);
 
-			bool exists = UT_go_file_exists(szFinalPathnameCopy);
-				
-			// Does the filename already exist?
-	
-			if (exists)
+			if (UT_go_file_exists(szFinalPathnameCopy))
 			{
 				// we have an existing file, ask to overwrite
-	
 				if (_askOverwrite_YesNo(pFrame, szFinalPathname))
 				{
 					m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
@@ -349,40 +351,6 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 			m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
 			goto ReturnTrue;
-	
-#if 0			
-			// Trim the pathname at beginning of the filename
-			// keeping the trailing slash.
-				
-			pLastSlash[1] = 0;
-	
-			// Stat the directory left over
-	
-			err = stat(szFinalPathnameCopy, &buf);
-			UT_ASSERT(err == 0 || err == -1);
-	
-			// If this directory doesn't exist, we have been feed garbage
-			// at some point.  Throw an error and continue with the selection.
-	
-			if (err == -1)
-			{
-				_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotExist);
-				goto ContinueLoop;
-			}
-	
-			// Since the stat passed the last test, we will make sure the
-			// directory is suitable for writing, since we know it exists.
-	
-			UT_ASSERT(S_ISDIR(buf.st_mode));
-	
-			if (!access(szFinalPathnameCopy, W_OK))
-			{
-				// we've got what we need, save it to the candidate
-				m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
-				goto ReturnTrue;
-			}
-	
-#endif
 
 			// complain about write permission on the directory.
 			// lop off ugly trailing slash only if we don't have
