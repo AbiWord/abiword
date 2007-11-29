@@ -95,8 +95,8 @@ enum {
 };
 
 static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
-	{"text/uri-list", 	0, TARGET_URI_LIST},
-	{"_NETSCAPE_URL", 	0, TARGET_URL}
+	{(gchar *)"text/uri-list", 	0, TARGET_URI_LIST},
+	{(gchar *)"_NETSCAPE_URL", 	0, TARGET_URL}
 };
 
 struct DragInfo {

@@ -1340,7 +1340,9 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 // Now shift all the offsets in the runs.
 //
+#ifdef ENABLE_SPELL
 		UT_sint32 iFirstOffset = static_cast<UT_sint32>(pRun->getBlockOffset());
+#endif
 		while(pRun)
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iSuggestDiff;

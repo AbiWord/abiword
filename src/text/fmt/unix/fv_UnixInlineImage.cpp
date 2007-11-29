@@ -29,7 +29,7 @@
 #include "xap_UnixFrameImpl.h"
 
 static const GtkTargetEntry targets[] = {
-  { "text/uri-list",0,0}};
+  { (gchar*)"text/uri-list",0,0}};
 
 FV_UnixVisualInlineImage::FV_UnixVisualInlineImage (FV_View * pView)
   : FV_VisualInlineImage (pView), m_bDragOut(false)

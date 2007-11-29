@@ -60,7 +60,9 @@
 
 #define	WIDGET_ID_TAG_KEY "id"
 
+#ifndef WITH_GUCHARMAP
 static UT_sint32 s_Insert_Symbol_first = 0;
+#endif
 static std::string s_Prev_Font;
 
 #ifndef WITH_GUCHARMAP
@@ -342,6 +344,13 @@ static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 	dlg->New_Font();
 }
 
+#ifdef WITH_GUCHARMAP
+static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
+{
+	pDlg->event_Insert ();
+}
+
+#else
 static void s_new_row(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->New_Row();
@@ -351,14 +360,6 @@ static void  s_scroll_event(GtkWidget * widget, GdkEventScroll * event, XAP_Unix
 {
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
-#ifdef WITH_GUCHARMAP
-
-static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
-{
-	pDlg->event_Insert ();
-}
-
-#else
 
 static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {

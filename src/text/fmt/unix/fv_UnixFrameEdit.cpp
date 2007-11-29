@@ -26,7 +26,7 @@
 #include "xap_UnixApp.h"
 
 static const GtkTargetEntry targets[] = {
-  { "text/uri-list",0,0}};
+  { (gchar*)"text/uri-list",0,0}};
 
 
 FV_UnixFrameEdit::FV_UnixFrameEdit (FV_View * pView)

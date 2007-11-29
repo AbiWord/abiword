@@ -51,7 +51,7 @@
 
 typedef struct
 {
-	char*	pStyle;
+	const char*	pStyle;
 	int		nID;	
 	
 } ST_LOCALISED_STYLES;
@@ -137,7 +137,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	*/
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; "
+	const char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; "
 		"field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	UT_String list_fmt_tmp;
 	UT_String stTmp;

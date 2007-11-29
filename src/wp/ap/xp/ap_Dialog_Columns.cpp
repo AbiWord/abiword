@@ -172,11 +172,11 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-space-after",pszSecProps)), pszAfter);
 	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-max-column-height",pszSecProps)), pszMaxHeight);
 
-	if(pszAfter && *pszAfter)
+	if(*pszAfter)
 	{
 		m_SpaceAfterString = static_cast<const char *>(pszAfter);
 	}
-	if(pszMaxHeight && *pszMaxHeight)
+	if(*pszMaxHeight)
 	{
 		UT_DEBUGMSG(("SEVIOR: Initial Height string = %s \n",pszMaxHeight));
 		m_HeightString = pszMaxHeight;

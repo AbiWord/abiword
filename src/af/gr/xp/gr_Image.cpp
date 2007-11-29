@@ -308,9 +308,9 @@ GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
 
    if (len < 6) return GR_Image::GRT_Unknown;
 
-   char * comp1 = "\211PNG";
-   char * comp2 = "<89>PNG";
-   if (!(strncmp(static_cast<const char*>(buf), comp1, 4)) || !(strncmp(static_cast<const char*>(buf), comp2, 6)))
+   const char * comp1 = "\211PNG";
+   const char * comp2 = "<89>PNG";
+   if (!(strncmp(buf, comp1, 4)) || !(strncmp(buf, comp2, 6)))
      return GR_Image::GRT_Raster;
 
    if (UT_SVG_recognizeContent (buf,len))

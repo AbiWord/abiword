@@ -173,7 +173,7 @@ void pf_Frag_Text::__dump(FILE * fp) const
 
 void pf_Frag_Object::__dump(FILE * fp) const
 {
-	char * sz = "";
+	const char * sz = "";
 	switch (m_objectType)
 	{
 	case PTO_Image:
