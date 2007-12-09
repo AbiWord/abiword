@@ -12389,7 +12389,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	}
 
 	// Hack for bug 2940
-	if (posStart == 1) posStart++;
+	if (posStart <= 1) posStart=2;
 
 	// the selection has to be within a single block
 	// we could implement hyperlinks spaning arbitrary part of the document

@@ -5379,7 +5379,8 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 {
 	fl_BlockLayout *pBlock = _findBlockAtPosition(posStart);
 	PT_DocPosition curPos = posStart - pBlock->getPosition(false);
-
+	if(curPos <2)
+		return NULL;
 	fp_Run * pRun = pBlock->getFirstRun();
 
 	//find the run at pos
