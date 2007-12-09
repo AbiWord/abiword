@@ -333,6 +333,7 @@ public:
 	static EV_EditMethod_Fn insertSumRows;
 	static EV_EditMethod_Fn insertSumCols;
 	static EV_EditMethod_Fn insertTab;
+	static EV_EditMethod_Fn insertTabCTL;
 	static EV_EditMethod_Fn insertTabShift;
 
 	static EV_EditMethod_Fn insertSpace;
@@ -991,6 +992,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSumCols),			0,	""),
 	EV_EditMethod(NF(insertSumRows),			0,	""),
 	EV_EditMethod(NF(insertTab),			0,	""),
+	EV_EditMethod(NF(insertTabCTL),			0,	""),
 	EV_EditMethod(NF(insertTabShift),			0,	""),
 	EV_EditMethod(NF(insertTable),          0,  ""),
 	EV_EditMethod(NF(insertTildeData),		_D_,	""),
@@ -6208,6 +6210,17 @@ Defun1(insertTab)
 	{
 		pView->cmdAdvanceNextPrevCell(true);
 	}
+	return true;
+}
+
+
+Defun1(insertTabCTL)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	UT_UCSChar c = UCS_TAB;
+	pView->cmdCharInsert(&c,1);
 	return true;
 }
 
