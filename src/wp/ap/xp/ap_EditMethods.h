@@ -23,6 +23,8 @@
 #include "ie_types.h"
 #include "fv_View.h"
 
+#include <set>
+
 UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft);
 
 // defined in ap_editmethods.cpp
@@ -30,7 +32,14 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 inWidth,  UT_sint32 inHeight,
-		     UT_uint32 nToPage, UT_uint32 nFromPage) ;
+		     UT_uint32 nToPage, UT_uint32 nFromPage);
+
+bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+		     FV_View * pPrintView, const char *pDocName,
+		     UT_uint32 nCopies, bool bCollate,
+		     UT_sint32 inWidth,  UT_sint32 inHeight,
+		     const std::set<UT_uint32>& pages);
+
 
 void s_getPageMargins(FV_View * inView,
 					  double &margin_left,

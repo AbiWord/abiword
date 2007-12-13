@@ -40,6 +40,7 @@
 
 #include "xap_Features.h"
 #include "ap_Features.h"
+#include "ap_EditMethods.h"
 
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
@@ -8384,14 +8385,29 @@ static bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
-
 bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
 		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
-	UT_uint32 j,k;
+	std::set<UT_uint32> pages;
+	for (UT_uint32 i = nFromPage; i <= nToPage; i++)
+		{
+			pages.insert(i);
+		}
+
+	return s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, 
+						   nCopies, bCollate, iWidth, iHeight, pages);
+}
+
+bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+		     FV_View * pPrintView, const char *pDocName,
+		     UT_uint32 nCopies, bool bCollate,
+		     UT_sint32 iWidth,  UT_sint32 iHeight,
+		     const std::set<UT_uint32>& pages)
+{
+	UT_uint32 i,j,k;
 
 	//
 	// Lock out operations on this document
@@ -8418,41 +8434,56 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		if (bCollate)
 		{
 			for (j=1; (j <= nCopies); j++)
-				for (k=nFromPage; (k <= nToPage); k++)
 				{
-					sprintf (msgBuf, msgTmpl, k, nToPage);
-
-					if(pFrame) {
-					  pFrame->setStatusMessage ( msgBuf );
-					  pFrame->nullUpdate();
-					}
-
-					// NB we will need a better way to calc
-					// pGraphics->m_iRasterPosition when
-					// iHeight is allowed to vary page to page
-					pGraphics->m_iRasterPosition = (k-1)*iHeight;
-					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
-					pPrintView->draw(k-1, &da);
+					i = 0;
+					for (std::set<UT_uint32>::const_iterator page = pages.begin();
+						 page != pages.end();
+						 page++)
+						{
+							i++;
+							k = *page;
+							sprintf (msgBuf, msgTmpl, i, pages.size());
+							
+							if(pFrame) {
+								pFrame->setStatusMessage ( msgBuf );
+								pFrame->nullUpdate();
+							}
+							
+							// NB we will need a better way to calc
+							// pGraphics->m_iRasterPosition when
+							// iHeight is allowed to vary page to page
+							pGraphics->m_iRasterPosition = (k-1)*iHeight;
+							pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
+							pPrintView->draw(k-1, &da);
+						}		
 				}
 		}
 		else
 		{
-			for (k=nFromPage; (k <= nToPage); k++)
-				for (j=1; (j <= nCopies); j++)
+			i = 0;
+			for (std::set<UT_uint32>::const_iterator page = pages.begin();
+				 page != pages.end();
+				 page++)
 				{
-					sprintf (msgBuf, msgTmpl, k, nToPage);
+					k = *page;
+					i++;
 
-					if(pFrame) {
-					  pFrame->setStatusMessage ( msgBuf );
-					  pFrame->nullUpdate();
-					}
+					for (j=1; (j <= nCopies); j++)
+						{
+							sprintf (msgBuf, msgTmpl, i, pages.size());
+							
+							if(pFrame) {
+								pFrame->setStatusMessage ( msgBuf );
+								pFrame->nullUpdate();
+							}
 
-					// NB we will need a better way to calc
-					// pGraphics->m_iRasterPosition when
-					// iHeight is allowed to vary page to page
-					pGraphics->m_iRasterPosition = (k-1)*iHeight;
-					pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
-					pPrintView->draw(k-1, &da);
+							// NB we will need a better way to calc
+							// pGraphics->m_iRasterPosition when
+							// iHeight is allowed to vary page to page
+							pGraphics->m_iRasterPosition = (k-1)*iHeight;
+							pGraphics->startPage(pDocName, k, orient, iWidth, iHeight);
+							pPrintView->draw(k-1, &da);
+						}
 				}
 		}
 		pGraphics->endPrint();

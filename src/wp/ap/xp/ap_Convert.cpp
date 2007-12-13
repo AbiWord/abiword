@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <string>
+#include <map>
 
 #include "ap_Convert.h"
 #include "xap_App.h"
@@ -392,12 +394,76 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		pDocLayout->setView (&printView);
 		pDocLayout->fillLayouts();
 		pDocLayout->formatAll();
-				
+		
+		bool bCollate = true;
+		UT_sint32 nCopies = 1;
+		std::set<UT_uint32> pages;
+
+		std::map<std::string, std::string> props_map;
+		UT_parse_properties(m_expProps.utf8_str(), props_map);
+
+		if (props_map.find("collate") != props_map.end())
+		  {
+		    bCollate = UT_parseBool(props_map["collate"].c_str(), true);
+		  }
+
+		if (props_map.find("copies") != props_map.end())
+		  {
+		    nCopies = atoi(props_map["copies"].c_str());
+		    if (nCopies <= 0)
+		      nCopies = 1;
+		  }
+
+		if (props_map.find("pages") != props_map.end())
+		  {
+		    char **page_descriptions;
+
+		    page_descriptions = g_strsplit(props_map["pages"].c_str(), ",", -1);
+
+		    int i = 0;
+		    while (page_descriptions[i] != NULL)
+		      {
+			char *description = page_descriptions[i];
+			i++;
+
+			int start_page, end_page;
+
+			if (2 == sscanf(description, "%d-%d", &start_page, &end_page))
+			  {
+			  }
+			else if (1 == sscanf(description, "%d", &start_page))
+			  {
+			    end_page = start_page;
+			  }
+			else
+			  {
+			    // invalid page specification
+			    continue;
+			  }
+
+			for (int pageno = start_page; pageno <= end_page; pageno++)
+			  {
+			    if ((pageno > 0) && (pageno <= (int)pDocLayout->countPages()))
+			      pages.insert(pageno);
+			  }
+		      }
+
+		    g_strfreev(page_descriptions);
+		  }
+
+		if (pages.empty())
+		  {
+		    for (UT_uint32 i = 1; i <= pDocLayout->countPages(); i++)
+		      {
+			pages.insert(i);
+		      }
+		  }
+
 		if(!s_actuallyPrint (pDoc, pGraphics, 
 				     &printView, szFile, 
-				     1, true, 
+				     nCopies, bCollate, 
 				     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-				     pDocLayout->countPages(), 1))
+				     pages))
 		  err = UT_SAVE_WRITEERROR;
 		
 		DELETEP(pDocLayout);
