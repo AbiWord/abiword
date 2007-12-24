@@ -139,7 +139,7 @@ bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
  */
 struct colorToRGBMapping
 {
-  char * m_name;
+  const char * m_name;
 
   unsigned char m_red;
   unsigned char m_green;

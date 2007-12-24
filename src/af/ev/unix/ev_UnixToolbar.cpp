@@ -75,7 +75,7 @@ class _wd;
 
 static void s_proxy_activated(GtkAction * action, _wd * wd);
 
-static const GtkTargetEntry s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+static const GtkTargetEntry s_AbiTBTargets[] = {{(gchar*)"abi-toolbars",0,0}};
 
 /*!
  * Append a widget to the toolbar, 

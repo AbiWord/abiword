@@ -579,8 +579,8 @@ register_stock_icon(void)
 		GtkIconFactory *factory;
 
 		static GtkStockItem items[] = {
-			{ "abi-table-widget",
-			  "_Table",
+			{ (gchar*)"abi-table-widget",
+			  (gchar*)"_Table",
 			  static_cast<GdkModifierType>(0), 0, NULL }
 		};
       

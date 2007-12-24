@@ -1,5 +1,5 @@
 /* XPM */
-static char * abiword_48_xpm[] = {
+static const char * abiword_48_xpm[] = {
 "48 48 590 2",
 "  	c None",
 ". 	c #404356",
