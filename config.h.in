@@ -34,9 +34,6 @@
 /* Define if building status bar */
 #undef ENABLE_STATUSBAR
 
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#undef HAVE_DLFCN_H
-
 /* Define to 1 if you have the <eps/eps.h> header file. */
 #undef HAVE_EPS_EPS_H
 
@@ -73,9 +70,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Name of package */
-#undef PACKAGE
-
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -96,9 +90,6 @@
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
-
-/* Version number of package */
-#undef VERSION
 
 /* use Dom's enchanting spell checker abstraction library */
 #undef WITH_ENCHANT
@@ -126,10 +117,6 @@
 
 /* building the gtk version */
 #undef XP_UNIX_TARGET_GTK
-
-/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
-   `char[]'. */
-#undef YYTEXT_POINTER
 
 /* minimal comctl.dll v4.70 for toolbars */
 #undef _WIN32_IE
