@@ -1280,7 +1280,9 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		UT_sint32 oldheight = getHeight();
 #endif
 		recalcHeight();
+#if DEBUG
 		UT_ASSERT(oldheight == getHeight());
+#endif
 		
 		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 		pVCon->getScreenOffsets(this, xoffLine, yoffLine);

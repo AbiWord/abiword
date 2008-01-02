@@ -13,6 +13,8 @@ libwin_la_SOURCES = \
 	ap_Win32Clipboard.cpp \
 	ap_Win32Clipboard.h \
 	ap_Win32Dialog_All.h \
+	ap_Win32Dialog_Annotation.cpp \
+	ap_Win32Dialog_Annotation.h \
 	ap_Win32Dialog_Background.cpp \
 	ap_Win32Dialog_Background.h \
 	ap_Win32Dialog_Break.cpp \
@@ -108,6 +110,7 @@ libwin_la_SOURCES = \
 	ap_Win32TopRuler.h
 
 rc2files = \
+	ap_Win32Res_DlgAnnotation.rc2 \
 	ap_Win32Res_DlgBreak.rc2 \
 	ap_Win32Res_DlgColumns.rc2 \
 	ap_Win32Res_DlgDownload_File.rc2 \

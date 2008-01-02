@@ -26,6 +26,8 @@ libgtk_la_SOURCES = \
 	$(statusbar_src) \
 	abiwidget.cpp \
 	abiwidget.h \
+	ap_DocView.cpp \
+	ap_DocView.h \
 	ap_UnixApp.cpp \
 	ap_UnixApp.h \
 	ap_UnixAppImpl.cpp \
@@ -33,6 +35,8 @@ libgtk_la_SOURCES = \
 	ap_UnixClipboard.cpp \
 	ap_UnixClipboard.h \
 	ap_UnixDialog_All.h \
+	ap_UnixDialog_Annotation.cpp \
+	ap_UnixDialog_Annotation.h \
 	ap_UnixDialog_Background.cpp \
 	ap_UnixDialog_Background.h \
 	ap_UnixDialog_Break.cpp \
@@ -109,6 +113,8 @@ libgtk_la_SOURCES = \
 	ap_UnixLeftRuler.h \
 	ap_UnixPrefs.cpp \
 	ap_UnixPrefs.h \
+	ap_UnixPreview_Annotation.cpp \
+	ap_UnixPreview_Annotation.h \
 	ap_UnixStatusBar.h \
 	ap_UnixStockIcons.cpp \
 	ap_UnixStockIcons.h \
@@ -135,6 +141,7 @@ endif
 gladedir=$(ABIWORD_GLADEDIR)
 glade_DATA = \
 	$(optglade) \
+	ap_UnixDialog_Annotation.glade \
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_FormatTOC.glade \

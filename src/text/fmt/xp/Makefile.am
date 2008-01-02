@@ -57,6 +57,7 @@ libxp_la_SOURCES = \
 	fl_TestRoutines.cpp \
 	fl_TOCLayout.cpp \
 	fl_TOCLayout.h \
+	fp_AnnotationRun.cpp \
 	fp_Column.cpp \
 	fp_Column.h \
 	fp_ContainerObject.cpp \
@@ -94,6 +95,8 @@ libxp_la_SOURCES = \
 	fp_TOCContainer.cpp \
 	fp_TOCContainer.h \
 	fp_types.h \
+	fv_Base.cpp \
+	fv_Base.h \
 	fv_FrameEdit.cpp \
 	fv_FrameEdit.h \
 	fv_InlineImage.cpp \

@@ -14,7 +14,6 @@ libxp_la_CPPFLAGS = \
 conditional_src = \
 	ap_Dialog_Spell.cpp \
 	ap_StatusBar.cpp \
-	ap_wp_splash.cpp \
 	ap_wp_sidebar.cpp
 
 if ENABLE_SPELL
@@ -23,7 +22,6 @@ endif
 
 if ENABLE_SPLASH
 splash_src = \
-	ap_wp_splash.cpp \
 	ap_wp_sidebar.cpp
 endif
 
@@ -42,6 +40,7 @@ libxp_la_SOURCES = \
 	ap_Clipboard.h \
 	ap_Convert.cpp \
 	ap_Convert.h \
+	ap_Dialog_Annotation.h \
 	ap_Dialog_Background.cpp \
 	ap_Dialog_Background.h \
 	ap_Dialog_Break.cpp \
@@ -190,6 +189,8 @@ libxp_la_SOURCES = \
 	ap_Prefs_SchemeIds.h \
 	ap_Preview_Abi.cpp \
 	ap_Preview_Abi.h \
+	ap_Preview_Annotation.cpp \
+	ap_Preview_Annotation.h \
 	ap_Preview_Paragraph.cpp \
 	ap_Preview_Paragraph.h \
 	ap_Ruler.cpp \
@@ -223,11 +224,7 @@ EXTRA_DIST = \
 	margin.xpm \
 	orient-horizontal.xpm \
 	orient-vertical.xpm \
-	splash.png \
 	sidebar.png
-
-ap_wp_splash.cpp: $(srcdir)/splash.png
-	$(CDUMPAPP) $(srcdir)/splash.png g_pngSplash > ap_wp_splash.cpp
 
 ap_wp_sidebar.cpp: $(srcdir)/sidebar.png
 	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
