@@ -1,0 +1,112 @@
+
+SUBDIRS = af other text wp
+
+libabiword_cpp = 
+opt_libs = 
+resources = 
+
+if TOOLKIT_COCOA
+AM_CXXFLAGS = -x objective-c++
+main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
+endif
+
+if TOOLKIT_GTK
+libabiword_cpp += $(top_srcdir)/src/wp/main/gtk/libabiword.cpp
+main_cpp = $(top_srcdir)/src/wp/main/gtk/UnixMain.cpp
+opt_libs += $(GOFFICE_BUILTIN_LIBS)
+endif
+
+if TOOLKIT_WIN
+main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
+opt_libs += Win32Resources.lo
+resources += Win32Resources.lo
+endif
+
+if LINK_OTHER
+opt_libs += other/libother.la
+endif
+
+lib_LTLIBRARIES = libabiword-2.5.la
+
+libabiword_2_5_la_CPPFLAGS = \
+	$(WP_CPPFLAGS) \
+	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\""
+
+libabiword_2_5_la_LDFLAGS = \
+	$(DEPS_LIBS) \
+	--no-undefined \
+	-avoid-version \
+	-export-dynamic
+
+libabiword_2_5_la_LIBADD = \
+	$(opt_libs) \
+	af/libaf.la \
+	text/libtext.la \
+	wp/libwp.la
+
+libabiword_2_5_la_DEPENDENCIES = \
+	$(resources)
+
+libabiword_2_5_la_SOURCES = \
+	$(top_srcdir)/src/wp/main/xp/abi_ver.cpp \
+	$(libabiword_cpp)
+
+libabiword_2_5_includedir = $(includedir)/abiword-2.5
+libabiword_2_5_include_HEADERS = \
+	wp/ap/gtk/abiwidget.h \
+	wp/main/gtk/libabiword.h \
+	af/xap/gtk/xap_UnixTableWidget.h
+
+# TODO is it possible to track dependencies for that?
+WINDRES_CPPFLAGS = -I$(top_srcdir)/src/af/xap/win -I$(top_srcdir)/src/af/util/win -I$(top_srcdir)/src/wp/ap/win
+Win32Resources.lo: $(top_srcdir)/src/wp/main/win/Win32Main.rc
+	CPPFLAGS="$(WINDRES_CPPFLAGS)" $(top_srcdir)/lt-compile-resource $< $@
+
+bin_PROGRAMS =
+
+
+if ENABLE_DYNAMIC
+
+bin_PROGRAMS += abiword-dynamic
+
+abiword_dynamic_CPPFLAGS = \
+	$(libabiword_2_5_la_CPPFLAGS)
+
+abiword_dynamic_LDFLAGS = \
+	$(DEPS_LIBS) \
+	--no-undefined \
+	-avoid-version \
+	-export-dynamic
+
+abiword_dynamic_LDADD = \
+	libabiword-2.5.la
+
+abiword_dynamic_SOURCES = \
+	$(main_cpp)
+
+endif # ENABLE_DYNAMIC
+
+
+if ENABLE_STATIC
+
+bin_PROGRAMS += abiword
+
+abiword_CPPFLAGS = \
+	$(libabiword_2_5_la_CPPFLAGS)
+
+# --no-undefined doesn't work for objc++, is it needed at all?
+abiword_LDFLAGS = \
+	-export-dynamic
+
+abiword_LDADD = \
+	.libs/libabiword-2.5.a \
+	$(resources) \
+	$(DEPS_LIBS)
+
+abiword_SOURCES = \
+	$(main_cpp)
+
+endif # ENABLE_STATIC
+
+include $(top_srcdir)/objc.mk
+
