@@ -1,3 +1,0 @@
-
-
-EXTRA_DIST = abiword.dirs  abiword.links  changelog  compat  control  copyright  rules

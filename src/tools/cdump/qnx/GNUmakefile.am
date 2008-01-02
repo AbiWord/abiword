@@ -1,5 +1,0 @@
-
-bin_PROGRAMS = cdump
-
-EXTRA_DIST = \
-	Makefile
