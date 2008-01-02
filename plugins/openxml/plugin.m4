@@ -1,0 +1,18 @@
+
+openxml_pkgs="libgsf-1 >= 1.14.4"
+
+OPENXML_CFLAGS=
+OPENXML_LIBS=
+
+if test "$enable_openxml" == "yes"; then
+
+PKG_CHECK_MODULES(OPENXML,[ $openxml_pkgs ])
+
+OPENXML_CFLAGS="$OPENXML_CFLAGS"'${WP_CPPFLAGS}'
+OPENXML_LIBS="$OPENXML_LIBS"'${PLUGIN_LIBS}'
+
+fi
+
+AC_SUBST([OPENXML_CFLAGS])
+AC_SUBST([OPENXML_LIBS])
+

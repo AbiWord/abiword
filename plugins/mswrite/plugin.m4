@@ -1,0 +1,18 @@
+
+mswrite_pkgs="$gsf_req"
+
+MSWRITE_CFLAGS=
+MSWRITE_LIBS=
+
+if test "$enable_mswrite" == "yes"; then
+
+PKG_CHECK_MODULES(MSWRITE,[ $mswrite_pkgs ])
+
+MSWRITE_CFLAGS="$MSWRITE_CFLAGS"'${WP_CPPFLAGS}'
+MSWRITE_LIBS="$MSWRITE_LIBS"'${PLUGIN_LIBS}'
+
+fi
+
+AC_SUBST([MSWRITE_CFLAGS])
+AC_SUBST([MSWRITE_LIBS])
+
