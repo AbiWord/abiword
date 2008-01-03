@@ -2,7 +2,12 @@
 noinst_LTLIBRARIES = libxp.la
 
 libxp_la_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS)
+	$(COLLAB_CFLAGS) \
+	-I$(srcdir)/.. \
+	-I$(srcdir)/../../.. \
+	-I$(srcdir)/../../dialogs \
+	-I$(srcdir)/../../packet \
+	-DABI_BUILD_VERSION=\"$(VERSION)\"
 
 libxp_la_SOURCES = \
 	AbiCollab_Command.cpp \

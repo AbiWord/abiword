@@ -2,7 +2,11 @@
 noinst_LTLIBRARIES = libxp.la
 
 libxp_la_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS)
+	$(COLLAB_CFLAGS) \
+	-I$(srcdir)/.. \
+	-I$(srcdir)/../../.. \
+	-I$(srcdir)/../../packet \
+	-I$(srcdir)/../../session
 
 libxp_la_SOURCES = \
 	ap_Dialog_CollaborationAccounts.cpp \

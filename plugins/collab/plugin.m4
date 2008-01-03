@@ -153,7 +153,7 @@ AC_ARG_ENABLE([collab-record-always],
 AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test $enable_collab_record_always == "yes"])
 
 
-PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
+PKG_CHECK_MODULES(COLLAB,[ $collab_req ])
 
 if test $enable_collab_backend_fake == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"

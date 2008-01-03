@@ -2,7 +2,11 @@
 noinst_LTLIBRARIES = libunix.la
 
 libunix_la_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS)
+	$(COLLAB_CFLAGS) \
+	-I$(srcdir)/.. \
+	-I$(srcdir)/../../.. \
+	-I$(srcdir)/../../packet \
+	-I$(srcdir)/../../session
 
 libunix_la_SOURCES = \
 	ap_UnixDialog_CollaborationAccounts.cpp \

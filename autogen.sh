@@ -61,6 +61,12 @@ autoheader configure.in 2>> autogen.err || {
     echo ""
 }
 
+# find extra m4 files provided by plugins
+for f in ` find ./plugins -name '*.m4' | grep -v 'plugin\.m4'`; do
+    f=`dirname $f`
+    ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I $f"
+done
+
 # Produce aclocal.m4, so autoconf gets the automake macros it needs
 # 
 echo "+ Creating aclocal.m4: aclocal $ACLOCAL_FLAGS"

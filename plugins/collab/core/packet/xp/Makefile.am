@@ -2,7 +2,8 @@
 noinst_LTLIBRARIES = libxp.la
 
 libxp_la_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS)
+	$(COLLAB_CFLAGS) \
+	-I$(srcdir)/../../..
 
 libxp_la_SOURCES = \
 	AbiCollab_Packet.cpp \

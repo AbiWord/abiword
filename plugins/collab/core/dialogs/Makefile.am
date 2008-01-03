@@ -1,9 +1,9 @@
 
 SUBDIRS = @PLATFORM@ xp
 
-noinst_LTLIBRARIES = libtcp.la
+noinst_LTLIBRARIES = libdialogs.la
 
-libtcp_la_LIBADD = @PLATFORM@/lib@PLATFORM@.la xp/libxp.la
+libdialogs_la_LIBADD = @PLATFORM@/lib@PLATFORM@.la xp/libxp.la
 
-libtcp_la_SOURCES = 
+libdialogs_la_SOURCES = 
 

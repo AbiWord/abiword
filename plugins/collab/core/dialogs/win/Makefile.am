@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libwin.la
 
 libwin_la_CPPFLAGS = \
-	$(COLLAB_CPPFLAGS)
+	$(COLLAB_CFLAGS)
 
 libwin_la_SOURCES = \
 	ap_Win32Dialog_CollaborationAccounts.cpp \
