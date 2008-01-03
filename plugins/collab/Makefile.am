@@ -1,19 +1,20 @@
 
-SUBDIRS = xp
+SUBDIRS = backends core
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libapplix.la
+plugin_LTLIBRARIES = libcollab.la
 
-libapplix_la_LIBADD = \
-	xp/libxp.la
+libcollab_la_LIBADD = \
+	backends/libbackends.la \
+	core/libcore.la
 
-libapplix_la_LDFLAGS = \
-	$(APPLIX_LIBS) \
+libcollab_la_LDFLAGS = \
+	$(COLLAB_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libapplix_la_SOURCES = 
+libcollab_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4

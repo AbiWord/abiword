@@ -34,6 +34,9 @@
 /* Define if building status bar */
 #undef ENABLE_STATUSBAR
 
+/* Define to 1 if you have the <asio.hpp> header file. */
+#undef HAVE_ASIO_HPP
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

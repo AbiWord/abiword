@@ -1,0 +1,16 @@
+
+noinst_LTLIBRARIES = libxp.la
+
+libxp_la_CPPFLAGS = \
+	$(COLLAB_CPPFLAGS)
+
+libxp_la_SOURCES = \
+	ap_Dialog_CollaborationAccounts.cpp \
+	ap_Dialog_CollaborationAccounts.h \
+	ap_Dialog_CollaborationAddAccount.cpp \
+	ap_Dialog_CollaborationAddAccount.h \
+	ap_Dialog_CollaborationAddBuddy.cpp \
+	ap_Dialog_CollaborationAddBuddy.h \
+	ap_Dialog_CollaborationJoin.cpp \
+	ap_Dialog_CollaborationJoin.h
+

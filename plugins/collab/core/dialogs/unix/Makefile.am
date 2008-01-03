@@ -1,0 +1,26 @@
+
+noinst_LTLIBRARIES = libunix.la
+
+libunix_la_CPPFLAGS = \
+	$(COLLAB_CPPFLAGS)
+
+libunix_la_SOURCES = \
+	ap_UnixDialog_CollaborationAccounts.cpp \
+	ap_UnixDialog_CollaborationAccounts.h \
+	ap_UnixDialog_CollaborationAddAccount.cpp \
+	ap_UnixDialog_CollaborationAddAccount.h \
+	ap_UnixDialog_CollaborationAddBuddy.cpp \
+	ap_UnixDialog_CollaborationAddBuddy.h \
+	ap_UnixDialog_CollaborationJoin.cpp \
+	ap_UnixDialog_CollaborationJoin.h
+
+gladedir=$(ABIWORD_GLADEDIR)
+glade_DATA = \
+	ap_UnixDialog_CollaborationAccounts.glade \
+	ap_UnixDialog_CollaborationAddAccount.glade \
+	ap_UnixDialog_CollaborationAddBuddy.glade \
+	ap_UnixDialog_CollaborationJoin.glade
+
+EXTRA_DIST = \
+        $(glade_DATA)
+
