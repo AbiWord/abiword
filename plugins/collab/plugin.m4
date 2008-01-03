@@ -36,7 +36,7 @@ if test $enable_collab_backend_xmpp == "yes"; then
 	[
 		collab_req="$collab_req $collab_xmpp_req"
 	], [
-		AC_MSG_ERROR([$collab_xmpp_req is required for the TCP backend])
+		AC_MSG_ERROR([$collab_xmpp_req is required for the collab plugin TCP backend])
 	])
 elif test $enable_collab_backend_xmpp == "auto"; then
 	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
@@ -60,11 +60,11 @@ AC_ARG_ENABLE([collab-backend-tcp],
 if test $enable_collab_backend_tcp == "yes"; then
 	AX_BOOST_THREAD
 	if test $ax_cv_boost_thread == "no"; then
-		AC_MSG_ERROR([Boost \`thread\' is required for the TCP backend])		
+		AC_MSG_ERROR([Boost::Thread is required for the collab plugin TCP backend])		
 	fi
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Boost \`asio\' is required for the TCP backend])
+		AC_MSG_ERROR([Boost \`asio' is required for the collab plugin TCP backend])
 	])
 elif test $enable_collab_backend_tcp == "auto"; then
 	AX_BOOST_THREAD
@@ -74,11 +74,11 @@ elif test $enable_collab_backend_tcp == "auto"; then
 			enable_collab_backend_tcp="yes"
 		], [
 			enable_collab_backend_tcp="no"
-			AC_MSG_WARN([Boost \`asio\' is required for the TCP backend])
+			AC_MSG_WARN([Boost \`asio' is required for the TCP backend])
 		])
 	else
 		enable_collab_backend_tcp="no"
-		AC_MSG_WARN([Boost \`thread\' is required for the TCP backend])		
+		AC_MSG_WARN([Boost::Thread is required for the TCP backend])		
 	fi
 fi
 AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test $enable_collab_backend_tcp == "yes"])
@@ -96,7 +96,7 @@ if test $enable_collab_backend_sugar == "yes"; then
 	[
 		collab_req="$collab_req $collab_sugar_req"
 	], [
-		AC_MSG_ERROR([$collab_sugar_req is required for the Sugar/OLPC backend])
+		AC_MSG_ERROR([$collab_sugar_req is required for the collab plugin Sugar/OLPC backend])
 	])
 elif test $enable_collab_backend_sugar == "auto"; then
 	PKG_CHECK_EXISTS([ $collab_sugar_req ],
@@ -120,11 +120,11 @@ AC_ARG_ENABLE([collab-backend-service],
 if test $enable_collab_backend_service == "yes"; then
 	AX_BOOST_THREAD
 	if test $ax_cv_boost_thread == "no"; then
-		AC_MSG_ERROR([Boost \`thread\' is required for the \`collaborate.abisource.com\' backend])		
+		AC_MSG_ERROR([Boost::Thread is required for the collab plugin \`collaborate.abisource.com' backend])		
 	fi
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Boost \`asio\' is required for the \`collaborate.abisource.com\' backend])
+		AC_MSG_ERROR([Boost \`asio' is required for the \`collaborate.abisource.com' backend])
 	])
 elif test $enable_collab_backend_service == "auto"; then
 	AX_BOOST_THREAD
@@ -137,7 +137,7 @@ elif test $enable_collab_backend_service == "auto"; then
 		])
 	else
 		enable_collab_backend_service="no"
-		AC_MSG_WARN([Boost \`thread\' is required for the \`collaborate.abisource.com\' backend])		
+		AC_MSG_WARN([Boost::Thread is required for the \`collaborate.abisource.com' backend])		
 	fi
 fi
 AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test $enable_collab_backend_service == "yes"])
