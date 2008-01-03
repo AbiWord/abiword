@@ -394,6 +394,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		pDocLayout->setView (&printView);
 		pDocLayout->fillLayouts();
 		pDocLayout->formatAll();
+		pDocLayout->recalculateTOCFields();
 		
 		bool bCollate = true;
 		UT_sint32 nCopies = 1;
