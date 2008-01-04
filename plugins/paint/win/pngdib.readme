@@ -1,0 +1,404 @@
+PNGDIB - a mini DIB-PNG conversion library for Win32
+By Jason Summers  <jason1@pobox.com>
+Version 2.2.0, Apr. 2002
+Web site: http://pobox.com/~jason1/pngdib/
+Note: version 2.2.2 is out which fixes a memory freeing bug
+(presently AbiWord defaults to libpng 1.2.3)
+
+
+This software is distributed in the hope that it will be useful, but 
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+or FITNESS FOR A PARTICULAR PURPOSE.
+
+Permission is hereby granted to use, copy, modify, and distribute this
+source code for any purpose, without fee.
+
+
+The pngdib.c file contains two functions that convert between PNG images 
+and Windows Device Independent Bitmaps (DIBs). PNGDIB is designed to be 
+quick and easy to use, but it does not attempt to support every feature 
+that one might want. If you wish use the PNG format to its full 
+capabilities, you'll need to use libpng directly, or program our own 
+extensions to PNGDIB.
+
+REQUIREMENTS
+
+* zlib  <http://www.info-zip.org/pub/infozip/zlib/>
+Tested with v1.1.4; other versions probably also work.
+
+* libpng  <http://www.libpng.org/pub/png/>
+Version 1.2.2beta5 or higher recommended. Most versions from about 1.0.5
+on will probably work, but they do not always handle gamma correction
+correctly when combined with alpha transparency.
+
+------
+
+INTRODUCTION
+
+The PNG-to-DIB function creates version 3.0 DIBs/BMPs. The image will be 
+uncompressed, with either 1, 4, 8, or 24 bits-per-pixel.
+
+(Note: A BMP image file is basically just a DIB copied directly from 
+memory, with a 14-byte file header tacked onto the front. The terms DIB 
+and BMP may sometimes be used almost interchangeably.)
+
+
+The DIB-to-PNG function supports approximately version 3.0 DIBs, and also 
+OS/2-style DIBs. It supports bit depths of 1, 4, 8, 16, 24, and 32 
+bits-per-pixel. It supports 4 bpp and 8 bpp compressed DIBs (it uses 
+Windows GDI functions to uncompress them).
+
+If you find a valid BMP file that the bmp2png sample program can't read, 
+please let me know.
+
+
+Two sample programs, png2bmp.c and bmp2png.c, are included which demonstrate 
+the use of library functions. They can be compiled as "console mode" Win32 
+applications.
+
+A third sample, "smview", is a bare-bones Windows program that uses pngdib 
+to read and display PNG files. This is intended to demonstrate that it is 
+easy to add PNG support to an application that uses DIBs. It is not 
+intended to be a usable image viewer.
+
+--------
+
+BRIEF INSTRUCTIONS FOR THE SAMPLE PNG VIEWER (smview)
+
+[This program is just a demo. For a more usable viewer, visit 
+http://pobox.com/~jason1/purpleview/.]
+
+Load a PNG image by selecting File|Open from the menu, or by drag-and-drop 
+from Windows Explorer.
+
+Gamma Correction - Toggles gamma correction. If you turn this off, some 
+images, or parts of images, will look too light or too dark.
+
+Save As PNG - Saves the visible (unstretched) image to a file. 
+IMPORTANT--- This saves the image as it is currently being displayed. The 
+saved image will not have any transparency, and the background color and 
+gamma correction will be applied to the image, not saved as meta-data. 
+This means that you can lose information by loading and then saving a PNG 
+image.
+
+Background colors - You can define a background color that will be used in 
+certain situations. The following logic is used to select a background 
+color: If "Use Image's Background Color" is checked, and the current PNG 
+image file contains a suggested background color, that suggested 
+background color will be used. Otherwise, if "Use Custom Background Color" 
+is checked, your custom background color will be used (by default this is 
+a very light gray color). Otherwise, no background color will be used at 
+all, and transparency information in the image will be completely ignored.  
+Some images will not look very good in this situation. (A pure white 
+background will be used for the window, but will not be applied to the 
+image.)
+
+Any time you make a change to the gamma or background color settings, the 
+PNG file will be reloaded from disk. That's not the ideal thing to do, but 
+this _is_ just a demo program...
+
+--------
+
+Basic instructions for using the library in your own programs (the 
+read_png_to_dib and write_dib_to_png functions) follow the change log
+and TO DO list.
+
+CHANGES in PNGDIB v2.2.0 (vs. 2.1.1)
+------------------------------------
+
+* Option to use HeapAlloc instead of GlobalAlloc (when reading PNGs).
+
+
+CHANGES in PNGDIB v2.1.1 (vs. 2.1.0)
+------------------------------------
+
+* More accurate conversion of 16-bpp DIBs into PNGs.
+
+* Some minor changes (mostly typecasts) to the pngdib.c and smview.c
+code to try to avoid compiler warnings and errors.
+
+
+CHANGES in PNGDIB v2.1.0 (vs. 2.0.0)
+------------------------------------
+
+* Added some fields to return image information (original bit depth, 
+resolution, etc.) when reading PNG images.
+
+* Added pngdib_get_version and pngdib_get_version_string functions.
+
+* -Removed- some features from the sample viewer program. It was getting 
+too big to be a useful demo. The feature-ful version has been spun off 
+into a separate project.
+
+* (v2.1.0 is backward-compatible with v2.0.0. I think.)
+
+
+CHANGES in PNGDIB v2.0.0 (vs. 1.x)
+----------------------------------
+
+* WARNING: v2.0 is neither source- nor binary-compatible with v1.x. 
+Compatibility *could* have been done, but frankly I'm not too concerned 
+about it. You shouldn't be using this as a shared library anyway. And you 
+really ought to update your source to use the new transparency features. 
+:-)
+
+* Optional transparency and background-color processing when reading PNG 
+images.
+
+* Optional gamma correction when reading PNG images.
+
+* PNG files that you write are now labeled with a gamma of 0.45455, 
+indicating that they are in the standard sRGB color space, which is 
+(reasonably close to) the color space used by nearly all Windows displays. 
+There's no option to change this value, but it can be turned off 
+completely.
+
+* Error messages can now be retrieved by the caller.
+
+
+TO DO
+-----
+
+* Improve this documentation.
+
+* Use CreateFile() and related functions instead of fopen(), etc.
+
+* Make the transparency processing code less complicated.
+
+* Investigate the possibility of returning an alpha channel in the DIB or 
+elsewhere.
+
+
+======================================================================
+
+int read_png_to_dib(PNGD_P2DINFO *p2dp)
+
+This function takes the filename of an existing PNG file, reads it and 
+converts it into an equivalent Windows Device Independent Bitmap (DIB).
+
+USAGE
+
+Create a structure of type PNGD_P2DINFO, zero all the fields, then set the 
+fields below as needed.
+
+Field        Type        Value
+------------ ----------- ------------------------------------------
+.structsize  DWORD       Set this to sizeof(PNGD_P2DINFO)
+
+.flags       DWORD       Combination of the following values (see below):
+                           PNGD_USE_BKGD
+                           PNGD_USE_CUSTOM_BG
+                           PNGD_GAMMA_CORRECTION
+						   PNGD_USE_HEAPALLOC
+
+.pngfn       char*       Pointer to null-terminated filename of the PNG
+                         file to read.
+
+.bgcolor     PNGD_COLOR_struct
+                         The background color to use when reading the
+                         PNG image (if it includes transparency). You must
+                         set the PNGD_USE_CUSTOM_BG flag for this to be used.
+                         Note that PNGDIB may modify this field (if you
+                         set PNGD_USE_BKGD).
+
+.errmsg      char*       This should point to a buffer of at least 100
+                         characters. If PNGDIB fails, an error message will
+                         be written here. This field can be NULL if you don't
+                         want error messages.
+
+.heap        HANDLE      If you set the PNGD_USE_HEAPALLOC flag, PNGDIB will
+                         use HeapAlloc instead of GlobalAlloc to allocate
+						 memory for the DIB. In that case, you can provide
+						 a handle to the heap to use. If you set this to
+						 NULL, PNGDIB will use the default heap (from
+						 GetProcessHeap).
+
+RETURN VALUE
+
+Returns 0 on success; returns a nonzero error code on error (see table at 
+end of this document). If there was an error, the values returned in the 
+PNGD_P2DINFO struct are undefined.
+
+If successful, the function will set values for some of the fields in your 
+PNGD_P2DINFO structure:
+
+
+FLAGS:
+
+PNGD_USE_BKGD
+
+If set, PNGDIB will use the PNG file's suggested background color, if it 
+has one. 
+If unset, PNGDIB will ignore any suggested background color in the PNG file.
+
+PNGD_USE_CUSTOM_BG 
+
+If set, indicates that you are providing your own background color in the 
+bgcolor field. If you are intending only to display (rather than edit) the 
+image, it is recommended that you provide a custom background color 
+whenever possible -- otherwise some PNG images may look pretty bad. The 
+color you choose is up to you, and depends on your application. If you 
+have no idea, a gray color may be safer than pure black or white.
+
+IMPORTANT: If you set both PNGD_USE_CUSTOM_BG and PNGD_USE_BKGD, the PNG 
+file's suggested background color will be used if it has one. Your custom 
+background color will be used if and only if PNG file does not have a 
+suggested background color.
+
+PNGD_GAMMA_CORRECTION
+
+If you set this flag, PNGDIB will perform gamma correction when it reads 
+PNG images. It assumes that the resulting DIB image will be in the sRGB 
+color space. Unlabeled PNG images are assumed to be in the sRGB color 
+space. If you do not set this flag, no gamma correction will be done. You 
+should usually turn on this flag, especially if you are intending only to 
+display (rather than edit) the image.
+
+---
+
+Fields returned or modified by read_png_to_dib:
+
+Field        Type        Value
+------------ ----------- ------------------------------------------
+.flags       DWORD       The following bits may be set by the function:
+                          PNGD_BG_RETURNED - set if the PNG image was
+                              composited against a background color.
+                              The color used is then returned in the
+                              bgcolor field.
+                          PNGD_RES_RETURNED - set if xres,yres,res_units
+                              fields are valid
+                          PNGD_GAMMA_RETURNED - set if file_gamma is valid
+
+.lpdib       LPBITMAPINFOHEADER    
+                         A pointer to the start of the new DIB in memory.
+                         This might more correctly be of type LPBITMAPINFO,
+                         but that is less convenient most of the time. Cast
+                         its type if necessary. This memory block will
+                         contain the BITMAPINFOHEADER, followed by the
+                         palette (if present), followed by the bitmap bits.
+                         The library will allocate a fixed memory block
+                         using GlobalAlloc (or HeapAlloc, if you used the
+						 PNGD_USE_HEAPALLOC flag). It is your responsibility
+						 to free it with GlobalFree (or HeapFree) when you're
+						 done with it.
+
+.dibsize     int         The size in bytes of the DIB in memory (pointed to
+                         by lpdib).
+
+.palette_offs  int       Integer offset (in bytes) of the palette from the
+                         start of lpdib. This will generally be 40.
+
+.bits_offs   int         Integer offset (in bytes) of the bitmap bits from
+                         the start of lpdib. Calculating 
+                         bits_offset-palette_offset will give you the size
+                         of the palette, in bytes.
+
+.palette     RGBQUAD*    Direct pointer to the palette. Note that this
+                         field is redundant and can be calculated from
+                         lpdib and palette_offs.
+
+.palette_colors  int     The number of colors in the palette. This is
+                         generally the same as lpdib->biClrUsed.
+
+.lpbits      void*       Direct pointer to the bitmap bits. Note that this
+                         field is redundant and can be calculated from
+                         lpdib and bits_offs.
+                         This field was accidentally named ".bits" in
+                         PNGDIB version 1.x.
+
+.bgcolor     PNGD_COLOR_struct
+                         If a background color was used when reading the
+                         image, it will be returned here and the
+                         PNGD_RETURNED_BG flag will be set.
+
+.color_type       int    The color type (based on the PNG spec).
+.bits_per_sample  int    Bits per color sample, or per palette entry.
+.bits_per_pixel   int    Bits per pixel, or per palette entry.
+.interlace        int    >0 if the image was interlaced.
+.res_x,res_y      int    X and Y resolution
+.res_units        int    1==resolution is in pixels per meter;
+                         0==resolution units are unspecified
+.file_gamma     double   File gamma (e.g. 0.50000)
+
+
+EXAMPLE
+
+See the included file png2bmp.c or smview.c for an example of this function 
+being used.
+
+
+======================================================================
+
+int write_dib_to_png(PNGD_D2PINFO *d2pp)
+
+USAGE
+
+Create a structure of type PNGD_D2PINFO, zero all the fields, then set the 
+fields below as needed.
+
+Field        Type        Value
+------------ ----------- ------------------------------------------
+.structsize  DWORD       Set this to sizeof(PNGD_D2PINFO)
+
+.flags       DWORD       Set to 0 or a combination of:
+                           PNGD_INTERLACE - to write an interlaced PNG image
+                           PNGD_NO_GAMMA_LABEL - to suppress writing a gamma
+                             value to the file
+
+.pngfn       char*       Pointer to null-terminated filename of the PNG file 
+                         to write.
+
+.lpdib       LPBITMAPINFOHEADER
+                         Set this to point to the start of start of your DIB
+                         [header and palette] in memory.
+
+.dibsize     int         The size in bytes of the data pointed to by lpdib.
+                         This field is optional, and can be set to zero. If
+                         you set it, it may allow better error checking.
+
+.lpbits      void*       Pointer to the start of the bitmap bits in memory.
+                         Most of the time, the bits data in a DIB
+                         immediately follows the header and palette (if
+                         present). If that is the case, you can just set 
+                         lpbits to NULL, and the library will find it.
+
+.bitssize    int         The size in bytes of the data pointed to by lpbits.
+                         This field is optional, and can be set to zero. If
+                         you set it, it may allow better error checking.
+
+.software    char*       Pointer to a brief NULL-terminated string
+                         identifying your application. Set to NULL if you
+                         don't want your app to be identified in the PNG
+                         file.
+
+.errmsg      char*       This should point to a buffer of at least 100
+                         characters. If PNGDIB fails, an error message will
+                         be written here. This field can be NULL if you don't
+                         want error messages.
+
+RETURN VALUE
+
+Returns 0 on success; returns a nonzero error code on error (see table below).
+
+
+EXAMPLE
+
+See the included file bmp2png.c for an example of this function being used.
+
+
+======================================================================
+
+Table of error codes (from pngdib.h):
+
+
+#define PNGD_E_SUCCESS   0
+#define PNGD_E_ERROR     1   // unspecified error 
+#define PNGD_E_VERSION   2   // struct size problem
+#define PNGD_E_NOMEM     3   // could not alloc memory
+#define PNGD_E_UNSUPP    4   // unsupported image type
+#define PNGD_E_LIBPNG    5   // libpng error (invalid PNG?)
+#define PNGD_E_BADBMP    6   // corrupt or unsupported DIB
+#define PNGD_E_BADPNG    7   // corrupt or unsupported PNG
+#define PNGD_E_READ      8   // couldn't read PNG file
+#define PNGD_E_WRITE     9   // couldn't write PNG file
+

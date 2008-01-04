@@ -21,7 +21,8 @@ for l in `find ./plugins -name sources.list`; do
 	cd=`echo $d | sed -e 's|/[[:alnum:]-]*|/\.\.|g'`
 	srcd=`cat $d/sources.base`
 	for f in `cat $l`; do
-		(echo $d/$f && cd $d && ln -sf $cd/../abiword-plugins/$srcd/$f)
+		#(echo $d/$f && cd $d && ln -sf $cd/../abiword-plugins/$srcd/$f)
+		(echo $d/$f && cd $d && svn cp $cd/../abiword-plugins/$srcd/$f .)
 	done
 done
 
