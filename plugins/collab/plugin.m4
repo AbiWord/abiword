@@ -21,7 +21,6 @@ AC_ARG_ENABLE([collab-backend-fake],
 ], [
 	enable_collab_backend_fake="no"
 ])
-AM_CONDITIONAL([COLLAB_BACKEND_FAKE], [test $enable_collab_backend_fake == "yes"])
 
 
 AC_ARG_ENABLE([collab-backend-xmpp], 
@@ -47,7 +46,6 @@ elif test $enable_collab_backend_xmpp == "auto"; then
 		enable_collab_backend_xmpp="no"
 	])
 fi
-AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test $enable_collab_backend_xmpp == "yes"])
 
 
 AC_ARG_ENABLE([collab-backend-tcp], 
@@ -85,7 +83,6 @@ elif test $enable_collab_backend_tcp == "auto"; then
 		AC_MSG_WARN([Boost::Thread is required for the TCP backend])		
 	fi
 fi
-AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test $enable_collab_backend_tcp == "yes"])
 
 
 AC_ARG_ENABLE([collab-backend-sugar], 
@@ -111,7 +108,6 @@ elif test $enable_collab_backend_sugar == "auto"; then
 		enable_collab_backend_sugar="no"
 	])
 fi
-AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test $enable_collab_backend_sugar == "yes"])
 
 
 AC_ARG_ENABLE([collab-backend-service], 
@@ -148,7 +144,6 @@ elif test $enable_collab_backend_service == "auto"; then
 		AC_MSG_WARN([Boost::Thread is required for the \`collaborate.abisource.com' backend])		
 	fi
 fi
-AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test $enable_collab_backend_service == "yes"])
 
 
 AC_ARG_ENABLE([collab-record-always], 
@@ -158,7 +153,6 @@ AC_ARG_ENABLE([collab-record-always],
 ], [
 	enable_collab_record_always="no"
 ])
-AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test $enable_collab_record_always == "yes"])
 
 
 PKG_CHECK_MODULES(COLLAB,[ $collab_req ])
@@ -191,6 +185,13 @@ COLLAB_CFLAGS="$COLLAB_CFLAGS "'${WP_CPPFLAGS}'
 COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
 
 fi # plugin conditional
+
+AM_CONDITIONAL([COLLAB_BACKEND_FAKE], [test "$enable_collab_backend_fake" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_XMPP], [test "$enable_collab_backend_xmpp" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_TCP], [test "$enable_collab_backend_tcp" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_SUGAR], [test "$enable_collab_backend_sugar" == "yes"])
+AM_CONDITIONAL([COLLAB_BACKEND_SERVICE], [test "$enable_collab_backend_service" == "yes"])
+AM_CONDITIONAL([COLLAB_RECORD_ALWAYS], [test "$enable_collab_record_always" == "yes"])
 
 AC_SUBST([COLLAB_CFLAGS])
 AC_SUBST([COLLAB_LIBS])
