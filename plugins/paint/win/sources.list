@@ -1,9 +1,0 @@
-bmp2png.cpp
-Makefile
-png2bmp.cpp
-pngdib.c
-pngdib.h
-pngdib.readme
-ut_process.h
-ut_Win32Process.cpp
-
