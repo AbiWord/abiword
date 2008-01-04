@@ -1,0 +1,9 @@
+docinfo.cpp
+docinfo.h
+ie_imp_StarOffice.cpp
+ie_imp_StarOffice_encodings.cpp
+ie_imp_StarOffice_encodings.h
+ie_imp_StarOffice.h
+sdw_cryptor.cpp
+sdw_cryptor.h
+

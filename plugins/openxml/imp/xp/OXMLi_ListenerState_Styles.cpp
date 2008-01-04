@@ -1,0 +1,130 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
+/* AbiSource
+ * 
+ * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
+
+// Class definition include
+#include <OXMLi_ListenerState_Styles.h>
+
+// Internal includes
+#include <OXML_Document.h>
+#include <OXML_Types.h>
+
+// AbiWord includes
+#include <ut_debugmsg.h>
+
+// External includes
+#include <cstring>
+
+OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles() : 
+	OXMLi_ListenerState(), 
+	m_pCurrentStyle(NULL)
+{
+
+}
+
+OXMLi_ListenerState_Styles::~OXMLi_ListenerState_Styles()
+{
+}
+
+void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
+{
+	UT_return_if_fail( _error_if_fail(rqst != NULL) );
+
+	if (!strcmp(rqst->pName, "docDefaults")) {
+		m_pCurrentStyle = new OXML_Style("Normal", "Normal");
+		m_pCurrentStyle->setAttribute(PT_TYPE_ATTRIBUTE_NAME, "P");
+		m_pCurrentStyle->setAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings");
+
+		rqst->handled = true;
+	} else if (!strcmp(rqst->pName, "rPr") || !strcmp(rqst->pName, "pPr")) {
+		//Push a dummy element onto the stack to collect the formatting for the current style.
+		OXML_SharedElement dummy(new OXML_Element("", P_TAG, BLOCK));
+		rqst->stck->push(dummy);
+
+		rqst->handled = true;
+	} else if (!strcmp(rqst->pName, "style")) {
+		const gchar * id = UT_getAttribute("w:styleId", rqst->ppAtts);
+		const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+		UT_return_if_fail( _error_if_fail( id != NULL && type != NULL ));
+		if (!strcmp(id, "Normal")) id = "_Normal"; //Cannot interfere with document defaults
+		m_pCurrentStyle = new OXML_Style(id, ""); //TODO: wrap this in try/catch
+
+		if (!strcmp(type, "character")) {
+			type = "C"; //Type is C for "character"
+		} else {
+			type = "P"; //Type is P for "paragraph", "numbering", and "table"
+		}
+		m_pCurrentStyle->setAttribute(PT_TYPE_ATTRIBUTE_NAME, type);
+
+		rqst->handled = true;
+	} else if (	!strcmp(rqst->pName, "name") ||
+				!strcmp(rqst->pName, "basedOn") ||
+				!strcmp(rqst->pName, "next")) {
+		const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+		UT_return_if_fail( _error_if_fail( m_pCurrentStyle != NULL && val != NULL ));
+		if (!strcmp(val, "Normal")) val = "_Normal"; //Cannot interfere with document defaults
+
+		if (!strcmp(rqst->pName, "name")) {
+			m_pCurrentStyle->setName(val);
+		} else if (!strcmp(rqst->pName, "basedOn")) {
+			//For now, we use the ID as reference, until all styles have been parsed
+			m_pCurrentStyle->setAttribute(PT_BASEDON_ATTRIBUTE_NAME, val);
+		} else if (!strcmp(rqst->pName, "next")) {
+			//For now, we use the ID as reference, until all styles have been parsed
+			m_pCurrentStyle->setAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, val);
+		}
+		rqst->handled = true;
+	}
+}
+
+void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
+{
+	UT_return_if_fail( _error_if_fail(rqst != NULL) );
+
+	if (!strcmp(rqst->pName, "docDefaults") || !strcmp(rqst->pName, "style")) {
+		UT_return_if_fail(_error_if_fail(m_pCurrentStyle != NULL));
+
+		OXML_Document * doc = OXML_Document::getInstance();
+		UT_return_if_fail( _error_if_fail(doc != NULL) );
+		OXML_SharedStyle styl(m_pCurrentStyle);
+		doc->addStyle(styl);
+		m_pCurrentStyle = NULL;
+
+		rqst->handled = true;
+	} else if (!strcmp(rqst->pName, "rPr") || !strcmp(rqst->pName, "pPr")) {
+		//Retrieve the formatting collected by the Common listener state.
+		OXML_SharedElement dummy = rqst->stck->top();
+		const gchar ** props = dummy->getProperties();
+		if (props != NULL) {
+			//Pass the retrieved properties to a new style object
+			UT_return_if_fail(_error_if_fail(UT_OK == m_pCurrentStyle->appendProperties(props)));
+		}
+		rqst->stck->pop();
+
+		rqst->handled = true;
+	}
+}
+
+void OXMLi_ListenerState_Styles::charData (OXMLi_CharDataRequest * rqst)
+{
+	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
+}
+

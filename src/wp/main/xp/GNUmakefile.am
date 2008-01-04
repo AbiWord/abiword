@@ -1,9 +1,0 @@
-
-INCLUDES = \
-	$(WP_INCLUDES) $(BINRELOC_CFLAGS)
-
-SOURCES = abi_ver.cpp
-
-EXTRA_DIST = \
-	Makefile \
-	$(SOURCES)

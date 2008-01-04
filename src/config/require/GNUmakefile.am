@@ -1,5 +1,0 @@
-
-SUBDIRS = win
-
-EXTRA_DIST = \
-	Makefile

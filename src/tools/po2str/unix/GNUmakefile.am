@@ -1,5 +1,0 @@
-
-bin_PROGRAMS = po2str
-
-EXTRA_DIST = \
-	Makefile

@@ -1,0 +1,20 @@
+
+docbook_pkgs="$gsf_req"
+
+DOCBOOK_CFLAGS=
+DOCBOOK_LIBS=
+
+if test "$enable_docbook" == "yes"; then
+
+AC_HEADER_TIME
+
+PKG_CHECK_MODULES(DOCBOOK,[ $docbook_pkgs ])
+
+DOCBOOK_CFLAGS="$DOCBOOK_CFLAGS "'${WP_CPPFLAGS}'
+DOCBOOK_LIBS="$DOCBOOK_LIBS "'${PLUGIN_LIBS}'
+
+fi
+
+AC_SUBST([DOCBOOK_CFLAGS])
+AC_SUBST([DOCBOOK_LIBS])
+

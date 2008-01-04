@@ -1,6 +1,0 @@
-
-EXTRA_DIST = \
-	$(strings_DATA)
-
-stringsdir = $(ABIWORD_DATADIR)/strings
-strings_DATA = $(wildcard $(srcdir)/*.strings)
