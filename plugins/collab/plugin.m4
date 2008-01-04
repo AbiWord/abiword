@@ -65,7 +65,7 @@ if test $enable_collab_backend_tcp == "yes"; then
 	fi
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Boost.Asio is required for the collab plugin TCP backend])
+		AC_MSG_ERROR([Asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 elif test $enable_collab_backend_tcp == "auto"; then
@@ -77,7 +77,7 @@ elif test $enable_collab_backend_tcp == "auto"; then
 			enable_collab_backend_tcp="yes"
 		], [
 			enable_collab_backend_tcp="no"
-			AC_MSG_WARN([Boost.Asio is required for the TCP backend])
+			AC_MSG_WARN([Asio is required for the TCP backend, see http://asio.sourceforge.net])
 		])
 		AC_LANG_POP
 	else
@@ -129,7 +129,7 @@ if test $enable_collab_backend_service == "yes"; then
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Boost.Asio is required for the \`collaborate.abisource.com' backend])
+		AC_MSG_ERROR([Asio is required for the \`collaborate.abisource.com' backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 elif test $enable_collab_backend_service == "auto"; then
