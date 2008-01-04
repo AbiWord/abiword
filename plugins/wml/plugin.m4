@@ -8,8 +8,8 @@ if test "$enable_wml" == "yes"; then
 
 PKG_CHECK_MODULES(WML,[ $wml_pkgs ])
 
-WML_CFLAGS="$WML_CFLAGS"'${WP_CPPFLAGS}'
-WML_LIBS="$WML_LIBS"'${PLUGIN_LIBS}'
+WML_CFLAGS="$WML_CFLAGS "'${WP_CPPFLAGS}'
+WML_LIBS="$WML_LIBS "'${PLUGIN_LIBS}'
 
 fi
 

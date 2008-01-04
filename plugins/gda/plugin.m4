@@ -8,8 +8,8 @@ if test "$enable_gda" == "yes"; then
 
 PKG_CHECK_MODULES(GDA,[ $gda_pkgs ])
 
-GDA_CFLAGS="$GDA_CFLAGS"'${WP_CPPFLAGS}'
-GDA_LIBS="$GDA_LIBS"'${PLUGIN_LIBS}'
+GDA_CFLAGS="$GDA_CFLAGS "'${WP_CPPFLAGS}'
+GDA_LIBS="$GDA_LIBS "'${PLUGIN_LIBS}'
 
 fi
 

@@ -8,8 +8,8 @@ if test "$enable_pdb" == "yes"; then
 
 PKG_CHECK_MODULES(PDB,[ $pdb_pkgs ])
 
-PDB_CFLAGS="$PDB_CFLAGS"'${WP_CPPFLAGS}'
-PDB_LIBS="$PDB_LIBS"'${PLUGIN_LIBS}'
+PDB_CFLAGS="$PDB_CFLAGS "'${WP_CPPFLAGS}'
+PDB_LIBS="$PDB_LIBS "'${PLUGIN_LIBS}'
 
 fi
 

@@ -8,8 +8,8 @@ if test "$enable_sdw" == "yes"; then
 
 PKG_CHECK_MODULES(SDW,[ $sdw_pkgs ])
 
-SDW_CFLAGS="$SDW_CFLAGS"'${WP_CPPFLAGS}'
-SDW_LIBS="$SDW_LIBS"'${PLUGIN_LIBS}'
+SDW_CFLAGS="$SDW_CFLAGS "'${WP_CPPFLAGS}'
+SDW_LIBS="$SDW_LIBS "'${PLUGIN_LIBS}'
 
 fi
 

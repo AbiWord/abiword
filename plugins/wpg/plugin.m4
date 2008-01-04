@@ -8,8 +8,8 @@ if test "$enable_wpg" == "yes"; then
 
 PKG_CHECK_MODULES(WPG,[ $wpg_pkgs ])
 
-WPG_CFLAGS="$WPG_CFLAGS"'${WP_CPPFLAGS}'
-WPG_LIBS="$WPG_LIBS"'${PLUGIN_LIBS}'
+WPG_CFLAGS="$WPG_CFLAGS "'${WP_CPPFLAGS}'
+WPG_LIBS="$WPG_LIBS "'${PLUGIN_LIBS}'
 
 fi
 

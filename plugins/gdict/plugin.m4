@@ -6,7 +6,7 @@ if test "$enable_gdict" == "yes"; then
 
 AC_TYPE_PID_T
 
-GDICT_CFLAGS="$GDICT_CFLAGS"'${WP_CPPFLAGS}'
+GDICT_CFLAGS="$GDICT_CFLAGS "'${WP_CPPFLAGS}'
 
 fi
 

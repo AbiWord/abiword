@@ -8,8 +8,8 @@ if test "$enable_rsvg" == "yes"; then
 
 PKG_CHECK_MODULES(RSVG,[ $rsvg_pkgs ])
 
-RSVG_CFLAGS="$RSVG_CFLAGS"'${WP_CPPFLAGS}'
-RSVG_LIBS="$RSVG_LIBS"'${PLUGIN_LIBS}'
+RSVG_CFLAGS="$RSVG_CFLAGS "'${WP_CPPFLAGS}'
+RSVG_LIBS="$RSVG_LIBS "'${PLUGIN_LIBS}'
 
 fi
 
