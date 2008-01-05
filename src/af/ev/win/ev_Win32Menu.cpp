@@ -449,7 +449,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 		}
 	}
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	HMENU wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
@@ -634,7 +634,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 		}
 	}
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	HMENU wDbg = NULL;
 	bResult = stackMenu.pop((void **)&wDbg);
 	UT_ASSERT(bResult);

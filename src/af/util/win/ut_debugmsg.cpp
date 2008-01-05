@@ -30,7 +30,7 @@
 
 void _UT_OutputMessage(const char *s, ...)
 {
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	char sBuf[1024];
 	va_list marker;
 

@@ -298,7 +298,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	        markForRedraw(pPOB);
 	}
 
-#if UT_DEBUG
+#ifdef DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
 	if(getSquiggleType() == FL_SQUIGGLE_SPELL)

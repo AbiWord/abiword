@@ -150,7 +150,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 	m_argv = argv;
 	m_argc = k;
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	for (int kk=0; kk<m_argc; kk++)
 		UT_DEBUGMSG(("ParsedCommandLine: argv[%d][%s]\n",kk,m_argv[kk]));
 #endif

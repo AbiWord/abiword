@@ -29,7 +29,7 @@
 
 void _UT_OutputMessage(const char *s, ...)
 {
-#ifdef UT_DEBUG
+#ifdef DEBUG
 #define DEBUG_MSG "DEBUG: "
 	va_list marker;
 

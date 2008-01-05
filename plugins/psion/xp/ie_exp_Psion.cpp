@@ -895,7 +895,7 @@ bool PL_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
 	int i;
 	psiconv_ucs2 character;
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	UT_UTF8Stringbuf buffer;
 	buffer.appendUCS4(p,inLength);
 	UT_DEBUGMSG(("PSION: text `%s'\n",buffer.data()));

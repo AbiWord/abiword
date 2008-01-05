@@ -24,7 +24,7 @@
 
 /*****************************************************************/
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 const char * UT_TestStatus_GetMessage(UT_TestStatus status)
 {
 	switch (status)

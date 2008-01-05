@@ -34,7 +34,7 @@
 
 #include <stdio.h>
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 typedef enum {  UT_Test_SystemError=-1,
 				UT_Test_Fail=0,
 				UT_Test_Pass=1

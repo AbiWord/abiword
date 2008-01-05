@@ -92,7 +92,7 @@ HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT uFmt, HCONV hConv,
 											 HSZ hsz1, HSZ hsz2, HDDEDATA hData,
 											 DWORD dwData1, DWORD dwData2)
 {
-#ifdef UT_DEBUG
+#ifdef DEBUG
 	UINT xtypf	= (uType & 0x000f);
 	UINT xtyp	= (uType & XTYP_MASK);
 	UINT xclass	= (uType & XCLASS_MASK);
