@@ -26,33 +26,33 @@ if LINK_OTHER
 opt_libs += other/libother.la
 endif
 
-lib_LTLIBRARIES = libabiword-2.5.la
+lib_LTLIBRARIES = libabiword-2.7.la
 
-libabiword_2_5_la_CPPFLAGS = \
+libabiword_2_7_la_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
 	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\""
 
-libabiword_2_5_la_LDFLAGS = \
+libabiword_2_7_la_LDFLAGS = \
 	$(DEPS_LIBS) \
 	--no-undefined \
 	-avoid-version \
 	-export-dynamic
 
-libabiword_2_5_la_LIBADD = \
+libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
 	af/libaf.la \
 	text/libtext.la \
 	wp/libwp.la
 
-libabiword_2_5_la_DEPENDENCIES = \
-	$(libabiword_2_5_la_LIBADD)
+libabiword_2_7_la_DEPENDENCIES = \
+	$(libabiword_2_7_la_LIBADD)
 
-libabiword_2_5_la_SOURCES = \
+libabiword_2_7_la_SOURCES = \
 	$(top_srcdir)/src/wp/main/xp/abi_ver.cpp \
 	$(libabiword_cpp)
 
-libabiword_2_5_includedir = $(includedir)/abiword-2.5
-libabiword_2_5_include_HEADERS = \
+libabiword_2_7_includedir = $(includedir)/abiword-2.7
+libabiword_2_7_include_HEADERS = \
 	wp/ap/gtk/abiwidget.h \
 	wp/main/gtk/libabiword.h \
 	af/xap/gtk/xap_UnixTableWidget.h
@@ -70,7 +70,7 @@ if ENABLE_DYNAMIC
 bin_PROGRAMS += abiword-dynamic
 
 abiword_dynamic_CPPFLAGS = \
-	$(libabiword_2_5_la_CPPFLAGS)
+	$(libabiword_2_7_la_CPPFLAGS)
 
 abiword_dynamic_LDFLAGS = \
 	$(DEPS_LIBS) \
@@ -79,7 +79,7 @@ abiword_dynamic_LDFLAGS = \
 	-export-dynamic
 
 abiword_dynamic_LDADD = \
-	libabiword-2.5.la
+	libabiword-2.7.la
 
 abiword_dynamic_SOURCES = \
 	$(main_cpp)
@@ -92,19 +92,19 @@ if ENABLE_STATIC
 bin_PROGRAMS += abiword
 
 abiword_CPPFLAGS = \
-	$(libabiword_2_5_la_CPPFLAGS)
+	$(libabiword_2_7_la_CPPFLAGS)
 
 # --no-undefined doesn't work for objc++, is it needed at all?
 abiword_LDFLAGS = \
 	-export-dynamic
 
 abiword_LDADD = \
-	.libs/libabiword-2.5.a \
+	.libs/libabiword-2.7.a \
 	$(resources) \
 	$(DEPS_LIBS)
 
 abiword_DEPENDENCIES = \
-	.libs/libabiword-2.5.a \
+	.libs/libabiword-2.7.a \
 	$(resources)
 
 abiword_SOURCES = \

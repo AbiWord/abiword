@@ -7,6 +7,9 @@
    */
 #undef ABI_SCANDIR_SELECT_QUALIFIER
 
+/* Define to enable debugging functionality */
+#undef DEBUG
+
 /* Whether we are building for embedded device */
 #undef EMBEDDED_TARGET
 
@@ -81,6 +84,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to disable debugging functionality */
+#undef NDEBUG
 
 /* Name of package */
 #undef PACKAGE
