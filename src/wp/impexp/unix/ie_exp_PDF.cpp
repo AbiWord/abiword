@@ -60,38 +60,51 @@ public:
 
   virtual UT_Error _writeDocument(void)
   {
-    const GnomePrintUnit *unit =
-      gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
     UT_Error exit_status = UT_ERROR;
-    bool portrait = true;
-    double width,height;
-    GnomePrintJob *job = NULL;
-    GnomePrintConfig *config = NULL;
+
+    GR_UnixPangoPrintGraphics *print_graphics = NULL;
     FL_DocLayout *pDocLayout = NULL;
-    FV_View * printView = NULL;
-    GR_Graphics * print_graphics = NULL;
-    job = gnome_print_job_new (NULL);
-    bool bRes;
+    FV_View *printView = NULL;
     char *filename = NULL;
     int fd;
 
-    if(!job)
-      goto exit_writeDocument;
-    
-    config = gnome_print_job_get_config (job);
+    double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+    bool portrait;
+    bool pdfWorkAround = (mFormat == BACKEND_PDF ? true : false);
+
+    mrgnTop = getDoc()->m_docPageSize.MarginTop(DIM_MM);
+    mrgnBottom = getDoc()->m_docPageSize.MarginBottom(DIM_MM);
+    mrgnLeft = getDoc()->m_docPageSize.MarginLeft(DIM_MM);
+    mrgnRight = getDoc()->m_docPageSize.MarginRight(DIM_MM);
+    width = getDoc()->m_docPageSize.Width (DIM_MM);
+    height = getDoc()->m_docPageSize.Height (DIM_MM);
+    portrait = getDoc()->m_docPageSize.isPortrait();
+  
+    GnomePrintJob * job = gnome_print_job_new (NULL);
+
+    // this has to happen before s_setup_config, because it will overwrite the page size and margins and etc...
+    GnomePrintConfig *config = gnome_print_job_get_config (job);
     if(!config)
       goto exit_writeDocument;
-    
+
     if(mFormat == BACKEND_PS) {
       if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"GENERIC"))
 	goto exit_writeDocument;
-    }
-    
-    if(mFormat == BACKEND_PDF) {
+    } else if(mFormat == BACKEND_PDF) {
       if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"PDF"))
 	goto exit_writeDocument;
     }
-    
+
+    if (pdfWorkAround && !portrait)
+      {
+	double tmp = width;
+	width = height;
+	height = tmp;
+      }
+
+    GR_UnixPangoPrintGraphics::s_setup_config (config, mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
+					       width, height, 1, portrait);    
+
     // acts kinda like tempnam()
     fd = g_file_open_tmp(NULL, &filename, NULL);
     if(!filename || fd == -1) { // shouldn't ever fail, but be pedantic
@@ -100,11 +113,15 @@ public:
     }
     
     close(fd);
-    bRes = (gnome_print_job_print_to_file (job, filename) == GNOME_PRINT_OK);
-    if (!bRes)
+    if (gnome_print_job_print_to_file (job, filename) != GNOME_PRINT_OK)
       goto exit_writeDocument;
     
     print_graphics = new GR_UnixPangoPrintGraphics(job);
+
+    if (pdfWorkAround && !portrait)
+      {
+	print_graphics->setPdfWorkaround();
+      }
 
     // create a new layout and view object for the doc
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
@@ -112,20 +129,7 @@ public:
     printView->getLayout()->fillLayouts();
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();
-    portrait = printView->getPageSize().isPortrait();
-    if(!portrait && (mFormat == BACKEND_PDF))
-    {
- 		
-      width = printView->getPageSize().Width (DIM_MM);
-      height = printView->getPageSize().Height (DIM_MM);
-      gnome_print_config_set_length (config, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
-      gnome_print_config_set_length (config, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
-    }
-    else if(!portrait)
-    {
-	gnome_print_config_set (config, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
 
-    }
     s_actuallyPrint (getDoc(), print_graphics,
 		     printView, getFileName(), 
 		     1, true, 
