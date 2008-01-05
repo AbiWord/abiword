@@ -321,6 +321,10 @@ if test "$abi_cv_gucharmap" == "yes"; then
 	opt_pkgs="$opt_pkgs $gucharmap_req"
 fi
 
+dnl check for popt.
+m4_include([popt.m4])
+ABI_POPT
+
 #
 # Dependency tests
 #
@@ -330,12 +334,6 @@ fi
 AC_CHECK_HEADER([png.h], [], 
 [
 	AC_MSG_ERROR([`png.h' not found, use CPPFLAGS to include custom locations])
-])
-
-# TODO need to check for libpopt too, at least on win32
-AC_CHECK_HEADER([popt.h], [], 
-[
-	AC_MSG_ERROR([`popt.h' not found, use CPPFLAGS to include custom locations])
 ])
 
 # TODO need to check for libz too, at least on win32
@@ -363,7 +361,6 @@ if test "$TOOLKIT" == "win"; then
                 -lwinspool \
 		\
 		-lpng13 \
-		-lpopt-0 \
 		-lzlib1"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
@@ -372,8 +369,9 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+DEPS_CFLAGS="$LIBPOPT_CFLAGS $DEPS_CFLAGS"
 AC_SUBST([DEPS_CFLAGS])
-DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
+DEPS_LIBS="$SYSTEM_LIBS $LIBPOPT_LIBS $DEPS_LIBS"
 AC_SUBST([DEPS_LIBS])
 
 BASE_CPPFLAGS='\
