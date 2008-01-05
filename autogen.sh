@@ -34,7 +34,8 @@ libtoolize --force --copy || {
 }
 
 # do not run autoheader on win32, reported to hang
-if [[ `uname | grep -i '^mingw32'` ]]; then
+uname | grep -i '^mingw32'
+if [ $? -eq 0 ]; then
     echo "+ Win32 detected, skipping autoheader"
 else
     echo "+ Running autoheader"
