@@ -95,8 +95,15 @@ public:
 	goto exit_writeDocument;
     }
 
+    if (pdfWorkAround && !portrait)
+      {
+	double tmp = width;
+	width = height;
+	height = tmp;
+      }
+
     GR_UnixPangoPrintGraphics::s_setup_config (config, mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
-					       width, height, 1, portrait);
+					       width, height, 1, portrait);    
 
     // acts kinda like tempnam()
     fd = g_file_open_tmp(NULL, &filename, NULL);
@@ -111,8 +118,10 @@ public:
     
     print_graphics = new GR_UnixPangoPrintGraphics(job);
 
-    if (pdfWorkAround)
-      print_graphics->setPdfWorkaround();
+    if (pdfWorkAround && !portrait)
+      {
+	print_graphics->setPdfWorkaround();
+      }
 
     // create a new layout and view object for the doc
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
