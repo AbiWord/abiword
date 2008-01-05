@@ -45,7 +45,7 @@ libabiword_2_5_la_LIBADD = \
 	wp/libwp.la
 
 libabiword_2_5_la_DEPENDENCIES = \
-	$(resources)
+	$(libabiword_2_5_la_LIBADD)
 
 libabiword_2_5_la_SOURCES = \
 	$(top_srcdir)/src/wp/main/xp/abi_ver.cpp \
@@ -102,6 +102,10 @@ abiword_LDADD = \
 	.libs/libabiword-2.5.a \
 	$(resources) \
 	$(DEPS_LIBS)
+
+abiword_DEPENDENCIES = \
+	.libs/libabiword-2.5.a \
+	$(resources)
 
 abiword_SOURCES = \
 	$(main_cpp)
