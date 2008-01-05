@@ -486,6 +486,15 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 											  double mrgnRight,
 											  double width, double height,
 											  int copies, bool portrait);
+
+	static void s_setup_config (GnomePrintConfig *cfg,
+								double mrgnTop,
+								double mrgnBottom,
+								double mrgnLeft,
+								double mrgnRight,
+								double width, double height,
+								int copies, bool portrait);
+	
 	void   setPdfWorkaround(void)
 	{ m_bPdfLandscapeWorkaround = true;}
 
