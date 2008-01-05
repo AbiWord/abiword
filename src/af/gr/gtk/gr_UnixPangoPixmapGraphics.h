@@ -50,10 +50,10 @@ public:
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	virtual bool      canQuickPrint(void)
 	{ return true;}
-	virtual void		scroll(UT_sint32, UT_sint32) {};
+	virtual void		scroll(UT_sint32, UT_sint32) {}
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							   UT_sint32 x_src, UT_sint32 y_src,
-							   UT_sint32 width, UT_sint32 height) {};
+							   UT_sint32 width, UT_sint32 height) {}
 	
 	virtual void		setCursor(GR_Graphics::Cursor c){};
 	virtual GR_Graphics::Cursor getCursor(void) const;
@@ -64,7 +64,6 @@ protected:
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pPixmap);}
 	GdkPixmap *       m_pPixmap;
-	virtual void init();
 };
 
 #endif

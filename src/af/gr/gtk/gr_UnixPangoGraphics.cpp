@@ -3663,17 +3663,16 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
 }
 
-
-GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
-															  double mrgnBottom,
-															  double mrgnLeft,
-															  double mrgnRight,
-															  double width,
-															  double height,
-															  int copies,
-															  bool portrait)
+void GR_UnixPangoPrintGraphics::s_setup_config (GnomePrintConfig *cfg,
+												double mrgnTop,
+												double mrgnBottom,
+												double mrgnLeft,
+												double mrgnRight,
+												double width,
+												double height,
+												int copies,
+												bool portrait)
 {
-	GnomePrintConfig * cfg = gnome_print_config_default();
 	
 	const GnomePrintUnit *unit =
 		gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
@@ -3707,7 +3706,19 @@ GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
 		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
 
 	}
+}
 
+GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
+															  double mrgnBottom,
+															  double mrgnLeft,
+															  double mrgnRight,
+															  double width,
+															  double height,
+															  int copies,
+															  bool portrait)
+{
+	GnomePrintConfig * cfg = gnome_print_config_default();
+	s_setup_config (cfg, mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height, copies, portrait);
 	return cfg;
 }
 
