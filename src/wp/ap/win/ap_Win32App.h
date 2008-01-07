@@ -26,8 +26,6 @@
 #ifndef AP_WIN32APP_H
 #define AP_WIN32APP_H
 
-#include "popt.h"
-
 #include "ap_App.h"
 #include "ap_Win32Prefs.h"
 #include "ap_Win32Clipboard.h"

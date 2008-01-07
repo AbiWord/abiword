@@ -26,9 +26,7 @@
 #ifndef AP_UNIXAPP_H
 #define AP_UNIXAPP_H
 
-#include <popt.h>
 #include "ut_bytebuf.h"
-#include "xap_Args.h"
 #include "ap_App.h"
 #include "ap_UnixPrefs.h"
 #include "ap_UnixClipboard.h"
@@ -52,7 +50,7 @@ class AP_DiskStringSet;
 class AP_UnixApp : public AP_App
 {
 public:
-	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);
+	AP_UnixApp(const char * szAppName);
 	virtual ~AP_UnixApp();
 
 	virtual bool					initialize(bool has_display);

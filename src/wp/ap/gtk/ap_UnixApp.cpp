@@ -157,7 +157,7 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
   /param szAppName A string representing the name of the app.
 	Currently always AbiWord (I think).
 */
-AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
+AP_UnixApp::AP_UnixApp(const char * szAppName)
     : AP_App(szAppName),
 	  m_pStringSet(0),
 	  m_pClipboard(0),
@@ -1193,8 +1193,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     // This is a static function.
     
     // initialize our application.
-	XAP_Args XArgs = XAP_Args(argc,argv);
-	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
 
 	int exit_status = 0;
 
@@ -1202,6 +1201,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	 * do not outlive the application object by giving them a lower scope
 	 */
 	{
+		XAP_Args XArgs = XAP_Args(argc,argv);
 		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE

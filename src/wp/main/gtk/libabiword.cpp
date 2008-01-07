@@ -31,8 +31,8 @@ static AP_UnixApp *_abiword_app = NULL;
 void libabiword_init (int argc, const char **argv)
 {
 	if (!_abiword_app) {
+		_abiword_app = new AP_UnixApp(PACKAGE);
 		XAP_Args XArgs(argc, argv);
-		_abiword_app = new AP_UnixApp(&XArgs, PACKAGE);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
 		Args.parsePoptOpts();
 		_abiword_app->initialize(TRUE);
@@ -44,8 +44,8 @@ void libabiword_init_noargs ()
 {
 	if (!_abiword_app) {
 		static const char *argv[] = {"libabiword", NULL};
+		_abiword_app = new AP_UnixApp(PACKAGE);
 		XAP_Args XArgs(1, argv);
-		_abiword_app = new AP_UnixApp(&XArgs, PACKAGE);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
 		Args.parsePoptOpts();
 		_abiword_app->initialize(TRUE);
