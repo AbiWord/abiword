@@ -19,7 +19,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef XAP_UNIXHILDONAPP_H
 #define XAP_UNIXHILDONAPP_H
 
@@ -31,8 +30,6 @@
 #include <gtk/gtkwidget.h>
 #include <libosso.h>
 
-class XAP_Args;
-
 /*****************************************************************
 ******************************************************************
 ** Only one of these is created by the application.
@@ -42,7 +39,7 @@ class XAP_Args;
 class ABI_EXPORT XAP_UnixHildonApp : public XAP_UnixApp
 {
 public:
-	XAP_UnixHildonApp(XAP_Args* pArgs, const char* szAppName);
+	XAP_UnixHildonApp(const char* szAppName);
 	virtual ~XAP_UnixHildonApp();
 
 	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);

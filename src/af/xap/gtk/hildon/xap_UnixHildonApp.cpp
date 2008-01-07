@@ -51,8 +51,8 @@ static gint osso_rpc_event_cb (const gchar     *interface,
                                osso_rpc_t      *retval);
 
 /*****************************************************************/
-XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_UnixApp(pArgs, szAppName),
+XAP_UnixHildonApp::XAP_UnixHildonApp(const char * szAppName)
+	: XAP_UnixApp(szAppName),
 	  m_pOsso(NULL),
 	  m_pHildonProgram(NULL),
 	  m_imContext(NULL),
