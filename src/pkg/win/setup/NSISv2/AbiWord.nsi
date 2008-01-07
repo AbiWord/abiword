@@ -185,15 +185,10 @@ Section "$(TITLE_section_abi)" section_abi
 		File "libgsf-1-114.dll"
 		File "bzip2.dll"
 
-		; only for MinGW builds
-		${IfExists} "libAbiWord.dll"
-			File "libAbiWord.dll"
-		${IfExistsEnd}
-
 		; system libs, our new 2.6 friend
 		File "iconv.dll"
 		File "intl.dll"
-		File "libxml2.dll"
+		File "libxml2-2.dll"
 
 	${EndIf}
 SectionEnd
@@ -208,17 +203,14 @@ SectionEnd
 	Delete "$INSTDIR\${PRODUCT}\bin\bzip2.dll"
 
 	; only for MinGW builds
-	${IfExists} "libAbiWord.dll"
-		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
-	${IfExistsEnd}
 	${IfExists} "iconv.dll"
 		Delete "$INSTDIR\${PRODUCT}\bin\iconv.dll"
 	${IfExistsEnd}
 	${IfExists} "intl.dll"
 		Delete "$INSTDIR\${PRODUCT}\bin\intl.dll"
 	${IfExistsEnd}
-	${IfExists} "libxml2.dll"
-		Delete "$INSTDIR\${PRODUCT}\bin\libxml2.dll"
+	${IfExists} "libxml2-2.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\libxml2-2.dll"
 	${IfExistsEnd}
 
 	; delete the BIN subdirectory
