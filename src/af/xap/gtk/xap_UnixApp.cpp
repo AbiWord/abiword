@@ -48,7 +48,6 @@
 
 #include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
-#include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
 #include "gr_UnixImage.h"
@@ -72,8 +71,8 @@ static UnixNull_Graphics * nullgraphics = NULL;
 /*****************************************************************/
 // #include <sys/time.h> // tmp just to measure the time that XftInit takes
 
-XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_App(pArgs, szAppName),
+XAP_UnixApp::XAP_UnixApp(const char * szAppName)
+	: XAP_App(szAppName),
 	  m_dialogFactory(this),
 	  m_controlFactory(),
 	  m_szTmpFile(NULL)
@@ -268,25 +267,8 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 	// FIXME: this code sucks hard
 
 	char buf[PATH_MAX];
-
-	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
-
-	int kLimit = m_pArgs->m_argc;
-	int nFirstArg = 1;	// Unix puts the program name in argv[0], so [1] is the first argument
-	int k;
 	
-	for (k = nFirstArg; k < kLimit; ++k)
-		if ((*m_pArgs->m_argv[k] == '-') && (g_ascii_strcasecmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
-		{
-			strcpy(buf,m_pArgs->m_argv[k+1]);
-			int len = strlen(buf);
-			if (buf[len-1]=='/')		// trim trailing slash
-				buf[len-1] = 0;
-			XAP_App::_setAbiSuiteLibDir(buf);
-			return;
-		}
-	
-	// if not, see if ABIWORD_DATADIR was set in the environment
+	// see if ABIWORD_DATADIR was set in the environment
 
 	const char * sz = getenv("ABIWORD_DATADIR");
 	if (sz && *sz)

@@ -105,8 +105,8 @@
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
-	: AP_App(hInstance, pArgs,szAppName)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance, const char * szAppName)
+	: AP_App(hInstance, szAppName)
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;

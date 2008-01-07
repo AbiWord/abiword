@@ -154,12 +154,11 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 
 /*!
   Construct an AP_UnixApp.
-  /param pArgs Arguments from command line
   /param szAppName A string representing the name of the app.
 	Currently always AbiWord (I think).
 */
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-    : AP_App(pArgs,szAppName),
+    : AP_App(szAppName),
 	  m_pStringSet(0),
 	  m_pClipboard(0),
 	  m_bHasSelection(false),

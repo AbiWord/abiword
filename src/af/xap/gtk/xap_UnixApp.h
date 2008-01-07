@@ -38,7 +38,6 @@
 #include "xap_UnixDialogFactory.h"
 #include "xap_Unix_TB_CFactory.h"
 
-class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
 class XAP_UnixClipboard;
@@ -52,7 +51,7 @@ class XAP_UnixClipboard;
 class ABI_EXPORT XAP_UnixApp : public XAP_App
 {
 public:
-	XAP_UnixApp(XAP_Args* pArgs, const char* szAppName);
+	XAP_UnixApp(const char* szAppName);
 	virtual ~XAP_UnixApp();
 
 	virtual const char * getDefaultEncoding () const

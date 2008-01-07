@@ -31,11 +31,11 @@
 
 #include "ap_Win32App.h" //needed for AP_Win32App::s_fromWinLocaleToUTF8()
 
-AP_App::AP_App (HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
-  : XAP_App_BaseClass ( hInstance, pArgs, szAppName )
+AP_App::AP_App (HINSTANCE hInstance, const char * szAppName)
+  : XAP_App_BaseClass ( hInstance, szAppName )
 #else
-AP_App::AP_App (XAP_Args * pArgs, const char * szAppName)
-  : XAP_App_BaseClass ( pArgs, szAppName )
+AP_App::AP_App (const char * szAppName)
+  : XAP_App_BaseClass ( szAppName )
 #endif
 {
 }

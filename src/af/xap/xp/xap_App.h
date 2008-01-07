@@ -40,7 +40,6 @@
 
 #define NUM_MODELESSID 39
 
-class XAP_Args;
 class XAP_DialogFactory;
 class XAP_Dialog_Modeless;
 class XAP_Toolbar_ControlFactory;
@@ -116,7 +115,7 @@ public:
 	static const char* getAbiSuiteHome ();
 
 public:
-	XAP_App(XAP_Args * pArgs, const char * szAppName);
+	XAP_App(const char * szAppName);
 	virtual ~XAP_App();
 
 	XAP_AppImpl* getImpl()
@@ -156,8 +155,6 @@ public:
 	const XAP_EncodingManager *			getEncodingManager() const;
 	EV_Menu_ActionSet *				getMenuActionSet();
 	EV_Toolbar_ActionSet *				getToolbarActionSet();
-
-	XAP_Args *					getArgs() const { return m_pArgs; };
 
 	// only used in ispell builds because aspell doesn't suck...
 	bool						addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
@@ -281,7 +278,6 @@ protected:
 	virtual bool                _saveState(XAP_StateData & sd);
 	virtual bool                _retrieveState(XAP_StateData & sd);
 
-	XAP_Args *					m_pArgs;
 	const char *					m_szAppName;
 	const char *					m_szAbiSuiteLibDir;
 

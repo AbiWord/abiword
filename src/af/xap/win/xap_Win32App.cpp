@@ -26,7 +26,6 @@
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_Win32Uuid.h"
-#include "xap_Args.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
 #include "xap_Frame.h"
@@ -60,8 +59,8 @@ extern "C" {const char * wvLIDToLangConverter(UT_uint16);}
 
 /*****************************************************************/
 
-XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
-:	XAP_App(pArgs, szAppName),
+XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
+:	XAP_App(szAppName),
 	m_hInstance(hInstance),
 	m_dialogFactory(this)
 {
@@ -293,21 +292,6 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	char buf[PATH_MAX];
 	char buf2[PATH_MAX];
 	char szApplicationName[PATH_MAX];
-
-	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
-
-	int kLimit = m_pArgs->m_argc;
-
-	for (int k=1; k<kLimit; k++)
-		if ((*m_pArgs->m_argv[k] == '-') && (g_ascii_strcasecmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
-		{
-			strcpy(buf,m_pArgs->m_argv[k+1]);
-			int len = strlen(buf);
-			if (buf[len-1]=='\\')		// trim trailing slash
-				buf[len-1] = 0;
-			XAP_App::_setAbiSuiteLibDir(buf);
-			return;
-		}
 
 	// if not, see if ABIWORD_DATADIR was set in the environment
 

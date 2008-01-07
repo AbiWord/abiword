@@ -32,7 +32,6 @@
 #define MAX_CONVBUFFER 256
 
 class XAP_Win32Slurp;
-class XAP_Args;
 class AP_Win32Toolbar_Icons;
 
 /*****************************************************************
@@ -44,7 +43,7 @@ class AP_Win32Toolbar_Icons;
 class XAP_Win32App : public XAP_App
 {
 public:
-	XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
+	XAP_Win32App(HINSTANCE hInstance, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
 	virtual const char * getDefaultEncoding () const;

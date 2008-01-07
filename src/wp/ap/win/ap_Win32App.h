@@ -28,7 +28,6 @@
 
 #include "popt.h"
 
-#include "xap_Args.h"
 #include "ap_App.h"
 #include "ap_Win32Prefs.h"
 #include "ap_Win32Clipboard.h"
@@ -63,7 +62,7 @@ class PD_DocumentRange;
 class AP_Win32App : public AP_App
 {
 public:
-	AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
+	AP_Win32App(HINSTANCE hInstance, const char * szAppName);
 	virtual ~AP_Win32App(void);
 
 	virtual bool					initialize(void);

@@ -38,7 +38,6 @@
 #include "ev_Toolbar_Actions.h"
 #include "xap_App.h"
 #include "xap_AppImpl.h"
-#include "xap_Args.h"
 #include "xap_InputModes.h"
 #include "gr_Image.h"
 #include "xap_Frame.h"
@@ -69,9 +68,8 @@ XAP_App * XAP_App::m_pApp = NULL;
 
 XAP_App * XAP_App::getApp() {return m_pApp;}
 
-XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
-	: m_pArgs(pArgs),
-	  m_szAppName(szAppName),
+XAP_App::XAP_App(const char * szAppName)
+	: m_szAppName(szAppName),
 	  m_szAbiSuiteLibDir(NULL),
 	  m_pEMC(NULL),
 	  m_pBindingSet(NULL),
@@ -361,8 +359,6 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	else
 		setEnableSmoothScrolling(false);
 
-	// TODO use m_pArgs->{argc,argv} to process any command-line
-	// TODO options that we need.
 	//
 	// Need to initialize the random number generator. 
 	//
