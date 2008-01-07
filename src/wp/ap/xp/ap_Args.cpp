@@ -120,6 +120,20 @@ void AP_Args::parsePoptOpts ()
 	}
 }
 
+UT_String * AP_Args::getPluginOpts () const
+{
+	UT_String *opts;
+	const char *opt = NULL;
+
+	opts = new UT_String();
+	while ((opt = poptGetArg (poptcon)) != NULL) {
+		(*opts) += opt;
+		(*opts) += " ";
+	}
+
+	return opts;
+}
+
 /*!
  * Handles arguments which require an XAP_App but no windows.
  * It has a callback to getApp()::doWindowlessArgs().

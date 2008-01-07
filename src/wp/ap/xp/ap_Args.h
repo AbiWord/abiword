@@ -25,8 +25,9 @@
 #include "popt.h"
 
 class AP_Args;
-class XAP_App;
 class AP_App;
+class UT_String;
+class XAP_App;
 
 // warning: options array is static.
 class AP_Args
@@ -40,6 +41,7 @@ public:
 
 	/* Parse options. */
 	void parsePoptOpts ();
+	UT_String * getPluginOpts () const;
 
 	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs(bool & bSuccessful);

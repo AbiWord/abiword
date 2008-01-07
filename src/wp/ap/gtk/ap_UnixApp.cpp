@@ -1206,7 +1206,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 #ifdef LOGFILE
 		UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
-//	UT_String sLogFile = "/home/msevior/.AbiSuite";
 		sLogFile += "abiLogFile";
 		logfile = fopen(sLogFile.c_str(),"a+");
 		fprintf(logfile,"About to do gtk_set_locale \n");
@@ -1217,7 +1216,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		// hack needed to intialize gtk before ::initialize
 		gtk_set_locale();
 
-		gboolean have_display = gtk_init_check(&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
+		gboolean have_display = gtk_init_check(&argc,const_cast<char ***>(&argv));
 
 #ifdef LOGFILE
 		fprintf(logfile,"Got display %d \n",have_display);
@@ -1226,14 +1225,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 		if (have_display > 0) {
 #ifndef WITH_GNOMEUI
-			gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
+			gtk_init (argc,const_cast<char ***>(argv));
 			Args.parsePoptOpts();
 #else
 #ifdef LOGFILE
 			fprintf(logfile,"About to start gnome_program_init \n");
 #endif
 			GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
-														 LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
+														 LIBGNOMEUI_MODULE, argc, const_cast<char **>(argv),
 														 GNOME_PARAM_APP_PREFIX, PREFIX,
 														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
 														 GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
@@ -1340,7 +1339,7 @@ void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
   fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
 	  poptBadOption (Args->poptcon, 0),
 	  poptStrerror (nextopt),
-	  Args->XArgs->m_argv[0]);
+	  g_get_prgname ());
 }
 
 void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
@@ -1562,6 +1561,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
+				UT_DEBUGMSG(("%s\n", szName));
 				if(strcmp(szName,szRequest) == 0)
 				{
 					bFound = true;
@@ -1591,20 +1591,9 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 //
 // Execute the plugin, then quit
 //
-		static UT_String sCommandLine;
-		sCommandLine.clear();
-		//
-		// invoked with
-		// AbiWord-2.6 --plugin AbiCollab .....
-		UT_sint32 iCount =3;
-		while(iCount < Args->XArgs->m_argc)
-		{
-				sCommandLine += Args->XArgs->m_argv[iCount];
-				sCommandLine += " ";
-				iCount++;
-		}
-	
-		ev_EditMethod_invoke(pInvoke, sCommandLine);
+		UT_String *sCommandLine = Args->getPluginOpts();
+		ev_EditMethod_invoke(pInvoke, *sCommandLine);
+		free(sCommandLine);
 		return false;
 	}
 
