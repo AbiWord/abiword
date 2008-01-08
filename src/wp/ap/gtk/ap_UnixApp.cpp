@@ -1225,7 +1225,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 		if (have_display > 0) {
 #ifndef WITH_GNOMEUI
-			gtk_init (argc,const_cast<char ***>(argv));
+			gtk_init (&argc,const_cast<char ***>(&argv));
 			Args.parsePoptOpts();
 #else
 #ifdef LOGFILE
