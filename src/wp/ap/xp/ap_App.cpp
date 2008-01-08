@@ -54,9 +54,16 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 {
 	int kWindowsOpened = 0;
 	const char *file = NULL;
-	poptContext poptcon = args->poptcon;
 
-	while ((file = poptGetArg (poptcon)) != NULL) {
+	if (AP_Args::m_sFiles == NULL) {
+		// no files to open, this is ok
+		XAP_Frame * pFrame = newFrame();
+		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
+		return true;
+	}
+
+	int i = 0;
+	while ((file = AP_Args::m_sFiles[i++]) != NULL) {
 		XAP_Frame * pFrame = newFrame();
 
 		char * uri = NULL;
@@ -114,25 +121,6 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 bool	AP_App::initialize(void)
 {
 	return XAP_App_BaseClass::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings);
-}
-
-
-/*! Prepares for popt to be callable by setting up Args->options.
- * Needs to be in AP_App so that platform code can subclass (eg GNOME).
- */
-void AP_App::initPopt (AP_Args * Args)
-{
-	UT_uint32 i;
-
-	for (i = 0; Args->const_opts[i].longName != NULL; i++)
-		;
-
-	struct poptOption * opts = (struct poptOption *)
-		UT_calloc(i+1, sizeof(struct poptOption));
-	for (UT_uint32 j = 0; j < i; j++)
-		opts[j] = Args->const_opts[j];
-
-	Args->options = opts;
 }
 
 void AP_App::errorMsgBadArg (AP_Args *, int)

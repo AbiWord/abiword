@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -1093,7 +1095,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
 
-	Args.parsePoptOpts();
+	Args.parseOptions();
 	pMyWin32App->initialize();
   
 	// Step 2: Handle all non-window args.
@@ -1318,15 +1320,11 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 }
 
 // cmdline processing call back I reckon
-void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
+void AP_Win32App::errorMsgBadArg(const char *msg)
 {
-	char *pszMessage = (char*)g_try_malloc( 500 );
-	UT_return_if_fail(pszMessage);
-	strcpy( pszMessage, "Error on option " );
-	strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
-	strcat( pszMessage, ": " );
-	strcat( pszMessage, poptStrerror (nextopt) );
-	strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
+	char *pszMessage;
+
+	pszMessage = g_strdup_printf ("%s\nRun with --help' to see a full list of available command line options.\n", msg);
 	MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR);
 	g_free( pszMessage );
 }
@@ -1369,9 +1367,9 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	else
 	if (Args->m_sPrintTo) 
 	{
-		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+		if (Args->m_sFiles[0])
 		{
-			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
+			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFiles[0]));
 			AP_Convert conv ;
 
 			if (Args->m_sMerge)
@@ -1383,7 +1381,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 				conv.setExpProps (Args->m_expProps);
 			
 			UT_String s = "AbiWord: ";
-			s+= Args->m_sFile;
+			s+= Args->m_sFiles[0];
 			
 			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
 			if(!pG)
@@ -1394,7 +1392,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			}
 			
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, pG, Args->m_sFileExtension);
+			conv.print (Args->m_sFiles[0], pG, Args->m_sFileExtension);
 	      
 			delete pG;
 		}
@@ -1408,24 +1406,29 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		return false;
 	}
 
-	if(Args->m_sPlugin)
+	if(Args->m_sPluginArgs)
 	{
 	//
 	// Start a plugin rather than the main abiword application.
 	//
-		const char * szName = NULL;
+	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-		Args->m_sPlugin = poptGetArg(Args->poptcon);
-		bool bFound = false;
-		if(Args->m_sPlugin != NULL)
+		const char * szRequest = NULL;
+		bool bFound = false;	
+		if(Args->m_sPluginArgs[0])
 		{
-			const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules ();
+			const char * szRequest = Args->m_sPluginArgs[0];
+			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
+			printf(" %d plugins loaded \n",pVec->getItemCount());
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				pModule = (XAP_Module *)pVec->getNthItem (i);
+				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				if(strcmp(szName,Args->m_sPlugin) == 0)
+				UT_DEBUGMSG(("%s\n", szName));
+				if(strcmp(szName,szRequest) == 0)
+				{
 					bFound = true;
+				}
 			}
 		}
 		if(!bFound)

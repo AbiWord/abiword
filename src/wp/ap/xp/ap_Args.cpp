@@ -1,5 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2002 Patrick Lam
+ * Copyright (C) 2008 Robert Staudinger
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +20,7 @@
  * 02111-1307, USA.
  */
 
+#include "config.h"
 #include "ap_Features.h"
 #include "xap_Strings.h"
 #include "ap_Strings.h"
@@ -32,10 +36,6 @@
 #include "ut_PerlBindings.h"
 #endif
 
-#include <popt.h>
-
-/*****************************************************************/
-
 // Static initializations:
 #ifdef ABI_OPT_PERL
 const char * AP_Args::m_sScript = NULL;
@@ -46,88 +46,96 @@ int AP_Args::m_iDumpstrings = 0;
 const char * AP_Args::m_sGeometry = NULL;
 const char * AP_Args::m_sToFormat = NULL;
 const char * AP_Args::m_sPrintTo = NULL;
-int    AP_Args::m_iVerbose = 1;
-const char * AP_Args::m_sPlugin = NULL;
-const char * AP_Args::m_sFile = NULL;
-int    AP_Args::m_iVersion = 0;
-int    AP_Args::m_iHelp = 0;
-const char * AP_Args::m_sDisplay = NULL;
-struct poptOption * AP_Args::options = NULL;
+int AP_Args::m_iVerbose = 1;
+const char ** AP_Args::m_sPluginArgs = NULL;
+const char ** AP_Args::m_sFiles = NULL;
+int AP_Args::m_iVersion = 0;
+int AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sMerge = NULL;
-
 const char * AP_Args::m_impProps=NULL;
 const char * AP_Args::m_expProps=NULL;
-
 const char * AP_Args::m_sUserProfile = NULL;
-
 const char * AP_Args::m_sFileExtension = NULL;
-
 int AP_Args::m_iToThumb = 0;
 const char * AP_Args::m_sName = NULL; // name of output file
 const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail by default
 
+
+static GOptionEntry _entries[] = {
+        {"geometry", 'g', 0, G_OPTION_ARG_STRING, &AP_Args::m_sGeometry, "Set initial frame geometry", "GEOMETRY"} ,
+        {"to", 't', 0, G_OPTION_ARG_STRING, &AP_Args::m_sToFormat, "Target format of the file (abw, zabw, rtf, txt, utf8, html, ...), depends on available filter plugins", "FORMAT"},
+        {"verbose", '\0', 0, G_OPTION_ARG_INT, &AP_Args::m_iVerbose, "Set verbosity level (0, 1, 2)", "LEVEL"},
+        {"print", 'p',0, G_OPTION_ARG_STRING, &AP_Args::m_sPrintTo, "Print this file to printer","'Printer name' or '-' for default printer"},
+        {"plugin", 'E', 0, G_OPTION_ARG_STRING_ARRAY, &AP_Args::m_sPluginArgs, "Execute plugin NAME instead of the main application", NULL},
+        {"merge", 'm', 0, G_OPTION_ARG_STRING, &AP_Args::m_sMerge, "Mail-merge", "FILE"},
+        {"imp-props", 'i', 0, G_OPTION_ARG_STRING, &AP_Args::m_impProps, "Importer Arguments", "CSS String"},
+        {"exp-props", 'e', 0, G_OPTION_ARG_STRING, &AP_Args::m_expProps, "Exporter Arguments", "CSS String"},
+        {"thumb", '\0', 0, G_OPTION_ARG_INT, &AP_Args::m_iToThumb, "Make a thumb nail of the first page",""},
+        {"sizeXY",'S', 0, G_OPTION_ARG_STRING, &AP_Args::m_sThumbXY, "Size of PNG thumb nail in pixels","VALxVAL"},
+        {"to-name",'o', 0, G_OPTION_ARG_STRING, &AP_Args::m_sName, "Name of output file",NULL},
+        {"import-extension", '\0', 0, G_OPTION_ARG_STRING, &AP_Args::m_sFileExtension, "Override document type detection by specifying a file extension", NULL},
+        {"userprofile", 'u', 0, G_OPTION_ARG_STRING, &AP_Args::m_sUserProfile, "Use specified user profile.",NULL},
+        {"version", '\0', 0, G_OPTION_ARG_NONE, &AP_Args::m_iVersion, "Print AbiWord version", NULL},
+        { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &AP_Args::m_sFiles, NULL,  "[FILE...]" },
+#ifdef DEBUG
+        {"dumpstrings", 'd', 0, G_OPTION_ARG_NONE, &AP_Args::m_iDumpstrings, "Dump strings to file", NULL},
+#endif
+#ifdef ABI_OPT_PERL
+        {"script", 's', 0, G_OPTION_ARG_STRING, &AP_Args::m_sScript, "Execute FILE as script", "FILE"},
+#endif
+        {NULL }
+};
+
+
+
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), poptcon(NULL), m_pApp(pApp)
+	: XArgs (pArgs), 
+	m_pApp(pApp)
 {
-	pApp->initPopt (this);
+	m_context = g_option_context_new ("- commandline options");
+	g_option_context_add_main_entries (m_context, _entries, NULL);
 }
 
 AP_Args::~AP_Args()
 {
-	if (poptcon != NULL)
-		poptFreeContext(poptcon);
-	FREEP(options);
+	// Only free ctxt if not using gnome, otherwise libgnome owns it
+#ifndef WITH_GNOMEUI
+	g_option_context_free (m_context);
+#endif	
 }
 
-/*****************************************************************/
+void AP_Args::addOptions(GOptionGroup *options)
+{
+	g_option_context_add_group (m_context, options);
+}
 
 /*! Processes all the command line options and puts them in AP_Args.
- * Leaves the files to open in the poptContext for ::openCmdLineFiles
- * to handle.
  *
  * Note that GNOME does this for us!
  */
-void AP_Args::parsePoptOpts ()
+void AP_Args::parseOptions()
 {
-	int nextopt;
-	poptcon = poptGetContext("AbiWord", 
-				       XArgs->m_argc, XArgs->m_argv, 
-				       options, 0);
+	GError *err;
+	gboolean ret;
 
-    while ((nextopt = poptGetNextOpt (poptcon)) > 0 &&
-		   nextopt != POPT_ERROR_BADOPT)
-        /* do nothing */ ;
-
-    if (nextopt != -1) 
-	{
-		m_pApp->errorMsgBadArg(this, nextopt);
-        exit (1);
-    }
-
- 	if (m_iVersion)
- 	{		
- 		printf("%s\n", XAP_App::s_szBuild_Version);
-		#ifdef _WIN32
-			MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
-		#endif
-		exit(0);
- 	}
-
-	if (m_iHelp)
-	{
-		poptPrintHelp(poptcon, stdout, 0);
-		exit(0);
+	err = NULL;
+	ret = g_option_context_parse (m_context, &XArgs->m_argc, &XArgs->m_argv, &err);
+	if (err) {
+		fprintf (stderr, "%s\n", err->message);
+		g_error_free (err); err = NULL;
 	}
 }
 
-UT_String * AP_Args::getPluginOpts () const
+UT_String * AP_Args::getPluginOptions() const
 {
 	UT_String *opts;
-	const char *opt = NULL;
+	int i;
 
+	UT_ASSERT(m_sPluginArgs && m_sPluginArgs[0]);
 	opts = new UT_String();
-	while ((opt = poptGetArg (poptcon)) != NULL) {
-		(*opts) += opt;
+	i = 1;
+	while (m_sPluginArgs[i]) {
+		(*opts) += m_sPluginArgs[i];
 		(*opts) += " ";
 	}
 
@@ -165,6 +173,15 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	}
 #endif
 
+ 	if (m_iVersion)
+ 	{		
+ 		printf("%s\n", PACKAGE_VERSION);
+		#ifdef _WIN32
+			MessageBox(NULL, PACKAGE_VERSION, "Version", MB_OK|MB_ICONINFORMATION);
+		#endif
+		exit(0);
+ 	}
+
 	if (m_sToFormat) 
 	{
 		AP_Convert * conv = new AP_Convert();
@@ -175,13 +192,15 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 			conv->setImpProps (m_impProps);
 		if (m_expProps)
 			conv->setExpProps (m_expProps);
-		while ((m_sFile = poptGetArg (poptcon)) != NULL)
+		int i = 0;
+		while (m_sFiles[i])
 		{
-			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sToFormat));
+			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFiles[i], m_sToFormat));
 			if(m_sName)
-			  bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sFileExtension, m_sName, m_sToFormat);
+			  bSuccessful = bSuccessful && conv->convertTo(m_sFiles[i], m_sFileExtension, m_sName, m_sToFormat);
 			else
-			  bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sFileExtension, m_sToFormat);
+			  bSuccessful = bSuccessful && conv->convertTo(m_sFiles[i], m_sFileExtension, m_sToFormat);
+			i++;
 		}
 		delete conv;
 		return false;
@@ -196,30 +215,3 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	return true;
 }
 
-/*****************************************************************/
-
-const struct poptOption AP_Args::const_opts[] =
-	{{"geometry", 'g', POPT_ARG_STRING, &m_sGeometry, 0, "Set initial frame geometry", "GEOMETRY"},
-#ifdef ABI_OPT_PERL
-	 {"script", 's', POPT_ARG_STRING, &m_sScript, 0, "Execute FILE as script", "FILE"},
-#endif
-#ifdef DEBUG
-	 {"dumpstrings", 'd', POPT_ARG_NONE, &m_iDumpstrings, 0, "Dump strings to file", NULL},
-#endif
-	 {"to", 't', POPT_ARG_STRING, &m_sToFormat, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
-	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
-	 {"print", 'p',POPT_ARG_STRING,&m_sPrintTo,0,"Print this file to printer","'Printer name' or '-' for default printer"},
-	 {"plugin", 'E', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", NULL},
-	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
-	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
-	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exporter Arguments", "CSS String"},
-	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
-	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
-	 {"to-name",'o',POPT_ARG_STRING,&m_sName,0,"Name of output file",NULL},
-	 {"import-extension", '\0', POPT_ARG_STRING, &m_sFileExtension, 0, "Override document type detection by specifying a file extension", NULL},
-	 // GNOME build kills everything after "version"
-	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
- 	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},
-	 {"userprofile", 'u', POPT_ARG_STRING, &m_sUserProfile,0,"Use specified user profile.",NULL},
-	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
-	};

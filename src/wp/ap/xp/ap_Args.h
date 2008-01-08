@@ -1,5 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2002 Patrick Lam
+ * Copyright (C) 2008 Robert Staudinger
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +23,9 @@
 #ifndef AP_ARGS_H
 #define AP_ARGS_H
 
+#include <glib.h>
 #include "ut_types.h"
 #include "xap_Args.h"
-#include "popt.h"
 
 class AP_Args;
 class AP_App;
@@ -37,18 +40,16 @@ public:
 	~AP_Args(void);
 
 	XAP_Args *XArgs;
-	poptContext poptcon;
+
+	GOptionContext * getContext() const { return m_context; }
+	void addOptions(GOptionGroup *options);
 
 	/* Parse options. */
-	void parsePoptOpts ();
-	UT_String * getPluginOpts () const;
+	void parseOptions();
+	UT_String * getPluginOptions() const;
 
 	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs(bool & bSuccessful);
-
-	// Would be nice if this could be non-static.
-	const static struct poptOption const_opts[];
-	static struct poptOption * options;
 
 #ifdef ABI_OPT_PERL
  	static const char * m_sScript;
@@ -64,11 +65,10 @@ public:
 	static const char * m_sThumbXY;
 	static int	  m_iVerbose;
 	static int	  m_iShow;
-	static const char * m_sPlugin;
-	static const char * m_sFile;
+	static const char ** m_sPluginArgs;
+	static const char ** m_sFiles;
 	static int    m_iVersion;
 	static int    m_iHelp;
-	static const char * m_sDisplay;
 	static const char * m_sMerge;
 
 	static const char * m_impProps;
@@ -78,6 +78,7 @@ public:
 	static const char * m_sFileExtension;
 private:
 	AP_App*       m_pApp;
+	GOptionContext *m_context;
 };
 
 #endif /* AP_ARGS_H */

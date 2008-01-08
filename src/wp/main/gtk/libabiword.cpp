@@ -28,13 +28,14 @@
 
 static AP_UnixApp *_abiword_app = NULL;
 
-void libabiword_init (int argc, const char **argv)
+void libabiword_init (int argc, char **argv)
 {
 	if (!_abiword_app) {
 		_abiword_app = new AP_UnixApp(PACKAGE);
 		XAP_Args XArgs(argc, argv);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
-		Args.parsePoptOpts();
+		/* TODO do we need to add the gtk's GOptionGroup here? */
+		Args.parseOptions();
 		_abiword_app->initialize(TRUE);
 		/* TODO set up segfault handlers */
 	}
@@ -43,11 +44,11 @@ void libabiword_init (int argc, const char **argv)
 void libabiword_init_noargs ()
 {
 	if (!_abiword_app) {
-		static const char *argv[] = {"libabiword", NULL};
+		static char *argv[] = {"libabiword", NULL};
 		_abiword_app = new AP_UnixApp(PACKAGE);
 		XAP_Args XArgs(1, argv);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
-		Args.parsePoptOpts();
+		Args.parseOptions();
 		_abiword_app->initialize(TRUE);
 		/* TODO set up segfault handlers */
 	}

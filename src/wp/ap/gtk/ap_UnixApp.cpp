@@ -37,6 +37,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <glib.h>
 
 #include "ut_debugmsg.h"
 #include "ut_path.h"
@@ -128,7 +129,6 @@
 #define WIN_POS GTK_WIN_POS_CENTER
 #endif
 
-#include <popt.h>
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
@@ -1188,7 +1188,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 
 /*****************************************************************/
 
-int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
+int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
     // This is a static function.
     
@@ -1226,36 +1226,30 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		if (have_display > 0) {
 #ifndef WITH_GNOMEUI
 			gtk_init (&argc,const_cast<char ***>(&argv));
-			Args.parsePoptOpts();
+			Args.addOptions(gtk_get_option_group(TRUE));
+			Args.parseOptions();
 #else
 #ifdef LOGFILE
 			fprintf(logfile,"About to start gnome_program_init \n");
 #endif
+			// GNOME handles 'parseOptions'.  Isn't it grand?
 			GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
 														 LIBGNOMEUI_MODULE, argc, const_cast<char **>(argv),
 														 GNOME_PARAM_APP_PREFIX, PREFIX,
 														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
 														 GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
 														 GNOME_PARAM_APP_LIBDIR, PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
-														 GNOME_PARAM_POPT_TABLE, AP_Args::options, 
+														 GNOME_PARAM_GOPTION_CONTEXT, Args.getContext(), 
 														 GNOME_PARAM_NONE);
 #ifdef LOGFILE
 			fprintf(logfile,"gnome_program_init completed \n");
 #endif
-
-			g_object_get (G_OBJECT (program),
-						  GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
-						  NULL);
-#ifdef LOGFILE
-			fprintf(logfile,"g_object_get completed \n");
-#endif
-
-			// GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
 		}
 		else {
 			// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
-			Args.parsePoptOpts();
+			Args.addOptions(gtk_get_option_group(FALSE));
+			Args.parseOptions();
 		}
 
 		// if the initialize fails, we don't have icons, fonts, etc.
@@ -1334,12 +1328,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	return exit_status;
 }
 	
-void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
+void AP_UnixApp::errorMsgBadArg(const char *msg)
 {
-  fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
-	  poptBadOption (Args->poptcon, 0),
-	  poptStrerror (nextopt),
-	  g_get_prgname ());
+  fprintf (stderr, "%s.\nRun '%s --help' to see a full list of available command line options.\n",
+	  msg, g_get_prgname());
 }
 
 void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
@@ -1347,36 +1339,6 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 {
   s_CouldNotLoadFileMessage (pFrame, file, error);
 }
-
-/*! Prepares for popt to be callable by setting up Args->options.
- * For GNOME, only copies args up to 'version'.
- */
-void AP_UnixApp::initPopt (AP_Args * Args)
-{
-#ifdef WITH_GNOMEUI
-	UT_sint32 v = -1, i;
-
-	// stop at --version.
-	for (i = 0; Args->const_opts[i].longName != NULL; i++)
-		if (!strcmp(Args->const_opts[i].longName, "version"))
-		{ 
-			v = i; break; 
-		}
-
-	if (v == -1)
-		v = i;
-
-	struct poptOption * opts = (struct poptOption *)
-		UT_calloc(v+1, sizeof(struct poptOption));
-	for (UT_sint32 j = 0; j < v; j++)
-		opts[j] = Args->const_opts[j];
-
-	Args->options = opts;
-#else
-	AP_App::initPopt(Args);
-#endif
-}
-
 
 #define PMSCALE 0.5
 #define PMW (PMSCALE * P_WIDTH)
@@ -1423,7 +1385,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	if (Args->m_sPrintTo) 
 	{
 #ifdef ENABLE_PRINT
-		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+		if (Args->m_sFiles[0])
 	    {
 			AP_Convert conv ;
 
@@ -1460,7 +1422,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			GR_UnixPangoPrintGraphics * print_graphics;
 
 			print_graphics = new GR_UnixPangoPrintGraphics(job);
-			bSuccess = conv.print (Args->m_sFile, print_graphics,
+			bSuccess = conv.print (Args->m_sFiles[0], print_graphics,
 								   Args->m_sFileExtension);
 
 			delete print_graphics;
@@ -1483,7 +1445,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 
 #ifdef ENABLE_PRINT
 
-		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+		if (Args->m_sFiles[0])
 	    {
 #if 0 // work out how to do this later
 			AP_Convert conv ;
@@ -1542,7 +1504,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 #endif
 	}
 
-	if(Args->m_sPlugin)
+	if(Args->m_sPluginArgs)
 	{
 //
 // Start a plugin rather than the main abiword application.
@@ -1550,11 +1512,10 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
 		const char * szRequest = NULL;
-		//		szRequest = poptGetArg(Args->poptcon);
-		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		if(Args->m_sPlugin != NULL)
+		if(Args->m_sPluginArgs[0])
 		{
+			const char * szRequest = Args->m_sPluginArgs[0];
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 			printf(" %d plugins loaded \n",pVec->getItemCount());
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
@@ -1584,16 +1545,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		if(!pInvoke)
 		{
 			fprintf(stderr, "Plugin %s invoke method %s not found \n",
-					Args->m_sPlugin,evExecute);
+					Args->m_sPluginArgs[0],evExecute);
 			bSuccess = false;
 			return false;
 		}
 //
 // Execute the plugin, then quit
 //
-		UT_String *sCommandLine = Args->getPluginOpts();
+		UT_String *sCommandLine = Args->getPluginOptions();
 		ev_EditMethod_invoke(pInvoke, *sCommandLine);
-		free(sCommandLine);
+		delete(sCommandLine);
 		return false;
 	}
 

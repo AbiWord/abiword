@@ -33,13 +33,13 @@ class XAP_Args
 	friend class AP_Args;
 
 public:
-	XAP_Args(int argc, const char ** argv);	/* for systems which cut up the command line for us */
+	XAP_Args(int argc, char ** argv);	/* for systems which cut up the command line for us */
 	XAP_Args(const char * szCmdLine);	/* for systems which give one big arg */
 	~XAP_Args(void);
 
 private:
-	int		m_argc;
-	const char **	m_argv;
+	int	m_argc;
+	char **	m_argv;
 
 	bool m_bAllocated;
 	char *	m_szBuf;

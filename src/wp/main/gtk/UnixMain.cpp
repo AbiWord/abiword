@@ -25,7 +25,7 @@
 
 #include "ap_UnixApp.h"
 
-int main(int argc, const char ** argv)
+int main(int argc, char ** argv)
 {
 	return AP_UnixApp::main(PACKAGE_NAME, argc, argv);
 }

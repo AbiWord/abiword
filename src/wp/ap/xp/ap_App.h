@@ -25,8 +25,6 @@
 #include "config.h"
 #endif
 
-#include <popt.h>
-
 class AP_Args;
 class AP_Frame;
 class XAP_Frame;
@@ -69,9 +67,6 @@ class AP_App : public XAP_App_BaseClass
 	virtual bool	initialize(void);
 
 	/* Command line stuff. */
-
-	/* Set up ::options array. */
-	virtual void initPopt (AP_Args *);
 
 	/* Print an error message.  eg printf on UNIX, MessageBox on Windows. */
 	virtual void errorMsgBadArg (AP_Args *, int);

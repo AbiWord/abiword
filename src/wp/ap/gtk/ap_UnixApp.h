@@ -92,15 +92,14 @@ public:
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
 
-	static int main (const char * szAppName, int argc, const char ** argv);
+	static int main (const char * szAppName, int argc, char ** argv);
 
 	void							catchSignals(int sig_num);
 	void loadAllPlugins ();
 
-	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
+	virtual void errorMsgBadArg(const char *msg);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
-	virtual void initPopt (AP_Args *);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	bool makePngPreview(const char * pszInFile,const char * pszPNGFile,  UT_sint32 iWidth, UT_sint32 iHeight);
 	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
