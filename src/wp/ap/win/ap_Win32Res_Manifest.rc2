@@ -38,6 +38,6 @@
 #define RT_MANIFEST 24
 #endif
 
-AP_RID_MANIFEST RT_MANIFEST "../../../../../abidistfiles/AbiWord.exe.MANIFEST"
+AP_RID_MANIFEST RT_MANIFEST "../../../../AbiWord.exe.MANIFEST"
 
 #endif /* RC_INVOKED */

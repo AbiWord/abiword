@@ -1092,7 +1092,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 #endif
 
 	// Step 1: Initialize our application.
-	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
+	pMyWin32App = new AP_Win32App(hInstance, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
 
 	Args.parseOptions();
@@ -1433,7 +1433,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			printf("Plugin %s not found or loaded \n",Args->m_sPluginArgs[0]);
 			bSuccess = false;
 			return false;
 		}
@@ -1448,7 +1448,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		if(!pInvoke)
 		{
 			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
+				   Args->m_sPluginArgs[0],evExecute);
 			bSuccess = false;
 			return false;
 		}

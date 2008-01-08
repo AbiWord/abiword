@@ -145,7 +145,7 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 		strlwr (szIDlow);
 		
 		if (AP_Win32Toolbar_Icons::saveBitmap (s_imTable[i].m_id)) {
-			UT_DEBUGMSG(("AP_RID_TI_%s BITMAP DISCARDABLE \"../../../wp/ap/win/ToolBarIcons/%s.bmp\"\n",
+			UT_DEBUGMSG(("AP_RID_TI_%s BITMAP DISCARDABLE \"../../../wp/ap/win/ToolbarIcons/%s.bmp\"\n",
 				szID, szIDlow));
 		}		
 	}

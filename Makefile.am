@@ -26,6 +26,7 @@ EXTRA_DIST = \
 	INSTALL \
 	NEWS \
 	README \
+	AbiWord.exe.MANIFEST \
 	ChangeLog \
 	abiword.desktop \
 	abiword.keys \
