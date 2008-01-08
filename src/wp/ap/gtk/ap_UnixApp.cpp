@@ -1193,17 +1193,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // This is a static function.
     
     // initialize our application.
-	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
-
 	int exit_status = 0;
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
 
 	/* this brace is here to ensure that our local variables on the stack
 	 * do not outlive the application object by giving them a lower scope
 	 */
 	{
-		XAP_Args XArgs = XAP_Args(argc,argv);
+		XAP_Args XArgs = XAP_Args(argc, argv);
 		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
-
 #ifdef LOGFILE
 		UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
 		sLogFile += "abiLogFile";
@@ -1211,21 +1209,17 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		fprintf(logfile,"About to do gtk_set_locale \n");
 		fprintf(logfile,"New logfile \n");
 #endif
-    
 		// Step 1: Initialize GTK and create the APP.
 		// hack needed to intialize gtk before ::initialize
 		gtk_set_locale();
-
-		gboolean have_display = gtk_init_check(&argc,const_cast<char ***>(&argv));
-
+		gboolean have_display = gtk_init_check(&argc, &argv);
 #ifdef LOGFILE
 		fprintf(logfile,"Got display %d \n",have_display);
 		fprintf(logfile,"Really display %d \n",have_display);
 #endif
-
 		if (have_display > 0) {
 #ifndef WITH_GNOMEUI
-			gtk_init (&argc,const_cast<char ***>(&argv));
+			gtk_init (&argc, &argv);
 			Args.addOptions(gtk_get_option_group(TRUE));
 			Args.parseOptions();
 #else
@@ -1234,7 +1228,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 #endif
 			// GNOME handles 'parseOptions'.  Isn't it grand?
 			GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
-														 LIBGNOMEUI_MODULE, argc, const_cast<char **>(argv),
+														 LIBGNOMEUI_MODULE, argc, argv,
 														 GNOME_PARAM_APP_PREFIX, PREFIX,
 														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
 														 GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
@@ -1261,9 +1255,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
 		// Setup signal handlers, primarily for segfault
 		// If we segfaulted before here, we *really* blew it
-	
 		struct sigaction sa;
-	
 		sa.sa_handler = signalWrapper;
     
 		sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
