@@ -13,16 +13,10 @@ libxp_la_CPPFLAGS = \
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
 	ap_Dialog_Spell.cpp \
-	ap_StatusBar.cpp \
-	ap_wp_sidebar.cpp
+	ap_StatusBar.cpp
 
 if ENABLE_SPELL
 spell_src = ap_Dialog_Spell.cpp
-endif
-
-if ENABLE_SPLASH
-splash_src = \
-	ap_wp_sidebar.cpp
 endif
 
 if ENABLE_STATUSBAR
@@ -223,9 +217,5 @@ EXTRA_DIST = \
 	$(conditional_src) \
 	margin.xpm \
 	orient-horizontal.xpm \
-	orient-vertical.xpm \
-	sidebar.png
-
-ap_wp_sidebar.cpp: $(srcdir)/sidebar.png
-	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
+	orient-vertical.xpm
 

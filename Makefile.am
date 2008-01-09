@@ -1,4 +1,6 @@
 
+ACLOCAL_AMFLAGS = -I .
+
 DIST_SUBDIRS = goffice-bits src plugins user
 
 if WITH_GOFFICE_BUILTIN
@@ -26,7 +28,6 @@ EXTRA_DIST = \
 	INSTALL \
 	NEWS \
 	README \
-	AbiWord.exe.MANIFEST \
 	ChangeLog \
 	abiword.desktop \
 	abiword.keys \

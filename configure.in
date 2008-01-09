@@ -166,15 +166,6 @@ if test "$abi_cv_spell" == "yes"; then
 	opt_pkgs="$opt_pkgs $enchant_req"
 fi
 
-AC_ARG_ENABLE([splash], 
-	[AS_HELP_STRING([--disable-splash], [do not include splash screen])], 
-[
-	abi_cv_splash="$enableval"
-],[
-	# on by default
-	abi_cv_splash="yes"
-])
-
 AC_ARG_ENABLE([statusbar], 
 	[AS_HELP_STRING([--disable-statusbar], [(gtk only) do not include status bar])], 
 [
@@ -514,11 +505,6 @@ if test "$abi_cv_spell" == "yes"; then
 fi
 AM_CONDITIONAL([ENABLE_SPELL], test "$abi_cv_spell" == "yes")
 
-if test "$abi_cv_splash" == "yes"; then
-	AC_DEFINE([ENABLE_SPLASH], [1], [Define if building splash screen])
-fi
-AM_CONDITIONAL([ENABLE_SPLASH], test "$abi_cv_splash" == "yes")
-
 if test "$abi_cv_statusbar" == "yes"; then
 	AC_DEFINE([ENABLE_STATUSBAR], [1], [Define if building status bar])
 fi
@@ -670,6 +656,7 @@ AC_OUTPUT(
 
 echo "
 Configuration:
+  target                ${target}
   dynamic binary        ${enable_dynamic}
   static binary         ${enable_static}
   platform              ${PLATFORM} (embedded: $abi_cv_embedded_platform)
@@ -680,7 +667,6 @@ Optional features:
   menubutton            ${abi_cv_menubutton}
   printing              ${abi_cv_print}
   spell checking        ${abi_cv_spell}
-  splash screen         ${abi_cv_splash}
   status bar            ${abi_cv_statusbar}
 
 Optional dependencies:

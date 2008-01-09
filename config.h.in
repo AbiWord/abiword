@@ -31,9 +31,6 @@
 /* Define if building spell checking support */
 #undef ENABLE_SPELL
 
-/* Define if building splash screen */
-#undef ENABLE_SPLASH
-
 /* Define if building status bar */
 #undef ENABLE_STATUSBAR
 
