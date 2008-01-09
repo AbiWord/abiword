@@ -20,7 +20,7 @@
 #ifndef UT_DEBUGMSG_H
 #define UT_DEBUGMSG_H
 
-#include <config.h>
+#include "config.h"
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -32,7 +32,7 @@
 
 ABI_EXPORT void _UT_OutputMessage(const char *s, ...);
 
-#ifdef UT_DEBUG
+#ifdef DEBUG
 #define UT_DEBUGMSG(M) _UT_OutputMessage M
 #else
 #define UT_DEBUGMSG(M)
