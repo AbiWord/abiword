@@ -2,7 +2,7 @@
 DIST_SUBDIRS = unix win xp
 SUBDIRS = @PLATFORM@ xp
 
-plugindir = $(ABIWORD_PAINTSDIR)
+plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = libpaint.la
 
 libpaint_la_LIBADD = \
