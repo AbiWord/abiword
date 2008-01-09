@@ -71,6 +71,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent;
 
+	// TODO Rob: use the more fancy "sidebar.png" logo, just like win32
 	if (!logo) {
 		UT_String str (DATADIR);
 		str += "/icons/abiword_48.png";

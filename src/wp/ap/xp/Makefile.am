@@ -25,7 +25,6 @@ endif
 
 libxp_la_SOURCES = \
 	$(spell_src) \
-	$(splash_src) \
 	$(statusbar_src) \
 	ap_App.cpp \
 	ap_App.h \
@@ -211,11 +210,16 @@ libxp_la_SOURCES = \
 	ap_Toolbar_Layouts_All.h \
 	ap_Toolbar_Layouts.cpp \
 	ap_TopRuler.cpp \
-	ap_TopRuler.h
+	ap_TopRuler.h \
+	ap_wp_sidebar.cpp
 
 EXTRA_DIST = \
 	$(conditional_src) \
 	margin.xpm \
 	orient-horizontal.xpm \
-	orient-vertical.xpm
+	orient-vertical.xpm \
+	sidebar.png
+
+ap_wp_sidebar.cpp: $(srcdir)/sidebar.png
+	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
 
