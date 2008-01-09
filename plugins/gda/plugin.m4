@@ -6,6 +6,13 @@ GDA_LIBS=
 
 if test "$enable_gda" == "yes"; then
 
+AC_MSG_CHECKING([gtk toolkit])
+if test "$TOOLKIT" == "gda"; then
+  AC_MSG_RESULT([ok])
+else
+  AC_MSG_ERROR([the gda plugin is only supported with gtk])
+fi
+
 PKG_CHECK_MODULES(GDA,[ $gda_pkgs ])
 
 GDA_CFLAGS="$GDA_CFLAGS "'${WP_CPPFLAGS}'

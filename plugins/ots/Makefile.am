@@ -18,3 +18,18 @@ libots_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libots.dll
+
+CLEANFILES = \
+	libots.def \
+	libots.dll \
+	libots.dll.a
+
+libots.dll: .libs/libots.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OTS_LIBS)
+
+endif # TOOLKIT_WIN
+

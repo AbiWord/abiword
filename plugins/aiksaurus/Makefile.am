@@ -22,3 +22,18 @@ libaiksaurus_la_LDFLAGS = \
 
 libaiksaurus_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libaiksaurus.dll
+
+CLEANFILES = \
+	libaiksaurus.def \
+	libaiksaurus.dll \
+	libaiksaurus.dll.a
+
+libaiksaurus.dll: .libs/libaiksaurus.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(AIKSAURUS_LIBS)
+
+endif # TOOLKIT_WIN
+

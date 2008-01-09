@@ -4,6 +4,13 @@ GDICT_LIBS=
 
 if test "$enable_gdict" == "yes"; then
 
+AC_MSG_CHECKING([gtk toolkit])
+if test "$TOOLKIT" == "gtk"; then
+  AC_MSG_RESULT([ok])
+else
+  AC_MSG_ERROR([the gda plugin is only supported with gtk])
+fi
+
 AC_TYPE_PID_T
 
 GDICT_CFLAGS="$GDICT_CFLAGS "'${WP_CPPFLAGS}'

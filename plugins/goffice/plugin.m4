@@ -6,6 +6,13 @@ GOFFICE_LIBS=
 
 if test "$enable_goffice" == "yes"; then
 
+AC_MSG_CHECKING([gtk toolkit])
+if test "$TOOLKIT" == "gtk"; then
+  AC_MSG_RESULT([ok])
+else
+  AC_MSG_ERROR([the goffice plugin is only supported with gtk])
+fi
+
 PKG_CHECK_MODULES(GOFFICE,[ $goffice_pkgs ])
 
 AC_CHECK_HEADER(hash_map,[GOFFICE_CFLAGS="-DHAVE_HASH_MAP $GOFFICE_CFLAGS"],[

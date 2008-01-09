@@ -17,3 +17,19 @@ libwmf_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libwmf.dll
+
+CLEANFILES = \
+	libwmf.def \
+	libwmf.dll \
+	libwmf.dll.a
+
+libwmf.dll: .libs/libwmf.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WMF_LIBS)
+
+endif # TOOLKIT_WIN
+

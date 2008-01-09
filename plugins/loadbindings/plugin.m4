@@ -1,5 +1,5 @@
 
-loadbindings_pkgs="$glib_req"
+loadbindings_pkgs="$gsf_req"
 
 LOADBINDINGS_CFLAGS=
 LOADBINDINGS_LIBS=
@@ -8,7 +8,7 @@ if test "$enable_loadbindings" == "yes"; then
 
 PKG_CHECK_MODULES(LOADBINDINGS,[ $loadbindings_pkgs ])
 
-LOADBINDINGS_CFLAGS="$LOADBINDINGS_CFLAGS "'${WP_CPPFLAGS}'
+LOADBINDINGS_CFLAGS="$LOADBINDINGS_CFLAGS "'${PLUGIN_CFLAGS}'
 LOADBINDINGS_LIBS="$LOADBINDINGS_LIBS "'${PLUGIN_LIBS}'
 
 fi

@@ -15,3 +15,18 @@ libnroff_la_LDFLAGS = \
 
 libnroff_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libnroff.dll
+
+CLEANFILES = \
+	libnroff.def \
+	libnroff.dll \
+	libnroff.dll.a
+
+libnroff.dll: .libs/libnroff.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+

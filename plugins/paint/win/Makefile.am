@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libwin.la
 
 libwin_la_CPPFLAGS = \
-	$(AF_CPPFLAGS)
+	$(PAINT_CFLAGS)
 
 libwin_la_SOURCES = \
 	bmp2png.cpp \

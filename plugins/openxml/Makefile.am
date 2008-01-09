@@ -18,3 +18,19 @@ libopenxml_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libopenxml.dll
+
+CLEANFILES = \
+	libopenxml.def \
+	libopenxml.dll \
+	libopenxml.dll.a
+
+libopenxml.dll: .libs/libopenxml.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENXML_LIBS)
+
+endif # TOOLKIT_WIN
+

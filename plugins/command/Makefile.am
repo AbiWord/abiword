@@ -15,3 +15,18 @@ libcommand_la_LDFLAGS = \
 
 libcommand_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libcommand.dll
+
+CLEANFILES = \
+	libcommand.def \
+	libcommand.dll \
+	libcommand.dll.a
+
+libcommand.dll: .libs/libcommand.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(COMMAND_LIBS)
+
+endif # TOOLKIT_WIN
+

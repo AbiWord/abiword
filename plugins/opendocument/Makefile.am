@@ -22,17 +22,16 @@ EXTRA_DIST = \
 
 if TOOLKIT_WIN
 
-# TODO install the dll
+plugin_DATA = \
+	libopendocument.dll
 
 CLEANFILES = \
 	libopendocument.def \
 	libopendocument.dll \
 	libopendocument.dll.a
 
-all-local: libopendocument.dll
-
-libopendocument_dll_OBJECTS = $(shell find . -name '*.o')
-libopendocument.dll: $(libopendocument_dll_OBJECTS)
+libopendocument.dll: .libs/libopendocument.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENDOCUMENT_LIBS)
-endif
+
+endif # TOOLKIT_WIN
 

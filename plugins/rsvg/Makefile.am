@@ -17,3 +17,19 @@ librsvg_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	librsvg.dll
+
+CLEANFILES = \
+	librsvg.def \
+	librsvg.dll \
+	librsvg.dll.a
+
+librsvg.dll: .libs/librsvg.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(RSVG_LIBS)
+
+endif # TOOLKIT_WIN
+

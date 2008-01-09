@@ -15,3 +15,18 @@ libhrtext_la_LDFLAGS = \
 
 libhrtext_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libhrtext.dll
+
+CLEANFILES = \
+	libhrtext.def \
+	libhrtext.dll \
+	libhrtext.dll.a
+
+libhrtext.dll: .libs/libhrtext.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+

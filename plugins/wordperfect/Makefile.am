@@ -17,3 +17,19 @@ libwordperfect_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libwordperfect.dll
+
+CLEANFILES = \
+	libwordperfect.def \
+	libwordperfect.dll \
+	libwordperfect.dll.a
+
+libwordperfect.dll: .libs/libwordperfect.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WORDPERFECT_LIBS)
+
+endif # TOOLKIT_WIN
+

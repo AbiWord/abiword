@@ -475,17 +475,19 @@ fi
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_dynamic" == "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
 
-PLUGIN_LIBS=
+PKG_CHECK_MODULES(PLUGIN,[$glib_req])
+PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS}'
 # TODO possibly cocoa needs something similar to win32
 if test "$TOOLKIT" == "gtk" && 
    test "$enable_dynamic" == "yes"; then
 	# link plugins to work around gcc visibility issue with 
 	# derived classes in dlopened modules
-	PLUGIN_LIBS='-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
+	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
 elif test "$TOOLKIT" == "win"; then
 	# link plugins to the executable so they can be loaded
-	PLUGIN_LIBS='-L${top_builddir}/src -labiword'
+	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src -labiword'
 fi
+AC_SUBST([PLUGIN_CFLAGS])
 AC_SUBST([PLUGIN_LIBS])
 
 if test "$abi_cv_menubutton" == "yes"; then

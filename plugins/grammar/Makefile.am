@@ -16,3 +16,18 @@ libgrammar_la_LDFLAGS = \
 
 libgrammar_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libgrammar.dll
+
+CLEANFILES = \
+	libgrammar.def \
+	libgrammar.dll \
+	libgrammar.dll.a
+
+libgrammar.dll: .libs/libgrammar.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GRAMMAR_LIBS)
+
+endif # TOOLKIT_WIN
+

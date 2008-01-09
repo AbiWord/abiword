@@ -18,3 +18,18 @@ libgda_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libgda.dll
+
+CLEANFILES = \
+	libgda.def \
+	libgda.dll \
+	libgda.dll.a
+
+libgda.dll: .libs/libgda.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GDA_LIBS)
+
+endif # TOOLKIT_WIN
+

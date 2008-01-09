@@ -17,3 +17,19 @@ libsdw_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libsdw.dll
+
+CLEANFILES = \
+	libsdw.def \
+	libsdw.dll \
+	libsdw.dll.a
+
+libsdw.dll: .libs/libsdw.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(SDW_LIBS)
+
+endif # TOOLKIT_WIN
+

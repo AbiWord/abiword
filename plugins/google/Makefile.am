@@ -15,3 +15,18 @@ libgoogle_la_LDFLAGS = \
 
 libgoogle_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libgoogle.dll
+
+CLEANFILES = \
+	libgoogle.def \
+	libgoogle.dll \
+	libgoogle.dll.a
+
+libgoogle.dll: .libs/libgoogle.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+

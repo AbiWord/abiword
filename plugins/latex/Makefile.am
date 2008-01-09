@@ -15,3 +15,18 @@ liblatex_la_LDFLAGS = \
 
 liblatex_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	liblatex.dll
+
+CLEANFILES = \
+	liblatex.def \
+	liblatex.dll \
+	liblatex.dll.a
+
+liblatex.dll: .libs/liblatex.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+

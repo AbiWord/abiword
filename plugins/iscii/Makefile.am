@@ -15,3 +15,18 @@ libiscii_la_LDFLAGS = \
 
 libiscii_la_SOURCES = 
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libiscii.dll
+
+CLEANFILES = \
+	libiscii.def \
+	libiscii.dll \
+	libiscii.dll.a
+
+libiscii.dll: .libs/libiscii.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+
+endif # TOOLKIT_WIN
+

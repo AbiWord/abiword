@@ -17,3 +17,19 @@ libapplix_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libapplix.dll
+
+CLEANFILES = \
+	libapplix.def \
+	libapplix.dll \
+	libapplix.dll.a
+
+libapplix.dll: .libs/libapplix.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(APPLIX_LIBS)
+
+endif # TOOLKIT_WIN
+

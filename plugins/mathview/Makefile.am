@@ -19,3 +19,18 @@ libmathview_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libmathview.dll
+
+CLEANFILES = \
+	libmathview.def \
+	libmathview.dll \
+	libmathview.dll.a
+
+libmathview.dll: .libs/libmathview.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MATHVIEW_LIBS)
+
+endif # TOOLKIT_WIN
+

@@ -17,3 +17,19 @@ libopenwriter_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libopenwriter.dll
+
+CLEANFILES = \
+	libopenwriter.def \
+	libopenwriter.dll \
+	libopenwriter.dll.a
+
+libopenwriter.dll: .libs/libopenwriter.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENWRITER_LIBS)
+
+endif # TOOLKIT_WIN
+

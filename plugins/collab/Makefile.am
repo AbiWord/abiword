@@ -18,3 +18,19 @@ libcollab_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libcollab.dll
+
+CLEANFILES = \
+	libcollab.def \
+	libcollab.dll \
+	libcollab.dll.a
+
+libcollab.dll: .libs/libcollab.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(COLLAB_LIBS)
+
+endif # TOOLKIT_WIN
+

@@ -17,3 +17,19 @@ libpdf_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+plugin_DATA = \
+	libpdf.dll
+
+CLEANFILES = \
+	libpdf.def \
+	libpdf.dll \
+	libpdf.dll.a
+
+libpdf.dll: .libs/libpdf.a
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PDF_LIBS)
+
+endif # TOOLKIT_WIN
+
