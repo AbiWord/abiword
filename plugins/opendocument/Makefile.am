@@ -19,3 +19,20 @@ libopendocument_la_SOURCES =
 
 EXTRA_DIST = \
 	plugin.m4
+
+if TOOLKIT_WIN
+
+# TODO install the dll
+
+CLEANFILES = \
+	libopendocument.def \
+	libopendocument.dll \
+	libopendocument.dll.a
+
+all-local: libopendocument.dll
+
+libopendocument_dll_OBJECTS = $(shell find . -name '*.o')
+libopendocument.dll: $(libopendocument_dll_OBJECTS)
+	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENDOCUMENT_LIBS)
+endif
+

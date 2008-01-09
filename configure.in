@@ -484,7 +484,7 @@ if test "$TOOLKIT" == "gtk" &&
 	PLUGIN_LIBS='-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
 elif test "$TOOLKIT" == "win"; then
 	# link plugins to the executable so they can be loaded
-	PLUGIN_LIBS='-L${top_builddir}/src -labiword.exe'
+	PLUGIN_LIBS='-L${top_builddir}/src -labiword'
 fi
 AC_SUBST([PLUGIN_LIBS])
 

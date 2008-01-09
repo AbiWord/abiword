@@ -3,6 +3,7 @@ SUBDIRS = af other text wp
 
 libabiword_cpp = 
 opt_libs = 
+platform_ldflags = 
 resources = 
 
 if TOOLKIT_COCOA
@@ -19,6 +20,7 @@ endif
 if TOOLKIT_WIN
 main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
 opt_libs += Win32Resources.lo
+platform_ldflags += -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,abiword.dll.a
 resources += Win32Resources.lo
 endif
 
@@ -96,6 +98,7 @@ abiword_CPPFLAGS = \
 
 # --no-undefined doesn't work for objc++, is it needed at all?
 abiword_LDFLAGS = \
+	$(platform_ldflags) \
 	-export-dynamic
 
 abiword_LDADD = \
@@ -111,6 +114,9 @@ abiword_SOURCES = \
 	$(main_cpp)
 
 endif # ENABLE_STATIC
+
+CLEANFILES = \
+	abiword.dll.a
 
 include $(top_srcdir)/objc.mk
 
