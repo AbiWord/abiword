@@ -23,7 +23,6 @@ libwin_la_SOURCES = \
 	ut_Win32Timer.h \
 	ut_Win32Uuid.cpp \
 	ut_Win32Uuid.h \
-	ut_win_iconv.cpp \
 	ut_Xpm2Bmp.cpp \
 	ut_Xpm2Bmp.h
 
