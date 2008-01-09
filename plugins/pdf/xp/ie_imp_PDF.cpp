@@ -39,7 +39,9 @@
 #  define PDFTOABW_PROGRAM "pdftotext"
 #  define PDFTOABW_EXTENSION ".txt"
 #else
-#error Neither PDFTOABW nor PDFTOTEXT were enabled.
+// #warning Neither pdftoabw nor pdftotext were enabled. Defaulting to pdftotext
+#  define PDFTOABW_PROGRAM "pdftotext"
+#  define PDFTOABW_EXTENSION ".txt"
 #endif
 
 static UT_Error temp_name (UT_String& out_filename)
