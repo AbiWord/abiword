@@ -32,17 +32,14 @@
 
 #include "xap_Module.h"
 
-#ifdef HAVE_PDFTOABW
-#  define PDFTOABW_PROGRAM "pdftoabw"
-#  define PDFTOABW_EXTENSION ".abw"
-#elif defined(HAVE_PDFTOTEXT)
-#  define PDFTOABW_PROGRAM "pdftotext"
-#  define PDFTOABW_EXTENSION ".txt"
-#else
-// #warning Neither pdftoabw nor pdftotext were enabled. Defaulting to pdftotext
-#  define PDFTOABW_PROGRAM "pdftotext"
-#  define PDFTOABW_EXTENSION ".txt"
-#endif
+static const struct
+{
+	const char *conversion_program;
+	const char *extension;
+} pdf_conversion_programs[] = {
+	{ "pdftoabw", ".abw" },
+	{ "pdftotext", ".txt" }
+};
 
 static UT_Error temp_name (UT_String& out_filename)
 {
@@ -76,6 +73,42 @@ public:
   {
   }
   
+	UT_Error _runConversion(const UT_String& pdf_on_disk, const UT_String& output_on_disk, size_t which)
+	{
+		UT_Error rval = UT_ERROR;
+
+		const char * pdftoabw_argv[4];
+		
+		int argc = 0;
+		pdftoabw_argv[argc++] = pdf_conversion_programs[which].conversion_program;
+		pdftoabw_argv[argc++] = pdf_on_disk.c_str ();
+		pdftoabw_argv[argc++] = output_on_disk.c_str ();
+		pdftoabw_argv[argc++] = NULL;
+		
+		// run conversion
+		if (g_spawn_sync (NULL,
+						  (gchar **)pdftoabw_argv,
+						  NULL,
+						  (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
+						  NULL,
+						  NULL,
+						  NULL,
+						  NULL,
+						  NULL,
+						  NULL))
+			{
+				char * uri = UT_go_filename_to_uri (output_on_disk.c_str ());
+				if (uri)
+					{
+						// import the document
+						rval = IE_Imp::loadFile (getDoc (), uri, IE_Imp::fileTypeForSuffix (pdf_conversion_programs[which].extension));
+						g_free (uri);
+					}
+			}
+
+		return rval;
+	}
+
   virtual UT_Error _loadFile(GsfInput * input)
   {
     UT_Error rval = UT_ERROR;
@@ -100,32 +133,10 @@ public:
 
 			if (copy_res)
 				{
-					const char * pdftoabw_argv[4];
-
-					pdftoabw_argv[0] = PDFTOABW_PROGRAM;
-					pdftoabw_argv[1] = pdf_on_disk.c_str ();
-					pdftoabw_argv[2] = abw_on_disk.c_str ();
-					pdftoabw_argv[3] = NULL;
-
-					// run conversion
-					if (g_spawn_sync (NULL,
-									  (gchar **)pdftoabw_argv,
-									  NULL,
-									  (GSpawnFlags)(G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL),
-									  NULL,
-									  NULL,
-									  NULL,
-									  NULL,
-									  NULL,
-									  NULL))
+					for (size_t i = 0; i < G_N_ELEMENTS(pdf_conversion_programs); i++)
 						{
-							char * uri = UT_go_filename_to_uri (abw_on_disk.c_str ());
-							if (uri)
-								{
-									// import the document
-									rval = IE_Imp::loadFile (getDoc (), uri, IE_Imp::fileTypeForSuffix (PDFTOABW_EXTENSION));
-									g_free (uri);
-								}
+							if ((rval = _runConversion(pdf_on_disk, abw_on_disk, i)) == UT_OK)
+								break;
 						}
 				}			
 		}
@@ -215,32 +226,33 @@ static IE_Imp_PDF_Sniffer * m_impSniffer = 0;
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-	gchar * prog_path;
-
-	prog_path = g_find_program_in_path (PDFTOABW_PROGRAM);
-	if (prog_path)
+	for (size_t i = 0; i < G_N_ELEMENTS(pdf_conversion_programs); i++)
 		{
-			// don't register the plugin if it can't find pdftoabw
-			g_free (prog_path);
+			gchar * prog_path;
 
-			if (!m_impSniffer)
+			prog_path = g_find_program_in_path (pdf_conversion_programs[i].conversion_program);
+			if (prog_path)
 				{
-					m_impSniffer = new IE_Imp_PDF_Sniffer ();
+					// don't register the plugin if it can't find pdftoabw
+					g_free (prog_path);
+					
+					if (!m_impSniffer)
+						{
+							m_impSniffer = new IE_Imp_PDF_Sniffer ();
+						}
+					
+					mi->name    = "PDF Import Filter";
+					mi->desc    = "Import Adobe PDF Documents";
+					mi->version = ABI_VERSION_STRING;
+					mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
+					mi->usage   = "No Usage";
+					
+					IE_Imp::registerImporter (m_impSniffer);
+					return 1;
 				}
-			
-			mi->name    = "PDF Import Filter";
-			mi->desc    = "Import Adobe PDF Documents";
-			mi->version = ABI_VERSION_STRING;
-			mi->author  = "Dom Lachowicz <cinamod@hotmail.com>";
-			mi->usage   = "No Usage";
-			
-			IE_Imp::registerImporter (m_impSniffer);
-			return 1;
 		}
-	else
-		{
-			return 1;
-		}
+
+	return 0;
 }
 
 ABI_FAR_CALL
