@@ -8,7 +8,7 @@ if test "$enable_hancom" == "yes"; then
 
 PKG_CHECK_MODULES(HANCOM,[ $hancom_pkgs ])
 
-HANCOM_CFLAGS="$HANCOM_CFLAGS "'${WP_CPPFLAGS}'
+HANCOM_CFLAGS="$HANCOM_CFLAGS "'${PLUGIN_CFLAGS}'
 HANCOM_LIBS="$HANCOM_LIBS "'${PLUGIN_LIBS}'
 
 fi

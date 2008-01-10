@@ -13,7 +13,7 @@ AC_CHECK_HEADER(jpeglib.h,[
 	AC_MSG_ERROR([jpeg: error - jpeg header not found])
 ])
 
-JPEG_CFLAGS='${WP_CPPFLAGS}'
+JPEG_CFLAGS='${PLUGIN_CFLAGS}'
 JPEG_LIBS="-ljpeg "'${PLUGIN_LIBS}'
 
 fi

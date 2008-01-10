@@ -8,7 +8,7 @@ if test "$enable_grammar" == "yes"; then
 
 PKG_CHECK_MODULES(GRAMMAR,[ $grammar_pkgs ])
 
-GRAMMAR_CFLAGS="$GRAMMAR_CFLAGS "'${WP_CPPFLAGS}'
+GRAMMAR_CFLAGS="$GRAMMAR_CFLAGS "'${PLUGIN_CFLAGS}'
 GRAMMAR_LIBS="$GRAMMAR_LIBS "'${PLUGIN_LIBS}'
 
 fi

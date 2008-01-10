@@ -8,7 +8,7 @@ if test "$enable_pdf" == "yes"; then
 
 PKG_CHECK_MODULES(PDF,[ $pdf_pkgs ])
 
-PDF_CFLAGS="$PDF_CFLAGS "'${WP_CPPFLAGS}'
+PDF_CFLAGS="$PDF_CFLAGS "'${PLUGIN_CFLAGS}'
 PDF_LIBS="$PDF_LIBS "'${PLUGIN_LIBS}'
 
 fi

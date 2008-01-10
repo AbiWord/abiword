@@ -8,7 +8,7 @@ if test "$enable_t602" == "yes"; then
 
 PKG_CHECK_MODULES(T602,[ $t602_pkgs ])
 
-T602_CFLAGS="$T602_CFLAGS "'${WP_CPPFLAGS}'
+T602_CFLAGS="$T602_CFLAGS "'${PLUGIN_CFLAGS}'
 T602_LIBS="$T602_LIBS "'${PLUGIN_LIBS}'
 
 fi

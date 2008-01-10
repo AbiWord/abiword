@@ -8,7 +8,7 @@ if test "$enable_xslfo" == "yes"; then
 
 PKG_CHECK_MODULES(XSLFO,[ $xslfo_pkgs ])
 
-XSLFO_CFLAGS="$XSLFO_CFLAGS "'${WP_CPPFLAGS}'
+XSLFO_CFLAGS="$XSLFO_CFLAGS "'${PLUGIN_CFLAGS}'
 XSLFO_LIBS="$XSLFO_LIBS "'${PLUGIN_LIBS}'
 
 fi

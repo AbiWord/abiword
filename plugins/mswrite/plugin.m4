@@ -8,7 +8,7 @@ if test "$enable_mswrite" == "yes"; then
 
 PKG_CHECK_MODULES(MSWRITE,[ $mswrite_pkgs ])
 
-MSWRITE_CFLAGS="$MSWRITE_CFLAGS "'${WP_CPPFLAGS}'
+MSWRITE_CFLAGS="$MSWRITE_CFLAGS "'${PLUGIN_CFLAGS}'
 MSWRITE_LIBS="$MSWRITE_LIBS "'${PLUGIN_LIBS}'
 
 fi

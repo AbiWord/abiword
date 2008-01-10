@@ -8,7 +8,7 @@ if test "$enable_openxml" == "yes"; then
 
 PKG_CHECK_MODULES(OPENXML,[ $openxml_pkgs ])
 
-OPENXML_CFLAGS="$OPENXML_CFLAGS "'${WP_CPPFLAGS}'
+OPENXML_CFLAGS="$OPENXML_CFLAGS "'${PLUGIN_CFLAGS}'
 OPENXML_LIBS="$OPENXML_LIBS "'${PLUGIN_LIBS}'
 
 fi

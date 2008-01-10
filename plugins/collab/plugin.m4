@@ -181,7 +181,7 @@ if test $enable_collab_backend_tcp == "yes" || \
 	COLLAB_LIBS="$COLLAB_LIBS $BOOST_THREAD_LIB"
 fi
 
-COLLAB_CFLAGS="$COLLAB_CFLAGS "'${WP_CPPFLAGS}'
+COLLAB_CFLAGS="$COLLAB_CFLAGS "'${PLUGIN_CFLAGS}'
 COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
 
 fi # plugin conditional

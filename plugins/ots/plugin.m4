@@ -8,7 +8,7 @@ if test "$enable_ots" == "yes"; then
 
 PKG_CHECK_MODULES(OTS,[ $ots_pkgs ])
 
-OTS_CFLAGS="$OTS_CFLAGS "'${WP_CPPFLAGS}'
+OTS_CFLAGS="$OTS_CFLAGS "'${PLUGIN_CFLAGS}'
 OTS_LIBS="$OTS_LIBS "'${PLUGIN_LIBS}'
 
 fi
