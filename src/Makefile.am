@@ -107,7 +107,7 @@ abiword_LDADD = \
 	$(DEPS_LIBS)
 
 abiword_DEPENDENCIES = \
-	.libs/libabiword-2.7.a \
+	libabiword-2.7.la \
 	$(resources)
 
 abiword_SOURCES = \
