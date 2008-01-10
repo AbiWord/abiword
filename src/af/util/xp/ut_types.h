@@ -227,7 +227,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 ** Some useful macros that we use throughout
 */
 
-#define FREEP(p)		do { if (p) { free((void *)p); (p)=NULL; } } while (0)
+#define FREEP(p)		do { if (p) { g_free((void *)p); (p)=NULL; } } while (0)
 #define DELETEP(p)		do { if (p) { delete(p); (p)=NULL; } } while (0)
 #define DELETEPV(pa)	do { if (pa) { delete [] (pa); (pa)=NULL; } } while (0)
 #define REPLACEP(p,q)		do { if (p) delete p; p = q; } while (0)
