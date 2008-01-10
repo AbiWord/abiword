@@ -4,10 +4,10 @@ libwmf_major_req=0
 libwmf_minor_req=2
 libwmf_micro_req=8
 
-WMF_CFLAGS=
-WMF_LIBS=
+WMFGFX_CFLAGS=
+WMFGFX_LIBS=
 
-if test "$enable_wmf" == "yes"; then
+if test "$enable_wmfgfx" == "yes"; then
 
 AC_ARG_WITH([libwmf-config],
 	[AS_HELP_STRING([--with-libwmf-config=DIR], [use libwmf-config in DIR])],
@@ -49,11 +49,11 @@ else
 	fi
 fi
 
-WMF_CFLAGS="$WMF_CFLAGS "'${PLUGIN_CFLAGS}'
-WMF_LIBS="$WMF_LIBS "'${PLUGIN_LIBS}'
+WMFGFX_CFLAGS="$WMFGFX_CFLAGS "'${PLUGIN_CFLAGS}'
+WMFGFX_LIBS="$WMFGFX_LIBS "'${PLUGIN_LIBS}'
 
 fi
 
-AC_SUBST([WMF_CFLAGS])
-AC_SUBST([WMF_LIBS])
+AC_SUBST([WMFGFX_CFLAGS])
+AC_SUBST([WMFGFX_LIBS])
 
