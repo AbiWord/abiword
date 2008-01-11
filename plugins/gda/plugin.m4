@@ -7,7 +7,7 @@ GDA_LIBS=
 if test "$enable_gda" == "yes"; then
 
 AC_MSG_CHECKING([gtk toolkit])
-if test "$TOOLKIT" == "gda"; then
+if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([ok])
 else
   AC_MSG_ERROR([the gda plugin is only supported with gtk])
