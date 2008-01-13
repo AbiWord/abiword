@@ -241,6 +241,7 @@ G_BEGIN_DECLS
     void (* signal_color) (AbiWidget * widget, int r, int g, int b);
     void (* signal_font_size) (AbiWidget * widget, double value);
     void (* signal_font_family) (AbiWidget * widget, const char * value);
+    void (* signal_changed) (AbiWidget * widget, gboolean value);
     void (* signal_can_undo) (AbiWidget * widget, gboolean value);
     void (* signal_can_redo) (AbiWidget * widget, gboolean value);
     void (* signal_is_dirty) (AbiWidget * widget, gboolean value);
