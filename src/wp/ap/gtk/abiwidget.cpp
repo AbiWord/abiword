@@ -370,6 +370,16 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 /**************************************************************************/
 
+#define INSTALL_VOID_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_marshal_VOID__VOID, \
+									  G_TYPE_NONE, 0); } while(0)
+
 #define INSTALL_BOOL_SIGNAL(signal_offset, signal_name, signal_func) do { \
 	abiwidget_signals[signal_offset] = \
 		g_signal_new (signal_name, \
@@ -431,6 +441,7 @@ enum {
 	SIGNAL_SUPERSCRIPT,
 	SIGNAL_SUBSCRIPT,
 	SIGNAL_COLOR,
+	SIGNAL_CHANGED,
 	SIGNAL_CAN_UNDO,
 	SIGNAL_CAN_REDO,
 	SIGNAL_FONT_SIZE,
@@ -467,6 +478,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_SUPERSCRIPT, "superscript", signal_superscript);
 	INSTALL_BOOL_SIGNAL(SIGNAL_SUBSCRIPT, "subscript", signal_subscript);
 	INSTALL_COLOR_SIGNAL(SIGNAL_COLOR, "color", signal_color);
+	INSTALL_VOID_SIGNAL(SIGNAL_CHANGED, "changed", signal_changed);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_UNDO, "can-undo", signal_can_undo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_REDO, "can-redo", signal_can_redo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_IS_DIRTY, "is-dirty", signal_is_dirty);
@@ -620,12 +632,23 @@ public:
 			FIRE_BOOL(b,tableState_,tableState);
 		}
 
+		if (m_pView && m_pView->getDocument())
+		{
+			// we're being all smart here: if the undo count changed, then
+			// the structure of the document must have changed
+			UT_uint32 undo_count = m_pView->getDocument()->undoCount(true);
+			if (undo_count_ != undo_count) {
+				undo_count_ = undo_count;
+				changed();
+			}
+		}
+		
 		if ((AV_CHG_ALL) & mask)
 		{
 			FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
 			FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
 			FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
-
+			
 			XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
 			UT_return_val_if_fail(pFrame, false);
 			FIRE_SINT32(pFrame->getZoomPercentage(), zoomPercentage_, zoomPercentage); // surely there is a better signal for this than AV_CHG_ALL
@@ -699,6 +722,7 @@ public:
 	virtual void color(UT_RGBColor value) {}
 	virtual void font_size(double value) {}
 	virtual void font_family(const char * value) {}
+	virtual void changed(void) {}
 	virtual void can_undo(bool value) {}
 	virtual void can_redo(bool value) {}
 	virtual void is_dirty(bool value) {}
@@ -738,6 +762,7 @@ private:
 		// singals will be emitted to turn the toolbar and menu item 
 		// insensitive
 		//
+		undo_count_ = 0;
 		can_undo_ = true;
 		can_redo_ = true;
 		is_dirty_ = true;
@@ -768,6 +793,7 @@ private:
 	UT_RGBColor color_;
 	double font_size_;
 	UT_UTF8String font_family_;
+	UT_sint32 undo_count_; /* used to determine when to emit a 'changed' signal */
 	bool can_undo_;
 	bool can_redo_;
 	bool is_dirty_;
@@ -813,6 +839,7 @@ public:
 	virtual void color(UT_RGBColor value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_COLOR], 0, (int)value.m_red, (int)value.m_grn, (int)value.m_blu);}
 	virtual void font_size(double value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_SIZE], 0, value);}
 	virtual void font_family(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
+	virtual void changed(void) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CHANGED], 0);}
 	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
 	virtual void can_redo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
 	virtual void is_dirty(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IS_DIRTY], 0, (gboolean)value);}
