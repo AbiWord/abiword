@@ -6,11 +6,11 @@ RSVG_LIBS=
 
 if test "$enable_rsvg" == "yes"; then
 
-AC_MSG_CHECKING([gtk toolkit])
+AC_MSG_CHECKING([for gtk toolkit])
 if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([ok])
 else
-  AC_MSG_ERROR([the rsvg plugin is only supported with gtk])
+  AC_MSG_ERROR([rsvg plugin: only supported with gtk])
 fi
 
 PKG_CHECK_MODULES(RSVG,[ $rsvg_pkgs ])

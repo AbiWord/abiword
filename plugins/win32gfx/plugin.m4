@@ -4,11 +4,11 @@ WIN32GFX_LIBS=
 
 if test "$enable_win32gfx" == "yes"; then
 
-AC_MSG_CHECKING([win32 toolkit])
+AC_MSG_CHECKING([for win32 toolkit])
 if test "$TOOLKIT" == "win"; then
   AC_MSG_RESULT([ok])
 else
-  AC_MSG_ERROR([the win32gfx plugin is only supported on win32])
+  AC_MSG_ERROR([win32gfx plugin: only supported on win32])
 fi
 
 # TODO check for libpng
