@@ -84,8 +84,8 @@ const IE_MimeConfidence * IE_Imp_Object_Sniffer::getMimeConfidence ()
 UT_Confidence_t IE_Imp_Object_Sniffer::recognizeContents(const char * szBuf,
 													   UT_uint32 iNumbytes)
 {
-	char * magic1 = "<?xml version=\"1.0\"";
-	char * magic2 = "<GogObject type=\"GogGraph\">";
+	const char * magic1 = "<?xml version=\"1.0\"";
+	const char * magic2 = "<GogObject type=\"GogGraph\">";
 	
 	xxx_UT_DEBUGMSG(("magic1 = %s \n",magic1));
 	xxx_UT_DEBUGMSG(("magic2 = %s \n",magic2));

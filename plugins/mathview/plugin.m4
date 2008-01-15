@@ -12,12 +12,6 @@ if test "$enable_mathview" == "yes"; then
 
 PKG_CHECK_MODULES(MATHVIEW,[ $mathview_pkgs ])
 
-AC_CHECK_HEADER(hash_map,[MATHVIEW_CFLAGS="-DHAVE_HASH_MAP $MATHVIEW_CFLAGS"],[
-AC_CHECK_HEADER(ext/hash_map,[MATHVIEW_CFLAGS="-DHAVE_EXT_HASH_MAP $MATHVIEW_CFLAGS"],
-[        
-	AC_MSG_WARN([mathview: error hash_map header not found])])
-])
-
 MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS "'${PLUGIN_CFLAGS}'
 MATHVIEW_LIBS="$MATHVIEW_LIBS "'${PLUGIN_LIBS}'
 
