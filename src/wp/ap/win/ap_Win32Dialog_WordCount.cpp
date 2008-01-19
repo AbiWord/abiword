@@ -33,6 +33,7 @@
 #include "ap_Win32Dialog_WordCount.h"
 #include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 
@@ -168,7 +169,7 @@ void AP_Win32Dialog_WordCount::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, m_WindowName);
+	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
@@ -183,7 +184,7 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, m_WindowName);
+		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
 
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -283,7 +284,7 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(hWnd, m_WindowName);
+	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());	
 			
 	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this);
 	setUpdateCounter( 1 );
@@ -320,7 +321,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();
-	SetWindowText(hWnd, m_WindowName);
+	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
 }
 
 BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
