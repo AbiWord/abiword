@@ -7915,7 +7915,7 @@ msgstr "Japonès, Windows 932"
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h.h:477
 msgid "Kannada"
-msgstr "Kannada"
+msgstr "Kannarès"
 
 #. LANG_KO_KR
 #. LANG_KO
@@ -8031,7 +8031,7 @@ msgstr "Combina"
 #. LANG_MN_MN
 #: po/tmp/xap_String_Id.h.h:524
 msgid "Mongolian"
-msgstr "Mongolès"
+msgstr "Mongol"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:526
@@ -8244,7 +8244,7 @@ msgstr "Punjabi (Shahmukhi)"
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:617
 msgid "Quechua"
-msgstr "Quechua"
+msgstr "Quítxua"
 
 #
 #. DLG_FOSA_RecordToFileTitle
@@ -8414,7 +8414,7 @@ msgstr "Estils:"
 #. LANG_SW
 #: po/tmp/xap_String_Id.h.h:701
 msgid "Swahili"
-msgstr "Swahili"
+msgstr "Suahili"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:703
@@ -8443,7 +8443,7 @@ msgstr "Tagal"
 #. LANG_TA_IN
 #: po/tmp/xap_String_Id.h.h:713
 msgid "Tamil"
-msgstr "Tamil"
+msgstr "Tàmil"
 
 #
 #. LANG_TE_IN
@@ -8669,7 +8669,7 @@ msgstr "Actualitza"
 #. LANG_UR
 #: po/tmp/xap_String_Id.h.h:811
 msgid "Urdu"
-msgstr "Urdu"
+msgstr "Urdú"
 
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:813
