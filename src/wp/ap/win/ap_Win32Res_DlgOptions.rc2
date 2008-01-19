@@ -62,7 +62,6 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1303
 #define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1305
 #define AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars	1306
-#define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1307
 #define AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins		1308
 #define AP_RID_DIALOG_OPTIONS_STATIC_UI					1309
 #define AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP			1310
@@ -143,26 +142,23 @@ BEGIN
     PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,
                     15,87,90,14
     LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_UI,7,15,
-                    127,8
-    CONTROL         "Show Spash on Startup",
-                    AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,131,228,10
+                    127,8    
     CONTROL         "Allow Custom Toolbars",
                     AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,48,175,10
     LTEXT           "Application Startup",
                     AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,115,127,8
     CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,148,228,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,131,228,10
     LTEXT           "User Interface Language",
-                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,191,99,8
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,114,189, 105,200,
+                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,174,99,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,114,172,105,200,
                     CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Change language when changing keyboard",
                     AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,210,240,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,193,240,8
     LTEXT           "Language Settings",
-                    AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,10,175,208,8
+                    AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,10,158,208,8
 END
 
 AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 251, 233
