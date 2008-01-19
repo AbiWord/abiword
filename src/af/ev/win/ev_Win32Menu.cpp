@@ -563,6 +563,13 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 						{
 							strcpy (item->szText, szLabelName);					
 							//UT_DEBUGMSG(("Menu changing text->%s\n",szLabelName));
+							if (UT_IsWinVista()) 
+							{
+								mif.fState = uCheck | uEnable | uBold;
+								mif.fType = MFT_STRING;
+								mif.dwTypeData = (LPTSTR)szLabelName;
+								SetMenuItemInfo (hMenuBar,cmd,FALSE,&mif);
+							}
 							break;
 						}
 					}
