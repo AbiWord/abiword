@@ -343,7 +343,7 @@ void fp_FrameContainer::setContainer(fp_Container * pContainer)
 fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 {
 	fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->getSectionLayout());
 	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
 	return pDSL;
 }

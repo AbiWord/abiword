@@ -151,6 +151,7 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_IMAGE_DATAID           (static_cast<const gchar *>("dataid"))
 #define PT_IMAGE_TITLE           (static_cast<const gchar *>("title"))
 #define PT_IMAGE_DESCRIPTION           (static_cast<const gchar *>("alt"))
+#define PT_DATA_PREVIEW           (static_cast<const gchar *>("preview"))
 
 
 #endif /* PT_TYPES_H */

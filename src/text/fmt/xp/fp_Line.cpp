@@ -36,6 +36,7 @@
 #include "fv_View.h"
 #include "fl_SectionLayout.h"
 #include "fl_TableLayout.h"
+#include "fp_FrameContainer.h"
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
@@ -356,7 +357,7 @@ fp_Container * fp_Line::getColumn(void)
 	{
 		return NULL;
 	}
-	else if(pCon->getContainerType() != FP_CONTAINER_CELL)
+	else if((pCon->getContainerType() != FP_CONTAINER_CELL))
 	{
 		return pCon->getColumn();
 	}
