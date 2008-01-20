@@ -294,6 +294,7 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 		case PX_ChangeRecord::PXT_CreateDataItem:
 		{
 			// build change record
+
 			Data_ChangeRecordSessionPacket* packet = PacketFactory<Data_ChangeRecordSessionPacket>::create( pcr, m_pAbiCollab, m_pDoc );
 			// set properties
 			_mapPropsAtts( index, packet->getPropMap(), packet->getAttMap() );
@@ -307,6 +308,14 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			if(pszDataName == NULL)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return NULL;
+			}
+			if(g_str_has_prefix(pszDataName,"snapshot-png-") == TRUE)
+			{
+				//
+				// Drop the snapshot, let the remote document create it's own
+				//
+				delete packet;
 				return NULL;
 			}
 			const UT_ByteBuf* pBuf=NULL;

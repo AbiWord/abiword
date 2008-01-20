@@ -840,7 +840,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 			return false;
 		}
 		fl_BlockLayout * pPrevBL = pBL;
-		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) )
+		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)  || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL))
 		{
 		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
 		     pPrevBL = pBL;
@@ -877,7 +877,10 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 // Need this for offset to column
 //
-		fp_Container * pCol = pLine->getColumn();
+		UT_return_val_if_fail(pBL->getFirstRun(),false);
+		UT_return_val_if_fail(pBL->getFirstRun()->getLine(),false);
+		UT_return_val_if_fail(pBL->getFirstRun()->getLine()->getColumn(),false);
+		fp_Container * pCol = pBL->getFirstRun()->getLine()->getColumn();
 		UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
 //
 // Find the screen coords of pCol and substract then from x,y
