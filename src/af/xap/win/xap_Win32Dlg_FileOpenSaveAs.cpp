@@ -298,7 +298,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
 		if(!szURI)
-			szURI = "";
+			szURI = static_cast<const char *> (UT_calloc (1, sizeof (char)));
 
 		strcpy(szDir,AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
 		char * pLastSlash = strrchr(szDir, '/');
