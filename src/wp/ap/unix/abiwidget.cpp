@@ -58,6 +58,7 @@
 #include "ut_timer.h"
 #include "ev_Toolbar_Actions.h"
 #include "ap_Toolbar_Id.h"
+#include "px_CR_Span.h"
 
 /**************************************************************************/
 /**************************************************************************/
@@ -632,14 +633,59 @@ public:
 			FIRE_BOOL(b,tableState_,tableState);
 		}
 
-		if (m_pView && m_pView->getDocument())
+		if ((AV_CHG_ALL) & mask)
 		{
-			// we're being all smart here: if the undo count changed, then
-			// the structure of the document must have changed
-			UT_uint32 undo_count = m_pView->getDocument()->undoCount(true);
-			if (undo_count_ != undo_count) {
-				undo_count_ = undo_count;
-				changed();
+			// check if we need to fire a 'changed' signal
+			if (m_pView && m_pView->getDocument() && 
+				m_pView->getDocument()->getPieceTable())
+			{
+				pt_PieceTable* pPt = m_pView->getDocument()->getPieceTable();
+				PX_ChangeRecord* pcr = NULL;
+				pPt->getUndo(&pcr);
+				
+				// We're trying to be smart here: if the top-most changerecord on the undo stack changed, 
+				// then the structure of the document must have changed. Determining if a top-most changerecord
+				// has changed can be tricky unfortunately: new changerecords can be coalesced into the top-most
+				// one if they share the same type and properties (in the case of insert or delete spans).
+				// Therefor, when we are dealing with insert and delete spans, we not only check the actual 
+				// changerecord pointer, but also its length, buffer index and block offset. That should cover
+				// all cases I think/hope - MARCM
+				if (pcr_ != pcr)
+				{
+					pcr_ = pcr;
+					if (pcr_)
+					{
+						PX_ChangeRecord_Span * pcrs_ = static_cast<PX_ChangeRecord_Span *>(pcr_);
+						pcrlen_ = pcrs_->getLength();
+						pcrpos_ = pcrs_->getPosition();
+						pcrbi_ = pcrs_->getBufIndex();
+						pcrbo_ = pcrs_->getBlockOffset();
+					}	
+					changed();
+				}
+				else if (pcr_ == pcr && pcr_ && pcr)
+				{
+					// some additional checks to detect coalesced changerecords
+					if (pcr_->getType() == PX_ChangeRecord::PXT_InsertSpan || 
+						pcr_->getType() == PX_ChangeRecord::PXT_DeleteSpan )
+					{
+						// we could have been coalesced! check some additional properties
+						// to see if we are
+						PX_ChangeRecord_Span * pcrs_ = static_cast<PX_ChangeRecord_Span *>(pcr_);
+						if (pcrlen_ !=  pcrs_->getLength() ||
+							pcrpos_ != pcrs_->getPosition() ||
+							pcrbi_ != pcrs_->getBufIndex() ||
+							pcrbo_ != pcrs_->getBlockOffset())
+						{
+							// yep, we are coalesced, so emit a 'changed' signal after all
+							pcrlen_ = pcrs_->getLength();
+							pcrpos_ = pcrs_->getPosition();
+							pcrbi_ = pcrs_->getBufIndex();
+							pcrbo_ = pcrs_->getBlockOffset();
+							changed();
+						}
+					}
+				}
 			}
 		}
 		
@@ -762,7 +808,11 @@ private:
 		// singals will be emitted to turn the toolbar and menu item 
 		// insensitive
 		//
-		undo_count_ = 0;
+		pcr_ = NULL; // the pcr* values are needed to emit a sane 'changed' signal
+		pcrlen_ = 0;
+		pcrpos_ = 0;
+		pcrbi_ = 0;
+		pcrbo_ = 0;
 		can_undo_ = true;
 		can_redo_ = true;
 		is_dirty_ = true;
@@ -793,7 +843,11 @@ private:
 	UT_RGBColor color_;
 	double font_size_;
 	UT_UTF8String font_family_;
-	UT_sint32 undo_count_; /* used to determine when to emit a 'changed' signal */
+	PX_ChangeRecord* pcr_;
+	UT_uint32 pcrlen_;
+	PT_DocPosition pcrpos_;
+	PT_BufIndex pcrbi_;
+	PT_BlockOffset pcrbo_;
 	bool can_undo_;
 	bool can_redo_;
 	bool is_dirty_;
