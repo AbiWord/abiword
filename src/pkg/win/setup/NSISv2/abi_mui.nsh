@@ -24,7 +24,7 @@
     ; specify Finish Page settings
       ; prompt to run AbiWord (start with readme.txt)
       !define MUI_FINISHPAGE_RUN "$INSTDIR\${MAINPROGRAM}"
-      !define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.txt$\"
+      !define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.abw$\"
       ; or uncomment to allow viewing readme with default text editor
       ;!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
       ; force user to close so they can see install done & not start readme
