@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005 by Martin Sevior
- * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net> 
+ * Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net> 
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -81,7 +81,7 @@ public:
 
 private:
 	UT_UTF8String			_getNameFromFqa(const UT_UTF8String& fqa);
-	bool					_send(char* base64data, const Buddy& buddy);
+	bool					_send(const char* base64data, const Buddy& buddy);
 		
 	// connection management
 	LmConnection *			m_pConnection;

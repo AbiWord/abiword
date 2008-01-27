@@ -1,6 +1,6 @@
 /* 
  * Copyright (C) 2005 by Martin Sevior
- * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -449,7 +449,7 @@ bool XMPPAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
 	return true;
 }
 
-bool XMPPAccountHandler::_send(char* base64data, const Buddy& buddy)
+bool XMPPAccountHandler::_send(const char* base64data, const Buddy& buddy)
 {
 	UT_return_val_if_fail(base64data, false);
 	
@@ -474,11 +474,9 @@ bool XMPPAccountHandler::_send(char* base64data, const Buddy& buddy)
 		UT_DEBUGMSG(("Error while sending message to '%s':\n%s\n",
 				base64data, (error ? error->message : "") ));
 		lm_message_unref(m);
-		g_free(base64data);
 		return false;
 	}
 	lm_message_unref(m);
-	g_free(base64data);
 	return true;
 }
 
