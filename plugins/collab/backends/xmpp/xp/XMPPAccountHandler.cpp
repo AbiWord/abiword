@@ -510,7 +510,11 @@ void XMPPAccountHandler::handleMessage(const gchar* pPacket, const std::string& 
 	
 	RawPacket* pRp = new RawPacket();
 	pRp->buddy = pBuddy;
-	pRp->packet = pPacket;
-
+	// all packets are base64 encoded when sent over this backend; 
+	// decode the incoming packet;
+	std::string p = pPacket;
+	size_t len = gsf_base64_decode_simple((guint8*)(p.c_str()), p.size());
+	pRp->packet.resize(len);
+	memcpy(&pRp->packet[0], &p[0], len);
 	AccountHandler::handleMessage(*pRp);
 }
