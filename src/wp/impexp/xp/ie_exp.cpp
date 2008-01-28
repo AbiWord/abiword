@@ -67,7 +67,6 @@ public:
 	{
 		if (updatedFields_)
 			return;
-
 		// todo: support other platforms when possible
 		GR_Graphics * graphics = NULL;
 
@@ -209,6 +208,9 @@ IE_Exp::~IE_Exp()
 
 void IE_Exp::populateFields()
 {
+	if(isCopying())
+		return;
+
 	if (!m_fieldUpdater)
 		m_fieldUpdater = new IE_FieldUpdater;
 

@@ -1569,6 +1569,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+		xxx_UT_DEBUGMSG(("ContainerLayout %x ContainerType %s \n",pCL,pCL->getContainerString()));
 		pCL->listUpdate();
 		goto finish_up;
 
