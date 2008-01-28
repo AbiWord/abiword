@@ -209,6 +209,9 @@ IE_Exp::~IE_Exp()
 
 void IE_Exp::populateFields()
 {
+	if(isCopying())
+		return;
+
 	if (!m_fieldUpdater)
 		m_fieldUpdater = new IE_FieldUpdater;
 
