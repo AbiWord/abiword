@@ -7487,12 +7487,12 @@ msgstr "Anglès (Sud-àfrica)"
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:296
 msgid "English (UK)"
-msgstr "Anglès (RU)"
+msgstr "Anglès (Regne Unit)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:298
 msgid "English (US)"
-msgstr "Anglès (EU)"
+msgstr "Anglès (Estats Units)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:300
