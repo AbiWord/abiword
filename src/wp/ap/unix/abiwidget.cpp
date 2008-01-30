@@ -551,12 +551,23 @@ public:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
+
+
 	virtual ~Stateful_ViewListener(void)
 	{
 		// re-enable this when we are also properly notified if the view is killed under us - MARCM
-		//if (m_lid != (AV_ListenerId)-1)
-		//	m_pView->removeListener(m_lid);
+		// unbind();
 	}
+
+
+	void unbind(void)
+	{
+		if (m_lid != (AV_ListenerId)-1)
+			m_pView->removeListener(m_lid);
+
+		m_lid = (AV_ListenerId)-1;
+	}
+
 
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
 	{
@@ -916,6 +927,19 @@ private:
 	AbiWidget *         m_pWidget;
 };
 
+
+static void _abi_widget_unbindListener(AbiWidget *widget)
+{
+	// Unbind the listener from the view
+	AbiPrivData * private_data = (AbiPrivData *)widget->priv;
+	AbiWidget_ViewListener * pListener = private_data->m_pViewListener;
+	if (!pListener)
+		return;
+
+	pListener->unbind();
+}
+
+
 static void _abi_widget_releaseListener(AbiWidget *widget)
 {
 	// remove a FV_View listener from the widget. see _abi_widget_bindListenerToView() for more details.
@@ -1219,6 +1243,7 @@ abi_widget_file_open(AbiWidget * abi)
 	// Need to release the listner first because it's View pointer
 	// will be invalidated once the new document is loaded.
 	//
+	_abi_widget_unbindListener(abi);
 	_abi_widget_releaseListener(abi);
 	abi_widget_invoke(abi,"fileOpen");
 	

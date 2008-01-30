@@ -170,23 +170,24 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		*ppcr = NULL;
 		return false;
 	}
-
+	UT_sint32 iGLOB = 0;
 	bool bGotOne = false;
 	PX_ChangeRecord * pcr = NULL;
+	PX_ChangeRecord * pcrFirst = NULL;
 	bool bCorrect = false;
 	UT_sint32 iAdjust = m_iAdjustOffset;
+	UT_sint32 iLoop = 0;
 	while (!bGotOne)
 	{
-		if ((m_undoPosition - m_iAdjustOffset) <= m_iMinUndo)
+		if ((m_undoPosition - m_iAdjustOffset -iLoop) <= m_iMinUndo)
 		{
 			if (bStatic)
 				m_iAdjustOffset = iAdjust;
 			return false;
 		}
 		
-		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
+		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1-iLoop);
 		UT_return_val_if_fail(pcr, false); // just bail out, everything seems wrong
-		
 		//
 		// Do Adjustments for blocks of remote CR's
 		//
@@ -196,11 +197,46 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 			m_iAdjustOffset++;
 			UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
 		}
-		else
+		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker))
+		{
+			iGLOB++;
+			pcrFirst = pcr;
+			iLoop++;
+		}
+		else if((iGLOB>0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker))
+		{
+			pcr = pcrFirst;
+			bGotOne = true;
+			if(m_iAdjustOffset > 0)
+				bCorrect = true;
+
+		}
+		else if(iGLOB == 0)
 		{
 			bGotOne = true;
 			if(m_iAdjustOffset > 0)
 				bCorrect = true;
+		}
+		else
+		{
+			PT_DocPosition pos = pcr->getPosition();
+			PT_DocPosition low, high;
+			getCRRange(pcr, low, high);
+			for (UT_sint32 i = m_iAdjustOffset-1-iLoop; i>=0;i--)
+			{
+				PX_ChangeRecord *pcrTmp = m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
+				if (!pcrTmp->isFromThisDoc())
+				{
+					if (doesOverlap(pcrTmp,low,high))
+					{
+						*ppcr = NULL;
+						m_iMinUndo = m_undoPosition-i-1;
+						return false;
+					}
+				}
+			}
+			
+			iLoop++;
 		}
 	}
 
