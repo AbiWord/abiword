@@ -80,6 +80,8 @@ bool AV_View::addListener(AV_Listener * pListener,
 	// give our vector index back to the caller as a "Listener Id".
 	
 	*pListenerId = k;
+
+	UT_DEBUGMSG(("Adding listener %x type %d id %d \n",pListener,pListener->getType(),k));
 	return true;
 }
 
