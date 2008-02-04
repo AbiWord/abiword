@@ -89,7 +89,7 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
 
             pPageLayout = m_rDocumentData.m_stylesAutoStyles.getPageLayout("Standard");
             pMPStyle = m_rDocumentData.m_masterStyles.pick("Standard");
-            
+            UT_DEBUGMSG(("Got PageLayout %x AutoStyles %x \n",pPageLayout,&m_rDocumentData.m_stylesAutoStyles));
             m_isFirstSection = false;
 
         } else {
@@ -114,6 +114,14 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
         
         pMPStyle->fetchAttributesFromAbiSection(pAP);
         pPageLayout->fetchAttributesFromAbiSection(pAP);
+	//
+	// OK Set up a "standard" default set of properties
+	//
+	ODe_Style_PageLayout* pStandard = new ODe_Style_PageLayout();
+	UT_UTF8String sName = "Standard";
+	pStandard->setName(sName);
+        m_rDocumentData.m_contentAutoStyles.addPageLayout(pStandard);
+	pStandard->fetchAttributesFromAbiSection(pAP);
     } else {
         // Without this, '!strcmp(pId, pValue)' fails in _isHeaderFooterSection()
         // below, which ultimately leads to a crash due to an uninitialized
@@ -131,7 +139,10 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
         
         pSectionStyle->fetchAttributesFromAbiSection(pAP);
         m_rDocumentData.m_contentAutoStyles.storeSectionStyle(pSectionStyle);
-        
+
+        ODe_Style_PageLayout* pPageLayout = m_rDocumentData.m_contentAutoStyles.addPageLayout();
+	pPageLayout->fetchAttributesFromAbiSection(pAP);
+       
         UT_UTF8String output;
         
         UT_UTF8String_sprintf(output,

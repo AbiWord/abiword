@@ -297,7 +297,35 @@ bool ODe_Style_Style::hasSectionInfo(const PP_AttrProp* pAP) {
     if (ok && pValue != NULL) {
         return true;
     }
+    ok= pAP->getProperty("page-margin-top",pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
 
+    ok= pAP->getProperty("page-margin-left",pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok= pAP->getProperty("page-margin-right",pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+
+    ok= pAP->getProperty("page-margin-bottom",pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("page-margin-header", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("page-margin-footer", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
     return false;
 }
 

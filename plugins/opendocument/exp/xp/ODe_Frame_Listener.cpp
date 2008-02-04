@@ -29,10 +29,11 @@
 #include "ODe_Style_Style.h"
 #include "ODe_Text_Listener.h"
 #include "ODe_ListenerAction.h"
+#include "ODe_Style_PageLayout.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
-
+#include <ut_units.h>
 
 /**
  * Constructor
@@ -180,13 +181,45 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
         
         ODe_writeAttribute(output, "text:anchor-type", "page");
 
-        ok = rAP.getProperty("frame-page-xpos", pValue);
-        UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:x", pValue);
+	if(pValue && !strcmp(pValue, "column-above-text"))
+	{
+	  //
+	  // Get the most recent page style so we can do the arithmetic
+	  // Won't work for x in multi-columned docs
+	  //
+	    UT_uint32 numPStyles =  m_rAutomatiStyles.getSectionStylesCount();
+	    UT_UTF8String stylePName;
+	    UT_UTF8String_sprintf(stylePName, "PLayout%d", numPStyles + 1);
+	    ODe_Style_PageLayout * pPageL = m_rAutomatiStyles.getPageLayout(stylePName.utf8_str());
+
+	    ok = rAP.getProperty("frame-col-xpos", pValue);
+	    UT_ASSERT(ok && pValue != NULL);
+	    double xCol =  UT_convertToInches(pValue);
+	    const gchar* pSVal= pPageL->getPageMarginLeft();
+	    double xPageL = UT_convertToInches(pSVal);
+	    double xTot = xPageL + xCol;
+	    pValue = UT_convertInchesToDimensionString(DIM_IN,xTot,"4");
+	    ODe_writeAttribute(output, "svg:x", pValue);
         
-        ok = rAP.getProperty("frame-page-ypos", pValue);
-        UT_ASSERT(ok && pValue != NULL);
-        ODe_writeAttribute(output, "svg:y", pValue);
+	    ok = rAP.getProperty("frame-col-ypos", pValue);
+	    UT_ASSERT(ok && pValue != NULL);
+	    double yCol =  UT_convertToInches(pValue);
+	    pSVal= pPageL->getPageMarginTop();
+	    double yPageL = UT_convertToInches(pSVal);
+	    double yTot = yPageL + yCol;
+	    pValue = UT_convertInchesToDimensionString(DIM_IN,yTot,"4");
+	    ODe_writeAttribute(output, "svg:y", pValue);	  
+	}
+	else
+	{
+	    ok = rAP.getProperty("frame-page-xpos", pValue);
+	    UT_ASSERT(ok && pValue != NULL);
+	    ODe_writeAttribute(output, "svg:x", pValue);
+        
+	    ok = rAP.getProperty("frame-page-ypos", pValue);
+	    UT_ASSERT(ok && pValue != NULL);
+	    ODe_writeAttribute(output, "svg:y", pValue);
+	}
     }
     
     

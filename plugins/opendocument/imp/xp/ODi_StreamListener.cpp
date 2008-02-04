@@ -427,7 +427,7 @@ void ODi_StreamListener::_clear ()
 ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
     
     ODi_ListenerState* pState = NULL;
-    
+    UT_DEBUGMSG(("ODi ListenerState name %s \n",pStateName));
     if (!strcmp("StylesStream", pStateName)) {
         
         pState = new ODi_StylesStream_ListenerState(m_pAbiDocument, m_pGsfInfile,

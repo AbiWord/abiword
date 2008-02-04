@@ -33,10 +33,12 @@
 #include "ODe_Style_List.h"
 #include "ODe_Style_Style.h"
 #include "ODe_Table_Listener.h"
+#include "ODe_Style_PageLayout.h"
 
 // AbiWord includes
 #include <pp_AttrProp.h>
 #include <gsf/gsf-output-memory.h>
+#include <ut_units.h>
 
 // External includes
 #include <stdlib.h>
@@ -834,13 +836,88 @@ void ODe_Text_Listener::insertPositionedImage(const gchar* pImageName,
     output += "<draw:frame text:anchor-type=\"";
     ok = pAP->getProperty("position-to", pValue);
     if(ok && pValue && !strcmp(pValue, "column-above-text")) {
-        output+="paragraph\""; //the spec doesn't seem to handle column anchoring
+        output+="page\""; //the spec doesn't seem to handle column anchoring
+	// we work around it
+	ok = pAP->getProperty("pref-page", pValue);
+ 	if(ok)
+	{
+	    UT_sint32 iPage = atoi(pValue)+1;
+	    UT_UTF8String sPage;
+	    UT_UTF8String_sprintf(sPage,"%d",iPage);
+	    ODe_writeAttribute(output, "text:anchor-page-number", sPage.utf8_str());
+	}
+	else
+	{
+	    ODe_writeAttribute(output, "text:anchor-page-number", "1");
+	}
+	//
+	// Get the most recent page style so we can do the arithmetic
+	// Won't work for x in multi-columned docs
+	//
+
+	UT_DEBUGMSG(("InsertPosionedObject TextListener %x AutoStyle %x \n",this,&m_rAutomatiStyles));
+	ODe_Style_PageLayout * pPageL = NULL;
+	UT_uint32 numPStyles =  m_rAutomatiStyles.getSectionStylesCount();
+	UT_UTF8String stylePName;
+	UT_DEBUGMSG(("Number PageLayoutStyles %d \n",numPStyles));
+	UT_UTF8String_sprintf(stylePName, "PLayout%d", numPStyles + 1);
+	pPageL = m_rAutomatiStyles.getPageLayout(stylePName.utf8_str());
+	if(pPageL == NULL)
+	{
+	    pPageL = m_rAutomatiStyles.getPageLayout("Standard");
+	}
+	UT_DEBUGMSG(("Got PageLayoutStyle %x \n",pPageL));
+	double xPageL = 0.;
+	double yPageL = 0.;
+	
+	ok = pAP->getProperty("frame-col-xpos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+	double xCol =  UT_convertToInches(pValue);
+	const gchar* pSVal= NULL;
+	if(pPageL)
+	{
+	    pSVal = pPageL->getPageMarginLeft();
+	    xPageL = UT_convertToInches(pSVal);
+	}
+	double xTot = xPageL + xCol;
+	pValue = UT_convertInchesToDimensionString(DIM_IN,xTot,"4");
+	ODe_writeAttribute(output, "svg:x", pValue);
+        
+	ok = pAP->getProperty("frame-col-ypos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+	double yCol =  UT_convertToInches(pValue);
+	if(pPageL)
+	{
+	    pSVal = pPageL->getPageMarginTop();
+	    yPageL = UT_convertToInches(pSVal);
+	    pSVal = pPageL->getPageMarginHeader();
+	    yPageL += UT_convertToInches(pSVal);
+	    UT_DEBUGMSG(("PageMarginTop %s Margin in %f8.4\n",pSVal,yPageL));
+	}
+	double yTot = yPageL + yCol;
+	UT_DEBUGMSG(("Col %f8.4 Total in %f8.4\n",yCol,yTot));
+	pValue = UT_convertInchesToDimensionString(DIM_IN,yTot,"4");
+	ODe_writeAttribute(output, "svg:y", pValue);
     }
     else if(ok && pValue && !strcmp(pValue, "page-above-text")) {
         output+="page\"";
+	ok = pAP->getProperty("frame-page-xpos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+        ODe_writeAttribute(output, "svg:x", pValue);
+        
+	ok = pAP->getProperty("frame-page-ypos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+        ODe_writeAttribute(output, "svg:y", pValue);
     }
     else { //this handles the block-above-text case and any other unforeseen ones
         output+="paragraph\"";
+	ok = pAP->getProperty("xpos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+        ODe_writeAttribute(output, "svg:x", pValue);
+        
+	ok = pAP->getProperty("ypos", pValue);
+	UT_ASSERT(ok && pValue != NULL);
+        ODe_writeAttribute(output, "svg:y", pValue);
     }
 
     UT_UTF8String_sprintf(str, "%u", m_zIndex);

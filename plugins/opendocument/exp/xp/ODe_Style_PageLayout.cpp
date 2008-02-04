@@ -102,6 +102,23 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
      * OpenDocument's header height == AbiWord's top margin -
      *                                 AbiWord's header margin
      */
+
+    ok = pAP->getProperty("page-margin-top", pValue);
+    if (ok && pValue != NULL) {
+        
+        if (hasAbiHeaderMargin) {
+            abiTopMarginCM = UT_convertToDimension(pValue, DIM_CM);
+            
+            UT_UTF8String_sprintf(m_headerHeight, "%fcm",
+                                  abiTopMarginCM - abiHeaderMarginCM);
+        } else {
+            m_marginTop = pValue;
+        }
+    }
+    if(m_marginTop.size() == 0)
+    {
+	m_marginTop = "1.0in";
+    }
     
     ok = pAP->getProperty("page-margin-header", pValue);
     if (ok && pValue != NULL) {
@@ -115,35 +132,7 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
         
         // Redefine the top margin
         hasAbiHeaderMargin = true;
-        m_marginTop = pValue;
-    }
-
-    ok = pAP->getProperty("page-margin-footer", pValue);
-    if (ok && pValue != NULL) {
-        
-        abiFooterMarginCM = UT_convertToDimension(pValue, DIM_CM);
-        
-        // Set the footer height
-        abiBottomMarginCM = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
-        UT_UTF8String_sprintf(m_footerHeight, "%fcm",
-                              abiBottomMarginCM - abiFooterMarginCM);
-        
-        // Redefine the bottom margin
-        hasAbiFooterMargin = true;
-        m_marginBottom = pValue;
-    }
-
-    ok = pAP->getProperty("page-margin-top", pValue);
-    if (ok && pValue != NULL) {
-        
-        if (hasAbiHeaderMargin) {
-            abiTopMarginCM = UT_convertToDimension(pValue, DIM_CM);
-            
-            UT_UTF8String_sprintf(m_headerHeight, "%fcm",
-                                  abiTopMarginCM - abiHeaderMarginCM);
-        } else {
-            m_marginTop = pValue;
-        }
+        UT_UTF8String_sprintf(m_marginTop, "%fcm",abiHeaderMarginCM);
     }
 
     ok = pAP->getProperty("page-margin-bottom", pValue);
@@ -158,22 +147,50 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
             m_marginBottom = pValue;
         }
     }
+    if(m_marginBottom.size() == 0)
+    {
+	m_marginBottom = "1.0in";
+    }
+
+    ok = pAP->getProperty("page-margin-footer", pValue);
+    if (ok && pValue != NULL) {
+        
+        abiFooterMarginCM = UT_convertToDimension(pValue, DIM_CM);
+        
+        // Set the footer height
+        abiBottomMarginCM = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
+        UT_UTF8String_sprintf(m_footerHeight, "%fcm",
+                              abiBottomMarginCM - abiFooterMarginCM);
+        
+        // Redefine the bottom margin
+        hasAbiFooterMargin = true;
+        UT_UTF8String_sprintf(m_marginBottom, "%fcm",abiFooterMarginCM);
+    }
 
     ok = pAP->getProperty("page-margin-left", pValue);
     if (ok && pValue != NULL) {
         m_marginLeft = pValue;
+	UT_DEBUGMSG(("Found MarginLeft of section %s \n",pValue));
+    }
+    if(m_marginLeft.size() == 0)
+    {
+	m_marginLeft = "1.0in";
     }
 
     ok = pAP->getProperty("page-margin-right", pValue);
     if (ok && pValue != NULL) {
         m_marginRight = pValue;
     }
+    if(m_marginRight.size() == 0)
+    {
+	m_marginRight = "1.0in";
+    }
 
     ok = pAP->getProperty("background-color", pValue);
     if (ok && pValue != NULL) {
         int len = strlen(pValue);
         if(len == 6) {
-            m_backgroundColor = UT_UTF8String_sprintf("#%s", pValue);
+            m_backgroundColor = UT_UTF8String_sprintf("%s", pValue);
         } else if(len == 7) {
             m_backgroundColor = pValue;
         } else {

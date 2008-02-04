@@ -56,6 +56,13 @@ public:
     // Write the <style:page-layout> element.
     bool write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset) const;
 
+    const char * getPageMarginTop(void)
+    { return m_marginTop.utf8_str();}
+    const char * getPageMarginLeft(void)
+    { return m_marginLeft.utf8_str();}
+    const char * getPageMarginHeader(void)
+    { return m_headerHeight.utf8_str();}
+
 private:
 
     bool _haveHeaderInfo() const {return !m_headerHeight.empty();}
