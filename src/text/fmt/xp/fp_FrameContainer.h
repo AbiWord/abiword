@@ -80,8 +80,7 @@ public:
 	fl_DocSectionLayout * getDocSectionLayout(void);
 	void                getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks);
 	PP_PropertyMap::Background getBackground () const;
-	void                setPreferedPageNo(UT_sint32 i)
-	{     m_iPreferedPageNo =  i;}
+	void                setPreferedPageNo(UT_sint32 i);
 	UT_sint32           getPreferedPageNo(void)
 	{     return m_iPreferedPageNo;}
 

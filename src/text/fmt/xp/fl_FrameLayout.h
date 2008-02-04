@@ -181,6 +181,7 @@ private:
 	UT_sint32               m_iBoundingSpace;
         FL_FrameWrapMode        m_iFrameWrapMode;
 	bool                    m_bIsTightWrap;
+	UT_sint32               m_iPrefPage;
 };
 
 #endif /* FRAMELAYOUT_H */
