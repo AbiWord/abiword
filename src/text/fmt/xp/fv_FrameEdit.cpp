@@ -835,6 +835,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		bool bDir=false;
 		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
 		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
+		fp_Run * pOrigRun = pRun;
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
@@ -880,7 +881,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_return_val_if_fail(pBL->getFirstRun(),false);
 		UT_return_val_if_fail(pBL->getFirstRun()->getLine(),false);
 		UT_return_val_if_fail(pBL->getFirstRun()->getLine()->getColumn(),false);
-		fp_Container * pCol = pBL->getFirstRun()->getLine()->getColumn();
+		fp_Container * pCol = pOrigRun->getLine()->getColumn();
 		UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
 //
 // Find the screen coords of pCol and substract then from x,y

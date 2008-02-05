@@ -189,21 +189,22 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1-iLoop);
 		UT_return_val_if_fail(pcr, false); // just bail out, everything seems wrong
 		//
-		// Do Adjustments for blocks of remote CR's
+		// Do Adjustments for blocks of remote CR's. Scan through local globs
+		// to check for remote CR's which overlap it.
 		//
-		if(pcr && !pcr->isFromThisDoc())
+		if((iGLOB== 0) && !pcr->isFromThisDoc())
 		{
 			bCorrect = true;
 			m_iAdjustOffset++;
 			UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
 		}
-		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker))
+		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) && pcr->isFromThisDoc())
 		{
 			iGLOB++;
 			pcrFirst = pcr;
 			iLoop++;
 		}
-		else if((iGLOB>0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker))
+		else if((iGLOB>0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) &&  pcr->isFromThisDoc())
 		{
 			pcr = pcrFirst;
 			bGotOne = true;
@@ -217,6 +218,10 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 			if(m_iAdjustOffset > 0)
 				bCorrect = true;
 		}
+		//
+		// we're here if we've started scanning through a glob in the local
+		// document.
+		//
 		else
 		{
 			PT_DocPosition pos = pcr->getPosition();

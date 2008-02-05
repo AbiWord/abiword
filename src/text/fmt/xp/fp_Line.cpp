@@ -357,11 +357,18 @@ fp_Container * fp_Line::getColumn(void)
 	{
 		return NULL;
 	}
+	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+	{
+	        fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
+		if(pPage == NULL)
+		  return NULL;
+	        fp_Container * pCol = static_cast<fp_Container *>(pPage->getNthColumnLeader(0));
+	        return pCol;
+	}
 	else if((pCon->getContainerType() != FP_CONTAINER_CELL))
 	{
 		return pCon->getColumn();
 	}
-
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
 	return pCell->getColumn(this);
 }
