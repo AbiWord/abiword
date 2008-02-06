@@ -36,11 +36,12 @@
 
 px_ChangeHistory::px_ChangeHistory(pt_PieceTable * pPT)
 	: m_undoPosition(0),
-	m_savePosition(0),
-	m_pPT(pPT),
-	m_iAdjustOffset(0),
-	m_bOverlap(false),
-	m_iMinUndo(0)
+	  m_savePosition(0),
+	  m_pPT(pPT),
+	  m_iAdjustOffset(0),
+	  m_bOverlap(false),
+	  m_iMinUndo(0),
+	  m_bScanUndoGLOB(false)
 {
 }
 
@@ -61,6 +62,7 @@ void px_ChangeHistory::clearHistory()
 	m_iAdjustOffset = 0;
 	m_bOverlap = false;
 	m_iMinUndo = 0;
+	m_bScanUndoGLOB = false;
 }
 
 void px_ChangeHistory::_invalidateRedo(void)
@@ -188,6 +190,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		
 		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1-iLoop);
 		UT_return_val_if_fail(pcr, false); // just bail out, everything seems wrong
+
 		//
 		// Do Adjustments for blocks of remote CR's. Scan through local globs
 		// to check for remote CR's which overlap it.
@@ -198,19 +201,18 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 			m_iAdjustOffset++;
 			UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
 		}
-		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) && pcr->isFromThisDoc())
+		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) && pcr->isFromThisDoc() && !isScanningUndoGLOB() && (m_iAdjustOffset > 0))
 		{
 			iGLOB++;
 			pcrFirst = pcr;
 			iLoop++;
+			setScanningUndoGLOB(true);
 		}
 		else if((iGLOB>0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) &&  pcr->isFromThisDoc())
 		{
-			pcr = pcrFirst;
+			if(isScanningUndoGLOB())
+				pcr = pcrFirst;
 			bGotOne = true;
-			if(m_iAdjustOffset > 0)
-				bCorrect = true;
-
 		}
 		else if(iGLOB == 0)
 		{
@@ -220,7 +222,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		}
 		//
 		// we're here if we've started scanning through a glob in the local
-		// document.
+		// document to see if it overlaps a later remote change.
 		//
 		else
 		{
@@ -235,7 +237,12 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 					if (doesOverlap(pcrTmp,low,high))
 					{
 						*ppcr = NULL;
-						m_iMinUndo = m_undoPosition-i-1;
+						//
+						// OK now we have to invalidate the undo stack
+						// to just before the first pcr we pulled off.
+						//
+						m_iMinUndo = m_undoPosition-iAdjust;
+						m_iAdjustOffset = iAdjust;
 						return false;
 					}
 				}

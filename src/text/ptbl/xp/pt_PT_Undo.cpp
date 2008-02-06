@@ -587,7 +587,7 @@ bool pt_PieceTable::undoCmd(void)
 	// for a simple change, we just do it and return.
 	// for a glob, we loop until we do the
 	// corresponding other end.
-
+	m_history.setScanningUndoGLOB(false);
 	UT_Byte flagsFirst = GETGLOBFLAGS(pcr);
 	if(m_fragments.areFragsDirty())
 	{
@@ -610,6 +610,7 @@ bool pt_PieceTable::undoCmd(void)
 			break;
 
 	} while (m_history.getUndo(&pcr));
+	m_history.setScanningUndoGLOB(false);
 	m_pDocument->updateFields();
 	return true;
 }
@@ -618,7 +619,7 @@ bool pt_PieceTable::redoCmd(void)
 {
 	// do a user-atomic redo.
 	// return false if we can't.
-	
+        m_history.setScanningUndoGLOB(false);
 	PX_ChangeRecord * pcr;
 	if (!m_history.getRedo(&pcr))
 		return false;
@@ -650,7 +651,7 @@ bool pt_PieceTable::redoCmd(void)
 		if (flagsRevFirst == GETGLOBFLAGS(pcr))		// stop when we have a matching end
 			break;
 	}
-
+	m_history.setScanningUndoGLOB(false);
 	return true;
 }
 

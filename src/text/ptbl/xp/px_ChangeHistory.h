@@ -80,7 +80,11 @@ public:
 	PD_Document *			getDoc(void) const;
 	bool					getCRRange(PX_ChangeRecord * pcr,PT_DocPosition & posLow, PT_DocPosition &posHigh) const;
 	bool					doesOverlap(PX_ChangeRecord * pcr, PT_DocPosition low, PT_DocPosition high) const;
-
+	void                                    setScanningUndoGLOB(bool bTrue) const
+	{ m_bScanUndoGLOB = bTrue;}
+	bool                                    isScanningUndoGLOB(void) const
+	{ return m_bScanUndoGLOB;}
+	
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
 #endif
@@ -96,6 +100,7 @@ protected:
 	mutable	UT_sint32		m_iAdjustOffset;
 	mutable bool			m_bOverlap;
 	mutable UT_sint32		m_iMinUndo;
+	mutable bool                            m_bScanUndoGLOB;
 };
 
 #endif /* PX_CHANGEHISTORY_H */
