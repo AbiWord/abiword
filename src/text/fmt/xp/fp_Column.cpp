@@ -1830,7 +1830,8 @@ void fp_Column::layout(void)
 	UT_sint32 iOldY  =-1;
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_Line * pLastLine = NULL;
-	fp_Container *pContainer, *pPrevContainer = NULL;
+	fp_Container *pContainer = NULL;
+	fp_Container *pPrevContainer = NULL;
 	UT_sint32 i  = 0;
 	for (i=0; i < static_cast<UT_sint32>(countCons()) ; i++)
 	{
@@ -1966,22 +1967,6 @@ void fp_Column::layout(void)
 
 		pPrevContainer = pContainer;
 	}
-//
-// Set the frames on the page
-//
-	UT_sint32 count = vecBlocks.getItemCount();
-	for(i=0; i < count; i++)
-	{
-		fl_BlockLayout * pBlock = vecBlocks.getNthItem(i);
-		if(i < count -1)
-		{
-			pBlock->setFramesOnPage(NULL);
-		}
-		else
-		{
-			pBlock->setFramesOnPage(pLastLine);
-		}
-	}
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
@@ -1999,9 +1984,21 @@ void fp_Column::layout(void)
 				pLine->setAssignedScreenHeight(iY - iPrevY);
 			}
 		}
+	}
+//
+// Set the frames on the page
+//
+	UT_sint32 count = vecBlocks.getItemCount();
+	for(i=0; i < count; i++)
+	{
+		fl_BlockLayout * pBlock = vecBlocks.getNthItem(i);
+		if(i < count -1)
+		{
+			pBlock->setFramesOnPage(NULL);
+		}
 		else
 		{
-			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			pBlock->setFramesOnPage(pLastLine);
 		}
 	}
 //	validate();

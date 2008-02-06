@@ -154,6 +154,8 @@ public:
 	fp_Page*	getNthPage(int n);
 	UT_uint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
+	void            setFramePageNumbers(UT_sint32 iStartPage);
+
 	UT_sint32   getPercentFilled(void)
 		{ return m_iFilled;}
 	void         setPercentFilled(UT_sint32 iFill)

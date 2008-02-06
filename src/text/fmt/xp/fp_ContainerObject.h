@@ -224,6 +224,12 @@ public:
 		{ return  m_iBreakTick;}
 	void        setBreakTick(UT_sint32 iTick)
 		{ m_iBreakTick = iTick;}
+        void                ref(void)
+	{ m_iRef++;}
+	void                unref(void)
+	{ m_iRef--;}
+	UT_sint32           getRefCount(void)
+	{ return m_iRef;}
 private:
 	/*!
 	  Container type
@@ -235,6 +241,7 @@ private:
 	fl_SectionLayout*       m_pSectionLayout;
 	UT_BidiCharType         m_iDirection;
 	UT_sint32               m_iBreakTick;
+	UT_sint32               m_iRef;
 };
 
 
@@ -252,10 +259,8 @@ public:
 	virtual UT_sint32      getMarginAfter(void) const =0;
     virtual fp_ContainerObject * getNext(void) const {return m_pNext;}
     virtual fp_ContainerObject * getPrev(void) const {return m_pPrev;}
-    virtual void        setNext(fp_ContainerObject * pNext)
-		{m_pNext = pNext;}
-    virtual void        setPrev(fp_ContainerObject * pPrev)
-		{m_pPrev = pPrev;}
+    virtual void        setNext(fp_ContainerObject * pNext);
+    virtual void        setPrev(fp_ContainerObject * pPrev);
 	void                   clearCons(void)
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_uint32 i) const;
@@ -281,7 +286,7 @@ public:
 	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) { 
 			m_cBrokenContainers -= 1; }}
 
-fg_FillType *       getFillType(void);
+        fg_FillType *       getFillType(void);
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;
@@ -289,7 +294,7 @@ private:
 	UT_GenericVector<fp_ContainerObject *> m_vecContainers;
 	fp_Container *         m_pMyBrokenContainer;
 	UT_uint32              m_cBrokenContainers;
-    fg_FillType            m_FillType;                        
+    fg_FillType            m_FillType;
 };
 
 

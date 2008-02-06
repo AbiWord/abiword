@@ -161,6 +161,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // check and update wrapped text around positioned objects
 //
+			        UT_sint32 iPage = m_pDocSec->getDocLayout()->findPage(pPrevPage);
+				m_pDocSec->getDocLayout()->setFramePageNumbers(iPage);
 				fp_Container * pNextContainer = pPrevPage->updatePageForWrapping(pCurColumn);
 				xxx_UT_DEBUGMSG(("Returned container updatePage %x \n",pNextContainer));
 				if(pNextContainer != NULL)
@@ -1095,6 +1097,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		{
 			UT_ASSERT(pOuterContainer == NULL);
 			fp_Page * pPage = pPrevColumn->getPage();
+			UT_sint32 iPage = m_pDocSec->getDocLayout()->findPage(pPage);
+			m_pDocSec->getDocLayout()->setFramePageNumbers(iPage);
 			fp_Container * pNextContainer = pPage->updatePageForWrapping(pCurColumn);
 			xxx_UT_DEBUGMSG(("Returned container updatePage %x \n",pNextContainer));
 			if(pNextContainer == NULL)

@@ -714,9 +714,26 @@ void FL_DocLayout::fillLayouts(void)
 		else
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+	//
+	// Finally set all page numbers in frames
+	//
+	setFramePageNumbers(0);
 }
 
-
+/*!
+ * Starting from page iStartPage, set the page numbers of the frames in the
+ * document.
+ */
+void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
+{
+      UT_sint32 iPage = 0;
+      fp_Page * pPage = NULL;
+      for(iPage=iStartPage; iPage<static_cast<UT_sint32>(countPages());iPage++)
+      {
+	  pPage = getNthPage(iPage);
+	  pPage->setPageNumberInFrames();
+      }
+}
 void FL_DocLayout::setView(FV_View* pView)
 {
 	m_pView = pView;
@@ -1897,7 +1914,8 @@ UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
 fp_Page* FL_DocLayout::getNthPage(int n)
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
-
+	if(n >= m_vecPages.getItemCount())
+	  return NULL;
 	return m_vecPages.getNthItem(n);
 }
 
@@ -1939,7 +1957,10 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	pPage->setNext(NULL);
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
-
+	if(ndx < countPages())
+	{
+	    setFramePageNumbers(ndx);
+	}
 	// let the view know that we deleted a page,
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.

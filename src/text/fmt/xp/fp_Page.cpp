@@ -134,6 +134,26 @@ bool fp_Page::isEmpty(void) const
 }
 
 /*!
+ * This method sets the page number in all thepages frames.
+ */
+
+void fp_Page::setPageNumberInFrames(void)
+{
+	UT_sint32 iPage = getDocLayout()->findPage(this);
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(countAboveFrameContainers()); i++)
+	{
+		fp_FrameContainer * pFrame = getNthAboveFrameContainer(i);
+		pFrame->setPreferedPageNo(iPage);
+	}
+	for(i=0; i< static_cast<UT_sint32>(countBelowFrameContainers()); i++)
+	{
+		fp_FrameContainer * pFrame = getNthBelowFrameContainer(i);
+		pFrame->setPreferedPageNo(iPage);
+	}
+}
+
+/*!
  * Fill a vector with all the layouts referenced from this page.
  */
 void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts){

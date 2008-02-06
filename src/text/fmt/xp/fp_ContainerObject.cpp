@@ -54,7 +54,8 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
 	:       m_iConType(iType),
 			m_pSectionLayout(pSectionLayout),
 			m_iDirection(UT_BIDI_UNSET),
-			m_iBreakTick(0)
+		m_iBreakTick(0),
+		m_iRef(0)
 {
 	UT_ASSERT(pSectionLayout);
 }
@@ -188,6 +189,20 @@ void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
 		pc->incBrokenCount();
 		pc = pc->getContainer();
 	}
+}
+
+void fp_Container::setNext(fp_ContainerObject * pNext)
+{
+  m_pNext = pNext;
+  if(pNext)
+    pNext->ref();
+}
+
+void fp_Container::setPrev(fp_ContainerObject * pPrev)
+{
+  m_pPrev = pPrev;
+  if(pPrev)
+    pPrev->ref();
 }
 
 /*!
@@ -332,6 +347,7 @@ void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 	}
 #endif
 	m_vecContainers.insertItemAt(pCon,i);
+	pCon->ref();
 }
 
 void fp_Container::addCon(fp_ContainerObject * pCon)
@@ -355,6 +371,7 @@ void fp_Container::addCon(fp_ContainerObject * pCon)
 	}
 #endif
 	m_vecContainers.addItem(pCon);
+	pCon->ref();
 }
 
 fp_ContainerObject *  fp_Container:: getNthCon(UT_uint32 i) const
@@ -436,6 +453,8 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 
 void fp_Container::justRemoveNthCon(UT_sint32 i)
 {
+        fp_ContainerObject * pCon = getNthCon(i);
+	pCon->unref();
 	m_vecContainers.deleteNthItem(i);
 }
 
@@ -447,6 +466,7 @@ void  fp_Container::deleteNthCon(UT_sint32 i)
 		UT_ASSERT(0);
 		pCon->setContainer(NULL);
 	}
+	pCon->unref();
 	m_vecContainers.deleteNthItem(i);
 	xxx_UT_DEBUGMSG(("AFter deleting item %d in %x there are %d cons left \n",i,this,countCons()));
 }

@@ -152,6 +152,8 @@ public:
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
 	bool                overlapsWrappedFrame(fp_Line * pLine);
 	bool                overlapsWrappedFrame(UT_Rect & rec);
+	void                setPageNumberInFrames(void);
+
 	bool                TopBotMarginChanged(void);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
@@ -165,7 +167,6 @@ public:
 #endif
 
 	void                updateColumnX();
-	
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
