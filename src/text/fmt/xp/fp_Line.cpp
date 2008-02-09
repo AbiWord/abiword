@@ -32,6 +32,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
+#include "fp_FrameContainer.h"
 #include "fp_Page.h"
 #include "fv_View.h"
 #include "fl_SectionLayout.h"

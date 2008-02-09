@@ -92,6 +92,7 @@ public:
 protected:
 	void					_invalidateRedo(void);
 	void					_invalidateHistory(void);
+	void                                    _printHistory(UT_sint32 i) const;
 
 	UT_GenericVector<PX_ChangeRecord *>		m_vecChangeRecords;
 	UT_sint32				m_undoPosition;
