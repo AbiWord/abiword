@@ -84,7 +84,7 @@ public:
 	{ m_bScanUndoGLOB = bTrue;}
 	bool                                    isScanningUndoGLOB(void) const
 	{ return m_bScanUndoGLOB;}
-
+	
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
 #endif
@@ -92,6 +92,7 @@ public:
 protected:
 	void					_invalidateRedo(void);
 	void					_invalidateHistory(void);
+	void                                    _printHistory(UT_sint32 i) const;
 
 	UT_GenericVector<PX_ChangeRecord *>		m_vecChangeRecords;
 	UT_sint32				m_undoPosition;

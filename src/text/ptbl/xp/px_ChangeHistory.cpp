@@ -53,6 +53,7 @@ px_ChangeHistory::~px_ChangeHistory()
 // this function is used when restoring an older version of a document
 // when maintaining full history, since that makes the info in the
 // undo meaningless (and causes crashes)
+
 void px_ChangeHistory::clearHistory()
 {
 	UT_VECTOR_PURGEALL(PX_ChangeRecord *,m_vecChangeRecords);
@@ -145,7 +146,9 @@ bool px_ChangeHistory::canDo(bool bUndo) const
 		return false;
 	PX_ChangeRecord * pcr;
 	UT_sint32 iAdj = m_iAdjustOffset;
+	setScanningUndoGLOB(false);
 	bool b = (bUndo ? getUndo(&pcr) : getRedo(&pcr));
+	setScanningUndoGLOB(false);
 	m_iAdjustOffset = iAdj;
 	return b;
 }
@@ -179,6 +182,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	bool bCorrect = false;
 	UT_sint32 iAdjust = m_iAdjustOffset;
 	UT_sint32 iLoop = 0;
+	//	_printHistory(50);
 	while (!bGotOne)
 	{
 		if ((m_undoPosition - m_iAdjustOffset -iLoop) <= m_iMinUndo)
@@ -226,15 +230,23 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		//
 		else
 		{
-			PT_DocPosition pos = pcr->getPosition();
 			PT_DocPosition low, high;
+			PT_DocPosition lowWork, highWork;
+			UT_sint32 iAccumOffset = 0;
 			getCRRange(pcr, low, high);
-			for (UT_sint32 i = m_iAdjustOffset-1-iLoop; i>=0;i--)
+			for (UT_sint32 i = 0; i<m_iAdjustOffset;i++)
 			{
 				PX_ChangeRecord *pcrTmp = m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
 				if (!pcrTmp->isFromThisDoc())
 				{
-					if (doesOverlap(pcrTmp,low,high))
+					UT_sint32 iCur = getDoc()->getAdjustmentForCR(pcrTmp);
+					if(pcrTmp->getPosition() <= lowWork+iCur)
+					{
+						iAccumOffset += iCur;
+					}
+					lowWork = low + iAccumOffset;
+					highWork = high + iAccumOffset;
+					if (doesOverlap(pcrTmp,lowWork,highWork))
 					{
 						*ppcr = NULL;
 						//
@@ -258,6 +270,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	    pcr->setAdjustment(0);
 	    PT_DocPosition pos = pcr->getPosition();
 	    UT_sint32 iAdj = 0;
+		UT_sint32 iCurrAdj  = 0;
 	    PT_DocPosition low, high;
 	    getCRRange(pcr, low, high);
 	    for (UT_sint32 i = m_iAdjustOffset-1; i>=0;i--)
@@ -265,17 +278,21 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 			pcr = m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
 			if (!pcr->isFromThisDoc())
 			{
+				iCurrAdj = getDoc()->getAdjustmentForCR(pcr);
+			    if(pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj + iCurrAdj))
+			    {
+					iAdj += iCurrAdj;
+					low += iCurrAdj;
+					high += iCurrAdj;
+			    }
 			    if (doesOverlap(pcr,low,high))
 			    {
+					UT_DEBUGMSG(("CR Type %d adj pos %d Overlaps found with CR pos %d \n",pcrOrig->getType(),pcrOrig->getPosition()+iAdj,pcr->getPosition()));
+					UT_DEBUGMSG((" Orig Adj low %d high %d \n",low,high));
+
 					*ppcr = NULL;
-					m_iMinUndo = m_undoPosition-i-1;
+					m_iMinUndo = m_undoPosition-m_iAdjustOffset-1;
 					return false;
-			    }
-			    if(pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj))
-			    {
-					iAdj += getDoc()->getAdjustmentForCR(pcr);
-					low += iAdj;
-					high += iAdj;
 			    }
 			}
 	    }
@@ -315,7 +332,10 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	if (m_bOverlap)
 		return false;
 	
-	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
+	UT_sint32 iRedoPos = m_undoPosition-m_iAdjustOffset;
+	if(iRedoPos <0)
+		return false;
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(iRedoPos);
 	UT_return_val_if_fail(pcr, false);
 
 	// leave records from external documents in place so we can correct
@@ -337,13 +357,14 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	
 	while (pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset > 0))
 	{
-	    pcr = m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
+	    pcr = m_vecChangeRecords.getNthItem(iRedoPos);
 	    m_iAdjustOffset--;
+		iRedoPos++;
 	    bIncrementAdjust = true;
 	    xxx_UT_DEBUGMSG(("AdjustOffset decremented -1 %d ", m_iAdjustOffset));
 	}
 	
-	if (bIncrementAdjust)
+	if (pcr && bIncrementAdjust)
 	{
 	    PX_ChangeRecord * pcrOrig = pcr;
 	    pcr->setAdjustment(0);
@@ -356,17 +377,18 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 			pcr = m_vecChangeRecords.getNthItem(m_undoPosition-i);
 			if (!pcr->isFromThisDoc())
 			{
+				UT_sint32 iCur = getDoc()->getAdjustmentForCR(pcr);
+			    if (pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj + iCur))
+			    {
+					iAdj += iCur; 
+					low += iCur;
+					high += iCur;
+			    }
 			    m_bOverlap = doesOverlap(pcr,low,high);
 			    if (m_bOverlap)
 			    {
 					*ppcr = NULL;
 					return false;
-			    }
-			    if (pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj))
-			    {
-					iAdj += getDoc()->getAdjustmentForCR(pcr);
-					low += iAdj;
-					high += iAdj;
 			    }
 			}
 	    }
@@ -447,6 +469,27 @@ bool px_ChangeHistory::didRedo(void)
 	return true;
 }
 
+void px_ChangeHistory::_printHistory(UT_sint32 iPrev) const
+{
+	UT_sint32 i = 0;
+	UT_sint32 iStop = m_undoPosition-1 - iPrev;
+	if(iStop <0)
+		iStop =0;
+	for(i=m_undoPosition-1; i>= iStop;i--)
+	{
+			PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(i);
+			if(i != (m_undoPosition-m_iAdjustOffset-1))
+			{
+					UT_DEBUGMSG((" loc %d pos %d type %d isLocal %d \n",i,pcr->getPosition(),pcr->getType(),pcr->isFromThisDoc()));
+			}
+			else
+			{
+					UT_DEBUGMSG((" loc %d pos %d type %d isLocal %d <- Current undo record \n",i,pcr->getPosition(),pcr->getType(),pcr->isFromThisDoc()));
+			}
+	}
+}
+
+
 void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 {
 	// coalesce this record with the current undo record.
@@ -510,7 +553,7 @@ bool px_ChangeHistory:: doesOverlap(PX_ChangeRecord * pcr, PT_DocPosition low, P
 	getCRRange(pcr, crLow, crHigh);
 	if ((crLow>=low) && (crLow<high))
 		return true;
-	if ((crHigh>=low) && (crHigh<high))
+	if ((crHigh>low) && (crHigh<=high))
 		return true;
 	return false;
 }
