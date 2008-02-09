@@ -2464,6 +2464,91 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(const GR_Font *pFont)
 	return pFP->getAscent() + pFP->getDescent();
 }
 
+typedef struct
+{
+  int value;
+  const char str[16];
+} FieldMap;
+
+static const FieldMap style_map[] = {
+  { PANGO_STYLE_NORMAL, "" },
+  { PANGO_STYLE_OBLIQUE, "Oblique" },
+  { PANGO_STYLE_ITALIC, "Italic" }
+};
+
+static const FieldMap variant_map[] = {
+  { PANGO_VARIANT_NORMAL, "" },
+  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
+};
+
+static const FieldMap weight_map[] = {
+  { PANGO_WEIGHT_ULTRALIGHT, "Ultra-Light" },
+  { PANGO_WEIGHT_ULTRALIGHT, "Ultralight" },
+  { PANGO_WEIGHT_LIGHT, "Light" },
+  { PANGO_WEIGHT_NORMAL, "" },
+  { 500, "Medium" },
+  { PANGO_WEIGHT_SEMIBOLD, "Semi-Bold" },
+  { PANGO_WEIGHT_SEMIBOLD, "Semibold" },
+  { PANGO_WEIGHT_BOLD, "Bold" },
+  { PANGO_WEIGHT_ULTRABOLD, "Ultra-Bold" },
+  { PANGO_WEIGHT_HEAVY, "Heavy" }
+};
+
+static const FieldMap stretch_map[] = {
+  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
+  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
+  { PANGO_STRETCH_CONDENSED,       "Condensed" },
+  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
+  { PANGO_STRETCH_NORMAL,          "" },
+  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
+  { PANGO_STRETCH_EXPANDED,        "Expanded" },
+  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
+  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
+};
+
+static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *elem)
+{
+	for (size_t i = 0; i < n; i++)
+		{
+			if (0 == g_ascii_strcasecmp(fma[i].str, elem))
+				{
+					return &(fma[i]);
+				}
+		}
+
+	return NULL;
+}
+
+static void getDefaultFontmapAndContext(PangoFontMap **fontmap, PangoContext **context, bool *fontmapNeedsFreeing)
+{
+	// todo : use default cairo fontmap and context
+	GdkDisplay * gDisplay = NULL;
+	GdkScreen *  gScreen = NULL;
+
+	*fontmap = 0;
+	*context = 0;
+	*fontmapNeedsFreeing = false;
+
+	gDisplay = gdk_display_get_default();
+	gScreen = gdk_screen_get_default();
+
+	if (gScreen && gDisplay)
+		{
+			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
+			*context = pango_xft_get_context(disp, iScreen);
+			*fontmap = pango_xft_get_font_map(disp, iScreen);
+		}
+#ifdef HAVE_PANGOFT2
+	else
+		{
+			*fontmap = pango_ft2_font_map_new ();
+			*context = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(*fontmap));
+			fontmapNeedsFreeing = true;
+		}
+#endif
+}
+
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2474,83 +2559,65 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontLang)
 {
 	static UT_UTF8String s = pszFontFamily;
+
+	PangoFontDescription *d = pango_font_description_new();
 	
-	double dSize = UT_convertToPoints(pszFontSize);
-	int iWeight = 400;
-	if (pszFontWeight)
+	if (d)
 	{
-		if (!strcmp (pszFontWeight, "normal"))
-			iWeight = 400;
-		else if (!strcmp (pszFontWeight, "bold"))
-			iWeight = 700;
-		else if (!strcmp (pszFontWeight, "heavy"))
-			iWeight = 900;
-		else if (!strcmp (pszFontWeight, "semibold"))
-			iWeight = 600;
-		else if (!strcmp (pszFontWeight, "light"))
-			iWeight = 300;
-		else if (!strcmp (pszFontWeight, "ultralight"))
-			iWeight = 200;
-	}
-	
-	FcPattern *p = FcPatternCreate();
-	if (p)
-	{
-		FcValue v;
-		v.type = FcTypeString;
-		v.u.s  = (const FcChar8*) pszFontFamily;
-		FcPatternAdd(p, FC_FAMILY, v, FcFalse);
+		const FieldMap *fm;
 
-		v.u.s = (const FcChar8*) pszFontStyle;
-		FcPatternAdd(p, FC_STYLE, v, FcFalse);
+		pango_font_description_set_family(d, pszFontFamily);
+		pango_font_description_set_size(d, (int)UT_convertToPoints(pszFontSize));
 
-		v.u.s = (const FcChar8*) pszFontLang;
-		FcPatternAdd(p, FC_LANG, v, FcFalse);
-
-		v.type = FcTypeInteger;
-		v.u.i  = iWeight;
-		FcPatternAdd(p, FC_WEIGHT, v, FcFalse);
-
-		v.type = FcTypeDouble;
-		v.u.d  = dSize;
-		FcPatternAdd(p, FC_SIZE, v, FcFalse);
-		
-		FcDefaultSubstitute (p);
-		FcConfigSubstitute (FcConfigGetCurrent(), p, FcMatchPattern);
-
-		// must initalize this, as FcFontMatch will only modify it if the
-		// call does not succeed !!!
-		FcResult r = FcResultMatch;
-		FcPattern * p2 = FcFontMatch(FcConfigGetCurrent(), p, &r);
-
-		if (r == FcResultMatch)
-		{
-			FcChar8 * family;
-			if (FcResultMatch == FcPatternGetString(p2, FC_FAMILY, 0, &family))
+		if ((fm = find_field(style_map, G_N_ELEMENTS(style_map), pszFontStyle)) != 0)
 			{
-				s = (char*)family;
+				pango_font_description_set_style(d, (PangoStyle)fm->value);				
 			}
 
-			FcPatternDestroy (p2);
-		}
-		else
-			UT_DEBUGMSG(("@@@@ ===== No match for %s, %s, %s, %s, %s, %s, %s "
-						 "(%d)!!!\n",
-						 pszFontFamily,
-						 pszFontStyle,
-						 pszFontVariant,
-						 pszFontWeight,
-						 pszFontStretch,
-						 pszFontSize,
-						 pszFontLang,
-						 r));
+		if ((fm = find_field(variant_map, G_N_ELEMENTS(variant_map), pszFontVariant)) != 0)
+			{
+				pango_font_description_set_variant(d, (PangoVariant)fm->value);				
+			}
+
+		if ((fm = find_field(weight_map, G_N_ELEMENTS(weight_map), pszFontWeight)) != 0)
+			{
+				pango_font_description_set_weight(d, (PangoWeight)fm->value);				
+			}
+
+		if ((fm = find_field(stretch_map, G_N_ELEMENTS(stretch_map), pszFontStretch)) != 0)
+			{
+				pango_font_description_set_stretch(d, (PangoStretch)fm->value);				
+			}
+
+		PangoFontMap *fontmap;
+		PangoContext *context;
+		bool ownsFontMap;
 		
-		FcPatternDestroy (p);
+		getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
+		
+		if (fontmap && context)
+			{
+				PangoFont *font = pango_font_map_load_font(fontmap, context, d);
+				if (font)
+					{
+						PangoFontDescription *new_desc = pango_font_describe(font);
+						s = pango_font_description_get_family(new_desc);
+						pango_font_description_free(new_desc);
+						g_object_unref(font);
+					}
+		
+				g_object_unref(context);
+
+				if (ownsFontMap)
+					g_object_unref(fontmap);
+			}
+
+		pango_font_description_free(d);
 	}
 
 	xxx_UT_DEBUGMSG(("@@@@ ===== Requested [%s], found [%s]\n",
 				 pszFontFamily, s.utf8_str()));
-	
+
 	return s.utf8_str();
 }
 
