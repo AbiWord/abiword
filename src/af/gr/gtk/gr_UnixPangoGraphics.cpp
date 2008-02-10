@@ -3413,15 +3413,6 @@ static double fontPoints2float(UT_uint32 iSize, UT_uint32 iFontPoints)
 	return iSize * ((double)iFontPoints / PANGO_SCALE) * 1.44;
 }
 
-static float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
-{
-	if(pFace == NULL)
-		return 0.0;
-	float rat = 1.44; // convert from points to inches
-	return static_cast<float>(iFontPoints) * static_cast<float>(iSize) * rat  /
-		pFace->units_per_EM;
-}
-
 static PangoGlyph getGlyphForChar(UT_UCS4Char g,
 								  PangoFont *pf,
 								  PangoContext *context)
