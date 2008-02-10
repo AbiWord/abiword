@@ -2765,27 +2765,43 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 		}
 	}
 
-	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
-	FcFontSet* fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
-	
-	for(UT_sint32 i = 0; i < fs->nfont; ++i)
-	{
-		unsigned char *family;
-		FcPatternGetString(fs->fonts[i], FC_FAMILY, 0, &family);
 
-		if (bExclude)
-		{
-			XAP_FontSettings & Fonts = pPrefs->getFontSettings();
-			if (Fonts.isOnExcludeList((const char *)family))
-			{
-				UT_DEBUGMSG(("@@@@ ===== Excluding font [%s] =====\n",
-							 family));
-				continue;
-			}
-		}
+	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
+	PangoFontMap *fontmap;
+	PangoContext *context;
+	bool ownsFontMap;
 		
-		Vec.push_back((const char*)family);
-	}
+	getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
+		
+	if (fontmap && context)
+		{
+			PangoFontFamily **font_families;
+			int n_families;
+			pango_font_map_list_families(fontmap, &font_families, &n_families);
+			
+			for(UT_sint32 i = 0; i < n_families; ++i)
+				{
+					const char *family = pango_font_family_get_name(font_families[i]);
+					
+					if (bExclude)
+						{
+							XAP_FontSettings & Fonts = pPrefs->getFontSettings();
+							if (Fonts.isOnExcludeList(family))
+								{
+									UT_DEBUGMSG(("@@@@ ===== Excluding font [%s] =====\n",
+												 family));
+									continue;
+								}
+						}
+					
+					Vec.push_back(family);
+				}
+						
+			g_object_unref(context);
+			
+			if (ownsFontMap)
+				g_object_unref(fontmap);
+		}
 
 	return Vec;
 }
