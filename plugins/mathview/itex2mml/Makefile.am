@@ -22,7 +22,8 @@ EXTRA_DIST = \
 	test-itex.html
 
 DISTCLEANFILES = \
-	$(BUILT_SOURCES)
+	$(BUILT_SOURCES) \
+	y.tab.h
 
 y.tab.c:	$(srcdir)/itex2MML.y
 		$(YACC) -p $(YYPREFIX) -d $<
