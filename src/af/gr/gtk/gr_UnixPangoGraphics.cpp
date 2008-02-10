@@ -2808,9 +2808,7 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 
 UT_uint32 GR_UnixPangoGraphics::getAllFontCount()
 {
-	FcFontSet* fs;
-	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
-	return fs->nfont;
+	return getAllFontNames().size();
 }
 
 GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
