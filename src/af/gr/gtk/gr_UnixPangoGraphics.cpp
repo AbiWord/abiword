@@ -67,15 +67,6 @@
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
-float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
-{
-	if(pFace == NULL)
-		return 0.0;
-	float rat = 1.44; // convert from points to inches
-	return static_cast<float>(iFontPoints) * static_cast<float>(iSize) * rat  /
-		pFace->units_per_EM;
-}
-
 UT_uint32      GR_UnixPangoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_UnixPangoGraphics::s_Version;
 int            GR_UnixPangoGraphics::s_iMaxScript = 0;
@@ -2567,7 +2558,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 		const FieldMap *fm;
 
 		pango_font_description_set_family(d, pszFontFamily);
-		pango_font_description_set_size(d, (int)UT_convertToPoints(pszFontSize));
+		pango_font_description_set_size(d, (int)((double)PANGO_SCALE * UT_convertToPoints(pszFontSize)));
 
 		if ((fm = find_field(style_map, G_N_ELEMENTS(style_map), pszFontStyle)) != 0)
 			{
@@ -3417,13 +3408,66 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 	return true;
 }
 
+static double fontPoints2float(UT_uint32 iSize, UT_uint32 iFontPoints)
+{
+	return iSize * ((double)iFontPoints / PANGO_SCALE) * 1.44;
+}
+
+static float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
+{
+	if(pFace == NULL)
+		return 0.0;
+	float rat = 1.44; // convert from points to inches
+	return static_cast<float>(iFontPoints) * static_cast<float>(iSize) * rat  /
+		pFace->units_per_EM;
+}
+
+static PangoGlyph getGlyphForChar(UT_UCS4Char g,
+								  PangoFont *pf,
+								  PangoContext *context)
+{
+	UT_UTF8String utf8(&g, 1);
+
+	// this function expect indexes in bytes !!! (stupid)
+	GList * pItems = pango_itemize(context,
+								   utf8.utf8_str(),
+								   0, utf8.byteLength(),
+								   NULL, NULL);
+	
+	int iItemCount = g_list_length(pItems);
+	PangoGlyphString * pGstring = pango_glyph_string_new();
+	
+	for(int i = 0; i < iItemCount; ++i)
+	{
+		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
+
+		if(!pItem)
+		{
+			UT_ASSERT(pItem);
+			if(pGstring)
+				pango_glyph_string_free(pGstring);
+			g_list_free(pItems);
+			return PANGO_GLYPH_EMPTY;
+		}
+
+		pItem->analysis.font = pf;
+
+		pango_shape(utf8.utf8_str()+ pItem->offset,
+					pItem->length,
+					&(pItem->analysis),
+					pGstring);
+	}
+
+	PangoGlyph glyph = pGstring->glyphs[0].glyph;
+	pango_glyph_string_free(pGstring);
+
+	return glyph;
+}
+
 bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
 	UT_return_val_if_fail( m_pf, false );
 	
-	guint iGlyphIndx = pango_fc_font_get_glyph (PANGO_FC_FONT(m_pf), g);
-	FT_Face pFace = pango_fc_font_lock_face(PANGO_FC_FONT(m_pf));
-
 	double resRatio = 1.0;
 	
 #ifdef ENABLE_PRINT
@@ -3436,39 +3480,26 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	  		resRatio = pPGP->_getResolutionRatio();
 	}
 #endif
-	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
-								   FT_LOAD_LINEAR_DESIGN |
-								   FT_LOAD_IGNORE_TRANSFORM |
-								   FT_LOAD_NO_BITMAP |
-								   FT_LOAD_NO_SCALE);
 
-	
-	if (error)
-	{
-		pango_fc_font_unlock_face(PANGO_FC_FONT(m_pf));
-		return false;
-	}
+	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_UnixPangoPrintGraphics *>(pG))->getContext());
 
-	UT_uint32 iSize = (UT_uint32)(0.5 + m_dPointSize * resRatio *(double)pG->getResolution() /
-		(double)pG->getDeviceResolution());
+	PangoRectangle ink_rect;
+	pango_font_get_glyph_extents(m_pf, iGlyphIndx, &ink_rect, NULL);
+
+	UT_uint32 iSize = (UT_uint32)(0.5 + resRatio *(double)pG->getResolution() /
+								  (double)pG->getDeviceResolution());
 	
-	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
-														 pFace->glyph->metrics.horiBearingX));
+	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.x));
 	
-	rec.width  = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
-														 pFace->glyph->metrics.width));
+	rec.width  = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.width));
 	
-	rec.top    = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
-														 pFace->glyph->metrics.horiBearingY));
+	rec.top    = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, -ink_rect.y));
 	
-	rec.height = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
-														 pFace->glyph->metrics.height));
-	
+	rec.height = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.height));
+
 	UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
 				 (char)g, rec.left,rec.width,rec.top,rec.height));
 
-	pango_fc_font_unlock_face(PANGO_FC_FONT(m_pf));
-	
 	return true;
 }
 
