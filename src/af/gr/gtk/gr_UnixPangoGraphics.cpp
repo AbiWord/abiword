@@ -64,6 +64,11 @@
   #include <libgnomeprintui/gnome-print-job-preview.h>
 #endif
 
+// only became "public" in pango 1.20. see http://bugzilla.gnome.org/show_bug.cgi?id=472303
+#ifndef PANGO_GLYPH_EMPTY
+#define PANGO_GLYPH_EMPTY ((PangoGlyph)0x0FFFFFFF)
+#endif
+
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
