@@ -28,6 +28,13 @@
 #include "pt_PieceTable.h"
 #include "ut_debugmsg.h"
 
+// UGLY UGLY UGLY - we really need uwog's fancy new ChangeHistory class
+
+static void __invalidateRedo(const px_ChangeHistory * pC)
+{
+	px_ChangeHistory * pChange = const_cast<px_ChangeHistory *>(pC);
+	pChange->_invalidateRedo();
+}
 
 // m_undoPosition is the position of the undo pointer.
 // a value of zero means no undo history.
@@ -87,6 +94,7 @@ void px_ChangeHistory::_invalidateRedo(void)
 	m_undoPosition = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
 	if (m_savePosition > m_undoPosition)
 		m_savePosition = -1;
+	m_iAdjustOffset = 0;
 }
 
 PD_Document * px_ChangeHistory::getDoc(void) const
@@ -181,7 +189,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	bool bCorrect = false;
 	UT_sint32 iAdjust = m_iAdjustOffset;
 	UT_sint32 iLoop = 0;
-	//	_printHistory(50);
+   	_printHistory(20);
 	while (!bGotOne)
 	{
 		if ((m_undoPosition - m_iAdjustOffset -iLoop) <= m_iMinUndo)
@@ -248,12 +256,25 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 					if (doesOverlap(pcrTmp,lowWork,highWork))
 					{
 						*ppcr = NULL;
+						if (bStatic)
+						{
+							m_iAdjustOffset = iAdjust;
+							return false;
+						}
 						//
 						// OK now we have to invalidate the undo stack
 						// to just before the first pcr we pulled off.
 						//
-						m_iMinUndo = m_undoPosition-iAdjust;
+						if(m_undoPosition-iAdjust > 0)
+						{
+							m_iMinUndo = m_undoPosition-iAdjust-1;
+						}
+						else
+						{
+							m_iMinUndo = 0;
+						}
 						m_iAdjustOffset = iAdjust;
+						m_iAdjustOffset++;
 						return false;
 					}
 				}
@@ -306,22 +327,32 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	return true;
 }
 
+/*!
+ * This method returns the nth element offset the undo stack.
+ * 0 returns the top element
+ * 1 returns the next element
+ * etc
+ * The result is adjusted for undo's in the presence of remote
+ * changerecords but no attempt is made to see if an undo is legal 
+ * (ie doesn't overlap with a later remote CR) or not.
+ */
 bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
 {
 	UT_sint32 iAdjust = m_iAdjustOffset;
 	iAdjust = static_cast<UT_sint32>(m_undoPosition) - m_iAdjustOffset;
-	UT_sint32 iAdjIdx = static_cast<UT_sint32>(undoNdx) - undoNdx;
-	if (iAdjust <= static_cast<UT_sint32>(iAdjIdx))
-		return false;
-	if (static_cast<UT_sint32>(iAdjIdx) <= m_iMinUndo)
+	UT_sint32 iAdjIdx = static_cast<UT_sint32>(undoNdx);
+	if (static_cast<UT_sint32>(static_cast<UT_sint32>(m_undoPosition) - iAdjust - iAdjIdx -1) <= static_cast<UT_sint32>(m_iMinUndo))
 		return false;
 	
-	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(iAdjust-iAdjIdx-1);
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition - iAdjust-iAdjIdx-1);
 	UT_return_val_if_fail(pcr, false);
 	
 	*ppcr = pcr;
 	return true;
 }
+
+
+#if 1
 
 bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 {
@@ -410,6 +441,168 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	*ppcr = NULL;
 	return false;
 }
+
+#else
+
+
+bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
+{
+	if ((m_iAdjustOffset == 0) && (m_undoPosition >= static_cast<UT_sint32>(m_vecChangeRecords.getItemCount())))
+		return false;
+	
+	if (m_bOverlap)
+		return false;
+	
+	UT_sint32 iRedoPos = m_undoPosition-m_iAdjustOffset;
+	if(iRedoPos <0)
+		return false;
+	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(iRedoPos);
+	UT_return_val_if_fail(pcr, false);
+
+	// leave records from external documents in place so we can correct
+
+	bool bIncrementAdjust = false;
+
+	// Look for overlap between an collection of GLOB'd redo's and
+	// CR's from a remote document
+
+	UT_sint32 iGLOB = 0;
+	bool bGotOne = false;
+	PX_ChangeRecord * pcrFirst = NULL;
+	UT_sint32 iAdjust = m_iAdjustOffset;
+	UT_sint32 iLoop = 0;
+   	_printHistory(20);
+	while (!bGotOne)
+	{
+		if (iLoop > m_iAdjustOffset)
+		{
+			return false;
+		}
+		pcr = m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset+iLoop);
+		UT_return_val_if_fail(pcr, false); // just bail out, everything seems wrong
+
+		//
+		// Do Adjustments for blocks of remote CR's. Scan through local globs
+		// to check for remote CR's which overlap it.
+		//
+		if((iGLOB== 0) && !pcr->isFromThisDoc())
+		{
+			if(m_iAdjustOffset <= 1)
+				return false;
+			bIncrementAdjust = true;
+			m_iAdjustOffset--;
+			UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
+		}
+		else if ((iGLOB==0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) && pcr->isFromThisDoc() && !isScanningUndoGLOB() && (m_iAdjustOffset > 0))
+		{
+			iGLOB++;
+			pcrFirst = pcr;
+			iLoop++;
+			setScanningUndoGLOB(true);
+		}
+		else if((iGLOB>0) && (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker) &&  pcr->isFromThisDoc())
+		{
+			if(isScanningUndoGLOB())
+				pcr = pcrFirst;
+			bGotOne = true;
+		}
+		else if(iGLOB == 0)
+		{
+			bGotOne = true;
+			if(m_iAdjustOffset > 0)
+				bIncrementAdjust = true;
+		}
+		//
+		// we're here if we've started scanning through a glob in the local
+		// document to see if it overlaps a later remote change.
+		//
+		else
+		{
+			PT_DocPosition low, high;
+			PT_DocPosition lowWork, highWork;
+			UT_sint32 iAccumOffset = 0;
+			getCRRange(pcr, low, high);
+			for (UT_sint32 i = 0; i<m_iAdjustOffset-1;i++)
+			{
+				PX_ChangeRecord *pcrTmp = m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
+				if (!pcrTmp->isFromThisDoc())
+				{
+					UT_sint32 iCur = getDoc()->getAdjustmentForCR(pcrTmp);
+					if(pcrTmp->getPosition() <= lowWork+iCur)
+					{
+						iAccumOffset += iCur;
+					}
+					lowWork = low + iAccumOffset;
+					highWork = high + iAccumOffset;
+					if (doesOverlap(pcrTmp,lowWork,highWork))
+					{
+						*ppcr = NULL;
+						//
+						// OK now we have to invalidate the redo stack
+						// to just before the first pcr we pulled off.
+						//
+						m_iAdjustOffset = iAdjust;
+						__invalidateRedo(this);
+						m_iAdjustOffset += 1; // for didRedo
+						return false;
+					}
+				}
+			}
+			
+			iLoop++;
+		}
+	}
+
+	if (pcr && bIncrementAdjust)
+	{
+	    PX_ChangeRecord * pcrOrig = pcr;
+	    pcr->setAdjustment(0);
+	    PT_DocPosition low,high;
+	    getCRRange(pcr,low,high);
+	    PT_DocPosition pos = pcr->getPosition();
+	    UT_sint32 iAdj = 0;
+	    for (UT_sint32 i = m_iAdjustOffset; i >= 1;i--)
+	    {
+			pcr = m_vecChangeRecords.getNthItem(m_undoPosition-i);
+			if (!pcr->isFromThisDoc())
+			{
+				UT_sint32 iCur = getDoc()->getAdjustmentForCR(pcr);
+			    if (pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj + iCur))
+			    {
+					iAdj += iCur; 
+					low += iCur;
+					high += iCur;
+			    }
+			    m_bOverlap = doesOverlap(pcr,low,high);
+			    if (m_bOverlap)
+			    {
+					*ppcr = NULL;
+					return false;
+			    }
+			}
+	    }
+	    pcr = pcrOrig;
+	    pcr->setAdjustment(iAdj);
+	    xxx_UT_DEBUGMSG(("Redo Adjustment set to %d \n",iAdj));
+	}
+	
+	if (pcr && pcr->isFromThisDoc())
+	{  
+	    *ppcr = pcr;
+	    if(bIncrementAdjust)
+	    {
+	        m_iAdjustOffset += 1; // for didRedo
+	        xxx_UT_DEBUGMSG(("AdjustOffset incremented -2 %d \n", m_iAdjustOffset));
+	    }
+	    return true;
+	}
+
+	*ppcr = NULL;
+	return false;
+}
+
+
+#endif
 
 bool px_ChangeHistory::didUndo(void)
 {

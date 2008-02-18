@@ -88,9 +88,9 @@ public:
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
 #endif
+	void					_invalidateRedo(void);
 
 protected:
-	void					_invalidateRedo(void);
 	void					_invalidateHistory(void);
 	void                                    _printHistory(UT_sint32 i) const;
 
