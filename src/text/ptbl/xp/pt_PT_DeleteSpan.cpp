@@ -657,8 +657,6 @@ bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const
 	// see if this record can be coalesced with the most recent undo record.
 
 	UT_return_val_if_fail (pcrSpan->getType() == PX_ChangeRecord::PXT_DeleteSpan, false);
-	if(!pcrSpan->isFromThisDoc())
-	  return false;
 	PX_ChangeRecord * pcrUndo;
 	if (!m_history.getUndo(&pcrUndo,true))
 		return false;
