@@ -990,6 +990,19 @@ public:
 		{
 			case APF_ReplaceDocument:
 				UT_DEBUGMSG(("Replace document signalled\n"));
+				//
+				// Not sure what got broken for us to need this.
+				// Views should be deleted before their documents
+				// Nonetheless this fixes bug 11421  crash in sugar
+				// when changing document with a shared session.
+				//
+				//
+				if (m_pWidget->priv->m_pFrame->getCurrentView())
+				{
+					FV_View * pView = static_cast<FV_View *>(m_pWidget->priv->m_pFrame->getCurrentView());
+					m_pWidget->priv->m_pDoc = pView->getDocument();
+				}
+ 
 				break;
 			case APF_ReplaceView:
 				UT_DEBUGMSG(("Replace view signalled\n"));
