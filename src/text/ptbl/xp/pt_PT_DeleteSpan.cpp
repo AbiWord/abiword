@@ -637,7 +637,7 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 								   length,blockOffset,pft->getField());
 	UT_return_val_if_fail (pcr, false);
-
+	pcr->setDocument(m_pDocument);
 	bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 
 	bool canCoalesce = _canCoalesceDeleteSpan(pcr);
@@ -671,6 +671,8 @@ bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const
 		return false;
 	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
 		return false;
+	if((pcrUndo->isFromThisDoc() != pcrSpan->isFromThisDoc()))
+	   return false;
 
 	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
 	UT_uint32 lengthUndo = pcrUndoSpan->getLength();

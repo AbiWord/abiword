@@ -591,6 +591,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	UT_return_val_if_fail (pcr, false);
 
 	{
+	        pcr->setDocument(m_pDocument);
 		bool canCoalesce = _canCoalesceInsertSpan(pcr);
 		if (!bAddChangeRec || (canCoalesce && !m_pDocument->isCoalescingMasked()))
 		{
@@ -631,6 +632,9 @@ bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
 		return false;
 
 	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
+	if((pcrUndoSpan->isFromThisDoc() != pcrSpan->isFromThisDoc()))
+	   return false;
+
 	UT_uint32 lengthUndo = pcrUndoSpan->getLength();
 
 	if ((pcrUndo->getPosition() + lengthUndo) != pcrSpan->getPosition())
