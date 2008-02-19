@@ -4320,7 +4320,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 		bOK = _charMotion(false,1);
 		bMoved = true;
 	}
-	if(!bMoved)
+	if(!bMoved && (getPoint() != posEnd))
 	{
 		bOK = _charMotion(true,1);
 		bOK = _charMotion(false,1);
