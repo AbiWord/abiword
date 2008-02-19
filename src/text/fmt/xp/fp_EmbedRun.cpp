@@ -185,7 +185,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			  if (bFoundDescent && pszDescent != NULL && iHeight >= 0)
 			  {
 				  iDescent = UT_convertToLogicalUnits(pszDescent);
-				  if (iHeight != iAscent + iDescent && iHeight > iAscent)
+				  if (iHeight != iAscent + iDescent)
 					  iAscent = iHeight * iAscent / (iAscent + iDescent);
 			  }
 			  iDescent = (iHeight >= iAscent)? iHeight - iAscent: 0;
