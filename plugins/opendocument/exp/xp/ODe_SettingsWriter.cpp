@@ -44,8 +44,6 @@ bool ODe_SettingsWriter::writeSettings(PD_Document* pDoc, GsfOutfile* oo)
             " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
             " xmlns:config=\"urn:oasis:names:tc:opendocument:xmlns:config:1.0\""
             " xmlns:ooo=\"http://openoffice.org/2004/office\" office:version=\"1.0\">\n",
-        "<office:settings>\n",
-        "</office:settings>\n",
         "</office:document-settings>"
     };
 
