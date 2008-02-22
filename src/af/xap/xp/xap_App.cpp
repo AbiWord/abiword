@@ -310,20 +310,6 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	// init keyboard language (cannot be in the constructor as it
 	// requires the platform code already initialised
 	setKbdLanguage(_getKbdLanguage());
-	
-#if 0 
-	m_pEMC = AP_GetEditMethods();
-	UT_ASSERT(m_pEMC);
-
-	m_pBindingSet = new AP_BindingSet(m_pEMC);
-	UT_ASSERT(m_pBindingSet);
-	
-	m_pMenuActionSet = AP_CreateMenuActionSet();
-	UT_ASSERT(m_pMenuActionSet);
-
-	m_pToolbarActionSet = AP_CreateToolbarActionSet();
-	UT_ASSERT(m_pToolbarActionSet);
-#endif
 
 	// HACK: for now, this works from XAP code
 	// TODO: where should this really go?
