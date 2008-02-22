@@ -78,7 +78,7 @@ typedef void (CALLBACK* GDIPLUSSHUTDOWN) (ULONG_PTR token);
 
 /*
 
-		GDI Plus dynamic loded functions
+		GDI Plus dynamic loaded functions
 
 */
 

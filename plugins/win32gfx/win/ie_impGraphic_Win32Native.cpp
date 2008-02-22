@@ -55,7 +55,7 @@ static void _write_png( png_structp png_ptr,
 
 static void _write_flush(png_structp png_ptr) 
 {
-  // Empty Fuction. 
+  // Empty Function. 
 }
 
 //
