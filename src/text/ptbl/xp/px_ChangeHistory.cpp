@@ -247,6 +247,11 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 					}
 					lowWork = low + iAccumOffset;
 					highWork = high + iAccumOffset;
+					PT_DocPosition p1,p2;
+					getCRRange(pcrTmp,p1,p2);
+					bool bZero = (p1 == p2);
+					if(bZero)
+						lowWork++;
 					if (doesOverlap(pcrTmp,lowWork,highWork))
 					{
 						*ppcr = NULL;
@@ -294,7 +299,13 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 					low += iCurrAdj;
 					high += iCurrAdj;
 			    }
-			    if (doesOverlap(pcr,low,high))
+				PT_DocPosition p1,p2;
+				getCRRange(pcr,p1,p2);
+				bool bZero = (p1 == p2);
+				PT_DocPosition low1 = low;
+				if(bZero)
+					low1++;
+			    if (doesOverlap(pcr,low1,high))
 			    {
 					UT_DEBUGMSG(("CR Type %d adj pos %d Overlaps found with CR pos %d \n",pcrOrig->getType(),pcrOrig->getPosition()+iAdj,pcr->getPosition()));
 					UT_DEBUGMSG((" Orig Adj low %d high %d \n",low,high));
@@ -332,7 +343,6 @@ bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) co
 	UT_sint32 iAdjust = static_cast<UT_sint32>(m_undoPosition) - m_iAdjustOffset;
 	UT_sint32 iAdjIdx = static_cast<UT_sint32>(undoNdx);
 	bool bGotOne = false;
-	bool bAdjusted=  false;
 	while(!bGotOne)
 	{
 		if (static_cast<UT_sint32>(iAdjust - iAdjIdx -1) <= static_cast<UT_sint32>(m_iMinUndo))
@@ -350,6 +360,7 @@ bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) co
 			iAdjust--;
 		}
 	}
+	return false;
 }
 
 
@@ -413,7 +424,13 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 					low += iCur;
 					high += iCur;
 			    }
-			    m_bOverlap = doesOverlap(pcr,low,high);
+				PT_DocPosition p1,p2;
+				getCRRange(pcr,p1,p2);
+				bool bZero = (p1 == p2);
+				if(bZero)
+					m_bOverlap = doesOverlap(pcr,low+1,high);
+				else
+					m_bOverlap = doesOverlap(pcr,low,high);
 			    if (m_bOverlap)
 			    {
 					*ppcr = NULL;
@@ -501,10 +518,21 @@ bool px_ChangeHistory::didRedo(void)
 void px_ChangeHistory::_printHistory(UT_sint32 iPrev) const
 {
 	UT_sint32 i = 0;
-	UT_sint32 iStop = m_undoPosition-1 - iPrev;
+	UT_sint32 iStop = 0;
+	UT_sint32 iStart = 0;
+	if(iPrev>0)
+	{
+		iStop =m_undoPosition-1 - iPrev;
+		iStart = m_undoPosition-1;
+	}
+	else
+	{
+		iStart = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount()) -1;
+		iStop = iStart + iPrev;
+	}
 	if(iStop <0)
 		iStop =0;
-	for(i=m_undoPosition-1; i>= iStop;i--)
+	for(i=iStart; i>= iStop;i--)
 	{
 			PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(i);
 			if(i != (m_undoPosition-m_iAdjustOffset-1))
