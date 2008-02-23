@@ -361,20 +361,7 @@ fp_Container * fp_Line::getColumn(void)
 	{
 		return NULL;
 	}
-<<<<<<< .working
 	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
-=======
-	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
-        {
-	    fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
-	    if(pPage == NULL)
-	      return NULL;
-	    fp_Container * pCol = static_cast<fp_Container *>(pPage->getNthColumnLeader(0));
-	    return pCol;
-
-	}
-	else if(pCon->getContainerType() != FP_CONTAINER_CELL)
->>>>>>> .merge-right.r22803
 	{
 	        fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
 		if(pPage == NULL)
