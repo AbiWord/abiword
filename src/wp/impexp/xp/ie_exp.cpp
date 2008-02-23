@@ -67,7 +67,6 @@ public:
 	{
 		if (updatedFields_)
 			return;
-
 		// todo: support other platforms when possible
 		GR_Graphics * graphics = NULL;
 
