@@ -100,7 +100,8 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iYPage(0),
 	  m_iBoundingSpace(0),
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
-	  m_bIsTightWrap(false)
+	  m_bIsTightWrap(false),
+	  m_iPrefPage(-1)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -222,6 +223,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 //
 		pFrame->setWrapping(true);
 	}
+	pFrame->setPreferedPageNo(m_iPrefPage);
 }
 
 UT_sint32 fl_FrameLayout::getBoundingSpace(void) const
@@ -815,7 +817,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	const gchar * pszBoundingSpace = NULL;
 	const gchar * pszTightWrapped = NULL;
-
+	const gchar * pszPrefPage = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -1107,6 +1109,20 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iBoundingSpace = UT_convertToLogicalUnits(pszBoundingSpace);
+	}
+	//
+	// Preferred Page
+	//
+	if(!pSectionAP || !pSectionAP->getProperty("pref-page",pszPrefPage))
+	{
+		m_iPrefPage = -1;
+	}
+	else
+	{
+		if(pszPrefPage && *pszPrefPage != 0)
+			m_iPrefPage = atoi(pszPrefPage);
+		else
+			m_iPrefPage = -1;
 	}
 }
 

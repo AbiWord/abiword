@@ -814,6 +814,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 				   UT_String & sColYpos,
 				   UT_String & sPageXpos,
 				   UT_String & sPageYpos,
+				   UT_String & sPrefPage,
 				   fl_BlockLayout ** pCloseBL,
 				   fp_Page ** ppPage)
 {
@@ -973,6 +974,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
 		*ppPage = pPage;
+		UT_sint32 iPage = getView()->getLayout()->findPage(pPage);
+		UT_String_sprintf(sPrefPage,"%d",iPage);
 		return true;
 }
 
@@ -1026,15 +1029,16 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sPageYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
+		UT_String sPrefPage("");
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
 		pf_Frag_Strux * pfFrame = NULL;
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
 		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = gchar_strdup(somePropHolder); else sLeftThickness = "1px";
-		const gchar * props[38] = {"frame-type","textbox",
+		const gchar * props[40] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1045,6 +1049,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 					      "frame-col-ypos",sColYpos.c_str(),
 					      "frame-page-xpos",sPageXpos.c_str(),
 					      "frame-page-ypos",sPageYpos.c_str(),
+					   "pref-page",sPrefPage.c_str(),
 					      "background-color", "ffffff",
 						  "left-style","1",
 						  "right-style","1",
@@ -1430,9 +1435,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sColYpos("");
 		UT_String sPageXpos("");
 		UT_String sPageYpos("");
+		UT_String sPrefPage("");
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
 
 		sProp = "xpos";
 		sVal = sXpos;
@@ -1461,6 +1467,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "frame-height";
 		sVal = sHeight;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "pref-page";
+		sVal = sPrefPage;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		//
 		// Get all the blocks around the frame
@@ -1537,7 +1546,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		//
 		// Frame has gone, now find out where to put it.
 		//
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL,&pPage);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
 
 		m_pFrameLayout = NULL;
 		posAtXY = pCloseBL->getPosition();

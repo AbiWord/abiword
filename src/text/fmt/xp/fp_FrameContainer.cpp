@@ -29,6 +29,7 @@
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fl_DocLayout.h"
+#include "pd_Document.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "ut_vector.h"
@@ -179,6 +180,22 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
      }
      delete pMyFrameRec;
      return false;
+}
+
+void fp_FrameContainer::setPreferedPageNo(UT_sint32 i)
+{
+     m_iPreferedPageNo =  i;
+     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+     FL_DocLayout * pDL = pFL->getDocLayout();
+     if(pDL->isLayoutFilling())
+       return;
+     PD_Document * pDoc = pDL->getDocument();
+     UT_UTF8String sVal;
+     UT_UTF8String_sprintf(sVal,"%d",i);
+     const char ** attr = NULL;
+     const char * props[3] = {"pref-page",NULL,NULL};
+     props[1] = sVal.utf8_str();
+     pDoc->changeStruxFmtNoUndo(PTC_AddFmt,pFL->getStruxDocHandle(),attr,props);
 }
 /*!
  * This method returns the padding to be applied between a line approaching
