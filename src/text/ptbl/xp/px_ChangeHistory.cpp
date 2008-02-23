@@ -189,7 +189,6 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	bool bCorrect = false;
 	UT_sint32 iAdjust = m_iAdjustOffset;
 	UT_sint32 iLoop = 0;
-   	//_printHistory(20);
 	while (!bGotOne)
 	{
 		if ((m_undoPosition - m_iAdjustOffset -iLoop) <= m_iMinUndo)
