@@ -10,4 +10,4 @@ Package: abiword
 Section: user/office
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: AbiWord is a free word processing program similar to Microsoft® Word. It is suitable for typing papers, letters, reports, memos, and so forth.
+Description: AbiWord is a free word processing program. It is suitable for a wide variety of word processing tasks.
