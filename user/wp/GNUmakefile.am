@@ -7,6 +7,7 @@ EXTRA_DIST = \
 wpdir = $(ABIWORD_DATADIR)
 wp_DATA = \
 	readme.txt \
+	readme.abw \
 	system.profile \
 	system.profile-am-ET \
 	system.profile-ar \

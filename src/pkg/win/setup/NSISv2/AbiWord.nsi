@@ -265,6 +265,7 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 	SetOutPath $INSTDIR
 	File /oname=copying.txt "..\AbiSuite\Copying"
 	File "..\AbiSuite\readme.txt"
+	File "..\AbiSuite\readme.abw"
 
 	; Special Install of Dingbats font
 	SetOutPath $TEMP
