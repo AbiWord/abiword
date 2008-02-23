@@ -777,6 +777,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		if (m_bSuggestName)
 		{
+			xxx_UT_DEBUGMSG(("Iniitial filename is %s \n",m_szInitialPathname));
+#if 0
 			if (!g_path_is_absolute (m_szInitialPathname)) { // DAL: todo: is this correct?
 				gchar *dir = g_get_current_dir ();
 				gchar *file = m_szInitialPathname;
@@ -786,6 +788,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				g_free (dir);
 				g_free (file);
 			}
+#endif
 			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
 			{
 				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
@@ -813,7 +816,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					}
 				}
 			}
-			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
+			gtk_file_chooser_set_uri(m_FC, m_szInitialPathname);
 		}
 		else
 		{
