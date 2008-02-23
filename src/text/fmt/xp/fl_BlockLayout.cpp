@@ -2423,7 +2423,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				{
 					UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
-					if((iPrefPage > -1) && (iPrefPage > iGuessedPage) && (iPrefPage < iGuessedPage+3))
+					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
 						pPage = getDocLayout()->getNthPage(iPrefPage);
 						bPageSet = true;
