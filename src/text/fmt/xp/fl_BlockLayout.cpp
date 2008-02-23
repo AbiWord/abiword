@@ -2361,7 +2361,21 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 						}
 					}
 				}
+				UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
 				fp_Container * pCol = pLine->getColumn();
+				if(!getDocLayout()->isLayoutFilling())
+				{
+					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
+					{
+						fp_Page *pPrefPage = getDocLayout()->getNthPage(iPrefPage);
+						if(pPrefPage && (pPage != pPrefPage))
+						{
+							pPage = pPrefPage;
+							pCol = pPage->getNthColumnLeader(0);
+						}
+					}
+				}
+
 				UT_return_val_if_fail(pCol,false);
 				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
 				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
@@ -2381,37 +2395,38 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			bool bPageSet = false;
 			fp_Page * pPage = NULL;
-			if(pFrameCon && pFrameCon->getPreferedPageNo() > -1)
-			{
-				UT_sint32 iPage = pFrameCon->getPreferedPageNo();
-				pPage = getDocLayout()->getNthPage(iPage);
-				if(pPage)
-					bPageSet = true;
-			}
 			if(pFrameCon)
 			{
 				//
 				// Handle case of block spanning two pages
 				//
-				if(!bPageSet)
+
+				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
+				UT_return_val_if_fail(pLLast,false);
+				fp_Page * pPageLast = pLLast->getPage();
+				UT_return_val_if_fail(pPageLast,false);
+				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
+				UT_return_val_if_fail(pLFirst,false);
+				fp_Page * pPageFirst = pLFirst->getPage();
+				UT_return_val_if_fail(pPageFirst,false);
+				pPage = pPageLast;
+				if(pPageFirst != pPageLast)
 				{
-					fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
-					UT_return_val_if_fail(pLLast,false);
-					fp_Page * pPageLast = pLLast->getPage();
-					UT_return_val_if_fail(pPageLast,false);
-					fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
-					UT_return_val_if_fail(pLFirst,false);
-					fp_Page * pPageFirst = pLFirst->getPage();
-					UT_return_val_if_fail(pPageFirst,false);
-					pPage = pPageLast;
-					if(pPageFirst != pPageLast)
+					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+					if(idFirst < idLast)
 					{
-						UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-						UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
-						if(idFirst < idLast)
-						{
-							pPage = pPageFirst;
-						}
+						pPage = pPageFirst;
+					}
+				}
+				if(!getDocLayout()->isLayoutFilling())
+				{
+					UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
+					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
+					if((iPrefPage > -1) && (iPrefPage > iGuessedPage) && (iPrefPage < iGuessedPage+3))
+					{
+						pPage = getDocLayout()->getNthPage(iPrefPage);
+						bPageSet = true;
 					}
 				}
 				pFrameCon->setX(pFrame->getFrameXPagepos());

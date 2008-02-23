@@ -184,6 +184,8 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 
 void fp_FrameContainer::setPreferedPageNo(UT_sint32 i)
 {
+     if(m_iPreferedPageNo == i)
+       return;
      m_iPreferedPageNo =  i;
      fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
      FL_DocLayout * pDL = pFL->getDocLayout();
@@ -381,6 +383,13 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
   fl_BlockLayout * pCurBlock = NULL;
   fp_Line * pCurLine = NULL;
   fp_Container * pCurCon = NULL;
+  if(pPage->countColumnLeaders() == 0)
+  {
+      UT_sint32 iPage = getPreferedPageNo();
+      if(iPage >0)
+	setPreferedPageNo(iPage-1);
+      return;
+  }
   for(iColLeader = 0; iColLeader < pPage->countColumnLeaders(); iColLeader++)
   {
     pCol = pPage->getNthColumnLeader(iColLeader);

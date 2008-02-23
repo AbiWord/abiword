@@ -45,6 +45,8 @@
 #include "ut_string.h"
 #include "ap_Prefs.h"
 #include "fp_FootnoteContainer.h"
+#include "fp_FrameContainer.h"
+
 
 #ifdef USE_STATIC_MAP
 //initialize the static members of the class
@@ -135,7 +137,6 @@ fp_Line::~fp_Line()
 		s_pOldXs = NULL;
 		s_iOldXsSize = 0;
 	}
-	xxx_UT_DEBUGMSG(("Deleting Line %x \n",this));
 #ifdef USE_STATIC_MAP
 	if(!s_iClassInstanceCounter) //this is the last/only instance of the class Line
 	{
@@ -162,6 +163,8 @@ fp_Line::~fp_Line()
 	m_pEmbeddingLevels = 0;
 #endif
 	setScreenCleared(true);
+	xxx_UT_DEBUGMSG(("Line %x delete refCount %d \n",this,getRefCount()));
+	UT_ASSERT(getRefCount() == 0);
 }
 
 
@@ -358,7 +361,20 @@ fp_Container * fp_Line::getColumn(void)
 	{
 		return NULL;
 	}
+<<<<<<< .working
 	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+=======
+	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+        {
+	    fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
+	    if(pPage == NULL)
+	      return NULL;
+	    fp_Container * pCol = static_cast<fp_Container *>(pPage->getNthColumnLeader(0));
+	    return pCol;
+
+	}
+	else if(pCon->getContainerType() != FP_CONTAINER_CELL)
+>>>>>>> .merge-right.r22803
 	{
 	        fp_Page * pPage = static_cast<fp_FrameContainer *>(pCon)->getPage();
 		if(pPage == NULL)
@@ -615,12 +631,16 @@ void fp_Line::remove(void)
 	fp_ContainerObject * pNext = getNext();
 	if (pNext)
 	{
+	        pNext->unref();
 		pNext->setPrev(pPrev);
+		unref();
 	}
 
 	if (pPrev)
 	{
+	        pPrev->unref();
 		pPrev->setNext(pNext);
+		unref();
 	}
 	if(getContainer())
 	{

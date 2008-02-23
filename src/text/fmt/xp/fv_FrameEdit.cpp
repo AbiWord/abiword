@@ -836,13 +836,15 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		bool bDir=false;
 		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
 		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
-		fp_Run * pOrigRun = pRun;
+		fp_Run * pRunOrig = pRun;
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
 		}
 		fl_BlockLayout * pPrevBL = pBL;
-		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL) )
+		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)  || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL)
+ || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_SHADOW)
+ || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_HDRFTR))
 		{
 		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
 		     pPrevBL = pBL;
@@ -882,7 +884,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_return_val_if_fail(pBL->getFirstRun(),false);
 		UT_return_val_if_fail(pBL->getFirstRun()->getLine(),false);
 		UT_return_val_if_fail(pBL->getFirstRun()->getLine()->getColumn(),false);
-		fp_Container * pCol = pOrigRun->getLine()->getColumn();
+		fp_Container * pCol = pRunOrig->getLine()->getColumn();
 		UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
 //
 // Find the screen coords of pCol and substract then from x,y
