@@ -319,27 +319,37 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 
 
 /*!
- * This method returns the nth element offset the undo stack.
+ * This method returns the nth element off the undo stack.
  * 0 returns the top element
  * 1 returns the next element
  * etc
- * The result is adjusted for undo's in the presence of remote
- * changerecords but no attempt is made to see if an undo is legal 
+ * The result is not adjusted for undo's in the presence of remote
+ * changerecords and no attempt is made to see if an undo is legal 
  * (ie doesn't overlap with a later remote CR) or not.
  */
 bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
 {
-	UT_sint32 iAdjust = m_iAdjustOffset;
-	iAdjust = static_cast<UT_sint32>(m_undoPosition) - m_iAdjustOffset;
+	UT_sint32 iAdjust = static_cast<UT_sint32>(m_undoPosition) - m_iAdjustOffset;
 	UT_sint32 iAdjIdx = static_cast<UT_sint32>(undoNdx);
-	if (static_cast<UT_sint32>(static_cast<UT_sint32>(m_undoPosition) - iAdjust - iAdjIdx -1) <= static_cast<UT_sint32>(m_iMinUndo))
-		return false;
+	bool bGotOne = false;
+	bool bAdjusted=  false;
+	while(!bGotOne)
+	{
+		if (static_cast<UT_sint32>(iAdjust - iAdjIdx -1) <= static_cast<UT_sint32>(m_iMinUndo))
+			return false;
 	
-	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition - iAdjust-iAdjIdx-1);
-	UT_return_val_if_fail(pcr, false);
-	
-	*ppcr = pcr;
-	return true;
+		PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(iAdjust-iAdjIdx-1);
+		UT_return_val_if_fail(pcr, false);
+		if(pcr->isFromThisDoc())
+		{
+			*ppcr = pcr;
+			return true;
+		}
+		else
+		{
+			iAdjust--;
+		}
+	}
 }
 
 

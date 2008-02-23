@@ -351,8 +351,17 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	bool bMerged;
+	if(attributes && properties && (attributes[0] == NULL) && (properties[0] == NULL))
+	{
+	    //
+	    // Clear out all attributes/properties and set to the first index
+	    //
+	    bMerged = true;
+	    indexNewAP = 0;
+	}
+	else
+	  bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -478,7 +487,6 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (lProps && *lProps);
-	UT_return_val_if_fail (bHaveAttributes || bHaveProperties, false); // must have something to do
 
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
