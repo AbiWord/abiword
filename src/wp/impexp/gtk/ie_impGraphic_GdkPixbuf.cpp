@@ -454,7 +454,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::Initialize_PNG(void)
 	m_pPngBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
 	
 	/* Setting up the Data Writing Function */
-	png_set_write_fn(m_pPNG, static_cast<void *>(m_pPngBB), static_cast<png_rw_ptr>(_write_png), NULL);
+	png_set_write_fn(m_pPNG, static_cast<void *>(m_pPngBB), reinterpret_cast<png_rw_ptr>(_write_png), NULL);
 	
 	return UT_OK;
 }
