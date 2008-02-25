@@ -644,7 +644,6 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 
 void XAP_UnixFrameImpl::focusIMIn ()
 {
-	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_in(getIMContext());
 	gtk_im_context_reset (getIMContext());
@@ -652,7 +651,6 @@ void XAP_UnixFrameImpl::focusIMIn ()
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
-	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_out(getIMContext());
 }
@@ -670,7 +668,6 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_return_val_if_fail(pFrameImpl,FALSE);
-	xxx_UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
 
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
@@ -695,7 +692,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_return_val_if_fail(pFrameImpl,FALSE);
-	xxx_UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
+
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
@@ -1623,23 +1620,66 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
-	xxx_UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
-				 w, this));
-
 	m_imContext = gtk_im_multicontext_new();
-	gtk_im_context_set_use_preedit (m_imContext, FALSE); // show alternate preedit stuff in a separate window or somesuch
+
+	gtk_im_context_set_use_preedit (m_imContext, FALSE);
+
 	gtk_im_context_set_client_window(m_imContext, w);
+
 	g_signal_connect(G_OBJECT(m_imContext), "commit",
 					 G_CALLBACK(_imCommit_cb), this);
+	g_signal_connect (m_imContext, "preedit_start",
+					  G_CALLBACK (_imPreeditStart_cb), this);
 	g_signal_connect (m_imContext, "preedit_changed",
 					  G_CALLBACK (_imPreeditChanged_cb), this);
+	g_signal_connect (m_imContext, "preedit_end",
+					  G_CALLBACK (_imPreeditEnd_cb), this);
 	g_signal_connect (m_imContext, "retrieve_surrounding",
 					  G_CALLBACK (_imRetrieveSurrounding_cb), this);
 	g_signal_connect (m_imContext, "delete_surrounding",
 					  G_CALLBACK (_imDeleteSurrounding_cb), this);
 }
 
-void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
+void XAP_UnixFrameImpl::_imPreeditStart_cb (GtkIMContext *context,
+											gpointer data)
+{
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView =
+		static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	pImpl->m_iPreeditStart = pView->getInsPoint ();
+	pImpl->m_iPreeditLen = 0;
+
+	UT_DEBUGMSG(("@@@@ Preedit Started, pos %d\n", pView->getInsPoint ()));
+}
+
+void XAP_UnixFrameImpl::_imPreeditEnd_cb (GtkIMContext *context,
+										  gpointer data)
+{
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView =
+		static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	UT_DEBUGMSG(("@@@@ Preedit Ended\n"));
+
+	if (pImpl->m_iPreeditLen)
+		{
+			// Anything that might have been entered as part of pre-edit
+			// needs to be nuked.
+			UT_DEBUGMSG(("@@@@@ deleting preedit from %d, len %d\n",
+						 pImpl->m_iPreeditStart,
+						 pImpl->m_iPreeditLen));
+			pView->moveInsPtTo (pImpl->m_iPreeditStart);
+			pView->cmdCharDelete (true, pImpl->m_iPreeditLen);
+
+			pImpl->m_iPreeditLen = 0;
+		}
+
+	pImpl->m_iPreeditStart = 0;
+}
+
+void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context,
+											  gpointer data)
 {
 	gchar *text;
 	gint   len = 0;
@@ -1647,32 +1687,46 @@ void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context, gpointer da
 	guint  insPt;
 
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
-	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+	XAP_Frame* pFrame = pImpl->getFrame();
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView ());
+	ev_UnixKeyboard * pUnixKeyboard =
+		static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
 
-	gtk_im_context_get_preedit_string (context,
-									   &text, NULL,
-									   &pos);
+	// delete previous pre-edit, if there is one
+	if (pImpl->m_iPreeditLen)
+		{
+			UT_DEBUGMSG(("deleting preedit from %d, len %d\n",
+						 pImpl->m_iPreeditStart,
+						 pImpl->m_iPreeditLen));
+			pView->moveInsPtTo (pImpl->m_iPreeditStart);
+			pView->cmdCharDelete (true, pImpl->m_iPreeditLen);
+
+			pImpl->m_iPreeditLen = 0;
+			pImpl->m_iPreeditStart = 0;
+		}
+
+	// fetch the updated pre-edit string.
+	gtk_im_context_get_preedit_string (context, &text, NULL, &pos);
 
 	if (!text || !(len = strlen (text)))
 		return;
 
-	insPt = pView->getInsPoint ();
+	pImpl->m_iPreeditStart = pView->getInsPoint ();
+	pImpl->m_iPreeditLen   = g_utf8_strlen (text, -1);
 
-	pImpl->_imCommit (context, text);
+	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0),
+								 text, strlen(text));
 
-	pImpl->m_iPreeditStart = insPt;
-	pImpl->m_iPreeditLen = g_utf8_strlen (text, -1);
-
-	UT_DEBUGMSG(("Preedit Changed, text %s, len %d (%d), pos %d\n",
-				 text, len, pImpl->m_iPreeditLen, pos));
+	UT_DEBUGMSG(("@@@@ Preedit Changed, text %s, len %d (utf8 chars %d)\n",
+				 text, len, pImpl->m_iPreeditLen));
 }
 
-gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
+gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context,
+												   gpointer data)
 {
-	xxx_UT_DEBUGMSG(("Retrieve Surrounding\n"));
-
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
-	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+	FV_View * pView =
+		static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
 
 	PT_DocPosition begin_p, end_p, here;
 
@@ -1696,11 +1750,14 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 	return TRUE;
 }
 
-gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
+gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave,
+												 gint offset, gint n_chars,
+												 gpointer data)
 {
 	xxx_UT_DEBUGMSG(("Delete Surrounding\n"));
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
-	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+	FV_View * pView =
+		static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
 
 	PT_DocPosition insPt = pView->getInsPoint ();
 	if ((gint) insPt + offset < 0)
@@ -1713,7 +1770,8 @@ gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offse
 }
 
 // Actual keyboard commit should be done here.
-void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
+void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc,
+									 const gchar *text, gpointer data)
 {
 	XAP_UnixFrameImpl * impl = static_cast<XAP_UnixFrameImpl*>(data);
 	impl->_imCommit (imc, text);
@@ -1724,25 +1782,26 @@ void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 {
 	XAP_Frame* pFrame = getFrame();
 	FV_View * pView = static_cast<FV_View*>(getFrame()->getCurrentView ());
-	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
+	ev_UnixKeyboard * pUnixKeyboard =
+		static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
 
 	if (m_iPreeditLen)
 		{
 			/* delete previous pre-edit */
-			xxx_UT_DEBUGMSG(("deleting preedit from %d, len %d\n",
+			UT_DEBUGMSG(("deleting preedit from %d, len %d\n",
 						 m_iPreeditStart,
 						 m_iPreeditLen));
 			pView->moveInsPtTo (m_iPreeditStart);
 			pView->cmdCharDelete (true, m_iPreeditLen);
 
 			m_iPreeditLen = 0;
+			m_iPreeditStart = 0;
 		}
 
-	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0), text, strlen(text));
+	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0),
+								 text, strlen(text));
 
-	xxx_UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x, text %s, len %d\n<<<<<<<<<<<<<<<<<<\n",
-				 imc, this, text, strlen(text)));
-
+	UT_DEBUGMSG(("<<<<<<<<_imCommit: text %s, len %d\n", text, strlen(text)));
 }
 
 GtkIMContext * XAP_UnixFrameImpl::getIMContext()
