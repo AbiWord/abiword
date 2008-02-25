@@ -549,6 +549,7 @@ private:
 #endif
 
 	void	_openTextBox (PT_AttrPropIndex api);
+	void	_openPosImage (PT_AttrPropIndex api);
 	void	_closeTextBox ();
 	
 	void	_outputData (const UT_UCSChar * p, UT_uint32 length);
@@ -561,7 +562,7 @@ private:
 						 const UT_UTF8String & imagedir, const UT_UTF8String & filename);
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
-	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID);
+	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool isPositioned);
 	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
@@ -4087,6 +4088,18 @@ void s_HTML_Listener::_closeCell ()
 
 #endif /* HTML_TABLES_SUPPORTED */
 
+
+void s_HTML_Listener::_openPosImage (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	if (!bHaveProp || (pAP == 0)) return;
+	const gchar * pszDataID = NULL;
+	pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
+	_handleImage(pAP,pszDataID,true);
+
+}
+
 void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
@@ -4605,7 +4618,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 		}
 
 	// embed an <img> version of the object, as a rendering fallback
-	_handleImage (pAP, imgDataID.utf8_str());
+	_handleImage (pAP, imgDataID.utf8_str(),false);
 
 	m_utf8_1 = "object";
 	tagClose(TT_OBJECT, m_utf8_1);
@@ -4623,10 +4636,10 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	if (szDataID == 0) return;
 
-	_handleImage (pAP, szDataID);
+	_handleImage (pAP, szDataID,false);
 }
 
-void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szDataID)
+void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szDataID, bool bIsPositioned)
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
@@ -4725,10 +4738,36 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 		_writeImage (pByteBuf, imagedir, filename);
 	}
 	m_utf8_1 = "img";
-
+	if(bIsPositioned)
+	{
+			const gchar * szXPos = NULL;
+			UT_sint32 ixPos = 0;
+			if(pAP->getProperty("xpos",szXPos))
+			{
+				    ixPos= UT_convertToLogicalUnits(szXPos);
+			}
+			else if(pAP->getProperty("frame-col-xpos",szXPos))
+			{
+				    ixPos= UT_convertToLogicalUnits(szXPos);
+			}
+			else if(pAP->getProperty("frame-page-xpos",szXPos))
+			{
+				    ixPos= UT_convertToLogicalUnits(szXPos);
+			}
+			if(ixPos > UT_convertToLogicalUnits("1.0in"))
+			{
+					m_utf8_1 += " align=\"right\" ";
+			}
+			else
+			{
+					m_utf8_1 += " align=\"left\" ";
+			}
+	}
 	const gchar * szWidth  = 0;
-
-	pAP->getProperty ("width",  szWidth);
+	if(!bIsPositioned)
+		pAP->getProperty ("width",  szWidth);
+	else
+		pAP->getProperty ("frame-width",  szWidth);
 
 	double dWidth = UT_convertToInches(szWidth);
 	double total = 0;
@@ -5417,13 +5456,17 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				if (!bHaveProp || (pAP == 0)) return true;
 				const gchar * szType = 0;
 				if((pAP->getProperty ("frame-type", szType)) && szType)
-				  {
+				{
 				     if (!strcmp(szType, "textbox"))
 				     {
-					_openTextBox(pcr->getIndexAP()); // Open a new text box
-					return true;
+						 _openTextBox(pcr->getIndexAP()); // Open a new text box
+						 return true;
 				     }
-				  }
+					 if(!strcmp(szType, "image"))
+					 { 
+						 _openPosImage(pcr->getIndexAP()); // Output positioned image
+					 }
+				}
 				return true;
 			}
 		case PTX_EndFrame:
