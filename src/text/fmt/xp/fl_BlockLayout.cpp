@@ -2297,9 +2297,22 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			{
 				pFrameCon->setX(xFpos);
 				pFrameCon->setY(yFpos);
+				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
+				UT_sint32 iThisPage = getDocLayout()->findPage(pPage);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
-					pPage->insertFrameContainer(pFrameCon);
+					if((iPrefPage >= 0) && abs(iPrefPage - iThisPage) < 2)
+					{
+							fp_Page * pPrefPage = getDocLayout()->getNthPage(iPrefPage);
+							if(pPrefPage && (pPrefPage->findFrameContainer(pFrameCon) < 0))
+							{
+									pPrefPage->insertFrameContainer(pFrameCon);
+							}
+					}
+					else
+					{
+							pPage->insertFrameContainer(pFrameCon);
+					}
 				}
 			}
 		}
