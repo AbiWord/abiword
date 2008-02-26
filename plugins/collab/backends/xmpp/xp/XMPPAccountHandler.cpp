@@ -212,12 +212,18 @@ ConnectResult XMPPAccountHandler::connect()
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	
 	const std::string server = getProperty("server");
+	const std::string username = getProperty("username");
 	const std::string port = getProperty("port"); // TODO: unused atm
 	const std::string resource = getProperty("resource");
+
+	std::string jid = username + "@" + server;
 	
-	UT_DEBUGMSG(("Connecting to server: |%s|, resource: |%s|\n", server.c_str(), resource.c_str()));
+	UT_DEBUGMSG(("Connecting to server: |%s|, username: |%s|, resource: |%s|\n",
+	             server.c_str(), username.c_str(), resource.c_str()));
 	m_pConnection = lm_connection_new(server.c_str());
 	UT_return_val_if_fail(m_pConnection, CONNECT_INTERNAL_ERROR);
+
+	lm_connection_set_jid(m_pConnection, jid.c_str());
 
 	GError* error = NULL;
 	if (!lm_connection_open(m_pConnection, lm_connection_open_async_cb, this, NULL, &error)) 
