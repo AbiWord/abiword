@@ -386,8 +386,8 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 			errorCode = IE_Imp::loadFile(this, input, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
 			_syncFileTypes(false);
 
-			UT_ASSERT_HARMLESS(!getFilename());
-			_setFilename(g_strdup(szFilename));
+			if (!getFilename())
+				_setFilename(g_strdup(szFilename));
 		}
 	repairDoc();
 	
