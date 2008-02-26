@@ -1131,11 +1131,10 @@ UT_go_file_open_impl (char const *uri, GError **err)
 			return result;
 		}
 	}
-#else
+#endif
 	g_set_error (err, gsf_input_error (), 0,
 		     "Invalid or non-supported URI");
 	return NULL;
-#endif
 }
 
 /**
