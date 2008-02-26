@@ -197,6 +197,8 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod toggle_super;
     Abi_Void__Bool_EditMethod toggle_topline;
     Abi_Void__Bool_EditMethod toggle_unindent;
+    Abi_Void__Bool_EditMethod toggle_bullets;
+    Abi_Void__Bool_EditMethod toggle_numbering;
     
     Abi_Void__Bool_EditMethod view_formatting_marks;
     Abi_Void__Bool_EditMethod view_print_layout;
@@ -363,6 +365,8 @@ G_BEGIN_DECLS
   gboolean abi_widget_toggle_topline (AbiWidget * w);
   gboolean abi_widget_toggle_unindent (AbiWidget * w);
   gboolean abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue);
+  gboolean abi_widget_toggle_bullets (AbiWidget * w);
+  gboolean abi_widget_toggle_numbering (AbiWidget * w);
 
   /* cursor functions */
   gboolean abi_widget_moveto_bob (AbiWidget * w);
