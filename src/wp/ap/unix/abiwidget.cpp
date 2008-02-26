@@ -323,6 +323,8 @@ EM_VOID__BOOL(toggleSuper, toggle_super)
 EM_VOID__BOOL(toggleTopline, toggle_topline)
 EM_VOID__BOOL(toggleUline, toggle_underline)
 EM_VOID__BOOL(toggleUnIndent, toggle_unindent)
+EM_VOID__BOOL(doBullets, toggle_bullets)
+EM_VOID__BOOL(doNumbers, toggle_numbering)
 
 EM_VOID__BOOL(viewPara, view_formatting_marks)
 EM_VOID__BOOL(viewPrintLayout, view_print_layout)
@@ -2147,6 +2149,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->toggle_topline     = EM_NAME(toggleTopline);
 	abi_class->toggle_underline   = EM_NAME(toggleUline);
 	abi_class->toggle_unindent    = EM_NAME(toggleUnIndent);
+	abi_class->toggle_bullets     = EM_NAME(doBullets);
+	abi_class->toggle_numbering   = EM_NAME(doNumbers);
 	
 	abi_class->view_formatting_marks = EM_NAME(viewPara);
 	abi_class->view_print_layout     = EM_NAME(viewPrintLayout);
