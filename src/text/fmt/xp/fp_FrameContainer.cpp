@@ -194,10 +194,11 @@ void fp_FrameContainer::setPreferedPageNo(UT_sint32 i)
      PD_Document * pDoc = pDL->getDocument();
      UT_UTF8String sVal;
      UT_UTF8String_sprintf(sVal,"%d",i);
-     const char ** attr = NULL;
-     const char * props[3] = {"pref-page",NULL,NULL};
-     props[1] = sVal.utf8_str();
-     pDoc->changeStruxFmtNoUndo(PTC_AddFmt,pFL->getStruxDocHandle(),attr,props);
+     const char * attr = PT_PROPS_ATTRIBUTE_NAME;
+     UT_UTF8String sAttVal = "pref-page:";
+     sAttVal += sVal.utf8_str();
+     
+     pDoc->changeStruxAttsNoUpdate(pFL->getStruxDocHandle(),attr,sAttVal.utf8_str());
 }
 /*!
  * This method returns the padding to be applied between a line approaching

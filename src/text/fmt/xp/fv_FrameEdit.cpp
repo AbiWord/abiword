@@ -179,14 +179,13 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 		        UT_sint32 yscroll = abs(y);
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
-			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( minScroll +iExtra));
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( yscroll +iExtra));
 		}
 		else if(bScrollDown)
 		{
 		        UT_sint32 yscroll = y - pView->getWindowHeight();
 			if(yscroll < minScroll)
 			    yscroll = minScroll;
-
 			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yscroll+iExtra));
 		}
 		if(bScrollLeft)
@@ -198,6 +197,7 @@ void FV_FrameEdit::_actuallyScroll(UT_Worker * pWorker)
 			pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(x -pView->getWindowWidth()));
 		}
 		pFE->drawFrame(true);
+		iExtra = 0;
 		return;
 	}
 	else
@@ -223,13 +223,14 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 	UT_return_if_fail(pFE);
 	if(bScrollRunning)
 	{
-	    iExtra += pFE->getGraphics()->tlu(20);
+	    if(iExtra < pFE->getGraphics()->tlu(400))
+	      iExtra += pFE->getGraphics()->tlu(20);
 	    UT_DEBUGMSG(("Dropping FrameEditautoscroll !!!!!!! \n"));
 	    return;
 	}
 
 	UT_DEBUGMSG(("_autoscroll started!! \n"));
-	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	int inMode = UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	s_pScroll = UT_WorkerFactory::static_constructor (_actuallyScroll,pFE, inMode, outMode);
 
@@ -238,7 +239,7 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pScroll)->set(1);
+		static_cast<UT_Timer*>(s_pScroll)->set(200);
 	}
 	bScrollRunning = true;
 	iExtra = 0;
