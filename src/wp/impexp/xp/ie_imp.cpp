@@ -378,7 +378,7 @@ const char * IE_Imp::getMimeTypeForSuffix(const char * suffix)
 	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
 		IE_ImpSniffer *sniffer = IE_IMP_Sniffers.getNthItem(i);
 		sc = sniffer->getSuffixConfidence();
-		while (sc && sc->suffix.empty()) {
+		while (sc && !sc->suffix.empty()) {
 			if (0 == g_ascii_strcasecmp(suffix, sc->suffix.c_str())) {
 				const IE_MimeConfidence *mc = sniffer->getMimeConfidence();
 				if (mc) {
