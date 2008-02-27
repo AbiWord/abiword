@@ -143,6 +143,7 @@ void FV_VisualInlineImage::_actuallyScroll(UT_Worker * pWorker)
 		pView->_setPoint(posAtXY);
 		pVis->drawCursor(posAtXY);
 #endif
+		iExtra = 0;
 		return;
 	}
 	else
@@ -170,7 +171,8 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 	{
 	    UT_DEBUGMSG(("Dropping InlineImage autoscroll !!!!!!! \n"));
 	    FV_View * pView = pVis->m_pView;
-	    iExtra += pView->getGraphics()->tlu(20);
+	    if(iExtra < pVis->getGraphics()->tlu(600))
+	      iExtra += pVis->getGraphics()->tlu(20);
 	    return;
 	}
 
@@ -183,7 +185,7 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pScroll)->set(1);
+		static_cast<UT_Timer*>(s_pScroll)->set(100);
 	}
 	bScrollRunning = true;
 	s_pScroll->start();
