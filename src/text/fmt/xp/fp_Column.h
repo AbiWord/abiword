@@ -164,6 +164,7 @@ protected:
 	UT_sint32           _getMaxContainerHeight(void) const;
 
 	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
+	UT_sint32                   m_iRedrawHeight;
 private:
 
 	/*!
