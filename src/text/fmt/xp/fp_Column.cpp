@@ -46,6 +46,7 @@
  */
 fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) :
 	fp_Container(iType, pSectionLayout),
+	m_iRedrawHeight(-1),
 	m_iWidth(0),
 	m_iHeight(0),
 	m_iMaxHeight(0),
@@ -1102,6 +1103,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	bool bStartedDrawing = false;
 	dg_DrawArgs da = *pDA;
 	UT_uint32 count = countCons();
+	UT_sint32 iCurrHeight = 0;
 	xxx_UT_DEBUGMSG(("number of container %d \n",count));
 	for (UT_uint32 i = 0; i < count; i++)
 	{
@@ -1111,6 +1113,11 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
+		iCurrHeight = pContainer->getY() + pContainer->getHeight();
+		if((m_iRedrawHeight > 0) && (iCurrHeight >  m_iRedrawHeight))
+		{
+		    da.bDirtyRunsOnly = false;
+		}
 		xxx_UT_DEBUGMSG(("Draw container %x yoff %d\n",pContainer,da.yoff));
 		xxx_UT_DEBUGMSG(("Draw container %x xoff %d\n",pContainer,da.xoff));
 #if 0
@@ -1165,7 +1172,8 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			break;
 		}
 	}
-    _drawBoundaries(pDA);
+	m_iRedrawHeight = -1;
+	_drawBoundaries(pDA);
 }
 
 /*!
@@ -1833,6 +1841,11 @@ void fp_Column::layout(void)
 	fp_Container *pContainer = NULL;
 	fp_Container *pPrevContainer = NULL;
 	UT_sint32 i  = 0;
+	//
+	// RedrawHeight makes sure we redraw from whereever a line
+	// changes position.
+	//
+	m_iRedrawHeight = -1;
 	for (i=0; i < static_cast<UT_sint32>(countCons()) ; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
@@ -1876,6 +1889,9 @@ void fp_Column::layout(void)
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
+			if((m_iRedrawHeight == -1) && (pContainer->getY() > 0))
+			  m_iRedrawHeight = pContainer->getY();
+
 		}
 		xxx_UT_DEBUGMSG(("Layout: container %d setY %d \n",i,iY));
 //
