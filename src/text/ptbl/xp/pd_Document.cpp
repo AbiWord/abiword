@@ -128,10 +128,15 @@ PD_Document::PD_Document(XAP_App *pApp)
 
 PD_Document::~PD_Document()
 {
+	// ideally all connections would have been removed BEFORE
+	// we ever reach this destructor (for example by disconnecting
+	// listeners in the frame before deleting the document); this
+	// will do for now though
+	removeConnections();
+
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
-	removeConnections();
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
