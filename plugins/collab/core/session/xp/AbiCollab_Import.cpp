@@ -398,11 +398,11 @@ void ABI_Collab_Import::_disableUpdates(UT_GenericVector<AV_View *>& vecViews, b
 	{
 		vecViews.getNthItem(i)->setActivityMask(false);
 	}
+	m_pDoc->notifyPieceTableChangeStart();
 	
 	if (bIsGlob)
 	{
 		// lock out all updates while processing the glob
-		m_pDoc->notifyPieceTableChangeStart();
 		m_pDoc->disableListUpdates();
 		m_pDoc->setDontImmediatelyLayout(true);
 		m_pDoc->beginUserAtomicGlob();
@@ -416,10 +416,10 @@ void ABI_Collab_Import::_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bo
 		// allow updates again
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
-		m_pDoc->notifyPieceTableChangeEnd();
 		m_pDoc->setDontImmediatelyLayout(false);
 		m_pDoc->endUserAtomicGlob();
 	}
+	m_pDoc->notifyPieceTableChangeEnd();
 	
 	bool bDone = false;
 	for (UT_uint32 i = 0; i<vecViews.getItemCount(); i++)
