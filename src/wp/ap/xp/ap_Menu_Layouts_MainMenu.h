@@ -51,7 +51,7 @@ BeginLayout(Main,0)
 #if !XP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
-#ifdef XP_UNIX_TARGET_GTK
+#if defined(XP_UNIX_TARGET_GTK) || defined (WIN32)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)

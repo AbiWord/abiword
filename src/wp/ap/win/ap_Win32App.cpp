@@ -149,6 +149,7 @@ bool AP_Win32App::initialize(void)
 	bool bSuccess = true;
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
 	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+
 	UT_return_val_if_fail (bVerified, false);
 
 	// load the preferences.

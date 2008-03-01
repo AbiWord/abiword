@@ -116,7 +116,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, const char * szAppName)
 		HINSTANCE hUniscribe = LoadLibrary("usp10.dll");
 #endif
 
-		if(hUniscribe)
+		if(hUniscribe && (NULL == g_getenv("ABIWORD_DISABLE_UNISCRIBE")))
 		{
 			// register Uniscribe graphics and make it the default
 			bSuccess = pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,

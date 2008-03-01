@@ -33,6 +33,7 @@
 #	include "xap_Win32Dlg_MessageBox.h"
 #	include "xap_Win32Dlg_FileOpenSaveAs.h"
 #	include "xap_Win32Dlg_Print.h"
+#       include "xap_Win32Dlg_PrintPreview.h"
 #	include "xap_Win32Dlg_FontChooser.h"
 #	include "xap_Win32Dlg_WindowMore.h"
 #	include "xap_Win32Dlg_About.h"
@@ -97,6 +98,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_Win32Dialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,		XAP_Win32Dialog_PrintPreview)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_RECORDTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_REPLAYFROMFILE,	XAP_Win32Dialog_FileOpenSaveAs)
