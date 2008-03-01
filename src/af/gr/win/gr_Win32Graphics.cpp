@@ -109,6 +109,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_bStartPage = false;
 	m_pFont = NULL;
 	m_pFontGUI = NULL;
+	m_bIsPreview = false;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -206,6 +207,7 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, HGLOBAL hD
  	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
 	m_hDevMode = hDevMode;
+	m_bIsPreview = (hDevMode == NULL);
 }
 
 GR_Win32Graphics::~GR_Win32Graphics()
@@ -939,7 +941,15 @@ bool GR_Win32Graphics::startPrint(void)
 {
 	UT_ASSERT(m_bPrint);
 	UT_ASSERT(!m_bStartPrint);
-	m_bStartPrint = ( StartDoc(m_hdc,m_pDocInfo) > 0 );
+
+	if (!m_bIsPreview)
+	  {
+	    m_bStartPrint = ( StartDoc(m_hdc,m_pDocInfo) > 0 );
+	  }
+	else
+	  {
+	    m_bStartPrint = true;
+	  }
 
 	return m_bStartPrint;
 }
@@ -980,18 +990,22 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	const int iRet = StartPage(m_hdc);
 
-	m_bStartPage = iRet > 0;
+	if (!m_bIsPreview) {
+	  m_bStartPage = iRet > 0;
 
-	if (iRet > 0)
-	{
-		// PHYSICALOFFSETX returns offset of printable area from the left edge
-		// of the physical printer paper. The value returned is in device units.
-		// Since the current mapping mode is MM_TEXT, this code _should_ work.
-		const POINT ptNew = {
-			-GetDeviceCaps(m_hdc, PHYSICALOFFSETX),
-			-GetDeviceCaps(m_hdc, PHYSICALOFFSETY)
-		};
-		SetViewportOrgEx(m_hdc, ptNew.x, ptNew.y, 0);
+	  if (m_bStartPage) {
+	      // PHYSICALOFFSETX returns offset of printable area from the left edge
+	      // of the physical printer paper. The value returned is in device units.
+	      // Since the current mapping mode is MM_TEXT, this code _should_ work.
+	      const POINT ptNew = {
+		-GetDeviceCaps(m_hdc, PHYSICALOFFSETX),
+		-GetDeviceCaps(m_hdc, PHYSICALOFFSETY)
+	      };
+	      SetViewportOrgEx(m_hdc, ptNew.x, ptNew.y, 0);
+	    }
+	}
+	else {
+	  m_bStartPage = true;
 	}
 
 	return m_bStartPage;
@@ -999,10 +1013,14 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 bool GR_Win32Graphics::endPrint(void)
 {
-	if (m_bStartPage)
+  if (m_bStartPage) {
 		EndPage(m_hdc);
+  }
 
-	return (EndDoc(m_hdc) > 0);
+  if (!m_bIsPreview)
+    return (EndDoc(m_hdc) > 0);
+  
+  return true;
 }
 
 /**

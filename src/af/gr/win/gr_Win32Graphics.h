@@ -359,6 +359,7 @@ private:
 	
 	CACHE_PEN*				   m_pArPens;
 	int						   m_nArPenPos;
+	bool m_bIsPreview;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */
