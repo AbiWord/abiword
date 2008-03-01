@@ -3298,6 +3298,7 @@ void fl_BlockLayout::format()
 		m_iNeedsReformat = 0;
 		bJustifyStuff = true;
 	}
+
 	//
 	// Save the old height of the block. We compare to the new height after
 	// the format.
@@ -3338,6 +3339,10 @@ void fl_BlockLayout::format()
 	// set a bool in blocks with these sort of fields.
 	//
 	setUpdatableField(false);
+	//
+	// Save old line widths
+	//
+	UT_GenericVector<UT_sint32> vecOldLineWidths;
 	xxx_UT_DEBUGMSG(("formatBlock 3: pPage %x \n",pPrevP));
 	if (m_pFirstRun)
 	{
@@ -3363,8 +3368,17 @@ void fl_BlockLayout::format()
 		//
 		// Save old X position and width
 		//
+		fp_Line * pOldLine = NULL;
 		while(pRun)
 		{
+			if(pOldLine != pRun->getLine())
+			{
+				pOldLine = pRun->getLine();
+				if(pOldLine)
+				{
+					vecOldLineWidths.addItem(pOldLine->getWidth());
+				}
+			}
 			pRun->setTmpX(pRun->getX());
 			pRun->setTmpY(pRun->getY());
 			pRun->setTmpWidth(pRun->getWidth());
@@ -3436,10 +3450,33 @@ void fl_BlockLayout::format()
 		m_bListLabelCreated =true;
 	}
 	_assertRunListIntegrity();
+	if(!bJustifyStuff && m_pAlignment && (m_pAlignment->getType() != FB_ALIGNMENT_LEFT))
+	{
+		//
+		// If the width of the line changes for center or right justification
+		// we need to clear the whole line.
+		//
+		fp_Line * pLine =  static_cast<fp_Line *>(getFirstContainer());
+		UT_sint32 iCurLine = 0;
+		while(pLine && (pLine->getContainerType() == FP_CONTAINER_LINE) && (vecOldLineWidths.getItemCount() > 0))
+		{
+			UT_sint32 iOldWidth = vecOldLineWidths.getNthItem(iCurLine);
+			pLine->calculateWidthOfLine();
+			UT_DEBUGMSG(("Line %x Width old %d new %d \n",pLine,iOldWidth,pLine->getWidth()));
+			if(iOldWidth != pLine->getWidth())
+			{
+				pLine->clearScreen();
+			}
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+			iCurLine++;
+			if(iCurLine >= vecOldLineWidths.getItemCount())
+				break;
+		}
+	}
 	fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
 	if(pLastLine && pLastLine->getContainerType() == FP_CONTAINER_LINE)
 	{
-		if(	bJustifyStuff)
+		if(bJustifyStuff)
 		{
 			pLastLine->resetJustification(bJustifyStuff); // permanent reset
 			pLastLine->layout();
