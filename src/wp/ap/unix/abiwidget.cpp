@@ -1322,7 +1322,7 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 	
 	UT_Error result = w->priv->m_pDoc->saveAs(GSF_OUTPUT(sink), ieft, true, (!exp_props || *exp_props == '\0' ? NULL : exp_props));
 	if(result != UT_OK)
-		return NULL;
+		return NULL; // leaks sink??
 	gsf_output_close(GSF_OUTPUT(sink));
 	guint32 size = gsf_output_size (GSF_OUTPUT(sink));
 	const guint8* ibytes = gsf_output_memory_get_bytes (sink);
@@ -1334,7 +1334,6 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 	w->priv->m_iContentLength = size+1;
 	return szOut;
 }
-
 
 /*!
  * Extract all the content in the selection
@@ -1547,21 +1546,25 @@ abi_widget_get_font_names (AbiWidget * w)
 	return fonts_ar;
 }
 
+// TODO: there is quite a bit of overlap between abi_widget_load_file, abi_widget_load_file_from_gsf
+// and abi_widget_load_file_from_memory; we need to merge them, where load_file and
+// load_file_from_memory call into load_file_from_gsf
+
 extern "C" gboolean
-abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * extension_or_mimetype)
+abi_widget_load_file(AbiWidget * w, const gchar * pszFile, const gchar * extension_or_mimetype)
 {
 	UT_DEBUGMSG(("abi_widget_load_file() - file: %s\n", pszFile));
 	
-	UT_return_val_if_fail(abi && abi->priv, false);
+	UT_return_val_if_fail(w && w->priv, false);
 	
-	IEFileType ieft = s_abi_widget_get_file_type(abi, extension_or_mimetype, true);
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, true);
 	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
 
 	bool res = false;
-	if (abi->priv->m_bMappedToScreen)
+	if (w->priv->m_bMappedToScreen)
 	{
-		UT_return_val_if_fail(abi->priv->m_pFrame, FALSE);
-		AP_UnixFrame * pFrame = abi->priv->m_pFrame;
+		UT_return_val_if_fail(w->priv->m_pFrame, FALSE);
+		AP_UnixFrame * pFrame = w->priv->m_pFrame;
 
 		s_StartStopLoadingCursor( true, pFrame);
 		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
@@ -1570,7 +1573,7 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 		res = (pFrame->loadDocument(pszFile, ieft, true) == UT_OK);
 		
 		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-		abi->priv->m_pDoc = pView->getDocument();
+		w->priv->m_pDoc = pView->getDocument();
 		
 		s_StartStopLoadingCursor( false, pFrame);
 	}
@@ -1579,34 +1582,34 @@ abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * exten
 		UT_DEBUGMSG(("Attempting to load %s \n", pszFile));
 		// FIXME: DELETEP(abi->priv->m_pDoc);
 
-		abi->priv->m_pDoc = new PD_Document(XAP_App::getApp());
-		abi->priv->m_pDoc->readFromFile(pszFile, ieft);		
+		w->priv->m_pDoc = new PD_Document(XAP_App::getApp());
+		w->priv->m_pDoc->readFromFile(pszFile, ieft);		
 	}
 
-	if (abi->priv->m_bUnlinkFileAfterLoad)
+	if (w->priv->m_bUnlinkFileAfterLoad)
 	{
 		remove(pszFile);
-		abi->priv->m_bUnlinkFileAfterLoad = false;
+		w->priv->m_bUnlinkFileAfterLoad = false;
 	}
 
 	return res;
 }
 
 extern "C" gboolean
-abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
+abi_widget_load_file_from_gsf(AbiWidget * w, GsfInput * input)
 {
 	UT_DEBUGMSG(("abi_widget_load_file_from_gsf()\n"));
 	
-	UT_return_val_if_fail(abi && abi->priv, false);
+	UT_return_val_if_fail(w && w->priv, false);
 	UT_return_val_if_fail(input, false);
-	UT_return_val_if_fail(abi->priv->m_bMappedToScreen, false);
+	UT_return_val_if_fail(w->priv->m_bMappedToScreen, false);
 	
 	// you shouldn't load a file unless we are mapped to the screen
 	// NOTE: hopefully this restriction will be removed some day - MARCM
-	UT_return_val_if_fail(abi->priv->m_bMappedToScreen, false);
-	UT_return_val_if_fail(abi->priv->m_pFrame, FALSE);
+	UT_return_val_if_fail(w->priv->m_bMappedToScreen, false);
+	UT_return_val_if_fail(w->priv->m_pFrame, FALSE);
 
-	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) w->priv->m_pFrame;
 	
 	bool res = false;
 	s_StartStopLoadingCursor( true, pFrame);
@@ -1615,6 +1618,50 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 	s_StartStopLoadingCursor( false, pFrame);
 
 	return res;
+}
+
+
+extern "C" gboolean 
+abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimetype, const gchar * buf, gint length)
+{
+	UT_DEBUGMSG(("abi_widget_set_content()\n"));
+    
+	UT_return_val_if_fail(w && w->priv, false);
+    UT_return_val_if_fail(buf && length > 0, false);
+	
+	GsfInputMemory* source = GSF_INPUT_MEMORY(gsf_input_memory_new((guint8 *)buf, length, false));
+	UT_return_val_if_fail(source, false);
+
+	IEFileType ieft = s_abi_widget_get_file_type(w, extension_or_mimetype, true);
+	UT_DEBUGMSG(("Will use ieft %d to load file\n", ieft));
+	
+	bool res = false;
+	if (w->priv->m_bMappedToScreen)
+	{
+		UT_return_val_if_fail(w->priv->m_pFrame, FALSE);
+		AP_UnixFrame * pFrame = w->priv->m_pFrame;
+
+		s_StartStopLoadingCursor( true, pFrame);
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+
+		UT_DEBUGMSG(("Attempting to load from stream\n"));		
+		res = (pFrame->loadDocument(GSF_INPUT(source), ieft) == UT_OK);
+		
+		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+		w->priv->m_pDoc = pView->getDocument();
+		
+		s_StartStopLoadingCursor(false, pFrame);
+	}
+	else
+	{
+		UT_DEBUGMSG(("Attempting to load from stream in unmapped state\n"));
+		// FIXME: DELETEP(abi->priv->m_pDoc);
+
+		w->priv->m_pDoc = new PD_Document(XAP_App::getApp());
+		w->priv->m_pDoc->readFromFile(GSF_INPUT(source), ieft);		
+	}
+
+    return res;
 }
 
 static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)

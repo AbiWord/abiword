@@ -288,8 +288,9 @@ G_BEGIN_DECLS
   /* file handing functions */
   gboolean abi_widget_file_open (AbiWidget * w);
   gboolean abi_widget_file_save (AbiWidget * w);
-  gboolean abi_widget_load_file(AbiWidget * abi, const gchar * pszFile, const gchar * mimetype);
-  gboolean abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input);
+  gboolean abi_widget_load_file(AbiWidget * w, const gchar * pszFile, const gchar * mimetype);
+  gboolean abi_widget_load_file_from_gsf(AbiWidget * w, GsfInput * input);
+  gboolean abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimetype, const gchar * buf, gint length);
   gboolean abi_widget_save ( AbiWidget * w, const gchar * fname, const gchar * extension_or_mimetype,  const gchar * exp_props );
   gboolean abi_widget_save_immediate (AbiWidget * w);
   gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const gchar * extension_or_mimetype );
