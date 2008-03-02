@@ -436,11 +436,14 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	m_iMaxWidth = iMaxWidth;
 	xxx_UT_DEBUGMSG(("Line %x MaxWidth set %d SameY %d \n",this,iMaxWidth,isSameYAsPrevious()));
 	if(m_iMaxWidth > 9000 && isSameYAsPrevious())
-	  {
+	{
 	    UT_DEBUGMSG(("Found unlikely width set!!! \n"));
-	  }
+	}
 	m_iClearToPos = iMaxWidth;
-	m_iClearLeftOffset = getDescent();
+	m_iClearLeftOffset = getHeight()/5;
+	if(getGraphics() && (m_iClearLeftOffset < getGraphics()->tlu(3)))
+	  m_iClearLeftOffset = getGraphics()->tlu(3);
+	
 }
 
 void fp_Line::setContainer(fp_Container* pContainer)
@@ -1138,7 +1141,7 @@ void fp_Line::clearScreen(void)
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
 //			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
 			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
-			xxx_UT_DEBUGMSG(("Clear pLine %x xoffline %d width %d \n",this,xoffLine,getMaxWidth() + m_iClearLeftOffset +iExtra));
+			xxx_UT_DEBUGMSG(("Clear pLine %x clearoffset %d xoffline %d width %d \n",this,m_iClearLeftOffset,xoffLine,getMaxWidth() + m_iClearLeftOffset +iExtra));
 //
 // Sevior: I added this for robustness.
 //
