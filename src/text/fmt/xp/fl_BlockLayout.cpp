@@ -3462,7 +3462,6 @@ void fl_BlockLayout::format()
 		{
 			UT_sint32 iOldWidth = vecOldLineWidths.getNthItem(iCurLine);
 			pLine->calculateWidthOfLine();
-			UT_DEBUGMSG(("Line %x Width old %d new %d \n",pLine,iOldWidth,pLine->getWidth()));
 			if(iOldWidth != pLine->getWidth())
 			{
 				pLine->clearScreen();
