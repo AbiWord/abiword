@@ -439,10 +439,23 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	{
 	    UT_DEBUGMSG(("Found unlikely width set!!! \n"));
 	}
+	//
+	// OK set up the clearscreen parameters
+	//
 	m_iClearToPos = iMaxWidth;
+	//
+	// The problem we're trying to solve here is that some character have
+	// extensions to left of their position on a line. So if you just
+	// clear from the start of a line you leave a bit of screen dirt
+	// from character extension. To solve this we have to clear a bit to
+	// the left of the line.
+	// The code below is a heuristic to give us a first approximation for
+	// when we do not have the info we need. We recalculate later in 
+	// recalcHeight
+	//
 	m_iClearLeftOffset = getHeight()/5;
 	if(getGraphics() && (m_iClearLeftOffset < getGraphics()->tlu(3)))
-	  m_iClearLeftOffset = getGraphics()->tlu(3);
+	     m_iClearLeftOffset = getGraphics()->tlu(3);
 	
 }
 
@@ -933,6 +946,11 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 	}
+	//
+	// More accurate calculation of the amount we need to clear to the
+	// left of the line.
+	//
+	m_iClearLeftOffset = iMaxDescent;
 	UT_sint32 iOldHeight = m_iHeight;
 	UT_sint32 iOldAscent = m_iAscent;
 	UT_sint32 iOldDescent = m_iDescent;
@@ -1126,6 +1144,7 @@ void fp_Line::clearScreen(void)
 //			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
 			fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
 			UT_sint32 iExtra = getGraphics()->tlu(2);
+			xxx_UT_DEBUGMSG(("full clearscren prect %x \n",getGraphics()->getClipRect()));
 			if(getContainer() && (getContainer()->getContainerType() != FP_CONTAINER_CELL) && (getContainer()->getContainerType() != FP_CONTAINER_FRAME))
 
 			{
@@ -1265,7 +1284,6 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		if(pPrev)
 			pPrev->markAsDirty();
  
-		
 		leftClear = pRun->getDescent();
 		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
 		{
@@ -1325,7 +1343,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			}
 		}
 		if(xoff == xoffLine)
-				leftClear = pRun->getAscent()/2;
+		        leftClear = m_iClearLeftOffset;
 		if(getPage() == NULL)
 		{
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
@@ -1360,6 +1378,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
 		xxx_UT_DEBUGMSG(("Width of clear %d \n",m_iClearToPos + leftClear - xoff));
 		xxx_UT_DEBUGMSG((" m_iClearToPos %d leftClear %d xoff %d xoffline %d \n",m_iClearToPos,leftClear,xoff,xoffLine));
+		xxx_UT_DEBUGMSG(("_doclearscren prect %x \n",getGraphics()->getClipRect()));
 		// now we do the clearing
 		if(iDomDirection == UT_BIDI_LTR)
 		{
@@ -1397,7 +1416,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 		pRun->markAsDirty();
 		pRun->setCleared();
-
+		xxx_UT_DEBUGMSG(("Run %x marked Dirty \n",pRun));
 		// now we need to mark all the runs between us and the end of
 		// the line as dirty
 		if(iDomDirection == UT_BIDI_RTL)

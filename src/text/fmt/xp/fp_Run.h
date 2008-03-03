@@ -350,6 +350,10 @@ public:
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
+	bool               setMustClearScreen(void)
+	{ m_bMustClearScreen = true;}
+	bool               getMustClearScreen(void)
+	{return m_bMustClearScreen;}
 
 protected:
 	virtual bool        _deleteFollowingIfAtInsPoint() const;
@@ -490,6 +494,7 @@ private:
     bool                    m_bDrawSelection;
     PT_DocPosition          m_iSelLow;
     PT_DocPosition          m_iSelHigh;
+	bool                    m_bMustClearScreen;
 #ifdef DEBUG
 	UT_uint32               m_iFontAllocNo;
 #endif

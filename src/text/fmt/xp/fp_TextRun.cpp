@@ -1150,7 +1150,7 @@ void fp_TextRun::mergeWithNext(void)
 			// is not going to change
 		}
 	}
-
+	setMustClearScreen();
 
 	delete pNext;
 }
@@ -1420,6 +1420,13 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 //	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 iExtra = 0;
+	if(getWidth() == 0)
+	{
+		//
+		// Can't clear if the width is 0
+		//
+		return;
+	}
 	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
@@ -1516,8 +1523,8 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	}
 	Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear,
 		 getLine()->getHeight());
-	xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",
-					 leftClear,getWidth(),xoff,getLine()->getHeight()));
+	xxx_UT_DEBUGMSG(("leftClear = %d total width = %d xoff %d height %d \n",
+					 leftClear,getWidth()+leftClear+rightClear,xoff,getLine()->getHeight()));
 
 }
 const gchar * fp_TextRun::getLanguage() const

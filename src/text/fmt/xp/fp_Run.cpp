@@ -140,7 +140,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pTmpLine(NULL),
 	m_bDrawSelection(false),
 	m_iSelLow(0),
-	m_iSelHigh(0)
+	m_iSelHigh(0),
+	m_bMustClearScreen(false)
 #ifdef DEBUG
 	,m_iFontAllocNo(0)
 #endif
@@ -287,11 +288,11 @@ bool fp_Run::clearIfNeeded(void)
 {
 	// only do this on runs that have not been cleared already
 	// see bug 8154
-	if(m_bIsCleared)
+	if(m_bIsCleared &&!getMustClearScreen() )
 		return true;
 	
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
-	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
+	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()) && !getMustClearScreen() )
 	{
 		return true;
 	}
@@ -313,6 +314,12 @@ bool fp_Run::clearIfNeeded(void)
 	UT_sint32 iX = getX();
 	UT_sint32 iY = getY();
 	_setWidth(getTmpWidth());
+	//
+	// Special case of merging the first char into the first run of
+	// block
+	//
+	if(getMustClearScreen() && (getTmpWidth() == 0) && (getX() == getTmpX()))
+		_setWidth(iWidth);
 	_setX(getTmpX());
 	_setY(getTmpY());
 	//
@@ -948,7 +955,8 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 		return;
 	}
     m_bRecalcWidth |= bRefresh;
-	clearScreen();
+	if(getWidth() > 0)
+		clearScreen();
 	//	UT_ASSERT((getType() == FPRUN_FMTMARK) ||  (iLen > 0));
 	m_iLen = iLen;
 
@@ -988,11 +996,12 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		return;
 	}
 	markAsDirty();
-	if (m_bIsCleared)
+	if (m_bIsCleared && !getMustClearScreen())
 	{
 		// no need to clear if we've already done so.
 		return;
 	}
+	m_bMustClearScreen = false;
 
 	if (!getLine())
 	{
