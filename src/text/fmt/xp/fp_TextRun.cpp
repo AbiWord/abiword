@@ -1479,12 +1479,13 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	fp_Line * thisLine = getLine();
 	fp_Run * pPrev = getPrevRun();
 	fp_Run * pNext = getNextRun();
-	UT_sint32 leftClear = getAscent()/2;
+	//	UT_sint32 leftClear = getAscent()/2;
+   	UT_sint32 leftClear = getDescent();
 	if(isSelectionDraw())
 	{
 		leftClear = 0;
 	}
-	UT_sint32 rightClear = getAscent()/2 + iExtra;
+	UT_sint32 rightClear = getDescent() + iExtra;
 
 	UT_sint32 iCumWidth = leftClear;
 	if(thisLine != NULL)
@@ -2159,7 +2160,7 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	
 	if(!getLength())
 		return;
-	return;
+	//	return;
 	// have to set font (and colour!), since we were called from a run
 	// using different font
 	GR_Graphics * pG = getGraphics();

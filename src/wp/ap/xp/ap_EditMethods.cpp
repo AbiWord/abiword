@@ -1299,7 +1299,7 @@ public:
 		m_pView (pView),
 		m_pData(pData),
 		m_pExe(exe)
-		{};
+	{ UT_DEBUGMSG(("_Freq created %x ",this));};
 	AV_View * m_pView;
 	EV_EditMethodCallData * m_pData;
 	void(* m_pExe)(AV_View * ,EV_EditMethodCallData *) ;
@@ -1323,6 +1323,7 @@ static bool s_EditMethods_check_frame(void)
 	}
 	if(s_pFrequentRepeat != NULL)
 	{
+		UT_DEBUGMSG(("Dropping frequent event!!!! \n"));
 		return true;
 	}
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -1386,17 +1387,24 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 		return;
 	
 	bRunning = true;
-	
-	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
-	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
 //
 // Once run then delete, stop and set to NULL
 //
+	
+	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
+	UT_DEBUGMSG((" _sFrequentRepeat: pWorker %x pFeq %x \n",pWorker,pFreq));
+	s_pFrequentRepeat->stop();
+	UT_Worker * pTmp =  s_pFrequentRepeat;
+	//
+	// Set s_pFrequentRepeat to NULL before we execute the method
+	// so that the call itself doesn't generate a new event to process
+	//
+	s_pFrequentRepeat = NULL;
+
+	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
 	DELETEP(pFreq->m_pData);
 	delete pFreq;
-	s_pFrequentRepeat->stop();
-	delete s_pFrequentRepeat;
-	s_pFrequentRepeat = NULL;
+	delete pTmp;
 
 	
 	bRunning = false;
@@ -14498,10 +14506,17 @@ static void sActualDragInlineImage(AV_View *  pAV_View, EV_EditMethodCallData * 
 	UT_return_if_fail(pView);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
+	//
+	// This boolean is true if we had to drop aa release event because
+	// a drag was pending so instead of doing a dragInlineImage we now
+	// do the release inline image and return.
+	//
 	if(sReleaseInlineImage)
 	{
+		UT_DEBUGMSG(("Nested Release InlineImage call \n"));
 		sReleaseInlineImage = false;
 		pView->releaseInlineImage(x,y);
+		return;
 	}
 	pView->dragInlineImage(x,y);
 
@@ -14520,6 +14535,7 @@ Defun(dragInlineImage)
 //
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	//int inMode = UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
@@ -14545,6 +14561,13 @@ Defun(dragInlineImage)
 Defun(releaseInlineImage)
 {
 	sReleaseInlineImage = true;
+	//
+	// If this release event occurs while the current image is had a drag
+	// event pending process then we can up with a duplicated image.
+	// The CHECK_FRAME below will return true if there is a pending
+	// drag being processed. The flag above will be set true to handle
+	// this case.
+	//
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Release Inline Image \n"));
@@ -14595,6 +14618,7 @@ static void sActualDragFrame(AV_View *  pAV_View, EV_EditMethodCallData * pCallD
 	{
 		sReleaseFrame = false;
 		pView->releaseFrame(x,y);
+		return;
 	}
 	pView->dragFrame(x,y);
 
@@ -14604,7 +14628,7 @@ Defun(dragFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	xxx_UT_DEBUGMSG(("Drag Frame \n"));
+	UT_DEBUGMSG(("Doing Drag Frame \n"));
 //
 // Do this operation in an idle loop so when can reject queued events
 //
@@ -14613,6 +14637,7 @@ Defun(dragFrame)
 //
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	//int inMode = UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
@@ -14628,7 +14653,8 @@ Defun(dragFrame)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		UT_DEBUGMSG(("Set timer to 50 ms \n"));
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -14856,6 +14882,8 @@ Defun(dragVisualText)
 // This code sets things up to handle the warp right in an idle loop.
 //
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	//int inMode = UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
