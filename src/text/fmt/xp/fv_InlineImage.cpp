@@ -838,7 +838,7 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 		if( bX && bY)
 		{
 			setDragWhat( FV_DragWhole );
-			UT_DEBUGMSG(("!!!!!Dragging Whole Image \n"));
+			xxx_UT_DEBUGMSG(("!!!!!Dragging Whole Image \n"));
 		}
 		else
 		{
