@@ -1287,7 +1287,8 @@ s_abi_widget_get_file_type(AbiWidget * w, const char * extension_or_mimetype, co
 	{
 		if (w->priv->m_pDoc)
 		{
-			ieft = w->priv->m_pDoc->getLastOpenedType();
+			ieft = bImport ? w->priv->m_pDoc->getLastOpenedType()
+				: w->priv->m_pDoc->getLastSavedAsType();
 			if (ieft == IEFT_Bogus || ieft == IEFT_Unknown)
 				ieft = bImport ? IE_Imp::fileTypeForSuffix(".abw")
 					: IE_Exp::fileTypeForSuffix(".abw");
