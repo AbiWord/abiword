@@ -2249,6 +2249,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 iFillHeight = getLine()->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
 
+	xxx_UT_DEBUGMSG(("iFillTop Tab %d YTopOfRun %d \n",iFillTop, pDA->yoff - getAscent()));
 	FV_View* pView = _getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
@@ -2329,12 +2330,19 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = 1;
 		cumWidth = 0;
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 		while (cumWidth < getWidth() && i < 151)
+		{
+			if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+			{
+				wid[i] = static_cast<UT_sint32>(wid[i]*getGraphics()->getResolutionRatio());
+			}
 			cumWidth += wid[i++];
-
+		}
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop,wid);
+		UT_sint32 iTabTop = pDA->yoff - getAscent();
+		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iTabTop,wid);
 	}
 //
 // Draw underline/overline/strikethough
