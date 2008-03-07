@@ -293,7 +293,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimetype, const gchar * buf, gint length);
   gboolean abi_widget_save ( AbiWidget * w, const gchar * fname, const gchar * extension_or_mimetype,  const gchar * exp_props );
   gboolean abi_widget_save_immediate (AbiWidget * w);
-  gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const gchar * extension_or_mimetype );
+  gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const gchar * extension_or_mimetype, const gchar *exp_props);
 
   /* paragraph modification functions */
   gboolean abi_widget_align_center (AbiWidget * w);

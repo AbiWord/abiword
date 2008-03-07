@@ -1279,10 +1279,9 @@ s_abi_widget_get_file_type(const char * extension_or_mimetype, const char * cont
 		ieft = IE_Imp::fileTypeForContents(contents, contents_len);
 	}
 
-	if (ieft == IEFT_Unknown)
+	if (ieft == IEFT_Unknown && !bImport)
 	{
-		ieft = bImport ? IE_Imp::fileTypeForSuffix(".txt")
-			: IE_Exp::fileTypeForSuffix(".abw");
+		ieft = IE_Exp::fileTypeForSuffix(".abw");
 	}
 
 	return ieft;
@@ -2517,14 +2516,14 @@ abi_widget_save ( AbiWidget * w, const char * fname, const char * extension_or_m
 }
 
 extern "C" gboolean 
-abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype )
+abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output, const char * extension_or_mimetype, const char * exp_props )
 {
 	UT_return_val_if_fail ( w != NULL, FALSE );
 	UT_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
 	UT_return_val_if_fail ( output != NULL, FALSE );
 
 	IEFileType ieft = s_abi_widget_get_file_type(extension_or_mimetype, NULL, 0, false);
-	return w->priv->m_pDoc->saveAs(output, ieft) == UT_OK ? TRUE : FALSE;
+	return w->priv->m_pDoc->saveAs(output, ieft, false, (!exp_props || *exp_props == '\0' ? NULL : exp_props)) == UT_OK ? TRUE : FALSE;
 }
 
 extern "C" gboolean 
