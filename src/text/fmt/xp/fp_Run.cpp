@@ -189,7 +189,7 @@ UT_uint32 fp_Run::getAscent() const
 	if(isHidden() == FP_VISIBLE)
 	{
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
-		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER) && (getType() != FPRUN_IMAGE) && (getType() != FPRUN_TEXT))
+		if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER) && (getType() != FPRUN_IMAGE) && (getType() != FPRUN_TEXT)&& (getType() != FPRUN_FIELD))
 		{
 			return static_cast<UT_uint32>(static_cast<double>(m_iAscent)*getGraphics()->getResolutionRatio());
 		}
