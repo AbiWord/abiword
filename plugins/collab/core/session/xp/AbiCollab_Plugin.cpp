@@ -281,7 +281,7 @@ void s_abicollab_add_menus()
 	// const XAP_StringSet * pSS = pApp->getStringSet();
     
 	// The Collaboration menu item
-	XAP_Menu_Id collabId = pFact->addNewMenuBefore("Main", NULL, AP_MENU_ID_HELP, EV_MLF_BeginSubMenu);
+	XAP_Menu_Id collabId = pFact->addNewMenuBefore("Main", NULL, AP_MENU_ID_WINDOW, EV_MLF_BeginSubMenu);
     pFact->addNewLabel(NULL, collabId, szCollaboration, szCollaborationTip);
     EV_Menu_Action* myCollaborationAction = new EV_Menu_Action (
 		collabId,    			 // id that the layout said we could use
