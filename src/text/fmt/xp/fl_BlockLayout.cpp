@@ -474,7 +474,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -532,7 +532,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
@@ -774,7 +774,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -899,7 +899,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
