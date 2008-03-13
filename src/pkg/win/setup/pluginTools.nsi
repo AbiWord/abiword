@@ -122,6 +122,7 @@ SectionEnd
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
+!ifdef 0
 Section "Equation Editor"
 	SectionIn 2
 	
@@ -169,6 +170,7 @@ Section "Equation Editor"
   
 	End:
 SectionEnd
+!endif
 
 
 SubSection /e "Collaboration Tools"
