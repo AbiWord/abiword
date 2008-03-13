@@ -146,8 +146,8 @@ static const char * szCollaborationTip = "Collaborate over the internet or local
 static const char * szCollaborationOffer = "Share Document";
 static const char * szCollaborationOfferTip = "Offer the current document for collaboration";
 
-static const char * szCollaborationJoin = "Available Documents";
-static const char * szCollaborationJoinTip = "Open a Document for collaboration";
+static const char * szCollaborationJoin = "Shared Documents";
+static const char * szCollaborationJoinTip = "Join a collaboration session";
 
 static const char * szCollaborationAccounts = "Accounts";
 static const char * szCollaborationAccountsTip = "Manage collaboration accounts";
