@@ -34,7 +34,7 @@
 
 ; N.B. This needs to include a version number or unique identifier.  
 ; More than one version of Abiword but only one Control Panel.  
-${WRSU} "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
+${WRSU} "DisplayName" "${PRODUCT} ${VERSION}"
 ${WRSU} "UninstallString" "$INSTDIR\${REG_UNINSTALL_FNAME}"
 
 
@@ -100,7 +100,7 @@ ${WRDU} "NoRemove" 0
 
 ; Comments (string) - misc info (1 line, no wrap or newlines)
 
-${WRSU} "Comments" "AbiWord is a free word processing program suitable for typing papers, letters, reports, memos, and so forth."
+${WRSU} "Comments" "AbiWord is a free word processing program suitable for a wide variety of word processing tasks."
 
 
 ; Create the Uninstaller

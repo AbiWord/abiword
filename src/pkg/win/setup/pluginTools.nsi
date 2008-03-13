@@ -239,7 +239,7 @@ SubSectionEnd
 !endif
 
 Section "Grammar Checker"
-	SectionIn 1 2
+	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGrammar.dll" 0 DoInstall
@@ -450,7 +450,7 @@ Section "Create Uninstaller for Tools Plugins"
 	; Write the uninstall keys for Windows
 	; N.B. This needs to include a version number or unique identifier.  
 	; More than one version of Abiword but only one Control Panel.  
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "DisplayName" "AbiWord's Tools Plugins (remove only)"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "DisplayName" "AbiWord Tools Plugins"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "UninstallString" '"$INSTDIR\AbiWord\plugins\UninstallAbiWordToolsPlugins.exe"'
 
 	; New Uninstaller 
