@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-11-09 05:16+0100\n"
-"PO-Revision-Date: 2007-11-25 13:56+0100\n"
+"PO-Revision-Date: 2008-02-26 10:32+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Martin Srebotnjak <miles@filmsi.net>\n"
 "MIME-Version: 1.0\n"
@@ -6629,7 +6629,7 @@ msgstr "katalonski"
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Central Aymara"
-msgstr "centralni ajmarski"
+msgstr "osrednji ajmarski"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:139
@@ -7742,7 +7742,7 @@ msgstr "pundžabski (Šamukški)"
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:623
 msgid "Quechua"
-msgstr "kečuanski"
+msgstr "kvečski"
 
 #. LANG_QUH_BO
 #: po/tmp/xap_String_Id.h.h:625
