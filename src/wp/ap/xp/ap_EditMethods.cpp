@@ -8689,7 +8689,18 @@ static bool s_doPrintPreview(FV_View * pView)
 	pDialog->runModal(pFrame);
 
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
-	UT_return_val_if_fail (pGraphics->queryProperties(GR_Graphics::DGP_PAPER), false);
+	if (!(pGraphics && pGraphics->queryProperties(GR_Graphics::DGP_PAPER)))
+		{
+			UT_ASSERT_HARMLESS(pGraphics);
+			UT_ASSERT_HARMLESS(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
+			
+			pDialogFactory->releaseDialog(pDialog);
+			
+			// Turn off wait cursor
+			pView->clearCursorWait();
+
+			return false;
+		}
 
 	/*
 	We need to re-layout the document for now, so the UnixPSGraphics class will
