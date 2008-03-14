@@ -350,7 +350,7 @@ public:
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
-	bool               setMustClearScreen(void)
+	void               setMustClearScreen(void)
 	{ m_bMustClearScreen = true;}
 	bool               getMustClearScreen(void)
 	{return m_bMustClearScreen;}
