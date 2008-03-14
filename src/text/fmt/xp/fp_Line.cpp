@@ -1649,6 +1649,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	}
 	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	pDA->yoff += m_iAscent;
+	xxx_UT_DEBUGMSG(("fp_Line::draw getAscent() %d m_iAscent %d \n",getAscent(),m_iAscent));
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 
 	for (i=0; i<count; i++)
@@ -1688,7 +1689,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 		da.yoff += pRun->getY();
 		UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
-		xxx_UT_DEBUGMSG(("Draw run in line at xoff %d \n",da.xoff));
+		xxx_UT_DEBUGMSG(("fp_Line: Draw run in line at yoff %d pRun->getY() \n",da.yoff,pRun->getY()));
 		if (pRect == NULL || pRect->intersectsRect(&runRect))
 		{
 			pRun->draw(&da);

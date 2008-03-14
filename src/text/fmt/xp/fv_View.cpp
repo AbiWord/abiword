@@ -9027,7 +9027,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
 
-		if(getViewMode() == VIEW_NORMAL)
+		if((getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB))
 		{
 			pInfo->u.c.m_xaLeftMargin = getNormalModeXOffset();
 			UT_sint32 iExtra = 72; 
@@ -9063,7 +9063,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 
-		if(getViewMode() == VIEW_NORMAL)
+		if((getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB))
 		{
 			pInfo->u.c.m_xaLeftMargin = getNormalModeXOffset();
 			UT_sint32 iExtra = 72; 
@@ -9149,7 +9149,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 			}
 
-			if(getViewMode() == VIEW_NORMAL)
+			if((getViewMode() == VIEW_NORMAL) || (getViewMode() == VIEW_WEB))
 			{
 				pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
 				pInfo->u.c.m_xaRightMargin = 0;
@@ -9254,7 +9254,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			iCum += width;
 		}
 	}
-	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME && getViewMode() != VIEW_NORMAL)
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME && (getViewMode() != VIEW_NORMAL)  && (getViewMode() != VIEW_WEB))
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);

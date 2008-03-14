@@ -1569,7 +1569,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - pG->tlu(1); // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun + pG->tlu(1); // final character dirt
 #else
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent();
+  	UT_sint32 yTopOfRun = pDA->yoff - getAscent();
+	//	UT_sint32 yTopOfRun = pDA->yoff - pG->getFontAscent(_getFont());
 	UT_sint32 yTopOfSel = yTopOfRun;
 #endif
 	xxx_UT_DEBUGMSG(("_draw Text: yoff %d \n",pDA->yoff));
@@ -1928,12 +1929,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		m_pRenderInfo->m_iLength = iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment];
 		m_pRenderInfo->m_xoff = iX;
 		m_pRenderInfo->m_yoff = yTopOfRun;
+		UT_DEBUGMSG((" _drawText yTopOfRun %d \n",yTopOfRun));
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
 #if 0 
 		//DEBUG
-		GR_Font * f = _getFont();
+		const GR_Font * f = _getFont();
 		UT_uint32 _ascent, _descent, _height;
 		
 		_ascent = pG->getFontAscent(f);
