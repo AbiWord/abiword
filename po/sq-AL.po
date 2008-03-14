@@ -1,12 +1,21 @@
+# translation of abiword.pot to Albanian
+# Copyright (C) 2002-2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Me ndihmën e çmuar të Laurent Dhimës, Alan Horkan, Keneth Jeremy Davis, Pierre Abbat,
+# Besnik Bleta <besnik@programeshqip.org>, 2002-2006.
+# për versionin head të abiword.pot-it
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2007-11-10 14:19+0200\n"
+"Project-Id-Version: sq-AL\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-06-11 02:29+0200\n"
+"PO-Revision-Date: 2008-02-28 21:21+0200\n"
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>\n"
-"Language-Team: Albanian <translation-team-sq@lists.sourceforge.net>\n"
+"Language-Team: Albanian\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #.
@@ -51,7 +60,6 @@ msgstr "Vetëpërditësim"
 #  DLG_PageSetup_Percent
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:29
-#, c-format
 msgid "% of normal size"
 msgstr "% e madhësisë normale"
 
@@ -593,8 +601,9 @@ msgstr "&Blloko skemë"
 #  MENU_LABEL_TOOLS_MAILMERGE
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:251
+#, fuzzy
 msgid "&Mail Merge"
-msgstr "&\"Mail Merge\""
+msgstr "Mail Merge"
 
 #. MENU_LABEL_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:253
@@ -714,7 +723,7 @@ msgstr "&Ngjit"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:299
 msgid "&Picture"
-msgstr "&Foto"
+msgstr "&Pamje"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:301
@@ -739,7 +748,7 @@ msgstr "&Skemë Shtypjeje"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:309
 msgid "&Purge History"
-msgstr "&Pastro Historikun"
+msgstr "&Spastro Historik"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:311
@@ -898,7 +907,7 @@ msgstr "&Tabe"
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h.h:375
 msgid "&Tabs..."
-msgstr "&Tabe..."
+msgstr "&Tabs..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:377
@@ -939,7 +948,7 @@ msgstr "&Zhbëj"
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:392
 msgid "&Units:"
-msgstr "&Njësi matse:"
+msgstr "&Njësi matëse:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
@@ -982,7 +991,7 @@ msgstr "&Numërim Fjalësh"
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:409
 msgid "&Zoom"
-msgstr "&Zmadhim"
+msgstr "&Zoom"
 
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:411
@@ -1280,7 +1289,7 @@ msgstr "Autor:"
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Auto &Save"
-msgstr "Vetë&ruaj"
+msgstr "&Vetëruaj"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:524
@@ -1340,7 +1349,7 @@ msgstr "Vetëpërditësohu"
 #. MSG_AutoMerge
 #: po/tmp/ap_String_Id.h.h:546
 msgid "Automerge"
-msgstr "Vetëpërzjej"
+msgstr "Vetëpërziej:"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:548
@@ -1350,7 +1359,7 @@ msgstr "Fusha të Mundshme"
 #. DLG_DateTime_AvailableFormats_Capital
 #: po/tmp/ap_String_Id.h.h:550
 msgid "Available Formats"
-msgstr "Formate të Mundshëm"
+msgstr "Formate të Mundshëm:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:552
@@ -1603,7 +1612,7 @@ msgid ""
 "List"
 msgstr ""
 "Ndërro Listën \n"
-"e Tanishme"
+"E Tanishme"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:656
@@ -1733,12 +1742,12 @@ msgstr "Kontrollo &gramatikën në shkrim e sipër"
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:712
 msgid "Check for &Updates"
-msgstr "Kontrollo për &Përditësim"
+msgstr "Kontrollo për &Përditësime"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:714
 msgid "Check online for newer versions of AbiWord"
-msgstr "Kontrollo online për versione më të rinj të AbiWord-it"
+msgstr "Kontrollo online për \"versione\" më të rinj të AbiWord-it"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:716
@@ -1872,7 +1881,7 @@ msgstr "Koment"
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:765
 msgid "Comment to be associated with the revision:"
-msgstr "Koment shoqërues i rishikimit:"
+msgstr "Koment shoqërues i rishikimit"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:767
@@ -1965,22 +1974,22 @@ msgstr "Kopjo Kuti Teksti"
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Copy hyperlink location"
-msgstr "Kopjo vend tejlidhjeje"
+msgstr "Kopjo vendndodhje tejlidhjeje"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:805
 msgid "Copy the Text Box to the clipboard"
-msgstr "Kopjo Kuti Teksti në të papastër"
+msgstr "Kopjo Kuti Teksti në \"clipboard\""
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr "Kopjo Kuti Teksti në të papastër e mandej hiqe"
+msgstr "Kopjo Kuti Teksti në \"clipboard\" e mandej hiqe"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Kopjo përzgjedhjen dhe hidhe në Të papastër"
+msgstr "Kopjo përzgjedhjen dhe hidhe në Clipboard"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:811
@@ -1992,7 +2001,7 @@ msgstr "S'hapa dot kartelën %s për të shkruar"
 #: po/tmp/ap_String_Id.h.h:813
 #, c-format
 msgid "Could not open file %s."
-msgstr "S'hapa dot kartelën %s."
+msgstr "S'hapa dot kartelën %s"
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:815
@@ -2004,7 +2013,7 @@ msgstr "S'shkruajta dot në kartelën %s"
 #: po/tmp/ap_String_Id.h.h:817
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "S'shkruajta dot në kartelën %s."
+msgstr "S'shkruajta dot në kartelën %s"
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:819
@@ -2148,7 +2157,7 @@ msgstr "Pri Kuti Teksti"
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:877
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Pri përzgjedhjen dhe hidhe në Të papastër"
+msgstr "Pri përzgjedhjen dhe hidhe në Clipboard"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:879
@@ -2223,7 +2232,7 @@ msgstr "Madhësia e parazgjedhur për faqen"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:908
 msgid "Default tab stops:"
-msgstr "Ndalesa tab parazgjedhje:"
+msgstr "Ndalesa tab e parazgjedhur"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:910
@@ -2501,7 +2510,7 @@ msgstr "Përpunoni Kryefaqe"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1026
 msgid "Edit Latex Equation"
-msgstr "Përpunoni Ekuacion LaTeX"
+msgstr "Përpunoni Ekuacion Latex"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1028
@@ -2526,7 +2535,7 @@ msgstr "Përpunoni Kryefaqen në faqen e çastit"
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h.h:1036
 msgid "Embedded"
-msgstr "E trupëzuar"
+msgstr "I trupëzuar"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1038
@@ -2573,7 +2582,7 @@ msgstr "Gabim gjatë përmbushjes së programthit %s"
 #: po/tmp/ap_String_Id.h.h:1054
 #, c-format
 msgid "Error importing file %s."
-msgstr "Gabim gjatë importimit të kartelës %s."
+msgstr "Gabim gjatë importimit të kartelës %s"
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:1056
@@ -2636,7 +2645,7 @@ msgstr "Panele Ekstra "
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "Extra parameters:"
-msgstr "Parametra ekstra:"
+msgstr "Parametra ekstra"
 
 #  MENU_LABEL_INSERT_FILE
 #. MENU_LABEL_INSERT_FILE
@@ -2904,7 +2913,7 @@ msgstr "Format"
 #. MENU_STATUSLINE_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1188
 msgid "Format Embedded Object"
-msgstr "Formatoni Objekt të Trupëzuar"
+msgstr "Formato Objekt të Trupëzuar"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1190
@@ -2982,7 +2991,7 @@ msgstr "Nga Kartelë"
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1219
 msgid "From LaTeX"
-msgstr "Nga LaTeX"
+msgstr "Nga LaTex"
 
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
@@ -3045,7 +3054,7 @@ msgstr "Kryefaqe"
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1246
 msgid "Header Properties"
-msgstr "Veti të Kryefaqes"
+msgstr "Veti Kryefaqeje"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h.h:1248
@@ -3065,7 +3074,7 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Kryefaqe dhe Fundfaqe mund të krijohen dhe përpunohen vetëm brenda Mënyrës Parje Shtypjeje. \n"
+"Kryefaqet dhe Fundfaqet mund të krijohen dhe përpunohen vetëm brenda Mënyrës Parje Shtypjeje. \n"
 " Për t'u futur atje, zgjidhni prej Menuje Shfaq mandej Skemë Shtypjeje. \n"
 " Doni të futeni atje tani?"
 
@@ -3272,7 +3281,7 @@ msgstr "Fut Kuti"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1337
 msgid "Insert Clipboard contents"
-msgstr "Fut përmbajtjen e Të papastrës"
+msgstr "Fut përmbajtjen e Clipboard-it"
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1339
@@ -3313,7 +3322,7 @@ msgstr "Fut Fushë Mail Merge"
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1354
 msgid "Insert MathML from a file"
-msgstr "Fut MathML prej një kartele"
+msgstr "Fut MathML prej një kartele:"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3330,12 +3339,12 @@ msgstr "Fut shenjues Unicode drejtimi te dokumenti"
 #. MENU_STATUSLINE_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1362
 msgid "Insert a Footer"
-msgstr "Fut një Fundfaqe"
+msgstr "Fut Fundfaqe"
 
 #. MENU_STATUSLINE_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1364
 msgid "Insert a Header"
-msgstr "Fut një Kryefaqe"
+msgstr "Fut Kryefaqe"
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1366
@@ -3502,7 +3511,7 @@ msgstr "Fut datën dhe/ose kohën"
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1435
 msgid "Insert unformatted clipboard contents"
-msgstr "Fut përmbajtjen e Të papastrës siç është"
+msgstr "Fut përmbajtjen e Clipboard-it siç është"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1437
@@ -3552,7 +3561,7 @@ msgstr "Lidh me &pasuesin"
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:1456
 msgid "Kevins Test"
-msgstr "Provë Kevins"
+msgstr "Kevins Test"
 
 #. FIELD_Document_Keywords
 #: po/tmp/ap_String_Id.h.h:1458
@@ -3568,7 +3577,7 @@ msgstr "Fjalëkyçe:"
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h.h:1463
 msgid "LaTeX Equation"
-msgstr "Ekuacion LaTeX"
+msgstr "Ekuacion LaTex"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1465
@@ -3605,7 +3614,7 @@ msgstr "Skemë"
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h.h:1479
 msgid "Layout Details"
-msgstr "Hollësi Skeme"
+msgstr "Hollësi Skeme:"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1481
@@ -3823,7 +3832,7 @@ msgstr "Shenjo ndryshime në shkrim e sipër"
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:1566
 msgid "Martins Test"
-msgstr "Provë Martins"
+msgstr "Martins Test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:1568
@@ -3872,7 +3881,7 @@ msgstr "Përziej më sipër"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1588
 msgid "Merge another document into the active document using revision marks"
-msgstr "Përzjej një tjetër dokument me dokumentin aktiv duke përdorur shënime rishikimesh"
+msgstr "Përziej një tjetër dokument me dokumentin aktiv duke përdorur shënime rishikimesh"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1590
@@ -4215,7 +4224,7 @@ msgstr "Ve&ti"
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1734
 msgid "P&urge revisions"
-msgstr "P&astro rishikime"
+msgstr "S&pastro rishikime"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1736
@@ -4302,7 +4311,7 @@ msgstr "Faqosje"
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:1769
 msgid "Paper Si&ze:"
-msgstr "M&adhësi Letre:"
+msgstr "M&adhësi Letre"
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h.h:1771
@@ -4355,11 +4364,10 @@ msgstr "Leje"
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h.h:1792
 msgid "Picture"
-msgstr "Foto"
+msgstr "Pamje"
 
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1794
-#, fuzzy
 msgid "Piece Table"
 msgstr "Element Tabele"
 
@@ -4502,7 +4510,7 @@ msgstr "Shtyp dokumentin"
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1854
 msgid "Print using the internal PS driver"
-msgstr "Shtyp duke përdorur driver-in e brendshëm PS"
+msgstr "Shtyp duke përdorur përudhësin e brendshëm PS"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1856
@@ -4533,12 +4541,12 @@ msgstr "Zë&vendëso"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:1866
 msgid "RTL &Document"
-msgstr "&Dokument RTL"
+msgstr "&Dokumenti RTL"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1868
 msgid "RTL &Paragraph"
-msgstr "&Paragraf RTL"
+msgstr "&Paragraf DNM"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:1870
@@ -4548,7 +4556,7 @@ msgstr "&Ndarje RTL"
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1872
 msgid "Re&place with:"
-msgstr "Zëvendëso &me:"
+msgstr "Zëvendëso &me"
 
 #. DLG_FR_ReverseFind
 #: po/tmp/ap_String_Id.h.h:1874
@@ -4626,37 +4634,37 @@ msgstr "Hiqe Rreshtin si Titull"
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1908
 msgid "Remove Row as the page Heading"
-msgstr "Hiqe Rreshtin si Titullin e faqes"
+msgstr "Hiqe Rreshtin si Titull faqeje"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1910
 msgid "Remove all revision information from the document"
-msgstr "Hiq tërë të dhëna rishikimesh prej dokumentit"
+msgstr "Hiq tërë të dhënat e rishikimeve prej dokumentit"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:1912
 msgid "Remove full document history from the document"
-msgstr "Hiq tërë historikun prej dokumentit"
+msgstr "Hiq prej dokumenti histori të plotë dokumenti"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1914
 msgid "Remove the Footer on this page from the Document"
-msgstr "Hiq Fundfaqen në këtë faqe nga Dokumenti"
+msgstr "Hiq nga Dokumenti Fundfaqen në këtë faqe"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1916
 msgid "Remove the Header on this page from the Document"
-msgstr "Hiq Kryefaqen në këtë faqe nga Dokumenti"
+msgstr "Hiq nga Dokumenti Kryefaqen në këtë faqe"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1918
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Hiqe Pamjen dhe ruaj një kopje në Të papastër"
+msgstr "Hiq Pamjen dhe ruaj një kopje te e papastra"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1920
 msgid "Remove the Image from the Document"
-msgstr "Hiqe Pamjen Dokumentit"
+msgstr "Hiq Pamjen prej Dokumentit"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1922
@@ -4671,7 +4679,7 @@ msgstr "Hiq ndryshimin e këshilluar"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1926
 msgid "Repeat Row as Heading"
-msgstr "Përsërit Rreshtin si Titull"
+msgstr "Përsërit Rreshtin si Kryefaqe"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1928
@@ -4747,12 +4755,12 @@ msgstr "Mbaj tërë ndryshimet e dokumentit"
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1957
 msgid "Revert file to last saved state?"
-msgstr "Të rikthej kartelën te gjendja para shpëtimit të fundit?"
+msgstr "Ta rikthej kartelën në gjendjen e shpëtimit të fundit?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1959
 msgid "Revert the document to the last saved state"
-msgstr "Kthe dokumentin te gjendja e fundit e shpëtuar"
+msgstr "Të rikthej dokumentin te gjendja e fundit e shpëtuar?"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1961
@@ -4879,7 +4887,7 @@ msgstr "Ruaj Si"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:2011
 msgid "Save a copy of the image on the clipboard"
-msgstr "Ruaj një kopje të pamjes në të papastër"
+msgstr "Kopjo një kopje të pamjes te e papastra"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:2013
@@ -4924,7 +4932,7 @@ msgstr "Ruaj  në një kartelë pamjen e përzgjedhur"
 #. MENU_LABEL_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2031
 msgid "Save to file"
-msgstr "Ruaj në kartelë"
+msgstr "Ruaj te kartelë"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2033
@@ -5011,7 +5019,7 @@ msgstr "Përzgjidhni Kuti Tekstesh"
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:2065
 msgid "Select a target bookmark from the list."
-msgstr "Përzgjidhni një faqerojtës nga lista."
+msgstr "Përzgjidhni një faqerojtës nga lista"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -5038,24 +5046,23 @@ msgstr "Përzgjedhje"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:2076
-#, fuzzy
 msgid "Sentence case"
 msgstr "Sentence case"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2078
 msgid "Separate table items with commas"
-msgstr "Ndaj elementë tabele me presje"
+msgstr "Ndaj objekte tabele me presje"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2080
 msgid "Separate table items with commas and tabs"
-msgstr "Ndaj elementë tabele me presje dhe tab"
+msgstr "Ndaj objekte tabele me presje dhe tabe"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2082
 msgid "Separate table items with tabs"
-msgstr "Ndaj elementë tabele me tab"
+msgstr "Ndaj objekte tabele me tabe"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2084
@@ -5065,12 +5072,12 @@ msgstr "Ndaj me presje"
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2086
 msgid "Separate with commas and tabs"
-msgstr "Ndaj me presje dhe tab"
+msgstr "Ndaj me presje dhe tabe"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2088
 msgid "Separate with tabs"
-msgstr "Ndaj me tab"
+msgstr "Ndaj me tabe"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2090
@@ -5112,7 +5119,7 @@ msgstr "Caktoni një pamje si sfond për faqen tuaj"
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:2105
 msgid "Set dominant direction of document to RTL"
-msgstr "Cakto DNM si drejtimin mbizotërues të dokumentit"
+msgstr "Cakto RTL si drejtimin mbizotërues të dokumentit"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2107
@@ -5122,7 +5129,7 @@ msgstr "Cakto DNM si drejtimin mbizotërues të paragrafit"
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:2109
 msgid "Set dominant direction of section to RTL"
-msgstr "Cakto DNM si drejtimin mbizotërues të paragrafit"
+msgstr "Cakto RTL si drejtimin mbizotërues të ndarjes"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:2111
@@ -5132,7 +5139,7 @@ msgstr "Caktoni veti për meta-data"
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h.h:2113
 msgid "Set new Tab"
-msgstr "Cakto Tab të Re"
+msgstr "Cakto Tab të Ri"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -5168,17 +5175,17 @@ msgstr "Caktoni tipet e Kryefaqeve dhe Fundfaqeve"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2128
 msgid "Set this Row as Heading"
-msgstr "Vëre këtë Rresht si Titull"
+msgstr "Vër këtë Rresht si Titull"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2130
 msgid "Set this Row as the Heading on each page"
-msgstr "Vëre këtë Rresht si Titull të çdo faqeje "
+msgstr "Vëre këtë Rresht si Titull për çdo faqe"
 
 #. MENU_STATUSLINE_FMT_SETPOSIMAGE
 #: po/tmp/ap_String_Id.h.h:2132
 msgid "Set this image to be positioned"
-msgstr "Vëre këtë pamje të pozicionohet"
+msgstr "Caktojeni këtë pamje të pozicionohet"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:2134
@@ -5188,7 +5195,7 @@ msgstr "Caktoni parapëlqime tuajat për kontroll drejtshkrimi"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:2136
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Rregulloni për dokumentin tuaj veti të faqes të tilla si madhësi faqeje dhe mënjana"
+msgstr "Rregulloni për dokumentin tuaj veti të faqes si madhësia e faqes dhe mënjanat"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:2138
@@ -5299,7 +5306,7 @@ msgstr "E thjeshtë"
 #. DLG_Options_Label_ViewSimpleTB
 #: po/tmp/ap_String_Id.h.h:2182
 msgid "Simple Toolbar"
-msgstr "Panel i Thjeshtë"
+msgstr "Panel i thjeshtë"
 
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h.h:2184
@@ -5472,22 +5479,22 @@ msgstr "Ndaj në Anën e Sipërme"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2256
 msgid "Split on all delimiters except spaces"
-msgstr "Ndaj në tërë kufizuesat hiq hapësira"
+msgstr "Ndaj te tërë përndarësit hiq hapësirat"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2258
 msgid "Split on all word delimiters including spaces"
-msgstr "Ndaj në tërë kufizuesat e fjalëve përfshi hapësira"
+msgstr "Ndaj te tërë përndarësa fjalësh përfshi hapësirat"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2260
 msgid "Split text at commas or tabs"
-msgstr "Ndaj tekst në prejse apo tabe"
+msgstr "Ndaj tekst te presje ose tabe"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2262
 msgid "Split text at spaces, commas, or tabs"
-msgstr "Ndaj tekst në hapësira, prejse apo tabe"
+msgstr "Ndaj tekst te hapësira, presje, ose tabe"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -5505,7 +5512,7 @@ msgstr "Listë Katrorë"
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2269
 msgid "St&yle"
-msgstr "St&il"
+msgstr "St&il:"
 
 #. TB_Standard
 #: po/tmp/ap_String_Id.h.h:2271
@@ -5548,7 +5555,7 @@ msgstr "Nis një rishikim të ri"
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2286
 msgid "Start ne&w revision"
-msgstr "Nis një rishikim të &ri"
+msgstr "Nis &rishikim të ri"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2288
@@ -5696,7 +5703,7 @@ msgstr "Përmbledhje"
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:2347
 msgid "Supe&rscript"
-msgstr "Sipë&rshkrim"
+msgstr "Sipë&rshkrim:"
 
 #. TOOLBAR_LABEL_FMT_SUPERSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
@@ -5781,7 +5788,7 @@ msgstr "Madhësi tabele"
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:2383
 msgid "Tabs"
-msgstr "Tab"
+msgstr "Tabs"
 
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2385
@@ -5837,7 +5844,7 @@ msgstr "Tekst dhe Figura"
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2406
 msgid "The margins selected are too large to fit on the page."
-msgstr "Mënjanat e përzgjedhura janë tepër të gjera për t'i vendosur në faqe."
+msgstr "Mënjanat e përzgjedhura janë tepër të gjera për t'u vendosur në faqe. "
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2408
@@ -5877,7 +5884,7 @@ msgstr "Ky dokument përmban rishikime të cilët për çastin janë fshehur pre
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2422
 msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Ky paragraf tregon si do të dukeshin fjalët nëÂ dokumentin tuaj. Që tëÂ parashihni tekst nga dokumenti juaj, vendosni kursorin në një paragraf me tekst dhe hapni këtë dialog."
+msgstr "Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të parashihni tekst nga dokumenti juaj, vendosni kursorin në një paragraf me tekst dhe hapni këtë dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2424
@@ -5886,7 +5893,7 @@ msgid ""
 " so it cannot be modified"
 msgstr ""
 "Ky stil nuk gjendet\n"
-"ndaj edhe s'mund tëÂ ndryshohet"
+"ndaj edhe s'mund të ndryshohet"
 
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:2426
@@ -5963,7 +5970,7 @@ msgstr "Tip"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2453
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Shtyp një emër për faqerojtësin ose përzgjidh një nga lista."
+msgstr "Shtyp një emër për faqerojtësin ose përzgjidh një nga lista"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2455
@@ -6006,14 +6013,14 @@ msgstr "Zhbëj përpunimin"
 #: po/tmp/ap_String_Id.h.h:2471
 #: po/tmp/xap_String_Id.h.h:807
 msgid "Upper Case List"
-msgstr "Listë Me tëÂ Mëdhaja"
+msgstr "Listë Me të Mëdhaja"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h.h:2473
 #: po/tmp/xap_String_Id.h.h:809
 msgid "Upper Roman List"
-msgstr "Listë Me gërma Roman tëÂ Mëdhaja"
+msgstr "Listë Me gërma Roman të Mëdhaja"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2475
@@ -6088,7 +6095,7 @@ msgstr "Shihni këtë dokument"
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2507
 msgid "View tooltips"
-msgstr "Shihni spiegime ndihmëze"
+msgstr "Shihni shpjegime ndihmëze"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2509
@@ -6161,12 +6168,12 @@ msgstr "Gabim shkrimi gjatë përpjekjes për ruajtjen e %s"
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:2536
 msgid "You have changed the default direction."
-msgstr "Keni ndryshuar drejtimin e paracaktuar."
+msgstr "Keni ndryshuar drejtimin e paracaktuar"
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:2538
 msgid "You have changed the direction mode."
-msgstr "Keni ndryshuar kahun."
+msgstr "Keni ndryshuar kahun"
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2540
@@ -6324,7 +6331,7 @@ msgstr "(test i anashkaluar)"
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Një drejtori në shtegun e treguar nuk ekziston."
+msgstr "Një drejtori në shtegun e treguar nuk ekziston"
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
@@ -6345,7 +6352,7 @@ msgstr ""
 #: po/tmp/xap_String_Id.h.h:35
 #, c-format
 msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit sepse të dhënat e versionit nuk janë të plota."
+msgstr "AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit sepse të dhënat e versionit nuk janë  të plota."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
@@ -6377,7 +6384,7 @@ msgstr "Afrikaans"
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:47
 msgid "Akan"
-msgstr "Akan"
+msgstr ""
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:49
@@ -6577,7 +6584,7 @@ msgstr "Ndërro Gjuhë kur ndërrohet tastiera"
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Chapter Heading"
-msgstr "Titull Kapitulli"
+msgstr "Fillim Kapitulli"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:143
@@ -6657,7 +6664,7 @@ msgstr "Vizatime"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Clip Art could not be loaded"
-msgstr "Vizatimet nuk u ngarkuan dot"
+msgstr "Nuk u ngarkua dot vizatimi"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:175
@@ -6717,7 +6724,7 @@ msgstr "Titull Përmbajtjesh"
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:199
 msgid "Copies: "
-msgstr "Kopje: "
+msgstr "Kopje:"
 
 #. LANG_COP_EG
 #: po/tmp/xap_String_Id.h.h:201
@@ -6818,7 +6825,7 @@ msgstr "Deklaroje si XML (version 1.0)"
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Default language: "
-msgstr "Gjuhë parazgjedhje: "
+msgstr "Gjuhë parazgjedhnje:"
 
 #  DLG_Image_Placement
 #. DLG_Image_Placement
@@ -6991,7 +6998,7 @@ msgstr "Kartelë"
 #: po/tmp/xap_String_Id.h.h:316
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Ka një kartelë të tillë. Të mbishkruaj kartelën '%s'?"
+msgstr "Ka një kartelë të tillë. Të mbishkruaj kartelën '%s'? "
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h.h:318
@@ -7001,7 +7008,7 @@ msgstr "Kartelë ku të regjistrohet përpunimi:"
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h.h:320
 msgid "File to replay editing:"
-msgstr "Kartelë ku të ripërsëritet përpunimi:"
+msgstr "Kartelë prej nga ku të ripërsëritet përpunimi:"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:322
@@ -7051,7 +7058,7 @@ msgstr "Frisiane"
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:347
 msgid "From: "
-msgstr "Nga: "
+msgstr "Nga:"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h.h:349
@@ -7181,7 +7188,7 @@ msgstr "Lartësi:"
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Height: "
-msgstr "Lartësi: "
+msgstr "Lartësi:"
 
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h.h:405
@@ -7226,7 +7233,7 @@ msgstr "Veti Pamjeje"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Image floats above text"
-msgstr "Pamja sillet pezull përsipër tekstit"
+msgstr "Pamja valëvitet sipër tekstit"
 
 #  DLG_Image_InLine
 #. DLG_Image_InLine
@@ -7262,7 +7269,7 @@ msgstr "Fut Objekt të Trupëzueshëm"
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h.h:439
 msgid "Insert Embeddable Object file:"
-msgstr "Fut Kartelë Objekti të Trupëzueshëm:"
+msgstr "Fut kartelë Objekti të Trupëzueshëm:"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:441
@@ -7287,7 +7294,7 @@ msgstr "Fut Tabelë të Re"
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:449
 msgid "Insert Picture"
-msgstr "Fut Foto"
+msgstr "Fut Pamje"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:451
@@ -7312,7 +7319,7 @@ msgstr "Inuktitut"
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Invalid pathname."
-msgstr "Emër shtegu i pavlefshëm."
+msgstr "Emër shtegu i pavlefshëm"
 
 #. LANG_GA_IE
 #: po/tmp/xap_String_Id.h.h:461
@@ -7413,7 +7420,7 @@ msgstr "Lituaneze"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h.h:502
 msgid "Loading Clip Art"
-msgstr "Po ngarkoj Vizatime"
+msgstr "Po ngarkoj Vizatim"
 
 #. LANG_MK
 #: po/tmp/xap_String_Id.h.h:508
@@ -7428,7 +7435,7 @@ msgstr "Vëre parazgjedhje për dokumenta"
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h.h:512
 msgid "Malay"
-msgstr "Malaj"
+msgstr "Malaje"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h.h:514
@@ -7468,7 +7475,7 @@ msgstr "Emër:"
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h.h:528
 msgid "Nepali (Nepal)"
-msgstr "Nepal"
+msgstr "Nepali (Nepal)"
 
 #. DLG_QNXMB_No
 #: po/tmp/xap_String_Id.h.h:530
@@ -7478,12 +7485,12 @@ msgstr "Jo"
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h.h:532
 msgid "No Picture"
-msgstr "Pa Foto"
+msgstr "Pa Pamje"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:534
 msgid "No plugin selected"
-msgstr "Pa përzjedhje shtojce"
+msgstr "Pa përzgjedhje shtojce"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:536
@@ -7508,7 +7515,7 @@ msgstr "Jo i mundshëm"
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:544
 msgid "Numbered Heading 1"
-msgstr "Fillim i Numëruar 1"
+msgstr "Fillim i numëruar 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:546
@@ -7641,7 +7648,7 @@ msgstr "Shtyp kartelën si tip:"
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:605
 msgid "Print in: "
-msgstr "Shtyp në: "
+msgstr "Shtyp në:"
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:607
@@ -7691,7 +7698,7 @@ msgstr "Marrëdhënie:"
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h.h:625
 msgid "Replay Editing from File"
-msgstr "Përsërit Përpunim prej Kartele"
+msgstr "Ripërsërit Përpunim prej Kartele"
 
 #. DLG_Restore
 #: po/tmp/xap_String_Id.h.h:627
@@ -7756,7 +7763,7 @@ msgstr "Programth:"
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h.h:651
 msgid "Section Heading"
-msgstr "Titull Seksioni"
+msgstr "Fillim Seksioni"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:655
@@ -7827,7 +7834,6 @@ msgstr "Spanjolle (Spanjë)"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:687
-#, fuzzy
 msgid "Square text wrapping"
 msgstr "Mbështjellje katrore teksti"
 
@@ -7929,16 +7935,15 @@ msgstr "Versioni më i afërt që mund të rikthehet plotësisht është %d. Don
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:737
 msgid "The print command string is not valid."
-msgstr "Vargu i urdhrit tëÂ shtypjes nuk është i vlefshëm."
+msgstr "Vargu i urdhrit të shtypjes nuk është i vlefshëm"
 
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:739
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr "Ky veprim nuk mund të zhbëhet. Jeni i sigurtë se doni të ecet përpara?"
+msgstr "Ky veprim nuk mund të zhbëhet. Jeni i sigurt se doni të vazhdohet me të?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:743
-#, fuzzy
 msgid "Tight text wrapping"
 msgstr "Mbështjellje e ngjeshur teksti"
 
@@ -7975,7 +7980,7 @@ msgstr "Turke, Windows Code Page 1254"
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:763
 msgid "Type of text wrapping"
-msgstr "Tip mbështjelljeje teksti"
+msgstr "Tip mbështjellje teksti"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:765
@@ -8091,7 +8096,7 @@ msgstr "Urdu (Pakistan)"
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:815
 msgid "Uzbek"
-msgstr "Uzbek"
+msgstr "Uzbeke"
 
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:819
@@ -8187,7 +8192,7 @@ msgstr "Gjerësi:"
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:856
 msgid "Width:  "
-msgstr "Gjerësi:  "
+msgstr "Gjerësi:"
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:858
