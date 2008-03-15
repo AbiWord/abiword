@@ -399,6 +399,7 @@ dcl(LANG_NE_NP, 							"Nepali (Nepal)")
 dcl(LANG_NN_NO, 							"Norwegian Nynorsk")
 dcl(LANG_OC_FR,								"Occitan")		// Jordi 19/10/2002
 dcl(LANG_PL_PL, 							"Polish")
+dcl(LANG_PS,								"Pashto")
 dcl(LANG_PT_BR, 							"Portuguese (Brazil)")
 dcl(LANG_PT_PT, 							"Portuguese (Portugal)")
 dcl(LANG_PA_IN,                             "Punjabi (Gurmukhi)")
