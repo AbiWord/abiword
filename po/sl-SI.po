@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord\n"
+"Project-Id-Version: AbiWord 2.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-11-09 05:16+0100\n"
-"PO-Revision-Date: 2008-02-26 10:32+0100\n"
+"POT-Creation-Date: 2008-03-12 05:17+0100\n"
+"PO-Revision-Date: 2008-03-12 15:04+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Martin Srebotnjak <miles@filmsi.net>\n"
 "MIME-Version: 1.0\n"
@@ -5957,7 +5957,7 @@ msgstr "Trije"
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
 #: po/tmp/ap_String_Id.h.h:2458
-#: po/tmp/xap_String_Id.h.h:751
+#: po/tmp/xap_String_Id.h.h:753
 msgid "Tick List"
 msgstr "Kljukice"
 
@@ -5980,7 +5980,7 @@ msgstr "Vsaka Beseda"
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
 #: po/tmp/ap_String_Id.h.h:2467
-#: po/tmp/xap_String_Id.h.h:755
+#: po/tmp/xap_String_Id.h.h:757
 msgid "Title:"
 msgstr "Naslov:"
 
@@ -6001,14 +6001,14 @@ msgstr "Zgornji rob [%s]"
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
 #: po/tmp/ap_String_Id.h.h:2476
-#: po/tmp/xap_String_Id.h.h:761
+#: po/tmp/xap_String_Id.h.h:763
 msgid "Topline"
 msgstr "Črta zgoraj"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h.h:2478
-#: po/tmp/xap_String_Id.h.h:763
+#: po/tmp/xap_String_Id.h.h:765
 msgid "Triangle List"
 msgstr "Seznam s trikotniki"
 
@@ -6042,7 +6042,7 @@ msgstr "VELIKE ČRKE"
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/ap_String_Id.h.h:2492
-#: po/tmp/xap_String_Id.h.h:783
+#: po/tmp/xap_String_Id.h.h:785
 msgid "Underline"
 msgstr "Podčrtano"
 
@@ -6066,14 +6066,14 @@ msgstr "Razveljavi urejanje"
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
 #: po/tmp/ap_String_Id.h.h:2502
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:819
 msgid "Upper Case List"
 msgstr "Seznam z velikimi črkami"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h.h:2504
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Upper Roman List"
 msgstr "Seznam z velikimi rimskimi številkami"
 
@@ -6115,7 +6115,7 @@ msgstr "Uporabniško navedeni slogi"
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
 #: po/tmp/ap_String_Id.h.h:2520
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Version"
 msgstr "Različica"
 
@@ -6250,7 +6250,7 @@ msgstr "V kolikor sprememb ne shranite, bodo izgubljene."
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
 #: po/tmp/ap_String_Id.h.h:2579
-#: po/tmp/xap_String_Id.h.h:876
+#: po/tmp/xap_String_Id.h.h:878
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -6629,7 +6629,7 @@ msgstr "katalonski"
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Central Aymara"
-msgstr "osrednji ajmarski"
+msgstr "centralni ajmarski"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:139
@@ -7742,7 +7742,7 @@ msgstr "pundžabski (Šamukški)"
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:623
 msgid "Quechua"
-msgstr "kvečski"
+msgstr "kečuanski"
 
 #. LANG_QUH_BO
 #: po/tmp/xap_String_Id.h.h:625
@@ -7995,364 +7995,369 @@ msgstr "tajski, nabor znakov Windows-874"
 msgid "The directory '%s' is write-protected."
 msgstr "Mapa '%s' je zaščitena proti pisanju."
 
-#. MSG_HistoryPartRestore2
+#. DLG_FOSA_ExtensionDoesNotMatch
 #: po/tmp/xap_String_Id.h.h:745
+msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
+msgstr "Podana končnica datoteke se ne ujema z izbrano vrsto datoteke. Želite kljub temu uporabiti to ime?"
+
+#. MSG_HistoryPartRestore2
+#: po/tmp/xap_String_Id.h.h:747
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
 msgstr "Najbližja različica, ki jo lahko v celoti obnovite, je %d. Želite obnoviti to različico? Če želite delno obnoviti različico %d, izberite Ne."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:747
+#: po/tmp/xap_String_Id.h.h:749
 msgid "The print command string is not valid."
 msgstr "Ukaz za tiskanje ni veljaven."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:749
+#: po/tmp/xap_String_Id.h.h:751
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr "Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:753
+#: po/tmp/xap_String_Id.h.h:755
 msgid "Tight text wrapping"
 msgstr "Tesno oblivanje besedila"
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:757
+#: po/tmp/xap_String_Id.h.h:759
 msgid "To continue anyway, press OK."
 msgstr "Če želite kljub temu nadaljevati, pritisnite V redu."
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:759
+#: po/tmp/xap_String_Id.h.h:761
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Če želite poskus obnovitve zaključiti, pritisnite Prekliči."
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:765
+#: po/tmp/xap_String_Id.h.h:767
 msgid "Turkish"
 msgstr "turški"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:767
+#: po/tmp/xap_String_Id.h.h:769
 msgid "Turkish, ISO-8859-9"
 msgstr "turški, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:769
+#: po/tmp/xap_String_Id.h.h:771
 msgid "Turkish, Macintosh"
 msgstr "turški, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:771
+#: po/tmp/xap_String_Id.h.h:773
 msgid "Turkish, Windows Code Page 1254"
 msgstr "turški, nabor znakov Windows-1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:773
+#: po/tmp/xap_String_Id.h.h:775
 msgid "Type of text wrapping"
 msgstr "Vrsta oblivanja besedila"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:775
+#: po/tmp/xap_String_Id.h.h:777
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:777
+#: po/tmp/xap_String_Id.h.h:779
 msgid "Ukrainian"
 msgstr "ukrajinski"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:779
+#: po/tmp/xap_String_Id.h.h:781
 msgid "Ukrainian, KOI8-U"
 msgstr "ukrajinski, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:781
+#: po/tmp/xap_String_Id.h.h:783
 msgid "Ukrainian, Macintosh"
 msgstr "ukrajinski, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:785
+#: po/tmp/xap_String_Id.h.h:787
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:787
+#: po/tmp/xap_String_Id.h.h:789
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 BE"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:789
+#: po/tmp/xap_String_Id.h.h:791
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 LE"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:791
+#: po/tmp/xap_String_Id.h.h:793
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:793
+#: po/tmp/xap_String_Id.h.h:795
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 BE"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:795
+#: po/tmp/xap_String_Id.h.h:797
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 LE"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:799
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:799
+#: po/tmp/xap_String_Id.h.h:801
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UFT-16 BE"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:803
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 LE"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:805
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:807
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 BE"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:809
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 LE"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:811
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:815
 #, c-format
 msgid "Untitled%d"
 msgstr "Neimenovano-%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Update"
 msgstr "Posodobi"
 
 #. LANG_UR
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Urdu"
 msgstr "urdujski"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Urdu (Pakistan)"
 msgstr "urdujski (Pakistan)"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:827
 msgid "Uzbek"
 msgstr "uzbeški"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Version history"
 msgstr "Zgodovina različic"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:832
+#: po/tmp/xap_String_Id.h.h:834
 msgid "Version:"
 msgstr "Različica:"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:834
+#: po/tmp/xap_String_Id.h.h:836
 msgid "Vietnamese"
 msgstr "vietnamski"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:836
+#: po/tmp/xap_String_Id.h.h:838
 msgid "Vietnamese, TCVN"
 msgstr "vietnamski, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:838
+#: po/tmp/xap_String_Id.h.h:840
 msgid "Vietnamese, VISCII"
 msgstr "vietnamski, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:840
+#: po/tmp/xap_String_Id.h.h:842
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "vietnamski, nabor znakov Windows-1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:842
+#: po/tmp/xap_String_Id.h.h:844
 msgid "View Document"
 msgstr "Pokaži dokument"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:844
+#: po/tmp/xap_String_Id.h.h:846
 msgid "View:"
 msgstr "Pogled:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:846
+#: po/tmp/xap_String_Id.h.h:848
 msgid "Welsh"
 msgstr "velški"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:848
+#: po/tmp/xap_String_Id.h.h:850
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "zahodnoevropski, nabor znakov DOS/Windows-437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:850
+#: po/tmp/xap_String_Id.h.h:852
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "zahodnoevropski, nabor znakov DOS/Windows-850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:852
+#: po/tmp/xap_String_Id.h.h:854
 msgid "Western European, HP"
 msgstr "zahodnoevropski, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:854
+#: po/tmp/xap_String_Id.h.h:856
 msgid "Western European, ISO-8859-1"
 msgstr "zahodnoevropski, ISO-8859-2"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:856
+#: po/tmp/xap_String_Id.h.h:858
 msgid "Western European, Macintosh"
 msgstr "zahodnoevropski, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:858
+#: po/tmp/xap_String_Id.h.h:860
 msgid "Western European, NeXT"
 msgstr "zahodnoevropski, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:860
+#: po/tmp/xap_String_Id.h.h:862
 msgid "Western European, Windows Code Page 1252"
 msgstr "zahodnoevropski, nabor znakov Windows-1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:862
+#: po/tmp/xap_String_Id.h.h:864
 msgid "Whole Page"
 msgstr "Celostransko"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:864
+#: po/tmp/xap_String_Id.h.h:866
 msgid "Width:"
 msgstr "Širina:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:866
+#: po/tmp/xap_String_Id.h.h:868
 msgid "Width:  "
 msgstr "Širina:  "
 
 #. LANG_WO_SN
-#: po/tmp/xap_String_Id.h.h:868
+#: po/tmp/xap_String_Id.h.h:870
 msgid "Wolof (Senegal)"
 msgstr "volofski (Senegal)"
 
 #. DLG_QNXMB_Yes
-#: po/tmp/xap_String_Id.h.h:870
+#: po/tmp/xap_String_Id.h.h:872
 msgid "Yes"
 msgstr "Da"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:872
+#: po/tmp/xap_String_Id.h.h:874
 msgid "Yiddish"
 msgstr "jidiš"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:874
+#: po/tmp/xap_String_Id.h.h:876
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr "Pred nadaljevanjem morate dokument %s shraniti. Ga želite shraniti zdaj?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:878
+#: po/tmp/xap_String_Id.h.h:880
 msgid "Zoom to"
 msgstr "Povečaj na"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:880
+#: po/tmp/xap_String_Id.h.h:882
 msgid "_No"
 msgstr "_Ne"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:882
+#: po/tmp/xap_String_Id.h.h:884
 msgid "_Yes"
 msgstr "_Da"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:884
+#: po/tmp/xap_String_Id.h.h:886
 msgid "cm"
 msgstr "cm"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:886
+#: po/tmp/xap_String_Id.h.h:888
 msgid "different"
 msgstr "različen"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:888
+#: po/tmp/xap_String_Id.h.h:890
 #, c-format
 msgid "diverging after document position %d"
 msgstr "se razlikuje od položaja %d naprej"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:890
+#: po/tmp/xap_String_Id.h.h:892
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "se razlikuje od različice %d od %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:892
+#: po/tmp/xap_String_Id.h.h:894
 msgid "identical"
 msgstr "identičen"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:894
+#: po/tmp/xap_String_Id.h.h:896
 msgid "inch"
 msgstr "palci"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:896
+#: po/tmp/xap_String_Id.h.h:898
 msgid "mm"
 msgstr "mm"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:898
+#: po/tmp/xap_String_Id.h.h:900
 msgid "pica"
 msgstr "pica"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:900
+#: po/tmp/xap_String_Id.h.h:902
 msgid "points"
 msgstr "pike"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:902
+#: po/tmp/xap_String_Id.h.h:904
 msgid "siblings"
 msgstr "soroden"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:904
+#: po/tmp/xap_String_Id.h.h:906
 msgid "unrelated"
 msgstr "nepovezan"
 
