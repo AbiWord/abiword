@@ -1510,7 +1510,7 @@ bool fp_Run::_recalcWidth(void)
 
 void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 {
-
+	UT_DEBUGMSG(("drawDecors xoff %d \n",xoff));
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
@@ -4309,7 +4309,8 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 //
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
 	                                                 //character dirt
-	drawDecors( xoff, yTopOfRun,pG);
+	UT_DEBUGMSG(("xoff infield before drawdecors %d \n",pDA->xoff));
+	drawDecors( pDA->xoff, yTopOfRun,pG);
 
 }
 
