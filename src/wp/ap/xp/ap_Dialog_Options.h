@@ -57,6 +57,8 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_BUTTON_SPELL_AUTOREPLACE,
 				   id_CHECK_GRAMMAR_CHECK,
 
+				   id_CHECK_SMART_QUOTES_ENABLE,
+
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 
 				   id_CHECK_AUTO_SAVE_FILE,
@@ -135,6 +137,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(GrammarCheck,		bool);
+	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
 #if !defined (XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
@@ -236,6 +239,7 @@ public:
 			bo_IgnoreUppercase,
 			bo_IgnoreURLs,
 			bo_CheckGrammar,
+			bo_SmartQuotes,
 			bo_LayoutMarks,
 			bo_MainDictionaryOnly,	// NOT (YET?) IMPLEMENTED
 			bo_Plugins,

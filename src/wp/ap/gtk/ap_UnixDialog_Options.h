@@ -108,6 +108,10 @@ public:
 
 	 	SET_GATHER (GrammarCheck,    bool);
 
+	// Smart Quotes
+
+	 	SET_GATHER (SmartQuotes,   bool);
+
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
 
 	SET_GATHER			(PrefsAutoSave,			bool);
@@ -189,6 +193,10 @@ public:
 		// Grammar Checking
 
 		GtkWidget *m_checkbuttonGrammarCheck;
+
+		// Smart Quotes
+
+		GtkWidget *m_checkbuttonSmartQuotes;
 
     		// Dummy
 		bool m_boolEnableSmoothScrolling;

@@ -116,6 +116,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// save the values to the Prefs classes
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoSpellCheck, _gatherSpellCheckAsType() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotes() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
@@ -282,6 +283,11 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_GRAMMAR_CHECK:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck,
 					_gatherGrammarCheck());
+			break;
+
+		case id_CHECK_SMART_QUOTES_ENABLE:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable,
+					_gatherSmartQuotes());
 			break;
 
 		case id_CHECK_SPELL_UPPERCASE:
@@ -475,6 +481,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_AutoGrammarCheck,&b))
 		_setGrammarCheck (b);
+
+	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_SmartQuotesEnable,&b))
+		_setSmartQuotes (b);
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
@@ -704,6 +713,8 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 		m_BOData[bo_CheckSpelling	].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&bValue))
 		m_BOData[bo_CheckGrammar	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( XAP_PREF_KEY_SmartQuotesEnable,						&bValue))
+		m_BOData[bo_SmartQuotes	].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&bValue))
 		m_BOData[bo_CursorBlink		].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,		&bValue))
@@ -926,6 +937,10 @@ void AP_PreferenceScheme::saveChanges()
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
 		m_pPrefsScheme->setValueBool( AP_PREF_KEY_AutoGrammarCheck,					 m_BOData[bo].m_current);
 
+	bo = bo_SmartQuotes;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( XAP_PREF_KEY_SmartQuotesEnable,					 m_BOData[bo].m_current);
+
 	bo = bo_CursorBlink;
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
 		m_pPrefsScheme->setValueBool( AP_PREF_KEY_CursorBlink,						 m_BOData[bo].m_current);
@@ -1145,6 +1160,7 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValueBool(XAP_PREF_KEY_AutoSaveFile,						&(m_BOData[bo_AutoSave			].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_AutoSpellCheck,						&(m_BOData[bo_CheckSpelling		].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&(m_BOData[bo_CheckGrammar		].m_default));
+	pScheme->getValueBool( XAP_PREF_KEY_SmartQuotesEnable,						&(m_BOData[bo_SmartQuotes		].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&(m_BOData[bo_CursorBlink		].m_default));
 	pScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,	&(m_BOData[bo_DirectionMarkers	].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_DefaultDirectionRtl,					&(m_BOData[bo_DirectionRTL		].m_default));

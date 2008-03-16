@@ -430,6 +430,25 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		localizeButtonUnderline (m_checkbuttonGrammarCheck, pSS,
 					 AP_STRING_ID_DLG_Options_Label_GrammarCheck);
 
+		// Smart Quotes
+		
+		m_checkbuttonSmartQuotes = WID ("chkSmartQuotes");
+		localizeButtonUnderline (m_checkbuttonSmartQuotes, pSS,
+					 AP_STRING_ID_DLG_Options_Label_SmartQuotes);
+					 
+/*		tmp = WID ("lblSQLangSelect");
+		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_SQLangSelect);
+
+        m_optionSQLangSelect = _getWidget("comboSQLangSelect");
+        
+        // create the drop-down menu with all of our supported page sizes
+        GList *popdown_items = NULL;
+        for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_); i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
+            popdown_items = g_list_append (popdown_items, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)) );
+        gtk_combo_set_popdown_strings (GTK_COMBO (m_optionSQLangSelect), popdown_items);
+        GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionSQLangSelect)->list);
+        m_iOptionPageSizeListID = g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",  G_CALLBACK(s_page_size_changed), static_cast<gpointer>(this));
+*/
 	//////////////////////////////////////////////////////////////////
 
 //
@@ -565,6 +584,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_GRAMMAR_CHECK:
 		return m_checkbuttonGrammarCheck;
 
+	case id_CHECK_SMART_QUOTES_ENABLE:
+		return m_checkbuttonSmartQuotes;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
@@ -665,6 +687,7 @@ DEFINE_GET_SET_BOOL(SpellMainOnly)
 DEFINE_GET_SET_BOOL(SpellUppercase)
 DEFINE_GET_SET_BOOL(SpellNumbers)
 DEFINE_GET_SET_BOOL(GrammarCheck)
+DEFINE_GET_SET_BOOL(SmartQuotes)
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
 

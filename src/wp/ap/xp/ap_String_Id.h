@@ -371,6 +371,8 @@ dcl(DLG_Options_Label_SpellHighlightMisspelledWords, "&Highlight misspelled word
      // Grammar Check
 dcl(DLG_Options_Label_Grammar, "Automatic Grammar Checking")
 dcl(DLG_Options_Label_GrammarCheck, "Check &grammar as you type")
+
+dcl(DLG_Options_Label_SmartQuotes, "Enable smart (curly) quotes")
 										      // should be merged one day
 dcl(DLG_Options_Label_SpellSuggest, 	"A&lways suggest corrections")
 dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")
