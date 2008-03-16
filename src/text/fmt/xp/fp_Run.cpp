@@ -2331,17 +2331,21 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		i = 1;
 		cumWidth = 0;
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
+		UT_sint32 iTabTop = pDA->yoff - getAscent();
+		if(pG && pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+				iTabTop = pDA->yoff - pG->getFontAscent(_getFont());
+		}
 		while (cumWidth < getWidth() && i < 151)
 		{
-			if(getGraphics() && pLayout->isQuickPrint() && getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+			if(pG && pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 			{
-				wid[i] = static_cast<UT_sint32>(wid[i]*getGraphics()->getResolutionRatio());
+				wid[i] = static_cast<UT_sint32>(wid[i]*pG->getResolutionRatio());
 			}
 			cumWidth += wid[i++];
 		}
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		UT_sint32 iTabTop = pDA->yoff - getAscent();
 		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iTabTop,wid);
 	}
 //
