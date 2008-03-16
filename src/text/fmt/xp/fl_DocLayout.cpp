@@ -3489,8 +3489,10 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 
 	pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
+	
+	
 	pDocLayout->_toggleAutoSmartQuotes( b );
-
+	
 	const gchar * pszTransparentColor = NULL;
 	pPrefs->getPrefsValue(static_cast<const gchar *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 	if(strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
@@ -3760,10 +3762,15 @@ converted to a curly quote in the open direction.
 6.  If a QUOTE is immediately followed by a sqCLOSEPUNCT, it is
 converted to a curly quote in the close direction.
 
-7.  If a QUOTE is in isolation, it is not converted.  It is in
-isolation if it is immediately preceded and followed by either a sqBREAK
-or sqWHITE.  The things before and after it don't have to be of
-the same type.
+7.  If a QUOTE is in isolation, it is converted to a curly quote
+in the open direction.  It is in isolation if it is immediately
+preceded and followed by either a sqBREAK or sqWHITE.  The things
+before and after it don't have to be of the same type.
+
+Rule 7 was originally that it didin't convert.  This does not make
+sense because the most common use of smart quotes is as you're typing
+where there is often a space before and nothing after (since it hasn't
+been written yet!) -- Bobby Weinmann Feb 4, 2008
 
 8.  If a QUOTE is immediately preceded by a sqBREAK or sqWHITE and
 is immediately followed by anything other than a sqBREAK or sqWHITE,
@@ -3804,7 +3811,7 @@ looking.  I think we need a mechanism for dealing with that, but I
 want to save proposals for that to be separate from the basic
 algorithm.
 */
-#if 0
+
 // The following are descriptions of the thing before or after a
 // character being considered for smart quote promotion.  The thing
 // is either a structural break in a document, or it is a literal
@@ -3927,20 +3934,20 @@ static struct sqTable sqTable_en[] =
 	{sqDONTCARE, '`',  sqCLOSEPUNCT,  UCS_RQUOTE},          // rule 6
 	{sqDONTCARE, '"',  sqCLOSEPUNCT,  UCS_RDBLQUOTE},       // rule 6
 
-	{sqBREAK,      '\'', sqBREAK,     UCS_UNKPUNK},         // rule 7
-	{sqWHITE,      '\'', sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '\'', sqBREAK,     UCS_LQUOTE},         // rule 7
+	{sqWHITE,      '\'', sqBREAK,     UCS_LQUOTE},         // rule 7
 	{sqBREAK,      '\'', sqWHITE,     UCS_UNKPUNK},         // rule 7
 	{sqWHITE,      '\'', sqWHITE,     UCS_UNKPUNK},         // rule 7
 
-	{sqBREAK,      '`',  sqBREAK,     UCS_UNKPUNK},         // rule 7
-	{sqWHITE,      '`',  sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '`',  sqBREAK,     UCS_LQUOTE},         // rule 7
+	{sqWHITE,      '`',  sqBREAK,     UCS_LQUOTE},         // rule 7
 	{sqBREAK,      '`',  sqWHITE,     UCS_UNKPUNK},         // rule 7
 	{sqWHITE,      '`',  sqWHITE,     UCS_UNKPUNK},         // rule 7
 
-	{sqBREAK,      '"',  sqBREAK,     UCS_UNKPUNK},         // rule 7
-	{sqWHITE,      '"',  sqBREAK,     UCS_UNKPUNK},         // rule 7
-	{sqBREAK,      '"',  sqWHITE,     UCS_UNKPUNK},         // rule 7
-	{sqWHITE,      '"',  sqWHITE,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '"',  sqBREAK,     UCS_LDBLQUOTE},         // rule 7
+	{sqWHITE,      '"',  sqBREAK,     UCS_LDBLQUOTE},         // rule 7
+	{sqBREAK,      '"',  sqWHITE,     UCS_LDBLQUOTE},         // rule 7
+	{sqWHITE,      '"',  sqWHITE,     UCS_LDBLQUOTE},         // rule 7
 
 	{sqBREAK,      '\'', sqDONTCARE,  UCS_LQUOTE},          // rule 8
 	{sqWHITE,      '\'', sqDONTCARE,  UCS_LQUOTE},          // rule 8
@@ -3983,13 +3990,16 @@ static void s_swapQuote(UT_UCSChar & c)
     else if(c == UCS_RDBLQUOTE)
         c = UCS_LDBLQUOTE;
 }
-#endif
+
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
-#if 0
 	if (!block)
 		return;
 	if (m_pView->isHdrFtrEdit())
+		return;
+	if (!getSmartQuotes())
+		return;
+	if (!m_pView->m_bAllowSmartQuoteReplacement)
 		return;
 
 	setPendingSmartQuote(NULL, 0);  // avoid recursion
@@ -4056,7 +4066,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the last character in a block, so see
 			// what's at the beginning of the next block, if any
-			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getNextInDocument());
+			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getNext());
 			if (ob)
 			{
 				fp_Run *r = ob->getFirstRun();
@@ -4111,23 +4121,11 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 
 			m_pView->moveInsPtTo(quotable_at);
 			// delete/insert create change records for UNDO
-			m_pView->cmdCharDelete(true, 1);
+			m_pView->cmdSelect(quotable_at, quotable_at + 1);
 			m_pView->cmdCharInsert(&replacement, 1);
 			m_pView->moveInsPtTo(saved_pos);
-
-			// Alas, Abi undo moves the insertion point, so you can't
-			// just UNDO right after a smart quote pops up to force
-			// an ASCII quote.  For an open quote, you could type
-			// " backspace to get it (in other words, quote, space,
-			// backspace.  The space will prevent the smart quote
-			// promotion (no magic ... just following the rules).
-			// For a close quote, type "/backspace (quote, slash, backspace)
-			// for similar reasons.
 		}
 	}
-#else
-	return;
-#endif
 }
 
 void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)

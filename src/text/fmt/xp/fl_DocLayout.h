@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
+ 
 #ifndef DOCLAYOUT_H
 #define DOCLAYOUT_H
 
@@ -293,6 +293,9 @@ public:
 	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
 	void		recheckIgnoredWords();
 #endif
+// --------------------------------------------------------------------
+	bool		getSmartQuotes(void) const { return (hasBackgroundCheckReason(bgcrSmartQuotes)); }
+// --------------------------------------------------------------------
     
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}

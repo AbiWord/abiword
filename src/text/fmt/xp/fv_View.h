@@ -1060,6 +1060,8 @@ private:
 	UT_UTF8String       m_sDocUUID;
 	bool				m_bAnnotationPreviewActive;
 	UT_uint32			m_iAnnPviewID;
+	bool                m_bAllowSmartQuoteReplacement;  // Enable/disable replacing of quote with smart quote
+														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
 };
 
 #endif /* FV_VIEW_H */

@@ -286,7 +286,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_InlineImage(this),
 		m_bInsertAtTablePending(false),
 		m_iPosAtTable(0),
-		m_bAnnotationPreviewActive(false)
+		m_bAnnotationPreviewActive(false),
+		m_bAllowSmartQuoteReplacement(true)
 {
 	if(m_pDoc)
 		m_sDocUUID = m_pDoc->getMyUUIDString();

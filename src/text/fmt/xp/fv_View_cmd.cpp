@@ -4206,6 +4206,10 @@ void FV_View::cmdUndo(UT_uint32 count)
 	if (!isSelectionEmpty())
 		_clearSelection();
 
+	// Temporarily disable smart quotes
+	// This allows the smart quote to be reverted by undo.
+	m_bAllowSmartQuoteReplacement = false;
+
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
@@ -4269,14 +4273,20 @@ void FV_View::cmdUndo(UT_uint32 count)
 	}
 	setCursorToContext();
 
-
 	_updateInsertionPoint();
+
+	// Reenable smart quotes
+	m_bAllowSmartQuoteReplacement = true;
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
 		_clearSelection();
+
+	// Temporarily disable smart quotes
+	// This allows the smart quote to be reverted by undo.
+	m_bAllowSmartQuoteReplacement = false;
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
@@ -4345,6 +4355,9 @@ void FV_View::cmdRedo(UT_uint32 count)
 	setCursorToContext();
 	_updateInsertionPoint();
 	notifyListeners(AV_CHG_ALL);
+
+	// Reenable smart quotes
+	m_bAllowSmartQuoteReplacement = true;
 }
 
 UT_Error FV_View::cmdSave(void)
