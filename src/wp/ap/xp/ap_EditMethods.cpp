@@ -4940,6 +4940,7 @@ Defun(contextHyperlink)
 		EX(warpInsPtToXY);
 	
 	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
+	UT_return_val_if_fail(pRun, false);
 	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
 	
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL) // normal hyperlinks
