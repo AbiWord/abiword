@@ -234,7 +234,11 @@ void IE_Imp_WML::openTable(const gchar **atts)
 	wml_columns = _getXMLPropValue ("columns", atts);
 
 	if (wml_columns)
+	{
 		m_iColumns = atoi(wml_columns);
+		if (m_iColumns < 1)
+			m_iColumns = 1;
+	}
 	else
 		X_CheckDocument(false); // columns is a required attribute, bail out
 

@@ -70,9 +70,9 @@ public:
 	void closeCell(void);
 	void createImage(const char *name, const gchar **atts);
 
-	UT_uint32					m_iColumns;
+	UT_sint32					m_iColumns;
 	UT_uint32					m_iImages;
-	UT_uint32					m_iOpenedColumns;
+	UT_sint32					m_iOpenedColumns;
 	IE_Imp_TableHelperStack *	m_TableHelperStack;
 };
 
