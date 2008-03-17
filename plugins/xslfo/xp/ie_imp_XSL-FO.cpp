@@ -705,15 +705,23 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			X_VerifyParseState(_PS_Table);
 			m_parseState = _PS_Block;
 
-			UT_uint32 rowspan = 1, colspan = 1;
+			UT_sint32 rowspan = 1, colspan = 1;
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("number-columns-spanned", atts));
 			if(pVal)
+			{
 				colspan = atoi(pVal);
+				if(colspan < 1)
+					colspan = 1;
+			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("number-rows-spanned", atts));
 			if(pVal)
+			{
 				rowspan = atoi(pVal);
+				if(rowspan < 1)
+					rowspan = 1;
+			}
 
 
 			X_CheckError(m_TableHelperStack->tdStart(rowspan, colspan, NULL));
