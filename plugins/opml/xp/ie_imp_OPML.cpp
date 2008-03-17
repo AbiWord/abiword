@@ -463,7 +463,7 @@ void IE_Imp_OPML::_createBullet(void)
 	buf[8] = PT_PROPS_ATTRIBUTE_NAME;
 
 	val = "start-value:0; list-style:Bullet List;";
-	val += UT_String_sprintf(" margin-left:%f", (m_iOutlineDepth * 0.5)); //set the indent
+	val += UT_String_sprintf(" margin-left:%fin", (m_iOutlineDepth * 0.5)); //set the indent
 
 	buf[9] = (gchar *)g_strdup(val.c_str());
 
