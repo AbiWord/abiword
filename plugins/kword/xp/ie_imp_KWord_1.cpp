@@ -388,14 +388,20 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 	p = _getXMLPropValue("red", atts);
 	if (p != NULL) {
 	  red = atoi(p);
+	  if (red < 0 || red > 255)
+	    red = 0;
 	}
 	if (p != NULL) {
 	  p = _getXMLPropValue("green", atts);
 	  green = atoi(p);
+	  if (green < 0 || green > 255)
+	    green = 0;
 	}
 	if (p != NULL) {
 	  p = _getXMLPropValue("blue", atts);
 	  blue = atoi(p);
+	  if (blue < 0 || blue > 255)
+	    blue = 0;
 	}
 	
 	m_szCharProps += "color:";
