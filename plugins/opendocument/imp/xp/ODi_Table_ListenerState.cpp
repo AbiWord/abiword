@@ -314,14 +314,18 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
         pVal = UT_getAttribute("table:number-columns-spanned", ppAtts);
         if (pVal) {
             colSpan = atoi(pVal);
-            UT_ASSERT(colSpan > 0);
+            if (colSpan < 1) {
+                colSpan = 1;
+            }
         } else {
             colSpan = 1;
         }
         pVal = UT_getAttribute("table:number-rows-spanned", ppAtts);
         if (pVal) {
             rowSpan = atoi(pVal);
-            UT_ASSERT(rowSpan > 0);
+            if (rowSpan < 1) {
+                rowSpan = 1;
+            }
         } else {
             rowSpan = 1;
         }
