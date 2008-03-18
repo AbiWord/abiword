@@ -35,6 +35,7 @@ GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, const scaled
   UT_Rect glyphRect;
   graphics->setFont(m_pFont);
   f->glyphBox(m_ch, glyphRect, graphics);
+  GR_Abi_RenderingContext Context(graphics);
 #if 0
   fprintf(stderr, "getting glyph %d\n glyphBox [left=%d,width=%d,top=%d,height=%d]\n measureUnremappedChar=%d\n measureUnremappedCharForCache=%d\n ftlu=%f\n tdu=%f\n tlu=%f\n size=%d\n", c,
 	  glyphRect.left, glyphRect.width, glyphRect.top, glyphRect.height,
@@ -46,9 +47,9 @@ GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, const scaled
 	  size.getValue());
 #endif
 
-  m_box = BoundingBox(GR_Abi_RenderingContext::fromAbiLayoutUnits(glyphRect.width + glyphRect.left),
-		      GR_Abi_RenderingContext::fromAbiLayoutUnits(glyphRect.top),
-		      GR_Abi_RenderingContext::fromAbiLayoutUnits(glyphRect.height - glyphRect.top));
+  m_box = BoundingBox(Context.fromAbiLayoutUnits(glyphRect.width + glyphRect.left),
+		      Context.fromAbiLayoutUnits(glyphRect.top),
+		      Context.fromAbiLayoutUnits(glyphRect.height - glyphRect.top));
 #endif
 }
 

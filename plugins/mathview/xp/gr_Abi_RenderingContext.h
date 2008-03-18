@@ -58,20 +58,16 @@ public:
   // 72.27 points = UT_LAYOUT_RESOLUTION dots
   // 1 point = UT_LAYOUT_RESOLUTION / 72.27 dots
   // 1 dot = 72.27 / UT_LAYOUT_RESOLUTION points
-  static UT_sint32 toAbiLayoutUnits(const scaled& s)
-    { return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt(); }// was 72.27
-  static scaled fromAbiLayoutUnits(UT_sint32 s)
-    { return scaled((s * 72.0) / UT_LAYOUT_RESOLUTION); } // was 72.27
+  UT_sint32 toAbiLayoutUnits(const scaled& s) const;
+  scaled fromAbiLayoutUnits(UT_sint32 s) const;
 
-  static UT_sint32 toAbiX(const scaled& x)
-  { return toAbiLayoutUnits(x); }
-  static UT_sint32 toAbiY(const scaled& y)
-  { return toAbiLayoutUnits(-y); }
+  UT_sint32 toAbiX(const scaled& x) const;
+  UT_sint32 toAbiY(const scaled& y) const;
 
-  static scaled fromAbiX(UT_sint32 x)
-  { return fromAbiLayoutUnits(x); }
-  static scaled fromAbiY(UT_sint32 y)
-  { return fromAbiLayoutUnits(-y); }
+
+  scaled fromAbiX(UT_sint32 x) const;
+  scaled fromAbiY(UT_sint32 y) const;
+
 
   static RGBColor fromAbiColor(const UT_RGBColor& c)
   { return RGBColor(c.m_red, c.m_grn, c.m_blu, c.m_bIsTransparent); }

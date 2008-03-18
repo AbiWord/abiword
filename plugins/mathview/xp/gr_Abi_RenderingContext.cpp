@@ -20,6 +20,7 @@
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "gr_Abi_RenderingContext.h"
+#include <math.h>
 
 GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
   : m_pGraphics(pGr)
@@ -46,6 +47,46 @@ GR_Abi_RenderingContext::getColor(RGBColor& c) const
   c = GR_Abi_RenderingContext::fromAbiColor(color);
 }
 
+ UT_sint32 GR_Abi_RenderingContext::toAbiLayoutUnits(const scaled& s) const
+{
+  if(!m_pGraphics)
+     return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt();
+  if( fabs(1.0 - m_pGraphics->getResolutionRatio()) > 0.01)
+  {
+      return round((s * (UT_LAYOUT_RESOLUTION * m_pGraphics->getResolutionRatio())) / 72.0).toInt();
+  }
+   return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt();
+}
+
+scaled GR_Abi_RenderingContext::fromAbiLayoutUnits(UT_sint32 s)  const
+{
+
+  if(!m_pGraphics)
+  { 
+    return scaled((s * 72.0) / UT_LAYOUT_RESOLUTION); 
+  }
+ 
+  if( fabs(1.0 - m_pGraphics->getResolutionRatio()) > 0.01)
+  {
+      return scaled((s * 72.0) / (UT_LAYOUT_RESOLUTION * m_pGraphics->getResolutionRatio()));
+  }
+  return scaled((s * 72.0) / UT_LAYOUT_RESOLUTION); 
+}
+
+ scaled GR_Abi_RenderingContext::fromAbiX(UT_sint32 x) const
+  { return fromAbiLayoutUnits(x); }
+
+ scaled GR_Abi_RenderingContext::fromAbiY(UT_sint32 y)  const
+  { return fromAbiLayoutUnits(-y); }
+
+
+  UT_sint32 GR_Abi_RenderingContext::toAbiX(const scaled& x)  const
+  { return toAbiLayoutUnits(x); }
+
+
+  UT_sint32 GR_Abi_RenderingContext::toAbiY(const scaled& y)  const
+  { return toAbiLayoutUnits(-y); }
+
 void
 GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const scaled& y, const BoundingBox& box) const
 {
@@ -55,10 +96,10 @@ GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const s
 		   toAbiLayoutUnits(box.width), toAbiLayoutUnits(box.height), toAbiLayoutUnits(box.depth)));
   GR_Painter Painter(m_pGraphics);
   Painter.fillRect(color,
-		   GR_Abi_RenderingContext::toAbiX(x),
-		   GR_Abi_RenderingContext::toAbiY(y + box.verticalExtent()),
-		   GR_Abi_RenderingContext::toAbiLayoutUnits(box.horizontalExtent()),
-		   GR_Abi_RenderingContext::toAbiLayoutUnits(box.verticalExtent()));
+		   toAbiX(x),
+		   toAbiY(y + box.verticalExtent()),
+		   toAbiLayoutUnits(box.horizontalExtent()),
+		   toAbiLayoutUnits(box.verticalExtent()));
 }
 
 void
@@ -75,8 +116,8 @@ GR_Abi_RenderingContext::drawGlyph(const scaled& x, const scaled& y, GR_Font* f,
   m_pGraphics->setFont(f);
   GR_Painter Painter(m_pGraphics);
   Painter.drawGlyph(glyph,
-		    GR_Abi_RenderingContext::toAbiX(x),
-		    GR_Abi_RenderingContext::toAbiY(y));
+		    toAbiX(x),
+		    toAbiY(y));
 }
 
 void
@@ -84,9 +125,9 @@ GR_Abi_RenderingContext::drawChar(const scaled& x, const scaled& y, GR_Font* f, 
 {
   m_pGraphics->setFont(f);
   GR_Painter Painter(m_pGraphics);
-  Painter.drawCharsRelativeToBaseline(&c, 0, 1,
-		    GR_Abi_RenderingContext::toAbiX(x),
-		    GR_Abi_RenderingContext::toAbiY(y));
+  UT_sint32 ax = toAbiX(x);
+  UT_sint32 ay = toAbiY(y) - m_pGraphics->getFontAscent(f);
+  Painter.drawChars(&c, 0, 1,ax,ay);
 }
 
 void
