@@ -95,16 +95,17 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	     m_iMathUID = -1;
 	     xxx_UT_DEBUGMSG(("---Recoved from QuickPrint!! \n"));
 	}
+
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG);
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
-	  xxx_UT_DEBUGMSG(("---Doing a QuickPrint!! \n"));
+	     UT_DEBUGMSG(("---Doing a QuickPrint!! \n"));
 	     if(m_iMathUID >= 0 && getMathManager())
 	     {
-	       xxx_UT_DEBUGMSG(("MathRun Old Width = %d Ascent = %d Descent = %d \n",getWidth(),getAscent(),getDescent())); 
+	         UT_DEBUGMSG(("MathRun Old Width = %d Ascent = %d Descent = %d \n",getWidth(),getAscent(),getDescent())); 
 		 getMathManager()->releaseEmbedView(m_iMathUID);
 		 m_iMathUID = -1;
 	     }
@@ -132,7 +133,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
 	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
-	  xxx_UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
+	  UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
@@ -151,7 +152,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  iDescent = getMathManager()->getDescent(m_iMathUID);
 	}
 	m_iPointHeight = iAscent + iDescent;
-	xxx_UT_DEBUGMSG(("MathRun _lookupProps Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
+	UT_DEBUGMSG(("MathRun _lookupProps Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
 	fp_Page * p = NULL;
@@ -186,9 +187,14 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
-	  xxx_UT_DEBUGMSG(("---Doing a QuickPrint!! -CHECK \n"));
-	  //	  UT_ASSERT(getAscent() == iAscent);
+	  UT_DEBUGMSG(("---Doing a QuickPrint!! -CHECK \n"));
+	  //UT_ASSERT(getAscent() == iAscent);
 	  //UT_ASSERT(getDescent() == iDescent);
+	  if((getAscent() >0) && (getDescent() > 0))
+	   {
+	      iAscent = getAscent();
+	      iDescent = getDescent();
+	   }
 	}
 	_setAscent(iAscent);
 	_setDescent(iDescent);
@@ -431,6 +437,12 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	if(getMathManager()->isDefault())
 	{
 	  rec.top -= getAscent();
+	}
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	if(pG && pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER) && !getMathManager()->isDefault() )
+	{
+	  //	  rec.top -= getAscent()*pG->getResolutionRatio();
+	  //rec.top -= getAscent();
 	}
 	xxx_UT_DEBUGMSG(("LineHeigt %d MathRun Height %d\n",getLine()->getHeight(),getHeight()));
 	xxx_UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.width,rec.height)); 
