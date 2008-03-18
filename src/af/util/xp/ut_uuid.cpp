@@ -101,6 +101,8 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
     const char  *cp;
     char        buf[3];
 
+    UT_return_val_if_fail(in, false);
+
 	// verify this is valid uuid string
     if(strlen(in) != 36)
         return false;

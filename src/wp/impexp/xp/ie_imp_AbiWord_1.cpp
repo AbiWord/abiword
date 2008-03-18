@@ -813,8 +813,11 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			
 			szS = UT_getAttribute("uid",atts);
 
-			AD_VersionData v(iId, szS, tStarted, bAuto, iXID);
-			getDoc()->addRecordToHistory(v);
+			if(szS)
+			{
+				AD_VersionData v(iId, szS, tStarted, bAuto, iXID);
+				getDoc()->addRecordToHistory(v);
+			}
 		}
 
 		goto cleanup;
