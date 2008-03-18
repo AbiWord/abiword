@@ -83,7 +83,7 @@ void UT_UnixIdle::start ()
 	if(m_id == -1)
 	{  
 #ifndef XP_TARGET_COCOA
-		m_id = g_idle_add(_Timer_Proc, this);
+	        m_id = g_idle_add_full(G_PRIORITY_LOW,_Timer_Proc, this,NULL);
 #else
 		m_id = -1;
 #endif

@@ -188,6 +188,8 @@ static int s_mapMimeToUriType (const char * uri)
 #else
 	const gchar * suffix = UT_pathSuffix(uri);
 	if (suffix) {
+		if(suffix[0] == '.')
+			suffix++;
 		const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
 		if (!mt) {
 			mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
