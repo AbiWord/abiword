@@ -932,7 +932,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 		if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
 		{
-			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(static_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
+			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(reinterpret_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
 		}
 	}
 	return 1;
