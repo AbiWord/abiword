@@ -527,7 +527,7 @@ fire(var); \
 } \
 } while(0)
 
-#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { double val = atof(sz); if (val != var) { var = val; fire(val); } } } while(0) 
+#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { double val = g_ascii_strtod(sz, NULL); if (val != var) { var = val; fire(val); } } } while(0) 
 
 #define FIRE_STRING_CHARFMT(prop, var, fire) do { const gchar * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
 
