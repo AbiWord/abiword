@@ -1284,7 +1284,7 @@ public:
 		m_pView (pView),
 		m_pData(pData),
 		m_pExe(exe)
-	{ UT_DEBUGMSG(("_Freq created %x ",this));};
+	{ xxx_UT_DEBUGMSG(("_Freq created %x ",this));};
 	AV_View * m_pView;
 	EV_EditMethodCallData * m_pData;
 	void(* m_pExe)(AV_View * ,EV_EditMethodCallData *) ;
@@ -1308,7 +1308,7 @@ static bool s_EditMethods_check_frame(void)
 	}
 	if(s_pFrequentRepeat != NULL)
 	{
-		UT_DEBUGMSG(("Dropping frequent event!!!! \n"));
+		xxx_UT_DEBUGMSG(("Dropping frequent event!!!! \n"));
 		return true;
 	}
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -4101,7 +4101,7 @@ Defun1(warpInsPtLeft)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -4151,7 +4151,7 @@ Defun1(warpInsPtRight)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -5052,7 +5052,7 @@ Defun(dragToXY)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -5583,7 +5583,7 @@ Defun1(delLeft)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -5621,7 +5621,7 @@ Defun1(delRight)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -5780,7 +5780,7 @@ Defun(insertData)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 #endif
@@ -7199,7 +7199,7 @@ Defun1(paste)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 
@@ -14322,7 +14322,7 @@ Defun(dragInlineImage)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
 	return true;
@@ -14408,7 +14408,6 @@ Defun(dragFrame)
 //
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
-	//int inMode = UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
@@ -14667,7 +14666,6 @@ Defun(dragVisualText)
 	if ( UT_WorkerFactory::TIMER == outMode )
 	{
 		// this is really a timer, so it's safe to static_cast it
-		UT_DEBUGMSG(("Set timer to 50 ms \n"));
 		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(50);
 	}
 	s_pFrequentRepeat->start();
