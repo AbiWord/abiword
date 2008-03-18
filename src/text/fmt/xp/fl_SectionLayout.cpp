@@ -1066,7 +1066,7 @@ fl_AnnotationLayout * fl_DocSectionLayout::getAnnotationLayout(UT_uint32 pid)
  */ 
 UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
 {
-	UT_sint32 Height = static_cast<UT_sint32>(getDocument()->m_docPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	UT_sint32 Height = static_cast<UT_sint32>(m_pLayout->m_docViewPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /m_pLayout->m_docViewPageSize.getScale());
 	Height -= (getTopMargin() + getBottomMargin());
 	if(m_iMaxSectionColumnHeight > 0)
 	{
@@ -1083,7 +1083,7 @@ UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
 
 UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
 {
-	UT_sint32 width = static_cast<UT_sint32>(getDocument()->m_docPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	UT_sint32 width = static_cast<UT_sint32>(m_pLayout->m_docViewPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /m_pLayout->m_docViewPageSize.getScale());
 	width -= (getLeftMargin() + getRightMargin());
 	if(m_iNumColumns > 1)
 	{
@@ -1096,7 +1096,7 @@ UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
 UT_sint32 fl_DocSectionLayout::getWidth(void)
 {
 	UT_sint32 ires = m_pLayout->getGraphics()->getResolution();
-	UT_sint32 width = static_cast<UT_sint32>(ires * getDocument()->m_docPageSize.Width(DIM_IN));
+	UT_sint32 width = static_cast<UT_sint32>(ires * m_pLayout->m_docViewPageSize.Width(DIM_IN));
 	return width;
 }
 

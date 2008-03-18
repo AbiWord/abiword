@@ -129,7 +129,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iPrevPos(0),
     m_pQuickPrintGraphics(NULL),
     m_bIsQuickPrint(false),
-    m_bDisplayAnnotations(false)
+    m_bDisplayAnnotations(false),
+    m_docViewPageSize("A4")
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -538,6 +539,7 @@ void FL_DocLayout::fillLayouts(void)
 {
 	_lookupProperties();
 	setLayoutIsFilling(true);
+	m_docViewPageSize = getDocument()->m_docPageSize;
 	if(m_pView)
 	{
 		m_pView->setPoint(0);
@@ -1988,7 +1990,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 
 	fp_Page* pPage = new fp_Page(	this,
 									m_pView,
-									m_pDoc->m_docPageSize,
+									m_docViewPageSize,
 									pOwner);
 	if (pLastPage)
 	{
@@ -2323,6 +2325,7 @@ void FL_DocLayout::updateOnViewModeChange()
 {
 	// force margin properties lookup
 	fl_SectionLayout* pSL = m_pFirstSection;
+	m_docViewPageSize = getDocument()->m_docPageSize;
   	while (pSL)
   	{
 		pSL->lookupMarginProperties();

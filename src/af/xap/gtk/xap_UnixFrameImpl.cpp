@@ -775,7 +775,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	AV_View * pView = pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	UT_sint32 prevWidth = 0;
 	UT_sint32 prevHeight = 0;
 	UT_sint32 iNewWidth = 0;
@@ -855,7 +855,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	{
 		// currently, we blow away the old view.  This will change, rendering
 		// the loop superfluous.
-		pView = pFrame->getCurrentView();
+		pView = static_cast<FV_View *>(pFrame->getCurrentView());
 
 		if(!pView)
 		{
@@ -870,12 +870,47 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 
 		iNewWidth = pUnixFrameImpl->m_iNewWidth;
 		iNewHeight = pUnixFrameImpl->m_iNewHeight;
-
-		// don't need this for quickZoom
-#if 0
-		pUnixFrameImpl->_startViewAutoUpdater();
-#endif
+		//
+		// In web mode we reflow the text to changed page set at the
+		// current zoom.
+		//
+		if((pView->getViewMode() == VIEW_WEB) && (abs(iNewWidth -prevWidth) > 2) && (prevWidth > 10) && (iNewWidth > 10))
+		{
+			pView->setWindowSize(iNewWidth, iNewHeight);
+			UT_sint32 iAdjustZoom = pView->calculateZoomPercentForPageWidth();
+			FL_DocLayout * pLayout = pView->getLayout();
+			PD_Document * pDoc = pLayout->getDocument();
+			UT_Dimension orig_ut = DIM_IN;
+			orig_ut = pLayout->m_docViewPageSize.getDims();
+			double orig_width = pDoc->m_docPageSize.Width(orig_ut);
+			double orig_height = pDoc->m_docPageSize.Height(orig_ut);
+			double rat = static_cast<double>(iAdjustZoom)/static_cast<double>(pView->getGraphics()->getZoomPercentage()) ;
+			double new_width = orig_width*rat;
+			xxx_UT_DEBUGMSG(("old width %f new width %f old height %f \n",orig_width,new_width,orig_height));
+			bool p = pLayout->m_docViewPageSize.isPortrait();
+			pLayout->m_docViewPageSize.Set(new_width,orig_height,orig_ut);
+			pLayout->m_docViewPageSize.Set(fp_PageSize::psCustom,orig_ut);
+			if(p)
+			{
+				pLayout->m_docViewPageSize.setPortrait();
+			}
+			else
+			{
+				pLayout->m_docViewPageSize.setLandscape();
+			}
+			pView->rebuildLayout();
+			pView->setWindowSize(iNewWidth, iNewHeight);
+			pView->updateScreen(false);
+			return true;
+		}
+		//
+		// If we are here in view_web we just return
+		//
 		pView->setWindowSize(iNewWidth, iNewHeight);
+		if(pView->getViewMode() == VIEW_WEB)
+		{
+			return true;
+		}
 		pFrame->quickZoom(); // was update zoom
 
 	}

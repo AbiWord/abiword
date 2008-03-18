@@ -49,6 +49,8 @@ public:
 	fp_PageSize(Predefined preDef);
 	fp_PageSize(const char *name);
 	fp_PageSize(double w, double h, UT_Dimension u);
+	fp_PageSize&      operator=(fp_PageSize& rhs);
+	fp_PageSize&      operator=(const fp_PageSize& rhs);
 
 	bool match(double x, double y);
 	void Set(Predefined preDef, UT_Dimension u = DIM_none);

@@ -9303,7 +9303,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 			pDoc->m_docPageSize.Set(final_def,final_ut);
 		}
 		pDoc->m_docPageSize.setScale(final_scale);
-
+		FL_DocLayout * pLayout = pView->getLayout();
+		pLayout->m_docViewPageSize = pDoc->m_docPageSize;
 		//
 		// Get all clones of this frame and set the new page dimensions
 		//
@@ -9317,9 +9318,9 @@ static bool s_doPageSetupDlg (FV_View * pView)
 				XAP_Frame * f = vClones.getNthItem(i);
 				UT_sint32 iZoom = f->getZoomPercentage();
 				XAP_Frame::tZoomType zt = f->getZoomType();
+				FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
 				if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
 				{
-					FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
 					if(pV->isHdrFtrEdit())
 					{
 						pV->clearHdrFtrEdit();
@@ -9335,6 +9336,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 					}
 				}
 				f->setZoomPercentage(iZoom);
+				pLayout = pV->getLayout();
+				pLayout->m_docViewPageSize = pDoc->m_docPageSize;
 			}
 		}
 		else
@@ -9942,6 +9945,8 @@ Defun(viewNormalLayout)
 UT_return_val_if_fail(pFrameData, false);
 	pFrameData->m_pViewMode = VIEW_NORMAL;
 	pFrame->toggleLeftRuler (false);
+	if(!pFrameData->m_bIsFullScreen)
+		pFrame->toggleTopRuler (true);
 
 	pView->setViewMode (VIEW_NORMAL);
 
@@ -9975,6 +9980,11 @@ Defun(viewWebLayout)
 UT_return_val_if_fail(pFrameData, false);
 	pFrameData->m_pViewMode = VIEW_WEB;
 	pFrame->toggleLeftRuler (false);
+	pFrame->toggleTopRuler (false);
+	//
+	// This about this. we need to work out a page width for 100% zoom
+	//
+	pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_WEB);
@@ -10009,6 +10019,8 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrameData->m_pViewMode = VIEW_PRINT;
 	pFrame->toggleLeftRuler (true && (pFrameData->m_bShowRuler) &&
 				 (!pFrameData->m_bIsFullScreen));
+	if(!pFrameData->m_bIsFullScreen)
+		pFrame->toggleTopRuler (true);
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_PRINT);
