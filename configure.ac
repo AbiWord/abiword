@@ -482,6 +482,8 @@ AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 # this must stay after all custrom m4 macros
 AC_SUBST(ABIWORD_REQUIRED_PKGS)
 
+AC_CONFIG_FILES([goffice-bits/GNUmakefile])
+
 AC_CONFIG_FILES([
  abiword.pc
  libabiword.pc

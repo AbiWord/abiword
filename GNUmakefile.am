@@ -3,10 +3,10 @@ ACLOCAL_AMFLAGS = -I ac-helpers
 if WITH_SYSTEM_GOFFICE
 SUBDIRS = src user
 else
-SUBDIRS = src user
+SUBDIRS = goffice-bits src user
 endif
 
-DIST_SUBDIRS = src user
+DIST_SUBDIRS = goffice-bits src user
 
 desktopdir = $(datadir)/applications
 
