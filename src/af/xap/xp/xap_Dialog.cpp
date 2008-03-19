@@ -241,7 +241,7 @@ void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, char * pDialogName
 	if (pFrame)
 	{
 		wn += " - ";
-		wn += pFrame->getTitle(width-count-3);
+		wn += pFrame->getTitle();
 	}
 
 	UT_uint32 len = UT_MIN(wn.byteLength(), width);

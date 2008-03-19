@@ -568,23 +568,9 @@ const char * XAP_Frame::getViewKey(void) const
 	return buf;
 }
 
-const char * XAP_Frame::getTitle(int len) const
+const UT_UTF8String & XAP_Frame::getTitle() const
 {
-	UT_ASSERT(len >= 0);
-
-	// Returns the pathname being edited (with view and dirty bit
-	// '*' adornments), if all that fits. If it doesn't fit,
-	// returns the tail of the string that does fit. Would be
-	// better to chop it at a pathname separator boundary.
-	if (static_cast<int>(m_sTitle.size()) <= len)
-		return m_sTitle.utf8_str();
-
-	// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
-	UT_UTF8Stringbuf::UTF8Iterator iter = m_sTitle.getIterator ();
-	iter = iter.start ();
-	for (int currentSize = m_sTitle.size(); currentSize > len; currentSize--)
-		iter.advance();
-	return iter.current();
+	return m_sTitle;
 }
 
 const char * XAP_Frame::getNonDecoratedTitle() const

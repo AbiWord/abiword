@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -271,9 +273,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 		XAP_Frame * pFrame = pApp->getFrame(ndx);
 		UT_return_val_if_fail (pFrame, NULL);
 
-		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));
-
-		sprintf(buf,szFormat,szTitle);
+		memset(buf, 0, sizeof(buf));
+		snprintf(buf, sizeof(buf), szFormat, pFrame->getTitle().utf8_str());
+		buf[sizeof(buf) - 1] = '\0';
 		return buf;
 	}
 

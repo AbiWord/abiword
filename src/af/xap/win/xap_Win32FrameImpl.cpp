@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2002
@@ -172,10 +174,10 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 		return false;
 	}
 
-	UT_String sTmp = pFrame->getTitle(INT_MAX);
+	UT_UTF8String sTmp = pFrame->getTitle();
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
-	UT_SetWindowText(m_hwndFrame, sTmp.c_str());
+	UT_SetWindowText(m_hwndFrame, sTmp.utf8_str());
 
 	return true;
 }

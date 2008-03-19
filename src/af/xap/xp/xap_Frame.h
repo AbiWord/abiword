@@ -126,7 +126,7 @@ public:
 	void                        setView(AV_View * pView) {m_pView = pView;}
 	void                        setDoc(AD_Document * pDoc) {m_pDoc = pDoc;}
 	const char *				getFilename() const;
-	const char *				getTitle(int len) const;
+	const UT_UTF8String &		getTitle() const;
 	const char *				getNonDecoratedTitle() const;
 
 	XAP_FrameMode getFrameMode(); 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -174,7 +176,7 @@ void XAP_UnixDialog_WindowMore::_populateWindowData(void)
 {
 	GtkListStore *model;
 	GtkTreeIter iter;
-	
+
 	model = gtk_list_store_new (2, 
 							    G_TYPE_STRING,
 								G_TYPE_INT);
@@ -183,13 +185,11 @@ void XAP_UnixDialog_WindowMore::_populateWindowData(void)
     {		
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_return_if_fail(f);
-		const char * s = f->getTitle(128);	// TODO: chop this down more? 
 
 		// Add a new row to the model
-		gtk_list_store_append (model, &iter);
-		
+		gtk_list_store_append (model, &iter);		
 		gtk_list_store_set (model, &iter,
-							0, s,
+							0, f->getTitle().utf8_str(),
 							1, i,
 							-1);
     } 

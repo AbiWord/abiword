@@ -175,6 +175,7 @@ public:
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
 	SET_GATHER			(GrammarCheck,		bool); 
+ 	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);

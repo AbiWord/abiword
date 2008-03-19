@@ -2040,8 +2040,7 @@ bool XAP_UnixFrameImpl::_updateTitle()
 	{
 		if (GTK_IS_WINDOW (m_wTopLevelWindow))
 			{
-				const char * szTitle = getFrame()->getTitle(MAX_TITLE_LENGTH);
-				gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), szTitle);
+				gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), getFrame()->getTitle().utf8_str());
 			}
 	}
 	return true;

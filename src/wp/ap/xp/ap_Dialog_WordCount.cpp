@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2005 Hubert Figuiere
@@ -82,7 +84,7 @@ void AP_Dialog_WordCount::updateDialogData(void)
 	setWidgetValueInt(LINES_VAL_WID, m_count.line);
 	setWidgetValueInt(PAGES_VAL_WID, m_count.page);
 
-	setWidgetLabel (TITLE_LBL_WID, getActiveFrame()->getTitle(60));
+	setWidgetLabel (TITLE_LBL_WID, getActiveFrame()->getTitle().utf8_str());
 }
 
 

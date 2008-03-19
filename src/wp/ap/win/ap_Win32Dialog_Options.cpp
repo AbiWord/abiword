@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *			 (c) 2002-2006 Jordi Mas i Hernàndez jmas@softcatala.org
@@ -306,7 +308,15 @@ DEFINE_GET_SET_BOOL(PG_SPELL,SpellMainOnly)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellUppercase)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellNumbers)
 DEFINE_GET_SET_BOOL(PG_SPELL,GrammarCheck)
+// DEFINE_GET_SET_BOOL(PG_GENERAL,SmartQuotes)
 
+bool AP_Win32Dialog_Options::_gatherSmartQuotes() {
+
+}
+
+void AP_Win32Dialog_Options::_setSmartQuotes(bool) {
+
+}
 
 
 /* Not used */

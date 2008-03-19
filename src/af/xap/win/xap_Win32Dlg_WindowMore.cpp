@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -82,9 +84,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_continue_if_fail(f);
 
-		const char * s = f->getTitle(128);	// TODO: chop this down more? 
-		
-		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, s);
+		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, f->getTitle().utf8_str());
 		setListDataItem(XAP_RID_DIALOG_WINDOWMORE_LIST, nIndex, (DWORD) i);
      } 
 
