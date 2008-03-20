@@ -46,36 +46,11 @@
 
 #include "ap_UnixDialog_Tab.h"
 
-
-
 //! Column indices for list-store
 enum {
 	COLUMN_TAB = 0,
 	NUM_COLUMNS
 };
-
-
-/*!
-* FIXME remove this after we depend on gtk-2.6
-*/
-gchar *
-gtk_combo_box_get_active_text (GtkComboBox *combo_box)
-{
-  GtkTreeIter iter;
-  gchar *text = NULL;
-  GtkTreeModel *model = gtk_combo_box_get_model (combo_box);
-
-  g_return_val_if_fail (GTK_IS_COMBO_BOX (combo_box), NULL);
-  g_return_val_if_fail (GTK_IS_LIST_STORE (model), NULL);
-
-  if (gtk_combo_box_get_active_iter (combo_box, &iter)) {
-    gtk_tree_model_get (model, &iter, 
-			0, &text, -1);
-  }
-  return text;
-}
-
-
 
 //! Event dispatcher for default tab width
 static void
@@ -124,7 +99,7 @@ AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 *widget,
 									   GdkEventFocus *event,
 									   gpointer 	  data)
 {
-	UT_DEBUGMSG (("onPositionFocusOut() '%d' \n", event->type));
+	xxx_UT_DEBUGMSG (("onPositionFocusOut() '%d' \n", event->type));
 	
 	if (event->type == GDK_FOCUS_CHANGE) {
 		AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -459,6 +434,8 @@ AP_UnixDialog_Tab::onDefaultTabChanged (double value)
 	UT_Dimension dim = _getDimension ();
 	const gchar *text = UT_formatDimensionString (dim, value);
 
+	UT_DEBUGMSG(("onDefaultTabChanged() %s\n", text));
+
 	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
 
     _storeWindowData ();
@@ -471,23 +448,23 @@ AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 	const gchar *text = gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
 	if (UT_isValidDimensionString (text)) {
 		// set
-		float pos;
-		sscanf (text, "%f", &pos);
-		UT_Dimension dim = UT_determineDimension(text, _getDimension ());
-		UT_DEBUGMSG (("onDefaultTabFocusOut() %d/%d (%s/%f)\n", dim, _getDimension (), text, pos));
-		if (dim != _getDimension ()) {
-			pos = UT_convertDimensions(pos, dim, _getDimension ());
+		float pos = strtof(text, NULL);
+		if (pos != gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab))) {
+
+			UT_Dimension dim = UT_determineDimension(text, _getDimension ());
+			UT_DEBUGMSG (("onDefaultTabFocusOut() %d/%d (%s/%f)\n", dim, _getDimension (), text, pos));
+			if (dim != _getDimension ()) {
+				pos = UT_convertDimensions(pos, dim, _getDimension ());
+			}
+
+			text = UT_formatDimensionString (dim, pos);
+			UT_DEBUGMSG (("onDefaultTabFocusOut() '%s'\n", text));
+
+			g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbDefaultTab), pos);
+			gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
+			g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 		}
-
-		text = UT_formatDimensionString (dim, pos);
-		UT_DEBUGMSG (("onDefaultTabFocusOut() '%s'\n", text));
-
-		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbDefaultTab), pos);
-		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
-		g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
-
-	    _storeWindowData ();
 	}
 	else {
 		// reset
@@ -498,25 +475,37 @@ AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
 		g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+
+	    _storeWindowData ();
 	}
+
 }
 
 //! Add tab and apply to paragraph.
 void 
 AP_UnixDialog_Tab::onAddTab ()
 { 
-	// HACK
-	// a new tab stop is by default at position 1 whatever the ruler unit is
-	guint pos = 1;
-	UT_UTF8String text = UT_UTF8String_sprintf ("%d%s", pos, UT_dimensionName (_getDimension ()));
-	//text += UT_dimensionName (_getDimension ());
-	UT_DEBUGMSG (("onAddTab() '%s'\n", text.utf8_str ()));
-
-	//m_lvTabs
-
-	UT_DEBUGMSG (("onAddTab() '%s'\n", text.utf8_str ()));
-
-	// set defaults
+	// Add tab one position after the last one
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvTabs));
+	GtkTreeIter iter;
+	char *value; 
+	float pos, max = 0;
+	if (gtk_tree_model_get_iter_first(model, &iter)) {
+		do {
+			gtk_tree_model_get (model, &iter, 0, &value, -1);
+			pos = strtof (value, NULL);
+			free(value);
+			if (pos > max)
+				max = pos;
+		} while (gtk_tree_model_iter_next(model, &iter));
+	}
+ 
+	pos = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
+	max += pos;
+	UT_UTF8String text = UT_UTF8String_sprintf ("%f%s", max, UT_dimensionName (_getDimension ())); 
+	UT_DEBUGMSG (("onAddTab() '%s' (%f/%f)\n", text.utf8_str(), pos, max));
+ 
+ 	// set defaults
 
 	g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
@@ -705,7 +694,11 @@ AP_UnixDialog_Tab::_setLeader (eTabLeader l)
 const gchar * 
 AP_UnixDialog_Tab::_gatherDefaultTabStop ()
 {
-	return gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
+	double pos = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
+	UT_Dimension dim = _getDimension ();
+	const char *text = UT_formatDimensionString (dim, pos);
+	UT_DEBUGMSG (("ROB: _gatherDefaultTabStop '%s'\n", text));
+	return text;
 }
 
 //! Set default tab stop.
