@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2005 Robert Staudinger <robsta@stereolyzer.net>
@@ -456,6 +458,7 @@ AP_UnixDialog_Tab::onDefaultTabChanged (double value)
 { 
 	UT_Dimension dim = _getDimension ();
 	const gchar *text = UT_formatDimensionString (dim, value);
+
 	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
 
     _storeWindowData ();
@@ -476,7 +479,7 @@ AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 			pos = UT_convertDimensions(pos, dim, _getDimension ());
 		}
 
-		const gchar *text = UT_formatDimensionString (dim, pos);
+		text = UT_formatDimensionString (dim, pos);
 		UT_DEBUGMSG (("onDefaultTabFocusOut() '%s'\n", text));
 
 		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
@@ -507,6 +510,10 @@ AP_UnixDialog_Tab::onAddTab ()
 	guint pos = 1;
 	UT_UTF8String text = UT_UTF8String_sprintf ("%d%s", pos, UT_dimensionName (_getDimension ()));
 	//text += UT_dimensionName (_getDimension ());
+	UT_DEBUGMSG (("onAddTab() '%s'\n", text.utf8_str ()));
+
+	//m_lvTabs
+
 	UT_DEBUGMSG (("onAddTab() '%s'\n", text.utf8_str ()));
 
 	// set defaults
@@ -707,12 +714,20 @@ AP_UnixDialog_Tab::_setDefaultTabStop (const gchar *defaultTabStop)
 {
 	UT_DEBUGMSG (("ROB: _setDefaultTabStop '%s'\n", defaultTabStop));
 
+	g_return_if_fail (defaultTabStop && *defaultTabStop && (defaultTabStop[0] != '0' || defaultTabStop[1] != '\0'));
+
 	float pos;
 	sscanf (defaultTabStop, "%f", &pos);
 
+	UT_UTF8String text = defaultTabStop;
+	if (!UT_hasDimensionComponent(defaultTabStop)) {
+		UT_Dimension dim = _getDimension ();
+		text = UT_formatDimensionString (dim, pos);
+	}
+
 	g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbDefaultTab), pos);
-	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), defaultTabStop);
+	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text.utf8_str());
 	g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 }
 
