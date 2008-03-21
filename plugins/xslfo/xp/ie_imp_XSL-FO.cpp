@@ -170,6 +170,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"fo:region-body",			TT_REGION_BODY			},
 	{	"fo:root",					TT_DOCUMENT				},
 	{	"fo:simple-page-master",	TT_SIMPLE_PAGE_MASTER	},
+	{	"fo:static-content",		TT_STATIC				},
 	{	"fo:table",					TT_TABLE				},
 	{	"fo:table-body",			TT_TABLEBODY			},
 	{	"fo:table-cell",			TT_TABLECELL			},
@@ -237,6 +238,14 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 		}
 
 		case TT_SECTION:
+		{
+			X_VerifyParseState(_PS_Doc);
+			m_parseState = _PS_Sec;
+			X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
+			break;
+		}
+
+		case TT_STATIC: // TODO: turn these into headers and footers, not generic sections
 		{
 			X_VerifyParseState(_PS_Doc);
 			m_parseState = _PS_Sec;
@@ -810,6 +819,13 @@ void IE_Imp_XSL_FO::endElement(const gchar *name)
 		}
 
 		case TT_SECTION:
+		{
+			X_VerifyParseState(_PS_Sec);
+			m_parseState = _PS_Doc;
+			break;
+		}
+
+		case TT_STATIC:
 		{
 			X_VerifyParseState(_PS_Sec);
 			m_parseState = _PS_Doc;

@@ -47,5 +47,6 @@
 #define TT_LISTITEMBODY			21	// fo:list-item-body
 #define TT_LISTBLOCK			22	// fo:list-block
 #define TT_BASICLINK			23	// fo:basic-link
+#define TT_STATIC			24	// fo:static-content
 
 #endif
