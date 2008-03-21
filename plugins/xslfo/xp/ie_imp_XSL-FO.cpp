@@ -257,11 +257,12 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 		{
 			X_CheckError((m_parseState == _PS_Sec) || (m_parseState == _PS_Block) || (m_parseState == _PS_List)); //blocks can be nested
 
+			m_iBlockDepth++; // leave this above the footnote check to prevent parse errors
+
 			if(m_bIgnoreFootnoteBlock)
 				break; // we want to ignore the first <fo:block> in <fo:footnote-body> because it appends an unwanted "break" before the footnote text
 
 			m_parseState = _PS_Block;
-			m_iBlockDepth++;
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("background-color", atts));
 			if (pVal && *pVal)
@@ -835,6 +836,7 @@ void IE_Imp_XSL_FO::endElement(const gchar *name)
 		case TT_BLOCK:
 		{
 			UT_ASSERT_HARMLESS(m_lenCharDataSeen == 0);
+			m_iBlockDepth--; // keep this above the footnote block check
 
 			if(m_bIgnoreFootnoteBlock) //we only want to ignore the first block, not all
 			{
@@ -843,7 +845,6 @@ void IE_Imp_XSL_FO::endElement(const gchar *name)
 			}
 
 			X_VerifyParseState( _PS_Block);
-			m_iBlockDepth--;
 
 			if(_isInListTag())
 				m_parseState = _PS_List;
