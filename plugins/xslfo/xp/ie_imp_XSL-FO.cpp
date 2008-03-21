@@ -471,7 +471,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 
 			{
 				pVal = static_cast<const gchar*>(_getXMLPropValue("background-color", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "bgcolor:";
@@ -479,7 +479,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("color", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "color:";
@@ -487,7 +487,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("language", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "lang:";
@@ -495,7 +495,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("font-size", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "font-size:";
@@ -503,7 +503,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 				
 				pVal = static_cast<const gchar*>(_getXMLPropValue("font-family", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "font-family:";
@@ -511,7 +511,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("font-weight", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "font-weight:";
@@ -519,7 +519,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("font-style", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "font-style:";
@@ -527,7 +527,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("font-stretch", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "font-stretch:";
@@ -535,7 +535,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("keep-together", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "keep-together:";
@@ -543,7 +543,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("keep-with-next", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "keep-with-next:";
@@ -551,7 +551,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 
 				pVal = static_cast<const gchar*>(_getXMLPropValue("text-decoration", atts));
-				if (pVal)
+				if (pVal && *pVal)
 				{
 					USED();
 					sBuf += "text-decoration:";
@@ -600,7 +600,9 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			if(p_val) //internal
 			{
 				UT_UTF8String link = "#";
-				link += p_val;
+				// It looks like the spec allows for an 'empty string', so we will too
+				if(*p_val)
+					link += p_val;
 
 				buf[0] = "xlink:href";
 				buf[1] = link.utf8_str();
@@ -626,7 +628,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 				else
 				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					UT_DEBUGMSG(("XSL-FO import: invalid external-destination attribute: [%s]\n", p_val));
 				}
 			}
 
@@ -759,7 +761,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				}
 				else
 				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					UT_DEBUGMSG(("XSL-FO import: invalid image src attribute: [%s]\n", p_val));
 				}
 			}
 
@@ -891,8 +893,6 @@ void IE_Imp_XSL_FO::endElement(const gchar *name)
 
 			if(m_bOpenedLink)
 				X_CheckError(appendObject(PTO_Hyperlink, NULL));
-			else
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 			m_bOpenedLink = false;
 			break;
