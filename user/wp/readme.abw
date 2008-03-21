@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
-<abiword template="false" version="2.4.0" xmlns:svg="http://www.w3.org/2000/svg" xid-max="130" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:en-US; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
+<abiword template="false" version="2.4.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xid-max="136" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.1" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:en-US; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
 <!-- ======================================================================== -->
 <!-- This file is an AbiWord document.                                        -->
 <!-- AbiWord is a free, Open Source word processor.                           -->
@@ -12,20 +12,22 @@
 <m key="dc.format">application/x-abiword</m>
 <m key="abiword.generator">AbiWord</m>
 </metadata>
-<history version="9" edit-time="576" last-saved="1131226883" uid="91c633fc-4e43-11da-9bf9-8faddbe5f409">
+<history version="11" edit-time="750" last-saved="1206140381" uid="91c633fc-4e43-11da-9bf9-8faddbe5f409">
 <version id="9" started="1131226323" uid="e94517c8-4e44-11da-9bf9-8faddbe5f409" auto="0" top-xid="120"/>
+<version id="11" started="1206140231" uid="7daa26f0-f79a-11dc-9fd4-edd0f61e2864" auto="0" top-xid="136"/>
 </history>
 <styles>
-<s type="P" name="Heading 1" basedon="Normal" followedby="Normal" props="keep-with-next:1; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; font-size:17pt"/>
-<s followedby="Current Settings" name="Normal" type="P" props="font-weight:normal; font-family:Times New Roman; margin-top:0pt; font-style:normal; margin-left:0pt; lang:en-US; dom-dir:ltr; font-variant:normal; text-indent:0in; margin-bottom:12pt; text-decoration:none; bgcolor:transparent; margin-right:0pt; color:000000; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
-<s type="P" name="Heading 2" basedon="Normal" followedby="Normal" props="keep-with-next:1; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; font-size:14pt"/>
+<s type="P" name="Heading 1" basedon="Normal" followedby="Normal" props="font-size:17pt; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; keep-with-next:1"/>
+<s followedby="Current Settings" name="Normal" type="P" props="text-indent:0in; margin-top:0pt; margin-left:0pt; font-stretch:normal; line-height:1.0; text-align:left; bgcolor:transparent; lang:en-US; dom-dir:ltr; margin-bottom:12pt; text-decoration:none; font-weight:normal; font-variant:normal; color:000000; text-position:normal; font-size:12pt; margin-right:0pt; font-style:normal; widows:2; font-family:Times New Roman"/>
+<s type="P" name="Heading 2" basedon="Normal" followedby="Normal" props="font-size:14pt; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; keep-with-next:1"/>
 </styles>
 <pagesize pagetype="A4" orientation="portrait" width="210.000000" height="297.000000" units="mm" page-scale="1.000000"/>
 <section xid="1">
 <p style="Heading 1" xid="2">Release Notes</p>
 <p style="Normal" xid="7" props="text-align:left; dom-dir:ltr; font-style:italic"><c props="font-style:italic">Thank you for your interest in this release of AbiWord!</c></p>
 <p style="Heading 2" xid="9">About AbiWord</p>
-<p style="Normal" xid="11" props="text-align:left; dom-dir:ltr">AbiWord is an "Open Source" word processor.  To learn more about the concept of Open Source, you should look at &lt;<a xlink:href="http%3a//www.opensource.org" xid="130">http://www.opensource.org</a>&gt;.  Because AbiWord is Open Source, it is freely distributable and available for use by anyone, without restrictions.  With AbiWord, there is no need to worry about piracy.  We encourage you to make as many copies as you like and to give them to your friends and colleagues.</p>
+<p style="Normal" xid="11" props="text-align:left; dom-dir:ltr">AbiWord is an "Open Source" word processor.<c props="lang:en-US">  </c>To learn more about the concept of Open Source, you should look at &lt;<a xlink:href="http%3a//www.opensource.org" xid="130">http://www.opensource.org</a>&gt;.</p>
+<p style="Normal" xid="131" props="text-align:left; dom-dir:ltr">Because AbiWord is Open Source, it is freely <c props="lang:en-US">shareable</c> and available for use by anyone, without restrictions.  With AbiWord, there is no need to worry about piracy.  We encourage you to make as many copies as you like and to give them to your friends and colleagues.</p>
 <p style="Normal" xid="20" props="text-align:left; dom-dir:ltr">Note that AbiWord is not "shareware".  You are under no moral or legal obligation to pay anyone for the right to use this program. If you are not familiar with this kind of software, please rest assured that there is no catch.  AbiWord is free, and it will always be free.  It is developed in a public fashion, by members of the software community from all over the world, communicating and collaborating together via the Internet.</p>
 <p style="Heading 2" xid="29">Getting Help</p>
 <p style="Normal" xid="31" props="text-align:left; dom-dir:ltr">There is some documentation at &lt;<a xlink:href="http://www.abisource.com/support/" xid="122">http://www.abisource.com/support/</a>&gt;. However, due to the lack of time and people to contribute to the documentation effort, it is far from complete, and does not cover all features, including many of the new features available in the 2.x release series. Another, sometimes more useful place to get help is the AbiWord user mailing list &lt;<a xlink:href="http://www.abisource.com/support/help/maillist.phtml" xid="124">http://www.abisource.com/support/help/maillist.phtml</a>&gt;. Users are strongly encouraged to join the mailing list in order to ask and answer questions freely.  Please keep discussion limited to AbiWord related subjects.</p>
