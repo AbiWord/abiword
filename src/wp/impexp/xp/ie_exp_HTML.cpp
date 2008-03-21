@@ -4998,8 +4998,10 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 					noteNumInit = atoi(szNoteNumInit);
 				else if(!strcmp(noteToken, "endnote") && pDAP->getProperty("document-endnote-initial", szNoteNumInit))
 					noteNumInit = atoi(szNoteNumInit);
-			pAP->getAttribute (strcat(idAttr, "-id"), szID);
-			UT_uint32 ID = atoi(szID);
+
+			UT_uint32 ID = 0;
+			if(pAP->getAttribute (strcat(idAttr, "-id"), szID) && szID)
+				ID = atoi(szID);
 			
 			UT_UTF8String_sprintf(notePIDString, " id=\"%s_%s-%d\"", noteToken, partToken, (ID + noteNumInit));
 			m_utf8_1 += notePIDString;
