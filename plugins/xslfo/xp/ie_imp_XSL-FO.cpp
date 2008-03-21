@@ -255,7 +255,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			m_iBlockDepth++;
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("background-color", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "bgcolor:";
@@ -263,7 +263,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("color", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "color:";
@@ -271,7 +271,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("language", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "lang:";
@@ -279,7 +279,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("font-size", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "font-size:";
@@ -287,7 +287,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 			
 			pVal = static_cast<const gchar*>(_getXMLPropValue("font-family", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "font-family:";
@@ -295,7 +295,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("font-weight", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "font-weight:";
@@ -303,7 +303,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("font-style", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "font-style:";
@@ -311,7 +311,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("font-stretch", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "font-stretch:";
@@ -319,7 +319,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("keep-together", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "keep-together:";
@@ -327,7 +327,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("keep-with-next", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "keep-with-next:";
@@ -335,7 +335,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("line-height", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "line-height:";
@@ -343,7 +343,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("margin-bottom", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "margin-bottom:";
@@ -351,7 +351,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("margin-top", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "margin-top:";
@@ -359,7 +359,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("margin-left", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "margin-left:";
@@ -367,7 +367,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("margin-right", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "margin-right:";
@@ -375,7 +375,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("text-align", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "text-align:";
@@ -383,7 +383,7 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("widows", atts));
-			if (pVal)
+			if (pVal && *pVal)
 			{
 				USED();
 				sBuf += "widows:";
