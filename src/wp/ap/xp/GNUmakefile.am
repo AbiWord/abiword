@@ -130,6 +130,7 @@ EXTRA_DIST = \
 	margin.png \
 	orient-horizontal.xpm \
 	orient-vertical.xpm \
+	sidebar.png \
 	$(headers_DATA)
 
 dist-hook:
