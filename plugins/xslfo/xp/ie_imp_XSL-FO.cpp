@@ -387,9 +387,23 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 			pVal = static_cast<const gchar*>(_getXMLPropValue("text-align", atts));
 			if (pVal && *pVal)
 			{
-				USED();
-				sBuf += "text-align:";
-				sBuf += static_cast<const char *>(pVal);
+				if (!strcmp("left", pVal) || !strcmp("right", pVal) || !strcmp("center", pVal) || !strcmp("justify", pVal))
+				{
+					USED();
+					sBuf += "text-align:";
+					sBuf += static_cast<const char *>(pVal);
+				}
+				else if (!strcmp("start", pVal))
+				{
+					USED();
+					sBuf += "text-align:left";
+				}
+				else if (!strcmp("end", pVal))
+				{
+					USED();
+					sBuf += "text-align:right";
+				}
+				// "outside" and "inside" are not handled
 			}
 
 			pVal = static_cast<const gchar*>(_getXMLPropValue("widows", atts));
