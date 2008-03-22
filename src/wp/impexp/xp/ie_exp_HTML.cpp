@@ -4094,9 +4094,10 @@ void s_HTML_Listener::_openPosImage (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
+
 	const gchar * pszDataID = NULL;
-	pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-	_handleImage(pAP,pszDataID,true);
+	if(pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID) && pszDataID)
+		_handleImage(pAP,pszDataID,true);
 
 }
 
