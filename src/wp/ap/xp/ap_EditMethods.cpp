@@ -9984,7 +9984,7 @@ UT_return_val_if_fail(pFrameData, false);
 	//
 	// This about this. we need to work out a page width for 100% zoom
 	//
-	pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
+	//pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_WEB);
@@ -10023,6 +10023,7 @@ UT_return_val_if_fail(pFrameData, false);
 		pFrame->toggleTopRuler (true);
 
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	UT_DEBUGMSG(("Set mode VIEW PRINT \n"));
 	pView->setViewMode (VIEW_PRINT);
 
 	// POLICY: make this the default for new frames, too
@@ -10034,11 +10035,11 @@ UT_return_val_if_fail(pFrameData, false);
 UT_return_val_if_fail(pScheme, false);
 	pScheme->setValue(AP_PREF_KEY_LayoutMode, "1");
 
-	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
 
 	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
 		pFrame->updateZoom();
+	pView->updateScreen(false);
 
 	return true;
 }

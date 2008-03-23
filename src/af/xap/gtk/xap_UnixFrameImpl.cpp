@@ -816,6 +816,11 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		}
 		if(pView)
 			pView->setWindowSize(iNewWidth, iNewHeight);
+		//
+		// Come back later when we have a view
+		//
+   		if(!pView)
+			return TRUE;
 		return FALSE;
 	}
 	if(!pView || pFrame->isFrameLocked() ||
@@ -847,10 +852,16 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		}
 		if(pView)
 			pView->setWindowSize(iNewWidth, iNewHeight);
+		//
+		// Come back later when we have a view
+		//
+   		if(!pView)
+			return TRUE;
 		return FALSE;
 	}
 
 	pUnixFrameImpl->m_bDoZoomUpdate = true;
+	UT_sint32 iLoop = 0;
 	do
 	{
 		// currently, we blow away the old view.  This will change, rendering
@@ -866,7 +877,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 
 		// oops, we're not ready yet.
 		if (pView->isLayoutFilling())
-			return TRUE;
+			return FALSE;
 
 		iNewWidth = pUnixFrameImpl->m_iNewWidth;
 		iNewHeight = pUnixFrameImpl->m_iNewHeight;
@@ -886,7 +897,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 			double orig_height = pDoc->m_docPageSize.Height(orig_ut);
 			double rat = static_cast<double>(iAdjustZoom)/static_cast<double>(pView->getGraphics()->getZoomPercentage()) ;
 			double new_width = orig_width*rat;
-			xxx_UT_DEBUGMSG(("old width %f new width %f old height %f \n",orig_width,new_width,orig_height));
+			UT_DEBUGMSG(("VIEW_WEB old width %f new width %f old height %f \n",orig_width,new_width,orig_height));
 			bool p = pLayout->m_docViewPageSize.isPortrait();
 			pLayout->m_docViewPageSize.Set(new_width,orig_height,orig_ut);
 			pLayout->m_docViewPageSize.Set(fp_PageSize::psCustom,orig_ut);
@@ -899,9 +910,11 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				pLayout->m_docViewPageSize.setLandscape();
 			}
 			pView->rebuildLayout();
-			pView->setWindowSize(iNewWidth, iNewHeight);
 			pView->updateScreen(false);
-			return true;
+			//
+			// We're done. No more calls needed
+			//
+			return TRUE;
 		}
 		//
 		// If we are here in view_web we just return
@@ -909,12 +922,12 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		pView->setWindowSize(iNewWidth, iNewHeight);
 		if(pView->getViewMode() == VIEW_WEB)
 		{
-			return true;
+			return TRUE;
 		}
 		pFrame->quickZoom(); // was update zoom
-
+		iLoop++;
 	}
-	while((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight));
+	while((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight) && (iLoop < 10));
 
 	pUnixFrameImpl->m_iZoomUpdateID = 0;
 	pUnixFrameImpl->m_bDoZoomUpdate = false;

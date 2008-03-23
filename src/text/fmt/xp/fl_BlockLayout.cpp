@@ -3392,10 +3392,20 @@ void fl_BlockLayout::format()
 					vecOldLineWidths.addItem(pOldLine->getWidth());
 				}
 			}
-			pRun->setTmpX(pRun->getX());
-			pRun->setTmpY(pRun->getY());
-			pRun->setTmpWidth(pRun->getWidth());
-			pRun->setTmpLine(pRun->getLine());
+			if(pRun->getLine())
+			{
+				pRun->setTmpX(pRun->getX());
+				pRun->setTmpY(pRun->getY());
+				pRun->setTmpWidth(pRun->getWidth());
+				pRun->setTmpLine(pRun->getLine());
+			}
+			else
+			{
+				pRun->setTmpX(0);
+				pRun->setTmpY(0);
+				pRun->setTmpWidth(0);
+				pRun->setTmpLine(NULL);
+			}
 			pRun = pRun->getNextRun();
 		}
 

@@ -9056,7 +9056,7 @@ UT_sint32 FV_View::getNormalModeXOffset(void) const
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
 	{
-		if(static_cast<AP_Frame *>(pFrame)->isShowMargin())
+		if(static_cast<AP_Frame *>(pFrame)->isShowMargin() && (getViewMode() != VIEW_WEB)  )
 		{
 			iX += FRAME_MARGIN; // add 0.1 inch for a left border to click in
 		}
@@ -9078,20 +9078,28 @@ UT_uint32 FV_View::getTabToggleAreaWidth() const
 
 void FV_View::setViewMode (ViewMode vm)
 {
+	bool bPrevWeb= (m_viewMode == VIEW_WEB);
 	m_viewMode = vm;
-
-	UT_return_if_fail( m_pLayout );
-
-	m_pLayout->updateOnViewModeChange();
 	
-	for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+	UT_return_if_fail( m_pLayout );
+	UT_DEBUGMSG(("View mode set calling updateviewonmodechange \n"));
+	m_pLayout->updateOnViewModeChange();
+	if(bPrevWeb)
 	{
-		fp_Page * pPage = m_pLayout->getNthPage(i);
-		UT_return_if_fail( pPage );
-
-		pPage->updateColumnX();
+		rebuildLayout();
+		m_pLayout->formatAll();
+		_generalUpdate();
 	}
+	else
+	{
+		for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+		{
+				fp_Page * pPage = m_pLayout->getNthPage(i);
+				UT_return_if_fail( pPage );
 
+				pPage->updateColumnX();
+		}
+	}
 	_fixInsertionPointCoords();
 	
 }
@@ -12949,8 +12957,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 		return getGraphics()->getZoomPercentage();
 
 	double scale = (getWindowWidth() - (2 * getPageViewLeftMargin())) /
-		(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
-								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
+		(pageWidth * (static_cast<double>(getGraphics()->getResolution())/
+					  								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
+	//				  (100.0 * 100.0)));
 	//
 	// Fill the whole width for non-Print view
 	//

@@ -1278,7 +1278,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_FillType.setColor(bgCol); 
 	}
-	UT_DEBUGMSG(("Drawing pDA->yoff %d \n",pDA->yoff));
+	xxx_UT_DEBUGMSG(("Drawing pDA->yoff %d \n",pDA->yoff));
 	_draw(pDA);
 	if(!bgCol.isTransparent())
 	{
@@ -1560,7 +1560,7 @@ bool fp_Run::_recalcWidth(void)
 
 void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 {
-	UT_DEBUGMSG(("drawDecors xoff %d \n",xoff));
+	xxx_UT_DEBUGMSG(("drawDecors xoff %d \n",xoff));
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
