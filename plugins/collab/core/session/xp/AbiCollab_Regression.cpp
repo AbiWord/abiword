@@ -19,6 +19,7 @@
  */
 
 #include <string>
+#include <string.h>
 
 #include "ut_debugmsg.h"
 #include <xp/AbiCollab_Regression.h>
