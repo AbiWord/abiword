@@ -85,6 +85,7 @@ endif
 EXTRA_DIST = \
 	Makefile \
 	libabiword.cpp \
+	libabiword.h \
 	$(noinst_HEADERS)
 
 ###
