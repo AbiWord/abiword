@@ -64,6 +64,38 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		GR_Graphics * pOldGraphics = pView->getGraphics();
 		pOldGraphics->setZoomPercentage(iZoom);
 		pOldGraphics->clearFont();
+
+		if(pView->getViewMode() == VIEW_WEB)
+		{
+			UT_sint32 iAdjustZoom = pView->calculateZoomPercentForPageWidth();
+			UT_Dimension orig_ut = DIM_IN;
+			orig_ut = pDocLayout->m_docViewPageSize.getDims();
+			double orig_width = pDocLayout->getDocument()->m_docPageSize.Width(orig_ut);
+			double orig_height = pDocLayout->getDocument()->m_docPageSize.Height(orig_ut);
+			double rat = static_cast<double>(iAdjustZoom)/static_cast<double>(iZoom) ;
+			double new_width = orig_width*rat;
+			UT_DEBUGMSG(("AP_Frame zoom VIEW_WEB old width %f new width %f old height %f \n",orig_width,new_width,orig_height));
+			bool p = pDocLayout->m_docViewPageSize.isPortrait();
+			pDocLayout->m_docViewPageSize.Set(new_width,orig_height,orig_ut);
+			pDocLayout->m_docViewPageSize.Set(fp_PageSize::psCustom,orig_ut);
+			if(p)
+			{
+				pDocLayout->m_docViewPageSize.setPortrait();
+			}
+			else
+			{
+				pDocLayout->m_docViewPageSize.setLandscape();
+			}
+			fl_SectionLayout* pSL = pDocLayout->getFirstSection();
+			while (pSL)
+			{
+				pSL->lookupMarginProperties();
+				pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
+			}
+			pView->rebuildLayout();
+			pDocLayout->formatAll();
+
+		}
 		AP_TopRuler * pTop = pView->getTopRuler();
 		if(pTop)
 		{
@@ -76,12 +108,6 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		}
 		setYScrollRange();
 		setXScrollRange();
-//
-// Redraw the entire screen
-//
-		pView->updateScreen(false);
-		pView->setPoint(pView->getPoint()); // place the cursor correctly
-		                                    // on the screen.
 		if(pTop && !pTop->isHidden())
 		{
 			pTop->draw(NULL);
@@ -90,6 +116,12 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		{
 			pLeft->draw(NULL);
 		}
+//
+// Redraw the entire screen
+//
+		pView->updateScreen(false);
+		pView->setPoint(pView->getPoint()); // place the cursor correctly
+		                                    // on the screen.
 	}
 	else
 	{
