@@ -21,6 +21,7 @@
 #ifndef __XMPPACCOUNTHANDLER__
 #define __XMPPACCOUNTHANDLER__
 
+#include <string>
 #include <vector>
 #include <map>
 
