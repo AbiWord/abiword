@@ -448,7 +448,7 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
 void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
 {
-	GR_Painter painter(getGraphics());
+	GR_Painter painter(pGr);
 
 	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
 		return; // do not draw	
