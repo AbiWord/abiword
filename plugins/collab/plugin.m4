@@ -57,31 +57,21 @@ AC_ARG_ENABLE([collab-backend-tcp],
 ])
 if test $enable_collab_backend_tcp == "yes"; then
 	AC_LANG_PUSH(C++)
-	AX_BOOST_THREAD
-	if test $ax_cv_boost_thread == "no"; then
-		AC_MSG_ERROR([Boost::Thread is required for the collab plugin TCP backend])		
-	fi
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
 		AC_MSG_ERROR([Asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 elif test $enable_collab_backend_tcp == "auto"; then
-	AX_BOOST_THREAD
-	if test $ax_cv_boost_thread == "yes"; then
-		AC_LANG_PUSH(C++)
-		AC_CHECK_HEADERS([asio.hpp], 
-		[
-			enable_collab_backend_tcp="yes"
-		], [
-			enable_collab_backend_tcp="no"
-			AC_MSG_WARN([Asio is required for the TCP backend, see http://asio.sourceforge.net])
-		])
-		AC_LANG_POP
-	else
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADERS([asio.hpp], 
+	[
+		enable_collab_backend_tcp="yes"
+	], [
 		enable_collab_backend_tcp="no"
-		AC_MSG_WARN([Boost::Thread is required for the TCP backend])		
-	fi
+		AC_MSG_WARN([Asio is required for the TCP backend, see http://asio.sourceforge.net])
+	])
+	AC_LANG_POP
 fi
 
 
@@ -118,10 +108,6 @@ AC_ARG_ENABLE([collab-backend-service],
 	enable_collab_backend_service="no"
 ])
 if test $enable_collab_backend_service == "yes"; then
-	AX_BOOST_THREAD
-	if test $ax_cv_boost_thread == "no"; then
-		AC_MSG_ERROR([Boost::Thread is required for the collab plugin \`collaborate.abisource.com' backend])		
-	fi
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
@@ -129,20 +115,14 @@ if test $enable_collab_backend_service == "yes"; then
 	])
 	AC_LANG_POP
 elif test $enable_collab_backend_service == "auto"; then
-	AX_BOOST_THREAD
-	if test $ax_cv_boost_thread == "yes"; then
-		AC_LANG_PUSH(C++)
-		AC_CHECK_HEADERS([asio.hpp], 
-		[
-			enable_collab_backend_service="yes"
-		], [
-			enable_collab_backend_service="no"
-		])
-		AC_LANG_POP
-	else
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADERS([asio.hpp], 
+	[
+		enable_collab_backend_service="yes"
+	], [
 		enable_collab_backend_service="no"
-		AC_MSG_WARN([Boost::Thread is required for the \`collaborate.abisource.com' backend])		
-	fi
+	])
+	AC_LANG_POP
 fi
 
 
@@ -178,7 +158,7 @@ fi
 
 if test $enable_collab_backend_tcp == "yes" || \
    test $enable_collab_backend_service == "yes"; then
-	COLLAB_LIBS="$COLLAB_LIBS $BOOST_THREAD_LIB"
+	COLLAB_LIBS="$COLLAB_LIBS -lpthread"
 fi
 
 COLLAB_CFLAGS="$COLLAB_CFLAGS "'${PLUGIN_CFLAGS}'

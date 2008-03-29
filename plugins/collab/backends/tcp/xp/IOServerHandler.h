@@ -22,7 +22,6 @@
 #include "ut_debugmsg.h"
 
 #include <boost/bind.hpp>
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <asio.hpp>
 
@@ -47,7 +46,7 @@ public:
 	{
 		work = new asio::io_service::work(io_service);
 		m_pAcceptor = new asio::ip::tcp::acceptor(io_service, endpoint);
-		boost::thread thread(iot);
+		asio::thread thread(iot);
 	}
 	
 	virtual ~IOServerHandler()

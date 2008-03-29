@@ -20,7 +20,6 @@
 #define __IO_CLIENT_HANDLER__
 
 #include <boost/bind.hpp>
-#include <boost/thread.hpp>
 #include <boost/utility.hpp>
 #include <asio.hpp>
 
@@ -69,7 +68,7 @@ public:
 		UT_return_if_fail(work == NULL);
 		
 		work = new asio::io_service::work(io_service);
-		thread = new boost::thread(IOServiceThread(io_service));
+		thread = new asio::thread(IOServiceThread(io_service));
 		
 		// TODO: catch exceptions
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
@@ -79,7 +78,7 @@ public:
 
 private:
 	asio::io_service					io_service;
-	boost::thread*						thread;
+	asio::thread*						thread;
 	asio::io_service::work*				work;
 	asio::ip::tcp::resolver				resolver;
 	asio::ip::tcp::resolver::query		query;

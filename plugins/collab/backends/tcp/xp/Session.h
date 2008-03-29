@@ -20,6 +20,7 @@
 #define __SESSION__
 
 #include <deque>
+#include <backends/xp/lock.h>
 
 class TCPAccountHandler;
 
@@ -48,7 +49,7 @@ public:
 	void push(int size, char* data)
 	{
 		{
-			boost::mutex::scoped_lock lock(queue_protector); 
+			abicollab::scoped_lock lock(queue_protector); 
 			incoming.push_back( std::pair<int, char*>(size, data) );
 		}
 		signal();
@@ -62,7 +63,7 @@ public:
 		if (incoming.size() == 0)
 			return false;
 		{
-			boost::mutex::scoped_lock lock(queue_protector); 
+			abicollab::scoped_lock lock(queue_protector); 
 			std::pair<int, char*> p = incoming.front();
 			size = p.first;
 			*data = p.second;
@@ -218,7 +219,7 @@ private:
 	}
 
 	asio::ip::tcp::socket					socket;
-	boost::mutex 							queue_protector;
+	abicollab::mutex 							queue_protector;
 	std::deque< std::pair<int, char*> >		incoming;
 	std::deque< std::pair<int, char*> >		outgoing;
 
