@@ -12363,7 +12363,7 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_
 	UT_UTF8String sDate;
 	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
 	pszAnn[5] = sDate.utf8_str();
-	UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.utf8_str(),sTitle.utf8_str(),posStart));
+	xxx_UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.utf8_str(),sTitle.utf8_str(),posStart));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,pszAnn,PTX_SectionAnnotation);
 
 	m_pDoc->endUserAtomicGlob();
