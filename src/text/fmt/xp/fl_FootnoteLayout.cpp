@@ -789,7 +789,7 @@ void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const char *pszDate;
 	if(!pSectionAP->getProperty("annotation-author", (const char *&)pszAuthor))
 	{
-	        pszAuthor = "/na";
+	        pszAuthor = "n/a";
 	}
 	if(*pszAuthor == 0)
         {
@@ -798,7 +798,7 @@ void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	m_sAuthor = pszAuthor;
 	if(!pSectionAP->getProperty("annotation-title", (const char *&)pszTitle))
 	{
-	        pszTitle = "/na";
+	        pszTitle = "n/a";
 	}
 	if(*pszTitle == 0)
         {
@@ -807,7 +807,7 @@ void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	m_sTitle = pszTitle;
 	if(!pSectionAP->getProperty("annotation-date", (const char *&)pszDate))
 	{
-	        pszDate = "/na";
+	        pszDate = "n/a";
 	}
 	if(*pszDate == 0)
         {
