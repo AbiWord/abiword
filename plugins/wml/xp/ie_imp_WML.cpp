@@ -813,7 +813,7 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 
 	p_val = _getXMLPropValue("xml:lang", atts);
 
-	if(p_val)
+	if(p_val && *p_val)
 	{
 		if(props.length())
 			props+= "; ";
