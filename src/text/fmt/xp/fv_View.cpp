@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <glib.h>
 #include "ut_locale.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
@@ -12313,31 +12314,108 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 
 }
 
+
+/*!
+ * Set the content of the annotation to the plain text supplied by
+ *  UT_UTF8String sText.
+ * Returns true if a valid annotation was found with valid content.
+ */
+bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle)
+{
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhStart = pAL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation, &sdhEnd);
+	
+	UT_return_val_if_fail(sdhEnd != NULL, false);
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart)+1; // Pos of Block o Text
+	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd); 
+	//
+	// First set up a glob
+	//
+	m_pDoc->beginUserAtomicGlob();
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	//
+	// Cut out current content
+	//
+	UT_uint32 iRealDeleteCount2;
+	PP_AttrProp * pAttrProp_Before = NULL;
+	m_pDoc->deleteSpan(posStart+1, posEnd, pAttrProp_Before, iRealDeleteCount2);
+	//
+	// Insert the new text
+	//
+	m_pDoc->insertSpan(posStart+1, sText.ucs4_str().ucs4_str(),sText.ucs4_str().size(),pAttrProp_Before);
+	//
+	// Set the annotation properties
+	//
+	posStart;
+	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	pszAnn[0] = "annotation-author";
+	pszAnn[1] = sAuthor.utf8_str();
+	pszAnn[2] = "annotation-title";
+	pszAnn[3] = sTitle.utf8_str();
+	pszAnn[4] = "annotation-date";
+	GDate  gDate;
+	g_date_set_time_t (&gDate, time (NULL));
+	UT_UTF8String sDate;
+	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
+	pszAnn[5] = sDate.utf8_str();
+	UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.utf8_str(),sTitle.utf8_str(),posStart));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,pszAnn,PTX_SectionAnnotation);
+
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	return true;
+
+}
+
 // TODO getters and setters to implement/change/add as judged necessary
-bool FV_View::getAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+bool FV_View::getAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
 {
-	// TODO implement
-	UT_DEBUGMSG(("getAnnotationTitle: not implemented\n"));
-	sTitle = "n/a";
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	sTitle = pAL->getTitle();
 	return true;
 }
-bool FV_View::setAnnotationTitle(UT_uint32 iAnnotaion, UT_UTF8String & sTitle)
+bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, UT_UTF8String & sTitle)
 {
-	// TODO implement
-	UT_DEBUGMSG(("setAnnotationTitle: not implemented\n"));
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
+	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
+	const char * pszAnn[3] = {NULL,NULL,NULL};
+	pszAnn[0] = "annotation-title";
+	pszAnn[1] = sTitle.utf8_str();
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
 	return true;
 }
-bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor)
 {
-	// TODO implement
-	UT_DEBUGMSG(("getAnnotationAuthor: not implemented\n"));
-	sAuthor = "n/a";
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	sAuthor = pAL->getAuthor();
 	return true;
 }
-bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
+bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, UT_UTF8String & sAuthor)
 {
-	// TODO implement
-	UT_DEBUGMSG(("setAnnotationAuthor: not implemented\n"));
+	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);
+	if(!pAL)
+		return false;
+	PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
+	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
+	const char * pszAnn[3] = {NULL,NULL,NULL};
+	pszAnn[0] = "annotation-author";
+	pszAnn[1] = sAuthor.utf8_str();
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
 	return true;
 }
 
@@ -12349,9 +12427,9 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotaion, UT_UTF8String & sAuthor)
  * an annotation.
  */
 bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
-							   UT_UTF8String * pTitle, // TODO store pTitle and pAuthor fields as well
-							   UT_UTF8String * pAuthor,
-							   UT_UTF8String * pDescr,
+							   UT_UTF8String * sDescr,
+							   UT_UTF8String * sAuthor,
+							   UT_UTF8String * sTitle,
 							   bool bReplace)
 {
 	// can only apply an Annotation to an FL_SECTION_DOC or a Table
@@ -12470,6 +12548,17 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	ann_attrs[1] = sNum.utf8_str();
 	ann_attrs[2] = 0;
 	ann_attrs[3] = 0;
+	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	pszAnn[0] = "annotation-author";
+	pszAnn[1] = sAuthor->utf8_str();
+	pszAnn[2] = "annotation-title";
+	pszAnn[3] = sTitle->utf8_str();
+	pszAnn[4] = "annotation-date";
+	GDate gDate;
+	g_date_set_time_t (&gDate, time (NULL));
+	UT_UTF8String sDate;
+	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
+	pszAnn[5] = sDate.utf8_str();
 	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
 				  "normal",
 				  NULL,
@@ -12479,7 +12568,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	//
 	// OK now insert the Annotation struxes
 	//
-	m_pDoc->insertStrux(posAnnotation,PTX_SectionAnnotation,ann_attrs,NULL);
+	m_pDoc->insertStrux(posAnnotation,PTX_SectionAnnotation,ann_attrs,pszAnn);
  	m_pDoc->insertStrux(posAnnotation+1,PTX_Block,block_atts,NULL);
 	m_pDoc->insertStrux(posAnnotation+2,PTX_EndAnnotation,NULL,NULL);
 	//
@@ -12496,13 +12585,13 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	else
 	{
 		UT_UTF8String sTmp;
-		if(pDescr == NULL)	
+		if(sDescr == NULL)	
 		{
 			sTmp = "Annotation";
 		}
 		else
 		{
-			sTmp = *pDescr;
+			sTmp = *sDescr;
 		}
 	
 		UT_UCS4String sUCS4(sTmp.utf8_str());

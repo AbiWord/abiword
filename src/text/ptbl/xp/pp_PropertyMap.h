@@ -48,7 +48,10 @@ class ABI_EXPORT PP_PropertyMap
 public:
 	enum AbiPropertyIndex // list of all properties used internally by AbiWord
 	{		
-		abi_background_color = 0,
+		abi_annotation_author= 0,
+		abi_annotation_date,
+		abi_annotation_title,
+		abi_background_color,
 		abi_background_image,
 		abi_bgcolor,
 		abi_bot_attach,

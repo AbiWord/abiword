@@ -4714,15 +4714,12 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 			pApp->getFrame(i)->updateTitle ();
 		}	  
 		
-		UT_UTF8String pDescr = pDialog->getDescription();
-		UT_UTF8String pTitle = pDialog->getTitle();
-		UT_UTF8String pAuthor = pDialog->getAuthor();
+		UT_UTF8String sDescr = pDialog->getDescription();
+		UT_UTF8String sTitle = pDialog->getTitle();
+		UT_UTF8String sAuthor = pDialog->getAuthor();
 //		bool bReplaceSelection = false;
-		b = setAnnotationText(aID,pDescr);
 		
-		// Optional fields
-		setAnnotationTitle(aID,pTitle);
-		setAnnotationAuthor(aID,pAuthor);
+		b = setAnnotationText(aID,sDescr,sAuthor,sTitle);
 	}
 	
 	// release the dialog

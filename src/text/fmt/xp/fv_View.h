@@ -561,12 +561,13 @@ public:
 	// Stuff for Annotaions
 	//	
 	bool				insertAnnotation(UT_sint32 iAnnotation,
-										 UT_UTF8String * pTitle,
-										 UT_UTF8String * pAuthor,
-										 UT_UTF8String * pDescr,
+										 UT_UTF8String * sDescr,
+										 UT_UTF8String * sAuthor,
+										 UT_UTF8String * sTitle,
 										 bool bReplace);
 	bool                getAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
 	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText);
+	bool                setAnnotationText(UT_uint32 iAnnotaion, UT_UTF8String & sText,UT_UTF8String & sAuthor, UT_UTF8String & sTitle);
 	bool                getAnnotationRichText(UT_uint32 iAnnotation, UT_UTF8String & sRTF);
     bool                setAnnotationRichText(UT_uint32 iAnnotaion, UT_UTF8String &sRTF);
 	// TODO getters and setters to implement/change/add as judged necessary

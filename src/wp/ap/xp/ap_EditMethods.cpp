@@ -10581,9 +10581,9 @@ Defun1(insAnnotation)
 	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
 	
 	pView->insertAnnotation(iAnnotation,
-							&pTitle,
-							&pAuthor,
 							&pDescr,
+							&pAuthor,
+							&pTitle,
 							false); // TODO this line is the only difference with insAnnotationFromSel below, code should me merged
 	
 	// Open edit annotation dialog
@@ -10610,14 +10610,15 @@ Defun1(insAnnotationFromSel)
 	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 	
 	// Default values
-	UT_UTF8String pTitle("New annotation"); // TODO auto enumerate (ex. "New annotation (3)")
-	UT_UTF8String pAuthor("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
-	UT_UTF8String pDescr("empty"); // TODO should be empty but FV_View::insertAnnotation needs to be fixed
+	UT_UTF8String sTitle;
+	sTitle = UT_UTF8String_sprintf("Annotation %d ",iAnnotation);
+	UT_UTF8String sAuthor("empty"); 
+	UT_UTF8String sDescr("empty"); 
 	
 	pView->insertAnnotation(iAnnotation,
-							&pTitle,
-							&pAuthor,
-							&pDescr,
+							&sDescr,
+							&sAuthor,
+							&sTitle,
 							true);
 	
 	// Open edit annotation dialog

@@ -595,7 +595,10 @@ fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout,
 					 FL_SECTION_ANNOTATION,
 					 FL_CONTAINER_ANNOTATION,
 					 PTX_SectionAnnotation),
-	  m_iAnnotationPID(0)
+	  m_iAnnotationPID(0),
+	  m_sAuthor("n/a"),
+	  m_sDate("n/a"),
+	  m_sTitle("n/a")
 {
 	m_pLayout->addAnnotation(this);
 	_createAnnotationContainer();
@@ -781,6 +784,37 @@ void fl_AnnotationLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iAnnotationPID = atoi(pszAnnotationPID);
 	}
+	const char* pszAuthor;
+	const char* pszTitle;
+	const char *pszDate;
+	if(!pSectionAP->getProperty("annotation-author", (const char *&)pszAuthor))
+	{
+	        pszAuthor = "/na";
+	}
+	if(*pszAuthor == 0)
+        {
+	        pszAuthor = "n/a";
+	}
+	m_sAuthor = pszAuthor;
+	if(!pSectionAP->getProperty("annotation-title", (const char *&)pszTitle))
+	{
+	        pszTitle = "/na";
+	}
+	if(*pszTitle == 0)
+        {
+	        pszTitle = "n/a";
+	}
+	m_sTitle = pszTitle;
+	if(!pSectionAP->getProperty("annotation-date", (const char *&)pszDate))
+	{
+	        pszDate = "/na";
+	}
+	if(*pszDate == 0)
+        {
+	        pszDate = "n/a";
+	}
+	m_sDate = pszDate;
+	UT_DEBUGMSG(("Annotation _lookupProps Author|%s| Title |%s| \n",m_sAuthor.utf8_str(),m_sTitle.utf8_str()));
 }
 
 void fl_AnnotationLayout::_localCollapse(void)

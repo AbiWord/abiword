@@ -26,6 +26,9 @@
 #include "pp_PropertyMap.h"
 
 static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
+	"annotation-author",
+	"annotation-date",
+	"annotation-title",
 	"background-color",
 	"background-image",
 	"bgcolor",

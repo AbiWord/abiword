@@ -175,6 +175,12 @@ public:
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
 	UT_uint32                getAnnotationPID(void) const
 		{return m_iAnnotationPID;}
+	const char *             getAuthor(void) const
+	{ return m_sAuthor.utf8_str();}
+	const char *             getDate(void) const
+	{ return m_sDate.utf8_str();}
+	const char *             getTitle(void) const
+	{ return m_sTitle.utf8_str();}
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 private:
@@ -182,6 +188,9 @@ private:
 	void                     _insertAnnotationContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
 	UT_uint32                m_iAnnotationPID;
+	UT_UTF8String            m_sAuthor;
+	UT_UTF8String            m_sDate;
+	UT_UTF8String            m_sTitle;
 };
 
 

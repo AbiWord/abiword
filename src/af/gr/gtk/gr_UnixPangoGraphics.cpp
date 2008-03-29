@@ -3312,6 +3312,7 @@ GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
 	
 	setLanguage(pLang);
 	reloadFont(pG);
+	UT_DEBUGMSG(("Created UnixPangOFont %x \n",this));
 }
 
 GR_UnixPangoFont::~GR_UnixPangoFont()
@@ -3376,7 +3377,8 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
 	m_iAscent = (UT_uint32) pG->ptlu(pango_font_metrics_get_ascent(pfm));
 	m_iDescent = (UT_uint32) pG->ptlu(pango_font_metrics_get_descent(pfm));
-	xxx_UT_DEBUGMSG(("Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
+	UT_DEBUGMSG(("UnixPangeFont: Reloaded Pango Font %x \n",m_pf));
+	xxx_UT_DEBUGMSG(("Reload font: Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
 }
 
