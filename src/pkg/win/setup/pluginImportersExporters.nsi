@@ -34,7 +34,8 @@ CRCCheck on
 SetCompressor /SOLID lzma
 
 ; The name of the installer
-Name "AbiWord's Importer/Exporter Plugins"
+Name "AbiWord Importer/Exporter Plugins"
+BrandingText "AbiWord 2.6 Series"
 
 ; Personal build
 Icon "..\..\pkg\win\setup\setup.ico"
