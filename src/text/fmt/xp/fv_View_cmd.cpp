@@ -4704,6 +4704,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Drawing annotation dialog...\n"));
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);
+	bool bApply = (pDialog->getAnswer() == AP_Dialog_Annotation::a_APPLY);
 	
 	if (bOK)
 	{
@@ -4721,7 +4722,35 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 		
 		b = setAnnotationText(aID,sDescr,sAuthor,sTitle);
 	}
-	
+	else if (bApply)
+	{
+		UT_UTF8String sDescr = pDialog->getDescription();
+		fl_AnnotationLayout * pAL = getAnnotationLayout(aID);
+		if(!pAL)
+		  return false;
+		PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = NULL;
+		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
+		
+		UT_return_val_if_fail(sdhEnd != NULL, false);
+		//
+		// Start of the text covered by the annotations
+		//
+		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
+		posStart++;
+		fp_Run * pRun = getHyperLinkRun(posStart);
+		UT_return_val_if_fail(pRun, false);
+		pRun = pRun->getNextRun();
+		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
+		  pRun = pRun->getNextRun();
+		UT_return_val_if_fail(pRun, false);
+		UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, false);
+		PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
+		if(posStart> posEnd)
+		  posStart = posEnd;
+		cmdSelect(posStart,posEnd);
+		cmdCharInsert(sDescr.ucs4_str().ucs4_str(),sDescr.ucs4_str().size());
+	}
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
 	

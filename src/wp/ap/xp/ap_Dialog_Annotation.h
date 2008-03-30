@@ -46,7 +46,7 @@ public:
 
 	virtual void	runModal(XAP_Frame * pFrame) = 0;
 
-	typedef enum { a_OK, a_CANCEL } tAnswer;
+	typedef enum { a_APPLY, a_OK, a_CANCEL } tAnswer;
 
 	AP_Dialog_Annotation::tAnswer		getAnswer(void) const
 	  {

@@ -41,9 +41,6 @@ AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)
 void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG(("Preview Annotation runModeless %x \n",this));
-	// TODO
-	// Set Window size from the length of the description
-	//
 	setActiveFrame(pFrame);
 	if(m_pPreviewWindow)
 	{

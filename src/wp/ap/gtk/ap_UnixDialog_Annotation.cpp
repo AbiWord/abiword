@@ -66,6 +66,10 @@ void AP_UnixDialog_Annotation::runModal(XAP_Frame * pFrame)
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
 				   GTK_RESPONSE_CANCEL, false))
 	{
+		case GTK_RESPONSE_APPLY:
+			eventApply();
+			break;
+
 		case GTK_RESPONSE_OK:
 			eventOK();
 			break;
@@ -89,6 +93,31 @@ set##name ( txt )
 void AP_UnixDialog_Annotation::eventOK ()
 {
 	setAnswer ( AP_Dialog_Annotation::a_OK ) ;
+	
+	// TODO: gather data
+	const char * txt = NULL ;
+	
+	GRAB_ENTRY_TEXT(Title);
+	GRAB_ENTRY_TEXT(Author);
+	
+	GtkTextIter start, end;
+	
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_textDescription));
+	gtk_text_buffer_get_iter_at_offset ( buffer, &start, 0 );
+	gtk_text_buffer_get_iter_at_offset ( buffer, &end, -1 );
+	
+	char * editable_txt = gtk_text_buffer_get_text ( buffer, &start, &end, FALSE );
+	
+	if (editable_txt && strlen(editable_txt))
+	{
+		setDescription ( editable_txt ) ;
+		g_free(editable_txt);
+	}
+}
+
+void AP_UnixDialog_Annotation::eventApply ()
+{
+	setAnswer ( AP_Dialog_Annotation::a_APPLY ) ;
 	
 	// TODO: gather data
 	const char * txt = NULL ;
@@ -154,6 +183,16 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
 	}
 	
+	GtkWidget * wOK = glade_xml_get_widget(xml, "btOK");
+	GtkWidget * wReplace = glade_xml_get_widget(xml, "btReplace");
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
+	gtk_button_set_label(GTK_BUTTON(wReplace),s.utf8_str()); 
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);
+	gtk_widget_set_tooltip_text (wOK,s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_tooltip,s);
+	gtk_widget_set_tooltip_text (wReplace,s.utf8_str());
+
+
 	SET_ENTRY_TXT(Title)
 	SET_ENTRY_TXT(Author)
 	

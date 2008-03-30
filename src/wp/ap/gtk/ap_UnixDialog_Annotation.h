@@ -41,6 +41,7 @@ class AP_UnixDialog_Annotation: public AP_Dialog_Annotation
 
 	void eventCancel () ;
 	void eventOK () ;
+	void eventApply () ;
 	
 	virtual GtkWidget * _constructWindow () ;
 
