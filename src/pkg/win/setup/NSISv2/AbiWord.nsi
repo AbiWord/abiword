@@ -66,6 +66,7 @@ OutFile "${INSTALLERNAME}"
 
 ; The name displayed by the installer
 Name "${PRODUCT} ${VERSION}"
+BrandingText "${PRODUCT} ${VERSION}"
 
 ; The default installation directory
 InstallDir $PROGRAMFILES\${APPSET}${VERSION_MAJOR}      ; e.g. "C:\Program Files\AbiSuite2"
@@ -479,6 +480,45 @@ Section "Uninstall"
 	Abort "Quitting the uninstall process"
 
 	DoUnInstall:
+	;;;;;;;;;;;;;;;;;;;;
+; Uninstall IEPlugins if installed
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordIEPlugins" \
+  "UninstallString"
+  StrCmp $R0 "" doneIEPlugins
+ 
+  ClearErrors
+  ExecWait '$R0 /S _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+ 
+  IfErrors no_remove_uninstaller_IEPlugins
+    ;You can either use Delete /REBOOTOK in the uninstaller or add some code
+    ;here to remove the uninstaller. Use a registry key to check
+    ;whether the user has chosen to uninstall. If you are using an uninstaller
+    ;components page, make sure all sections are uninstalled.
+	Delete '$R0'
+  no_remove_uninstaller_IEPlugins:
+  
+doneIEPlugins:
+
+;;;;;;;;;;;;;;;;;;;;
+; Uninstall ToolsPlugins if installed
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" \
+  "UninstallString"
+  StrCmp $R0 "" doneToolsPlugins
+
+  ClearErrors
+  ExecWait '$R0 /S _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+ 
+  IfErrors no_remove_uninstaller_ToolsPlugins
+    ;You can either use Delete /REBOOTOK in the uninstaller or add some code
+    ;here to remove the uninstaller. Use a registry key to check
+    ;whether the user has chosen to uninstall. If you are using an uninstaller
+    ;components page, make sure all sections are uninstalled.
+	Delete '$R0'
+  no_remove_uninstaller_ToolsPlugins:
+  
+doneToolsPlugins:
 
 	; removes all optional components
 	!insertmacro SectionList "RemoveSection"
