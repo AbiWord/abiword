@@ -252,27 +252,6 @@ Section "WML Wireless Markup"
 SectionEnd
 
 
-Section "WordPerfect"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-        SetOutPath $INSTDIR\AbiWord\bin
-        File "libwpd-0.8.dll"
-
-        SetOutPath $INSTDIR\AbiWord\plugins
-	  File "AbiWordPerfect.dll"
-
-	End:
-SectionEnd
-
 ;XML/XSL Formatting objects, meant to be similar in scope to LaTeX
 Section "XSL-FO"
 	SectionIn 2
@@ -331,22 +310,6 @@ Section "MS Write"
 	End:
 SectionEnd
 
-Section "Star Office Writer 5.1"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiSDW.dll"
-
-	End:
-SectionEnd
 
 Section "OPML"
 	SectionIn 2
@@ -365,6 +328,25 @@ Section "OPML"
 	End:
 SectionEnd
 
+
+Section "Star Office Writer 5.1"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiSDW.dll"
+
+	End:
+SectionEnd
+
+
 Section "T602"
 	SectionIn 2
 
@@ -378,6 +360,28 @@ Section "T602"
 
 	DoInstall:
 	File "AbiT602.dll"
+
+	End:
+SectionEnd
+
+
+Section "WordPerfect"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+        SetOutPath $INSTDIR\AbiWord\bin
+        File "libwpd-0.8.dll"
+
+        SetOutPath $INSTDIR\AbiWord\plugins
+	  File "AbiWordPerfect.dll"
 
 	End:
 SectionEnd
