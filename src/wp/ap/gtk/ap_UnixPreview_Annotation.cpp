@@ -41,9 +41,20 @@ AP_UnixPreview_Annotation::~AP_UnixPreview_Annotation(void)
 void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG(("Preview Annotation runModeless %x \n",this));
-	if(!m_pPreviewWindow)
-	  _constructWindow();
-	//draw();
+	// TODO
+	// Set Window size from the length of the description
+	//
+	setActiveFrame(pFrame);
+	if(m_pPreviewWindow)
+	{
+		DELETEP(m_gc);
+		gtk_widget_destroy(m_pDrawingArea);
+		gtk_widget_destroy(m_pPreviewWindow);
+		m_pPreviewWindow = NULL;
+		m_pDrawingArea = NULL;
+	}
+	setSizeFromAnnotation();
+	_constructWindow();
 	gtk_window_set_modal ( GTK_WINDOW(m_pPreviewWindow), FALSE ) ;
 	gtk_widget_show(m_pPreviewWindow);
 	
@@ -80,62 +91,22 @@ void  AP_UnixPreview_Annotation::_constructWindow(void)
 {
 	XAP_App::getApp()->rememberModelessId(getDialogId(), static_cast<XAP_Dialog_Modeless *>(this));
 	UT_DEBUGMSG(("Contructing Window width %d height %d left %d top %d \n",m_width,m_height,m_left,m_top));
-	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);   
-	gtk_widget_set_size_request(m_pPreviewWindow, PREVIEW_DEFAULT_WIDTH, PREVIEW_DEFAULT_HEIGHT);
-	
+	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
+	//	gtk_window_set_decorated(GTK_WINDOW(m_pPreviewWindow),FALSE);
+	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
+	gtk_window_set_position(GTK_WINDOW(m_pPreviewWindow),GTK_WIN_POS_MOUSE);
+	gint root_x,root_y;
+	gtk_window_get_position (GTK_WINDOW(m_pPreviewWindow),&root_x,&root_y);	
 	m_pDrawingArea = createDrawingArea();
+	gtk_widget_show(GTK_WIDGET(m_pDrawingArea));
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
-
-	gtk_widget_show_all(GTK_WIDGET(m_pPreviewWindow));
-	
-
-	
-	
-	
+	root_y -= m_height;
 	// moving
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow),
-					m_left,// + GTK_WIDGET(m_pPreviewWindow)->allocation.x,
-					m_top);// + GTK_WIDGET(m_pPreviewWindow)->allocation.y + GTK_WIDGET(m_pPreviewWindow)->allocation.height);
+					root_x,
+					root_y);
 	
-	// looking for offsets......
-	
-	gint left;// = 100;
-	gint top;// = 100;
-	GdkWindow * kk = gdk_window_get_toplevel(m_pPreviewWindow->window);
-	gdk_window_get_origin(kk, &left, &top);
-	UT_DEBUGMSG(("gdk_window_get_origin offsets? left %d top %d \n", left, top));
-	gdk_window_get_root_origin(kk, &left, &top);
-	UT_DEBUGMSG(("gdk_window_get_root_origin offsets? left %d top %d \n", left, top));
-	gdk_window_get_deskrelative_origin(kk, &left, &top);
-	UT_DEBUGMSG(("gdk_window_get_deskrelative_origin offsets? left %d top %d \n", left, top));
-	gdk_window_get_position(kk, &left, &top);
-	UT_DEBUGMSG(("gdk_window_get_position offsets? left %d top %d \n", left, top));
-	gdk_window_get_geometry(kk, &left, &top, NULL, NULL, NULL);
-	UT_DEBUGMSG(("gdk_window_get_geometry  offsets? left %d top %d \n", left, top));
-
-	/*  gdk_window_get_parent                       (GdkWindow *window);
-	GdkWindow*          gdk_window_get_toplevel             (GdkWindow *window);
-	GList*              gdk_window_get_toplevels            (void);
-	GdkWindow*          gdk_get_default_root_window         (void);
-	gdk_window_get_deskrelative_origin
-	*/
-		
-		
-	//gtk_widget_set_uposition(GTK_WIDGET(m_pPreviewWindow), left, top);
-	
-//	gtk_widget_show(m_pPreviewWindow);
-//	gtk_widget_show_all(GTK_WIDGET(m_pPreviewWindow));
-//	gtk_widget_show(GTK_WIDGET(m_pPreviewWindow));
-	//gtk_widget_popup(GTK_WIDGET(m_pPreviewWindow), left, top);
-//	gtk_widget_grab_focus(m_pPreviewWindow);
-	//UT_ASSERT(false);
-
-
-	/*XAP_App *pApp = XAP_App::getApp();
-	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
-
-	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);*/
+	gtk_widget_show_all(GTK_WIDGET(m_pPreviewWindow));
 }
 
 void  AP_UnixPreview_Annotation::destroy(void)

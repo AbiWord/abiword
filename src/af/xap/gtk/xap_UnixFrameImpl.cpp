@@ -2123,6 +2123,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		// We run this menu synchronously, since GTK doesn't.
 		// Popup menus have a special "unmap" function to call
 		// gtk_main_quit() when they're done.
+		gdk_event_free(event);	
 		gtk_main();
 	}
 

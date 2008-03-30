@@ -81,19 +81,70 @@ void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_
 	UT_DEBUGMSG(("AP_Preview_Annotation: Annotation preview created!\n"));
 }
 
+/*!
+ * This method sets the height and width of the preview from
+ * the size of the comment in the annotation.
+ */
+void AP_Preview_Annotation::setSizeFromAnnotation(void)
+{
+	//
+	// Get the font and features
+	//
+	
+	// "font-family"
+	const char * pszFamily = "Times New Roman";
+	
+	// "font-style"
+	const char * pszStyle = "normal";
+	
+	// "font-variant"
+	const char * pszVariant = "normal";
+	
+	// "font-stretch"
+	const char * pszStretch = "normal";
+	
+	// "font-size"
+	const char * pszSize="12pt";
+	
+	// "font-weight"
+	const char * pszWeight = "normal";
+
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	UT_return_if_fail(pView);
+	GR_Graphics * pVGraphics = pView->getGraphics();
+	UT_return_if_fail(pVGraphics);
+	GR_Font * pFont = pVGraphics->findFont(pszFamily, pszStyle,
+							 pszVariant, pszWeight,
+							 pszStretch, pszSize,
+							 NULL);
+	
+	UT_return_if_fail(pFont);
+	
+	UT_sint32 iHeight = pVGraphics->getFontAscent(pFont) + pVGraphics->tlu(7);
+	double rat = 100./static_cast<double>(pVGraphics->getZoomPercentage());
+	//	rat = 1.0;
+	iHeight = static_cast<UT_sint32>(static_cast<double>(iHeight));
+	m_drawString = m_pDescription;
+	UT_sint32 len = m_drawString.size();
+	UT_sint32 iwidth = pVGraphics->measureString(m_drawString.ucs4_str(),0,len,NULL) + pVGraphics->tlu(6);
+	iwidth = static_cast<UT_sint32>(static_cast<double>(iwidth));
+	m_width = static_cast<UT_sint32>(static_cast<double>(pVGraphics->tdu(iwidth))*rat);
+	m_height = static_cast<UT_sint32>(static_cast<double>(pVGraphics->tdu(iHeight))*rat);
+	if(pVGraphics->tdu(pView->getWindowWidth()) < m_width)
+	  m_width = pVGraphics->tdu(pView->getWindowWidth());
+}
 // Finally draw the characters in the preview.
 void AP_Preview_Annotation::draw(void)
 {
-	m_drawString = m_pTitle + " (" + m_pAuthor + "): " + m_pDescription;
-
+        m_drawString = m_pDescription;
 	//
 	// Text decorations.
 	//
 	bool isUnder,isOver,isStrike;
 	
-		isUnder = false;	// "underline"
-		isOver = false;		// "overline"
-		isStrike = false;	// "line-through"
+	isUnder = false;	// "underline"
+	isOver = false;		// "overline"
+	isStrike = false;	// "line-through"
 	
 	//
 	// Foreground and background colors.
@@ -148,12 +199,11 @@ void AP_Preview_Annotation::draw(void)
 	//
 	// Calculate the draw coordinates position
 	//
-	UT_sint32 iWinWidth = m_gc->tlu(getWindowWidth());
-	UT_sint32 iWinHeight = m_gc->tlu(getWindowHeight());
-	UT_sint32 iTop = (iWinHeight - m_iHeight)/2;
+	UT_sint32 iTop = m_gc->tlu(1);
 	UT_sint32 len = m_drawString.size();
 	UT_sint32 twidth = m_gc->measureString(m_drawString.ucs4_str(),0,len,NULL);
-	UT_sint32 iLeft = (iWinWidth - twidth)/2;
+	UT_sint32 iLeft = m_gc->tlu(2);
+
 	//
 	// Fill the background color
 	//
@@ -164,7 +214,6 @@ void AP_Preview_Annotation::draw(void)
 	//
 	m_gc->setColor(FGcolor);
 	painter.drawChars(m_drawString.ucs4_str(), 0, len, iLeft, iTop);
-	
 	//
 	// Do the decorations
 	//
@@ -227,11 +276,11 @@ void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)
 
 /*!
  * Set the left and top positions of the popup. These are the mouse
- * coordinates in device units.
+ * coordinates in device units.c - This is ignored by the unix FE
  */
 void  AP_Preview_Annotation::setXY(UT_sint32 x, UT_sint32 y)
 {
-  m_left = x - PREVIEW_DEFAULT_WIDTH/2;
+  m_left = x - m_width/2;
   m_top = y;
   if(m_top < 0)
     m_top = 0;

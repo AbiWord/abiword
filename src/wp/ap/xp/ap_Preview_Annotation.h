@@ -30,7 +30,7 @@
 
 // default annotation preview values
 #define PREVIEW_DEFAULT_WIDTH 320
-#define PREVIEW_DEFAULT_HEIGHT 160
+#define PREVIEW_DEFAULT_HEIGHT 80
 
 class AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_Modeless
 {
@@ -48,7 +48,8 @@ public:
 	void		clearScreen(void);
 	void        setXY(UT_sint32 x, UT_sint32 y);                              
 	void        setActiveFrame(XAP_Frame *pFrame);
-	
+	void        setSizeFromAnnotation(void);
+
 	//virtual void	activate(void);
 	
 protected:
