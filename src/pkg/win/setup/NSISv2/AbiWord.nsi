@@ -488,7 +488,7 @@ Section "Uninstall"
   StrCmp $R0 "" doneIEPlugins
  
   ClearErrors
-  ExecWait '$R0 /S _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+  ExecWait '$R0 /S _?=$INSTDIR\AbiWord\plugins' ;Do not copy the uninstaller to a temp files
  
   IfErrors no_remove_uninstaller_IEPlugins
     ;You can either use Delete /REBOOTOK in the uninstaller or add some code
@@ -508,7 +508,7 @@ doneIEPlugins:
   StrCmp $R0 "" doneToolsPlugins
 
   ClearErrors
-  ExecWait '$R0 /S _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+  ExecWait '$R0 /S _?=$INSTDIR\AbiWord\plugins'  ;Do not copy the uninstaller to a temp files
  
   IfErrors no_remove_uninstaller_ToolsPlugins
     ;You can either use Delete /REBOOTOK in the uninstaller or add some code
