@@ -122,7 +122,6 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 	
 	UT_sint32 iHeight = pVGraphics->getFontAscent(pFont) + pVGraphics->tlu(7);
 	double rat = 100./static_cast<double>(pVGraphics->getZoomPercentage());
-	//	rat = 1.0;
 	iHeight = static_cast<UT_sint32>(static_cast<double>(iHeight));
 	m_drawString = m_pDescription;
 	UT_sint32 len = m_drawString.size();
