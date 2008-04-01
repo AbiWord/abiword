@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- Mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -824,9 +824,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openTable(PT_AttrPropIndex api)
 {
 	UT_sint32 i = 0;
-	
-	m_pie->write("\n\\\\");
-	m_pie->write("\n%");
+
+	m_pie->write("\n\n%");
 	m_pie->write("\n% Table begins");
 	m_pie->write("\n% ");
 	m_pie->write("\n\\begin{table}[h]\\begin{tabular}{|");
