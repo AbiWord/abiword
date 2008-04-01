@@ -199,27 +199,22 @@ static void LoadBindings_RemoveFromMethods ()
 //      Abiword Plugin Interface 
 // -----------------------------------------------------------------------
 
-static void LoadKeybindings( const char* basedir )
+static void LoadKeybindings(const char* uri)
 {
-	if (basedir) {
-		std::string userFile = basedir;
-		userFile += "/keybindings.xml";
+	UT_return_if_fail(uri);
+	UT_DEBUGMSG(("[LoadBindings] trying file %s\n", uri));
 		
-		UT_DEBUGMSG(("[LoadBindings] trying file %s\n", userFile.c_str()));
-		
-		// find out if the file exists at all
-		GsfInput* in = NULL;
-		struct stat buf;
-		if (stat(userFile.c_str(), &buf)==0 ||
-			(in = UT_go_file_open( userFile.c_str(), NULL ))) 
-		{
-			// it seems to exist, cleanup after ourselves ...
-			if (in) g_object_unref(G_OBJECT(in));
-			// ... and let LoadBindings_invoke do its thing
-			UT_DEBUGMSG(("[LoadBindings] invoking loader on %s\n", userFile.c_str()));
-			EV_EditMethodCallData userFileData( userFile.c_str(), UT_uint32(userFile.size()) );
-			LoadBindingsFromURI_invoke( NULL, &userFileData );
-		}
+	// find out if the file exists at all
+	GsfInput* in = NULL;
+	if (in = UT_go_file_open(uri, NULL)) 
+	{
+		// it seems to exist, cleanup after ourselves ...
+		if (in)
+			g_object_unref(G_OBJECT(in));
+		// ... and let LoadBindings_invoke do its thing
+		UT_DEBUGMSG(("[LoadBindings] invoking loader on %s\n", uri));
+		EV_EditMethodCallData userFileData(uri, strlen(uri));
+		LoadBindingsFromURI_invoke(NULL, &userFileData);
 	}
 }
 
@@ -235,11 +230,26 @@ ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	LoadBindings_registerMethod ();
 	
-	// execute the keybindings.xml file from the application directory, if present
-	LoadKeybindings( XAP_App::getApp()->getAbiSuiteAppDir() );
+	// load the keybindings.xml file from the application directory, if present
+	UT_UTF8String appFile = XAP_App::getApp()->getAbiSuiteAppDir();
+	appFile += "/keybindings.xml";
+	char * appUri = UT_go_filename_to_uri(appFile.utf8_str());
+	if (appUri)
+	{
+		LoadKeybindings(appUri);
+		FREEP(appUri);
+	}
 	
-	// execute the keybindings.xml file from the user's home directory, if present
-	LoadKeybindings( XAP_App::getApp()->getUserPrivateDirectory() );
+	// load the keybindings.xml file from the user's home directory, if present
+	UT_UTF8String userFile = XAP_App::getApp()->getUserPrivateDirectory();
+	userFile += "/keybindings.xml";
+	char * userUri = UT_go_filename_to_uri(userFile.utf8_str());
+	if (userUri)
+	{
+		LoadKeybindings(userUri);
+		FREEP(userUri);
+	}
+
 	return 1;
 }
 
