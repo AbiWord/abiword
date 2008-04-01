@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ut_stack.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -177,7 +178,7 @@ static bool _convertLettersToSymbols(char c, const char *& subst);
 
 #define BULLET_LIST	1
 #define NUMBERED_LIST	2
-
+typedef int LIST_TYPE;
 class s_LaTeX_Listener : public PL_Listener
 {
 public:
@@ -212,6 +213,8 @@ protected:
 	void				_closeSection(void);
 	void				_closeSpan(void);
 	void				_closeTable(void);
+	void                _closeList(void);
+	void                _closeLists(void);
 	void				_openCell(PT_AttrPropIndex api);
 	void				_openParagraph(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
@@ -243,7 +246,10 @@ protected:
 	bool				m_bLineHeight;
 	bool				m_bFirstSection;
 	int 				ChapterNumber;
-	int				list_type;
+	int                 m_Indent;
+	
+// Type for the last-processed list  
+	LIST_TYPE			list_type;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -253,6 +259,9 @@ protected:
 	// Table utility members
 	
 	ie_Table *			m_pTableHelper;
+
+//	std::stack<LIST_TYPE>   list_stack;
+	UT_NumberStack          list_stack;
 };
 
 void s_LaTeX_Listener::_closeParagraph(void)
@@ -260,6 +269,29 @@ void s_LaTeX_Listener::_closeParagraph(void)
 	if ((!m_bInCell) && (!m_bInFootnote)) m_pie->write("\n");
 	m_bInHeading = false;
 	return;
+}
+        
+void s_LaTeX_Listener::_closeList(void)
+{
+	switch (list_type) {
+		case NUMBERED_LIST:
+			m_pie->write("\\end{enumerate}\n");
+			break;
+		case BULLET_LIST:
+			m_pie->write("\\end{itemize}\n");
+			break;
+		default:
+			;
+	}
+	list_stack.pop();
+}
+
+void s_LaTeX_Listener::_closeLists()
+{
+	do{
+		_closeList();
+	} while(list_stack.getDepth());
+	m_bInList = false;
 }
 
 void s_LaTeX_Listener::_closeSection(void)
@@ -271,12 +303,7 @@ void s_LaTeX_Listener::_closeSection(void)
 
 	if (m_bInList)
 	{
-		m_bInList = false;
-		if (list_type == BULLET_LIST)
-			m_pie->write("\\end{itemize}");
-		else if (list_type == NUMBERED_LIST)
-			m_pie->write("\\end{enumerate}");
-
+		this->_closeLists();
 	}
  
 	if (m_bMultiCols)
@@ -383,41 +410,75 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			&& (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 			&& (0 == strcmp(szValue, "Normal")))
 		{
-			if (m_bInList)
-				m_pie->write("\\item ");
-			else
+			int indent = 0;
+			bool bNewList = false;
+			const gchar * szIndent, * szLeft, * szListStyle;
+			
+			pAP->getProperty("list-style", szListStyle);
+			
+			if (pAP->getProperty("text-indent", szIndent) && pAP->getProperty("margin-left", szLeft))
+			{
+				indent = UT_convertToDimension(szIndent, DIM_MM) + UT_convertToDimension(szLeft, DIM_MM);
+				if (m_bInList)
+				{
+					UT_DEBUGMSG(("      indent = %d, m_Indent = %d\n", indent, m_Indent));
+					if(indent > this->m_Indent) //nested list
+						bNewList = true;
+					else if (indent < this->m_Indent)
+					{
+						this->_closeList();
+					}
+					else
+						/*
+						 * now we have indent == this->m_Indent,
+						 * but it is possible that the current list item is
+						 * of different style with the last one.
+						 */                                    
+					{
+						if(szListStyle)
+						{
+							LIST_TYPE temp = BULLET_LIST;
+							if (0 == strcmp(szListStyle, "Numbered List") )
+								temp = NUMBERED_LIST;
+							if (temp != list_type)
+							{
+								this->_closeList();
+								bNewList = true;
+							}
+						}
+					}
+				}
+			}
+			
+			if (bNewList || !m_bInList) 
+				//necessary to build a new (possibly nested) list
 			{
 				if (pAP->getProperty("list-style", szValue))
 				{
+					//if(NULL == list_stack)
+					//  this->list_stack = new std::stack<LIST_TYPE>();
 					if (0 == strcmp(szValue, "Numbered List"))
 					{
 						list_type = NUMBERED_LIST;
-						m_pie->write("\\begin{enumerate}\n\\item ");
+						m_pie->write("\\begin{enumerate}\n");
 					}
 					else if (0 == strcmp(szValue, "Bullet List"))
 					{
 						list_type = BULLET_LIST;
-						m_pie->write("\\begin{itemize}\n\\item ");
+						m_pie->write("\\begin{itemize}\n");
 					}
+					list_stack.push(list_type);
 				}
 				m_bInList = true;
 			}
+			
+			if (szIndent && szLeft)
+				this->m_Indent = indent;
+			
+			m_pie->write("\\item ");
 		} else if (m_bInList) {
-			m_bInList = false;
-			switch (list_type) {
-			case NUMBERED_LIST:
-				m_pie->write("\\end{enumerate}\n");
-				break;
-			case BULLET_LIST:
-				m_pie->write("\\end{itemize}\n");
-				break;
-			default:
-				;
-			}
+			this->_closeLists();
 		}
-
-
-
 		if (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			if (strstr(szValue, "Heading"))
@@ -2328,22 +2389,22 @@ static int wvConvertUnicodeToLaTeX(U16 char16,const char*& out)
 			return(1);
 
 		case 0x01FA:
-			printf("\\'{\\AA}");  /* Å with acute */
+			printf("\\'{\\AA}");  /* ? with acute */
 			return(1);
 		case 0x01FB:
-			printf("\\'{\\aa}");  /* å with acute */
+			printf("\\'{\\aa}");  /* ? with acute */
 			return(1);
 		case 0x01FC:
-			printf("\\'{\\AE}");  /* Æ with acute */
+			printf("\\'{\\AE}");  /* ? with acute */
 			return(1);
 		case 0x01FD:
-			printf("\\'{\\ae}");  /* æ with acute */
+			printf("\\'{\\ae}");  /* ? with acute */
 			return(1);
 		case 0x01FE:
-			printf("\\'{\\O}");  /* Ø with acute */
+			printf("\\'{\\O}");  /* ? with acute */
 			return(1);
 		case 0x01FF:
-			printf("\\'{\\o}");  /* ø with acute */
+			printf("\\'{\\o}");  /* ? with acute */
 			return(1);
 
 		case 0x2010:
