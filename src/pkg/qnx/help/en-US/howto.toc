@@ -1,4 +1,0 @@
-4|Howto|./howto/index.html
-5|Tables|./howtotables.html
-5|Templates|./howtonormaltemplate.html
-5|Web|./howtoweb.html

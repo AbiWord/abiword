@@ -1,4 +1,0 @@
-4|Introduction|./introduction.html
-4|About|./aboutos.html
-4|Credits|./credits.html
-4|Documentation License|./fdl.html
