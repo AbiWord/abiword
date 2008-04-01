@@ -101,8 +101,6 @@ libcocoa_la_SOURCES = \
 	ap_CocoaPrefs.cpp \
 	ap_Cocoa_ResourceIDs.h \
 	ap_Cocoa_ResourceIDs.cpp \
-	ap_CocoaSplash.h \
-	ap_CocoaSplash.cpp \
 	ap_CocoaStatusBar.h \
 	ap_CocoaStatusBar.cpp \
 	ap_Cocoa_TB_CFactory.cpp \

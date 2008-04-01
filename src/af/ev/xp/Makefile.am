@@ -24,6 +24,7 @@ libxp_la_SOURCES = \
 	ev_Menu_Layouts.h \
 	ev_Mouse.cpp \
 	ev_Mouse.h \
+	ev_MouseListener.h \
 	ev_NamedVirtualKey.cpp \
 	ev_NamedVirtualKey.h \
 	ev_Toolbar_Actions.cpp \

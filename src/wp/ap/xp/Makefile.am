@@ -109,6 +109,7 @@ libxp_la_SOURCES = \
 	ap_FrameData.cpp \
 	ap_FrameData.h \
 	ap_Frame.h \
+	ap_FrameListener.h \
 	ap_LB_DeadAbovedot.cpp \
 	ap_LB_DeadAbovedot.h \
 	ap_LB_DeadAcute.cpp \
