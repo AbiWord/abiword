@@ -179,11 +179,81 @@ static bool _convertLettersToSymbols(char c, const char *& subst);
 #define BULLET_LIST	1
 #define NUMBERED_LIST	2
 typedef int LIST_TYPE;
+
+class LaTeX_Analysis_Listener : public PL_Listener
+{
+public:
+	bool m_hasEndnotes;
+
+	LaTeX_Analysis_Listener(PD_Document * pDocument,
+							IE_Exp_LaTeX * pie)
+		: m_hasEndnotes(false)
+	{
+	}
+
+	virtual ~LaTeX_Analysis_Listener()
+	{
+	}
+
+	virtual bool		populate(PL_StruxFmtHandle sfh,
+								 const PX_ChangeRecord * pcr)
+	{
+		return true;	
+	}
+
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh)
+	{
+		UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+		const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+		*psfh = 0;							// we don't need it.
+
+		switch (pcrx->getStruxType())
+			{
+			case PTX_SectionEndnote:
+			case PTX_EndEndnote:
+				m_hasEndnotes = true;
+				break;
+			default:
+				break;
+			}
+
+		return true;
+	}
+
+	virtual bool		change(PL_StruxFmtHandle sfh,
+							   const PX_ChangeRecord * pcr)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+									const PX_ChangeRecord * pcr,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew))
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
+	virtual bool		signal(UT_uint32 iSignal)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+};
+
 class s_LaTeX_Listener : public PL_Listener
 {
 public:
 	s_LaTeX_Listener(PD_Document * pDocument,
-						IE_Exp_LaTeX * pie);
+					 IE_Exp_LaTeX * pie,
+					 LaTeX_Analysis_Listener& analysis);
 	virtual ~s_LaTeX_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -1256,7 +1326,7 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	}
 }
 
-s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie)
+s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, LaTeX_Analysis_Listener& analysis)
   : m_pDocument(pDocument),
 	m_pie(pie),
 	m_bInBlock(false),
@@ -1269,7 +1339,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie)
 	m_bInSansSerif(0),
 	m_bFirstSection(true),
 	m_bInEndnote(false),
-	m_bHaveEndnote(false)
+	m_bHaveEndnote(analysis.m_hasEndnotes)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -1298,12 +1368,10 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie)
 	m_pie->write("%% Please set your language here\n");
 	m_pie->write("\\usepackage[english]{babel}\n");
 	m_pie->write("\\usepackage{color}\n");
-	/* TODO: Decice whether it is necessary to include the endnotes package
-	 * after the whole document is parsed. This is doable if we can extend
-	 * the interface of IE_Exp_LaTeX by a method that can insert text at the
-	 * beginning of the stream.
-	 */
-	m_pie->write("\\usepackage{endnotes}\n");
+
+	if (m_bHaveEndnote)
+		m_pie->write("\\usepackage{endnotes}\n");
+
 	// Must be as late as possible.
 	m_pie->write("\\usepackage{hyperref}\n");
 
@@ -1595,7 +1663,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		m_bInEndnote = true;
 		m_pie->write("\\endnote{");
-		m_bHaveEndnote = true;
 		return true;
 	}
 	case PTX_EndEndnote:
@@ -1641,7 +1708,11 @@ bool s_LaTeX_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_LaTeX::_writeDocument(void)
 {
-	m_pListener = new s_LaTeX_Listener(getDoc(),this);
+	LaTeX_Analysis_Listener analysis(getDoc(), this);
+	if (!getDoc()->tellListener(&analysis))
+		return UT_ERROR;
+
+	m_pListener = new s_LaTeX_Listener(getDoc(),this, analysis);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
