@@ -241,6 +241,8 @@ protected:
 	bool           m_bInSymbol;
  	bool	m_bInCourier;
  	bool	m_bInSansSerif;
+	bool				m_bInEndnote;
+	bool				m_bHaveEndnote;
   
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
@@ -266,7 +268,7 @@ protected:
 
 void s_LaTeX_Listener::_closeParagraph(void)
 {
-	if ((!m_bInCell) && (!m_bInFootnote)) m_pie->write("\n");
+	if ((!m_bInCell) && (!m_bInFootnote) && (!m_bInEndnote)) m_pie->write("\n");
 	m_bInHeading = false;
 	return;
 }
@@ -318,7 +320,7 @@ void s_LaTeX_Listener::_closeSection(void)
 
 void s_LaTeX_Listener::_closeBlock(void)
 { 
-	if(m_bInFootnote)
+	if(m_bInFootnote || m_bInEndnote)
 		return;
 	if (!m_bInBlock)
 		return;
@@ -1265,7 +1267,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie)
 	m_bInSymbol(0),
 	m_bInCourier(0),
 	m_bInSansSerif(0),
-	m_bFirstSection(true)
+	m_bFirstSection(true),
+	m_bInEndnote(false),
+	m_bHaveEndnote(false)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -1294,6 +1298,12 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie)
 	m_pie->write("%% Please set your language here\n");
 	m_pie->write("\\usepackage[english]{babel}\n");
 	m_pie->write("\\usepackage{color}\n");
+	/* TODO: Decice whether it is necessary to include the endnotes package
+	 * after the whole document is parsed. This is doable if we can extend
+	 * the interface of IE_Exp_LaTeX by a method that can insert text at the
+	 * beginning of the stream.
+	 */
+	m_pie->write("\\usepackage{endnotes}\n");
 	// Must be as late as possible.
 	m_pie->write("\\usepackage{hyperref}\n");
 
@@ -1319,7 +1329,8 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 	_closeSection();
 	_handleDataItems();
 	DELETEP(m_pTableHelper);
-
+	if (m_bHaveEndnote)
+		m_pie->write("\n\\theendnotes");
 	m_pie->write("\n\\end{document}\n");
 }
 
@@ -1449,7 +1460,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	switch (pcrx->getStruxType())
 	{
-	case PTX_SectionEndnote:
 	case PTX_Section:
 	{
 		_closeSpan();
@@ -1568,8 +1578,32 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 		m_pie->write("\\footnote{");
 		return true;
 	}
-
+	
+	case PTX_SectionTOC:
+	{
+		_closeSpan();	
+		_closeBlock();
+		/*
+		_closeSection();
+		 */
+		m_pie->write("\\tableofcontents \n");
+	}
+	case PTX_EndTOC:
+		return true;
+	
+	case PTX_SectionEndnote:
+	{
+		m_bInEndnote = true;
+		m_pie->write("\\endnote{");
+		m_bHaveEndnote = true;
+		return true;
+	}
 	case PTX_EndEndnote:
+	{
+		m_bInEndnote = false;
+		m_pie->write("} ");
+		return true;
+	}
 	default:
 		UT_ASSERT(UT_TODO);
 		return true;
