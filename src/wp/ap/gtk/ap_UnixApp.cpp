@@ -1509,7 +1509,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		{
 			const char * szRequest = Args->m_sPluginArgs[0];
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-			printf(" %d plugins loaded \n",pVec->getItemCount());
+			UT_DEBUGMSG((" %d plugins loaded \n",pVec->getItemCount()));
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = pVec->getNthItem (i);

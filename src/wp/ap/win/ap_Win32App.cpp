@@ -1400,7 +1400,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		else
 		{
 			// couldn't load document
-			printf("Error: no file to print!\n");
+			UT_DEBUGMSG(("Error: no file to print!\n"));
 			bSuccess = false;
 		}
 
@@ -1420,7 +1420,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		{
 			const char * szRequest = Args->m_sPluginArgs[0];
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-			printf(" %d plugins loaded \n",pVec->getItemCount());
+			UT_DEBUGMSG((" %d plugins loaded \n",pVec->getItemCount()));
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = pVec->getNthItem (i);
@@ -1434,7 +1434,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPluginArgs[0]);
+			UT_DEBUGMSG(("Plugin %s not found or loaded \n",Args->m_sPluginArgs[0]));
 			bSuccess = false;
 			return false;
 		}
@@ -1448,8 +1448,8 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPluginArgs[0],evExecute);
+			UT_DEBUGMSG(("Plugin %s invoke method %s not found \n",
+				   Args->m_sPluginArgs[0],evExecute));
 			bSuccess = false;
 			return false;
 		}
