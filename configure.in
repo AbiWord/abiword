@@ -5,7 +5,7 @@ m4_define([abi_version_micro], [0])
 m4_define([abi_series], [abi_version_major.abi_version_minor])
 m4_define([abi_version], [abi_version_major.abi_version_minor.abi_version_micro])
 
-AC_INIT([libabiword],[abi_version],[http://www.abisource.com/])
+AC_INIT([abiword],[abi_version],[http://www.abisource.com/])
 AC_CANONICAL_TARGET
 AC_CONFIG_HEADERS(config.h)
 
