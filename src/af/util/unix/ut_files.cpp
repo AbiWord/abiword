@@ -39,45 +39,12 @@
 
 bool progExists(const char* progName)
 {
-	struct stat statbuf;
-	int laststat;
+  char *prog;
 
-	if(*progName == '/')
-	{
-		laststat = stat(progName, &statbuf);
-		if(laststat == 0 && (S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode)))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+  prog = g_find_program_in_path (progName);
+  if (!prog)
+    return false;
 
-	UT_String envpath = getenv("PATH");
-	UT_String* path;
-
-	UT_GenericVector<UT_String*> * utvPath = simpleSplit(envpath, ':');
-	if (!utvPath)
-	  return false;
-
-	bool found = false;
-	for(UT_uint32 i = 0; i < utvPath->getItemCount(); i++)
-	{
-		path = utvPath->getNthItem(i);
-		char * path2 = g_build_filename(path->c_str(), progName, NULL);
-		laststat = stat(path2, &statbuf);
-		FREEP(path2);
-
-		if(laststat == 0 && (S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode)))
-		{
-			found = true;
-			break;
-		}
-	}
-
-	UT_VECTOR_PURGEALL(UT_String*, (*utvPath));
-	DELETEP(utvPath);
-	return found;
+  g_free (prog);
+  return true;
 }
