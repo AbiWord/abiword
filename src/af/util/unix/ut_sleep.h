@@ -20,13 +20,9 @@
 #ifndef UT_SLEEP_H
 #define UT_SLEEP_H
 
-#include <unistd.h>
+#include <glib.h>
 
-#ifdef AIX
-#include <sys/time.h>
-#else 
-#define UT_usleep usleep
-#endif
+#define UT_usleep g_usleep
 
 #endif
 
