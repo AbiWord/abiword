@@ -43,10 +43,6 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_locale.h"
-#ifdef ABI_OPT_PERL
-  #include "ut_PerlBindings.h"
-  #include "ut_Script.h"
-#endif
 #include "ut_sleep.h"
 
 #include "xap_Args.h"
@@ -391,14 +387,6 @@ bool AP_UnixApp::initialize(bool has_display)
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)
 		loadAllPlugins();
-
-    //////////////////////////////////////////////////////////////////
-
-#ifdef ABI_OPT_PERL
-    // hack to keep the perl bindings working on unix
-    UT_ScriptLibrary * instance = UT_ScriptLibrary::instance(); 
-    instance->registerScript ( new UT_PerlScriptSniffer () );
-#endif
 
     return true;
 }

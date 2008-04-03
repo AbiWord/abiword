@@ -45,7 +45,6 @@
 #include "ut_misc.h"
 #include "ut_png.h"
 
-#include "ut_PerlBindings.h"
 #include "ut_Script.h"
 
 #include "ev_CocoaMenuBar.h"
@@ -412,13 +411,6 @@ bool AP_CocoaApp::initialize(void)
 		XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 		[pController setAutoLoadPluginsAfterLaunch:YES];
 	}
-    //////////////////////////////////////////////////////////////////
-
-#ifdef ABI_OPT_PERL
-    // hack to keep the perl bindings working on unix
-    UT_ScriptLibrary& instance = UT_ScriptLibrary::instance(); 
-    instance.registerScript ( new UT_PerlScriptSniffer () );
-#endif
 
     return true;
 }

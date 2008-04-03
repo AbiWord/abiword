@@ -32,14 +32,7 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 
-#ifdef ABI_OPT_PERL
-#include "ut_PerlBindings.h"
-#endif
-
 // Static initializations:
-#ifdef ABI_OPT_PERL
-const char * AP_Args::m_sScript = NULL;
-#endif
 #ifdef DEBUG
 int AP_Args::m_iDumpstrings = 0;
 #endif
@@ -79,9 +72,6 @@ static GOptionEntry _entries[] = {
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &AP_Args::m_sFiles, NULL,  "[FILE...]" },
 #ifdef DEBUG
         {"dumpstrings", 'd', 0, G_OPTION_ARG_NONE, &AP_Args::m_iDumpstrings, "Dump strings to file", NULL},
-#endif
-#ifdef ABI_OPT_PERL
-        {"script", 's', 0, G_OPTION_ARG_STRING, &AP_Args::m_sScript, "Execute FILE as script", "FILE"},
 #endif
         {NULL }
 };
@@ -161,15 +151,6 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 									static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
 		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
 		delete pBuiltinStringSet;
-	}
-#endif
-
-#ifdef ABI_OPT_PERL
-	if (m_sScript)
-	{
-		UT_PerlBindings& pb(UT_PerlBindings::getInstance());
-		if (!pb.evalFile(m_sScript))
-			printf("%s\n", pb.errmsg().c_str());
 	}
 #endif
 

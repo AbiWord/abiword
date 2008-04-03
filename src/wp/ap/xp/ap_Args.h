@@ -50,10 +50,6 @@ public:
 
 	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs(bool & bSuccessful);
-
-#ifdef ABI_OPT_PERL
- 	static const char * m_sScript;
-#endif
 #ifdef DEBUG
 	static int    m_iDumpstrings;
 #endif

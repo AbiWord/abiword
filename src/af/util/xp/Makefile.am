@@ -6,14 +6,7 @@ noinst_LTLIBRARIES = libxp.la
 libxp_la_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
-if SCRIPT
-script_sources = \
-	ut_PerlBindings.cpp \
-	ut_PerlBindings.h
-endif
-
 libxp_la_SOURCES = \
-	$(script_sources) \
 	ut_AdobeEncoding.cpp \
 	ut_AdobeEncoding.h \
 	ut_allocator.cpp \
