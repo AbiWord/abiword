@@ -347,7 +347,7 @@ bool AP_Win32App::initialize(void)
 		char szPath[PATH_MAX];
 		char szPlugin[PATH_MAX];
 		_getExeDir( szPath, PATH_MAX);
-		strcat(szPath, "..\\Plugins\\*.dll");
+		strcat(szPath, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\*.dll");
 
 	    struct _finddata_t cfile;
 		long findtag = _findfirst( szPath, &cfile );
@@ -356,7 +356,7 @@ bool AP_Win32App::initialize(void)
 			do
 			{	
 				_getExeDir( szPlugin, PATH_MAX );
-				strcat( szPlugin, "..\\Plugins\\" );
+				strcat( szPlugin, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\" );
 				strcat( szPlugin, cfile.name );
 				XAP_ModuleManager::instance().loadModule( szPlugin );
 			} while( _findnext( findtag, &cfile ) == 0 );
