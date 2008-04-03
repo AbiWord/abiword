@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * BIDI Copyright (c) 2001-2004 Tomas Frydrych
@@ -19,6 +21,10 @@
  */
 
 #define WIN32_LEAN_AND_MEAN
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <windows.h>
 #include <direct.h>
@@ -290,11 +296,8 @@ static void s_buildDirName(const UT_Vector& vDirComponents, UT_uint32 iComponent
 void XAP_Win32App::_setAbiSuiteLibDir(void)
 {
 	char buf[PATH_MAX];
-	char buf2[PATH_MAX];
-	char szApplicationName[PATH_MAX];
 
-	// if not, see if ABIWORD_DATADIR was set in the environment
-
+	// see if ABIWORD_DATADIR was set in the environment
 	if (GetEnvironmentVariableA("ABIWORD_DATADIR",buf,sizeof(buf)) > 0) //!TODO Using ANSI function
 	{
 		char * p = buf;
@@ -312,75 +315,21 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		return;
 	}
 
-	// [Win32 only] if not, use something relative to <exedir>
-	// if we are in normal distribution format, we have:
-	//
-	// .../AbiSuite/AbiWord/bin/AbiWord.exe
-	//                     /strings/*.strings
-	//                     /help/en-US/*.html
-	//                     /samples/en-US/*.abw
-	//             /AbiShow/bin/AbiShow.exe
-	//                     /strings/*.strings
-	//                     /help/en-US/*.html
-	//                     /samples/en-US/*.abw
-	//             /dictionary/*.hash
-	//
-	// we want to set the library directory to the
-	// directory which stand for .../AbiSuite
-	// (aka "getExeDir()/../..")
-	//
-	// if this is a developer build in the canonical build
-	// directory, we have:
-	//
-	// $(OUT)/$os_..._$dbg/bin/AbiWord.exe
-	//                        /AbiShow.exe
-	//                    /obj/*.obj
-	//                    /AbiSuite/AbiWord/strings/*.strings
-	//                                     /help/...
-	//                                     /samples/...
-	//                             /AbiShow/...
-	//                             /dictionary/*.hash
-	//
-	// note that the bin directory is in a different place.
-	// in this case, we want to set the library directory to
-	// $(OUT)/$os_..._$dbg/AbiSuite
-	// (aka "getExeDir()/../AbiSuite")
-
 	if (_getExeDir(buf,sizeof(buf)) > 0)
 	{
-		int len = strlen(buf);
-		if (buf[len-1]=='\\')
-			buf[len-1] = 0;
+		char *dir;
+		char *base;
+		size_t len, baselen;
 
-		strcpy(buf2,buf);
-
-		UT_Vector v;
-		char * p = strtok(buf2,"\\");
-		v.addItem(p);
-		while ( (p=strtok(NULL,"\\")) )
-			v.addItem(p);
-
-		strcpy(szApplicationName, getApplicationName());
-		strtok(szApplicationName, " ");
-
-		int n = v.getItemCount();
-		if (   (n > 2)
-			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-1),"bin")==0)
-			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-2),szApplicationName)==0))
-		{
-			s_buildDirName(v, n - 2, buf);
-			XAP_App::_setAbiSuiteLibDir(buf);
-			return;
-		}
-
-		if (   (n > 1)
-			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-1),"bin")==0))
-		{
-			s_buildDirName(v, n - 1, buf);
-			strcat(buf,"\\AbiSuite");
-			XAP_App::_setAbiSuiteLibDir(buf);
-			return;
-		}
+		len = strlen(buf);
+		base = g_path_get_basename(buf);
+		baselen = strlen(base);
+		g_free (base), base = NULL;
+		buf[len - baselen - 1] = '\0';
+		dir = g_build_filename(buf, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
+		XAP_App::_setAbiSuiteLibDir(dir);
+		g_free (dir), dir = NULL;
+		return;
 	}
 
 	// otherwise, use the hard-coded value

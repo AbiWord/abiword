@@ -434,13 +434,7 @@ bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
 
 const char * AP_Win32App::getAbiSuiteAppDir(void) const
 {
-	// we return a static string, use it quickly.
-	
-	static gchar buf[1024];
-	UT_return_val_if_fail ((strlen(getAbiSuiteLibDir()) + strlen(PACKAGE_NAME) + 2) < sizeof(buf), NULL);
-
-	sprintf(buf,"%s\\%s",getAbiSuiteLibDir(),PACKAGE_NAME);
-	return buf;
+    return getAbiSuiteLibDir();
 }
 
 HICON AP_Win32App::getIcon(void)

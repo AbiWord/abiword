@@ -269,7 +269,6 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 	char buf[PATH_MAX];
 	
 	// see if ABIWORD_DATADIR was set in the environment
-
 	const char * sz = getenv("ABIWORD_DATADIR");
 	if (sz && *sz)
 	{
