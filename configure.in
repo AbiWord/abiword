@@ -588,8 +588,6 @@ for dep in `echo $deps_pkgs`; do
 done
 AC_SUBST(ABIWORD_REQUIRED_PKGS)
 
-AC_DEFINE([ABI_SCANDIR_SELECT_QUALIFIER], [const], [Define to const if scandir's select function requires it, empty otherwise])
-
 AM_CONDITIONAL([SCRIPT], false)
 
 

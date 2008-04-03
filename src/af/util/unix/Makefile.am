@@ -14,8 +14,6 @@ libunix_la_SOURCES = \
 	ut_threadImpl.h \
 	ut_unixAssert.cpp \
 	ut_unixAssert.h \
-	ut_unixDirent.cpp \
-	ut_unixDirent.h \
 	ut_unixIdle.cpp \
 	ut_unixIdle.h \
 	ut_unixMisc.cpp \

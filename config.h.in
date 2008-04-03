@@ -3,10 +3,6 @@
 /* major.minor */
 #undef ABIWORD_SERIES
 
-/* Define to const if scandir's select function requires it, empty otherwise
-   */
-#undef ABI_SCANDIR_SELECT_QUALIFIER
-
 /* Define to enable debugging functionality */
 #undef DEBUG
 

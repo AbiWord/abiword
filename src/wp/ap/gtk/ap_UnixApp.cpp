@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
@@ -48,7 +47,6 @@
   #include "ut_PerlBindings.h"
   #include "ut_Script.h"
 #endif
-#include "ut_unixDirent.h"
 #include "ut_sleep.h"
 
 #include "xap_Args.h"
@@ -767,26 +765,43 @@ bool AP_UnixApp::canPasteFromClipboard(void)
     return m_pClipboard->canPaste(XAP_UnixClipboard::TAG_ClipboardOnly);
 }
 
-extern "C" {
+// TODO we could make this some utility function and use for all platforms
+// Can return NULL
+// The list must be free'd by the caller, but the filenames are owned by the system.
+static GSList * so_only (const char *path) {
 
-	// return > 0 for directory entries ending in ".so" ".sl" and the like
-	static int so_only (ABI_SCANDIR_SELECT_QUALIFIER struct dirent *d)
-	{
-		const char * name = d->d_name;
-		
-		if ( name )
-		{
-			int len = strlen (name);
-			
-			if (len >= 3)
-			{
-				if(!strcmp(name+(len-3), "."G_MODULE_SUFFIX))
-					return 1;
-			}
-		}
-		return 0;
+	GDir 		*dir;
+	GSList 		*list;
+	const char 	*name;
+	const char  *suffix;
+	int			 len;
+	GError 		*err;
+
+	if (!g_file_test (path, G_FILE_TEST_IS_DIR))
+		return NULL;
+
+	err = NULL;
+	dir = g_dir_open (path, 0, &err);
+	if (err) {
+		g_warning (err->message);
+		g_error_free (err), err = NULL;
+		return NULL;
 	}
-} // extern "C" block
+
+	list = NULL;
+	while (NULL != (name = g_dir_read_name (dir))) {
+		len = strlen (name);
+		if (len < 4)
+			continue;
+		suffix = name+(len-3);
+		if(0 == strcmp (suffix, "."G_MODULE_SUFFIX)) {
+			list = g_slist_prepend (list, (void *) name);
+		}
+	}
+	g_dir_close (dir), dir = NULL;
+
+	return list;
+}
 
 #ifdef ABI_PLUGIN_BUILTIN
 extern void abipgn_builtin_register ();
@@ -800,14 +815,10 @@ void AP_UnixApp::loadAllPlugins ()
   UT_DEBUGMSG(("finished loading preloaded plugins.\n"));
 #endif
 
-  struct dirent **namelist;
-  int n = 0;
-
   UT_String pluginList[2];
   UT_String pluginDir;
 
   // the global plugin directory
-  // TODO Rob: re-enable binreloc
   pluginDir += ABIWORD_PLUGINSDIR "/";
 
   UT_DEBUGMSG(("pluginDir: '%s'\n", pluginDir.c_str ()));
@@ -820,47 +831,27 @@ void AP_UnixApp::loadAllPlugins ()
   UT_DEBUGMSG (("ROB: private plugins in '%s'\n", pluginDir.c_str ()));
   pluginList[1] = pluginDir;
 
-  for(UT_uint32 i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)
+  for(UT_uint32 i = 0; i < G_N_ELEMENTS(pluginList); i++)
   {
-      pluginDir = pluginList[i];
+	pluginDir = pluginList[i];
+	GSList *list = so_only(pluginDir.c_str());
+	const char *name;
 
-      n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
-      UT_DEBUGMSG(("DOM: found %d plugins in %s\n", n, pluginDir.c_str()));
+	while (list) {
 
-      if (n > 0)
-	  {
-		  while(n--) 
-		  {
-			  UT_String plugin (pluginDir + namelist[n]->d_name);
+		name = (const char *) list->data;
 
-			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
+		UT_String plugin (pluginDir + name);
+		UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
 
-			  int len = strlen (namelist[n]->d_name);
-			  if (len < 4)
-			  {
-				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-				  g_free(namelist[n]);
-				  continue;
-			  }
-			  if(strcmp (namelist[n]->d_name+(len-3), "."G_MODULE_SUFFIX) != 0)
-			  {
-				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-				  g_free(namelist[n]);
-				  continue;
-			  }
+		if (XAP_ModuleManager::instance().loadModule (plugin.c_str())) {
+		  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", name));
+		} else {
+		  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", name));
+		}
 
-			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
-			  {
-				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
-			  }
-			  else
-			  {
-				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
-			  }
-			  g_free(namelist[n]);
-		  }
-		  g_free(namelist);
-      }
+		list = g_slist_remove(list, name);
+	}
   }
 }
 
