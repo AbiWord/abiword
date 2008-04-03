@@ -228,9 +228,9 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	  //if(szViolation != NULL)
 	  {
 	    UT_sint32 iLword = linkage_get_link_lword(linkage,j);
-	    char * szLword =  linkage_get_word(linkage,iLword);
+	    const char * szLword =  linkage_get_word(linkage,iLword);
 	    UT_sint32 iRword = linkage_get_link_rword(linkage,j);
-	    char * szRword =  linkage_get_word(linkage,iRword);
+	    const char * szRword =  linkage_get_word(linkage,iRword);
 	    //UT_DEBUGMSG(("Link %d |%s| and |%s|\n",i,szLword,szRword));
 	    //UT_DEBUGMSG(("Left Word num %d Right Word num %d\n",iLword,iRword));
 	  }
