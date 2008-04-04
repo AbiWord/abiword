@@ -43,3 +43,13 @@ DISTCLEANFILES = \
 abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 	cp $< $@
 
+if TOOLKIT_WIN
+zip:
+	rm -rf $(PACKAGE)-$(VERSION)
+	make DESTDIR=$(shell pwd)/zip install
+	mv zip$(prefix) $(PACKAGE)-$(VERSION)
+	cd $(PACKAGE)-$(VERSION)
+	zip -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION) -x \*.a \*.la
+	rm -rf $(PACKAGE)-$(VERSION) $(shell pwd)/zip
+endif
+
