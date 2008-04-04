@@ -188,9 +188,7 @@ enum GR_GraphicsId
 
 	/* IDs for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
 	/* (these classes cannot be unregistered) */
-	GRID_BEOS            =  0x101, // deprecated
 	GRID_COCOA           =  0x102,
-	GRID_QNX             =  0x103,
 	GRID_WIN32           =  0x104,
 	GRID_UNIX            =  0x105,
 	GRID_UNIX_PS         =  0x106,

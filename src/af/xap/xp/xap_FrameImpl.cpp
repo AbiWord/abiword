@@ -38,8 +38,6 @@
 #include "ut_assert.h"
 #include "ut_path.h"
 
-//#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
-
 /*** Also look at xap_Frame.cpp, half the XAP_FrameImpl seems to be there!!! ***/
 
 XAP_FrameImpl::XAP_FrameImpl(XAP_Frame *pFrame) :

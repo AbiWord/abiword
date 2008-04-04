@@ -40,10 +40,6 @@
   #include "xap_Win32Module.h"
   #define MODULE_CLASS XAP_Win32Module
 
-#elif defined (__QNXNTO__)
-  #include "xap_QNXModule.h"
-  #define MODULE_CLASS XAP_QNXModule
-
 #elif defined (__APPLE__) && defined (XP_MAC_TARGET_MACOSX)
 	#if defined (XP_MAC_TARGET_CARBON)
 		#include <ConditionalMacros.h>

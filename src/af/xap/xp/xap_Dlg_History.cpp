@@ -217,9 +217,9 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 
 				const char * pszS;
 				if(m_pDoc->getHistoryNthAutoRevisioned(item))
-					pszS = m_pSS->getValue(XAP_STRING_ID_DLG_QNXMB_Yes);
+					pszS = m_pSS->getValue(XAP_STRING_ID_DLG_MB_Yes);
 				else
-					pszS = m_pSS->getValue(XAP_STRING_ID_DLG_QNXMB_No);
+					pszS = m_pSS->getValue(XAP_STRING_ID_DLG_MB_No);
 					
 				UT_return_val_if_fail(pszS, NULL);
 

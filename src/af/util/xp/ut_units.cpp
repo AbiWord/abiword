@@ -74,14 +74,6 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 	  strtod(sz, &p);
   }
 
-#if defined(__QNXNTO__)
-  // workaround for QNX's strtod being overly ambitious
-  // being totaly stupid and match 'in' for infinity, but still return 0.
-  // it does work fine on qnx if there is a number before 'in..' though.
-  if (g_ascii_strcasecmp(sz,"inch")==0 || g_ascii_strcasecmp(sz,"in")==0)
-    return DIM_IN;
-#endif
-
   // p should now point to the unit
   if (p && *p)
     {

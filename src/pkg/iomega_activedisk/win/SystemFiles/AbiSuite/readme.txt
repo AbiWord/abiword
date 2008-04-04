@@ -27,9 +27,9 @@ different formats to HTML on the fly.
 
 AbiWord is not only a fully-featured multilingual word processor, it is also a cross-
 platform application: it was designed to work well on multiple types of computers and 
-operating systems. At the present time, AbiWord is supported on Windows (Windows 95 – 
+operating systems. At the present time, AbiWord is supported on Windows (Windows NT – 
 Windows XP), Linux (including Intel and Alpha), a variety of other UNIX-like systems 
-(including Solaris, and *BSD), BeOS, QNX and MacOS X.
+(including Solaris, and *BSD) and MacOS X.
 
 
 * Latest Version and Additional Downloads

@@ -77,9 +77,8 @@ to work well on multiple types of computers and operating systems.
 At the present time, AbiWord is supported on Windows (including
 Windows 95 through Windows XP), Mac OS (see note below), Linux, a
 variety of other UNIX-like systems (including everything from Solaris
-to *BSD to RTEMS), and QNX (though beware that there is currently only
-one active QNX-port developer).  The BeOS port has been removed from the 
-source tree as of July 8th 2005. If you
+to *BSD to RTEMS).  The BeOS port has been removed from the 
+source tree as of July 8th 2005, the QNX port as of April 2008. If you
 can help us with any of these ports or provide and maintain a new one,
 you are more than welcome to.
 

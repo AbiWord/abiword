@@ -241,11 +241,6 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define FRIBIDI_TYPE_UNSET -1
 #define FRIBIDI_TYPE_IGNORE -2
 
-/* TODO: move to includes.mk */
-#if !defined(WIN32) && !defined(__QNX__) && !defined(XP_MAC_TARGET_MACOSX)
-#define XP_UNIX_TARGET_GTK 1
-#endif
-
 // this is maximum revision level; it is intentionally not defined as
 // 0xffffffff to avoid problems with bad 64-bit compilers
 

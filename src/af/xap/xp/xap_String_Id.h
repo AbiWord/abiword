@@ -110,8 +110,8 @@ dcl(DLG_Unit_pica,				"pica")
 dcl(DLG_UnixMB_Yes, 			"_Yes")
 dcl(DLG_UnixMB_No,				"_No")
 
-dcl(DLG_QNXMB_Yes,				"Yes")
-dcl(DLG_QNXMB_No,				"No")
+dcl(DLG_MB_Yes,					"Yes")
+dcl(DLG_MB_No,					"No")
 
 /* More Windows dialog */
 dcl(DLG_MW_MoreWindows, 		"View Document")

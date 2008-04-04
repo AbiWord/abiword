@@ -10732,7 +10732,7 @@ Defun1(dlgBullets)
 //
   // Dialog for Bullets and Lists
   //
-#if defined(__QNXTO__) || defined(TARGET_OS_MAC)
+#if defined(TARGET_OS_MAC)
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);

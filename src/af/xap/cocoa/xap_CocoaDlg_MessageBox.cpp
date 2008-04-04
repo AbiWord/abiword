@@ -123,8 +123,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
 			{
 				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_Yes),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_No), 
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
 										  nil);
 
 				switch (btn)
@@ -143,8 +143,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		else
 			{
 				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_No), 
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_Yes),
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
 										  nil);
 
 				switch (btn)
@@ -166,8 +166,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
 			{
 				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_Yes),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_No), 
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
 										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel));
 
 				switch (btn)
@@ -190,8 +190,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			{
 				int btn = NSRunAlertPanel(title, message,
 										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_No), 
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_QNXMB_Yes));
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes));
 
 				switch (btn)
 					{

@@ -62,7 +62,7 @@ public:
 	// "automatically detected" type, so the caller should NOT supply one
 	// in the list.  This is done because each platform has a different notion
 	// of auto-detect (Windows is strictly by extension, Unix can be anything,
-	// BeOS is MIME type, etc.) and XP, AP-level code shouldn't have to know
+	// etc.) and XP, AP-level code shouldn't have to know
 	// what type of suffix (ala "*.*" or "*") is appropriate.
 	UT_sint32							getFileType(void) const;
 	
