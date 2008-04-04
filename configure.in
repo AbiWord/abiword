@@ -60,7 +60,7 @@ win_pkgs="$enchant_req"
 
 AC_PROG_CC
 AC_PROG_CXX
-AC_PROG_OBJC
+#AC_PROG_OBJC
 AC_PROG_INSTALL
 #building static abiword by default
 #AC_DISABLE_STATIC
