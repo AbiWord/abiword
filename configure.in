@@ -550,8 +550,13 @@ if test "$abi_cv_gucharmap" == "yes"; then
 fi
 AM_CONDITIONAL([WITH_GUCHARMAP], test "$abi_cv_gucharmap" == "yes")
 
-ALL_PLUGINS="\
+ALL_PLUGINS_="\
   m4_include([plugin-list.m4])"
+# strip trailing newline from the included file, it messes up sed on windows
+ALL_PLUGINS=
+for p in $(echo $ALL_PLUGINS_); do
+	ALL_PLUGINS="$ALL_PLUGINS $p"
+done
 AC_SUBST([ALL_PLUGINS])
 
 default_plugins="opendocument"
