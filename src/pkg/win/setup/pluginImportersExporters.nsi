@@ -154,9 +154,9 @@ Section "OpenDocument (.odt)"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenDocument.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiOpenDocument Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing OpenDocument Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiOpenDocument Plugin (already exists)!"
+	DetailPrint "Skipping OpenDocument Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -171,9 +171,9 @@ Section "OpenWriter (*.sxw)"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenWriter.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiOpenWriter Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing OpenWriter Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiOpenWriter Plugin (already exists)!"
+	DetailPrint "Skipping OpenWriter Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -317,9 +317,9 @@ Section "OPML"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOPML.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiOPML Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing OPML Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiOPML Plugin (already exists)!"
+	DetailPrint "Skipping OPML Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -335,9 +335,9 @@ Section "Star Office Writer 5.1"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Star Office Writer 5.1 Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
+	DetailPrint "Skipping Star Office Writer 5.1 Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -353,9 +353,9 @@ Section "T602"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiT602.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiT602 Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing T602 Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiT602 Plugin (already exists)!"
+	DetailPrint "Skipping T602 Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -371,9 +371,9 @@ Section "WordPerfect"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing WordPerfect Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
+	DetailPrint "Skipping WordPerfect Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -417,9 +417,9 @@ Section "LaTeX"
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiLaTeX.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiLaTeX Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing LaTeX Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiLaTeX Plugin (already exists)!"
+	DetailPrint "Skipping LaTeX Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -692,7 +692,7 @@ UninstallText "This will uninstall AbiWord's Importer/Exporter Plugins. Hit next
 ; special uninstall section.
 Section "Uninstall"
 
-	MessageBox MB_OKCANCEL "This will delete all Importer/Exporter plugins and associated registry entries?" IDOK DoUnInstall
+	MessageBox MB_OKCANCEL "Are you sure you want to fully remove all AbiWord Import/Export Plugins?" IDOK DoUnInstall
 	
 	Abort "Quitting the uninstall process"
 

@@ -282,6 +282,7 @@ SectionEnd
 ; Dictionary, thesaurus, encyclopedia, etc.
 SubSectionEnd
 
+
 SubSection /e "Reference Tools"
 
 ; OPTIONAL
@@ -323,6 +324,7 @@ SectionEnd
 ;Reference Tools
 SubSectionEnd
 
+
 SubSection /e "Translation Plugins"
 
 ; OPTIONAL
@@ -343,11 +345,9 @@ Section "Babelfish Translation"
 	End:  
 SectionEnd
 
-;SectionDivider
-
 ; OPTIONAL
 Section "FreeTranslation.com Translation"
-	SectionIn 1 2
+	SectionIn 1
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiFreeTranslation.dll" 0 DoInstall
@@ -364,8 +364,11 @@ Section "FreeTranslation.com Translation"
 SectionEnd
 
 SubSectionEnd
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Disabled Plugins
 !ifdef 0
-;SectionDivider
+
 SubSection /e "Image Manipulation"
 
 ; OPTIONAL
@@ -467,7 +470,7 @@ UninstallText "This will uninstall AbiWord's Tools Plugins. Hit next to continue
 ; special uninstall section.
 Section "Uninstall"
 
-	MessageBox MB_OKCANCEL "This will delete all Tools plugins and associated files & registry entries?" IDOK DoUnInstall
+	MessageBox MB_OKCANCEL "Are you sure you want to fully remove all AbiWord Tools Plugins?" IDOK DoUnInstall
 	
 	Abort "Quitting the uninstall process"
 
