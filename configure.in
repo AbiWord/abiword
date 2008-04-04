@@ -378,62 +378,62 @@ BASE_CPPFLAGS=
 for f in $(echo $BASE_CPPFLAGS_); do BASE_CPPFLAGS="$BASE_CPPFLAGS $f"; done
 AC_SUBST([BASE_CPPFLAGS])
 
-AF_CPPFLAGS_='\
-  ${BASE_CPPFLAGS} \
-  -I${top_srcdir}/src/af/ev/${TOOLKIT} \
-  -I${top_srcdir}/src/af/ev/xp \
-  -I${top_srcdir}/src/af/gr/${TOOLKIT} \
-  -I${top_srcdir}/src/af/gr/xp \
-  -I${top_srcdir}/src/af/util/${PLATFORM} \
-  -I${top_srcdir}/src/af/util/xp \
-  -I${top_srcdir}/src/af/xap/${TOOLKIT} \
-  -I${top_srcdir}/src/af/xap/xp \
+AF_CPPFLAGS_='
+  ${BASE_CPPFLAGS} 
+  -I${top_srcdir}/src/af/ev/${TOOLKIT} 
+  -I${top_srcdir}/src/af/ev/xp 
+  -I${top_srcdir}/src/af/gr/${TOOLKIT} 
+  -I${top_srcdir}/src/af/gr/xp 
+  -I${top_srcdir}/src/af/util/${PLATFORM} 
+  -I${top_srcdir}/src/af/util/xp 
+  -I${top_srcdir}/src/af/xap/${TOOLKIT} 
+  -I${top_srcdir}/src/af/xap/xp 
   -I${top_srcdir}/src/other/spell/xp'
 AF_CPPFLAGS=
 for f in $(echo $AF_CPPFLAGS_); do AF_CPPFLAGS="$AF_CPPFLAGS $f"; done
 AC_SUBST([AF_CPPFLAGS])
 
-AF_TEST_CPPFLAGS_='\
-  ${AF_CPPFLAGS} \
+AF_TEST_CPPFLAGS_='
+  ${AF_CPPFLAGS} 
   -I${top_srcdir}/src/af/tf/xp'
 AF_TEST_CPPFLAGS=
 for f in $(echo $AF_TEST_CPPFLAGS_); do AF_TEST_CPPFLAGS="$AF_TEST_CPPFLAGS $f"; done
 AC_SUBST([AF_TEST_CPPFLAGS])
 
-TEXT_CPPFLAGS_='\
-  ${AF_CPPFLAGS} \
-  -I${top_srcdir}/src/text/fmt/${TOOLKIT} \
-  -I${top_srcdir}/src/text/fmt/xp \
+TEXT_CPPFLAGS_='
+  ${AF_CPPFLAGS} 
+  -I${top_srcdir}/src/text/fmt/${TOOLKIT} 
+  -I${top_srcdir}/src/text/fmt/xp 
   -I${top_srcdir}/src/text/ptbl/xp'
 TEXT_CPPFLAGS=
 for f in $(echo $TEXT_CPPFLAGS_); do TEXT_CPPFLAGS="$TEXT_CPPFLAGS $f"; done
 AC_SUBST([TEXT_CPPFLAGS])
 
-TEXT_TEST_CPPFLAGS_='\
-  ${TEXT_CPPFLAGS} \
+TEXT_TEST_CPPFLAGS_='
+  ${TEXT_CPPFLAGS} 
   -I${top_srcdir}/src/af/tf/xp'
 TEXT_TEST_CPPFLAGS=
 for f in $(echo $TEXT_TEST_CPPFLAGS_); do TEXT_TEST_CPPFLAGS="$TEXT_TEST_CPPFLAGS $f"; done
 AC_SUBST([TEXT_TEST_CPPFLAGS])
 
-IMPEXP_CPPFLAGS_='\
-  ${TEXT_CPPFLAGS} \
-  -I${top_srcdir}/src/wp/impexp/${TOOLKIT} \
+IMPEXP_CPPFLAGS_='
+  ${TEXT_CPPFLAGS} 
+  -I${top_srcdir}/src/wp/impexp/${TOOLKIT} 
   -I${top_srcdir}/src/wp/impexp/xp'
 IMPEXP_CPPFLAGS=
 for f in $(echo $IMPEXP_CPPFLAGS_); do IMPEXP_CPPFLAGS="$IMPEXP_CPPFLAGS $f"; done
 AC_SUBST([IMPEXP_CPPFLAGS])
 
-IMPEXP_TEST_CPPFLAGS_='\
-  ${IMPEXP_CPPFLAGS} \
+IMPEXP_TEST_CPPFLAGS_='
+  ${IMPEXP_CPPFLAGS} 
   -I${top_srcdir}/src/af/tf/xp'
 IMPEXP_TEST_CPPFLAGS=
 for f in $(echo $IMPEXP_TEST_CPPFLAGS_); do IMPEXP_TEST_CPPFLAGS="$IMPEXP_TEST_CPPFLAGS $f"; done
 AC_SUBST([IMPEXP_TEST_CPPFLAGS])
 
-WP_CPPFLAGS_='\
-  ${IMPEXP_CPPFLAGS} \
-  -I${top_srcdir}/src/wp/ap/${TOOLKIT} \
+WP_CPPFLAGS_='
+  ${IMPEXP_CPPFLAGS} 
+  -I${top_srcdir}/src/wp/ap/${TOOLKIT} 
   -I${top_srcdir}/src/wp/ap/xp'
 WP_CPPFLAGS=
 for f in $(echo $WP_CPPFLAGS_); do WP_CPPFLAGS="$WP_CPPFLAGS $f"; done
