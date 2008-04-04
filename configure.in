@@ -370,13 +370,15 @@ AC_SUBST([DEPS_CFLAGS])
 DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
 AC_SUBST([DEPS_LIBS])
 
-BASE_CPPFLAGS='\
+BASE_CPPFLAGS_='\
   ${DEPS_CFLAGS} \
   -I${top_srcdir} \
   ${GOFFICE_BUILTIN_CPPFLAGS}'
+BASE_CPPFLAGS=
+for f in $(echo $BASE_CPPFLAGS_); do BASE_CPPFLAGS="$BASE_CPPFLAGS $f"; done
 AC_SUBST([BASE_CPPFLAGS])
 
-AF_CPPFLAGS='\
+AF_CPPFLAGS_='\
   ${BASE_CPPFLAGS} \
   -I${top_srcdir}/src/af/ev/${TOOLKIT} \
   -I${top_srcdir}/src/af/ev/xp \
@@ -387,40 +389,54 @@ AF_CPPFLAGS='\
   -I${top_srcdir}/src/af/xap/${TOOLKIT} \
   -I${top_srcdir}/src/af/xap/xp \
   -I${top_srcdir}/src/other/spell/xp'
+AF_CPPFLAGS=
+for f in $(echo $AF_CPPFLAGS_); do AF_CPPFLAGS="$AF_CPPFLAGS $f"; done
 AC_SUBST([AF_CPPFLAGS])
 
-AF_TEST_CPPFLAGS='\
+AF_TEST_CPPFLAGS_='\
   ${AF_CPPFLAGS} \
   -I${top_srcdir}/src/af/tf/xp'
+AF_TEST_CPPFLAGS=
+for f in $(echo $AF_TEST_CPPFLAGS_); do AF_TEST_CPPFLAGS="$AF_TEST_CPPFLAGS $f"; done
 AC_SUBST([AF_TEST_CPPFLAGS])
 
-TEXT_CPPFLAGS='\
+TEXT_CPPFLAGS_='\
   ${AF_CPPFLAGS} \
   -I${top_srcdir}/src/text/fmt/${TOOLKIT} \
   -I${top_srcdir}/src/text/fmt/xp \
   -I${top_srcdir}/src/text/ptbl/xp'
+TEXT_CPPFLAGS=
+for f in $(echo $TEXT_CPPFLAGS_); do TEXT_CPPFLAGS="$TEXT_CPPFLAGS $f"; done
 AC_SUBST([TEXT_CPPFLAGS])
 
-TEXT_TEST_CPPFLAGS='\
+TEXT_TEST_CPPFLAGS_='\
   ${TEXT_CPPFLAGS} \
   -I${top_srcdir}/src/af/tf/xp'
+TEXT_TEST_CPPFLAGS=
+for f in $(echo $TEXT_TEST_CPPFLAGS_); do TEXT_TEST_CPPFLAGS="$TEXT_TEST_CPPFLAGS $f"; done
 AC_SUBST([TEXT_TEST_CPPFLAGS])
 
-IMPEXP_CPPFLAGS='\
+IMPEXP_CPPFLAGS_='\
   ${TEXT_CPPFLAGS} \
   -I${top_srcdir}/src/wp/impexp/${TOOLKIT} \
   -I${top_srcdir}/src/wp/impexp/xp'
+IMPEXP_CPPFLAGS=
+for f in $(echo $IMPEXP_CPPFLAGS_); do IMPEXP_CPPFLAGS="$IMPEXP_CPPFLAGS $f"; done
 AC_SUBST([IMPEXP_CPPFLAGS])
 
-IMPEXP_TEST_CPPFLAGS='\
+IMPEXP_TEST_CPPFLAGS_='\
   ${IMPEXP_CPPFLAGS} \
   -I${top_srcdir}/src/af/tf/xp'
+IMPEXP_TEST_CPPFLAGS=
+for f in $(echo $IMPEXP_TEST_CPPFLAGS_); do IMPEXP_TEST_CPPFLAGS="$IMPEXP_TEST_CPPFLAGS $f"; done
 AC_SUBST([IMPEXP_TEST_CPPFLAGS])
 
-WP_CPPFLAGS='\
+WP_CPPFLAGS_='\
   ${IMPEXP_CPPFLAGS} \
   -I${top_srcdir}/src/wp/ap/${TOOLKIT} \
   -I${top_srcdir}/src/wp/ap/xp'
+WP_CPPFLAGS=
+for f in $(echo $WP_CPPFLAGS_); do WP_CPPFLAGS="$WP_CPPFLAGS $f"; done
 AC_SUBST([WP_CPPFLAGS])
 
 #
@@ -554,9 +570,7 @@ ALL_PLUGINS_="\
   m4_include([plugin-list.m4])"
 # strip trailing newline from the included file, it messes up sed on windows
 ALL_PLUGINS=
-for p in $(echo $ALL_PLUGINS_); do
-	ALL_PLUGINS="$ALL_PLUGINS $p"
-done
+for p in $(echo $ALL_PLUGINS_); do ALL_PLUGINS="$ALL_PLUGINS $p"; done
 AC_SUBST([ALL_PLUGINS])
 
 default_plugins="opendocument"
