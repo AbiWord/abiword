@@ -387,8 +387,7 @@ AF_CPPFLAGS_='
   -I${top_srcdir}/src/af/util/${PLATFORM} 
   -I${top_srcdir}/src/af/util/xp 
   -I${top_srcdir}/src/af/xap/${TOOLKIT} 
-  -I${top_srcdir}/src/af/xap/xp 
-  -I${top_srcdir}/src/other/spell/xp'
+  -I${top_srcdir}/src/af/xap/xp'
 AF_CPPFLAGS=
 for f in $(echo $AF_CPPFLAGS_); do AF_CPPFLAGS="$AF_CPPFLAGS $f"; done
 AC_SUBST([AF_CPPFLAGS])
@@ -528,9 +527,6 @@ if test "$abi_cv_statusbar" == "yes"; then
 fi
 AM_CONDITIONAL([ENABLE_STATUSBAR], test "$abi_cv_statusbar" == "yes")
 
-# whether anything in src/other was built and needs to be linked
-AM_CONDITIONAL([LINK_OTHER], test "$abi_cv_spell" == "yes")
-
 if test "$abi_cv_embedded_target" != "no"; then
 	AC_DEFINE_UNQUOTED(EMBEDDED_TARGET, $abi_cv_embedded_target, [Whether we are building for embedded device])
 fi
@@ -640,9 +636,6 @@ AC_OUTPUT(
   src/af/xap/gtk/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
-  src/other/Makefile
-  src/other/spell/Makefile
-  src/other/spell/xp/Makefile
   src/text/Makefile
   src/text/fmt/Makefile
   src/text/fmt/gtk/Makefile

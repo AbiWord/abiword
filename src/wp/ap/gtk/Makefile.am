@@ -133,14 +133,8 @@ libgtk_la_SOURCES = \
 	ap_UnixViewListener.cpp \
 	ap_UnixViewListener.h
 
-optglade = 
-if ENABLE_SPELL
-	optglade += ap_UnixDialog_Spell.glade
-endif
-
 gladedir=$(ABIWORD_GLADEDIR)
 glade_DATA = \
-	$(optglade) \
 	ap_UnixDialog_Annotation.glade \
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
@@ -169,8 +163,14 @@ glade_DATA = \
 	ap_UnixDialog_Options.glade \
 	ap_UnixDialog_HdrFtr.glade
 
+if ENABLE_SPELL
+optgladedir=$(gladedir)
+optglade_DATA = ap_UnixDialog_Spell.glade
+endif
+
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(glade_DATA) \
+	ap_UnixDialog_Spell.glade \
 	abiword_48.xpm
 

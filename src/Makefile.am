@@ -1,5 +1,5 @@
 
-SUBDIRS = af other text wp
+SUBDIRS = af text wp
 
 libabiword_cpp = 
 opt_libs = 
@@ -22,10 +22,6 @@ main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
 opt_libs += Win32Resources.lo
 platform_ldflags += -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,abiword.dll.a
 resources += Win32Resources.lo
-endif
-
-if LINK_OTHER
-opt_libs += other/libother.la
 endif
 
 lib_LTLIBRARIES = libabiword-2.7.la

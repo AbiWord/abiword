@@ -6,6 +6,13 @@ libxp_la_CPPFLAGS = \
 
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
+	barbarisms.cpp \
+	barbarisms.h \
+	enchant_checker.cpp \
+	enchant_checker.h \
+	ispell_def.h \
+	spell_manager.cpp \
+	spell_manager.h
 	xap_Dlg_Print.cpp \
 	xap_Dlg_PrintPreview.cpp \
 	xap_StatusBar.cpp
@@ -16,12 +23,24 @@ print_src = \
 	xap_Dlg_PrintPreview.cpp
 endif
 
+if ENABLE_SPELL
+spell_src = \
+	barbarisms.cpp \
+	barbarisms.h \
+	enchant_checker.cpp \
+	enchant_checker.h \
+	ispell_def.h \
+	spell_manager.cpp \
+	spell_manager.h
+endif
+
 if ENABLE_STATUSBAR
 statusbar_src = xap_StatusBar.cpp
 endif
 
 libxp_la_SOURCES = \
 	$(print_src) \
+	$(spell_src) \
 	$(statusbar_src) \
 	xad_Document.cpp \
 	xad_Document.h \
