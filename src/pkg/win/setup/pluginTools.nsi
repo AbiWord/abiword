@@ -448,24 +448,22 @@ SectionEnd
 ;SectionEnd
 
 
-; OPTIONAL Create Uninstaller for Plugin
-Section "Create Uninstaller for Tools Plugins"
-	SectionIn 1 2
+; REQUIRED Create Uninstaller for Plugin
+Section "-CreateUninstaller"
 	; Write the uninstall keys for Windows
 	; N.B. This needs to include a version number or unique identifier.  
 	; More than one version of Abiword but only one Control Panel.  
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "DisplayName" "AbiWord Tools Plugins"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "UninstallString" '"$INSTDIR\AbiWord\plugins\UninstallAbiWordToolsPlugins.exe"'
-
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "NoModify" "1"
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordToolsPlugins" "NoRepair" "1"
 	; New Uninstaller 
 	WriteUninstaller "AbiWord\plugins\UninstallAbiWordToolsPlugins.exe"
-
 SectionEnd
 
 
 ; uninstall stuff
 UninstallText "This will uninstall AbiWord's Tools Plugins. Hit next to continue."
-;;UninstallExeName "UninstallAbiWordToolsPlugins.exe"
 
 ; special uninstall section.
 Section "Uninstall"

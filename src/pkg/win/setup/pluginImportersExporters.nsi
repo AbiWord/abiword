@@ -671,14 +671,15 @@ SubSectionEnd
 
 
 ; OPTIONAL Create Uninstaller for Plugin
-Section "Create Uninstaller for I/E Plugins"
+Section "-CreateUninstaller"
 	SectionIn 1 2
 	; Write the uninstall keys for Windows
 	; N.B. This needs to include a version number or unique identifier.  
 	; More than one version of Abiword but only one Control Panel.  
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordIEPlugins" "DisplayName" "AbiWord Importer/Exporter Plugins"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordIEPlugins" "UninstallString" '"$INSTDIR\AbiWord\plugins\UninstallAbiWordIEPlugins.exe"'
-
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordIEPlugins" "NoModify" "1"
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\AbiwordIEPlugins" "NoRepair" "1"
 	; New Uninstaller 
 	WriteUninstaller "AbiWord\plugins\UninstallAbiWordIEPlugins.exe"
 
