@@ -39,7 +39,6 @@ static BOOL CALLBACK AP_Win32Dialog_CollaborationAccounts::s_dlgProc(HWND hWnd, 
 		UT_return_val_if_fail(pThis, 0);
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
 
 	case WM_COMMAND:
 		pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
@@ -48,26 +47,9 @@ static BOOL CALLBACK AP_Win32Dialog_CollaborationAccounts::s_dlgProc(HWND hWnd, 
 	
 	case WM_DESTROY:
 		pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
-		if (pThis->p_win32Dialog)
-		{
-			DELETEP(pThis->p_win32Dialog);
-		}
+		DELETEP(pThis->p_win32Dialog);
+		return true;
 		
-		// WM_DESTROY processed
-		return 0;
-		
-
-	case WM_NOTIFY:
-		pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
-		UT_return_val_if_fail(pThis, 0);
-		UT_return_val_if_fail(lParam, 0);
-		switch (((LPNMHDR)lParam)->code)
-		{
-			//case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-			default:				return 0;
-		}
-		
-
 	default:
 		// Message not processed - Windows should take care of it
 		return false;
@@ -217,33 +199,26 @@ void AP_Win32Dialog_CollaborationAccounts::signal(const Event& event, const Budd
 BOOL AP_Win32Dialog_CollaborationAccounts::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// Welcome, let's initialize a dialog!
-	//////
 	// Store handles for easy access
 	// hDlg is stored in the DialogHelper - use that!
 	
-	//////
 	// Get ourselves a custom DialogHelper
-	if (p_win32Dialog)
-	{
-		DELETEP(p_win32Dialog);
-	}
+	DELETEP(p_win32Dialog);
 	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
-	//////
 	// Set up dialog initial state
 	_setModel(_constructModel());
-	
 	
 	// we have no selection yet
 	_updateSelection();
 	
-	
 	// Center Window
 	p_win32Dialog->centerDialog();
 
-	return 1;
+	return true;
 }
 
+// return true if we process the command, false otherwise
 BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
@@ -256,7 +231,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_CLOSE_BUTTON:
 		m_answer=AP_Dialog_CollaborationAccounts::a_CLOSE;
 		EndDialog(hWnd,0);
-		return 0;
+		return true;
 		
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON:
 		if (m_bHasSelection)
@@ -265,7 +240,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 			// setOnline checks validity of pHandler
 			setOnline(pHandler, true);
 		}
-		return 0;
+		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON:
 		if (m_bHasSelection)
@@ -274,7 +249,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 			// setOnline checks validity of pHandler
 			setOnline(pHandler, false);
 		}
-		return 0;
+		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST:
 		switch (wNotifyCode)
@@ -295,16 +270,16 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 				}
 			}
 			
-			// WM_COMMAND message processed - return 0
-			return 0;
+			// WM_COMMAND message processed
+			return true;
 		case LBN_SELCHANGE:
 			_updateSelection();
 			
-			// WM_COMMAND message processed - return 0
-			return 0;
+			// WM_COMMAND message processed
+			return true;
 		default:
 			// unhandled activity on the list.
-			return 1;
+			return false;
 		}
 		
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_ADD_BUTTON:
@@ -313,8 +288,8 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 		// TODO: only refresh if it actually changed.
 		_setModel(_constructModel());
 		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		// WM_COMMAND message processed
+		return true;
 	
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON:
 		// Delete the account
@@ -340,8 +315,8 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 			}
 		}
 		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		// WM_COMMAND message processed
+		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON:
 		// open the Properties dialog.  This does not exist yet, but when it does, we'll be ready.
@@ -351,12 +326,12 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 			// TODO: do something like open a dialog.
 		
 		}
-		// we didn't really handle anything - tell this to windows.
-		return 1;
+		// we didn't really handle anything
+		return false;
 
 	default:
-		// WM_COMMAND message NOT processed - return 1
-		return 1;
+		// WM_COMMAND message NOT processed
+		return false;
 	}
 
 	

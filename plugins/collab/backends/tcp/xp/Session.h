@@ -38,7 +38,15 @@ public:
 	virtual ~Session()
 	{
 		UT_DEBUGMSG(("~Session()\n"));
-		socket.close();
+		asio::error_code ecs;
+		socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
+		if (ecs)
+			UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
+
+		asio::error_code ecc;
+		socket.close(ecc);
+		if (ecc)
+			UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
 	}
 
 	asio::ip::tcp::socket& getSocket()

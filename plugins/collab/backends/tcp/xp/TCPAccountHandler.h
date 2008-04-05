@@ -26,7 +26,7 @@
 
 class TCPBuddy;
 
-#define DEFAULT_TCP_PORT 58599  /* e * 10^4 + pi * 10^4 */
+#define DEFAULT_TCP_PORT 25509  /* log2(e + pi) * 10^4 */
 
 extern AccountHandlerConstructor TCPAccountHandlerConstructor;
 

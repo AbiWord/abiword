@@ -50,6 +50,7 @@ TCPAccountHandler::TCPAccountHandler()
 
 TCPAccountHandler::~TCPAccountHandler()
 {
+	UT_DEBUGMSG(("~TCPAccountHandler()\n"));
 	if (m_bConnected)
 		disconnect();
 }
@@ -86,6 +87,7 @@ ConnectResult TCPAccountHandler::connect()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, CONNECT_INTERNAL_ERROR);
 
+	UT_return_val_if_fail(!m_pDelegator, CONNECT_INTERNAL_ERROR);
 	
 	if (m_bConnected)
 		return CONNECT_ALREADY_CONNECTED;
@@ -96,7 +98,6 @@ ConnectResult TCPAccountHandler::connect()
 		UT_sint32 port = _getPort(getProperties());
 		UT_DEBUGMSG(("Start accepting connections on port %d...\n", port));
 
-		// TODO: do we catch all possible acceptions?
 		try
 		{
 			IOServerHandler* pDelegator = new IOServerHandler(port, IOAcceptFunc, *this);
@@ -105,9 +106,16 @@ ConnectResult TCPAccountHandler::connect()
 
 			m_pPendingSession = pDelegator->constructSession(IOEventFunc, *this);
 			pDelegator->run(*m_pPendingSession);
-		} catch (asio::system_error se)
+		}
+		catch (asio::system_error se)
 		{
 			UT_DEBUGMSG(("Failed to start accepting connections: %s\n", se.what()));
+			_teardownAndDestroyHandler();
+			return CONNECT_FAILED;
+		}
+		catch (...)
+		{
+			UT_DEBUGMSG(("Caught unhandled server exception!\n"));
 			_teardownAndDestroyHandler();
 			return CONNECT_FAILED;
 		}
@@ -143,17 +151,23 @@ ConnectResult TCPAccountHandler::connect()
 			_teardownAndDestroyHandler();
 			return CONNECT_FAILED;
 		}
+		catch (...)
+		{
+			UT_DEBUGMSG(("Caught unhandled client exception!\n"));
+			_teardownAndDestroyHandler();
+			return CONNECT_FAILED;
+		}		
 	}
 	
-	if (m_bConnected)
-	{
-		// we are connected now, time to start sending out messages (such as events)
-		pManager->registerEventListener(this);
-		// signal all listeners we are logged in
-		AccountOnlineEvent event;
-		// TODO: fill the event
-		AbiCollabSessionManager::getManager()->signal(event);
-	}
+	if (!m_bConnected)
+		return CONNECT_FAILED;
+
+	// we are connected now, time to start sending out messages (such as events)
+	pManager->registerEventListener(this);
+	// signal all listeners we are logged in
+	AccountOnlineEvent event;
+	// TODO: fill the event
+	AbiCollabSessionManager::getManager()->signal(event);
 
 	return CONNECT_SUCCESS;
 }
@@ -183,14 +197,13 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 {
 	UT_return_if_fail(m_pDelegator);
 
-	// first, stop the IO handler
-	m_pDelegator->stop();
-
-	// ... then destroy the pending client session (if any) (ugly)
+	// stop accepting new connections
+	UT_DEBUGMSG(("Stop accepting connections\n"));
 	if (m_pPendingSession)
 		DELETEP(m_pPendingSession);
 
 	// ... then tear down all client connections
+	UT_DEBUGMSG(("Tearing down client connections\n"));
 	for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end();)
 	{
 		std::map<const TCPBuddy*, Session*>::iterator next_it = it;
@@ -206,7 +219,12 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 		it = next_it;
 	}
 
-	// ... and then kill off the IO handler alltogether
+	// ... then stop the IO handler
+	UT_DEBUGMSG(("Stopping the IO handler\n"));
+	m_pDelegator->stop();
+
+	// ... and finally kill off the IO handler alltogether
+	UT_DEBUGMSG(("Deleting the IO handler\n"));
 	DELETEP(m_pDelegator);
 }
 

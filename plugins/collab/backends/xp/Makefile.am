@@ -12,13 +12,13 @@ libxp_la_SOURCES = \
 	AccountEvent.h \
 	AccountHandler.cpp \
 	AccountHandler.h \
+	BackendPackets.cpp \
 	Buddy.cpp \
 	Buddy.h \
 	DocHandle.h \
 	DocTreeItem.h \
 	Event.h \
 	EventListener.h \
-	Packets.cpp \
 	SessionEvent.cpp \
 	SessionEvent.h
 

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <boost/lexical_cast.hpp>
 #include "TCPWin32AccountHandler.h"
 
 AccountHandlerConstructor TCPAccountHandlerConstructor = &TCPWin32AccountHandler::static_constructor;
@@ -191,7 +192,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// Port entry box
 	// OK should be disabled when this is empty
-	m_hPortEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT","58599", ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP| WS_GROUP,
+	m_hPortEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", boost::lexical_cast<std::string>(DEFAULT_TCP_PORT).c_str(), ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP| WS_GROUP,
 	80, 85, 60, 20, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTENTRY,  m_hInstance, (LPARAM) pThis);
 	UT_return_if_fail(m_hPortEntry);
 	

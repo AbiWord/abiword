@@ -33,8 +33,12 @@
 //////////////////
 
 #ifdef WIN32
-static bool Synchronizer::sm_bClassRegistered=false;
+#ifndef HWND_MESSAGE
+#define HWND_MESSAGE ((HWND)(-3))
+#endif
+
 static int Synchronizer::sm_iMessageWindows=0;
+ATOM sm_iClass = 0;
 
 static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) // Win32-only
 {
@@ -67,24 +71,9 @@ static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wPar
 		UT_DEBUGMSG(("Received a message in Synchronizer.h message loop! 0x%x\n", msg));
 		pThis->fromMainloopCallback();
 		return 1;
-		
-	case WM_NOTIFY:
-		printf("WM_NOTIFY\n");
-		pThis = (Synchronizer *)GetWindowLong(hWnd,GWL_USERDATA);
-		UT_return_val_if_fail(pThis, 0);
-		UT_return_val_if_fail(lParam, 0);
-		switch (((LPNMHDR)lParam)->code)
-		{
-			//case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-			default:				return 0;
-		}
-	case WM_DESTROY:
-		printf("WM_DESTROY\n");
-		PostQuitMessage(0);
-		break;
 
 	default:
-		printf("return DefWindowProc for message 0x%x\n", msg);
+		UT_DEBUGMSG(("return DefWindowProc for message 0x%x\n", msg));
 		// We do not want to handle this message so pass back to Windows
 		// to handle it in a default way
 		return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -92,74 +81,56 @@ static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wPar
 }
 static void Synchronizer::_registerWndClass() // Win32-only
 {
-	if (!sm_bClassRegistered)
+	if (sm_iClass)
 	{
-		
-		WNDCLASS wc;
-		HINSTANCE hInstance;
-		
-		
-		AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
-		if (pSessionManager)
-		{
-			hInstance=pSessionManager->getInstance();
-		}
-
-		if (hInstance)
-		{
-			// create class if we haven't before
-			wc.style = CS_HREDRAW | CS_VREDRAW;
-			wc.lpfnWndProc = Synchronizer::s_wndProc;
-			wc.cbClsExtra = 0;
-			wc.cbWndExtra = 0;
-			wc.hInstance = hInstance;
-			wc.hIcon = NULL;
-			wc.hCursor = NULL;
-			wc.hbrBackground = NULL;
-			wc.lpszMenuName =  NULL;
-			wc.lpszClassName = "AbiTCPSynchronizer";
-
-			
-			ATOM iClass = RegisterClass(&wc);
-			switch ((unsigned int)iClass)
-			{
-			case 0:
-				UT_DEBUGMSG(("Win32 error in Class Registration: %d.  This is bad, especially if it's 1410.\n", GetLastError()));
-				break;
-			default:
-				sm_bClassRegistered=true;
-				sm_iMessageWindows=0;
-				break;
-				// ok!
-			};
-		}
-			
-
+		UT_DEBUGMSG(("Skipping window class registration\n"));
+		return;
 	}
 
+	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pSessionManager);
+
+	HINSTANCE hInstance = pSessionManager->getInstance();
+	UT_return_if_fail(hInstance);
+
+	WNDCLASS wc;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = Synchronizer::s_wndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = hInstance;
+	wc.hIcon = NULL;
+	wc.hCursor = NULL;
+	wc.hbrBackground = NULL;
+	wc.lpszMenuName =  NULL;
+	wc.lpszClassName = "AbiTCPSynchronizer";
+
+	sm_iClass = RegisterClass(&wc);
+	UT_return_if_fail(sm_iClass);
+	
+	sm_iMessageWindows = 0;
 }
 
 static void Synchronizer::_unregisterWndClass() // Win32-only
 {
-	if (sm_bClassRegistered && sm_iMessageWindows==0)
+	UT_DEBUGMSG(("Synchronizer::_unregisterWndClass()\n"));
+	UT_return_if_fail(sm_iClass);
+	
+	if (sm_iMessageWindows > 0)
 	{
-		HINSTANCE hInstance;
-		UT_DEBUGMSG(("Synchronizer Class Unregistration about to occur.\n"));
-		AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
-		if (pSessionManager)
-		{
-			hInstance=pSessionManager->getInstance();
-		}
-		
-		if (!UnregisterClass("AbiTCPSynchronizer", hInstance ))
-		{
-			UT_DEBUGMSG(("Win32 error in Class Unregistration: %d.\n", GetLastError()));
-		}
-		else
-		{
-			sm_bClassRegistered=false;
-		}
+		UT_DEBUGMSG(("%d message windows still exist, skipping unregistering\n", sm_iMessageWindows));
+		return;
 	}
+	
+	AbiCollabSessionManager * pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	HINSTANCE hInstance = pManager->getInstance();
+	UT_return_if_fail(hInstance);
+
+	UT_DEBUGMSG(("Unregistrating message window class\n"));
+	UT_return_if_fail(UnregisterClass(sm_iClass, hInstance));
+	sm_iClass = NULL;
 }
 
 #endif
@@ -171,38 +142,38 @@ static void Synchronizer::_unregisterWndClass() // Win32-only
 #ifdef WIN32
 Synchronizer::Synchronizer(void (*f)(void*), void* data) // Win32 Implementation
 	: f_(f),
-	data_(data)
+	data_(data),
+	m_hWnd(0)
 {
 	UT_DEBUGMSG(("Synchronizer()\n"));
-	HINSTANCE hInstance;
-	m_hWnd=0;
-	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
-	if (pSessionManager)
-	{
-		hInstance=pSessionManager->getInstance();
-	}
 
-	if (hInstance)
-	{
-		_registerWndClass();
+	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pSessionManager);
+
+	HINSTANCE hInstance = pSessionManager->getInstance();
+	UT_return_if_fail(hInstance);
+
+	_registerWndClass();
 		
-		// HWND_MESSAGE as parent HWND is Win2k/xp/vista only - replaced with 0
-		// (also HWND_MESSAGE doesn't compile in MinGW, weird bug.  --RP 8 August 2007)
+	// HWND_MESSAGE as parent HWND is Win2k/xp/vista only - replaced with 0
+	// (also HWND_MESSAGE doesn't compile in MinGW, weird bug.  --RP 8 August 2007)
 		
-		m_hWnd = CreateWindow("AbiTCPSynchronizer",
+	m_hWnd = CreateWindow("AbiTCPSynchronizer",
 			"AbiCollab",
 			0,
 			CW_USEDEFAULT,
 			SW_HIDE,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			NULL,
+			HWND_MESSAGE,
 			NULL,
 			hInstance,
-			(void *) this);
-		UT_DEBUGMSG(("Created message window: HWND 0x%x\n", m_hWnd));
-		switch ((int)m_hWnd)
-		{
+			(void *) this
+		);
+		
+	UT_DEBUGMSG(("Created message window: HWND 0x%x\n", m_hWnd));
+	switch ((int)m_hWnd)
+	{
 		case NULL:
 			UT_DEBUGMSG(("Win32 error: %d.\n", GetLastError()));
 			break;
@@ -210,9 +181,7 @@ Synchronizer::Synchronizer(void (*f)(void*), void* data) // Win32 Implementation
 			sm_iMessageWindows++;
 			break;
 			// ok!
-		};
-
-	}
+	};
 }
 
 #else
@@ -260,7 +229,8 @@ Synchronizer::~Synchronizer() // Win32 Implementation
 	if (m_hWnd)
 	{
 		DestroyWindow(m_hWnd);
-		m_hWnd=0;
+		m_hWnd = 0;
+		sm_iMessageWindows--;
 	}
 	else
 	{

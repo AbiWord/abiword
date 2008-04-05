@@ -32,7 +32,12 @@
 
 class XAP_Frame;
 
-struct ShareListItem { Buddy* pBuddy; DocHandle* pDocHandle; };
+struct ShareListItem
+{
+	ShareListItem(Buddy* pBuddy_, DocHandle* pDocHandle_) : pBuddy(pBuddy_), pDocHandle(pDocHandle_) {};
+	Buddy* pBuddy;
+	DocHandle* pDocHandle;
+};
 
 class AP_Win32Dialog_CollaborationJoin : public AP_Dialog_CollaborationJoin
 {
@@ -49,8 +54,7 @@ public:
 private:
 	XAP_Win32DialogHelper *	p_win32Dialog;
 
-	std::map<UT_UTF8String, ShareListItem> _constructModel();
-	void					_setModel(std::map<UT_UTF8String, ShareListItem>  model);
+	void					_setModel();
 	void					_refreshWindow();
 	void					_enableBuddyAddition(bool bEnabled);
 	void					_updateSelection();
@@ -66,9 +70,8 @@ private:
 	BOOL					m_bShareSelected;
 	HTREEITEM				m_hSelected;
 	
-	// Models
-	std::map<UT_UTF8String, ShareListItem> m_mModel;
-	std::map<HTREEITEM, ShareListItem> m_mTreeItemHandles;
+	// Model
+	std::map< HTREEITEM, ShareListItem > m_mTreeItemHandles;
 };
 
 #endif /* AP_WIN32DIALOG_COLLABORATIONJOIN_H */

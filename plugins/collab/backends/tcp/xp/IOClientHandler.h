@@ -20,10 +20,8 @@
 #define __IO_CLIENT_HANDLER__
 
 #include <boost/bind.hpp>
-#include <boost/utility.hpp>
 #include <asio.hpp>
 
-#include "IOServiceThread.h" 
 #include "Synchronizer.h"
 #include "Session.h"
 #include "IOHandler.h"
@@ -68,7 +66,7 @@ public:
 		UT_return_if_fail(work == NULL);
 		
 		work = new asio::io_service::work(io_service);
-		thread = new asio::thread(IOServiceThread(io_service));
+		thread = new asio::thread(boost::bind(&asio::io_service::run, &io_service));
 		
 		// TODO: catch exceptions
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));

@@ -121,7 +121,7 @@ const char* Packet::getPacketClassname( PClassType eType )
 
 void Packet::registerPacketClass( PClassType eType, PacketCreateFuncType createFunc, const char* szClassName ) 
 {
-	UT_ASSERT( !createPacket(eType) ); // if this fails, we have a duplicate eType registration
+	UT_return_if_fail( !createPacket(eType) ); // if this fails, we have a duplicate eType registration
 	ClassData cd;
 	cd.StaticConstructor = createFunc;
 	cd.ClassName = szClassName;

@@ -22,15 +22,15 @@
 #include "ut_debugmsg.h"
 
 #include <boost/bind.hpp>
-#include <boost/utility.hpp>
 #include <asio.hpp>
 
-#include "IOServiceThread.h" 
 #include "Synchronizer.h"
 #include "Session.h"
 #include "IOHandler.h"
 
 class TCPAccountHandler;
+
+using asio::ip::tcp;
 
 class IOServerHandler : public IOHandler
 {
@@ -39,23 +39,26 @@ public:
 	:	accept_synchronizer((void (*)(void*))af, (void*)this),
 		io_service(),
 		work(NULL),
-		endpoint(asio::ip::tcp::v4(), port),
+		thread(NULL),
 		m_pAcceptor(NULL),
-		iot(io_service),
 		m_handler(handler)
 	{
+		UT_DEBUGMSG(("IOServerHandler()\n"));
 		work = new asio::io_service::work(io_service);
-		m_pAcceptor = new asio::ip::tcp::acceptor(io_service, endpoint);
-		asio::thread thread(iot);
+		m_pAcceptor = new tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), port));
+		thread = new asio::thread(boost::bind(&asio::io_service::run, &io_service));
 	}
 	
 	virtual ~IOServerHandler()
 	{
 		UT_DEBUGMSG(("IOServerHandler::~IOServerHandler()\n"));
+		if (m_pAcceptor)
+			stop();
 	}
 
 	virtual void stop()
 	{
+		UT_DEBUGMSG(("IOServerHandler::stop()\n"));
 		if (m_pAcceptor)
 		{
 			m_pAcceptor->close();
@@ -63,15 +66,21 @@ public:
 		}
 		DELETEP(work);
 		io_service.stop();
+		if (thread)
+			thread->join();
+		DELETEP(thread);
 	}
 
 	void run(Session& newSession)
 	{
+		UT_DEBUGMSG(("IOServerHandler::run()\n"));
 		asyncAccept(newSession);
 	}
 
 	void asyncAccept(Session& newSession)
 	{
+		UT_DEBUGMSG(("IOServerHandler::asyncAccept()\n"));
+		UT_return_if_fail(m_pAcceptor);
 		m_pAcceptor->async_accept(newSession.getSocket(),
 			boost::bind(&IOServerHandler::handleAsyncAccept,
 				this, asio::placeholders::error,
@@ -80,6 +89,7 @@ public:
 
 	Session* constructSession(void (*ef)(Session*), TCPAccountHandler& handler)
 	{
+		UT_DEBUGMSG(("IOServerHandler::constructSession()\n"));
 		return new Session(io_service, ef, handler);
 	}
 
@@ -88,6 +98,7 @@ public:
 	*/
 	void handleAccept(Session& newSession)
 	{
+		UT_DEBUGMSG(("IOServerHandler::handleAccept()\n"));
 		accept_synchronizer.consume();
 		asyncAccept(newSession);
 	}
@@ -110,10 +121,8 @@ private:
 	Synchronizer				accept_synchronizer;
 	asio::io_service			io_service;
 	asio::io_service::work*		work;
-	asio::ip::tcp::endpoint		endpoint;
+	asio::thread*				thread;	
 	asio::ip::tcp::acceptor*	m_pAcceptor;
-	
-	IOServiceThread				iot;
 
 	TCPAccountHandler&			m_handler;
 };

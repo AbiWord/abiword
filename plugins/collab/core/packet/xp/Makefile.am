@@ -8,8 +8,8 @@ libxp_la_CPPFLAGS = \
 libxp_la_SOURCES = \
 	AbiCollab_Packet.cpp \
 	AbiCollab_Packet.h \
+	CorePackets.cpp \
 	EventPacket.h \
-	Packets.cpp \
 	Serialization.cpp \
 	Serialization.h
 
