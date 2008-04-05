@@ -308,6 +308,7 @@ SectionEnd
 	; remove files we installed in $INSTDIR
 	Delete "$INSTDIR\copying.txt"
 	Delete "$INSTDIR\readme.txt"
+	Delete "$INSTDIR\readme.abw"
 
 	; remove string sets
 	Delete "$INSTDIR\${PRODUCT}\strings\*.strings"
