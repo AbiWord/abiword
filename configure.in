@@ -330,13 +330,13 @@ fi
 # check using pkg-config instead
 AC_CHECK_HEADER([png.h], [], 
 [
-	AC_MSG_ERROR([`png.h' not found, use CPPFLAGS to include custom locations])
+	AC_MSG_ERROR([`png.h' not found, install libpng or specify CPPFLAGS to include custom locations])
 ])
 
 # TODO need to check for libz too, at least on win32
 AC_CHECK_HEADER([zlib.h], [], 
 [
-	AC_MSG_ERROR([`zlib.h' not found, use CPPFLAGS to include custom locations])
+	AC_MSG_ERROR([`zlib.h' not found, install zlib or specify CPPFLAGS to include custom locations])
 ])
 
 deps_pkgs="$xp_pkgs $opt_pkgs"
