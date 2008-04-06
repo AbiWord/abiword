@@ -2192,7 +2192,7 @@ void fp_Line::layout(void)
 	// at this stage, (and chances are we will not need to anyway), because
 	// we have to first calculate the widths of our tabs
 	fb_Alignment* pAlignment = m_pBlock->getAlignment();
-	UT_ASSERT(pAlignment);
+	UT_return_if_fail(pAlignment);
 	FB_AlignmentType eAlignment 	  = pAlignment->getType();
 
 	//we have to remember the old X coordinances of our runs
