@@ -387,6 +387,11 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
 	EV_EditMethod * pem = m_pemc->findEditMethodByName(szMethodName);
 	if (!pem)
 	{
+	        if(strcmp(szMethodName,"NULL") == 0)
+		{
+		    EV_EditBinding * ev = NULL;
+		    return setBinding(eb,ev);
+		}
 		UT_DEBUGMSG(("Unknown method name [%s] in binding table.\n",szMethodName));
 		UT_ASSERT(pem);				// TODO remove this and find a better way of doing a spelling-check...
 		return false;
