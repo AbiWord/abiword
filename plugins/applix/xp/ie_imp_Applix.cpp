@@ -263,11 +263,11 @@ IE_Imp_Applix::s_getTagName(const char *str, size_t len)
 	if(*ptr == '<')
 	{
 		ptr++;
-		while(ptr && !UT_UCS4_isspace(*ptr) && (*ptr != '>'))
+		while(*ptr && !UT_UCS4_isspace(*ptr) && (*ptr != '>'))
 		{
 			ptr++;
 		}
-		if (ptr)
+		if (*ptr)
 		{
 			char buf [APPLIX_LINE_LENGTH + 1];
 
