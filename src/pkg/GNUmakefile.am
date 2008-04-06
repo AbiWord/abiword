@@ -11,7 +11,6 @@ EXTRA_DIST = \
 	cygwin \
 	hpux \
 	irix \
-	maemo \
 	qnx \
 	win
 
