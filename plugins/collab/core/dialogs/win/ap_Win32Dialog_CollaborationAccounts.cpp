@@ -262,12 +262,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 				pHandler=m_mIndices[m_iSelected];
 				UT_DEBUGMSG(("An account handler is selected!\n"));
 				if (pHandler)
-				{
-					if (!pHandler->isOnline())
-						setOnline(pHandler, true);
-					if (pHandler->isOnline())
-						setOnline(pHandler, false);
-				}
+					setOnline(pHandler, !pHandler->isOnline());
 			}
 			
 			// WM_COMMAND message processed
