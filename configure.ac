@@ -527,7 +527,6 @@ AC_CONFIG_FILES([
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile
  src/pkg/GNUmakefile
- src/pkg/linux/GNUmakefile
  src/pkg/maemo/GNUmakefile
  src/pkg/maemo/abiword.desktop
  src/pkg/maemo/com.abisource.abiword.service
