@@ -4094,9 +4094,10 @@ void s_HTML_Listener::_openPosImage (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
+
 	const gchar * pszDataID = NULL;
-	pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-	_handleImage(pAP,pszDataID,true);
+	if(pAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID) && pszDataID)
+		_handleImage(pAP,pszDataID,true);
 
 }
 
@@ -4998,8 +4999,10 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 					noteNumInit = atoi(szNoteNumInit);
 				else if(!strcmp(noteToken, "endnote") && pDAP->getProperty("document-endnote-initial", szNoteNumInit))
 					noteNumInit = atoi(szNoteNumInit);
-			pAP->getAttribute (strcat(idAttr, "-id"), szID);
-			UT_uint32 ID = atoi(szID);
+
+			UT_uint32 ID = 0;
+			if(pAP->getAttribute (strcat(idAttr, "-id"), szID) && szID)
+				ID = atoi(szID);
 			
 			UT_UTF8String_sprintf(notePIDString, " id=\"%s_%s-%d\"", noteToken, partToken, (ID + noteNumInit));
 			m_utf8_1 += notePIDString;
