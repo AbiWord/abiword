@@ -544,12 +544,7 @@ static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event,
 		sDoHelp( pDlg ) ;
 		return TRUE ;
 	}
-	else if ( event->keyval == GDK_Escape )
-	{
-		gtk_widget_destroy ( wid ) ;
-		return TRUE ;
-	}
-	
+
 	return FALSE ;
 }
 

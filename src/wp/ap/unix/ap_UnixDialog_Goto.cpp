@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) Robert Staudinger <robsta@stereolyzer.net>
@@ -19,7 +21,6 @@
  */
 
 
-
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -38,7 +39,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_UnixDialog_Goto.h"
-
 
 
 /*!
@@ -498,7 +498,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame)
 void 
 AP_UnixDialog_Goto::updateWindow ()
 {
-	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d'\n", getExistingBookmarksCount()));
+	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d', mapped='%d'\n", getExistingBookmarksCount(), GTK_WIDGET_MAPPED(m_wDialog)));
+
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
@@ -552,6 +553,7 @@ AP_UnixDialog_Goto::notifyActiveFrame (XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG (("ROB: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);
+
 	updateWindow ();
 	/* default to page */
 	m_JumpTarget = AP_JUMPTARGET_PAGE;
