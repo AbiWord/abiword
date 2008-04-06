@@ -141,11 +141,6 @@ ABI_LIBS+=$(top_builddir)/src/text/fmt/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
 
-if EMBEDDED_HILDON
-else
- ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
-endif
-
 if ENABLE_SPELL
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 endif
