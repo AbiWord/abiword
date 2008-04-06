@@ -335,6 +335,7 @@ dcl(LANG_AYC_BO, 							"Aymara (Oruro)")
 dcl(LANG_AYR, 								"Central Aymara")
 dcl(LANG_EU_ES, 							"Basque")
 dcl(LANG_BE_BY, 							"Belarusian")
+dcl(LANG_BE_LATIN,							"Belarusian, Latin")
 dcl(LANG_BN_IN,                             "Bengali")
 dcl(LANG_BR_FR,								"Breton")		// Jordi 19/10/2002
 dcl(LANG_BG_BG, 							"Bulgarian")
