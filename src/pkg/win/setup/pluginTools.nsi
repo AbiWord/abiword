@@ -123,9 +123,9 @@ SectionEnd
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
-!ifdef 0
+
 Section "Equation Editor"
-	SectionIn 2
+	SectionIn 1 2
 	
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -140,38 +140,22 @@ Section "Equation Editor"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Unzip libmathview into same directory as AbiWord.exe
-	SetOutPath $INSTDIR\AbiWord
-
-	;;;;;;;;;
-	; libmathview
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.7-runtime.zip" "$TEMP\libmathview-0.7.7-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-
-	doCleanup:
-		; Delete temporary files
-		
-		Delete "$TEMP\libmathview-0.7.7-runtime.zip"
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Set output path back to the plugins directory.
-	SetOutPath $INSTDIR\AbiWord\plugins
-
-	File "AbiMathView.dll"
+	SetOutPath $INSTDIR\AbiWord\bin
+	File /r "..\bin\libmathview-0.dll"
+	File /r "..\bin\libmathview_frontend_libxml2-0.dll"
+	
 	;Install Configuration Files - This better work...
 	SetOutPath $INSTDIR\math
 	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
 	File /r "..\AbiSuite\math\dictionary-local.xml"
 	File /r "..\AbiSuite\math\dictionary.xml"
+	
 	SetOutPath $INSTDIR\AbiWord\plugins
-  
+	File "AbiMathView.dll"
+
 	End:
 SectionEnd
-!endif
+
 
 
 SubSection /e "Collaboration Tools"
