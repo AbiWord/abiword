@@ -9,17 +9,11 @@ DIST_SUBDIRS = linux maemo
 
 EXTRA_DIST = \
 	aix \
-	common \
 	cygwin \
-	freebsd \
 	hpux \
-	iomega_activedisk \
 	irix \
-	netbsd \
-	openbsd \
-	osf1 \
+	maemo \
 	qnx \
-	sunos \
 	win
 
 dist-hook:
