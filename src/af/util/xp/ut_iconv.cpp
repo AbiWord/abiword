@@ -123,7 +123,11 @@ static const char * s_ucs2_list[] = {
 	"UCS-2-BE",
 	"UCS-2LE",
 	"UCS-2BE",
+	"UTF16-LE",
+	"UTF16-BE",
 	"UCS2",
+	"UCS-2",
+	"UTF-16",
 	0
 };
 
@@ -133,7 +137,12 @@ static const char * s_ucs4_list[] = {
 	"UCS-4-BE",
 	"UCS-4LE",
 	"UCS-4BE",
+	"UTF-32LE",
+	"UTF-32BE",
 	"UCS4",
+	"UCS-4",
+	"UTF32",
+	"UTF-32",
 	0
 };
 
