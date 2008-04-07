@@ -175,6 +175,22 @@ AC_ARG_ENABLE([statusbar],
 	abi_cv_statusbar="yes"
 ])
 
+AC_ARG_ENABLE([emacs-keybinding], 
+	[AS_HELP_STRING([--enable-emacs-keybinding], [Enable the use of emacs-compatible keyboard commands])], 
+[
+	abi_cv_emacs_keybinding="$enableval"
+], [
+	abi_cv_emacs_keybinding="no"
+])
+
+AC_ARG_ENABLE([vi-keybinding], 
+	[AS_HELP_STRING([--enable-vi-keybinding], [Enable the use of vi-compatible keyboard commands])], 
+[
+	abi_cv_vi_keybinding="$enableval"
+], [
+	abi_cv_vi_keybinding="no"
+])
+
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
 # #if EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #
@@ -532,6 +548,16 @@ if test "$abi_cv_embedded_target" != "no"; then
 fi
 AM_CONDITIONAL(EMBEDDED_HILDON, test "$abi_cv_embedded_target" == "EMBEDDED_TARGET_HILDON")
 
+if test "$abi_cv_emacs_keybinding" == "yes"; then
+	AC_DEFINE([ENABLE_EMACS_KEYBINDING], [1], [Define to enable include emacs-compatible keyboard commands])
+fi
+AM_CONDITIONAL(ENABLE_EMACS_KEYBINDING, test "$abi_cv_emacs_keybinding" == "yes")
+
+if test "$abi_cv_vi_keybinding" == "yes"; then
+	AC_DEFINE([ENABLE_VI_KEYBINDING], [1], [Define to enable include vi-compatible keyboard commands])
+fi
+AM_CONDITIONAL(ENABLE_VI_KEYBINDING, test "$abi_cv_vi_keybinding" == "yes")
+
 if test "$abi_cv_debug" == "yes"; then
 	AC_DEFINE([DEBUG], [1], [Define to enable debugging functionality])
 else
@@ -680,6 +706,8 @@ Optional features:
   printing              ${abi_cv_print}
   spell checking        ${abi_cv_spell}
   status bar            ${abi_cv_statusbar}
+  emacs keybinding      ${abi_cv_emacs_keybinding}
+  vi keybinding         ${abi_cv_vi_keybinding}
 
 Optional dependencies:
   libgnomeui            ${abi_cv_gnomeui}

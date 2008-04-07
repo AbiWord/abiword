@@ -12,8 +12,26 @@ libxp_la_CPPFLAGS = \
 
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
+	ap_LB_Emacs.cpp \
+	ap_LB_EmacsCtrlX.cpp \
+	ap_LB_EmacsCtrlX.h \
+	ap_LB_Emacs.h \
 	ap_Dialog_Spell.cpp \
-	ap_StatusBar.cpp
+	ap_StatusBar.cpp \
+	ap_LB_viEdit_c.cpp \
+	ap_LB_viEdit_c.h \
+	ap_LB_viEdit_colon.cpp \
+	ap_LB_viEdit_colon.h \
+	ap_LB_viEdit.cpp \
+	ap_LB_viEdit_d.cpp \
+	ap_LB_viEdit_d.h \
+	ap_LB_viEdit.h \
+	ap_LB_viEdit_r.cpp \
+	ap_LB_viEdit_r.h \
+	ap_LB_viEdit_y.cpp \
+	ap_LB_viEdit_y.h \
+	ap_LB_viInput.cpp \
+	ap_LB_viInput.h
 
 if ENABLE_SPELL
 spell_src = ap_Dialog_Spell.cpp
@@ -23,9 +41,37 @@ if ENABLE_STATUSBAR
 statusbar_src = ap_StatusBar.cpp
 endif
 
+if ENABLE_EMACS_KEYBINDING
+emacs_keybinding_src = \
+	ap_LB_Emacs.cpp \
+	ap_LB_EmacsCtrlX.cpp \
+	ap_LB_EmacsCtrlX.h \
+	ap_LB_Emacs.h
+endif
+
+if ENABLE_VI_KEYBINDING
+vi_keybinding_src = \
+	ap_LB_viEdit_c.cpp \
+	ap_LB_viEdit_c.h \
+	ap_LB_viEdit_colon.cpp \
+	ap_LB_viEdit_colon.h \
+	ap_LB_viEdit.cpp \
+	ap_LB_viEdit_d.cpp \
+	ap_LB_viEdit_d.h \
+	ap_LB_viEdit.h \
+	ap_LB_viEdit_r.cpp \
+	ap_LB_viEdit_r.h \
+	ap_LB_viEdit_y.cpp \
+	ap_LB_viEdit_y.h \
+	ap_LB_viInput.cpp \
+	ap_LB_viInput.h
+endif
+
 libxp_la_SOURCES = \
 	$(spell_src) \
 	$(statusbar_src) \
+	$(emacs_keybinding_src) \
+	$(vi_keybinding_src) \
 	ap_App.cpp \
 	ap_App.h \
 	ap_Args.cpp \
@@ -136,24 +182,6 @@ libxp_la_SOURCES = \
 	ap_LB_DeadTilde.h \
 	ap_LB_Default.cpp \
 	ap_LB_Default.h \
-	ap_LB_Emacs.cpp \
-	ap_LB_EmacsCtrlX.cpp \
-	ap_LB_EmacsCtrlX.h \
-	ap_LB_Emacs.h \
-	ap_LB_viEdit_c.cpp \
-	ap_LB_viEdit_c.h \
-	ap_LB_viEdit_colon.cpp \
-	ap_LB_viEdit_colon.h \
-	ap_LB_viEdit.cpp \
-	ap_LB_viEdit_d.cpp \
-	ap_LB_viEdit_d.h \
-	ap_LB_viEdit.h \
-	ap_LB_viEdit_r.cpp \
-	ap_LB_viEdit_r.h \
-	ap_LB_viEdit_y.cpp \
-	ap_LB_viEdit_y.h \
-	ap_LB_viInput.cpp \
-	ap_LB_viInput.h \
 	ap_LeftRuler.cpp \
 	ap_LeftRuler.h \
 	ap_LoadBindings.cpp \

@@ -18,6 +18,9 @@
 /* Poky embedded platform */
 #undef EMBEDDED_TARGET_POKY
 
+/* Define to enable include emacs-compatible keyboard commands */
+#undef ENABLE_EMACS_KEYBINDING
+
 /* Define if building printing support */
 #undef ENABLE_MENUBUTTON
 
@@ -29,6 +32,9 @@
 
 /* Define if building status bar */
 #undef ENABLE_STATUSBAR
+
+/* Define to enable include vi-compatible keyboard commands */
+#undef ENABLE_VI_KEYBINDING
 
 /* Define to 1 if you have the <asio.hpp> header file. */
 #undef HAVE_ASIO_HPP

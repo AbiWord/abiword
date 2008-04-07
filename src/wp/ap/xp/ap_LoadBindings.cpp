@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -25,21 +27,16 @@
 // ********************************************************************************
 // ********************************************************************************
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ev_EditBinding.h"
 #include "ap_LoadBindings.h"
 #include "ap_LB_Default.h"
-#include "ap_LB_Emacs.h"
-#include "ap_LB_EmacsCtrlX.h"
-#include "ap_LB_viEdit.h"
-#include "ap_LB_viEdit_colon.h"
-#include "ap_LB_viEdit_c.h"
-#include "ap_LB_viEdit_d.h"
-#include "ap_LB_viEdit_r.h"
-#include "ap_LB_viEdit_y.h"
-#include "ap_LB_viInput.h"
 #include "ap_LB_DeadAbovedot.h"
 #include "ap_LB_DeadAcute.h"
 #include "ap_LB_DeadBreve.h"
@@ -52,6 +49,21 @@
 #include "ap_LB_DeadMacron.h"
 #include "ap_LB_DeadOgonek.h"
 #include "ap_LB_DeadTilde.h"
+
+#ifdef ENABLE_EMACS_KEYBINDING
+#include "ap_LB_Emacs.h"
+#include "ap_LB_EmacsCtrlX.h"
+#endif
+
+#ifdef ENABLE_VI_KEYBINDING
+#include "ap_LB_viEdit.h"
+#include "ap_LB_viEdit_colon.h"
+#include "ap_LB_viEdit_c.h"
+#include "ap_LB_viEdit_d.h"
+#include "ap_LB_viEdit_r.h"
+#include "ap_LB_viEdit_y.h"
+#include "ap_LB_viInput.h"
+#endif
 
 /****************************************************************/
 /****************************************************************/
@@ -127,30 +139,32 @@ AP_BindingSet::~AP_BindingSet(void)
 void AP_BindingSet::loadBuiltin(void)
 {
 
-  m_vecBindings.addItem(new c_lb(true,"default",ap_LoadBindings_Default,NULL)); // stock AbiWord bindings
-  m_vecBindings.addItem(new c_lb(true,  "emacs",ap_LoadBindings_Emacs, NULL)); // emacs key bindings
-  m_vecBindings.addItem(new c_lb(false, "emacsctrlx",ap_LoadBindings_EmacsCtrlX, NULL)); // emacs ctrl-x key bindings
-
-  m_vecBindings.addItem(new c_lb(true,  "viEdit",ap_LoadBindings_viEdit,NULL)); // vi Edit-Mode bindings
-										  m_vecBindings.addItem(new c_lb(false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL)); // vi Edit-Mode :-prefix key bindings
+  m_vecBindings.addItem(new c_lb(true,	"default",			ap_LoadBindings_Default,			NULL)); // stock AbiWord bindings
+#ifdef ENABLE_EMACS_KEYBINDING
+  m_vecBindings.addItem(new c_lb(true,  "emacs",			ap_LoadBindings_Emacs, 				NULL)); // emacs key bindings
+  m_vecBindings.addItem(new c_lb(false, "emacsctrlx",		ap_LoadBindings_EmacsCtrlX,			NULL)); // emacs ctrl-x key bindings
+#endif
+#ifdef ENABLE_VI_KEYBINDING
+  m_vecBindings.addItem(new c_lb(true,  "viEdit",			ap_LoadBindings_viEdit,				NULL)); // vi Edit-Mode bindings
+  m_vecBindings.addItem(new c_lb(false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL)); // vi Edit-Mode :-prefix key bindings
   m_vecBindings.addItem(new c_lb(false, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL)); // vi Edit-Mode c-prefix key bindings
   m_vecBindings.addItem(new c_lb(false, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL)); // vi Edit-Mode d-prefix key bindings
   m_vecBindings.addItem(new c_lb(false, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL)); // vi Edit-Mode y-prefix key bindings
   m_vecBindings.addItem(new c_lb(false, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL)); // vi Edit-Mode r-prefix key bindings
   m_vecBindings.addItem(new c_lb(false, "viInput",			ap_LoadBindings_viInput,			NULL)); // vi Input-Mode bindings
-  
+#endif  
   m_vecBindings.addItem(new c_lb(false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL)); // subordinate maps for 'dead'
-  m_vecBindings.addItem(new c_lb(false, "deadacute",			ap_LoadBindings_DeadAcute,			NULL)); // key prefixes.
-  m_vecBindings.addItem(new c_lb(false, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadacute",		ap_LoadBindings_DeadAcute,			NULL)); // key prefixes.
+  m_vecBindings.addItem(new c_lb(false, "deadbreve",		ap_LoadBindings_DeadBreve,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadcaron",		ap_LoadBindings_DeadCaron,			NULL));
   m_vecBindings.addItem(new c_lb(false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL));
-  m_vecBindings.addItem(new c_lb(false, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL));
-  m_vecBindings.addItem(new c_lb(false, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL));
-m_vecBindings.addItem(new c_lb(false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL));
- m_vecBindings.addItem(new c_lb(false, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL));
- m_vecBindings.addItem(new c_lb(false, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL));
- m_vecBindings.addItem(new c_lb(false, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL));
- m_vecBindings.addItem(new c_lb(false, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadcircumflex",	ap_LoadBindings_DeadCircumflex,		NULL));
+  m_vecBindings.addItem(new c_lb(false, "deaddiaeresis",	ap_LoadBindings_DeadDiaeresis,		NULL));
+  m_vecBindings.addItem(new c_lb(false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadgrave",		ap_LoadBindings_DeadGrave,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadmacron",		ap_LoadBindings_DeadMacron,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadogonek",		ap_LoadBindings_DeadOgonek,			NULL));
+  m_vecBindings.addItem(new c_lb(false, "deadtilde",		ap_LoadBindings_DeadTilde,			NULL));
 }
 
 EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
