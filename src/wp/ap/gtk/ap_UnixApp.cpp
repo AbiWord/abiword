@@ -753,56 +753,19 @@ bool AP_UnixApp::canPasteFromClipboard(void)
     return m_pClipboard->canPaste(XAP_UnixClipboard::TAG_ClipboardOnly);
 }
 
-// TODO we could make this some utility function and use for all platforms
-// Can return NULL
-// The list must be free'd by the caller, but the filenames are owned by the system.
-static GSList * so_only (const char *path) {
+static bool is_so (const char *file) {
 
-	GDir 		*dir;
-	GSList 		*list;
-	const char 	*name;
-	const char  *suffix;
-	int			 len;
-	GError 		*err;
-
-	if (!g_file_test (path, G_FILE_TEST_IS_DIR))
-		return NULL;
-
-	err = NULL;
-	dir = g_dir_open (path, 0, &err);
-	if (err) {
-		g_warning (err->message);
-		g_error_free (err), err = NULL;
-		return NULL;
-	}
-
-	list = NULL;
-	while (NULL != (name = g_dir_read_name (dir))) {
-		len = strlen (name);
-		if (len < 4)
-			continue;
-		suffix = name+(len-3);
-		if(0 == strcmp (suffix, "."G_MODULE_SUFFIX)) {
-			list = g_slist_prepend (list, (void *) name);
-		}
-	}
-	g_dir_close (dir), dir = NULL;
-
-	return list;
+	int len = strlen (file);
+	if (len < (strlen(G_MODULE_SUFFIX) + 2)) // this is ".so" and at least one char for the filename
+		return false;
+	const char *suffix = file+(len-3);
+	if(0 == strcmp (suffix, "."G_MODULE_SUFFIX))
+		return true;
+	return false;
 }
-
-#ifdef ABI_PLUGIN_BUILTIN
-extern void abipgn_builtin_register ();
-#endif
 
 void AP_UnixApp::loadAllPlugins ()
 {
-#ifdef ABI_PLUGIN_BUILTIN
-  UT_DEBUGMSG(("load preloaded plugins:\n"));
-  abipgn_builtin_register ();
-  UT_DEBUGMSG(("finished loading preloaded plugins.\n"));
-#endif
-
   UT_String pluginList[2];
   UT_String pluginDir;
 
@@ -821,25 +784,33 @@ void AP_UnixApp::loadAllPlugins ()
 
   for(UT_uint32 i = 0; i < G_N_ELEMENTS(pluginList); i++)
   {
-	pluginDir = pluginList[i];
-	GSList *list = so_only(pluginDir.c_str());
-	const char *name;
+	const UT_String &path = pluginList[i];
 
-	while (list) {
+	if (!g_file_test (path.c_str(), G_FILE_TEST_IS_DIR))
+		continue;
 
-		name = (const char *) list->data;
-
-		UT_String plugin (pluginDir + name);
-		UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
-
-		if (XAP_ModuleManager::instance().loadModule (plugin.c_str())) {
-		  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", name));
-		} else {
-		  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", name));
-		}
-
-		list = g_slist_remove(list, name);
+	GError *err = NULL;
+	GDir *dir = g_dir_open (path.c_str(), 0, &err);
+	if (err) {
+		g_warning (err->message);
+		g_error_free (err), err = NULL;
+		continue;
 	}
+
+	const char *name;
+	while (NULL != (name = g_dir_read_name (dir))) {
+		if (is_so (name)) {
+			UT_String plugin (path + name);
+			UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
+
+			if (XAP_ModuleManager::instance().loadModule (plugin.c_str())) {
+			  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", name));
+			} else {
+			  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", name));
+			}
+		}
+	}
+	g_dir_close (dir), dir = NULL;
   }
 }
 

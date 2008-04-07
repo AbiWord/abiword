@@ -32,6 +32,3 @@ int main(int argc, char ** argv)
 
 #endif
 
-#ifdef ABI_PLUGIN_BUILTIN
-#include "abi_plugin_builtin.h"
-#endif
