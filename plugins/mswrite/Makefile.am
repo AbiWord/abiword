@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libmswrite.la
+plugin_LTLIBRARIES = mswrite.la
 
-libmswrite_la_LIBADD = \
+mswrite_la_LIBADD = \
 	xp/libxp.la
 
-libmswrite_la_LDFLAGS = \
+mswrite_la_LDFLAGS = \
 	$(MSWRITE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libmswrite_la_SOURCES = 
+mswrite_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libmswrite.dll
+	mswrite.dll
 
 CLEANFILES = \
-	libmswrite.def \
-	libmswrite.dll \
-	libmswrite.dll.a
+	mswrite.def \
+	mswrite.dll \
+	mswrite.dll.a
 
-libmswrite.dll: .libs/libmswrite.a
+mswrite.dll: .libs/mswrite.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MSWRITE_LIBS)
 
 endif # TOOLKIT_WIN

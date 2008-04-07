@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libwordperfect.la
+plugin_LTLIBRARIES = wordperfect.la
 
-libwordperfect_la_LIBADD = \
+wordperfect_la_LIBADD = \
 	xp/libxp.la
 
-libwordperfect_la_LDFLAGS = \
+wordperfect_la_LDFLAGS = \
 	$(WORDPERFECT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libwordperfect_la_SOURCES = 
+wordperfect_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libwordperfect.dll
+	wordperfect.dll
 
 CLEANFILES = \
-	libwordperfect.def \
-	libwordperfect.dll \
-	libwordperfect.dll.a
+	wordperfect.def \
+	wordperfect.dll \
+	wordperfect.dll.a
 
-libwordperfect.dll: .libs/libwordperfect.a
+wordperfect.dll: .libs/wordperfect.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WORDPERFECT_LIBS)
 
 endif # TOOLKIT_WIN

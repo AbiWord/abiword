@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libdocbook.la
+plugin_LTLIBRARIES = docbook.la
 
-libdocbook_la_LIBADD = \
+docbook_la_LIBADD = \
 	xp/libxp.la
 
-libdocbook_la_LDFLAGS = \
+docbook_la_LDFLAGS = \
 	$(DOCBOOK_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libdocbook_la_SOURCES = 
+docbook_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libdocbook.dll
+	docbook.dll
 
 CLEANFILES = \
-	libdocbook.def \
-	libdocbook.dll \
-	libdocbook.dll.a
+	docbook.def \
+	docbook.dll \
+	docbook.dll.a
 
-libdocbook.dll: .libs/libdocbook.a
+docbook.dll: .libs/docbook.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(DOCBOOK_LIBS)
 
 endif # TOOLKIT_WIN

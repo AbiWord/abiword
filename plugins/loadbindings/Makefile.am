@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libloadbindings.la
+plugin_LTLIBRARIES = loadbindings.la
 
-libloadbindings_la_LIBADD = \
+loadbindings_la_LIBADD = \
 	xp/libxp.la
 
-libloadbindings_la_LDFLAGS = \
+loadbindings_la_LDFLAGS = \
 	$(LOADBINDINGS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libloadbindings_la_SOURCES = 
+loadbindings_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libloadbindings.dll
+	loadbindings.dll
 
 CLEANFILES = \
-	libloadbindings.def \
-	libloadbindings.dll \
-	libloadbindings.dll.a
+	loadbindings.def \
+	loadbindings.dll \
+	loadbindings.dll.a
 
-libloadbindings.dll: .libs/libloadbindings.a
+loadbindings.dll: .libs/loadbindings.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(LOADBINDINGS_LIBS)
 
 endif # TOOLKIT_WIN

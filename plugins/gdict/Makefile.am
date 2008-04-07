@@ -2,18 +2,18 @@
 SUBDIRS = unix
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libgdict.la
+plugin_LTLIBRARIES = gdict.la
 
-libgdict_la_LIBADD = \
+gdict_la_LIBADD = \
 	unix/libunix.la
 
-libgdict_la_LDFLAGS = \
+gdict_la_LDFLAGS = \
 	$(GDICT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libgdict_la_SOURCES = 
+gdict_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4

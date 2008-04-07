@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libpdb.la
+plugin_LTLIBRARIES = pdb.la
 
-libpdb_la_LIBADD = \
+pdb_la_LIBADD = \
 	xp/libxp.la
 
-libpdb_la_LDFLAGS = \
+pdb_la_LDFLAGS = \
 	$(PDB_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libpdb_la_SOURCES = 
+pdb_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libpdb.dll
+	pdb.dll
 
 CLEANFILES = \
-	libpdb.def \
-	libpdb.dll \
-	libpdb.dll.a
+	pdb.def \
+	pdb.dll \
+	pdb.dll.a
 
-libpdb.dll: .libs/libpdb.a
+pdb.dll: .libs/pdb.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PDB_LIBS)
 
 endif # TOOLKIT_WIN

@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libsdw.la
+plugin_LTLIBRARIES = sdw.la
 
-libsdw_la_LIBADD = \
+sdw_la_LIBADD = \
 	xp/libxp.la
 
-libsdw_la_LDFLAGS = \
+sdw_la_LDFLAGS = \
 	$(SDW_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libsdw_la_SOURCES = 
+sdw_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libsdw.dll
+	sdw.dll
 
 CLEANFILES = \
-	libsdw.def \
-	libsdw.dll \
-	libsdw.dll.a
+	sdw.def \
+	sdw.dll \
+	sdw.dll.a
 
-libsdw.dll: .libs/libsdw.a
+sdw.dll: .libs/sdw.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(SDW_LIBS)
 
 endif # TOOLKIT_WIN

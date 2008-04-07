@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libkword.la
+plugin_LTLIBRARIES = kword.la
 
-libkword_la_LIBADD = \
+kword_la_LIBADD = \
 	xp/libxp.la
 
-libkword_la_LDFLAGS = \
+kword_la_LDFLAGS = \
 	$(KWORD_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libkword_la_SOURCES = 
+kword_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libkword.dll
+	kword.dll
 
 CLEANFILES = \
-	libkword.def \
-	libkword.dll \
-	libkword.dll.a
+	kword.def \
+	kword.dll \
+	kword.dll.a
 
-libkword.dll: .libs/libkword.a
+kword.dll: .libs/kword.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(KWORD_LIBS)
 
 endif # TOOLKIT_WIN

@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libopml.la
+plugin_LTLIBRARIES = opml.la
 
-libopml_la_LIBADD = \
+opml_la_LIBADD = \
 	xp/libxp.la
 
-libopml_la_LDFLAGS = \
+opml_la_LDFLAGS = \
 	$(PLUGIN_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libopml_la_SOURCES = 
+opml_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libopml.dll
+	opml.dll
 
 CLEANFILES = \
-	libopml.def \
-	libopml.dll \
-	libopml.dll.a
+	opml.def \
+	opml.dll \
+	opml.dll.a
 
-libopml.dll: .libs/libopml.a
+opml.dll: .libs/opml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

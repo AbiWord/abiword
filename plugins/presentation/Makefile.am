@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libpresentation.la
+plugin_LTLIBRARIES = presentation.la
 
-libpresentation_la_LIBADD = \
+presentation_la_LIBADD = \
 	xp/libxp.la
 
-libpresentation_la_LDFLAGS = \
+presentation_la_LDFLAGS = \
 	$(PRESENTATION_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libpresentation_la_SOURCES = 
+presentation_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libpresentation.dll
+	presentation.dll
 
 CLEANFILES = \
-	libpresentation.def \
-	libpresentation.dll \
-	libpresentation.dll.a
+	presentation.def \
+	presentation.dll \
+	presentation.dll.a
 
-libpresentation.dll: .libs/libpresentation.a
+presentation.dll: .libs/presentation.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PRESENTATION_LIBS)
 
 endif # TOOLKIT_WIN

@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libots.la
+plugin_LTLIBRARIES = ots.la
 
-libots_la_LIBADD = \
+ots_la_LIBADD = \
 	xp/libxp.la
 
-libots_la_LDFLAGS = \
+ots_la_LDFLAGS = \
 	$(OTS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libots_la_SOURCES = 
+ots_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libots.dll
+	ots.dll
 
 CLEANFILES = \
-	libots.def \
-	libots.dll \
-	libots.dll.a
+	ots.def \
+	ots.dll \
+	ots.dll.a
 
-libots.dll: .libs/libots.a
+ots.dll: .libs/ots.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OTS_LIBS)
 
 endif # TOOLKIT_WIN

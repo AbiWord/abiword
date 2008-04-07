@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libclarisworks.la
+plugin_LTLIBRARIES = clarisworks.la
 
-libclarisworks_la_LIBADD = \
+clarisworks_la_LIBADD = \
 	xp/libxp.la
 
-libclarisworks_la_LDFLAGS = \
+clarisworks_la_LDFLAGS = \
 	$(CLARISWORKS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libclarisworks_la_SOURCES = 
+clarisworks_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libclarisworks.dll
+	clarisworks.dll
 
 CLEANFILES = \
-	libclarisworks.def \
-	libclarisworks.dll \
-	libclarisworks.dll.a
+	clarisworks.def \
+	clarisworks.dll \
+	clarisworks.dll.a
 
-libclarisworks.dll: .libs/libclarisworks.a
+clarisworks.dll: .libs/clarisworks.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(CLARISWORKS_LIBS)
 
 endif # TOOLKIT_WIN

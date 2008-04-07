@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libwml.la
+plugin_LTLIBRARIES = wml.la
 
-libwml_la_LIBADD = \
+wml_la_LIBADD = \
 	xp/libxp.la
 
-libwml_la_LDFLAGS = \
+wml_la_LDFLAGS = \
 	$(WML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libwml_la_SOURCES = 
+wml_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libwml.dll
+	wml.dll
 
 CLEANFILES = \
-	libwml.def \
-	libwml.dll \
-	libwml.dll.a
+	wml.def \
+	wml.dll \
+	wml.dll.a
 
-libwml.dll: .libs/libwml.a
+wml.dll: .libs/wml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WML_LIBS)
 
 endif # TOOLKIT_WIN

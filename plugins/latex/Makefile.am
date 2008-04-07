@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = liblatex.la
+plugin_LTLIBRARIES = latex.la
 
-liblatex_la_LIBADD = \
+latex_la_LIBADD = \
 	xp/libxp.la
 
-liblatex_la_LDFLAGS = \
+latex_la_LDFLAGS = \
 	$(PLUGIN_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-liblatex_la_SOURCES = 
+latex_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	liblatex.dll
+	latex.dll
 
 CLEANFILES = \
-	liblatex.def \
-	liblatex.dll \
-	liblatex.dll.a
+	latex.def \
+	latex.dll \
+	latex.dll.a
 
-liblatex.dll: .libs/liblatex.a
+latex.dll: .libs/latex.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

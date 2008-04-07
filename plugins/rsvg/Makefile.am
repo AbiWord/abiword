@@ -2,18 +2,18 @@
 SUBDIRS = unix
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = librsvg.la
+plugin_LTLIBRARIES = rsvg.la
 
-librsvg_la_LIBADD = \
+rsvg_la_LIBADD = \
 	unix/libunix.la
 
-librsvg_la_LDFLAGS = \
+rsvg_la_LDFLAGS = \
 	$(RSVG_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-librsvg_la_SOURCES = 
+rsvg_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	librsvg.dll
+	rsvg.dll
 
 CLEANFILES = \
-	librsvg.def \
-	librsvg.dll \
-	librsvg.dll.a
+	rsvg.def \
+	rsvg.dll \
+	rsvg.dll.a
 
-librsvg.dll: .libs/librsvg.a
+rsvg.dll: .libs/rsvg.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(RSVG_LIBS)
 
 endif # TOOLKIT_WIN

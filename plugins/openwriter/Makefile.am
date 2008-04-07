@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libopenwriter.la
+plugin_LTLIBRARIES = openwriter.la
 
-libopenwriter_la_LIBADD = \
+openwriter_la_LIBADD = \
 	xp/libxp.la
 
-libopenwriter_la_LDFLAGS = \
+openwriter_la_LDFLAGS = \
 	$(OPENWRITER_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libopenwriter_la_SOURCES = 
+openwriter_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libopenwriter.dll
+	openwriter.dll
 
 CLEANFILES = \
-	libopenwriter.def \
-	libopenwriter.dll \
-	libopenwriter.dll.a
+	openwriter.def \
+	openwriter.dll \
+	openwriter.dll.a
 
-libopenwriter.dll: .libs/libopenwriter.a
+openwriter.dll: .libs/openwriter.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENWRITER_LIBS)
 
 endif # TOOLKIT_WIN

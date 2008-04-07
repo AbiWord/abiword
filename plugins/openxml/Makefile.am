@@ -2,19 +2,19 @@
 SUBDIRS = common imp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libopenxml.la
+plugin_LTLIBRARIES = openxml.la
 
-libopenxml_la_LIBADD = \
+openxml_la_LIBADD = \
 	common/libcommon.la \
 	imp/libimp.la
 
-libopenxml_la_LDFLAGS = \
+openxml_la_LDFLAGS = \
 	$(OPENXML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libopenxml_la_SOURCES = 
+openxml_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -22,14 +22,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libopenxml.dll
+	openxml.dll
 
 CLEANFILES = \
-	libopenxml.def \
-	libopenxml.dll \
-	libopenxml.dll.a
+	openxml.def \
+	openxml.dll \
+	openxml.dll.a
 
-libopenxml.dll: .libs/libopenxml.a
+openxml.dll: .libs/openxml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENXML_LIBS)
 
 endif # TOOLKIT_WIN

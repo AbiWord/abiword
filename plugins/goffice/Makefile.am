@@ -2,18 +2,18 @@
 SUBDIRS = unix
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libgoffice.la
+plugin_LTLIBRARIES = goffice.la
 
-libgoffice_la_LIBADD = \
+goffice_la_LIBADD = \
 	unix/libunix.la
 
-libgoffice_la_LDFLAGS = \
+goffice_la_LDFLAGS = \
 	$(GOFFICE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libgoffice_la_SOURCES = 
+goffice_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libgoffice.dll
+	goffice.dll
 
 CLEANFILES = \
-	libgoffice.def \
-	libgoffice.dll \
-	libgoffice.dll.a
+	goffice.def \
+	goffice.dll \
+	goffice.dll.a
 
-libgoffice.dll: .libs/libgoffice.a
+goffice.dll: .libs/goffice.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GOFFICE_LIBS)
 
 endif # TOOLKIT_WIN

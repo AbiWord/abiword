@@ -2,31 +2,31 @@
 SUBDIRS = linkgrammarwrap xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libgrammar.la
+plugin_LTLIBRARIES = grammar.la
 
-libgrammar_la_LIBADD = \
+grammar_la_LIBADD = \
 	linkgrammarwrap/liblinkgrammarwrap.la \
 	xp/libxp.la
 
-libgrammar_la_LDFLAGS = \
+grammar_la_LDFLAGS = \
 	$(GRAMMAR_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libgrammar_la_SOURCES = 
+grammar_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libgrammar.dll
+	grammar.dll
 
 CLEANFILES = \
-	libgrammar.def \
-	libgrammar.dll \
-	libgrammar.dll.a
+	grammar.def \
+	grammar.dll \
+	grammar.dll.a
 
-libgrammar.dll: .libs/libgrammar.a
+grammar.dll: .libs/grammar.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GRAMMAR_LIBS)
 
 endif # TOOLKIT_WIN

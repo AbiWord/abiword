@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libpdf.la
+plugin_LTLIBRARIES = pdf.la
 
-libpdf_la_LIBADD = \
+pdf_la_LIBADD = \
 	xp/libxp.la
 
-libpdf_la_LDFLAGS = \
+pdf_la_LDFLAGS = \
 	$(PDF_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libpdf_la_SOURCES = 
+pdf_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libpdf.dll
+	pdf.dll
 
 CLEANFILES = \
-	libpdf.def \
-	libpdf.dll \
-	libpdf.dll.a
+	pdf.def \
+	pdf.dll \
+	pdf.dll.a
 
-libpdf.dll: .libs/libpdf.a
+pdf.dll: .libs/pdf.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PDF_LIBS)
 
 endif # TOOLKIT_WIN

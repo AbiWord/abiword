@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libhancom.la
+plugin_LTLIBRARIES = hancom.la
 
-libhancom_la_LIBADD = \
+hancom_la_LIBADD = \
 	xp/libxp.la
 
-libhancom_la_LDFLAGS = \
+hancom_la_LDFLAGS = \
 	$(HANCOM_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libhancom_la_SOURCES = 
+hancom_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libhancom.dll
+	hancom.dll
 
 CLEANFILES = \
-	libhancom.def \
-	libhancom.dll \
-	libhancom.dll.a
+	hancom.def \
+	hancom.dll \
+	hancom.dll.a
 
-libhancom.dll: .libs/libhancom.a
+hancom.dll: .libs/hancom.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(HANCOM_LIBS)
 
 endif # TOOLKIT_WIN

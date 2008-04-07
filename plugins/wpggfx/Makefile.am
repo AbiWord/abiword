@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libwpggfx.la
+plugin_LTLIBRARIES = wpggfx.la
 
-libwpggfx_la_LIBADD = \
+wpggfx_la_LIBADD = \
 	xp/libxp.la
 
-libwpggfx_la_LDFLAGS = \
+wpggfx_la_LDFLAGS = \
 	$(WPGGFX_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libwpggfx_la_SOURCES = 
+wpggfx_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libwpggfx.dll
+	wpggfx.dll
 
 CLEANFILES = \
-	libwpggfx.def \
-	libwpggfx.dll \
-	libwpggfx.dll.a
+	wpggfx.def \
+	wpggfx.dll \
+	wpggfx.dll.a
 
-libwpggfx.dll: .libs/libwpggfx.a
+wpggfx.dll: .libs/wpggfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WPGGFX_LIBS)
 
 endif # TOOLKIT_WIN

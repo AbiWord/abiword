@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = liburldict.la
+plugin_LTLIBRARIES = urldict.la
 
-liburldict_la_LIBADD = \
+urldict_la_LIBADD = \
 	xp/libxp.la
 
-liburldict_la_LDFLAGS = \
+urldict_la_LDFLAGS = \
 	$(PLUGIN_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-liburldict_la_SOURCES = 
+urldict_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	liburldict.dll
+	urldict.dll
 
 CLEANFILES = \
-	liburldict.def \
-	liburldict.dll \
-	liburldict.dll.a
+	urldict.def \
+	urldict.dll \
+	urldict.dll.a
 
-liburldict.dll: .libs/liburldict.a
+urldict.dll: .libs/urldict.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

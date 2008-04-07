@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libgoogle.la
+plugin_LTLIBRARIES = google.la
 
-libgoogle_la_LIBADD = \
+google_la_LIBADD = \
 	xp/libxp.la
 
-libgoogle_la_LDFLAGS = \
+google_la_LDFLAGS = \
 	$(PLUGIN_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libgoogle_la_SOURCES = 
+google_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libgoogle.dll
+	google.dll
 
 CLEANFILES = \
-	libgoogle.def \
-	libgoogle.dll \
-	libgoogle.dll.a
+	google.def \
+	google.dll \
+	google.dll.a
 
-libgoogle.dll: .libs/libgoogle.a
+google.dll: .libs/google.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

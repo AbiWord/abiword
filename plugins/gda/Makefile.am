@@ -2,18 +2,18 @@
 SUBDIRS = unix
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libgda.la
+plugin_LTLIBRARIES = gda.la
 
-libgda_la_LIBADD = \
+gda_la_LIBADD = \
 	unix/libunix.la
 
-libgda_la_LDFLAGS = \
+gda_la_LDFLAGS = \
 	$(GDA_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libgda_la_SOURCES = 
+gda_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libgda.dll
+	gda.dll
 
 CLEANFILES = \
-	libgda.def \
-	libgda.dll \
-	libgda.dll.a
+	gda.def \
+	gda.dll \
+	gda.dll.a
 
-libgda.dll: .libs/libgda.a
+gda.dll: .libs/gda.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GDA_LIBS)
 
 endif # TOOLKIT_WIN

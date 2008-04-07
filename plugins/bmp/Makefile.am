@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libbmp.la
+plugin_LTLIBRARIES = bmp.la
 
-libbmp_la_LIBADD = \
+bmp_la_LIBADD = \
 	xp/libxp.la
 
-libbmp_la_LDFLAGS = \
+bmp_la_LDFLAGS = \
 	$(BMP_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libbmp_la_SOURCES = 
+bmp_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libbmp.dll
+	bmp.dll
 
 CLEANFILES = \
-	libbmp.def \
-	libbmp.dll \
-	libbmp.dll.a
+	bmp.def \
+	bmp.dll \
+	bmp.dll.a
 
-libbmp.dll: .libs/libbmp.a
+bmp.dll: .libs/bmp.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(BMP_LIBS)
 
 endif # TOOLKIT_WIN

@@ -2,30 +2,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libcommand.la
+plugin_LTLIBRARIES = command.la
 
-libcommand_la_LIBADD = \
+command_la_LIBADD = \
 	xp/libxp.la
 
-libcommand_la_LDFLAGS = \
+command_la_LDFLAGS = \
 	$(COMMAND_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libcommand_la_SOURCES = 
+command_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libcommand.dll
+	command.dll
 
 CLEANFILES = \
-	libcommand.def \
-	libcommand.dll \
-	libcommand.dll.a
+	command.def \
+	command.dll \
+	command.dll.a
 
-libcommand.dll: .libs/libcommand.a
+command.dll: .libs/command.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(COMMAND_LIBS)
 
 endif # TOOLKIT_WIN

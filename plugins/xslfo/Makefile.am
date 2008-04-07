@@ -2,18 +2,18 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libxslfo.la
+plugin_LTLIBRARIES = xslfo.la
 
-libxslfo_la_LIBADD = \
+xslfo_la_LIBADD = \
 	xp/libxp.la
 
-libxslfo_la_LDFLAGS = \
+xslfo_la_LDFLAGS = \
 	$(XSLFO_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libxslfo_la_SOURCES = 
+xslfo_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -21,14 +21,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libxslfo.dll
+	xslfo.dll
 
 CLEANFILES = \
-	libxslfo.def \
-	libxslfo.dll \
-	libxslfo.dll.a
+	xslfo.def \
+	xslfo.dll \
+	xslfo.dll.a
 
-libxslfo.dll: .libs/libxslfo.a
+xslfo.dll: .libs/xslfo.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(XSLFO_LIBS)
 
 endif # TOOLKIT_WIN

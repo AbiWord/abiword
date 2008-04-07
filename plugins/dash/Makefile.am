@@ -4,30 +4,30 @@
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libdash.la
+plugin_LTLIBRARIES = dash.la
 
-libdash_la_LIBADD = \
+dash_la_LIBADD = \
 	xp/libxp.la
 
-libdash_la_LDFLAGS = \
+dash_la_LDFLAGS = \
 	$(PLUGIN_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libdash_la_SOURCES = 
+dash_la_SOURCES = 
 
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libdash.dll
+	dash.dll
 
 CLEANFILES = \
-	libdash.def \
-	libdash.dll \
-	libdash.dll.a
+	dash.def \
+	dash.dll \
+	dash.dll.a
 
-libdash.dll: .libs/libdash.a
+dash.dll: .libs/dash.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

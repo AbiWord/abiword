@@ -2,20 +2,20 @@
 SUBDIRS = common exp imp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
-plugin_LTLIBRARIES = libopendocument.la
+plugin_LTLIBRARIES = opendocument.la
 
-libopendocument_la_LIBADD = \
+opendocument_la_LIBADD = \
 	common/libcommon.la \
 	exp/libexp.la \
 	imp/libimp.la
 
-libopendocument_la_LDFLAGS = \
+opendocument_la_LDFLAGS = \
 	$(OPENDOCUMENT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
 
-libopendocument_la_SOURCES = 
+opendocument_la_SOURCES = 
 
 EXTRA_DIST = \
 	plugin.m4
@@ -23,14 +23,14 @@ EXTRA_DIST = \
 if TOOLKIT_WIN
 
 plugin_DATA = \
-	libopendocument.dll
+	opendocument.dll
 
 CLEANFILES = \
-	libopendocument.def \
-	libopendocument.dll \
-	libopendocument.dll.a
+	opendocument.def \
+	opendocument.dll \
+	opendocument.dll.a
 
-libopendocument.dll: .libs/libopendocument.a
+opendocument.dll: .libs/opendocument.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENDOCUMENT_LIBS)
 
 endif # TOOLKIT_WIN
