@@ -25,7 +25,7 @@ CLEANFILES = \
 	bmp.dll \
 	bmp.dll.a
 
-bmp.dll: .libs/bmp.a
+bmp.dll: .libs/libbmp.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(BMP_LIBS)
 
 endif # TOOLKIT_WIN

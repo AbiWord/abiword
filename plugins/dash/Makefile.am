@@ -27,7 +27,7 @@ CLEANFILES = \
 	dash.dll \
 	dash.dll.a
 
-dash.dll: .libs/dash.a
+dash.dll: .libs/libdash.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

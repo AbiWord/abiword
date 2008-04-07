@@ -28,7 +28,7 @@ CLEANFILES = \
 	wordperfect.dll \
 	wordperfect.dll.a
 
-wordperfect.dll: .libs/wordperfect.a
+wordperfect.dll: .libs/libwordperfect.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WORDPERFECT_LIBS)
 
 endif # TOOLKIT_WIN

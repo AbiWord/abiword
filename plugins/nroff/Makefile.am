@@ -25,7 +25,7 @@ CLEANFILES = \
 	nroff.dll \
 	nroff.dll.a
 
-nroff.dll: .libs/nroff.a
+nroff.dll: .libs/libnroff.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

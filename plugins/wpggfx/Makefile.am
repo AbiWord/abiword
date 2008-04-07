@@ -28,7 +28,7 @@ CLEANFILES = \
 	wpggfx.dll \
 	wpggfx.dll.a
 
-wpggfx.dll: .libs/wpggfx.a
+wpggfx.dll: .libs/libwpggfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WPGGFX_LIBS)
 
 endif # TOOLKIT_WIN

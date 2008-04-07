@@ -28,7 +28,7 @@ CLEANFILES = \
 	wmfgfx.dll \
 	wmfgfx.dll.a
 
-wmfgfx.dll: .libs/wmfgfx.a
+wmfgfx.dll: .libs/libwmfgfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WMFGFX_LIBS)
 
 endif # TOOLKIT_WIN

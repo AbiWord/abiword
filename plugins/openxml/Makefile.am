@@ -29,7 +29,7 @@ CLEANFILES = \
 	openxml.dll \
 	openxml.dll.a
 
-openxml.dll: .libs/openxml.a
+openxml.dll: .libs/libopenxml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENXML_LIBS)
 
 endif # TOOLKIT_WIN

@@ -28,7 +28,7 @@ CLEANFILES = \
 	mswrite.dll \
 	mswrite.dll.a
 
-mswrite.dll: .libs/mswrite.a
+mswrite.dll: .libs/libmswrite.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MSWRITE_LIBS)
 
 endif # TOOLKIT_WIN

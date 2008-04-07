@@ -28,7 +28,7 @@ CLEANFILES = \
 	xslfo.dll \
 	xslfo.dll.a
 
-xslfo.dll: .libs/xslfo.a
+xslfo.dll: .libs/libxslfo.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(XSLFO_LIBS)
 
 endif # TOOLKIT_WIN

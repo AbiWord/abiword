@@ -25,7 +25,7 @@ CLEANFILES = \
 	freetranslation.dll \
 	freetranslation.dll.a
 
-freetranslation.dll: .libs/freetranslation.a
+freetranslation.dll: .libs/libfreetranslation.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

@@ -28,7 +28,7 @@ CLEANFILES = \
 	docbook.dll \
 	docbook.dll.a
 
-docbook.dll: .libs/docbook.a
+docbook.dll: .libs/libdocbook.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(DOCBOOK_LIBS)
 
 endif # TOOLKIT_WIN

@@ -28,7 +28,7 @@ CLEANFILES = \
 	wml.dll \
 	wml.dll.a
 
-wml.dll: .libs/wml.a
+wml.dll: .libs/libwml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WML_LIBS)
 
 endif # TOOLKIT_WIN

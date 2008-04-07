@@ -25,7 +25,7 @@ CLEANFILES = \
 	hrtext.dll \
 	hrtext.dll.a
 
-hrtext.dll: .libs/hrtext.a
+hrtext.dll: .libs/libhrtext.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

@@ -28,7 +28,7 @@ CLEANFILES = \
 	t602.dll \
 	t602.dll.a
 
-t602.dll: .libs/t602.a
+t602.dll: .libs/libt602.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(T602_LIBS)
 
 endif # TOOLKIT_WIN

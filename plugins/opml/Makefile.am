@@ -25,7 +25,7 @@ CLEANFILES = \
 	opml.dll \
 	opml.dll.a
 
-opml.dll: .libs/opml.a
+opml.dll: .libs/libopml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

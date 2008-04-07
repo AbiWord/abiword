@@ -30,7 +30,7 @@ CLEANFILES = \
 	opendocument.dll \
 	opendocument.dll.a
 
-opendocument.dll: .libs/opendocument.a
+opendocument.dll: .libs/libopendocument.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENDOCUMENT_LIBS)
 
 endif # TOOLKIT_WIN

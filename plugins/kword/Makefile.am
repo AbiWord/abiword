@@ -28,7 +28,7 @@ CLEANFILES = \
 	kword.dll \
 	kword.dll.a
 
-kword.dll: .libs/kword.a
+kword.dll: .libs/libkword.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(KWORD_LIBS)
 
 endif # TOOLKIT_WIN

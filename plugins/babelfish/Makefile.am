@@ -25,7 +25,7 @@ CLEANFILES = \
 	babelfish.dll \
 	babelfish.dll.a
 
-babelfish.dll: .libs/babelfish.a
+babelfish.dll: .libs/libbabelfish.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

@@ -28,7 +28,7 @@ CLEANFILES = \
 	presentation.dll \
 	presentation.dll.a
 
-presentation.dll: .libs/presentation.a
+presentation.dll: .libs/libpresentation.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PRESENTATION_LIBS)
 
 endif # TOOLKIT_WIN

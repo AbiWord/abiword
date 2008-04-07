@@ -25,7 +25,7 @@ CLEANFILES = \
 	latex.dll \
 	latex.dll.a
 
-latex.dll: .libs/latex.a
+latex.dll: .libs/liblatex.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

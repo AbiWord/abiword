@@ -28,7 +28,7 @@ CLEANFILES = \
 	jpeggfx.dll \
 	jpeggfx.dll.a
 
-jpeggfx.dll: .libs/jpeggfx.a
+jpeggfx.dll: .libs/libjpeggfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(JPEGGFX_LIBS)
 
 endif # TOOLKIT_WIN

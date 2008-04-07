@@ -25,7 +25,7 @@ CLEANFILES = \
 	eml.dll \
 	eml.dll.a
 
-eml.dll: .libs/eml.a
+eml.dll: .libs/libeml.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN

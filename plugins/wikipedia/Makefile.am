@@ -25,7 +25,7 @@ CLEANFILES = \
 	wikipedia.dll \
 	wikipedia.dll.a
 
-wikipedia.dll: .libs/wikipedia.a
+wikipedia.dll: .libs/libwikipedia.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
