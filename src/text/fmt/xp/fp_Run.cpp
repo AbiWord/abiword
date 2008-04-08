@@ -1249,7 +1249,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_FillType.setColor(bgCol); 
 	}
-	UT_DEBUGMSG(("Drawing pDA->yoff %d \n",pDA->yoff));
+	xxx_UT_DEBUGMSG(("Drawing pDA->yoff %d \n",pDA->yoff));
 	_draw(pDA);
 	if(!bgCol.isTransparent())
 	{
