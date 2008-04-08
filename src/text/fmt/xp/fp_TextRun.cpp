@@ -1930,7 +1930,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		m_pRenderInfo->m_iLength = iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment];
 		m_pRenderInfo->m_xoff = iX;
 		m_pRenderInfo->m_yoff = yTopOfRun;
-		UT_DEBUGMSG((" _drawText yTopOfRun %d \n",yTopOfRun));
+		xxx_UT_DEBUGMSG((" _drawText yTopOfRun %d \n",yTopOfRun));
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
