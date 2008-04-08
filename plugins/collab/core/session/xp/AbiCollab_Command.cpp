@@ -31,7 +31,6 @@
 
 #ifndef WIN32
 #include "ap_UnixApp.h"
-//#include "gr_UnixNullGraphics.h"
 #include "ap_UnixFrame.h"
 
 #else

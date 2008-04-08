@@ -710,6 +710,8 @@ class ABI_EXPORT GR_Graphics
 	virtual const UT_VersionInfo & getVersion() const {UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED ); return s_Version;}
 	UT_uint32         getPaintCount(void) const
 		{ return  m_paintCount;}
+
+	static GR_Graphics* newNullGraphics();
 	
  protected:
 

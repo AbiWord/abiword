@@ -26,7 +26,6 @@
 #ifndef WIN32
 // FIXME: this breaks OSX
 #include "ap_UnixFrame.h"
-#include "gr_UnixNullGraphics.h"
 #else
 // TODO: fix includes
 #endif
@@ -214,13 +213,12 @@ bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
 		
 		// create a new frame, view and layout for the document
 		m_pFrame = new AP_UnixFrame();
-		GR_UnixNullGraphicsAllocInfo ai;
-		pG = (UnixNull_Graphics *) XAP_App::getApp()->newGraphics (ai);
 
 #else
 		m_pFrame = new AP_Win32Frame();
-		//pG = ???
 #endif
+
+		pG = GR_Graphics::newNullGraphics();
 	
 		FL_DocLayout* pLayout = new FL_DocLayout(m_pDoc, static_cast<GR_Graphics *>(pG));
 		FV_View* pView = new FV_View(XAP_App::getApp(), m_pFrame, pLayout);

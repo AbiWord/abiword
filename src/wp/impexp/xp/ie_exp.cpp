@@ -49,10 +49,7 @@ static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 
 #include "fv_View.h"
 #include "xap_App.h"
-
-#if defined(XP_UNIX_TARGET_GTK)
-#include "gr_UnixNullGraphics.h"
-#endif
+#include "gr_Graphics.h"
 
 class IE_FieldUpdater
 {
@@ -67,13 +64,8 @@ public:
 	{
 		if (updatedFields_)
 			return;
-		// todo: support other platforms when possible
-		GR_Graphics * graphics = NULL;
 
-#if defined(XP_UNIX_TARGET_GTK)
-		GR_UnixNullGraphicsAllocInfo ai;
-		graphics = XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, (GR_AllocInfo&)ai);
-#endif
+		GR_Graphics * graphics = GR_Graphics::newNullGraphics();
 
 		if (graphics)
 			{

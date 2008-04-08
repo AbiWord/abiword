@@ -2487,3 +2487,64 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	return true;
 }
 
+DOCINFO *GR_Win32Graphics::getDocInfo()
+{
+  DOCINFO *di;
+  
+  di = (DOCINFO*) UT_calloc(1, sizeof(DOCINFO));
+  memset( di, 0, sizeof(DOCINFO) );
+  di->cbSize = sizeof(DOCINFO);
+  di->lpszDocName = (LPCTSTR)TEXT("AbiWord Print Preview");
+  di->lpszOutput = (LPTSTR) NULL;
+  di->lpszDatatype = (LPTSTR) NULL;
+  di->fwType = 0;
+  
+  return di;
+}
+
+/*
+ *  Creates a HDC to the best printer to be used as a reference for CreateEnhMetaFile
+ */
+HDC GR_Win32Graphics::createbestmetafilehdc()
+{
+  DWORD neededsize;
+  DWORD noprinters;
+  DWORD printer;
+  LPPRINTER_INFO_5 printerinfo = NULL;
+  int bestres = 0;
+  HDC besthdc = 0;
+  
+  EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5, NULL, 0,
+	       &neededsize, &noprinters);
+  printerinfo = (LPPRINTER_INFO_5) malloc(neededsize);
+  
+  if (EnumPrinters(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL, NULL, 5,
+		   (LPBYTE)printerinfo, neededsize, &neededsize, &noprinters)) {
+    // init best resolution for hdc=0, which is screen resolution:    
+    HDC curhdc = GetDC(NULL);
+    if (curhdc) {
+      bestres = GetDeviceCaps(curhdc, LOGPIXELSX) + GetDeviceCaps(curhdc,
+								  LOGPIXELSY);
+      bestres = ReleaseDC(NULL, curhdc); 
+    }
+      
+    for (int i = 0; i < noprinters; i++) {
+      curhdc = CreateDC("WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
+      if (curhdc) {
+	int curres = GetDeviceCaps(curhdc, LOGPIXELSX) + GetDeviceCaps(curhdc,
+								       LOGPIXELSY);
+	if (curres > bestres) {
+	  if (besthdc)
+	    DeleteDC(besthdc);
+	  bestres = curres;
+	  besthdc = curhdc;
+	} else {
+	  DeleteDC(curhdc);
+	}
+      }
+    }
+  }
+  
+  free(printerinfo);
+  return besthdc;
+}
