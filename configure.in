@@ -482,7 +482,6 @@ if test "$enable_static" == ""; then
 fi
 
 if test "$TOOLKIT" == "win"; then
-	# TODO obsoletes the manual define in ev_Win32Toolbar.cpp
 	AC_DEFINE([_WIN32_IE], [0x0300], [minimal comctl.dll v4.70 for toolbars])
 	# override static/dynamic, on win32 only static is possible
 	enable_dynamic="no"

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -19,8 +21,11 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <windows.h>
-#define _WIN32_IE 0x0300 // specify minimal comctl.dll v4.70 for toolbars
 #include <commctrl.h>   // includes the common control header
 
 #include "ut_assert.h"
