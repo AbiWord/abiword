@@ -125,6 +125,7 @@
 
 #include "ie_impGraphic.h"
 #include "ut_math.h"
+#include "abi-builtin-plugins.h"
 
 #ifdef ENABLE_PRINT
   #include <libart_lgpl/art_affine.h>
@@ -383,6 +384,9 @@ bool AP_UnixApp::initialize(bool has_display)
 		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
+
+	abi_register_builtin_plugins();
+
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)

@@ -40,7 +40,8 @@ libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
 	af/libaf.la \
 	text/libtext.la \
-	wp/libwp.la
+	wp/libwp.la \
+	../plugins/libplugins.la
 
 libabiword_2_7_la_DEPENDENCIES = \
 	$(libabiword_2_7_la_LIBADD)

@@ -8,7 +8,7 @@ SUBDIRS = goffice-bits
 else 
 SUBDIRS =
 endif
-SUBDIRS += src plugins user
+SUBDIRS += plugins src user
 
 desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop

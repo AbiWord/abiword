@@ -449,7 +449,8 @@ AC_SUBST([IMPEXP_TEST_CPPFLAGS])
 WP_CPPFLAGS_='
   ${IMPEXP_CPPFLAGS} 
   -I${top_srcdir}/src/wp/ap/${TOOLKIT} 
-  -I${top_srcdir}/src/wp/ap/xp'
+  -I${top_srcdir}/src/wp/ap/xp
+  -I${top_srcdir}/plugins'
 WP_CPPFLAGS=
 for f in $(echo $WP_CPPFLAGS_); do WP_CPPFLAGS="$WP_CPPFLAGS $f"; done
 AC_SUBST([WP_CPPFLAGS])
@@ -607,12 +608,23 @@ else
 	PLUGINS="$PLUGINS $abi_cv_plugins"
 fi
 AC_SUBST([PLUGINS])
+# TODO: enable builtin plugins here 
+# AC_SUBST([BUILTIN_PLUGINS], [$default_plugins])
 
 # which plugins to enable
 # this creates variables like "enable_wordperfect=yes"
 for plugin in `echo $PLUGINS`; do
 	eval $(echo "enable_$plugin")="yes"
 done
+
+# which plugins to build in
+# this creates variables like "enable_wordperfect_builtin=yes"
+for plugin in `echo $BUILTIN_PLUGINS`; do
+	variable="enable_"$plugin"_builtin"
+	eval $(echo $variable)="yes"
+done
+
+m4_include([plugin-builtin.m4])
 
 m4_include([plugin-configure.m4])
 

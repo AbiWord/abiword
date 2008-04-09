@@ -21,9 +21,9 @@
  */
 
 #ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_OpenDocument_register
-#define abi_plugin_unregister abipgn_OpenDocument_unregister
-#define abi_plugin_supports_version abipgn_OpenDocument_supports_version
+#define abi_plugin_register abipgn_opendocument_register
+#define abi_plugin_unregister abipgn_opendocument_unregister
+#define abi_plugin_supports_version abipgn_opendocument_supports_version
 #endif
 
 // External includes
