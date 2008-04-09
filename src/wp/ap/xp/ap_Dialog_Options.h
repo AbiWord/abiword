@@ -140,7 +140,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
-#if !defined (XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined (TOOLKIT_GTK) && !defined(TOOLKIT_COCOA)
 	SET_GATHER			(ViewShowRuler, 	bool);
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) = 0;
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) = 0;
@@ -153,7 +153,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 	SET_GATHER			(EnableSmoothScrolling, bool);
 #endif
 	SET_GATHER			(AutoLoadPlugins, bool);
@@ -194,7 +194,7 @@ private:
 };
 
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 
 /* AP_PreferenceScheme AP_PreferenceSchemeManager are helper classes for the Options dialog.
  */
@@ -379,6 +379,6 @@ private:
 	char *										m_PopUp_UnitsList[4];
 };
 
-#endif /* XP_TARGET_COCOA */
+#endif /* TOOLKIT_COCOA */
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

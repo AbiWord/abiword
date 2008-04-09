@@ -108,6 +108,15 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
+/* Build cocoa user interface */
+#undef TOOLKIT_COCOA
+
+/* Build gtk+ user interface */
+#undef TOOLKIT_GTK
+
+/* Build win32 user interface */
+#undef TOOLKIT_WIN
+
 /* Version number of package */
 #undef VERSION
 
@@ -128,15 +137,6 @@
 
 /* do not use XOR drawing functions */
 #undef XAP_DONTUSE_XOR
-
-/* building the cocoa version */
-#undef XP_MAC_TARGET_MACOSX
-
-/* building the cocoa version */
-#undef XP_TARGET_COCOA
-
-/* building the gtk version */
-#undef XP_UNIX_TARGET_GTK
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */

@@ -24,6 +24,10 @@
 #define abi_plugin_supports_version abipgn_ots_supports_version
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -43,7 +47,7 @@
 
 #include <ots/libots.h>
 
-#if !defined(WIN32)
+#ifdef TOOLKIT_GTK
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 #include "xap_UnixDialogHelper.h"
@@ -51,7 +55,7 @@
 
 static const char* Ots_MenuLabel = "&Summarize";
 static const char* Ots_MenuTooltip = "Summarize your document or selected text";
-#if !defined(WIN32)
+#ifdef TOOLKIT_GTK
 
 static int getSummaryPercent(void)
 {
@@ -194,7 +198,7 @@ Ots_addToMenus()
   
   EV_Menu_Action* myAction = new EV_Menu_Action(newID,                     // id that the layout said we could use
 						0,                      // no, we don't have a sub menu.
-#ifndef WIN32
+#ifdef TOOLKIT_GTK
 						1,                      // yes, we raise a dialog.
 #else
 						0,                      // no dialog

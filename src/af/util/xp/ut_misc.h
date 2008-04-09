@@ -17,10 +17,12 @@
  * 02111-1307, USA.
  */
  
-
-
 #ifndef UTMISC_H
 #define UTMISC_H
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -315,7 +317,7 @@ UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
 UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 #include "ut_unixMisc.h"
 #else
 // TODO maintainers please fix their platform

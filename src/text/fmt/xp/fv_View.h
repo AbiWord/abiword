@@ -21,18 +21,17 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xap_Features.h"
-
-//#include "ut_misc.h"
 #include "ut_types.h"
-
 #include "xav_View.h"
-
 #include "pt_Types.h"
 #include "fp_types.h"
 #include "fl_Squiggles.h"
 #include "ev_EditBits.h"
-
 
 // have to include these as they are instantiated in the FV_View
 // class definition
@@ -40,7 +39,7 @@
 #include "fv_Selection.h"
 #include "fv_InlineImage.h"
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 #include "fv_UnixVisualDrag.h"
 #include "fv_UnixFrameEdit.h"
 #include "fv_UnixInlineImage.h"
@@ -1032,12 +1031,12 @@ private:
 	fv_PropCache        m_BlockProps;
 	fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	FV_UnixFrameEdit    m_FrameEdit;
 #else
 	FV_FrameEdit        m_FrameEdit;
 #endif
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	FV_UnixVisualDrag   m_VisualDragText;
 #else
 	FV_VisualDragText   m_VisualDragText;
@@ -1050,7 +1049,7 @@ private:
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	FV_UnixVisualInlineImage  m_InlineImage;
 #else
 	FV_VisualInlineImage  m_InlineImage;

@@ -122,7 +122,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	
 // Not implemented for UNIX or Win32. No need for it.
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
+#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
@@ -134,7 +134,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling, _gatherEnableSmoothScrolling() );
 #endif
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
@@ -168,7 +168,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
+#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
@@ -217,7 +217,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	{
 		XAP_App::getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
 	}
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 	if ( _gatherEnableSmoothScrolling() != XAP_App::getApp()->isSmoothScrollingEnabled() )
 	{
 		XAP_App::getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
@@ -323,7 +323,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_RULER:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
+#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 			{
 				bool tmpbool = _gatherViewShowRuler();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
@@ -347,7 +347,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherViewCursorBlink());
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
+#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 			{
 				bool tmpbool = _gatherViewShowStatusBar();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
@@ -376,7 +376,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_ENABLE_SMOOTH_SCROLLING:
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling,
 					_gatherEnableSmoothScrolling());
 #endif
@@ -493,7 +493,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
 
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
+#if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 	UT_uint32 i;
@@ -516,7 +516,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AllowCustomToolbars,&b))
 		_setAllowCustomToolbars(b);
 
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
 		_setEnableSmoothScrolling(b);
 #endif
@@ -620,7 +620,7 @@ void AP_Dialog_Options::_initEnableControls()
 	// If the prefs color for transparent is white initially disable the choose
 	// color button
 	// On UNIX/GTK, we have a nice color chooser and ignore this setting.
-#ifndef XP_UNIX_TARGET_GTK
+#ifndef TOOLKIT_GTK
 	if(strcmp(m_CurrentTransparentColor,"ffffff") == 0)
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);
@@ -666,7 +666,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	pPrefs->setCurrentScheme(old_name);
 }
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 
 static const char * s_null_extension = XAP_PREF_DEFAULT_AutoSaveFileExt;
 
@@ -1569,4 +1569,4 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 	// TODO
 }
 
-#endif /* XP_TARGET_COCOA */
+#endif /* TOOLKIT_COCOA */

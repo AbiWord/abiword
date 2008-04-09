@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 
-#define ENABLE_SPELL 1
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pd_Document.h"
 #include "fl_BlockLayout.h"
@@ -34,7 +36,7 @@
 #include "ut_sleep.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 #include <windows.h>
 #else
 #include <unistd.h>

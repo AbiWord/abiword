@@ -36,31 +36,15 @@
 
 // the loader manages instances of one of these target classes
 
-#if defined (WIN32)
+#if defined (TOOLKIT_WIN)
   #include "xap_Win32Module.h"
   #define MODULE_CLASS XAP_Win32Module
-
-#elif defined (__APPLE__) && defined (XP_MAC_TARGET_MACOSX)
-	#if defined (XP_MAC_TARGET_CARBON)
-		#include <ConditionalMacros.h>
-		#if defined(TARGET_RT_MAC_CFM) && (TARGET_RT_MAC_CFM == 1)
-			#include "xap_MacCFMModule.h"
-			#define MODULE_CLASS XAP_MacModule
-		#elif defined (TARGET_RT_MAC_MACHO) && (TARGET_RT_MAC_MACHO == 1)
-			#include "xap_MacModule.h"
-			#define MODULE_CLASS XAP_MacModule
-		#else
-			#error Unknown Apple architecture
-		#endif
-	#elif defined (XP_TARGET_COCOA)
-		#include "xap_CocoaModule.h"
-		#define MODULE_CLASS XAP_CocoaModule	
-	#endif
+#elif defined (TOOLKIT_COCOA)
+  #include "xap_CocoaModule.h"
+  #define MODULE_CLASS XAP_CocoaModule	
 #else
-  // *NIX
   #include "xap_UnixModule.h"
   #define MODULE_CLASS XAP_UnixModule
-
 #endif
 
 // log information about plugin loading into the <log> section of AbiWord.profile

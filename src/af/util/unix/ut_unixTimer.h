@@ -22,9 +22,13 @@
 #ifndef UT_UNIXTIMER_H
 #define UT_UNIXTIMER_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_timer.h"
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 typedef struct NSMutableDictionary;
 typedef struct NSLock;
 #endif
@@ -42,7 +46,7 @@ public:
 private:
 	UT_sint32 m_iMilliseconds;
 	UT_uint32 m_iGtkTimerId;
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 	/* these are here for Cocoa timer */
 	static NSLock* s_timerMutex;
 	static NSMutableDictionary* s_timerIds;

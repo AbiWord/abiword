@@ -22,6 +22,10 @@
 #ifndef UT_ASSERT_H
 #define UT_ASSERT_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 // TODO move these declarations into platform directories.
 
 #if (defined (WIN32) || defined (_WIN32) || defined (_WIN64))
@@ -118,33 +122,6 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 
 #endif // ifdef NDEBUG
 
-/* above only useful on Carbon target if build as Mach-O. CFM use alert and Cocoa use UNIX */
-#elif (defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON) && (!defined(CARBON_ON_MACH_O) || (CARBON_ON_MACH_O == 0)) // Carbon on Mach-O as UNIX
-
-#     ifdef NDEBUG
-              // When NDEBUG is defined, assert() does nothing.
-              // So we let the system header files take care of it.
-#             include <assert.h>
-#             define UT_ASSERT assert
-#   else
-              // Otherwise, we want a slighly modified behavior.
-              // We'd like assert() to ask us before crashing.
-              // We treat asserts as logic flaws, which are sometimes
-              // recoverable, but that should be noted.
-
-              // On MacOS this requires toolbox to be initialized. Otherwise, 
-              // expect MacBug or a crash if MacBug is not here.
-
-#             include <assert.h>
-// Please keep the "/**/" to stop MSVC dependency generator complaining.
-#             include /**/ "ut_MacAssert.h"
-#             define UT_ASSERT(expr)                  \
-                      ((void) ((expr) ||      \
-                      (UT_MacAssertMsg(#expr,\
-                       __FILE__, __LINE__),   \
-                       0)))
-#   endif
-
 #else
 
 	// A Unix variant, possibly Gnome.
@@ -153,7 +130,7 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 
 		// When NDEBUG is defined, assert() does nothing.
 		// So we let the system header files take care of it.
-#       if defined(XP_TARGET_COCOA)
+#       if defined(TOOLKIT_COCOA)
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #			include /**/ "xap_CocoaAssert.h"
 #			define UT_ASSERT(expr)								\

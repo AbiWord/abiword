@@ -22,11 +22,15 @@
  * Corel Corporation or Corel Corporation Limited."
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ie_exp_WordPerfect.h"
 #include "ie_impexp_WordPerfect.h"
 
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(TOOLKIT_WIN) && !defined(__MINGW32__)
 extern double rint(double x);
 #endif /* _WIN32 */
 

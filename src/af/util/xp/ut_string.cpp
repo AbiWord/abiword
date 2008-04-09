@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1607,7 +1611,7 @@ const char* std_size_string(float f)
   return string;
 }
 
-#ifndef WIN32
+#ifndef TOOLKIT_WIN
 
 UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 {

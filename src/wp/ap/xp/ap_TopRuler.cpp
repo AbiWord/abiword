@@ -533,7 +533,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		// here. Thi sis Tomas's code which works for Windows
 		// but not Unix
 		//
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 // the call to drawChars will scale y and x by the zoom factor 
 // -- in reality the y is
 // constant because the height of the whole ruler bar is a constant and 

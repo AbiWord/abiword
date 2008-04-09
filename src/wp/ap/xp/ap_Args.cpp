@@ -157,7 +157,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
  	if (m_iVersion)
  	{		
  		printf("%s\n", PACKAGE_VERSION);
-		#ifdef _WIN32
+		#ifdef TOOLKIT_WIN
 			MessageBox(NULL, PACKAGE_VERSION, "Version", MB_OK|MB_ICONINFORMATION);
 		#endif
 		exit(0);

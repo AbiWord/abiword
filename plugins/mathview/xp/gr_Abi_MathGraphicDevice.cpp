@@ -23,6 +23,10 @@
 #include <MathView/ShaperManager.hh>
 #include <MathView/SpaceShaper.hh>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_DefaultShaper.h"
@@ -45,7 +49,7 @@ GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice(const SmartPtr<AbstractLogger
   getShaperManager()->registerShaper(defaultShaper);
   getShaperManager()->registerShaper(SpaceShaper::create());
 
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
   SmartPtr<GR_Abi_StandardSymbolsShaper> symbolsShaper = GR_Abi_StandardSymbolsShaper::create();
   symbolsShaper->setGraphics(pGr);
   getShaperManager()->registerShaper(symbolsShaper);

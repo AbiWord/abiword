@@ -31,21 +31,18 @@ class XAP_Frame;
 
 // this ugliness is needed for proper inheritence
 
-#if defined(WIN32)
-#include "xap_Win32App.h"
-#define XAP_App_BaseClass XAP_Win32App
-#elif (defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON) && (!defined(CARBON_ON_MACH_O) || (CARBON_ON_MACH_O == 0)) // Carbon on Mach-O as UNIX
-#include "xap_MacApp.h"
-#define XAP_App_BaseClass XAP_MacApp
-#elif defined(XP_TARGET_COCOA)
-#include "xap_CocoaApp.h"
-#define XAP_App_BaseClass XAP_CocoaApp
+#if defined(TOOLKIT_WIN)
+  #include "xap_Win32App.h"
+  #define XAP_App_BaseClass XAP_Win32App
+#elif defined(TOOLKIT_COCOA)
+  #include "xap_CocoaApp.h"
+  #define XAP_App_BaseClass XAP_CocoaApp
 #elif defined (EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include "xap_UnixHildonApp.h"
-#define XAP_App_BaseClass XAP_UnixHildonApp
+  #include "xap_UnixHildonApp.h"
+  #define XAP_App_BaseClass XAP_UnixHildonApp
 #else
-#include "xap_UnixApp.h"
-#define XAP_App_BaseClass XAP_UnixApp
+  #include "xap_UnixApp.h"
+  #define XAP_App_BaseClass XAP_UnixApp
 #endif
 
 /*!
@@ -55,7 +52,7 @@ class AP_App : public XAP_App_BaseClass
 {
  public:
 
-#if defined(WIN32)
+#if defined(TOOLKIT_WIN)
 	AP_App (HINSTANCE hInstance, const char * szAppName);
 #else
 	AP_App (const char * szAppName);

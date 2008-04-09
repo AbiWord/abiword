@@ -22,7 +22,11 @@
 #ifndef UTUNIXMISC_H
 #define UTUNIXMISC_H
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef TOOLKIT_GTK
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 typedef GtkWidget AbiNativeWidget;

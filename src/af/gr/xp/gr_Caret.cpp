@@ -32,9 +32,9 @@
 #include "ut_debugmsg.h"
 static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 #include <gtk/gtk.h>
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 #include <windows.h>
 #endif
 
@@ -177,14 +177,14 @@ void GR_Caret::s_blink_timeout(UT_Worker * _w)
 
 UT_uint32 GR_Caret::_getCursorBlinkTime() const
 {
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	UT_uint32 blink;
 	GtkSettings * settings = gtk_settings_get_default ();
 
 	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-time", &blink, NULL);
 
 	return (blink/2);
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 	return GetCaretBlinkTime ();
 #else
 	return 600; // milliseconds
@@ -193,14 +193,14 @@ UT_uint32 GR_Caret::_getCursorBlinkTime() const
 
 UT_uint32 GR_Caret::_getCursorBlinkTimeout() const
 {
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	UT_uint32 timeout = 0;
 	GtkSettings * settings = gtk_settings_get_default ();
 
 	// retrieves the blink timeout in seconds
 	g_object_get (G_OBJECT(settings), "gtk-cursor-blink-timeout", &timeout, NULL);
 	return (timeout == 0 ? 2147483647 : timeout * 1000);
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 	// just use a wacko high number; we could also use -1 to denote infinite blinking, 
 	// but this is simpler, and roughly 25 days if you interpret this as milliseconds :)
 	return 2147483647; // not sure if there is a global windows setting for this
@@ -309,13 +309,13 @@ void GR_Caret::disable(bool bNoMulti)
  * If not, then _blink() won't actually clear the caret; it'll only draw. */
 void GR_Caret::setBlink(bool bBlink)
 {
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	gboolean can;
 	GtkSettings * settings = gtk_settings_get_default ();
 
 	g_object_get (G_OBJECT(settings), "gtk-cursor-blink", &can, NULL);
 	m_bCursorBlink = (can != FALSE);
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 	m_bCursorBlink = (((int)GetCaretBlinkTime ()) > 0);
 #else
 	m_bCursorBlink = bBlink;

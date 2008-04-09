@@ -24,6 +24,10 @@
 #define abi_plugin_supports_version abipgn_abimathview_supports_version
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <MathView/Init.hh>
 #include <MathView/MathMLElement.hh>
 #include <MathView/ShaperManager.hh>
@@ -82,7 +86,7 @@
 #include "ut_sleep.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -588,7 +592,7 @@ void GR_MathManager::initialize(void)
 
 	// add the configuration paths
  
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 	if (const char * resources = getenv("ABIWORD_COCOA_BUNDLED_RESOURCES"))
 	{
 		UT_UTF8String bundleConfDir(resources);
@@ -606,7 +610,7 @@ void GR_MathManager::initialize(void)
 	 
 	// add the dictionary paths
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 	if (const char * resources = getenv("ABIWORD_COCOA_BUNDLED_RESOURCES"))
 	{
 		UT_UTF8String bundleDictDir(resources);

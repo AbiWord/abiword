@@ -19,6 +19,9 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 /*****************************************************************
 ******************************************************************
@@ -33,7 +36,7 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
 	Spacer()
-#if defined(XP_UNIX_TARGET_GTK) || defined (WIN32)
+#if defined(TOOLKIT_GTK) || defined (TOOLKIT_WIN)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
 #endif
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)

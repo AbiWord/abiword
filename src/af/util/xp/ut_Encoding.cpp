@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 
 #include "ut_iconv.h"
@@ -145,7 +149,7 @@ static enc_entry s_Table[] =
 	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
 	{enc_big5,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5},
 	{enc_big5hkscs,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5HKSCS},
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 	{enc_cp437,				NULL, XAP_STRING_ID_ENC_US_DOS},
 	{enc_cp850,				NULL, XAP_STRING_ID_ENC_MLNG_DOS},
 #endif

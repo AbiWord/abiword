@@ -27,6 +27,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -235,7 +239,7 @@ static void s_internal_init ()
  */
 const char * ucs2Internal ()
 {
-#if defined(WIN32)
+#if defined(TOOLKIT_WIN)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
   return "UCS-2LE";
@@ -258,7 +262,7 @@ const char * ucs2Internal ()
  */
 const char * ucs4Internal ()
 {
-#if defined(WIN32)
+#if defined(TOOLKIT_WIN)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
   return "UCS-4LE";

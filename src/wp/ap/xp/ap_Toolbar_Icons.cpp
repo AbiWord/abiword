@@ -18,6 +18,9 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "xap_Features.h"
 #include "ap_Features.h"
@@ -96,7 +99,7 @@ static struct _im s_imTable[] =
 #ifdef DEBUG
 AP_Toolbar_Icons iconsdebug;
 
-#if defined (WIN32)
+#if defined (TOOLKIT_WIN)
 #include "xap_Win32Toolbar_Icons.h"
 #endif
 

@@ -20,6 +20,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <string.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -43,7 +47,7 @@
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
 #include "ut_string_class.h"
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
   #include "ut_Win32OS.h"
 #endif
 

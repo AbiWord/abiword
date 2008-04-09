@@ -21,10 +21,6 @@
 #ifndef __XAP_COCOA_FEATURES_H__
 #define __XAP_COCOA_FEATURES_H__
  
-#ifdef XP_MAC_TARGET_QUARTZ
-# define XAP_DONTUSE_XOR 1
-#endif
-
 #define XAP_SINGLE_XAPAPP 1
 
 #define XAP_DONT_INLINE_XPM 1

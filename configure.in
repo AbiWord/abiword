@@ -467,7 +467,7 @@ AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_LIBDIR,     "${libdir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_LIBDIR}/plugins")
 
-# TODO maybe just switch on TOOLKIT instead of the fancy TARGET defines
+# maybe just switch on TOOLKIT instead of the fancy TARGET defines
 # also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" == "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" == "gtk")
@@ -482,19 +482,19 @@ if test "$enable_static" == ""; then
 fi
 
 if test "$TOOLKIT" == "win"; then
+	AC_DEFINE([TOOLKIT_WIN], [1], [Build win32 user interface])
 	AC_DEFINE([_WIN32_IE], [0x0300], [minimal comctl.dll v4.70 for toolbars])
 	# override static/dynamic, on win32 only static is possible
 	enable_dynamic="no"
 	enable_static="yes"
 elif test "$TOOLKIT" == "cocoa"; then
+	AC_DEFINE([TOOLKIT_COCOA], [1], [Build cocoa user interface])
 	AC_DEFINE([XAP_DONTUSE_XOR], [1], [do not use XOR drawing functions])
-	AC_DEFINE([XP_TARGET_COCOA], [1], [building the cocoa version])
-        AC_DEFINE([XP_MAC_TARGET_MACOSX], [1], [building the cocoa version])
 	# override static/dynamic, on win32 only static is possible
 	enable_dynamic="no"
 	enable_static="yes"
 else
-	AC_DEFINE([XP_UNIX_TARGET_GTK], [1], [building the gtk version])
+	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
 	# build static binary by default
 	if test "$enable_dynamic" == "no" && \
 	   test "$enable_static" == "no"; then 

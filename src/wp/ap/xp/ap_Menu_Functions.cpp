@@ -58,7 +58,7 @@
 #include "fp_TableContainer.h"
 #include "fl_BlockLayout.h"
 
-#ifdef _WIN32
+#ifdef TOOLKIT_WIN
 #include "ap_Win32App.h" 
 #endif
 

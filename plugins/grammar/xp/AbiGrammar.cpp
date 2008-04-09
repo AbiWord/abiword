@@ -24,6 +24,10 @@
 #define abi_plugin_supports_version abipgn_abigrammar_supports_version
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Module.h"
@@ -42,7 +46,7 @@
 #include "ut_sleep.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -143,7 +147,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     // Add to AbiWord's plugin listeners
     XAP_App * pApp = XAP_App::getApp();
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
     if (const char * resources = getenv ("ABIWORD_COCOA_BUNDLED_RESOURCES"))
     {
         UT_UTF8String dict_dir = resources;

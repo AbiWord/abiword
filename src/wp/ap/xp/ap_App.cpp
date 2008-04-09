@@ -18,6 +18,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Features.h"
 #include "ap_App.h"
 #include "ap_Args.h"
@@ -27,7 +31,7 @@
 
 #include "ie_imp.h"
 
-#if defined(WIN32)
+#if defined(TOOLKIT_WIN)
 
 #include "ap_Win32App.h" //needed for AP_Win32App::s_fromWinLocaleToUTF8()
 
@@ -68,7 +72,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 
 		char * uri = NULL;
 
-#if defined(WIN32)
+#if defined(TOOLKIT_WIN)
 		uri = UT_go_shell_arg_to_uri (AP_Win32App::s_fromWinLocaleToUTF8(file).utf8_str());
 #else
 		uri = UT_go_shell_arg_to_uri (file);

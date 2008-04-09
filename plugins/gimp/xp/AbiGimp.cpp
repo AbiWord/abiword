@@ -24,6 +24,10 @@
 #define abi_plugin_supports_version abipgn_abigimp_supports_version
 #endif
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Module.h"
@@ -186,7 +190,7 @@ AbiGimp_RemoveFromMenus ()
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-#if !defined(WIN32)
+#if !defined(TOOLKIT_WIN)
   // gimp doesn't exist, don't let the plugin get loaded
   if (!progExists("gimp"))
     return 0;

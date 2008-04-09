@@ -22,7 +22,6 @@
  * 02111-1307, USA.
  */
 
-
 /* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
 
 #ifdef HAVE_CONFIG_H
@@ -8427,13 +8426,13 @@ bool IE_Imp_RTF::RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
                               UT_uint16 fontIndex,
                               int charSet, int codepage,
                               UT_UTF8String sFontNamesAndPanose[]) {
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
 	if (sFontNamesAndPanose[SFontTableState::MainFontName] == "helvetica")
 	{
 		sFontNamesAndPanose[SFontTableState::MainFontName] = "Helvetic";
 	}
-#endif /* ! XP_TARGET_COCOA */
+#endif /* ! TOOLKIT_COCOA */
 
 
 	// Create the font entry and put it into the font table

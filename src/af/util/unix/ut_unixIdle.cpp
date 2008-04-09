@@ -21,17 +21,10 @@
 #include "config.h"
 #endif
 
-#ifndef XP_TARGET_COCOA
-#include <glib.h>
-#else 
-	typedef int gint;
-	
-#endif
-
 #include "ut_unixIdle.h"
 #include "ut_assert.h"
 
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 //
 // timer procedure callback
 //
@@ -82,7 +75,7 @@ void UT_UnixIdle::start ()
 // UT_ASSERT(m_id == -1);
 	if(m_id == -1)
 	{  
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 	        m_id = g_idle_add_full(G_PRIORITY_LOW,_Timer_Proc, this,NULL);
 #else
 		m_id = -1;
@@ -101,7 +94,7 @@ void UT_UnixIdle::stop ()
 //    UT_ASSERT(m_id > 0);
 	if(m_id > 0)
 	{
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 		gboolean b = g_idle_remove_by_data(this);
 		UT_ASSERT(TRUE == b);
 #else

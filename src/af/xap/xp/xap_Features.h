@@ -30,11 +30,11 @@
 #include "config.h"
 #endif
 
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
 # include "xap_CocoaFeatures.h"
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 # include "xap_Win32Features.h"
-#elif defined(XP_UNIX_TARGET_GTK)
+#elif defined(TOOLKIT_GTK)
 # include "xap_UnixFeatures.h"
 #endif
 

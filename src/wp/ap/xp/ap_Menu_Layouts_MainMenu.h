@@ -19,6 +19,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ap_Features.h"
 #ifdef APF_MENU_LAYOUTS_MAIN_MENU
 #  include APF_MENU_LAYOUTS_MAIN_MENU
@@ -51,14 +55,14 @@ BeginLayout(Main,0)
 #if !XP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
-#if defined(XP_UNIX_TARGET_GTK) || defined (WIN32)
+#if defined(TOOLKIT_GTK) || defined (TOOLKIT_WIN)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
 		Separator()
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// GNOME HIG style recent files 
 		MenuItem(AP_MENU_ID_FILE_RECENT_1)
 		MenuItem(AP_MENU_ID_FILE_RECENT_2)
@@ -174,7 +178,7 @@ BeginLayout(Main,0)
         MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		MenuItem(AP_MENU_ID_INSERT_CLIPART)
 #endif
 		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
@@ -305,9 +309,6 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 		MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
-#ifndef XP_MAC_TARGET_MACOSX
-		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
-#endif
 #if XAP_PREFSMENU_UNDER_TOOLS
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
@@ -406,10 +407,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif
-#ifndef XP_UNIX_TARGET_GTK
+#ifndef TOOLKIT_GTK
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)

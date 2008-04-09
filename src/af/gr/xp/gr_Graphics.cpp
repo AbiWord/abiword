@@ -1692,11 +1692,11 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 	return true;
 }
 
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 #include "gr_UnixNullGraphics.h"
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 #include "gr_Win32Graphics.h"
-#elif defined(XP_TARGET_COCOA)
+#elif defined(TOOLKIT_COCOA)
 #error hub: please implement offscreen graphics for cocoa, so that the OSX port can use abicommand, abicollab, exporters that flatten fields, and the upcoming s5 plugin can paginate
 #endif
 
@@ -1708,13 +1708,13 @@ GR_Graphics* GR_Graphics::newNullGraphics()
 {
 	// todo: support other platforms when possible
 	
-#if defined(XP_UNIX_TARGET_GTK)
+#if defined(TOOLKIT_GTK)
 	GR_UnixNullGraphicsAllocInfo ai;
 	return XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, (GR_AllocInfo&)ai);
-#elif defined(WIN32)
+#elif defined(TOOLKIT_WIN)
 	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), NULL);
 	return XAP_App::getApp()->newGraphics(GRID_WIN32, (GR_AllocInfo&)ai);
-#elif defined(XP_TARGET_COCOA)
+#elif defined(TOOLKIT_COCOA)
 #endif
 	
 	return NULL;

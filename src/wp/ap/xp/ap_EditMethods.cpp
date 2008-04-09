@@ -25,7 +25,7 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
+#ifdef TOOLKIT_WIN
 #include <io.h>
 #else
 // this ansi header is not available on Windows.
@@ -3686,7 +3686,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 Defun(closeWindow)
 {
 	CHECK_FRAME;
-#if !defined(XP_UNIX_TARGET_GTK)
+#if !defined(TOOLKIT_GTK)
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8031,7 +8031,7 @@ UT_return_val_if_fail(pDialog, false);
 
 static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 {
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8505,7 +8505,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	return true;
 }
 
-#if defined(XP_TARGET_COCOA)
+#if defined(TOOLKIT_COCOA)
 /* declare but possibly not implment them */
 bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
@@ -9642,11 +9642,11 @@ Defun1(dlgSpellPrefs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
-#ifdef XP_TARGET_COCOA
+#ifdef TOOLKIT_COCOA
     return s_doOptionsDlg(pView, 4); // spelling tab
 #endif
 
-#if !defined (WIN32) && !defined (XP_UNIX_TARGET_GTK)
+#if !defined (TOOLKIT_WIN) && !defined (TOOLKIT_GTK)
     return s_doOptionsDlg(pView, 1); // spelling tab
 #else
     // spelling tab in Windows in the tab num 2

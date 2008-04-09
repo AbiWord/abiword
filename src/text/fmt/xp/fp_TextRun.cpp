@@ -811,7 +811,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 	}
 	else
 	{
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// This is really for the benefit of the Pango graphics, which requires the raw
 		// text for almost anything; we do not need this on win32, and since this this
 		// called all the time, do not want it in here unless necessary
@@ -827,7 +827,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		pos = getGraphics()->XYToPosition(*m_pRenderInfo, x, y);
 		pos += getBlock()->getPosition() + getBlockOffset();
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// reset this, so we have no stale pointers there
 		m_pRenderInfo->m_pText = NULL;
 #endif
@@ -943,7 +943,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		m_pRenderInfo->m_iLength = getLength();
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// This is really for the benefit of the Pango graphics, which requires the raw
 		// text for almost anything; we do not need this on win32, and since this this
 		// called all the time, do not want it in
@@ -957,7 +957,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		x += xoff;
 		x2 += xoff;
 		
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// reset this, so we have no stale pointers there
 		m_pRenderInfo->m_pText = NULL;
 #endif
@@ -2675,7 +2675,7 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 	
 		_setWidth(getWidth() + iAmount);
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// Because Pango does not yet support justification, we need to iterate over the raw
 		// text counting spaces; this is not required by the default graphics class, nor
 		// Uniscribe and for performance reasons it is therefore only conditionally compiled
@@ -2694,7 +2694,7 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		m_pRenderInfo->m_iJustificationAmount = iAmount;
 		getGraphics()->justify(*m_pRenderInfo);
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 		// do not leave stale pointer behind
 		m_pRenderInfo->m_pText = NULL;
 #endif
@@ -2715,7 +2715,7 @@ UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 
 	UT_return_val_if_fail(m_pRenderInfo->m_iLength > 0, 0);
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	// Because Pango does not yet support justification, we need to iterate over the raw
 	// text counting spaces; this is not required by the default graphics class, nor
 	// Uniscribe and for performance reasons it is therefore only conditionally compiled
@@ -2733,7 +2733,7 @@ UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 	m_pRenderInfo->m_bLastOnLine = bLast;
 	UT_sint32 iCount = getGraphics()->countJustificationPoints(*m_pRenderInfo);
 
-#ifdef XP_UNIX_TARGET_GTK
+#ifdef TOOLKIT_GTK
 	m_pRenderInfo->m_pText = NULL;
 #endif
 

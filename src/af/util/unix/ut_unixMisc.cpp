@@ -116,7 +116,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &a)
     return false;
 }
 
-#ifndef XP_TARGET_COCOA
+#ifndef TOOLKIT_COCOA
 /*!
 * Convert a GdkColor stuct to abi's UT_RGBColor. 
 * The caller is responsible for freeing the returned object.
