@@ -15,7 +15,8 @@ class IE_TOCHelper
   IE_TOCHelper(PD_Document * doc);
   ~IE_TOCHelper();
 
-  bool hasTOC() const;
+  bool hasTOC() const; // true if there are any "headings" in the document
+  bool docHasTOC() const; // true if the doc has 1 or more tables of contents
 
   bool isTOCStyle(const UT_UTF8String & styleName, int * out_level = NULL) const;
   bool isTOCStyle(const char * styleName, int * out_level = NULL) const;
@@ -41,6 +42,7 @@ class IE_TOCHelper
   UT_GenericVector<int> mTOCLevels;
 
   bool mHasTOC;
+  bool mDocHasTOC;
   PD_Document *mDoc;
 };
 

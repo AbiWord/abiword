@@ -149,6 +149,11 @@ bool TOC_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
   switch (pcrx->getStruxType())
     {
+    case PTX_SectionTOC:
+      {
+	mTOC->mDocHasTOC = true;
+	return true;
+      }
     case PTX_Block:
       {
 	const PP_AttrProp * pAP = NULL;
@@ -202,7 +207,7 @@ bool TOC_Listener::signal(UT_uint32 /* iSignal */)
 /*******************************************************************************/
 
 IE_TOCHelper::IE_TOCHelper(PD_Document * pDoc)
-  : mHasTOC(false), mDoc(pDoc)
+  : mHasTOC(false), mDocHasTOC(false), mDoc(pDoc)
 {
   TOC_Listener listener(pDoc,this);
 
@@ -217,6 +222,11 @@ IE_TOCHelper::~IE_TOCHelper()
 bool IE_TOCHelper::hasTOC() const
 {
   return mHasTOC;
+}
+
+bool IE_TOCHelper::docHasTOC() const
+{
+  return mDocHasTOC;
 }
 
 bool IE_TOCHelper::_tocNameLevelHelper(const UT_UTF8String & style_name,

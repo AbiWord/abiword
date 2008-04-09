@@ -2302,7 +2302,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2320,7 +2320,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2338,7 +2338,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2399,7 +2399,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2413,7 +2413,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2427,7 +2427,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2456,7 +2456,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc && m_toc->isTOCStyle(szValue)) {
+			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2469,7 +2469,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc && m_toc->isTOCStyle(szValue)) {
+			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
