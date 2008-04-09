@@ -6134,7 +6134,9 @@ void s_StyleTree::print (StyleListener * listener) const
 		UT_UTF8String selector("*.");
 		if (m_class_name.byteLength ())
 		{
-			selector += m_class_name;
+			UT_UTF8String tmp = m_class_name;
+			tmp.escapeXML();
+			selector += tmp.utf8_str();
 		}
 		else
 		{
