@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <time.h>
 
+#include <glib.h>
 #include <gsf/gsf-utils.h>
 
 #include "ut_types.h"
@@ -896,11 +897,6 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 		return false;
 	}
 
-#if defined(WIN32)
-	const char * sep = "\\";
-#else
-	const char * sep = "/";
-#endif
 	bool bFound = false;
 
 	const char * dir = getUserPrivateDirectory();
@@ -909,10 +905,10 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 		path = dir;
 		if (subdir)
 		{
-			path += sep;
+			path += G_DIR_SEPARATOR;
 			path += subdir;
 		}
-		path += sep;
+		path += G_DIR_SEPARATOR;
 		path += filename;
 		bFound = UT_isRegularFile (path.c_str ());
 	}
@@ -921,10 +917,10 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 		path = dir;
 		if (subdir)
 		{
-			path += sep;
+			path += G_DIR_SEPARATOR;
 			path += subdir;
 		}
-		path += sep;
+		path += G_DIR_SEPARATOR;
 		path += filename;
 		bFound = UT_isRegularFile (path.c_str ());
 	}
@@ -938,11 +934,6 @@ bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const
 		return false;
 	}
 
-#if defined(WIN32)
-	const char * sep = "\\";
-#else
-	const char * sep = "/";
-#endif
 	bool bFound = false;
 
 	const char * dir = getAbiSuiteAppDir();
@@ -951,10 +942,10 @@ bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const
 		path = dir;
 		if (subdir)
 		{
-			path += sep;
+			path += G_DIR_SEPARATOR;
 			path += subdir;
 		}
-		path += sep;
+		path += G_DIR_SEPARATOR;
 		path += filename;
 		bFound = UT_isRegularFile (path.c_str ());
 	}

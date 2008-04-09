@@ -599,12 +599,6 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 
 }
 
-#ifdef WIN32
-#define ut_PATHSEP	'\\'
-#else
-#define ut_PATHSEP '/'
-#endif
-
 const char * UT_pathSuffix(const char * path)
 {
 	// TODO This needs to be moved to platform code.
@@ -617,7 +611,7 @@ const char * UT_pathSuffix(const char * path)
 	// is a slash), we consider the stuff beyond the dot (in
 	// the forward direction) the extension.
 
-	const char * slashpos = strrchr(path, ut_PATHSEP);
+	const char * slashpos = strrchr(path, G_DIR_SEPARATOR);
 
 	if (slashpos)
 	  return strchr (slashpos + 1, '.');
