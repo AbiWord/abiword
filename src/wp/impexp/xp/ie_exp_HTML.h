@@ -193,6 +193,8 @@ public:
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
 
+	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& tree);
+
 private:
 	UT_Error            _doOptions ();
 	void				_buildStyleTree ();
