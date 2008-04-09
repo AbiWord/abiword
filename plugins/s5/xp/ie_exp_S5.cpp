@@ -122,8 +122,8 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 		m_sniffer = new IE_Exp_S5_Sniffer ();
 	}
 
-	mi->name = "S5 Exporter";
-	mi->desc = "Export S5 Documents";
+	mi->name = "S5 Slideshow Exporter";
+	mi->desc = "Export S5 Slideshows";
 	mi->version = ABI_VERSION_STRING;
 	mi->author = "Abi the Ant";
 	mi->usage = "No Usage";
@@ -168,7 +168,7 @@ IE_Exp_S5_Sniffer::IE_Exp_S5_Sniffer () :
 
 bool IE_Exp_S5_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!g_ascii_strcasecmp(szSuffix, ".s5"));
+	return (!g_ascii_strcasecmp(szSuffix, ".s5.html"));
 }
 
 UT_Error IE_Exp_S5_Sniffer::constructExporter(PD_Document * pDocument,
@@ -182,8 +182,8 @@ bool IE_Exp_S5_Sniffer::getDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft)
 {
-	*pszDesc = "S5 (.s5)";
-	*pszSuffixList = "*.s5";
+	*pszDesc = "S5 Slideshow (.s5.html)";
+	*pszSuffixList = "*.s5.html";
 	*ft = getFileType();
 	return true;
 }
