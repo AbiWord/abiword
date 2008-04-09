@@ -67,27 +67,25 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 {
 	const char * toTranslate = getValue(id);
 
+	UT_return_val_if_fail(toTranslate != NULL, false);
+
 	if(!strcmp(m_encoding.c_str(),inEncoding))
 	{
 		s = toTranslate;
 	}
 	else
 	{
-		UT_TRY
-			{
-				auto_iconv cd(m_encoding.c_str(), inEncoding);
-				char * translated = UT_convert_cd(toTranslate, strlen (toTranslate), cd, NULL, NULL);
-				
-				UT_return_val_if_fail(translated, false);
-				s = translated;
-				
-				g_free(translated);
-			}
-		UT_CATCH(UT_CATCH_ANY)
-			{
-				return false;
-			}
-		UT_END_CATCH
+	        UT_iconv_t conv = UT_iconv_open(inEncoding, m_encoding.c_str());
+		UT_return_val_if_fail(UT_iconv_isValid(conv), false);
+	  
+		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate), conv, NULL, NULL);
+		
+		UT_iconv_close(conv);
+		
+		UT_return_val_if_fail(translated, false);
+		s = translated;
+		
+		g_free(translated);
 	}
 	
 	return true;
@@ -95,32 +93,11 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 
 bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 {	
-	const char * toTranslate = getValue(id);
-
-	if(!strcmp(m_encoding.c_str(), "UTF-8"))
-	{
-		s = toTranslate;
-	}
-	else
-	{
-		UT_TRY
-			{
-				auto_iconv cd(m_encoding.c_str(), "UTF-8");
-				char * translated = UT_convert_cd(toTranslate, strlen (toTranslate), cd, NULL, NULL);
-				
-				UT_return_val_if_fail(translated, false);
-				s = translated;
-				
-				g_free(translated);
-			}
-		UT_CATCH(UT_CATCH_ANY)
-			{
-				return false;
-			}
-		UT_END_CATCH
-	}
-	
-	return true;
+        UT_String s_;
+	bool b = getValue(id, "UTF-8", s_);
+	if (b)
+	        s = s_.c_str();
+	return b;
 }
 
 void XAP_StringSet::setEncoding(const gchar * inEncoding)
