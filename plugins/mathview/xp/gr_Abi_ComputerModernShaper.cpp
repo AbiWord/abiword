@@ -51,7 +51,7 @@ GR_Abi_ComputerModernShaper::getGlyphArea(ComputerModernFamily::FontNameId fontN
   static char fontFamily[128];
   sprintf(fontFamily, "%s", getFamily()->nameOfFont(fontName, designSize).c_str());
 
-  GR_Font* font = m_pGraphics->findFont(fontFamily, "normal", NULL, "normal", NULL, fontSize,NULL);
+  GR_Font* font = m_pGraphics->findFont(fontFamily, "normal", "", "normal", "", fontSize, "");
   UT_ASSERT(font);
 
   return GR_Abi_CharArea::create(getGraphics(), font, size, toTTFGlyphIndex(getFamily()->encIdOfFontNameId(fontName), index));

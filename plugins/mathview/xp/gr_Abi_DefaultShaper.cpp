@@ -111,7 +111,7 @@ GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const ShapingContext& conte
   sprintf(fontSize, "%dpt", static_cast<int>(context.getSize().toFloat() + 0.5f));
 
   const AbiTextProperties& props = getTextProperties(variant);
-  GR_Font* font = m_pGraphics->findFont(props.family, props.style, NULL, props.weight, NULL, fontSize,NULL);
+  GR_Font* font = m_pGraphics->findFont(props.family, props.style, "", props.weight, "", fontSize, "");
   UT_ASSERT(font);
 
   SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(context.getFactory());

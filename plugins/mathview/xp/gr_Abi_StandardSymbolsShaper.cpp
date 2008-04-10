@@ -45,7 +45,7 @@ GR_Abi_StandardSymbolsShaper::getGlyphArea(const SmartPtr<AreaFactory>& f,
   static char fontSize[128];
   sprintf(fontSize, "%dpt", static_cast<int>(size.toFloat() + 0.5f));
 
-  GR_Font* font = m_pGraphics->findFont("Symbol", "normal", NULL, "normal", NULL, fontSize,NULL);
+  GR_Font* font = m_pGraphics->findFont("Symbol", "normal", "", "normal", "", fontSize, "");
   UT_ASSERT(font);
   UT_UCS4Char ch = static_cast<UT_UCS4Char>(static_cast<unsigned char>(index));
   return factory->charArea(getGraphics(), font, size, ch);
