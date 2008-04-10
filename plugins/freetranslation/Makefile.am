@@ -1,19 +1,13 @@
 
 SUBDIRS = xp
 
+if FREETRANSLATION_BUILTIN
+noinst_LTLIBRARIES = freetranslation.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = freetranslation.la
-
-freetranslation_la_LIBADD = \
-	xp/libxp.la
-
-freetranslation_la_LDFLAGS = \
-	$(PLUGIN_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-freetranslation_la_SOURCES = 
 
 if TOOLKIT_WIN
 
@@ -29,4 +23,20 @@ freetranslation.dll: .libs/libfreetranslation.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+freetranslation_la_LIBADD = \
+	xp/libxp.la
+
+freetranslation_la_LDFLAGS = \
+	$(FREETRANSLATION_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+freetranslation_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

@@ -21,12 +21,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_abidash_register
-#define abi_plugin_unregister abipgn_abidash_unregister
-#define abi_plugin_supports_version abipgn_abidash_supports_version
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -60,6 +54,16 @@
 #include "ut_files.h"
 #endif
 
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_dash_register
+#define abi_plugin_unregister abipgn_dash_unregister
+#define abi_plugin_supports_version abipgn_dash_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Dash")
+#endif
 
 // -----------------------------------------------------------------------
 //
@@ -184,8 +188,6 @@ private:
 
 static AbiDash * pAbiDash = NULL;
 
-ABI_PLUGIN_DECLARE(AbiDash)
-
 // -----------------------------------------------------------------------
 //
 //      Abiword Plugin Interface 
@@ -193,7 +195,7 @@ ABI_PLUGIN_DECLARE(AbiDash)
 // -----------------------------------------------------------------------
 
   
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     mi->name = "AbiDash";
@@ -214,7 +216,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -231,7 +233,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
     return 1; 

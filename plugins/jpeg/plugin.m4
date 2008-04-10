@@ -23,6 +23,10 @@ AC_CHECK_HEADER(jpeglib.h,[
 JPEG_CFLAGS='${PLUGIN_CFLAGS}'
 JPEG_LIBS="-ljpeg "'${PLUGIN_LIBS}'
 
+if test "$enable_jpeg_builtin" == "yes"; then
+	JPEG_CFLAGS="$JPEG_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
+
 fi
 
 AC_SUBST([JPEG_CFLAGS])

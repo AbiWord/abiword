@@ -9,6 +9,9 @@ COLLAB_LIBS=
 
 if test "$enable_collab" == "yes"; then
 
+if test "$enable_collab_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `collab' plugin])
+fi
 
 # check for various boost libs, needs to be done before
 AX_BOOST_BASE([1.33.1])

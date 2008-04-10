@@ -27,21 +27,26 @@
   This is the core of the JPEG importer.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_jpeg_register
-#define abi_plugin_unregister abipgn_jpeg_unregister
-#define abi_plugin_supports_version abipgn_jpeg_supports_version
-#endif
-
 #include <stdio.h>
 #include <string.h>
 
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-
 #include "ie_impGraphic_JPEG.h"
 #include "fg_GraphicRaster.h"
+#include "xap_Module.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_jpeg_register
+#define abi_plugin_unregister abipgn_jpeg_unregister
+#define abi_plugin_supports_version abipgn_jpeg_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("JPEG")
+#endif
 
 // TODO: shouldn't those function be part of a class instead of being duplicated each time ?
 static void _write_png( png_structp png_ptr, 
@@ -392,13 +397,8 @@ void IE_ImpGraphic_JPEG::_jpegTermSource (j_decompress_ptr cinfo)
 	/* no work necessary here */
 }
 
-
-#include "xap_Module.h"
-
 /*******************************************************************/
 /*******************************************************************/
-
-ABI_PLUGIN_DECLARE("JPEG")
 
 // we use a reference-counted sniffer
 static IE_ImpGraphicJPEG_Sniffer * m_impSniffer = 0;

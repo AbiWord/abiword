@@ -19,32 +19,34 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_opml_register
-#define abi_plugin_unregister abipgn_opml_unregister
-#define abi_plugin_supports_version abipgn_opml_supports_version
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "ie_imp_OPML.h"
 #include "ie_types.h"
+#include "xap_Module.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_opml_register
+#define abi_plugin_unregister abipgn_opml_unregister
+#define abi_plugin_supports_version abipgn_opml_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("OPML")
+#endif
 
 /****************************************************************************/
 
 // completely generic code to allow this to be a plugin
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("OPML")
-
 #define PLUGIN_NAME "AbiOPML::OPML"
 
 static IE_Imp_OPML_Sniffer * m_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	if (!m_sniffer)
@@ -64,7 +66,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name    = 0;
@@ -82,7 +84,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 				 UT_uint32 release)
 {

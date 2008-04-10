@@ -1,15 +1,15 @@
 
-presentation_pkgs="$glib_req"
-
 PRESENTATION_CFLAGS=
 PRESENTATION_LIBS=
 
 if test "$enable_presentation" == "yes"; then
 
-PKG_CHECK_MODULES(PRESENTATION,[ $presentation_pkgs ])
-
 PRESENTATION_CFLAGS="$PRESENTATION_CFLAGS "'${PLUGIN_CFLAGS}'
 PRESENTATION_LIBS="$PRESENTATION_LIBS "'${PLUGIN_LIBS}'
+
+if test "$enable_presentation_builtin" == "yes"; then
+	PRESENTATION_CFLAGS="$PRESENTATION_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
 
 fi
 

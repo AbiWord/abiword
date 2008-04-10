@@ -6,6 +6,10 @@ RSVG_LIBS=
 
 if test "$enable_rsvg" == "yes"; then
 
+if test "$enable_rsvg_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `rsvg' plugin])
+fi
+
 AC_MSG_CHECKING([for gtk toolkit])
 if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([ok])

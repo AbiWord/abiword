@@ -1,5 +1,5 @@
 
-GDICT_CFLAGS="-DUSE_FORK_AND_EXEC_METHOD=1"
+GDICT_CFLAGS=
 GDICT_LIBS=
 
 if test "$enable_gdict" == "yes"; then
@@ -13,8 +13,12 @@ fi
 
 AC_TYPE_PID_T
 
-GDICT_CFLAGS="$GDICT_CFLAGS "'${PLUGIN_CFLAGS}'
+GDICT_CFLAGS="$GDICT_CFLAGS "'${PLUGIN_CFLAGS} -DUSE_FORK_AND_EXEC_METHOD=1'
 GDICT_LIBS='${PLUGIN_LIBS}'
+
+if test "$enable_gdict_builtin" == "yes"; then
+	GDICT_CFLAGS="$GDICT_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
 
 fi
 

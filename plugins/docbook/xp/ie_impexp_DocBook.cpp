@@ -19,17 +19,20 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_docbook_register
-#define abi_plugin_unregister abipgn_docbook_unregister
-#define abi_plugin_supports_version abipgn_docbook_supports_version
-#endif
-
 #include "ie_imp_DocBook.h"
 #include "ie_exp_DocBook.h"
 #include "xap_Module.h"
 
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_docbook_register
+#define abi_plugin_unregister abipgn_docbook_unregister
+#define abi_plugin_supports_version abipgn_docbook_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
 ABI_PLUGIN_DECLARE("DocBook")
+#endif
 
 #define PLUGIN_NAME "AbiDocBook::DocBook"
 
@@ -37,7 +40,7 @@ ABI_PLUGIN_DECLARE("DocBook")
 static IE_Imp_DocBook_Sniffer * m_impSniffer = 0;
 static IE_Exp_DocBook_Sniffer * m_expSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	if (!m_impSniffer)
@@ -62,7 +65,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -85,7 +88,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

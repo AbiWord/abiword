@@ -19,17 +19,20 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_kword_register
-#define abi_plugin_unregister abipgn_kword_unregister
-#define abi_plugin_supports_version abipgn_kword_supports_version
-#endif
-
 #include "ie_imp_KWord_1.h"
 #include "ie_exp_KWord_1.h"
 #include "xap_Module.h"
 
-ABI_PLUGIN_DECLARE("AbiKWord")
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_kword_register
+#define abi_plugin_unregister abipgn_kword_unregister
+#define abi_plugin_supports_version abipgn_kword_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("KWord")
+#endif
 
 #define PLUGIN_NAME "AbiKWord::KWord"
 
@@ -37,7 +40,7 @@ ABI_PLUGIN_DECLARE("AbiKWord")
 static IE_Imp_KWord_1_Sniffer * m_impSniffer = 0;
 static IE_Exp_KWord_1_Sniffer * m_expSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo *mi)
 {
   if (!m_impSniffer)
@@ -61,7 +64,7 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister(XAP_ModuleInfo *mi)
 {
   mi->name = 0;
@@ -84,7 +87,7 @@ int abi_plugin_unregister(XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
   return 1;

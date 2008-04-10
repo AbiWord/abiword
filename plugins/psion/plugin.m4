@@ -9,6 +9,10 @@ PSION_LIBS=
 
 if test "$enable_psion" == "yes"; then
 
+if test "$enable_psion_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `psion' plugin])
+fi
+
 AC_ARG_WITH([psiconv-config],
 	[AS_HELP_STRING([--with-psiconv-config=DIR], [use psiconv-config in DIR])],
 [

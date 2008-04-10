@@ -6,6 +6,10 @@ GOFFICE_LIBS=
 
 if test "$enable_goffice" == "yes"; then
 
+if test "$enable_goffice_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `goffice' plugin])
+fi
+
 AC_MSG_CHECKING([for gtk toolkit])
 if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([ok])

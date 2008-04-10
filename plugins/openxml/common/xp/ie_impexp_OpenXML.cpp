@@ -20,12 +20,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_OpenXML_register
-#define abi_plugin_unregister abipgn_OpenXML_unregister
-#define abi_plugin_supports_version abipgn_OpenXML_supports_version
-#endif
-
 // External includes
 #include <gsf/gsf-utils.h>
 #include <xap_Module.h>
@@ -34,12 +28,21 @@
 #include <ie_imp_OpenXML_Sniffer.h>
 //#include "../../exp/xp/ie_exp_OpenXML_Sniffer.h"
 
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_openxml_register
+#define abi_plugin_unregister abipgn_openxml_unregister
+#define abi_plugin_supports_version abipgn_openxml_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("OpenXML")
+#endif
+
 /*****************************************************************************/
 /*****************************************************************************/
 
 // completely generic C-interface code to allow this to be a plugin
-
-ABI_PLUGIN_DECLARE("OpenXML")
 
 static IE_Imp_OpenXML_Sniffer* pImp_sniffer = 0;
 //static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
@@ -48,7 +51,7 @@ static IE_Imp_OpenXML_Sniffer* pImp_sniffer = 0;
 /**
  * Register the OpenXML plugin
  */
-ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenXML_Sniffer ();
@@ -75,7 +78,7 @@ ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 /**
  * Unregister the OpenXML plugin
  */
-ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
   mi->name    = 0;
   mi->desc    = 0;
@@ -98,7 +101,7 @@ ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 /**
  * 
  */
-ABI_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
                  UT_uint32 release)
 {
   return 1;

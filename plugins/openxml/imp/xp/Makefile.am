@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libxp.la
 
 libxp_la_CPPFLAGS = \
-	$(IMPEXP_CPPFLAGS) \
+	$(OPENXML_CFLAGS) \
 	-I$(srcdir)/../../common/xp
 
 libxp_la_SOURCES = \

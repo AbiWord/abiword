@@ -17,28 +17,31 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_OpenWriter_register
-#define abi_plugin_unregister abipgn_OpenWriter_unregister
-#define abi_plugin_supports_version abipgn_OpenWriter_supports_version
-#endif
-
 #include <gsf/gsf-utils.h>
 #include "xap_Module.h"
 #include "ie_impexp_OpenWriter.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_openwriter_register
+#define abi_plugin_unregister abipgn_openwriter_unregister
+#define abi_plugin_supports_version abipgn_openwriter_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("OpenWriter")
+#endif
 
 /*****************************************************************************/
 /*****************************************************************************/
 
 // completely generic C-interface code to allow this to be a plugin
 
-ABI_PLUGIN_DECLARE("OpenWriter")
-  
 // we use a reference-counted sniffer
 static IE_Imp_OpenWriter_Sniffer * m_imp_sniffer = 0;
 static IE_Exp_OpenWriter_Sniffer * m_exp_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
   if (!m_imp_sniffer)
@@ -58,7 +61,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
   mi->name    = 0;
@@ -78,7 +81,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 				 UT_uint32 release)
 {

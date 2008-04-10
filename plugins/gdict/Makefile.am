@@ -1,8 +1,13 @@
 
 SUBDIRS = unix
 
+if GDICT_BUILTIN
+noinst_LTLIBRARIES = gdict.la
+else
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = gdict.la
+
+endif
 
 gdict_la_LIBADD = \
 	unix/libunix.la

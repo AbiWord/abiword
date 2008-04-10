@@ -11,6 +11,10 @@ PKG_CHECK_MODULES(OPENXML,[ $openxml_pkgs ])
 OPENXML_CFLAGS="$OPENXML_CFLAGS "'${PLUGIN_CFLAGS}'
 OPENXML_LIBS="$OPENXML_LIBS "'${PLUGIN_LIBS}'
 
+if test "$enable_openxml_builtin" == "yes"; then
+	OPENXML_CFLAGS="$OPENXML_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
+
 AC_LANG_PUSH(C++)
 AC_CHECK_HEADER([boost/shared_ptr.hpp], [], 
 [

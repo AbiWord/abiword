@@ -33,9 +33,16 @@
 
 #include "AbiGeneric.h"
 
-/* OS DLL hook functions, if required (e.g. for Windows) */
-ABI_PLUGIN_DECLARE(ABI_PLUGIN_NAME)
-
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_paint_register
+#define abi_plugin_unregister abipgn_paint_unregister
+#define abi_plugin_supports_version abipgn_paint_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Paint")
+#endif
 
 /*
  * Preference / User modifiable settings
@@ -43,14 +50,13 @@ ABI_PLUGIN_DECLARE(ABI_PLUGIN_NAME)
  */
 XAP_Prefs * prefs = NULL;
 
-
 /*
  * Abiword Plugin Interface 
  * These are implemented by this generic class,
  * any work should be done by extending appropriate methods, not implementing these.
  */
     
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	prefs = XAP_App::getApp()->getPrefs();
@@ -76,7 +82,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	// clear module info
@@ -98,7 +104,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
 	// doesn't really matter as it will fail to load if the imports don't match.

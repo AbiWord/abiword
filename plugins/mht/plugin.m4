@@ -4,6 +4,10 @@ mht_pkgs="$gsf_req"
 
 if test "$enable_mht" == "yes"; then
 
+if test "$enable_mht_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `mht' plugin])
+fi
+
 #
 # Optional packages
 #
@@ -80,3 +84,4 @@ AC_SUBST([MHT_LIBS])
 AM_CONDITIONAL([ABI_XHTML_XML2], test /bin/true)
 AM_CONDITIONAL([ABI_XHTML_MHT], test "$mht_cv_inter7eps" == "yes")
 AM_CONDITIONAL([ABI_XHTML_TIDY], test "$mht_cv_libtidy" == "yes")
+

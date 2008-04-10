@@ -1,19 +1,13 @@
 
 SUBDIRS = xp
 
+if URLDICT_BUILTIN
+noinst_LTLIBRARIES = urldict.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = urldict.la
-
-urldict_la_LIBADD = \
-	xp/libxp.la
-
-urldict_la_LDFLAGS = \
-	$(PLUGIN_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-urldict_la_SOURCES = 
 
 if TOOLKIT_WIN
 
@@ -29,4 +23,20 @@ urldict.dll: .libs/liburldict.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+urldict_la_LIBADD = \
+	xp/libxp.la
+
+urldict_la_LDFLAGS = \
+	$(URLDICT_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+urldict_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

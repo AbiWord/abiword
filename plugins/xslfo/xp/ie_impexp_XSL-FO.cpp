@@ -17,17 +17,20 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_xsl_fo_register
-#define abi_plugin_unregister abipgn_xsl_fo_unregister
-#define abi_plugin_supports_version abipgn_xsl_fo_supports_version
-#endif
-
 #include "ie_exp_XSL-FO.h"
 #include "ie_imp_XSL-FO.h"
 #include "xap_Module.h"
 
-ABI_PLUGIN_DECLARE("XSL-FO")
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_xslfo_register
+#define abi_plugin_unregister abipgn_xslfo_unregister
+#define abi_plugin_supports_version abipgn_xslfo_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("XSLFO")
+#endif
 
 #define PLUGIN_NAME "AbiXSLFO::XSL-FO"
 
@@ -35,7 +38,7 @@ ABI_PLUGIN_DECLARE("XSL-FO")
 static IE_Imp_XSL_FO_Sniffer * m_impSniffer = 0;
 static IE_Exp_XSL_FO_Sniffer * m_expSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -61,7 +64,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -84,7 +87,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

@@ -19,12 +19,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_sdw_register
-#define abi_plugin_unregister abipgn_sdw_unregister
-#define abi_plugin_supports_version abipgn_sdw_supports_version
-#endif
-
 #include <memory.h>
 #include <gsf/gsf.h>
 #include <gsf/gsf-input.h>
@@ -53,9 +47,21 @@
 #include "xap_Dlg_Password.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
+#include "xap_Module.h"
 
 #ifdef DEBUG
 #include <errno.h>
+#endif
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_sdw_register
+#define abi_plugin_unregister abipgn_sdw_unregister
+#define abi_plugin_supports_version abipgn_sdw_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("SDW")
 #endif
 
 // ********************************************************************************
@@ -986,14 +992,10 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 
 /*******************************************************/
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("StarOffice")
-
 // we use a reference-counted sniffer
 static IE_Imp_StarOffice_Sniffer * m_impSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     if (!m_impSniffer)
@@ -1012,7 +1014,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -1030,7 +1032,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
                                  UT_uint32 release)
 {

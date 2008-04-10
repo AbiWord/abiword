@@ -36,6 +36,7 @@
 #define ABI_BUILTIN_FAR_CALL extern "C"
 #else
 #define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("OpenDocument")
 #endif
 
 /*****************************************************************************/
@@ -43,8 +44,6 @@
 
 // completely generic C-interface code to allow this to be a plugin
 
-ABI_PLUGIN_DECLARE("OpenDocument")
-  
 // we use a reference-counted sniffer
 static IE_Imp_OpenDocument_Sniffer* pImp_sniffer = 0;
 static IE_Exp_OpenDocument_Sniffer* pExp_sniffer = 0;

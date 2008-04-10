@@ -28,13 +28,13 @@ all-local:
 		(cd ../../plugins/$$plugin && $(MAKE) $(AM_MAKEFLAGS) all);			\
 	done
 
-abi-builtin-plugins-calls.inc: Makefile
+abi-builtin-plugins-calls.inc: Makefile all-local
 	echo "" > $@
 	for plugin in $(BUILTIN_PLUGINS); do							\
 		echo "abipgn_"$$plugin"_register(pmi);" >> $@;					\
 	done
 
-abi-builtin-plugins-decls.inc: Makefile
+abi-builtin-plugins-decls.inc: Makefile all-local
 	echo "" > $@
 	for plugin in $(BUILTIN_PLUGINS); do							\
 		echo "extern \"C\" int abipgn_"$$plugin"_register(XAP_ModuleInfo *);" >> $@;	\

@@ -18,12 +18,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_abigimp_register
-#define abi_plugin_unregister abipgn_abigimp_unregister
-#define abi_plugin_supports_version abipgn_abigimp_supports_version
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -49,17 +43,25 @@
 #include "ut_sleep.h"
 #include <sys/types.h>  
 #include <sys/stat.h>
+#include <unistd.h>
 #ifdef WIN32
 #include <windows.h>
 #else
-#include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
 #include "ut_files.h"
 #endif
 
-
-ABI_PLUGIN_DECLARE(AbiGimp)
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_gimp_register
+#define abi_plugin_unregister abipgn_gimp_unregister
+#define abi_plugin_supports_version abipgn_gimp_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Gimp")
+#endif
 
 static bool AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d);
 
@@ -187,7 +189,7 @@ AbiGimp_RemoveFromMenus ()
 //
 // -----------------------------------------------------------------------
     
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 #if !defined(TOOLKIT_WIN)
@@ -209,7 +211,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -224,7 +226,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
     return 1; 

@@ -17,12 +17,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_hrtext_register
-#define abi_plugin_unregister abipgn_hrtext_unregister
-#define abi_plugin_supports_version abipgn_hrtext_supports_version
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,11 +34,21 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "xap_EncodingManager.h"
-
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
-
 #include "ut_hash.h"
+#include "xap_Module.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_hrtext_register
+#define abi_plugin_unregister abipgn_hrtext_unregister
+#define abi_plugin_supports_version abipgn_hrtext_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("HRText")
+#endif
 
 // our delimiters
 #define BOLD_DELIM           "*"
@@ -62,14 +66,10 @@
 
 // completely generic code to allow this to be a plugin
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("HRText")
-
 // we use a reference-counted sniffer
 static IE_Exp_HRText_Sniffer * m_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -88,7 +88,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -106,7 +106,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

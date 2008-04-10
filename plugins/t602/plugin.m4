@@ -1,15 +1,15 @@
 
-t602_pkgs="$gsf_req"
-
 T602_CFLAGS=
 T602_LIBS=
 
 if test "$enable_t602" == "yes"; then
 
-PKG_CHECK_MODULES(T602,[ $t602_pkgs ])
-
 T602_CFLAGS="$T602_CFLAGS "'${PLUGIN_CFLAGS}'
 T602_LIBS="$T602_LIBS "'${PLUGIN_LIBS}'
+
+if test "$enable_t602_builtin" == "yes"; then
+	T602_CFLAGS="$T602_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
 
 fi
 

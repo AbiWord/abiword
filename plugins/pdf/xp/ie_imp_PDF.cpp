@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "ut_string.h"
 #include "ut_types.h"
@@ -31,6 +32,17 @@
 #include <gsf/gsf-output-stdio.h>
 
 #include "xap_Module.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_pdf_register
+#define abi_plugin_unregister abipgn_pdf_unregister
+#define abi_plugin_supports_version abipgn_pdf_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("PDF")
+#endif
 
 static const struct
 {
@@ -218,12 +230,10 @@ public:
 /* General plugin stuff                                          */
 /*****************************************************************/
 
-ABI_PLUGIN_DECLARE("PDF")
-
 // we use a reference-counted sniffer
 static IE_Imp_PDF_Sniffer * m_impSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 	for (size_t i = 0; i < G_N_ELEMENTS(pdf_conversion_programs); i++)
@@ -255,7 +265,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 0;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
   mi->name = 0;
@@ -274,7 +284,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
   return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

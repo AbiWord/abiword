@@ -1,22 +1,13 @@
 
 SUBDIRS = xp
 
+if MSWRITE_BUILTIN
+noinst_LTLIBRARIES = mswrite.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = mswrite.la
-
-mswrite_la_LIBADD = \
-	xp/libxp.la
-
-mswrite_la_LDFLAGS = \
-	$(MSWRITE_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-mswrite_la_SOURCES = 
-
-EXTRA_DIST = \
-	plugin.m4
 
 if TOOLKIT_WIN
 
@@ -32,4 +23,20 @@ mswrite.dll: .libs/libmswrite.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MSWRITE_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+mswrite_la_LIBADD = \
+	xp/libxp.la
+
+mswrite_la_LDFLAGS = \
+	$(MSWRITE_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+mswrite_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

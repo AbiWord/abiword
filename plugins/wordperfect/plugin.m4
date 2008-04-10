@@ -7,6 +7,10 @@ WORDPERFECT_LIBS=
 
 if test "$enable_wordperfect" == "yes"; then
 
+if test "$enable_wordperfect_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `wordperfect' plugin])
+fi
+
 deps_pkgs="$wordperfect_pkgs"
 
 PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],

@@ -19,12 +19,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_loadbindings_register
-#define abi_plugin_unregister abipgn_loadbindings_unregister
-#define abi_plugin_supports_version abipgn_loadbindings_supports_version
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -64,7 +58,16 @@
 #include "xap_Dialog_Id.h"
 #include "ev_NamedVirtualKey.h"
 
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_loadbindings_register
+#define abi_plugin_unregister abipgn_loadbindings_unregister
+#define abi_plugin_supports_version abipgn_loadbindings_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
 ABI_PLUGIN_DECLARE (LoadBindings)
+#endif
 
 #define RES_TO_STATUS(a) ((a) ? 0 : -1)
 
@@ -218,7 +221,7 @@ static void LoadKeybindings(const char* uri)
 	}
 }
 
-ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi) 
+ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi) 
 {
 	mi->name = "LoadBindings";
 	mi->desc = "This allows Keybindings to be loaded from an Ascii file";
@@ -253,7 +256,7 @@ ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi) 
+ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi) 
 {
 	mi->name = 0;
 	mi->desc = 0;
@@ -265,7 +268,7 @@ ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release) 
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release) 
 {
 	return 1;
 }

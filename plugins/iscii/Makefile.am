@@ -1,19 +1,13 @@
 
 SUBDIRS = xp
 
+if ISCII_BUILTIN
+noinst_LTLIBRARIES = iscii.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = iscii.la
-
-iscii_la_LIBADD = \
-	xp/libxp.la
-
-iscii_la_LDFLAGS = \
-	$(PLUGIN_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-iscii_la_SOURCES = 
 
 if TOOLKIT_WIN
 
@@ -29,4 +23,20 @@ iscii.dll: .libs/libiscii.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+iscii_la_LIBADD = \
+	xp/libxp.la
+
+iscii_la_LDFLAGS = \
+	$(ISCII_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+iscii_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

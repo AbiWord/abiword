@@ -18,12 +18,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_gdict_register
-#define abi_plugin_unregister abipgn_gdict_unregister
-#define abi_plugin_supports_version abipgn_gdict_supports_version
-#endif
-
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -44,6 +38,17 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_gdict_register
+#define abi_plugin_unregister abipgn_gdict_unregister
+#define abi_plugin_supports_version abipgn_gdict_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Gdict")
+#endif
 
 static void
 GDict_exec (const char * search)
@@ -366,9 +371,7 @@ GDict_addToMenus()
 //
 // -----------------------------------------------------------------------
 
-ABI_PLUGIN_DECLARE(Gdict)
-
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     mi->name = "GDict plugin";
@@ -384,7 +387,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -399,7 +402,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
     return 1; 

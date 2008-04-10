@@ -18,12 +18,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_google_register
-#define abi_plugin_unregister abipgn_google_unregister
-#define abi_plugin_supports_version abipgn_google_supports_version
-#endif
-
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -36,6 +30,17 @@
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
 #include "ut_string_class.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_google_register
+#define abi_plugin_unregister abipgn_google_unregister
+#define abi_plugin_supports_version abipgn_google_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Google")
+#endif
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
@@ -201,9 +206,7 @@ Google_addToMenus()
 //
 // -----------------------------------------------------------------------
 
-ABI_PLUGIN_DECLARE	("AbiGoogle")
-
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     mi->name = "Google plugin";
@@ -218,7 +221,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -233,7 +236,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
     return 1; 

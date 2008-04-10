@@ -17,12 +17,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_freetranslation_register
-#define abi_plugin_unregister abipgn_freetranslation_unregister
-#define abi_plugin_supports_version abipgn_freetranslation_supports_version
-#endif
-
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -39,6 +33,17 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Language.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_freetranslation_register
+#define abi_plugin_unregister abipgn_freetranslation_unregister
+#define abi_plugin_supports_version abipgn_freetranslation_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("FreeTranslation")
+#endif
 
 // FreeTranslation offers a similar service to BabelFish
 // but has a way to return just the translated string
@@ -366,9 +371,7 @@ static void FreeTranslation_addToMenus()
 // 
 // -----------------------------------------------------------------------
 
-ABI_PLUGIN_DECLARE ("AbiFreeTranslation")
-
-ABI_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 {
 	mi->name = "FreeTranslation plugin";
 	mi->desc = "On-line Translation support for AbiWord. Based upon the FreeTranslation translation tool (www.freetranslation.com), only for personal, non-commercial use only.";
@@ -383,7 +386,7 @@ ABI_FAR_CALL int abi_plugin_register(XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
 	mi->desc = 0;
@@ -397,7 +400,7 @@ ABI_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
 }
 
 
-ABI_FAR_CALL int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor,
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor,
 			UT_uint32 release)
 {
 	return 1;

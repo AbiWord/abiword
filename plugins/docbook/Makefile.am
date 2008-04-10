@@ -1,22 +1,13 @@
 
 SUBDIRS = xp
 
+if DOCBOOK_BUILTIN
+noinst_LTLIBRARIES = docbook.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = docbook.la
-
-docbook_la_LIBADD = \
-	xp/libxp.la
-
-docbook_la_LDFLAGS = \
-	$(DOCBOOK_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-docbook_la_SOURCES = 
-
-EXTRA_DIST = \
-	plugin.m4
 
 if TOOLKIT_WIN
 
@@ -32,4 +23,20 @@ docbook.dll: .libs/libdocbook.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(DOCBOOK_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+docbook_la_LIBADD = \
+	xp/libxp.la
+
+docbook_la_LDFLAGS = \
+	$(DOCBOOK_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+docbook_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

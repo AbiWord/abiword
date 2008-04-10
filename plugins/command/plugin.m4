@@ -8,6 +8,10 @@ COMMAND_LIBS=
 
 if test "$enable_command" == "yes"; then
 
+if test "$enable_command_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `command' plugin])
+fi
+
 PKG_CHECK_MODULES(COMMAND,[ $command_pkgs ])
 
 # stolen from the original plugin.m4 in abiword-plugins

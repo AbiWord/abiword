@@ -1,22 +1,13 @@
 
 SUBDIRS = win
 
+if WIN32GFX_BUILTIN
+noinst_LTLIBRARIES = win32gfx.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = win32gfx.la
-
-win32gfx_la_LIBADD = \
-	win/libwin.la
-
-win32gfx_la_LDFLAGS = \
-	$(WIN32GFX_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-win32gfx_la_SOURCES = 
-
-EXTRA_DIST = \
-	plugin.m4
 
 if TOOLKIT_WIN
 
@@ -32,4 +23,20 @@ win32gfx.dll: .libs/libwin32gfx.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WIN32GFX_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+win32gfx_la_LIBADD = \
+	win/libwin.la
+
+win32gfx_la_LDFLAGS = \
+	$(WIN32GFX_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+win32gfx_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

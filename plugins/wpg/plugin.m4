@@ -6,6 +6,10 @@ WPG_LIBS=
 
 if test "$enable_wpg" == "yes"; then
 
+if test "$enable_wpg_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `wpg' plugin])
+fi
+
 PKG_CHECK_MODULES(WPG, [ $wpg_pkgs ])
 
 WPG_CFLAGS="$WPG_CFLAGS "'${PLUGIN_CFLAGS}'

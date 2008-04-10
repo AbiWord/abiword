@@ -1,15 +1,15 @@
 
-wml_pkgs="$gsf_req"
-
 WML_CFLAGS=
 WML_LIBS=
 
 if test "$enable_wml" == "yes"; then
 
-PKG_CHECK_MODULES(WML,[ $wml_pkgs ])
-
 WML_CFLAGS="$WML_CFLAGS "'${PLUGIN_CFLAGS}'
 WML_LIBS="$WML_LIBS "'${PLUGIN_LIBS}'
+
+if test "$enable_wml_builtin" == "yes"; then
+	WML_CFLAGS="$WML_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
 
 fi
 

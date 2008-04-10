@@ -20,12 +20,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_latex_register
-#define abi_plugin_unregister abipgn_latex_unregister
-#define abi_plugin_supports_version abipgn_latex_supports_version
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -48,22 +42,29 @@
 #include "fd_Field.h"
 #include "ie_Table.h"
 #include "ut_locale.h"
-
 #include "ut_string_class.h"
+#include "xap_Module.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_latex_register
+#define abi_plugin_unregister abipgn_latex_unregister
+#define abi_plugin_supports_version abipgn_latex_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("LaTeX")
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
 
 // completely generic code to allow this to be a plugin
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("LaTeX")
-
 // we use a reference-counted sniffer
 static IE_Exp_LaTeX_Sniffer * m_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -82,7 +83,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -100,7 +101,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

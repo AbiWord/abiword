@@ -30,12 +30,6 @@
  * own slide show theme. It's totally simple, and it's totally standards-driven.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_s5_register
-#define abi_plugin_unregister abipgn_s5_unregister
-#define abi_plugin_supports_version abipgn_s5_supports_version
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -64,8 +58,19 @@
 #include "xap_App.h"
 #include "ut_path.h"
 #include "ie_exp_HTML.h"
-
+#include "xap_Module.h"
 #include "ut_string_class.h"
+
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_s5_register
+#define abi_plugin_unregister abipgn_s5_unregister
+#define abi_plugin_supports_version abipgn_s5_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("S5")
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -106,14 +111,10 @@ public:
 
 // completely generic code to allow this to be a plugin
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("S5")
-
 // we use a reference-counted sniffer
 static IE_Exp_S5_Sniffer * m_sniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -132,7 +133,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -150,7 +151,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

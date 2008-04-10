@@ -19,17 +19,12 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_hancom_register
-#define abi_plugin_unregister abipgn_hancom_unregister
-#define abi_plugin_supports_version abipgn_hancom_supports_version
-#endif
-
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-msole.h>
 
 #include <memory.h>
+#include "xap_Module.h"
 #include "ie_imp.h"
 #include "ut_types.h"
 #include "ut_string.h"
@@ -37,8 +32,18 @@
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
 
-static const UT_Byte hwpSignature[] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_hancom_register
+#define abi_plugin_unregister abipgn_hancom_unregister
+#define abi_plugin_supports_version abipgn_hancom_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+ABI_PLUGIN_DECLARE("Hancom")
+#endif
 
+static const UT_Byte hwpSignature[] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
 
 // -------------------------------------------------------------------------------------
 // The importer
@@ -168,14 +173,10 @@ class ABI_EXPORT IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
 // -------------------------------------------------------------------------------------
 // Plugin Code
 
-#include "xap_Module.h"
-
-ABI_PLUGIN_DECLARE("Hancom")
-
 // we use a reference-counted sniffer
 static IE_Imp_Hancom_Sniffer * m_impSniffer = 0;
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     if (!m_impSniffer)
@@ -193,7 +194,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
     mi->name = 0;
@@ -211,7 +212,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     return 1;
 }
 
-ABI_FAR_CALL
+ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
                                  UT_uint32 release)
 {

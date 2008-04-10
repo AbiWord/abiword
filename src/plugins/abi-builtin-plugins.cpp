@@ -24,7 +24,8 @@
 
 void abi_register_builtin_plugins()
 {
-	// TODO
+	// TODO at the moment the statically linked plugins don't show up anywhere
+	// they just work.
 	XAP_ModuleInfo mi;
 	XAP_ModuleInfo *pmi;
 

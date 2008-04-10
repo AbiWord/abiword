@@ -1,22 +1,13 @@
 
 SUBDIRS = xp
 
+if APPLIX_BUILTIN
+noinst_LTLIBRARIES = applix.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = applix.la
-
-applix_la_LIBADD = \
-	xp/libxp.la
-
-applix_la_LDFLAGS = \
-	$(APPLIX_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-applix_la_SOURCES = 
-
-EXTRA_DIST = \
-	plugin.m4
 
 if TOOLKIT_WIN
 
@@ -32,4 +23,20 @@ applix.dll: .libs/libapplix.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(APPLIX_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif # APPLIX_BUILTIN
+
+applix_la_LIBADD = \
+	xp/libxp.la
+
+applix_la_LDFLAGS = \
+	$(APPLIX_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+applix_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

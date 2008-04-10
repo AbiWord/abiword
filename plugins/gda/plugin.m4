@@ -6,6 +6,10 @@ GDA_LIBS=
 
 if test "$enable_gda" == "yes"; then
 
+if test "$enable_gda_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `gda' plugin])
+fi
+
 AC_MSG_CHECKING([for gtk toolkit])
 if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([ok])

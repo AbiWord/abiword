@@ -11,10 +11,14 @@ else
 	AC_MSG_ERROR([bmp plugin: only supported on win32])
 fi
 
-# TODO check for libpng
+# TODO check for libpng, well abiword links to it anyways
 
 BMP_CFLAGS="$BMP_CFLAGS "'${PLUGIN_CFLAGS}'
 BMP_LIBS="$BMP_LIBS "'${PLUGIN_LIBS} -lpng13'
+
+if test "$enable_bmp_builtin" == "yes"; then
+	BMP_CFLAGS="$BMP_CFLAGS -DABI_PLUGIN_BUILTIN"
+fi
 
 fi
 

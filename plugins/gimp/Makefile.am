@@ -1,19 +1,13 @@
 
 SUBDIRS = xp
 
+if GIMP_BUILTIN
+noinst_LTLIBRARIES = gimp.la
+
+else
+
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = gimp.la
-
-gimp_la_LIBADD = \
-	xp/libxp.la
-
-gimp_la_LDFLAGS = \
-	$(PLUGIN_LIBS) \
-	-avoid-version \
-	-module \
-	-no-undefined
-
-gimp_la_SOURCES = 
 
 if TOOLKIT_WIN
 
@@ -29,4 +23,20 @@ gimp.dll: .libs/libgimp.a
 	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
+
+endif
+
+gimp_la_LIBADD = \
+	xp/libxp.la
+
+gimp_la_LDFLAGS = \
+	$(GIMP_LIBS) \
+	-avoid-version \
+	-module \
+	-no-undefined
+
+gimp_la_SOURCES = 
+
+EXTRA_DIST = \
+	plugin.m4
 

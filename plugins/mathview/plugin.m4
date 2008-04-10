@@ -10,6 +10,10 @@ AC_PROG_YACC
 
 if test "$enable_mathview" == "yes"; then
 
+if test "$enable_mathview_builtin" == "yes"; then
+AC_MSG_ERROR([static linking is not supported for the `mathview' plugin])
+fi
+
 PKG_CHECK_MODULES(MATHVIEW,[ $mathview_pkgs ])
 
 MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS "'${PLUGIN_CFLAGS}'
