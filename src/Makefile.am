@@ -1,5 +1,5 @@
 
-SUBDIRS = af text wp
+SUBDIRS = af plugins text wp
 
 libabiword_cpp = 
 opt_libs = 
@@ -39,9 +39,9 @@ libabiword_2_7_la_LDFLAGS = \
 libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
 	af/libaf.la \
+	plugins/libplugins.la \
 	text/libtext.la \
-	wp/libwp.la \
-	../plugins/libplugins.la
+	wp/libwp.la
 
 libabiword_2_7_la_DEPENDENCIES = \
 	$(libabiword_2_7_la_LIBADD)

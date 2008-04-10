@@ -71,6 +71,7 @@
 #include "xap_ModuleManager.h"
 #include "ev_EditMethod.h"
 #include "xap_Module.h"
+#include "abi-builtin-plugins.h"
 
 #include "ap_Win32Resources.rc2"
 #include "ap_Clipboard.h"
@@ -338,6 +339,8 @@ bool AP_Win32App::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	// load the all Plugins from the correct directory
 	//////////////////////////////////////////////////////////////////
+
+	abi_register_builtin_plugins();
 
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);

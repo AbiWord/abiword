@@ -20,12 +20,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef ABI_PLUGIN_BUILTIN
-#define abi_plugin_register abipgn_opendocument_register
-#define abi_plugin_unregister abipgn_opendocument_unregister
-#define abi_plugin_supports_version abipgn_opendocument_supports_version
-#endif
-
 // External includes
 #include <gsf/gsf-utils.h>
 #include <xap_Module.h>
@@ -34,6 +28,15 @@
 #include "../../imp/xp/ie_imp_OpenDocument_Sniffer.h"
 #include "../../exp/xp/ie_exp_OpenDocument_Sniffer.h"
 
+#ifdef ABI_PLUGIN_BUILTIN
+#define abi_plugin_register abipgn_opendocument_register
+#define abi_plugin_unregister abipgn_opendocument_unregister
+#define abi_plugin_supports_version abipgn_opendocument_supports_version
+// dll exports break static linking
+#define ABI_BUILTIN_FAR_CALL extern "C"
+#else
+#define ABI_BUILTIN_FAR_CALL ABI_FAR_CALL
+#endif
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -50,7 +53,7 @@ static IE_Exp_OpenDocument_Sniffer* pExp_sniffer = 0;
 /**
  * Register the OpenDocument plugin
  */
-ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 {
     if (!pImp_sniffer) {
         pImp_sniffer = new IE_Imp_OpenDocument_Sniffer ();
@@ -77,7 +80,7 @@ ABI_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
 /**
  * Unregister the OpenDocument plugin
  */
-ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
+ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
   mi->name    = 0;
   mi->desc    = 0;
@@ -100,7 +103,7 @@ ABI_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 /**
  * 
  */
-ABI_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
                  UT_uint32 release)
 {
   return 1;

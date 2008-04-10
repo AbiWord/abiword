@@ -65,6 +65,7 @@
 #include "xap_Prefs.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_Toolbar_Layouts.h"
+#include "abi-builtin-plugins.h"
 
 #include "xav_View.h"
 
@@ -403,6 +404,8 @@ bool AP_CocoaApp::initialize(void)
 	UT_ASSERT(m_pCocoaMenu);
 	if (!m_pCocoaMenu)
 		return false;
+
+	abi_register_builtin_plugins();
 
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);

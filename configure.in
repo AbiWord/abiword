@@ -450,7 +450,7 @@ WP_CPPFLAGS_='
   ${IMPEXP_CPPFLAGS} 
   -I${top_srcdir}/src/wp/ap/${TOOLKIT} 
   -I${top_srcdir}/src/wp/ap/xp
-  -I${top_srcdir}/plugins'
+  -I${top_srcdir}/src/plugins'
 WP_CPPFLAGS=
 for f in $(echo $WP_CPPFLAGS_); do WP_CPPFLAGS="$WP_CPPFLAGS $f"; done
 AC_SUBST([WP_CPPFLAGS])
@@ -673,6 +673,7 @@ AC_OUTPUT(
   src/af/xap/gtk/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
+  src/plugins/Makefile
   src/text/Makefile
   src/text/fmt/Makefile
   src/text/fmt/gtk/Makefile
