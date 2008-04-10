@@ -269,18 +269,9 @@ size_t UT_String_findRCh(const UT_String &st, char ch)
 UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
 			      va_list      args1)
 {
-  char *buffer;
-  va_list args2;
-
-  G_VA_COPY (args2, args1);
-
-  buffer = new char [ g_printf_string_upper_bound (format, args1) ];
-  vsprintf (buffer, format, args2);
-  va_end (args2);
-
+  char *buffer = g_strdup_vprintf(format, args1);
   inStr = buffer;
-
-  delete [] buffer;
+  g_free(buffer);
 
   return inStr;
 }
