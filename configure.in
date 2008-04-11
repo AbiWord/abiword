@@ -672,6 +672,14 @@ for plugin in `echo $BUILTIN_PLUGINS`; do
 	eval $(echo $variable)="yes"
 done
 
+# this creates the list of .la files to link statically
+# used in src/plugins/Makefile.am
+BUILTIN_PLUGINS_LA=
+for plugin in `echo $BUILTIN_PLUGINS`; do
+	BUILTIN_PLUGINS_LA="$BUILTIN_PLUGINS_LA ../../plugins/$plugin/$plugin.la"
+done
+AC_SUBST([BUILTIN_PLUGINS_LA])
+
 m4_include([plugin-builtin.m4])
 
 m4_include([plugin-configure.m4])

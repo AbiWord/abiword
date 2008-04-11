@@ -5,7 +5,7 @@ libplugins_la_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
 # builtin plugins' la files
-libplugins_la_LIBADD = $(foreach plugin, $(BUILTIN_PLUGINS), ../../plugins/$(plugin)/$(plugin).la)
+libplugins_la_LIBADD = $(BUILTIN_PLUGINS_LA)
 
 libplugins_la_SOURCES = \
 	abi-builtin-plugins.cpp \
