@@ -100,7 +100,7 @@ AC_ARG_ENABLE([default-plugins],
 ])
 
 AC_ARG_ENABLE([plugins], 
-	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Can also be used to disable plugin loading support, resulting in a smaller binary size.])], 
+	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Use --disable-plugins to disable plugin loading support, resulting in a smaller binary size.])], 
 [
 	if test "$enableval" == "no"; then
 		abi_cv_disable_exports="yes"
