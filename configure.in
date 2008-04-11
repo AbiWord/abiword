@@ -355,6 +355,33 @@ if test "$abi_cv_gucharmap" == "yes"; then
 fi
 
 #
+# Compiler settings (from gnumeric's configure.in)
+#
+
+AC_LANG_PUSH(C++)
+if test "$GCC" = "yes"; then
+	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
+		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
+		      -Wunused -Wpointer-arith -Wshadow -Woverloaded-virtual; do
+		SAVE_CXXFLAGS="$CXXFLAGS"
+		CXXFLAGS="$CXXFLAGS $option"
+		AC_MSG_CHECKING([whether gcc understands $option])
+		AC_TRY_COMPILE([], [],
+			has_option=yes,
+			has_option=no,)
+		if test $has_option = no; then
+		  CXXFLAGS="$SAVE_CXXFLAGS"
+		fi
+		AC_MSG_RESULT($has_option)
+		unset has_option
+		unset SAVE_CXXFLAGS
+	done
+	unset option
+fi
+AC_LANG_POP
+AC_SUBST(CXXFLAGS)
+
+#
 # Dependency tests
 #
 
@@ -650,20 +677,12 @@ m4_include([plugin-builtin.m4])
 
 m4_include([plugin-configure.m4])
 
-#
-# abiword compat settings
-# cut down over the time
-#
-
 # put all deps on a single line for the .pc file
 ABIWORD_REQUIRED_PKGS=
 for dep in `echo $deps_pkgs`; do
 	ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $dep"
 done
 AC_SUBST(ABIWORD_REQUIRED_PKGS)
-
-AM_CONDITIONAL([SCRIPT], false)
-
 
 AC_OUTPUT(
   libabiword.pc
