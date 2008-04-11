@@ -692,7 +692,7 @@ void  fg_FillType::setDocLayout(FL_DocLayout * pDocLayout)
 }
 
 /*!
- * Set that the fill should be transperent if we're printing.
+ * Set that the fill should be transparent if we're printing.
  */
 void fg_FillType::markTransparentForPrint(void)
 {
