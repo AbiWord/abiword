@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -175,7 +177,6 @@ public:
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
 	SET_GATHER			(GrammarCheck,		bool); 
- 	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);
@@ -192,11 +193,15 @@ public:
 	SET_GATHER			(PrefsAutoSave,			bool);
 	SET_GATHER			(ViewShowRuler,			bool);
 	SET_GATHER			(ViewShowStatusBar,		bool);
-	SET_GATHER			(ViewAll,			bool);
+	SET_GATHER			(ViewAll,				bool);
 	SET_GATHER			(ViewHiddenText,		bool);
 	SET_GATHER			(ViewUnprintable,		bool);
-	SET_GATHER			(EnableSmoothScrolling,		bool);
+	SET_GATHER			(EnableSmoothScrolling,	bool);
 
+ 	SET_GATHER			(SmartQuotes,   		bool);
+ 	SET_GATHER			(CustomSmartQuotes,		bool);
+	SET_GATHER			(OuterQuoteStyle,		gint);
+	SET_GATHER			(InnerQuoteStyle,		gint);
 		
 	
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
@@ -219,6 +224,10 @@ public:
 	bool			m_boolViewShowStatusBar;
 	bool			m_boolViewUnprintable;
 
+ 	bool			m_boolSmartQuotes;
+ 	bool			m_boolCustomSmartQuotes;
+	gint			m_gintOuterQuoteStyle;
+	gint			m_gintInnerQuoteStyle;
 	
 #undef SET_GATHER
 

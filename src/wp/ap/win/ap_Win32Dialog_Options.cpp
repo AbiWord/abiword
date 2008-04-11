@@ -285,12 +285,20 @@ void AP_Win32Dialog_Options::_set##button(const bool b) { \
 }
 
 // dummy implementations
-#define DEFINE_GET_SET_BOOL_DUMMY(Bool)	\
-bool	AP_Win32Dialog_Options::_gather##Bool(void) { \
-		return m_bool##Bool;					\
-} \
-void	AP_Win32Dialog_Options::_set##Bool(bool b) { \
-	m_bool##Bool = b;					\
+#define DEFINE_GET_SET_BOOL_DUMMY(Bool)						\
+bool	AP_Win32Dialog_Options::_gather##Bool(void) { 		\
+		return m_bool##Bool;								\
+} 															\
+void	AP_Win32Dialog_Options::_set##Bool(bool b) { 		\
+	m_bool##Bool = b;										\
+}
+
+#define DEFINE_GET_SET_GINT_DUMMY(GInt)						\
+gint	AP_Win32Dialog_Options::_gather##GInt(void) { 		\
+		return m_gint##GInt;								\
+} 															\
+void	AP_Win32Dialog_Options::_set##GInt(gint b) { 		\
+	m_gint##GInt = b;										\
 }
 
 
@@ -308,16 +316,6 @@ DEFINE_GET_SET_BOOL(PG_SPELL,SpellMainOnly)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellUppercase)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellNumbers)
 DEFINE_GET_SET_BOOL(PG_SPELL,GrammarCheck)
-// DEFINE_GET_SET_BOOL(PG_GENERAL,SmartQuotes)
-
-bool AP_Win32Dialog_Options::_gatherSmartQuotes() {
-
-}
-
-void AP_Win32Dialog_Options::_setSmartQuotes(bool) {
-
-}
-
 
 /* Not used */
 DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
@@ -328,6 +326,10 @@ DEFINE_GET_SET_BOOL_DUMMY (ViewShowRuler)
 DEFINE_GET_SET_BOOL_DUMMY (ViewShowStatusBar)
 DEFINE_GET_SET_BOOL_DUMMY (ViewUnprintable)
 
+DEFINE_GET_SET_BOOL_DUMMY (SmartQuotes);
+DEFINE_GET_SET_BOOL_DUMMY (CustomSmartQuotes);
+DEFINE_GET_SET_GINT_DUMMY (OuterQuoteStyle);
+DEFINE_GET_SET_GINT_DUMMY (InnerQuoteStyle);
 
 #undef DEFINE_GET_SET_BOOL
 
