@@ -69,7 +69,7 @@ static const char* AbiGimp_MenuLabel = "&Edit Image via GIMP";
 static const char* AbiGimp_MenuTooltip = "Opens the selected image in the GIMP for editing.";
 
 #ifdef WIN32
-BOOL CreateChildProcess(char * appName, char *cmdline,
+static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,
 				STARTUPINFO *startInfo);
 #endif
@@ -469,7 +469,7 @@ AbiGimp_invoke(AV_View* v, EV_EditMethodCallData *d)
 
 #ifdef WIN32
 // our equivalent of fork()
-BOOL CreateChildProcess(char * appName, char *cmdline,
+static BOOL CreateChildProcess(char * appName, char *cmdline,
 				PROCESS_INFORMATION *procInfo,
 				STARTUPINFO *startInfo) 
 {
