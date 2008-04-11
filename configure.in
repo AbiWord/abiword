@@ -379,7 +379,6 @@ if test "$GCC" = "yes"; then
 	unset option
 fi
 AC_LANG_POP
-AC_SUBST(CXXFLAGS)
 
 #
 # Dependency tests
