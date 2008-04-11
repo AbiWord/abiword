@@ -196,7 +196,7 @@ AC_ARG_ENABLE([emacs-keybinding],
 [
 	abi_cv_emacs_keybinding="$enableval"
 ], [
-	abi_cv_emacs_keybinding="no"
+	abi_cv_emacs_keybinding="yes"
 ])
 
 AC_ARG_ENABLE([vi-keybinding], 
@@ -204,7 +204,7 @@ AC_ARG_ENABLE([vi-keybinding],
 [
 	abi_cv_vi_keybinding="$enableval"
 ], [
-	abi_cv_vi_keybinding="no"
+	abi_cv_vi_keybinding="yes"
 ])
 
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
