@@ -38,10 +38,25 @@ libabiword_2_7_la_LDFLAGS = \
 
 libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
-	af/libaf.la \
 	plugins/libplugins.la \
-	text/libtext.la \
-	wp/libwp.la
+	text/fmt/xp/libxp.la \
+	text/ptbl/xp/libxp.la \
+	wp/ap/$(TOOLKIT)/lib$(TOOLKIT).la \
+	wp/ap/xp/libxp.la \
+	wp/impexp/$(TOOLKIT)/lib$(TOOLKIT).la \
+	wp/impexp/xp/libxp.la \
+	af/xap/$(TOOLKIT)/lib$(TOOLKIT).la \
+	af/xap/xp/libxp.la \
+	af/gr/$(TOOLKIT)/lib$(TOOLKIT).la \
+	af/gr/xp/libxp.la \
+	af/util/$(PLATFORM)/lib$(PLATFORM).la \
+	af/util/xp/libxp.la \
+	af/ev/$(TOOLKIT)/lib$(TOOLKIT).la \
+	af/ev/xp/libxp.la
+
+if TOOLKIT_GTK
+libabiword_2_7_la_LIBADD += text/fmt/gtk/libgtk.la
+endif
 
 libabiword_2_7_la_DEPENDENCIES = \
 	$(libabiword_2_7_la_LIBADD)
