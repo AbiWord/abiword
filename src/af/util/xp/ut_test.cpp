@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
  
-
-
 #include "ut_test.h"
 #include "ut_base64.h"
 

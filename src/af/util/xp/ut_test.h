@@ -17,10 +17,12 @@
  * 02111-1307, USA.
  */
  
-
-
 #ifndef UT_TEST_H
 #define UT_TEST_H
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 // UT_TEST_H governs multiple inclusion of this header file
 // 
