@@ -11,7 +11,6 @@ libxp_la_SOURCES = \
 	IOClientHandler.h \
 	IOHandler.h \
 	IOServerHandler.h \
-	IOServiceThread.h \
 	Session.h \
 	Synchronizer.cpp \
 	Synchronizer.h \
