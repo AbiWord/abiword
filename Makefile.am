@@ -24,7 +24,10 @@ pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 
 EXTRA_DIST = \
 	AUTHORS \
+	BiDiReadme.txt \
+	BUILD.TXT \
 	COPYING	\
+	COPYRIGHT.TXT \
 	INSTALL \
 	NEWS \
 	README \
