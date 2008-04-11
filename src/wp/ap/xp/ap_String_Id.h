@@ -373,6 +373,9 @@ dcl(DLG_Options_Label_Grammar, "Automatic Grammar Checking")
 dcl(DLG_Options_Label_GrammarCheck, "Check &grammar as you type")
 
 dcl(DLG_Options_Label_SmartQuotes, "Enable smart (curly) quotes")
+dcl(DLG_Options_Label_CustomSmartQuotes, "Use custom smart quote style")
+dcl(DLG_Options_Label_OuterQuoteStyle, "Outer (double) quote style")
+dcl(DLG_Options_Label_InnerQuoteStyle, "Inner (single) quote style")
 										      // should be merged one day
 dcl(DLG_Options_Label_SpellSuggest, 	"A&lways suggest corrections")
 dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")

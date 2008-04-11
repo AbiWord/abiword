@@ -789,170 +789,203 @@ static const char* cjk_fontsizes[]=
 	http://www.unicode.org/unicode/onlinedat/languages.html 
    using lynx, sed and hands of VH.
 */
+const XAP_SmartQuoteStyle XAP_EncodingManager::smartQuoteStyles[] =
+{
+	{ UCS_LDBLQUOTE, UCS_RDBLQUOTE }, // 0 English double quotes
+	{ UCS_LQUOTE, UCS_RQUOTE }, // 1 English single quotes
+	{ ((UT_UCSChar)0x00ab), ((UT_UCSChar)0x00bb) }, // 2 French double
+	{ ((UT_UCSChar)0x00bb), ((UT_UCSChar)0x00ab) }, // 3 Danish double
+	{ ((UT_UCSChar)0x00bb), ((UT_UCSChar)0x00bb) }, // 4
+	{ UCS_LQUOTE, ((UT_UCSChar)0x201a) }, // 5
+	{ UCS_RQUOTE, UCS_RQUOTE }, // 6
+	{ ((UT_UCSChar)0x201a), UCS_LQUOTE }, // 7 German single
+	{ ((UT_UCSChar)0x201a), UCS_RQUOTE }, // 8
+	{ UCS_LDBLQUOTE, ((UT_UCSChar)0x201e) }, // 9
+	{ UCS_RDBLQUOTE, UCS_RDBLQUOTE }, // 10
+	{ ((UT_UCSChar)0x201e), UCS_RDBLQUOTE }, // 11 German double
+	{ ((UT_UCSChar)0x201e), UCS_LDBLQUOTE }, // 12
+	{ ((UT_UCSChar)0x2039), ((UT_UCSChar)0x203a) }, // 13 French single
+	{ ((UT_UCSChar)0x203a), ((UT_UCSChar)0x2039) }, // 14 reverse French single
+	{ ((UT_UCSChar)0x300c), ((UT_UCSChar)0x300d) }, // 15 Dark corner bracket
+	{ ((UT_UCSChar)0x300e), ((UT_UCSChar)0x300f) }, // 16 White corner bracket
+	{ UCS_RDBLQUOTE, UCS_LDBLQUOTE }, // 17 - Same as English, but RTL for Hebrew
+	{ '\"', '\"' }, // 18 - ASCII double quote
+	{ '\'', '\'' }, // 19 - ASCII single quote
+	{ 0, 0 } // End of the list
+};
+
+/* This structure is built from 
+	http://www.unicode.org/unicode/onlinedat/languages.html 
+   using lynx, sed and hands of VH.
+*/
 const XAP_LangInfo XAP_EncodingManager::langinfo[] =
 {
-    {{   "Abkhazian",         "ab",     "",       "",                                  ""      }},
-    {{   "Afar",              "aa",     "",       "",                                  ""      }},
-    {{   "Afrikaans",         "af",     "0x0036", "",                                  ""      }},
-    {{   "Albanian",          "sq",     "0x001c", "langAlbanian",                      "36"    }},
-    {{   "Amharic",           "am",     "",       "langAmharic",                       "85"    }},
-    {{   "Arabic",            "ar",     "0x0001", "langArabic",                        "12"    }},
-    {{   "Armenian",          "hy",     "",       "langArmenian",                      "51"    }},
-    {{   "Assamese",          "as",     "",       "langAssamese",                      "68"    }},
-    {{   "Aymara",            "ay",     "",       "langAymara",                        "134"   }},
-    {{   "Azerbaijani",       "az",     "",       "langAzerbaijani(Latin)",            "49"    }},
-    {{   "Azerbaijani",       "az",     "",       "langAzerbaijanAr(Arabic)",          "50"    }},
-    {{   "Bashkir",           "ba",     "",       "",                                  ""      }},
-    {{   "Basque",            "eu",     "0x002d", "langBasque",                        "129"   }},
-    {{   "Bengali",           "bn",     "",       "langBengali",                       "67"    }},
-    {{   "Bangla",            "bn",     "",       "langBengali",                       "67"    }},
-    {{   "Bhutani",           "dz",     "",       "langDzongkha",                      "137"   }},
-    {{   "Bihari",            "bh",     "",       "",                                  ""      }},
-    {{   "Bislama",           "bi",     "",       "",                                  ""      }},
-    {{   "Breton",            "br",     "",       "langBreton",                        "142"   }},
-    {{   "Bulgarian",         "bg",     "0x0002", "langBulgarian",                     "44"    }},
-    {{   "Burmese",           "my",     "",       "langBurmese",                       "77"    }},
-    {{   "Byelorussian",      "be",     "0x0023", "langByelorussian",                  "46"    }},
-    {{   "Cambodian",         "km",     "",       "langKhmer",                         "78"    }},
-    {{   "Catalan",           "ca",     "0x0003", "langCatalan",                       "130"   }},
-    {{   "Chewa",             "",       "",       "langChewa",                         "92"    }},
-    {{   "Chinese",           "zh",     "0x0004", "langTradChinese",                   "19"    }},
-    {{   "Chinese",           "zh",     "0x0004", "langSimpChinese",                   "33"    }},
-    {{   "Cornish",	          "kw",     "",       "",                                  ""      }},	// Jordi 19/10/2002 
-    {{   "Corsican",          "co",     "",       "",                                  ""      }},
-    {{   "Croatian",          "hr",     "0x001a", "langCroatian",                      "18"    }},
-    {{   "Czech",             "cs",     "0x0005", "langCzech",                         "38"    }},
-    {{   "Danish",            "da",     "0x0006", "langDanish",                        "7"     }},
-    {{   "Dutch",             "nl",     "0x0013", "langDutch",                         "4"     }},
-    {{   "English",           "en",     "0x0009", "langEnglish",                       "0"     }},
-    {{   "Esperanto",         "eo",     "",       "langEsperanto",                     "94"    }},
-    {{   "Estonian",          "et",     "0x0025", "langEstonian",                      "27"    }},
-    {{   "Faeroese",          "fo",     "0x0038", "langFaeroese",                      "30"    }},
-    {{   "Farsi",             "fa",     "0x0029", "langFarsi",                         "31"    }},
-    {{   "Farsi",             "fa",     "0x0029", "langPersian",                       "31"    }},
-    {{   "Fiji",              "fj",     "",       "",                                  ""      }},
-    {{   "Finnish",           "fi",     "0x000b", "langFinnish",                       "13"    }},
-    {{   "Flemish",           "",       "",       "langFlemish",                       "34"    }},
-    {{   "French",            "fr",     "0x000c", "langFrench",                        "1"     }},
-    {{   "Frisian",           "fy",     "",       "",                                  ""      }},
-    {{   "Galician",          "gl",     "",       "",                                  ""      }},
-    {{   "Galla",             "",       "",       "langGalla",                         "87"    }},
-    {{   "Georgian",          "ka",     "",       "langGeorgian",                      "52"    }},
-    {{   "German",            "de",     "0x0007", "langGerman",                        "2"     }},
-    {{   "Greek",             "el",     "0x0008", "langGreek",                         "14"    }},
-    {{   "Greenlandic",       "kl",     "",       "",                                  ""      }},
-    {{   "Guarani",           "gn",     "",       "langGuarani",                       "133"   }},
-    {{   "Gujarati",          "gu",     "",       "langGujarati",                      "69"    }},
-    {{   "Hausa",             "ha",     "",       "",                                  ""      }},
-    {{   "Hebrew",            "he",     "0x000d", "langHebrew",                        "10"    }},
-    {{   "Hebrew",            "iw",     "0x000d", "langHebrew",                        "10"    }},
-    {{   "Hindi",             "hi",     "0x0039", "langHindi",                         "21"    }},
-    {{   "Hungarian",         "hu",     "0x000e", "langHungarian",                     "26"    }},
-    {{   "Icelandic",         "is",     "0x000f", "langIcelandic",                     "15"    }},
-    {{   "Indonesian",        "in",     "0x0021", "langIndonesian",                    "81"    }},
-    {{   "Indonesian",        "id",     "0x0021", "langIndonesian",                    "81"    }},
-    {{   "Interlingua",       "ia",     "",       "",                                  ""      }},
-    {{   "Interlingue",       "ie",     "",       "",                                  ""      }},
-    {{   "Inuktitut",         "iu",     "",       "langInuktitut",                     "143"   }},
-    {{   "Inupiak",           "ik",     "",       "",                                  ""      }},
-    {{   "Irish",             "ga",     "",       "langIrish",                         "35"    }},
-    {{   "Italian",           "it",     "0x0010", "langItalian",                       "3"     }},
-    {{   "Japanese",          "ja",     "0x0011", "langJapanese",                      "11"    }},
-    {{   "Javanese",          "jw",     "",       "langJavaneseRom",                   "138"   }},
-    {{   "Kannada",           "kn",     "",       "langKannada",                       "73"    }},
-    {{   "Kashmiri",          "ks",     "",       "langKashmiri",                      "61"    }},
-    {{   "Kazakh",            "kk",     "",       "langKazakh",                        "48"    }},
-    {{   "Kinyarwanda",       "rw",     "",       "",                                  ""      }},
-    {{   "Kirghiz",           "ky",     "",       "langKirghiz",                       "54"    }},
-    {{   "Kirundi",           "rn",     "",       "",                                  ""      }},
-    {{   "Korean",            "ko",     "0x0012", "langKorean",                        "23"    }},
-    {{   "Kurdish",           "ku",     "",       "langKurdish",                       "60"    }},
-    {{   "Laothian",          "lo",     "",       "langLao",                           "79"    }},
-    {{   "Lappish",           "",       "",       "langLappish",                       "29"    }},
-    {{   "Lappish",           "",       "",       "langSaamisk",                       "29"    }},
-    {{   "Latin",             "la",     "",       "langLatin",                         "131"   }},
-    {{   "Latvian",           "lv",     "0x0026", "langLatvian",                       "28"    }},
-    {{   "Lettish",           "lv",     "0x0026", "langLatvian",                       "28"    }},
-    {{   "Lingala",           "ln",     "",       "",                                  ""      }},
-    {{   "Lithuanian",        "lt",     "0x0027", "langLithuanian",                    "24"    }},
-    {{   "Macedonian",        "mk",     "0x002f", "langMacedonian",                    "43"    }},
-    {{   "Malagasy",          "mg",     "",       "langMalagasy",                      "93"    }},
-    {{   "Malay",             "ms",     "0x003e", "langMalayRoman(Latin)",             "83"    }},
-    {{   "Malay",             "ms",     "0x003e", "langMalayArabic(Arabic)",           "84"    }},
-    {{   "Malayalam",         "ml",     "",       "langMalayalam",                     "72"    }},
-    {{   "Maltese",           "mt",     "",       "langMaltese",                       "16"    }},
-    {{   "Manx Gaelic",       "gv",     "",       "langGailck",                        "141"   }},
-    {{   "Maori",             "mi",     "",       "",                                  ""      }},
-    {{   "Marathi",           "mr",     "",       "langMarathi",                       "66"    }},
-    {{   "Marshallese",       "mh",     "",       "",                                  ""      }},
-    {{   "Moldavian",         "mo",     "",       "langMoldavian",                     "53"    }},
-    {{   "Mongolian",         "mn",     "",       "langMongolian(Mongolian)",          "57"    }},
-    {{   "Mongolian",         "mn",     "",       "langMongolianCyr(Cyrillic)",        "58"    }},
-    {{   "Nauru",             "na",     "",       "",                                  ""      }},
-    {{   "Nepali",            "ne",     "",       "langNepali",                        "64"    }},
-    {{   "Norwegian",         "no",     "0x0014", "langNorwegian",                     "9"     }},
-    {{   "Occitan",           "oc",     "",       "",                                  ""      }},
-    {{   "Oriya",             "or",     "",       "langOriya",                         "71"    }},
-    {{   "Oromo",             "om",     "",       "langOromo",                         "87"    }},
-    {{   "Afan",              "om",     "",       "langOromo",                         "87"    }},
-    {{   "Pashto",            "ps",     "",       "langPashto",                        "59"    }},
-    {{   "Pushto",            "ps",     "",       "langPashto",                        "59",   }},
-    {{   "Polish",            "pl",     "0x0015", "langPolish",                        "25"    }},
-    {{   "Portuguese",        "pt",     "0x0016", "langPortuguese",                    "8"     }},
-    {{   "Punjabi",           "pa",     "",       "langPunjabi",                       "70"    }},
-    {{   "Quechua",           "qu",     "",       "langQuechua",                       "132"   }},
-    {{   "Rhaeto-Romance",    "rm",     "",       "",                                  ""      }},
-    {{   "Romanian",          "ro",     "0x0018", "langRomanian",                      "37"    }},
-    {{   "Ruanda",            "",       "",       "langRuanda",                        "90"    }},
-    {{   "Rundi",             "",       "",       "langRundi",                         "91"    }},
-    {{   "Russian",           "ru",     "0x0019", "langRussian",                       "32"    }},
-    {{   "Samoan",            "sm",     "",       "",                                  "" 	   }},
-    {{   "Sangro",            "sg",     "",       "",                                  "" 	   }},
-    {{   "Sanskrit",          "sa",     "",       "langSanskrit",                      "65"    }},
-    {{   "Sardinian",         "sc",     "",       "",        			               ""      }}, // Jordi 19/10/2002 
-    {{   "Scots Gaelic",      "gd",     "",       "langGaidhlig",                      "140"   }},
-    {{   "Serbian",           "sr",     "0x001a", "langSerbian",                       "42"    }},
-    {{   "Serbo-Croatian",    "sh",     "",       "",                                  ""      }},
-    {{   "Sesotho",           "st",     "",       "",                                  ""      }},
-    {{   "Setswana",          "tn",     "",       "",                                  ""      }},
-    {{   "Shona",             "sn",     "",       "",                                  ""      }},
-    {{   "Sindhi",            "sd",     "",       "langSindhi",                        "62"    }},
-    {{   "Singhalese",        "si",     "",       "langSinhalese",                     "76"    }},
-    {{   "Siswati",           "ss",     "",       "",                                  ""      }},
-    {{   "Slovak",            "sk",     "0x001b", "langSlovak",                        "39"    }},
-    {{   "Slovenian",         "sl",     "0x0024", "langSlovenian",                     "40"    }},
-    {{   "Somali",            "so",     "",       "langSomali",                        "88"    }},
-    {{   "Spanish",           "es",     "0x000a", "langSpanish",                       "6"     }},
-    {{   "Sundanese",         "su",     "",       "langSundaneseRom",                  "139"   }},
-    {{   "Swahili",           "sw",     "0x0041", "langSwahili",                       "89"    }},
-    {{   "Swedish",           "sv",     "0x001d", "langSwedish",                       "5"     }},
-    {{   "Tagalog",           "tl",     "",       "langTagalog",                       "82"    }},
-    {{   "Tajik",             "tg",     "",       "langTajiki",                        "55"    }},
-    {{   "Tamil",             "ta",     "",       "langTamil",                         "74"    }},
-    {{   "Tatar",             "tt",     "",       "langTatar",                         "135"   }},
-    {{   "Telugu",            "te",     "",       "langTelugu",                        "75"    }},
-    {{   "Thai",              "th",     "0x001e", "langThai",                          "22"    }},
-    {{   "Tibetan",           "bo",     "",       "langTibetan",                       "63"    }},
-    {{   "Tigrinya",          "ti",     "",       "langTigrinya",                      "86"    }},
-    {{   "Tonga",             "to",     "",       "",                                  "" 	   }},
-    {{   "Tsonga",            "ts",     "",       "",                                  "" 	   }},
-    {{   "Turkish",           "tr",     "0x001f", "langTurkish",                       "17"    }},
-    {{   "Turkmen",           "tk",     "",       "langTurkmen",                       "56"    }},
-    {{   "Twi",               "tw",     "",       "",                                  ""      }},
-    {{   "Uighur",            "ug",     "",       "langUighur",                        "136"   }},
-    {{   "Ukrainian",         "uk",     "0x0022", "langUkrainian",                     "45"    }},
-    {{   "Urdu",              "ur",     "0x0020", "langUrdu",                          "20"    }},
-    {{   "Uzbek",             "uz",     "",       "langUzbek",                         "47"    }},
-    {{   "Vietnamese",        "vi",     "0x002a", "langVietnamese",                    "80"    }},
-    {{   "VolapØk",           "vo",     "",       "",                                  ""      }},
-    {{   "Welsh",             "cy",     "",       "langWelsh",                         "128"   }},
-    {{   "Wolof",             "wo",     "",       "",                                  ""      }},
-    {{   "Xhosa",             "xh",     "",       "",                                  ""      }},
-    {{   "Yiddish",           "ji",     "",       "langYiddish",                       "41"    }},
-    {{   "Yiddish",           "yi",     "",       "langYiddish",                       "41"    }},
-    {{   "Yoruba",            "yo",     "",       "",                                  "" 	   }},
-    {{   "Zulu",              "zu",     "",       "",                                  "" 	   }},
-    {{   NULL,                "",       "",       "",                                  "" 	   }}
+    {{   "Abkhazian",         "ab",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Afar",              "aa",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Afrikaans",         "af",     "",     "0x0036", "",                                  "",     },  12,   8   },
+    {{   "Albanian",          "sq",     "",     "0x001c", "langAlbanian",                      "36",   },   2,  13   },
+    {{   "Amharic",           "am",     "",     "",       "langAmharic",                       "85",   },   0,   1   },
+    {{   "Arabic",            "ar",     "",     "0x0001", "langArabic",                        "12",   },   0,   1   },
+    {{   "Armenian",          "hy",     "",     "",       "langArmenian",                      "51",   },   0,   1   },
+    {{   "Assamese",          "as",     "",     "",       "langAssamese",                      "68",   },   0,   1   },
+    {{   "Aymara",            "ay",     "",     "",       "langAymara",                        "134",  },   0,   1   },
+    {{   "Azerbaijani",       "az",     "",     "",       "langAzerbaijani(Latin)",            "49",   },   0,   1   },
+    {{   "Azerbaijani",       "az",     "",     "",       "langAzerbaijanAr(Arabic)",          "50",   },   0,   1   },
+    {{   "Bashkir",           "ba",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Basque",            "eu",     "",     "0x002d", "langBasque",                        "129",  },   0,   1   },
+    {{   "Bengali",           "bn",     "",     "",       "langBengali",                       "67",   },   0,   1   },
+    {{   "Bangla",            "bn",     "",     "",       "langBengali",                       "67",   },   0,   1   },
+    {{   "Bhutani",           "dz",     "",     "",       "langDzongkha",                      "137",  },   0,   1   },
+    {{   "Bihari",            "bh",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Bislama",           "bi",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Breton",            "br",     "",     "",       "langBreton",                        "142",  },   0,   1   },
+    {{   "Bulgarian",         "bg",     "",     "0x0002", "langBulgarian",                     "44",   },  11,   1   },
+    {{   "Burmese",           "my",     "",     "",       "langBurmese",                       "77",   },   0,   1   },
+    {{   "Byelorussian",      "be",     "",     "0x0023", "langByelorussian",                  "46",   },   2,   1   },
+    {{   "Cambodian",         "km",     "",     "",       "langKhmer",                         "78",   },   0,   1   },
+    {{   "Catalan",           "ca",     "",     "0x0003", "langCatalan",                       "130",  },   2,   0   },
+    {{   "Chewa",             "",       "",     "",       "langChewa",                         "92",   },   0,   1   },
+    {{   "Chinese",           "zh",     "",     "0x0004", "langTradChinese",                   "19",   },  15,  16   },
+    {{   "Chinese",           "zh",     "",     "0x0004", "langSimpChinese",                   "33",   },   0,   1   },
+    {{   "Cornish",	          "kw",     "",     "",       "",                                  "",     },   0,   1   },	// Jordi 19/10/2002 
+    {{   "Corsican",          "co",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Croatian",          "hr",     "",     "0x001a", "langCroatian",                      "18",   },  11,   1   },
+    {{   "Czech",             "cs",     "",     "0x0005", "langCzech",                         "38",   },  11,   7   },
+    {{   "Danish",            "da",     "",     "0x0006", "langDanish",                        "7",    },   3,  14   },
+    {{   "Dutch",             "nl",     "",     "0x0013", "langDutch",                         "4",    },  12,   8   },
+    {{   "English",           "en",     "",     "0x0009", "langEnglish",                       "0",    },   0,   1   },
+    {{   "Esperanto",         "eo",     "",     "",       "langEsperanto",                     "94",   },   0,   1   },
+    {{   "Estonian",          "et",     "",     "0x0025", "langEstonian",                      "27",   },  11,  19   },
+    {{   "Faeroese",          "fo",     "",     "0x0038", "langFaeroese",                      "30",   },   0,   1   },
+    {{   "Farsi",             "fa",     "",     "0x0029", "langFarsi",                         "31",   },   0,   1   },
+    {{   "Farsi",             "fa",     "",     "0x0029", "langPersian",                       "31",   },   0,   1   },
+    {{   "Fiji",              "fj",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Finnish",           "fi",     "",     "0x000b", "langFinnish",                       "13",   },  10,   6   },
+    {{   "Flemish",           "",       "",     "",       "langFlemish",                       "34",   },   0,   1   },
+    {{   "French",            "fr",     "",     "0x000c", "langFrench",                        "1",    },   2,   2   },
+    {{   "French",            "fr",     "CH",   "0x000c", "langFrench",                        "1",    },   2,  13   },
+    {{   "Frisian",           "fy",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Galician",          "gl",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Galla",             "",       "",     "",       "langGalla",                         "87",   },   0,   1   },
+    {{   "Georgian",          "ka",     "",     "",       "langGeorgian",                      "52",   },   0,   1   },
+    {{   "German",            "de",     "",     "0x0007", "langGerman",                        "2",    },  11,   7   },
+    {{   "German",            "de",     "CH",   "0x0007", "langGerman",                        "2",    },   2,  13   }, // Swiss
+    {{   "Greek",             "el",     "",     "0x0008", "langGreek",                         "14",   },   2,  19   },
+    {{   "Greenlandic",       "kl",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Guarani",           "gn",     "",     "",       "langGuarani",                       "133",  },   0,   1   },
+    {{   "Gujarati",          "gu",     "",     "",       "langGujarati",                      "69",   },   0,   1   },
+    {{   "Hausa",             "ha",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Hebrew",            "he",     "",     "0x000d", "langHebrew",                        "10",   },  17,   1   },
+    {{   "Hebrew",            "iw",     "",     "0x000d", "langHebrew",                        "10",   },  17,   1   },
+    {{   "Hindi",             "hi",     "",     "0x0039", "langHindi",                         "21",   },   0,   1   },
+    {{   "Hungarian",         "hu",     "",     "0x000e", "langHungarian",                     "26",   },  12,   3   },
+    {{   "Icelandic",         "is",     "",     "0x000f", "langIcelandic",                     "15",   },  11,   7   },
+    {{   "Indonesian",        "in",     "",     "0x0021", "langIndonesian",                    "81",   },   0,   1   },
+    {{   "Indonesian",        "id",     "",     "0x0021", "langIndonesian",                    "81",   },   0,   1   },
+    {{   "Interlingua",       "ia",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Interlingue",       "ie",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Inuktitut",         "iu",     "",     "",       "langInuktitut",                     "143",  },   0,   1   },
+    {{   "Inupiak",           "ik",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Irish",             "ga",     "",     "",       "langIrish",                         "35",   },   0,   1   },
+    {{   "Italian",           "it",     "",     "0x0010", "langItalian",                       "3",    },   2,  19   },
+    {{   "Italian",           "it",     "CH",   "0x0010", "langItalian",                       "3",    },   2,  13   },
+    {{   "Japanese",          "ja",     "",     "0x0011", "langJapanese",                      "11",   },  15,  16   },
+    {{   "Javanese",          "jw",     "",     "",       "langJavaneseRom",                   "138",  },   0,   1   },
+    {{   "Kannada",           "kn",     "",     "",       "langKannada",                       "73",   },   0,   1   },
+    {{   "Kashmiri",          "ks",     "",     "",       "langKashmiri",                      "61",   },   0,   1   },
+    {{   "Kazakh",            "kk",     "",     "",       "langKazakh",                        "48",   },   0,   1   },
+    {{   "Kinyarwanda",       "rw",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Kirghiz",           "ky",     "",     "",       "langKirghiz",                       "54",   },   0,   1   },
+    {{   "Kirundi",           "rn",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Korean",            "ko",     "",     "0x0012", "langKorean",                        "23",   },   0,   1   },
+    {{   "Kurdish",           "ku",     "",     "",       "langKurdish",                       "60",   },   0,   1   },
+    {{   "Laothian",          "lo",     "",     "",       "langLao",                           "79",   },   0,   1   },
+    {{   "Lappish",           "",       "",     "",       "langLappish",                       "29",   },   0,   1   },
+    {{   "Lappish",           "",       "",     "",       "langSaamisk",                       "29",   },   0,   1   },
+    {{   "Latin",             "la",     "",     "",       "langLatin",                         "131",  },   0,   1   },
+    {{   "Latvian",           "lv",     "",     "0x0026", "langLatvian",                       "28",   },   2,  12   },
+    {{   "Lettish",           "lv",     "",     "0x0026", "langLatvian",                       "28",   },   0,   1   },
+    {{   "Lingala",           "ln",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Lithuanian",        "lt",     "",     "0x0027", "langLithuanian",                    "24",   },  11,   7   },
+    {{   "Macedonian",        "mk",     "",     "0x002f", "langMacedonian",                    "43",   },   0,   1   },
+    {{   "Malagasy",          "mg",     "",     "",       "langMalagasy",                      "93",   },   0,   1   },
+    {{   "Malay",             "ms",     "",     "0x003e", "langMalayRoman(Latin)",             "83",   },   0,   1   },
+    {{   "Malay",             "ms",     "",     "0x003e", "langMalayArabic(Arabic)",           "84",   },   0,   1   },
+    {{   "Malayalam",         "ml",     "",     "",       "langMalayalam",                     "72",   },   0,   1   },
+    {{   "Maltese",           "mt",     "",     "",       "langMaltese",                       "16",   },   0,   1   },
+    {{   "Manx Gaelic",       "gv",     "",     "",       "langGailck",                        "141",  },   0,   1   },
+    {{   "Maori",             "mi",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Marathi",           "mr",     "",     "",       "langMarathi",                       "66",   },   0,   1   },
+    {{   "Marshallese",       "mh",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Moldavian",         "mo",     "",     "",       "langMoldavian",                     "53",   },   0,   1   },
+    {{   "Mongolian",         "mn",     "",     "",       "langMongolian(Mongolian)",          "57",   },   0,   1   },
+    {{   "Mongolian",         "mn",     "",     "",       "langMongolianCyr(Cyrillic)",        "58",   },   0,   1   },
+    {{   "Nauru",             "na",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Nepali",            "ne",     "",     "",       "langNepali",                        "64",   },   0,   1   },
+    {{   "Norwegian",         "no",     "",     "0x0014", "langNorwegian",                     "9",    },   2,   1   },
+    {{   "Occitan",           "oc",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Oriya",             "or",     "",     "",       "langOriya",                         "71",   },   0,   1   },
+    {{   "Oromo",             "om",     "",     "",       "langOromo",                         "87",   },   0,   1   },
+    {{   "Afan",              "om",     "",     "",       "langOromo",                         "87",   },   0,   1   },
+    {{   "Pashto",            "ps",     "",     "",       "langPashto",                        "59",   },   0,   1   },
+    {{   "Pushto",            "ps",     "",     "",       "langPashto",                        "59",   },   0,   1   },
+    {{   "Polish",            "pl",     "",     "0x0015", "langPolish",                        "25",   },  12,   8   },
+    {{   "Portuguese",        "pt",     "",     "0x0016", "langPortuguese",                    "8",    },   2,   0   },
+    {{   "Portuguese",        "pt",     "BR",   "0x0016", "langPortuguese",                    "8",    },   0,   1   },
+    {{   "Punjabi",           "pa",     "",     "",       "langPunjabi",                       "70",   },   0,   1   },
+    {{   "Quechua",           "qu",     "",     "",       "langQuechua",                       "132",  },   0,   1   },
+    {{   "Rhaeto-Romance",    "rm",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Romanian",          "ro",     "",     "0x0018", "langRomanian",                      "37",   },  12,   2   },
+    {{   "Ruanda",            "",       "",     "",       "langRuanda",                        "90",   },   0,   1   },
+    {{   "Rundi",             "",       "",     "",       "langRundi",                         "91",   },   0,   1   },
+    {{   "Russian",           "ru",     "",     "0x0019", "langRussian",                       "32",   },   2,  11   },
+    {{   "Samoan",            "sm",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Sangro",            "sg",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Sanskrit",          "sa",     "",     "",       "langSanskrit",                      "65",   },   0,   1   },
+    {{   "Sardinian",         "sc",     "",     "",       "",        			               "",     },   0,   1   }, // Jordi 19/10/2002 
+    {{   "Scots Gaelic",      "gd",     "",     "",       "langGaidhlig",                      "140",  },   0,   1   },
+    {{   "Serbian",           "sr",     "",     "0x001a", "langSerbian",                       "42",   },  11,   7   },
+    {{   "Serbo-Croatian",    "sh",     "",     "",       "",                                  "",     },  11,   7   },
+    {{   "Sesotho",           "st",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Setswana",          "tn",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Shona",             "sn",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Sindhi",            "sd",     "",     "",       "langSindhi",                        "62",   },   0,   1   },
+    {{   "Singhalese",        "si",     "",     "",       "langSinhalese",                     "76",   },   0,   1   },
+    {{   "Siswati",           "ss",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Slovak",            "sk",     "",     "0x001b", "langSlovak",                        "39",   },  11,   7   },
+    {{   "Slovenian",         "sl",     "",     "0x0024", "langSlovenian",                     "40",   },  11,   7   },
+    {{   "Somali",            "so",     "",     "",       "langSomali",                        "88",   },   0,   1   },
+    {{   "Spanish",           "es",     "",     "0x000a", "langSpanish",                       "6",    },   2,   0   },
+    {{   "Sundanese",         "su",     "",     "",       "langSundaneseRom",                  "139",  },   0,   1   },
+    {{   "Swahili",           "sw",     "",     "0x0041", "langSwahili",                       "89",   },   0,   1   },
+    {{   "Swedish",           "sv",     "",     "0x001d", "langSwedish",                       "5",    },  10,   6   },
+    {{   "Tagalog",           "tl",     "",     "",       "langTagalog",                       "82",   },   0,   1   },
+    {{   "Tajik",             "tg",     "",     "",       "langTajiki",                        "55",   },   0,   1   },
+    {{   "Tamil",             "ta",     "",     "",       "langTamil",                         "74",   },   0,   1   },
+    {{   "Tatar",             "tt",     "",     "",       "langTatar",                         "135",  },   0,   1   },
+    {{   "Telugu",            "te",     "",     "",       "langTelugu",                        "75",   },   0,   1   },
+    {{   "Thai",              "th",     "",     "0x001e", "langThai",                          "22",   },   0,   1   },
+    {{   "Tibetan",           "bo",     "",     "",       "langTibetan",                       "63",   },   0,   1   },
+    {{   "Tigrinya",          "ti",     "",     "",       "langTigrinya",                      "86",   },   0,   1   },
+    {{   "Tonga",             "to",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Tsonga",            "ts",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Turkish",           "tr",     "",     "0x001f", "langTurkish",                       "17",   },   2,  13   },
+    {{   "Turkmen",           "tk",     "",     "",       "langTurkmen",                       "56",   },   0,   1   },
+    {{   "Twi",               "tw",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Uighur",            "ug",     "",     "",       "langUighur",                        "136",  },   0,   1   },
+    {{   "Ukrainian",         "uk",     "",     "0x0022", "langUkrainian",                     "45",   },   2,  19   },
+    {{   "Urdu",              "ur",     "",     "0x0020", "langUrdu",                          "20",   },   0,   1   },
+    {{   "Uzbek",             "uz",     "",     "",       "langUzbek",                         "47",   },   0,   1   },
+    {{   "Vietnamese",        "vi",     "",     "0x002a", "langVietnamese",                    "80",   },   0,   1   },
+    {{   "Volapï¿½k",           "vo",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Welsh",             "cy",     "",     "",       "langWelsh",                         "128",  },   1,   0   },
+    {{   "Wolof",             "wo",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Xhosa",             "xh",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Yiddish",           "ji",     "",     "",       "langYiddish",                       "41",   },  17,   1   },
+    {{   "Yiddish",           "yi",     "",     "",       "langYiddish",                       "41",   },  17,   1   },
+    {{   "Yoruba",            "yo",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   "Zulu",              "zu",     "",     "",       "",                                  "",     },   0,   1   },
+    {{   NULL,                "",       "",     "",       "",                                  "" ,    },   0,   1   },
 };
 
 /* 
@@ -1159,6 +1192,47 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 	for(; cur->fields[0]; ++cur)
 		if (!g_ascii_strcasecmp(cur->fields[idx],key))
 			return cur;
+	return NULL;
+}
+
+const XAP_LangInfo* XAP_EncodingManager::findLangInfoByLocale(const char* locale)
+{
+	if (!locale)
+		return NULL;
+		
+	std::string strISOName(locale, 2);
+	std::string strCountryCode;
+	
+	if (strlen(locale) == 5)
+	{
+		strCountryCode = (locale + 3);
+	}
+	
+	const XAP_LangInfo* cur = langinfo;
+	const XAP_LangInfo* temp = NULL;
+	for(; cur->fields[0]; ++cur)
+	{
+		if (strISOName == cur->fields[XAP_LangInfo::isoshortname_idx])
+		{
+			if (*cur->fields[XAP_LangInfo::countrycode_idx] == NULL)
+			{
+				if (strCountryCode.empty())
+					return cur;
+				else
+					temp = cur; // store, just in case
+			}
+			else if (strCountryCode == cur->fields[XAP_LangInfo::countrycode_idx])
+			{
+				return cur;
+			}
+		}
+	}
+	
+	if (temp != NULL)
+	{
+		return temp;
+	}
+	
 	return NULL;
 }
 

@@ -146,6 +146,13 @@ bool XAP_PrefsScheme::setValueBool(const gchar * szKey, bool bValue)
 	return setValue(szKey, reinterpret_cast<const gchar*>((bValue) ? "1" : "0"));
 }
 
+bool XAP_PrefsScheme::setValueInt(const gchar * szKey, const int nValue)
+{
+	gchar szValue[32];
+	sprintf(szValue, "%d", nValue);
+	return setValue(szKey, szValue);
+}
+
 bool XAP_PrefsScheme::getValue(const gchar * szKey, const gchar ** pszValue) const
 {
 	gchar *pEntry = m_hash.pick(szKey);
@@ -164,6 +171,19 @@ bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 		return false;
 
 	stValue = pEntry;
+	return true;
+}
+
+bool XAP_PrefsScheme::getValueInt(const gchar * szKey, int& nValue) const
+{
+	const gchar * szValue = NULL;
+	if (!getValue(szKey,&szValue))
+		return false;				// bogus keyword ??
+
+	if (!szValue || !*szValue)
+		return false;				// no value for known keyword ??
+		
+	nValue = atoi(szValue);
 	return true;
 }
 
@@ -690,6 +710,28 @@ bool XAP_Prefs::getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAll
 	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		*pbValue = false;
+		return true;
+	}
+
+	return false;
+}
+
+bool XAP_Prefs::getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin) const
+{
+	// a convenient routine to get a name/value pair from the current scheme
+
+	UT_return_val_if_fail(m_currentScheme,false);
+
+	if (m_currentScheme->getValueInt(szKey,nValue))
+		return true;
+	if (bAllowBuiltin && m_builtinScheme->getValueInt(szKey,nValue))
+		return true;
+	// It is legal for there to be arbitrary preference tags that start with 
+	// "Debug", and Abi apps won't choke.  The idea is that developers can use
+	// these to selectively trigger development-time behaviors.
+	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	{
+		nValue = -1;
 		return true;
 	}
 

@@ -55,6 +55,15 @@
 /* substitute curly smart quotes on the fly */
 #define XAP_PREF_DEFAULT_SmartQuotesEnable			"1"
 
+#define XAP_PREF_KEY_CustomSmartQuotes		"CustomSmartQuotes"
+#define XAP_PREF_DEFAULT_CustomSmartQuotes	"0"
+
+#define XAP_PREF_KEY_OuterQuoteStyle			"OuterQuoteStyle"
+#define XAP_PREF_DEFAULT_OuterQuoteStyle			"0"
+
+#define XAP_PREF_KEY_InnerQuoteStyle			"InnerQuoteStyle"
+#define XAP_PREF_DEFAULT_InnerQuoteStyle			"1"
+
 #define XAP_PREF_KEY_UseSuffix						"UseSuffix"
 /* append suffixes to saved files */
 #define XAP_PREF_DEFAULT_UseSuffix					"1"
@@ -175,6 +184,9 @@
 dcl(ToolbarAppearance)
 dcl(RemapGlyphsDefault)
 dcl(SmartQuotesEnable)
+dcl(CustomSmartQuotes)
+dcl(OuterQuoteStyle)
+dcl(InnerQuoteStyle)
 dcl(UseSuffix)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)

@@ -64,6 +64,8 @@
 
 #include "gr_EmbedManager.h"
 
+#include "xap_EncodingManager.h"
+
 #define REDRAW_UPDATE_MSECS	500
 
 const char * s_FootnoteTypeDesc[] = {
@@ -4007,18 +4009,6 @@ static struct sqTable sqTable_en[] =
 	{sqDONTCARE, 0, sqDONTCARE, UCS_UNKPUNK}  // signals end of table
 };
 
-static void s_swapQuote(UT_UCSChar & c)
-{
-    if(c == UCS_LQUOTE)
-        c = UCS_RQUOTE;
-    else if(c == UCS_RQUOTE)
-        c = UCS_LQUOTE;
-    else if(c == UCS_LDBLQUOTE)
-        c = UCS_RDBLQUOTE;
-    else if(c == UCS_RDBLQUOTE)
-        c = UCS_LDBLQUOTE;
-}
-
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
 	if (!block)
@@ -4140,8 +4130,79 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 
             xxx_UT_DEBUGMSG(("pThisRun [0x%x], vis dir. %d\n", pThisRun, pThisRun->getVisDirection()));
 
-            if(pThisRun && pThisRun->getVisDirection() == UT_BIDI_RTL)
-                s_swapQuote(replacement);
+			gint nOuterQuoteStyleIndex = 0; // Default to English
+			gint nInnerQuoteStyleIndex = 1; // Default to English
+			bool bUseCustomQuotes = false;
+			bool bOK = true;
+			
+			// 1st - See if we should use custom quotes
+			if (m_pPrefs)
+			{
+				bOK = m_pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_CustomSmartQuotes), &bUseCustomQuotes );
+				if (bOK && bUseCustomQuotes)
+				{
+					bool bOK = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_OuterQuoteStyle), nOuterQuoteStyleIndex );
+					if (!bOK)
+					{
+						nOuterQuoteStyleIndex = 0; // English if bad
+					}
+					else
+					{
+						bool bOK = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_InnerQuoteStyle), nInnerQuoteStyleIndex );
+						if (!bOK)
+						{
+							nInnerQuoteStyleIndex = 1; // English if bad
+						}
+					}
+				}
+			}
+
+			// 2nd - Not using custom quotes, look up doc lang
+			if (!bOK || !bUseCustomQuotes)
+			{
+				const char * pszLang = NULL;
+				const gchar ** props_in = NULL;
+				if (m_pView->getCharFormat(&props_in))
+				{
+					pszLang = UT_getAttribute("lang", props_in);
+					FREEP(props_in);
+				}
+
+				if (pszLang && *pszLang)
+				{
+					const XAP_LangInfo* found = XAP_EncodingManager::findLangInfoByLocale(pszLang);
+				
+					if (found)
+					{
+						nOuterQuoteStyleIndex = found->outerQuoteIdx;
+						nInnerQuoteStyleIndex = found->innerQuoteIdx;
+					}
+				}
+			}
+
+			// 3rd - bad thing happened, go with English
+			if (nOuterQuoteStyleIndex < 0 || nInnerQuoteStyleIndex < 0)
+			{
+				nOuterQuoteStyleIndex = 0;
+				nInnerQuoteStyleIndex = 1;
+			}
+
+			switch (replacement)
+			{
+			case UCS_LQUOTE:
+				replacement = XAP_EncodingManager::smartQuoteStyles[nInnerQuoteStyleIndex].leftQuote;
+				break;
+			case UCS_RQUOTE:
+				replacement = XAP_EncodingManager::smartQuoteStyles[nInnerQuoteStyleIndex].rightQuote;
+				break;
+			case UCS_LDBLQUOTE:
+				replacement = XAP_EncodingManager::smartQuoteStyles[nOuterQuoteStyleIndex].leftQuote;
+				break;
+			case UCS_RDBLQUOTE:
+				replacement = XAP_EncodingManager::smartQuoteStyles[nOuterQuoteStyleIndex].rightQuote;
+				break;
+			}
+			
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();

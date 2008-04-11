@@ -58,6 +58,9 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_CHECK_GRAMMAR_CHECK,
 
 				   id_CHECK_SMART_QUOTES_ENABLE,
+				   id_CHECK_CUSTOM_SMART_QUOTES,
+				   id_LIST_VIEW_OUTER_QUOTE_STYLE,
+				   id_LIST_VIEW_INNER_QUOTE_STYLE,
 
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 
@@ -137,6 +140,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(GrammarCheck,		bool);
+	SET_GATHER			(CustomSmartQuotes,		bool);
 	SET_GATHER			(SmartQuotes,		bool);
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
@@ -147,6 +151,8 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(ViewShowStatusBar, bool);
 #endif
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
+	SET_GATHER			(OuterQuoteStyle,	gint);
+	SET_GATHER			(InnerQuoteStyle,	gint);
 	SET_GATHER			(ViewCursorBlink,	bool);
 
 	SET_GATHER			(ViewAll,			bool);
@@ -240,6 +246,7 @@ public:
 			bo_IgnoreURLs,
 			bo_CheckGrammar,
 			bo_SmartQuotes,
+			bo_CustomSmartQuotes,
 			bo_LayoutMarks,
 			bo_MainDictionaryOnly,	// NOT (YET?) IMPLEMENTED
 			bo_Plugins,

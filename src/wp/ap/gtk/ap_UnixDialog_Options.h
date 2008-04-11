@@ -111,6 +111,9 @@ public:
 	// Smart Quotes
 
 	 	SET_GATHER (SmartQuotes,   bool);
+	 	SET_GATHER (CustomSmartQuotes,   bool);
+		SET_GATHER (OuterQuoteStyle,	gint);
+		SET_GATHER (InnerQuoteStyle,	gint);
 
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
 
@@ -197,6 +200,9 @@ public:
 		// Smart Quotes
 
 		GtkWidget *m_checkbuttonSmartQuotes;
+		GtkWidget *m_checkbuttonCustomSmartQuotes;
+		GtkWidget *m_omOuterQuoteStyle;
+		GtkWidget *m_omInnerQuoteStyle;
 
     		// Dummy
 		bool m_boolEnableSmoothScrolling;
@@ -217,6 +223,7 @@ private:
 	static void s_auto_save_toggled	     (GtkToggleButton *,   gpointer);
 	static void s_checkbutton_toggle     (GtkWidget *,	   gpointer);
 	static gint s_menu_item_activate     (GtkWidget *,	   gpointer);
+	void	    _setupSmartQuotesCombos( GtkWidget *optionmenu );
 
 	// callbacks can fire these events
 	virtual void _storeWindowData(void);

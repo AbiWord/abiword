@@ -114,12 +114,14 @@ public:
 	
 	bool				setValue(const gchar * szKey, const gchar * szValue);
 	bool				setValueBool(const gchar * szKey, bool bValue);
+	bool				setValueInt(const gchar * szKey, const int nValue);
 	
 	// the get*Value*() functions return the answer in the last
 	// argument; they return error information as the function
 	// return value.
 	bool				getValue(const gchar * szKey, const gchar ** pszValue) const;
 	bool				getValue(const UT_String &szKey, UT_String &szValue) const;
+	bool				getValueInt(const gchar * szKey, int& nValue) const;
 	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
 	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue);
 	
@@ -157,6 +159,7 @@ public:
 	bool					getPrefsValue(const gchar * szKey, const gchar ** pszValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin = true) const;
 	bool					getPrefsValueBool(const gchar * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValueInt(const gchar * szKey, int& nValue, bool bAllowBuiltin = true) const;
 
 	bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(bool bAuto);

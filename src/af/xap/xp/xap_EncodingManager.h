@@ -49,12 +49,22 @@ struct ABI_EXPORT XAP_LangInfo
 	*/
 	enum fieldidx { longname_idx, /*this field is not empty*/
 			isoshortname_idx /*ISO*/, 
+			countrycode_idx, /*e.g. the "US" in "en-US" */
 			winlangcode_idx, /*0x400 + atoi() it to get a value*/
 			macname_idx, /*e.g. "langRussian" or empty*/
 			maclangcode_idx, /*atoi() it to get a value*/
 			max_idx = maclangcode_idx };
 
 	const char*		fields[max_idx+1];
+	
+	size_t outerQuoteIdx;
+	size_t innerQuoteIdx;
+};
+
+struct ABI_EXPORT XAP_SmartQuoteStyle
+{
+	UT_UCSChar leftQuote;
+	UT_UCSChar rightQuote;
 };
 
 
@@ -242,6 +252,10 @@ public:
 
 	/*it's terminated with the record with NULL in language name. */
 	static const XAP_LangInfo		langinfo[];
+
+	/*it's terminated with a record with all NULLs. */
+	static const XAP_SmartQuoteStyle		smartQuoteStyles[];
+	
 	/*
 	    Precise meaning:
 		swap_utos: the following seq should produce a seq in buf that
@@ -267,6 +281,8 @@ public:
 	we can use the same routine. Returns NULL if nothing was found. */
 	static const XAP_LangInfo* findLangInfo(const char* key,
 		XAP_LangInfo::fieldidx column);
+
+	static const XAP_LangInfo* findLangInfoByLocale(const char* locale);
 		
 	/*word uses non-ascii names of fonts in .doc*/
 	static UT_Bijection cjk_word_fontname_mapping;
