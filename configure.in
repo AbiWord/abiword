@@ -95,14 +95,16 @@ AC_ARG_ENABLE([default-plugins],
 	[AS_HELP_STRING([--disable-default-plugins], [do not build any plugins by default])], 
 [
 	if test "$enableval" == "no"; then
-		abi_cv_plugins_disabled="yes"
+		abi_cv_disable_default_plugins="yes"
 	fi
 ])
 
 AC_ARG_ENABLE([plugins], 
-	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build])], 
+	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Can also be used to disable plugin loading support, resulting in a smaller binary size.])], 
 [
 	if test "$enableval" == "no"; then
+		abi_cv_disable_exports="yes"
+		abi_cv_disable_default_plugins="yes"
 		abi_cv_plugins=""
 	elif test "$enableval" == "yes"; then
 		# just build default plugins
@@ -535,6 +537,10 @@ fi
 AC_SUBST([PLUGIN_CFLAGS])
 AC_SUBST([PLUGIN_LIBS])
 
+if test "$abi_cv_disable_exports" == "yes"; then
+	AC_DEFINE([DISABLE_EXPORTS], [1], [Define to prevent symbols from being exported dynamically])
+fi
+
 if test "$abi_cv_menubutton" == "yes"; then
 	AC_DEFINE([ENABLE_MENUBUTTON], [1], [Define if building printing support])
 fi
@@ -612,7 +618,7 @@ AC_SUBST([ALL_PLUGINS])
 default_plugins="opendocument"
 
 PLUGINS=
-if test "$abi_cv_plugins_disabled" != "yes"; then
+if test "$abi_cv_disable_default_plugins" != "yes"; then
 	PLUGINS="$default_plugins"
 fi
 PLUGINS="$PLUGINS $abi_cv_plugins"

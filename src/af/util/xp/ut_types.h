@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -19,6 +21,10 @@
 
 #ifndef UT_TYPES_H
 #define UT_TYPES_H
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdlib.h>
 #include <glib.h>
@@ -67,25 +73,15 @@ typedef UT_uint8 UT_Confidence_t;
 #define UT_CONFIDENCE_ZILCH     0
 
 #if defined(WIN32) /* && !defined(__MINGW32__) */
-  #define ABI_PLUGIN_EXPORT __declspec(dllexport)
-  #ifndef ABI_DLL
-     /* we are building AbiWord and wish for its parts to be used by plugins */
-     #define ABI_EXPORT __declspec(dllexport)
-  #else 
-     /* we are building an AbiWord plugin and want to use something declared in a library */
-     #define ABI_EXPORT __declspec(dllimport)
-  #endif
-#elif defined (ABI_UNIX_NO_EXPORTS)
+  #define ABI_EXPORT __declspec(dllexport)
+#elif defined (DISABLE_EXPORTS)
   #define ABI_EXPORT __attribute__ ((visibility ("hidden")))
-  #define ABI_PLUGIN_EXPORT __attribute__ ((visibility ("hidden")))
 #else
   #define ABI_EXPORT
-  #define ABI_PLUGIN_EXPORT
 #endif
 
 /* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */
-#define ABI_CALL extern "C"
-#define ABI_FAR_CALL ABI_CALL ABI_PLUGIN_EXPORT
+#define ABI_FAR_CALL extern "C" ABI_EXPORT
 
 #define _abi_callonce /* only call me once! */
 

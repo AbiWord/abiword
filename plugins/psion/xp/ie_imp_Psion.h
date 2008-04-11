@@ -35,7 +35,7 @@
 // The importer/reader for Psion Word and TextEd Files.
 
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion_Sniffer : public IE_ImpSniffer
+class IE_Imp_Psion_Sniffer : public IE_ImpSniffer
 {
 public:
 	IE_Imp_Psion_Sniffer(const char * name): IE_ImpSniffer(name) {}
@@ -45,7 +45,7 @@ protected:
 	                               psiconv_file_type_t filetype);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion_Word_Sniffer : public IE_Imp_Psion_Sniffer
+class IE_Imp_Psion_Word_Sniffer : public IE_Imp_Psion_Sniffer
 {
 public:
 	IE_Imp_Psion_Word_Sniffer(const char * name): IE_Imp_Psion_Sniffer(name) {}
@@ -62,7 +62,7 @@ public:
 										IE_Imp ** ppie);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion_TextEd_Sniffer : 
+class IE_Imp_Psion_TextEd_Sniffer : 
 	                                                public IE_Imp_Psion_Sniffer
 {
 public:
@@ -81,7 +81,7 @@ public:
 										IE_Imp ** ppie);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion : public IE_Imp
+class IE_Imp_Psion : public IE_Imp
 {
 public:
 	IE_Imp_Psion(PD_Document * pDocument): IE_Imp(pDocument),list(false) {}
@@ -115,7 +115,7 @@ protected:
 	bool list;
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion_Word : public IE_Imp_Psion
+class IE_Imp_Psion_Word : public IE_Imp_Psion
 {
 public:
 	IE_Imp_Psion_Word(PD_Document * pDocument): IE_Imp_Psion(pDocument) {}
@@ -125,7 +125,7 @@ protected:
 	virtual	UT_Error parseFile(const psiconv_file psionfile);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_Psion_TextEd : public IE_Imp_Psion
+class IE_Imp_Psion_TextEd : public IE_Imp_Psion
 {
 public:
 	IE_Imp_Psion_TextEd(PD_Document * pDocument): IE_Imp_Psion(pDocument) {}

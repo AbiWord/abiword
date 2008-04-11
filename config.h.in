@@ -6,6 +6,9 @@
 /* Define to enable debugging functionality */
 #undef DEBUG
 
+/* Define to prevent symbols from being exported dynamically */
+#undef DISABLE_EXPORTS
+
 /* Whether we are building for embedded device */
 #undef EMBEDDED_TARGET
 

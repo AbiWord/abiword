@@ -38,7 +38,7 @@
  * This sniffer class is specific for Psion Word files. It does not extend
  * the basic IE_ExpSniffer class.
  */
-class ABI_PLUGIN_EXPORT IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
+class IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
 {
 public:
 	IE_Exp_Psion_Word_Sniffer (const char * name): IE_ExpSniffer(name) {}
@@ -58,7 +58,7 @@ public:
  * This sniffer class is specific for Psion TextEd files. It does not extend
  * the basic IE_ExpSniffer class.
  */
-class ABI_PLUGIN_EXPORT IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
+class IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
 {
 public:
 	IE_Exp_Psion_TextEd_Sniffer (const char * name): IE_ExpSniffer(name) {}
@@ -202,7 +202,7 @@ public:
  * the _writeDocument method, which you do not need to override in the
  * derived classes.
  */
-class ABI_PLUGIN_EXPORT IE_Exp_Psion: public IE_Exp
+class IE_Exp_Psion: public IE_Exp
 {
 public:
 	// Constructors and destructor
@@ -224,7 +224,7 @@ protected:
  * The only method which this class overrides is the _constructListener
  * method, that is made to return a listener of type PL_Psion_TextEd_Listener.
  */
-class ABI_PLUGIN_EXPORT IE_Exp_Psion_TextEd : public IE_Exp_Psion
+class IE_Exp_Psion_TextEd : public IE_Exp_Psion
 {
 public:
 	// Constructors and destructor
@@ -243,7 +243,7 @@ protected:
  * The only method which this class overrides is the _constructListener
  * method, that is made to return a listener of type PL_Psion_Word_Listener.
  */
-class ABI_PLUGIN_EXPORT IE_Exp_Psion_Word : public IE_Exp_Psion
+class IE_Exp_Psion_Word : public IE_Exp_Psion
 {
 public:
 	// Constructors and destructor
