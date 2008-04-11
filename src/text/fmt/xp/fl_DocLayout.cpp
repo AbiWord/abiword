@@ -32,6 +32,7 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_FootnoteLayout.h"
+#include "fl_FrameLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_TOCLayout.h"
 #include "fl_ContainerLayout.h"
@@ -737,6 +738,25 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
 	  pPage->setPageNumberInFrames();
       }
 }
+
+/*!
+ * relocate the frame given to the block on the page requested by the
+ * Frame
+ *
+ */
+void FL_DocLayout:: relocateFrame(fl_FrameLayout * pFrame)
+{
+  //
+  // Get all the attributes/properties
+  // Copy the content
+  // Get page requested.
+  // get the position coords of the frame on the page
+  // delete the old frame
+  // find the correct block on the page
+  // Insert the frame - make sure "relocate" is 0
+  // paste content
+}
+
 void FL_DocLayout::setView(FV_View* pView)
 {
 	m_pView = pView;

@@ -132,6 +132,7 @@ public:
 		abi_page_margin_left,
 		abi_page_margin_right,
 		abi_page_margin_top,
+		abi_relocate,
 		abi_right_attach,
 		abi_right_color,
 		abi_right_style,

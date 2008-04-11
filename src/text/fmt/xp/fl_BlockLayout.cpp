@@ -2190,6 +2190,17 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			continue;
 		}
+
+		if(pFrame->isRelocate())
+		{
+				//
+				// This frame needs to be relocated elsewhere
+				//
+				removeFrame(pFrame);
+				m_pLayout->relocateFrame(pFrame);
+				i--;
+				continue;
+		}
 		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
 		{
 			UT_sint32 xFpos = pFrame->getFrameXpos();

@@ -1249,7 +1249,13 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			sVal = pszWrapMode;
 		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+
+// Relocate     
+		sProp = "relocate";
+		sVal = "0";
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+
 
 // Xpadding
 

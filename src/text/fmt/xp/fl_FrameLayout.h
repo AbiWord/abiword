@@ -141,6 +141,8 @@ public:
 		{ return m_bHasEndFrame;}
 	bool                isTightWrap(void)
 	  { return m_bIsTightWrap;}
+	bool                isRelocate(void) const
+	{ return m_bRelocate;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void		     _lookupMarginProperties(const PP_AttrProp* pAP);
@@ -182,6 +184,7 @@ private:
         FL_FrameWrapMode        m_iFrameWrapMode;
 	bool                    m_bIsTightWrap;
 	UT_sint32               m_iPrefPage;
+	bool                    m_bRelocate;
 };
 
 #endif /* FRAMELAYOUT_H */

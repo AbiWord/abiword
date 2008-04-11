@@ -1,4 +1,3 @@
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Patrick Lam <plam@mit.edu>
@@ -109,6 +108,14 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	}
 }
 
+/*!
+ * Returns true if the frame should be relocated before placing on a page
+ */
+bool fp_FrameContainer::isRelocate(void) const
+{
+     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+     return pFL->isRelocate();
+}
 /*!
  * Returns true if the supplied screen rectangle overlaps with frame
  * container. This method takes account of transparening and tight wrapping.

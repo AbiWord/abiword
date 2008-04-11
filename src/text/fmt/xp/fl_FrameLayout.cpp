@@ -101,7 +101,8 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iBoundingSpace(0),
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
 	  m_bIsTightWrap(false),
-	  m_iPrefPage(-1)
+	  m_iPrefPage(-1),
+	  m_bRelocate(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -816,6 +817,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszBoundingSpace = NULL;
 	const gchar * pszTightWrapped = NULL;
 	const gchar * pszPrefPage = NULL;
+
+	const gchar * pszRelocate = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -913,6 +916,21 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_bIsTightWrap = false;
+	}
+	//
+	// Should be relocated before final placement
+	//
+	if(!pSectionAP || !pSectionAP->getProperty("relocate",pszTightWrapped))
+	{
+		m_bRelocate = false;
+	}
+	else if(strcmp(pszTightWrapped,"1") == 0)
+	{
+		m_bRelocate = true;
+	}
+	else
+	{
+		m_bRelocate = false;
 	}
 
 // Xpos

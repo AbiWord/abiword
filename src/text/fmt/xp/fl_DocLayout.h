@@ -76,6 +76,7 @@ class fl_AnnotationLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
 class GR_EmbedManager;
+class fl_FrameLayout;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -155,6 +156,7 @@ public:
 	UT_uint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
 	void            setFramePageNumbers(UT_sint32 iStartPage);
+	void            relocateFrame(fl_FrameLayout * pFrame);
 
 	UT_sint32   getPercentFilled(void)
 		{ return m_iFilled;}
