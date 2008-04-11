@@ -32,13 +32,14 @@ EXTRA_DIST = \
 	abiword.desktop \
 	abiword.keys \
 	abiword_48.png \
-	libabiword.pc.in \
+	libabiword.pc.in
+
+DISTCLEANFILES = \
+	abiword-$(ABIWORD_SERIES).pc \
+	plugin-builtin.m4 \
 	plugin-configure.m4 \
 	plugin-list.m4 \
 	plugin-makefiles.m4
-
-DISTCLEANFILES = \
-	abiword-$(ABIWORD_SERIES).pc
 
 abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 	cp $< $@
@@ -46,10 +47,10 @@ abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 if TOOLKIT_WIN
 zip:
 	rm -rf $(PACKAGE)-$(VERSION)
-	make DESTDIR=$(shell pwd)/zip install
+	make DESTDIR=$(abs_builddir)/zip install
 	mv zip$(prefix) $(PACKAGE)-$(VERSION)
 	cd $(PACKAGE)-$(VERSION)
 	zip -r $(PACKAGE)-$(VERSION).zip $(PACKAGE)-$(VERSION) -x \*.a \*.la
-	rm -rf $(PACKAGE)-$(VERSION) $(shell pwd)/zip
+	rm -rf $(PACKAGE)-$(VERSION) ./zip
 endif
 
