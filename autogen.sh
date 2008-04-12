@@ -6,7 +6,7 @@ test -z "$srcdir" && srcdir=.
 olddir=`pwd`
 cd $srcdir
 
-source autogen-common.sh
+./autogen-common.sh
 
 autoreconf --force --install --symlink
 
