@@ -123,9 +123,7 @@ abi_table_resize(AbiTable* table)
 	g_return_if_fail(table);
 
 	if (table->selected_rows == 0 && table->selected_cols == 0)
-		// RIVERA changed as suggested by uwog (OSX X11 was crashing)
-		//text = g_strdup_printf(table->szCancel);
-		text = (table->szCancel ? g_strdup_printf(table->szCancel) : NULL);
+		text = g_strdup(table->szCancel);
 	else
 	{
 		UT_UTF8String prText =  "%d x %d ";
