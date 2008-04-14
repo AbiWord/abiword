@@ -1084,37 +1084,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
 
-	// HACK : This one's ugly.  If we continue through the callback chain,
-	// HACK : GTK will pick up key presses and hand them off to widgets with
-	// HACK : focus (like toolbar combos).  This is bad, since we have already
-	// HACK : acted on the key press (like space, we would insert a space
-	// HACK : in the document, but GTK will let space mean "open the menu"
-	// HACK : to a combo).  The user is confused and things are annoying.
-	// HACK :
-	// HACK : We _could_ block all GTK key handling, and do everything
-	// HACK : ourselves, but then we lose the automatic menu accelerator
-	// HACK : bindings (Alt-F for File menu).
-	// HACK :
-	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
-
-	// If a modifier is down, return to let GTK catch
-
-	// don't let GTK handle keys when mod2 (numlock) or mod5 (scroll lock) are down
-
-	// What's "LOCK_MASK"?  I can't seem to trigger it with caps lock, scroll lock, or
-	// num lock.
-//		(e->state & GDK_LOCK_MASK))		// catch all keys with "num lock" down for now
-
-	if ((e->state & GDK_MOD1_MASK) ||
-		(e->state & GDK_MOD3_MASK) ||
-		(e->state & GDK_MOD4_MASK))
-		return 0;
-
-	// ... else, stop this signal
-	g_signal_stop_emission (G_OBJECT(w),
-							g_signal_lookup ("key_press_event",
-											 G_OBJECT_TYPE (w)), 0);
-	return 1;
+	return 0;
 }
 
 gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
@@ -1624,11 +1594,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		gtk_widget_realize(m_wTopLevelWindow);
 
 	_createIMContext(m_wTopLevelWindow->window);
-
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
-					   G_CALLBACK(_fe::key_press_event), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
-					   G_CALLBACK(_fe::key_release_event), NULL);
 
 	/* If refactoring the toolbars code, please make sure that toolbars
 	 * are created AFTER the main menu bar has been synthesized, otherwise

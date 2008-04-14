@@ -215,7 +215,13 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
-  
+
+	g_signal_connect(G_OBJECT(m_dArea), "key_press_event",
+					   G_CALLBACK(XAP_UnixFrameImpl::_fe::key_press_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "key_release_event",
+					   G_CALLBACK(XAP_UnixFrameImpl::_fe::key_release_event), NULL);
+
 	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::button_press_event), NULL);
 
