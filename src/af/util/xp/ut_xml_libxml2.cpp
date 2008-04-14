@@ -207,7 +207,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 			{
 			  if(getNumMinorErrors() > getNumRecoveredErrors())
 			    {
-				UT_DEBUGMSG (("Error - 1 parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+				UT_DEBUGMSG (("Error - 1 parsing '%s' (Line: %d, Column: %d)\n", szFilename, xmlSAX2GetLineNumber(ctxt), xmlSAX2GetColumnNumber(ctxt)));
 				ret = UT_IE_IMPORTERROR;
 				break;
 			    }
@@ -218,7 +218,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 			{
 				if (xmlParseChunk (ctxt, "", 0, 1))
 				{
-					UT_DEBUGMSG (("Error -2 parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+					UT_DEBUGMSG (("Error -2 parsing '%s' (Line: %d, Column: %d)\n", szFilename, xmlSAX2GetLineNumber(ctxt), xmlSAX2GetColumnNumber(ctxt)));
 					ret = UT_IE_IMPORTERROR;
 				}
 			}
