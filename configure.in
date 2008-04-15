@@ -89,8 +89,8 @@ AC_SUBST([TOOLKIT])
 
 # Platform-specific tests
 
-function_err='Your operating system or setup seems to be missing one ore more required functions'
-header_err='Your operating system or setup seems to be missing one ore more required header files'
+function_err='Your operating system or setup seems to be missing one or more required functions'
+header_err='Your operating system or setup seems to be missing one or more required header files'
 
 cocoa_funcs='floor mkdir'
 unix_funcs='gettimeofday'
