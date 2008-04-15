@@ -23,7 +23,6 @@ endif
 
 libgtk_la_SOURCES = \
 	$(print_src) \
-	gtkintl.h \
 	xap_EmbeddedFeatures.h \
 	xap_UnixApp.cpp \
 	xap_UnixApp.h \
