@@ -2,7 +2,7 @@
 SUBDIRS = ToolbarIcons
 
 # TODO set this in configure.in
-CDUMPAPP = $(top_srcdir)/src/tools/cdump/xp/cdump.pl
+CDUMPAPP = $(top_srcdir)/tools/cdump/xp/cdump.pl
 
 noinst_LTLIBRARIES = libxp.la
 
