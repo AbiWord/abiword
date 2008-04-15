@@ -75,6 +75,9 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
@@ -145,8 +148,17 @@
    `char[]'. */
 #undef YYTEXT_POINTER
 
+/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef was allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT32_T
+
 /* minimal comctl.dll v4.70 for toolbars */
 #undef _WIN32_IE
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
+
+/* Define to the type of an unsigned integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint32_t

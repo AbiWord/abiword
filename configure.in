@@ -87,6 +87,33 @@ AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
 AC_SUBST([PLATFORM])
 AC_SUBST([TOOLKIT])
 
+# Platform-specific tests
+
+function_err='Your operating system or setup seems to be missing one ore more required functions'
+header_err='Your operating system or setup seems to be missing one ore more required header files'
+
+cocoa_funcs='floor mkdir'
+unix_funcs='gettimeofday'
+win_funcs=
+xp_funcs='alarm localeconv strcspn strncasecmp strtoul' # "sqrt" test fails, hmm
+funcs=
+
+if test "$PLATFORM" == "cocoa"; then
+	funcs="$cocoa_funcs $xp_funcs"
+elif test "$PLATFORM" == "unix"; then
+	AC_CHECK_HEADERS([sys/time.h], [], [$header_err])
+	AC_FUNC_STRTOD
+	AC_TYPE_UINT32_T
+	funcs="$unix_funcs $xp_funcs"
+elif test "$PLATFORM" == "win"; then
+	funcs="$win_funcs $xp_funcs"
+fi
+
+AC_CHECK_FUNCS([ $funcs ], 
+[], [
+	AC_MSG_ERROR([$function_err])
+])
+
 #
 # Features
 #
