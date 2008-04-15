@@ -112,11 +112,6 @@
 #include "gr_UnixPangoGraphics.h"
 #include "gr_UnixPangoPixmapGraphics.h"
 
-#ifdef ENABLE_BINRELOC
-  #include "prefix.h"
-#endif // ENABLE_BINRELOC
-
-
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
 #else
