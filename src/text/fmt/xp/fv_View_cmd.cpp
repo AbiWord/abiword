@@ -6036,9 +6036,12 @@ void FV_View::cmdContextAdd(void)
 	// locate the squiggle
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
-	UT_ASSERT(pBL);
+	UT_return_if_fail(pBL);
 	fl_PartOfBlock* pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
-	UT_ASSERT(pPOB);
+	if(!pPOB) // this can happen with very rapid right-clicks
+	{
+		return;
+	}
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
