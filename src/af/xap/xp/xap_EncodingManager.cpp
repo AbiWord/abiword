@@ -1394,9 +1394,9 @@ void XAP_EncodingManager::initialize()
 	    const char** fontsizes = cjk_locale() ? cjk_fontsizes : non_cjk_fontsizes;
 	    for(const char** cur=fontsizes; *cur; ++cur) 
 		{
-		  UT_String buf ( " " );
+		  UT_String buf;// ( " " );
 		  buf += *cur;
-		  buf += " ";
+//		  buf += " ";
 		  fontsizes_mapping.add(*cur, buf.c_str());
 	    }
 	}

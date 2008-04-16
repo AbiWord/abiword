@@ -403,6 +403,42 @@ public:									// we create...
 		pFrame->dragEnd(wd->m_id);
 	};
 
+	/*!
+	 * Only accept numeric input in the toolbar's font size combo.
+	 */
+	static void s_insert_text_cb (GtkEditable *editable,
+								  gchar       *new_text,
+								  gint         new_text_length,
+								  gint        /* *position */ , 
+								  gpointer    /* data */)
+	{
+		gchar		*iter;
+		gunichar	 c;
+
+		iter = new_text;
+		while (iter < (new_text + new_text_length)) {
+			c = g_utf8_get_char (iter);
+			if (!g_unichar_isdigit (c)) {
+				g_signal_stop_emission_by_name (G_OBJECT (editable), "insert-text");
+				return;
+			}
+			iter = g_utf8_next_char (iter);
+		}
+	}
+
+	/*!
+	 * Apply changes after editing of the font size is done.
+	 */
+	static gboolean	focus_out_event_cb (GtkWidget     *widget,
+										GdkEventFocus *event,
+										_wd           *wd)
+	{
+		GtkComboBox *combo;
+		combo = GTK_COMBO_BOX (gtk_widget_get_parent (widget));
+		s_combo_changed (combo, wd);
+		return FALSE;
+	}
+
 	static void s_font_prelight(GtkComboBox * combo, const gchar *text, _wd * wd)
 	{
 		GtkWidget 	*widget;
@@ -461,6 +497,15 @@ public:									// we create...
 		// only act if the widget has been shown and embedded in the toolbar
 		if (!wd->m_widget || wd->m_blockSignal) {
 			return;
+		}
+
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+			// no updates of the font size while the entry is being edited
+			GtkWidget *entry;
+			entry = gtk_bin_get_child (GTK_BIN(combo));
+			if (GTK_WIDGET_HAS_FOCUS(entry)) {
+				return;
+			}
 		}
 
 		// TODO Rob: move this into ev_UnixFontCombo
@@ -943,6 +988,8 @@ bool EV_UnixToolbar::synthesize(void)
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
 					gtk_entry_set_width_chars (entry, 4);
+					g_signal_connect (G_OBJECT (entry), "insert-text", G_CALLBACK (_wd::s_insert_text_cb), NULL);
+					g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (_wd::focus_out_event_cb), (gpointer) wd);
 					// same size for font and font-size combos
 					// gtk_size_group_add_widget (m_wHSizeGroup, combo);
 					proxy_action_name = "dlgFont";

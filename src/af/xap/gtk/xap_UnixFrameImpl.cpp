@@ -31,6 +31,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <gdk/gdkkeysyms.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -1084,7 +1085,14 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
 
-	return 0;
+	// stop emission for keys that would take the focus away from the document widget
+	switch (e->keyval) {
+	case GDK_Tab: case GDK_Left: case GDK_Up: case GDK_Right: case GDK_Down: 
+		return TRUE;
+		break;
+	}
+
+	return FALSE;
 }
 
 gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
