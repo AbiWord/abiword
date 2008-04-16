@@ -29,6 +29,7 @@
 #include "config.h"
 #endif
 
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include <goffice/gtk/go-combo-box.h>
 #include <goffice/gtk/go-combo-color.h>
@@ -427,15 +428,34 @@ public:									// we create...
 	}
 
 	/*!
-	 * Apply changes after editing of the font size is done.
+	 * Apply font size upon <return>
 	 */
-	static gboolean	focus_out_event_cb (GtkWidget     *widget,
-										GdkEventFocus *event,
-										_wd           *wd)
+	static gboolean	s_key_press_event_cb (GtkWidget   *widget,
+	                                      GdkEventKey *event,
+	                                      _wd         *wd)
 	{
 		GtkComboBox *combo;
+
+		if (event->keyval == GDK_Return) {
+			combo = GTK_COMBO_BOX (gtk_widget_get_parent (widget));
+			s_combo_apply_changes (combo, wd);
+		}
+
+		return FALSE;
+	}
+
+	/*!
+	 * Apply changes after editing of the font size is done.
+	 */
+	static gboolean	s_focus_out_event_cb (GtkWidget     *widget,
+										  GdkEventFocus *event,
+										  _wd           *wd)
+	{
+
+		GtkComboBox *combo;
 		combo = GTK_COMBO_BOX (gtk_widget_get_parent (widget));
-		s_combo_changed (combo, wd);
+		s_combo_apply_changes (combo, wd);
+
 		return FALSE;
 	}
 
@@ -508,6 +528,17 @@ public:									// we create...
 			}
 		}
 
+		s_combo_apply_changes (combo, wd);
+	}
+
+	/*!
+	 * Actually apply changes after a combo has been frobbed.
+	 * This is not meant to be used as a signal handler, but rather to 
+	 * implement common functionality after the decision has been made 
+	 * whether to apply or not.
+ 	 */
+	static void s_combo_apply_changes(GtkComboBox * combo, _wd * wd)
+	{
 		// TODO Rob: move this into ev_UnixFontCombo
 		gchar *buffer = NULL;
 		GtkTreeModel *model = gtk_combo_box_get_model (combo);
@@ -543,7 +574,7 @@ public:									// we create...
 		UT_UCS4String ucsText(buffer);
 		wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
 		g_free (buffer);
-	};
+	}
 
 	EV_UnixToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
@@ -989,7 +1020,8 @@ bool EV_UnixToolbar::synthesize(void)
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
 					gtk_entry_set_width_chars (entry, 4);
 					g_signal_connect (G_OBJECT (entry), "insert-text", G_CALLBACK (_wd::s_insert_text_cb), NULL);
-					g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (_wd::focus_out_event_cb), (gpointer) wd);
+					g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (_wd::s_focus_out_event_cb), (gpointer) wd);
+					g_signal_connect (G_OBJECT (entry), "key-press-event", G_CALLBACK (_wd::s_key_press_event_cb), (gpointer) wd);
 					// same size for font and font-size combos
 					// gtk_size_group_add_widget (m_wHSizeGroup, combo);
 					proxy_action_name = "dlgFont";
