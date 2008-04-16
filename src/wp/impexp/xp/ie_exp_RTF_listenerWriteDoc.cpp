@@ -1685,6 +1685,10 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bOpennedFootnote = false;
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
+	m_bAnnotationOpen = false;
+	m_iAnnotationNumber = 0;
+	m_pAnnContent = NULL;
+	m_pSavedBuf = NULL;
 	m_bOpenBlockForSpan = bHasMultiBlock;
 	m_bTextBox = false;
 	// <section>+ will be handled by the populate code.
@@ -1817,6 +1821,67 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->_rtf_close_brace();
 					m_pie->_rtf_close_brace();
 				}
+			    return true;
+			}
+			case PTO_Annotation:
+			{
+				_closeSpan ();
+				const PP_AttrProp * pAP = NULL;
+				m_pDocument->getAttrProp(api,&pAP);
+				const gchar * pName;
+				const gchar * pValue;
+				bool bFound = false;
+				UT_uint32 k = 0;
+				while(pAP->getNthAttribute(k++, pName, pValue))
+				{
+					bFound = (0 == g_ascii_strncasecmp(pName,"annotation",10));
+					if(bFound)
+						break;
+				}
+				if(bFound)
+				{
+					//this is the start of the Annotation
+					_writeAnnotation(pcro);
+				}
+				else
+				{
+//
+// This is the end of the Annotation marker, signified by no Annotation tag
+//
+					m_bAnnotationOpen = false;
+					m_pie->_rtf_open_brace();
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword_space("atrfend",m_iAnnotationNumber);
+					m_pie->_rtf_close_brace();
+//
+// Now assemble all the stuff for the annotation content and write it to the
+// stream
+//
+					m_pie->_rtf_open_brace();
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword("atnauthor",m_sAnnAuthor.utf8_str());
+					m_pie->_rtf_close_brace();
+					m_pie->_rtf_keyword("chatn");
+
+					m_pie->_rtf_open_brace();
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword("annotation");
+
+					m_pie->_rtf_open_brace();
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword_space("atnref",m_iAnnotationNumber);
+					m_pie->_rtf_close_brace();
+
+					m_pie->_rtf_open_brace();
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword("atdate",m_sAnnDate.utf8_str());
+					m_pie->_rtf_close_brace();
+					m_pie->write(reinterpret_cast<const char *>(m_pAnnContent->getPointer(0)),m_pAnnContent->getLength());
+					DELETEP(m_pAnnContent);
+					m_pie->_rtf_close_brace();
+					m_pie->_rtf_close_brace();
+
+			}
 			    return true;
 			}
 			default:
@@ -4177,6 +4242,71 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
 			return true;
 		}
+	case PTX_SectionAnnotation:
+	    {
+			_closeSpan();
+			_setTabEaten(false);
+			m_bOpennedFootnote = true;
+
+			// we set m_bInBlock to false to prevent issue of \par keyword; the block
+			// which gets inserted into the footnote resets this into the normal state, so
+			// that when we exit the footnote section, we will be again in block and the
+			// block that contains the footnote will get closed as normal
+			m_bInBlock = false;
+			m_apiSavedBlock = m_apiThisBlock;
+			m_sdhSavedBlock = m_sdh;
+			m_sdh = sdh;
+			const PP_AttrProp * pAnnotationAP = NULL;
+			m_pDocument->getAttrProp(pcr->getIndexAP(),&pAnnotationAP);
+			const char* pszAuthor;
+			const char* pszTitle;
+			const char *pszDate;
+			if(!pAnnotationAP->getProperty("annotation-author", (const char *&)pszAuthor))
+			{
+			    pszAuthor = "n/a";
+			}
+			if(*pszAuthor == 0)
+			{
+			    pszAuthor = "n/a";
+			}
+			m_sAnnAuthor = pszAuthor;
+			if(!pAnnotationAP->getProperty("annotation-title", (const char *&)pszTitle))
+			{
+			    pszTitle = "n/a";
+			}
+			if(*pszTitle == 0)
+			{
+			    pszTitle = "n/a";
+			}
+			m_sAnnTitle = pszTitle;
+			if(!pAnnotationAP->getProperty("annotation-date", (const char *&)pszDate))
+			{
+			    pszDate = "n/a";
+			}
+			if(*pszDate == 0)
+			{
+			    pszDate = "n/a";
+			}
+			m_sAnnDate = pszDate;
+			//
+			// Swap out current buffer for a annotation buffer
+			// we'll paste the annotation content back in later
+			//
+			m_pSavedBuf = m_pie->getByteBuf();
+			m_pAnnContent = new UT_ByteBuf(0);
+			m_pie->setByteBuf(m_pAnnContent);
+			return true;
+		}
+	case PTX_EndAnnotation:
+	    {
+	                m_pie->setByteBuf(m_pSavedBuf);
+			_closeSpan();
+			_setTabEaten(false);
+			m_sdh = m_sdhSavedBlock;
+			m_apiThisBlock = m_apiSavedBlock;
+			return true;
+		}
+
 	case PTX_SectionFrame:
 	    {
 			_closeSpan();
@@ -4744,6 +4874,29 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("fldrslt");
+}
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+void s_RTF_ListenerWriteDoc::_writeAnnotation(const PX_ChangeRecord_Object * pcro)
+{
+	PT_AttrPropIndex api = pcro->getIndexAP();
+	const PP_AttrProp * pAnnotationAP = NULL;
+	m_pDocument->getAttrProp(api,&pAnnotationAP);
+
+	const gchar * szAnn = NULL;
+	bool bFound = pAnnotationAP->getAttribute("annotation", szAnn);
+	if (!bFound)
+	{
+		UT_DEBUGMSG (("RTF_Export: cannot get address for Annotation\n"));
+		return;
+	}
+	m_iAnnotationNumber = UT_newNumber();
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword_space("atrfstart",m_iAnnotationNumber);
+	m_bAnnotationOpen = true;
 }
 
 

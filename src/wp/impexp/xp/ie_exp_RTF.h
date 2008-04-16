@@ -122,10 +122,13 @@ public:
 	void exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,const char * pszKeyword);
 	UT_BidiCharType isCharRTL() {return m_CharRTL;}
 	void setCharRTL(UT_BidiCharType t) {m_CharRTL = t;}
-
+	void     setByteBuf(UT_ByteBuf * pBuf)
+	{ _setByteBuf(pBuf);}
+	UT_ByteBuf * getByteBuf(void)
+	{ return _getByteBuf();}
 protected:
 	virtual UT_Error	_writeDocument(void);
-
+	UT_Error	        _writeDocumentLocal(bool bSkipHeader);
 	UT_sint32			_findColor(const char * szColor) const;
 	UT_sint32           _findOrAddColor (const char * szColor);
 	void				_addColor(const char * szColor);
@@ -134,6 +137,7 @@ protected:
 	bool                _rtf_reopen_brace(void);
 	void				_rtf_keyword(const char * szKey);
 	void				_rtf_keyword(const char * szKey, UT_sint32 d);
+	void				_rtf_keyword_space(const char * szKey, UT_sint32 d);
 	void                _rtf_keyword(const char * szKey, const char * szValue);
 	void				_rtf_nonascii_hex2(UT_sint32 d);
 	void				_rtf_nonascii_hex2(UT_sint32 d, UT_String & pStr);

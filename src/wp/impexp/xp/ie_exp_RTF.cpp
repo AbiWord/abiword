@@ -190,8 +190,12 @@ bool IE_Exp_MsWord_Hack_Sniffer::getDlgLabels(const char ** pszDesc,
 
 /*****************************************************************/
 /*****************************************************************/
-
 UT_Error IE_Exp_RTF::_writeDocument(void)
+{
+	_writeDocumentLocal(false);
+}
+
+UT_Error IE_Exp_RTF::_writeDocumentLocal(bool bSkipHeader)
 {
 	// The overall syntax for an RTF file is:
 	//
@@ -211,7 +215,7 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	s_RTF_ListenerGetProps * listenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
 	if (!listenerGetProps)
 		return UT_IE_NOMEMORY;
-	if (getDocRange())
+	if (getDocRange() && !bSkipHeader)
 		getDoc()->tellListenerSubset(listenerGetProps,getDocRange());
 	else
 		getDoc()->tellListener(listenerGetProps);
@@ -228,10 +232,11 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	_selectStyles();
 
 	// write rtf header
-
-	if (!_write_rtf_header())
-		return UT_IE_COULDNOTWRITE;
-
+	if(!bSkipHeader)
+	{
+		if (!_write_rtf_header())
+			return UT_IE_COULDNOTWRITE;
+	}
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 
@@ -246,11 +251,15 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 
 	// write any rtf trailer matter
 
-	if (!_write_rtf_trailer())
-		return UT_IE_COULDNOTWRITE;
-
+	if(!bSkipHeader)
+	{
+			if (!_write_rtf_trailer())
+				return UT_IE_COULDNOTWRITE;
+	}
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
+
+
 
 /*!
  * This method search for the requested header/footer section within
@@ -458,6 +467,15 @@ void IE_Exp_RTF::_rtf_keyword(const char * szKey, UT_sint32 d)
 	write("\\");
 	write(szKey);
 	write(UT_String_sprintf("%d",d));
+	m_bLastWasKeyword = true;
+}
+
+
+void IE_Exp_RTF::_rtf_keyword_space(const char * szKey, UT_sint32 d)
+{
+	write("\\");
+	write(szKey);
+	write(UT_String_sprintf(" %d",d));
 	m_bLastWasKeyword = true;
 }
 

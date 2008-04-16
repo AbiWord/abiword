@@ -12560,7 +12560,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	sDate = UT_UTF8String_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
 	pszAnn[5] = sDate.utf8_str();
 	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
-				  "normal",
+				  "Normal",
 				  NULL,
 				  NULL
 	};

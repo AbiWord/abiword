@@ -228,6 +228,19 @@ bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_apiThisBlock = m_apiSavedBlock;
 			return true;
 		}
+	case PTX_SectionAnnotation:
+	    {
+			_closeSpan();
+			m_apiSavedBlock = m_apiThisBlock;
+			return true;
+		}
+	case PTX_EndAnnotation:
+	    {
+			_closeSpan();
+			_closeBlock();
+			m_apiThisBlock = m_apiSavedBlock;
+			return true;
+		}
 	case PTX_SectionEndnote:
 	    {
 			_closeSpan();

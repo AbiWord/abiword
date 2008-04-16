@@ -90,6 +90,7 @@ protected:
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
 	void                _writeHyperlink(const PX_ChangeRecord_Object * pcro);
+	void                _writeAnnotation(const PX_ChangeRecord_Object * pcro);
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
 	const UT_UCSChar *  _getFieldValue(void);
 	void                _writeFieldTrailer(void);
@@ -147,7 +148,14 @@ protected:
 	bool                m_bHyperLinkOpen;
 	bool                m_bOpenBlockForSpan;
 	bool                m_bTextBox;
-	
+	//
+	bool                m_bAnnotationOpen;
+	UT_uint32           m_iAnnotationNumber;
+	UT_ByteBuf *        m_pAnnContent;
+	UT_ByteBuf *        m_pSavedBuf;
+	UT_UTF8String       m_sAnnTitle;
+	UT_UTF8String       m_sAnnAuthor;
+	UT_UTF8String       m_sAnnDate;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

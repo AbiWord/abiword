@@ -185,6 +185,10 @@ protected:
 		}
 
 	bool				m_error;
+	void               _setByteBuf(UT_ByteBuf * pBuf)
+	{ m_pByteBuf = pBuf;}
+	UT_ByteBuf *       _getByteBuf(void)
+	{ return m_pByteBuf;}
 
 public:
 	const std::string & getProperty (const std::string & key) {
