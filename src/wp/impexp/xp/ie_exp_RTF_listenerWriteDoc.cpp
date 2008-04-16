@@ -1832,7 +1832,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				const gchar * pValue;
 				bool bFound = false;
 				UT_uint32 k = 0;
-				while(pAP->getNthAttribute(k++, pName, pValue))
+				while(pAP && pAP->getNthAttribute(k++, pName, pValue))
 				{
 					bFound = (0 == g_ascii_strncasecmp(pName,"annotation",10));
 					if(bFound)
@@ -1874,7 +1874,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 
 					m_pie->_rtf_open_brace();
 					m_pie->_rtf_keyword("*");
-					m_pie->_rtf_keyword("atdate",m_sAnnDate.utf8_str());
+					m_pie->_rtf_keyword("atndate",m_sAnnDate.utf8_str());
 					m_pie->_rtf_close_brace();
 					m_pie->write(reinterpret_cast<const char *>(m_pAnnContent->getPointer(0)),m_pAnnContent->getLength());
 					DELETEP(m_pAnnContent);
@@ -4261,7 +4261,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			const char* pszAuthor;
 			const char* pszTitle;
 			const char *pszDate;
-			if(!pAnnotationAP->getProperty("annotation-author", (const char *&)pszAuthor))
+			if(!pAnnotationAP || !pAnnotationAP->getProperty("annotation-author", (const char *&)pszAuthor))
 			{
 			    pszAuthor = "n/a";
 			}
@@ -4270,7 +4270,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			    pszAuthor = "n/a";
 			}
 			m_sAnnAuthor = pszAuthor;
-			if(!pAnnotationAP->getProperty("annotation-title", (const char *&)pszTitle))
+			if(!pAnnotationAP || !pAnnotationAP->getProperty("annotation-title", (const char *&)pszTitle))
 			{
 			    pszTitle = "n/a";
 			}
@@ -4279,7 +4279,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			    pszTitle = "n/a";
 			}
 			m_sAnnTitle = pszTitle;
-			if(!pAnnotationAP->getProperty("annotation-date", (const char *&)pszDate))
+			if(!pAnnotationAP || !pAnnotationAP->getProperty("annotation-date", (const char *&)pszDate))
 			{
 			    pszDate = "n/a";
 			}
@@ -4884,6 +4884,7 @@ void s_RTF_ListenerWriteDoc::_writeAnnotation(const PX_ChangeRecord_Object * pcr
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pAnnotationAP = NULL;
 	m_pDocument->getAttrProp(api,&pAnnotationAP);
+	UT_return_if_fail(pAnnotationAP);
 
 	const gchar * szAnn = NULL;
 	bool bFound = pAnnotationAP->getAttribute("annotation", szAnn);
