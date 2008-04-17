@@ -61,14 +61,17 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
         !strcmp("text:list-level-style-number", pName) ||
         !strcmp("text:list-level-style-image", pName)) {
 
-        UT_uint32 result;
+        UT_uint32 result = 0;
             
         pVal = UT_getAttribute ("text:level", ppAtts);
-        UT_ASSERT(pVal);
         
-        result = sscanf(pVal, "%u", &m_levelNumber);
-        UT_ASSERT(result==1);
-        m_level = pVal;
+        if (pVal) {
+            result = sscanf(pVal, "%u", &m_levelNumber);
+            // TODO: check result?
+            m_level = pVal;
+        } else {
+            UT_DEBUGMSG(("ODi_ListLevelStyle::startElement: missing text:level attribute\n"));
+        }
         
         pVal = UT_getAttribute ("text:style-name", ppAtts);
         if (pVal) {
