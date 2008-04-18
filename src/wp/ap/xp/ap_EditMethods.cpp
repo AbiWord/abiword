@@ -8557,6 +8557,7 @@ UT_return_val_if_fail(pDialog, false);
 
 	XAP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == XAP_Dialog_Print::a_OK);
+	bool bHideFmtMarks = false;
 
 	if (bOK)
 	{
@@ -8605,6 +8606,11 @@ UT_return_val_if_fail(pDialog, false);
 				pDocLayout = pLayout;
 				pPrintView = pView;
 				pDocLayout->setQuickPrint(pGraphics);
+				if(pFrameData->m_bShowPara)
+				{
+					pPrintView->setShowPara(false);
+					bHideFmtMarks = true;
+				}
 				bDoingQuickPrint = true;
 		}
 
@@ -8638,7 +8644,10 @@ UT_return_val_if_fail(pDialog, false);
 		 }
 		else
 		{
-				pDocLayout->setQuickPrint(NULL);
+			if(bHideFmtMarks)
+				pPrintView->setShowPara(true);
+
+			pDocLayout->setQuickPrint(NULL);
 		}
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -8664,8 +8673,12 @@ static bool s_doPrintPreview(FV_View * pView)
 {
 #ifdef ENABLE_PRINT
 	UT_return_val_if_fail(pView, false);
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_return_val_if_fail(pFrameData, false);
 
 	pFrame->raise();
 
@@ -8710,6 +8723,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	*/
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pPrintView = NULL;
+	bool bHideFmtMarks = false;
 	if(!pGraphics->canQuickPrint() || (pView->getViewMode() != VIEW_PRINT))
 	{
 			pDocLayout = new FL_DocLayout(doc,pGraphics);
@@ -8724,6 +8738,12 @@ static bool s_doPrintPreview(FV_View * pView)
 			pDocLayout = pLayout;
 			pPrintView = pView;
 			pDocLayout->setQuickPrint(pGraphics);
+
+			if(pFrameData->m_bShowPara)
+			{
+				pPrintView->setShowPara(false);
+				bHideFmtMarks = true;
+			}
 	}
 	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
@@ -8746,6 +8766,9 @@ static bool s_doPrintPreview(FV_View * pView)
 	}
 	else
 	{
+		if(bHideFmtMarks)
+			pPrintView->setShowPara(true);
+
 		pDocLayout->setQuickPrint(NULL);
 	}
 	pDialog->releasePrinterGraphicsContext(pGraphics);
