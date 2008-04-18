@@ -4907,7 +4907,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 	  }
   }
 
-  vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell];
+  if (ps->vmerges && ps->vmerges[m_iCurrentRow - 1])
+    vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell];
 
   if (vspan > 0)
     vspan--;
