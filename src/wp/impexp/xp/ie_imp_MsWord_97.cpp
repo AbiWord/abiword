@@ -5081,8 +5081,16 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	// background color
 	ico = achp->shd.icoBack;
 	if (ico) {
-		UT_String_sprintf(propBuffer, "background-color:%s;",
-						  sMapIcoToColor(ico, false).c_str());
+		if (!achp->fHighlight) {
+			// HACK: We don't support borders and shading yet, so it seems safe to use the background
+			// color as a substitute when there's no true highlight color (see the doc from Bug 6432)
+			UT_String_sprintf(propBuffer, "bgcolor:%s;",
+							  sMapIcoToColor(ico, false).c_str());
+		} else {
+			// Note: This property won't be rendered until we have borders and shading support
+			UT_String_sprintf(propBuffer, "background-color:%s;",
+							  sMapIcoToColor(ico, false).c_str());
+		}
 		s += propBuffer;
 	}
 	
