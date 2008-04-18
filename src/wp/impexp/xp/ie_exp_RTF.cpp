@@ -1366,9 +1366,9 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 			static char tmp[100];
 			if(lab != NULL)
 			{
-				UT_uint32 len = UT_MIN(UT_UCS4_strlen(lab),100);
+				UT_uint32 len = UT_MIN(UT_UCS4_strlen(lab),99);
 				UT_uint32 i;
-				for(i=0; i<len; i++)
+				for(i=0; i<=len; i++)
 					tmp[i] = (char ) (unsigned char)  *lab++;
 				_rtf_chardata(tmp,len);
 			}
