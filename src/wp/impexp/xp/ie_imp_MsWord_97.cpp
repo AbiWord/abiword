@@ -2840,7 +2840,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			UT_sint32 i =0;
 			UT_sint32 posLeft = 0;
 			UT_sint32 posRight =0;
-			posLeft = ps->cellbounds[0];
+			if (ps->cellbounds)
+				posLeft = ps->cellbounds[0];
 			for (column = 1; column < ps->nocellbounds; column++) 
 			{
 				int span = 0;
