@@ -448,7 +448,8 @@ public:
 
 	bool descends (const char * style_name) const;
 
-	void print (s_HTML_Listener * listener) const;
+	template<typename StyleListener>
+	void print (StyleListener * listener) const;
 
 	const s_StyleTree * operator[] (UT_uint32 i) const
 	{
@@ -2301,7 +2302,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2319,7 +2320,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2337,7 +2338,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
@@ -2398,7 +2399,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2412,7 +2413,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2426,7 +2427,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 			bClassAsTag = true;
 
-			if (m_toc) {
+			if (m_toc->docHasTOC()) {
 				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2455,7 +2456,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc && m_toc->isTOCStyle(szValue)) {
+			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -2468,7 +2469,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_P;
 			tagPending = true;
 
-			if (m_toc && m_toc->isTOCStyle(szValue)) {
+			if (m_toc->docHasTOC() && m_toc->isTOCStyle(szValue)) {
 				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
@@ -6121,7 +6122,8 @@ bool s_StyleTree::descends (const char * style_name) const
 	return m_parent->descends (style_name);
 }
 
-void s_StyleTree::print (s_HTML_Listener * listener) const
+template<typename StyleListener>
+void s_StyleTree::print (StyleListener * listener) const
 {
 	if (!m_bInUse) return;
 
@@ -6132,7 +6134,9 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 		UT_UTF8String selector("*.");
 		if (m_class_name.byteLength ())
 		{
-			selector += m_class_name;
+			UT_UTF8String tmp = m_class_name;
+			tmp.escapeXML();
+			selector += tmp.utf8_str();
 		}
 		else
 		{
@@ -7072,6 +7076,93 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_Error err = parser.parse (prop.c_str ());
 
 	return err;
+}
+
+struct StyleListener
+{
+	UT_ByteBuf& m_sink;
+	UT_UTF8String m_utf8_0;
+	UT_uint32 m_styleIndent;
+
+	StyleListener(UT_ByteBuf& sink)
+		: m_sink(sink), m_styleIndent(0)
+	{
+	}
+
+	bool get_Compact() { return false; }
+
+	void tagRaw (UT_UTF8String & content)
+	{
+		m_sink.append((const UT_Byte*)content.utf8_str (), content.byteLength ());
+	}
+
+	void styleIndent ()
+	{
+		m_utf8_0 = "";
+		
+		for (UT_uint32 i = 0; i < m_styleIndent; i++) m_utf8_0 += "\t";
+	}
+
+	void styleOpen (const UT_UTF8String & rule)
+	{
+		styleIndent ();
+		
+		m_utf8_0 += rule;
+		m_utf8_0 += " {";
+		if(!get_Compact())
+			m_utf8_0 += MYEOL;
+		
+		tagRaw (m_utf8_0);
+		
+		m_styleIndent++;
+	}
+	
+	void styleClose ()
+	{
+		if (m_styleIndent == 0)
+			{
+				UT_DEBUGMSG(("WARNING: CSS style group over-closing!\n"));
+				return;
+			}
+		m_styleIndent--;
+		
+		styleIndent ();
+		
+		m_utf8_0 += "}";
+		if(!get_Compact())
+			m_utf8_0 += MYEOL;
+		
+		tagRaw (m_utf8_0);
+	}
+
+	void styleNameValue (const char * name, const UT_UTF8String & value)
+	{
+		styleIndent ();
+		
+		m_utf8_0 += name;
+		m_utf8_0 += ":";
+		m_utf8_0 += value;
+		m_utf8_0 += ";";
+		if(!get_Compact())
+			m_utf8_0 += MYEOL;
+
+		tagRaw (m_utf8_0);
+	}
+
+	void styleText (const UT_UTF8String & content)
+	{
+		m_utf8_0 = content;
+		tagRaw (m_utf8_0);
+	}
+};
+
+void IE_Exp_HTML::printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink)
+{
+	IE_Exp_HTML html(pDocument);
+	html._buildStyleTree ();
+
+	StyleListener listener(sink);
+	html.m_style_tree->print(&listener);
 }
 
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)

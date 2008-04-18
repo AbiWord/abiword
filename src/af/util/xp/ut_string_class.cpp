@@ -269,18 +269,9 @@ size_t UT_String_findRCh(const UT_String &st, char ch)
 UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
 			      va_list      args1)
 {
-  char *buffer;
-  va_list args2;
-
-  G_VA_COPY (args2, args1);
-
-  buffer = new char [ g_printf_string_upper_bound (format, args1) ];
-  vsprintf (buffer, format, args2);
-  va_end (args2);
-
+  char *buffer = g_strdup_vprintf(format, args1);
   inStr = buffer;
-
-  delete [] buffer;
+  g_free(buffer);
 
   return inStr;
 }
@@ -556,6 +547,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 
 bool operator==(const UT_String& s1, const UT_String& s2)
 {
+        if (s1.size() != s2.size()) return false;
 	return strcmp(s1.c_str(), s2.c_str()) == 0;
 }
 
@@ -1190,12 +1182,13 @@ bool operator<(const UT_UTF8String& s1, const UT_UTF8String& s2)
 }
 bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2)
 {
+        if (s1.size() != s2.size()) return false;
 	return strcmp(s1.utf8_str(), s2.utf8_str()) == 0;
 }
 
 bool operator!=(const UT_UTF8String& s1, const UT_UTF8String& s2)
 {
-	return strcmp(s1.utf8_str(), s2.utf8_str()) != 0;
+	return !(s1 == s2);
 }
 
 bool operator==(const UT_UTF8String& s1, const char * s2)
@@ -1210,11 +1203,13 @@ bool operator!=(const UT_UTF8String& s1, const char * s2)
 
 bool operator==(const UT_UTF8String& s1, const std::string &s2)
 {
+        if (s1.size() != s2.size()) return false;
 	return s1.utf8_str() == s2;
 }
 
 bool operator!=(const UT_UTF8String& s1, const std::string &s2)
 {
+        if (s1.size() != s2.size()) return true;
 	return s1.utf8_str() != s2;
 }
 
@@ -1482,6 +1477,7 @@ void UT_UCS4String::swap(UT_UCS4String& rhs)
 
 bool operator==(const UT_UCS4String& s1, const UT_UCS4String& s2)
 {
+        if (s1.size() != s2.size()) return false;
 	return UT_UCS4_strcmp(s1.ucs4_str(), s2.ucs4_str()) == 0;
 }
 

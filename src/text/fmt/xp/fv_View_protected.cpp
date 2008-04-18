@@ -189,7 +189,8 @@ void FV_View::_clearSelection(void)
 	{
 		return;
 	}
-	m_pG->getCaret()->enable();
+	if (m_pG->getCaret())
+		m_pG->getCaret()->enable();
 
 	_fixInsertionPointCoords();
 	if (!m_Selection.isSelected())
