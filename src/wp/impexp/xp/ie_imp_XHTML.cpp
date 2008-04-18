@@ -1782,6 +1782,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 					m_Title.clear();
 				}
 		}
+		return;
 
 	case TT_A:
 		if( m_szBookMarkName )

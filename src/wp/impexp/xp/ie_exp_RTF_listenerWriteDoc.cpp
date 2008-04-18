@@ -2567,7 +2567,7 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
 			}
-			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			else if(strcmp (sWork.c_str(), "transparent") == 0)
 			{
 				bWriteColor = false;
 				iColor = m_pie->_findOrAddColor(sWork.c_str());
@@ -2596,7 +2596,7 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 		{
 			iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
 		}
-		else if(strcmp (sWork.c_str(), "transperent") == 0)
+		else if(strcmp (sWork.c_str(), "transparent") == 0)
 		{
 			bWriteColor = false;
 			iColor = m_pie->_findOrAddColor(sWork.c_str());
@@ -2697,7 +2697,7 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
 			}
-			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			else if(strcmp (sWork.c_str(), "transparent") == 0)
 			{
 				bWriteColor = false;
 				iColor = m_pie->_findOrAddColor(sWork.c_str());
@@ -2782,7 +2782,7 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
 			}
-			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			else if(strcmp (sWork.c_str(), "transparent") == 0)
 			{
 				bWriteColor = false;
 				iColor = m_pie->_findOrAddColor(sWork.c_str());
@@ -2867,7 +2867,7 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				iColor =  m_pie->_findOrAddColor(m_sLastColor.c_str());
 			}
-			else if(strcmp (sWork.c_str(), "transperent") == 0)
+			else if(strcmp (sWork.c_str(), "transparent") == 0)
 			{
 				bWriteColor = false;
 				iColor = m_pie->_findOrAddColor(sWork.c_str());

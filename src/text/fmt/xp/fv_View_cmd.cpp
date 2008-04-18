@@ -4099,10 +4099,10 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	while (pRun && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
 		pRun= pRun->getNextRun();
 
-	UT_ASSERT(pRun);
+	UT_return_if_fail(pRun);
 	pRun->getPrevRun();
 
-	UT_ASSERT(pRun);
+	UT_return_if_fail(pRun);
 #if 0
 	if(pRun->getType()== FPRUN_FMTMARK || pRun->getType()== FPRUN_HYPERLINK || pRun->getType()== FPRUN_BOOKMARK)
 		pRun  = pRun->getNextRun();
@@ -4111,9 +4111,7 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 #endif
 	fp_HyperlinkRun * pH = pRun->getHyperlink();
 
-	UT_ASSERT(pH);
-	if(!pH)
-		return;
+	UT_return_if_fail(pH);
 
 	const gchar * pTarget = pH->getTarget();
 
@@ -4140,9 +4138,7 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 {
 	fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun *>(getHyperLinkRun(pos));
-	UT_ASSERT(pH);
-	if(!pH)
-		return;
+	UT_return_if_fail(pH);
 
 	const gchar * pTarget = pH->getTarget();
 
@@ -5857,9 +5853,12 @@ void FV_View::cmdContextIgnoreAll(void)
 	// locate the squiggle
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
-	UT_ASSERT(pBL);
+	UT_return_if_fail(pBL);
 	fl_PartOfBlock* pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
-	UT_ASSERT(pPOB);
+	if(!pPOB) // this can happen with very rapid right-clicks
+	{
+		return;
+	}
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
@@ -5896,9 +5895,12 @@ void FV_View::cmdContextAdd(void)
 	// locate the squiggle
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
-	UT_ASSERT(pBL);
+	UT_return_if_fail(pBL);
 	fl_PartOfBlock* pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
-	UT_ASSERT(pPOB);
+	if(!pPOB) // this can happen with very rapid right-clicks
+	{
+		return;
+	}
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
@@ -5991,9 +5993,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 		}
 	}
 	pShadow = pHFCon->getShadow();
-	UT_ASSERT(pShadow);
-	if(!pShadow)
-		return;
+	UT_return_if_fail(pShadow);
 
 	m_pDoc->beginUserAtomicGlob();
 

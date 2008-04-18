@@ -4809,10 +4809,16 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
+	UT_return_if_fail(pp);
+
 	const gchar * footid;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
-	UT_ASSERT(bRes);
+	if(!bRes || !footid)
+	{
+		UT_DEBUGMSG(("fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun: Missing footnote-id attribute. Probably a malformed file.\n"));
+		return;
+	}
 	m_iPID = atol(footid);
 
 	// see bug 9793
@@ -4830,9 +4836,9 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
-	UT_ASSERT(bRes);
-	if(!bRes)
+	if(!bRes || !footid)
 	{
+		UT_DEBUGMSG(("fp_FieldFootnoteRefRun::calculateValue: Missing footnote-id attribute. Probably a malformed file.\n"));
 		return false;
 	}
 	FV_View * pView = _getView();
@@ -4858,10 +4864,16 @@ bool fp_FieldFootnoteRefRun::canBreakBefore(void) const
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const gchar * footid;
+	UT_return_if_fail(pp);
+
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
-	UT_ASSERT(bRes);
+	if(!bRes || !footid)
+	{
+		UT_DEBUGMSG(("fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun: Missing footnote-id attribute. Probably a malformed file.\n"));
+		return;
+	}
 	m_iPID = atol(footid);
 
 	// see bug 9793
@@ -4872,12 +4884,14 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getSpanAP();
+	UT_return_val_if_fail(pp, false);
+
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
-	UT_ASSERT(bRes);
-	if(footid == NULL)
+	if(!bRes || !footid)
 	{
+		UT_DEBUGMSG(("fp_FieldFootnoteAnchorRun::calculateValue: Missing footnote-id attribute. Probably a malformed file.\n"));
 		return false;
 	}
 	UT_uint32 iPID = atoi(footid);
@@ -4900,10 +4914,16 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
-	const gchar * footid;
+	UT_return_if_fail(pp);
+
+	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
-	UT_ASSERT(bRes);
+	if(!bRes || !footid)
+	{
+		UT_DEBUGMSG(("fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun: Missing endnote-id attribute. Probably a malformed file.\n"));
+		return;
+	}
 	m_iPID = atoi(footid);
 
 	// see bug 9793
@@ -4913,14 +4933,15 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 // Appears in the EndnoteSection, one per endnote.
 bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 {
-
 	const PP_AttrProp * pp = getSpanAP();
+	UT_return_val_if_fail(pp, false);
+
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
-	UT_ASSERT(bRes);
-	if(footid == NULL)
+	if(!bRes || !footid)
 	{
+		UT_DEBUGMSG(("fp_FieldEndnoteAnchorRun::calculateValue: Missing endnote-id attribute. Probably a malformed file.\n"));
 		return false;
 	}
 	UT_uint32 iPID = atoi(footid);
@@ -4943,10 +4964,16 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
+	UT_return_if_fail(pp);
+
 	const gchar * footid;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
-	UT_ASSERT(bRes);
+	if(!bRes || !footid)
+	{
+		UT_DEBUGMSG(("fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun: Missing endnote-id attribute. Probably a malformed file.\n"));
+		return;
+	}
 	m_iPID = atoi(footid);
 
 	// see bug 9793
@@ -4956,14 +4983,15 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 // Appears in the EndnoteSection, one per endnote.
 bool fp_FieldEndnoteRefRun::calculateValue(void)
 {
-
 	const PP_AttrProp * pp = getSpanAP();
+	UT_return_val_if_fail(pp, false);
+
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
-	UT_ASSERT(bRes);
-	if(footid == NULL)
+	if(!bRes || !footid)
 	{
+		UT_DEBUGMSG(("fp_FieldEndnoteRefRun::calculateValue: Missing endnote-id attribute. Probably a malformed file.\n"));
 		return false;
 	}
 	UT_uint32 iPID = atoi(footid);
@@ -5045,7 +5073,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
 	PD_Document * pDoc = getBlock()->getDocument();
-	UT_ASSERT(pDoc);
+	UT_return_val_if_fail(pDoc, false);
 
 	//copy in the name or some wierd char instead
 	const char * name = pDoc->getFilename();
