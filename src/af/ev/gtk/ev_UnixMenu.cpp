@@ -267,7 +267,10 @@ void EV_UnixMenu::_convertStringToAccel(const char *str,
 	}
 
 	if (strncmp (str, "Del", 3) == 0) {
-		accel_key = GDK_Delete;
+		// Rob: we are not using <del> as accel key, otherwise
+		// events are not passed down the widget hierarchy
+		// see #1235.
+		// accel_key = GDK_Delete;
 	}
 	else if (str[0] == 'F' &&
 			 str[1] >= '0' &&
@@ -1106,10 +1109,12 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	  {
 		  guint accelKey = 0;
 		  GdkModifierType acMods = (GdkModifierType)0;
-		  _convertStringToAccel(szMnemonicName, accelKey, acMods);		  
+		  _convertStringToAccel(szMnemonicName, accelKey, acMods);
 		  // the accel doesn't actually do anything, because all the keyboard actions
 		  // are handled at a lower level (we just get an accel label)
-		  gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
+		  if (accelKey) {
+			gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
+		  }
 	  }
 #endif	  
 	
