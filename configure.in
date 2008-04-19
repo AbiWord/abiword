@@ -389,7 +389,7 @@ AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-		      -Wunused -Wpointer-arith -Wshadow -Woverloaded-virtual; do
+		      -Wunused -Wpointer-arith -Wshadow ; do
 		SAVE_CXXFLAGS="$CXXFLAGS"
 		CXXFLAGS="$CXXFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
