@@ -1360,17 +1360,11 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		else
 		{
 			const UT_UCSChar * lab = pAuto->getLabel(sdh);
-            //
-			// TODO Handle all our interesting symbols properly
-            // In the meantime convert to char *
-			static char tmp[100];
+
 			if(lab != NULL)
 			{
-				UT_uint32 len = UT_MIN(UT_UCS4_strlen(lab),99);
-				UT_uint32 i;
-				for(i=0; i<=len; i++)
-					tmp[i] = (char ) (unsigned char)  *lab++;
-				_rtf_chardata(tmp,len);
+				UT_UTF8String tmp = lab;
+				_rtf_chardata(tmp.utf8_str(),tmp.byteLength());
 			}
 			else
 			{
