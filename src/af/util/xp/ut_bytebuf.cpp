@@ -198,7 +198,7 @@ bool UT_ByteBuf::insertFromURI(UT_uint32 iPosition, const char *szURI)
   if(!fp)
     return false;
 
-  bool res = insertFromInput (0, fp);
+  bool res = insertFromInput (iPosition, fp);
   
   g_object_unref (fp);
   return res;
