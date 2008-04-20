@@ -2035,7 +2035,7 @@ UT_uint32 s_HTML_Listener::listType ()
 	return (UT_uint32)i;
 }
 
-void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
+void s_HTML_Listener::listPush (UT_uint32 type, const char * /*ClassName*/)
 {
 	if (tagTop () == TT_LI)
 	{
@@ -2122,7 +2122,7 @@ void s_HTML_Listener::listPopToDepth (UT_uint32 depth)
 	for (UT_uint32 i = 0; i < count; i++) listPop ();
 }
 
-void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
+void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle /*sdh*/)
 {
 	if (m_bFirstWrite) _openSection (api, 0);
 
@@ -3071,8 +3071,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 	// Positioned columns controls
 	//
 	const char * pszColumnProps = m_TableHelper.getTableProp("table-column-props");
-	UT_sint32 nCols = m_TableHelper.getNumCols ();
-	UT_DEBUGMSG(("Number columns in table %d \n",nCols));
+	UT_DEBUGMSG(("Number columns in table %d \n",m_TableHelper.getNumCols ()));
 	if(m_vecDWidths.getItemCount() > 0)
 	{
 		UT_VECTOR_PURGEALL(double *,m_vecDWidths);
@@ -3194,9 +3193,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			styles += "width:";
 			// use mm (inches are too big, since we want to use an int).
 			double dMM = UT_convertToDimension(pszWidth, DIM_MM);
-			UT_UTF8String t;
-			UT_UTF8String_sprintf(t, "%.1fmm", dMM);
-			styles += t;
+			UT_UTF8String t2;
+			UT_UTF8String_sprintf(t2, "%.1fmm", dMM);
+			styles += t2;
 		}
 	} else if (get_Scale_Units()) {
 		// TEST ME!
@@ -3208,9 +3207,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			UT_UTF8String tws = UT_UTF8String_sprintf("%d", totWidth);
 			double pMM = UT_convertToDimension(tws.utf8_str(), DIM_MM);
 			double dPCT = tMM / pMM;
-			UT_UTF8String t;
-			UT_UTF8String_sprintf(t, "%d%%", dPCT);
-			styles += t;
+			UT_UTF8String t2;
+			UT_UTF8String_sprintf(t2, "%d%%", dPCT);
+			styles += t2;
 		}
 	} 
 	else {
@@ -4462,11 +4461,12 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 
 	const char * szName = 0;
 	const char * szMimeType = 0;
+	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 		
 	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
 		{
 			k++;
 			if (szName == 0) continue;
@@ -4647,11 +4647,12 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 
 	const char * szName = 0;
 	const char * szMimeType = 0;
+	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
 	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
 	{
 		k++;
 		if (szName == 0) continue;
@@ -4877,11 +4878,12 @@ void s_HTML_Listener::_handlePendingImages ()
 
 		const char * szName = 0;
 		const char * szMimeType = 0;
+		const char ** pszMimeType = &szMimeType;
 
 		const UT_ByteBuf * pByteBuf = 0;
 
 		UT_uint32 k = 0;
-		while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
+		while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
 		{
 			k++;
 			if (szName == 0) continue;
@@ -5712,7 +5714,7 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-s_HTML_HdrFtr_Listener::s_HTML_HdrFtr_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener) :
+s_HTML_HdrFtr_Listener::s_HTML_HdrFtr_Listener (PD_Document * pDocument, IE_Exp_HTML * /*pie*/, PL_Listener * pHTML_Listener) :
 	m_pHdrDocRange(NULL),
 	m_pFtrDocRange(NULL),
 	m_pDocument(pDocument),
@@ -5796,7 +5798,7 @@ bool s_HTML_HdrFtr_Listener::populateStrux (PL_StruxDocHandle sdh,
 	}
 }
 
-bool s_HTML_HdrFtr_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+bool s_HTML_HdrFtr_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -5829,16 +5831,16 @@ bool s_HTML_HdrFtr_Listener::signal (UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Style * style) :
+s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * _style_name, PD_Style * style) :
 	m_pDocument(0),
 	m_parent(parent),
 	m_list(0),
 	m_count(0),
 	m_max(0),
 	m_bInUse(false),
-	m_style_name(style_name),
-	m_class_name(style_name),
-	m_class_list(style_name),
+	m_style_name(_style_name),
+	m_class_name(_style_name),
+	m_class_list(_style_name),
 	m_style(style)
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
@@ -5853,7 +5855,7 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 	}
 	else
 	{
-		s_removeWhiteSpace (style_name, m_class_name, true);
+		s_removeWhiteSpace (_style_name, m_class_name, true);
 		m_class_list = m_class_name;
 	}
 
@@ -5983,7 +5985,7 @@ s_StyleTree::~s_StyleTree ()
 	FREEP (m_list);
 }
 
-bool s_StyleTree::add (const char * style_name, PD_Style * style)
+bool s_StyleTree::add (const char * _style_name, PD_Style * style)
 {
 	if (m_list == 0)
 	{
@@ -6004,7 +6006,7 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 
 	UT_TRY
 		{
-			tree = new s_StyleTree(this,style_name,style);
+			tree = new s_StyleTree(this,_style_name,style);
 		}
 	UT_CATCH(UT_CATCH_ANY)
 		{
@@ -6019,17 +6021,21 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 	return true;
 }
 
-bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
+bool s_StyleTree::add (const char * _style_name, PD_Document * pDoc)
 {
-	if ((pDoc == 0) || (style_name == 0) || (*style_name == 0)) return false;
+	if ((pDoc == 0) || (_style_name == 0) || (*_style_name == 0)) 
+		return false;
 
-	if (m_parent) return m_parent->add (style_name, pDoc);
+	if (m_parent) 
+		return m_parent->add (_style_name, pDoc);
 
-	if (find (style_name)) return true;
+	if (find (_style_name)) 
+		return true;
 
 	PD_Style * style = 0;
-	pDoc->getStyle (style_name, &style);
-	if (!style) return false;
+	pDoc->getStyle (_style_name, &style);
+	if (!style) 
+		return false;
 
 	s_StyleTree * parent = NULL;
 
@@ -6038,23 +6044,25 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 	const gchar * parent_name = NULL;
 	if (basis && 
 		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
-		strcmp(style_name, parent_name) != 0)
+		strcmp(_style_name, parent_name) != 0)
 	{
 		parent = const_cast<s_StyleTree*>(find (basis));
 		if (parent == NULL)
 		{
 			const gchar * basis_name = 0;
 			basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, basis_name);
-			if (!basis_name) return false;
+			if (!basis_name) 
+				return false;
 
 			if (basis->getBasedOn() && basis->getBasedOn()->getName() &&
-				!strcmp(style_name, basis->getBasedOn()->getName()))
+				!strcmp(_style_name, basis->getBasedOn()->getName()))
 			{
 				parent = this;
 			}
 			else
 			{
-				if (!add (basis_name, pDoc)) return false;
+				if (!add (basis_name, pDoc)) 
+					return false;
 
 				parent = const_cast<s_StyleTree*>(find (basis));
 			}
@@ -6067,7 +6075,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 		UT_ASSERT_NOT_REACHED();
 		return false;
 	}
-	return parent->add (style_name, style);
+	return parent->add (_style_name, style);
 }
 
 void s_StyleTree::inUse ()
@@ -6077,9 +6085,9 @@ void s_StyleTree::inUse ()
 		m_parent->inUse ();
 }
 
-const s_StyleTree * s_StyleTree::findAndUse (const char * style_name)
+const s_StyleTree * s_StyleTree::findAndUse (const char * _style_name)
 {
-	const s_StyleTree * style_tree = find (style_name);
+	const s_StyleTree * style_tree = find (_style_name);
 
 	if (style_tree)
 	{
@@ -6089,37 +6097,42 @@ const s_StyleTree * s_StyleTree::findAndUse (const char * style_name)
 	return style_tree;
 }
 
-const s_StyleTree * s_StyleTree::find (const char * style_name) const
+const s_StyleTree * s_StyleTree::find (const char * _style_name) const
 {
-	if (m_style_name == style_name) return this;
+	if (m_style_name == _style_name) 
+		return this;
 
 	const s_StyleTree * tree = 0;
 
 	for (UT_uint32 i = 0; i < m_count; i++)
 	{
-		tree = m_list[i]->find (style_name);
-		if (tree) break;
+		tree = m_list[i]->find (_style_name);
+		if (tree) 
+			break;
 	}
 	return tree;
 }
 
 const s_StyleTree * s_StyleTree::find (PD_Style * style) const
 {
-	const gchar * style_name = 0;
-	style->getAttribute (PT_NAME_ATTRIBUTE_NAME, style_name);
-	if (!style_name) return NULL;
+	const gchar * _style_name = 0;
+	style->getAttribute (PT_NAME_ATTRIBUTE_NAME, _style_name);
+	if (!_style_name) 
+		return NULL;
 
-	return find (style_name);
+	return find (_style_name);
 }
 
-bool s_StyleTree::descends (const char * style_name) const
+bool s_StyleTree::descends (const char * _style_name) const
 {
-	if (m_parent == 0) return false;
+	if (m_parent == 0) 
+		return false;
 
 	// the name comparison has to be be case insensitive
-	if (!g_ascii_strcasecmp(m_style_name.utf8_str(),style_name)) return true;
+	if (!g_ascii_strcasecmp(m_style_name.utf8_str(), _style_name)) 
+		return true;
 
-	return m_parent->descends (style_name);
+	return m_parent->descends (_style_name);
 }
 
 template<typename StyleListener>
@@ -6754,7 +6767,7 @@ void s_TemplateHandler::EndCdataSection ()
 	m_cdata = false;
 }
 
-void s_TemplateHandler::Default (const gchar * buffer, int length)
+void s_TemplateHandler::Default (const gchar * /*buffer*/, int /*length*/)
 {
 	// do nothing
 }

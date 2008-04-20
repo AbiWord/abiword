@@ -192,7 +192,7 @@ bool IE_Exp_MsWord_Hack_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 UT_Error IE_Exp_RTF::_writeDocument(void)
 {
-	_writeDocumentLocal(false);
+	return _writeDocumentLocal(false);
 }
 
 UT_Error IE_Exp_RTF::_writeDocumentLocal(bool bSkipHeader)
@@ -1609,10 +1609,10 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 			}
 			else
 			{
-				UT_uint32 i,len;
+				UT_uint32 j,len;
 				len = UT_UCS4_strlen(tmp);
-				for(i=0;i<=len;i++)
-					p[i] = (char) (unsigned char) *tmp++;
+				for(j=0;j<=len;j++)
+					p[j] = (char) (unsigned char) *tmp++;
 				_rtf_chardata(p,len);
 			}
 			_rtf_close_brace();
@@ -1637,7 +1637,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 //		if(id != m_currID)
 		{
 			UT_return_if_fail(iOver);
-			fl_AutoNum * pAuto = getDoc()->getListByID(id);
+//			fl_AutoNum * pAuto = getDoc()->getListByID(id);
 			UT_return_if_fail(pAuto);
 			while(pAuto->getParent() != NULL)
 			{
@@ -1735,7 +1735,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	UT_sint32 ndxColor = -1;
 	if(szColor)
 	{
-		UT_sint32 ndxColor = _findColor((char*)szColor);
+		ndxColor = _findColor((char*)szColor);
 		if( ndxColor == -1)
 		{
 			return;
@@ -2145,8 +2145,8 @@ struct NumberedStyle
     const PD_Style * pStyle;
     UT_uint32 n;
 
-    NumberedStyle(const PD_Style * pStyle, UT_uint32 n) :
-	pStyle(pStyle), n(n) {}
+    NumberedStyle(const PD_Style * _pStyle, UT_uint32 _n) :
+		pStyle(_pStyle), n(_n) {}
 };
 
 /*!
@@ -2985,7 +2985,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
  * Actually output the RTF from an Overide
  \param ie_exp_RTF_Overide * pOver pointer to an Overide definition
  */
-void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 iOver)
+void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 /*iOver*/)
 {
 	_rtf_open_brace();
 	_rtf_keyword("listoverride");

@@ -195,10 +195,10 @@ bool IE_Imp::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
 
 // default impl, meant to abort
 
-bool	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				  const unsigned char * pData, 
-				  UT_uint32 lenData, 
-				  const char * szEncoding)
+bool	  IE_Imp::pasteFromBuffer(PD_DocumentRange * /*pDocRange*/,
+								  const unsigned char * /*pData*/, 
+								  UT_uint32 /*lenData*/, 
+								  const char * /*szEncoding*/)
 {
   UT_ASSERT_NOT_REACHED();
   return false;
@@ -212,8 +212,8 @@ PD_Document * IE_Imp::getDoc () const
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ImpSniffer::IE_ImpSniffer(const char * name, bool canPaste)
-	: m_name(name),
+IE_ImpSniffer::IE_ImpSniffer(const char * _name, bool canPaste)
+	: m_name(_name),
 	  m_type(IEFT_Bogus),
 	  m_bCanPaste(canPaste)
 {
@@ -233,8 +233,8 @@ UT_Confidence_t IE_ImpSniffer::recognizeContents (GsfInput * input)
 	return recognizeContents(szBuf, iNumbytes);
 }
 
-UT_Confidence_t IE_ImpSniffer::recognizeContents (const char * szBuf, 
-												  UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpSniffer::recognizeContents (const char * /*szBuf*/, 
+												  UT_uint32 /*iNumbytes*/)
 {
 	// should be explicitly overriden, or not return anything
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -251,7 +251,6 @@ void IE_Imp::registerImporter (IE_ImpSniffer * s)
 	UT_Error err = IE_IMP_Sniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
-	UT_return_if_fail(ndx >= 0);
 
 	s->setFileType(ndx+1);
 }
@@ -259,8 +258,6 @@ void IE_Imp::registerImporter (IE_ImpSniffer * s)
 void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 {
 	UT_uint32 ndx = s->getFileType(); // 1:1 mapping
-
-	UT_return_if_fail(ndx >= 0);
 
 	IE_IMP_Sniffers.deleteNthItem (ndx-1);
 

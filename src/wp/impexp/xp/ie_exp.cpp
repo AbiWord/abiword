@@ -92,8 +92,8 @@ private:
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ExpSniffer::IE_ExpSniffer (const char * name, bool canCopy)
-	: m_name(name),
+IE_ExpSniffer::IE_ExpSniffer (const char * _name, bool canCopy)
+	: m_name(_name),
 	  m_type(IEFT_Bogus),
 	  m_bCanCopy(canCopy)
 {
@@ -132,7 +132,6 @@ void IE_Exp::registerExporter (IE_ExpSniffer * s)
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
-	UT_return_if_fail(ndx >= 0);
 
 	s->setFileType(ndx+1);
 }
@@ -142,8 +141,6 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 	UT_uint32 ndx = 0;
 
 	ndx = s->getFileType(); // 1:1 mapping
-
-	UT_return_if_fail(ndx >= 0);
 
 	m_sniffers.deleteNthItem (ndx-1);
 

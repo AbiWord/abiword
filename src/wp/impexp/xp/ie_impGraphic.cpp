@@ -49,7 +49,6 @@ void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 	UT_Error err = IE_IMP_GraphicSniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
-	UT_return_if_fail(ndx >= 0);
 
 	s->setType(ndx+1);
 }
@@ -57,8 +56,6 @@ void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 {
 	UT_uint32 ndx = s->getType(); // 1:1 mapping
-
-	UT_return_if_fail(ndx >= 0);
 
 	IE_IMP_GraphicSniffers.deleteNthItem (ndx-1);
 
@@ -685,8 +682,8 @@ UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (GsfInput * input)
 	return recognizeContents(szBuf, iNumbytes);
 }
 
-UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (const char * szBuf, 
-														 UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (const char * /*szBuf*/, 
+														 UT_uint32 /*iNumbytes*/)
 {
 	// should be explicitly overriden, or not return anything
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

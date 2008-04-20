@@ -78,7 +78,7 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 	return;
 }
 
-void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
+void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  /*nextApi*/)
 {
 	if(!m_bInBlock)
 		return;
@@ -1988,8 +1988,9 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 }
 
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
-								 bool bNewLineAfter, PT_AttrPropIndex api)
+										  bool /*bNewLineAfter*/, PT_AttrPropIndex api)
 {
+	UT_UNUSED(szSuffix);
 	 xxx_UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
 	 if(strcmp(szPrefix,"field") == 0)
 	 {
@@ -2479,10 +2480,10 @@ void s_RTF_ListenerWriteDoc::_export_AbiWord_Cell_props(PT_AttrPropIndex api, bo
 		for(i=0;i< iFirstLeft;i++)
 		{
 			sTempProps.clear();
-			UT_String sLeft = UT_String_sprintf("%d",i);
-			UT_String sRight = UT_String_sprintf("%d",i+1);
-			UT_String_setProperty(sTempProps,sLeftAttach,sLeft);
-			UT_String_setProperty(sTempProps,sRightAttach,sRight);
+			UT_String_setProperty(sTempProps,sLeftAttach,
+								  UT_String_sprintf("%d",i));
+			UT_String_setProperty(sTempProps,sRightAttach,
+								  UT_String_sprintf("%d",i+1));
 			UT_String_setProperty(sTempProps,sTopAttach,sTTop);
 			UT_String_setProperty(sTempProps,sBotAttach,sTBot);
 //
@@ -3195,7 +3196,6 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	}
 
 	//UT_sint32 iOldRow = m_iTop;
-	UT_sint32 i =0;
 	UT_sint32 iOldRight = m_iRight;
 	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	PT_AttrPropIndex prevAPI = api;
@@ -3280,6 +3280,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 // fix me have to handle horizontally and vertically merged cells at the
 // left of a table.
 
+		UT_sint32 i =0;
 		if(m_Table.getNestDepth() < 2)
 		{
 			for(i = 0; i < m_Table.getLeft(); i++)
@@ -3303,6 +3304,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	{
 		if(!m_bNewTable)
 		{
+			UT_sint32 i =0;
 			if(m_Table.getNestDepth() < 2)
 			{
 				for(i = m_iRight; i < m_Table.getLeft(); i++)

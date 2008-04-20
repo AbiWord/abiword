@@ -1378,6 +1378,7 @@ bool IE_Imp_AbiWord_1::_handleImage(const gchar ** atts)
 
 	return success;
 #else
+	UT_UNUSED(atts);
 	return false;
 #endif
 }
@@ -1534,6 +1535,8 @@ bool IE_Imp_AbiWord_1::_handleResource (const gchar ** atts, bool isResource)
 			return add_resource;
 		}
 #else
+	UT_UNUSED(atts);
+	UT_UNUSED(isResource);
 	return false;
 #endif
 }

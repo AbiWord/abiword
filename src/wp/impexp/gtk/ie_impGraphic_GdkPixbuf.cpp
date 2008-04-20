@@ -141,64 +141,32 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 		return err;
 	}
 
-	if (setjmp(m_pPNG->jmpbuf))
-	{
-		DELETEP(m_pPngBB);
-		g_object_unref(G_OBJECT(pixbuf));
-		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-		return UT_ERROR;
+	err = _png_write(pixbuf);
+
+	if(err == UT_OK) {
+		FG_GraphicRaster * pFGR = new FG_GraphicRaster();
+		if(pFGR == NULL)
+		{
+			DELETEP(m_pPngBB);
+			return UT_IE_NOMEMORY;
+		}
+		
+		if(!pFGR->setRaster_PNG(m_pPngBB)) 
+		{
+			DELETEP(pFGR);
+			DELETEP(m_pPngBB);
+			return UT_IE_FAKETYPE;
+		}
+		
+		*ppfg = static_cast<FG_Graphic *>(pFGR);
 	}
-
-	//
-	// Build the png member variables.
-	//
-	_createPNGFromPixbuf(pixbuf);
-
-	//
-	// Get rid of these now that they are no longer needed
-	//
-	g_object_unref(G_OBJECT(pixbuf));
-	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-
-	FG_GraphicRaster * pFGR = new FG_GraphicRaster();
-	if(pFGR == NULL)
-	{
-		DELETEP(m_pPngBB);
-		return UT_IE_NOMEMORY;
-	}
-
-	if(!pFGR->setRaster_PNG(m_pPngBB)) 
-	{
-		DELETEP(pFGR);
-		DELETEP(m_pPngBB);
-		return UT_IE_FAKETYPE;
-	}
-
-	*ppfg = static_cast<FG_Graphic *>(pFGR);
-	return UT_OK;
+	return err;
 }
 
-/*!
- * Convert an image byte buffer into a PNG byte buffer
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
-								UT_ByteBuf** ppBB)
+
+/** needed for the stejmp context */
+UT_Error IE_ImpGraphic_GdkPixbuf::_png_write(GdkPixbuf * pixbuf)
 {
-	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB);
-
-	if (!pixbuf)
-	{			
-		return UT_ERROR;
-	}
-
-	// Initialize stuff to create our PNG.
-	UT_Error err =Initialize_PNG();
-	if (err)
-	{
-		g_object_unref(G_OBJECT(pixbuf));
-		return err;
-	}
-
 	if (setjmp(m_pPNG->jmpbuf))
 	{
 		DELETEP(m_pPngBB);
@@ -215,9 +183,37 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 	// cleanup
 	g_object_unref(G_OBJECT(pixbuf));
 	png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
-
-	*ppBB =  m_pPngBB;
 	return UT_OK;
+}
+
+
+/*!
+ * Convert an image byte buffer into a PNG byte buffer
+ */
+UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
+								UT_ByteBuf** ppBB)
+{
+	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB);
+
+	if (!pixbuf)
+	{			
+		return UT_ERROR;
+	}
+
+	// Initialize stuff to create our PNG.
+	UT_Error err;
+	err = Initialize_PNG();
+	if (err)
+	{
+		g_object_unref(G_OBJECT(pixbuf));
+		return err;
+	}
+
+	err = _png_write(pixbuf);
+	if(err == UT_OK) {
+		*ppBB =  m_pPngBB;
+	}
+	return err;
 }
 
 /*!

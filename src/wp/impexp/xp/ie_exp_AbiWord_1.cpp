@@ -1550,13 +1550,15 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	const char * szName;
    	const char * szMimeType;
+   	const char ** pszMimeType = &szMimeType;
 	const UT_ByteBuf * pByteBuf;
 
 	UT_ByteBuf bbEncoded(1024);
 	string_set::iterator end(m_pUsedImages.end());
 	UT_DEBUGMSG(("Used images are... \n"));
 	for (UT_uint32 k=0;
-		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType)));
+		 
+		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(pszMimeType)));
 		 k++)
 	{
 		string_set::iterator it(m_pUsedImages.find(szName));

@@ -57,6 +57,8 @@ private:
 
 	GdkPixbuf * pixbufForByteBuf (UT_ByteBuf * pBB);
 	void _createPNGFromPixbuf(GdkPixbuf * pixbuf);
+	UT_Error _png_write(GdkPixbuf * pixbuf);
+
 	GdkPixbuf * _loadXPM(UT_ByteBuf * pBB);
 	UT_Error Initialize_PNG(void);
 
