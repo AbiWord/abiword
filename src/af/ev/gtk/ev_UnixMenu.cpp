@@ -35,8 +35,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stack>
 #include "ut_types.h"
-#include "ut_stack.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_debugmsg.h"
@@ -90,9 +90,9 @@ public:									// we create...
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
 	}
 
-	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
+	static void s_onMenuItemSelect(GtkWidget * /*widget*/, gpointer data)
 	{
-		UT_ASSERT(widget && data);
+		UT_ASSERT(data);
 
 		_wd * wd = static_cast<_wd *>(data);
 		UT_ASSERT(wd && wd->m_pUnixMenu);
@@ -113,9 +113,9 @@ public:									// we create...
 		pFrame->setStatusMessage(szMsg);
 	}
 	
-	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
+	static void s_onMenuItemDeselect(GtkWidget * /*widget*/, gpointer data)
 	{
-		UT_ASSERT(widget && data);
+		UT_ASSERT(data);
 
 		_wd * wd = static_cast<_wd *>(data);
 		UT_ASSERT(wd && wd->m_pUnixMenu);
@@ -126,14 +126,14 @@ public:									// we create...
 		pFrame->setStatusMessage(NULL);
 	}
 
-	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
+	static void s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
 	{
 		_wd * wd = static_cast<_wd *>(callback_data);
 		UT_ASSERT(wd);
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 	}
 
-	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
+	static void s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
 	{
 		_wd * wd = static_cast<_wd *>(callback_data);
 		UT_ASSERT(wd);
@@ -174,7 +174,7 @@ public:									// we create...
 */
 
 static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
-									  XAP_Frame * pFrame,
+									  XAP_Frame * /*pFrame*/,
 									  const EV_Menu_Action * pAction,
 									  const EV_Menu_Label * pLabel)
 {
@@ -416,8 +416,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	bool bResult;
-	UT_Stack stack;
+	std::stack<GtkWidget*> stack;
 	stack.push(wMenuRoot);
 
 	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
@@ -451,9 +450,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				w = s_createNormalMenuEntry(id, pAction->isCheckable(), pAction->isRadio(), 
 											isPopup, szLabelName, szMnemonicName);
 				// find parent menu item
-				GtkWidget * wParent;
-				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
-				UT_ASSERT(bResult);
+				GtkWidget * wParent = stack.top();
+				UT_ASSERT(wParent);
 
 				// bury in parent
 				gtk_menu_shell_append(GTK_MENU_SHELL(wParent), w);
@@ -492,9 +490,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				m_vecCallbacks.addItem(static_cast<void *>(wd));
 
 				// find parent menu item
-				GtkWidget * wParent;
-				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
-				UT_ASSERT(bResult);
+				GtkWidget * wParent = stack.top();
+				UT_ASSERT(wParent);
 
 				// bury the widget in parent menu
 				gtk_container_add(GTK_CONTAINER(wParent), w);
@@ -612,8 +609,9 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		{
 			// pop and inspect
 			GtkWidget * w;
-			bResult = stack.pop(reinterpret_cast<void **>(&w));
-			UT_ASSERT(bResult);
+			w = stack.top();
+			stack.pop();
+			UT_ASSERT(w);
 
 			// item is created (albeit empty in this case), add to vector
 			m_vecMenuWidgets.addItem(w);
@@ -624,9 +622,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
 
-			GtkWidget * wParent;
-			bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
-			UT_ASSERT(bResult);
+			GtkWidget * wParent = stack.top();
+			UT_ASSERT(wParent);
 
 			gtk_widget_show(w);
 			gtk_menu_shell_append(GTK_MENU_SHELL(wParent),w);
@@ -652,8 +649,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 	// make sure our last item on the stack is the one we started with
 	GtkWidget * wDbg = NULL;
-	bResult = stack.pop(reinterpret_cast<void **>(&wDbg));
-	UT_ASSERT(bResult);
+	wDbg = stack.top();
+	stack.pop();
 	UT_ASSERT(wDbg == wMenuRoot);
 
 	// we also have to bind the top level window to our
@@ -684,8 +681,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	bool bResult;
-	UT_Stack stack;
+	std::stack<GtkWidget*> stack;
 	stack.push(wMenuRoot);
 
 	// -1 will catch the case where we're inserting and haven't actually
@@ -744,12 +740,12 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					UT_ASSERT(w);
 
 					// find parent menu item
-					GtkWidget * wParent;
-					bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
-					UT_ASSERT(bResult);
+					GtkWidget * wParent = stack.top();
+					UT_ASSERT(wParent);
 
 					// bury in parent
-					gtk_menu_shell_insert(GTK_MENU_SHELL(GTK_MENU_ITEM(wParent)->submenu), w, (nPositionInThisMenu+1));
+					gtk_menu_shell_insert(GTK_MENU_SHELL(GTK_MENU_ITEM(wParent)->submenu), 
+										  w, (nPositionInThisMenu+1));
 					
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
@@ -885,13 +881,10 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			break;
 		}
 		case EV_MLF_EndSubMenu:
-		{
-			GtkWidget * item = NULL;
-			bResult = stack.pop(reinterpret_cast<void **>(&item));
-			UT_ASSERT(bResult);
+			UT_ASSERT(stack.top());
+			stack.pop();
 
 			break;
-		}
 
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
@@ -903,10 +896,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		}	
 	}
 
-	GtkWidget * wDbg = NULL;
-	bResult = stack.pop(reinterpret_cast<void **>(&wDbg));
-	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == wMenuRoot);
+	UT_ASSERT(stack.top() == wMenuRoot);
+	stack.pop();
 
 	return true;
 }
@@ -924,8 +915,9 @@ bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	{
 		UT_sint32 err = m_vecMenuWidgets.insertItemAt(NULL, layout_pos);
 
-		if (err != 0)
+		if (err != 0) {
 			UT_DEBUGMSG(("Error [%d] inserting NULL item in a ut_vector.\n", err));
+		}
 
 		return (err == 0);
 	}
