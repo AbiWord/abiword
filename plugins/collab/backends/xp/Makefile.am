@@ -19,6 +19,7 @@ libxp_la_SOURCES = \
 	DocTreeItem.h \
 	Event.h \
 	EventListener.h \
+	lock.h \
 	SessionEvent.cpp \
 	SessionEvent.h
 
