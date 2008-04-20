@@ -350,6 +350,7 @@ Presentation_context (AV_View * v, EV_EditMethodCallData * d)
 		return false;
 	bool res = pFrame->runModalContextMenu(pView,szContextMenuName,
 									   xPos,yPos);
+	pFrame->nullUpdate();
 	GR_Graphics * pG  = pView->getGraphics();
 	if(pG && pG->getCaret())
 	  pG->getCaret()->disable();
@@ -418,17 +419,17 @@ bool Presentation::_loadPresentationBindings(AV_View * pView)
   {
       return true;
   }
-  // get a handle to the actual EditMethod
-  UT_String sAll;
-  UT_sint32 i =0 ;
-  while(sPresBindings[i].size() > 0)
-    {
-      sAll += sPresBindings[i];
-      i++;
-    }
-  EV_EditMethod * pLoadB = pEMC->findEditMethodByName ("LoadBindings_invoke");
+	// get the path where our app data is located
+  XAP_App * pApp = static_cast<XAP_App*>(XAP_App::getApp());
+  UT_String data_path( pApp->getAbiSuiteLibDir() );
+#if defined(WIN32)
+  data_path += "\\Presentation.xml";
+#else
+  data_path += "/Presentation.xml";
+#endif
+  EV_EditMethod * pLoadB = pEMC->findEditMethodByName ("com.abisource.abiword.loadbindings.fromURI");
   g_return_val_if_fail (pLoadB != 0, false);
-  EV_EditMethodCallData calldata(sAll.c_str(),sAll.size());
+  EV_EditMethodCallData calldata(data_path.c_str(),data_path.size());
   calldata.m_xPos = 0;
   calldata.m_yPos = 0;
   return (pLoadB->Fn(pView,&calldata) ? TRUE : FALSE);
@@ -442,7 +443,7 @@ bool Presentation::start(AV_View * view)
   m_sPrevBindings = m_pApp->getInputMode();
   _loadPresentationBindings(view);
   UT_sint32 i = m_pApp->setInputMode("Presentation");
-  if(i <=0 )
+  if(i < 0 )
     return false;
   // get a handle to the actual EditMethod
   EV_EditMethod * pFullScreen = pEMC->findEditMethodByName ("viewFullScreen");

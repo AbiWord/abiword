@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<editbindings name="Presentation" mode="replace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.abisource.com/abiword-keybindings-1.0.xsd">
+	<mousecontext context="EV_EMC_EMBED" button="1" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_EMBED" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_EMBED" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_EMBED" button="0">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MATH" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MATH" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MATH" button="0">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_POSOBJECT" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_POSOBJECT" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_POSOBJECT" button="0">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="5" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="4" control="true">
+		<operation type="click" handler="Presentation_prevPage"/>
+		<operation type="doubleclick" handler="Presentation_prevPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="5">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="4">
+		<operation type="click" handler="Presentation_prevPage"/>
+		<operation type="doubleclick" handler="Presentation_prevPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOC" button="0">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOPCELL" button="2">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOPCELL" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TOPCELL" button="0">
+		<operation type="drag" handler="cursorTopCell"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="1" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VISUALTEXTDRAG" button="0">
+		<operation type="drag" handler="btn0VisualText"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FRAME" button="3">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FRAME" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FRAME" button="0">
+		<operation type="drag" handler="btn0Frame"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HLINE" button="0">
+		<operation type="drag" handler="cursorHline"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_VLINE" button="0">
+		<operation type="drag" handler="cursorVline"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_REVISION" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_RIGHTOFTEXT" button="0">
+		<operation type="drag" handler="cursorDefault"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+		<operation type="doubleclick" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="2">
+		<operation type="click" handler="pasteSelection"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_HYPERLINK" button="0">
+		<operation type="drag" handler="hyperlinkStatusBar"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_FIELD" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="1" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGESIZE" button="0">
+		<operation type="drag" handler="btn0InlineImage"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="1" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_IMAGE" button="0">
+		<operation type="drag" handler="cursorImage"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="1" control="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="1"  shift="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_MISSPELLEDTEXT" button="0">
+		<operation type="drag" handler="cursorIBeam"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+		<operation type="doubleclick" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_LEFTOFTEXT" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="1"  shift="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+		<operation type="doubleclick" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+		<operation type="doubleclick" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="3">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="2">
+		<operation type="click" handler="pasteSelection"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_TEXT" button="0">
+		<operation type="drag" handler="cursorIBeam"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="1"  alt="true">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="1">
+		<operation type="click" handler="Presentation_nextPage"/>
+		<operation type="doubleclick" handler="Presentation_nextPage"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="3"  alt="true">
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="3" >
+		<operation type="click" handler="Presentation_context"/>
+		<operation type="doubleclick" handler="NULL"/>
+		<operation type="drag" handler="NULL"/>
+		<operation type="doubledrag" handler="NULL"/>
+		<operation type="release" handler="NULL"/>
+		<operation type="doublerelease" handler="NULL"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="5" control="true">
+		<operation type="click" handler="zoomOut"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="4" control="true">
+		<operation type="click" handler="zoomIn"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="5">
+		<operation type="click" handler="scrollWheelMouseDown"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="4">
+		<operation type="click" handler="scrollWheelMouseUp"/>
+	</mousecontext>
+	<mousecontext context="EV_EMC_UNKNOWN" button="0">
+		<operation type="drag" handler="cursorDefault"/>
+	</mousecontext>
+	<keystroke key="down" handler="Presentation_nextPage" control="true"  alt="true"/>
+	<keystroke key="right" handler="Presentation_nextPage" control="true"  alt="true"/>
+	<keystroke key="up" handler="Presentation_prevPage" control="true"  alt="true"/>
+	<keystroke key="left" handler="Presentation_prevPage" control="true"  alt="true"/>
+	<keystroke key="home" handler="Presentation_end" control="true"  alt="true"/>
+	<keystroke key="end" handler="Presentation_end" control="true"  alt="true"/>
+	<keystroke key="pagedown" handler="Presentation_nextPage" control="true"  alt="true"/>
+	<keystroke key="pageup" handler="Presentation_prevPage" control="true"  alt="true"/>
+	<keystroke key="escape" handler="Presentation_end" control="true"  alt="true"/>
+	<keystroke key="return" handler="Presentation_nextPage" control="true"  alt="true"/>
+	<keystroke key="tab" handler="Presentation_nextPage" control="true"  alt="true"/>
+	<keystroke key="down" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="right" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="up" handler="Presentation_prevPage" alt="true"/>
+	<keystroke key="left" handler="Presentation_prevPage" alt="true"/>
+	<keystroke key="home" handler="Presentation_end" alt="true"/>
+	<keystroke key="end" handler="Presentation_end" alt="true"/>
+	<keystroke key="pagedown" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="pageup" handler="Presentation_prevPage" alt="true"/>
+	<keystroke key="escape" handler="Presentation_end" alt="true"/>
+	<keystroke key="return" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="tab" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="space" handler="Presentation_nextPage" alt="true"/>
+	<keystroke key="down" handler="Presentation_nextPage" />
+	<keystroke key="right" handler="Presentation_nextPage" />
+	<keystroke key="up" handler="Presentation_prevPage" />
+	<keystroke key="left" handler="Presentation_prevPage" />
+	<keystroke key="home" handler="Presentation_start" />
+	<keystroke key="end" handler="Presentation_end" />
+	<keystroke key="pagedown" handler="Presentation_nextPage" />
+	<keystroke key="pageup" handler="Presentation_prevPage" />
+	<keystroke key="escape" handler="Presentation_end" />
+	<keystroke key="return" handler="Presentation_nextPage" />
+	<keystroke key="tab" handler="Presentation_nextPage" />
+	<keystroke key="space" handler="Presentation_nextPage"/>
+	<keystroke key="down" handler="Presentation_nextPage" control="true"/>
+	<keystroke key="right" handler="Presentation_nextPage" control="true"/>
+	<keystroke key="up" handler="Presentation_prevPage" control="true"/>
+	<keystroke key="left" handler="Presentation_prevPage" control="true"/>
+	<keystroke key="home" handler="Presentation_start" control="true"/>
+	<keystroke key="end" handler="Presentation_end" control="true"/>
+	<keystroke key="pagedown" handler="Presentation_nextPage" control="true"/>
+	<keystroke key="pageup" handler="Presentation_prevPage" control="true"/>
+	<keystroke key="escape" handler="Presentation_end" control="true"/>
+	<keystroke key="return" handler="Presentation_nextPage" control="true"/>
+	<keystroke key="tab" handler="Presentation_nextPage" control="true"/>
+	<keystroke key="space" handler="Presentation_nextPage" control="true"/>
+</editbindings>
