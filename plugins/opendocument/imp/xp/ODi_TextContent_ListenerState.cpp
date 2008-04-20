@@ -289,11 +289,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:bookmark")) {
         
         _flush ();
-        const gchar * pName = UT_getAttribute ("text:name", ppAtts);
+        const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
 
-        if(pName) {
-            _insertBookmark (pName, "start");
-            _insertBookmark (pName, "end");
+        if(pAttr) {
+            _insertBookmark (pAttr, "start");
+            _insertBookmark (pAttr, "end");
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -301,10 +301,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:bookmark-start")) {
 
         _flush ();
-        const gchar * pName = UT_getAttribute ("text:name", ppAtts);
+        const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
 
-        if(pName) {
-            _insertBookmark (pName, "start");
+        if(pAttr) {
+            _insertBookmark (pAttr, "start");
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -312,10 +312,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:bookmark-end")) {
 
         _flush ();
-        const gchar * pName = UT_getAttribute ("text:name", ppAtts);
+        const gchar * pAttr = UT_getAttribute ("text:name", ppAtts);
 
-        if(pName) {
-            _insertBookmark (pName, "end");
+        if(pAttr) {
+            _insertBookmark (pAttr, "end");
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         }
@@ -493,14 +493,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
     } else if (!strcmp(pName, "text:note-body")) {
 
-        const gchar* ppAtts[10];
+        const gchar* ppAtts2[10];
         bool ok;
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
         const UT_UTF8String* pCitationStyleName = NULL;
         UT_uint8 i;
-        bool isFootnote;
+        bool isFootnote = false;
         const gchar* pNoteClass;
         
         pNoteClass = m_rElementStack.getStartTag(0)->getAttributeValue("text:note-class");
@@ -534,38 +534,38 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
 
         i = 0;
-        ppAtts[i++] = "type";
+        ppAtts2[i++] = "type";
         if (isFootnote) {
-            ppAtts[i++] = "footnote_ref";
-            ppAtts[i++] = "footnote-id";
+            ppAtts2[i++] = "footnote_ref";
+            ppAtts2[i++] = "footnote-id";
         } else {
-            ppAtts[i++] = "endnote_ref";
-            ppAtts[i++] = "endnote-id";
+            ppAtts2[i++] = "endnote_ref";
+            ppAtts2[i++] = "endnote-id";
         }
-        ppAtts[i++] = m_currentNoteId.utf8_str();
+        ppAtts2[i++] = m_currentNoteId.utf8_str();
         if (pCitationStyleName && (!pCitationStyleName->empty()) && (pStyle != NULL)) {
-            ppAtts[i++] = "style";
-            ppAtts[i++] = pStyle->getDisplayName().utf8_str();
+            ppAtts2[i++] = "style";
+            ppAtts2[i++] = pStyle->getDisplayName().utf8_str();
         }
-        ppAtts[i++] = "props";
-        ppAtts[i++] = "text-position:superscript";
-        ppAtts[i] = 0;
+        ppAtts2[i++] = "props";
+        ppAtts2[i++] = "text-position:superscript";
+        ppAtts2[i] = 0;
         
-        ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
+        ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts2);
         UT_ASSERT(ok);
         
         if (isFootnote) {
-            ppAtts[0] = "footnote-id";
+            ppAtts2[0] = "footnote-id";
         } else {
-            ppAtts[0] = "endnote-id";
+            ppAtts2[0] = "endnote-id";
         }
-        ppAtts[1] = m_currentNoteId.utf8_str();
-        ppAtts[2] = 0;
+        ppAtts2[1] = m_currentNoteId.utf8_str();
+        ppAtts2[2] = 0;
         
         if (isFootnote) {
-            ok = m_pAbiDocument->appendStrux(PTX_SectionFootnote, ppAtts);
+            ok = m_pAbiDocument->appendStrux(PTX_SectionFootnote, ppAtts2);
         } else {
-            ok = m_pAbiDocument->appendStrux(PTX_SectionEndnote, ppAtts);
+            ok = m_pAbiDocument->appendStrux(PTX_SectionEndnote, ppAtts2);
         }
         UT_ASSERT(ok);
         
@@ -680,7 +680,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         rAction.popState();
         
     } else if (!strcmp(pName, "text:note-body")) {
-        bool ok;
+        bool ok = false;
         const gchar* pNoteClass;
         
         pNoteClass = m_rElementStack.getStartTag(1)->getAttributeValue("text:note-class");
@@ -792,7 +792,7 @@ void ODi_TextContent_ListenerState::_popInlineFmt(void)
     if (!m_stackFmtStartIndex.pop(&start))
         return;
         
-    UT_uint32 k;
+    UT_sint32 k;
     UT_uint32 end = m_vecInlineFmt.getItemCount();
     const gchar* p;
     
@@ -1005,9 +1005,10 @@ void ODi_TextContent_ListenerState::_insureInBlock(const gchar ** atts)
 /**
  * Process <text:p> and <text:h> startElement calls
  */
-void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* pName,
+void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName*/,
                                           const gchar** ppParagraphAtts,
-                                          ODi_ListenerStateAction& rAction) {
+															ODi_ListenerStateAction& /*rAction*/) 
+{
         bool bIsListParagraph = false;
         const gchar* pStyleName;
         const gchar *ppAtts[50];
@@ -1242,8 +1243,9 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* pName,
  * 
  */
 void ODi_TextContent_ListenerState::_endParagraphElement (
-                                           const gchar* pName,
-                                           ODi_ListenerStateAction& rAction) {
+	const gchar* /*pName*/,
+	ODi_ListenerStateAction& rAction) 
+{
                                             
     const gchar* pStyleName;
     const ODi_Style_Style* pStyle;

@@ -73,7 +73,7 @@ ODe_Table_Listener::~ODe_Table_Listener() {
  * 
  */
 void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
-                                   ODe_ListenerAction& rAction) {
+                                   ODe_ListenerAction& /*rAction*/) {
     const gchar* pValue;
     bool ok;
     gchar buffer[100];
@@ -389,10 +389,6 @@ void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
     m_bottomAttach = atoi(pValue);
 
     // A few sanity checks
-    UT_ASSERT(m_leftAttach   >= 0);
-    UT_ASSERT(m_rightAttach  >= 0);
-    UT_ASSERT(m_topAttach    >= 0);
-    UT_ASSERT(m_bottomAttach >= 0);
     UT_ASSERT(m_leftAttach   <  m_rightAttach);
     UT_ASSERT(m_topAttach    <  m_bottomAttach);
     

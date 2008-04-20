@@ -48,7 +48,7 @@ public:
     
     void endElement(const gchar* pName, ODi_ListenerStateAction& rAction);
     
-    void charData (const gchar* pBuffer, int length) {}
+    void charData (const gchar* /*pBuffer*/, int /*length*/) {}
     
     
     inline const UT_UTF8String& getLayoutName() const {return m_layoutName;}

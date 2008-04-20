@@ -255,7 +255,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
  * Used to parse a <table:table-column> start element.
  */
 void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
-                                                 ODi_ListenerStateAction& rAction)
+                                                 ODi_ListenerStateAction& /*rAction*/)
 {
     if (m_onFirstPass) {
         const gchar* pStyleName;

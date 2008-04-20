@@ -59,7 +59,7 @@ public:
                       
     void endElement(const gchar* pName, ODi_ListenerStateAction& rAction);
     
-    void charData (const gchar* pBuffer, int length) {}
+    void charData (const gchar* /*pBuffer*/, int /*length*/) {}
     
     
     const UT_UTF8String& getDisplayName() const {return m_displayName;}

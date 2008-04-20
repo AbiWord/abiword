@@ -155,7 +155,7 @@ void ODi_Style_Style_Family::fixStyles() {
     
     UT_uint32 i, count;
     UT_GenericVector<ODi_Style_Style*>* pStylesVec;
-    ODi_Style_Style* pStyle;
+    ODi_Style_Style* pStyle = NULL;
     bool noneFound;
     
     do {
@@ -249,7 +249,6 @@ void ODi_Style_Style_Family::removeStyleStyle(ODi_Style_Style* pRemovedStyle,
     UT_GenericVector<ODi_Style_Style*>* pStylesVec;
     UT_UTF8String styleName;
     UT_UTF8String replacementName;
-    bool ok;
 
 
     _findSuitableReplacement(replacementName, pRemovedStyle, bOnContentStream);

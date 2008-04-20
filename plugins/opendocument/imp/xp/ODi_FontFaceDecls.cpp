@@ -43,8 +43,8 @@ ODi_FontFaceDecls::ODi_FontFaceDecls(ODi_ElementStack& rElementStack)
  */
 void ODi_FontFaceDecls::startElement (const gchar* pName,
                                       const gchar** ppAtts,
-                                      ODi_ListenerStateAction& rAction) {
-                                        
+                                      ODi_ListenerStateAction& /*rAction*/) 
+{
     if (!strcmp(pName, "style:font-face")) {
         const gchar* pStyleName;
         const gchar* pFontFamily;

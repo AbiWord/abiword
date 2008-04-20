@@ -85,8 +85,8 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     bool ok;
     bool hasAbiHeaderMargin = false;
     bool hasAbiFooterMargin = false;
-    double abiHeaderMarginCM;
-    double abiFooterMarginCM;
+    double abiHeaderMarginCM = 0.0;
+    double abiFooterMarginCM = 0.0;
     double abiTopMarginCM;
     double abiBottomMarginCM;
     UT_LocaleTransactor t(LC_NUMERIC, "C");    

@@ -42,10 +42,10 @@ public:
       ACTION_POP        = 2
     };
 
-    void pushListenerImpl(ODe_AbiDocListenerImpl* pListenerImpl, bool deleteWhenPop) {
+    void pushListenerImpl(ODe_AbiDocListenerImpl* pListenerImpl, bool _deleteWhenPop) {
         m_action = ACTION_PUSH;
         m_pListenerImpl = pListenerImpl;
-        m_deleteWhenPop = deleteWhenPop;
+        m_deleteWhenPop = _deleteWhenPop;
     }
     
     void popListenerImpl() {

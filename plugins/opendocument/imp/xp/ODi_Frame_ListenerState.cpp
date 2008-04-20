@@ -115,7 +115,8 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 /**
  * 
  */
-void ODi_Frame_ListenerState::charData (const gchar* pBuffer, int length) {
+void ODi_Frame_ListenerState::charData (const gchar* /*pBuffer*/, int /*length*/) 
+{
     // Nothing yet...
 }
 

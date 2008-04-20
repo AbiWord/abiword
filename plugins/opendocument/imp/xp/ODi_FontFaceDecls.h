@@ -47,7 +47,7 @@ public:
                        
     void endElement (const gchar* pName, ODi_ListenerStateAction& rAction);
     
-    void charData (const gchar* pBuffer, int length) {}
+    void charData (const gchar* /*pBuffer*/, int /*length*/) {}
     
     const std::string & getFontFamily(const UT_UTF8String& rStyleName);
     

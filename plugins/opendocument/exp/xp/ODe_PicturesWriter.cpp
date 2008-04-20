@@ -40,6 +40,7 @@
 bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
     const char * szName;
     const char * szMimeType;
+	const char ** pszMimeType = &szMimeType;
     const UT_ByteBuf * pByteBuf;
     GsfOutput* pImg;
     UT_UTF8String name;
@@ -50,8 +51,7 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT) {
                               NULL,
                               &szName,
                               &pByteBuf,
-                              reinterpret_cast<const void **>
-                                  (const_cast<const char **>(&szMimeType))));
+                              reinterpret_cast<const void **>(pszMimeType)));
          k++) {
             
         if (szMimeType && !strcmp(szMimeType, "image/png")) {

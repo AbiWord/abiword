@@ -176,7 +176,8 @@ void ODe_Main_Listener::openSection(const PP_AttrProp* pAP,
 /**
  * Override of ODe_AbiDocListenerImpl::closeSection
  */
-void ODe_Main_Listener::closeSection(ODe_ListenerAction& rAction) {
+void ODe_Main_Listener::closeSection(ODe_ListenerAction& /*rAction*/) 
+{
 	if (m_openedODSection) {
 
 		ODe_writeToFile(m_rDocumentData.m_pOfficeTextTemp, "   </text:section>\n");
@@ -213,12 +214,12 @@ void ODe_Main_Listener::_openHeaderFooterSection(
                                                   const PP_AttrProp* pAP,
                                                   ODe_ListenerAction& rAction) {
     const gchar* pValue;
-    const gchar* pId;
+    const gchar* pId = NULL;
     bool ok;
     UT_GenericVector<ODe_Style_MasterPage*>* pMasterPageVector;
     UT_uint32 count, i;
     const ODe_Style_MasterPage* pMPageStyle;
-    GsfOutput* pTextOutput;
+    GsfOutput* pTextOutput = NULL;
     
     pMasterPageVector = m_rDocumentData.m_masterStyles.enumerate();
     count = pMasterPageVector->getItemCount();

@@ -46,52 +46,52 @@ public:
     
     virtual ~ODe_AbiDocListenerImpl() {}
     
-    virtual void insertText(const UT_UTF8String& rText) {}
+    virtual void insertText(const UT_UTF8String& /*rText*/) {}
     
     virtual void insertLineBreak() {}
     virtual void insertColumnBreak() {}
     virtual void insertPageBreak() {}
     virtual void insertTabChar() {}
     
-    virtual void openSpan(const PP_AttrProp* pAP) {}
+    virtual void openSpan(const PP_AttrProp* /*pAP*/) {}
     virtual void closeSpan() {}
     
-    virtual void openBlock(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
+    virtual void openBlock(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
     virtual void closeBlock() {}
     
-    virtual void openSection(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeSection(ODe_ListenerAction& rAction) {}
+    virtual void openSection(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeSection(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openField(const fd_Field* field, const UT_UTF8String& fieldType, const UT_UTF8String& fieldValue) {}
-    virtual void closeField(const UT_UTF8String& fieldType) {}
+    virtual void openField(const fd_Field* /*field*/, const UT_UTF8String& /*fieldType*/, const UT_UTF8String& /*fieldValue*/) {}
+    virtual void closeField(const UT_UTF8String& /*fieldType*/) {}
     
-    virtual void openTable(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeTable(ODe_ListenerAction& rAction) {}
+    virtual void openTable(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeTable(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openCell(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeCell(ODe_ListenerAction& rAction) {}
+    virtual void openCell(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeCell(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openFootnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeFootnote(ODe_ListenerAction& rAction) {}
+    virtual void openFootnote(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeFootnote(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeEndnote(ODe_ListenerAction& rAction) {}
+    virtual void openEndnote(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeEndnote(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction) {}
-    virtual void closeFrame(ODe_ListenerAction& rAction) {}
+    virtual void openFrame(const PP_AttrProp* /*pAP*/, ODe_ListenerAction& /*rAction*/) {}
+    virtual void closeFrame(ODe_ListenerAction& /*rAction*/) {}
     
-    virtual void openTOC(const PP_AttrProp* pAP) {}
+    virtual void openTOC(const PP_AttrProp* /*pAP*/) {}
     virtual void closeTOC() {}
 
-    virtual void openBookmark(const PP_AttrProp* pAP) {}
-    virtual void closeBookmark(const PP_AttrProp* pAP) {}
-    virtual void closeBookmark(UT_UTF8String &sBookmarkName) {}
+    virtual void openBookmark(const PP_AttrProp* /*pAP*/) {}
+    virtual void closeBookmark(const PP_AttrProp* /*pAP*/) {}
+    virtual void closeBookmark(UT_UTF8String & /*sBookmarkName*/) {}
     
-    virtual void openHyperlink(const PP_AttrProp* pAP) {}
+    virtual void openHyperlink(const PP_AttrProp* /*pAP*/) {}
     virtual void closeHyperlink() {}
     
-    virtual void insertInlinedImage(const gchar* pImageName,
-                                    const PP_AttrProp* pAP) {}
+    virtual void insertInlinedImage(const gchar* /*pImageName*/,
+                                    const PP_AttrProp* /*pAP*/) {}
                                     
 protected:
 

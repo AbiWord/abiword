@@ -99,7 +99,7 @@ void ODe_Note_Listener::closeEndnote(ODe_ListenerAction& rAction) {
 /**
  * 
  */
-void ODe_Note_Listener::openBlock(const PP_AttrProp* pAP,
+void ODe_Note_Listener::openBlock(const PP_AttrProp* /*pAP*/,
                                   ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
     pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
@@ -116,7 +116,7 @@ void ODe_Note_Listener::openBlock(const PP_AttrProp* pAP,
  */
 void ODe_Note_Listener::_openNote(const gchar* pNoteClass,
                                   const gchar* pNoteId,
-                                  ODe_ListenerAction& rAction) {
+                                  ODe_ListenerAction& /*rAction*/) {
     UT_uint32 noteCitation;
     UT_UTF8String str;
     UT_UTF8String output;

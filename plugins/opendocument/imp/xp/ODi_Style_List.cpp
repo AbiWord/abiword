@@ -88,7 +88,8 @@ void ODi_Style_List::endElement (const gchar* pName,
 /**
  * 
  */
-void ODi_Style_List::charData (const gchar* pBuffer, int length) {
+void ODi_Style_List::charData (const gchar* /*pBuffer*/, int /*length*/) 
+{
 }
 
 

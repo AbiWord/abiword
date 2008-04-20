@@ -126,7 +126,7 @@ ODe_Text_Listener::~ODe_Text_Listener() {
 /**
  * 
  */
-void ODe_Text_Listener::openTable(const PP_AttrProp* pAP,
+void ODe_Text_Listener::openTable(const PP_AttrProp* /*pAP*/,
                                   ODe_ListenerAction& rAction) {
     _closeODParagraph();
     _closeODList();
@@ -144,7 +144,7 @@ void ODe_Text_Listener::openTable(const PP_AttrProp* pAP,
  * Override of ODe_AbiDocListenerImpl::openBlock
  */
 void ODe_Text_Listener::openBlock(const PP_AttrProp* pAP,
-                                  ODe_ListenerAction& rAction) {
+                                  ODe_ListenerAction& /*rAction*/) {
 
     _closeODParagraph();
 
@@ -365,7 +365,7 @@ void ODe_Text_Listener::closeField(const UT_UTF8String& fieldType) {
  */
 
 
-void ODe_Text_Listener::openFootnote(const PP_AttrProp* pAP,
+void ODe_Text_Listener::openFootnote(const PP_AttrProp* /*pAP*/,
                                      ODe_ListenerAction& rAction) {
     ODe_Note_Listener* pNoteListener;
     
@@ -397,7 +397,7 @@ void ODe_Text_Listener::closeFootnote(ODe_ListenerAction& rAction) {
 /**
  * 
  */
-void ODe_Text_Listener::openEndnote(const PP_AttrProp* pAP,
+void ODe_Text_Listener::openEndnote(const PP_AttrProp* /*pAP*/,
                                     ODe_ListenerAction& rAction) {
     ODe_Note_Listener* pNoteListener;
     

@@ -137,7 +137,7 @@ void ODe_Bullet_ListLevelStyle::fetchAttributesFromAbiBlock(
     
     const gchar* pValue;
     bool ok;
-    UT_UCS4Char ucs4Char;
+    UT_UCS4Char ucs4Char = 0;
 
     // I'm hardcoding this font because it has all possible bullet characters and
     // it's a free font.

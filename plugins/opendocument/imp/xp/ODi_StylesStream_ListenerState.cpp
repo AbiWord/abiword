@@ -153,7 +153,7 @@ void ODi_StylesStream_ListenerState::startElement (const gchar* pName,
  * e.g: <bla>char_data</bla>
  */
 void ODi_StylesStream_ListenerState::charData (
-                            const gchar* pBuffer, int length)
+	const gchar* /*pBuffer*/, int /*length*/)
 {
 }
 

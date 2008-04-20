@@ -56,8 +56,9 @@ ODi_Postpone_ListenerState::~ODi_Postpone_ListenerState()
  * 
  */
 void ODi_Postpone_ListenerState::startElement (const gchar* pName,
-                                              const gchar** ppAtts,
-                                              ODi_ListenerStateAction& rAction) {
+											   const gchar** ppAtts,
+											   ODi_ListenerStateAction& /*rAction*/) 
+{
 
     m_xmlRecorder.startElement(pName, ppAtts);
     m_elementStackCount++;

@@ -122,7 +122,7 @@ void ODi_ContentStream_ListenerState::endElement (const gchar* pName,
 /**
  * 
  */
-void ODi_ContentStream_ListenerState::charData (
-                            const gchar* pBuffer, int length)
+void ODi_ContentStream_ListenerState::charData (const gchar* /*pBuffer*/, 
+												int /*length*/)
 {
 }

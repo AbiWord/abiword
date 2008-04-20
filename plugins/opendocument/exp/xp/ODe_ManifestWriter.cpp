@@ -70,6 +70,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
 
     const char* szName;
     const char* szMimeType;
+	const char **pszMimeType = &szMimeType;
     const UT_ByteBuf* pByteBuf;
     bool wroteDirManifest = false;
     
@@ -78,7 +79,7 @@ bool ODe_ManifestWriter::writeManifest(PD_Document* pDoc, GsfOutfile* pODT)
                               NULL,
                               &szName,
                               &pByteBuf,
-                              reinterpret_cast<const void **>(const_cast<const char **>(&szMimeType)))); k++) {
+                              reinterpret_cast<const void **>(pszMimeType))); k++) {
                                 
         if (szMimeType && !strcmp(szMimeType, "image/png")) {
             

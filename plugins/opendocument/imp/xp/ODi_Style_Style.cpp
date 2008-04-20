@@ -64,7 +64,8 @@ ODi_Style_Style::ODi_Style_Style(ODi_ElementStack& rElementStack) :
  */
 void ODi_Style_Style::startElement(const gchar* pName,
                                   const gchar** ppAtts,
-                                  ODi_ListenerStateAction& rAction) {
+								   ODi_ListenerStateAction& /*rAction*/) 
+{
 
     if (!strcmp("style:style", pName)) {
         

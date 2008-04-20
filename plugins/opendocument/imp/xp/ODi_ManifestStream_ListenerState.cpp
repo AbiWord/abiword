@@ -46,8 +46,8 @@ ODi_ManifestStream_ListenerState::ODi_ManifestStream_ListenerState(
  * Called to signal that the start tag of an element has been reached.
  */
 void ODi_ManifestStream_ListenerState::startElement (const gchar* pName,
-                                                const gchar** ppAtts,
-                                                ODi_ListenerStateAction& rAction) 
+													 const gchar** /*ppAtts*/,
+													 ODi_ListenerStateAction& /*rAction*/) 
 {
     if (!strcmp(pName, "manifest:encryption-data")) {
         m_isDocumentEncripted = true;

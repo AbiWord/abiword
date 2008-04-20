@@ -40,12 +40,12 @@ public:
         
     virtual ~ODi_SettingsStream_ListenerState() {}
     
-    void startElement (const gchar* pName, const gchar** ppAtts,
-                               ODi_ListenerStateAction& rAction) {}
+    void startElement (const gchar* /*pName*/, const gchar** /*ppAtts*/,
+					   ODi_ListenerStateAction& /*rAction*/) {}
                                
-    void endElement (const gchar* pName, ODi_ListenerStateAction& rAction) {}
+    void endElement (const gchar* /*pName*/, ODi_ListenerStateAction& /*rAction*/) {}
                              
-    void charData (const gchar* pBuffer, int length) {}
+    void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 };
 
 #endif //_ODI_SETTINGSSTREAM_LISTENERSTATE_H_

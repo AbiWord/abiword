@@ -56,7 +56,7 @@ ODi_ElementStack::~ODi_ElementStack() {
 void ODi_ElementStack::startElement (const gchar* pName,
                                                  const gchar** ppAtts) {
 
-    ODi_StartTag* pStartTag;
+    ODi_StartTag* pStartTag = NULL;
 
     if (!m_pStartTags) {
         m_pStartTags = new UT_GenericVector <ODi_StartTag*> (10, 10);
@@ -85,7 +85,7 @@ void ODi_ElementStack::startElement (const gchar* pName,
  * Must be the last command called by the endElement method of the listener
  * class.
  */
-void ODi_ElementStack::endElement (const gchar* pName) {
+void ODi_ElementStack::endElement (const gchar* /*pName*/) {
     UT_ASSERT(m_pStartTags != NULL);
     UT_return_if_fail(m_stackSize > 0);
     m_stackSize--;

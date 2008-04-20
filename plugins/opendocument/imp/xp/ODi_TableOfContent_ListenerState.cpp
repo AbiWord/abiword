@@ -51,8 +51,9 @@ ODi_TableOfContent_ListenerState::ODi_TableOfContent_ListenerState (
  * 
  */
 void ODi_TableOfContent_ListenerState::startElement (const gchar* pName,
-                                                    const gchar** ppAtts,
-                                              ODi_ListenerStateAction& rAction) {
+													 const gchar** ppAtts,
+													 ODi_ListenerStateAction& /*rAction*/) 
+{
 
     if (!strcmp(pName, "text:index-title-template")) {
         const gchar* pVal;

@@ -32,7 +32,7 @@
 #include <ut_types.h>
  
  
-bool ODe_SettingsWriter::writeSettings(PD_Document* pDoc, GsfOutfile* oo)
+bool ODe_SettingsWriter::writeSettings(PD_Document* /*pDoc*/, GsfOutfile* oo)
 {
     GsfOutput* pSettings = gsf_outfile_new_child (oo, "settings.xml", FALSE);
 

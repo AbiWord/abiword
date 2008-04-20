@@ -386,7 +386,7 @@ void ODi_StreamListener::_handleStateAction ()
             m_currentAction = ODI_IGNORING;
             
             UT_ASSERT(m_stateAction.getElementLevel() >= -1);
-            UT_ASSERT(m_pElementStack->getStackSize() -
+            UT_ASSERT((int)m_pElementStack->getStackSize() -
                       (m_stateAction.getElementLevel()+1) >= 0);
             
             m_elemenStackSize = m_pElementStack->getStackSize() -

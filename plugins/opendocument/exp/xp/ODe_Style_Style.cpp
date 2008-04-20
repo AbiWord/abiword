@@ -1392,7 +1392,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
         gchar buffer[100];
         UT_uint32 i;
         double tableWidth = 0.0;
-        UT_Dimension dimension;
+        UT_Dimension dimension = DIM_none;
         bool gotDimension = false;
         
         // The table width is the sum of all column widths.

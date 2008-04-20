@@ -54,7 +54,8 @@ ODi_ListLevelStyle::ODi_ListLevelStyle(const char* pStateName,
  */
 void ODi_ListLevelStyle::startElement (const gchar* pName,
                                       const gchar** ppAtts,
-                                      ODi_ListenerStateAction& rAction) {
+									   ODi_ListenerStateAction& /*rAction*/) 
+{
     const gchar* pVal = NULL;
 
     if (!strcmp("text:list-level-style-bullet", pName) ||

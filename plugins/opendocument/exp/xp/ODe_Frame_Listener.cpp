@@ -93,7 +93,7 @@ void ODe_Frame_Listener::closeFrame(ODe_ListenerAction& rAction) {
 /**
  * 
  */
-void ODe_Frame_Listener::openTable(const PP_AttrProp* pAP,
+void ODe_Frame_Listener::openTable(const PP_AttrProp* /*pAP*/,
                                    ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
     pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
@@ -108,7 +108,7 @@ void ODe_Frame_Listener::openTable(const PP_AttrProp* pAP,
 /**
  * 
  */
-void ODe_Frame_Listener::openBlock(const PP_AttrProp* pAP,
+void ODe_Frame_Listener::openBlock(const PP_AttrProp* /*pAP*/,
                                    ODe_ListenerAction& rAction) {
     ODe_Text_Listener* pTextListener;
     pTextListener = new ODe_Text_Listener(m_rAutomatiStyles,
@@ -124,7 +124,8 @@ void ODe_Frame_Listener::openBlock(const PP_AttrProp* pAP,
  * 
  */
 void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
-                                        ODe_ListenerAction& rAction) {
+                                        ODe_ListenerAction& /*rAction*/) 
+{
     UT_UTF8String output;
     UT_UTF8String str;
     bool ok;

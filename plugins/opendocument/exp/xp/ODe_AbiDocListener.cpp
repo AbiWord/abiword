@@ -80,7 +80,7 @@ ODe_AbiDocListener::~ODe_AbiDocListener() {
 /**
  * 
  */
-bool ODe_AbiDocListener::populate(PL_StruxFmtHandle sfh,
+bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
                                  const PX_ChangeRecord * pcr)
 {
     switch (pcr->getType()) {
@@ -208,7 +208,7 @@ bool ODe_AbiDocListener::populate(PL_StruxFmtHandle sfh,
 /**
  * 
  */
-bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle sdh,
+bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
                                        const PX_ChangeRecord* pcr,
                                        PL_StruxFmtHandle* psfh)
 {
@@ -414,7 +414,7 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle sdh,
 /**
  * 
  */
-bool ODe_AbiDocListener::change(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr)
+bool ODe_AbiDocListener::change(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
     UT_ASSERT_NOT_REACHED();
     return true;
@@ -424,13 +424,13 @@ bool ODe_AbiDocListener::change(PL_StruxFmtHandle sfh, const PX_ChangeRecord * p
 /**
  * 
  */
-bool ODe_AbiDocListener::insertStrux(PL_StruxFmtHandle sfh,
-                            const PX_ChangeRecord * pcr,
-                            PL_StruxDocHandle sdh,
-                            PL_ListenerId lid,
-                            void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-                                                    PL_ListenerId lid,
-                                                    PL_StruxFmtHandle sfhNew))
+bool ODe_AbiDocListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+									 const PX_ChangeRecord * /*pcr*/,
+									 PL_StruxDocHandle /*sdh*/,
+									 PL_ListenerId /*lid*/,
+									 void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+																 PL_ListenerId lid,
+																 PL_StruxFmtHandle sfhNew))
 {
     UT_ASSERT_NOT_REACHED();
     return true;
@@ -440,7 +440,7 @@ bool ODe_AbiDocListener::insertStrux(PL_StruxFmtHandle sfh,
 /**
  * 
  */
-bool ODe_AbiDocListener::signal(UT_uint32 iSignal)
+bool ODe_AbiDocListener::signal(UT_uint32 /*iSignal*/)
 {
     UT_ASSERT_NOT_REACHED();
     return true;
@@ -1168,7 +1168,7 @@ void ODe_AbiDocListener::_insertMath(PT_AttrPropIndex api) {
         return;
     }
 
-    for (int i = 0; i < buf.length(); i++) {
+    for (UT_uint32 i = 0; i < buf.length(); i++) {
         if (buf[i] == '<') {
             if (((i + 1) < buf.length()) && (buf[i+1] == '/')) {
                 output += "</math:";

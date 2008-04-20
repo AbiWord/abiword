@@ -48,9 +48,9 @@ ODi_MetaStream_ListenerState::ODi_MetaStream_ListenerState(
 /** 
  * Called to signal that the start tag of an element has been reached.
  */
-void ODi_MetaStream_ListenerState::startElement (const gchar* pName,
-                                                const gchar** ppAtts,
-                                                ODi_ListenerStateAction& rAction) 
+void ODi_MetaStream_ListenerState::startElement (const gchar* /*pName*/,
+												 const gchar** /*ppAtts*/,
+												 ODi_ListenerStateAction& /*rAction*/) 
 {
     m_charData.clear ();
     

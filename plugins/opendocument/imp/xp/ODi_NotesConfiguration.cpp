@@ -33,8 +33,9 @@
  * 
  */
 void ODi_NotesConfiguration::startElement(const gchar* pName,
-                                             const gchar** ppAtts,
-                                             ODi_ListenerStateAction& rAction) {
+										  const gchar** ppAtts,
+										  ODi_ListenerStateAction& /*rAction*/) 
+{
                                                 
     const gchar* pVal;
                                         

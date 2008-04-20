@@ -47,7 +47,7 @@ public:
     virtual void endElement (const gchar* pName,
                              ODi_ListenerStateAction& rAction);
                              
-    virtual void charData (const gchar* pBuffer, int length) {}
+    virtual void charData (const gchar* /*pBuffer*/, int /*length*/) {}
     
     UT_uint32 getLevelNumber() const {return m_levelNumber;}
     

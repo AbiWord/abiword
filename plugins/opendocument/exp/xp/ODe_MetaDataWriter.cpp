@@ -86,7 +86,7 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
         UT_UTF8String buf = "";
         UT_UCS4String keyword = keywords.utf8_str();
 
-        for(int i = 0;i < keyword.length(); i++)
+        for(UT_uint32 i = 0;i < keyword.length(); i++)
         {
             if(keyword[i] != ' ')
             {

@@ -40,7 +40,8 @@
  */
 void ODi_Style_PageLayout::startElement(const gchar* pName,
                                        const gchar** ppAtts,
-                                       ODi_ListenerStateAction& rAction) {
+										ODi_ListenerStateAction& /*rAction*/) 
+{
 
     const gchar* pVal;
                                         
@@ -121,8 +122,8 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
     UT_uint32 propCtr = 0;
     static const int MAX_PAGE_ATTS = 13; // 2*(width height orientation pagetype units page-scale) 0 
     const gchar* pageAtts[MAX_PAGE_ATTS];
-    double pageWidthMmNumeric;
-    double pageHeightMmNumeric;
+    double pageWidthMmNumeric = 0.0;
+    double pageHeightMmNumeric = 0.0;
     UT_UTF8String pageWidthMm;
     UT_UTF8String pageHeightMm;
     UT_LocaleTransactor lt(LC_NUMERIC, "C");

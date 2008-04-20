@@ -158,7 +158,11 @@ private:
             m_pListenerImpl = pListenerImpl;
         }
         // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
-        StackCell(UT_uint32 i) {m_pListenerImpl=NULL; m_deleteWhenPop=false;}
+        StackCell(UT_uint32 /*i*/) 
+			{
+				m_pListenerImpl=NULL; 
+				m_deleteWhenPop=false;
+			}
         
         StackCell& operator=(const StackCell& sc) {
             this->m_deleteWhenPop = sc.m_deleteWhenPop;
