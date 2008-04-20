@@ -333,8 +333,8 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa) UT_THROWS((U
       // Data structure:
       // Count(8) | Position (in twips) (32) | Adjustment (8) | Decimal Separator (?) (8) | Fill character (8)
       // (total size per tab = 7)
-      UT_sint8 count = aAttr.data[0];
-      for (int i = 1; (i + 6) < aAttr.dataLen; i += 7) {
+      // UT_sint8 count = aAttr.data[0];
+      for (UT_uint32 i = 1; (i + 6) < aAttr.dataLen; i += 7) {
         // Abiword wants: 12.3cm/L0, where 0 indicates what to fill with
         UT_uint16 posInTwips = GSF_LE_GET_GUINT32(aAttr.data + i);
         UT_String pos = twipsToSizeString(posInTwips);
@@ -383,7 +383,7 @@ void streamRead(GsfInput* aStream, TextAttr& aAttr, gsf_off_t aEoa) UT_THROWS((U
 static void hexdump(void* aPtr, UT_uint32 aLen) {
 	unsigned char* ptr = (unsigned char*)aPtr;
 	for (UT_uint32 i = 0; i < aLen; i++) {
-		fprintf(stderr, "%02x ", ptr[i], ptr[i]);
+		fprintf(stderr, "%02x ", ptr[i]);
 	}
 }
 #endif
@@ -793,9 +793,9 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 								// now insert the spans of text
 								UT_uint32 len = textNode.length();
 								UT_uint32 lastInsPos = 0;
-								for (int i = 1; i < len; i++) {
+								for (UT_uint32 i = 1; i < len; i++) {
 									bool doInsert = false; // whether there was an attribute change
-									for (int j = 0; j < charAttributes.getItemCount(); j++) {
+									for (UT_uint32 j = 0; j < charAttributes.getItemCount(); j++) {
 										const TextAttr* a = reinterpret_cast<const TextAttr*>(charAttributes[j]);
 										// clear the last attribute, if set
 										if (a->endSet && a->end == (i - 1)) {
@@ -1033,8 +1033,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-                                 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+                                 UT_uint32 /*release*/)
 {
     return 1;
 }
