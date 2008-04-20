@@ -419,14 +419,12 @@ bool Presentation::_loadPresentationBindings(AV_View * pView)
   {
       return true;
   }
-	// get the path where our app data is located
+  // get the path where our app data is located
   XAP_App * pApp = static_cast<XAP_App*>(XAP_App::getApp());
   UT_String data_path( pApp->getAbiSuiteLibDir() );
-#if defined(WIN32)
-  data_path += "\\Presentation.xml";
-#else
-  data_path += "/Presentation.xml";
-#endif
+  data_path += G_DIR_SEPARATOR;
+  data_path += "Presentation.xml";
+
   EV_EditMethod * pLoadB = pEMC->findEditMethodByName ("com.abisource.abiword.loadbindings.fromURI");
   g_return_val_if_fail (pLoadB != 0, false);
   EV_EditMethodCallData calldata(data_path.c_str(),data_path.size());
