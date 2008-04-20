@@ -96,6 +96,7 @@ void UT_UnixIdle::stop ()
 	{
 #ifndef TOOLKIT_COCOA
 		gboolean b = g_idle_remove_by_data(this);
+		UT_UNUSED(b);
 		UT_ASSERT(TRUE == b);
 #else
 		UT_ASSERT (UT_NOT_IMPLEMENTED);

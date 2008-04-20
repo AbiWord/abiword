@@ -66,7 +66,7 @@ public:
 protected:
 	virtual GtkToolbarStyle 		getStyle(void);
 	virtual bool 					getDetachable(void) { return true; }
-	virtual void 					setDetachable(gboolean detachable) { /* only the GNOME version does that ATM */ }
+	virtual void 					setDetachable(gboolean /*detachable*/) { /* only the GNOME version does that ATM */ }
 
 	virtual GtkBox*					_getContainer();
 

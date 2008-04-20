@@ -170,7 +170,7 @@ const char* XAP_EncodingManager::getLanguageISOTerritory() const
 // TODO Do we need an equivalent function which can return
 // TODO U+FFFD "REPLACEMENT CHARACTER" or U+25A0 "BLACK SQUARE"
 // TODO for translating into Unicode?
-char XAP_EncodingManager::fallbackChar(UT_UCSChar c) const 
+char XAP_EncodingManager::fallbackChar(UT_UCSChar) const 
 { 
     return '?'; 
 }
@@ -293,6 +293,8 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
                                           XML_Encoding *info)
 {
 #ifndef	HAVE_EXPAT
+	UT_UNUSED(name);
+	UT_UNUSED(info);
 	return 0;
 #else
 	/*this is used by code that reads xml using expat*/
@@ -552,10 +554,11 @@ static const char* search_map_with_opt_suffix(const _map* m,const char* key,cons
 static const char* texenc_iso88595[] = { "iso8859-5", NULL };
 static const _rmap native_tex_enc_map[]=
 {
-	{ NULL}, /* the 1st item tells default value */
-	{ "koi8-r"}, { "koi8-ru"}, { "koi8-u"}, { "cp1251"}, { "cp866"},
+	{ NULL, NULL }, /* the 1st item tells default value */
+	{ "koi8-r", NULL }, { "koi8-ru", NULL }, 
+	{ "koi8-u", NULL }, { "cp1251", NULL }, { "cp866", NULL },
 	{ "iso88595", texenc_iso88595},
-	{ NULL } /*last entry has NULL as 'value'*/
+	{ NULL, NULL } /*last entry has NULL as 'value'*/
 };
 
 
@@ -605,7 +608,7 @@ static const char* wincharsetcode_zh_BIG5[]= /* chinese*/
 
 static const _rmap langcode_to_wincharsetcode[]=
 {
-	{"0"}, /* default value - ansi charset*/
+	{"0", NULL }, /* default value - ansi charset*/
 	{"204",wincharsetcode_ru},
 	{"161",wincharsetcode_el},
 	{"162",wincharsetcode_tr},
@@ -613,7 +616,7 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{"222",wincharsetcode_th},	
 	{"134",wincharsetcode_zh_GB2312},
 	{"136",wincharsetcode_zh_BIG5},	
-	{NULL}
+	{NULL, NULL}
 };
 
 static const UT_Bijection::pair_data zh_TW_big5[]=
@@ -634,9 +637,9 @@ static const char* zh_TW_big5_keys[]=
 
 static const _rmap cjk_word_fontname_mapping_data[]=
 {
-    {NULL},
+    {NULL, NULL},
     {reinterpret_cast<const char*>(zh_TW_big5),zh_TW_big5_keys},
-    {NULL}
+    {NULL, NULL}
 };
 
 
@@ -646,9 +649,9 @@ static const char* cjk_languages[]=
 
 static const _rmap langcode_to_cjk[]=
 {
-	{"0"}, /* default value - non-CJK environment */    
+	{"0", NULL}, /* default value - non-CJK environment */    
 	{"1",cjk_languages},
-	{NULL}
+	{NULL, NULL}
 };
 
 
@@ -756,7 +759,7 @@ static const _map charset_name_to_MSCodepagename_map[]=
 static const _map langcode_to_winlangcode[]=
 {
 /*key, value*/
-    {NULL},
+    {NULL, NULL},
    {"zh_CN.GB2312",	"0x804"},     
    {"zh_CN.GBK",	"0x804"}, 
    {"zh_CN.GB18030",	"0x804"}, 
@@ -765,7 +768,7 @@ static const _map langcode_to_winlangcode[]=
    {"zh_HK.UTF-8",	"0x404"},  
    {"zh_TW.BIG5",	"0x404"},  
    {"zh_TW.UTF-8",	"0x404"},  
-   {NULL}
+	{NULL, NULL}
 };
 
 #undef v
@@ -1214,7 +1217,7 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfoByLocale(const char* locale
 	{
 		if (strISOName == cur->fields[XAP_LangInfo::isoshortname_idx])
 		{
-			if (*cur->fields[XAP_LangInfo::countrycode_idx] == NULL)
+			if (! *cur->fields[XAP_LangInfo::countrycode_idx])
 			{
 				if (strCountryCode.empty())
 					return cur;
@@ -1295,14 +1298,18 @@ void XAP_EncodingManager::initialize()
 			break;
 		}
 	}
-	if (UCS2BEName)
+	if (UCS2BEName) {
 		UT_DEBUGMSG(("This iconv supports UCS-2BE as \"%s\"\n",UCS2BEName));
-	else
+	}
+	else {
 		UT_DEBUGMSG(("This iconv does not support UCS-2BE!\n"));
-	if (UCS2LEName)
+	}
+	if (UCS2LEName) {
 		UT_DEBUGMSG(("This iconv supports UCS-2LE as \"%s\"\n",UCS2LEName));
-	else
+	}
+	else {
 		UT_DEBUGMSG(("This iconv does not support UCS-2LE!\n"));
+	}
 
 	for (p = szUCS4BENames; *p; ++p)
 	{
@@ -1322,14 +1329,18 @@ void XAP_EncodingManager::initialize()
 			break;
 		}
 	}
-	if (UCS4BEName)
+	if (UCS4BEName) {
 		UT_DEBUGMSG(("This iconv supports UCS-4BE as \"%s\"\n",UCS4BEName));
-	else
+	}
+	else {
 		UT_DEBUGMSG(("This iconv does not support UCS-4BE!\n"));
-	if (UCS4LEName)
+	}
+	if (UCS4LEName) {
 		UT_DEBUGMSG(("This iconv supports UCS-4LE as \"%s\"\n",UCS4LEName));
-	else
+	}
+	else {
 		UT_DEBUGMSG(("This iconv does not support UCS-4LE!\n"));
+	}
 
 	if(!g_ascii_strcasecmp(enc, "UTF-8") || !g_ascii_strcasecmp(enc, "UTF8")
 		|| !g_ascii_strcasecmp(enc, "UTF-16") || !g_ascii_strcasecmp(enc, "UTF16")

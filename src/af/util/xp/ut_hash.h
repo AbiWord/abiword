@@ -358,6 +358,7 @@ public:
 	bool key_eq(const char  *test, size_t h) const
 		{
 #if 1
+			(void)h;
 			return m_key.eq(test);
 #else
 			return m_key.hashval() == h;
@@ -722,7 +723,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 							size_t&			hashval,
 							const void*		v,
 							bool*			v_found,
-							void*			vi,
+							void*			/*vi*/,
 							size_t			hashval_in) const
 {
 	if ( m_nSlots == 0 )

@@ -271,8 +271,8 @@ void XAP_Draw_Symbol::draw(void)
 
 			if(w != GR_CW_ABSENT)
 			{
-				UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
-				UT_uint32 y = pos / 32 * tmph;
+				x = (pos % 32) * tmpw + (tmpw - w) / 2;
+				y = pos / 32 * tmph;
 			
 				painter.drawChars(&j, 0, 1, x, y);
 			}

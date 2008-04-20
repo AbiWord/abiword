@@ -1591,5 +1591,7 @@ void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 	}
 	
 	UT_DEBUGMSG(("----------------------------------------------------------------------------\n"));
+#else
+	UT_UNUSED(pDoc);
 #endif
 }

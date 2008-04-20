@@ -71,7 +71,7 @@ public:
 	 * that you can export this MIME type. 0 being the least, 127 being
 	 * so-so, 255 being absolutely sure
 	 */
-	virtual UT_Confidence_t supportsMIME (const char * szMIME) { return UT_CONFIDENCE_ZILCH; }
+	virtual UT_Confidence_t supportsMIME (const char * /*szMIME*/) { return UT_CONFIDENCE_ZILCH; }
 
 	const UT_UTF8String & name () const { return m_name; }
 

@@ -237,7 +237,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	/* This is the top level GTK widget, the window.
 	 * It's created with a "dialog" style.
 	 */
-	GtkWidget * m_windowMain = abiDialogNew ("HTML export options dialog", true, title);
+	m_windowMain = abiDialogNew ("HTML export options dialog", true, title);
 
 	if (m_windowMain == NULL) return NULL;
 

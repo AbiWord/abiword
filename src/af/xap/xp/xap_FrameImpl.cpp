@@ -74,7 +74,7 @@ XAP_FrameImpl::~XAP_FrameImpl(void)
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
 }
 
-void XAP_FrameImpl::notifyViewChanged(AV_View * pView)
+void XAP_FrameImpl::notifyViewChanged(AV_View * )
 {
 	// called from XAP_Frame::setView(pView)
 }

@@ -432,7 +432,7 @@ fl_ContainerLayout * fl_ContainerLayout::getPrev(void) const
 	return m_pPrev;
 }
 
-fl_DocSectionLayout * fl_ContainerLayout::getDocSectionLayout(void)
+fl_DocSectionLayout * fl_ContainerLayout::getDocSectionLayout(void) const
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
 	while(pCL!= NULL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))

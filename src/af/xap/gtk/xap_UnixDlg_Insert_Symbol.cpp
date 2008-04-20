@@ -102,7 +102,7 @@ XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 #endif
 }
 
-void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * )
 {
 }
 
@@ -114,7 +114,7 @@ void XAP_UnixDialog_Insert_Symbol::activate(void)
 	gdk_window_raise(m_windowMain->window);
 }
 
-void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
+void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *)
 {
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
@@ -333,13 +333,13 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 }
 
 static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     XAP_UnixDialog_Insert_Symbol * dlg)
+							 gpointer,
+							 XAP_UnixDialog_Insert_Symbol * /*dlg*/)
 {
 	abiDestroyWidget(widget);
 }
 
-static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
+static void s_new_font(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->New_Font();
 }
@@ -351,48 +351,48 @@ static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_Unix
 }
 
 #else
-static void s_new_row(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
+static void s_new_row(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->New_Row();
 }
 
-static void  s_scroll_event(GtkWidget * widget, GdkEventScroll * event, XAP_UnixDialog_Insert_Symbol * dlg)
+static void  s_scroll_event(GtkWidget * /*widget*/, GdkEventScroll * event, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
 
-static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_sym_SymbolMap_exposed(GtkWidget * /*widget*/, GdkEvent * /*e*/, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->SymbolMap_exposed();
 	return FALSE;
 }
 
-static gboolean s_size_request(GtkWidget * widget, GtkAllocation* req, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_size_request(GtkWidget *, GtkAllocation* req, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->setSymbolMap_size (req->width, req->height);
 	return FALSE;
 }
 
 
-static gboolean s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_Symbolarea_exposed(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->Symbolarea_exposed();
 	return FALSE;
 }
 
-static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean  s_SymbolMap_clicked(GtkWidget *, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->SymbolMap_clicked( e );
 	return FALSE; 
 }
 
-static gboolean  s_CurrentSymbol_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean  s_CurrentSymbol_clicked(GtkWidget *, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	dlg->CurrentSymbol_clicked( e );
 	return FALSE; 
 }
 
-static gboolean s_keypressed(GtkWidget * widget, GdkEventKey * e,  XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_keypressed(GtkWidget *, GdkEventKey * e,  XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	return dlg->Key_Pressed( e );
 }

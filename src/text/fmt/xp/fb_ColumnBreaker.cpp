@@ -681,6 +681,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		xxx_UT_DEBUGMSG(("Doing column fill now pCurContainer %x pFirstContainer %x \n",pCurContainer,pFirstContainerToKeep));
 		pCurContainer = pFirstContainerToKeep;
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pFirstContainerToKeep);
+		UT_UNUSED(pTab); // only for debug.
 		UT_sint32 conPos = 0;
 		while (pCurContainer)
 		{
@@ -940,7 +941,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				UT_DEBUGMSG(("4111 bug \n"));
 			}
 			UT_ASSERT(pLastContainerToKeep->getColumn()==pCurColumn);
-			fp_Page* pPrevPage = pCurColumn->getPage();
+			fp_Page* pPrevPage2 = pCurColumn->getPage();
 			fp_Column* pNextColumn = pCurColumn;
 
 			do
@@ -968,7 +969,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				             == FP_CONTAINER_LINE &&
 				   static_cast<fp_Line *>(pLastContainerToKeep)
 				        ->containsForcedPageBreak() &&
-				   (pNextColumn->getPage() == pPrevPage));
+				   (pNextColumn->getPage() == pPrevPage2));
 			if(pCurColumn != NULL && (pCurColumn == pNextColumn))
 			{
 				pCurColumn->layout();
@@ -1409,7 +1410,8 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 		    xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
 			fp_TOCContainer * pNewTOC = static_cast<fp_TOCContainer *>(pOffendingContainer);
 			UT_ASSERT(pBroke->getHeight() > 0);
-			UT_ASSERT(pNewTOC->getHeight() > 0);
+			UT_UNUSED(pNewTOC);
+			UT_ASSERT(pNewTOC && pNewTOC->getHeight() > 0);
 			pLastContainerToKeep = static_cast<fp_Container *>(pTOC);
 			xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 1 %x \n",pLastContainerToKeep));
 		}

@@ -127,12 +127,7 @@ protected:
 	   \return a newly allocated XAP_Widget. Caller is responsible from
 	   freeing it.
 	*/
-    // FIXME make it pure virtual
-	virtual XAP_Widget *getWidget(xap_widget_id wid)
-   	{ 
-		UT_ASSERT(UT_NOT_IMPLEMENTED); 
-		return NULL; 
-	} 
+	virtual XAP_Widget *getWidget(xap_widget_id /*wid*/) { return NULL; };
 
 	XAP_App *				m_pApp;
 	XAP_DialogFactory *			m_pDlgFactory;
@@ -227,14 +222,14 @@ public:
 
 // runModal is not a virtual pure function.  It's here only to make happy the old
 // dialogs that have been partially transformed to non modal dialogs (is it true?)
-	virtual void				runModal(XAP_Frame * pFrame) {}
+	virtual void				runModal(XAP_Frame * /*pFrame*/) {}
 
 	virtual void				runModeless(XAP_Frame * pFrame) = 0;
 	virtual void				setActiveFrame(XAP_Frame *pFrame);
 
 // not pure functions.  Unix doesn't need to implement these functions
-	virtual void				notifyActiveFrame(XAP_Frame *pFrame) {}
-	virtual void				notifyCloseFrame(XAP_Frame *pFrame) {}
+	virtual void				notifyActiveFrame(XAP_Frame * /*pFrame*/) {}
+	virtual void				notifyCloseFrame(XAP_Frame * /*pFrame*/) {}
 
 	virtual void				destroy(void) = 0;
 	virtual void				activate(void) = 0;
@@ -262,14 +257,14 @@ public:
 	class Page {
 	public:
 		Page() {}
-		Page(const gchar *title, AbiNativeWidget * widget) 
+		Page(const gchar *_title, AbiNativeWidget * _widget) 
 		{ 
-			this->title = g_strdup(title);
-			this->widget = widget;
+			title = g_strdup(_title);
+			widget = _widget;
 		}
 		~Page() 
 		{
-			g_free(this->title);
+			g_free(title);
 		}
 		gchar 			* title;
 		AbiNativeWidget * widget;

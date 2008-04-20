@@ -36,7 +36,7 @@ class XAP_Insert_symbol_listener
 	public:
 		virtual ~XAP_Insert_symbol_listener() {}
 
-	        virtual void setView( AV_View * pJustPocussedView) {};
+		virtual void setView( AV_View * /*pJustPocussedView*/) {};
 		virtual bool insertSymbol(UT_UCSChar Char, const char *p_font_name) = 0;
 	};
 

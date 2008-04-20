@@ -121,7 +121,7 @@ bool   GR_VectorImage::hasAlpha(void) const
   return false;
 }
 
-bool   GR_VectorImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+bool   GR_VectorImage::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
   UT_ASSERT(0);
   return false;
@@ -181,7 +181,7 @@ bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
    */
 }
 
-static void _startElement(void* userdata, const char* name, const char** atts)
+static void _startElement(void* userdata, const char* /*name*/, const char** atts)
 {
 	GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 	
@@ -212,7 +212,7 @@ static void _startElement(void* userdata, const char* name, const char** atts)
   //
 }
 
-static void _endElement(void* userdata, const char* name)
+static void _endElement(void* userdata, const char* /*name*/)
 {
   GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 
@@ -231,7 +231,7 @@ static void _endElement(void* userdata, const char* name)
   //
 }
 
-static void _charData(void* userdata, UT_ByteBuf* pBB)
+static void _charData(void* /*userdata*/, UT_ByteBuf* pBB)
 {
   //GR_VectorImage* pImage = static_cast<GR_VectorImage*>(userdata);
 

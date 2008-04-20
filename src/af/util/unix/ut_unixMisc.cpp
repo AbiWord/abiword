@@ -43,6 +43,7 @@ void UT_gettimeofday(struct timeval *tv)
 */
 bool UT_getEthernetAddress(UT_EthernetAddress &a)
 {
+	UT_UNUSED(a);
 #if 0
 	// TODO -- someone should debug this and turn it on
 #ifdef HAVE_NET_IF_H

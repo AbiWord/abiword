@@ -210,30 +210,30 @@ static gboolean s_drawing_area_expose(GtkWidget * w,
 	return TRUE;
 }
 
-static void s_underline_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+static void s_underline_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->underlineChanged();
 }
 
 
-static void s_overline_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+static void s_overline_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->overlineChanged();
 }
 
 
-static void s_strikeout_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+static void s_strikeout_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->strikeoutChanged();
 }
 
-static void s_hidden_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+static void s_hidden_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->hiddenChanged();
 }
 
 
-static void s_transparency_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+static void s_transparency_toggled(GtkWidget * ,  XAP_UnixDialog_FontChooser * dlg)
 {
 	dlg->transparencyChanged();
 }

@@ -34,6 +34,7 @@ ap_Scrollbar_ViewListener::ap_Scrollbar_ViewListener(XAP_Frame * pFrame,
 
 bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
+	UT_UNUSED(pView);
 	UT_ASSERT(pView == m_pView);
 	
 	//UT_DEBUGMSG(("Scrollbar_ViewListener::notify [view %p tb %p][mask %p]\n",

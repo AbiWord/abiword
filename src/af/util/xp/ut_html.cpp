@@ -75,7 +75,7 @@ static void _endElement (void * userData, const gchar * name)
 	pXML->endElement (reinterpret_cast<const char *>(name));
 }
 
-static xmlEntityPtr _getEntity (void * userData, const gchar * name)
+static xmlEntityPtr _getEntity (void * /*userData*/, const gchar * name)
 {
 	return xmlGetPredefinedEntity (name);
 }
@@ -86,7 +86,7 @@ static void _charData (void * userData, const gchar * buffer, int length)
 	pXML->charData (reinterpret_cast<const char *>(buffer), length);
 }
 
-static void _errorSAXFunc (void *ctx, const char *msg, ...)
+static void _errorSAXFunc (void * /*ctx*/, const char *msg, ...)
 {
 	va_list args;
 	va_start (args, msg);
@@ -97,7 +97,7 @@ static void _errorSAXFunc (void *ctx, const char *msg, ...)
 	UT_DEBUGMSG(("libxml2/html: error: %s", errorMessage.c_str()));
 }
 
-static void _fatalErrorSAXFunc (void *ctx, const char *msg, ...)
+static void _fatalErrorSAXFunc (void * /*ctx*/, const char *msg, ...)
 {
 	va_list args;
 	va_start (args, msg);

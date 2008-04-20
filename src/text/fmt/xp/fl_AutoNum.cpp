@@ -307,7 +307,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 			fl_AutoNum * pParent = m_pDoc->getNthList(iList);
 			UT_uint32 i=0;
 			PL_StruxDocHandle pParentItem = pParent->getNthBlock(i);
-			PT_DocPosition posParent=0;
+			posParent=0;
 			if(pParentItem != NULL)
 			{
 				posParent = m_pDoc->getStruxPosition(pParentItem);
@@ -676,7 +676,7 @@ UT_uint32 fl_AutoNum::getStartValue32() const
 	return m_iStartValue;
 }
 
-void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 depth, bool bDoFix)
+void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 /*depth*/, bool bDoFix)
 {
 	UT_sint32 i = -1;
 	if(m_pItems.getItemCount() > 0)
@@ -846,7 +846,7 @@ UT_uint32 fl_AutoNum::getNumLabels() const
 	return m_pItems.getItemCount();
 }
 
-UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth) const
+UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 /*depth*/) const
 {
 	UT_ASSERT(m_pItems.getItemCount() > 0);
 
@@ -1189,7 +1189,7 @@ bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 
 PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {
-	if(list_num <0 || list_num >= m_pItems.getItemCount())
+	if(list_num >= m_pItems.getItemCount())
 		return static_cast<PL_StruxDocHandle>(NULL);
 	else
 		return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(list_num));

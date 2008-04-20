@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <time.h>
 
 #include <glib.h>
@@ -64,6 +65,16 @@
 
 
 /*****************************************************************/
+
+XAP_StateData::XAP_StateData()
+	: iFileCount(0)
+{
+	memset(&filenames, 0, sizeof(filenames));
+	memset(&iDocPos, 0, sizeof(iDocPos));
+	memset(&iXScroll, 0, sizeof(iXScroll));
+	memset(&iYScroll, 0, sizeof(iYScroll));
+}
+
 
 XAP_App * XAP_App::m_pApp = NULL;
 
@@ -1445,7 +1456,7 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 bool XAP_App::saveState(bool bQuit)
 {
 	// gather the state data for platform code to deal with
-	XAP_StateData sd = {0};
+	XAP_StateData sd;
 
 	bool bRet = true;
 
@@ -1562,7 +1573,7 @@ bool XAP_App::saveState(bool bQuit)
 
     returns true on success
 */
-bool XAP_App::_saveState(XAP_StateData & sd)
+bool XAP_App::_saveState(XAP_StateData & )
 {
 	return false;
 }
@@ -1576,7 +1587,7 @@ bool XAP_App::_saveState(XAP_StateData & sd)
 
 bool XAP_App::retrieveState()
 {
-	XAP_StateData sd = {0};
+	XAP_StateData sd;
 
 	bool bRet = true;
 	
@@ -1684,7 +1695,7 @@ bool XAP_App::retrieveState()
 
     returns true on success
 */
-bool XAP_App::_retrieveState(XAP_StateData & sd)
+bool XAP_App::_retrieveState(XAP_StateData & )
 {
 	return false;
 }

@@ -285,15 +285,17 @@ void PP_resetInitialBiDiValues(const gchar * pszValue)
 		  //this last one is not necessary since dom-dir and column-order
 		  //share the same physical string
 		{
-			strncpy(_props[i].m_pszInitial, pszValue, 3);
+			_props[i].m_pszInitial = pszValue;
 		}
 		else if ((0 == strcmp(_props[i].m_pszName, "text-align")))
 		{
 			UT_DEBUGMSG(("reseting text-align (%s)\n", pszValue));
-			if(pszValue[0] == (gchar)'r')
-				strncpy(_props[i].m_pszInitial,"right", 5);
-			else
-				strncpy(_props[i].m_pszInitial, "left", 4);
+			if(pszValue[0] == (gchar)'r') {
+				_props[i].m_pszInitial = "right";
+			}
+			else {
+				_props[i].m_pszInitial = "left";
+			}
 			break; //since the list is alphabetical, this is always the last one
 		}
 	}

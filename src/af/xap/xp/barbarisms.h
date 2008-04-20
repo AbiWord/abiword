@@ -42,8 +42,8 @@ public:
 		Implementation of UT_XML::Listener
 	*/
 	void startElement(const gchar *name, const gchar **atts);
-	void endElement(const gchar *name){};
-	void charData(const gchar *s, int len){};		
+	void endElement(const gchar *){};
+	void charData(const gchar *, int){};		
 
 private:
 

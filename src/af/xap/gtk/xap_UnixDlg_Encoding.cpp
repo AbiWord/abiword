@@ -48,9 +48,9 @@ XAP_UnixDialog_Encoding::~XAP_UnixDialog_Encoding(void)
 {
 }
 
-void XAP_UnixDialog_Encoding::s_encoding_dblclicked(GtkTreeView *treeview,
-													GtkTreePath *arg1,
-													GtkTreeViewColumn *arg2,
+void XAP_UnixDialog_Encoding::s_encoding_dblclicked(GtkTreeView * /*treeview*/,
+													GtkTreePath * /*arg1*/,
+													GtkTreeViewColumn * /*arg2*/,
 													XAP_UnixDialog_Encoding * me)
 {
 	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);

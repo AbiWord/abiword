@@ -140,11 +140,10 @@ unalias_lang (char *lang)
 }
 
 static void
-free_entry (void *ekey,void *eval,void *user_data)
+free_entry (void *ekey,void *eval,void * /*user_data*/)
 {
-g_free(ekey);
-g_free(eval);
-return;
+	g_free(ekey);
+	g_free(eval);
 }
 
 /* Mask for components of locale spec. The ordering here is from

@@ -122,8 +122,8 @@ static void s_dialog_response(GtkWidget * /* widget */,
 	}
 }
 
-static void s_delete_clicked(GtkWidget 	*widget, 
-							 GdkEvent 	*event, 
+static void s_delete_clicked(GtkWidget 	* /*widget*/, 
+							 GdkEvent 	* /*event*/, 
 							 gpointer 	 data)
 {
 	XAP_UnixDialog_FileOpenSaveAs *dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *>(data);
@@ -148,7 +148,7 @@ static void s_filetypechanged(GtkWidget * w, gpointer p)
 }
 
 static gint
-fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+fsel_key_event (GtkWidget * widget, GdkEventKey * event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
 #ifdef GDK_Escape
 	if (event->keyval == GDK_Escape) {
@@ -156,6 +156,10 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 		s_dialog_response(widget, GTK_RESPONSE_CANCEL, answer);
 		return TRUE;
 	}
+#else
+	UT_UNUSED(widget);
+	UT_UNUSED(event);
+	UT_UNUSED(answer);
 #endif
 
 	return FALSE;
@@ -166,7 +170,7 @@ static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer *
 	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
 
-static void file_selection_changed  (GtkTreeSelection  *selection,
+static void file_selection_changed  (GtkTreeSelection  * /*selection*/,
 				     gpointer           ptr)
 {
   XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
@@ -871,8 +875,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 {
 	UT_ASSERT (m_FC && m_preview);
 
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
+	UT_ASSERT(XAP_App::getApp());
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_return_val_if_fail( pSS, 0 );

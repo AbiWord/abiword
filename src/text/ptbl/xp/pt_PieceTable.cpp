@@ -232,6 +232,7 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType
 	{		
 		PT_AttrPropIndex pAPIold = indexAP;
 		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,NULL,&indexAP,getDocument());
+		UT_UNUSED(bMerged);
 		UT_ASSERT_HARMLESS(bMerged);
 	}
 //

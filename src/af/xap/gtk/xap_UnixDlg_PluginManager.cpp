@@ -309,14 +309,14 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 
 /*****************************************************************/
 
-void XAP_UnixDialog_PluginManager::s_load_clicked (GtkWidget * w,
+void XAP_UnixDialog_PluginManager::s_load_clicked (GtkWidget *,
 												   XAP_UnixDialog_PluginManager * dlg)
 {
 	UT_return_if_fail (dlg);
 	dlg->event_Load ();
 }
 
-void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeSelection *selection,
+void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeSelection *,
 												  XAP_UnixDialog_PluginManager * dlg)
 {
 	UT_return_if_fail(dlg);

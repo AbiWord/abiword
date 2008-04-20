@@ -39,10 +39,10 @@
 /* NONE:UINT,UINT (/dev/stdin:1) */
 static void
 g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
-                                         GValue       *return_value,
+                                         GValue       * /*return_value*/,
                                          guint         n_param_values,
                                          const GValue *param_values,
-                                         gpointer      invocation_hint,
+                                         gpointer      /*invocation_hint*/,
                                          gpointer      marshal_data)
 {
   typedef void (*GMarshalFunc_VOID__UINT_UINT) (gpointer     data1,
@@ -199,7 +199,7 @@ abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 }
 
 static gboolean
-on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
+on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	guint i;
@@ -347,7 +347,7 @@ emit_selected (AbiTable *table)
 }
 
 static gboolean
-on_button_release_event (GtkWidget *window, GdkEventButton *ev, gpointer user_data)
+on_button_release_event (GtkWidget *, GdkEventButton *ev, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 

@@ -143,8 +143,8 @@ bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 	return XAP_App::getApp()->addWordToDict (word, len);
 }
 
-void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
-								const UT_UCSChar *correct, size_t correctLen)
+void SpellChecker::correctWord (const UT_UCSChar * /*toCorrect*/, size_t /*toCorrectLen*/,
+								const UT_UCSChar * /*correct*/, size_t /*correctLen*/)
 {
 }
 

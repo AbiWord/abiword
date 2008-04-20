@@ -103,7 +103,7 @@ typedef enum {
 
 class SpellChecker;
 class fl_TabStop;
-void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
+void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs);
 
 class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
@@ -147,7 +147,7 @@ public:
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
 	virtual void		redrawUpdate();
-	virtual void        updateLayout(bool bDoAll) {}
+	virtual void        updateLayout(bool /*bDoAll*/) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
 	FV_View *		getView(void) const { 
 		UT_return_val_if_fail( m_pLayout, NULL ); 

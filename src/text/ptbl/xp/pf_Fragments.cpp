@@ -180,8 +180,10 @@ pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
 		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Cleanning fragments ( O(n) complexity! )\n", nthFrag));
 		cleanFrags();
 	}
-	else
+	else 
+	{
 		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Don't need to clean fragments\n", nthFrag));
+	}
 	
 	if (m_vecFrags.getItemCount() > 0)
 	{

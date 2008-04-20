@@ -342,7 +342,7 @@ public:									// we create...
 		}
 	};
 
-	static void s_new_table(GtkWidget *table, int rows, int cols, gpointer* user_data)
+	static void s_new_table(GtkWidget * /*table*/, int rows, int cols, gpointer* user_data)
 	{
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
@@ -359,7 +359,7 @@ public:									// we create...
 	}
 
 	static void s_drag_begin(GtkWidget  *widget,
-							GdkDragContext     *context)
+							 GdkDragContext     * /*context*/)
 	{
 		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
@@ -370,7 +370,7 @@ public:									// we create...
 
 	static void s_drag_drop(GtkWidget  *widget,
 							GdkDragContext     *context,
-							gint x, gint y, guint time )
+							gint /*x*/, gint /*y*/, guint /*time*/ )
 	{
 		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 		GtkWidget * src = gtk_drag_get_source_widget(context);
@@ -382,9 +382,10 @@ public:									// we create...
 		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
 	};
 
-	static void s_drag_drop_toolbar(GtkWidget  *widget,
-							GdkDragContext     *context,
-							gint x, gint y, guint time, gpointer pTB)
+	static void s_drag_drop_toolbar(GtkWidget  * /*widget*/,
+									GdkDragContext     *context,
+									gint /*x*/, gint /*y*/, 
+									guint /*time*/, gpointer pTB)
 	{
 		GtkWidget * src = gtk_drag_get_source_widget(context);
 		_wd * wdSrc = static_cast<_wd *>(g_object_get_data(G_OBJECT(src),"wd_pointer"));
@@ -396,7 +397,7 @@ public:									// we create...
 	};
 
 	static void s_drag_end(GtkWidget  *widget,
-							GdkDragContext     *context)
+						   GdkDragContext     */*context*/)
 	{
 		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 
@@ -448,7 +449,7 @@ public:									// we create...
 	 * Apply changes after editing of the font size is done.
 	 */
 	static gboolean	s_focus_out_event_cb (GtkWidget     *widget,
-										  GdkEventFocus *event,
+										  GdkEventFocus * /*event*/,
 										  _wd           *wd)
 	{
 
@@ -488,7 +489,8 @@ public:									// we create...
 		wd->m_pUnixToolbar->m_pFontPreview->draw();
 	};
 
-	static void s_font_popup_opened(GtkComboBox * combo, GdkRectangle *position, _wd * wd)
+	static void s_font_popup_opened(GtkComboBox * /*combo*/, 
+									GdkRectangle *position, _wd * wd)
 	{
 		if (wd && 
 			wd->m_pUnixToolbar) {
@@ -498,7 +500,7 @@ public:									// we create...
 		}
 	};
 
-	static void s_font_popup_closed(GtkComboBox * combo, _wd * wd)
+	static void s_font_popup_closed(GtkComboBox * /*combo*/, _wd * wd)
 	{
 		if (wd && 
 			wd->m_pUnixToolbar &&
@@ -584,11 +586,11 @@ public:									// we create...
 };
 
 static void
-s_fore_color_changed (GOComboColor 	*cc, 
+s_fore_color_changed (GOComboColor 	* /*cc*/, 
 					  GOColor 		 color,
-					  gboolean 		 custom, 
-					  gboolean 		 by_user, 
-					  gboolean 		 is_default, 
+					  gboolean 		 /*custom*/, 
+					  gboolean 		 /*by_user*/, 
+					  gboolean 		 /*is_default*/, 
 					  _wd 			*wd)
 {
 	UT_UTF8String str;
@@ -603,10 +605,10 @@ s_fore_color_changed (GOComboColor 	*cc,
 }
 
 static void
-s_back_color_changed (GOComboColor 	*cc, 
+s_back_color_changed (GOComboColor 	* /*cc*/, 
 					  GOColor 		 color,
-					  gboolean 		 custom, 
-					  gboolean 		 by_user, 
+					  gboolean 		 /*custom*/, 
+					  gboolean 		 /*by_user*/, 
 					  gboolean 		 is_default, 
 					  _wd 			*wd)
 {
@@ -962,21 +964,21 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 
-					gboolean show = TRUE;
+					gboolean bShow = TRUE;
 					if (0 == strncmp("ALIGN_RIGHT", pLabel->getIconName(), strlen("ALIGN_RIGHT")) && 
 						GTK_TEXT_DIR_RTL != gtk_widget_get_direction(m_wToolbar)) {
 						/* only show in rtl mode */
-						show = FALSE;
+						bShow = FALSE;
 					}
 					else if (0 == strncmp("ALIGN_LEFT", pLabel->getIconName(), strlen("ALIGN_LEFT")) && 
 						GTK_TEXT_DIR_RTL == gtk_widget_get_direction(m_wToolbar)) {
 						/* only show in ltr mode */
-						show = FALSE;
+						bShow = FALSE;
 					}
 					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
 												    	  pLabel->getToolbarLabel(), NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
-														  show, &(wd->m_handlerId));
+														  bShow, &(wd->m_handlerId));
 					//
 					// Add in a right drag method
 					//

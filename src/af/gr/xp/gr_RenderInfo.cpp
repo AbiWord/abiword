@@ -343,7 +343,7 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
    return value false indicates that simple removal was not possible
    and the caller needs to re-shape.
 */
-bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
+bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool /*bReverse*/)
 {
 	UT_return_val_if_fail(m_pText, false);
 	// ascertain the state of the buffer and our shaping requirenments ...

@@ -145,8 +145,8 @@ typedef unsigned int tPropLevel;
 class ABI_EXPORT PP_Property
 {
 public:
-	gchar *			m_pszName;
-	gchar *			m_pszInitial;
+	const gchar *			m_pszName;
+	const gchar *			m_pszInitial;
 	bool				m_bInherit;
 	PP_PropertyType *	m_pProperty;
 	tPropLevel          m_iLevel;

@@ -182,7 +182,7 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 
 static gboolean convCallback(const gchar *buf,
 			     gsize count,
-			     GError **error,
+				 GError ** /*error*/,
 			     gpointer byteBuf)
 {
   UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);

@@ -35,7 +35,7 @@ XAP_Log::~XAP_Log()
 	}
 }
 
-void XAP_Log::log(const UT_String &method_name, AV_View *pAV_View, EV_EditMethodCallData *pCallData)
+void XAP_Log::log(const UT_String &method_name, AV_View * /*pAV_View*/, EV_EditMethodCallData *pCallData)
 {
 	UT_ASSERT(m_pOutput != 0);
 	fprintf(m_pOutput, "\t<event name=\"%s\"", method_name.c_str());

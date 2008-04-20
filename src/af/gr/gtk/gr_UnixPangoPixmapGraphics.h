@@ -51,11 +51,11 @@ public:
 	virtual bool      canQuickPrint(void)
 	{ return true;}
 	virtual void		scroll(UT_sint32, UT_sint32) {}
-	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-							   UT_sint32 x_src, UT_sint32 y_src,
-							   UT_sint32 width, UT_sint32 height) {}
+	virtual void		scroll(UT_sint32 /*x_dest*/, UT_sint32 /*y_dest*/,
+							   UT_sint32 /*x_src*/, UT_sint32 /*y_src*/,
+							   UT_sint32 /*width*/, UT_sint32 /*height*/) {}
 	
-	virtual void		setCursor(GR_Graphics::Cursor c){};
+	virtual void		setCursor(GR_Graphics::Cursor ){};
 	virtual GR_Graphics::Cursor getCursor(void) const;
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 

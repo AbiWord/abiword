@@ -44,9 +44,9 @@ XAP_UnixDialog_Language::XAP_UnixDialog_Language(XAP_DialogFactory * pDlgFactory
 {
 }
 
-void XAP_UnixDialog_Language::s_lang_dblclicked(GtkTreeView *treeview,
-												GtkTreePath *arg1,
-												GtkTreeViewColumn *arg2,
+void XAP_UnixDialog_Language::s_lang_dblclicked(GtkTreeView * /*treeview*/,
+												GtkTreePath * /*arg1*/,
+												GtkTreeViewColumn * /*arg2*/,
 												XAP_UnixDialog_Language * me)
 {
 	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_CLOSE);

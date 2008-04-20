@@ -665,8 +665,9 @@ UT_UTF8String::UT_UTF8String (const char *str, const char *encoding)
 }
 
 
-UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs) :
-	pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))
+UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs)
+	: UT_GenericBase(),
+	  pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))
 {
 	// 
 }
@@ -1284,11 +1285,11 @@ UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
 {
 }
 
-void UT_UCS4String::_loadUtf8(const char * utf8_str, size_t bytelength)
+void UT_UCS4String::_loadUtf8(const char * _utf8_str, size_t bytelength)
 {
 	UT_UCS4Char ucs4;
 	do {
-		ucs4 = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
+		ucs4 = UT_Unicode::UTF8_to_UCS4 (_utf8_str, bytelength);
 		if (ucs4) {
 			pimpl->append (&ucs4, 1);
 		}
@@ -1298,14 +1299,14 @@ void UT_UCS4String::_loadUtf8(const char * utf8_str, size_t bytelength)
 
 /* construct from a string in UTF-8 format
  */
-UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */)
+UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == zero-terminate */)
 	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
-		if (utf8_str == 0 || *utf8_str == '\0') return;
-		bytelength = strlen (utf8_str);
+		if (_utf8_str == 0 || *_utf8_str == '\0') return;
+		bytelength = strlen (_utf8_str);
 	}
-	_loadUtf8(utf8_str, bytelength);
+	_loadUtf8(_utf8_str, bytelength);
 }
 
 UT_UCS4String::UT_UCS4String(const std::string & str /* zero-terminated utf-8 encoded */)
@@ -1319,18 +1320,18 @@ UT_UCS4String::UT_UCS4String(const std::string & str /* zero-terminated utf-8 en
  * if (strip_whitespace != true) replace CR-LF & CR by LF
  * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS4_isspace()
  */
-UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace)
+UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace)
 	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
 {
 	if (bytelength == 0) {
-		if (utf8_str == 0 || *utf8_str == '\0') return;
-		bytelength = strlen (utf8_str);
+		if (_utf8_str == 0 || *_utf8_str == '\0') return;
+		bytelength = strlen (_utf8_str);
 	}
-	UT_UCS4Char ucs4a = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
+	UT_UCS4Char ucs4a = UT_Unicode::UTF8_to_UCS4 (_utf8_str, bytelength);
 	while (true) {
 		if (ucs4a == 0) 
 			break; // end-of-string
-		UT_UCS4Char ucs4b = UT_Unicode::UTF8_to_UCS4 (utf8_str, bytelength);
+		UT_UCS4Char ucs4b = UT_Unicode::UTF8_to_UCS4 (_utf8_str, bytelength);
 		if (UT_UCS4_isspace (ucs4a)) {
 			if (strip_whitespace) {
 				if (!UT_UCS4_isspace (ucs4b)) {

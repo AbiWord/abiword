@@ -45,6 +45,7 @@ ap_ViewListener::~ap_ViewListener()
 
 bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
+	UT_UNUSED(pView);
 	UT_ASSERT(pView);
 	UT_ASSERT(pView==m_pFrame->getCurrentView());
 

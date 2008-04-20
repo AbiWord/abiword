@@ -313,7 +313,7 @@ static int compare_tabs(const void* p1, const void* p2)
 	return 0;
 }
 
-void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs)
+void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vecTabs)
 {
 	// no matter what, clear prior tabstops
 	UT_uint32 iCount = m_vecTabs.getItemCount();
@@ -502,7 +502,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	// Tomas 21/1/2002
 	const char * pszSpacing = getProperty("line-height");
 	const char * pPlusFound = strrchr(pszSpacing, '+');
-	eSpacingPolicy eSpacingPolicy = m_eSpacingPolicy;
+	eSpacingPolicy spacingPolicy = m_eSpacingPolicy;
 	double dLineSpacing = m_dLineSpacing;
 	
 	if (pPlusFound && *(pPlusFound + 1) == 0)
@@ -565,7 +565,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	
 	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
 	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != getTextIndent() ||
-	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
+	   spacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
 	{
 		collapse();
 	}
@@ -840,7 +840,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 	// parse any new tabstops
 	const char* pszTabStops = getProperty("tabstops");
-	buildTabStops(pG, pszTabStops, m_vecTabs);
+	buildTabStops(pszTabStops, m_vecTabs);
 
 
 #if 0
@@ -1233,6 +1233,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize, UT_sint32 iSuggestDiff)
 {
+	UT_UNUSED(iEmbeddedSize);
 	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d shift %d \n",posEmbedded,iEmbeddedSize,iSuggestDiff));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posOfBlock = getPosition(true);
@@ -1311,6 +1312,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 			xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 			bool bres = pTRun->split(splitOffset);
+			UT_UNUSED(bres);
 			UT_ASSERT(bres);
 			pRun = pTRun->getNextRun();
 			pPrev = pTRun;
@@ -2339,7 +2341,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				//
 				// Handle case of block spanning two pages
 				//
-				bool bPageSet = false;
 				fp_Page * pPage = NULL;
 				fp_Line * pLine = NULL;
 				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
@@ -2883,7 +2884,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 	fp_Page * pPage = m_pVertContainer->getPage();
 	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
  	fp_FrameContainer * pFC = NULL;
-	UT_sint32 iExpand;
+	UT_sint32 iExpand = 0;
 
 	UT_sint32 i = 0;
 	UT_sint32 iScreenX = iX + xoff;
@@ -3169,52 +3170,52 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	while(!bStop)
     {
 		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
-		fp_Line* pLine = new fp_Line(getSectionLayout());
+		fp_Line* pLine2 = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
 		if(iMinWidth >  getMinWrapWidth())
 		{
 			if(pOldLastLine == NULL)
 			{
 				xxx_UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
-				setFirstContainer(pLine);
-				setLastContainer(pLine);
-				pLine->setBlock(this);
-   				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				setFirstContainer(pLine2);
+				setLastContainer(pLine2);
+				pLine2->setBlock(this);
+   				m_pVertContainer->insertConAt(pLine2,m_iLinePosInContainer);
 				m_iLinePosInContainer++;
-				pLine->setContainer(m_pVertContainer);
+				pLine2->setContainer(m_pVertContainer);
 				xxx_UT_DEBUGMSG(("Max width 4 set to %d \n",iMinWidth));
-				pLine->setMaxWidth(iMinWidth);
-				pLine->setX(iMinLeft-xoff);
-				pLine->setSameYAsPrevious(false);
-				pLine->setWrapped((iMaxW != iMinWidth));
+				pLine2->setMaxWidth(iMinWidth);
+				pLine2->setX(iMinLeft-xoff);
+				pLine2->setSameYAsPrevious(false);
+				pLine2->setWrapped((iMaxW != iMinWidth));
 				m_bSameYAsPrevious = true;
 			}
 			else
 		    {
-				pLine->setPrev(getLastContainer());
-				getLastContainer()->setNext(pLine);
-				setLastContainer(pLine);
+				pLine2->setPrev(getLastContainer());
+				getLastContainer()->setNext(pLine2);
+				setLastContainer(pLine2);
 				
 				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
-				pLine->setWrapped((iMaxW != iMinWidth));
-				pLine->setBlock(this);
+				pLine2->setWrapped((iMaxW != iMinWidth));
+				pLine2->setBlock(this);
 				if(pContainer)
 				{
 			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
-					m_iLinePosInContainer = pContainer->findCon(pLine)+1;
-					pLine->setContainer(pContainer);
+					m_iLinePosInContainer = pContainer->findCon(pLine2)+1;
+					pLine2->setContainer(pContainer);
 				}
 				xxx_UT_DEBUGMSG(("Max width 5 set to %d \n",iMinWidth));
-				pLine->setMaxWidth(iMinWidth);
-				pLine->setX(iMinLeft-xoff);
-				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
+				pLine2->setMaxWidth(iMinWidth);
+				pLine2->setX(iMinLeft-xoff);
+				pLine2->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
-			xxx_UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
-			pLine->setHeight(iHeight);
-			UT_ASSERT(findLineInBlock(pLine) >= 0);
+			xxx_UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine2,pLine2->getX(),pLine2->getMaxWidth(),pLine2->isWrapped(),pLine2->isSameYAsPrevious()));
+			pLine2->setHeight(iHeight);
+			UT_ASSERT(findLineInBlock(pLine2) >= 0);
 			pPrevLine->setAdditionalMargin(m_iAdditionalMarginAfter);
-			return pLine;
+			return pLine2;
 		}
 		xxx_UT_DEBUGMSG(("Max width 6 set to %d \n",20));
 #if 0
@@ -3499,7 +3500,7 @@ void fl_BlockLayout::format()
 		// we need to clear the whole line.
 		//
 		fp_Line * pLine =  static_cast<fp_Line *>(getFirstContainer());
-		UT_sint32 iCurLine = 0;
+		UT_uint32 iCurLine = 0;
 		while(pLine && (pLine->getContainerType() == FP_CONTAINER_LINE) && (vecOldLineWidths.getItemCount() > 0))
 		{
 			UT_sint32 iOldWidth = vecOldLineWidths.getNthItem(iCurLine);
@@ -4434,6 +4435,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);
+	UT_UNUSED(bRes);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar* pBlockText = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
@@ -6250,8 +6252,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
-			UT_sint32 i = 0;
-			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			for(i=0; i<vecBlocksInTOCs.getItemCount();i++)
 			{
 				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_insertSpan(pcrs);
@@ -6441,8 +6442,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					// the deleted section crosses over the end of the
 					// run, but not the start; it can however, lead to
 					// deletion of an entire run
-					int iDeleted = iRunBlockOffset + iRunLength - blockOffset;
-					UT_ASSERT(iDeleted > 0);
+					UT_ASSERT(iRunBlockOffset + iRunLength - blockOffset > 0);
 
 					if(pRun->getType()== FPRUN_DIRECTIONMARKER)
 					{
@@ -7677,6 +7677,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		const PP_AttrProp* pHFAP = NULL;
 		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
+		UT_UNUSED(bres);
 		UT_ASSERT(bres);
 		pHFAP->getAttribute("id", pszNewID);
 //
@@ -7760,6 +7761,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 		const PP_AttrProp* pAP = NULL;
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
+		UT_UNUSED(bres);
 		UT_ASSERT(bres);
 		pAP->getAttribute("id", pszNewID);
 		break;
@@ -8001,13 +8003,14 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
  * Insert a table into the list of blocks
  */
 fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
-											   SectionType iType,
+														   SectionType iType,
 											   PL_StruxDocHandle sdh,
 											   PL_ListenerId lid,
 											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
+	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_TABLE);
 	_assertRunListIntegrity();
 
@@ -8074,13 +8077,14 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
  * Insert a Frame after this block.
  */
 fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
-											   SectionType iType,
+														   SectionType iType,
 											   PL_StruxDocHandle sdh,
 											   PL_ListenerId lid,
 											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
+	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_FRAME);
 	_assertRunListIntegrity();
 
@@ -9329,6 +9333,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	// buffer to hold text
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);
+	UT_UNUSED(bRes);
 	UT_ASSERT(bRes);
 	const UT_UCSChar* pBlockText = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
 
@@ -9385,12 +9390,12 @@ FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style)
 char *	fl_BlockLayout::getFormatFromListType( FL_ListType iListType)
 {
 	UT_sint32 nlisttype = static_cast<UT_sint32>(iListType);
-	char * format = NULL;
+	char * pFormat = NULL;
 	if(nlisttype < 0 || nlisttype >= static_cast<UT_sint32>(NOT_A_LIST))
-		return format;
+		return pFormat;
 	fl_AutoLists al;
-	format = const_cast<char *>(al.getFmtList(nlisttype));
-	return format;
+	pFormat = const_cast<char *>(al.getFmtList(nlisttype));
+	return pFormat;
 }
 
 FL_ListType fl_BlockLayout::decodeListType(char * listformat)
@@ -9434,8 +9439,7 @@ void fl_BlockLayout::remItemFromList(void)
 	if( m_bListLabelCreated == true)
 	{
 		m_bListLabelCreated = false;
-		FV_View* pView = getView();
-		UT_ASSERT(pView);
+		UT_ASSERT(getView());
 
 
 		UT_uint32 currLevel = getLevel();
@@ -9801,8 +9805,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 		}
 			
 
-	FV_View* pView = getView();
-	UT_ASSERT(pView);
+	UT_ASSERT(getView());
 	if(bGetPrevAuto)
 	{
 		pAutoNum = m_pDoc->getListByID(id);
@@ -10327,8 +10330,7 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	props[i] = static_cast<gchar *>(NULL);
 	m_bStartList =	false;
 	m_bStopList = false;
-	FV_View* pView = getView();
-	UT_ASSERT(pView);
+	UT_ASSERT(getView());
 	m_bListLabelCreated = false;
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
@@ -10372,8 +10374,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	props[i] = static_cast<gchar *>(NULL);
 	m_bStartList =	false;
 	m_bStopList = false;
-	FV_View* pView = getView();
-	UT_ASSERT(pView);
+	UT_ASSERT(getView());
 	m_bListLabelCreated = false;
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
@@ -11020,6 +11021,7 @@ fl_BlockSpellIterator::fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos
 {
 	m_pgb = new UT_GrowBuf(1024);
 	bool bRes = pBL->getBlockBuf(m_pgb);
+	UT_UNUSED(bRes);
 	UT_ASSERT(bRes);
 	m_pText = reinterpret_cast<UT_UCS4Char*>(m_pgb->getPointer(0));
 	m_iLength = m_pgb->getLength();
@@ -11055,6 +11057,7 @@ fl_BlockSpellIterator::updateBlock(void)
 {
 	m_pgb->truncate(0);
 	bool bRes = m_pBL->getBlockBuf(m_pgb);
+	UT_UNUSED(bRes);
 	UT_ASSERT(bRes);
 	m_pText = reinterpret_cast<UT_UCS4Char*>(m_pgb->getPointer(0));
 

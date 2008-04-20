@@ -273,7 +273,7 @@ void AP_Dialog_Tab::_event_Set(void)
 	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 	UT_return_if_fail(pView);
 	
-	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+	buildTabStops(m_pszTabStops, m_tabInfo);
 
 	_setTabList(m_tabInfo.getItemCount());
 
@@ -371,7 +371,7 @@ void AP_Dialog_Tab::_event_Update(void)
 	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 	UT_return_if_fail(pView);
 	
-	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+	buildTabStops(m_pszTabStops, m_tabInfo);
 
 	_setTabList(m_tabInfo.getItemCount());
 
@@ -410,9 +410,7 @@ void AP_Dialog_Tab::_event_Clear(void)
 
 		UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
-		FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
-
-		buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+		buildTabStops(m_pszTabStops, m_tabInfo);
 
 		_setTabList(m_tabInfo.getItemCount());
 
@@ -440,9 +438,7 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 	delete [] m_pszTabStops;
 	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 
-	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
-
-	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+	buildTabStops(m_pszTabStops, m_tabInfo);
 
 	_clearList();
 

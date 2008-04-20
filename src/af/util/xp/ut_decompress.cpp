@@ -109,7 +109,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 	int    len;
 	char   fname[TGZ_BLOCKSIZE];
 	FILE   *outfile = NULL;
-	int    fileSize;
+	int    fileSize = 0;
 	
 	if (retBuf)
 		FREEP(*retBuf);

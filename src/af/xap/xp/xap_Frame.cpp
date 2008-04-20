@@ -192,7 +192,7 @@ int XAP_Frame::_getNextUntitledNumber(void)
 
 /*****************************************************************/
 
-bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_Frame::initialize(const char * /*szKeyBindingsKey*/, const char * /*szKeyBindingsDefaultValue*/,
 						   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 						   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 						   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
@@ -393,10 +393,12 @@ static void autoSaveCallback(UT_Worker *wkr)
 	{
 		UT_Error error = me->backup();
 
-		if (!error)
+		if (!error) {
 			xxx_UT_DEBUGMSG(("Document Auto saved\n"));
-		else
+		}
+		else {
 			xxx_UT_DEBUGMSG(("Error [%d] saving document.\n", error));
+		}
 	}
 	else
 	{
@@ -796,16 +798,17 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   UT_String backupName;
   UT_DEBUGMSG(("In make Backup name. Old Name is  %s \n",oldName.c_str()));
   if (oldName.empty())
-    {
+  {
       const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	  UT_String sTmp;
 	  pSS->getValue(XAP_STRING_ID_UntitledDocument, XAP_App::getApp()->getDefaultEncoding(), sTmp);
 	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
-    }
-  else
+  }
+  else {
     UT_DEBUGMSG(("Filename [%s]\n", oldName.c_str()));
+  }
   
   backupName = oldName + ext;
 
@@ -954,6 +957,8 @@ void XAP_Frame::dragBegin(XAP_Toolbar_Id srcId, EV_Toolbar * pTBsrc)
  */
 void XAP_Frame::dragDropToIcon(XAP_Toolbar_Id srcId,XAP_Toolbar_Id destId, EV_Toolbar * pTBsrc, EV_Toolbar * pTBdest)
 {
+	UT_UNUSED(srcId);
+	UT_UNUSED(pTBsrc);
 	UT_ASSERT(m_isrcId == srcId);
 	UT_ASSERT(m_isrcTBNr == findToolbarNr(pTBsrc));
 	m_idestId = destId;
@@ -967,6 +972,8 @@ void XAP_Frame::dragDropToIcon(XAP_Toolbar_Id srcId,XAP_Toolbar_Id destId, EV_To
  */
 void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolbar * pTBdest)
 {
+	UT_UNUSED(srcId);
+	UT_UNUSED(pTBsrc);
 	UT_ASSERT(m_isrcId == srcId);
 	UT_ASSERT(m_isrcTBNr == findToolbarNr(pTBsrc));
 	m_idestTBNr = findToolbarNr(pTBdest);
@@ -978,6 +985,7 @@ void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolba
  */
 void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 {
+	UT_UNUSED(srcId);
 	UT_ASSERT(m_isrcId == srcId);
 	if(!XAP_App::getApp()->areToolbarsCustomizable())
 	{

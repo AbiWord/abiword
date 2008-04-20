@@ -194,7 +194,7 @@ public:
 		{ return m_pSectionLayout; }
     void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
-	virtual inline UT_BidiCharType getDirection(void)
+	virtual inline UT_BidiCharType getDirection(void) const
 		{ return m_iDirection;}
 	virtual inline void setDirection(UT_BidiCharType c) {m_iDirection = c;}
 	virtual UT_sint32	getHeight(void) const = 0;

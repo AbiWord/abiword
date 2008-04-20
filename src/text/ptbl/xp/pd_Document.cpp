@@ -186,12 +186,12 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
 }
 
 // RIVERA TODO not working and may not be needed
-void PD_Document::setAnnotationProp ( const UT_String & key,
-									const UT_UTF8String & value )
+void PD_Document::setAnnotationProp ( const UT_String & /*key*/,
+									  const UT_UTF8String & /*value*/ )
 {
 	return; // TODO something!
 }
-bool PD_Document::getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const
+bool PD_Document::getAnnotationProp (const UT_String & /*key*/, UT_UTF8String & outProp) const
 {
 	bool found = true;//false;
 	outProp = "Dummy value";
@@ -1517,7 +1517,7 @@ bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSav
   * Use with extreme care. Should only be needed by AbiCollab
  */
 bool PD_Document::deleteStrux(PT_DocPosition dpos,
-							  PTStruxType pts,
+							  PTStruxType /*pts*/,
 							  bool bRecordChange)
 {
 	PT_BlockOffset pOffset;
@@ -2333,6 +2333,9 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		if(pf)
 			pfs= static_cast<const pf_Frag_Strux *>(pf);
 	}
+#else
+	UT_UNUSED(sdh);
+	UT_UNUSED(nstruxes);
 #endif
 }
 		
@@ -2708,11 +2711,13 @@ bool PD_Document::removeStyle(const gchar * pszName)
 		}
 		if( bDoBasedOn || bDoFollowedby)
 		{
-			UT_uint32 i =0;
-			for(i=0; nAtts[i] != NULL; i+=2)
+#if 0
+			UT_uint32 j =0;
+			for(j=0; nAtts[j] != NULL; j+=2)
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
+				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[j],nAtts[j+1]));
 			}
+#endif
 			const_cast<PD_Style *>(pStyle)->addAttributes( static_cast<const gchar **>(&nAtts[0]));
 		}
 	}
@@ -5470,12 +5475,12 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 
 		while (1)
 		{
-			UT_sint32 iOffset = pos - pBL->getPosition();
+			UT_sint32 iOffset2 = pos - pBL->getPosition();
 
-			if(iOffset < 0)
+			if(iOffset2 < 0)
 				break;
 			
-			pRunResult = pBL->findRunAtOffset((UT_uint32)iOffset);
+			pRunResult = pBL->findRunAtOffset((UT_uint32)iOffset2);
 
 			if(pRunResult)
 				break;

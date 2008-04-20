@@ -85,7 +85,9 @@ bool XAP_Module::registerThySelf ()
 
 	m_bRegistered = true; // i.e., don't try to register again
 
-	int (*plugin_init_func) (XAP_ModuleInfo *);
+	typedef int (*plugin_init_func_t) (XAP_ModuleInfo *) ;
+	plugin_init_func_t plugin_init_func;
+	plugin_init_func_t *pfunc = &plugin_init_func;
 
 	m_iStatus = 0;
 
@@ -94,7 +96,7 @@ bool XAP_Module::registerThySelf ()
 			memset (&m_info, 0, sizeof (m_info)); // ensure that this is null
 			m_iStatus = m_fnRegister (&m_info);
 		}
-	else if (resolveSymbol ("abi_plugin_register", reinterpret_cast<void **>(&plugin_init_func)))
+	else if (resolveSymbol ("abi_plugin_register", reinterpret_cast<void **>(pfunc)))
 		{
 			if (!plugin_init_func)
 				{
@@ -135,13 +137,15 @@ bool XAP_Module::unregisterThySelf ()
 
 	if (registered ())
 		{
-			int (*plugin_cleanup_func) (XAP_ModuleInfo *);
+			typedef int (*plugin_cleanup_func_t) (XAP_ModuleInfo *);
+			plugin_cleanup_func_t plugin_cleanup_func;
+			plugin_cleanup_func_t *pfunc = &plugin_cleanup_func;
 
 			if (m_fnDeregister)
 				{
 					if (m_fnDeregister (&m_info) == 0) result = false;
 				}
-			else if (resolveSymbol ("abi_plugin_unregister", reinterpret_cast<void **>(&plugin_cleanup_func)))
+			else if (resolveSymbol ("abi_plugin_unregister", reinterpret_cast<void **>(pfunc)))
 				{
 					if (plugin_cleanup_func)
 						{
@@ -172,14 +176,16 @@ bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor, UT_uint32
 {
 	UT_ASSERT (m_bLoaded && m_bRegistered);
 
-	int (*plugin_supports_ver) (UT_uint32, UT_uint32, UT_uint32);
+	typedef int (*plugin_supports_ver_t) (UT_uint32, UT_uint32, UT_uint32);
+	plugin_supports_ver_t plugin_supports_ver;
+	plugin_supports_ver_t *pfunc = &plugin_supports_ver;
 	int result = 0;
 
 	if (m_fnSupportsVersion)
 		{
 			result = m_fnSupportsVersion (major, minor, release);
 		}
-	else if (resolveSymbol ("abi_plugin_supports_version", reinterpret_cast<void **>(&plugin_supports_ver)))
+	else if (resolveSymbol ("abi_plugin_supports_version", reinterpret_cast<void **>(pfunc)))
 		{
 			if (!plugin_supports_ver)
 				{

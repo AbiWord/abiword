@@ -106,7 +106,7 @@ public:
 	virtual bool        isCollapsed(void) const = 0;
 	virtual bool        needsReformat(void) const = 0;
 	virtual bool        needsRedraw(void) const = 0;
-	virtual fl_DocSectionLayout * getDocSectionLayout(void);
+	virtual fl_DocSectionLayout * getDocSectionLayout(void) const;
 	virtual fl_SectionLayout * getSectionLayout() const = 0;
 	virtual fl_HdrFtrSectionLayout * getHdrFtrSectionLayout(void) const;
 	void				setContainingLayout(fl_ContainerLayout*);
@@ -166,7 +166,7 @@ private:
 
 	// This function must be overriden by any derrived class that can endup positioned
 	// outside of the normal printable area on page
-	virtual void            _lookupMarginProperties(const PP_AttrProp* pAP){}
+	virtual void            _lookupMarginProperties(const PP_AttrProp* /*pAP*/){}
 	
 	virtual bool            _canContainPoint() const {return true;}
 	void	                _insertFirst(fl_ContainerLayout * pL);

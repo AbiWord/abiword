@@ -1503,8 +1503,8 @@ void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 }
 
-void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri,
-													 UT_GrowBuf & buf) const
+void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & /*ri*/,
+													 UT_GrowBuf & /*buf*/) const
 {
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
@@ -1593,7 +1593,7 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 }
 
 
-bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
+bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
 {
 	// something smarter is needed here, so we do not go through this for
 	// langugages that do not need it.
@@ -1896,7 +1896,8 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
-UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
+UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, 
+											 UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
@@ -1946,9 +1947,9 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 }
 
 void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
-										  UT_sint32& x, UT_sint32& y,
-										  UT_sint32& x2, UT_sint32& y2,
-										  UT_sint32& height, bool& bDirection) const
+										UT_sint32& x, UT_sint32& /*y*/,
+										UT_sint32& x2, UT_sint32& /*y2*/,
+										UT_sint32& /*height*/, bool& /*bDirection*/) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
@@ -2020,7 +2021,7 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
-									int * pCharWidth)
+									 int * /*pCharWidth*/)
 {
 	UT_return_if_fail(m_pXftDraw);
 
@@ -2318,7 +2319,7 @@ GR_Image* GR_UnixPangoGraphics::createNewImage (const char* pszName,
 											    const UT_ByteBuf* pBB,
 												UT_sint32 iWidth,
 												UT_sint32 iHeight,
-												GR_Image::GRType iType)
+												GR_Image::GRType /*iType*/)
 {
    	GR_Image* pImg = NULL;
 
@@ -2415,7 +2416,8 @@ void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
 	}
 }
 
-GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily, const char * pLang)
+GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& /*fontFamily*/, 
+											  const char * /*pLang*/)
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, NULL );
 }
@@ -2552,7 +2554,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontWeight,
 										 const char* pszFontStretch,
 										 const char* pszFontSize,
-										 const char* pszFontLang)
+										 const char* /*pszFontLang*/)
 {
 	static UT_UTF8String s = pszFontFamily;
 
@@ -3387,7 +3389,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	Measure the unremapped char to be put into the cache.
 	That means measuring it for a font size of 120
 */
-UT_sint32 GR_UnixPangoFont::measureUnremappedCharForCache(UT_UCS4Char cChar) const
+UT_sint32 GR_UnixPangoFont::measureUnremappedCharForCache(UT_UCS4Char /*cChar*/) const
 {
 	// this is not implemented because we do not use the width cache (when
 	// shaping, it is not possible to measure characters, only glyphs)
@@ -3546,7 +3548,7 @@ bool GR_UnixPangoRenderInfo::canAppend(GR_RenderInfo &ri) const
 }
 
 
-bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
+bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &/*ri*/, bool /*bReverse*/)
 {
 	if(s_pOwnerUTF8 == this)
 		s_pOwnerUTF8 = NULL;
@@ -3561,7 +3563,7 @@ bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 	return false;
 }
 
-bool GR_UnixPangoRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
+bool GR_UnixPangoRenderInfo::split (GR_RenderInfo *&pri, bool /*bReverse*/)
 {
 	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
 
@@ -3591,7 +3593,7 @@ bool GR_UnixPangoRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	return false;
 }
 
-bool GR_UnixPangoRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
+bool GR_UnixPangoRenderInfo::cut(UT_uint32 /*offset*/, UT_uint32 /*iLen*/, bool /*bReverse*/)
 {
 
 	if(s_pOwnerUTF8 == this)
@@ -3846,7 +3848,7 @@ UT_sint32 GR_UnixPangoPrintGraphics::scale_xdir (UT_sint32 in) const
 void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
 										   UT_sint32 xoff, UT_sint32 yoff,
-										   int * pCharWidths)
+										  int * /*pCharWidths*/)
 {
 	UT_UTF8String utf8;
 
@@ -4103,8 +4105,8 @@ bool GR_UnixPangoPrintGraphics::startPrint(void)
 }
 
 bool GR_UnixPangoPrintGraphics::startPage (const char *szPageLabel,
-											UT_uint32 pageNo, bool portrait, 
-											UT_uint32 width, UT_uint32 height)
+										   UT_uint32 /*pageNo*/, bool /*portrait*/, 
+										   UT_uint32 /*width*/, UT_uint32 /*height*/)
 {
 	if (m_bStartPage)
 		_endPage();
@@ -4247,7 +4249,7 @@ void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c,
 	setColor (old);
 }
 
-void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor c)
+void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor )
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -4258,51 +4260,51 @@ GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor(void) const
 	return GR_CURSOR_INVALID;
 }
 
-void GR_UnixPangoPrintGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, 
-										 UT_sint32 y2)
+void GR_UnixPangoPrintGraphics::xorLine(UT_sint32 /*x1*/, UT_sint32 /*y1*/, UT_sint32 /*x2*/, 
+										UT_sint32 /*y2*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::polyLine(UT_Point * pts, 
-										  UT_uint32 nPoints)
+void GR_UnixPangoPrintGraphics::polyLine(UT_Point * /*pts*/, 
+										 UT_uint32 /*nPoints*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::invertRect(const UT_Rect* pRect)
+void GR_UnixPangoPrintGraphics::invertRect(const UT_Rect*)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::clearArea(UT_sint32 x, UT_sint32 y,
-										   UT_sint32 width, UT_sint32 height)
+void GR_UnixPangoPrintGraphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
+										  UT_sint32 /*width*/, UT_sint32 /*height*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x, UT_sint32 y)
+void GR_UnixPangoPrintGraphics::scroll(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x_dest,
-										UT_sint32 y_dest,
-										UT_sint32 x_src,
-										UT_sint32 y_src,
-										UT_sint32 width,
-										UT_sint32 height)
+void GR_UnixPangoPrintGraphics::scroll(UT_sint32 /*x_dest*/,
+									   UT_sint32 /*y_dest*/,
+									   UT_sint32 /*x_src*/,
+									   UT_sint32 /*y_src*/,
+									   UT_sint32 /*width*/,
+									   UT_sint32 /*height*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-UT_RGBColor * GR_UnixPangoPrintGraphics::getColor3D(GR_Color3D c)
+UT_RGBColor * GR_UnixPangoPrintGraphics::getColor3D(GR_Color3D )
 {
 	UT_ASSERT_NOT_REACHED ();
 	return NULL;
 }
 
-void GR_UnixPangoPrintGraphics::setColor3D(GR_Color3D c)
+void GR_UnixPangoPrintGraphics::setColor3D(GR_Color3D)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
@@ -4313,24 +4315,24 @@ GR_Font* GR_UnixPangoPrintGraphics::getGUIFont()
 	return NULL;
 }
 
-void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y,
-										  UT_sint32 w, UT_sint32 h)
+void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/,
+										 UT_sint32 /*w*/, UT_sint32 /*h*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D, UT_Rect &)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::setPageSize(char* pageSizeName,
-											UT_uint32 iwidth, UT_uint32 iheight)
+void GR_UnixPangoPrintGraphics::setPageSize(char* /*pageSizeName*/,
+											UT_uint32 /*iwidth*/, UT_uint32 /*iheight*/)
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-void GR_UnixPangoPrintGraphics::setClipRect(const UT_Rect* pRect)
+void GR_UnixPangoPrintGraphics::setClipRect(const UT_Rect* )
 {
 }
 
@@ -4388,7 +4390,7 @@ dashToPS (GR_Graphics::LineStyle ls, gint & n_values, double &offset)
 	n_values = 0; offset = 0.; return NULL;
 }
 
-void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
+void GR_UnixPangoPrintGraphics::setLineProperties (double /*inWidth*/,
 												   JoinStyle inJoinStyle,
 												   CapStyle inCapStyle,
 												   LineStyle inLineStyle)

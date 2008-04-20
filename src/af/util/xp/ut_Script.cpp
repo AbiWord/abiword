@@ -105,7 +105,7 @@ void UT_ScriptLibrary::registerScript ( UT_ScriptSniffer * s )
 	UT_uint32 ndx = 0;
 	UT_Error err = mSniffers->addItem (s, &ndx);
 
-	UT_return_if_fail(err == UT_OK && ndx >= 0);
+	UT_return_if_fail(err == UT_OK);
 	s->setType(ndx+1);
 }
 

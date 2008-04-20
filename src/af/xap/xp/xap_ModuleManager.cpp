@@ -293,7 +293,8 @@ void XAP_ModuleManager::unloadModule (UT_sint32 ndx)
 	pModule->setLoaded (false);
 
 	bool module_unloaded = pModule->unload ();
-	UT_ASSERT (module_unloaded == true);
+	UT_UNUSED (module_unloaded);
+	UT_ASSERT (module_unloaded);
 
 	delete pModule;
 }

@@ -315,8 +315,10 @@ void GR_Caret::setBlink(bool bBlink)
 
 	g_object_get (G_OBJECT(settings), "gtk-cursor-blink", &can, NULL);
 	m_bCursorBlink = (can != FALSE);
+	UT_UNUSED(bBlink);
 #elif defined(TOOLKIT_WIN)
 	m_bCursorBlink = (((int)GetCaretBlinkTime ()) > 0);
+	UT_UNUSED(bBlink);
 #else
 	m_bCursorBlink = bBlink;
 #endif

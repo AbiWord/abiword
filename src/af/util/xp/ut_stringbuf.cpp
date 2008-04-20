@@ -650,7 +650,7 @@ void UT_UTF8Stringbuf::escapeURL ()
 	
 	for(c = charCode(J.current()); c != 0; c = charCode(J.advance()))
 	{
-		char * p = (char*) J.current();
+		p = (char*) J.current();
 		UT_sint32 iByteLen = UT_Unicode::UTF8_ByteLength(c);
 		
 		if (iByteLen > 1) // mutlibyte in utf-8; each byte is to be encoded

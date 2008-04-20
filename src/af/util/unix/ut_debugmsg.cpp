@@ -37,5 +37,7 @@ void _UT_OutputMessage(const char *s, ...)
 	g_logv(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, s, marker);
 
 	va_end(marker);
+#else
+	UT_UNUSED(s);
 #endif
 }

@@ -455,7 +455,7 @@ UT_TextIterator * PD_StruxIterator::makeCopy()
 	return t;
 }
 
-UT_uint32 PD_StruxIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bForward)
+UT_uint32 PD_StruxIterator::find(UT_TextIterator & /*text*/, UT_uint32 /*iLen*/, bool /*bForward*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	m_status = UTIter_OutOfBounds;
@@ -463,7 +463,7 @@ UT_uint32 PD_StruxIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bF
 }
 
 
-UT_uint32 PD_StruxIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward)
+UT_uint32 PD_StruxIterator::find(UT_UCS4Char * /*what*/, UT_uint32 /*iLen*/, bool /*bForward*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	m_status = UTIter_OutOfBounds;

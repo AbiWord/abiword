@@ -60,7 +60,7 @@ public:
 
 	// vector of DictionaryMapping*
 	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
-	virtual bool doesDictionaryExist (const char * szLang) {return false;};
+	virtual bool doesDictionaryExist (const char * /*szLang*/) {return false;};
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
 	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,

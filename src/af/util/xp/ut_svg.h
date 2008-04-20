@@ -126,7 +126,7 @@ class ABI_EXPORT UT_SVGMatrix
   UT_SVGMatrix(float a = 1, float b = 0, float c = 0, float d = 1, float e = 0, float f = 0);
   ~UT_SVGMatrix();
 
-  bool applyTransform (UT_SVGMatrix * currentMatrix,const char * transformAttribute);
+  static bool applyTransform (UT_SVGMatrix * currentMatrix,const char * transformAttribute);
 };
 
 #endif /* UT_SVG_H */

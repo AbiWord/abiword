@@ -44,7 +44,7 @@ private:
 	
 	void event_Return () ;
 
-	static void s_return_hit ( GtkWidget * entry, XAP_UnixDialog_Password * me )
+	static void s_return_hit ( GtkWidget *, XAP_UnixDialog_Password * me )
 	  {
 	    me->event_Return () ;
 	  }

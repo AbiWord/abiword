@@ -60,6 +60,9 @@ typedef gint32		    UT_sint32;
 typedef guint64 UT_uint64;
 typedef gint64 UT_sint64;
 
+/** use to mark variable as unused */
+#define UT_UNUSED(x) (void)(x);
+
 /*!
  * Confidence heuristic datatype normalized to the range
  * [0,255] with 0 being least confident and 255 being the most confident

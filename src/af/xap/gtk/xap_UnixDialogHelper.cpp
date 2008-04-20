@@ -65,7 +65,7 @@ static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*
       return FALSE;
 }
 
-static gboolean destroy_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
+static gboolean destroy_event(GtkWidget * /*widget*/ ,GdkEvent */*event*/,gpointer /*user_data*/)
 {
       return FALSE;
 }
@@ -288,6 +288,7 @@ on_notebook_switch_page				   (GtkNotebook		*notebook,
 
 	UT_ASSERT(topwindow && GTK_IS_WINDOW(topwindow));
 	UT_ASSERT(notebook && GTK_IS_NOTEBOOK(notebook));
+	UT_UNUSED(page);
 	UT_ASSERT(page);
 
 	oldaccel = static_cast<GtkAccelGroup *>(g_object_get_data( G_OBJECT(notebook),
@@ -316,6 +317,7 @@ static void process_notebook_page( GtkWidget *notebook,
 	GtkAccelGroup *newgroup;
 	struct fix_label_data newdata;
 
+	UT_UNUSED(notebook);
 	UT_ASSERT(notebook && page && data && data->topwindow);
 	UT_ASSERT( GTK_IS_NOTEBOOK(notebook) );
 	UT_ASSERT( GTK_IS_WIDGET(page) );
@@ -428,8 +430,9 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 
 		/* go deeper */
 		TRACE(("found %s - ", dbg_str ));
+		struct fix_label_data * pn = &newdata;
 		gtk_container_forall( GTK_CONTAINER(widget), 
-							  fix_label_callback, reinterpret_cast<gpointer *>(&newdata) );
+							  fix_label_callback, reinterpret_cast<gpointer *>(pn) );
 
 	}
 
@@ -517,7 +520,7 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 /*!
  * Catch F1 keypress over a dialog and open up the help file, if any
  */
-static gint modal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+static gint modal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event, 
 								XAP_Dialog * pDlg )
 {
 	// propegate keypress up if not F1
@@ -535,7 +538,7 @@ static gint modal_keypress_cb ( GtkWidget * wid, GdkEventKey * event,
 /*!
  * Catch F1 keypress over a dialog and open up the help file, if any
  */
-static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event, 
 								   XAP_Dialog * pDlg )
 {
 	// propegate keypress up if not F1
@@ -548,7 +551,7 @@ static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event,
 	return FALSE ;
 }
 
-static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
+static void help_button_cb (GObject * /*button*/, XAP_Dialog * pDlg)
 {
   if (pDlg)
     sDoHelp (pDlg);
@@ -687,7 +690,7 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 6) Sets the default button to defaultResponse, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-							gint defaultResponse, bool abi_modeless, AtkRole role )
+							gint defaultResponse, bool abi_modeless, AtkRole /*role*/ )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
@@ -716,7 +719,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
-
+	// FIXME: shouldn't we pass role here?
 	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), ATK_ROLE_ALERT);
 	
 	// show the window

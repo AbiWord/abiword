@@ -197,7 +197,7 @@ void GR_EmbedManager::initialize(void)
  * transfrom Latex to MathML. This method enables this. Returns true if the
  * conversion was successful.
  */
-bool GR_EmbedManager::convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf &  To  )
+bool GR_EmbedManager::convert(UT_uint32 /*iConv*/, UT_ByteBuf & /*From*/, UT_ByteBuf & /*To*/)
 {
   return false;
 }
@@ -247,7 +247,7 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api, con
  * Once the SVG backend for gnome-print is in wide use, any printable 
  * document which employs gnome-print can be snapshotted into SVG.
  */
-void GR_EmbedManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
+void GR_EmbedManager::makeSnapShot(UT_sint32 uid, UT_Rect & /*rec*/)
 {
   if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
     {
@@ -276,7 +276,7 @@ bool GR_EmbedManager::isDefault(void)
  * via a changeObject(..) call to the PD_Document. This causes the object 
  * and surrounding text to be re-rendered.
  */
-bool GR_EmbedManager::modify(UT_sint32 uid)
+bool GR_EmbedManager::modify(UT_sint32 /*uid*/)
 {
   // FIXME write this
   return false;
@@ -287,7 +287,7 @@ bool GR_EmbedManager::modify(UT_sint32 uid)
  * call on the embedded object. The properties of the object will be 
  * re-calculated.
  */
-bool GR_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 api)
+bool GR_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 /*api*/)
 {
   if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
     {
@@ -306,7 +306,7 @@ bool GR_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 api)
  * Perform any specific View Initializations after creating it. The view is
  * accessed via uid.
  */
-void GR_EmbedManager::initializeEmbedView(UT_sint32 uid)
+void GR_EmbedManager::initializeEmbedView(UT_sint32 /*uid*/)
 {
   // FIXME write this
 }
@@ -372,7 +372,7 @@ UT_sint32 GR_EmbedManager::getAscent(UT_sint32 uid)
  * in 
  * AbiWord Logical units.
  */
-UT_sint32 GR_EmbedManager::getDescent(UT_sint32 uid)
+UT_sint32 GR_EmbedManager::getDescent(UT_sint32 /*uid*/)
 {
   // FIXME write this
   return 0;
@@ -467,7 +467,7 @@ void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
  * Returns true if the plugin can be editted via the modify method.
  * The default implementation cannot be editted so we return false.
  */
-bool GR_EmbedManager::isEdittable(UT_sint32 uid)
+bool GR_EmbedManager::isEdittable(UT_sint32 /*uid*/)
 {
   return false;
 }
@@ -476,15 +476,15 @@ bool GR_EmbedManager::isEdittable(UT_sint32 uid)
  * Returns true if the plugin can be resized. Subclasses overide if they 
  * need to
  */
-bool GR_EmbedManager::isResizeable(UT_sint32 uid)
+bool GR_EmbedManager::isResizeable(UT_sint32 /*uid*/)
 {
   return true;
 }
 
-void GR_EmbedManager::setRun (UT_sint32 uid, fp_Run * run)
+void GR_EmbedManager::setRun (UT_sint32 /*uid*/, fp_Run * /*run*/)
 {
 }
 
-void GR_EmbedManager:: updateData(UT_sint32 uid, UT_sint32 api)
+void GR_EmbedManager:: updateData(UT_sint32 /*uid*/, UT_sint32 /*api*/)
 {
 }

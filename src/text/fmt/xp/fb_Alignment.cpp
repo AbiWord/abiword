@@ -71,7 +71,7 @@ UT_sint32 fb_Alignment_center::getStartPosition()
 	return m_startPosition;
 }
 
-void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
+void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 /*runIndex*/)
 {
 	pLine->clearScreen();
 }

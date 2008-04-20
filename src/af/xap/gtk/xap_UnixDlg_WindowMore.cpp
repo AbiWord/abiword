@@ -56,9 +56,9 @@ XAP_UnixDialog_WindowMore::~XAP_UnixDialog_WindowMore(void)
 {
 }
 
-void XAP_UnixDialog_WindowMore::s_list_dblclicked(GtkTreeView *treeview,
-												  GtkTreePath *arg1,
-												  GtkTreeViewColumn *arg2,
+void XAP_UnixDialog_WindowMore::s_list_dblclicked(GtkTreeView * /*treeview*/,
+												  GtkTreePath * /*arg1*/,
+												  GtkTreeViewColumn * /*arg2*/,
 												  XAP_UnixDialog_WindowMore * me)
 {
 	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_VIEW);

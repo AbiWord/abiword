@@ -178,15 +178,15 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_G
 	*/
 	if (UT_UCS4_isupper(*word32))
 	{
-		UT_UCSChar* pStr = const_cast<UT_UCSChar *>(word32);
-		pStr++;
+		UT_UCSChar* pStr2 = const_cast<UT_UCSChar *>(word32);
+		pStr2++;
 		len=length;
 		if (len)
 			len--;
 		/* After the first character, the rest should be lower case */
-		for (;len;pStr++, len--)
+		for (;len;pStr2++, len--)
 		{
-			if (!UT_UCS4_islower(*pStr))
+			if (!UT_UCS4_islower(*pStr2))
 				break;
 		}
 		if (!len)

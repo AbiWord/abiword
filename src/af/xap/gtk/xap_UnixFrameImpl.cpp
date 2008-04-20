@@ -221,7 +221,7 @@ static int s_mapMimeToUriType (const char * uri)
 }
 
 static void
-s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView,gint x, gint y)
+s_loadImage (const UT_UTF8String & file, FV_View * pView,gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic (file.utf8_str(), 0, &pFG);
@@ -242,7 +242,7 @@ s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView,gin
 }
 
 static void
-s_loadImage (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView, gint x, gint y)
+s_loadImage (UT_ByteBuf * bytes, FV_View * pView, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
@@ -331,7 +331,7 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 
 	if (type == TARGET_IMAGE)
 		{
-			s_loadImage (uri, pFrame, pView,x,y);
+			s_loadImage (uri, pView,x,y);
 			return;
 		}
 	else
@@ -396,12 +396,12 @@ s_pasteText (XAP_Frame * pFrame, const char * target_name,
 }
 
 static void
-s_drag_data_get_cb (GtkWidget        *widget,
-					GdkDragContext   *context,
+s_drag_data_get_cb (GtkWidget        * /*widget*/,
+					GdkDragContext   * /*context*/,
 					GtkSelectionData *selection,
-					guint             _info,
-					guint             _time,
-					gpointer          user_data)
+					guint             /*_info*/,
+					guint             /*_time*/,
+					gpointer          /*user_data*/)
 {
 	void * data = NULL;
 	UT_uint32 dataLen = 0;
@@ -489,7 +489,7 @@ s_drag_data_get_cb (GtkWidget        *widget,
 
 static void
 s_dndDropEvent(GtkWidget        *widget,
-				 GdkDragContext   *context,
+			   GdkDragContext   * /*context*/,
 				 gint              x,
 				 gint              y,
 				 GtkSelectionData *selection_data,
@@ -524,7 +524,7 @@ s_dndDropEvent(GtkWidget        *widget,
 
 		UT_DEBUGMSG(("JK: Image target\n"));
 		bytes->append (selection_data->data, selection_data->length);
-		s_loadImage (bytes, pFrame, pView,x,y);
+		s_loadImage (bytes, pView,x,y);
 	}
 	else if (info == TARGET_URL)
 	{
@@ -538,18 +538,17 @@ s_dndDropEvent(GtkWidget        *widget,
 
 static void
 s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context,
-					   gint x, gint y, guint time, gpointer ppFrame)
+					gint /*x*/, gint /*y*/, guint time, gpointer /*ppFrame*/)
 {
 	UT_DEBUGMSG(("DOM: dnd drop event\n"));
 	GdkAtom selection = gdk_drag_get_selection(context);
 
-	char *targetName = gdk_atom_name(selection);
-	UT_DEBUGMSG(("RealDrag and drop event: target in selection = %s \n", targetName));
+	UT_DEBUGMSG(("RealDrag and drop event: target in selection = %s \n", gdk_atom_name(selection)));
 	gtk_drag_get_data (widget,context,selection,time);
 }
 
 static void
-s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+s_dndDragEnd (GtkWidget  *, GdkDragContext *, gpointer /*ppFrame*/)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
 
@@ -557,7 +556,7 @@ s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 }
 
 static void
-s_dndDragBegin (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+s_dndDragBegin (GtkWidget  *, GdkDragContext *, gpointer /*ppFrame*/)
 {
 	UT_DEBUGMSG(("DOM: dnd begin event\n"));
 }
@@ -623,19 +622,19 @@ XAP_UnixFrameImpl::~XAP_UnixFrameImpl()
 }
 
 
-void XAP_UnixFrameImpl::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_UnixFrameImpl::_fe::realize(GtkWidget *, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-void XAP_UnixFrameImpl::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_UnixFrameImpl::_fe::unrealize(GtkWidget *, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-void XAP_UnixFrameImpl::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_UnixFrameImpl::_fe::sizeAllocate(GtkWidget *, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-gint XAP_UnixFrameImpl::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+gint XAP_UnixFrameImpl::_fe::focusIn(GtkWidget *, GdkEvent * /*e*/,gpointer /*data*/)
 {
 	return FALSE;
 }
@@ -899,10 +898,10 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 			double rat = static_cast<double>(iAdjustZoom)/static_cast<double>(pView->getGraphics()->getZoomPercentage()) ;
 			double new_width = orig_width*rat;
 			UT_DEBUGMSG(("VIEW_WEB old width %f new width %f old height %f \n",orig_width,new_width,orig_height));
-			bool p = pLayout->m_docViewPageSize.isPortrait();
+			bool isPortrait = pLayout->m_docViewPageSize.isPortrait();
 			pLayout->m_docViewPageSize.Set(new_width,orig_height,orig_ut);
 			pLayout->m_docViewPageSize.Set(fp_PageSize::psCustom,orig_ut);
-			if(p)
+			if(isPortrait)
 			{
 				pLayout->m_docViewPageSize.setPortrait();
 			}
@@ -1104,8 +1103,7 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	if(pApp->isBonoboRunning())
 		return FALSE;
 
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
+	UT_ASSERT(pApp->getMenuActionSet());
 
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_return_val_if_fail(pEMC,FALSE);
@@ -1663,7 +1661,7 @@ void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 					  G_CALLBACK (_imDeleteSurrounding_cb), this);
 }
 
-void XAP_UnixFrameImpl::_imPreeditStart_cb (GtkIMContext *context,
+void XAP_UnixFrameImpl::_imPreeditStart_cb (GtkIMContext * /*context*/,
 											gpointer data)
 {
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
@@ -1676,7 +1674,7 @@ void XAP_UnixFrameImpl::_imPreeditStart_cb (GtkIMContext *context,
 	UT_DEBUGMSG(("@@@@ Preedit Started, pos %d\n", pView->getInsPoint ()));
 }
 
-void XAP_UnixFrameImpl::_imPreeditEnd_cb (GtkIMContext *context,
+void XAP_UnixFrameImpl::_imPreeditEnd_cb (GtkIMContext * /*context*/,
 										  gpointer data)
 {
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
@@ -1707,7 +1705,6 @@ void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context,
 	gchar *text;
 	gint   len = 0;
 	gint   pos;
-	guint  insPt;
 
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
 	XAP_Frame* pFrame = pImpl->getFrame();
@@ -1773,7 +1770,7 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context,
 	return TRUE;
 }
 
-gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave,
+gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext * /*slave*/,
 												 gint offset, gint n_chars,
 												 gpointer data)
 {
@@ -1801,7 +1798,7 @@ void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc,
 }
 
 // Actual keyboard commit should be done here.
-void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
+void XAP_UnixFrameImpl::_imCommit(GtkIMContext * /*imc*/, const gchar * text)
 {
 	XAP_Frame* pFrame = getFrame();
 	FV_View * pView = static_cast<FV_View*>(getFrame()->getCurrentView ());
@@ -1957,6 +1954,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 					 m_szMenuLabelSetName);
 	UT_return_if_fail(m_pUnixMenu);
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
+	UT_UNUSED(bResult);
 	UT_ASSERT_HARMLESS(bResult);
 }
 
@@ -2033,7 +2031,7 @@ bool XAP_UnixFrameImpl::_updateTitle()
 }
 
 bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
-					       UT_sint32 x, UT_sint32 y)
+											 UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	XAP_Frame*	pFrame = getFrame();
 	bool bResult = true;

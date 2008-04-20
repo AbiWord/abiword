@@ -330,10 +330,10 @@ double	GR_Graphics::ftluD(double fontUnits) const
 	return (fontUnits * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution()));
 }
 
-void GR_Graphics::setLineProperties ( double    inWidthPixels, 
-				      JoinStyle inJoinStyle,
-				      CapStyle  inCapStyle,
-				      LineStyle inLineStyle )
+void GR_Graphics::setLineProperties ( double    /*inWidthPixels*/, 
+									  JoinStyle /*inJoinStyle*/,
+									  CapStyle  /*inCapStyle*/,
+									  LineStyle /*inLineStyle*/ )
 {
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -363,7 +363,8 @@ void GR_Graphics::getMaxCharacterDimension(const UT_UCSChar*s, UT_uint32 length,
 }
 
 UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
-										 int num,  UT_GrowBufElement* pWidths, UT_uint32 *height)
+										 int num,  UT_GrowBufElement* pWidths, 
+									 UT_uint32 * /*height*/)
 {
 	// Generic base class version defined in terms of measureUnRemappedChar().
 	// Platform versions can roll their own if it makes a performance difference.
@@ -914,12 +915,12 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 					
 					while(text.getStatus() == UTIter_OK)
 					{
-						UT_UCS4Char c = text.getChar();
+						UT_UCS4Char c2 = text.getChar();
 						UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 
 						++text;
 						
-						iNextType = UT_bidiGetCharType(c);
+						iNextType = UT_bidiGetCharType(c2);
 						xxx_UT_DEBUGMSG(("GR_Graphics::itemize: iNextType 0x%04x\n", iNextType));
 						
 						if(iNextType == iPrevType)
@@ -1485,7 +1486,8 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 	}
 }
 
-UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
+UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 /*x*/, 
+									UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
@@ -1496,9 +1498,9 @@ UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_si
 }
 
 void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
-						 	  UT_sint32& x, UT_sint32& y,
-							  UT_sint32& x2, UT_sint32& y2,
-							  UT_sint32& height, bool& bDirection) const
+							   UT_sint32& /*x*/, UT_sint32& /*y*/,
+							   UT_sint32& /*x2*/, UT_sint32& /*y2*/,
+							   UT_sint32& /*height*/, bool& /*bDirection*/) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
@@ -1507,12 +1509,12 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
 
-UT_uint32 GR_Graphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+UT_uint32 GR_Graphics::adjustCaretPosition(GR_RenderInfo & ri, bool /*bForward*/)
 {
 	return ri.m_iOffset;
 }
 
-void GR_Graphics::adjustDeletePosition(GR_RenderInfo & ri)
+void GR_Graphics::adjustDeletePosition(GR_RenderInfo & )
 {
 	return;
 }

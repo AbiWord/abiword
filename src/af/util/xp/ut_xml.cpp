@@ -74,7 +74,7 @@ UT_XML_BufReader::~UT_XML_BufReader ()
   // 
 }
 
-bool UT_XML_BufReader::openFile (const char * szFilename)
+bool UT_XML_BufReader::openFile (const char * /*szFilename*/)
 {
   if ((m_buffer == 0) || (m_length == 0)) return false;
   m_bufptr = m_buffer;
@@ -363,16 +363,16 @@ public:
 	UT_XML_Decoder () {}
 	virtual ~UT_XML_Decoder () {}
 
-	virtual void startElement (const gchar * name, const gchar ** atts)
+	virtual void startElement (const gchar * /*name*/, const gchar ** atts)
 	{
 		mKey = UT_getAttribute ( "k", atts ) ;
 	}
 	
-	virtual void endElement (const gchar * name)
+	virtual void endElement (const gchar * /*name*/)
 	{
 	}
 	
-	virtual void charData (const gchar * buffer, int length)
+	virtual void charData (const gchar * /*buffer*/, int /*length*/)
 	{
 	}
 	

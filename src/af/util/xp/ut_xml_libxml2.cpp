@@ -59,7 +59,7 @@ static void _endElement (void * userData, const gchar * name)
   pXML->endElement (reinterpret_cast<const char *>(name));
 }
 
-static xmlEntityPtr _getEntity (void * userData, const gchar * name)
+static xmlEntityPtr _getEntity (void * /*userData*/, const gchar * name)
 {
   return xmlGetPredefinedEntity (name);
 }

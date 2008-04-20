@@ -140,6 +140,7 @@ void EV_Menu_Layout::addFakeLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_Layout
 {
 	UT_uint32 err = m_layoutTable.insertItemAt(new EV_Menu_LayoutItem(0, flags), indexLayoutItem);
 	UT_ASSERT(!err);
+	UT_UNUSED(err);
 }
 
 XAP_Menu_Id EV_Menu_Layout::addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags)

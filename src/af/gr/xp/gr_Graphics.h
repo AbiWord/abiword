@@ -564,7 +564,8 @@ class ABI_EXPORT GR_Graphics
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual bool      getColor3D(GR_Color3D name, UT_RGBColor &color) { return false; }
+	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
+	{ return false; }
 
 	//
 	// Methods to deal with background repainting as used in the Unix FE. These
@@ -666,7 +667,7 @@ class ABI_EXPORT GR_Graphics
 
 	// indicates if special caret positioning has to be done for the run of text; this allows us
 	// to speed things up when this is not needed
-	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & ri) VIRTUAL_SFX {return false;}
+	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & /*ri*/) VIRTUAL_SFX {return false;}
 	
 	// adjusts caret position if given script restricts where caret can be placed
 	// the caller has to set initial position within the run in ri.m_iOffset, overall length of
@@ -778,7 +779,7 @@ class ABI_EXPORT GR_Graphics
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
  private:
-	virtual bool _setTransform(const GR_Transform & tr)
+	virtual bool _setTransform(const GR_Transform & /*tr*/)
 		{
 			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
 			return false;

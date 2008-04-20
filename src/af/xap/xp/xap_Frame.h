@@ -160,7 +160,7 @@ public:
 	virtual void                toggleLeftRuler(bool /*bRulerOn*/) = 0;
 	virtual void				toggleBar(UT_uint32 /* iBarNb */, bool /* bBarOn */) { }
 	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
-	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
+	virtual bool				getBarVisibility(UT_uint32 /*iBarNb*/) { return true; }
 
    	EV_Mouse *					getMouse() { return m_pFrameImpl->m_pMouse; }
 	EV_Keyboard *				getKeyboard() { return m_pFrameImpl->m_pKeyboard; }
@@ -215,8 +215,8 @@ public:
 
 	const bool                  isStatusBarShown(void) const { return m_bShowStatusbar;}
 	const bool                  isMenuBarShown(void) const { return m_bShowMenubar;}
-	virtual void                setStatusBarShown(bool bShowStatusbar) {}
-	virtual void                setMenuBarShown(bool bShowMenubar) {}
+	virtual void                setStatusBarShown(bool /*bShowStatusbar*/) {}
+	virtual void                setMenuBarShown(bool /*bShowMenubar*/) {}
 	UT_uint32                   getTimeSinceSave() const;
 	bool                        isFrameLocked(void) const 
 	                            {return m_bIsFrameLocked;}

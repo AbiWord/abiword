@@ -163,9 +163,9 @@ public:
 	virtual fp_ContainerObject * getPrev(void) const { return NULL;}
 	virtual fp_Container *       getNextContainerInSection(void) const { return NULL;}
 	virtual fp_Container *       getPrevContainerInSection(void) const { return NULL;}
-	virtual void                 setNext(fp_ContainerObject * pNull) {}
-	virtual void                 setPrev(fp_ContainerObject * pNull) {}
-	virtual void                 draw(GR_Graphics * pG) {}
+	virtual void                 setNext(fp_ContainerObject * /*pNull*/) {}
+	virtual void                 setPrev(fp_ContainerObject * /*pNull*/) {}
+	virtual void                 draw(GR_Graphics * /*pG*/) {}
 
 	UT_uint32		    getBlockOffset() const			{ return m_iOffsetFirst; }
 	UT_uint32		    getLength() const				{ return m_iLen; }
@@ -221,8 +221,8 @@ public:
 	virtual void		draw(dg_DrawArgs*);
 	virtual void        clearScreen(void);
 	void                Run_ClearScreen(bool bFullLineHeightRect = false);
-	virtual void        setWidth(UT_sint32 iW) {}
-	virtual void        setHeight(UT_sint32 iH) {}
+	virtual void        setWidth(UT_sint32 /*iW*/) {}
+	virtual void        setHeight(UT_sint32 /*iH*/) {}
 	virtual bool        isVBreakable(void) {return false;}
 	virtual bool        isHBreakable(void) {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32 i) {return i;}
@@ -294,11 +294,11 @@ public:
 	fp_Run *			getNextVisual();
 	fp_Run *			getPrevVisual();
 
-	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
+	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool /*bForward*/)
 	                           { return iDocumentPosition;}
 
-	virtual void        adjustDeletePosition(UT_uint32 &pos1, UT_uint32 &count)
-	                           {return;}
+	virtual void        adjustDeletePosition(UT_uint32 & /*pos1*/, 
+											 UT_uint32 & /*count*/) {}
 
 	bool                containsRevisions(){return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the

@@ -73,6 +73,7 @@ GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 
 void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
+	UT_UNUSED(pGraphics);
 	UT_ASSERT(pGraphics == m_pPrintGraphics);	
 	DELETEP(m_pPrintGraphics);
 }

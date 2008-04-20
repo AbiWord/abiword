@@ -141,7 +141,10 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) {return NULL;}
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
+	void                recalcMaxWidth(bool bDontClearIfNeeded = false) 
+	{
+		UT_UNUSED(bDontClearIfNeeded);
+	}
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
 	virtual void        setAssignedScreenHeight(UT_sint32) {}

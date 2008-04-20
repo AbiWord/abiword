@@ -88,8 +88,8 @@ fill_store (XAP_UnixDialog_ClipArt *self)
  * Clipart clicked handler.
  */
 static void
-item_activated (GtkIconView 			*icon_view,
-				GtkTreePath 			*tree_path,
+item_activated (GtkIconView 			* /*icon_view*/,
+				GtkTreePath 			* /*tree_path*/,
 				XAP_UnixDialog_ClipArt 	*self)
 {
 	self->onItemActivated();
@@ -217,7 +217,7 @@ gboolean XAP_UnixDialog_ClipArt::fillStore()
 	GdkPixbuf	*pixbuf;
 	GError		*error;
 	GtkTreeIter  iter;
-	gint		 count;
+	gint		 _count;
 
 	if (!g_file_test (this->dir_path, G_FILE_TEST_IS_DIR)) {
 		return FALSE;
@@ -232,7 +232,7 @@ gboolean XAP_UnixDialog_ClipArt::fillStore()
 	}
 
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (this->progress), 0.);
-	count = 0;
+	_count = 0;
 	name = g_dir_read_name (dir);
 	while (name != NULL) {
 
@@ -269,19 +269,19 @@ gboolean XAP_UnixDialog_ClipArt::fillStore()
 
 		if (clipartCount) {
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (this->progress), 
-										   count / clipartCount * 100.);
+										   _count / clipartCount * 100.);
 		}
 		else {
 			gtk_progress_bar_pulse (GTK_PROGRESS_BAR (this->progress));
 		}
-		count++;
-		if (count % 10 == 0) {
+		_count++;
+		if (_count % 10 == 0) {
 			gtk_main_iteration_do (FALSE);
 		}
 next:
 		name = g_dir_read_name (dir);
 	}
-	clipartCount = count;
+	clipartCount = _count;
 
 	gtk_icon_view_set_model (GTK_ICON_VIEW (this->icon_view), 
 							 GTK_TREE_MODEL (this->store));

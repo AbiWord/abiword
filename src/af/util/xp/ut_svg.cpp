@@ -35,7 +35,7 @@ UT_svg::UT_svg(GR_Graphics* pG,ParseMode ePM) :
 	m_ePM(ePM),
 	m_bSVG(false),
 	m_bContinue(true),
-	m_pG(0),
+	m_pG(pG),
 	m_iDisplayWidth(0),
 	m_iDisplayHeight(0),
 	m_iLayoutWidth(0),
@@ -591,123 +591,123 @@ static bool BNF_comma_wsp (const char ** pptr) // comma-wsp
 
 static bool BNF_number (const char ** pptr, float * number) // number
 {
-  const char * ptr = *pptr;
-  const char * number_start = ptr;
-  const char * number_end = 0;
+	const char * ptr = *pptr;
+	const char * number_start = ptr;
+	const char * number_end = 0;
 
-  bool bValid = false;
+	bool bValid = false;
 
-  if (*ptr == 0) return bValid;
+	if (*ptr == 0) return bValid;
 
-  if ((*ptr == '+') || (*ptr == '-')) ptr++;
+	if ((*ptr == '+') || (*ptr == '-')) ptr++;
 
-  if (*ptr == '.')
+	if (*ptr == '.')
     {
-      ptr++;
-      int digit_count = 0;
-      while (*ptr)
-	{
-	  int ic = (int) *ptr;
-	  if (ic < 0) ic += 0xff;
-
-	  if (!isdigit (ic)) break;
-	  digit_count++;
-	  ptr++;
-	}
-      if (digit_count > 0)
-	{
-	  if ((*ptr == 'e') || (*ptr == 'E'))
-	    {
-	      ptr++;
-	      if ((*ptr == '+') || (*ptr == '-')) ptr++;
-	      int digit_count = 0;
-	      while (*ptr)
+		ptr++;
+		int digit_count = 0;
+		while (*ptr)
 		{
-		  int ic = (int) *ptr;
-		  if (ic < 0) ic += 0xff;
+			int ic = (int) *ptr;
+			if (ic < 0) ic += 0xff;
 
-		  if (!isdigit (ic)) break;
-		  digit_count++;
-		  ptr++;
+			if (!isdigit (ic)) break;
+			digit_count++;
+			ptr++;
 		}
-	      if (digit_count > 0) bValid = true; // optimistic, but a reasonable assumption
-	    }
-	  else
-	    {
-	      bValid = true; // optimistic, but a reasonable assumption
-	    }
-	  number_end = ptr;
-	}
+		if (digit_count > 0)
+		{
+			if ((*ptr == 'e') || (*ptr == 'E'))
+			{
+				ptr++;
+				if ((*ptr == '+') || (*ptr == '-')) ptr++;
+				int digit_count2 = 0;
+				while (*ptr)
+				{
+					int ic = (int) *ptr;
+					if (ic < 0) ic += 0xff;
+
+					if (!isdigit (ic)) break;
+					digit_count2++;
+					ptr++;
+				}
+				if (digit_count2 > 0) bValid = true; // optimistic, but a reasonable assumption
+			}
+			else
+			{
+				bValid = true; // optimistic, but a reasonable assumption
+			}
+			number_end = ptr;
+		}
     }
-  else
+	else
     {
-      int digit_count = 0;
-      while (*ptr)
-	{
-	  int ic = (int) *ptr;
-	  if (ic < 0) ic += 0xff;
-
-	  if (!isdigit (ic)) break;
-	  digit_count++;
-	  ptr++;
-	}
-      if (digit_count > 0)
-	{
-	  if (*ptr == '.')
-	    {
-	      ptr++;
-	      while (*ptr)
+		int digit_count = 0;
+		while (*ptr)
 		{
-		  int ic = (int) *ptr;
-		  if (ic < 0) ic += 0xff;
+			int ic = (int) *ptr;
+			if (ic < 0) ic += 0xff;
 
-		  if (!isdigit (ic)) break;
-		  ptr++;
+			if (!isdigit (ic)) break;
+			digit_count++;
+			ptr++;
 		}
-	    }
-	  if ((*ptr == 'e') || (*ptr == 'E'))
-	    {
-	      ptr++;
-	      if ((*ptr == '+') || (*ptr == '-')) ptr++;
-	      int digit_count = 0;
-	      while (*ptr)
+		if (digit_count > 0)
 		{
-		  int ic = (int) *ptr;
-		  if (ic < 0) ic += 0xff;
+			if (*ptr == '.')
+			{
+				ptr++;
+				while (*ptr)
+				{
+					int ic = (int) *ptr;
+					if (ic < 0) ic += 0xff;
 
-		  if (!isdigit (ic)) break;
-		  digit_count++;
-		  ptr++;
+					if (!isdigit (ic)) break;
+					ptr++;
+				}
+			}
+			if ((*ptr == 'e') || (*ptr == 'E'))
+			{
+				ptr++;
+				if ((*ptr == '+') || (*ptr == '-')) ptr++;
+				int digit_count2 = 0;
+				while (*ptr)
+				{
+					int ic = (int) *ptr;
+					if (ic < 0) ic += 0xff;
+
+					if (!isdigit (ic)) break;
+					digit_count2++;
+					ptr++;
+				}
+				if (digit_count2 > 0) bValid = true; // optimistic, but a reasonable assumption
+			}
+			else
+			{
+				bValid = true; // optimistic, but a reasonable assumption
+			}
+			number_end = ptr;
 		}
-	      if (digit_count > 0) bValid = true; // optimistic, but a reasonable assumption
-	    }
-	  else
-	    {
-	      bValid = true; // optimistic, but a reasonable assumption
-	    }
-	  number_end = ptr;
-	}
-    }
-
-  if (bValid)
-    {
-      int number_length = number_end - number_start + 1;
-      char* number_buffer = new char[number_length];
-      char* number_ptr = number_buffer;
-      while (number_start < number_end)
-	{
-	  *number_ptr = *number_start;
-	  number_ptr++;
-	  number_start++;
-	}
-      *number_ptr = '\0';
-      bValid = (sscanf (number_buffer,"%f",number) == 1);
-      if (number_buffer) delete[] number_buffer;
     }
 
-  *pptr = ptr;
+	if (bValid)
+    {
+		int number_length = number_end - number_start + 1;
+		char* number_buffer = new char[number_length];
+		char* number_ptr = number_buffer;
+		while (number_start < number_end)
+		{
+			*number_ptr = *number_start;
+			number_ptr++;
+			number_start++;
+		}
+		*number_ptr = '\0';
+		bValid = (sscanf (number_buffer,"%f",number) == 1);
+		if (number_buffer) delete[] number_buffer;
+    }
 
-  return bValid;
+	*pptr = ptr;
+
+	return bValid;
 }
 
 /**
@@ -764,8 +764,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	    }
 	  ptr++;
 	  BNF_wsp_star (&ptr);
-	  float a;
-	  if (!BNF_number (&ptr,&a))
+	  float _a;
+	  if (!BNF_number (&ptr,&_a))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -777,8 +777,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	      bParseError = true;
 	      break;
 	    }
-	  float b;
-	  if (!BNF_number (&ptr,&b))
+	  float _b;
+	  if (!BNF_number (&ptr,&_b))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -790,8 +790,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	      bParseError = true;
 	      break;
 	    }
-	  float c;
-	  if (!BNF_number (&ptr,&c))
+	  float _c;
+	  if (!BNF_number (&ptr,&_c))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -803,8 +803,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	      bParseError = true;
 	      break;
 	    }
-	  float d;
-	  if (!BNF_number (&ptr,&d))
+	  float _d;
+	  if (!BNF_number (&ptr,&_d))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -816,8 +816,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	      bParseError = true;
 	      break;
 	    }
-	  float e;
-	  if (!BNF_number (&ptr,&e))
+	  float _e;
+	  if (!BNF_number (&ptr,&_e))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -829,8 +829,8 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	      bParseError = true;
 	      break;
 	    }
-	  float f;
-	  if (!BNF_number (&ptr,&f))
+	  float _f;
+	  if (!BNF_number (&ptr,&_f))
 	    {
 	      UT_DEBUGMSG(("SVG: parse error: in transform(matrix)\n"));
 	      bParseError = true;
@@ -845,9 +845,9 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	    }
 	  ptr++;
 
-	  UT_DEBUGMSG(("SVG: matrix(%f,%f,%f,%f,%f,%f)\n",a,b,c,d,e,f));
+	  UT_DEBUGMSG(("SVG: matrix(%f,%f,%f,%f,%f,%f)\n",_a,_b,_c,_d,_e,_f));
 
-	  UT_SVGMatrix trans(a,b,c,d,e,f);
+	  UT_SVGMatrix trans(_a,_b,_c,_d,_e,_f);
 	  *currentMatrix = currentMatrix->multiply (trans);
 	}
 

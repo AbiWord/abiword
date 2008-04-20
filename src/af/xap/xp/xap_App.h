@@ -69,6 +69,8 @@ class AV_Listener;
 class GR_EmbedManager;
 class XAP_Module;
 class UT_ScriptLibrary;
+
+
 #define XAP_SD_FILENAME_LENGTH 256
 #define XAP_SD_MAX_FILES 5
 
@@ -79,6 +81,7 @@ class UT_ScriptLibrary;
 */
 struct ABI_EXPORT XAP_StateData
 {
+	XAP_StateData();
 	UT_uint32 iFileCount;
 	char filenames[XAP_SD_MAX_FILES][XAP_SD_FILENAME_LENGTH];
 	UT_uint32 iDocPos[XAP_SD_MAX_FILES];
@@ -180,8 +183,8 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool					canPasteFromClipboard() = 0;
 	virtual void					cacheCurrentSelection(AV_View *) = 0;
-	virtual void				addClipboardFmt (const char * szFormat) {}
-	virtual void				deleteClipboardFmt (const char * szFormat) {}
+	virtual void				addClipboardFmt (const char * /*szFormat*/) {}
+	virtual void				deleteClipboardFmt (const char * /*szFormat*/) {}
 	void						rememberFocussedFrame(void * pJustFocussedFrame);
 	XAP_Frame *					getLastFocussedFrame() const;
 	XAP_Frame *					findValidFrame() const;
@@ -200,7 +203,7 @@ public:
 	void						notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
 	void						notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
-	virtual void					setViewSelection(AV_View * pView) {}; //subclasses override
+	virtual void					setViewSelection(AV_View * /*pView*/) {}; //subclasses override
 	virtual AV_View *				getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
 	
 	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
@@ -225,7 +228,9 @@ public:
 
 	void						setBonoboRunning(void) { m_bBonoboRunning = true; }
 	bool						isBonoboRunning(void) const { return m_bBonoboRunning; }
-	virtual void					getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags) {}
+	virtual void					getDefaultGeometry(UT_uint32& /*width*/, 
+													   UT_uint32& /*height*/, 
+													   UT_uint32& /*flags*/) {}
 
 	const UT_LangRecord *				getKbdLanguage() const { return m_pKbdLang; }
 	void						setKbdLanguage(const char * pszLang);

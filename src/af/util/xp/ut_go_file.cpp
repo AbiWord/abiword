@@ -71,6 +71,8 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "ut_types.h"
+
 #ifndef _
 #define _(X) X
 #endif
@@ -529,7 +531,7 @@ UT_go_url_simplify (const char *uri)
 
 	if (g_ascii_strncasecmp (uri, "file:///", 8) == 0) {
 		char *filename = UT_go_filename_from_uri (uri);
-		char *simp = filename ? UT_go_filename_to_uri (filename) : NULL;
+		simp = filename ? UT_go_filename_to_uri (filename) : NULL;
 		g_free (filename);
 		return simp;
 	}
@@ -1216,7 +1218,7 @@ UT_go_file_create (char const *uri, GError **err)
 }
 
 gboolean
-UT_go_file_remove (char const *uri, GError **err)
+UT_go_file_remove (char const *uri, GError ** err)
 {
 	char *filename;
 
@@ -1231,6 +1233,7 @@ UT_go_file_remove (char const *uri, GError **err)
 
 
 #ifdef GOFFICE_WITH_GNOME
+	UT_UNUSED(err);
 	return (gnome_vfs_unlink (uri) == GNOME_VFS_OK);
 #else
 	g_set_error (err, gsf_output_error_id (), 0,
@@ -1859,6 +1862,7 @@ UT_go_shell_argv_to_glib_encoding (gint argc, gchar const **argv)
 
 	return (gchar const **) args;
 #else
+	UT_UNUSED(argc);
 	return argv;
 #endif
 }

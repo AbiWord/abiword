@@ -93,9 +93,9 @@ void XAP_UnixClipboard::initialize()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
+void XAP_UnixClipboard::common_get_func(GtkClipboard * /*clipboard*/,
 										GtkSelectionData *selection_data,
-										guint info, T_AllowGet which)
+										guint /*info*/, T_AllowGet which)
 {
 	XAP_FakeClipboard & which_clip = ( which == TAG_ClipboardOnly ? m_fakeClipboard : m_fakePrimaryClipboard );
 	
@@ -122,21 +122,23 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
 			
 			if(which_clip.hasFormat(format_name))
             {
-				gchar * data = 0;
+				guchar * data = 0;
 				UT_uint32 data_len = 0;
-                which_clip.getClipboardData(format_name,reinterpret_cast<void**>(&data),&data_len);	 
-                gtk_selection_data_set(selection_data,needle,8,reinterpret_cast<guchar*>(data),data_len);
+
+				guchar **pdata = &data;
+                which_clip.getClipboardData(format_name,reinterpret_cast<void**>(pdata),&data_len);	 
+                gtk_selection_data_set(selection_data,needle,8, data, data_len);
             }
 			break; // success or failure, we've found the needle in the haystack so exit the loop
 		}  
 	}
 }
 
-void  XAP_UnixClipboard::primary_clear_func (GtkClipboard *clipboard)
+void  XAP_UnixClipboard::primary_clear_func (GtkClipboard * /*clipboard*/)
 {
 }
 
-void  XAP_UnixClipboard::clipboard_clear_func (GtkClipboard *clipboard)
+void  XAP_UnixClipboard::clipboard_clear_func (GtkClipboard * /*clipboard*/)
 {
 }
 
@@ -354,6 +356,7 @@ bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom)
 	
 	return found;
 #else
+	UT_UNUSED(tFrom);
 	return true;
 #endif
 }

@@ -462,9 +462,9 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & r) { return NULL;}
-	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
-	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
+	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
+	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
 	virtual UT_uint32 getDeviceResolution(void) const;
 	virtual bool      canQuickPrint(void)

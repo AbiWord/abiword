@@ -124,14 +124,14 @@ public:
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
-	UT_uint32	binarysearch(const void* key, int (*compar)(const void *, const void *));
+	UT_uint32	binarysearch(const void* key, int (*compar)(const void *, const void *)) const;
 
 	bool		copy(const UT_GenericVector<T> *pVec);
 	inline UT_uint32 size() const { return getItemCount(); }
 
 private:
 	UT_sint32		grow(UT_uint32);
-	UT_uint32		binarysearchForSlot(const void* key, compar_fn_t compar);
+	UT_uint32		binarysearchForSlot(const void* key, compar_fn_t compar) const;
 
 	T*			m_pEntries;
 	UT_uint32		m_iCount;
@@ -409,7 +409,7 @@ void UT_GenericVector<T>::qsort(int (*compar)(const void *, const void *))
 // http://tbray.org/ongoing/When/200x/2003/03/22/Binary
 
 template <class T>
-UT_uint32 UT_GenericVector<T>::binarysearch(const void* key, compar_fn_t compar)
+UT_uint32 UT_GenericVector<T>::binarysearch(const void* key, compar_fn_t compar) const
 {
 	UT_sint32 slot = binarysearchForSlot(key, compar);
 
@@ -420,7 +420,7 @@ UT_uint32 UT_GenericVector<T>::binarysearch(const void* key, compar_fn_t compar)
 }
 
 template <class T>
-UT_uint32 UT_GenericVector<T>::binarysearchForSlot(const void* key, compar_fn_t compar)
+UT_uint32 UT_GenericVector<T>::binarysearchForSlot(const void* key, compar_fn_t compar) const
 {
 	UT_sint32 high = m_iCount;
 	UT_sint32 low = -1;

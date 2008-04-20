@@ -46,9 +46,9 @@ XAP_UnixDialog_About::XAP_UnixDialog_About(XAP_DialogFactory * pDlgFactory, XAP_
 XAP_UnixDialog_About::~XAP_UnixDialog_About(void)
 {}
 
-static void onAboutDialogActivate (GtkAboutDialog 	*about,
+static void onAboutDialogActivate (GtkAboutDialog 	* /*about*/,
 								   const gchar 		*link,
-								   gpointer 		 data)
+								   gpointer 		 /*data*/)
 {
 	XAP_App::getApp()->openURL(link);
 }

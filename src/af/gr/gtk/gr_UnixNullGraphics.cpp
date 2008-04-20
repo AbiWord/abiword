@@ -60,7 +60,11 @@ UnixNull_Graphics::~UnixNull_Graphics()
 	_destroyFonts ();
 }
 
-GR_Image* UnixNull_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* UnixNull_Graphics::createNewImage(const char* /*pszName*/, 
+											const UT_ByteBuf* /*pBB*/, 
+											UT_sint32 /*iDisplayWidth*/, 
+											UT_sint32 /*iDisplayHeight*/,
+											GR_Image::GRType /*iType*/)
 {
 	return NULL;
 }
@@ -79,11 +83,11 @@ bool UnixNull_Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-void UnixNull_Graphics::setColor(const UT_RGBColor& clr)
+void UnixNull_Graphics::setColor(const UT_RGBColor& )
 {
 }
 
-void UnixNull_Graphics::getColor(UT_RGBColor& clr)
+void UnixNull_Graphics::getColor(UT_RGBColor& )
 {
 }
 
@@ -92,17 +96,18 @@ GR_Font* UnixNull_Graphics::getGUIFont()
 	return NULL;
 }
 
-void UnixNull_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-				  int iLength, UT_sint32 xoff, UT_sint32 yoff,
-				  int * pCharWidths)
+void UnixNull_Graphics::drawChars(const UT_UCSChar* /*pChars*/, int /*iCharOffset*/,
+								  int /*iLength*/, UT_sint32 /*xoff*/, UT_sint32 /*yoff*/,
+								  int * /*pCharWidths*/)
 {
 }
 
-void UnixNull_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void UnixNull_Graphics::drawLine(UT_sint32 /*x1*/, UT_sint32 /*y1*/, 
+								 UT_sint32 /*x2*/, UT_sint32 /*y2*/)
 {
 }
 
-void UnixNull_Graphics::setLineWidth(UT_sint32 iLineWidth)
+void UnixNull_Graphics::setLineWidth(UT_sint32 )
 {
 }
 
@@ -114,7 +119,8 @@ void UnixNull_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
 {
 }
 
-void UnixNull_Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void UnixNull_Graphics::fillRect(const UT_RGBColor&, UT_sint32, UT_sint32, UT_sint32, 
+								 UT_sint32)
 {
 }
 
@@ -122,7 +128,7 @@ void UnixNull_Graphics::invertRect(const UT_Rect* /*pRect*/)
 {
 }
 
-void UnixNull_Graphics::setClipRect(const UT_Rect* r)
+void UnixNull_Graphics::setClipRect(const UT_Rect* )
 {
 }
 
@@ -151,8 +157,8 @@ bool UnixNull_Graphics::startPrint(void)
 	return true;
 }
 
-bool UnixNull_Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-				  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool UnixNull_Graphics::startPage(const char *, UT_uint32,
+				  bool, UT_uint32, UT_uint32)
 {
 	return true;
 }
@@ -165,23 +171,23 @@ bool UnixNull_Graphics::endPrint(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void UnixNull_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void UnixNull_Graphics::drawImage(GR_Image*, UT_sint32, UT_sint32)
 {
 }
 	
-void UnixNull_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void UnixNull_Graphics::drawRGBImage(GR_Image*, UT_sint32, UT_sint32)
 {
 }
 
-void UnixNull_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void UnixNull_Graphics::drawGrayImage(GR_Image*, UT_sint32, UT_sint32)
 {
 	
 }
-void UnixNull_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void UnixNull_Graphics::drawBWImage(GR_Image*, UT_sint32, UT_sint32)
 {
 }
 
-void UnixNull_Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+void UnixNull_Graphics::setColorSpace(GR_Graphics::ColorSpace)
 {
 }
 
@@ -190,7 +196,7 @@ GR_Graphics::ColorSpace UnixNull_Graphics::getColorSpace(void) const
   return GR_COLORSPACE_COLOR;
 }
 
-void UnixNull_Graphics::setCursor(GR_Graphics::Cursor c)
+void UnixNull_Graphics::setCursor(GR_Graphics::Cursor)
 {
 }
 
@@ -217,12 +223,12 @@ void UnixNull_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
 {
 }
 
-void UnixNull_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
+void UnixNull_Graphics::setPageSize(char*, UT_uint32, UT_uint32)
 {
 }
 
 
-GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo& info)
+GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo&)
 {
 	return new UnixNull_Graphics();
 }

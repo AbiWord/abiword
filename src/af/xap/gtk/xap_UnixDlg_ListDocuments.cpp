@@ -62,10 +62,10 @@ XAP_UnixDialog_ListDocuments::~XAP_UnixDialog_ListDocuments(void)
 {
 }
 
-void XAP_UnixDialog_ListDocuments::s_list_dblclicked(GtkTreeView *treeview,
-												  GtkTreePath *arg1,
-												  GtkTreeViewColumn *arg2,
-												  XAP_UnixDialog_ListDocuments * me)
+void XAP_UnixDialog_ListDocuments::s_list_dblclicked(GtkTreeView * /*treeview*/,
+													 GtkTreePath * /*arg1*/,
+													 GtkTreeViewColumn * /*arg2*/,
+													 XAP_UnixDialog_ListDocuments * me)
 {
 	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_VIEW);
 }

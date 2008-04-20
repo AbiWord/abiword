@@ -345,13 +345,14 @@ UT_sint32 GR_Image::getDisplayHeight(void) const
   return m_iDisplayHeight; 
 }
 
-bool GR_Image::convertToBuffer(UT_ByteBuf** ppBB) const 
+bool GR_Image::convertToBuffer(UT_ByteBuf** /*ppBB*/) const 
 { 
   // default no impl
   return false; 
 }
 
-bool GR_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iWidth, UT_sint32 iHeight) 
+bool GR_Image::convertFromBuffer(const UT_ByteBuf* /*pBB*/, UT_sint32 /*iWidth*/, 
+								 UT_sint32 /*iHeight*/) 
 { 
   // default no impl
   UT_ASSERT_NOT_REACHED ();
@@ -369,7 +370,8 @@ GR_Image::GRType GR_Image::getType() const
 	return GRT_Raster;
 }
 
-bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_Image::render(GR_Graphics * /*pGR*/, UT_sint32 /*iDisplayWidth*/, 
+					  UT_sint32 /*iDisplayHeight*/)
 { 
   UT_ASSERT_NOT_REACHED ();
   return false; 

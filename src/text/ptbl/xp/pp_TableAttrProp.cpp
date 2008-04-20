@@ -173,12 +173,8 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
 	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecTable.getItemCount());
 	UT_sint32 k;
   
- 	//$HACK ???
- 	// VC6 complains about not being able to convert from
- 	// 'const class UT_Vector *' to 'class UT_Vector &'
- 	// so I put in the cast to shut it up
 	UT_uint32 checksum = pMatch->getCheckSum();
- 	k = ((UT_Vector &)m_vecTableSorted).binarysearch(reinterpret_cast<void *>(&checksum), compareAPBinary);
+ 	k = m_vecTableSorted.binarysearch(reinterpret_cast<void *>(&checksum), compareAPBinary);
  	UT_uint32 cksum = pMatch->getCheckSum();
  
  	if (k == -1)

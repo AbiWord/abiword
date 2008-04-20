@@ -232,8 +232,6 @@ void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, char * pDialogName
 // This function constructs and returns the window name of a modeless dialog by
 // concatenating the active frame with the dialog name
 
-	const UT_sint32 count = (UT_sint32) strlen(pDialogName);
-
 	*pWindowName = (char) NULL;
 	UT_UTF8String wn = UT_UTF8String(pDialogName);
 

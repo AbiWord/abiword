@@ -108,7 +108,7 @@ protected:
     font face, font size, etc.
 */
 	
-	virtual bool            _isContentEqual(const pf_Frag & f2) const {return true;}
+	virtual bool            _isContentEqual(const pf_Frag & /*f2*/) const {return true;}
 	
 	PFType					m_type;
 	UT_uint32				m_length;	/* in PT_DocPosition-space */
