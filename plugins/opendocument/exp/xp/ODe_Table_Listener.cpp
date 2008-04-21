@@ -76,10 +76,10 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                                    ODe_ListenerAction& /*rAction*/) {
     const gchar* pValue;
     bool ok;
-    gchar buffer[100];
     const gchar* pVar;
     UT_uint32 i;
     ODe_Style_Style* pStyle;
+    std::string buffer;
     UT_UTF8String styleName;
     UT_GenericVector<UT_UTF8String*> columnStyleNames;
     UT_GenericVector<UT_UTF8String*> rowStyleNames;
@@ -116,63 +116,56 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     ok = pAP->getProperty("table-column-props", pValue);
     if (ok && pValue != NULL) {
         pVar = pValue;
-        i=0;
         while (*pVar != 0) {
             if (*pVar == '/') {
-                buffer[i] = 0; // NULL-terminate the string
-
-                if (buffer[0] != 0 /* or i > 0 */) {
+                if (!buffer.empty()) {
 
                     UT_UTF8String_sprintf(styleName, "%s.col%u",
                                           m_tableName.utf8_str(), m_numColumns+1);
                                           
                     pStyle = m_rAutomatiStyles.addTableColumnStyle(styleName);
-                    pStyle->setColumnWidth(buffer);
+                    pStyle->setColumnWidth(buffer.c_str());
 
                     columnStyleNames.addItem(new UT_UTF8String(styleName));
                     
-                    i=0; // Clear the buffer.
+                    buffer.clear();
                 } else {
                     columnStyleNames.addItem(new UT_UTF8String(""));
                 }
 
                 m_numColumns++;
             } else {
-                buffer[i] = *pVar;
-                i++;
+                buffer += *pVar;
             }
             pVar++;
         }
     }
 
+    buffer.clear();
     m_numRows = 0;
     ok = pAP->getProperty("table-row-heights", pValue);
     if (ok && pValue != NULL) {
         pVar = pValue;
-        i=0;
         while (*pVar != 0) {
             if (*pVar == '/') {
-                buffer[i] = 0; // NULL-terminate the string
-
-                if (buffer[0] != 0 /* or i > 0 */) {
+                if (!buffer.empty()) {
 
                     UT_UTF8String_sprintf(styleName, "%s.row%u",
                                           m_tableName.utf8_str(), m_numRows+1);
 
                     pStyle = m_rAutomatiStyles.addTableRowStyle(styleName);
-                    pStyle->setRowHeight(buffer);
+                    pStyle->setRowHeight(buffer.c_str());
                     
                     rowStyleNames.addItem(new UT_UTF8String(styleName));
 
-                    i=0; // Clear the buffer.
+                    buffer.clear(); // Clear the buffer.
                 } else {
                     rowStyleNames.addItem(new UT_UTF8String(""));
                 }
                 
                 m_numRows++;
             } else {
-                buffer[i] = *pVar;
-                i++;
+                buffer += *pVar;
             }
             pVar++;
         }

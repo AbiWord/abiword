@@ -1389,34 +1389,26 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("table-column-props", pValue);
     if (ok && pValue != NULL) {
-        gchar buffer[100];
-        UT_uint32 i;
+        std::string buffer;
         double tableWidth = 0.0;
         UT_Dimension dimension = DIM_none;
         bool gotDimension = false;
         
         // The table width is the sum of all column widths.
         
-        buffer[0] = 0;
-        i = 0;
         while (*pValue != 0) {
             if (*pValue == '/') {
                 // We've reached the end of a column width
-                
-                buffer[i] = 0; // NULL terminate the string
-                
                 if (!gotDimension) {
-                    dimension = UT_determineDimension(buffer, DIM_none);
+                    dimension = UT_determineDimension(buffer.c_str(), DIM_none);
                     gotDimension = true;
                 }
                 
-                tableWidth += UT_convertDimensionless(buffer);
-                
-                i = 0; // Restart the buffer
+                tableWidth += UT_convertDimensionless(buffer.c_str());
+                buffer.clear();
             } else {
                 // Store the character in the buffer
-                buffer[i] = *pValue;
-                i++;
+                buffer += *pValue;
             }
             pValue++;
         }
