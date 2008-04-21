@@ -164,12 +164,12 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// "Address:"
 	m_hServerLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Address:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
-	15, 55, 51, 15, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERLABEL,  m_hInstance, (LPARAM) pThis);
+	15, 57, 51, 15, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERLABEL,  m_hInstance, (LPARAM) pThis);
 	UT_return_if_fail(m_hServerLabel);
 	
 	// "Port:"
 	m_hPortLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Port:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 
-	15, 75, 47, 15, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTLABEL,  m_hInstance, (LPARAM) pThis);
+	15, 87, 47, 15, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_PORTLABEL,  m_hInstance, (LPARAM) pThis);
 	UT_return_if_fail(m_hPortLabel);
 	
 	/* Radio Button Group */
