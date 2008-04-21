@@ -186,7 +186,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	/* Tabbable */
 	// Entry box for IP address of server
 	// should be disabled when in server mode, and OK should be disabled when this is empty in join mode
-	m_hServerEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hServerEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | ES_AUTOHSCROLL | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
 	80, 55, 121, 20, m_hBox,  (HMENU) ABI_RID_DIALOG_COLLABTCP_SERVERENTRY,  m_hInstance, (LPARAM) pThis);
 	UT_return_if_fail(m_hServerEntry);
 	
