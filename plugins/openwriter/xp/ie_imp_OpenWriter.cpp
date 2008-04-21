@@ -264,6 +264,7 @@ public:
   void parse (const gchar ** props)
   {
     const gchar * val = NULL;
+    const gchar * val2 = NULL;
 
     val = UT_getAttribute ("fo:text-align", props);
     if (val)
@@ -324,10 +325,16 @@ public:
       else
         m_fontSize = UT_String_sprintf ("font-size: %s;", val);
     }
-    
-    if (UT_getAttribute("fo:language", props) && UT_getAttribute("fo:country", props))
-      m_lang = UT_String_sprintf ("lang: %s-%s;", UT_getAttribute("fo:language", props),
-				  UT_getAttribute("fo:country", props));
+
+    val = UT_getAttribute("fo:language", props);
+    val2 = UT_getAttribute("fo:country", props);
+    if (val && val2 && *val && *val2) {
+      if (!strcmp(val, "zxx") && !strcmp(val2, "none")) {
+        m_lang = "lang:-none-;"; // no proofing
+      } else {
+        m_lang = UT_String_sprintf ("lang:%s-%s;", val, val2);
+      }
+    }
     
     val = UT_getAttribute("style:text-position", props);
     if(val) {
