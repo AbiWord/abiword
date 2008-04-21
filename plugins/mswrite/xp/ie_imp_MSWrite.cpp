@@ -365,7 +365,6 @@ int IE_Imp_MSWrite::read_pap ()
 				UT_LocaleTransactor lt (LC_NUMERIC, "C");
 				UT_String_sprintf (propBuffer, "text-align:%s; line-height:%.1f",
 						   text_align[jc], static_cast<float>(dyaLine) / 240.0);
-				propBuffer += tempBuffer;
 
 				/* tabs */
 				if (tab_count) {
