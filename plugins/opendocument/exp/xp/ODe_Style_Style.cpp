@@ -1125,44 +1125,12 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("text-decoration", pValue);
     if (ok && pValue != NULL) {
-        gchar buffer[500];
-        UT_uint32 i,j;
-        bool keepGoing = true;
-        bool finishedWord = false;
-        
-        buffer[0] = 0;
-        i = 0;
-        
-        j = 0;        
-        while (keepGoing) {
-            buffer[i] = pValue[j];
-            
-            if (pValue[j] == 0) {
-                keepGoing = false;
-                finishedWord = true;
-            } else if (isspace(pValue[j])) {
-                finishedWord = true;
-                buffer[i] = 0; // Make a null terminated string
-            }
-            
-            if (finishedWord) {
-                if (!strcmp(buffer, "underline")) {
-                    m_underlineType = "single";
-                    
-                } else if (!strcmp(buffer, "line-through")) {
-                    m_lineThroughType = "single";
-                }
-                finishedWord = false;
-                i = 0;
-                buffer[0] = 0;
-            } else {
-                i++;
-            }
-            
-            j++;
-        }
-        
-    } // if (ok)
+        if (strstr(pValue, "underline"))
+            m_underlineType = "single";
+
+        if (strstr(pValue, "line-through"))
+            m_lineThroughType = "single";
+    }
     
     
     ok = rAP.getProperty("text-position", pValue);
