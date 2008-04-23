@@ -313,6 +313,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
 	m_bParagraphInSection(false),
 	m_bInSection(false),
 	m_bSectionChanged(false),
+	m_bRequireBlock(false),
 	m_iCurrentListLevel(0),
 	m_bInCell(false),
 	m_bHdrFtrOpenCount(0)
@@ -541,6 +542,7 @@ void IE_Imp_WordPerfect::openParagraph(const WPXPropertyList &propList, const WP
 	propsArray[1] = propBuffer.c_str();
 	propsArray[2] = NULL;
 	X_CheckDocumentError(appendStrux(PTX_Block, propsArray));
+	m_bRequireBlock = false;
 
 	if (propList["fo:break-before"])
 	{
@@ -880,6 +882,7 @@ void IE_Imp_WordPerfect::openListElement(const WPXPropertyList &propList, const 
 	listAttribs[attribsCount++] = NULL;
 	
 	X_CheckDocumentError(appendStrux(PTX_Block, listAttribs));
+	m_bRequireBlock = false;
 	
 	// hang text off of a list label
 	getDoc()->appendFmtMark();
@@ -921,6 +924,7 @@ void IE_Imp_WordPerfect::openFootnote(const WPXPropertyList &propList)
 	X_CheckDocumentError(appendStrux(PTX_SectionFootnote,attribs));
 	
 	X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+	m_bRequireBlock = false;
 
 	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
 	propsArray [0] = "type";
@@ -961,6 +965,7 @@ void IE_Imp_WordPerfect::openEndnote(const WPXPropertyList &propList)
 	X_CheckDocumentError(appendStrux(PTX_SectionEndnote,attribs));
 	
 	X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+	m_bRequireBlock = false;
 
 	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
 	propsArray [0] = "type";
@@ -1114,6 +1119,7 @@ void IE_Imp_WordPerfect::closeTable()
 	// FIXME: NEED TO PASS THE CURRENT PROPERTIES INSTEAD OF NULL
 	// NOTE: THIS SUCKS.........
 	X_CheckDocumentError(appendStrux(PTX_Block, NULL));
+	m_bRequireBlock = false;
 }
 
 UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLeft, const float marginRight)
@@ -1123,6 +1129,11 @@ UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLe
 	UT_String myProps("") ;
 	UT_LocaleTransactor lt(LC_NUMERIC, "C");
 	myProps += UT_String_sprintf("columns:%d; page-margin-left:%.4fin; page-margin-right:%.4fin", numColumns, marginLeft, marginRight);
+
+	if(m_bInSection && m_bRequireBlock) // AbiWord will hang on an empty <section>
+	{
+		X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+	}
 	
 	const gchar * propsArray[3];
 	propsArray[0] = "props";
@@ -1131,6 +1142,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLe
 	X_CheckDocumentError(appendStrux(PTX_Section, propsArray));
 	
 	m_bInSection = true;
+	m_bRequireBlock = true;
 
 	m_bSectionChanged = false;
 	

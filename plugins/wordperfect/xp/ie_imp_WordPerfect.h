@@ -189,6 +189,7 @@ private:
     bool								m_bParagraphInSection;
     bool								m_bInSection;
     bool								m_bSectionChanged;
+    bool								m_bRequireBlock;
 
     int							        m_iCurrentListLevel;
     bool								m_bInCell;
