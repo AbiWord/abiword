@@ -54,13 +54,13 @@ ODe_Note_Listener::ODe_Note_Listener(ODe_AutomaticStyles& rAutomatiStyles,
 void ODe_Note_Listener::openFootnote(const PP_AttrProp* pAP,
                                      ODe_ListenerAction& rAction) {
     bool ok;
-    const gchar* pValue;
+    const gchar* pValue = NULL;
     UT_UTF8String str;
     
     ok = pAP->getAttribute("footnote-id", pValue);
-    UT_ASSERT(ok && pValue != NULL);
-    
-    _openNote("footnote", pValue, rAction);
+
+    if (ok && pValue)
+        _openNote("footnote", pValue, rAction);
 }
 
 
@@ -78,13 +78,13 @@ void ODe_Note_Listener::closeFootnote(ODe_ListenerAction& rAction) {
 void ODe_Note_Listener::openEndnote(const PP_AttrProp* pAP,
                                     ODe_ListenerAction& rAction) {
     bool ok;
-    const gchar* pValue;
+    const gchar* pValue = NULL;
     UT_UTF8String str;
     
     ok = pAP->getAttribute("endnote-id", pValue);
-    UT_ASSERT(ok && pValue != NULL);
-    
-    _openNote("endnote", pValue, rAction);
+
+    if (ok && pValue)
+        _openNote("endnote", pValue, rAction);
 }
 
 
@@ -120,6 +120,8 @@ void ODe_Note_Listener::_openNote(const gchar* pNoteClass,
     UT_uint32 noteCitation;
     UT_UTF8String str;
     UT_UTF8String output;
+
+    UT_return_if_fail(pNoteId);
     
     // The note citation will be id+1
     // So id=0 will have a citation "1", and so on.
