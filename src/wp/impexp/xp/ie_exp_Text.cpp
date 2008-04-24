@@ -749,6 +749,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Math:
 				return true;
 
+			case PTO_Annotation:
+				return true;
+
 			default:
 				UT_ASSERT_HARMLESS(UT_TODO);
 				return true;
@@ -886,6 +889,8 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_EndEndnote:
 	case PTX_SectionTOC:
 	case PTX_EndTOC:
+	case PTX_SectionAnnotation:
+	case PTX_EndAnnotation:
 	    return true ;
 
 	default:
