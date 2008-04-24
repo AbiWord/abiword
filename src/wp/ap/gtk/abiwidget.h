@@ -330,8 +330,8 @@ G_BEGIN_DECLS
   gboolean abi_widget_delete_left (AbiWidget * w);
   gboolean abi_widget_delete_right (AbiWidget * w);
 
-  gchar * abi_widget_get_content (AbiWidget * w, const gchar * extention_or_mimetype, const gchar * exp_props, gint* iLength);
-  gchar * abi_widget_get_selection (AbiWidget * w, const gchar * extention_or_mimetype, gint* iLength);
+  gchar * abi_widget_get_content (AbiWidget * w, const gchar * extension_or_mimetype, const gchar * exp_props, gint* iLength);
+  gchar * abi_widget_get_selection (AbiWidget * w, const gchar * extension_or_mimetype, gint* iLength);
     
   /* selection functions */
   gboolean abi_widget_select_bob (AbiWidget * w);
