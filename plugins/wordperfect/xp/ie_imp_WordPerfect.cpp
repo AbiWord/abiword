@@ -905,6 +905,13 @@ void IE_Imp_WordPerfect::openFootnote(const WPXPropertyList &propList)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 
+	if (!m_bInSection)
+	{
+		X_CheckDocumentError(appendStrux(PTX_Section, NULL));
+		X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+		m_bInSection = true;
+	}
+
 	const gchar** propsArray = NULL;
 	
 	UT_String footnoteId;
