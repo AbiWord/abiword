@@ -3495,7 +3495,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	}
 #endif
 
-	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_UnixPangoPrintGraphics *>(pG))->getContext());
+	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_UnixPangoGraphics *>(pG))->getContext());
 
 	PangoRectangle ink_rect;
 	pango_font_get_glyph_extents(m_pf, iGlyphIndx, &ink_rect, NULL);
