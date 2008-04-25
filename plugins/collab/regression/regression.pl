@@ -48,6 +48,6 @@ foreach my $session (@sessions) {
 			print "REGRESSION FAILED: different outcome ($fqsna.diff)!\n";
 		}
 	} else {
-		print "REGRESSION FAILED: missing ouput file ($fqsna)\n";
+		print "REGRESSION FAILED: missing output file ($fqsna)\n";
 	}
 }
