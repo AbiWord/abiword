@@ -86,8 +86,11 @@ static XAP_Menu_Id loadBindingID;
 static XAP_Menu_Id dumpEditMethodsID;
 static XAP_Menu_Id saveBindingID;
 static const char * szLoadBinding = "Load keybindings";
+static const char * szLoadBindingStatus = "Load keybindings from a file";
 static const char * szDumpEditMethods = "Dump edit methods";
+static const char * szDumpEditMethodsStatus = "Dump edit methods to your console";
 static const char * szSaveBinding = "Save keybindings";
+static const char * szSaveBindingStatus = "Save keybindings to your profile directory";
 
 static void LoadBindings_registerMethod () 
 {
@@ -116,7 +119,7 @@ static void LoadBindings_registerMethod ()
 #if defined(DEBUG)
 	// add menu item
 	loadBindingID = pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_FMT_STYLIST,EV_MLF_Normal);	// named _FMT_, but actually in tools menu
-	pFact->addNewLabel(NULL,loadBindingID,szLoadBinding, NULL);
+	pFact->addNewLabel(NULL,loadBindingID,szLoadBinding,szLoadBindingStatus);
 	EV_Menu_Action* myLoadBindingAction = new EV_Menu_Action(
 		loadBindingID,          // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
@@ -131,7 +134,7 @@ static void LoadBindings_registerMethod ()
 	
 	// add menu item
 	dumpEditMethodsID = pFact->addNewMenuAfter("Main",NULL,loadBindingID,EV_MLF_Normal);
-	pFact->addNewLabel(NULL,dumpEditMethodsID,szDumpEditMethods, NULL);
+	pFact->addNewLabel(NULL,dumpEditMethodsID,szDumpEditMethods,szDumpEditMethodsStatus);
 	EV_Menu_Action* myDumpEditMethodsAction = new EV_Menu_Action(
 		dumpEditMethodsID,        // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
@@ -146,7 +149,7 @@ static void LoadBindings_registerMethod ()
 	
 	// add menu item
 	saveBindingID = pFact->addNewMenuAfter("Main",NULL,dumpEditMethodsID,EV_MLF_Normal);
-	pFact->addNewLabel(NULL,saveBindingID,szSaveBinding, NULL);
+	pFact->addNewLabel(NULL,saveBindingID,szSaveBinding,szSaveBindingStatus);
 	EV_Menu_Action* mySaveBindingAction = new EV_Menu_Action(
 		saveBindingID,          // id that the layout said we could use
 		0,                      // no, we don't have a sub menu.
