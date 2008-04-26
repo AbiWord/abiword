@@ -13730,7 +13730,9 @@ Defun(hyperlinkJump)
 	UT_return_val_if_fail(pView,false);
 	
 	fp_Run * pRun = pView->getHyperLinkRun(pView->getPoint());
-	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
+	fp_HyperlinkRun * pHRun = NULL;
+	if(pRun)
+		pHRun = pRun->getHyperlink();
 	
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
 	{
