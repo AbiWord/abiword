@@ -79,11 +79,33 @@ const IE_MimeConfidence * IE_Imp_Applix_Sniffer::getMimeConfidence ()
 UT_Confidence_t IE_Imp_Applix_Sniffer::recognizeContents(const char * szBuf, 
 											  UT_uint32 iNumbytes)
 {
-	// this should be suffecient, at least for my liking
-	const char * magic = "<Applix Words>";
+	UT_uint32 iLinesToRead = 2;  // Only examine the first few lines of the file
+	UT_uint32 iBytesScanned = 0;
+	const char *p = szBuf;
+	const char *magic;
 
-	if (!AX_STRN_CMP(szBuf, magic, strlen(magic)))
-		return UT_CONFIDENCE_PERFECT;
+	while( iLinesToRead-- )
+	{
+		magic = "<Applix Words>";
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+
+		/*  Seek to the next newline:  */
+		while ( *p != '\n' && *p != '\r' )
+		{
+			iBytesScanned++; p++;
+			if( iBytesScanned+2 >= iNumbytes ) return(UT_CONFIDENCE_ZILCH);
+		}
+		/*  Seek past the next newline:  */
+		if ( *p == '\n' || *p == '\r' )
+		{
+			iBytesScanned++; p++;
+			if ( *p == '\n' || *p == '\r' )
+			{
+				iBytesScanned++; p++;
+			}
+		}
+	}
 	return UT_CONFIDENCE_ZILCH;
 }
 
