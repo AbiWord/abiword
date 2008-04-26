@@ -1845,6 +1845,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				}
 				else
 				{
+					UT_return_val_if_fail(m_pAnnContent, true);
 //
 // This is the end of the Annotation marker, signified by no Annotation tag
 //
