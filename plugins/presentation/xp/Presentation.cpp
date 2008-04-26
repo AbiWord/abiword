@@ -83,6 +83,7 @@ Presentation myPresentation;
 EV_EditMouseContext PresentationContextID =  EV_EMC_EMBED;
 static XAP_Menu_Id presentationID;
 static const char * szPresentation = "Presentation";
+static const char * szPresentationStatus = "View the document in presentation mode";
 static const char * szNextSlide = "Next Slide";
 static const char * szPrevSlide = "Previous Slide";
 static XAP_Menu_Id nextSlideID;
@@ -160,7 +161,7 @@ Presentation_registerMethod ()
     UT_DEBUGMSG(("presentationID %d \n",presentationID));
 
 
-    pFact->addNewLabel(NULL,presentationID,szPresentation, NULL);
+    pFact->addNewLabel(NULL,presentationID,szPresentation,szPresentationStatus);
 
     // Create the Action that will be called.
     EV_Menu_Action* myPresentationAction = new EV_Menu_Action(
