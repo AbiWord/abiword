@@ -520,7 +520,9 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					const gchar* pszID = NULL;
 					pAP->getAttribute("id", pszID);
 
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+					fl_DocSectionLayout* pDocSL = NULL;
+					if(pszID)
+						pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					if (pDocSL == NULL)
 					{
 						UT_DEBUGMSG(("Could not find HeaderFooter %s\n",(char*)pszID));

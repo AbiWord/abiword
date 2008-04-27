@@ -702,7 +702,9 @@ void fl_EndnoteLayout::format(void)
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
 	bool bOnPage = (getFirstContainer()->getPage() != NULL);
-	FV_View * pView = m_pLayout->getView();
+	FV_View * pView = NULL;
+	if(m_pLayout)
+		pView = m_pLayout->getView();
 	if(bOnPage && pView && !pView->isLayoutFilling())
 	{
 		getDocSectionLayout()->completeBreakSection();

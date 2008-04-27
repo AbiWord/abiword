@@ -891,7 +891,7 @@ bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_Container*	pAfterContainer)
 {
 	UT_ASSERT(pAfterContainer);
-	UT_ASSERT(pNewContainer);
+	UT_return_val_if_fail(pNewContainer, false);
 
 	UT_sint32 count = countCons();
 	UT_sint32 ndx = findCon(pAfterContainer);

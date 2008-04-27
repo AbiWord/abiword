@@ -3173,6 +3173,9 @@ void FL_DocLayout::removeHdrFtrSection(fl_SectionLayout * pHdrFtrSL)
 
 fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID) const
 {
+	if(!pszHdrFtrID)
+		return NULL;
+
 	const char* pszAtt = NULL;
 
 	fl_DocSectionLayout* pDocSL = m_pFirstSection;
