@@ -844,9 +844,14 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 			return false;
 		}
 		fl_BlockLayout * pPrevBL = pBL;
-		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME)  || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL)
- || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_SHADOW)
- || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_HDRFTR))
+		while(pBL && pBL->myContainingLayout() &&
+		((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_CELL) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_SHADOW) ||
+		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_HDRFTR)))
 		{
 		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
 		     pPrevBL = pBL;
@@ -861,7 +866,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			return false;
 		}
-		UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+		UT_ASSERT(pBL->myContainingLayout() && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
 			  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
 		*pCloseBL = pBL;
 		posAtXY = pBL->getPosition();
