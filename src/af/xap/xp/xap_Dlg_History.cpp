@@ -114,17 +114,35 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				tT = pUUID->getTime();
 				tM = localtime(&tT);
 				s = (char*)g_try_malloc(30);
-				strftime(s,30,"%c",tM);
+				if(!s)
+					return NULL;
+
+				size_t len = strftime(s,30,"%c",tM);
+				if(!len)
+				{
+					FREEP(s);
+					return NULL;
+				}
+
 				return s;
 			}
 			
 		case 3:
-			tT = m_pDoc->getLastSavedTime();
-			tM = localtime(&tT);
-			s = (char*)g_try_malloc(30);
-			strftime(s,30,"%c",tM);
-			return s;
+			{
+				tT = m_pDoc->getLastSavedTime();
+				tM = localtime(&tT);
+				s = (char*)g_try_malloc(30);
+				if(!s)
+					return NULL;
 
+				size_t len = strftime(s,30,"%c",tM);
+				if(!len)
+				{
+					FREEP(s);
+					return NULL;
+				}
+				return s;
+			}
 		case 4:
 			{
 				UT_uint32 iEditTime = m_pDoc->getEditTime();
@@ -205,11 +223,22 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 			return g_strdup(S.c_str());
 			
 		case 1:
-			tT = m_pDoc->getHistoryNthTimeStarted(item);
-			tM = localtime(&tT);
-			s = (char*)g_try_malloc(30);
-			strftime(s,30,"%c",tM);
-			return s;
+			{
+				tT = m_pDoc->getHistoryNthTimeStarted(item);
+				tM = localtime(&tT);
+				s = (char*)g_try_malloc(30);
+				if(!s)
+					return NULL;
+
+				size_t len = strftime(s,30,"%c",tM);
+				if(!len)
+				{
+					FREEP(s);
+					return NULL;
+				}
+
+				return s;
+			}
 
 		case 2:
 			{
