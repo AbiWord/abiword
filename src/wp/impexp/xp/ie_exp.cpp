@@ -250,23 +250,35 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	if(!pBytes || !length)
 	  return 0;
 
-	gsf_output_write(m_fp, length, pBytes);
+	if (!gsf_output_write(m_fp, length, pBytes))
+		return 0;
 	return length;
 }
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
 {
-	int length = strlen(reinterpret_cast<const char *>(sz));
+	size_t length = strlen(reinterpret_cast<const char *>(sz));
 	return (_writeBytes(sz,length)==static_cast<UT_uint32>(length));
 }
 
 bool IE_Exp::_closeFile(void)
 {
 	if (m_fp && m_bOwnsFp) {
+		gboolean res = TRUE;
+
 		if(!gsf_output_is_closed(m_fp))
-			gsf_output_close(m_fp);
+			res = gsf_output_close(m_fp);
+
 		g_object_unref(G_OBJECT(m_fp));
 		m_fp = 0;
+
+		if (!res)
+			{
+				// then remove the unwritten file
+				(void)UT_go_file_remove (m_szFileName, NULL);
+			}
+
+		return (res == TRUE);
 	}
 	return true;
 }
@@ -275,10 +287,13 @@ void IE_Exp::_abortFile(void)
 {
 	// abort the write
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	_closeFile();
-
-	// then remove the unwanted file
-	(void)UT_go_file_remove (m_szFileName, NULL);
+	if (m_fp)
+		{
+			_closeFile();
+			
+			// then remove the unwanted file
+			(void)UT_go_file_remove (m_szFileName, NULL);
+		}
 }
 
 //////////////////////////////////////////////////////////////////
@@ -321,7 +336,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 	UT_Error error = _writeDocument();
 
 	if (UT_OK == error)
-		_closeFile();
+		error = (_closeFile() ? UT_OK : UT_IE_COULDNOTWRITE);
 	else
 		_abortFile();
 
@@ -354,18 +369,7 @@ UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
 
 void IE_Exp::write(const char * sz)
 {
-	if (m_error)
-		return;
-
-	if (!sz)
-		return;
-
-	if (m_pByteBuf)
-		m_error |= (m_pByteBuf->append(reinterpret_cast<const UT_Byte *>(sz),strlen(sz)) != true);
-	else
-		m_error |= ! _writeBytes(reinterpret_cast<const UT_Byte *>(sz));
-
-	return;
+	write(sz, strlen(sz));
 }
 
 /*! 
