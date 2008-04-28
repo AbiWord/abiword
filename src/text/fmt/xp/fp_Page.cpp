@@ -667,7 +667,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
-	if(pNewFirstCon->getContainerType() == FP_CONTAINER_LINE)
+	if(pNewFirstCon && pNewFirstCon->getContainerType() == FP_CONTAINER_LINE)
 	  {
 	    fp_Line * pFLine = static_cast<fp_Line *>(pNewFirstCon);
 	    UT_ASSERT(pFLine->getBlock() && (pFLine->getBlock()->findLineInBlock(pFLine) >= 0));
