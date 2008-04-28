@@ -151,6 +151,6 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_IMAGE_DATAID           (static_cast<const gchar *>("dataid"))
 #define PT_IMAGE_TITLE           (static_cast<const gchar *>("title"))
 #define PT_IMAGE_DESCRIPTION           (static_cast<const gchar *>("alt"))
-
+#define PT_ANNOTATION_NUMBER     (static_cast<const gchar *>("annotation"))
 
 #endif /* PT_TYPES_H */

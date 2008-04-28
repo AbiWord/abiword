@@ -506,6 +506,23 @@ public:
 	UT_sint32             m_iNumRows;
 };
 
+//
+// Little class to be used for importing annotations
+//
+class ABI_EXPORT ABI_RTF_Annotation
+{
+ public:
+	ABI_RTF_Annotation();
+	virtual ~ABI_RTF_Annotation() {}
+	UT_sint32          m_iAnnNumber;
+	UT_UTF8String      m_sAuthor;
+	UT_UTF8String      m_sDate;
+	UT_UTF8String      m_sTitle;
+	pf_Frag *          m_pInsertFrag;
+	PT_DocPosition     m_Annpos;
+	UT_sint32          m_iRTFLevel;
+};
+
 // The importer/reader for Rich Text Format files
 
 class ABI_EXPORT IE_Imp_RTF_Sniffer : public IE_ImpSniffer
@@ -593,6 +610,7 @@ private:
 	bool ParseRTFKeyword();
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
+	bool ReadContentFromFile(UT_UTF8String & str);
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
 	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, 
@@ -746,6 +764,7 @@ private:
  private:
 
 	void           HandleNote();
+	void           HandleAnnotation();
 	void           HandleNoteReference();
 // Shape handlers in ie_imp_RTFObjectsAndPicts.cpp
 	void           HandleShape(void);
@@ -915,6 +934,10 @@ private:
 	int m_iDefaultFontNumber;        // Document default font.
 	PT_DocPosition        m_dPosBeforeFootnote;
 	bool                  m_bMovedPos;
+	ABI_RTF_Annotation *  m_pAnnotation;
+	pf_Frag *             m_pDelayedFrag; // insert before this frag if non-null
+	PT_DocPosition        m_posSavedDocPosition;
+	bool                  m_bInAnnotation;
 };
 
 #endif /* IE_IMP_RTF_H */

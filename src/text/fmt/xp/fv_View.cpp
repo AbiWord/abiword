@@ -12504,7 +12504,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 		return false;
 	}
 	const gchar * pAttr[4];
-	pAttr[0] = "Annotation";
+	pAttr[0] = PT_ANNOTATION_NUMBER;
 	UT_UTF8String sNum;
 	UT_UTF8String_sprintf(sNum,"%d",iAnnotation);
 	pAttr[1] = sNum.utf8_str();

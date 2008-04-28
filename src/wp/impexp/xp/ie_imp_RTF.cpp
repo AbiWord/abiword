@@ -506,6 +506,17 @@ ABI_Paste_Table::~ABI_Paste_Table(void)
 {
 }
 
+ABI_RTF_Annotation::ABI_RTF_Annotation(void):
+	m_iAnnNumber(0),
+	m_sAuthor(""),
+	m_sDate(""),
+	m_sTitle(""),
+	m_pInsertFrag(NULL),
+	m_Annpos(0),
+	m_iRTFLevel(0)
+{
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 
 RTF_msword97_list::RTF_msword97_list(IE_Imp_RTF * pie_rtf)
@@ -1447,8 +1458,13 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_szDefaultEncoding(NULL),
 	m_iDefaultFontNumber(-1),
 	m_dPosBeforeFootnote(0),
-	m_bMovedPos(true)
+	m_bMovedPos(true),
+	m_pAnnotation(NULL),
+	m_pDelayedFrag(NULL),
+	m_posSavedDocPosition(0),
+	m_bInAnnotation(false)
 {
+	UT_DEBUGMSG(("New ie_imp_RTF %x \n",this));
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -1467,13 +1483,17 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 IE_Imp_RTF::~IE_Imp_RTF()
 {
 	// Empty the state stack
+	UT_DEBUGMSG(("In RTF destructor %x \n",this));
 	while (m_stateStack.getDepth() > 0)
 	{
 		RTFStateStore* pItem = NULL;
 		m_stateStack.pop((void**)(&pItem));
+		UT_DEBUGMSG(("Deleteing item %x in RTF destructor \n",pItem));
 		delete pItem;
 	}
+	UT_DEBUGMSG(("Closing pastetable In RTF destructor %x \n",this));
 	closePastedTableIfNeeded();
+	UT_DEBUGMSG(("Deleting fonts In RTF destructor %x \n",this));
 
 	// and the font table (can't use the macro as we allow NULLs in the vector
 	UT_sint32 size = m_fontTable.getItemCount();
@@ -1485,6 +1505,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	}
 
 	// and the styleName table.
+	UT_DEBUGMSG(("Deleting styles In RTF destructor %x \n",this));
 
 	size = m_styleTable.getItemCount();
 	for (i = 0; i < size; i++)
@@ -1492,6 +1513,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 		char * pItem = m_styleTable.getNthItem(i);
 		FREEP(pItem);
 	}
+	UT_DEBUGMSG(("Purging In RTF destructor %x \n",this));
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
@@ -1614,7 +1636,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		bool ok =true;
 		if(!bUseInsertNotAppend())
 		{
-			if(m_bNoteIsFNote)
+			if(m_bNoteIsFNote)  
 				getDoc()->appendStrux(PTX_EndFootnote,NULL);
 			else
 				getDoc()->appendStrux(PTX_EndEndnote,NULL);
@@ -2299,6 +2321,81 @@ void IE_Imp_RTF::HandleNote(void)
 }
 
 
+void IE_Imp_RTF::HandleAnnotation(void)
+{
+	UT_return_if_fail(m_pAnnotation);
+	if(m_bInAnnotation)
+		{
+			UT_DEBUGMSG(("Recursive call to HandleAnnotion \n"));
+			return;
+		}
+	m_bInAnnotation = true;
+	UT_String sAnnNum;
+	UT_String_sprintf(sAnnNum,"%d",m_pAnnotation->m_iAnnNumber);
+	const char * ann_attrs[5] = {NULL,NULL,NULL,NULL,NULL};
+	ann_attrs[0] = "annotation-id";
+	ann_attrs[1] = sAnnNum.c_str();
+	ann_attrs[2] = 0;
+	ann_attrs[3] = 0;
+	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_sint32 i = 0;
+	if(m_pAnnotation->m_sAuthor.size() > 0)
+	{
+		pszAnn[i] = "annotation-author";
+		i++;
+		pszAnn[i] = m_pAnnotation->m_sAuthor.utf8_str();
+		i++;
+	}
+	if(m_pAnnotation->m_sTitle.size() > 0)
+	{
+		pszAnn[i] = "annotation-title";
+		i++;
+		pszAnn[i] = m_pAnnotation->m_sTitle.utf8_str();
+		i++;
+	}
+	if(m_pAnnotation->m_sDate.size() > 0)
+	{
+		pszAnn[i] = "annotation-date";
+		i++;
+		pszAnn[i] = m_pAnnotation->m_sDate.utf8_str();
+		i++;
+	}
+	if(!bUseInsertNotAppend())
+	{
+		m_pDelayedFrag = m_pAnnotation->m_pInsertFrag->getNext();
+		UT_DEBUGMSG(("Delayed Frag set to %x \n",m_pDelayedFrag));
+		ann_attrs[2] = "properties";
+		UT_sint32 k = 0;
+		UT_UTF8String sProperties;
+		for(k=0; k<i;k++)
+		{
+			sProperties += pszAnn[k];
+			k++;
+			sProperties += ":";
+			sProperties += pszAnn[k];
+			k++;
+			if(k < i)
+				sProperties += ";";
+		}
+		ann_attrs[3] = sProperties.utf8_str();
+		UT_DEBUGMSG(("Appending annotation strux, props are %s \n", sProperties.utf8_str()));
+		FlushStoredChars();
+		getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_SectionAnnotation,ann_attrs);
+		getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+	}
+	else
+	{
+		m_posSavedDocPosition = m_dposPaste;
+		m_dposPaste = m_pAnnotation->m_Annpos;
+		insertStrux(PTX_SectionAnnotation,ann_attrs,pszAnn);
+		UT_DEBUGMSG((" Insert Block at 7 \n"));
+		markPasteBlock();
+		insertStrux(PTX_Block);
+	}
+}
+
+
+
 UT_Error IE_Imp_RTF::_parseText()
 {
 	bool ok = true;
@@ -2366,7 +2463,11 @@ UT_Error IE_Imp_RTF::_parseText()
 					continue;
 				}
 			}
-			
+			else if(m_pAnnotation && (m_pAnnotation->m_iRTFLevel > 0) && !m_bInAnnotation && c != '\\')
+			{
+				HandleAnnotation();
+				continue;
+			}
 			
 			switch (c)
 			{
@@ -2754,8 +2855,14 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		if(ok && m_bCellBlank && (getTable() != NULL))
 		{
 			xxx_UT_DEBUGMSG(("Append block 10 \n"));
-
-			getDoc()->appendStrux(PTX_Block,NULL);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+			}
+			else
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+			}
 			m_bSectionHasPara = true;
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -2764,19 +2871,19 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		{
 			xxx_UT_DEBUGMSG(("Append block 11 \n"));
 
-			getDoc()->appendStrux(PTX_Block,NULL);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+			}
+			else
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+			}
 			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
 		}
-//		else if( ok && m_bEndFrameOpen)
-//		{
-//			UT_DEBUGMSG(("Append block for EndFrameOpen 12 \n"));
-// CVS CONFLICT			m_bSectionHasPara = true;
-//			getDoc()->appendStrux(PTX_Block,NULL);
-//		}
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
-//		m_bEndFrameOpen = false;
 	}
 	if( ok && m_bInFootnote && (m_stateStack.getDepth() < m_iDepthAtFootnote))
 	{
@@ -2803,6 +2910,28 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
 	}
+	if( ok && m_bInAnnotation && m_pAnnotation && (m_stateStack.getDepth() < m_pAnnotation->m_iRTFLevel))
+		{
+			//
+			// Wind up the annotation
+			m_bInAnnotation = false;
+			UT_DEBUGMSG(("Finishing up the annotation depth %d RTFlevel %d \n",m_stateStack.getDepth(), m_pAnnotation->m_iRTFLevel ));
+			if(!bUseInsertNotAppend())
+			{
+				FlushStoredChars();
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_EndAnnotation,NULL);
+					
+			}
+			else
+			{
+				insertStrux(PTX_EndAnnotation);
+			}
+			DELETEP(m_pAnnotation);
+			m_pDelayedFrag = NULL;
+			m_dposPaste = m_posSavedDocPosition;
+			m_posSavedDocPosition = 0;
+			UT_DEBUGMSG(("Annotation insert complete \n"));
+		}
 //	if( ok && m_bFrameOpen && (static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame))	
 //	{
 //		HandleEndShape();
@@ -2993,10 +3122,10 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
     // Read the numeric parameter (if there is one)
 	// According to the specs, a dttm parameter (e.g. \revdttm), which is a long, has the
 	// individual bytes emited as ASCII characters
-	if (isdigit(ch))
+	if (isdigit(ch) || ch == ' ')
 	{
 		*pParamUsed = true;
-		while (isdigit(ch))
+		while (isdigit(ch) || ch == ' ')
 		{
 			// Avoid buffer overflow
 			if (count == max_param )
@@ -3004,8 +3133,8 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
 				UT_DEBUGMSG(("Parameter too large. Bogus RTF!\n"));
 				return false;
 			}
-
-			parameter[count++] = ch;
+			if(ch != ' ')
+				parameter[count++] = ch;
 			if (!ReadCharFromFileWithCRLF(&ch))
 				return false;
 		}
@@ -3055,6 +3184,22 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 	}
 
 	return ok;
+}
+
+bool IE_Imp_RTF::ReadContentFromFile(UT_UTF8String & str)
+{
+	unsigned char* pCh;
+	do
+	{
+		if (ReadCharFromFileWithCRLF(pCh) == false)
+		{
+			return false;
+		}
+		if(*pCh != 10 &&  *pCh != 13 && *pCh != '}')
+			str += *pCh;
+	} while ((*pCh == 10  ||  *pCh == 13)  || (*pCh != '}'));
+	return true;
+
 }
 
 /*!
@@ -3422,8 +3567,15 @@ bool IE_Imp_RTF::HandleField()
 			{
 				xxx_UT_DEBUGMSG(("Append block 14 \n"));
 
-				getDoc()->appendStrux(PTX_Block,NULL);
-				m_bCellBlank = false;
+				if(m_pDelayedFrag)
+				{
+					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				}
+				else
+				{
+					getDoc()->appendStrux(PTX_Block,NULL);
+				}	
+			m_bCellBlank = false;
 				m_bEndTableOpen = false;
 			}
 			getDoc()->appendObject(PTO_Hyperlink, NULL);
@@ -3631,7 +3783,14 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 				{
 					UT_DEBUGMSG(("Append block 15 \n"));
 
-					getDoc()->appendStrux(PTX_Block,NULL);
+					if(m_pDelayedFrag)
+					{
+						getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+					}
+					else
+					{
+						getDoc()->appendStrux(PTX_Block,NULL);
+					}
 					m_bCellBlank = false;
 					m_bEndTableOpen = false;
 				}
@@ -5179,6 +5338,8 @@ bool IE_Imp_RTF::HandleStarKeyword()
 			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 							MAX_KEYWORD_LEN))
 			{
+
+				xxx_UT_DEBUGMSG(("actual keyword_star %s read after * \n",keyword_star));
 				RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(keyword_star));
 				switch (keywordID) {
 				case RTF_KW_ol:
@@ -5440,8 +5601,136 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				}
 				case RTF_KW_revtbl:
 					return ReadRevisionTable();
+				case RTF_KW_atnauthor:
+				{
+					//
+					// Annotation Author
+					UT_DEBUGMSG(("Handling atnauthor keyword \n"));
+					if(NULL == m_pAnnotation)
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					UT_UTF8String sContent;
+					ReadContentFromFile(sContent);
+					UT_DEBUGMSG(("atnauthor content %s \n", sContent.utf8_str()));
+					m_pAnnotation->m_sAuthor = sContent.utf8_str();
+					return true;
+				}
+				case RTF_KW_atrfend:
+				{
+					//
+					// End of Annotated region
+					UT_DEBUGMSG(("found annotation end \n"));
+					if(NULL == m_pAnnotation)
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					if(m_pAnnotation->m_iAnnNumber != parameter_star)
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					UT_String sAnnNum;
+					UT_String_sprintf(sAnnNum,"%d",m_pAnnotation->m_iAnnNumber);
+					const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
+					attr[1] = sAnnNum.c_str();
+					UT_DEBUGMSG(("found annotation end id %d  \n",m_pAnnotation->m_iAnnNumber));
+
+					if(!bUseInsertNotAppend())
+					{
+						FlushStoredChars();
+						getDoc()->appendObject(PTO_Annotation, NULL);
+					}
+					else
+					{
 				
+						bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, NULL,NULL);
+						
+						if(bRet)
+						{
+							m_dposPaste++;
+							bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
+							m_dposPaste++;
+						}
+						
+					}
+					return true;
+				}
+				case RTF_KW_atndate:
+				{
+					//
+					// date of the annotation
+					UT_DEBUGMSG(("Found annotation date %d \n",m_pAnnotation));
+					if(NULL == m_pAnnotation)
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					UT_UTF8String sContent;
+					ReadContentFromFile(sContent);
+					UT_DEBUGMSG(("annotation date is %s \n",sContent.utf8_str()));
+					m_pAnnotation->m_sDate = sContent.utf8_str();
+					return true;
+				}
+				case RTF_KW_annotation:
+				{
+					//
+					// Annotation content
+					UT_DEBUGMSG(("Found annotation content mP-Annotation %x \n",m_pAnnotation));
+					if(m_pAnnotation == NULL)
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return false;
+					}
+					//					if(m_pAnnotation->m_iAnnNumber != parameter_star)
+					//	{
+					//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					//	return false;
+					//	}
+					m_pAnnotation->m_iRTFLevel = m_stateStack.getDepth()-1;
+					UT_DEBUGMSG(("Found annotation content depth %d \n",m_pAnnotation->m_iRTFLevel));
+					return true;
+				}
+				case RTF_KW_atnref:
+				{
+					//
+					// Annotation reference number
+				}
+				break;
+				case RTF_KW_atrfstart:
+				{
+					//
+					// Start of Annotated region
+					if(m_pAnnotation == NULL)
+						m_pAnnotation = new ABI_RTF_Annotation();
+					UT_DEBUGMSG(("created m_pAnnotation %x \n",m_pAnnotation));
+					m_pAnnotation->m_iAnnNumber = parameter_star;
+					UT_String sAnnNum;
+					UT_String_sprintf(sAnnNum,"%d",parameter_star);
+					const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
+					attr[1] = sAnnNum.c_str();
+					UT_DEBUGMSG(("HAndling atrfstart number %d \n",parameter_star));
+					if(!bUseInsertNotAppend())
+					{
+						FlushStoredChars();
+						getDoc()->appendObject(PTO_Annotation, attr);
+						//
+						// Remember the annotation field frag. We'll insert
+						// the annotation content after this
+						//
+						m_pAnnotation->m_pInsertFrag = getDoc()->getLastFrag();
+					}
+					else
+					{
+						m_pAnnotation->m_Annpos = m_dposPaste;
+						
+					}
+					return true;
+				}
 				default:
+
 					UT_DEBUGMSG (("RTF: default case star keyword %s not handled\n", keyword_star));
 					break;
 				}
@@ -5751,11 +6040,22 @@ bool IE_Imp_RTF::_appendSpan()
 					if(i - iLast > 0)
 					{
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
-						if(!getDoc()->appendFmt(propsArray))
-							return false;
+						if(m_pDelayedFrag)
+						{
+							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+									return false;
+								UT_DEBUGMSG(("Appending span before %x \n",m_pDelayedFrag));
+								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p, i- iLast))
+									return false;
+						}
+						else
+						{
+							if(!getDoc()->appendFmt(propsArray))
+								return false;
 					
-						if(!getDoc()->appendSpan(p, i - iLast))
-							return false;
+							if(!getDoc()->appendSpan(p, i - iLast))
+								return false;
+						}
 					}
 					m_iAutoBidiOverride = UT_BIDI_LTR;
 					propsArray[iPropOffset] = pProps;
@@ -5769,11 +6069,21 @@ bool IE_Imp_RTF::_appendSpan()
 					if(i - iLast > 0)
 					{
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
-						if(!getDoc()->appendFmt(propsArray))
-							return false;
+						if(m_pDelayedFrag)
+						{
+							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+									return false;
+								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,i - iLast))
+									return false;
+						}
+						else
+						{
+								if(!getDoc()->appendFmt(propsArray))
+									return false;
 
-						if(!getDoc()->appendSpan(p, i - iLast))
-							return false;
+								if(!getDoc()->appendSpan(p, i - iLast))
+									return false;
+						}
 					}
 					m_iAutoBidiOverride = UT_BIDI_RTL;
 					propsArray[iPropOffset] = pProps;
@@ -5790,11 +6100,21 @@ bool IE_Imp_RTF::_appendSpan()
 					if(i - iLast > 0)
 					{
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
-						if(!getDoc()->appendFmt(propsArray))
-							return false;
+						if(m_pDelayedFrag)
+						{
+							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+									return false;
+								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,i - iLast))
+									return false;
+						}
+						else
+						{
+							    if(!getDoc()->appendFmt(propsArray))
+									return false;
 					
-						if(!getDoc()->appendSpan(p, i - iLast))
-							return false;
+								if(!getDoc()->appendSpan(p, i - iLast))
+									return false;
+						}
 					}
 					m_iAutoBidiOverride = UT_BIDI_UNSET;
 
@@ -5820,29 +6140,41 @@ bool IE_Imp_RTF::_appendSpan()
 		if(iLen - iLast > 0)
 		{
 			p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
-			if(!getDoc()->appendFmt(propsArray))
-				return false;
+			if(m_pDelayedFrag)
+			{
+				if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+					return false;
+				if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,iLen - iLast))
+				   return false;
+			}
+			else
+			{
+				if(!getDoc()->appendFmt(propsArray))
+					return false;
 					
-			if(!getDoc()->appendSpan(p, iLen - iLast))
-				return false;
+				if(!getDoc()->appendSpan(p, iLen - iLast))
+					return false;
+			}
 		}
 	}
 	else
 	{
 		// not a bidi doc, just do it the simple way
 		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
-		if(!getDoc()->appendFmt(propsArray))
-			return false;
-#if DEBUG
-#if 0
-		UT_UTF8String sDebug;
-		sDebug.appendUCS4(p,iLen);
-		UT_DEBUGMSG(("Appending Span |%s| \n",sDebug.utf8_str()));
-#endif
-#endif
-		if(!getDoc()->appendSpan(p, iLen))
-			return false;
-		
+		if(m_pDelayedFrag)
+		{
+			if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+				return false;
+			if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,iLen))
+			   return false;
+		}
+		else
+		{
+			if(!getDoc()->appendFmt(propsArray))
+				return false;
+			if(!getDoc()->appendSpan(p, iLen))
+				return false;
+		}
 	}
 	
 	return true;
@@ -5948,7 +6280,9 @@ bool IE_Imp_RTF::_insertSpan()
 													propsArray,NULL))
 							return false;
 						
-						m_dposPaste += i - iLast;						
+						m_dposPaste += i - iLast;	
+						if(m_posSavedDocPosition > 0)
+							m_posSavedDocPosition += i - iLast;
 					}
 					m_iAutoBidiOverride = UT_BIDI_LTR;
 					propsArray[iPropOffset] = pProps;
@@ -5968,8 +6302,9 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->changeSpanFmt(PTC_SetFmt, m_dposPaste,m_dposPaste+ i - iLast,
 													propsArray,NULL))
 							return false;
-						
-						m_dposPaste += i - iLast;						
+						m_dposPaste += i - iLast;
+						if(m_posSavedDocPosition > 0)
+							m_posSavedDocPosition  += i - iLast;
 					}
 					m_iAutoBidiOverride = UT_BIDI_RTL;
 					propsArray[iPropOffset] = pProps;
@@ -5994,6 +6329,8 @@ bool IE_Imp_RTF::_insertSpan()
 							return false;
 						
 						m_dposPaste += i - iLast;						
+						if(m_posSavedDocPosition > 0)
+							m_posSavedDocPosition  += i - iLast;
 					}
 					m_iAutoBidiOverride = UT_BIDI_UNSET;
 					if(bRevised)
@@ -6026,6 +6363,8 @@ bool IE_Imp_RTF::_insertSpan()
 				return false;
 						
 			m_dposPaste += iLen - iLast;						
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition  += iLen - iLast;
 		}
 	}
 	else
@@ -6036,6 +6375,8 @@ bool IE_Imp_RTF::_insertSpan()
 		{
 			getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition++;
 		}
 		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
 			return false;
@@ -6045,6 +6386,8 @@ bool IE_Imp_RTF::_insertSpan()
 			return false;
 						
 		m_dposPaste += iLen;						
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition  += iLen;
 	}
 	
 	return true;
@@ -6107,8 +6450,18 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		
 		if (!bUseInsertNotAppend())	// if we are reading from a file or parsing headers and footers
 		{
-			ok = getDoc()->appendFmt(propsArray);
-			ok = ok && getDoc()->appendFmtMark();
+			if(m_pDelayedFrag)
+			{
+				if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+					ok = getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray);
+				ok = ok && getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag);
+			}
+			else
+			{
+				if(!getDoc()->appendFmt(propsArray))
+					ok = getDoc()->appendFmt(propsArray);
+				ok = ok && getDoc()->appendFmtMark();
+			}
 		}
 		else								// else we are pasting from a buffer
 		{
@@ -6795,7 +7148,15 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		if(bAbiList || bWord97List )
 		{
 			xxx_UT_DEBUGMSG(("Append block 1 \n"));
-			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
+			bool bret = false;
+			if(m_pDelayedFrag)
+			{
+				bret = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs);
+			}
+			else
+			{
+				bret = getDoc()->appendStrux(PTX_Block, attribs);
+			}
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
 			m_newParaFlagged = false;
@@ -6831,7 +7192,15 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		else
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
-			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
+			bool ok = false;
+			if(m_pDelayedFrag)
+			{
+				ok = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs);
+			}
+			else
+			{
+				ok = getDoc()->appendStrux(PTX_Block, attribs);
+			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
@@ -6858,6 +7227,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
 			m_dposPaste++;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition++;
 			PL_StruxDocHandle sdh_cur;
 			UT_uint32 j;
 			fl_AutoNum * pAuto = getDoc()->getListByID(id);
@@ -7265,6 +7636,8 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		if (bSuccess)
 		{
 			m_dposPaste--;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition--;
 			XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 			if(pFrame == NULL)
 			{
@@ -9002,14 +9375,25 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 		{
 			getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition++;
 		}
 
 		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);
 		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	else
 	{
-		getDoc()->appendObject(PTO_Math,attrs);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Math,attrs);
+			}
+			else
+			{
+				getDoc()->appendObject(PTO_Math,attrs);
+			}
 	}
 	return true;
 }
@@ -9052,14 +9436,25 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 		{
 			getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition++;
 		}
 
 		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs,NULL);
 		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	else
 	{
-		getDoc()->appendObject(PTO_Embed,attrs);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Embed,attrs);
+			}
+			else
+			{
+				getDoc()->appendObject(PTO_Embed,attrs);
+			}
 	}
 	return true;
 }
@@ -9219,6 +9614,8 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 			m_newParaFlagged = true;
 			FlushStoredChars(true);
 			m_dposPaste--;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition--;
 		}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
@@ -9496,6 +9893,8 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar
 		(pts != PTX_EndTOC))
 	{
 		m_dposPaste--;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition--;
 	}
 	if(bDoExtraBlock && (pts == PTX_SectionTable))
 	{
@@ -9589,10 +9988,14 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar
 	}
 	res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
 	m_dposPaste++;
+	if(m_posSavedDocPosition > 0)
+		m_posSavedDocPosition++;
 	if(	bInHyperlink)
 	{
 		m_dposPaste++;
 		m_iHyperlinkOpen =0;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	m_bStruxInserted = true;
 	return res;
@@ -10148,7 +10551,14 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		}
 		if(!bUseInsertNotAppend()) 
 		{
-			getDoc()->appendStrux(PTX_Block,NULL);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+			}
+			else
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+			}
 		}
 		else
 		{
@@ -10163,7 +10573,14 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 
 	if (!bUseInsertNotAppend()) 
 	{
-		getDoc()->appendObject(PTO_Bookmark, props);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Bookmark,props);
+			}
+			else
+			{
+				getDoc()->appendObject(PTO_Bookmark, props);
+			}
 	}
 	else 
 	{
@@ -10174,6 +10591,8 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 		}
 		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, NULL);
 		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	return true;
 }
@@ -10347,12 +10766,25 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
 			UT_DEBUGMSG(("Append block 5 \n"));
-
-			getDoc()->appendStrux(PTX_Block,NULL);
+			if(m_pDelayedFrag)
+			{
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+			}
+			else
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+			}
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
 		}
-		getDoc()->appendObject(PTO_Field, propsArray);
+		if(m_pDelayedFrag)
+	    {
+			getDoc()->insertObjectBeforeFrag(m_pDelayedFrag,PTO_Field, propsArray);
+		}
+		else
+		{
+			getDoc()->appendObject(PTO_Field, propsArray);
+		}
 	}
 	else
 	{
@@ -10395,6 +10827,8 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 		}
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
+		if(m_posSavedDocPosition > 0)
+			m_posSavedDocPosition++;
 	}
 	g_free(propsArray);
 	m_bFieldRecognized = true;
@@ -10541,6 +10975,8 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		{
 			getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
+			if(m_posSavedDocPosition > 0)
+				m_posSavedDocPosition++;
 		}
 	}
 	m_pPasteBuffer = NULL;
