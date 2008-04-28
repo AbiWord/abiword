@@ -30,13 +30,16 @@
 void _UT_OutputMessage(const char *s, ...)
 {
 #ifdef DEBUG
+#define DEBUG_MSG "DEBUG: "
 	va_list marker;
 
 	va_start(marker, s);
 
-	g_logv(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, s, marker);
+	fwrite(DEBUG_MSG, 1, strlen(DEBUG_MSG), stderr);
+	vfprintf(stderr, s, marker);
 
 	va_end(marker);
+#undef DEBUG_MSG
 #else
 	UT_UNUSED(s);
 #endif
