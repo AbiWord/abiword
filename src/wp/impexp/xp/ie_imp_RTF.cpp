@@ -1488,7 +1488,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	{
 		RTFStateStore* pItem = NULL;
 		m_stateStack.pop((void**)(&pItem));
-		UT_DEBUGMSG(("Deleteing item %x in RTF destructor \n",pItem));
+		UT_DEBUGMSG(("Deleting item %x in RTF destructor \n",pItem));
 		delete pItem;
 	}
 	UT_DEBUGMSG(("Closing pastetable In RTF destructor %x \n",this));
@@ -2364,7 +2364,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	{
 		m_pDelayedFrag = m_pAnnotation->m_pInsertFrag->getNext();
 		UT_DEBUGMSG(("Delayed Frag set to %x \n",m_pDelayedFrag));
-		ann_attrs[2] = "properties";
+		ann_attrs[2] = PT_PROPS_ATTRIBUTE_NAME;
 		UT_sint32 k = 0;
 		UT_UTF8String sProperties;
 		for(k=0; k<i;k++)
@@ -3188,16 +3188,16 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 
 bool IE_Imp_RTF::ReadContentFromFile(UT_UTF8String & str)
 {
-	unsigned char* pCh;
+	unsigned char pCh = 0;
 	do
 	{
-		if (ReadCharFromFileWithCRLF(pCh) == false)
+		if (ReadCharFromFileWithCRLF(&pCh) == false)
 		{
 			return false;
 		}
-		if(*pCh != 10 &&  *pCh != 13 && *pCh != '}')
-			str += *pCh;
-	} while ((*pCh == 10  ||  *pCh == 13)  || (*pCh != '}'));
+		if(pCh != 10 &&  pCh != 13 && pCh != '}')
+			str += pCh;
+	} while ((pCh == 10  ||  pCh == 13)  || (pCh != '}'));
 	return true;
 
 }
@@ -5678,7 +5678,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					//
 					// Annotation content
-					UT_DEBUGMSG(("Found annotation content mP-Annotation %x \n",m_pAnnotation));
+					UT_DEBUGMSG(("Found annotation content m_pAnnotation %x \n",m_pAnnotation));
 					if(m_pAnnotation == NULL)
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5711,7 +5711,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					UT_String_sprintf(sAnnNum,"%d",parameter_star);
 					const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
 					attr[1] = sAnnNum.c_str();
-					UT_DEBUGMSG(("HAndling atrfstart number %d \n",parameter_star));
+					UT_DEBUGMSG(("Handling atrfstart number %d \n",parameter_star));
 					if(!bUseInsertNotAppend())
 					{
 						FlushStoredChars();
