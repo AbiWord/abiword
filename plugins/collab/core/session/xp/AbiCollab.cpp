@@ -163,7 +163,7 @@ AbiCollab::~AbiCollab(void)
 	DELETEP(m_pRecorder);
 }
 
-void AbiCollab::removeCollaborator(Buddy* pCollaborator)
+void AbiCollab::removeCollaborator(const Buddy* pCollaborator)
 {
 	UT_return_if_fail(pCollaborator);
 

@@ -317,6 +317,9 @@ void TCPAccountHandler::forceDisconnectBuddy(Buddy* buddy)
 void TCPAccountHandler::handleEvent(Session& session)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::handleEvent()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
 	
 	// get an incoming packet, if any
 	// TODO: we could read all packets here in one go
@@ -349,8 +352,38 @@ void TCPAccountHandler::handleEvent(Session& session)
 	// check the connection status
 	if (!session.isConnected())
 	{
-		UT_DEBUGMSG(("Socket is not connected anymore!!!!!\n"));
-		// FIXME: handle this (delete the session, and remove it from the client list)
+		UT_DEBUGMSG(("Socket is not connected anymore!\n"));
+		// drop all buddies that were on this connection
+		std::map<const TCPBuddy*, Session*>::iterator next;
+		for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end(); it = next)
+		{
+			next = it;
+			next++;
+		
+			UT_continue_if_fail((*it).first);
+			UT_continue_if_fail((*it).second);
+
+			const TCPBuddy* pB = (*it).first;
+			const Session* pS = (*it).second;
+			
+			if (pS == &session)
+			{
+				UT_DEBUGMSG(("Lost connection to %s buddy %s\n", getProperty("server") == "" ? "client" : "server", pB->getName().utf8_str()));
+				// drop this buddy from all sessions
+				pManager->removeBuddy(pB);
+				
+				// erase the buddy <-> session mapping
+				m_clients.erase(it);
+			}
+
+			// if we were connected to a server, then we are disconnected now
+			if (getProperty("server") != "")
+			{
+				UT_ASSERT_HARMLESS(next == m_clients.end());
+				disconnect();
+				break;
+			}
+		}
 	}
 
 	// check other things here if needed...

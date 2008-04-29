@@ -102,10 +102,12 @@ public:
 
 	// collaborator management
 	void								addCollaborator(Buddy* pCollaborator);
-	void								removeCollaborator(Buddy* pCollaborator);
+	void								removeCollaborator(const Buddy* pCollaborator);
 	void								removeCollaboratorsForAccount(AccountHandler* pHandler);
 	const std::vector<Buddy*>&			getCollaborators() const
 		{ return m_vecCollaborators; }
+	bool								isController(const Buddy* pCollaborator) const
+		{ return m_pController == pCollaborator; }
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)

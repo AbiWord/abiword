@@ -115,8 +115,9 @@ public:
 	void									addBuddy(Buddy* buddy);
 	const UT_GenericVector<Buddy*>&	 		getBuddies() const
 		{ return m_vecBuddies; }
-
 	Buddy*									getBuddy(const UT_UTF8String& name);
+	void									deleteBuddy(const UT_UTF8String& name);
+	void									deleteBuddies();
 	virtual Buddy*							constructBuddy(const PropertyMap& vProps) = 0;
 	virtual bool							allowsManualBuddies() = 0;
 	virtual void							forceDisconnectBuddy(Buddy* buddy);

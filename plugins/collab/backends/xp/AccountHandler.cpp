@@ -94,6 +94,29 @@ Buddy* AccountHandler::getBuddy(const UT_UTF8String& name)
 	return 0;
 }
 
+void AccountHandler::deleteBuddy(const UT_UTF8String& name)
+{
+	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	{
+		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
+		if (pBuddy->getName() == name)
+		{
+			m_vecBuddies.deleteNthItem(i);
+			return;
+		}
+	}		
+}
+
+void AccountHandler::deleteBuddies()
+{
+	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	{
+		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
+		DELETEP(pBuddy);
+	}
+	m_vecBuddies.clear();
+}
+
 void AccountHandler::forceDisconnectBuddy(Buddy* buddy)
 {
 }

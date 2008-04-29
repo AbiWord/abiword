@@ -804,6 +804,35 @@ bool AbiCollabSessionManager::isActive(const UT_UTF8String& sSessionId)
 	return false;
 }
 
+void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy)
+{
+	UT_DEBUGMSG(("Dropping buddy %s from all sessions\n", pBuddy->getName().utf8_str()));
+	// TODO: should we send out events for every buddy we drop, or session
+	// we delete?
+	
+	for (UT_sint32 i = m_vecSessions.getItemCount() - 1; i >= 0; i--)
+	{
+		AbiCollab* pSession = m_vecSessions.getNthItem(i);
+		UT_continue_if_fail(pSession);
+		
+		if (pSession->isLocallyControlled())
+		{
+			pSession->removeCollaborator(pBuddy);
+		}
+		else
+		{
+			// we don't control this session, meaning we can drop it completely
+			// if this buddy controlled it
+			// TODO: when we allow more than 1 buddy in a non-locally controlled,
+			// then remove it from that list here
+			if (pSession->isController(pBuddy))
+			{
+				UT_DEBUGMSG(("This buddy controlled a session, destroying the session...\n"));
+				destroySession(pSession);
+			}
+		}
+	}
+}
 
 bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 {
