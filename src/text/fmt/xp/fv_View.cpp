@@ -12260,11 +12260,20 @@ bool FV_View::getAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText)
 	fl_BlockLayout * block; 
 	
 	block = m_pLayout->findBlockAtPosition(posStart+1);
+	fp_Run * pRun = NULL;
 	while(block && (static_cast<fl_AnnotationLayout *>(block->myContainingLayout()) == pAL))
 	{
 			UT_GrowBuf tmp;
 			block->getBlockBuf(&tmp);
-			buffer.append(tmp.getPointer(0),tmp.getLength());
+			pRun = block->getFirstRun();
+			while(pRun)
+			{
+				if(pRun->getType() == FPRUN_TEXT)
+				{
+					buffer.append(tmp.getPointer(pRun->getBlockOffset()),pRun->getLength());
+				}
+				pRun = pRun->getNextRun();
+			}
 			tmp.truncate(0);
 			block = block->getNextBlockInDocument();
 	}
