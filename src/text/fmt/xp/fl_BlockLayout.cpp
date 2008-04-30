@@ -230,9 +230,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	const PP_AttrProp * pAP = 0;
 	getAP(pAP);
-    UT_ASSERT(pAP);
+    UT_ASSERT_HARMLESS(pAP);
 
-	if (!pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+	if (pAP && !pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
 		{
 			m_szStyle = NULL;
 		}
@@ -705,12 +705,14 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	}
 	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
-		UT_ASSERT(pOrphans);
-		m_iOrphansProperty = pOrphans->getValue();
+		UT_ASSERT_HARMLESS(pOrphans);
+		if(pOrphans)
+			m_iOrphansProperty = pOrphans->getValue();
 
 		const PP_PropertyTypeInt *pWidows = static_cast<const PP_PropertyTypeInt *>(getPropertyType("widows", Property_type_int));
-		UT_ASSERT(pWidows);
-		m_iWidowsProperty = pWidows->getValue();
+		UT_ASSERT_HARMLESS(pWidows);
+		if(pWidows)
+			m_iWidowsProperty = pWidows->getValue();
 
 		if (m_iOrphansProperty < 1)
 		{
