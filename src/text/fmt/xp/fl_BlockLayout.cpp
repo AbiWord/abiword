@@ -2306,12 +2306,12 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN)
 		{
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
-			UT_sint32 iPrefPage = pFrameCon-> getPreferedPageNo();
 			//
 			// The frame container may not yet be created.
 			// 
 			if(pFrameCon)
 			{
+				UT_sint32 iPrefPage = pFrameCon-> getPreferedPageNo();
 				//
 				// Handle case of block spanning two pages
 				//

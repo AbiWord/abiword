@@ -291,7 +291,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 			delete pnt;
 		}
 	}
-	UT_ASSERT(pp->getNext() != pf);
+	UT_ASSERT(pp && (pp->getNext() != pf));
 }
 
 bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
