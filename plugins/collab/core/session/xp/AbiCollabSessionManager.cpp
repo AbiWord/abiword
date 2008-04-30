@@ -804,8 +804,10 @@ bool AbiCollabSessionManager::isActive(const UT_UTF8String& sSessionId)
 	return false;
 }
 
-void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy)
+void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy, bool graceful)
 {
+	UT_return_if_fail(pBuddy);
+	
 	UT_DEBUGMSG(("Dropping buddy %s from all sessions\n", pBuddy->getName().utf8_str()));
 	// TODO: should we send out events for every buddy we drop, or session
 	// we delete?
@@ -828,7 +830,19 @@ void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy)
 			if (pSession->isController(pBuddy))
 			{
 				UT_DEBUGMSG(("This buddy controlled a session, destroying the session...\n"));
+				UT_UTF8String docName = pSession->getDocument()->getFilename();
+				if (docName == "")
+					docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 				destroySession(pSession);
+				if (!graceful)
+				{
+					XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+					UT_continue_if_fail(pFrame);
+					// TODO: make this localizable
+					UT_UTF8String msg;
+					UT_UTF8String_sprintf(msg, "You've been disconnected from buddy %s. The collaboration session for document %s has been stopped.", pBuddy->getDescription().utf8_str(), docName.utf8_str()); 
+					pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+				}
 			}
 		}
 	}
@@ -1109,6 +1123,10 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 				{
 					if (!isLocallyControlled(pSession->getDocument()))
 					{
+						UT_UTF8String docName = pSession->getDocument()->getFilename();
+						if (docName == "")
+							docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
+						
 						// the server hosting this session is gone, so let's disconnect as well
 						if (!destroySession(pSession))
 							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -1122,7 +1140,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 						UT_return_val_if_fail(pFrame, true);
 						UT_UTF8String msg;
 						// TODO: make this localizable
-						UT_UTF8String_sprintf(msg, "This document is not being shared anymore by %s. You are disconnected from the collaboration session.", buddy->getName().utf8_str()); 
+						UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.utf8_str(), buddy->getName().utf8_str()); 
 						pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 					}
 					else

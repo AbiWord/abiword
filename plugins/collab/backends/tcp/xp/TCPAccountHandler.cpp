@@ -1,4 +1,4 @@
-/* Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -210,6 +210,7 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 		next_it++;
 
 		// const TCPBuddy* pBuddy = (*it).first;
+		// TODO: remove this buddy from all running sessions
 		// TODO: signal the buddy leaving && free the buddy
 
 		Session* pSession = (*it).second;
@@ -226,6 +227,29 @@ void TCPAccountHandler::_teardownAndDestroyHandler()
 	// ... and finally kill off the IO handler alltogether
 	UT_DEBUGMSG(("Deleting the IO handler\n"));
 	DELETEP(m_pDelegator);
+}
+
+void TCPAccountHandler::_handleMessages(Session& session)
+{
+	UT_DEBUGMSG(("TCPAccountHandler::_handleMessages()\n"));
+	
+	// handle all packets waiting in our queue
+	int packet_size;
+	char* packet_data;
+	while (session.pop(packet_size, &packet_data))
+	{
+		// setup raw packet struct
+		RawPacket pRp;
+		pRp.buddy = const_cast<TCPBuddy*>(_getBuddy(&session));
+		pRp.packet.resize( packet_size );
+		memcpy( &pRp.packet[0], packet_data, packet_size );
+		
+		// cleanup packet
+		FREEP(packet_data);
+		
+		// handle!
+		handleMessage( pRp );
+	}	
 }
 
 bool TCPAccountHandler::isOnline()
@@ -320,37 +344,14 @@ void TCPAccountHandler::handleEvent(Session& session)
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
-	
-	// get an incoming packet, if any
-	// TODO: we could read all packets here in one go
-	int packet_size;
-	char* packet_data;
-	if (session.pop(packet_size, &packet_data))
-	{
-		/*
-		printf("Got packet:\n");
-		for (int i = 0; i < packet_size; i++)
-		{
-			printf("%02x ", (UT_uint8)packet_data[i] );
-		}
-		printf("\n");
-		*/
-		
-		// setup raw packet struct
-		RawPacket pRp;
-		pRp.buddy = const_cast<TCPBuddy*>(_getBuddy(&session));
-		pRp.packet.resize( packet_size );
-		memcpy( &pRp.packet[0], packet_data, packet_size );
-		
-		// cleanup packet
-		FREEP(packet_data);
-		
-		// handle!
-		handleMessage( pRp );
-	}
 
+	// make sure we have handled _all_ packets in the queue before checking
+	// the disconnected status
+	bool disconnected = !session.isConnected();
+	_handleMessages(session);
+	
 	// check the connection status
-	if (!session.isConnected())
+	if (disconnected)
 	{
 		UT_DEBUGMSG(("Socket is not connected anymore!\n"));
 		// drop all buddies that were on this connection
@@ -370,7 +371,7 @@ void TCPAccountHandler::handleEvent(Session& session)
 			{
 				UT_DEBUGMSG(("Lost connection to %s buddy %s\n", getProperty("server") == "" ? "client" : "server", pB->getName().utf8_str()));
 				// drop this buddy from all sessions
-				pManager->removeBuddy(pB);
+				pManager->removeBuddy(pB, false);
 				
 				// erase the buddy <-> session mapping
 				m_clients.erase(it);

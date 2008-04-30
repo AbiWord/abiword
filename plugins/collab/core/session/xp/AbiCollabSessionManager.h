@@ -98,7 +98,7 @@ public:
 	bool										isLocallyControlled(PD_Document* pDoc);
 	bool										isInSession(PD_Document* pDoc);
 	bool										isActive(const UT_UTF8String& sSessionId);
-	void										removeBuddy(const Buddy* pBuddy);
+	void										removeBuddy(const Buddy* pBuddy, bool graceful = true);
 	  
 	// account code
 	bool										registerAccountHandlers(void);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -73,6 +73,7 @@ protected:
 	
 private:
 	void									_teardownAndDestroyHandler();
+	void									_handleMessages(Session& session);
 		
 	bool									m_bConnected; // TODO: drop this, ask the IO handler
 	IOHandler*								m_pDelegator;
