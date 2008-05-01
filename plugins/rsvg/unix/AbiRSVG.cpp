@@ -54,7 +54,7 @@ static void _write_png( png_structp png_ptr,
 	bb->append(data, length);
 }
 
-static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
+static void _write_flush(png_structp /*png_ptr*/) { } // Empty Fuction.
 
 //------------------------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ public:
 		return IE_RSVGGraphic_Sniffer__SuffixConfidence;
 	}
 
-  virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 iNum)
+  virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 /*iNum*/)
 	{
 		// todo: make me better
 		if ( strstr ( szBuf, "xml" ) != NULL && 
@@ -375,7 +375,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL extern "C"
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	return isCurrentAbiVersion(major, minor, release);
 }
