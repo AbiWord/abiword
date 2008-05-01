@@ -27,8 +27,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_ISCII_Sniffer::IE_Exp_ISCII_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_ISCII_Sniffer::IE_Exp_ISCII_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
