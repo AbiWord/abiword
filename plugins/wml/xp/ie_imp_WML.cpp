@@ -50,8 +50,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_WML_Sniffer::IE_Imp_WML_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_WML_Sniffer::IE_Imp_WML_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -75,7 +75,7 @@ const IE_MimeConfidence * IE_Imp_WML_Sniffer::getMimeConfidence ()
 }
 
 UT_Confidence_t IE_Imp_WML_Sniffer::recognizeContents(const char * szBuf, 
-										   UT_uint32 iNumbytes)
+										   UT_uint32 /*iNumbytes*/)
 {
 	// TODO: scan the first few lines
 
@@ -250,7 +250,7 @@ void IE_Imp_WML::closeTable(void)
 	X_CheckError(m_TableHelperStack->tableEnd());
 }
 
-void IE_Imp_WML::openRow(const gchar **atts)
+void IE_Imp_WML::openRow(const gchar **/*atts*/)
 {
 	X_CheckError(m_TableHelperStack->trStart(NULL));
 }
@@ -267,7 +267,7 @@ void IE_Imp_WML::closeRow(void)
 	}
 }
 
-void IE_Imp_WML::openCell(const gchar **atts)
+void IE_Imp_WML::openCell(const gchar **/*atts*/)
 {
 	// Note: there's no rowspan or colspan in WML 1.1
 
@@ -325,55 +325,55 @@ void IE_Imp_WML::startElement(const gchar *name,
 		X_VerifyParseState(_PS_MetaData);
 		m_parseState = _PS_Meta;
 
-		const gchar *name = NULL, *content = NULL;
+		const gchar *metaname = NULL, *content = NULL;
 
-		name = static_cast<const gchar*>(_getXMLPropValue("name", atts));
+		metaname = static_cast<const gchar*>(_getXMLPropValue("name", atts));
 		content = static_cast<const gchar*>(_getXMLPropValue("content", atts));
 
-		if(!name || !content)
+		if(!metaname || !content)
 			return;
 
-		if(!strcmp("title", name))
+		if(!strcmp("title", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.title",content);
 		}
-		else if(!strcmp("author", name))
+		else if(!strcmp("author", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.creator",content);
 		}
-		else if(!strcmp("subject", name))
+		else if(!strcmp("subject", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.subject",content);
 		}
-		else if(!strcmp("description", name))
+		else if(!strcmp("description", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.description",content);
 		}
-		else if(!strcmp("publisher", name))
+		else if(!strcmp("publisher", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.publisher",content);
 		}
-		else if(!strcmp("contributor", name))
+		else if(!strcmp("contributor", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.contributor",content);
 		}
-		else if(!strcmp("source", name))
+		else if(!strcmp("source", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.source",content);
 		}
-		else if(!strcmp("relation", name))
+		else if(!strcmp("relation", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.relation",content);
 		}
-		else if(!strcmp("coverage", name))
+		else if(!strcmp("coverage", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.coverage",content);
 		}
-		else if(!strcmp("rights", name))
+		else if(!strcmp("rights", metaname))
 		{
 			getDoc()->setMetaDataProp("dc.rights",content);
 		}
-		else if(!strcmp("keywords", name))
+		else if(!strcmp("keywords", metaname))
 		{
 			getDoc()->setMetaDataProp("abiword.keywords",content);
 		}

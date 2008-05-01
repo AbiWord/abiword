@@ -61,8 +61,8 @@ IE_Exp_WML::~IE_Exp_WML()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_WML_Sniffer::IE_Exp_WML_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_WML_Sniffer::IE_Exp_WML_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
