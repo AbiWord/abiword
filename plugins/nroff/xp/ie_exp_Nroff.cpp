@@ -89,7 +89,7 @@ public:
   {
   }
 
-  virtual bool populate(PL_StruxFmtHandle sfh,
+  virtual bool populate(PL_StruxFmtHandle /*sfh*/,
 			const PX_ChangeRecord * pcr)
   {
     switch (pcr->getType())
@@ -127,7 +127,7 @@ public:
       }
   }
   
-  virtual bool populateStrux(PL_StruxDocHandle sdh,
+  virtual bool populateStrux(PL_StruxDocHandle /*sdh*/,
 			     const PX_ChangeRecord * pcr,
 			     PL_StruxFmtHandle * psfh)
   {
@@ -156,11 +156,11 @@ public:
 	}
   }
   
-  virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-				    const PX_ChangeRecord * pcr,
-				    PL_StruxDocHandle sdh,
-				    PL_ListenerId lid,
-				    void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+  virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
+				    const PX_ChangeRecord * /*pcr*/,
+				    PL_StruxDocHandle /*sdh*/,
+				    PL_ListenerId /*lid*/,
+				    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 							    PL_ListenerId lid,
 							    PL_StruxFmtHandle sfhNew))
   {
@@ -168,14 +168,14 @@ public:
     return false;
   }
   
-  virtual bool		change(PL_StruxFmtHandle sfh,
-			       const PX_ChangeRecord * pcr)
+  virtual bool		change(PL_StruxFmtHandle /*sfh*/,
+			       const PX_ChangeRecord * /*pcr*/)
   {
     // should not be used
     return false;
   }
 
-  virtual bool		signal(UT_uint32 iSignal)
+  virtual bool		signal(UT_uint32 /*iSignal*/)
   {
     // should not be used
     return false;
@@ -184,10 +184,10 @@ public:
 protected:
 	void	_closeBlock(void) {}
 	void	_closeSpan(void) {}
-	void	_openBlock(PT_AttrPropIndex api) {}
-	void	_openParagraph(PT_AttrPropIndex api) {}
-	void	_openSpan(PT_AttrPropIndex api) {}  
-	void    _outputData(const UT_UCSChar * data, UT_uint32 length) {}
+	void	_openBlock(PT_AttrPropIndex /*api*/) {}
+	void	_openParagraph(PT_AttrPropIndex /*api*/) {}
+	void	_openSpan(PT_AttrPropIndex /*api*/) {}  
+	void    _outputData(const UT_UCSChar * /*data*/, UT_uint32 /*length*/) {}
 	
 private:
 	PD_Document *		m_pDocument;
@@ -325,8 +325,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+				 UT_uint32 /*release*/)
 {
   return 1;
 }

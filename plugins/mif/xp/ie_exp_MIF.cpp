@@ -90,8 +90,8 @@ IE_Exp_MIF::~IE_Exp_MIF()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_MIF_Sniffer::IE_Exp_MIF_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_MIF_Sniffer::IE_Exp_MIF_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -149,7 +149,7 @@ void s_MIF_Listener::_closeBlock(void)
 	return;
 }
 
-void s_MIF_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
+void s_MIF_Listener::_outputData(const UT_UCSChar * /*data*/, UT_uint32 /*length*/)
 {
 }
 

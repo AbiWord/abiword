@@ -38,8 +38,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_MIF_Sniffer::IE_Imp_MIF_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_MIF_Sniffer::IE_Imp_MIF_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -55,8 +55,8 @@ const IE_SuffixConfidence * IE_Imp_MIF_Sniffer::getSuffixConfidence ()
 	return IE_Imp_MIF_Sniffer__SuffixConfidence;
 }
 
-UT_Confidence_t IE_Imp_MIF_Sniffer::recognizeContents(const char * szBuf, 
-										   UT_uint32 iNumbytes)
+UT_Confidence_t IE_Imp_MIF_Sniffer::recognizeContents(const char * /*szBuf*/, 
+										   UT_uint32 /*iNumbytes*/)
 {
   // TODO: try to sensibly recognize the contents of the buffer
   return(UT_CONFIDENCE_ZILCH);
@@ -125,7 +125,7 @@ UT_Error IE_Imp_MIF::_writeHeader(GsfInput * /* fp */)
 	return UT_OK;
 }
 
-UT_Error IE_Imp_MIF::_parseFile(GsfInput * fp)
+UT_Error IE_Imp_MIF::_parseFile(GsfInput * /*fp*/)
 {
 	return UT_OK;
 }
