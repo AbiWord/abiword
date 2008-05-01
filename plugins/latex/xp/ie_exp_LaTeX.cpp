@@ -102,8 +102,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-								 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+								 UT_uint32 /*release*/)
 {
   return 1;
 }
@@ -186,8 +186,8 @@ class LaTeX_Analysis_Listener : public PL_Listener
 public:
 	bool m_hasEndnotes;
 
-	LaTeX_Analysis_Listener(PD_Document * pDocument,
-							IE_Exp_LaTeX * pie)
+	LaTeX_Analysis_Listener(PD_Document * /*pDocument*/,
+							IE_Exp_LaTeX * /*pie*/)
 		: m_hasEndnotes(false)
 	{
 	}
@@ -196,13 +196,13 @@ public:
 	{
 	}
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr)
+	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
+								 const PX_ChangeRecord * /*pcr*/)
 	{
 		return true;	
 	}
 
-	virtual bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh)
 	{
@@ -223,18 +223,18 @@ public:
 		return true;
 	}
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr)
+	virtual bool		change(PL_StruxFmtHandle /*sfh*/,
+							   const PX_ChangeRecord * /*pcr*/)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+	virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
+									const PX_ChangeRecord * /*pcr*/,
+									PL_StruxDocHandle /*sdh*/,
+									PL_ListenerId /*lid*/,
+									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 	{
@@ -242,7 +242,7 @@ public:
 		return false;
 	}
 
-	virtual bool		signal(UT_uint32 iSignal)
+	virtual bool		signal(UT_uint32 /*iSignal*/)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -955,7 +955,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 }
 
-void s_LaTeX_Listener::_openTable(PT_AttrPropIndex api)
+void s_LaTeX_Listener::_openTable(PT_AttrPropIndex /*api*/)
 {
 	UT_sint32 i = 0;
 
@@ -1338,9 +1338,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	m_bInSymbol(0),
 	m_bInCourier(0),
 	m_bInSansSerif(0),
-	m_bFirstSection(true),
 	m_bInEndnote(false),
-	m_bHaveEndnote(analysis.m_hasEndnotes)
+	m_bHaveEndnote(analysis.m_hasEndnotes),
+	m_bFirstSection(true)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
