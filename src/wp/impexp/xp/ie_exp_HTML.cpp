@@ -5752,7 +5752,12 @@ void s_HTML_Listener::_doAnnotations () {
 		UT_UTF8String_sprintf(num,"%d",i);
 		sAnnTag += num;
 		sAnnTag += "\"";
-		sAnnTag += "/>";
+
+		if(!get_HTML4())
+			sAnnTag += "/>";
+		else
+			sAnnTag += "></a>";
+
 		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
