@@ -48,8 +48,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_Applix_Sniffer::IE_Imp_Applix_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_Applix_Sniffer::IE_Imp_Applix_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -674,7 +674,7 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
   Insert a new paragraph
   \todo TODO handle the style and paragraph attributes.
 */
-void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
+void IE_Imp_Applix::_applixNewPara (const char */*buf*/, size_t /*len*/)
 {
 	// flush the current run
 	UT_uint32 runlen;

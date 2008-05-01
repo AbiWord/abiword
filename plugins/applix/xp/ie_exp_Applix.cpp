@@ -54,8 +54,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_Applix_Sniffer::IE_Exp_Applix_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_Applix_Sniffer::IE_Exp_Applix_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -548,7 +548,7 @@ void s_Applix_Listener::_openSpan(PT_AttrPropIndex /* always ignored */)
   m_bInSpan = true;
 }
 
-void s_Applix_Listener::_openParagraph (PT_AttrPropIndex api)
+void s_Applix_Listener::_openParagraph (PT_AttrPropIndex /*api*/)
 {
   // TODO: this should get more complex, but this is a 1st rev
   _openTag ("P");
