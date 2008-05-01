@@ -405,6 +405,7 @@ class s_HTML_HdrFtr_Listener;
 
 bool m_bSecondPass = false;
 bool m_bInAFENote = false;
+bool m_bInAnnotation = false;
 
 class s_StyleTree : public PL_Listener
 {
@@ -567,6 +568,7 @@ private:
 	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
+	void	_handleAnnotationMark (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
 	void	_handleMath (PT_AttrPropIndex api);
 	void    _handleEmbedded (PT_AttrPropIndex api);
@@ -578,6 +580,7 @@ private:
 
 	void	_doEndnotes ();
 	void	_doFootnotes ();
+	void	_doAnnotations ();
 	void    _emitTOC (PT_AttrPropIndex api);
 
 	PD_Document *				m_pDocument;
@@ -690,8 +693,10 @@ private:
 	
 	void                addFootnote(PD_DocumentRange * pDocRange);         
 	void                addEndnote(PD_DocumentRange * pDocRange);
+	void                addAnnotation(PD_DocumentRange * pDocRange);
 	UT_uint32           getNumFootnotes(void);
 	UT_uint32           getNumEndnotes(void);
+	UT_uint32           getNumAnnotations(void);
 	
 	/* temporary strings; use with extreme caution
 	 */
@@ -735,6 +740,7 @@ private:
 	bool            m_bCellHasData;
 	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
 	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
+	UT_GenericVector<PD_DocumentRange *> m_vecAnnotations;
 
 	IE_TOCHelper *  m_toc;
 	int m_heading_count;
@@ -5072,6 +5078,33 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 	}
 }
 
+
+
+void s_HTML_Listener::_handleAnnotationMark (PT_AttrPropIndex api)
+{
+	m_utf8_1 = "a";
+
+	if (tagTop () == TT_A)
+	{
+		tagClose (TT_A, m_utf8_1, ws_None);
+	}
+
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	// Set a forward link to the annotation to be added at the end of the 
+	// document.
+		
+	m_utf8_1 += " href=\"#annotation-";
+	UT_UTF8String num;
+	UT_UTF8String_sprintf(num,"%d",m_vecAnnotations.getItemCount());
+	m_utf8_1 += num;
+	m_utf8_1 += "\"";
+	tagOpen (TT_A, m_utf8_1, ws_None);
+}
+
 void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 {
 	m_utf8_1 = "a";
@@ -5261,10 +5294,14 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 						case PTO_Hyperlink:
 							_handleHyperlink (api);
 							return true;
+
+						case PTO_Annotation:
+							_handleAnnotationMark (api);
+							return true;
 	
 						case PTO_Bookmark:
 							_handleBookmark (api);
-							return true;
+							return true;						
 
 						case PTO_Math:
 							_handleMath (api);
@@ -5421,6 +5458,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		
 		case PTX_SectionFootnote:
 		case PTX_SectionEndnote:
+		case PTX_SectionAnnotation:
 			{
 				// We should use strux-specific position markers, as this sets a precarious
 				// precedent for nested struxes.
@@ -5430,15 +5468,20 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_EndFootnote:
 		case PTX_EndEndnote:
+		case PTX_EndAnnotation:
 			{
 				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition());
 				if(pcrx->getStruxType () == PTX_EndFootnote)
 				{
 					addFootnote(pDocRange);
 				}
-				else
+				else if (pcrx->getStruxType () == PTX_EndEndnote)
 				{
 					addEndnote(pDocRange);
+				}
+				else
+				{
+					addAnnotation(pDocRange);
 				}
 				m_bIgnoreTillEnd = false;
 				return true;
@@ -5519,6 +5562,8 @@ bool s_HTML_Listener::endOfDocument () {
 	_doEndnotes();
 	
 	_doFootnotes();
+
+	_doAnnotations();
 	
 	return true;
 }
@@ -5682,6 +5727,43 @@ void s_HTML_Listener::_doFootnotes () {
 	}
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
 }
+
+
+void s_HTML_Listener::_doAnnotations () {	
+	//
+	// Output Annotations
+	//
+	UT_uint32 i = 0, nAnnotations = getNumAnnotations();
+	if(nAnnotations > 0) {
+		startEmbeddedStrux();
+	}
+	UT_UTF8String sAnnTag;
+	for(i = 0; i < nAnnotations; i = i + 1)
+	{
+		PD_DocumentRange * pDocRange = m_vecAnnotations.getNthItem(i);
+		m_bInAnnotation = true;
+		m_bInAFENote = true;
+		//
+		// Write a blank paragraph just before Each annotation containg the
+		// tag id of the annotation.
+		//
+	    sAnnTag = "<A name=\"annotation-";
+		UT_UTF8String num;
+		UT_UTF8String_sprintf(num,"%d",i);
+		sAnnTag += num;
+		sAnnTag += "\"";
+		sAnnTag += "/>";
+		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
+		m_pDocument->tellListenerSubset(this,pDocRange);
+   	    sAnnTag = "</A>";
+		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
+		m_bInAFENote = false;
+		m_bInAnnotation = false;
+		// Some combined bug fixes make tagpops no longer necessary, afaict.
+	}
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecAnnotations);
+}
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -7226,6 +7308,17 @@ void s_HTML_Listener::addFootnote(PD_DocumentRange * pDocRange)
 void s_HTML_Listener::addEndnote(PD_DocumentRange * pDocRange)
 {
 	m_vecEndnotes.addItem(pDocRange);
+}
+
+
+void s_HTML_Listener::addAnnotation(PD_DocumentRange * pDocRange)
+{
+	m_vecAnnotations.addItem(pDocRange);
+}
+
+UT_uint32 s_HTML_Listener::getNumAnnotations(void)
+{
+	return m_vecAnnotations.getItemCount();
 }
 
 UT_uint32 s_HTML_Listener::getNumFootnotes(void)
