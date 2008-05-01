@@ -85,16 +85,16 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+				 UT_uint32 /*release*/)
 {
   return 1;
 }
 
 /****************************************************************************/
 
-IE_Imp_OPML_Sniffer::IE_Imp_OPML_Sniffer (const char *name) :
-  IE_ImpSniffer(name)
+IE_Imp_OPML_Sniffer::IE_Imp_OPML_Sniffer (const char *_name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -533,7 +533,7 @@ void IE_Imp_OPML::_createList(void)
 	m_iCurListID++;
 }
 
-void IE_Imp_OPML::charData(const gchar *s, int len)
+void IE_Imp_OPML::charData(const gchar *s, int /*len*/)
 {
 	if((m_parseState == _PS_Meta) && m_sMetaTag.length())
 	{
