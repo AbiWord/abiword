@@ -192,7 +192,7 @@ void OXMLi_ListenerState_Theme::endElement (OXMLi_EndElementRequest * rqst)
 
 }
 
-void OXMLi_ListenerState_Theme::charData (OXMLi_CharDataRequest * rqst)
+void OXMLi_ListenerState_Theme::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
 	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
 }

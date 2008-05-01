@@ -82,7 +82,7 @@ void OXMLi_ListenerState_HdrFtr::endElement (OXMLi_EndElementRequest * rqst)
 	}
 }
 
-void OXMLi_ListenerState_HdrFtr::charData (OXMLi_CharDataRequest * rqst)
+void OXMLi_ListenerState_HdrFtr::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
 	//Nothing to do here
 }

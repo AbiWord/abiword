@@ -73,7 +73,7 @@ void OXMLi_ListenerState_DocSettings::endElement (OXMLi_EndElementRequest * rqst
 	}
 }
 
-void OXMLi_ListenerState_DocSettings::charData (OXMLi_CharDataRequest * rqst)
+void OXMLi_ListenerState_DocSettings::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
 	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
 }

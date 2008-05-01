@@ -47,7 +47,7 @@ OXML_Style::~OXML_Style()
 {
 }
 
-UT_Error OXML_Style::serialize(const std::string & path)
+UT_Error OXML_Style::serialize(const std::string & /*path*/)
 {
 	//TODO
 	return UT_OK;

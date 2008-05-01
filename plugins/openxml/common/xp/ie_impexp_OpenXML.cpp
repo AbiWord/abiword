@@ -101,8 +101,8 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 /**
  * 
  */
-ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-                 UT_uint32 release)
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+                 UT_uint32 /*release*/)
 {
   return 1;
 }

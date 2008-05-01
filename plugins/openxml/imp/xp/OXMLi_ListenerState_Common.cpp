@@ -135,7 +135,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				final += "pt";
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("text-indent", final.c_str()) ));
 			} else if (hanging != NULL) {
-				std::string final = _TwipsToPoints(hanging); //convert to points
+				final = _TwipsToPoints(hanging); //convert to points
 				//This is hanging, invert the sign
 				if (final[0] == '-')
 					final.erase(0,1);

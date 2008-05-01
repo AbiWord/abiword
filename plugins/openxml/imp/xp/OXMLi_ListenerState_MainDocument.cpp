@@ -70,7 +70,7 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 	}
 }
 
-void OXMLi_ListenerState_MainDocument::charData (OXMLi_CharDataRequest * rqst)
+void OXMLi_ListenerState_MainDocument::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
 	//Nothing to do here.
 }

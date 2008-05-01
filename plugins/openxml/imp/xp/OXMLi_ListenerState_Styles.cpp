@@ -123,7 +123,7 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 	}
 }
 
-void OXMLi_ListenerState_Styles::charData (OXMLi_CharDataRequest * rqst)
+void OXMLi_ListenerState_Styles::charData (OXMLi_CharDataRequest * /*rqst*/)
 {
 	UT_ASSERT ( UT_SHOULD_NOT_HAPPEN );
 }
