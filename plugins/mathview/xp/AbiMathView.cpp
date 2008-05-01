@@ -429,7 +429,7 @@ static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
 //   This is the function that we actually call to insert the MathML.
 //
 bool 
-AbiMathView_FileInsert(AV_View* v, EV_EditMethodCallData *d)
+AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
 {
 	// Get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -487,7 +487,7 @@ AbiMathView_FileInsert(AV_View* v, EV_EditMethodCallData *d)
 //   a Latex expression.
 //
 bool 
-AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData *d)
+AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData */*d*/)
 {
 	FV_View * pView = static_cast<FV_View *>(v);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -679,7 +679,7 @@ void GR_MathManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
 	pMathView->setDefaultFontSize(iSize);
 }
 
-UT_sint32 GR_MathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, const char * szDataID)
+UT_sint32 GR_MathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, const char * /*szDataID*/)
 {
 	if (m_pDoc == NULL)
 	{
@@ -801,7 +801,7 @@ bool GR_MathManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
 	return true;
 }
 
-bool GR_MathManager::modify(UT_sint32 uid)
+bool GR_MathManager::modify(UT_sint32 /*uid*/)
 {
 	return false;
 }
@@ -876,7 +876,7 @@ UT_sint32 GR_MathManager::getDescent(UT_sint32 uid)
 	return m_pAbiContext->toAbiLayoutUnits(box.depth);
 }
 
-void GR_MathManager::setColor(UT_sint32 uid, UT_RGBColor c)
+void GR_MathManager::setColor(UT_sint32 /*uid*/, UT_RGBColor c)
 {
 	m_pAbiContext->setColor(c);
 }
@@ -992,7 +992,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	return 1; 
 }

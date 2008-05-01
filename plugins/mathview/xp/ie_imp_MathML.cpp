@@ -274,9 +274,9 @@ const IE_MimeConfidence * IE_Imp_MathML_Sniffer::getMimeConfidence ()
  the Encoded Text importer.
  */
 UT_Confidence_t IE_Imp_MathML_Sniffer::recognizeContents(const char * szBuf,
-													   UT_uint32 iNumbytes)
+													   UT_uint32 /*iNumbytes*/)
 {
-	char * magic = "<math";
+	const char * magic = "<math";
 	if(strncmp(szBuf,magic,strlen(magic) == 0))
 	   return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
@@ -368,7 +368,6 @@ UT_Error IE_Imp_MathML::_parseStream(ImportStream * pStream)
 	UT_return_val_if_fail(pStream, UT_ERROR);
 
 	UT_ByteBuf BB;
-	bool bFirstChar = true;
 	UT_UCSChar c;
 	unsigned char uc;
 	while (pStream->getChar(c))

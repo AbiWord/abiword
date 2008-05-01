@@ -21,7 +21,7 @@
 #include "gr_Abi_CharArea.h"
 #include "gr_Abi_RenderingContext.h"
 
-GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, const scaled& size, UT_UCS4Char c)
+GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, const scaled& /*size*/, UT_UCS4Char c)
   : m_pFont(f), m_ch(c)
 {
 #if 0
