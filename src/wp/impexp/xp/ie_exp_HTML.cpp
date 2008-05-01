@@ -5744,10 +5744,10 @@ void s_HTML_Listener::_doAnnotations () {
 		m_bInAnnotation = true;
 		m_bInAFENote = true;
 		//
-		// Write a blank paragraph just before Each annotation containg the
+		// Write a blank paragraph just before Each annotation containing the
 		// tag id of the annotation.
 		//
-	    sAnnTag = "<A name=\"annotation-";
+	    sAnnTag = "<a name=\"annotation-";
 		UT_UTF8String num;
 		UT_UTF8String_sprintf(num,"%d",i);
 		sAnnTag += num;
@@ -5755,11 +5755,9 @@ void s_HTML_Listener::_doAnnotations () {
 		sAnnTag += "/>";
 		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
 		m_pDocument->tellListenerSubset(this,pDocRange);
-   	    sAnnTag = "</A>";
-		m_pie->write(sAnnTag.utf8_str(),sAnnTag.byteLength());
 		m_bInAFENote = false;
 		m_bInAnnotation = false;
-		// Some combined bug fixes make tagpops no longer necessary, afaict.
+		_closeTag(); // close the annotation <p>
 	}
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecAnnotations);
 }
