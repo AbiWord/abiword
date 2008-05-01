@@ -51,8 +51,8 @@
 /***********************************************************/
 /***********************************************************/
 
-IE_Imp_KWord_1_Sniffer::IE_Imp_KWord_1_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_KWord_1_Sniffer::IE_Imp_KWord_1_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -80,7 +80,7 @@ const IE_MimeConfidence * IE_Imp_KWord_1_Sniffer::getMimeConfidence ()
 	return IE_Imp_KWord_1_Sniffer__MimeConfidence;
 }
 
-UT_Confidence_t IE_Imp_KWord_1_Sniffer::recognizeContents(const char *szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_Imp_KWord_1_Sniffer::recognizeContents(const char *szBuf, UT_uint32 /*iNumbytes*/)
 {
 
   // first, look for the <?xml at the beginning of the document
@@ -329,6 +329,7 @@ kPageToFpPageSize (const char * sz)
     return fp_PageSize::psCustom;
 }
 
+#if 0
 // superscript/subscript/normal
 static const char *
 kVertAlignToTextPos ( const char * sz )
@@ -340,6 +341,7 @@ kVertAlignToTextPos ( const char * sz )
   else
     return "normal";
 }
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -496,19 +498,19 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
       {
         xxx_UT_DEBUGMSG(("ABIDEBUG: begin PAPER\n"));
 	
-	const gchar * pVal = NULL;
+	const gchar * pProp = NULL;
 
-	pVal = _getXMLPropValue("format", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("format", atts);
+	if(pProp)
 	  {
 	    // set the page size - we still set width&height below
-	    getDoc()->m_docPageSize.Set(kPageToFpPageSize(pVal));
+	    getDoc()->m_docPageSize.Set(kPageToFpPageSize(pProp));
 	  }
 
-	pVal = _getXMLPropValue("orientation", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("orientation", atts);
+	if(pProp)
 	  {
-	    if(strcmp(pVal, "1") == 0)
+	    if(strcmp(pProp, "1") == 0)
 	      {
 		// set to landscape
 		getDoc()->m_docPageSize.setLandscape();
@@ -522,18 +524,18 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 
 	double page_width, page_height;
 	page_width = page_height = 0.0;
-	pVal = _getXMLPropValue("width", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("width", atts);
+	if(pProp)
 	  {
 	    // get the page width
-	    page_width = atof(pVal);
+	    page_width = atof(pProp);
 	  }
 	
-	pVal = _getXMLPropValue("height", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("height", atts);
+	if(pProp)
 	  {
 	    // get the page height
-	    page_height = atof(pVal);
+	    page_height = atof(pProp);
 	  }
 
 	if ( page_height != 0. && page_width != 0. )
@@ -547,44 +549,44 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
 
 	// margins
 
-	const gchar * pVal = NULL;
+	const gchar * pProp = NULL;
 
-	pVal = _getXMLPropValue("right", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("right", atts);
+	if(pProp)
 	  {
 	    // page-margin-right from mm
 	    m_szSectProps += "page-margin-right:";
-	    m_szSectProps += pVal;
+	    m_szSectProps += pProp;
 	    m_szSectProps += "mm; ";
 	  }
 
 	// todo: really get these
 	m_szSectProps += "page-margin-footer:0.0mm; page-margin-header:0.0mm; ";
 
-	pVal = _getXMLPropValue("left", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("left", atts);
+	if(pProp)
 	  {
 	    // page-margin-left from mm
 	    m_szSectProps += "page-margin-left:";	    
-	    m_szSectProps += pVal;
+	    m_szSectProps += pProp;
 	    m_szSectProps += "mm; ";
 	  }
 
-	pVal = _getXMLPropValue("top", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("top", atts);
+	if(pProp)
 	  {
 	    // page-margin-top from mm
 	    m_szSectProps += "page-margin-top:";
-	    m_szSectProps += pVal;
+	    m_szSectProps += pProp;
 	    m_szSectProps += "mm; ";
 	  }
 
-	pVal = _getXMLPropValue("bottom", atts);
-	if(pVal)
+	pProp = _getXMLPropValue("bottom", atts);
+	if(pProp)
 	  {
 	    // page-margin-bottom from mm
 	    m_szSectProps += "page-margin-bottom:";
-	    m_szSectProps += pVal;
+	    m_szSectProps += pProp;
 	    m_szSectProps += "mm; ";
 	  }
 
@@ -601,13 +603,13 @@ void IE_Imp_KWord_1::startElement(const gchar *name, const gchar **atts)
       {
         xxx_UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAH\n"));
 
-        const gchar *pVal = NULL;
+        const gchar *pProp = NULL;
 
-        pVal = _getXMLPropValue("value", atts);
-        if (pVal)
+        pProp = _getXMLPropValue("value", atts);
+        if (pProp)
         {
           m_ParaProps += "text-align:";
-          m_ParaProps += numberToJustification(pVal);
+          m_ParaProps += numberToJustification(pProp);
           m_ParaProps += "; ";
         }
 

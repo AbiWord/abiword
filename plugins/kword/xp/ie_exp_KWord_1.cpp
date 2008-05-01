@@ -128,8 +128,8 @@ IE_Exp_KWord_1::~IE_Exp_KWord_1()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_KWord_1_Sniffer::IE_Exp_KWord_1_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_KWord_1_Sniffer::IE_Exp_KWord_1_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -555,7 +555,7 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	return;
 }
 
-void s_KWord_1_Listener::_handleAttributes(PT_AttrPropIndex api)
+void s_KWord_1_Listener::_handleAttributes(PT_AttrPropIndex /*api*/)
 {
 	m_pie->write("<ATTRIBUTES");
 	m_pie->write(" processing=\"0\"");
@@ -1023,11 +1023,11 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 		// <SIZE value="12"/> size in pt
 		if (pAP->getProperty("font-size", szValue))
 		{
-		  UT_String buf;
+		  UT_String buf2;
 
 			m_sFormats += "<SIZE value=\"";
-			UT_String_sprintf(buf,"%d", static_cast<int>(UT_convertToDimension(szValue, DIM_PT)));
-			m_sFormats += buf;
+			UT_String_sprintf(buf2,"%d", static_cast<int>(UT_convertToDimension(szValue, DIM_PT)));
+			m_sFormats += buf2;
 			m_sFormats += "\"/>\n";
 		}		
 
