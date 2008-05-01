@@ -262,7 +262,7 @@ void OO_WriterImpl::insertText(const UT_UCSChar * data, UT_uint32 length)
    outputCharData(m_pContentStream, data, length);
 }
 
-void OO_WriterImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading)
+void OO_WriterImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & /*font*/, bool bIsHeading)
 {
 	UT_UTF8String tag, props;
 
@@ -296,7 +296,7 @@ void OO_WriterImpl::closeBlock()
 	m_blockEnd.clear();
 }
 
-void OO_WriterImpl::openSpan(UT_String & props, UT_String & font)
+void OO_WriterImpl::openSpan(UT_String & props, UT_String & /*font*/)
 {
    UT_UTF8String spanString = UT_UTF8String_sprintf("<text:span text:style-name=\"S%i\">",  
 						    m_pStylesContainer->getSpanStyleNum(props));
@@ -306,8 +306,8 @@ void OO_WriterImpl::openSpan(UT_String & props, UT_String & font)
 
 void OO_WriterImpl::closeSpan()
 {
-   UT_UTF8String closeSpan = "</text:span>";
-   writeUTF8String(m_pContentStream, closeSpan);
+   UT_UTF8String endSpan = "</text:span>";
+   writeUTF8String(m_pContentStream, endSpan);
 }
 
 void OO_WriterImpl::openHyperlink(const PP_AttrProp* pAP)
@@ -397,11 +397,11 @@ const int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
       return 0;
 }
 
-const int OO_StylesContainer::getBlockStyleNum(UT_String & styleAtts, UT_String & styleProps) const
+const int OO_StylesContainer::getBlockStyleNum(UT_String & /*styleAtts*/, UT_String & styleProps) const
 {
 	UT_GenericVector<const UT_String*> *keys = m_blockAttsHash.keys();
 
-	for (int i = 0; i < keys->size(); i++) 
+	for (UT_uint32 i = 0; i < keys->size(); i++) 
 	{
 		const UT_String * key = keys->getNthItem(i);
 		if (key && (*key == styleProps))
@@ -445,7 +445,7 @@ void OO_AccumulatorImpl::openSpan(UT_String & props, UT_String & font)
 		m_pStylesContainer->addFont(font);
 }
 
-void OO_AccumulatorImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading)
+void OO_AccumulatorImpl::openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool /*bIsHeading*/)
 {
 	if (styleAtts.size() && styleProps.size()) 
 	{
@@ -463,7 +463,7 @@ OO_Listener::OO_Listener (PD_Document * pDocument, IE_Exp_OpenWriter * pie, OO_L
 {
 }
 
-bool OO_Listener::populate(PL_StruxFmtHandle sfh,
+bool OO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			   const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -515,7 +515,7 @@ bool OO_Listener::populate(PL_StruxFmtHandle sfh,
 	return true;
 }
    
-bool OO_Listener::populateStrux(PL_StruxDocHandle sdh,
+bool OO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				const PX_ChangeRecord * pcr,
 				PL_StruxFmtHandle * psfh)
 {
@@ -537,18 +537,18 @@ bool OO_Listener::populateStrux(PL_StruxDocHandle sdh,
    return true;
 }
 
-bool OO_Listener::change(PL_StruxFmtHandle sfh,
-			 const PX_ChangeRecord * pcr)
+bool OO_Listener::change(PL_StruxFmtHandle /*sfh*/,
+			 const PX_ChangeRecord * /*pcr*/)
 {
    UT_ASSERT_NOT_REACHED();
    return true;
 }
    
-bool OO_Listener::insertStrux(PL_StruxFmtHandle sfh,
-			      const PX_ChangeRecord * pcr,
-			      PL_StruxDocHandle sdh,
-			      PL_ListenerId lid,
-			      void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+bool OO_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+			      const PX_ChangeRecord * /*pcr*/,
+			      PL_StruxDocHandle /*sdh*/,
+			      PL_ListenerId /*lid*/,
+			      void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 						      PL_ListenerId lid,
 						      PL_StruxFmtHandle sfhNew))
 {
@@ -556,7 +556,7 @@ bool OO_Listener::insertStrux(PL_StruxFmtHandle sfh,
    return true;
 }
    
-bool OO_Listener::signal(UT_uint32 iSignal)
+bool OO_Listener::signal(UT_uint32 /*iSignal*/)
 {
    UT_ASSERT_NOT_REACHED();
    return true;
@@ -739,7 +739,7 @@ class OO_SettingsWriter
 {
 public:
 
-  static bool writeSettings(PD_Document * pDoc, GsfOutfile * oo)
+  static bool writeSettings(PD_Document * /*pDoc*/, GsfOutfile * oo)
   {
     GsfOutput * settings = gsf_outfile_new_child (oo, "settings.xml", FALSE);
 
@@ -978,7 +978,7 @@ bool OO_StylesWriter::writeStyles(PD_Document * pDoc, GsfOutfile * oo, OO_Styles
 void OO_StylesWriter::addFontDecls(UT_UTF8String & buffer, OO_StylesContainer & stylesContainer)
 {
 	UT_GenericVector<const UT_String*> *vecFonts = stylesContainer.getFontsKeys();
-	for (int i = 0; i < vecFonts->size(); i++) {
+	for (UT_uint32 i = 0; i < vecFonts->size(); i++) {
 		// FIXME ATM only variable width fonts
 		// check here by using pango?
 		const gchar * pitch = "variable";

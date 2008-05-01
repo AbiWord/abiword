@@ -154,12 +154,12 @@ class OO_AccumulatorImpl : public OO_ListenerImpl
 {
 public:
    OO_AccumulatorImpl(OO_StylesContainer *pStylesContainer) : OO_ListenerImpl() { m_pStylesContainer = pStylesContainer; }
-   virtual void insertText(const UT_UCSChar * data, UT_uint32 length) {}
+   virtual void insertText(const UT_UCSChar * /*data*/, UT_uint32 /*length*/) {}
    virtual void openBlock(UT_String & styleAtts, UT_String & styleProps, UT_String & font, bool bIsHeading = false);
    virtual void closeBlock() {};
    virtual void openSpan(UT_String & props, UT_String & font);
    virtual void closeSpan() {}
-   virtual void openHyperlink(const PP_AttrProp* pAP) {}
+   virtual void openHyperlink(const PP_AttrProp* /*pAP*/) {}
    virtual void closeHyperlink() {}
 
 private:

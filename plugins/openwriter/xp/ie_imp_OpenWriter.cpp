@@ -692,9 +692,9 @@ UT_Error IE_Imp_OpenWriter::_loadFile (GsfInput * oo_src)
   if ( UT_OK != (err = _handleMimetype ()))
     return err; // we require a mimetype
   if ( UT_OK != _handleMetaStream ())
-    ; // TODO: give warning about missing meta.xml stream
+    UT_DEBUGMSG(("IE_Imp_OpenWriter::_loadFile(): missing meta stream\n"));
   if ( UT_OK != _handleStylesStream ())
-    ; // TODO: give warning about missing styles.xml stream
+    UT_DEBUGMSG(("IE_Imp_OpenWriter::_loadFile(): missing styles stream\n"));
   if ( UT_OK != (err = _handleContentStream ()))
     return err; // abort because content.xml stream is compulsory
     
@@ -942,15 +942,15 @@ public:
   {
   }
 
-  virtual void startElement (const gchar * name, const gchar ** atts) 
+  virtual void startElement (const gchar * /*name*/, const gchar ** /*atts*/) 
   {
   }
 
-  virtual void endElement (const gchar * name)
+  virtual void endElement (const gchar * /*name*/)
   {
   }
 
-  virtual void charData (const gchar * buffer, int length)
+  virtual void charData (const gchar * /*buffer*/, int /*length*/)
   {
   }
   
@@ -1123,7 +1123,7 @@ public:
     }
   }
   
-  virtual void charData (const gchar * buffer, int length)
+  virtual void charData (const gchar * /*buffer*/, int /*length*/)
   {
   }  
 
@@ -1330,12 +1330,12 @@ public:
     else if (!strcmp(name, "text:bookmark"))
     {
       _flush ();
-      const gchar * name = UT_getAttribute ("text:name", atts);
+      const gchar * attr = UT_getAttribute ("text:name", atts);
 
-      if(name)
+      if(attr)
       {
-        _insertBookmark (name, "start");
-        _insertBookmark (name, "end");
+        _insertBookmark (attr, "start");
+        _insertBookmark (attr, "end");
       }
       else
       {
@@ -1345,11 +1345,11 @@ public:
     else if (!strcmp(name, "text:bookmark-start"))
     {
       _flush ();
-      const gchar * name = UT_getAttribute ("text:name", atts);
+      const gchar * attr = UT_getAttribute ("text:name", atts);
 
-      if(name)
+      if(attr)
       {
-        _insertBookmark (name, "start");
+        _insertBookmark (attr, "start");
       }
       else
       {
@@ -1359,11 +1359,11 @@ public:
     else if (!strcmp(name, "text:bookmark-end"))
     {
       _flush ();
-      const gchar * name = UT_getAttribute ("text:name", atts);
+      const gchar * attr = UT_getAttribute ("text:name", atts);
 
-      if(name)
+      if(attr)
       {
-        _insertBookmark (name, "end");
+        _insertBookmark (attr, "end");
       }
       else
       {
@@ -1665,22 +1665,22 @@ private:
       }	
   }
 
-  void _openTable (const gchar ** props)
+  void _openTable (const gchar ** /*props*/)
   {
     getDocument()->appendStrux(PTX_SectionTable,NULL);
   }
 
-  void _openColumn (const gchar ** props)
+  void _openColumn (const gchar ** /*props*/)
   {
     m_col++;
   }
 
-  void _openRow (const gchar ** props)
+  void _openRow (const gchar ** /*props*/)
   {
     m_row++; m_cel = 0;
   }
 
-  void _openCell (const gchar ** props)
+  void _openCell (const gchar ** /*props*/)
   {
     UT_String attach;
 
@@ -1758,7 +1758,7 @@ private:
     UT_sint32 start;
     if (!m_stackFmtStartIndex.pop(&start))
       return;
-    UT_uint32 k;
+    UT_sint32 k;
     UT_uint32 end = m_vecInlineFmt.getItemCount();
     for (k=end; k>=start; k--)
       {
