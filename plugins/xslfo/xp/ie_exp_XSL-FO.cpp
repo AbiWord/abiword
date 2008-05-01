@@ -57,8 +57,8 @@ IE_Exp_XSL_FO::~IE_Exp_XSL_FO()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_XSL_FO_Sniffer::IE_Exp_XSL_FO_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_XSL_FO_Sniffer::IE_Exp_XSL_FO_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -222,7 +222,7 @@ void s_XSL_FO_Listener::_closeCell(void)
 	}
 }
 
-void s_XSL_FO_Listener::_openTable(PT_AttrPropIndex api)
+void s_XSL_FO_Listener::_openTable(PT_AttrPropIndex /*api*/)
 {
 	if (!m_bInSection)
 	{
@@ -289,7 +289,7 @@ void s_XSL_FO_Listener::_openRow(void)
 	}
 }
 
-void s_XSL_FO_Listener::_openCell(PT_AttrPropIndex api)
+void s_XSL_FO_Listener::_openCell(PT_AttrPropIndex /*api*/)
 {
 	if (!m_bInSection)
 	{

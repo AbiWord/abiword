@@ -52,8 +52,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_XSL_FO_Sniffer::IE_Imp_XSL_FO_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_XSL_FO_Sniffer::IE_Imp_XSL_FO_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -436,15 +436,15 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 
 			UT_UTF8String id = UT_UTF8String_sprintf("%d", ++m_iFootnotes);
 
-			const gchar *buf[7];
-			buf[0] = PT_TYPE_ATTRIBUTE_NAME;
-			buf[1] = "footnote_ref";
-			buf[2] = "footnote-id";
-			buf[3] = id.utf8_str();
-			buf[4] = PT_PROPS_ATTRIBUTE_NAME;
-			buf[5] = "text-position:superscript";
-			buf[6] = NULL;
-			X_CheckError(appendObject(PTO_Field,buf));
+			const gchar *fnbuf[7];
+			fnbuf[0] = PT_TYPE_ATTRIBUTE_NAME;
+			fnbuf[1] = "footnote_ref";
+			fnbuf[2] = "footnote-id";
+			fnbuf[3] = id.utf8_str();
+			fnbuf[4] = PT_PROPS_ATTRIBUTE_NAME;
+			fnbuf[5] = "text-position:superscript";
+			fnbuf[6] = NULL;
+			X_CheckError(appendObject(PTO_Field,fnbuf));
 
 			m_bPendingFootnote = true;
 
@@ -615,8 +615,8 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				break;
 			}
 
-			const gchar *buf[3];
-			buf[2] = NULL;
+			const gchar *linkbuf[3];
+			linkbuf[2] = NULL;
 
 			gchar *p_val = NULL;
 			p_val = (gchar *)_getXMLPropValue("internal-destination", atts);
@@ -628,9 +628,9 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				if(*p_val)
 					link += p_val;
 
-				buf[0] = "xlink:href";
-				buf[1] = link.utf8_str();
-				X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(buf)));
+				linkbuf[0] = "xlink:href";
+				linkbuf[1] = link.utf8_str();
+				X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(linkbuf)));
 				m_bOpenedLink = true;
 				break;
 			}
@@ -645,9 +645,9 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 				{
 					p_val[len - 2] = '\0';
 					p_val = p_val + 5;
-					buf[0] = "xlink:href";
-					buf[1] = p_val;
-					X_CheckError(appendObject(PTO_Hyperlink, buf));
+					linkbuf[0] = "xlink:href";
+					linkbuf[1] = p_val;
+					X_CheckError(appendObject(PTO_Hyperlink, linkbuf));
 					m_bOpenedLink = true;
 				}
 				else
