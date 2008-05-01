@@ -103,7 +103,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_Passepartout_Sniffer::IE_Exp_Passepartout_Sniffer (const char * name)
+IE_Exp_Passepartout_Sniffer::IE_Exp_Passepartout_Sniffer (const char * /*name*/)
 	: IE_ExpSniffer(IE_IMPEXPNAME_TEXT, true)
 {
 }

@@ -151,7 +151,7 @@ static struct wri_struct write_ole[] = {
 };
 #endif 
 
-int wri_ole_read (unsigned char *data, int size, GsfOutput *fout) {
+int wri_ole_read (unsigned char */*data*/, int /*size*/, GsfOutput */*fout*/) {
 #if 0
    FILE *f; 
 
