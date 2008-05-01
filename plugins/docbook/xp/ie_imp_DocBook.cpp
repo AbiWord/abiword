@@ -41,8 +41,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_DocBook_Sniffer::IE_Imp_DocBook_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_DocBook_Sniffer::IE_Imp_DocBook_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -60,7 +60,7 @@ const IE_SuffixConfidence * IE_Imp_DocBook_Sniffer::getSuffixConfidence ()
 }
 
 UT_Confidence_t IE_Imp_DocBook_Sniffer::recognizeContents(const char * szBuf, 
-											   UT_uint32 iNumbytes)
+											   UT_uint32 /*iNumbytes*/)
 {
   // TODO: scan the first few lines
 
@@ -771,7 +771,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Block;
 		m_iBlockDepth++;
 
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[2] = NULL;
 
 		const gchar *p_val = NULL;
@@ -852,7 +852,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Block;
 		m_iBlockDepth++;
 
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[0] = PT_STYLE_ATTRIBUTE_NAME;
 		buf[1] = "Block Text";
 		buf[2] = NULL;
@@ -867,7 +867,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Block;
 		m_iBlockDepth++;
 
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[0] = PT_STYLE_ATTRIBUTE_NAME;
 		buf[1] = "Plain Text";
 		buf[2] = NULL;
@@ -884,7 +884,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		const gchar *p_val = NULL;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("role"), atts);
 
-		gchar *buf[7];
+		const gchar *buf[7];
 		buf[0] = NULL;
 		buf[1] = NULL;
 		buf[2] = NULL;
@@ -938,7 +938,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	{
 		X_VerifyParseState(_PS_Block);
 
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[0] = PT_PROPS_ATTRIBUTE_NAME;
 		buf[1] = NULL;
 		buf[2] = NULL;
@@ -1042,7 +1042,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 	case TT_ULINK:  //an external link
 	{
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[2] = NULL;
 
 		const gchar *p_val = NULL;
@@ -1064,7 +1064,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	
 	case TT_LINK:  //an internal link
 	{
-		gchar *buf[3];
+		const gchar *buf[3];
 		buf[2] = NULL;
 
 		const gchar *p_val = NULL;
@@ -1097,7 +1097,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	case TT_BOOKMARK:
 	{
 		X_VerifyParseState(_PS_Block);
-		gchar *buf[5];
+		const gchar *buf[5];
 		buf[4] = NULL;
 
 		const gchar *p_val = NULL;
@@ -1127,7 +1127,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_bInNote = true;
 		m_iFootnotes++;
 
-		gchar *buf[3];
+		const gchar *buf[3];
 		UT_UTF8String noteID;
 
 		if(m_iNoteID == -1)
@@ -1137,7 +1137,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 			m_iNoteID = m_iFootnotes;
 			UT_UTF8String_sprintf(id,"%i",m_iNoteID);
 
-			gchar *ref[7];
+			const gchar *ref[7];
 			ref[0] = PT_TYPE_ATTRIBUTE_NAME;
 			ref[1] = "footnote_ref";
 			ref[2] = "footnote-id";
@@ -1165,7 +1165,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Field) || (m_parseState == _PS_Cell));
 		m_parseState = _PS_Field;
 
-		gchar *buf[7];
+		const gchar *buf[7];
 		buf[0] = PT_TYPE_ATTRIBUTE_NAME;
 		buf[1] = "footnote_ref";
 		buf[2] = NULL;
@@ -2626,7 +2626,7 @@ void IE_Imp_DocBook::charData(const gchar *s, int len)
 	{
 		if(tagTop() == TT_EMAIL)
 		{
-			gchar *buf[3];
+			const gchar *buf[3];
 			buf[2] = NULL;
 
 			UT_UTF8String link = "mailto:";
@@ -2649,7 +2649,7 @@ void IE_Imp_DocBook::charData(const gchar *s, int len)
  */
 void IE_Imp_DocBook :: createTitle (void)
 {
-	UT_return_if_fail(m_iTitleDepth);
+	UT_return_if_fail(m_iTitleDepth > 0);
 
 	if (m_parseState == _PS_DataSec)
 	{
@@ -2660,10 +2660,10 @@ void IE_Imp_DocBook :: createTitle (void)
 	m_parseState = _PS_Block;
 
 	/* list of attributes */
-	gchar *buf[11];
+	const gchar *buf[11];
 	memset(buf, 0, sizeof(buf));
 
-	if(m_iTitleDepth > m_utvTitles.getItemCount())
+	if(static_cast<UT_uint32>(m_iTitleDepth) > m_utvTitles.getItemCount())
 	{
 		m_utvTitles.addItem((fl_AutoNum *)NULL);
 	}
@@ -2775,7 +2775,7 @@ void IE_Imp_DocBook :: createTitle (void)
 		 * it into a list
 		 */
 		/* deletes previous lists of same level and above */
-		for (int i = (m_iTitleDepth - 1); i < m_utvTitles.getItemCount(); i++)
+		for (UT_uint32 i = (m_iTitleDepth - 1); i < m_utvTitles.getItemCount(); i++)
 		{
 			if (i == 0) //always keep the first chapter title
 				continue;
@@ -2836,7 +2836,7 @@ void IE_Imp_DocBook :: createTitle (void)
 	if (m_bMustNumber)
 	{
 		/* adds field */
-		gchar * buf2 [3];
+		const gchar * buf2 [3];
 		buf2[0] = PT_TYPE_ATTRIBUTE_NAME;
 		buf2[1] = "list_label";
 		buf2[2] = NULL;
@@ -2886,7 +2886,7 @@ void IE_Imp_DocBook :: createList (void)
 		}
 	}
 
-	gchar * lDelim = "";
+	const gchar * lDelim = "";
 
 	if(m_iTitleDepth == 1)
 		lDelim = "Chapter %L.";
@@ -2943,7 +2943,7 @@ void IE_Imp_DocBook :: createImage (const char *name, const gchar **atts)
 	const char *mime = g_strdup("image/png");
 	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, reinterpret_cast<void *>(const_cast<char *>(mime)), NULL));
 
-	gchar *buf[5];
+	const gchar *buf[5];
 	buf[0] = "dataid";
 	buf[1] = (gchar*)dataid.utf8_str();
 	buf[2] = NULL;

@@ -72,7 +72,7 @@ const IE_SuffixConfidence * IE_ImpGraphicWMF_Sniffer::getSuffixConfidence ()
 	return IE_ImpGraphicWMF_Sniffer__SuffixConfidence;
 }
 
-UT_Confidence_t IE_ImpGraphicWMF_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicWMF_Sniffer::recognizeContents(const char * /*szBuf*/, UT_uint32 /*iNumbytes*/)
 {
 	return ( UT_CONFIDENCE_POOR ); // Don't know how to recognize metafiles, so say yes
 }
@@ -151,8 +151,10 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
 
 	unsigned long flags;
 
+#if 0 // the code that uses these two variables is in an if 0 block below
 	unsigned int max_width  = 500;
 	unsigned int max_height = 500;
+#endif
 
 	unsigned int width, height;
 
@@ -390,8 +392,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+				 UT_uint32 /*release*/)
 {
   return 1;
 }

@@ -47,8 +47,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_DocBook_Sniffer::IE_Exp_DocBook_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_DocBook_Sniffer::IE_Exp_DocBook_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -110,12 +110,12 @@ void IE_Exp_DocBook :: iwrite (const char *txt)
 {
 	if (s_align)
 	{
-		char *indent = new char [s_align + 1];
-		memset (indent, '\t', s_align);
-		indent [s_align] = '\0';
+		char *tmpIndent = new char [s_align + 1];
+		memset (tmpIndent, '\t', s_align);
+		tmpIndent [s_align] = '\0';
 
-		IE_Exp :: write (indent);
-		DELETEPV(indent);
+		IE_Exp :: write (tmpIndent);
+		DELETEPV(tmpIndent);
 	}
 
 	IE_Exp :: write (txt);
@@ -433,7 +433,7 @@ void s_DocBook_Listener :: _openChapter (PT_AttrPropIndex api)
 	_openChapterTitle(api);
 }
 
-void s_DocBook_Listener :: _openChapterTitle (PT_AttrPropIndex api)
+void s_DocBook_Listener :: _openChapterTitle (PT_AttrPropIndex /*api*/)
 {
 	if(_tagTop() == TT_CHAPTER)
 	{
@@ -446,7 +446,7 @@ void s_DocBook_Listener :: _openChapterTitle (PT_AttrPropIndex api)
 	}
 }
 
-void s_DocBook_Listener :: _openList (PT_AttrPropIndex api)
+void s_DocBook_Listener :: _openList (PT_AttrPropIndex /*api*/)
 {
 /*
 	if(_tagTop() != TT_ITEMIZEDLIST)
@@ -479,7 +479,7 @@ void s_DocBook_Listener :: _openBlock(PT_AttrPropIndex api, bool indent)
 	m_iBlockType = BT_NORMAL;
 }
 
-void s_DocBook_Listener :: _openPlainBlock(PT_AttrPropIndex api, bool indent)
+void s_DocBook_Listener :: _openPlainBlock(PT_AttrPropIndex api, bool /*indent*/)
 {
 	if(m_bInTitle)
 		return;
@@ -1426,7 +1426,7 @@ void s_DocBook_Listener::_handleMetaData(void)
 		UT_UTF8String buf = "";
 		UT_UCS4String keyword = metaProp.utf8_str();
 
-		for(int i = 0;i < keyword.length(); i++)
+		for(UT_uint32 i = 0;i < keyword.length(); i++)
 		{
 			if(keyword[i] != ' ')
 			{
