@@ -171,8 +171,8 @@ UT_Error UT_HTML::parse (const char * szFilename)
 					if (htmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
 						{
 							UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n",
-										  szFilename, getLineNumber(ctxt),
-										  getColumnNumber(ctxt)));
+										  szFilename, xmlSAX2GetLineNumber(ctxt),
+										  xmlSAX2GetColumnNumber(ctxt)));
 							ret = UT_IE_IMPORTERROR;
 							break;
 						}
@@ -183,8 +183,8 @@ UT_Error UT_HTML::parse (const char * szFilename)
 						if (htmlParseChunk (ctxt, 0, 0, 1))
 							{
 								UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n",
-											  szFilename, getLineNumber(ctxt),
-											  getColumnNumber(ctxt)));
+											  szFilename, xmlSAX2GetLineNumber(ctxt),
+											  xmlSAX2GetColumnNumber(ctxt)));
 								ret = UT_IE_IMPORTERROR;
 							}
 					}
