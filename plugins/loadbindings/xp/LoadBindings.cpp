@@ -76,7 +76,6 @@ ABI_PLUGIN_DECLARE (LoadBindings)
 // -----------------------------------------------------------------------
 
 static bool LoadBindingsDlg_invoke (AV_View * v, EV_EditMethodCallData * d);
-static bool LoadBindings_invoke (AV_View * v, EV_EditMethodCallData * d);
 static bool LoadBindingsFromURI_invoke (AV_View * v, EV_EditMethodCallData * d);
 static bool LoadBindingsFromMemory_invoke (AV_View * v, EV_EditMethodCallData * d);
 static bool DumpEditMethods_invoke (AV_View * v, EV_EditMethodCallData * d);
@@ -211,12 +210,11 @@ static void LoadKeybindings(const char* uri)
 	UT_DEBUGMSG(("[LoadBindings] trying file %s\n", uri));
 		
 	// find out if the file exists at all
-	GsfInput* in = NULL;
-	if (in = UT_go_file_open(uri, NULL)) 
+	GsfInput* in = UT_go_file_open(uri, NULL);
+	if (in) 
 	{
 		// it seems to exist, cleanup after ourselves ...
-		if (in)
-			g_object_unref(G_OBJECT(in));
+		g_object_unref(G_OBJECT(in));
 		// ... and let LoadBindings_invoke do its thing
 		UT_DEBUGMSG(("[LoadBindings] invoking loader on %s\n", uri));
 		EV_EditMethodCallData userFileData(uri, strlen(uri));
@@ -271,7 +269,7 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release) 
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/) 
 {
 	return 1;
 }
@@ -282,7 +280,7 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version (UT_uint32 major, UT_uint32
 
 // Utility function for Abiword that first shows an open file dialog,
 // then automatically invokes the LoadBindings and SetBindings functions
-static bool LoadBindingsDlg_invoke (AV_View *, EV_EditMethodCallData * d) 
+static bool LoadBindingsDlg_invoke (AV_View *, EV_EditMethodCallData * /*d*/) 
 {
 	// ask user what file to open
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -344,9 +342,11 @@ static bool DumpEditMethods_invoke(AV_View *, EV_EditMethodCallData *)
 	// print them
 	printf("%u bindable edit methods (don't require data)\n", list.size());
 	for (size_t i=0; i<list.size(); ++i) printf("%s\n", list[i]->getName());
+
+	return true;
 }
 
-static bool SaveBindings_invoke(AV_View * v, EV_EditMethodCallData* d)
+static bool SaveBindings_invoke(AV_View * /*v*/, EV_EditMethodCallData* d)
 {
 	// get binding set
 	AP_BindingSet* pBSet = static_cast<AP_BindingSet *>(XAP_App::getApp()->getBindingSet());

@@ -286,7 +286,7 @@ abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL int
-abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	return 1;
 }
@@ -304,7 +304,7 @@ abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release
 //   keybindings for a presentation.
 //
 static bool
-Presentation_start (AV_View * v, EV_EditMethodCallData * d)
+Presentation_start (AV_View * v, EV_EditMethodCallData * /*d*/)
 {
   myPresentation.start(v);
 	
@@ -317,14 +317,14 @@ Presentation_start (AV_View * v, EV_EditMethodCallData * d)
 // previous keybindings.
 //
 static bool
-Presentation_end (AV_View * v, EV_EditMethodCallData * d)
+Presentation_end (AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 {
   myPresentation.end();
   return true;
 }
 
 static bool
-Presentation_nextPage (AV_View * v, EV_EditMethodCallData * d)
+Presentation_nextPage (AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 {
   myPresentation.showNextPage();
   return true;
@@ -332,7 +332,7 @@ Presentation_nextPage (AV_View * v, EV_EditMethodCallData * d)
 
 
 static bool
-Presentation_prevPage (AV_View * v, EV_EditMethodCallData * d)
+Presentation_prevPage (AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 {
   myPresentation.showPrevPage();
   return true;
@@ -520,8 +520,6 @@ bool Presentation::drawNthPage(UT_sint32 iPage)
   da.pG = pG;
   da.xoff = 0;
   da.yoff = 0;
-  UT_sint32 iWidth = m_pView->getWindowWidth();
-  UT_sint32 iHeight = m_pView->getWindowHeight();
   m_pView->draw(iPage, &da);
   fp_Page * pPage = m_pView->getLayout()->getNthPage(iPage);
   UT_sint32 iTotalHeight = (pPage->getHeight() + m_pView->getPageViewSep())*iPage;
@@ -577,17 +575,18 @@ GR_Image * Presentation::renderPageToImage(UT_sint32 iPage, UT_uint32 iZoom)
 bool  Presentation::showNext(void)
 {
   showNextPage();
+  return true;
 }
 
 
 bool  Presentation::showNextPage(void)
 {
-  if(m_bDrewPrev && (m_iPage + 1< m_pView->getLayout()->countPages()))
+  if(m_bDrewPrev && (m_iPage + 1< static_cast<UT_sint32>(m_pView->getLayout()->countPages())))
   { 
       m_iPage++;
   }
   drawNthPage(m_iPage);
-  if(m_iPage+1 < (m_pView->getLayout()->countPages()))
+  if(m_iPage+1 < static_cast<UT_sint32>(m_pView->getLayout()->countPages()))
       m_iPage++;
   m_bDrewNext = true;
   m_bDrewPrev = false;
@@ -598,7 +597,7 @@ bool  Presentation::showPrevPage(void)
 {
   if(m_iPage > 0)
   {
-    if(m_iPage > 1 && m_bDrewNext && (m_iPage +1 < m_pView->getLayout()->countPages()))
+    if(m_iPage > 1 && m_bDrewNext && (static_cast<UT_uint32>(m_iPage) +1 < m_pView->getLayout()->countPages()))
 	  m_iPage--;
       m_iPage--;
   }
