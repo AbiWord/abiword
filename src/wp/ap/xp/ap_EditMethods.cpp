@@ -13801,7 +13801,7 @@ Defun(hyperlinkStatusBar)
 	if((pView->isAnnotationPreviewActive()) &&
 	   (pView->getActivePreviewAnnotationID() == pAnn->getPID()))
 	{
-		UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
+		xxx_UT_DEBUGMSG(("hyperlinkStatusBar: nothing to draw, annotation already previewed\n"));
 		return true; // should be false? think not
 	}
 	
