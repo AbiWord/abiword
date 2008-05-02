@@ -206,7 +206,7 @@ static bool _getTranslationCode(FV_View * pView, UT_String & langCode)
 //   It should be called when the user selects from the context menu
 // 
 static
-bool FreeTranslation_invoke(AV_View * v, EV_EditMethodCallData * d)
+bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 {
 	// Get the current view that the user is in.
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -400,8 +400,8 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister(XAP_ModuleInfo * mi)
 }
 
 
-ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor,
-			UT_uint32 release)
+ABI_BUILTIN_FAR_CALL int abi_plugin_supports_version(UT_uint32 /*major*/, UT_uint32 /*minor*/,
+			UT_uint32 /*release*/)
 {
 	return 1;
 }

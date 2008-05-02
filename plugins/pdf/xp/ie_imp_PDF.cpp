@@ -201,7 +201,7 @@ public:
   }
 
   virtual UT_Confidence_t recognizeContents (const char * szBuf,
-					     UT_uint32 iNumbytes)
+					     UT_uint32 /*iNumbytes*/)
   {
     if (!strncmp (szBuf, "%PDF-", 5))
       return UT_CONFIDENCE_PERFECT;
@@ -285,8 +285,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-								 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+								 UT_uint32 /*release*/)
 {
   return 1;
 }
