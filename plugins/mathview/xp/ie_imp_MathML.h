@@ -34,8 +34,8 @@ class   UT_ByteBuf;
 class   ImportStream;
 
 typedef struct {
-	char * szEntity;
-	char * szVal;
+	const char * szEntity;
+	const char * szVal;
 } AbiMathViewEntityMapItem;
 
 class ABI_EXPORT IE_Imp_MathML_EntityTable
