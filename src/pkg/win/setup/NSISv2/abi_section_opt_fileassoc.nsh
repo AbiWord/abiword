@@ -18,7 +18,7 @@ Section "" section_fa_shellupdate_inv ; invisible section that sets up general a
   ; Write the application generic file association keys (define app and how to run it)
   ;CreateApplicationAssociation ApplicationSuite.FileType AppName AppDesc DefIcon ExeCmd
   ${CreateApplicationAssociation} "${appType}" "${PRODUCT}" "${PRODUCT} Document" \
-                                  "$INSTDIR\${MAINPROGRAM},2" "$INSTDIR\${MAINPROGRAM}"
+                                  "$INSTDIR\${MAINPROGRAM},1" "$INSTDIR\${MAINPROGRAM}"
 SectionEnd
 !macro Remove_${section_fa_shellupdate_inv}
 	;Removes this component
