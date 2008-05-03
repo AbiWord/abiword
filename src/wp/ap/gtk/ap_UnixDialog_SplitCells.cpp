@@ -62,7 +62,7 @@ static void s_split_right(GtkWidget *widget, gpointer data )
 	dlg->onSplit();
 }
 
-static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_SplitCells * me )
+static void s_response(GtkWidget * wid, gint /*id*/, AP_UnixDialog_SplitCells * /*me*/ )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
@@ -196,7 +196,7 @@ void AP_UnixDialog_SplitCells::activate(void)
 	gdk_window_raise (m_windowMain->window);
 }
 
-void AP_UnixDialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_SplitCells::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
     UT_ASSERT(m_windowMain);
 	ConstructWindowName();
@@ -388,7 +388,7 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 
 static void s_delete_clicked(GtkWidget * widget,
 			     gpointer,
-			     gpointer * dlg)
+			     gpointer * /*dlg*/)
 {
 	abiDestroyWidget(widget);
 }

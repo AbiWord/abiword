@@ -41,7 +41,7 @@ enum
 	OPACITY
 };
 
-static void s_color_cleared(GtkWidget * btn, AP_UnixDialog_Background * dlg)
+static void s_color_cleared(GtkWidget * /*btn*/, AP_UnixDialog_Background * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->colorCleared();

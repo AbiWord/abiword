@@ -60,7 +60,7 @@ enum {
 * Event dispatcher for button "Add"
 */
 static void
-AP_UnixDialog_Spell__onAddClicked (GtkButton *button,
+AP_UnixDialog_Spell__onAddClicked (GtkButton * /*button*/,
 								   gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -71,7 +71,7 @@ AP_UnixDialog_Spell__onAddClicked (GtkButton *button,
 * Event dispatcher for button "Ignore"
 */
 static void
-AP_UnixDialog_Spell__onIgnoreClicked (GtkButton *button,
+AP_UnixDialog_Spell__onIgnoreClicked (GtkButton * /*button*/,
 									  gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -82,7 +82,7 @@ AP_UnixDialog_Spell__onIgnoreClicked (GtkButton *button,
 * Event dispatcher for button "Ignore All"
 */
 static void
-AP_UnixDialog_Spell__onIgnoreAllClicked (GtkButton *button,
+AP_UnixDialog_Spell__onIgnoreAllClicked (GtkButton * /*button*/,
 										 gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -93,7 +93,7 @@ AP_UnixDialog_Spell__onIgnoreAllClicked (GtkButton *button,
 * Event dispatcher for button "Change"
 */
 static void
-AP_UnixDialog_Spell__onChangeClicked (GtkButton *button,
+AP_UnixDialog_Spell__onChangeClicked (GtkButton * /*button*/,
 									  gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -104,7 +104,7 @@ AP_UnixDialog_Spell__onChangeClicked (GtkButton *button,
 * Event dispatcher for button "Change All"
 */
 static void
-AP_UnixDialog_Spell__onChangeAllClicked (GtkButton *button,
+AP_UnixDialog_Spell__onChangeAllClicked (GtkButton * /*button*/,
 										 gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -115,9 +115,9 @@ AP_UnixDialog_Spell__onChangeAllClicked (GtkButton *button,
 * Event dispatcher for dblclicking a suggestion
 */
 static void
-AP_UnixDialog_Spell__onSuggestionDblClicked (GtkTreeView       *tree,
-											 GtkTreePath       *path,
-											 GtkTreeViewColumn *col,
+AP_UnixDialog_Spell__onSuggestionDblClicked (GtkTreeView       * /*tree*/,
+											 GtkTreePath       * /*path*/,
+											 GtkTreeViewColumn * /*col*/,
 											 gpointer		    data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -128,7 +128,7 @@ AP_UnixDialog_Spell__onSuggestionDblClicked (GtkTreeView       *tree,
 * Event dispatcher for selecting a suggestion
 */
 static void
-AP_UnixDialog_Spell__onSuggestionSelected (GtkButton *button,
+AP_UnixDialog_Spell__onSuggestionSelected (GtkButton * /*button*/,
 										   gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);
@@ -139,7 +139,7 @@ AP_UnixDialog_Spell__onSuggestionSelected (GtkButton *button,
 * Event dispatcher for editing the suggestion
 */
 static void
-AP_UnixDialog_Spell__onSuggestionChanged (GtkButton *button,
+AP_UnixDialog_Spell__onSuggestionChanged (GtkButton * /*button*/,
 										  gpointer   data)
 {
 	AP_UnixDialog_Spell *dlg = static_cast<AP_UnixDialog_Spell*>(data);

@@ -39,50 +39,50 @@
 #include "ut_debugmsg.h"
 
 
-static void s_HdrEven(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_HdrEven(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged( AP_Dialog_HdrFtr::HdrEven);
 }
 
-static void s_HdrFirst(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_HdrFirst(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrFirst);
 }
 
 
-static void s_HdrLast(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_HdrLast(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrLast);
 }
 
-static void s_FtrEven(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_FtrEven(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrEven);
 }
 
-static void s_FtrFirst(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_FtrFirst(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrFirst);
 }
 
-static void s_FtrLast(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_FtrLast(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrLast);
 }
 
-static void s_restart_toggled(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_restart_toggled(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->RestartChanged();
 }
 
-static void s_spin_changed(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
+static void s_spin_changed(GtkWidget * /*btn*/, AP_UnixDialog_HdrFtr * dlg)
 {
 	UT_return_if_fail(dlg);
 	dlg->RestartSpinChanged();

@@ -268,7 +268,7 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 	}
 }
 
-void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
+void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * /*widget*/)
 {
 	m_bEditChanged = true;
 }

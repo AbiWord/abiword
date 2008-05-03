@@ -775,7 +775,7 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 {
 }
 
-void AP_UnixDialog_Columns::enableLineBetweenControl(bool bState)
+void AP_UnixDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 {
 }
 

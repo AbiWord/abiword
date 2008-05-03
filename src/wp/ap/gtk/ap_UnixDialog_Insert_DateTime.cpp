@@ -92,9 +92,9 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	abiDestroyWidget ( m_windowMain ) ;
 }
 
-void AP_UnixDialog_Insert_DateTime::s_date_dblclicked(GtkTreeView *treeview,
-													  GtkTreePath *arg1,
-													  GtkTreeViewColumn *arg2,
+void AP_UnixDialog_Insert_DateTime::s_date_dblclicked(GtkTreeView * /*treeview*/,
+													  GtkTreePath * /*arg1*/,
+													  GtkTreeViewColumn * /*arg2*/,
 													  AP_UnixDialog_Insert_DateTime * me)
 {
 	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_INSERT);

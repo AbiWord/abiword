@@ -45,7 +45,7 @@
 * Event dispatcher for spinbutton "page".
 */
 gboolean 
-AP_UnixDialog_Goto__onFocusPage (GtkWidget 		  *widget,
+AP_UnixDialog_Goto__onFocusPage (GtkWidget 		  * /*widget*/,
 								 GdkEventFocus    *event,
 								 gpointer 		  data) 
 {
@@ -62,7 +62,7 @@ AP_UnixDialog_Goto__onFocusPage (GtkWidget 		  *widget,
 * Event dispatcher for spinbutton "line".
 */
 gboolean 
-AP_UnixDialog_Goto__onFocusLine (GtkWidget 		  *widget,
+AP_UnixDialog_Goto__onFocusLine (GtkWidget 		  * /*widget*/,
 								 GdkEventFocus    *event,
 								 gpointer 		  data) 
 {
@@ -79,7 +79,7 @@ AP_UnixDialog_Goto__onFocusLine (GtkWidget 		  *widget,
 * Event dispatcher for treeview "bookmarks".
 */
 gboolean 
-AP_UnixDialog_Goto__onFocusBookmarks (GtkWidget 	   *widget,
+AP_UnixDialog_Goto__onFocusBookmarks (GtkWidget 	   * /*widget*/,
 									  GdkEventFocus    *event,
 									  gpointer 		   data) 
 {
@@ -96,7 +96,7 @@ AP_UnixDialog_Goto__onFocusBookmarks (GtkWidget 	   *widget,
 * Event dispatcher for spinbutton "page".
 */
 void 
-AP_UnixDialog_Goto__onPageChanged (GtkSpinButton *spinbutton,
+AP_UnixDialog_Goto__onPageChanged (GtkSpinButton * /*spinbutton*/,
 								   gpointer 	  data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -107,7 +107,7 @@ AP_UnixDialog_Goto__onPageChanged (GtkSpinButton *spinbutton,
 * Event dispatcher for spinbutton "line".
 */
 void 
-AP_UnixDialog_Goto__onLineChanged (GtkSpinButton *spinbutton,
+AP_UnixDialog_Goto__onLineChanged (GtkSpinButton * /*spinbutton*/,
 								   gpointer 	  data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -118,9 +118,9 @@ AP_UnixDialog_Goto__onLineChanged (GtkSpinButton *spinbutton,
 * Event dispatcher for treeview "bookmarks".
 */
 void
-AP_UnixDialog_Goto__onBookmarkDblClicked (GtkTreeView       *tree,
-										  GtkTreePath       *path,
-										  GtkTreeViewColumn *col,
+AP_UnixDialog_Goto__onBookmarkDblClicked (GtkTreeView       * /*tree*/,
+										  GtkTreePath       * /*path*/,
+										  GtkTreeViewColumn * /*col*/,
 										  gpointer		    data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -131,7 +131,7 @@ AP_UnixDialog_Goto__onBookmarkDblClicked (GtkTreeView       *tree,
 * Event dispatcher for button "jump".
 */
 void
-AP_UnixDialog_Goto__onJumpClicked (GtkButton *button,
+AP_UnixDialog_Goto__onJumpClicked (GtkButton * /*button*/,
 								   gpointer   data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -142,7 +142,7 @@ AP_UnixDialog_Goto__onJumpClicked (GtkButton *button,
 * Event dispatcher for button "prev".
 */
 void
-AP_UnixDialog_Goto__onPrevClicked (GtkButton *button,
+AP_UnixDialog_Goto__onPrevClicked (GtkButton * /*button*/,
 								   gpointer   data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -153,7 +153,7 @@ AP_UnixDialog_Goto__onPrevClicked (GtkButton *button,
 * Event dispatcher for button "next".
 */
 void
-AP_UnixDialog_Goto__onNextClicked (GtkButton *button,
+AP_UnixDialog_Goto__onNextClicked (GtkButton * /*button*/,
 								   gpointer   data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -164,7 +164,7 @@ AP_UnixDialog_Goto__onNextClicked (GtkButton *button,
 * Event dispatcher for button "close".
 */
 void
-AP_UnixDialog_Goto__onDialogResponse (GtkDialog *dialog,
+AP_UnixDialog_Goto__onDialogResponse (GtkDialog * /*dialog*/,
 									  gint 		response,
 									  gpointer  data)
 {
@@ -178,8 +178,8 @@ AP_UnixDialog_Goto__onDialogResponse (GtkDialog *dialog,
 * Event dispatcher for window.
 */
 gboolean
-AP_UnixDialog_Goto__onDeleteWindow (GtkWidget *widget,
-									GdkEvent  *event,
+AP_UnixDialog_Goto__onDeleteWindow (GtkWidget * /*widget*/,
+									GdkEvent  * /*event*/,
 									gpointer  data)
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
@@ -409,7 +409,7 @@ AP_UnixDialog_Goto::updateDocCount ()
 * Build dialog.
 */
 void 
-AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame) 
+AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
 	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
@@ -549,7 +549,7 @@ AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 }
 
 void 
-AP_UnixDialog_Goto::notifyActiveFrame (XAP_Frame *pFrame)
+AP_UnixDialog_Goto::notifyActiveFrame (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("ROB: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);

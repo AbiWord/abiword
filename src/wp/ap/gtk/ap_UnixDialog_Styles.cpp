@@ -128,35 +128,35 @@ s_typeslist_changed (GtkWidget *w, gpointer d)
 }
 
 static void
-s_deletebtn_clicked (GtkWidget *w, gpointer d)
+s_deletebtn_clicked (GtkWidget * /*w*/, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_DeleteClicked ();
 }
 
 static void
-s_modifybtn_clicked (GtkWidget *w, gpointer d)
+s_modifybtn_clicked (GtkWidget * /*w*/, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_ModifyClicked ();
 }
 
 static void
-s_newbtn_clicked (GtkWidget *w, gpointer d)
+s_newbtn_clicked (GtkWidget * /*w*/, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_NewClicked ();
 }
 
 static void
-s_applybtn_clicked (GtkWidget *w, gpointer d)
+s_applybtn_clicked (GtkWidget * /*w*/, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_Apply ();
 }
 
 static void
-s_closebtn_clicked (GtkWidget *w, gpointer d)
+s_closebtn_clicked (GtkWidget * /*w*/, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_Close ();

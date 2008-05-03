@@ -125,24 +125,24 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 	dlg->event_Cancel();
 }
 
-static void s_find_clicked(GtkWidget *btn, GtkWidget * dlg)
+static void s_find_clicked(GtkWidget * /*btn*/, GtkWidget * dlg)
 {
 	gtk_dialog_response (GTK_DIALOG(dlg), AP_UnixDialog_Replace::BUTTON_FIND);
 }
 
-static void s_findreplace_clicked(GtkWidget *btn, GtkWidget * dlg)
+static void s_findreplace_clicked(GtkWidget * /*btn*/, GtkWidget * dlg)
 {
 	gtk_dialog_response (GTK_DIALOG(dlg), AP_UnixDialog_Replace::BUTTON_REPLACE);
 }
 
-static void s_replaceall_clicked(GtkWidget *btn, GtkWidget * dlg)
+static void s_replaceall_clicked(GtkWidget * /*btn*/, GtkWidget * dlg)
 {
 	gtk_dialog_response (GTK_DIALOG(dlg), AP_UnixDialog_Replace::BUTTON_REPLACE_ALL);
 }
 
 static void s_delete_clicked(GtkWidget * widget,
 							 gpointer,
-							 gpointer * dlg)
+							 gpointer * /*dlg*/)
 {
 	abiDestroyWidget(widget);
 }
@@ -157,7 +157,7 @@ void AP_UnixDialog_Replace::activate(void)
 	gdk_window_raise(m_windowMain->window);
 }
 
-void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
