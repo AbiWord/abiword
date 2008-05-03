@@ -338,7 +338,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 		pView->setXScrollOffset(static_cast<UT_sint32>(xoffDisc));
 }
 
-void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+void AP_UnixFrame::translateDocumentToScreen(UT_sint32 & /*x*/, UT_sint32 & /*y*/)
 {
 	UT_ASSERT_NOT_REACHED();
 }

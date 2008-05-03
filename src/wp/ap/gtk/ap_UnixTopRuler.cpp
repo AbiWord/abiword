@@ -38,8 +38,8 @@
 /*****************************************************************/
 
 static void
-ruler_style_changed (GtkWidget 			*w, 
-					 GtkStyle 			*previous_style,
+ruler_style_changed (GtkWidget 			* /*w*/, 
+					 GtkStyle 			* /*previous_style*/,
 					 AP_UnixTopRuler 	*ruler)
 {
 	ruler->_ruler_style_changed();
@@ -268,7 +268,7 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 
 }
 	
-gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
+gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* /*w*/, GdkEventKey* /* e */)
 {
 	return 1;
 }

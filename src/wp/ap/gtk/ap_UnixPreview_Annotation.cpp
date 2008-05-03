@@ -67,7 +67,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	gtk_widget_show(m_pDrawingArea);
 }
 
-void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixPreview_Annotation::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	//UT_DEBUGMSG(("notifyActiveFrame: trying to activate... %x \n",this));
 	//activate();

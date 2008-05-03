@@ -76,7 +76,7 @@ void  AP_UnixDialog_WordCount::activate(void)
 }
 
 void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id,
-										 AP_UnixDialog_WordCount * me )
+										 AP_UnixDialog_WordCount * /*me*/ )
 {
 	if (id == GTK_RESPONSE_CLOSE)
 	{
@@ -131,7 +131,7 @@ void AP_UnixDialog_WordCount::event_WindowDelete(void)
 	destroy();
 }
 
-void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	// FIXME put that in XP code
 	UT_ASSERT(m_windowMain);

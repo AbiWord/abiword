@@ -57,7 +57,7 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 	    me->event_OK () ;
 	  }
 	
-	static void destroy_callback ( GtkWidget*, gpointer unused, AP_UnixDialog_MarkRevisions * me)
+	static void destroy_callback ( GtkWidget*, gpointer /*unused*/, AP_UnixDialog_MarkRevisions * me)
 	  {
 	    me->event_Cancel () ;
 	  }

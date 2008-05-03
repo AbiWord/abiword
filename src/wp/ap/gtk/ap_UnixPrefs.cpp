@@ -42,7 +42,7 @@ const char * AP_UnixPrefs::_getPrefsPathname(void) const
 	  return buf.c_str();
 
 	const char * szDirectory = m_pApp->getUserPrivateDirectory();
-	char * szFile = "AbiWord.Profile";
+	const char * szFile = "AbiWord.Profile";
 
 	buf = szDirectory;
 	if (!buf.size() || szDirectory[buf.size()-1] != '/')

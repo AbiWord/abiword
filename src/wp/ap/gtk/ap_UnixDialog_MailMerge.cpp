@@ -68,8 +68,8 @@ static void s_types_clicked(GtkTreeView *treeview,
 }
 
 static void s_types_dblclicked(GtkTreeView *treeview,
-							   GtkTreePath *arg1,
-							   GtkTreeViewColumn *arg2,
+							   GtkTreePath * /*arg1*/,
+							   GtkTreeViewColumn * /*arg2*/,
 							   AP_UnixDialog_MailMerge * me)
 {
 	// simulate the effects of a single click
@@ -120,7 +120,7 @@ void AP_UnixDialog_MailMerge::event_Close()
 	destroy();
 }
 
-static void s_destroy_clicked(GtkWidget * widget,
+static void s_destroy_clicked(GtkWidget * /*widget*/,
 							  AP_UnixDialog_MailMerge * dlg)
 {
 	dlg->event_Close();
@@ -128,7 +128,7 @@ static void s_destroy_clicked(GtkWidget * widget,
 
 static void s_delete_clicked(GtkWidget * widget,
 							 gpointer,
-							 gpointer * dlg)
+							 gpointer * /*dlg*/)
 {
 	abiDestroyWidget(widget);
 }

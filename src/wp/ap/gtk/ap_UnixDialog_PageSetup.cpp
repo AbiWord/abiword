@@ -557,7 +557,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint
 	return glade_xml_get_widget(m_pXML, sLocal.c_str());
 }
 
-void Markup(GtkWidget * widget, const XAP_StringSet * pSS, char *string)
+void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
 {
 	gchar * unixstr = NULL;	// used for conversions
 	UT_XML_cloneNoAmpersands(unixstr, string);

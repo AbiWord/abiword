@@ -44,8 +44,8 @@
 
 /*****************************************************************/
 
-static gint s_preview_exposed(GtkWidget * w,
-			      GdkEventExpose * e,
+static gint s_preview_exposed(GtkWidget * /*w*/,
+			      GdkEventExpose * /*e*/,
 			      AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);

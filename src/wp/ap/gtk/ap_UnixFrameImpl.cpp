@@ -127,13 +127,13 @@ void AP_UnixFrameImpl::_showOrHideStatusbar()
 }
 
 
-gboolean AP_UnixFrameImpl::ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
+gboolean AP_UnixFrameImpl::ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing * /*event*/, AP_UnixFrameImpl * /*me*/)
 {
   gtk_widget_grab_focus (drawing_area);
   return TRUE;
 }
 
-gboolean AP_UnixFrameImpl::ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
+gboolean AP_UnixFrameImpl::ap_focus_out_event (GtkWidget * /*drawing_area*/, GdkEventCrossing * /*event*/, AP_UnixFrameImpl * /*me*/)
 {
   return TRUE;
 }

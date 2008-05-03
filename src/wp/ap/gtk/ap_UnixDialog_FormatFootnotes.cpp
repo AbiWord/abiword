@@ -130,7 +130,7 @@ static void s_EndInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg
 }
 
 
-static void s_EndRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+static void s_EndRestartSection(GtkWidget * /*widget*/, AP_UnixDialog_FormatFootnotes * dlg)
 {	
 	UT_DEBUGMSG(("Restart Endnotes at each section \n")); 
 	dlg->event_EndRestartSection();
