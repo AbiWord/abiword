@@ -53,12 +53,12 @@ static void s_gchars_to_utf8str(const gchar * psz, UT_UTF8String & sStr)
 #endif
 }
 
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * /*me*/ )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
-static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_FormatTOC * me )
 {
    me->event_Close();
 }
@@ -295,7 +295,7 @@ void AP_UnixDialog_FormatTOC::event_IndentChanged(GtkWidget * wSpin)
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 }
 
-void AP_UnixDialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_FormatTOC::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
     UT_ASSERT(m_windowMain);
 }

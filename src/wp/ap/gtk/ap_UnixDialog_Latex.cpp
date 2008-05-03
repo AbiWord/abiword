@@ -34,26 +34,26 @@
 #include "ap_UnixDialog_Latex.h"
 #include "xap_Dlg_MessageBox.h"
 
-static gboolean s_delete_clicked(GtkWidget * widget, GdkEvent *event, AP_UnixDialog_Latex * dlg)
+static gboolean s_delete_clicked(GtkWidget * /*widget*/, GdkEvent * /*event*/, AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
 	return TRUE;
 }
 
-static void s_close_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
+static void s_close_clicked(GtkWidget * /*widget*/,AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_Close();
 }
 
-static void s_destroy_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
+static void s_destroy_clicked(GtkWidget * /*widget*/,AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_Close();
 }
 
-static void s_insert_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
+static void s_insert_clicked(GtkWidget * /*widget*/,AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_Insert();
@@ -113,7 +113,7 @@ void AP_UnixDialog_Latex::event_WindowDelete(void)
 	destroy();
 }
 
-void AP_UnixDialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_Latex::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	// FIXME put that in XP code
 	UT_ASSERT(m_windowMain);

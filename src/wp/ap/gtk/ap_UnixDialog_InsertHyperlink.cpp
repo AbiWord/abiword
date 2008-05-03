@@ -67,8 +67,8 @@ AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
 
 /*****************************************************************/
 
-static void s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_UnixDialog_InsertHyperlink *me)
+static void s_blist_clicked(GtkWidget * /*clist*/, gint row, gint /*column*/,
+										  GdkEventButton * /*event*/, AP_UnixDialog_InsertHyperlink *me)
 {
 	me->setRow(row);
 	gtk_entry_set_text(GTK_ENTRY(me->m_entry), me->m_pBookmarks[row]);

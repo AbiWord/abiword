@@ -224,7 +224,7 @@ void AP_UnixDialog_New::event_RadioButtonSensitivity ()
 /*************************************************************************/
 /*************************************************************************/
 
-static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
+static void s_choose_clicked (GtkWidget * /*w*/, AP_UnixDialog_New * dlg)
 {
 	dlg->event_ToggleOpenExisting();
 }
@@ -232,7 +232,7 @@ static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 /*************************************************************************/
 /*************************************************************************/
 
-static void s_radiobutton_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
+static void s_radiobutton_clicked (GtkWidget * /*w*/, AP_UnixDialog_New * dlg)
 {
 	dlg->event_RadioButtonSensitivity();
 }
@@ -288,9 +288,9 @@ static void s_template_clicked(GtkTreeView *treeview,
 	dlg->event_ListClicked();
 }
 
-void AP_UnixDialog_New::s_template_dblclicked(GtkTreeView *treeview,
-											  GtkTreePath *arg1,
-											  GtkTreeViewColumn *arg2,
+void AP_UnixDialog_New::s_template_dblclicked(GtkTreeView * /*treeview*/,
+											  GtkTreePath * /*arg1*/,
+											  GtkTreeViewColumn * /*arg2*/,
 											  AP_UnixDialog_New * me)
 {
 	me->event_ListClicked();
