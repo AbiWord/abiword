@@ -152,6 +152,6 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_IMAGE_TITLE           (static_cast<const gchar *>("title"))
 #define PT_IMAGE_DESCRIPTION           (static_cast<const gchar *>("alt"))
 #define PT_DATA_PREVIEW           (static_cast<const gchar *>("preview"))
-
+#define PT_HYPERLINK_TARGET_NAME  (static_cast<const gchar *>("xlink:href"))
 
 #endif /* PT_TYPES_H */
