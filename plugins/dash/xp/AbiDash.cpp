@@ -97,7 +97,7 @@ AV_ListenerId	getID(void)
 		{
 			return m_lid;
 		}
-virtual bool notify(AV_View * pAView, const AV_ChangeMask mask)
+virtual bool notify(AV_View * pAView, const AV_ChangeMask /*mask*/)
 		{
 			PD_Document *    arg_pCurDoc;
 			fl_BlockLayout * arg_pCurBlock;
@@ -125,7 +125,7 @@ virtual bool notify(AV_View * pAView, const AV_ChangeMask mask)
 						   tbork->tm_year+1900,
 						   tbork->tm_mon+1,
 						   tbork->tm_mday);
-			/* Gather various metadat items (if set))
+			/* Gather various metadat items (if set)) */
 			   /*title*/
 			m_pCurDoc->getMetaDataProp (PD_META_KEY_TITLE, aText);
 			if (aText.byteLength()>0) {
@@ -234,7 +234,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
     return 1; 
 }

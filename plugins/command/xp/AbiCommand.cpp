@@ -142,7 +142,7 @@ abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL int
-abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	return 1;
 }
@@ -160,7 +160,7 @@ abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release
 //   interface.
 //
 static bool
-AbiCommand_invoke (AV_View * v, EV_EditMethodCallData * d)
+AbiCommand_invoke (AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 {
 	AbiCommand myCommand;
 
@@ -752,7 +752,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		{
 			UT_UTF8String calldata;
 
-			for (int i = 1; i < count; i++)
+			for (i = 1; i < count; i++)
 			{
 				UT_UTF8String *pComm = const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
 				calldata += *pComm;
@@ -930,7 +930,7 @@ AbiCommand::movePoint (UT_Vector * pToks)
 			static_cast < FV_View * >(m_pCurView)->getEditableBounds (true, posEOD);
 			static_cast < FV_View * >(m_pCurView)->getEditableBounds (false, posBOD);
 
-			if (amt >= posBOD && amt <= posEOD)
+			if (amt >= static_cast<UT_sint32>(posBOD) && amt <= static_cast<UT_sint32>(posEOD))
 				static_cast < FV_View * >(m_pCurView)->setPoint (pos);
 			else
 				return false;
@@ -1070,13 +1070,6 @@ AbiCommand::printFiles (UT_Vector * pToks)
 		UT_UTF8String *pPrinter =
 		  const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
 
-		GR_GraphicsFactory * pGF;
-		
-		pGF = XAP_App::getApp()->getGraphicsFactory();
-		UT_return_val_if_fail(pGF, false);
-		
-		UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);		   
-		
 		GnomePrintJob *job = gnome_print_job_new (NULL);
 		UT_return_val_if_fail(job, false);
 		
@@ -1147,7 +1140,6 @@ AbiCommand::replaceDocument (PD_Document * pDoc)
 	// Put the new document in place.
 	//
 	m_pCurDoc = pDoc;
-	XAP_UnixApp *pUnixApp = static_cast < XAP_UnixApp * >(m_pApp);
 
 	m_pCurFrame = new AP_UnixFrame();
 	UT_UTF8String extension (".bak~");
