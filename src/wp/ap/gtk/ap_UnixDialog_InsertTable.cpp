@@ -78,7 +78,7 @@ AP_UnixDialog_InsertTable::~AP_UnixDialog_InsertTable(void)
 void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
 {
     // Build the dialog's window
-	GtkWidget * m_windowMain = _constructWindow();
+	m_windowMain = _constructWindow();
 	UT_return_if_fail(m_windowMain);
 
 	// Populate the window's data items

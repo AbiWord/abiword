@@ -210,10 +210,10 @@ return GET_CLASS (w)->p (w, str); \
 
 void
 g_cclosure_user_marshal_VOID__INT_INT_INT (GClosure     *closure,
-                                           GValue       *return_value,
+                                           GValue       * /*return_value*/,
                                            guint         n_param_values,
                                            const GValue *param_values,
-                                           gpointer      invocation_hint,
+                                           gpointer      /*invocation_hint*/,
                                            gpointer      marshal_data)
 {
 	typedef void (*GMarshalFunc_VOID__INT_INT_INT) (gpointer     data1,
@@ -765,36 +765,36 @@ public:
 		return AV_LISTENER_PLUGIN;
 	}
 
-	virtual void bold(bool value) {}
-	virtual void italic(bool value) {}
-	virtual void underline(bool value) {}
-	virtual void overline(bool value) {}
-	virtual void line_through(bool value) {}
-	virtual void topline(bool value) {}
-	virtual void bottomline(bool value) {}
-	virtual void subscript(bool value) {}
-	virtual void superscript(bool value) {}
-	virtual void color(UT_RGBColor value) {}
-	virtual void font_size(double value) {}
-	virtual void font_family(const char * value) {}
+	virtual void bold(bool /*value*/) {}
+	virtual void italic(bool /*value*/) {}
+	virtual void underline(bool /*value*/) {}
+	virtual void overline(bool /*value*/) {}
+	virtual void line_through(bool /*value*/) {}
+	virtual void topline(bool /*value*/) {}
+	virtual void bottomline(bool /*value*/) {}
+	virtual void subscript(bool /*value*/) {}
+	virtual void superscript(bool /*value*/) {}
+	virtual void color(UT_RGBColor /*value*/) {}
+	virtual void font_size(double /*value*/) {}
+	virtual void font_family(const char * /*value*/) {}
 	virtual void changed(void) {}
-	virtual void can_undo(bool value) {}
-	virtual void can_redo(bool value) {}
-	virtual void is_dirty(bool value) {}
-	virtual void leftAlign(bool value) {}
-	virtual void rightAlign(bool value) {}
-	virtual void centerAlign(bool value) {}
-	virtual void justifyAlign(bool value) {}
-	virtual void styleName(const char * value) {}
-	virtual void textSelected(bool value) {}
-	virtual void imageSelected(bool value) {}
-	virtual void selectionCleared(bool value) {}
-	virtual void enterSelection(bool value) {}
-	virtual void leaveSelection(bool value) {}
-	virtual void tableState(bool value) {}
-	virtual void pageCount(guint32 value) {}
-	virtual void currentPage(guint32 value) {}
-	virtual void zoomPercentage(gint32 value) {}
+	virtual void can_undo(bool /*value*/) {}
+	virtual void can_redo(bool /*value*/) {}
+	virtual void is_dirty(bool /*value*/) {}
+	virtual void leftAlign(bool /*value*/) {}
+	virtual void rightAlign(bool /*value*/) {}
+	virtual void centerAlign(bool /*value*/) {}
+	virtual void justifyAlign(bool /*value*/) {}
+	virtual void styleName(const char * /*value*/) {}
+	virtual void textSelected(bool /*value*/) {}
+	virtual void imageSelected(bool /*value*/) {}
+	virtual void selectionCleared(bool /*value*/) {}
+	virtual void enterSelection(bool /*value*/) {}
+	virtual void leaveSelection(bool /*value*/) {}
+	virtual void tableState(bool /*value*/) {}
+	virtual void pageCount(guint32 /*value*/) {}
+	virtual void currentPage(guint32 /*value*/) {}
+	virtual void zoomPercentage(gint32 /*value*/) {}
 
 private:
 

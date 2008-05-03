@@ -555,7 +555,7 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 
 static void s_delete_clicked(GtkWidget * widget,
 			     gpointer,
-			     gpointer * dlg)
+			     gpointer * /*dlg*/)
 {
 	abiDestroyWidget(widget);
 }

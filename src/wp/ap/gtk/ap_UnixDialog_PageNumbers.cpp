@@ -109,7 +109,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	
     // Build the dialog's window
-    GtkWidget * m_window = _constructWindow();
+    m_window = _constructWindow();
     UT_return_if_fail(m_window);
 
 	// attach a new graphics context to the drawing area

@@ -71,7 +71,7 @@ AP_UnixDialog_Lists::~AP_UnixDialog_Lists(void)
 		DELETEP (m_pPreviewWidget);
 }
 
-static void s_customChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_customChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
 	me->customChanged ();
@@ -87,14 +87,14 @@ static void s_FoldCheck_changed(GtkWidget * widget, AP_UnixDialog_Lists * me)
 	me->setFoldLevel(iLevel,bSet);
 }
 
-static void s_styleChangedNone (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_styleChangedNone (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
 	me->styleChanged ( 0 );
 }
 
 
-static void s_styleChangedBullet (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_styleChangedBullet (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
 	me->fillUncustomizedValues(); // Use defaults to start.
@@ -102,7 +102,7 @@ static void s_styleChangedBullet (GtkWidget * widget, AP_UnixDialog_Lists * me)
 }
 
 
-static void s_styleChangedNumbered (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_styleChangedNumbered (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
 	me->fillUncustomizedValues(); // Use defaults to start.
@@ -112,7 +112,7 @@ static void s_styleChangedNumbered (GtkWidget * widget, AP_UnixDialog_Lists * me
 /*!
  * User has changed their list type selection.
  */
-static void s_typeChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_typeChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
 	if(me->dontUpdate())
 		return;
@@ -126,7 +126,7 @@ static void s_typeChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 /*!
  * A value in the Customized box has changed.
  */
-static void s_valueChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_valueChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
 	if(me->dontUpdate())
 		return;
@@ -136,12 +136,12 @@ static void s_valueChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 }
 
 
-static void s_applyClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_applyClicked (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
 	me->applyClicked();
 }
 
-static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static void s_closeClicked (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 {
 	me->closeClicked();
 }
@@ -401,7 +401,7 @@ void AP_UnixDialog_Lists::activate (void)
 	gdk_window_raise (m_wMainWindow->window);
 }
 
-void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	UT_ASSERT(m_wMainWindow);
 	ConstructWindowName();
@@ -1361,7 +1361,7 @@ static void s_destroy_clicked(GtkWidget * /* widget */,
 
 static void s_delete_clicked(GtkWidget * widget,
 			     gpointer,
-			     gpointer * dlg)
+			     gpointer * /*dlg*/)
 {
 	abiDestroyWidget(widget); // will emit the proper signals for us
 }

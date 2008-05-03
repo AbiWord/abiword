@@ -60,9 +60,9 @@ static void s_types_clicked(GtkTreeView *treeview,
 }
 
 static gboolean
-tree_select_filter (GtkTreeSelection *selection, GtkTreeModel *model,
-								  GtkTreePath *path, gboolean path_selected,
-								  gpointer data)
+tree_select_filter (GtkTreeSelection * /*selection*/, GtkTreeModel * /*model*/,
+								  GtkTreePath *path, gboolean /*path_selected*/,
+								  gpointer /*data*/)
 {
 	if (gtk_tree_path_get_depth (path) > 1)
 		return TRUE;
@@ -70,8 +70,8 @@ tree_select_filter (GtkTreeSelection *selection, GtkTreeModel *model,
 }
 
 static void s_types_dblclicked(GtkTreeView *treeview,
-							   GtkTreePath *arg1,
-							   GtkTreeViewColumn *arg2,
+							   GtkTreePath * /*arg1*/,
+							   GtkTreeViewColumn * /*arg2*/,
 							   AP_UnixDialog_Stylist * me)
 {
 	// simulate the effects of a single click
@@ -79,12 +79,12 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 	me->event_Apply ();
 }
 
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
+static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * /*me*/ )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
-static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me )
+static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
 {
    me->event_Close();
 }
@@ -173,7 +173,7 @@ void AP_UnixDialog_Stylist::activate(void)
 	gdk_window_raise (m_windowMain->window);
 }
 
-void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
     UT_ASSERT(m_windowMain);
 }

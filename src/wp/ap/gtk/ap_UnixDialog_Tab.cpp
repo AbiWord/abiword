@@ -63,7 +63,7 @@ AP_UnixDialog_Tab__onDefaultTabChanged (GtkSpinButton *widget,
 
 //! Event dispatcher for default tab width
 static gboolean
-AP_UnixDialog_Tab__onDefaultTabFocusOut (GtkWidget 	   *widget,
+AP_UnixDialog_Tab__onDefaultTabFocusOut (GtkWidget 	   * /*widget*/,
 										 GdkEventFocus *event,
 										 gpointer 		data)
 {	
@@ -77,7 +77,7 @@ AP_UnixDialog_Tab__onDefaultTabFocusOut (GtkWidget 	   *widget,
 
 //! Event dispatcher for tab list. 
 static void
-AP_UnixDialog_Tab__onTabSelected (GtkTreeSelection *selection,
+AP_UnixDialog_Tab__onTabSelected (GtkTreeSelection * /*selection*/,
 								  gpointer 			data) 
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -95,7 +95,7 @@ AP_UnixDialog_Tab__onPositionChanged (GtkSpinButton *widget,
 
 //! Event dispatcher for position spinner.
 static gboolean
-AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 *widget,
+AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 * /*widget*/,
 									   GdkEventFocus *event,
 									   gpointer 	  data)
 {
@@ -111,7 +111,7 @@ AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 *widget,
 
 //! Event dispatcher for alignment popup-menu.
 static void
-AP_UnixDialog_Tab__onAlignmentChanged (GtkComboBox *widget,
+AP_UnixDialog_Tab__onAlignmentChanged (GtkComboBox * /*widget*/,
 									   gpointer 	data) 
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -120,7 +120,7 @@ AP_UnixDialog_Tab__onAlignmentChanged (GtkComboBox *widget,
 
 //! Event dispatcher for leader popup-menu.
 static void
-AP_UnixDialog_Tab__onLeaderChanged (GtkComboBox *widget,
+AP_UnixDialog_Tab__onLeaderChanged (GtkComboBox * /*widget*/,
 									   gpointer  data) 
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -129,7 +129,7 @@ AP_UnixDialog_Tab__onLeaderChanged (GtkComboBox *widget,
 
 //! Event dispatcher for button "Add".
 static void
-AP_UnixDialog_Tab__onAddTab (GtkButton *widget,
+AP_UnixDialog_Tab__onAddTab (GtkButton * /*widget*/,
 							 gpointer	data) 
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -138,7 +138,7 @@ AP_UnixDialog_Tab__onAddTab (GtkButton *widget,
 
 //! Event dispatcher for button "Delete".
 static void
-AP_UnixDialog_Tab__onDeleteTab (GtkButton *widget,
+AP_UnixDialog_Tab__onDeleteTab (GtkButton * /*widget*/,
 								gpointer   data) 
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -147,8 +147,8 @@ AP_UnixDialog_Tab__onDeleteTab (GtkButton *widget,
 
 //! Callback for closing window via window manager.
 static gboolean
-AP_UnixDialog_Tab__onCloseWindow (GtkWidget *widget,
-								  GdkEvent  *event,
+AP_UnixDialog_Tab__onCloseWindow (GtkWidget * /*widget*/,
+								  GdkEvent  * /*event*/,
 								  gpointer   data)
 {
 	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
@@ -470,10 +470,10 @@ AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 		// reset
 		UT_Dimension dim = _getDimension ();
 		gdouble value = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
-		const gchar *text = UT_formatDimensionString (dim, value);
+		const gchar *dimtext = UT_formatDimensionString (dim, value);
 
 		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
-		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
+		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), dimtext);
 		g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 
 	    _storeWindowData ();
@@ -571,12 +571,12 @@ AP_UnixDialog_Tab::onPositionFocusOut ()
 			pos = UT_convertDimensions(pos, dim, _getDimension ());
 		}
 
-		const gchar *text = UT_formatDimensionString (dim, pos);
-		UT_DEBUGMSG (("onPositionFocusOut() '%s'\n", text));
+		const gchar *dimtext = UT_formatDimensionString (dim, pos);
+		UT_DEBUGMSG (("onPositionFocusOut() '%s'\n", dimtext));
 
 		g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
-		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
+		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), dimtext);
 		g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 
 		_event_Update ();
@@ -585,10 +585,10 @@ AP_UnixDialog_Tab::onPositionFocusOut ()
 		// reset
 		UT_Dimension dim = _getDimension ();
 		gdouble value = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPosition));
-		const gchar *text = UT_formatDimensionString (dim, value);
+		const gchar *dimtext = UT_formatDimensionString (dim, value);
 
 		g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
-		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
+		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), dimtext);
 		g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	}
 }

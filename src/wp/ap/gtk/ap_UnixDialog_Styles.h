@@ -82,7 +82,7 @@ public:
 	void         modifyRunModal(void);
 	void         setModifySignalBlocked( bool val);
 	bool         isModifySignalBlocked(void) const;         
-	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
+	void         setIsNew(bool bIsNew) {m_bIsNew = bIsNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
 	gchar *   getNewStyleName(void) const {return (gchar *) m_newStyleName;}
 	gchar *   getBasedonName(void) const {return (gchar *) m_basedonName;}

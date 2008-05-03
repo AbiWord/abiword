@@ -112,7 +112,7 @@ void AP_UnixDialog_HdrFtr::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 
 	// Build the window's widgets and arrange them
-	GtkWidget * m_windowMain = _constructWindow();
+	m_windowMain = _constructWindow();
 	UT_return_if_fail(m_windowMain);
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
