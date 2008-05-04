@@ -466,7 +466,7 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
     return true;
 }
 
-void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
+void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int /*redraw*/)
 {
     if(getFrame()->getFrameMode() != XAP_NormalFrame)
     {
@@ -482,7 +482,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 	pf->update(m_sStatusMessage);
 }
 
-void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
+void AP_StatusBar::setStatusMessage(const char * pBuf, int /*redraw*/)
 {
     if(getFrame()->getFrameMode() != XAP_NormalFrame)
     {

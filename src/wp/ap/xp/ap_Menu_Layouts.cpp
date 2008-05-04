@@ -331,7 +331,7 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 }
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu, 
-											   const char * szLanguage,
+											   const char * /*szLanguage*/,
 											   const XAP_Menu_Id afterID, 
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
@@ -370,7 +370,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 }
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu, 
-											  const char * szLanguage,
+											  const char * /*szLanguage*/,
 											  const char * szAfter, 
 											  EV_Menu_LayoutFlags flags,
 											  XAP_Menu_Id newID)
@@ -429,7 +429,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 }
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu, 
-											   const char * szLanguage,
+											   const char * /*szLanguage*/,
 											   const XAP_Menu_Id beforeID, 
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
@@ -475,7 +475,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 }
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu, 
-											   const char * szLanguage,
+											   const char * /*szLanguage*/,
 											   const char * szBefore, 
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
@@ -550,7 +550,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
  * Language set szLanguage
  */
 XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu, 
-							  const char * szLanguage,  
+							  const char * /*szLanguage*/,  
 							  XAP_Menu_Id nukeID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
@@ -578,7 +578,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
  * Language set szLanguage
  */
 XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
-									  const char * szLanguage,
+									  const char * /*szLanguage*/,
 											 const char * szNuke)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
@@ -737,7 +737,7 @@ UT_uint32 XAP_Menu_Factory::GetMenuLabelSetLanguageCount(void)
 	return 1;
 }
 
-const char * XAP_Menu_Factory::GetNthMenuLabelLanguageName(UT_uint32 ndx)
+const char * XAP_Menu_Factory::GetNthMenuLabelLanguageName(UT_uint32 /*ndx*/)
 {
 	return m_pLabelSet->getLanguage();
 }
@@ -746,7 +746,7 @@ const char * XAP_Menu_Factory::GetNthMenuLabelLanguageName(UT_uint32 ndx)
  * afterID has just been created. All labels of value equal or greater 
  * must be incremented
  */
-bool XAP_Menu_Factory::addNewLabel(const char * szLanguage, 
+bool XAP_Menu_Factory::addNewLabel(const char * /*szLanguage*/, 
 										XAP_Menu_Id newID, 
 										const char * szNewName,
 										const char * szNewTooltip)
@@ -756,8 +756,8 @@ bool XAP_Menu_Factory::addNewLabel(const char * szLanguage,
 	return m_pLabelSet->addLabel(newLab);
 }
 
-bool XAP_Menu_Factory::removeLabel(const char * szLanguage, 
-									   XAP_Menu_Id nukeID)
+bool XAP_Menu_Factory::removeLabel(const char * /*szLanguage*/, 
+									   XAP_Menu_Id /*nukeID*/)
 {
 	return false;
 }

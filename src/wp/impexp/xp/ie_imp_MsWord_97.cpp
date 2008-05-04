@@ -2281,8 +2281,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 /****************************************************************************/
 /****************************************************************************/
 
-int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
-				  void *prop, int dirty)
+int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
+				  void *prop, int /*dirty*/)
 {
 	SEP * asep = static_cast <SEP *>(prop);
 
@@ -2714,8 +2714,8 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
-				  void *prop, int dirty)
+int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
+				  void *prop, int /*dirty*/)
 {
 
 	// if in a header of unsupported type, just return
@@ -3236,8 +3236,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
-								void *prop, int dirty)
+int IE_Imp_MsWord_97::_endPara (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
+								void * /*prop*/, int /*dirty*/)
 {
 	xxx_UT_DEBUGMSG(("#DOM: _endPara\n"));
 	// have to flush here, otherwise flushing later on will result in
@@ -3250,8 +3250,8 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
-								  void *prop, int dirty)
+int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 /*tag*/,
+								  void *prop, int /*dirty*/)
 {
 	// if in a header of unsupported type, just return
 	// the +1 is to account for the fact that ps->currentcp applies to the previous
@@ -3446,8 +3446,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_endChar (wvParseStruct *ps, UT_uint32 tag,
-								void *prop, int dirty)
+int IE_Imp_MsWord_97::_endChar (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
+								void * /*prop*/, int /*dirty*/)
 {
 	// nothing is needed here
 	return 0;
@@ -3599,7 +3599,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	return iRet;
 }
 
-bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
+bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*/)
 {
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token;
@@ -4723,7 +4723,7 @@ bool IE_Imp_MsWord_97::_isVectorFull(UT_NumberVector & vec)
 	return true;
 }
 
-void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
+void IE_Imp_MsWord_97::_table_close (const wvParseStruct * /*ps*/, const PAP *apap)
 {
   _cell_close();
   _row_close();
@@ -5171,7 +5171,7 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	FREEP(fname);
 }
 
-void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps)
+void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvParseStruct * /*ps*/)
 {
 	UT_String propBuffer;
 

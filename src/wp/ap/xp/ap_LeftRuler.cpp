@@ -1157,7 +1157,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 /*****************************************************************/
 
-void AP_LeftRuler::_ignoreEvent(bool bDone)
+void AP_LeftRuler::_ignoreEvent(bool /*bDone*/)
 {
 	// user released the mouse off of the ruler.  we need to treat
 	// this as a cancel.  so we need to put everything back the
@@ -1349,7 +1349,7 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 }
 
 void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
-										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
 {
 	//FV_View *pView = static_cast<FV_View *>(m_pView);
 	//bool hdrftr = pView->isHdrFtrEdit();
@@ -1627,7 +1627,7 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	xxx_UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks end \n"));
 }
 
-void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
+void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 {
 //
 // Draw square inside
