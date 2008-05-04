@@ -368,7 +368,7 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 \param const char * sz is the string containing the old value
 \param const gchar * pRet is the string to which the new value is copied.
 */
-void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *sz, gchar * pRet)
+void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * /*pFrame*/,const char *sz, gchar * pRet)
 {
 	UT_Dimension PreferedUnits = DIM_none;
 	const gchar * pszRulerUnits = NULL;

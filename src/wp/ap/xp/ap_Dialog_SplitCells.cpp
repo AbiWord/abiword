@@ -79,7 +79,7 @@ AP_Dialog_SplitCells::tAnswer AP_Dialog_SplitCells::getAnswer(void) const
 	return m_answer;
 }
 
-void    AP_Dialog_SplitCells::setActiveFrame(XAP_Frame *pFrame)
+void    AP_Dialog_SplitCells::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }

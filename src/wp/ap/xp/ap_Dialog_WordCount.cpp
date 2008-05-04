@@ -128,7 +128,7 @@ void AP_Dialog_WordCount::ConstructWindowName(void)
 
 }
 
-void    AP_Dialog_WordCount::setActiveFrame(XAP_Frame *pFrame)
+void    AP_Dialog_WordCount::setActiveFrame(XAP_Frame */*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }

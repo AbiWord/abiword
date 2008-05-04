@@ -175,7 +175,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	// Jordi: For now this is just implemented in win32, we should make it
 	// an abstract member if we decide to implemented in all platforms
 	virtual void _gatherUILanguage(UT_String &stRetVal){stRetVal.clear();};
-	virtual void _setUILanguage(const UT_String &stExt) {};
+	virtual void _setUILanguage(const UT_String & /*stExt*/) {};
 	virtual bool _gatherLanguageWithKeyboard() {return false;}
 	virtual void _setLanguageWithKeyboard(const bool) {}
 	virtual bool _gatherDirMarkerAfterClosingParenthesis(){return false;}

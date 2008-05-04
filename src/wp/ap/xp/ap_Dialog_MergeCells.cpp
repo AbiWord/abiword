@@ -78,7 +78,7 @@ AP_Dialog_MergeCells::tAnswer AP_Dialog_MergeCells::getAnswer(void) const
 	return m_answer;
 }
 
-void    AP_Dialog_MergeCells::setActiveFrame(XAP_Frame *pFrame)
+void    AP_Dialog_MergeCells::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }

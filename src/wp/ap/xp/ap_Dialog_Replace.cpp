@@ -124,7 +124,7 @@ AV_View * AP_Dialog_Replace::getView(void)
 	return getActiveFrame()->getCurrentView();
 }
 
-void  AP_Dialog_Replace::setActiveFrame(XAP_Frame *pFrame)
+void  AP_Dialog_Replace::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
         setView(getView());
 	notifyActiveFrame(getActiveFrame());

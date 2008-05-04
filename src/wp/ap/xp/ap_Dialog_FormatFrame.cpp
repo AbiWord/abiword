@@ -113,7 +113,7 @@ AP_Dialog_FormatFrame::tAnswer AP_Dialog_FormatFrame::getAnswer(void) const
 	return m_answer;
 }
 
-void AP_Dialog_FormatFrame::setActiveFrame(XAP_Frame *pFrame)
+void AP_Dialog_FormatFrame::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }

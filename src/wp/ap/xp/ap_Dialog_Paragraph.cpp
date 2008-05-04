@@ -981,7 +981,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 // member variables have been copied to the screen for the first
 // time, but before the dialog is displayed.
 
-void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
+void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false */)
 {
 	if(changed == id_SPIN_LEFT_INDENT)
 	{

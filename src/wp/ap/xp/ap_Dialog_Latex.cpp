@@ -95,7 +95,7 @@ void AP_Dialog_Latex::ConstructWindowName(void)
 	
 }
 
-void    AP_Dialog_Latex::setActiveFrame(XAP_Frame *pFrame)
+void    AP_Dialog_Latex::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }

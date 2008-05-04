@@ -96,7 +96,7 @@ AP_Dialog_FormatTOC::~AP_Dialog_FormatTOC(void)
 	stopUpdater();
 }
 
-void AP_Dialog_FormatTOC::setActiveFrame(XAP_Frame *pFrame)
+void AP_Dialog_FormatTOC::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	updateDialog();
 	notifyActiveFrame(getActiveFrame());
