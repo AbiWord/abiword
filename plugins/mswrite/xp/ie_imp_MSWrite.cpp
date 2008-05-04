@@ -314,7 +314,7 @@ int IE_Imp_MSWrite::read_pap ()
 			tab_count = 0;
 			dxaLeft = dxaRight = dxaLeft1 = 0;
 			
-			if (bfProp != 0xffff) {
+			if ((bfProp != 0xffff) && (bfProp + 13 < 0x80)) {
 				cch = pap_page[bfProp + 4];
 				if (cch >= 2) {
 					jc = pap_page[bfProp + 6]  & 3;
@@ -455,7 +455,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 			hps = 24;
 			bold = italic = underline = hpsPos = 0;
 			
-			if ((bfProp != 0xffff) && (bfProp < 0x80 - 10)) {
+			if ((bfProp != 0xffff) && (bfProp + 10 < 0x80)) {
 				cch = char_page[bfProp + 4];
 				
 				if (cch >= 2) 
