@@ -501,7 +501,8 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 				}
 				
 				while (fcFirst2 >= fcFirst) {
-					if ((fcFirst2 >= fcLim) || (fcFirst2 >= fcLim2)) {
+					if ((fcFirst2 >= fcLim) || (fcFirst2 >= fcLim2) ||
+						(fcFirst2 - 0x80 >= static_cast<UT_sint32>(mTextBuf.getLength()))) {
 						break;
 					}
 					translate_char (*(mTextBuf.getPointer(fcFirst2 - 0x80)), mCharBuf);
