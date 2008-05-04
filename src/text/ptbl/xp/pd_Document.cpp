@@ -4716,7 +4716,6 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 
 fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
 {
-	UT_ASSERT_HARMLESS(i >= 0);
 	return m_vecLists[i];
 }
 

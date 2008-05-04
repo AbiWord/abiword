@@ -190,7 +190,7 @@ fl_DocSectionLayout * fp_TOCContainer::getDocSectionLayout(void)
  Draw container content
  \param pDA Draw arguments
  */
-void fp_TOCContainer::draw(GR_Graphics * pG)
+void fp_TOCContainer::draw(GR_Graphics * /*pG*/)
 {
 }
 /*!

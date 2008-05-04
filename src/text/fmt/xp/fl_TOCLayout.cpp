@@ -282,7 +282,7 @@ void fl_TOCLayout::setTOCEndIn(void)
 /*!
  * This signals an incomplete footnote section.
  */
-bool fl_TOCLayout::doclistener_deleteEndTOC( const PX_ChangeRecord_Strux * pcrx)
+bool fl_TOCLayout::doclistener_deleteEndTOC( const PX_ChangeRecord_Strux * /*pcrx*/)
 {
 	m_bHasEndTOC = false;
 	return true;
@@ -907,7 +907,7 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
     recursive call to ourselves. bDontRecurse indicates that the recursive processing should not be
     done; it has a default value false.
 */
-void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
+void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurse*/)
 {
 	TOCEntry * pThisEntry = NULL;
 	fl_BlockLayout * pThisBL = NULL;
@@ -1245,7 +1245,7 @@ void fl_TOCLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_TOCLayout::updateLayout(bool bDoAll)
+void fl_TOCLayout::updateLayout(bool /*bDoAll*/)
 {
 	if(needsReformat())
 	{

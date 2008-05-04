@@ -225,7 +225,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
           list, otherwise just append it to the end.
   \return The newly created Table container
 */
-fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
+fp_Container* fl_TableLayout::getNewContainer(fp_Container * /*pPrevTab*/)
 {
 	UT_ASSERT(getFirstContainer() == NULL);
 	createTableContainer();
@@ -715,7 +715,7 @@ void fl_TableLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_TableLayout::updateLayout(bool bDoAll)
+void fl_TableLayout::updateLayout(bool /*bDoAll*/)
 {			
 	xxx_UT_DEBUGMSG(("updateTableLayout  in TableLayout\n"));
 	if(getDocument()->isDontImmediateLayout())
@@ -866,7 +866,7 @@ void fl_TableLayout::updateTable(void)
 }
 
 
-bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
+bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -2224,7 +2224,7 @@ bool fl_CellLayout::isLayedOut(void) const
 	return true;
 }
 
-void fl_CellLayout::updateLayout(bool bDoAll)
+void fl_CellLayout::updateLayout(bool /*bDoAll*/)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;

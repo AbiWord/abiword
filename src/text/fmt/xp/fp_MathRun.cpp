@@ -321,7 +321,7 @@ bool fp_MathRun::isSubscript(void) const
 	return false;
 }
 
-void fp_MathRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_MathRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & /*isTOC*/)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
@@ -357,7 +357,7 @@ void fp_MathRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
 }
 
-void fp_MathRun::_clearScreen(bool  bFullLineHeightRect )
+void fp_MathRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	//	UT_ASSERT(!isDirty());
 

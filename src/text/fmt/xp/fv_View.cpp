@@ -7514,7 +7514,7 @@ FV_View::findNext(const UT_UCSChar* pFind, bool& bDoneEntireDocument)
 bool
 FV_View::findNext(bool& bDoneEntireDocument)
 {
-	if ((m_startPosition >=0) && (m_startPosition <2)) {
+	if (m_startPosition <2) {
 		m_startPosition = 2;
 		setPoint(m_startPosition);
 		}
@@ -7792,7 +7792,7 @@ FV_View::findReplaceAll()
 	UT_uint32 iReplaced = 0;
 	m_pDoc->beginUserAtomicGlob();
 
-	if ((m_startPosition >=0) && (m_startPosition <2))
+	if (m_startPosition <2)
 	{
 		m_startPosition = 2;
 	}

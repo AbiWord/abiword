@@ -1813,7 +1813,7 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 /*!
  * Method to deal with mouse coordinates.
  */
-FV_DragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
+FV_DragWhat FV_FrameEdit::mouseMotion(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	return getDragWhat();
 }

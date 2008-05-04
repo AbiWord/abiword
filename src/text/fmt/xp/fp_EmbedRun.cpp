@@ -326,7 +326,7 @@ bool fp_EmbedRun::_recalcWidth(void)
 #endif
 }
 
-void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & /*isTOC*/)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
@@ -362,7 +362,7 @@ void fp_EmbedRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
 }
 
-void fp_EmbedRun::_clearScreen(bool  bFullLineHeightRect )
+void fp_EmbedRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	//	UT_ASSERT(!isDirty());
 
