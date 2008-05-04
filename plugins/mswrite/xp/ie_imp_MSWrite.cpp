@@ -520,7 +520,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 					appendSpan (reinterpret_cast<const UT_UCSChar *>(mCharBuf.ucs4_str()), mCharBuf.size());
 				}
 				else {
-					UT_DEBUGMSG (("Hub: Ingore 0 length span"));
+					UT_DEBUGMSG (("Hub: Ignoring 0 length span\n"));
 				}
 			}
 			
