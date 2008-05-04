@@ -455,7 +455,7 @@ int IE_Imp_MSWrite::read_char (int fcFirst2, int fcLim2) {
 			hps = 24;
 			bold = italic = underline = hpsPos = 0;
 			
-			if ((bfProp != 0xffff) && (bfProp < 0x80 + 9)) {
+			if ((bfProp != 0xffff) && (bfProp < 0x80 - 10)) {
 				cch = char_page[bfProp + 4];
 				
 				if (cch >= 2) 
