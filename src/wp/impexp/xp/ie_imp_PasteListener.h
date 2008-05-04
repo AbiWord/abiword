@@ -56,20 +56,20 @@ public:
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr)
+	virtual bool		change(PL_StruxFmtHandle /*sfh*/,
+							   const PX_ChangeRecord * /*pcr*/)
 		{return true;}
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdhNew,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+	virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
+									const PX_ChangeRecord * /*pcr*/,
+									PL_StruxDocHandle /*sdhNew*/,
+									PL_ListenerId /*lid*/,
+									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 		{ return true;}
 
-	virtual bool		signal(UT_uint32 iSignal)
+	virtual bool		signal(UT_uint32 /*iSignal*/)
 		{ return true;}
 	virtual PLListenerType getType() const
 		{

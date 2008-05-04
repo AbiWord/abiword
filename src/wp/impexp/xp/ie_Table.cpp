@@ -2482,7 +2482,7 @@ bool IE_Imp_TableHelper::tdPending ()
 }
 
 
-bool IE_Imp_TableHelper::Block (PTStruxType pts, const gchar ** attributes)
+bool IE_Imp_TableHelper::Block (PTStruxType /*pts*/, const gchar ** attributes)
 {
 	pf_Frag * pf = NULL;
 	if(m_bCaptionOn)

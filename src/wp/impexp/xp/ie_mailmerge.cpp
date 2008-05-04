@@ -395,7 +395,6 @@ void IE_MailMerge::registerMerger (IE_MergeSniffer * s)
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 	
 	UT_return_if_fail(err == UT_OK);
-	UT_return_if_fail(ndx >= 0);
 	
 	s->setFileType(ndx+1);
 }
@@ -545,7 +544,7 @@ public:
 	virtual ~IE_XMLMerge_Sniffer (){}
 	
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-											   UT_uint32 iNumbytes){
+											   UT_uint32 /*iNumbytes*/){
 		if (strstr(szBuf, "http://www.abisource.com/mailmerge/1.0") != 0 &&
 			strstr(szBuf, "merge-set") != 0)
 			return UT_CONFIDENCE_PERFECT;
@@ -745,7 +744,7 @@ public:
 	virtual ~IE_Delimiter_Sniffer (){}
 	
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-											   UT_uint32 iNumbytes){
+											   UT_uint32 /*iNumbytes*/){
 		char delim[2];
 		delim[0] = m_delim;
 		delim[1] = '\0';
