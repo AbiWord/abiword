@@ -312,6 +312,8 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
  
 bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
+	if (!g_thread_supported ())
+		g_thread_init (NULL);
 	gsf_init();
 
 	// create application-wide resources that
