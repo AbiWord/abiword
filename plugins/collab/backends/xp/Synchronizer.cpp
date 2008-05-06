@@ -1,5 +1,5 @@
 /* AbiCollab - Code to enable the modification of remote documents.
- * Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2007,2008 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 by Ryan Pavlik <abiryan@ryand.net>
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,11 @@
 #include <ut_debugmsg.h>
 
 #ifndef WIN32
-#include <unistd.h>
+static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condition, Synchronizer* synchronizer)
+{
+	synchronizer->callMainloop();
+	return TRUE;
+}
 #endif
 
 //////////////////
@@ -36,6 +40,8 @@
 #ifndef HWND_MESSAGE
 #define HWND_MESSAGE ((HWND)(-3))
 #endif
+
+#define SYNC_CLASSNAME "AbiCollabSynchronizer"
 
 static int Synchronizer::sm_iMessageWindows=0;
 ATOM sm_iClass = 0;
@@ -65,72 +71,73 @@ static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wPar
 		}
 		return 1;
 		
-	case WM_ABI_TCP_BACKEND:
+	case WM_ABI_SYNCHRONIZER:
+		UT_DEBUGMSG(("Received a message in Synchronizer message loop! 0x%x\n", msg));
 		pThis = (Synchronizer *)GetWindowLong(hWnd,GWL_USERDATA);
 		UT_return_val_if_fail(pThis, 0);
-		UT_DEBUGMSG(("Received a message in Synchronizer.h message loop! 0x%x\n", msg));
-		pThis->fromMainloopCallback();
+		pThis->callMainloop();
 		return 1;
 
 	default:
 		UT_DEBUGMSG(("return DefWindowProc for message 0x%x\n", msg));
 		// We do not want to handle this message so pass back to Windows
 		// to handle it in a default way
-		return DefWindowProc(hWnd, msg, wParam, lParam);
+		return 0;
 	}
 }
+
 static void Synchronizer::_registerWndClass() // Win32-only
 {
-	if (sm_iClass)
-	{
-		UT_DEBUGMSG(("Skipping window class registration\n"));
-		return;
-	}
-
-	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pSessionManager);
-
-	HINSTANCE hInstance = pSessionManager->getInstance();
-	UT_return_if_fail(hInstance);
-
-	WNDCLASS wc;
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = Synchronizer::s_wndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = NULL;
-	wc.hCursor = NULL;
-	wc.hbrBackground = NULL;
-	wc.lpszMenuName =  NULL;
-	wc.lpszClassName = "AbiTCPSynchronizer";
-
-	sm_iClass = RegisterClass(&wc);
-	UT_return_if_fail(sm_iClass);
-	
-	sm_iMessageWindows = 0;
+ 	if (sm_iClass)
+ 	{
+ 		UT_DEBUGMSG(("Skipping window class registration\n"));
+ 		return;
+ 	}
+  
+ 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
+ 	UT_return_if_fail(pSessionManager);
+  
+ 	HINSTANCE hInstance = pSessionManager->getInstance();
+ 	UT_return_if_fail(hInstance);
+  
+ 	WNDCLASS wc;
+ 	wc.style = CS_HREDRAW | CS_VREDRAW;
+ 	wc.lpfnWndProc = Synchronizer::s_wndProc;
+ 	wc.cbClsExtra = 0;
+ 	wc.cbWndExtra = 0;
+ 	wc.hInstance = hInstance;
+ 	wc.hIcon = NULL;
+ 	wc.hCursor = NULL;
+ 	wc.hbrBackground = NULL;
+ 	wc.lpszMenuName =  NULL;
+ 	wc.lpszClassName = SYNC_CLASSNAME;
+  
+ 	sm_iClass = RegisterClass(&wc);
+ 	UT_return_if_fail(sm_iClass);
+ 	
+ 	sm_iMessageWindows = 0;
 }
 
 static void Synchronizer::_unregisterWndClass() // Win32-only
 {
-	UT_DEBUGMSG(("Synchronizer::_unregisterWndClass()\n"));
-	UT_return_if_fail(sm_iClass);
-	
-	if (sm_iMessageWindows > 0)
-	{
-		UT_DEBUGMSG(("%d message windows still exist, skipping unregistering\n", sm_iMessageWindows));
-		return;
-	}
-	
-	AbiCollabSessionManager * pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);
-
-	HINSTANCE hInstance = pManager->getInstance();
-	UT_return_if_fail(hInstance);
-
-	UT_DEBUGMSG(("Unregistrating message window class\n"));
-	UT_return_if_fail(UnregisterClass(sm_iClass, hInstance));
-	sm_iClass = NULL;
+ 	UT_DEBUGMSG(("Synchronizer::_unregisterWndClass()\n"));
+ 	UT_return_if_fail(sm_iClass);
+ 	
+ 	if (sm_iMessageWindows > 0)
+  	{
+ 		UT_DEBUGMSG(("%d message windows still exist, skipping unregistering\n", sm_iMessageWindows));
+ 		return;
+  	}
+ 	
+ 	AbiCollabSessionManager * pManager = AbiCollabSessionManager::getManager();
+ 	UT_return_if_fail(pManager);
+ 
+ 	HINSTANCE hInstance = pManager->getInstance();
+ 	UT_return_if_fail(hInstance);
+ 
+ 	UT_DEBUGMSG(("Unregistrating message window class\n"));
+ 	UT_return_if_fail(UnregisterClass(sm_iClass, hInstance));
+ 	sm_iClass = NULL;
 }
 
 #endif
@@ -140,25 +147,23 @@ static void Synchronizer::_unregisterWndClass() // Win32-only
 //////////////////
 
 #ifdef WIN32
-Synchronizer::Synchronizer(void (*f)(void*), void* data) // Win32 Implementation
-	: f_(f),
-	data_(data),
-	m_hWnd(0)
+Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Implementation
+	: m_signalhandler(signalhandler),
+ 	m_hWnd(0)
 {
 	UT_DEBUGMSG(("Synchronizer()\n"));
-
-	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
+	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pSessionManager);
 
-	HINSTANCE hInstance = pSessionManager->getInstance();
-	UT_return_if_fail(hInstance);
+ 	HINSTANCE hInstance = pSessionManager->getInstance();
+ 	UT_return_if_fail(hInstance);
 
 	_registerWndClass();
-		
+	
 	// HWND_MESSAGE as parent HWND is Win2k/xp/vista only - replaced with 0
 	// (also HWND_MESSAGE doesn't compile in MinGW, weird bug.  --RP 8 August 2007)
-		
-	m_hWnd = CreateWindow("AbiTCPSynchronizer",
+	
+	m_hWnd = CreateWindow(SYNC_CLASSNAME,
 			"AbiCollab",
 			0,
 			CW_USEDEFAULT,
@@ -170,7 +175,6 @@ Synchronizer::Synchronizer(void (*f)(void*), void* data) // Win32 Implementation
 			hInstance,
 			(void *) this
 		);
-		
 	UT_DEBUGMSG(("Created message window: HWND 0x%x\n", m_hWnd));
 	switch ((int)m_hWnd)
 	{
@@ -186,9 +190,8 @@ Synchronizer::Synchronizer(void (*f)(void*), void* data) // Win32 Implementation
 
 #else
 
-Synchronizer::Synchronizer(void (*f)(void*), void* data) // Unix Implementation
-	: f_(f),
-	data_(data)
+Synchronizer::Synchronizer(boost::function<void ()> signalhandler) // Unix Implementation
+	: m_signalhandler(signalhandler)
 {
 	UT_DEBUGMSG(("~Synchronizer()\n"));
 	// on unix, we use the self-pipe trick to signal the glib main loop
@@ -234,7 +237,7 @@ Synchronizer::~Synchronizer() // Win32 Implementation
 	}
 	else
 	{
-		UT_DEBUGMSG(("TCP Backend Synchronizer Window already destroyed!\n"));
+		UT_DEBUGMSG(("AbiCollab Synchronizer Window already destroyed!\n"));
 	}
 	
 	// Attempt to unregister class - it will check to make sure we're the last one out.
@@ -268,15 +271,14 @@ void Synchronizer::signal() // Win32 Implementation
 {
 	UT_DEBUGMSG(("Synchronizer::signal()\n"));
 	// send a message to the main loop
-	int result=SendMessage(m_hWnd, WM_ABI_TCP_BACKEND, 0, 0);
-	UT_DEBUGMSG(("Synchronizer::signal() - SendMessage returned %d\n", result));
+	int result = PostMessage(m_hWnd, WM_ABI_SYNCHRONIZER, 0, 0);
+	UT_ASSERT(result != 0);
 }
 
 #else
 
 void Synchronizer::signal() // Unix Implementation
 {
-	UT_DEBUGMSG(("Synchronizer::signal()\n"));
 	UT_DEBUGMSG(("Signalling the main loop\n"));
 	unsigned char signal = 0xff;
 	if (write(fdw, &signal, 1) != 1)
@@ -289,7 +291,7 @@ void Synchronizer::signal() // Unix Implementation
 //////////////////
 // CONSUME
 //////////////////
-void Synchronizer::consume()
+void Synchronizer::_consume()
 {
 #ifdef WIN32
 	// void on win32
@@ -300,27 +302,3 @@ void Synchronizer::consume()
 		UT_DEBUGMSG(("Error signaling main loop!\n"));
 #endif
 }
-
-
-//////////////////
-// CALLBACK
-//////////////////
-
-void Synchronizer::fromMainloopCallback() // XP
-{
-	f_(data_);
-}
-
-
-//////////////////
-// GLOBAL FUNCTIONS
-//////////////////
-
-#ifndef WIN32
-// Unix-only
-static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condition, Synchronizer* synchronizer)
-{
-	synchronizer->fromMainloopCallback();
-	return TRUE;
-}
-#endif

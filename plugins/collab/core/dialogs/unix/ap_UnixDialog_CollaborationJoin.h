@@ -34,7 +34,9 @@ public:
 
 	void				eventAddBuddy();
 	void				eventRefresh();
-	void				eventJoin(Buddy* pBuddy, DocHandle* pDocHandle, bool joined);	
+	void				eventConnect();
+	void				eventDisconnect();
+	void				eventSelectionChanged(GtkTreeView *treeview);
 
 
 	GtkTreeStore*		getModel()
@@ -54,6 +56,8 @@ private:
 	GtkWidget*			m_wRefresh;	
 	GtkTreeStore*		m_wModel;
 	GtkWidget *			m_wBuddyTree;
+	GtkWidget*			m_wConnect;
+	GtkWidget*			m_wDisconnect;
 };
 
 #endif /* AP_UNIXDIALOG_COLLABORATIONJOIN_H */

@@ -19,10 +19,10 @@
 #ifndef __TCPACCOUNTHANDLER__
 #define __TCPACCOUNTHANDLER__
 
-#include "IOServerHandler.h"
-#include "IOClientHandler.h"
-
+#include <boost/shared_ptr.hpp>
 #include <backends/xp/AccountHandler.h>
+
+#include "IOServerHandler.h"
 
 class TCPBuddy;
 
@@ -48,7 +48,6 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
-	void									handleAccept(IOServerHandler* pHandler);
 
 	// user management
 	virtual Buddy*							constructBuddy(const PropertyMap& props);
@@ -61,7 +60,7 @@ public:
 	virtual bool							send(const Packet*, const Buddy& buddy);
 
 	// event management
-	void									handleEvent(Session& pSession);
+	void									handleEvent(Session& session);
 
 protected:
 
@@ -72,14 +71,18 @@ protected:
 	const TCPBuddy*							_getBuddy(Session* pSession);
 	
 private:
+	void									_handleAccept(IOServerHandler* pHandler, boost::shared_ptr<Session> session);
 	void									_teardownAndDestroyHandler();
 	void									_handleMessages(Session& session);
 		
+		
+	asio::io_service						m_io_service;
+	asio::io_service::work					m_work;
+	asio::thread*							m_thread;
 	bool									m_bConnected; // TODO: drop this, ask the IO handler
-	IOHandler*								m_pDelegator;
+	IOServerHandler*						m_pDelegator;
 
-	Session*								m_pPendingSession; // only used when accepting connections
-	std::map<const TCPBuddy*, Session*>		m_clients; // mapping buddies and their accompanying session
+	std::map<const TCPBuddy*, boost::shared_ptr<Session> >		m_clients; // mapping buddies and their accompanying session
 };
 
 #endif /* __TCPACCOUNTHANDLER__ */

@@ -1,5 +1,5 @@
 /* AbiCollab - Code to enable the modification of remote documents.
- * Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2007-2008 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 by Ryan Pavlik <abiryan@ryand.net>
  *
  * This program is free software; you can redistribute it and/or
@@ -21,21 +21,20 @@
 #ifndef __SYNCHRONIZER__
 #define __SYNCHRONIZER__
 
+#include <boost/function.hpp>
 #include <ut_assert.h>
 
 class Synchronizer;
 
 #ifdef WIN32
 // Windows implementation requirements
-#define WM_ABI_TCP_BACKEND WM_USER+15
+#define WM_ABI_SYNCHRONIZER WM_USER+15
 #include <windows.h>
 #include <xp/AbiCollabSessionManager.h>
-
 #else
-
 // Unix implementation requirements
+#include <unistd.h>
 #include <glib.h>
-static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condition, Synchronizer* synchronizer);
 #endif
 
 class Synchronizer
@@ -52,15 +51,20 @@ public:
 #endif
 
 	// XP prototypes
-	Synchronizer(void (*f)(void*), void* data);
+	Synchronizer(boost::function<void ()> signalhandler);
 	virtual ~Synchronizer();
 	
 	void signal();
-	void consume();
 
-	void fromMainloopCallback();
+	void callMainloop()
+	{
+		_consume();
+		m_signalhandler();
+	}
 
 private:
+	void _consume();
+
 //////////////////
 // PRIVATE DATA
 //////////////////
@@ -74,15 +78,7 @@ private:
 #endif
 
 // XP members
-	void (*f_)(void*);
-	void* data_;
+	boost::function<void ()> m_signalhandler;
 };
-
-//////////////////
-// GLOBAL FUNCTIONS + STUFF
-//////////////////
-#ifndef WIN32
-static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condition, Synchronizer* synchronizer);
-#endif
 
 #endif /* __SYNCHRONIZER__ */

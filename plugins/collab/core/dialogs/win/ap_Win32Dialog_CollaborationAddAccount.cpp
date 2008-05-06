@@ -1,6 +1,6 @@
 /* AbiCollab - Code to enable the modification of remote documents.
  * Copyright (C) 2007 by Ryan Pavlik <abiryan@ryand.net>
- * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2006,2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,52 +32,35 @@
 
 static BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Dialog_CollaborationAddAccount * pThis;
 	switch (msg)
 	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_CollaborationAddAccount *)lParam;
-		UT_return_val_if_fail(pThis, 0);
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
-		UT_return_val_if_fail(pThis, 0);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-	
-	case WM_DESTROY:
-		pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
-		if (pThis->p_win32Dialog)
+		case WM_INITDIALOG:
 		{
-			DELETEP(pThis->p_win32Dialog);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)lParam;
+			UT_return_val_if_fail(pThis, false);
+			SetWindowLong(hWnd,DWL_USER,lParam);
+			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
-		return 0;
-
-	case WM_NOTIFY:
-		pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
-		UT_return_val_if_fail(pThis, 0);
-		UT_return_val_if_fail(lParam, 0);
-		switch (((LPNMHDR)lParam)->code)
+		case WM_COMMAND:
 		{
-			//case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
-			default:				return 0;
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
+			UT_return_val_if_fail(pThis, false);
+			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
-		
-	case WM_PARENTNOTIFY:
-		// do something here - messages for the backend gui might come in here
-		UT_DEBUGMSG(("WM_PARENTNOTIFY!\n"));
-		return false;
-		
-		return false;
-		
-
-	default:
-		// Windows handles all unhandled messages - pass false
-		return false;
-		
+		case WM_DESTROY:
+		{
+			UT_DEBUGMSG(("Got WM_DESTROY\n"));
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
+			UT_return_val_if_fail(pThis, false);
+			DELETEP(pThis->m_pWin32Dialog);
+			return true;
+		}
+		default:
+			// Message not processed - Windows should take care of it
+			return false;
 	}
 }
+
 XAP_Dialog * AP_Win32Dialog_CollaborationAddAccount::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
 	return static_cast<XAP_Dialog *>(new AP_Win32Dialog_CollaborationAddAccount(pFactory, id));
@@ -86,7 +69,7 @@ pt2Constructor ap_Dialog_CollaborationAddAccount_Constructor = &AP_Win32Dialog_C
 
 AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationAddAccount(pDlgFactory, id),
-	p_win32Dialog(NULL),
+	m_pWin32Dialog(NULL),
 	m_hOk(NULL),
 	m_hDetails(NULL),
 	m_hInstance(NULL)
@@ -101,28 +84,27 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 
 void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 {
-
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
 	
+	// create the dialog
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_COLLABORATIONADDACCOUNT);
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 		(DLGPROC)s_dlgProc, (LPARAM)this );
-	switch (result) {
-	case 0:
-		// MSDN: If the function fails because the hWndParent parameter is invalid, the return value is zero.
-		break;
-	case -1:
-		UT_DEBUGMSG(("Win32 error: %d.  lpTemplate: %d, RID:%d\n", GetLastError(), lpTemplate, AP_RID_DIALOG_COLLABORATIONADDACCOUNT));
-		break;
-	default:
-		break;
-		// ok!
+	switch (result)
+	{
+		case 0:
+			// MSDN: If the function fails because the hWndParent parameter is invalid, the return value is zero.
+			break;
+		case -1:
+			UT_DEBUGMSG(("Win32 error: %d.  lpTemplate: %d, RID:%d\n", GetLastError(), lpTemplate, AP_RID_DIALOG_COLLABORATIONADDACCOUNT));
+			break;
+		default:
+			break;
 	};
-	//*/
 }
 
 /*****************************************************************/
@@ -143,23 +125,24 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onInitDialog(HWND hWnd, WPARAM wPa
 	
 	//////
 	// Get ourselves a custom DialogHelper
-	if (p_win32Dialog)
+	if (m_pWin32Dialog)
 	{
-		DELETEP(p_win32Dialog);
+		DELETEP(m_pWin32Dialog);
 	}
-	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
+	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
 	//////
 	// Set up dialog initial state
 	_populateWindowData();
 	
 	// Center Window
-	p_win32Dialog->centerDialog();
+	m_pWin32Dialog->centerDialog();
 
 	// Return 1 to proceed with dialog initialization
 	return 1;
 }
 
+// return true if we process the command, false otherwise
 BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wNotifyCode = HIWORD(wParam);
@@ -184,14 +167,9 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 			else
 				UT_DEBUGMSG(("No account handler types to select; this makes abicollab kinda pointless...\n"));
 			
-			// WM_COMMAND message processed - return 0
-			return 0;
+			return true;
 		}
-		else
-		{
-			// return unhandled
-			return 1;
-		}
+		return false;
 		
 	case AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON:
 		UT_DEBUGMSG(("Add Account - OK button clicked\n"));
@@ -201,65 +179,58 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 		pHandler->storeProperties();
 		m_answer=AP_Dialog_CollaborationAddAccount::a_OK;
 		EndDialog(hWnd,0);
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		return true;
+
 	case AP_RID_DIALOG_COLLABORATIONADDACCOUNT_CANCEL_BUTTON:
 		// Close without applying changes
 		EndDialog(hWnd,0);
 		m_answer=AP_Dialog_CollaborationAddAccount::a_CANCEL;
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		return true;
+
 	default:
-		
-		AccountHandler* pAccountHandler=_getActiveAccountHandler();
+		AccountHandler* pAccountHandler = _getActiveAccountHandler();
 		if (pAccountHandler) //if we have an account handler
 		{
 			return pAccountHandler->_onCommand(hWnd, wParam, lParam);
 		}
 		
-		// return unhandled
-		return 1;
+		// WM_COMMAND message NOT processed
+		return false;
 	}
-
-	
 }
 
 void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 {
-	// populate the account type combobox
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()\n"));
+	
 	AbiCollabSessionManager* pSessionManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pSessionManager);
-	UT_sint32 index;
+	
+	UT_return_if_fail(m_pWin32Dialog);
+	
 	for (UT_sint32 i = 0; i < pSessionManager->getRegisteredAccountHandlers().size(); i++)
 	{
 		AccountHandlerConstructor pConstructor = pSessionManager->getRegisteredAccountHandlers().getNthItem(i);
-		if (pConstructor)
+		UT_continue_if_fail(pConstructor);
+
+		// TODO: we need to free these somewhere
+		AccountHandler* pHandler = pConstructor();
+		UT_continue_if_fail(pHandler);
+
+		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pHandler->getDisplayType().utf8_str()).c_str());
+		if (index >= 0)
 		{
-			// TODO: we need to free these somewhere
-			AccountHandler* pHandler = pConstructor();
-			if (pHandler)
-			{
-				index=p_win32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) AP_Win32App::s_fromUTF8ToWinLocale(pHandler->getDisplayType().utf8_str()).c_str());
-				if (index>=0)
-				{
-					// remember for later
-					m_mAccountTypeCombo[index]=pHandler;
-				}
-				else
-				{
-					// windows threw an error
-					// TODO - handle?
-				}
-			}
+			UT_DEBUGMSG(("Added handler to index %d\n", index));
+			m_vAccountTypeCombo.insert(m_vAccountTypeCombo.begin()+index, pHandler);
 		}
+		else
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 	
 	// if we have at least one account handler, then make sure the first one is selected
 	if (pSessionManager->getRegisteredAccountHandlers().size() > 0)
 	{
-		p_win32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
+		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
 		// Note, this requires that the backends be alright with having their widgets destroyed before being created.
 		// TCP does this, but I didn't add such code to any other backends yet.  --RP 22 July 2007
 		UT_DEBUGMSG(("Add Account - New handler type selected\n"));
@@ -277,20 +248,23 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 	{
 		// nope, we don't have any account handler :'-( 
 		// Add a sample item to show that we can.  Then, disable the box and the ok button
-		index=p_win32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) "No Handlers!");
-		p_win32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON, false);
+		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) "No Handlers!");
+		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, false);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON, false);
 	}
 }
 
 AccountHandler* AP_Win32Dialog_CollaborationAddAccount::_getActiveAccountHandler()
 {
-	int index;
-	index=p_win32Dialog->getComboSelectedIndex(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO);
-	UT_return_val_if_fail(index >= 0, 0);
-	// check the return value of this function!  If it's a null pointer, don't follow it!
-	return m_mAccountTypeCombo[index];
+	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationAddAccount::_getActiveAccountHandler()\n"));
+	UT_return_val_if_fail(m_pWin32Dialog, NULL);
+	
+	int index = m_pWin32Dialog->getComboSelectedIndex(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO);
+	UT_return_val_if_fail(index >= 0 && index < m_vAccountTypeCombo.size(), NULL);
+	
+	// check the return value of this function!
+	return m_vAccountTypeCombo[index];
 }
 
 void AP_Win32Dialog_CollaborationAddAccount::setBackendValidity(bool valid)

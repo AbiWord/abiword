@@ -21,6 +21,7 @@
 #ifndef ABICOLLABSESSIONMANAGER_H
 #define ABICOLLABSESSIONMANAGER_H
 
+#include <map>
 #include <string>
 #include <vector>
 #include "ut_types.h"
@@ -51,7 +52,7 @@ public:
 
 	// helper functions
 	static UT_Error								serializeDocument(const PD_Document* pDoc, std::string& document, bool encodeBase64=true );
-	static UT_Error								deserializeDocument(PD_Document** pDoc, std::string& document, bool isEncodedBase64=true);	
+	static UT_Error								deserializeDocument(PD_Document** pDoc, const std::string& document, bool isEncodedBase64=true);	
 
 	// dialog code
 	bool										registerDialogs(void);
@@ -88,11 +89,13 @@ public:
 	AbiCollab*									getSessionFromSessionId(const UT_UTF8String& sSessionId);
 	const UT_GenericVector<AbiCollab *>&		getSessions(void) const
 		{ return m_vecSessions;}
-	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId);
+	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, XAP_Frame* pFrame);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
 	void										joinSessionInitiate(Buddy* pBuddy, DocHandle* pDocHandle);
-	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator);
+	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
+														const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator,
+														XAP_Frame *pFrame);
 	void										joinSession(AbiCollab* pSession, Buddy* pCollaborator);
 	void										disjoinSession(const UT_UTF8String& sSessionId);	
 	bool										isLocallyControlled(PD_Document* pDoc);
@@ -110,22 +113,34 @@ public:
 	const UT_GenericVector<AccountHandler *>&	getAccounts() const
 		{ return m_vecAccounts; }
 	void										destroyAccounts();
-	void										destroyAccount(AccountHandler* pHandler);
+	bool										destroyAccount(AccountHandler* pHandler);
 	void										setDocumentHandles(Buddy& buddy, const UT_GenericVector<DocHandle*>& vDocHandle);
 
 	// packet handling
-	bool										processPacket(AccountHandler& handler, Packet* pPacket, const UT_UTF8String& sBuddyName);
+	bool										processPacket(AccountHandler& handler, Packet* pPacket, Buddy* buddy);
 	
 	// signalling code
 	void										registerEventListener(EventListener* pListener);
 	void										unregisterEventListener(EventListener* pListener);
 	void										signal(const Event& event, const Buddy* pSource = 0);
 
+	// asynchronous operation handling
+	void										beginAsyncOperation(AbiCollab* pSession);
+	void										endAsyncOperation(AbiCollab* pSession);
+	void										beginAsyncOperation(AccountHandler* pSession);
+	void										endAsyncOperation(AccountHandler* pSession);		
 		
 	AbiCollabSessionManager(void); // TODO: this constructor shouldn't be public
 
 private:
-	static AbiCollabSessionManager* 			m_pManager;
+	bool										_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc);
+
+	// asynchronous operation handling
+	void										_deleteSession(AbiCollab* pSession);
+	void										_deleteAccount(AccountHandler* pHandler);
+	void										_nullUpdate();
+	
+	static AbiCollabSessionManager* 			m_pManager;	
 	
 	// dialog code
 	XAP_Dialog_Id								m_iDialogJoin;
@@ -144,6 +159,10 @@ private:
 	UT_GenericVector<AccountHandlerConstructor>	m_regAccountHandlers;
 	UT_GenericVector<AccountHandler *>			m_vecAccounts;
 	UT_GenericVector<EventListener *>			m_vecEventListeners;
+	
+	// asynchronous opertation registration
+	std::map<AbiCollab*, int>					m_asyncSessionOps;
+	std::map<AccountHandler*, int>				m_asyncAccountOps;
 };
 
 #endif /* ABICOLLABSESSIONMANAGER_H */

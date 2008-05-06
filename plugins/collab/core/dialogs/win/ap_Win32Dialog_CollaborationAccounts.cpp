@@ -31,29 +31,33 @@
 
 static BOOL CALLBACK AP_Win32Dialog_CollaborationAccounts::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	AP_Win32Dialog_CollaborationAccounts * pThis;
 	switch (msg)
 	{
-	case WM_INITDIALOG:
-		pThis = (AP_Win32Dialog_CollaborationAccounts *)lParam;
-		UT_return_val_if_fail(pThis, 0);
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-
-	case WM_COMMAND:
-		pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
-		UT_return_val_if_fail(pThis, 0);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-	
-	case WM_DESTROY:
-		pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
-		DELETEP(pThis->p_win32Dialog);
-		return true;
-		
-	default:
-		// Message not processed - Windows should take care of it
-		return false;
-	}
+		case WM_INITDIALOG:
+		{
+			AP_Win32Dialog_CollaborationAccounts* pThis = (AP_Win32Dialog_CollaborationAccounts *)lParam;
+			UT_return_val_if_fail(pThis, false);
+			SetWindowLong(hWnd,DWL_USER,lParam);
+			return pThis->_onInitDialog(hWnd,wParam,lParam);
+		}
+		case WM_COMMAND:
+		{
+			AP_Win32Dialog_CollaborationAccounts* pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
+			UT_return_val_if_fail(pThis, false);
+			return pThis->_onCommand(hWnd,wParam,lParam);
+		}
+		case WM_DESTROY:
+		{
+			UT_DEBUGMSG(("Got WM_DESTROY\n"));
+			AP_Win32Dialog_CollaborationAccounts* pThis = (AP_Win32Dialog_CollaborationAccounts *)GetWindowLong(hWnd,DWL_USER);
+			UT_return_val_if_fail(pThis, false);
+			DELETEP(pThis->m_pWin32Dialog);
+			return true;
+		}		
+		default:
+			// Message not processed - Windows should take care of it
+			return false;
+		}
 }
 
 XAP_Dialog * AP_Win32Dialog_CollaborationAccounts::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -64,7 +68,7 @@ pt2Constructor ap_Dialog_CollaborationAccounts_Constructor = &AP_Win32Dialog_Col
 
 AP_Win32Dialog_CollaborationAccounts::AP_Win32Dialog_CollaborationAccounts(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationAccounts(pDlgFactory, id),
-	p_win32Dialog(NULL),
+	m_pWin32Dialog(NULL),
 	m_hInstance(NULL)
 {
 	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
@@ -76,7 +80,6 @@ AP_Win32Dialog_CollaborationAccounts::AP_Win32Dialog_CollaborationAccounts(XAP_D
 
 void AP_Win32Dialog_CollaborationAccounts::runModal(XAP_Frame * pFrame)
 {
-
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
@@ -87,20 +90,17 @@ void AP_Win32Dialog_CollaborationAccounts::runModal(XAP_Frame * pFrame)
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 		(DLGPROC)s_dlgProc, (LPARAM)this );
-	switch (result) {
-	case 0:
-		// MSDN: If the function fails because the hWndParent parameter is invalid, the return value is zero.
-		break;
-	case -1:
-		UT_DEBUGMSG(("Win32 error: %d.  lpTemplate: %d, RID:%d\n", GetLastError(), lpTemplate, AP_RID_DIALOG_COLLABORATIONACCOUNTS));
-		
-		break;
-	default:
-		break;
-		// ok!
+	switch (result)
+	{
+		case 0:
+			// MSDN: If the function fails because the hWndParent parameter is invalid, the return value is zero.
+			break;
+		case -1:
+			UT_DEBUGMSG(("Win32 error: %d.  lpTemplate: %d, RID:%d\n", GetLastError(), lpTemplate, AP_RID_DIALOG_COLLABORATIONACCOUNTS));
+			break;
+		default:
+			break;
 	};
-	
-
 }
 
 /*****************************************************************/
@@ -143,12 +143,12 @@ void AP_Win32Dialog_CollaborationAccounts::_setModel(std::map<UT_UTF8String, Acc
 	int index=0;
 	std::map<UT_UTF8String, AccountHandler*>::iterator iter=model.begin();
 	std::map<UT_UTF8String, AccountHandler*>::iterator end=model.end();
-	p_win32Dialog->resetContent(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST);
+	m_pWin32Dialog->resetContent(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST);
 	m_mIndices.clear();
 	
 	while (iter!=end)
 	{
-		p_win32Dialog->addItemToList(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST, AP_Win32App::s_fromUTF8ToWinLocale((iter->first).utf8_str()).c_str());
+		m_pWin32Dialog->addItemToList(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST, AP_Win32App::s_fromUTF8ToWinLocale((iter->first).utf8_str()).c_str());
 		m_mIndices[index]=(iter->second);
 		iter++;
 		index++;
@@ -203,8 +203,8 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onInitDialog(HWND hWnd, WPARAM wPara
 	// hDlg is stored in the DialogHelper - use that!
 	
 	// Get ourselves a custom DialogHelper
-	DELETEP(p_win32Dialog);
-	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
+	DELETEP(m_pWin32Dialog);
+	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
 	// Set up dialog initial state
 	_setModel(_constructModel());
@@ -213,7 +213,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onInitDialog(HWND hWnd, WPARAM wPara
 	_updateSelection();
 	
 	// Center Window
-	p_win32Dialog->centerDialog();
+	m_pWin32Dialog->centerDialog();
 
 	return true;
 }
@@ -282,8 +282,6 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 		createNewAccount();
 		// TODO: only refresh if it actually changed.
 		_setModel(_constructModel());
-		
-		// WM_COMMAND message processed
 		return true;
 	
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON:
@@ -309,8 +307,7 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 				_setModel(_constructModel());
 			}
 		}
-		
-		// WM_COMMAND message processed
+	
 		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON:
@@ -321,27 +318,24 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 			// TODO: do something like open a dialog.
 		
 		}
-		// we didn't really handle anything
-		return false;
+		return true;
 
 	default:
 		// WM_COMMAND message NOT processed
 		return false;
-	}
-
-	
+	}	
 }
 
 void AP_Win32Dialog_CollaborationAccounts::_updateSelection()
 {
-	int selItem = p_win32Dialog->getListSelectedIndex(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST);
+	int selItem = m_pWin32Dialog->getListSelectedIndex(AP_RID_DIALOG_COLLABORATIONACCOUNTS_ACCOUNT_LIST);
 	if (selItem != LB_ERR)
 	{
 		m_bHasSelection = true;
 		m_iSelected = selItem;
 		// TODO: Uncomment this line when Preferences does something.
-		//p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON, true);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON, true);
+		//m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON, true);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON, true);
 		
 		// Choose which of the Connect/Disconnect buttons is available
 		AccountHandler* pHandler;
@@ -351,30 +345,30 @@ void AP_Win32Dialog_CollaborationAccounts::_updateSelection()
 			if (pHandler->isOnline())
 			{
 				// We're online with this account - allow disconnect.
-				p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
-				p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, true);
+				m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
+				m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, true);
 			}
 			else
 			{
 				// We're offline - allow connect
-				p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, true);
-				p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
+				m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, true);
+				m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
 			}
 		}
 		else
 		{
 			// pHandler no good - don't allow connect or disconnect
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
+			m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
+			m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
 		}
 	}
 	else
 	{
 		m_bHasSelection = false;
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_PROPERTIES_BUTTON, false);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DELETE_BUTTON, false);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_CONNECT_BUTTON, false);
+		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONACCOUNTS_DISCONNECT_BUTTON, false);
 	}
 
 }

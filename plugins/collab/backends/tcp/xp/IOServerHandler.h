@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2007-2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,109 +22,88 @@
 #include "ut_debugmsg.h"
 
 #include <boost/bind.hpp>
+#include <boost/function.hpp>
 #include <asio.hpp>
 
-#include "Synchronizer.h"
+#include <backends/xp/Synchronizer.h>
 #include "Session.h"
-#include "IOHandler.h"
 
 class TCPAccountHandler;
 
 using asio::ip::tcp;
 
-class IOServerHandler : public IOHandler
+class IOServerHandler
 {
 public:
-	IOServerHandler(int port, void (*af)(IOServerHandler*), TCPAccountHandler& handler)
-	:	accept_synchronizer((void (*)(void*))af, (void*)this),
-		io_service(),
-		work(NULL),
-		thread(NULL),
+	IOServerHandler(int port, boost::function<void (IOServerHandler*, boost::shared_ptr<Session>)> af,
+					boost::function<void (Session&)> ef, asio::io_service& io_service_)
+	:	accept_synchronizer(boost::bind(&IOServerHandler::_signal, this)),
+		io_service(io_service_),
 		m_pAcceptor(NULL),
-		m_handler(handler)
+		session_ptr(),
+		m_af(af),
+		m_ef(ef)
 	{
-		UT_DEBUGMSG(("IOServerHandler()\n"));
-		work = new asio::io_service::work(io_service);
-		m_pAcceptor = new tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), port));
-		thread = new asio::thread(boost::bind(&asio::io_service::run, &io_service));
+ 		UT_DEBUGMSG(("IOServerHandler()\n"));
+ 		m_pAcceptor = new tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), port));
 	}
 	
 	virtual ~IOServerHandler()
 	{
 		UT_DEBUGMSG(("IOServerHandler::~IOServerHandler()\n"));
-		if (m_pAcceptor)
-			stop();
+ 		if (m_pAcceptor)
+ 			stop();
 	}
 
 	virtual void stop()
 	{
-		UT_DEBUGMSG(("IOServerHandler::stop()\n"));
+ 		UT_DEBUGMSG(("IOServerHandler::stop()\n"));
 		if (m_pAcceptor)
 		{
 			m_pAcceptor->close();
 			DELETEP(m_pAcceptor);
 		}
-		DELETEP(work);
-		io_service.stop();
-		if (thread)
-			thread->join();
-		DELETEP(thread);
 	}
-
-	void run(Session& newSession)
+	
+	void run()
 	{
 		UT_DEBUGMSG(("IOServerHandler::run()\n"));
-		asyncAccept(newSession);
+		asyncAccept();
 	}
 
-	void asyncAccept(Session& newSession)
+	void asyncAccept()
 	{
-		UT_DEBUGMSG(("IOServerHandler::asyncAccept()\n"));
-		UT_return_if_fail(m_pAcceptor);
-		m_pAcceptor->async_accept(newSession.getSocket(),
+ 		UT_DEBUGMSG(("IOServerHandler::asyncAccept()\n"));
+ 		UT_return_if_fail(m_pAcceptor);
+ 		session_ptr.reset(new Session(io_service, m_ef));
+		m_pAcceptor->async_accept(session_ptr->getSocket(),
 			boost::bind(&IOServerHandler::handleAsyncAccept,
-				this, asio::placeholders::error,
-				boost::ref(newSession)));
-	}
-
-	Session* constructSession(void (*ef)(Session*), TCPAccountHandler& handler)
-	{
-		UT_DEBUGMSG(("IOServerHandler::constructSession()\n"));
-		return new Session(io_service, ef, handler);
-	}
-
-	/*
-		Only called fron the abiword main loop
-	*/
-	void handleAccept(Session& newSession)
-	{
-		UT_DEBUGMSG(("IOServerHandler::handleAccept()\n"));
-		accept_synchronizer.consume();
-		asyncAccept(newSession);
-	}
-
-	TCPAccountHandler& getAccountHandler()
-	{
-		return m_handler;
+				this, asio::placeholders::error));
 	}
 
 private:
-	void handleAsyncAccept(const asio::error_code& ec, Session& session)
+	void _signal()
 	{
-		if (!ec)
-		{
-			accept_synchronizer.signal();
-			session.asyncReadHeader();
-		}
+		UT_DEBUGMSG(("IOServerHandler::_signal()"));
+		UT_return_if_fail(session_ptr);
+		session_ptr->asyncReadHeader();
+		m_af(this, session_ptr);
+	}
+
+	void handleAsyncAccept(const asio::error_code& ec)
+	{
+		UT_DEBUGMSG(("IOServerHandler::handleAsyncAccept()"));
+		UT_return_if_fail(!ec);
+		accept_synchronizer.signal();
 	}
 
 	Synchronizer				accept_synchronizer;
-	asio::io_service			io_service;
-	asio::io_service::work*		work;
-	asio::thread*				thread;	
+	asio::io_service&			io_service;
 	asio::ip::tcp::acceptor*	m_pAcceptor;
+	boost::shared_ptr<Session>	session_ptr;
 
-	TCPAccountHandler&			m_handler;
+	boost::function<void (IOServerHandler*, boost::shared_ptr<Session>)> m_af;
+	boost::function<void (Session&)> m_ef;
 };
 
 #endif /* __IO_SERVER_HANDLER__ */

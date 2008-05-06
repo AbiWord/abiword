@@ -291,7 +291,7 @@ bool FakeAccountHandler::_createSession()
 		}
 		
 		addBuddy(pCollaborator);
-		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, true);
+		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, false, true);
 		pManager->joinSession(m_pSession, pCollaborator);
 	}
 
@@ -366,7 +366,7 @@ bool FakeAccountHandler::_import(const RecordedPacket& rp)
 		}
 		
 		// a remote m_packets has been received; let it walk the normal path for incoming m_packets
-		pManager->processPacket(*this, sp, rp.m_buddyName.utf8_str());
+		pManager->processPacket(*this, sp, getBuddy(rp.m_buddyName));
 	}
 	else
 	{

@@ -16,6 +16,9 @@
  * 02111-1307, USA.
  */
 
+#ifndef __ABICOLLAB_LOCK__
+#define __ABICOLLAB_LOCK__
+
 #ifndef WIN32
 #include <pthread.h>
 #endif
@@ -92,3 +95,4 @@ private:
 
 }
 
+#endif /* __ABICOLLAB_LOCK__ */

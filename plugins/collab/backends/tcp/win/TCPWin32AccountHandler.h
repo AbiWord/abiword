@@ -29,16 +29,6 @@
 
 #include <backends/tcp/xp/TCPAccountHandler.h>
 
-#define ABI_RID_DIALOG_COLLABTCP_SERVERENTRY 201
-#define ABI_RID_DIALOG_COLLABTCP_PORTENTRY 202
-#define ABI_RID_DIALOG_COLLABTCP_SERVERLABEL 203
-#define ABI_RID_DIALOG_COLLABTCP_PORTLABEL 204
-#define ABI_RID_DIALOG_COLLABTCP_SERVERRADIO 205
-#define ABI_RID_DIALOG_COLLABTCP_JOINRADIO 206
-#define ABI_RID_DIALOG_COLLABTCP_AUTOCONNECTCHECK 207
-#define ABI_RID_DIALOG_COLLABTCP_USESECURECHECK 208
-
-
 class ABI_EXPORT TCPWin32AccountHandler : public TCPAccountHandler
 {
 public:
@@ -55,11 +45,8 @@ public:
 private:
 	XAP_Win32DialogHelper *					p_win32Dialog;
 	
-	bool									m_bEmbedded;
-	
 	// handles
 	HINSTANCE								m_hInstance;
-	HWND									m_hBox;
 	HWND									m_hServerEntry;
 	HWND									m_hPortEntry;
 	HWND									m_hServerRadio;

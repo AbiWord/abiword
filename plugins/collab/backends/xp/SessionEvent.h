@@ -56,7 +56,7 @@ public:
 	
 	virtual std::string	toStr() const;
 
-	const UT_UTF8String&		getSessionId()
+	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
 
 private:
@@ -85,7 +85,7 @@ public:
 		UT_ASSERT(m_sSessionId != "");
 	}
 
-	const UT_UTF8String&		getSessionId()
+	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
 	
 	virtual std::string	toStr() const;
@@ -112,7 +112,7 @@ public:
 	
 	virtual std::string	toStr() const;
 
-	const UT_UTF8String&		getSessionId()
+	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
 
 private:
@@ -132,7 +132,7 @@ public:
 	
 	virtual std::string	toStr() const;
 
-	const UT_UTF8String&		getSessionId()
+	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
 
 private:

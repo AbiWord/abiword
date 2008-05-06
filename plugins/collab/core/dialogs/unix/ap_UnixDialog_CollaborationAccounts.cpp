@@ -310,8 +310,8 @@ void AP_UnixDialog_CollaborationAccounts::eventDelete()
 					pHandler->getDisplayType().utf8_str()
 				));
 			
-			AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-			pManager->destroyAccount(pHandler);
+			_deleteAccount(pHandler);
+			
 			// for now, recreate the whole model; but we should really just delete
 			// the iter we got above
 			_setModel(_constructModel());

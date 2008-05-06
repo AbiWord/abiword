@@ -91,13 +91,13 @@ class ABI_EXPORT AbiCollab : public EV_MouseListener
 	friend class ABI_Collab_Export;
 
 public:
-	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId);
+	AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Frame* pFrame);
 	AbiCollab(const UT_UTF8String& sSessionId, 
 					PD_Document* pDoc, 
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
 					Buddy* pControler,
-					bool bReuseCurrentFrame = false);
+					XAP_Frame* pFrame);
 	virtual ~AbiCollab();
 
 	// collaborator management
@@ -128,6 +128,8 @@ public:
 	// document management
 	PD_Document*						getDocument(void) const
 		{ return m_pDoc; }
+	XAP_Frame*							getFrame(void) const
+		{ return m_pFrame; }
 
 	const UT_UTF8String&				getSessionId() const
 		{ return m_sId; }
@@ -151,14 +153,14 @@ private:
 	void								_removeCollaborator(UT_sint32 index);
 
 	// document management
-	void								_setDocument(PD_Document* pDoc, bool bReuseCurrentFrame = false);
+	void								_setDocument(PD_Document* pDoc, XAP_Frame* pFrame);
 	void								_setDocListenerId(UT_uint32 iDocListenerId)
 		{ m_iDocListenerId = iDocListenerId; }
-	XAP_Frame*							_constructFrame();
 	
 	void								_fillRemoteRev( Packet* pPacket, const Buddy& ); 
 
 	PD_Document *						m_pDoc;
+	XAP_Frame*							m_pFrame;
 	ABI_Collab_Import					m_Import;
 	ABI_Collab_Export					m_Export;
 

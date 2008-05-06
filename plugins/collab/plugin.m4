@@ -104,7 +104,7 @@ fi
 
 
 AC_ARG_ENABLE([collab-backend-service], 
-    [AS_HELP_STRING([--enable-collab-backend-service], [collaborate.abisource.com backend (default: off)])], 
+    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off)])], 
 [
 	enable_collab_backend_service=$enableval
 ], [
@@ -114,7 +114,7 @@ if test $enable_collab_backend_service == "yes"; then
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Asio is required for the \`collaborate.abisource.com' backend, see http://asio.sourceforge.net])
+		AC_MSG_ERROR([Asio is required for the \`abicollab.net' backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 elif test $enable_collab_backend_service == "auto"; then

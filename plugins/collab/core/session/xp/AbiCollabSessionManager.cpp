@@ -40,8 +40,6 @@
 
 #ifdef WIN32
 #include <windows.h>
-// hacky but it works. it's what we get for not having autotools.
-#define ABICOLLAB_HANDLER_TCP 1
 #else
 #include <unistd.h>
 #include "ut_files.h"
@@ -142,10 +140,12 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 	return result;
 }
 
-UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, std::string& document, bool isEncodedBase64)
+UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const std::string& document, bool isEncodedBase64)
 {
+	UT_return_val_if_fail(pDoc, UT_ERROR);
+	
 	UT_Error res = UT_ERROR;
-
+	
 	// really bad abuse of std::string's below, but more efficient than copying 
 	// the whole buffer (which could be massive) into a temporary buffer
 	GsfInput *source;
@@ -167,13 +167,17 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, std::s
 		GsfInput *gzabwBuf = gsf_input_gzip_new (source, NULL); // todo: don't pass null here, but check for errors
 		if (gzabwBuf)
 		{
-			// TODO: if there are unsaved changes to the current document, 
-			//       then open this document in a new frame!
-			(*pDoc) = new PD_Document(XAP_App::getApp());
-			(*pDoc)->createRawDocument();
+			bool create = (*pDoc == NULL);
+			if (create)
+			{
+				UT_DEBUGMSG(("Creating a new document in AbiCollabSessionManager::deserializeDocument()\n"));
+				(*pDoc) = new PD_Document(XAP_App::getApp());
+				(*pDoc)->createRawDocument();
+			}
 			IE_Imp* imp = (IE_Imp*)new IE_Imp_AbiWord_1(*pDoc);
 			imp->importFile(gzabwBuf); // todo: check for errors
-			(*pDoc)->finishRawCreation();
+			if (create)
+				(*pDoc)->finishRawCreation();
 			DELETEP(imp);
 			g_object_unref(G_OBJECT(gzabwBuf));
 			res = UT_OK;
@@ -365,7 +369,7 @@ void AbiCollabSessionManager::loadProfile()
 												pHandler->connect();
 										break;
 									}
-									DELETEP(pHandler);
+									_deleteAccount(pHandler);
 								}
 							}
 						}
@@ -476,20 +480,20 @@ void AbiCollabSessionManager::storeProfile()
 
 bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
 {
-	AbiCollab * pCollab = NULL;
+	UT_DEBUGMSG(("AbiCollabSessionManager::destroySession(PD_Document * pDoc)\n"));
+	
 	UT_uint32 i = 0;
 	for (i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
-		pCollab = m_vecSessions.getNthItem(i);
-		if (pCollab)
+		AbiCollab* pSession = m_vecSessions.getNthItem(i);
+		UT_continue_if_fail(pSession);
+
+		PD_Document* pSessionDoc = pSession->getDocument();
+		if (pSessionDoc == pDoc)
 		{
-			PD_Document* pSessionDoc = pCollab->getDocument();
-			if (pSessionDoc == pDoc)
-			{
-				DELETEP(pCollab);
-				m_vecSessions.deleteNthItem(i);
-				return true;
-			}
+			m_vecSessions.deleteNthItem(i);
+			_deleteSession(pSession);
+			return true;
 		}
 	}
 	return false;
@@ -497,16 +501,18 @@ bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
 
 bool AbiCollabSessionManager::destroySession(AbiCollab* pSession)
 {
-	UT_DEBUGMSG(("AbiCollabSessionManager::destroySession()\n"));
+	UT_DEBUGMSG(("AbiCollabSessionManager::destroySession(AbiCollab* pSession)\n"));
 
 	UT_uint32 i = 0;
 	for (i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pActiveSession = m_vecSessions.getNthItem(i);
+		UT_continue_if_fail(pActiveSession);
+		
 		if (pActiveSession == pSession)
 		{
-			DELETEP(pSession);
 			m_vecSessions.deleteNthItem(i);
+			_deleteSession(pSession);
 			return true;
 		}
 	}
@@ -533,12 +539,8 @@ void AbiCollabSessionManager::disconnectSessions()
 	for(UT_uint32 i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
-		if (pSession)
-		{
-			disconnectSession(pSession);
-			DELETEP(pSession);
-		}
-		m_vecSessions.deleteNthItem(i);
+		UT_continue_if_fail(pSession);
+		disconnectSession(pSession);
 	}
 }		
 
@@ -600,7 +602,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String&
 	return NULL;
 }
 
-AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId)
+AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, XAP_Frame* pFrame)
 {
 	UT_DEBUGMSG(("Starting collaboration session for document with id %s\n", pDoc->getDocUUIDString()));
 	
@@ -612,7 +614,9 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 	}
 
 	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
-	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId);
+
+	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
+	AbiCollab* pAbiCollab = new AbiCollab(pDoc, sSessionId, pFrame);
 	m_vecSessions.push_back(pAbiCollab);
 	
 	// notify all people we are sharing a new document
@@ -680,19 +684,24 @@ void AbiCollabSessionManager::joinSessionInitiate(Buddy* pBuddy, DocHandle* pDoc
 	// TODO: do some accounting here, so we know we send an auth request in ::joinSession()
 }
 
-void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator)
+void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
+												const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator,
+												XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));
 
 	UT_return_if_fail(pCollaborator);
 	UT_return_if_fail(pDoc);
 	
-	AbiCollab* pSession = 
 #ifdef ABICOLLAB_HANDLER_SUGAR		
-		new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, true);
+	// HACK, remove this some day: the sugar backend should just pass us a frame to use
+	pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	pFrame->loadDocument(pDoc);
 #else
-		new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator);
-#endif
+	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
+#endif	
+	
+	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
 	m_vecSessions.push_back(pSession);
 
 	// signal everyone that we have joined this session
@@ -870,7 +879,7 @@ bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 	}
 	else
 	{
-		DELETEP(pHandler);
+		_deleteAccount(pHandler);
 		UT_DEBUGMSG(("User attempted to add duplicate account - request ignored.\n"));
 	}
 	
@@ -882,14 +891,14 @@ void AbiCollabSessionManager::destroyAccounts(void)
 	for (UT_uint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
 	{
 		AccountHandler * pHandler = m_vecAccounts.getNthItem(i);
-		DELETEP(pHandler);
+		_deleteAccount(pHandler);
 	}
 	m_vecAccounts.clear();
 }
 
-void AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
+bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 {
-	UT_return_if_fail(pHandler);
+	UT_return_val_if_fail(pHandler, false);
 
 	for (UT_uint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
 	{
@@ -921,10 +930,11 @@ void AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 			}
 
 			m_vecAccounts.deleteNthItem(i);
-			DELETEP(pHandler);
-			break;
+			_deleteAccount(pHandler);
+			return true;
 		}
 	}
+	return false;
 }
 
 void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericVector<DocHandle*>& vDocHandles)
@@ -1020,13 +1030,10 @@ void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericV
 	}
 }
 
-bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, const UT_UTF8String& sBuddyName) 
+bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, Buddy* buddy) 
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::processPacket()\n"));
 	UT_return_val_if_fail(packet, false);
-
-	// TODO: it is rather inefficient to request a buddy for every packet
-	Buddy* buddy = handler.getBuddy(sBuddyName);
 	UT_return_val_if_fail(buddy, false);
 	
 	// check if this is a simple import-meh-now-packet
@@ -1157,14 +1164,11 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 			
 			case PCT_AccountAddBuddyRequestEvent:
 			{
-				// TODO: it is rather inefficient to request a buddy for every packet
-				Buddy* pBuddy = handler.getBuddy(sBuddyName);
-				if (!pBuddy)
+				if (buddy != handler.getBuddy(buddy->getName()))
 				{
 					PropertyMap vBuddyProps;
-					vBuddyProps.insert(PropertyMap::value_type("name", sBuddyName.utf8_str()));
+					vBuddyProps.insert(PropertyMap::value_type("name", buddy->getName().utf8_str()));
 					Buddy* pBuddy = handler.constructBuddy(vBuddyProps);
-			
 					if (pBuddy)
 					{
 						// TODO: we don't handle request authorization yet. For now, just
@@ -1231,4 +1235,122 @@ void AbiCollabSessionManager::signal(const Event& event, const Buddy* pSource)
 		if (pListener)
 			pListener->signal(event, pSource);
 	}
+}
+
+void AbiCollabSessionManager::beginAsyncOperation(AbiCollab* pSession)
+{
+	UT_DEBUGMSG(("AbiCollabSessionManager::beginAsyncOperation(AbiCollab*)\n"));
+	UT_return_if_fail(pSession);
+	m_asyncSessionOps[pSession]++;
+}
+
+void AbiCollabSessionManager::endAsyncOperation(AbiCollab* pSession)
+{
+	UT_DEBUGMSG(("AbiCollabSessionManager::endAsyncOperation(AbiCollab*)\n"));
+	UT_return_if_fail(pSession);
+	UT_return_if_fail(m_asyncSessionOps[pSession] > 0);
+	m_asyncSessionOps[pSession]--;
+}
+
+void AbiCollabSessionManager::beginAsyncOperation(AccountHandler* pAccount)
+{
+	UT_DEBUGMSG(("AbiCollabSessionManager::beginAsyncOperation(AccountHandler*)\n"));
+	UT_return_if_fail(pAccount);
+	m_asyncAccountOps[pAccount]++;
+}
+
+void AbiCollabSessionManager::endAsyncOperation(AccountHandler* pAccount)
+{
+	UT_DEBUGMSG(("AbiCollabSessionManager::endAsyncOperation(AccountHandler*)\n"));
+	UT_return_if_fail(pAccount);
+	UT_return_if_fail(m_asyncAccountOps[pAccount] > 0);
+	m_asyncAccountOps[pAccount]--;
+}
+
+bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
+{
+	UT_return_val_if_fail(pFrame, false);
+	
+	if (*pFrame)
+	{
+		UT_DEBUGMSG(("Frame is non-NULL, NOT loading document in the frame\n"));
+		return true;
+	}
+	
+	// if the document doesn't belong to a frame already, then create a 
+	// new frame for this session (except when the document in the current 
+	// frame is not dirty, doesn't have a filename yet (which means it 
+	// is a brand new empty document), and isn't being shared at the moment)
+	XAP_Frame* pCurFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pCurFrame, false);
+
+	PD_Document * pFrameDoc = static_cast<PD_Document *>(pCurFrame->getCurrentDoc());
+	if (pFrameDoc != pDoc)
+	{
+		if (!pFrameDoc || (!pFrameDoc->getFilename() && !pFrameDoc->isDirty() && !isInSession(pFrameDoc)))
+		{
+			// we can replace the document in this frame safely, as it is 
+			// brand new, and doesn't have any contents yet
+		}
+		else
+		{
+			// the current frame has already a document loaded, let's create
+			// a new frame
+			pCurFrame = XAP_App::getApp()->newFrame();
+		}
+
+	}
+	else
+		UT_DEBUGMSG(("This document is already in the current frame; using this frame\n"));
+	
+	UT_return_val_if_fail(pCurFrame, false);
+	*pFrame = pCurFrame;
+		
+	// load the document in the frame; this will also delete the old document (or at least, it should)
+	if (static_cast<PD_Document *>((*pFrame)->getCurrentDoc()) != pDoc)
+	{
+		UT_DEBUGMSG(("Loading the document in the frame\n"));
+		(*pFrame)->loadDocument(pDoc);
+	}
+	else
+		UT_DEBUGMSG(("Not loading the document in the frame, as the frame already has it\n"));
+	
+	return true;
+}
+
+void AbiCollabSessionManager::_deleteSession(AbiCollab* pSession)
+{
+	UT_DEBUGMSG(("Waiting for all async actions to complete...\n"));
+	UT_return_if_fail(pSession);
+	// wait for all async actions to complete
+	// TODO: some sort of feedback to the user would be nice
+	while (m_asyncSessionOps[pSession] > 0)
+		_nullUpdate();
+	DELETEP(pSession);
+}
+
+void AbiCollabSessionManager::_deleteAccount(AccountHandler* pHandler)
+{
+	UT_DEBUGMSG(("Waiting for all async actions to complete...\n"));
+	UT_return_if_fail(pHandler);
+	// wait for all async actions to complete
+	// TODO: some sort of feedback to the user would be nice
+	while (m_asyncAccountOps[pHandler] > 0)
+		_nullUpdate();			
+	DELETEP(pHandler);
+}
+
+void AbiCollabSessionManager::_nullUpdate()
+{
+#ifdef WIN32
+		MSG msg;
+		for (UT_sint32 i = 0 ; i < 10 ; i++ )
+			if (PeekMessage(&msg, (HWND) NULL, 0, 0, PM_REMOVE))
+				DispatchMessage(&msg);
+		Sleep(10);
+#else
+		for (UT_sint32 i = 0; (i < 10) && gtk_events_pending(); i++)
+			gtk_main_iteration ();
+		usleep(1000*10);
+#endif	
 }

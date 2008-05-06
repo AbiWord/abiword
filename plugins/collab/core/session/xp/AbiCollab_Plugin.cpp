@@ -531,13 +531,16 @@ bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d)
 	else
 	{
 		UT_UTF8String sSessionId("");
-		pManager->startSession(pDoc, sSessionId);
+		pManager->startSession(pDoc, sSessionId, NULL);
 	}
 	return true;
 }
 
 bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
 {
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+	
 	// Get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	// Get an Accounts dialog instance
@@ -548,7 +551,33 @@ bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
 			);
 	// Run the dialog
 	pDialog->runModal(pFrame);
+	// Handle the dialog outcome
+	AP_Dialog_CollaborationJoin::tAnswer answer = pDialog->getAnswer();
+	Buddy* pBuddy = pDialog->getBuddy();
+	DocHandle* pDocHandle = pDialog->getDocHandle();
 	pFactory->releaseDialog(pDialog);
+	
+	switch (answer)
+	{
+		case AP_Dialog_CollaborationJoin::a_CONNECT:
+			UT_return_val_if_fail(pBuddy && pDocHandle, false);
+			pManager->joinSessionInitiate(pBuddy, pDocHandle);	
+			break;
+		case AP_Dialog_CollaborationJoin::a_DISCONNECT:
+			{
+				UT_return_val_if_fail(pBuddy && pDocHandle, false);
+				AbiCollab* pSession = pManager->getSessionFromSessionId(pDocHandle->getSessionId());
+				UT_return_val_if_fail(pSession, false);
+				if (pSession->isLocallyControlled())
+					pManager->closeSession(pSession, true);
+				else
+					pManager->disjoinSession(pDocHandle->getSessionId());
+			}
+			break;
+		case AP_Dialog_CollaborationJoin::a_CLOSE:
+			break;
+	}	
+	
 	return true;
 }
 

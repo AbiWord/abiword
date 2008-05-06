@@ -135,12 +135,8 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, L
 	// If we can't init common controls, bail out
 	UT_return_val_if_fail(InitCommonControlsEx(&icc), false);
 	
-	//////
 	// Get ourselves a custom DialogHelper
-	if (p_win32Dialog)
-	{
-		DELETEP(p_win32Dialog);
-	}
+	DELETEP(p_win32Dialog);
 	p_win32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
 	//////
@@ -155,7 +151,6 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, L
 	// Center Window
 	p_win32Dialog->centerDialog();
 	
-
 	// WM_INITDIALOG wants True returned in order to continue processing
 	return true;
 }
@@ -165,26 +160,28 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-
 	
 	switch (wId)
 	{
-	case AP_RID_DIALOG_COLLABORATIONJOIN_JOIN_BUTTON:
+	case AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON:
+		// join and close
+		// Formerly/secretly the OK button
+		_setJoin(m_hSelected, false);
+		EndDialog(hWnd, 0);
+		return true;
+
+	case AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON:
 		// join and close
 		// Formerly/secretly the OK button
 		_setJoin(m_hSelected, true);
-		EndDialog(hWnd,0);
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		EndDialog(hWnd, 0);
+		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_CLOSE_BUTTON:
 		// Close without necessarily joining
 		// formerly/secretly the Cancel button
 		EndDialog(hWnd,0);
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		return true;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_ADDBUDDY_BUTTON:
 		// open the Add Buddy dialog
@@ -198,16 +195,12 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		// Refresh documents
 		_refreshAllDocHandlesAsync();
 		_setModel();
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		return true;
 	
 	case AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON:
-		// right now, do nothing
 		// TODO: Implement!
-		
 		// didn't actually handle this
-		return 1;
+		return false;
 
 	case AP_RID_DIALOG_COLLABORATIONJOIN_REFRESH_BUTTON:
 		// TODO: we really should refresh the buddies here as well, 
@@ -215,13 +208,10 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		// avahi backend)
 		_refreshAllDocHandlesAsync();
 		_setModel();
-		
-		// WM_COMMAND message processed - return 0
-		return 0;
+		return true;
 
 	default:
-		// WM_COMMAND message not handled - return 1 to require Windows to process it.
-		return 1;
+		return false;
 	}
 }
 
@@ -232,7 +222,9 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onNotify(HWND hWnd, WPARAM wParam, LPARA
 		//UT_DEBUGMSG(("Notify: Code=0x%x\n", ((LPNMHDR)lParam)->code));
 		
 		case NM_DBLCLK:
-			// A double-click will toggle join status
+			return false; // need to think this through, just toggling the state sounds wrong to me, UI-wise - MARCM
+			
+/*			// A double-click will toggle join status
 			// TODO: This is probably awful GUI-wise
 			_updateSelection();
 			// join stuff!
@@ -252,7 +244,7 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onNotify(HWND hWnd, WPARAM wParam, LPARA
 				_refreshAllDocHandlesAsync();
 				_setModel();
 			}
-			return 1;
+			return 1;*/
 			
 		case TVN_SELCHANGED:
 			_updateSelection();
@@ -343,10 +335,12 @@ void AP_Win32Dialog_CollaborationJoin::_enableBuddyAddition(bool bEnabled)
 
 void AP_Win32Dialog_CollaborationJoin::_updateSelection()
 {
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);	
+	
 	HTREEITEM hSelItem = TreeView_GetSelection(m_hDocumentTreeview);
 	if (hSelItem)
 	{
-		m_bHasSelection = true;
 		m_hSelected = hSelItem;
 
 		std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hSelItem);
@@ -354,60 +348,59 @@ void AP_Win32Dialog_CollaborationJoin::_updateSelection()
 		if (cit->second.pDocHandle)
 		{
 			UT_DEBUGMSG(("Document selected\n"));
-			// If the doc handle isn't null then this is a document
-			m_bShareSelected=true;
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_JOIN_BUTTON, true);
+			bool bIsConnected = pManager->isActive(cit->second.pDocHandle->getSessionId());
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, bIsConnected );
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, !bIsConnected );
 			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, false);
 		}
 		else
 		{
 			UT_DEBUGMSG(("Buddy selected\n"));
-			// This is just a buddy.
-			m_bShareSelected=false;
-			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_JOIN_BUTTON, false);
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, false);
+			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, false);
 			p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, true);
 		}
 	}
 	else
 	{
-		m_bHasSelection = false;
-		m_bShareSelected = false;
-		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_JOIN_BUTTON, false);
+		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DISCONNECT_BUTTON, false);
+		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_CONNECT_BUTTON, false);
 		p_win32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONJOIN_DELETE_BUTTON, false);
 	}
-
 }
 
-// Return value: 	true if the join status was updated
-//				false if the desired status was already the current status
-bool AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus)
+void AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
 
 	std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hItem);
 	UT_return_val_if_fail(cit != m_mTreeItemHandles.end(), false);	
-	
+
 	Buddy* pBuddy = cit->second.pBuddy;
 	UT_return_if_fail(pBuddy);
 
 	DocHandle* pDocHandle = cit->second.pDocHandle;
 	UT_return_if_fail(pDocHandle);
-	
+
 	bool currentlyJoined = pManager->isActive(pDocHandle->getSessionId());
+	UT_return_if_fail(joinStatus != currentlyJoined);
 	
-	if (joinStatus && !currentlyJoined)
+	if (joinStatus)
 	{
-		_join(pBuddy, pDocHandle);
-		return true;
+		UT_DEBUGMSG(("Got a document we can connect to!\n"));
+		m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
+		m_pBuddy = pBuddy;
+		m_pDocHandle = pDocHandle;
+		return;
 	}
 	
-	if (!joinStatus && currentlyJoined)
+	if (!joinStatus)
 	{
-		_disjoin(pBuddy, pDocHandle);
-		return true;
+		UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
+		m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
+		m_pBuddy = pBuddy;
+		m_pDocHandle = pDocHandle;
+		return;
 	}
-	
-	// We did not have to change the status
-	return false;
 }

@@ -40,8 +40,28 @@ AP_Dialog_CollaborationAccounts::~AP_Dialog_CollaborationAccounts(void)
 
 bool AP_Dialog_CollaborationAccounts::_addAccount(AccountHandler* pAccount)
 {
+	UT_return_val_if_fail(pAccount, false);
+	
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	return pManager->addAccount(pAccount);
+	UT_return_val_if_fail(pManager, false);
+	
+	bool success = pManager->addAccount(pAccount);
+	if (success)
+		pManager->storeProfile();
+	return success;
+}
+
+bool AP_Dialog_CollaborationAccounts::_deleteAccount(AccountHandler* pAccount)
+{
+	UT_return_val_if_fail(pAccount, false);
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+	
+	bool success = pManager->destroyAccount(pAccount);
+	if (success)
+		pManager->storeProfile();
+	return success;
 }
 
 void AP_Dialog_CollaborationAccounts::createNewAccount()

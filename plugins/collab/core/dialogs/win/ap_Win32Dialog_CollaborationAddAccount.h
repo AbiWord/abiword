@@ -21,7 +21,7 @@
 #ifndef AP_WIN32DIALOG_COLLABORATIONADDACCOUNT_H
 #define AP_WIN32DIALOG_COLLABORATIONADDACCOUNT_H
 
-#include <map>
+#include <vector>
 
 #include "xap_Win32DialogHelper.h"
 #include "ut_assert.h"
@@ -44,7 +44,7 @@ public:
 	void						setBackendValidity(bool valid);
 
 protected:
-	XAP_Win32DialogHelper *		p_win32Dialog;
+	XAP_Win32DialogHelper *		m_pWin32Dialog;
 	/*
 	virtual void*				_getEmbeddingParent()
 		{ return m_hDlg; }
@@ -61,7 +61,7 @@ protected:
 	HWND						m_hDetails;
 	
 	// Data
-	std::map<UT_uint32, AccountHandler*> 	m_mAccountTypeCombo;
+	std::vector<AccountHandler*>	m_vAccountTypeCombo;
 
 private:
 	

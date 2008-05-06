@@ -528,7 +528,7 @@ bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle sfh,
  */
 bool ABI_Collab_Export::signal(UT_uint32 iSignal)
 {
-	UT_DEBUGMSG(("FIXME FIXME FIXME, DON'T SEND SIGNALS DIRECTLY FROM ABI_Collab_Export::signal()!\n"));
+	UT_DEBUGMSG(("ABI_Collab_Export::signal()!\n"));
 	
 	SignalSessionPacket* ssp = new SignalSessionPacket(m_pAbiCollab->getSessionId(), m_pDoc->getOrigDocUUIDString(), iSignal);
 	if(m_pGlobPacket)

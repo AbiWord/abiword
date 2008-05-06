@@ -142,6 +142,17 @@ void AccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
 	send(&event, buddy);
 }
 
+bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
+{
+	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	{
+		const Buddy* pBuddy = m_vecBuddies.getNthItem(i);
+		if (pBuddy->getDocHandle(sSessionId))
+			return true;
+	}
+	return false;
+}
+
 void AccountHandler::signal(const Event& event, const Buddy* pSource)
 {
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
@@ -171,23 +182,61 @@ void AccountHandler::signal(const Event& event, const Buddy* pSource)
 	}
 }
 
+// TODO: deprecate this function
 void AccountHandler::handleMessage(const RawPacket& pRp)
 {
 	UT_return_if_fail(pRp.buddy);
 	
+	Packet* pPacket = _createPacket(pRp.packet, pRp.buddy);
+	UT_return_if_fail(pPacket);
+	
+	handleMessage(pPacket, pRp.buddy);
+}
+
+void AccountHandler::handleMessage(Packet* pPacket, Buddy* pBuddy)
+{
+	UT_return_if_fail(pPacket);
+	UT_return_if_fail(pBuddy);	
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+	
+	//
+	// handle the incoming packet: first check for a protocol error, then ask the 
+	// session manager to handle it, then try to handle it ourselves
+	//
+	if (_handleProtocolError(pPacket, pBuddy) ||
+		pManager->processPacket(*this, pPacket, pBuddy))
+	{
+		DELETEP(pPacket);
+		return;
+	}
+
+	// it seems we need to handle the packet ourselves
+	_handlePacket(pPacket, pBuddy);
+	DELETEP(pPacket);
+}
+
+Packet* AccountHandler::_createPacket(const std::string& packet, Buddy* pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, NULL);
+	
 	// create archive
-	IStrArchive isa( pRp.packet );
+	IStrArchive isa( packet );
 	
 	// serialize version
 	int version;
 	isa << COMPACT_INT(version);
-	if (version!=ABICOLLAB_PROTOCOL_VERSION) {
-		if (version>0) {
+	if (version != ABICOLLAB_PROTOCOL_VERSION)
+	{
+		if (version > 0)
+		{
 			UT_DEBUGMSG(("Discarding packet, wrong version %d (expected %d)\n", version, ABICOLLAB_PROTOCOL_VERSION));
-			_sendProtocolError( *pRp.buddy, PE_Invalid_Version );
-			return;
+			_sendProtocolError(*pBuddy, PE_Invalid_Version);
+			return NULL;
 		}
-		else {
+		else
+		{
 			UT_DEBUGMSG(("Got error packet (hopefully), revision=%d\n", version));
 			// if it's a version 0 message, handle normally, picked up in _handlePacket
 		}
@@ -197,24 +246,19 @@ void AccountHandler::handleMessage(const RawPacket& pRp)
 	UT_uint8 classId;
 	isa << classId;
 	Packet* newPacket = Packet::createPacket( (PClassType)classId );
-	if (!newPacket) {
+	if (!newPacket)
+	{
 		UT_DEBUGMSG(("Discarding packet, got unknown class %d\n", classId));
-		return;
+		return NULL;
 	}
 		
 	// debug
-	UT_DEBUGMSG(("PACKET RECEIVED: [%s] %u bytes in serialized string\n", Packet::getPacketClassname( (PClassType)classId ), isa.Size()));
+	UT_DEBUGMSG(("PACKET DESERIALIZED: [%s] %u bytes in serialized string\n", Packet::getPacketClassname( (PClassType)classId ), isa.Size()));
 	
 	// serialize packet
 	isa << *newPacket;
-
-	// handle packet:
-	// 	NOTE:	uwog didn't want a "packet->execute" like construction, 
-	//			so we're checking the packet type here
-	_handlePacket( newPacket, pRp.buddy );
-
-	// cleanup
-	DELETEP(newPacket);
+	
+	return newPacket;
 }
 
 void AccountHandler::_createPacketStream( std::string& sString, const Packet* pPacket )
@@ -241,6 +285,25 @@ void AccountHandler::_createPacketStream( std::string& sString, const Packet* pP
 	UT_DEBUGMSG(("PACKET SENT: [%s] %u bytes in serialized string\n", Packet::getPacketClassname( (PClassType)classId ), osa.Size()));
 }
 
+bool AccountHandler::_handleProtocolError(Packet* packet, Buddy* buddy)
+{
+	// packet and buddy must always be set
+	UT_return_val_if_fail(packet, false);
+	UT_return_val_if_fail(buddy, false);
+
+	// error report?
+	if (packet->getClassType() != PCT_ProtocolErrorPacket)
+		return false;
+
+	// we have an error!
+	ProtocolErrorPacket* pee = static_cast<ProtocolErrorPacket*>( packet );
+	// report the error
+	_reportProtocolError( pee->getRemoteVersion(), pee->getErrorEnum(), *buddy );
+	// and remove buddy
+	forceDisconnectBuddy( buddy );
+	return true;
+}
+
 void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy )
 {
 	// packet and buddy must always be set
@@ -251,144 +314,137 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy )
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 	
-	// error report?
-	if (packet->getClassType()==PCT_ProtocolErrorPacket) 
-	{
-		ProtocolErrorPacket* pee = static_cast<ProtocolErrorPacket*>( packet );
+	// manager didn't handle it, see what we can do
+	switch (packet->getClassType()) 
+	{			
+		case PCT_JoinSessionRequestEvent:
+		{
+			JoinSessionRequestEvent* jse = static_cast<JoinSessionRequestEvent*>( packet );
+			
+			// lookup session
+			AbiCollab* pSession = pManager->getSessionFromSessionId( jse->getSessionId() );
+			UT_return_if_fail(pSession);
 		
-		// report error
-		_reportProtocolError( pee->getRemoteVersion(), pee->getErrorEnum(), *buddy );
+			// lookup exporter
+			ABI_Collab_Export* pExport = pSession->getExport();
+			UT_return_if_fail(pExport);
+			
+			// lookup adjusts
+			const UT_GenericVector<ChangeAdjust *>* pExpAdjusts = pExport->getAdjusts();
+			UT_return_if_fail(pExpAdjusts);
 		
-		// and remove buddy
-		forceDisconnectBuddy( buddy );
-	}	
-	// see if manager can handle this
-	else if (!pManager->processPacket( *this, packet, buddy->getName() )) 
-	{		
-		// manager didn't handle it, see what we can do
-		switch (packet->getClassType()) 
-		{			
-			case PCT_JoinSessionRequestEvent:
+			// TODO: ask the user to authorize this request
+			bool bAuthorized = true;
+			if (bAuthorized)
 			{
-				JoinSessionRequestEvent* jse = static_cast<JoinSessionRequestEvent*>( packet );
+				PD_Document* pDoc = pSession->getDocument();
 				
-				// lookup session
-				AbiCollab* pSession = pManager->getSessionFromSessionId( jse->getSessionId() );
-				UT_return_if_fail(pSession);
-			
-				// lookup exporter
-				ABI_Collab_Export* pExport = pSession->getExport();
-				UT_return_if_fail(pExport);
-				
-				// lookup adjusts
-				const UT_GenericVector<ChangeAdjust *>* pExpAdjusts = pExport->getAdjusts();
-				UT_return_if_fail(pExpAdjusts);
-			
-				// TODO: ask the user to authorize this request
-				bool bAuthorized = true;
-				if (bAuthorized)
+				// serialize entire document into string
+				JoinSessionRequestResponseEvent jsre( jse->getSessionId() );
+				if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
 				{
-					PD_Document* pDoc = pSession->getDocument();
+					// set more document properties
+					jsre.m_iRev = pDoc->getCRNumber();
+					jsre.m_sDocumentId = pDoc->getDocUUIDString();
+					if (pDoc->getFilename())
+						jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
 					
-					// serialize entire document into string
-					JoinSessionRequestResponseEvent jsre( jse->getSessionId() );
-					if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
+					// send to buddy!
+					send( &jsre, *buddy );
+					
+					// check if we already know this buddy
+					Buddy* existing = getBuddy(buddy->getName());
+					if (!existing)
 					{
-						// set more document properties
-						jsre.m_iRev = pDoc->getCRNumber();
-						jsre.m_sDocumentId = pDoc->getDocUUIDString();
-						if (pDoc->getFilename())
-							jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
-						
-						// send to buddy!
-						send( &jsre, *buddy );
-						
-						// check if we already know this buddy
-						Buddy* existing = getBuddy(buddy->getName());
-						if (!existing)
-						{
-							// we don't know this buddy yet; add this one as a volatile buddy
-							buddy->setVolatile(true);
-							addBuddy(buddy);
-						}
-					
-						// add this buddy to the collaboration session
-						pSession->addCollaborator(buddy);
+						// we don't know this buddy yet; add this one as a volatile buddy
+						buddy->setVolatile(true);
+						addBuddy(buddy);
 					}
+				
+					// add this buddy to the collaboration session
+					pSession->addCollaborator(buddy);
 				}
-				break;
 			}
-			
-			case PCT_JoinSessionRequestResponseEvent:
+			break;
+		}
+		
+		case PCT_JoinSessionRequestResponseEvent:
+		{
+			JoinSessionRequestResponseEvent* jsre = static_cast<JoinSessionRequestResponseEvent*>( packet );
+			PD_Document* pDoc = 0;
+			if (AbiCollabSessionManager::deserializeDocument(&pDoc, jsre->m_sZABW, false) == UT_OK)
 			{
-				JoinSessionRequestResponseEvent* jsre = static_cast<JoinSessionRequestResponseEvent*>( packet );
-				PD_Document* pDoc = 0;
-				if (AbiCollabSessionManager::deserializeDocument(&pDoc, jsre->m_sZABW, false) == UT_OK)
+				if (pDoc)
 				{
+					// NOTE: we could adopt the same document name here, but i'd
+					// rather not at the moment - MARCM
+					pDoc->forceDirty();
+					if (jsre->m_sDocumentName.size() > 0)
+					{
+						gchar* fname = g_strdup(jsre->m_sDocumentName.utf8_str());
+						pDoc->setFilename(fname);
+					}
+					pManager->joinSession( jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL );
+				}
+				else
+					UT_DEBUGMSG(("AccountHandler::_handlePacket() - deserializing document failed!\n"));
+			}
+			break;
+		}
+		
+		case PCT_GetSessionsEvent:
+		{
+			GetSessionsResponseEvent gsre;
+			const UT_GenericVector<AbiCollab *> sessions = pManager->getSessions();
+			for (UT_uint32 i = 0; i < sessions.getItemCount(); i++)
+			{
+				AbiCollab* pSession = sessions.getNthItem(i);
+				if (pSession && pSession->isLocallyControlled())
+				{
+					const PD_Document * pDoc = pSession->getDocument();
 					if (pDoc)
 					{
-						// NOTE: we could adopt the same document name here, but i'd
-						// rather not at the moment - MARCM
-						pDoc->forceDirty();
-						pManager->joinSession( jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy );
+						// determine name
+						UT_UTF8String documentBaseName;
+						if (pDoc->getFilename())
+							documentBaseName = UT_go_basename_from_uri(pDoc->getFilename());
+						// set session info
+						gsre.m_Sessions[ pSession->getSessionId() ] = documentBaseName;
 					}
 					else
-						UT_DEBUGMSG(("XMPPAccountHandler::_handleJoinSessionResponse() - deserializing document failed!\n"));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
-				break;
 			}
-			
-			case PCT_GetSessionsEvent:
-			{
-				GetSessionsResponseEvent gsre;
-				const UT_GenericVector<AbiCollab *> sessions = pManager->getSessions();
-				for (UT_uint32 i = 0; i < sessions.getItemCount(); i++)
-				{
-					AbiCollab* pSession = sessions.getNthItem(i);
-					if (pSession && pSession->isLocallyControlled())
-					{
-						const PD_Document * pDoc = pSession->getDocument();
-						if (pDoc)
-						{
-							// determine name
-							UT_UTF8String documentBaseName;
-							if (pDoc->getFilename())
-								documentBaseName = UT_go_basename_from_uri(pDoc->getFilename());
-							// set session info
-							gsre.m_Sessions[ pSession->getSessionId() ] = documentBaseName;
-						}
-						else
-							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-					}
-				}
-				send(&gsre, *buddy);
-				break;
+			send(&gsre, *buddy);
+			break;
+		}
+		
+		case PCT_GetSessionsResponseEvent:
+		{
+			GetSessionsResponseEvent* gsre = static_cast<GetSessionsResponseEvent*>( packet );
+			UT_GenericVector<DocHandle*> vDocHandles;
+			for (std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin(); it!=gsre->m_Sessions.end(); ++it) {
+				DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
+				vDocHandles.addItem(pDocHandle);
 			}
-			
-			case PCT_GetSessionsResponseEvent:
-			{
-				GetSessionsResponseEvent* gsre = static_cast<GetSessionsResponseEvent*>( packet );
-				UT_GenericVector<DocHandle*> vDocHandles;
-				for (std::map<UT_UTF8String,UT_UTF8String>::iterator it=gsre->m_Sessions.begin(); it!=gsre->m_Sessions.end(); ++it) {
-					DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
-					vDocHandles.addItem(pDocHandle);
-				}
-				pManager->setDocumentHandles( *buddy, vDocHandles );
-				break;
-			}
-			
-			default:
-			{
-				break;
-			}
+			pManager->setDocumentHandles( *buddy, vDocHandles );
+			break;
+		}
+		
+		default:
+		{
+			UT_DEBUGMSG(("Unhandled packet class: 0x%x\n", packet->getClassType()));
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			break;
 		}
 	}
 }
 
 #ifdef WIN32
+// return true if we process the command, false otherwise
 BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	return 1; // not handled by default
+	return false;
 }
 #endif
 

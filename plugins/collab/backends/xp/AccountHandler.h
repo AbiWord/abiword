@@ -84,7 +84,7 @@ public:
 	virtual UT_UTF8String					getStorageType() = 0;	
 	
 	void									addProperty(const string& key, const string& value)
-		{ m_properties.insert(PropertyMap::value_type(key, value)); }
+		{ m_properties[key] = value; }
 	const string							getProperty(const string& key);
 	PropertyMap&							getProperties()
 		{ return m_properties; }
@@ -129,40 +129,41 @@ public:
 		{ m_bCanOffer = bCanOffer; }
 		
 	// session management
-	void									getSessionsAsync();
-	void									getSessionsAsync(const Buddy& buddy);
-	void									joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
+	virtual void							getSessionsAsync();
+	virtual void							getSessionsAsync(const Buddy& buddy);
+	virtual void							joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
+	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 
 	// generic session management packet implementation
 	virtual void 							handleMessage(const RawPacket& pRp);
+	virtual void							handleMessage(Packet* pPacket, Buddy* pBuddy);
 
 	// signal management
 	virtual void							signal(const Event& event, const Buddy* pSource);
 	
+	// protocol error management
+	static void enableProtocolErrorReports(bool enable); // NOTE: enabled by default!
+	enum
+	{
+		PE_Invalid_Version 		= 1,	// only possible error atm ^_^
+	};
+
 protected:
+	Packet*									_createPacket(const std::string& packet, Buddy* pBuddy);
+	void 									_createPacketStream(std::string& sString, const Packet* pPacket);	// creates binary string!
+	void									_sendProtocolError(const Buddy& buddy, UT_sint32 errorEnum);
+	virtual bool							_handleProtocolError(Packet* packet, Buddy* buddy);
+	virtual	void							_handlePacket(Packet* packet, Buddy* buddy);
 
 	// bad bad, protected variables are bad
 	PropertyMap								m_properties;
 
-	void 									_createPacketStream( std::string& sString, const Packet* pPacket );	// creates binary string!
-	
 private:
+	static void								_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, const Buddy& buddy);
+	static bool								showProtocolErrorReports;
+
 	bool									m_bCanOffer;
 	UT_GenericVector<Buddy*>				m_vecBuddies;
-	
-	void 									_handlePacket( Packet* packet, Buddy* buddy );
-
-	
-public:
-	static void enableProtocolErrorReports( bool enable ); // NOTE: enabled by default!
-	enum {
-		PE_Invalid_Version 		= 1,	// only possible error atm ^_^
-	};
-protected:
-	void _sendProtocolError( const Buddy& buddy, UT_sint32 errorEnum );
-private:
-	static void _reportProtocolError( UT_sint32 remoteVersion, UT_sint32 errorEnum, const Buddy& buddy );
-	static bool showProtocolErrorReports;
 };
 
 

@@ -58,16 +58,13 @@ private:
 	void					_refreshWindow();
 	void					_enableBuddyAddition(bool bEnabled);
 	void					_updateSelection();
-	bool					_setJoin(HTREEITEM hItem, bool joinStatus);
+	void					_setJoin(HTREEITEM hItem, bool joinStatus);
 	
 	// Handles
 	HINSTANCE 				m_hInstance;
 	HWND					m_hDocumentTreeview;
 	
 	// Internal states
-	BOOL					m_bHasSelection;
-	BOOL					m_bBuddySelected;
-	BOOL					m_bShareSelected;
 	HTREEITEM				m_hSelected;
 	
 	// Model

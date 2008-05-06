@@ -72,9 +72,10 @@ ChangeAdjust::~ChangeAdjust()
 }
 
 // Use this constructor to host a collaboration session
-AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId)
+AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
+	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
 	m_iDocListenerId(0),
@@ -91,7 +92,7 @@ AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId)
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
 	// when there is no single collaborator yet
-	_setDocument(pDoc);
+	_setDocument(pDoc, pFrame);
 	
 #ifdef ABICOLLAB_RECORD_ALWAYS
 	startRecording( new DiskSessionRecorder( this ) );
@@ -104,9 +105,10 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 						const UT_UTF8String& docUUID, 
 						UT_sint32 iRev, 
 						Buddy* pController, 
-						bool bReuseCurrentFrame)
+						XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
+	m_pFrame(pFrame),
 	m_Import(this, pDoc),
 	m_Export(this, pDoc),
 	m_iDocListenerId(0),
@@ -122,7 +124,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
 	// when there is no single collaborator yet
-	_setDocument(pDoc, bReuseCurrentFrame);
+	_setDocument(pDoc, pFrame);
 
 	m_Import.setInitialRemoteRev(pController->getName(), iRev);
 	m_Export.addFakeImportAdjust(docUUID, iRev);
@@ -231,10 +233,11 @@ void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 	}
 }
 
-void AbiCollab::_setDocument(PD_Document* pDoc, bool bReuseCurrentFrame)
+void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 {
 	UT_DEBUGMSG(("AbiCollab::setDocument()\n"));
 	UT_return_if_fail(pDoc);
+	UT_return_if_fail(pFrame);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
@@ -244,39 +247,14 @@ void AbiCollab::_setDocument(PD_Document* pDoc, bool bReuseCurrentFrame)
 
 	// update the frame
 	m_pDoc = pDoc;
-	
-	// if the document doesn't belong to a frame already, then create a 
-	// new frame for this session (except when the document in the current 
-	// frame is not dirty, doesn't have a filename yet (which means it 
-	// is a brand new empty document), and isn't being shared at the moment)
-	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	if (pFrame)
-	{
-		PD_Document * pFrameDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-		if (pFrameDoc != pDoc)
-		{
-			if (bReuseCurrentFrame || 
-				(!pFrameDoc || !pFrameDoc->getFilename() && !pFrameDoc->isDirty() && !pManager->isInSession(pFrameDoc)))
-			{
-				// we can replace the document in this frame safely, as it is 
-				// brand new, and doesn't have any contents yet
-			}
-			else
-			{
-				// the current frame has already a document loaded, let's create
-				// a new frame
-				pFrame = XAP_App::getApp()->newFrame();
-			}
-			pFrame->loadDocument(m_pDoc);	// this will also delete the old document (or at least, it should)
-											// TODO: the frame shouldn't be raised
-		}
 
-		// register ourselves as a mouse listener
-		// FIXME: we should do this for all frames that display this document!
-		EV_Mouse* pMouse = pFrame->getMouse();
-		if (pMouse)
-			m_iMouseLID = pMouse->registerListener(this);
-	}
+	// register ourselves as a mouse listener
+	// FIXME: we should do this for all frames that display this document!
+	EV_Mouse* pMouse = pFrame->getMouse();
+	if (pMouse)
+		m_iMouseLID = pMouse->registerListener(this);
+	else
+		UT_DEBUGMSG(("No current frame!\n"));
 
 	// add the new export listeners
 	UT_uint32 lid = 0;

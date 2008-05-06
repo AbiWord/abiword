@@ -34,7 +34,9 @@
 #include <backends/xmpp/xp/XMPPBuddy.h>
 
 AP_Dialog_CollaborationJoin::AP_Dialog_CollaborationJoin(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationjoin")
+	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationjoin"),
+	m_pBuddy(NULL),
+	m_pDocHandle(NULL)
 {
 	AbiCollabSessionManager::getManager()->registerEventListener(this);
 }
@@ -119,27 +121,6 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 		bEnableAddition = accounts[i]->allowsManualBuddies();
 	}
 	_enableBuddyAddition(bEnableAddition);
-}
-
-void AP_Dialog_CollaborationJoin::_join(Buddy* pBuddy, DocHandle* pDocHandle)
-{
-	UT_DEBUGMSG(("AP_Dialog_CollaborationJoin::_join()\n"));
-	UT_return_if_fail(pBuddy);
-	UT_return_if_fail(pDocHandle);
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	pManager->joinSessionInitiate(pBuddy, pDocHandle);
-}
-
-void AP_Dialog_CollaborationJoin::_disjoin(Buddy* pBuddy, DocHandle* pDocHandle)
-{
-	UT_DEBUGMSG(("AP_Dialog_CollaborationJoin::_disjoin()\n"));
-	UT_return_if_fail(pBuddy);
-	UT_return_if_fail(pDocHandle);
-	
-	UT_DEBUGMSG(("Disjoining from session |%s| which was shared by |%s|\n", pDocHandle->getSessionId().utf8_str(), pBuddy->getDescription().utf8_str()));
-	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_if_fail(pManager);
-	pManager->disjoinSession(pDocHandle->getSessionId());
 }
 
 void AP_Dialog_CollaborationJoin::signal(const Event& event, const Buddy* pSource)

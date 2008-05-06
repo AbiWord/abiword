@@ -47,7 +47,8 @@ public:
 	
 protected:
 	bool				_addAccount(AccountHandler* pHandler);
-
+	bool				_deleteAccount(AccountHandler* pAccount);
+	
 	AP_Dialog_CollaborationAccounts::tAnswer	m_answer;
 };
 

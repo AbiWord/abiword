@@ -25,26 +25,13 @@
 
 #include <xp/AbiCollabSessionManager.h>
 
-static void IOAcceptFunc(IOServerHandler* pHandler)
-{
-	UT_DEBUGMSG(("IOAcceptFunc()\n"));
-	UT_return_if_fail(pHandler);
-	pHandler->getAccountHandler().handleAccept(pHandler);
-}
-
-static void IOEventFunc(Session* pSession)
-{
-	UT_DEBUGMSG(("IOEventFunc()\n"));
-	UT_return_if_fail(pSession);
-	pSession->consume();
-	pSession->getAccountHandler().handleEvent(*pSession);
-}
-
 TCPAccountHandler::TCPAccountHandler()
 	: AccountHandler(),
+	m_io_service(),
+	m_work(m_io_service),
+	m_thread(0),
 	m_bConnected(false),
-	m_pDelegator(0),
-	m_pPendingSession(0)
+	m_pDelegator(0)
 {
 }
 
@@ -88,9 +75,10 @@ ConnectResult TCPAccountHandler::connect()
 	UT_return_val_if_fail(pManager, CONNECT_INTERNAL_ERROR);
 
 	UT_return_val_if_fail(!m_pDelegator, CONNECT_INTERNAL_ERROR);
-	
-	if (m_bConnected)
-		return CONNECT_ALREADY_CONNECTED;
+	UT_return_val_if_fail(!m_bConnected, CONNECT_ALREADY_CONNECTED);
+	UT_return_val_if_fail(!m_thread, CONNECT_INTERNAL_ERROR);
+	m_io_service.reset();
+	m_thread = new asio::thread(boost::bind(&asio::io_service::run, &m_io_service));
 
 	// set up the connection
 	if (getProperty("server") == "")
@@ -100,12 +88,12 @@ ConnectResult TCPAccountHandler::connect()
 
 		try
 		{
-			IOServerHandler* pDelegator = new IOServerHandler(port, IOAcceptFunc, *this);
+			IOServerHandler* pDelegator = new IOServerHandler(port, 
+						boost::bind(&TCPAccountHandler::_handleAccept, this, _1, _2),
+						boost::bind(&TCPAccountHandler::handleEvent, this, _1), m_io_service);
 			m_pDelegator = pDelegator;
 			m_bConnected = true; // todo: ask it to the acceptor
-
-			m_pPendingSession = pDelegator->constructSession(IOEventFunc, *this);
-			pDelegator->run(*m_pPendingSession);
+			pDelegator->run();
 		}
 		catch (asio::system_error se)
 		{
@@ -123,27 +111,23 @@ ConnectResult TCPAccountHandler::connect()
 	else
 	{
 		UT_DEBUGMSG(("Connecting to server %s on port %d...\n", getProperty("server").c_str(), _getPort(getProperties())));
-	
-		// TODO: catch exceptions
+		boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
+		asio::ip::tcp::resolver resolver(m_io_service);
+		asio::ip::tcp::resolver::query query(getProperty("server"), getProperty("port"));
+		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		try
 		{
-			IOClientHandler* pDelegator = new IOClientHandler(getProperty("server"), getProperty("port"));
-			m_pDelegator = pDelegator;
-		
-			Session* pSession = pDelegator->constructSession(IOEventFunc, *this);
-			if (pSession)
-			{
-				pDelegator->connect(*pSession);
-				m_bConnected = true; // todo: ask it to the socket
-			
-				// Add a buddy
-				UT_UTF8String name = getProperty("server").c_str();
-				name += ":";
-				name += getProperty("port").c_str();
-				TCPBuddy* pBuddy = new TCPBuddy(this, name);
-				addBuddy(pBuddy);
-				m_clients.insert(std::pair<const TCPBuddy*, Session*>(pBuddy, pSession));
-			}
+			asio::ip::tcp::socket socket(m_io_service);
+			socket.connect(*iterator);
+			session_ptr->asyncReadHeader();
+			m_bConnected = true; // todo: ask it to the socket
+			// Add a buddy
+			UT_UTF8String name = getProperty("server").c_str();
+			name += ":";
+			name += getProperty("port").c_str();
+			TCPBuddy* pBuddy = new TCPBuddy(this, name);
+			addBuddy(pBuddy);
+			m_clients.insert(std::pair<const TCPBuddy*, boost::shared_ptr<Session> >(pBuddy, session_ptr));
 		}
 		catch (asio::system_error se)
 		{
@@ -151,12 +135,6 @@ ConnectResult TCPAccountHandler::connect()
 			_teardownAndDestroyHandler();
 			return CONNECT_FAILED;
 		}
-		catch (...)
-		{
-			UT_DEBUGMSG(("Caught unhandled client exception!\n"));
-			_teardownAndDestroyHandler();
-			return CONNECT_FAILED;
-		}		
 	}
 	
 	if (!m_bConnected)
@@ -195,38 +173,30 @@ bool TCPAccountHandler::disconnect()
 
 void TCPAccountHandler::_teardownAndDestroyHandler()
 {
-	UT_return_if_fail(m_pDelegator);
-
 	// stop accepting new connections
-	UT_DEBUGMSG(("Stop accepting connections\n"));
-	if (m_pPendingSession)
-		DELETEP(m_pPendingSession);
+	UT_DEBUGMSG(("Stop accepting connections/packets\n"));
+	m_io_service.stop();
+	if (m_thread)
+	{
+		m_thread->join();
+		DELETEP(m_thread);
+	}
 
 	// ... then tear down all client connections
 	UT_DEBUGMSG(("Tearing down client connections\n"));
-	for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end();)
+	for (std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end();)
+		(*it).second->disconnect();
+
+	// ... then stop the IOServerhandler (if any)
+	if (m_pDelegator)
 	{
-		std::map<const TCPBuddy*, Session*>::iterator next_it = it;
-		next_it++;
+		UT_DEBUGMSG(("Stopping the IOServerhandler\n"));
+		m_pDelegator->stop();
 
-		// const TCPBuddy* pBuddy = (*it).first;
-		// TODO: remove this buddy from all running sessions
-		// TODO: signal the buddy leaving && free the buddy
-
-		Session* pSession = (*it).second;
-		DELETEP(pSession);
-
-		m_clients.erase(it);
-		it = next_it;
+		// ... and finally kill off the IO handler alltogether
+		UT_DEBUGMSG(("Deleting the IO handler\n"));
+		DELETEP(m_pDelegator);
 	}
-
-	// ... then stop the IO handler
-	UT_DEBUGMSG(("Stopping the IO handler\n"));
-	m_pDelegator->stop();
-
-	// ... and finally kill off the IO handler alltogether
-	UT_DEBUGMSG(("Deleting the IO handler\n"));
-	DELETEP(m_pDelegator);
 }
 
 void TCPAccountHandler::_handleMessages(Session& session)
@@ -257,29 +227,23 @@ bool TCPAccountHandler::isOnline()
 	return m_bConnected; // TODO: ask the IO handler
 }
 
-void TCPAccountHandler::handleAccept(IOServerHandler* pHandler)
+void TCPAccountHandler::_handleAccept(IOServerHandler* pHandler, boost::shared_ptr<Session> session)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::handleAccept\n"));
-
 	UT_return_if_fail(pHandler);
+	UT_return_if_fail(session);
 	
-	if (m_pPendingSession)
-	{
-		// store this buddy/session
-		UT_UTF8String name;
-		UT_UTF8String_sprintf(name, "%s:%d", 
-				m_pPendingSession->getSocket().remote_endpoint().address().to_string().c_str(), 
-				m_pPendingSession->getSocket().remote_endpoint().port());
-		TCPBuddy* pBuddy = new TCPBuddy(this, name);
-		addBuddy(pBuddy);
-		m_clients.insert(std::pair<const TCPBuddy*, Session*>(pBuddy, m_pPendingSession));
-	}
-	else
-		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+	// store this buddy/session
+	UT_UTF8String name;
+	UT_UTF8String_sprintf(name, "%s:%d", 
+			session->getSocket().remote_endpoint().address().to_string().c_str(), 
+			session->getSocket().remote_endpoint().port());
+	TCPBuddy* pBuddy = new TCPBuddy(this, name);
+	addBuddy(pBuddy);
+	m_clients.insert(std::pair<const TCPBuddy*, boost::shared_ptr<Session> >(pBuddy, session));
 	
 	// accept a new buddy/session
-	m_pPendingSession = pHandler->constructSession(IOEventFunc, *this);
-	pHandler->handleAccept(*m_pPendingSession);	
+	pHandler->asyncAccept();	
 }
 
 Buddy* TCPAccountHandler::constructBuddy(const PropertyMap& props)
@@ -304,38 +268,18 @@ void TCPAccountHandler::forceDisconnectBuddy(Buddy* buddy)
 	UT_DEBUGMSG(("TCPAccountHandler::forceDisconnectBuddy()\n"));
 	
 	// locate this buddy!
-	std::map<const TCPBuddy*, Session*>::iterator it=m_clients.find( static_cast<TCPBuddy*>(buddy)/*ugly*/ );
-	if (it==m_clients.end()) 
+	std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator it = m_clients.find( static_cast<TCPBuddy*>(buddy)/*ugly*/ );
+	if (it == m_clients.end()) 
 	{
-		for (it=m_clients.begin(); it!=m_clients.end(); ++it) 
-		{
+		for (it = m_clients.begin(); it != m_clients.end(); ++it) 
 			if ((*it).first->getName() == buddy->getName()) 
-			{
 				break;
-			}
-		}
-		UT_return_if_fail(it!=m_clients.end());
+		UT_return_if_fail(it != m_clients.end());
 	}
 	
 	// disconnect it
-	UT_ASSERT(it!=m_clients.end());
-	try 
-	{
-		delete (*it).second;
-	} 
-	catch (...) 
-	{ 
-		UT_DEBUGMSG(("ERROR: exception during delete second\n"));
-	}
-	try 
-	{
-		delete (*it).first;
-	} 
-	catch (...) 
-	{
-		UT_DEBUGMSG(("ERROR: exception during delete first\n"));
-	}
-	m_clients.erase( it );
+	UT_return_if_fail(it != m_clients.end());
+	(*it).second->disconnect();
 }
 
 void TCPAccountHandler::handleEvent(Session& session)
@@ -355,8 +299,8 @@ void TCPAccountHandler::handleEvent(Session& session)
 	{
 		UT_DEBUGMSG(("Socket is not connected anymore!\n"));
 		// drop all buddies that were on this connection
-		std::map<const TCPBuddy*, Session*>::iterator next;
-		for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end(); it = next)
+		std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator next;
+		for (std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it = next)
 		{
 			next = it;
 			next++;
@@ -365,9 +309,8 @@ void TCPAccountHandler::handleEvent(Session& session)
 			UT_continue_if_fail((*it).second);
 
 			const TCPBuddy* pB = (*it).first;
-			const Session* pS = (*it).second;
 			
-			if (pS == &session)
+			if ((*it).second.get() == &session)
 			{
 				UT_DEBUGMSG(("Lost connection to %s buddy %s\n", getProperty("server") == "" ? "client" : "server", pB->getName().utf8_str()));
 				// drop this buddy from all sessions
@@ -375,16 +318,14 @@ void TCPAccountHandler::handleEvent(Session& session)
 				
 				// erase the buddy <-> session mapping
 				m_clients.erase(it);
-			}
-
-			// if we were connected to a server, then we are disconnected now
-			if (getProperty("server") != "")
-			{
-				UT_ASSERT_HARMLESS(next == m_clients.end());
-				disconnect();
-				break;
+				
+				deleteBuddy(pB->getName());
 			}
 		}
+
+		// if we were connected to a server, then we are basically disconnected now
+		if (getProperty("server") != "")
+			disconnect();
 	}
 
 	// check other things here if needed...
@@ -413,10 +354,10 @@ UT_sint32 TCPAccountHandler::_getPort(const PropertyMap& props)
 
 const TCPBuddy* TCPAccountHandler::_getBuddy(Session* pSession)
 {
-	for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
+	for (std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 	{
-		std::pair<const TCPBuddy*, Session*> pbs = *it;
-		if (pbs.second == pSession)
+		std::pair<const TCPBuddy*, boost::shared_ptr<Session> > pbs = *it;
+		if (pbs.second.get() == pSession)
 			return pbs.first;
 	}
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -435,9 +376,9 @@ bool TCPAccountHandler::send(const Packet* packet)
 		_createPacketStream( data, packet );
 		
 		// send it to everyone we know!
-		for (std::map<const TCPBuddy*, Session*>::iterator it = m_clients.begin(); it != m_clients.end(); it++)
+		for (std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator it = m_clients.begin(); it != m_clients.end(); it++)
 		{
-			std::pair<const TCPBuddy*, Session*> pbs = *it;
+			std::pair<const TCPBuddy*, boost::shared_ptr<Session> > pbs = *it;
 			if (pbs.second)
 			{
 				pbs.second->asyncWrite(data.size(), data.c_str());
@@ -458,16 +399,16 @@ bool TCPAccountHandler::send(const Packet* packet, const Buddy& buddy)
 	UT_return_val_if_fail( ourBuddy, false );
 	
 	// find the session
-	std::map<const TCPBuddy*, Session*>::iterator pos = m_clients.find( ourBuddy );
+	std::map<const TCPBuddy*, boost::shared_ptr<Session> >::iterator pos = m_clients.find( ourBuddy );
 	if (pos != m_clients.end())
 	{
-		Session* pSession = pos->second;
-		UT_return_val_if_fail(pSession, false);
+		boost::shared_ptr<Session> session_ptr = pos->second;
+		UT_return_val_if_fail(session_ptr, false);
 		
 		std::string data;
 		_createPacketStream( data, packet );
 
-		pSession->asyncWrite( data.size(), data.c_str() );
+		session_ptr->asyncWrite( data.size(), data.c_str() );
 		return true;
 	}
 	else

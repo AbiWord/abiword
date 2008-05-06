@@ -285,7 +285,7 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 		pManager->registerEventListener(this);
 		// start hosting a session on the current document
 		UT_UTF8String sID;
-		pManager->startSession(pDoc, sID);
+		pManager->startSession(pDoc, sID, NULL);
 		return true;
 	}
 	else

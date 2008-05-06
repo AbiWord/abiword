@@ -8,12 +8,8 @@ libxp_la_CPPFLAGS = \
 	-I$(srcdir)/../../../core/session
 
 libxp_la_SOURCES = \
-	IOClientHandler.h \
-	IOHandler.h \
 	IOServerHandler.h \
 	Session.h \
-	Synchronizer.cpp \
-	Synchronizer.h \
 	TCPAccountHandler.cpp \
 	TCPAccountHandler.h \
 	TCPBuddy.h

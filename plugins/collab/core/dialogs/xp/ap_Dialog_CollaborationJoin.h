@@ -40,11 +40,23 @@ public:
 	
 	void				signal(const Event& event, const Buddy* pSource);
 
-protected:
-	void				_eventAddBuddy();
-	void				_join(Buddy* pBuddy, DocHandle* pDocHandle);
-	void				_disjoin(Buddy* pBuddy, DocHandle* pDocHandle);	
+	typedef enum { a_CLOSE, a_CONNECT, a_DISCONNECT } tAnswer;
 
+	AP_Dialog_CollaborationJoin::tAnswer	getAnswer(void) const
+		{ return m_answer; }
+		
+	Buddy*				getBuddy()
+		{ return m_pBuddy; };
+
+	DocHandle*				getDocHandle()
+		{ return m_pDocHandle; };
+
+protected:
+	AP_Dialog_CollaborationJoin::tAnswer m_answer;
+	Buddy*				m_pBuddy;
+	DocHandle*			m_pDocHandle;
+
+	void				_eventAddBuddy();
 	void				_addBuddy(AccountHandler* pHandler, Buddy* pBuddy);
 	void				_refreshAllDocHandlesAsync();
 	

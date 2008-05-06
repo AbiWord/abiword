@@ -1,4 +1,5 @@
 /* Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,34 +20,23 @@
 #ifndef __SESSION__
 #define __SESSION__
 
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <deque>
 #include <backends/xp/lock.h>
+#include <backends/xp/Synchronizer.h>
 
 class TCPAccountHandler;
 
 class Session : public Synchronizer, public boost::noncopyable
 {
 public:
-	Session(asio::io_service& io_service, void (*ef)(Session*), TCPAccountHandler& handler)
-		: Synchronizer((void (*)(void*))ef, (void*)this),
+	Session(asio::io_service& io_service, boost::function<void (Session&)> ef)
+		: Synchronizer(boost::bind(&Session::_signal, this)),
 		socket(io_service),
 		queue_protector(),
-		owner(handler)
+		m_ef(ef)
 	{
-	}
-
-	virtual ~Session()
-	{
-		UT_DEBUGMSG(("~Session()\n"));
-		asio::error_code ecs;
-		socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
-		if (ecs)
-			UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
-
-		asio::error_code ecc;
-		socket.close(ecc);
-		if (ecc)
-			UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
 	}
 
 	asio::ip::tcp::socket& getSocket()
@@ -60,7 +50,7 @@ public:
 			abicollab::scoped_lock lock(queue_protector); 
 			incoming.push_back( std::pair<int, char*>(size, data) );
 		}
-		signal();
+		Synchronizer::signal();
 	}
 
 	/*
@@ -117,113 +107,121 @@ public:
 	{
 		return socket.is_open();
 	}
-
-	TCPAccountHandler& getAccountHandler()
+	
+	void disconnect()
 	{
-		return owner;
+		UT_DEBUGMSG(("Session::disconnect()\n"));
+		if (socket.is_open())
+		{
+			asio::error_code ecs;
+			socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
+			if (ecs)
+				UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
+
+			asio::error_code ecc;
+			socket.close(ecc);
+			if (ecc)
+				UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
+		}
+		UT_DEBUGMSG(("Socket closed, signalling mainloop\n"));
+		signal();
 	}
 
 private:
+	void _signal()
+	{
+		UT_DEBUGMSG(("Session::_signal()\n"));
+		m_ef(*this);
+	}
+
 	void asyncReadHeaderHandler(const asio::error_code& error,
 		std::size_t bytes_transferred)
 	{
-		if (!error)
-		{
-			if (bytes_transferred == 4)
-			{
-				UT_DEBUGMSG(("going to read datablock of length: %d\n", packet_size));
-
-				// now continue reading the packet data
-				packet_data = reinterpret_cast<char*>(malloc(packet_size));
-				asio::async_read(socket,
-					asio::buffer(packet_data, packet_size),
-					boost::bind(&Session::asyncReadHandler, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
-			}
-			else
-				close(); // TODO: should not happen, handle this			
-		}
-		else
+		if (error)
 		{
 			UT_DEBUGMSG(("asyncReadHeaderHandler generic error\n"));
-			close();
+			disconnect();
+			return;
 		}
+
+		if (bytes_transferred != 4)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			disconnect(); // TODO: should not happen, handle this
+			return;
+		}
+		
+		UT_DEBUGMSG(("going to read datablock of length: %d\n", packet_size));
+		// now continue reading the packet data
+		packet_data = reinterpret_cast<char*>(malloc(packet_size));
+		asio::async_read(socket,
+			asio::buffer(packet_data, packet_size),
+			boost::bind(&Session::asyncReadHandler, this, asio::placeholders::error, asio::placeholders::bytes_transferred));
 	}
 
 	void asyncReadHandler(const asio::error_code& error,
 		std::size_t bytes_transferred)
 	{
-		if (!error)
-		{
-			if (bytes_transferred == std::size_t(packet_size))
-			{
-				push(packet_size, packet_data);
-				// start over for a new packet
-				asyncReadHeader();
-			}
-			else
-			{
-				UT_DEBUGMSG(("asyncReadHandler error: wrong number of byes received: %d, expected: %d\n", bytes_transferred, packet_size));
-				close();
-			}
-		}
-		else
+		if (error)
 		{
 			UT_DEBUGMSG(("asyncReadHandler generic error\n"));
-			close();
+			disconnect();
+			return;
 		}
 		
+		if (bytes_transferred != std::size_t(packet_size))
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			disconnect(); // TODO: should not happen, handle this
+			return;
+		}
+		
+		push(packet_size, packet_data);
+		// start over for a new packet
+		asyncReadHeader();
 	}
 	
 	void asyncWriteHeaderHandler(const asio::error_code& ec)
 	{
 		UT_DEBUGMSG(("Session::asyncWriteHeaderHandler()\n"));
-		if (!ec)
-		{
-			// write the packet body
-			asio::async_write(socket, 
-				asio::buffer(packet_data_write, packet_size_write),
-				boost::bind(&Session::asyncWriteHandler, this, asio::placeholders::error));
-		}
-		else
+		if (ec)
 		{
 			UT_DEBUGMSG(("asyncWriteHeaderHandler generic error\n"));
-			close();
+			disconnect();
+			return;
 		}
+		
+		// write the packet body
+		asio::async_write(socket, 
+			asio::buffer(packet_data_write, packet_size_write),
+			boost::bind(&Session::asyncWriteHandler, this, asio::placeholders::error));
 	}
 
 	void asyncWriteHandler(const asio::error_code& ec)
 	{
 		UT_DEBUGMSG(("Session::asyncWriteHandler()\n"));
 		FREEP(packet_data_write);
-		if (!ec)
-		{
-			// TODO: this is a race condition, mutext this
-			outgoing.pop_front();
-			if (outgoing.size() > 0)
-			{
-				std::pair<int, char*> p = outgoing.front();
-				packet_size_write = p.first;
-				packet_data_write = p.second;
-				
-				UT_DEBUGMSG(("sending datablock of length: %d\n", packet_size_write));
-
-				asio::async_write(socket, 
-					asio::buffer(&packet_size_write, 4),
-					boost::bind(&Session::asyncWriteHeaderHandler, this, asio::placeholders::error));
-			}
-		}
-		else
+		if (ec)
 		{
 			UT_DEBUGMSG(("asyncWriteHandler generic error\n"));
-			close();
+			disconnect();
+			return;			
 		}
-	}
 
-	void close()
-	{
-		socket.close();
-		UT_DEBUGMSG(("socket closed\n"));
-		signal();
+		// TODO: this is a race condition, mutex this
+		outgoing.pop_front();
+		if (outgoing.size() > 0)
+		{
+			std::pair<int, char*> p = outgoing.front();
+			packet_size_write = p.first;
+			packet_data_write = p.second;
+			
+			UT_DEBUGMSG(("sending datablock of length: %d\n", packet_size_write));
+
+			asio::async_write(socket, 
+				asio::buffer(&packet_size_write, 4),
+				boost::bind(&Session::asyncWriteHeaderHandler, this, asio::placeholders::error));
+		}
 	}
 
 	asio::ip::tcp::socket					socket;
@@ -237,7 +235,7 @@ private:
 	int										packet_size_write; // state needed for async writes
 	char*									packet_data_write; // state needed for async writes
 	
-	TCPAccountHandler&						owner;
+	boost::function<void (Session&)>		m_ef;
 };
 
 #endif /* __SESSION__ */

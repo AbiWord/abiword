@@ -21,5 +21,7 @@ libxp_la_SOURCES = \
 	EventListener.h \
 	lock.h \
 	SessionEvent.cpp \
-	SessionEvent.h
-
+	SessionEvent.h \
+	SynchronizedQueue.h \
+	Synchronizer.cpp \
+	Synchronizer.h

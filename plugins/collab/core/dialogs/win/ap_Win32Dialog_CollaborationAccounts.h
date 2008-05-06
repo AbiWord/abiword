@@ -44,7 +44,7 @@ public:
 	virtual void			signal(const Event& event, const Buddy* pSource);
 
 private:
-	XAP_Win32DialogHelper *	p_win32Dialog;
+	XAP_Win32DialogHelper *	m_pWin32Dialog;
 	
 	std::map<UT_UTF8String, AccountHandler*> _constructModel();
 	void					_setModel(std::map<UT_UTF8String, AccountHandler*>  model);

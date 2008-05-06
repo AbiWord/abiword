@@ -66,11 +66,11 @@ public:
 	void							addDocHandle(DocHandle* pDocHandle);
 	const vector<DocHandle*>&		getDocHandles() const
 		{ return m_docHandles; }
-	DocHandle*						getDocHandle(const UT_UTF8String& sSessionId)
+	DocHandle*						getDocHandle(const UT_UTF8String& sSessionId) const
 	{
-		for (std::vector<DocHandle*>::iterator it = m_docHandles.begin(); it != m_docHandles.end(); it++)
+		for (std::vector<DocHandle*>::const_iterator cit = m_docHandles.begin(); cit != m_docHandles.end(); cit++)
 		{
-			DocHandle* pHandle = *it;
+			DocHandle* pHandle = *cit;
 			if (pHandle->getSessionId() == sSessionId)
 				return pHandle;
 		}
