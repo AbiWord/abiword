@@ -55,9 +55,11 @@ public:
 	enum
 	  {
 	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL,
-	    BUTTON_FIND,
-	    BUTTON_REPLACE,
-	    BUTTON_REPLACE_ALL
+	    // enum GtkResponseType seems to only use negative integers, so we'll use positive ones to
+	    // prevent potential conflicts (the cause of Bug 11583)
+	    BUTTON_FIND = 0,
+	    BUTTON_REPLACE = 1,
+	    BUTTON_REPLACE_ALL = 2
 	  } ResponseId;
 
 protected:
