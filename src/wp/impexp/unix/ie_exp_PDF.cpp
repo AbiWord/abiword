@@ -34,6 +34,7 @@
 #include <glib/gstdio.h>
 
 #include <unistd.h>
+#include <set>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -67,6 +68,9 @@ public:
     FV_View *printView = NULL;
     char *filename = NULL;
     int fd;
+
+    std::set<UT_uint32> pages;
+    const std::string & pages_prop = getProperty ("pages");
 
     double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
     bool portrait;
@@ -122,7 +126,7 @@ public:
       {
 	print_graphics->setPdfWorkaround();
       }
-
+    
     // create a new layout and view object for the doc
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
     printView = new FV_View(XAP_App::getApp(),0,pDocLayout);
@@ -130,11 +134,54 @@ public:
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();
 
+    if (!pages_prop.empty())
+      {
+	char **page_descriptions = g_strsplit(pages_prop.c_str(), ",", -1);
+	
+	int i = 0;
+	while (page_descriptions[i] != NULL)
+	  {
+	    char *description = page_descriptions[i];
+	    i++;
+	    
+	    int start_page, end_page;
+	    
+	    if (2 == sscanf(description, "%d-%d", &start_page, &end_page))
+	      {
+	      }
+	    else if (1 == sscanf(description, "%d", &start_page))
+	      {
+		end_page = start_page;
+	      }
+	    else
+	      {
+		// invalid page specification
+		continue;
+	      }
+	    
+	    for (int pageno = start_page; pageno <= end_page; pageno++)
+	      {
+		if ((pageno > 0) && (pageno <= (int)pDocLayout->countPages()))
+		  pages.insert(pageno);
+	      }
+	  }
+	
+	g_strfreev(page_descriptions);
+      }
+    
+    if (pages.empty())
+      {
+	for (UT_uint32 i = 1; i <= pDocLayout->countPages(); i++)
+	  {
+	    pages.insert(i);
+	  }
+      }    
+
     s_actuallyPrint (getDoc(), print_graphics,
 		     printView, getFileName(), 
 		     1, true, 
 		     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-		     pDocLayout->countPages(), 1);
+		     pages);
     
     // copy filename back into getFp()
     if(_copyFile(filename))
