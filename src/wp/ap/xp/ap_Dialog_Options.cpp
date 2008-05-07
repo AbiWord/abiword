@@ -361,6 +361,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_CURSOR_BLINK:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_CursorBlink,
 					_gatherViewCursorBlink());
+			break;
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
 #if !defined(TOOLKIT_GTK) && !defined(TOOLKIT_COCOA) && !defined (TOOLKIT_WIN) 
@@ -385,6 +386,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_UNPRINTABLE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
+			break;
 
 		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
