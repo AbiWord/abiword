@@ -426,24 +426,13 @@ AC_CHECK_HEADER([zlib.h], [],
 
 deps_pkgs="$xp_pkgs $opt_pkgs"
 SYSTEM_LIBS=
+SYSTEM_CFLAGS=
 if test "$TOOLKIT" == "win"; then
 	deps_pkgs="$deps_pkgs $win_pkgs"
 	# nonstandard dlls go below the blank line
-	SYSTEM_LIBS="\
-                -ladvapi32 \
-                -lcomctl32 \
-                -lcomdlg32 \
-                -lgdi32 \
-                -lkernel32 \
-                -lole32 \
-                -lshell32 \
-                -luser32 \
-                -luuid \
-                -lversion \
-                -lwinspool \
-		\
-		-lpng13 \
-		-lzlib1"
+	SYSTEM_LIBS="-ladvapi32 -lcomctl32 -lcomdlg32 -lgdi32 -lkernel32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinspool \
+		     -lpng13 -lzlib1"
+	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
 else
@@ -459,7 +448,7 @@ BASE_CPPFLAGS_='
   ${DEPS_CFLAGS} 
   -I${top_srcdir} 
   ${GOFFICE_BUILTIN_CPPFLAGS}'
-BASE_CPPFLAGS=
+BASE_CPPFLAGS="$SYSTEM_CFLAGS"
 for f in $(echo $BASE_CPPFLAGS_); do BASE_CPPFLAGS="$BASE_CPPFLAGS $f"; done
 AC_SUBST([BASE_CPPFLAGS])
 
