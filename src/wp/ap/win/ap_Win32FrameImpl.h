@@ -26,6 +26,7 @@
 #include "ap_FrameData.h"
 #include "gr_Win32Graphics.h"
 
+class AP_Win32Frame;
 
 class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 {

@@ -165,7 +165,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				bufPixel[kPx] = *p++;
 
 			sTmp = bufPixel;
-			const void * pEntry = hash.pick(sTmp);
+			guint32 pEntry = (guint32) hash.pick(sTmp);
 			*pPixel++ = ((UT_Byte)(pEntry)) - 1;
 		}
 
