@@ -651,43 +651,55 @@ void RTFProps_FrameProps::clear(void)
  */
 void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 {
+	UT_return_if_fail(pair);
+
 	const UT_UTF8String *propName = pair->first;
 	const UT_UTF8String *propValue = pair->second;
+
+	if(!propName)
+		return;
 
 	UT_sint32 ival = 0;
 	if(strcmp(propName->utf8_str(),"dxTextLeft")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iLeftPad = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"dxTextRight")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iRightPad = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"dxTextTop")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iTopPad = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"dxTextBottom")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iBotPad = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"fillColor")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iBackgroundColor = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"fillType")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iFillType = ival;
 	}
 	else if(strcmp(propName->utf8_str(),"shapeType")== 0)
 	{
-		ival = atoi(propValue->utf8_str());
+		if(propValue)
+			ival = atoi(propValue->utf8_str());
 		m_iFrameType = 0; // no others implemented
 		if(ival == 202)
 		{
@@ -705,7 +717,7 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 //
 		UT_DEBUGMSG(("Found positioned Image \n"));
 	}
-	else if( propName && propValue)
+	else if(propValue)
 	{
 		UT_DEBUGMSG(("unknown property %s with value %s\n", propName->utf8_str(),
 					 propValue->utf8_str() ));
