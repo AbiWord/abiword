@@ -394,7 +394,7 @@ void IE_Imp_WordPerfect::openPageSpan(const WPXPropertyList &propList)
 		
 }
 
-void IE_Imp_WordPerfect::openHeader(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openHeader(const WPXPropertyList & /*propList*/)
 {
 	m_bHdrFtrOpenCount++;
 	
@@ -436,7 +436,7 @@ void IE_Imp_WordPerfect::closeHeader()
 	*/
 }
 
-void IE_Imp_WordPerfect::openFooter(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openFooter(const WPXPropertyList & /*propList*/)
 {
 	m_bHdrFtrOpenCount++;
 	// see above comments re: openHeader
@@ -771,7 +771,7 @@ void IE_Imp_WordPerfect::defineUnorderedListLevel(const WPXPropertyList &propLis
 }
 
 //void IE_Imp_WordPerfect::openOrderedListLevel(const int listID)
-void IE_Imp_WordPerfect::openOrderedListLevel(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openOrderedListLevel(const WPXPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 	UT_DEBUGMSG(("AbiWordPerfect: openOrderedListLevel\n"));
@@ -793,7 +793,7 @@ void IE_Imp_WordPerfect::closeOrderedListLevel()
 	m_iCurrentListLevel--;
 }
 
-void IE_Imp_WordPerfect::openUnorderedListLevel(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openUnorderedListLevel(const WPXPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 	UT_DEBUGMSG(("AbiWordPerfect: openUNorderedListLevel\n"));
@@ -812,7 +812,7 @@ void IE_Imp_WordPerfect::closeUnorderedListLevel()
 
 // ASSUMPTION: We assume that unordered lists will always pass a number of "0". unpredictable behaviour
 // may result otherwise
-void IE_Imp_WordPerfect::openListElement(const WPXPropertyList &propList, const WPXPropertyListVector &tabStops)
+void IE_Imp_WordPerfect::openListElement(const WPXPropertyList &propList, const WPXPropertyListVector & /*tabStops*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 	UT_DEBUGMSG(("AbiWordPerfect: openListElement\n"));
@@ -901,7 +901,7 @@ void IE_Imp_WordPerfect::openListElement(const WPXPropertyList &propList, const 
 	X_CheckDocumentError(appendSpan(&ucs,1));
 }
 
-void IE_Imp_WordPerfect::openFootnote(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openFootnote(const WPXPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 
@@ -950,7 +950,7 @@ void IE_Imp_WordPerfect::closeFootnote()
 	X_CheckDocumentError(appendStrux(PTX_EndFootnote,NULL));
 }
 
-void IE_Imp_WordPerfect::openEndnote(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openEndnote(const WPXPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 	const gchar** propsArray = NULL;
@@ -1034,7 +1034,7 @@ void IE_Imp_WordPerfect::openTable(const WPXPropertyList &propList, const WPXPro
 	X_CheckDocumentError(appendStrux(PTX_SectionTable, propsArray));
 }
 
-void IE_Imp_WordPerfect::openTableRow(const WPXPropertyList &propList)
+void IE_Imp_WordPerfect::openTableRow(const WPXPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
 	UT_DEBUGMSG(("AbiWordPerfect: openRow\n"));
@@ -1161,7 +1161,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLe
 // NB: AbiWord-2.0 doesn't properly support setting list delimeters at levels greater than 1,
 // we hack around this by using only "plain" (e.g.: NULL) list delimeters on levels greater than 1.
 UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefinition *pListDefinition, int iLevel, 
-																  const char listType, const UT_UTF8String &sTextBeforeNumber, 
+																  const char /*listType*/, const UT_UTF8String &sTextBeforeNumber, 
 																  const UT_UTF8String &sTextAfterNumber, int iStartingNumber)
 {
 	UT_DEBUGMSG(("AbiWordPerfect: Updating document list definition (iLevel: %i)\n", iLevel));

@@ -146,7 +146,7 @@ public:
     virtual void closeTableRow() {}
     virtual void openTableCell(const WPXPropertyList &propList);
     virtual void closeTableCell() {}
-    virtual void insertCoveredTableCell(const WPXPropertyList &propList) {}
+    virtual void insertCoveredTableCell(const WPXPropertyList & /*propList*/) {}
     virtual void closeTable();
 
     
