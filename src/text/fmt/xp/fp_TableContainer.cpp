@@ -1706,7 +1706,7 @@ bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCon
  * We need to know the line for situations where the cell is broken over
  * different pages.
  */
-UT_sint32 fp_CellContainer::getCellX(fp_Line * pLine) const
+UT_sint32 fp_CellContainer::getCellX(fp_Line * /*pLine*/) const
 {
 	return 0;
 }
@@ -1716,7 +1716,7 @@ UT_sint32 fp_CellContainer::getCellX(fp_Line * pLine) const
  * We need to know the line for situations where the cell is broken over
  * different pages.
  */
-UT_sint32 fp_CellContainer::getCellY(fp_Line * pLine) const
+UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
 {
 	fp_TableContainer * pTab = getTopmostTable();
 	return pTab->getY();
@@ -1916,7 +1916,7 @@ void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
  * returns the last drawn cell in the container or NULL
 \Param pLine pointer to the line contained within the cell the cell.
 */
-fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
+fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * /*pLine*/)
 {
 	UT_return_val_if_fail(getPage(), NULL);
 
@@ -2747,10 +2747,10 @@ void fp_CellContainer::setLineMarkers(void)
 		UT_sint32 cLeft = 0;
 		for(cLeft = getLeftAttach(); cLeft < getRightAttach(); cLeft++)
 		{
-			fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach() -1,cLeft);
-			if(pCell)
+			fp_CellContainer * pCellAtRow = pTab->getCellAtRowColumn(getTopAttach() -1,cLeft);
+			if(pCellAtRow)
 			{
-				pCell->m_iBotY = m_iTopY;
+				pCellAtRow->m_iBotY = m_iTopY;
 			}
 			else
 			{
