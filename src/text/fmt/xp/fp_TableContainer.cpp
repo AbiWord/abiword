@@ -2738,7 +2738,9 @@ void fp_CellContainer::setLineMarkers(void)
 	}
 	else
 	{
-		m_iTopY -= pTab->getNthRow(getTopAttach())->spacing/2;
+		fp_TableRowColumn *pRow = pTab->getNthRow(getTopAttach());
+		if(pRow)
+			m_iTopY -= pRow->spacing/2;
 	}
 	if(getTopAttach() > 0)
 	{
@@ -3094,14 +3096,22 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 	xxx_UT_DEBUGMSG(("Looking for row %d numrows %d \n",row,getNumRows()));
 	for(i=0; i < row; i++)
 	{
-		iYRow += getNthRow(i)->allocation;
-		iYRow += getNthRow(i)->spacing;
+		fp_TableRowColumn *pRow = getNthRow(i);
+		if(pRow)
+		{
+			iYRow += pRow->allocation;
+			iYRow += pRow->spacing;
+		}
 		xxx_UT_DEBUGMSG((" row %d Height here %d \n",i,iYRow));
 	}
-	if(row < getNumRows())
+	if((row < getNumRows()) && (i > 0))
 	{
-		iYRow -= getNthRow(i-1)->spacing;
-		iYRow += getNthRow(i-1)->spacing/2;
+		fp_TableRowColumn *pRow = getNthRow(i-1);
+		if(pRow)
+		{
+			iYRow -= pRow->spacing;
+			iYRow += pRow->spacing/2;
+		}
 	}
 	return iYRow;
 }
