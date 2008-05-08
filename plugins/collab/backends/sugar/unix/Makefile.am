@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libunix.la
 
-libunix_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../.. \

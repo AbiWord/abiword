@@ -1,7 +1,7 @@
 
 check_LTLIBRARIES = libt.la
 
-libt_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_TEST_CPPFLAGS)
 
 libt_la_SOURCES = \

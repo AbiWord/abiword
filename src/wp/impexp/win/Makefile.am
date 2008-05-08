@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libwin.la
 
-libwin_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS)
 
 libwin_la_SOURCES = \

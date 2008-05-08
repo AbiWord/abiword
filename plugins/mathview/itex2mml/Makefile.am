@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libitex2mml.la
 
-libitex2mml_la_CPPFLAGS =
+AM_CPPFLAGS =
 
 libitex2mml_la_SOURCES = \
 	itex2MML.h \

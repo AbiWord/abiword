@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libcocoa.la
 
 # TODO: fix the wp include, needed because of ap_Features.h
-libcocoa_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS) \
 	-x objective-c++ \
 	-I$(top_srcdir)/src/wp/ap/xp \

@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libgoffice.la
 
-libgoffice_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(DEPS_CFLAGS)
 
 libgoffice_la_SOURCES = \

@@ -4,7 +4,7 @@ SUBDIRS = t
 noinst_LTLIBRARIES = libxp.la
 
 # WP includes needed because of prefs
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libxp_la_SOURCES = \

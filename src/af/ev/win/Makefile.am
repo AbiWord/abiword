@@ -4,7 +4,7 @@ SUBDIRS = bmp
 noinst_LTLIBRARIES = libwin.la
 
 # TODO: refactor so we can get away using only AF_CPPFLAGS here
-libwin_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libwin_la_SOURCES = \

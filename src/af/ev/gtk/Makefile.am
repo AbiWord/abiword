@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libgtk.la
 
 # TODO: refactor so we can get away using only AF_CPPFLAGS here
-libgtk_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libgtk_la_SOURCES = \

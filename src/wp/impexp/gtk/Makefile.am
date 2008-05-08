@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libgtk.la
 
 # The pdf exporter wants to call EditMethods, so we need WP_CPPFLAGS
-libgtk_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 # list all conditional source files here so they end up in the dist tarball

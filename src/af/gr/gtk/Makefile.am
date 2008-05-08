@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libgtk.la
 
-libgtk_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
 libgtk_la_SOURCES = \

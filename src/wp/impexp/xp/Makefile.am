@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libxp.la
 
 # Prefs needed, therefore WP_CPPFLAGS
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libxp_la_SOURCES = \

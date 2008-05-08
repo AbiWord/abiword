@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(MATHVIEW_CFLAGS) \
 	-I$(srcdir)/../itex2mml \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"

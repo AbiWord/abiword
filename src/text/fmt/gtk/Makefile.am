@@ -3,7 +3,7 @@ noinst_LTLIBRARIES = libgtk.la
 
 # TODO: look at refactoring IE_File* stuff so we'd get away using only AF_CPPFLAGS here
 # 	(low priority)
-libgtk_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS)
 
 libgtk_la_SOURCES = \

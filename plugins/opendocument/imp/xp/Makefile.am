@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS)
 
 libxp_la_SOURCES = \

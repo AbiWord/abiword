@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libcocoa.la
 
 # TODO: refactor so we can get away using only AF_CPPFLAGS here
-libcocoa_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
 	-x objective-c++
 

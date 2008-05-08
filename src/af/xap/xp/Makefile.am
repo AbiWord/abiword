@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
 # list all conditional source files here so they end up in the dist tarball

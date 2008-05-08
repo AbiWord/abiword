@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libplugins.la
 
-libplugins_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
 # builtin plugins' la files

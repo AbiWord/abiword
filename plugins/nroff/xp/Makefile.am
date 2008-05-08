@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(NROFF_CFLAGS) \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"
 

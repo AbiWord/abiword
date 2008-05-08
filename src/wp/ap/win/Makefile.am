@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libwin.la
 
-libwin_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
 	-I$(top_srcdir)/src/wp/ap/xp/ToolbarIcons
 

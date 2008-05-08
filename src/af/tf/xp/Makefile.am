@@ -1,7 +1,7 @@
 
 check_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(BASE_CPPFLAGS)
 
 libxp_la_SOURCES = \

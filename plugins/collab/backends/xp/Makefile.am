@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../core/packet \

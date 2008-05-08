@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libcocoa.la
 
-libcocoa_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS) \
 	-x objective-c++
 

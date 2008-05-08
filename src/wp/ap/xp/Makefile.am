@@ -6,7 +6,7 @@ CDUMPAPP = $(top_srcdir)/tools/cdump/xp/cdump.pl
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
 	-I$(srcdir)/ToolbarIcons
 

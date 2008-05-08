@@ -4,7 +4,7 @@ SUBDIRS = t
 noinst_LTLIBRARIES = libxp.la
 
 # TODO: look at refactoring IE_File* stuff so we'd get away using only AF_CPPFLAGS here
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 # list all conditional source files here so they end up in the dist tarball

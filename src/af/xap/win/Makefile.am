@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libwin.la
 
 # TODO: fix the wp include, needed because of ap_Features.h
-libwin_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libwin_la_SOURCES = \

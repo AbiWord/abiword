@@ -1,7 +1,7 @@
 
 noinst_LTLIBRARIES = libxp.la
 
-libxp_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(PAINT_CFLAGS) \
 	-I$(srcdir)/../$(PLATFORM) \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"

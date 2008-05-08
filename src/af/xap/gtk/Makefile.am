@@ -4,7 +4,7 @@ SUBDIRS = t
 noinst_LTLIBRARIES = libgtk.la
 
 # TODO: fix the wp include, needed because of ap_Features.h
-libgtk_la_CPPFLAGS = \
+AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS) \
 	-I$(top_srcdir)/src/wp/ap/gtk \
 	-I$(top_srcdir)/src/wp/ap/xp \
