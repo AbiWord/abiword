@@ -228,11 +228,10 @@ void ODe_Text_Listener::closeSpan() {
  */
 void ODe_Text_Listener::openFrame(const PP_AttrProp* pAP,
                                   ODe_ListenerAction& rAction) {
-    bool ok;
-    const gchar* pValue;
+    bool ok = false;
+    const gchar* pValue = NULL;
     
     ok = pAP->getProperty("frame-type", pValue);
-    UT_ASSERT_HARMLESS(ok && pValue != NULL);
     
     if (pValue && !strcmp(pValue, "textbox")) {
         ODe_Frame_Listener* pFrameListener;
