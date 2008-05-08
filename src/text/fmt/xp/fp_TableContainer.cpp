@@ -3241,7 +3241,7 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 {
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	UT_ASSERT(pTL);
+	UT_return_val_if_fail(pTL, 0);
 	const  UT_GenericVector<fl_RowProps*>* pVecRow = pTL->getVecRowProps();
 	if(static_cast<UT_sint32>(pVecRow->getItemCount()) < (iRow + 1))
 	{
