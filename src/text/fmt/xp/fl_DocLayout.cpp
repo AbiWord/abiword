@@ -87,7 +87,8 @@ const char * s_FootnoteTypeDesc[] = {
 };
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
-  : m_pG(pG),
+  : m_docViewPageSize("A4"),
+    m_pG(pG),
     m_pDoc(doc),
     m_pView(NULL),
     m_lid((PL_ListenerId)-1),
@@ -133,8 +134,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iPrevPos(0),
     m_pQuickPrintGraphics(NULL),
     m_bIsQuickPrint(false),
-    m_bDisplayAnnotations(false),
-    m_docViewPageSize("A4")
+    m_bDisplayAnnotations(false)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -748,7 +748,7 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
  * Frame
  *
  */
-void FL_DocLayout:: relocateFrame(fl_FrameLayout * pFrame)
+void FL_DocLayout:: relocateFrame(fl_FrameLayout * /*pFrame*/)
 {
   //
   // Get all the attributes/properties
