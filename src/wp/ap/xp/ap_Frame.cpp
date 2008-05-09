@@ -857,8 +857,20 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	{
 		pApp->rememberFrame(this);
 	}
-
+	//
+	// Remove the old layout before we fill the layouts to prevent
+	// stale pointers being accessed during the fill phase.
+	//
+	if(bSameDocument)
+	{
+		static_cast<PD_Document *>(m_pDoc)->disableListUpdates();
+	}
 	pDocLayout->fillLayouts();      
+	if(bSameDocument)
+	{
+		static_cast<PD_Document *>(m_pDoc)->enableListUpdates();
+		static_cast<PD_Document *>(m_pDoc)->updateDirtyLists();
+	}
 
 	// can only hold selection/point if the two views are for the same doc !!!
 	if(bSameDocument)

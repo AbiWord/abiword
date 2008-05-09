@@ -2386,7 +2386,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	else
 	{
 		m_posSavedDocPosition = m_dposPaste;
-		m_dposPaste = m_pAnnotation->m_Annpos;
+		m_dposPaste = m_pAnnotation->m_Annpos+1;
 		insertStrux(PTX_SectionAnnotation,ann_attrs,pszAnn);
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		markPasteBlock();
@@ -5650,8 +5650,12 @@ bool IE_Imp_RTF::HandleStarKeyword()
 						
 						if(bRet)
 						{
+							if(m_posSavedDocPosition >m_dposPaste )
+								m_posSavedDocPosition++;
 							m_dposPaste++;
 							bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
+							if(m_posSavedDocPosition >m_dposPaste )
+								m_posSavedDocPosition++;
 							m_dposPaste++;
 						}
 						
