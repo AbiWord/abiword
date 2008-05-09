@@ -135,12 +135,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
     } else if (!strcmp(pName, "text:h" )) {
 
-        const gchar* pStyleName;
-        const gchar* pOutlineLevel;
-        const ODi_Style_Style* pStyle;
-        
-        pStyleName = UT_getAttribute("text:style-name", ppAtts);
-        UT_ASSERT(pStyleName);
+        const gchar* pStyleName = NULL;
+        const gchar* pOutlineLevel = NULL;
+        const ODi_Style_Style* pStyle = NULL;
         
         pOutlineLevel = UT_getAttribute("text:outline-level", ppAtts);
         if (pOutlineLevel == NULL) {
@@ -148,9 +145,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // be at level 1.
             pOutlineLevel = "1";
         }
-        
-        pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
-        UT_ASSERT_HARMLESS(pStyle);
+
+        pStyleName = UT_getAttribute("text:style-name", ppAtts);
+        if (pStyleName) {
+            pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
+        }
         
         if (pStyle && (pStyle->isAutomatic())) {
 

@@ -447,6 +447,9 @@ void ODi_Style_Style_Family::linkStyles() {
  */
 const ODi_Style_Style* ODi_Style_Style_Family::getStyle(const gchar* pStyleName,
                                                       bool bOnContentStream) {
+
+    UT_return_val_if_fail(pStyleName, NULL);
+
     const ODi_Style_Style* pStyle = NULL;
     
     // Is it the default style?
