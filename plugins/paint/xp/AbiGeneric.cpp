@@ -32,6 +32,7 @@
 
 
 #include "AbiGeneric.h"
+#include "ap_Menu_Id.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_paint_register
@@ -121,7 +122,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 rel
  *   prevCM is the [English] Context menu item we place our 1st context menu item after
  *     prevMM and prevCM should not be NULL unless there is no entry added to the respective menu
  */
-UT_Error addToMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems, const char *prevMM, const char *prevCM)
+UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id prevMM, XAP_Menu_Id prevCM)
 {
   UT_uint32 i;
 
@@ -142,7 +143,6 @@ UT_Error addToMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems, const c
   // Now we need to grab an ActionSet.  This is going to be used later
   // on in our for loop.  Take a look near the bottom.
   EV_Menu_ActionSet* pActionSet = pApp->getMenuActionSet();
-
   for (i = 0; i < num_menuitems; i++)
   {
       // Create an EditMethod that will link our method's name with
@@ -164,18 +164,18 @@ UT_Error addToMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems, const c
 	// Generate an unique id for this menu item
 	// (We could also pass 0 or leave off newID and have addNewMenuAfter return one)
 	//
-	XAP_Menu_Id newID = pFact->getNewID();
+	amo[i].id = pFact->getNewID();
 
 	// TODO does it matter if this is before an addNewMenuAfter() call or not?
-     	pFact->addNewLabel(NULL,newID,amo[i].label, amo[i].description);
+     	pFact->addNewLabel(NULL, amo[i].id, amo[i].label, amo[i].description);
 
       //
       // Put it in the main menu
       //
 	if (amo[i].inMainMenu)
 	{
-		pFact->addNewMenuAfter("Main",NULL,prevMM, amo[i].flags, newID);
-		prevMM = amo[i].label;
+		pFact->addNewMenuAfter("Main", NULL, prevMM, amo[i].flags, amo[i].id);
+		prevMM = amo[i].id;
 	}
 
       //
@@ -183,13 +183,13 @@ UT_Error addToMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems, const c
       //
 	if (amo[i].inContextMenu)
 	{
-		pFact->addNewMenuAfter("ContextImageT",NULL,prevCM, amo[i].flags, newID);
-		prevCM = amo[i].label;
+		pFact->addNewMenuAfter("ContextImageT", NULL, prevCM, amo[i].flags, amo[i].id);
+		prevCM = amo[i].id;
 	}
 
       // Create the Action that will be called.
       EV_Menu_Action* myAction = new EV_Menu_Action(
-						    newID,                // id that the layout said we could use
+						    amo[i].id,                // id that the layout said we could use
 						    amo[i].hasSubMenu,    // do we have a sub menu.
 						    amo[i].hasDialog,     // do we raise a dialog (or in case a whole new program).
 						    amo[i].checkBox,      // do we have a checkbox.
@@ -238,8 +238,8 @@ UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems)
     DELETEP( pEM ) ;
 
     // remove the contextual & main menu items
-    if (amo[i].inMainMenu) pFact->removeMenuItem("Main",NULL, amo[i].label);
-    if (amo[i].inContextMenu) pFact->removeMenuItem("ContextImageT", NULL, amo[i].label);
+    if (amo[i].inMainMenu) pFact->removeMenuItem("Main",NULL, amo[i].id);
+    if (amo[i].inContextMenu) pFact->removeMenuItem("ContextImageT", NULL, amo[i].id);
   }
 
   // rebuild the menus

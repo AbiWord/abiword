@@ -195,6 +195,7 @@ typedef struct AbiMenuOptions
   /* if both of the following are false, then why do you even have the entry?                */
   bool inMainMenu;			/* true if should show in main menu     (generally true) */
   bool inContextMenu;			/* true if should show in context menu  (depends)        */
+  XAP_Menu_Id id;
 } AbiMenuOptions ;
 
     
@@ -207,7 +208,7 @@ typedef struct AbiMenuOptions
  *   prevCM is the [English] Context menu item we place our 1st context menu item after
  *     prevMM and prevCM should not be NULL unless there is no entry added to the respective menu
  */
-UT_Error addToMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems, const char *prevMM, const char *prevCM);
+UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id prevMM, XAP_Menu_Id prevCM);
 UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems);
 
 /* returns true only if user requested to cancel save, pass suggested path in */

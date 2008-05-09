@@ -85,26 +85,21 @@ ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(useBmp);
  *        most notable on the end of a submenu; its probably ok
  *        for separators to share a NULL label.
  */
-const static AbiMenuOptions amo [] = 
+static AbiMenuOptions amo [] = 
 {
-  { ABI_PLUGIN_METHOD_STR(submenu_start), NULL,                           "AbiPaint",                   "Allows in place editing of image via external program.", EV_MLF_BeginSubMenu, true, false, false, NULL, NULL, true, false },
-  { ABI_PLUGIN_METHOD_STR(editImage),     ABI_PLUGIN_METHOD(editImage),   "(AbiPaint) &Edit Image",     "Opens the selected image for modification (in specified image editing program).", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), getEditImageMenuName, true, true },
+  { ABI_PLUGIN_METHOD_STR(submenu_start), NULL,                           "AbiPaint",                   "Allows in place editing of image via external program.", EV_MLF_BeginSubMenu, true, false, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(editImage),     ABI_PLUGIN_METHOD(editImage),   "(AbiPaint) &Edit Image",     "Opens the selected image for modification (in specified image editing program).", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), getEditImageMenuName, true, true, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   "Save Image &As BMP",         "Saves the selected image as a BMP file.", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true },
+  { ABI_PLUGIN_METHOD_STR(saveAsBmp),     ABI_PLUGIN_METHOD(saveAsBmp),   "Save Image &As BMP",         "Saves the selected image as a BMP file.", EV_MLF_Normal, false, true, false, ABI_GRAYABLE_MENUITEM(editImage), NULL, true, true, 0 },
 #endif
-  { ABI_PLUGIN_METHOD_STR(separator1),    NULL,                           NULL,                         NULL, EV_MLF_Separator, false, false, false, NULL, NULL, true, false },
-  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, NULL, NULL, true, false },
+  { ABI_PLUGIN_METHOD_STR(separator1),    NULL,                           NULL,                         NULL, EV_MLF_Separator, false, false, false, NULL, NULL, true, false, 0 },
+  { ABI_PLUGIN_METHOD_STR(specify),       ABI_PLUGIN_METHOD(specify),     "&Specify Image Editor",      "Allows you to specify what image editing program to use, results stored in registry.", EV_MLF_Normal, false, true, false, NULL, NULL, true, false, 0 },
 #ifdef ENABLE_BMP
-  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      "Image Editor Requires &BMP", "Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled).", EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false },
+  { ABI_PLUGIN_METHOD_STR(useBmp),        ABI_PLUGIN_METHOD(useBmp),      "Image Editor Requires &BMP", "Indicates the specified image editing program must use a BMP file instead of PNG (default is enabled).", EV_MLF_Normal, false, false, true, ABI_TOGGLEABLE_MENUITEM(useBmp), NULL, true, false, 0 },
 #endif
-  { ABI_PLUGIN_METHOD_STR(submenu_end),   NULL,                           "AbiPaint Submenu End",       NULL, EV_MLF_EndSubMenu, true, false, false, NULL, NULL, true, false },
+  { ABI_PLUGIN_METHOD_STR(submenu_end),   NULL,                           "AbiPaint Submenu End",       NULL, EV_MLF_EndSubMenu, true, false, false, NULL, NULL, true, false, 0 },
 } ;
 #define NUM_MENUITEMS G_N_ELEMENTS(amo)
-
-const char * prevMM = "&Word Count";	// Main menu item we place our 1st menu item after
-const char * prevCM = "&Image";	// Context menu item we place our 1st image context menu item after
-
-
     
 // -----------------------------------------------------------------------
 //
@@ -149,7 +144,7 @@ bool doRegistration(void)
 
 
     // Add the image editor to AbiWord's menus.
-    addToMenus(amo, NUM_MENUITEMS, prevMM, prevCM);
+    addToMenus(amo, NUM_MENUITEMS, AP_MENU_ID_TOOLS_WORDCOUNT, AP_MENU_ID_FMT_IMAGE);
 
 
     return true;
