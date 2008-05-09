@@ -4092,7 +4092,7 @@ fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 
 static const gchar * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 {
-	UT_ASSERT(pAP);
+	UT_return_val_if_fail(pAP, NULL);
 	const gchar* sz = NULL;
 
 	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
@@ -6275,7 +6275,7 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText)
  */
 UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
 {
-	UT_ASSERT(pos2 > pos1);
+	UT_return_val_if_fail(pos2 > pos1, NULL);
 
 	UT_GrowBuf buffer;
 
@@ -7100,7 +7100,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	bool dec = false;
 
 	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char)));
-	UT_ASSERT(numberString);
+	UT_return_val_if_fail(numberString, false);
 	char * origNum = numberString;
 
 	UT_UCS4_strcpy_to_char(numberString, data);
@@ -7311,7 +7311,7 @@ book_mark_not_found:
 			{
 				//bookmark not found
 				XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
-				UT_ASSERT((pFrame));
+				UT_return_val_if_fail(pFrame, false);
 
 				pFrame->showMessageBox(AP_STRING_ID_MSG_BookmarkNotFound, 
 						       XAP_Dialog_MessageBox::b_O, 

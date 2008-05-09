@@ -301,6 +301,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		{
 			bool b = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX)==BST_CHECKED);
 			setMakeDocumentDefault(b);
+			return 1;
 		}
 			
 		default:							// we did not handle this notification

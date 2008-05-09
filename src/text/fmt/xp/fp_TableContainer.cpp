@@ -757,13 +757,13 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 // Lookup table properties to get the line thickness, etc.
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_ASSERT(pLayout);
-	if (pLayout == 0) return;
+	UT_return_if_fail(pLayout);
+
 	if(pBroke == NULL)
 	{
 		return;
 	}
-	if(pBroke && pBroke->getPage() && !pBroke->getPage()->isOnScreen())
+	if(pBroke->getPage() && !pBroke->getPage()->isOnScreen())
 	{
 		return;
 	}
@@ -980,11 +980,8 @@ PP_PropertyMap::Background fp_CellContainer::getBackground () const
 	PP_PropertyMap::Background background(m_background);
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_ASSERT(pLayout);
-	if (pLayout == 0) return background;
-
-	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
-	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return background;
+	UT_return_val_if_fail(pLayout, background);
+	UT_return_val_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE, background);
 
 	fl_TableLayout * table = static_cast<fl_TableLayout *>(pLayout);
 
@@ -1123,11 +1120,8 @@ void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
  */
 void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG, UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot, UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear )
 {
-	UT_ASSERT(getPage());
-	if(getPage() == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(getPage());
+
 	bool bNested = false;
 	if(pBroke == NULL)
 	{
@@ -1280,11 +1274,8 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
  */
 void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 {
-	UT_ASSERT(getPage());
-	if(getPage() == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(getPage());
+
 	bool bNested = false;
 	if(pBroke == NULL)
 	{
@@ -1304,8 +1295,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 // Lookup table properties to get the line thickness, etc.
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
-	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
+	UT_return_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+
 	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
 
 	PP_PropertyMap::Line lineBottom = getBottomStyle (pTableLayout);
@@ -1504,11 +1495,8 @@ void fp_CellContainer::drawLinesAdjacent(void)
  */
 void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBroke)
 {
-	UT_ASSERT(getPage());
-	if(getPage() == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(getPage());
+
 	if(getPage()->getDocLayout()->getView() == NULL)
 	{
 		return;
@@ -1742,11 +1730,8 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 */
 void fp_CellContainer::draw(fp_Line * pLine)
 {
-	UT_ASSERT(getPage());
-	if(!getPage())
-	{
-		return;
-	}
+	UT_return_if_fail(getPage());
+
 	m_bDirty = false;
 	FV_View * pView = getView();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
@@ -1857,11 +1842,8 @@ void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
 */
 fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 {
-	UT_ASSERT(getPage());
-	if(!getPage())
-	{
-		return NULL;
-	}
+	UT_return_val_if_fail(getPage(), NULL);
+
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
@@ -2663,7 +2645,9 @@ void fp_CellContainer::setLineMarkers(void)
 	}
 	else
 	{
-		m_iTopY -= pTab->getNthRow(getTopAttach())->spacing/2;
+		fp_TableRowColumn *pRow = pTab->getNthRow(getTopAttach());
+		if(pRow)
+			m_iTopY -= pRow->spacing/2;
 	}
 	if(getTopAttach() > 0)
 	{
@@ -3019,14 +3003,22 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 	xxx_UT_DEBUGMSG(("Looking for row %d numrows %d \n",row,getNumRows()));
 	for(i=0; i < row; i++)
 	{
-		iYRow += getNthRow(i)->allocation;
-		iYRow += getNthRow(i)->spacing;
+		fp_TableRowColumn *pRow = getNthRow(i);
+		if(pRow)
+		{
+			iYRow += pRow->allocation;
+			iYRow += pRow->spacing;
+		}
 		xxx_UT_DEBUGMSG((" row %d Height here %d \n",i,iYRow));
 	}
-	if(row < getNumRows())
+	if((row < getNumRows()) && (i > 0))
 	{
-		iYRow -= getNthRow(i-1)->spacing;
-		iYRow += getNthRow(i-1)->spacing/2;
+		fp_TableRowColumn *pRow = getNthRow(i-1);
+		if(pRow)
+		{
+			iYRow -= pRow->spacing;
+			iYRow += pRow->spacing/2;
+		}
 	}
 	return iYRow;
 }
@@ -3166,7 +3158,7 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 {
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	UT_ASSERT(pTL);
+	UT_return_val_if_fail(pTL, 0);
 	const  UT_GenericVector<fl_RowProps*>* pVecRow = pTL->getVecRowProps();
 	if(static_cast<UT_sint32>(pVecRow->getItemCount()) < (iRow + 1))
 	{

@@ -639,7 +639,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 																			PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(iType == FL_SECTION_TABLE);
-	UT_ASSERT(pcrx);
+	UT_return_val_if_fail(pcrx, NULL);
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	PT_DocPosition pos1;
 //
@@ -1177,11 +1177,11 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
  */
 void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 	UT_DEBUGMSG(("Doing HdrFtr change callback \n"));
 	// Get the docSectionLayout
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pWorker->getInstanceData());
-	UT_ASSERT(pDSL);
+	UT_return_if_fail(pDSL);
 
 	// Win32 timers can fire prematurely on asserts (the dialog's
 	// message pump releases the timers)
@@ -1674,7 +1674,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 	else
 	{
 		UT_ASSERT(!m_pFirstColumn);
-		UT_ASSERT(pLeaderColumn);
+		UT_return_val_if_fail(pLeaderColumn, NULL);
 		m_pFirstColumn = pLeaderColumn;
 	}
 
@@ -3287,7 +3287,7 @@ bool fl_HdrFtrSectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
-		UT_ASSERT(pPair->getShadow());
+		UT_continue_if_fail(pPair->getShadow());
 		bResult = pPair->getShadow()->recalculateFields(iUpdateCount) || bResult;
 	}
 	return bResult;
@@ -3687,7 +3687,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	if(iShadow <  0)
 		return;
 	_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(iShadow));
-	UT_ASSERT(pPair);
+	UT_return_if_fail(pPair);
 
 	UT_ASSERT(pPair->getShadow());
 
@@ -3804,7 +3804,7 @@ void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 	for(i =0; i< iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
-		UT_ASSERT(pPair);
+		UT_continue_if_fail(pPair);
 		UT_ASSERT(pPair->getShadow());
 
 		fp_Page * ppPage = pPair->getPage();

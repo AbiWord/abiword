@@ -1971,9 +1971,12 @@ bool fl_CellLayout::isCellSelected(void)
 	PT_DocPosition posStartCell = 0;
 	PT_DocPosition posEndCell =0;
 	PL_StruxDocHandle sdhEnd,sdhStart;
+
 	sdhStart = getStruxDocHandle();
 	posStartCell = m_pDoc->getStruxPosition(sdhStart) +1;
-	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
+	bool bRes = m_pDoc->getNextStruxOfType(sdhStart, PTX_EndCell, &sdhEnd);
+	UT_return_val_if_fail(bRes, false);
+
 	posEndCell = m_pDoc->getStruxPosition(sdhEnd) -1;
 	if(pView->isPosSelected(posStartCell) && pView->isPosSelected(posEndCell))
 	{

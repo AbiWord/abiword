@@ -1020,12 +1020,14 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	/* Frame-border properties:
 	 */
+	if(pSectionAP)
+	{
+		pSectionAP->getProperty ("color", pszColor);
 
-	pSectionAP->getProperty ("color", pszColor);
-
-	pSectionAP->getProperty ("bot-color",pszBorderColor);
-	pSectionAP->getProperty ("bot-style",pszBorderStyle);
-	pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
+		pSectionAP->getProperty ("bot-color",pszBorderColor);
+		pSectionAP->getProperty ("bot-style",pszBorderStyle);
+		pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
+	}
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, botLine);
 
@@ -1033,9 +1035,12 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	pszBorderStyle = NULL;
 	pszBorderWidth = NULL;
 
-	pSectionAP->getProperty ("left-color", pszBorderColor);
-	pSectionAP->getProperty ("left-style", pszBorderStyle);
-	pSectionAP->getProperty ("left-thickness", pszBorderWidth);
+	if(pSectionAP)
+	{
+		pSectionAP->getProperty ("left-color", pszBorderColor);
+		pSectionAP->getProperty ("left-style", pszBorderStyle);
+		pSectionAP->getProperty ("left-thickness", pszBorderWidth);
+	}
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, leftLine);
 
@@ -1043,9 +1048,12 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	pszBorderStyle = NULL;
 	pszBorderWidth = NULL;
 
-	pSectionAP->getProperty ("right-color",pszBorderColor);
-	pSectionAP->getProperty ("right-style",pszBorderStyle);
-	pSectionAP->getProperty ("right-thickness", pszBorderWidth);
+	if(pSectionAP)
+	{
+		pSectionAP->getProperty ("right-color",pszBorderColor);
+		pSectionAP->getProperty ("right-style",pszBorderStyle);
+		pSectionAP->getProperty ("right-thickness", pszBorderWidth);
+	}
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, rightLine);
 
@@ -1053,9 +1061,12 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	pszBorderStyle = NULL;
 	pszBorderWidth = NULL;
 
-	pSectionAP->getProperty ("top-color",  pszBorderColor);
-	pSectionAP->getProperty ("top-style",  pszBorderStyle);
-	pSectionAP->getProperty ("top-thickness",pszBorderWidth);
+	if(pSectionAP)
+	{
+		pSectionAP->getProperty ("top-color",  pszBorderColor);
+		pSectionAP->getProperty ("top-style",  pszBorderStyle);
+		pSectionAP->getProperty ("top-thickness",pszBorderWidth);
+	}
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, topLine);
 
@@ -1067,9 +1078,12 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	const gchar * pszBgColor = NULL;
 	const gchar * pszBackgroundColor = NULL;
 
-	pSectionAP->getProperty ("bg-style",    pszBgStyle);
-	pSectionAP->getProperty ("bgcolor",     pszBgColor);
-	pSectionAP->getProperty ("background-color", pszBackgroundColor);
+	if(pSectionAP)
+	{
+		pSectionAP->getProperty ("bg-style",    pszBgStyle);
+		pSectionAP->getProperty ("bgcolor",     pszBgColor);
+		pSectionAP->getProperty ("background-color", pszBackgroundColor);
+	}
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, background);
 
@@ -1179,7 +1193,8 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 // Image name
 //
 		const gchar * pszDataID = NULL;
-		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
+		if(pSectionAP)
+			pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
 		if(pszDataID != NULL)
 		{
 			const UT_ByteBuf * pbb = NULL;

@@ -446,6 +446,7 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 
 		case Error:
 			*s += "error:   ";
+			break;
 		case Log:
 		default:
 			*s += "message: ";
