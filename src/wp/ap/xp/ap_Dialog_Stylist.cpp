@@ -64,7 +64,7 @@ AP_Dialog_Stylist::~AP_Dialog_Stylist(void)
 	DELETEP(m_pStyleTree);
 }
 
-void AP_Dialog_Stylist::setActiveFrame(XAP_Frame *pFrame)
+void AP_Dialog_Stylist::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	updateDialog();
 	notifyActiveFrame(getActiveFrame());

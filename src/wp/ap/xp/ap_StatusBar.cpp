@@ -507,7 +507,7 @@ const UT_UTF8String & AP_StatusBar::getStatusMessage(void) const
     return m_sStatusMessage;
 }
 
-void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
+void AP_StatusBar::setStatusProgressType(int /*start*/, int /*end*/, int /*flags*/) {
 // 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
 // 	if(pf)
 // 	{

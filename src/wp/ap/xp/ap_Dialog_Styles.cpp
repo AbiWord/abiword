@@ -642,7 +642,7 @@ void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
  * Used to extract data out of the Tabs dialog.
  */
 static void
-s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
+s_TabSaveCallBack (AP_Dialog_Tab * /*pDlg*/, FV_View * /*pView*/,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * closure)
 {

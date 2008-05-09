@@ -1200,7 +1200,7 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 }
 
 void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
-										AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+										AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
 {
 	UT_Rect rLeft, rRight;
 
@@ -1829,7 +1829,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
-									  UT_uint32 kCell, bool bDrawAll)
+									  UT_uint32 /*kCell*/, bool bDrawAll)
 {
 	if(m_pG == NULL)
 		return;

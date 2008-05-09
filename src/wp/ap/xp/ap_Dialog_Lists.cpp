@@ -1090,13 +1090,13 @@ void AP_Dialog_Lists::ConstructWindowName(void)
 	FREEP(tmp);
 }
 
-void AP_Dialog_Lists::setActiveFrame(XAP_Frame *pFrame)
+void AP_Dialog_Lists::setActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	setView(getView());
 	notifyActiveFrame(getActiveFrame());
 }
 
-bool AP_Dialog_Lists::setView(FV_View * view)
+bool AP_Dialog_Lists::setView(FV_View * /*view*/)
 {
 	if (getActiveFrame())
 		m_pView = (FV_View *) getActiveFrame()->getCurrentView();
