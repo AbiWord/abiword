@@ -709,7 +709,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
@@ -730,7 +730,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
@@ -751,7 +751,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
@@ -772,7 +772,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
@@ -793,7 +793,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
@@ -814,7 +814,7 @@
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
-			  <property name="digits">1</property>
+			  <property name="digits">2</property>
 			  <property name="numeric">False</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
