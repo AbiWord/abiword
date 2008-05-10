@@ -43,21 +43,4 @@ BeginLayout(TableOps, AP_STRING_ID_TB_Table, AP_PREF_KEY_TableBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
 	ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
 
-	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVEAS)
-
-	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_2COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
-
-	Spacer()
-
-	ToolbarItem(AP_TOOLBAR_ID_IMG)
-	ToolbarItem(AP_TOOLBAR_ID_VIEW_SHOWPARA)
-	ToolbarItem(AP_TOOLBAR_ID_HELP)
-
-
 EndLayout()
