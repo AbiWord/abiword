@@ -326,8 +326,9 @@ bool fp_CellContainer::containsNestedTables(void)
  */
 void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
 {
-	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
-	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
+	UT_ASSERT(static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout()) &&
+	static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout())->getContainerType() == FL_CONTAINER_TABLE);
+
 	fp_Column * pCol = NULL;
 	UT_sint32 col_y =0;
 	UT_sint32 col_x =0;
@@ -2623,9 +2624,13 @@ void fp_CellContainer::setLineMarkers(void)
 // Set the boundary markers for line draing.
 //
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	UT_return_if_fail(pTab);
+
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pTab->getSectionLayout());
-	m_iLeft = getX() - 
-		static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
+	fp_TableRowColumn *pCol = pTab->getNthCol(getLeftAttach());
+	if(pCol)
+		m_iLeft = getX() - static_cast<UT_sint32>(pCol->spacing);
+
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
 	if(pCell)
 	{
@@ -2671,7 +2676,9 @@ void fp_CellContainer::setLineMarkers(void)
 		m_iBotY = pTab->getYOfRow(getBottomAttach());
 		if(getBottomAttach() < pTab->getNumRows()) 
 		{
-			m_iBotY += pTab->getNthRow(getBottomAttach())->spacing/2;
+			fp_TableRowColumn *pRow = pTab->getNthRow(getBottomAttach());
+			if(pRow)
+				m_iBotY += pRow->spacing/2;
 		}
 	}
 	else
@@ -5792,6 +5799,8 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	  for (row = 0; row < child->getTopAttach(); row++)
 	  {
 		  fp_TableRowColumn * pRow = getNthRow(row);
+		  UT_continue_if_fail(pRow);
+
 		  UT_sint32 iOldAlloc = pRow->allocation;
 		  UT_sint32 iNewAlloc = getRowHeight(row,iOldAlloc);
 		  if(iNewAlloc > iOldAlloc)
