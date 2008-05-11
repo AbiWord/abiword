@@ -80,8 +80,8 @@ XAP_Win32Dialog_FileOpenSaveAs::~XAP_Win32Dialog_FileOpenSaveAs(void)
 static bool SuffixInList(const char *haystack, const char *needle)
 {
 	int l = strlen(needle);
-	const char *s;
-	if (s = strstr(haystack, needle))
+	const char *s = strstr(haystack, needle);
+	if (s)
 		if (s[l] == 0 || s[l] == ';')
 			return true;
 	return false;
@@ -497,7 +497,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
  Static routine
  */
-UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT msg, WPARAM /*wParam*/, LPARAM lParam)
 {
 	XAP_Win32Dialog_FileOpenSaveAs* pThis;
 	static char buff[MAX_DLG_INS_PICT_STRING];

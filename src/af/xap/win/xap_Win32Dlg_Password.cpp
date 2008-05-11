@@ -64,7 +64,7 @@ void XAP_Win32Dialog_Password::runModal(XAP_Frame * pFrame)
 
 #define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// localize dialog title
 	localizeDialogTitle(XAP_STRING_ID_DLG_Password_Title);
@@ -77,7 +77,7 @@ BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 1;
 }
 
-BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -104,7 +104,7 @@ BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	}
 }
 
-BOOL XAP_Win32Dialog_Password::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL XAP_Win32Dialog_Password::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return 1;
 }

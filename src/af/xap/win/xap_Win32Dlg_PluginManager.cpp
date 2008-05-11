@@ -74,7 +74,7 @@ void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 	createModal(pFrame,MAKEINTRESOURCE(XAP_RID_DIALOG_PLUGIN_MANAGER));
 }
 
-BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {		
 	
 	localizeDialogTitle(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE);
@@ -98,7 +98,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_PluginManager::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_PluginManager::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	// This handles WM_COMMAND message for the top-level dialog.
 	
@@ -132,7 +132,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	}
 }
 
-BOOL XAP_Win32Dialog_PluginManager::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL XAP_Win32Dialog_PluginManager::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return FALSE;
 }

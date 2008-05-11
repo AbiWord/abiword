@@ -264,10 +264,10 @@ public:
   GR_Win32PrintPreviewGraphics(const RECT &rect)
     : GR_Win32Graphics(createbestmetafilehdc(), getDocInfo()),
       m_pGraphics(0), 
-      metafile_dc(0), 
       page_rect(rect),
-      m_tiffFilename(0),
-      m_multiPageTiff(0)
+      metafile_dc(0), 
+      m_multiPageTiff(0),
+      m_tiffFilename(0)
   {
     GpStatus status = gdip_init ();
     ASSERT_GDIP_SUCCESS (status, gdip_init);
@@ -497,8 +497,8 @@ public:
     return true;
   }
 
-  virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-			 bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+  virtual bool startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+			 bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
   {
     endPage(); // prints any previous pages and clears the font cache
 
@@ -680,7 +680,7 @@ GR_Graphics * XAP_Win32Dialog_PrintPreview::getPrinterGraphicsContext(void)
   return m_pPrintGraphics;
 }
 
-void XAP_Win32Dialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_Win32Dialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * /*pGraphics*/)
 {
   DELETEP(m_pPrintGraphics);
 }

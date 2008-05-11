@@ -69,7 +69,7 @@ void XAP_Win32Dialog_WindowMore::runModal(XAP_Frame * pFrame)
 
 }
 
-BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// localize controls
 	localizeDialogTitle(XAP_STRING_ID_DLG_MW_MoreWindows);
@@ -94,7 +94,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	int nItem;
@@ -135,7 +135,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 	}
 }
 
-BOOL XAP_Win32Dialog_WindowMore::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL XAP_Win32Dialog_WindowMore::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return FALSE;
 }
