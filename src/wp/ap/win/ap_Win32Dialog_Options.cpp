@@ -203,11 +203,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 
 	switch (id)
 	{
-
-		case id_CHECK_VIEW_CURSOR_BLINK:
-			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
-			return;	  
-		
 		case id_CHECK_LANG_WITH_KEYBOARD:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
 			return;
@@ -292,7 +287,6 @@ void	AP_Win32Dialog_Options::_set##Bool(bool b) { \
 }
 
 
-DEFINE_GET_SET_BOOL(PG_GENERAL,ViewCursorBlink)
 DEFINE_GET_SET_BOOL(PG_GENERAL,LanguageWithKeyboard)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AllowCustomToolbars)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AutoLoadPlugins)
@@ -310,6 +304,7 @@ DEFINE_GET_SET_BOOL(PG_SPELL,GrammarCheck)
 
 
 /* Not used */
+DEFINE_GET_SET_BOOL_DUMMY (ViewCursorBlink)
 DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
 DEFINE_GET_SET_BOOL_DUMMY (PrefsAutoSave)
 DEFINE_GET_SET_BOOL_DUMMY (ViewAll)
@@ -658,7 +653,6 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
 	
 	// localize controls	
-	_DS2(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);	
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
 	_DS2(OPTIONS_CHK_AllowCustomToolbars,	DLG_Options_Label_CheckAllowCustomToolbars);

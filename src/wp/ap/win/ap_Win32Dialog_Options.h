@@ -176,7 +176,6 @@ public:
 	SET_GATHER			(SpellNumbers,		bool );
 	SET_GATHER			(GrammarCheck,		bool); 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
-	SET_GATHER			(ViewCursorBlink,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
 	SET_GATHER			(OtherDirectionRtl, bool );
@@ -188,6 +187,7 @@ public:
 
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
 
+	SET_GATHER			(ViewCursorBlink,		bool);
 	SET_GATHER			(PrefsAutoSave,			bool);
 	SET_GATHER			(ViewShowRuler,			bool);
 	SET_GATHER			(ViewShowStatusBar,		bool);
@@ -218,6 +218,7 @@ public:
 	bool			m_boolViewShowStatusBar;
 	bool			m_boolViewUnprintable;
 
+	bool			m_boolViewCursorBlink;
 	
 #undef SET_GATHER
 
