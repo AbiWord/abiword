@@ -306,7 +306,7 @@ UT_sint32 GR_Graphics::_tduR(UT_sint32 layoutUnits) const
 
 UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 {
-	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) * 100.) / (static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())));;
+	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) * 100.) / (static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())));
 }
 
 double GR_Graphics::tduD(double layoutUnits) const

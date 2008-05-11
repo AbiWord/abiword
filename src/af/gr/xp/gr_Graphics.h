@@ -427,12 +427,12 @@ class ABI_EXPORT GR_Graphics
 									   const char* pszLang);
 #else
 	static const char* findNearestFont(const char* pszFontFamily,
-									   const char* pszFontStyle,
-									   const char* pszFontVariant,
-									   const char* pszFontWeight,
-									   const char* pszFontStretch,
-									   const char* pszFontSize,
-									   const char* pszLang)
+									   const char* /*pszFontStyle*/,
+									   const char* /*pszFontVariant*/,
+									   const char* /*pszFontWeight*/,
+									   const char* /*pszFontStretch*/,
+									   const char* /*pszFontSize*/,
+									   const char* /*pszLang*/)
 		{return pszFontFamily;}
 #endif
 	
