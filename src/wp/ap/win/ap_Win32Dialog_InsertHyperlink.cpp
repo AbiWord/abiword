@@ -62,7 +62,7 @@ void AP_Win32Dialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTHYPERLINK));
 }
 
-BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// localize dialog title
 	localizeDialogTitle(AP_STRING_ID_DLG_InsertHyperlink_Title);
@@ -103,7 +103,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	return 0; // 0 because we called set focus
 }
 
-BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -144,7 +144,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 	}
 }
 
-BOOL AP_Win32Dialog_InsertHyperlink::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL AP_Win32Dialog_InsertHyperlink::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return 0;
 }

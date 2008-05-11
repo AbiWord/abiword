@@ -114,7 +114,7 @@ BOOL CALLBACK AP_Win32Dialog_ListRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM 
 
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_LIST_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

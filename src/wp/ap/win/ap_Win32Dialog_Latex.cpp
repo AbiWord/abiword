@@ -153,7 +153,7 @@ bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
 
 /*****************************************************************/
 
-BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	m_hDlg = hWnd;
 	
@@ -179,7 +179,7 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 }
 
 
-BOOL AP_Win32Dialog_Latex::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Latex::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -199,7 +199,7 @@ BOOL AP_Win32Dialog_Latex::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-BOOL AP_Win32Dialog_Latex::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL AP_Win32Dialog_Latex::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {				
 	return FALSE;
 }
