@@ -32,7 +32,8 @@
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
-
+#include "xap_App.h"
+#include "xap_Frame.h"
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -154,9 +155,11 @@ void fl_AutoNum::fixHierarchy(void)
 	if(m_pItems.getItemCount() >0)
 	{
 		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(0));
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 		bool bFound = m_pDoc->getAttributeFromSDH(sdh,
-												  m_pView ? m_pView->isShowRevisions() : true,
-												  m_pView ? m_pView->getRevisionLevel(): PD_MAX_REVISION,
+												  pView ? pView->isShowRevisions() : true,
+												  pView ? pView->getRevisionLevel(): PD_MAX_REVISION,
 												  PT_PARENTID_ATTRIBUTE_NAME,&pszParentID);
 		if(bFound)
 		{
@@ -695,6 +698,8 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 		m_pParentItem = pLast;
 		m_bDirty = true;
 	}
+	if(m_pDoc->areListUpdatesAllowed() == false)
+		return;
 	if ( getAutoNumFromSdh(pItem) == this)
 		_updateItems(0,NULL);
 }

@@ -2856,6 +2856,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 
 bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
+	xxx_UT_DEBUGMSG(("Removing lid %d from document %x \n",listenerId,this));
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 

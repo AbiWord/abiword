@@ -158,6 +158,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
+        xxx_UT_DEBUGMSG(("Deleting DocLayout %x DocListener %x lid %d\n",this,m_pDocListener,m_lid));
+
 	m_bDeletingLayout = true;
 	if (m_pPrefs)
 	{
