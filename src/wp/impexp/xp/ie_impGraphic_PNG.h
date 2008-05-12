@@ -25,7 +25,7 @@
 
 #include "ie_impGraphic.h"
 
-class IE_ImpGraphicPNG_Sniffer : public IE_ImpGraphicSniffer
+class ABI_EXPORT IE_ImpGraphicPNG_Sniffer : public IE_ImpGraphicSniffer
 {
  public:
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
@@ -38,7 +38,7 @@ class IE_ImpGraphicPNG_Sniffer : public IE_ImpGraphicSniffer
 	virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg);
 };
 
-class IE_ImpGraphic_PNG : public IE_ImpGraphic
+class ABI_EXPORT IE_ImpGraphic_PNG : public IE_ImpGraphic
 {
 public:
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 

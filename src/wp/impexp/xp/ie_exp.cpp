@@ -54,7 +54,7 @@ static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 #include "gr_UnixNullGraphics.h"
 #endif
 
-class IE_FieldUpdater
+class ABI_EXPORT IE_FieldUpdater
 {
 public:
 	
