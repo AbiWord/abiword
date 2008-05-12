@@ -28,7 +28,7 @@
 // Lists Definitions are in fp_types.h
 ///////////////////////////////////////////////////////////////////////
 
-class fl_AutoLists
+class ABI_EXPORT fl_AutoLists
 {
 	public:
 		UT_uint32 getXmlListsSize();

@@ -122,7 +122,7 @@ private:
 	UT_sint32						m_iCaretNumber;
 };
 
-class GR_CaretDisabler
+class ABI_EXPORT GR_CaretDisabler
 {
  public:
 

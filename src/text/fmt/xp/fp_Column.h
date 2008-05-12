@@ -300,7 +300,7 @@ public:
 protected:
 };
 
-class fp_EndnoteSectionContainer : public fp_VerticalContainer
+class ABI_EXPORT fp_EndnoteSectionContainer : public fp_VerticalContainer
 {
 public:
 	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);

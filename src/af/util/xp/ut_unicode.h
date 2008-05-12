@@ -31,7 +31,7 @@
 
 
 /** contain various unicode function. Just a namespace */
-class UT_Unicode 
+class ABI_EXPORT UT_Unicode 
 {
 public:
 /** scans a buffer for the next valid UTF-8 sequence and returns the corresponding

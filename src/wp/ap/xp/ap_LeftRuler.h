@@ -49,7 +49,7 @@ class fp_TableContainer;
 
 
 /*****************************************************************/
-class AP_LeftRulerTableInfo
+class ABI_EXPORT AP_LeftRulerTableInfo
 {
 public:
 	UT_sint32 m_iTopCellPos;
@@ -63,7 +63,7 @@ public:
 
 /*****************************************************************/
 
-class AP_LeftRulerInfo
+class ABI_EXPORT AP_LeftRulerInfo
 {
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, 
@@ -117,7 +117,7 @@ public:
 	
 /*****************************************************************/
 
-class AP_LeftRuler : public AV_Listener
+class ABI_EXPORT AP_LeftRuler : public AV_Listener
 {
 public:
 	AP_LeftRuler(XAP_Frame * pFrame);

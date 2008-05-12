@@ -25,7 +25,7 @@
 
 #include "gr_Image.h"
 
-class GR_CairoImage : public GR_RasterImage
+class ABI_EXPORT GR_CairoImage : public GR_RasterImage
 {
 public:
 	GR_CairoImage(const char *pszName = 0);
