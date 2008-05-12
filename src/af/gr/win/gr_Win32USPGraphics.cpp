@@ -1699,7 +1699,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 }
 
-void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
+void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & /*ri*/, UT_GrowBuf & /*buf*/) const
 {
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
@@ -2159,7 +2159,7 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
-UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
+UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) ri;
@@ -2203,9 +2203,9 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 }
 
 void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
-										  UT_sint32& x, UT_sint32& y,
-										  UT_sint32& x2, UT_sint32& y2,
-										  UT_sint32& height, bool& bDirection) const
+										  UT_sint32& x, UT_sint32& /*y*/,
+										  UT_sint32& x2, UT_sint32& /*y2*/,
+										  UT_sint32& /*height*/, bool& /*bDirection*/) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) ri;
@@ -2382,7 +2382,7 @@ void GR_Win32USPGraphics::setZoomPercentage(UT_uint32 iZoom)
 // GR_WinUSPRenderInfo Implementation
 //
 
-bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
+bool GR_Win32USPRenderInfo::append(GR_RenderInfo & /*ri*/, bool /*bReverse*/)
 {
 	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
 	m_bNeedsReshaping = true;
@@ -2390,7 +2390,7 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 	return false;
 }
 
-bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
+bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool /*bReverse*/)
 {
 	UT_return_val_if_fail(m_pGraphics && m_pFont && m_pItem, false);
 
@@ -2549,7 +2549,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 #endif
 }
 
-bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
+bool GR_Win32USPRenderInfo::cut(UT_uint32 /*offset*/, UT_uint32 /*iLen*/, bool /*bReverse*/)
 {
 	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
 	m_bNeedsReshaping = true;

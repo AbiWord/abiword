@@ -74,7 +74,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
  * Returns true if pixel at point (x,y) in device units is transparent.
  * See gr_UnixImage.cpp for how it's done in GTK.
  */
-bool	GR_Win32Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
+bool	GR_Win32Image::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	UT_ASSERT_HARMLESS(0);
 	return false;
@@ -230,7 +230,7 @@ static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 	pBB->ins(pBB->getLength(), data, length);
 }
 
-static void _png_flush(png_structp png_ptr)
+static void _png_flush(png_structp /*png_ptr*/)
 {
 }
 
