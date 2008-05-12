@@ -6,7 +6,7 @@
 
 class PD_Document;
 
-class IE_TOCHelper
+class ABI_EXPORT IE_TOCHelper
 {
   friend class TOC_Listener;
 
