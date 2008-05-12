@@ -66,7 +66,7 @@
 
 class fl_TableLayout;
 
-class fp_TableRowColumn
+class ABI_EXPORT fp_TableRowColumn
 {
 public:
 	fp_TableRowColumn(void);

@@ -110,7 +110,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 
 class GR_UnixPangoRenderInfo;
 
-class GR_UnixAllocInfo : public GR_AllocInfo
+class ABI_EXPORT GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
  	GR_UnixAllocInfo(GdkWindow * win)

@@ -24,7 +24,7 @@
 
 #include "gr_Image.h"
 
-class GR_UnixImage : public GR_RasterImage
+class ABI_EXPORT GR_UnixImage : public GR_RasterImage
 {
 	friend class GR_UnixPangoGraphics;
 public:

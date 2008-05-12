@@ -22,7 +22,7 @@
 #include "ut_vector.h"
 
 
-class UT_PropVector 
+class ABI_EXPORT UT_PropVector 
 	: public UT_GenericVector<gchar*>
 {
 public:

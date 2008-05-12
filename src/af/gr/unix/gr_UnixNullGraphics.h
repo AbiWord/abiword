@@ -29,7 +29,7 @@ class UT_ByteBuf;
 
 /*****************************************************************/
 /*****************************************************************/
-class GR_UnixNullGraphicsAllocInfo : public GR_AllocInfo
+class ABI_EXPORT GR_UnixNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
  	GR_UnixNullGraphicsAllocInfo() 

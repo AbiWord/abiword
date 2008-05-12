@@ -69,7 +69,7 @@ enum GRRI_Type
    \note constructor should be protected; new instances can only be created via
    GR_Graphics::newItem()
 */
-class GR_Item
+class ABI_EXPORT GR_Item
 {
   public:
 	virtual ~GR_Item(){};
@@ -82,7 +82,7 @@ class GR_Item
 };
 
 
-class GR_XPItem : public GR_Item
+class ABI_EXPORT GR_XPItem : public GR_Item
 {
 	friend class GR_Graphics;
 	
@@ -119,7 +119,7 @@ class GR_XPItem : public GR_Item
    getItemCount() returns the count of all items, including the dummy
    GRScriptType_Void item.
 */
-class GR_Itemization
+class ABI_EXPORT GR_Itemization
 {
   public:
 	GR_Itemization():
@@ -206,7 +206,7 @@ class GR_Itemization
    always set them if the function to which GR_RenderInfo is passed is
    going to use them
 */
-class GR_RenderInfo
+class ABI_EXPORT GR_RenderInfo
 {
   public:
 	GR_RenderInfo(GR_ScriptType type)
@@ -265,7 +265,7 @@ class GR_RenderInfo
    This is an xp implementation of GR_RenderInfo for use with the
    built in UT_contextGlyph class.
 */
-class GR_XPRenderInfo : public GR_RenderInfo
+class ABI_EXPORT GR_XPRenderInfo : public GR_RenderInfo
 {
   public:
 	GR_XPRenderInfo(GR_ScriptType type);
@@ -310,7 +310,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 /**
    Encapsulates input to GR_Graphics::shape()
 */
-class GR_ShapingInfo
+class ABI_EXPORT GR_ShapingInfo
 {
   public:
 	GR_ShapingInfo(UT_TextIterator & text, UT_uint32 iLen,

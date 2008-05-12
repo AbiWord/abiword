@@ -82,13 +82,13 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 
-class fl_ColProps
+class ABI_EXPORT fl_ColProps
 {
 public:
 	UT_sint32 m_iColWidth;
 };
 
-class fl_RowProps
+class ABI_EXPORT fl_RowProps
 {
 public:
 	fl_RowProps(void)

@@ -43,7 +43,7 @@ class XAP_Frame;
 
 // TODO shouldn't this class be xap_ ??
 
-class ap_ViewListener : public AV_Listener
+class ABI_EXPORT ap_ViewListener : public AV_Listener
 {
 public:
 	ap_ViewListener(XAP_Frame* pFrame);

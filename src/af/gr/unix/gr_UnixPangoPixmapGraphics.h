@@ -24,7 +24,7 @@
 
 #include "gr_UnixPangoGraphics.h"
 
-class GR_UnixPixmapAllocInfo : public GR_AllocInfo
+class ABI_EXPORT GR_UnixPixmapAllocInfo : public GR_AllocInfo
 {
 public:
  	GR_UnixPixmapAllocInfo(GdkPixmap * pix)

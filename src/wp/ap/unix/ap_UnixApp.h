@@ -49,7 +49,7 @@ class AP_Args;
 class AP_BuiltinStringSet;
 class AP_DiskStringSet;
 
-class AP_UnixApp : public AP_App
+class ABI_EXPORT AP_UnixApp : public AP_App
 {
 public:
 	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);

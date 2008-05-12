@@ -92,7 +92,7 @@ class c_lb
 
 /*****************************************************************/
 
-class AP_BindingSet : public XAP_BindingSet
+class ABi_EXPORT AP_BindingSet : public XAP_BindingSet
 {
 public:
 	AP_BindingSet(EV_EditMethodContainer * pemc);

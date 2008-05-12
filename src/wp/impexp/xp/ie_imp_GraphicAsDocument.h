@@ -28,7 +28,7 @@ class PD_Document;
 
 // This creates a new empty document and inserts the specified image
 
-class IE_Imp_GraphicAsDocument : public IE_Imp
+class ABI_EXPORT IE_Imp_GraphicAsDocument : public IE_Imp
 {
 public:
 	IE_Imp_GraphicAsDocument(PD_Document * pDocument);
