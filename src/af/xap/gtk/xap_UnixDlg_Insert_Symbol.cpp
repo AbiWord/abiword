@@ -345,7 +345,7 @@ static void s_new_font(GtkWidget * /*widget*/, XAP_UnixDialog_Insert_Symbol * dl
 }
 
 #ifdef WITH_GUCHARMAP
-static void s_charmap_activate (GucharmapCharmap *charmap, gunichar ch, XAP_UnixDialog_Insert_Symbol * pDlg)
+static void s_charmap_activate (GucharmapCharmap */*charmap*/, gunichar /*ch*/, XAP_UnixDialog_Insert_Symbol * pDlg)
 {
 	pDlg->event_Insert ();
 }
