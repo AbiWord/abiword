@@ -356,7 +356,7 @@ UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
 /**************************************************************/
 /**************************************************************/
 
-class UT_XML_Decoder : public UT_XML::Listener
+class ABI_EXPORT UT_XML_Decoder : public UT_XML::Listener
 {
 public:
 
