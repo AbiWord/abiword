@@ -21,10 +21,18 @@
 #ifndef _XAP_APP_IMPL_H_
 #define _XAP_APP_IMPL_H_
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
 class UT_String;
 
 
-class XAP_AppImpl
+class ABI_EXPORT XAP_AppImpl
 {
 public:
 	virtual ~XAP_AppImpl() {}
