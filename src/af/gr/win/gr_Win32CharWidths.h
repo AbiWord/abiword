@@ -26,7 +26,7 @@
 // the only reason that we subclass is because Win32 provides a
 // routine to fetch the widths of a whole font in one call.
 
-class GR_Win32CharWidths : public GR_CharWidths
+class ABI_EXPORT GR_Win32CharWidths : public GR_CharWidths
 {
 public:
 	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1);

@@ -46,7 +46,7 @@
 
 
 template <typename char_type>
-class UT_StringImpl
+class ABI_EXPORT UT_StringImpl
 {
 public:
 	UT_StringImpl();
