@@ -32,7 +32,7 @@
 
 #include "ap_Win32Dialog_CollaborationJoin.h"
 
-static BOOL CALLBACK AP_Win32Dialog_CollaborationJoin::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK AP_Win32Dialog_CollaborationJoin::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	AP_Win32Dialog_CollaborationJoin * pThis;
 	switch (msg)

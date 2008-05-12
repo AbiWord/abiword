@@ -29,7 +29,7 @@
 
 #include "ap_Win32Dialog_CollaborationAccounts.h"
 
-static BOOL CALLBACK AP_Win32Dialog_CollaborationAccounts::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK AP_Win32Dialog_CollaborationAccounts::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
