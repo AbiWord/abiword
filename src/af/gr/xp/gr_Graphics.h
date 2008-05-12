@@ -268,7 +268,7 @@ enum GR_Capability
 	Platform implementation needs to override getType() so that
 	graphicsAllocator() can do type-checking.
 */
-class GR_AllocInfo
+class ABI_EXPORT GR_AllocInfo
 {
   public:
 	virtual ~GR_AllocInfo() {}
@@ -288,7 +288,7 @@ typedef const char *  (*GR_Descriptor)(void);
    use. The factory provides access to all graphics classes known to
    the application.
 */
-class GR_GraphicsFactory
+class ABI_EXPORT GR_GraphicsFactory
 {
 
   public:

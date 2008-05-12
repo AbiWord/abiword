@@ -44,7 +44,7 @@ class XAP_Frame;
 class AV_View;
 
 // a helper class for history tracking
-class AD_VersionData
+class ABI_EXPORT AD_VersionData
 {
   public:
 
@@ -94,7 +94,7 @@ enum AD_HISTORY_STATE
 
 
 // a helper class for keeping track of revisions in the document
-class AD_Revision
+class ABI_EXPORT AD_Revision
 {
   public:
 	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start, UT_uint32 iVer = 0)

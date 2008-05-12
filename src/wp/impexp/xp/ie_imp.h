@@ -232,7 +232,7 @@ public:
 	UT_Confidence_t m_fidelity;
 };
 
-class GsfInputMarker
+class ABI_EXPORT GsfInputMarker
 {
 	GsfInput *m_input;
 	gsf_off_t m_position;

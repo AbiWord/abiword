@@ -195,7 +195,7 @@ class ABI_EXPORT UT_XML
   void defaultData (const gchar * buffer, int length);
 };
 
-class DefaultReader : public UT_XML::Reader
+class ABI_EXPORT DefaultReader : public UT_XML::Reader
 {
 public:
   DefaultReader ();
@@ -214,7 +214,7 @@ private:
  * 
  * NOTE: The buffer is not copied, or g_free()ed.
  */
-class UT_XML_BufReader : public UT_XML::Reader
+class ABI_EXPORT UT_XML_BufReader : public UT_XML::Reader
 {
 public:
   UT_XML_BufReader (const char * buffer, UT_uint32 length);

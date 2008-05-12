@@ -23,7 +23,7 @@
 #include <locale.h>
 #include "ut_string_class.h"
 
-class UT_LocaleTransactor
+class ABI_EXPORT UT_LocaleTransactor
 {
  public:
 
@@ -40,7 +40,7 @@ class UT_LocaleTransactor
   char * mOldLocale;
 };
 
-class UT_LocaleInfo
+class ABI_EXPORT UT_LocaleInfo
 {
  public:
   

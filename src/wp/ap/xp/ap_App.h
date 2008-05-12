@@ -56,7 +56,7 @@ class XAP_Frame;
 /*!
  * Generic application base class
  */
-class AP_App : public XAP_App_BaseClass
+class ABI_EXPORT AP_App : public XAP_App_BaseClass
 {
  public:
 

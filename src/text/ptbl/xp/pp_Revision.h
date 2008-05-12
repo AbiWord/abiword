@@ -114,7 +114,7 @@ class PP_Revision: public PP_AttrProp
   displayed in the document
 */
 
-class PP_RevisionAttr
+class ABI_EXPORT PP_RevisionAttr
 {
   public:
 	PP_RevisionAttr()

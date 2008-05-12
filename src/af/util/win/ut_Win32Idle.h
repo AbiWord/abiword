@@ -25,7 +25,7 @@
 #include "ut_idle.h"
 #include "ut_vector.h"
 
-class UT_Win32Idle : public UT_Idle
+class ABI_EXPORT UT_Win32Idle : public UT_Idle
 {
 public:
 	UT_Win32Idle(UT_WorkerCallback pCallback, void* pData);

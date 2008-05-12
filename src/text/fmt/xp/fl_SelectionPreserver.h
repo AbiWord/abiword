@@ -24,7 +24,7 @@
 
 class FV_View;
 
-class FL_SelectionPreserver
+class ABI_EXPORT FL_SelectionPreserver
 {
 public:
 

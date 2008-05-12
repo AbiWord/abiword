@@ -62,7 +62,7 @@ typedef UT_uint32			XAP_String_Id;
 // base class provides interface regardless of how we got the strings
 //////////////////////////////////////////////////////////////////
 
-class XAP_StringSet
+class ABI_EXPORT XAP_StringSet
 {
 public:
 	XAP_StringSet(XAP_App * pApp, const gchar * szLanguageName);
@@ -90,7 +90,7 @@ protected:
 // a sub-class to wrap the compiled-in (english) strings
 //////////////////////////////////////////////////////////////////
 
-class XAP_BuiltinStringSet : public XAP_StringSet
+class ABI_EXPORT XAP_BuiltinStringSet : public XAP_StringSet
 {
 public:
 	XAP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
@@ -106,7 +106,7 @@ private:
 // a sub-class to deal with disk-based string sets (translations)
 //////////////////////////////////////////////////////////////////
 
-class XAP_DiskStringSet : public XAP_StringSet, public UT_XML::Listener
+class ABI_EXPORT XAP_DiskStringSet : public XAP_StringSet, public UT_XML::Listener
 {
 public:
 	XAP_DiskStringSet(XAP_App * pApp);

@@ -26,7 +26,7 @@
 class GR_Font;
 class GR_CharWidths;
 
-class GR_CharWidthsCache 
+class ABI_EXPORT GR_CharWidthsCache 
 {
 public:
 	

@@ -23,7 +23,7 @@
 #include "xap_Features.h"
 #include "gr_Graphics.h"
 
-class GR_Painter
+class ABI_EXPORT GR_Painter
 {
 public:
 
