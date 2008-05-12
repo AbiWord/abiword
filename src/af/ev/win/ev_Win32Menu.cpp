@@ -255,7 +255,6 @@ EV_Win32Menu::~EV_Win32Menu()
 	// we let the derived classes handle destruction of m_myMenu if appropriate.
 	// TODO: this is never colld
 	
-	HBITMAP	hBitmap;
 	for (std::vector<HBITMAP>::const_iterator i = m_vechBitmaps.begin(); 
 		 i != m_vechBitmaps.end(); i++)
 	{	    
@@ -265,7 +264,7 @@ EV_Win32Menu::~EV_Win32Menu()
 }
 
 bool EV_Win32Menu::onCommand(AV_View * pView,
-							 HWND hWnd, WPARAM wParam)
+							 HWND /*hWnd*/, WPARAM wParam)
 {
 	// TODO do we need the hWnd parameter....
 
@@ -459,7 +458,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	return true;
 }
 
-bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar)
+bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/, HMENU hMenuBar)
 {
 	// deal with WM_INITMENU.
 
@@ -723,7 +722,7 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 /*
 	Process message WM_MEASUREITEM
 */
-void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
+void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM /*wParam*/, LPARAM lParam)
 {
 	SIZE size;
 	LPMEASUREITEMSTRUCT lpmis = (LPMEASUREITEMSTRUCT) lParam; 
@@ -749,7 +748,7 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 /*
 	Process message  WM_MENUCHAR. Process the hotkey messages	
 */
-LPARAM EV_Win32Menu::onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam)
+LPARAM EV_Win32Menu::onMenuChar(HWND /*hwnd*/, WPARAM wParam, LPARAM lParam)
 {	
 	HMENU hMenu = (HMENU) lParam;
 	MENUITEMINFO	menuInfo;
@@ -792,7 +791,7 @@ LPARAM EV_Win32Menu::onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam)
 /*
 	Process message  WM_DRAWITEM
 */
-void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
+void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 {
 
 	LPDRAWITEMSTRUCT lpdis = (LPDRAWITEMSTRUCT) lParam;  
@@ -954,8 +953,8 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 }
 
 								
-bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
-								   HWND hWnd, HMENU hMenu, WPARAM wParam)
+bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * /*pView*/,
+								   HWND /*hWnd*/, HMENU hMenu, WPARAM wParam)
 {
 	UINT nItemID = (UINT)LOWORD(wParam);
 	UINT nFlags  = (UINT)HIWORD(wParam);

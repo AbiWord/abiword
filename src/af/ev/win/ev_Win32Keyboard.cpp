@@ -79,8 +79,8 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	  m_bIsUnicodeInput(false),
 	  m_bWasAnAbiCommand(false)
 {
-	HINSTANCE hInstUser;
-	if (hInstUser = LoadLibrary("USER32.DLL"))
+	HINSTANCE hInstUser = LoadLibrary("USER32.DLL");
+	if (hInstUser)
 	{
 		m_pToUnicodeEx = reinterpret_cast<int (*)(UINT,UINT,CONST PBYTE,LPWSTR,int,UINT,HKL)>
 			(GetProcAddress(hInstUser, "ToUnicodeEx"));
@@ -148,7 +148,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	
 */
 bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
-									HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
+									HWND /*hWnd*/, UINT /*iMsg*/, WPARAM nVirtKey, LPARAM keyData)
 {
 
 	m_bWasAnAbiCommand = false;
@@ -276,7 +276,7 @@ bool ev_Win32Keyboard::onIMEChar(AV_View * pView,
 }
 
 void ev_Win32Keyboard::_emitChar(AV_View * pView,
-								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
+								 HWND /*hWnd*/, UINT iMsg, WPARAM nVirtKey, LPARAM /*keyData*/,
 								 UT_uint32 b, EV_EditModifierState ems)
 {
 	// do the dirty work of pumping this character thru the state machine.
@@ -381,7 +381,7 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	The nVirtKey already contains utf-32 char, so we do not need to do any iconv translation
 */
 bool ev_Win32Keyboard::onUniChar(AV_View * pView,
-								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
+								 HWND /*hWnd*/, UINT /*iMsg*/, WPARAM nVirtKey, LPARAM /*keyData*/)
 {
 	// as WM_UNICHAR is not proceeded by WM_KEYDOWN message, we need to reset this flag here.
 	m_bWasAnAbiCommand = false;

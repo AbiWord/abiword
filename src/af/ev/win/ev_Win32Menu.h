@@ -63,7 +63,7 @@ public:
 	XAP_Menu_Id			MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); }
 	UINT				WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); }
 
-	virtual bool		_doAddMenuItem(UT_uint32 id) { UT_ASSERT_HARMLESS(UT_TODO); return false;/* TODO */ }		
+	virtual bool		_doAddMenuItem(UT_uint32 /*id*/) { UT_ASSERT_HARMLESS(UT_TODO); return false;/* TODO */ }		
 	void				onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	void				onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	LPARAM				onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam);	

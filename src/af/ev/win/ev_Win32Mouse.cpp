@@ -95,7 +95,7 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 }
 
 void EV_Win32Mouse::onButtonMove(AV_View * pView,
-								 HWND hWnd, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
+								 HWND /*hWnd*/, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
@@ -162,7 +162,7 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 }
 
 void EV_Win32Mouse::onButtonUp(AV_View * pView,
-							   HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
+							   HWND /*hWnd*/, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
@@ -269,7 +269,7 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	}
 }
 
-void EV_Win32Mouse::onButtonWheel(AV_View * pView, HWND hWnd, EV_EditMouseButton emb, 
+void EV_Win32Mouse::onButtonWheel(AV_View * pView, HWND /*hWnd*/, EV_EditMouseButton emb, 
 								  WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
