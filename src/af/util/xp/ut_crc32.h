@@ -12,7 +12,7 @@ const UT_uint32 CRC32_NEGL = 0xffffffffL;
 #endif
 
 //! CRC Checksum Calculation
-class UT_CRC32
+class ABI_EXPORT UT_CRC32
 {
 public:
         enum {DIGESTSIZE = 4};

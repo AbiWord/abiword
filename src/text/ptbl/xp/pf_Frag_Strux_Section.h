@@ -52,7 +52,7 @@ public:
  a header/footer section in the document.
 */
 
-class pf_Frag_Strux_SectionHdrFtr : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionHdrFtr : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionHdrFtr(pt_PieceTable * pPT,
@@ -69,7 +69,7 @@ public:
  a Endnote section in the document.
 */
 
-class pf_Frag_Strux_SectionEndnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndnote(pt_PieceTable * pPT,
@@ -87,7 +87,7 @@ public:
  a Frames section in the document.
 */
 
-class pf_Frag_Strux_SectionFrame : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionFrame : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionFrame(pt_PieceTable * pPT,
@@ -105,7 +105,7 @@ public:
  a EndFrame section in the document.
 */
 
-class pf_Frag_Strux_SectionEndFrame : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndFrame : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndFrame(pt_PieceTable * pPT,
@@ -123,7 +123,7 @@ public:
  a table section in the document.
 */
 
-class pf_Frag_Strux_SectionTable : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionTable : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionTable(pt_PieceTable * pPT,
@@ -141,7 +141,7 @@ public:
  a cell section in the document.
 */
 
-class pf_Frag_Strux_SectionCell : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionCell : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionCell(pt_PieceTable * pPT,
@@ -159,7 +159,7 @@ public:
  a footnote section in the document.
 */
 
-class pf_Frag_Strux_SectionFootnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionFootnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionFootnote(pt_PieceTable * pPT,
@@ -177,7 +177,7 @@ public:
  a Annotation section in the document.
 */
 
-class pf_Frag_Strux_SectionAnnotation : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionAnnotation : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionAnnotation(pt_PieceTable * pPT,
@@ -195,7 +195,7 @@ public:
  a header/footer section in the document.
 */
 
-class pf_Frag_Strux_SectionMarginnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionMarginnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionMarginnote(pt_PieceTable * pPT,
@@ -213,7 +213,7 @@ public:
  the end of a Table section in the document.
 */
 
-class pf_Frag_Strux_SectionEndTable : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndTable : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndTable(pt_PieceTable * pPT,
@@ -231,7 +231,7 @@ public:
  the end of a Cell section in the document.
 */
 
-class pf_Frag_Strux_SectionEndCell : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndCell : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndCell(pt_PieceTable * pPT,
@@ -249,7 +249,7 @@ public:
  the end of a Footnote section in the document.
 */
 
-class pf_Frag_Strux_SectionEndFootnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndFootnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndFootnote(pt_PieceTable * pPT,
@@ -267,7 +267,7 @@ public:
  the end of a Annotation section in the document.
 */
 
-class pf_Frag_Strux_SectionEndAnnotation : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndAnnotation : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndAnnotation(pt_PieceTable * pPT,
@@ -286,7 +286,7 @@ public:
  the end of a Table section in the document.
 */
 
-class pf_Frag_Strux_SectionEndMarginnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndMarginnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndMarginnote(pt_PieceTable * pPT,
@@ -303,7 +303,7 @@ public:
  the end of a Endnote section in the document.
 */
 
-class pf_Frag_Strux_SectionEndEndnote : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndEndnote : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndEndnote(pt_PieceTable * pPT,
@@ -321,7 +321,7 @@ public:
  a Table of Conents section in the document.
 */
 
-class pf_Frag_Strux_SectionTOC : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionTOC : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionTOC(pt_PieceTable * pPT,
@@ -339,7 +339,7 @@ public:
  the end of a Table of Contents section in the document.
 */
 
-class pf_Frag_Strux_SectionEndTOC : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_SectionEndTOC : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_SectionEndTOC(pt_PieceTable * pPT,

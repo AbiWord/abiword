@@ -65,7 +65,7 @@ typedef enum _AV_ScrollCmd
 	AV_SCROLLCMD_TOPOSITION
 } AV_ScrollCmd;
 
-class AV_ScrollObj
+class ABI_EXPORT AV_ScrollObj
 {
  public:
 	AV_ScrollObj(void * pData,

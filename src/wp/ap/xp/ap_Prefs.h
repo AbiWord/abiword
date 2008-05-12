@@ -26,7 +26,7 @@
 
 //////////////////////////////////////////////////////////////////
 
-class AP_Prefs : public XAP_Prefs
+class ABI_EXPORT AP_Prefs : public XAP_Prefs
 {
 public:
 	AP_Prefs(XAP_App * pApp);
