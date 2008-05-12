@@ -251,11 +251,11 @@ typedef UT_GenericStringMap<void const *>  UT_StringPtrMap;
 // Template implementation
 
 // fwd. decls.
-UT_uint32 _Recommended_hash_size(UT_uint32	size);
+ABI_EXPORT UT_uint32 _Recommended_hash_size(UT_uint32	size);
 
 
 // wrapper class for keys
-class key_wrapper
+class ABI_EXPORT key_wrapper
 {
 public:
 	key_wrapper() 
