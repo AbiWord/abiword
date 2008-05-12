@@ -32,7 +32,7 @@
 class UT_String;
 
 
-class XAP_AppImpl
+class ABI_EXPORT XAP_AppImpl
 {
 public:
 	virtual ~XAP_AppImpl() {}
