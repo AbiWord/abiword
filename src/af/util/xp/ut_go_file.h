@@ -20,7 +20,13 @@
 #ifndef UT_GO_FILE_H
 #define UT_GO_FILE_H
 
-
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
 
 #include <glib.h>
 #include <gsf/gsf.h>
@@ -51,52 +57,52 @@ typedef enum {
 	UT_GO_DOTDOT_LEAVE         /* Leave alone.  */
 } UT_GODotDot;
 
-gboolean UT_go_path_is_uri (const char * path);
+ABI_EXPORT gboolean UT_go_path_is_uri (const char * path);
 
-char *UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot, gboolean make_absolute);
-char *UT_go_url_simplify (const char *uri);
+ABI_EXPORT char *UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot, gboolean make_absolute);
+ABI_EXPORT char *UT_go_url_simplify (const char *uri);
 
-char *UT_go_filename_from_uri (const char *uri);
-char *UT_go_filename_to_uri (const char *filename);
+ABI_EXPORT char *UT_go_filename_from_uri (const char *uri);
+ABI_EXPORT char *UT_go_filename_to_uri (const char *filename);
 
-char *UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri);
-char *UT_go_url_make_relative (const char *uri, const char *ref_uri);
+ABI_EXPORT char *UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri);
+ABI_EXPORT char *UT_go_url_make_relative (const char *uri, const char *ref_uri);
 
-char *UT_go_shell_arg_to_uri (const char *arg);
-char *UT_go_basename_from_uri (const char *uri);
-char *UT_go_dirname_from_uri (const char *uri, gboolean brief);
-gboolean UT_go_directory_create (char const *uri, int mode, GError **err);
-gchar const **UT_go_shell_argv_to_glib_encoding (gint argc, gchar const **argv);
-void UT_go_shell_argv_to_glib_encoding_free (void);
+ABI_EXPORT char *UT_go_shell_arg_to_uri (const char *arg);
+ABI_EXPORT char *UT_go_basename_from_uri (const char *uri);
+ABI_EXPORT char *UT_go_dirname_from_uri (const char *uri, gboolean brief);
+ABI_EXPORT gboolean UT_go_directory_create (char const *uri, int mode, GError **err);
+ABI_EXPORT gchar const **UT_go_shell_argv_to_glib_encoding (gint argc, gchar const **argv);
+ABI_EXPORT void UT_go_shell_argv_to_glib_encoding_free (void);
 
-GsfInput  *UT_go_file_open		(char const *uri, GError **err);
-GsfOutput *UT_go_file_create	(char const *uri, GError **err);
-GSList	  *UT_go_file_split_urls	(char const *data);
+ABI_EXPORT GsfInput  *UT_go_file_open		(char const *uri, GError **err);
+ABI_EXPORT GsfOutput *UT_go_file_create	(char const *uri, GError **err);
+ABI_EXPORT GSList *UT_go_file_split_urls	(char const *data);
 
-gboolean UT_go_file_remove (char const *uri, GError **err);
+ABI_EXPORT gboolean UT_go_file_remove (char const *uri, GError **err);
 
-gboolean   UT_go_file_exists (char const *uri);
+ABI_EXPORT gboolean UT_go_file_exists (char const *uri);
 
-UT_GOFilePermissions *UT_go_get_file_permissions (char const *uri);
-void UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions);
+ABI_EXPORT UT_GOFilePermissions *UT_go_get_file_permissions (char const *uri);
+ABI_EXPORT void UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions);
 
-time_t UT_go_file_get_date_accessed (char const *uri);
-time_t UT_go_file_get_date_modified (char const *uri);
-time_t UT_go_file_get_date_changed  (char const *uri);
+ABI_EXPORT time_t UT_go_file_get_date_accessed (char const *uri);
+ABI_EXPORT time_t UT_go_file_get_date_modified (char const *uri);
+ABI_EXPORT time_t UT_go_file_get_date_changed  (char const *uri);
 
-gchar	*UT_go_url_decode		(gchar const *text);
-gchar	*UT_go_url_encode		(gchar const *text, int type);
-GError	*UT_go_url_show		(gchar const *url);
-gboolean UT_go_url_check_extension (gchar const *uri,
+ABI_EXPORT gchar	*UT_go_url_decode		(gchar const *text);
+ABI_EXPORT gchar	*UT_go_url_encode		(gchar const *text, int type);
+ABI_EXPORT GError	*UT_go_url_show		(gchar const *url);
+ABI_EXPORT gboolean UT_go_url_check_extension (gchar const *uri,
 				 gchar const *std_ext,
 				 gchar **new_uri);
-gchar	*UT_go_get_mime_type	(gchar const *uri);
-gchar	*UT_go_get_mime_type_for_data	(gconstpointer data, int data_size);
-gchar const	*UT_go_mime_type_get_description	(gchar const *mime_type);
+ABI_EXPORT gchar	*UT_go_get_mime_type	(gchar const *uri);
+ABI_EXPORT gchar	*UT_go_get_mime_type_for_data	(gconstpointer data, int data_size);
+ABI_EXPORT gchar const	*UT_go_mime_type_get_description	(gchar const *mime_type);
 
-const char * UT_go_guess_encoding (const char *raw, size_t len, const char *user_guess, char **utf8_str);
-char const * UT_go_get_real_name (void);
-gint UT_go_utf8_collate_casefold (const char *a, const char *b);
+ABI_EXPORT const char * UT_go_guess_encoding (const char *raw, size_t len, const char *user_guess, char **utf8_str);
+ABI_EXPORT char const * UT_go_get_real_name (void);
+ABI_EXPORT gint UT_go_utf8_collate_casefold (const char *a, const char *b);
 
 G_END_DECLS
 
