@@ -139,7 +139,7 @@ OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
 ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
 WARNFLAGS	+= -Wall -ansi -pedantic
 else
-WARNFLAGS	+= -w
+WARNFLAGS	+= -Wall
 endif
 
 # Includes
