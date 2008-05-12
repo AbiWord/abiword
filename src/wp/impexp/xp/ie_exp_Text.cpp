@@ -731,7 +731,7 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				field = pcro->getField();
 				UT_return_val_if_fail(field, false);
 
-//				m_pie->populateFields ();
+				m_pie->populateFields ();
 				if(field->getValue() != NULL)
 					m_pie->write(field->getValue());
 
