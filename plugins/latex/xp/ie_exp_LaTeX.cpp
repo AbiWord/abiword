@@ -887,7 +887,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		if (pszColor)
 		  {
 		    if ((0 != strcmp("000000", pszColor)) &&
-			(0 != strcmp("000000", pszColor)))
+			(0 != strcmp("transparent", pszColor)))
 		      {
  		 	UT_String szColor;
 			_convertColor(szColor,(const char*)pszColor);
