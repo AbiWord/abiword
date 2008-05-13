@@ -18,8 +18,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXMODULE_H
-#define XAP_UNIXMODULE_H
+#ifndef XAP_WIN32MODULE_H
+#define XAP_WIN32MODULE_H
 
 #include "xap_Module.h"
 
@@ -49,4 +49,4 @@ public:
 	class XAP_Win32ModuleImpl* pimpl;
 };
 
-#endif /* XAP_UNIXMODULE_H */
+#endif /* XAP_WIN32MODULE_H */
