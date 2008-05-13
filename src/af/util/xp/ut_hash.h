@@ -45,13 +45,13 @@
 #endif
 
 // fwd. decl.
-template <class T> class hash_slot;
+template <class T> class ABI_EXPORT hash_slot;
 
 template <class T> class ABI_EXPORT UT_GenericStringMap;
 
 	// Like a std cursor
 
-class _UT_StringMapImp
+class ABI_EXPORT _UT_StringMapImp
 {
 
 
@@ -95,7 +95,7 @@ public:
 	inline size_t cardinality() const { return n_keys; }
 	inline size_t size() const { return n_keys; }
 
-	class UT_Cursor
+	class ABI_EXPORT UT_Cursor
 	{
 		friend class UT_GenericStringMap<T>;
 		

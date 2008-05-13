@@ -22,7 +22,7 @@
 
 #include "xap_AppImpl.h"
 
-class XAP_Win32AppImpl
+class ABI_EXPORT XAP_Win32AppImpl
 	: public XAP_AppImpl
 {
 protected:

@@ -40,7 +40,7 @@ class AP_Win32Toolbar_Icons;
 ******************************************************************
 *****************************************************************/
 
-class XAP_Win32App : public XAP_App
+class ABI_EXPORT XAP_Win32App : public XAP_App
 {
 public:
 	XAP_Win32App(HINSTANCE hInstance, const char * szAppName);
