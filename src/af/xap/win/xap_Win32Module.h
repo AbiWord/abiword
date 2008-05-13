@@ -28,7 +28,7 @@
 	Implements the XAP_Module interface.
 */
 
-class XAP_Win32Module : public XAP_Module
+class ABI_EXPORT XAP_Win32Module : public XAP_Module
 {
 
 	friend class XAP_ModuleManager;
