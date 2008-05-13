@@ -33,7 +33,7 @@ class   ImportStream;
 
 // The importer/reader for Embedable Objects.
 
-class ABI_PLUGIN_EXPORT IE_Imp_Object_Sniffer : public IE_ImpSniffer
+class  IE_Imp_Object_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Object;
@@ -68,7 +68,7 @@ protected:
 
 // The importer/reader for GNOME-Office charts.
 
-class ABI_PLUGIN_EXPORT IE_Imp_Object : public IE_Imp
+class  IE_Imp_Object : public IE_Imp
 {
 public:
 	IE_Imp_Object(PD_Document * pDocument);

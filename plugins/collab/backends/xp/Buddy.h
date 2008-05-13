@@ -30,7 +30,7 @@ class AccountHandler;
 
 using std::vector;
 
-ABI_EXPORT class Buddy 
+ class Buddy 
 {
 public:
 	Buddy(AccountHandler* handler, const UT_UTF8String& name)

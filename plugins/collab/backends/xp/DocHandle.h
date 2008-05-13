@@ -22,7 +22,7 @@
 #include "ut_string_class.h"
 class AbiCollab;
 
-ABI_EXPORT class DocHandle
+ class DocHandle
 {
 public:
 	DocHandle(const UT_UTF8String& sSessionId, const UT_UTF8String& name) 

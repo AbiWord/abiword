@@ -30,7 +30,7 @@ class PD_Document;
 
 // The importer/reader for MIF files
 
-class ABI_PLUGIN_EXPORT IE_Imp_MIF_Sniffer : public IE_ImpSniffer
+class  IE_Imp_MIF_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -50,7 +50,7 @@ public:
 
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_MIF : public IE_Imp
+class  IE_Imp_MIF : public IE_Imp
 {
  public:
   IE_Imp_MIF(PD_Document * pDocument);

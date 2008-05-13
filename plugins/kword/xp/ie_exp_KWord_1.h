@@ -32,7 +32,7 @@ class s_KWord_1_Listener;
 
 // The exporter/writer for the KWord 1 spec
 
-class ABI_PLUGIN_EXPORT IE_Exp_KWord_1_Sniffer : public IE_ExpSniffer
+class  IE_Exp_KWord_1_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -50,7 +50,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class ABI_PLUGIN_EXPORT IE_Exp_KWord_1 : public IE_Exp
+class  IE_Exp_KWord_1 : public IE_Exp
 {
 public:
 	IE_Exp_KWord_1(PD_Document * pDocument);

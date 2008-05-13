@@ -43,7 +43,7 @@ class UT_Stack;
 class ABI_xmpp;
 class ChangeAdjust;
 
-class ABI_EXPORT ABI_Collab_Import
+class  ABI_Collab_Import
 {
 	friend class FakeAccountHandler;
 	

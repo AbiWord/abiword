@@ -31,7 +31,7 @@ class XAP_App;
 class XAP_Frame;
 class GR_Image;
 
-class ABI_PLUGIN_EXPORT Presentation
+class  Presentation
 {
 public:
 	                         Presentation(void);

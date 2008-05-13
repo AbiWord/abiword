@@ -54,7 +54,7 @@ typedef AccountHandler* (*AccountHandlerConstructor)();
 
 typedef map<string, string> PropertyMap; 
 
-ABI_EXPORT class ProtocolErrorPacket : public Packet
+ class ProtocolErrorPacket : public Packet
 {
 public:
 	ProtocolErrorPacket();
@@ -72,7 +72,7 @@ protected:
 	UT_sint32		m_remoteVersion;
 };
 
-ABI_EXPORT class AccountHandler : public EventListener
+ class AccountHandler : public EventListener
 {
 public:
 	AccountHandler() {}

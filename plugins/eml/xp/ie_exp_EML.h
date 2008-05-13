@@ -22,7 +22,7 @@
 
 #include "ie_exp_Text.h"
 
-class ABI_PLUGIN_EXPORT IE_Exp_EML : public IE_Exp_Text
+class  IE_Exp_EML : public IE_Exp_Text
 {
 public:
 	IE_Exp_EML(PD_Document * pDocument);
@@ -31,7 +31,7 @@ protected:
 	virtual UT_Error _writeDocument(void);
 };
 
-class ABI_PLUGIN_EXPORT IE_Exp_EML_Sniffer : public IE_ExpSniffer
+class  IE_Exp_EML_Sniffer : public IE_ExpSniffer
 {
 public:
 	IE_Exp_EML_Sniffer ();

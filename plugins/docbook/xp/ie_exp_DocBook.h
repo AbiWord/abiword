@@ -32,7 +32,7 @@ class s_DocBook_Listener;
 
 // The exporter/writer for DocBook
 
-class ABI_PLUGIN_EXPORT IE_Exp_DocBook_Sniffer : public IE_ExpSniffer
+class  IE_Exp_DocBook_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -49,7 +49,7 @@ public:
 };
 
 
-class ABI_PLUGIN_EXPORT IE_Exp_DocBook : public IE_Exp
+class  IE_Exp_DocBook : public IE_Exp
 {
 public:
 	IE_Exp_DocBook(PD_Document * pDocument);

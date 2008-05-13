@@ -30,7 +30,7 @@ class TCPBuddy;
 
 extern AccountHandlerConstructor TCPAccountHandlerConstructor;
 
-class ABI_EXPORT TCPAccountHandler : public AccountHandler
+class  TCPAccountHandler : public AccountHandler
 {
 public:
 	TCPAccountHandler();

@@ -29,7 +29,7 @@ class FL_DocLayout;
 class XAP_App;
 class UT_UTF8String;
 
-class ABI_PLUGIN_EXPORT AbiCommand
+class  AbiCommand
 {
 public:
 	                         AbiCommand(void);

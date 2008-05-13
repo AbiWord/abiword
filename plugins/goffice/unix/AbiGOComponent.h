@@ -32,7 +32,7 @@ class AD_Document;
 class GOComponentView;
 class GR_AbiGOComponentItems;
 
-class ABI_PLUGIN_EXPORT GR_AbiGOComponentItems
+class  GR_AbiGOComponentItems
 {
  public:
   GR_AbiGOComponentItems();
@@ -41,7 +41,7 @@ class ABI_PLUGIN_EXPORT GR_AbiGOComponentItems
   bool m_bHasSnapshot;
 };
 
-class ABI_PLUGIN_EXPORT GR_GOComponentManager : public GR_EmbedManager 
+class  GR_GOComponentManager : public GR_EmbedManager 
 {
 public:
     GR_GOComponentManager(GR_Graphics * pG, char const *mime_type);
@@ -87,7 +87,7 @@ private:
 };
 
 // FIXME wrapper for libGNOMEOFFICEComponent object
-class ABI_PLUGIN_EXPORT GOComponentView
+class  GOComponentView
 {
 friend class GR_GOComponentManager;
 public:

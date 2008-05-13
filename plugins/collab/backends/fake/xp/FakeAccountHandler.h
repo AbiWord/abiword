@@ -28,7 +28,7 @@ class AbiCollab;
 class FakeBuddy;
 class PD_Document;
 
-class ABI_EXPORT FakeAccountHandler : public AccountHandler
+class  FakeAccountHandler : public AccountHandler
 {
 public:
 	FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Frame* pFrame);

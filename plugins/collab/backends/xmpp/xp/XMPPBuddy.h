@@ -28,7 +28,7 @@
 
 class DocHandle;
 
-ABI_EXPORT class XMPPBuddy : public Buddy
+ class XMPPBuddy : public Buddy
 {
 public:
 	XMPPBuddy(AccountHandler* handler, const UT_UTF8String& name)

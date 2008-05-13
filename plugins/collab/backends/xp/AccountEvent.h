@@ -21,55 +21,55 @@
 
 #include "Event.h"
 
-ABI_EXPORT class AccountNewEvent : public Event
+ class AccountNewEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountNewEvent);
 };
 
-ABI_EXPORT class AccountOnlineEvent : public Event
+ class AccountOnlineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountOnlineEvent);
 };
 
-ABI_EXPORT class AccountOfflineEvent : public Event
+ class AccountOfflineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountOfflineEvent);
 };
 
-ABI_EXPORT class AccountAddBuddyEvent : public Event
+ class AccountAddBuddyEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountAddBuddyEvent);
 };
 
-ABI_EXPORT class AccountDeleteBuddyEvent : public Event
+ class AccountDeleteBuddyEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountDeleteBuddyEvent);
 };
 
-ABI_EXPORT class AccountBuddyOnlineEvent : public Event
+ class AccountBuddyOnlineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyOnlineEvent);
 };
 
-ABI_EXPORT class AccountBuddyOfflineEvent : public Event
+ class AccountBuddyOfflineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyOfflineEvent);
 };
 
-ABI_EXPORT class AccountAddBuddyRequestEvent : public Event
+ class AccountAddBuddyRequestEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountAddBuddyRequestEvent);
 };
 
-ABI_EXPORT class AccountBuddyAddDocumentEvent : public Event
+ class AccountBuddyAddDocumentEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyAddDocumentEvent);

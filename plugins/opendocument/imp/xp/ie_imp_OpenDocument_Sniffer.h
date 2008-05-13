@@ -28,7 +28,7 @@
 
 #include <ie_imp.h>
 
-class ABI_PLUGIN_EXPORT IE_Imp_OpenDocument_Sniffer : public IE_ImpSniffer
+class  IE_Imp_OpenDocument_Sniffer : public IE_ImpSniffer
 {
 public:
   IE_Imp_OpenDocument_Sniffer () ;

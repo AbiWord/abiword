@@ -22,7 +22,7 @@
 class Event;
 class Buddy;
 
-ABI_EXPORT class EventListener 
+ class EventListener 
 {
 public:
 	virtual ~EventListener()

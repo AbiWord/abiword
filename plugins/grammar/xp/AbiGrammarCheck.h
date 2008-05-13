@@ -27,7 +27,7 @@ class fl_BlockLayout;
 class LinkGrammarWrap;
 class PieceOfText;
 
-class ABI_PLUGIN_EXPORT Abi_GrammarCheck
+class  Abi_GrammarCheck
 {
  public:
   Abi_GrammarCheck(void);

@@ -28,7 +28,7 @@
 
 class DocHandle;
 
-ABI_EXPORT class TCPBuddy : public Buddy
+ class TCPBuddy : public Buddy
 {
 public:
 	TCPBuddy(AccountHandler* handler, const UT_UTF8String& name)

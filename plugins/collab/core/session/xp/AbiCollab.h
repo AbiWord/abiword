@@ -46,7 +46,7 @@ class CommandLine;
 class Buddy;
 class AccountHandler;
 
-class ABI_EXPORT ChangeAdjust
+class  ChangeAdjust
 {
 friend class AbiCollab_ImportRuleSet;
 	
@@ -74,7 +74,7 @@ private:
 };
 
 class AbiCollab;
-class ABI_EXPORT SessionRecorderInterface
+class  SessionRecorderInterface
 {
 public:
 	SessionRecorderInterface( AbiCollab* Session ) : m_pAbiCollab(Session) {}
@@ -86,7 +86,7 @@ protected:
 	AbiCollab*		m_pAbiCollab;
 };
 
-class ABI_EXPORT AbiCollab : public EV_MouseListener
+class  AbiCollab : public EV_MouseListener
 {
 	friend class ABI_Collab_Export;
 

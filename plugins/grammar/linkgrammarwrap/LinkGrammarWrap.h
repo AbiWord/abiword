@@ -26,7 +26,7 @@ extern "C" {
 
 class PieceOfText;
 
-class ABI_PLUGIN_EXPORT LinkGrammarWrap
+class  LinkGrammarWrap
 {
   public:
   LinkGrammarWrap(void);

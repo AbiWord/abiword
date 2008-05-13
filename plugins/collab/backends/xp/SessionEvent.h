@@ -24,26 +24,26 @@
 #include <xp/AbiCollab.h>
 #include <xp/AbiCollab_Packet.h>
 
-ABI_EXPORT class StartSessionEvent : public Event
+ class StartSessionEvent : public Event
 {
 public:
 	DECLARE_PACKET(StartSessionEvent);
 };
 
-ABI_EXPORT class GetSessionsEvent : public Event
+ class GetSessionsEvent : public Event
 {
 public:
 	DECLARE_PACKET(GetSessionsEvent);
 };
 
-ABI_EXPORT class GetSessionsResponseEvent : public Event
+ class GetSessionsResponseEvent : public Event
 {
 public:
 	DECLARE_PACKET(GetSessionsResponseEvent);
 	std::map<UT_UTF8String,UT_UTF8String> m_Sessions;	// contains session/name pairs
 };
 
-ABI_EXPORT class JoinSessionEvent : public Event
+ class JoinSessionEvent : public Event
 {
 public:
 	DECLARE_PACKET(JoinSessionEvent);
@@ -63,7 +63,7 @@ private:
 	UT_UTF8String				m_sSessionId;	
 };
 
-ABI_EXPORT class JoinSessionRequestEvent : public JoinSessionEvent {
+ class JoinSessionRequestEvent : public JoinSessionEvent {
 public:
 	DECLARE_PACKET(JoinSessionRequestEvent);	
 	JoinSessionRequestEvent() {}
@@ -71,7 +71,7 @@ public:
 	: JoinSessionEvent(sessionId) {}
 };
 
-ABI_EXPORT class JoinSessionRequestResponseEvent : public Event
+ class JoinSessionRequestResponseEvent : public Event
 {
 public:
 	DECLARE_PACKET(JoinSessionRequestResponseEvent);
@@ -99,7 +99,7 @@ private:
 	UT_UTF8String				m_sSessionId;	
 };
 
-ABI_EXPORT class DisjoinSessionEvent : public Event
+ class DisjoinSessionEvent : public Event
 {
 public:
 	DECLARE_PACKET(DisjoinSessionEvent);
@@ -119,7 +119,7 @@ private:
 	UT_UTF8String				m_sSessionId;	
 };
 
-ABI_EXPORT class CloseSessionEvent : public Event
+ class CloseSessionEvent : public Event
 {
 public:
 	DECLARE_PACKET(CloseSessionEvent);

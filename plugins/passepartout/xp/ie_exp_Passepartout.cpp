@@ -36,7 +36,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-class ABI_PLUGIN_EXPORT IE_Exp_Passepartout : public IE_Exp
+class  IE_Exp_Passepartout : public IE_Exp
 {
 public:
 	IE_Exp_Passepartout(PD_Document * pDocument);
@@ -55,7 +55,7 @@ protected:
 // into a passepartout stream.
 //////////////////////////////////////////////////////////////////
 
-class ABI_PLUGIN_EXPORT Passepartout_Listener : public PL_Listener
+class  Passepartout_Listener : public PL_Listener
 {
 public:
 	Passepartout_Listener(PD_Document * pDocument,

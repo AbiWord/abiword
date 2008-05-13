@@ -25,7 +25,7 @@
 
 #include "ut_types.h"
 
-class ABI_EXPORT AbiCollab_Regression
+class  AbiCollab_Regression
 {
 public:
 	bool			execute();

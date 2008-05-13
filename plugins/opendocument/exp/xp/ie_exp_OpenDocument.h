@@ -33,7 +33,7 @@
 // AbiWord includes
 #include <ie_exp.h>
 
-class ABI_PLUGIN_EXPORT IE_Exp_OpenDocument : public IE_Exp
+class  IE_Exp_OpenDocument : public IE_Exp
 {
 public:
     IE_Exp_OpenDocument(PD_Document * pDocument);

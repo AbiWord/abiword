@@ -27,7 +27,7 @@
 
 class DocHandle;
 
-ABI_EXPORT class FakeBuddy : public Buddy
+ class FakeBuddy : public Buddy
 {
 public:
 	FakeBuddy(AccountHandler* handler, const UT_UTF8String& name)

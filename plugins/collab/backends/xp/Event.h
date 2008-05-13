@@ -21,7 +21,7 @@
 
 #include <xp/EventPacket.h>
 
-ABI_EXPORT class Event	: public EventPacket
+ class Event	: public EventPacket
 {
 public:	
 	DECLARE_ABSTRACT_PACKET(Event);

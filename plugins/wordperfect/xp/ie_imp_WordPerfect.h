@@ -74,7 +74,7 @@ private:
     int m_iOutlineHash;
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
+class  IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_WordPerfect;
@@ -93,7 +93,7 @@ public:
 					IE_Imp ** ppie);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
+class  IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
 {
 public:
     IE_Imp_WordPerfect(PD_Document * pDocument);
@@ -200,7 +200,7 @@ private:
 
 #ifdef HAVE_LIBWPS
 
-class ABI_PLUGIN_EXPORT IE_Imp_MSWorks_Sniffer : public IE_ImpSniffer
+class  IE_Imp_MSWorks_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_MSWorks;

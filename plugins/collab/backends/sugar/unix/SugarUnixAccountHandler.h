@@ -33,7 +33,7 @@ extern AccountHandlerConstructor SugarAccountHandlerConstructor;
 class Session;
 class FV_View;
 
-class ABI_EXPORT SugarAccountHandler : public AccountHandler
+class  SugarAccountHandler : public AccountHandler
 {
 public:
 	static SugarAccountHandler*				getHandler();

@@ -43,7 +43,7 @@ class RawPacket;
 
 extern AccountHandlerConstructor XMPPAccountHandlerConstructor;
 	
-class ABI_EXPORT XMPPAccountHandler : public AccountHandler
+class  XMPPAccountHandler : public AccountHandler
 {
 public:
 	XMPPAccountHandler();

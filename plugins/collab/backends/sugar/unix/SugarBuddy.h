@@ -27,7 +27,7 @@
 
 class DocHandle;
 
-ABI_EXPORT class SugarBuddy : public Buddy
+ class SugarBuddy : public Buddy
 {
 public:
 	SugarBuddy(AccountHandler* handler, const UT_UTF8String& name, const UT_UTF8String dbusName)

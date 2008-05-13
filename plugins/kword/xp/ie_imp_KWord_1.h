@@ -30,7 +30,7 @@ class PD_Document;
 
 // The importer/reader for KWord 1.0 files.
 
-class ABI_PLUGIN_EXPORT IE_Imp_KWord_1_Sniffer : public IE_ImpSniffer
+class  IE_Imp_KWord_1_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -50,7 +50,7 @@ public:
 
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_KWord_1 : public IE_Imp_XML
+class  IE_Imp_KWord_1 : public IE_Imp_XML
 {
 public:
   IE_Imp_KWord_1(PD_Document * pDocument);

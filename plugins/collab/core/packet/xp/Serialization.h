@@ -65,7 +65,7 @@ class Archive;
  *			ar << COMPACT_INT(m_iRev); 
  */
 #define COMPACT_INT(v) (*(CompactInt*)&v)
-struct ABI_EXPORT CompactInt {
+struct  CompactInt {
 public:	
 	friend Archive& operator<<( Archive& ar, CompactInt& c );
 protected:
@@ -73,7 +73,7 @@ protected:
 };
 
 /** Base archive */
-class ABI_EXPORT Archive 
+class  Archive 
 {
 public:
 	virtual ~Archive() {}
@@ -194,7 +194,7 @@ public:
 };
 
 /** String based archive */
-class ABI_EXPORT StrArchive : public Archive
+class  StrArchive : public Archive
 {
 public:
 	unsigned int Size() const { return m_sSource.size(); }
@@ -211,7 +211,7 @@ protected:
 };
 
 /** Input (loading) archive */
-class ABI_EXPORT IStrArchive : public StrArchive 
+class  IStrArchive : public StrArchive 
 {
 public:
 	IStrArchive( const std::string& sSource )
@@ -242,7 +242,7 @@ protected:
 };
 
 /** Output (saving) archive */
-class ABI_EXPORT OStrArchive : public StrArchive
+class  OStrArchive : public StrArchive
 {
 public:
 	OStrArchive()

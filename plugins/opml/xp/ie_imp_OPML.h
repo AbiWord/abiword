@@ -27,7 +27,7 @@
 #include "fl_AutoNum.h"
 
 
-class ABI_PLUGIN_EXPORT IE_Imp_OPML_Sniffer : public IE_ImpSniffer
+class  IE_Imp_OPML_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -42,7 +42,7 @@ public:
 	virtual			UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);
 };
 
-class ABI_PLUGIN_EXPORT IE_Imp_OPML : public IE_Imp_XML
+class  IE_Imp_OPML : public IE_Imp_XML
 {
 public:
 	IE_Imp_OPML(PD_Document * pDocument);

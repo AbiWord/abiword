@@ -36,7 +36,7 @@ class UT_Stack;
 class PX_ChangeRecord;
 class ChangeAdjust;
 
-class ABI_EXPORT AbiCollabService_Export :  public PL_DocChangeListener
+class  AbiCollabService_Export :  public PL_DocChangeListener
 {
 public:
 	AbiCollabService_Export(PD_Document* pDoc, UT_sint64 iID);
