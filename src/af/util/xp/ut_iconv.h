@@ -62,27 +62,27 @@ class ABI_EXPORT auto_iconv
 
 G_BEGIN_DECLS
 
-const char * ucs2Internal ();
+ABI_EXPORT const char * ucs2Internal ();
 #define UCS_2_INTERNAL ucs2Internal()
-const char * ucs4Internal ();
+ABI_EXPORT const char * ucs4Internal ();
 #define UCS_INTERNAL ucs4Internal()
 
-UT_iconv_t  UT_iconv_open( const char* to, const char* from );
-size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, 
+ABI_EXPORT UT_iconv_t  UT_iconv_open( const char* to, const char* from );
+ABI_EXPORT size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, 
 		      size_t *inbytesleft, char **outbuf, 
 		      size_t *outbytesleft );
-int         UT_iconv_close( UT_iconv_t cd );
-void        UT_iconv_reset( UT_iconv_t cd );
-int         UT_iconv_isValid ( UT_iconv_t cd );
+ABI_EXPORT int         UT_iconv_close( UT_iconv_t cd );
+ABI_EXPORT void        UT_iconv_reset( UT_iconv_t cd );
+ABI_EXPORT int         UT_iconv_isValid ( UT_iconv_t cd );
 
-char *      UT_convert (const char *str,
+ABI_EXPORT char *      UT_convert (const char *str,
 			UT_sint32 len,
 			const char *from_codeset,
 			const char *to_codeset,
 			UT_uint32 *bytes_read,
 			UT_uint32 *bytes_written);
 
-char *      UT_convert_cd (const char *str,
+ABI_EXPORT char *      UT_convert_cd (const char *str,
 			   UT_sint32 len,
 			   UT_iconv_t cd,
 			   UT_uint32 *bytes_read,
