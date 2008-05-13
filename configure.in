@@ -566,7 +566,7 @@ AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_dynamic" == "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
 
 PKG_CHECK_MODULES(PLUGIN,[$glib_req])
-PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS}'
+PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS} -DABI_DLL'
 # TODO possibly cocoa needs something similar to win32
 if test "$TOOLKIT" == "gtk" && 
    test "$enable_dynamic" == "yes"; then

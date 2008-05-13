@@ -25,7 +25,7 @@
 #include "ut_string_class.h"
 
 /** Decryptor for .sdw files */
-class ABI_EXPORT SDWCryptor {
+class ABI_PLUGIN_EXPORT SDWCryptor {
 	public:
 		/** Maximum length of the password */
 		enum { maxPWLen = 16 };

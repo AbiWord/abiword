@@ -32,7 +32,7 @@ class PD_Document;
 
 // The importer/reader for Palm Doc Database Files.
 
-class ABI_EXPORT IE_Imp_PalmDoc_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_PalmDoc_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -52,7 +52,7 @@ public:
 
 };
 
-class ABI_EXPORT IE_Imp_PalmDoc : public IE_Imp
+class ABI_PLUGIN_EXPORT IE_Imp_PalmDoc : public IE_Imp
 {
 public:
 	IE_Imp_PalmDoc(PD_Document * pDocument);

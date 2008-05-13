@@ -30,7 +30,7 @@
 #include <ie_exp.h>
 
 
-class ABI_EXPORT IE_Exp_OpenDocument_Sniffer : public IE_ExpSniffer
+class ABI_PLUGIN_EXPORT IE_Exp_OpenDocument_Sniffer : public IE_ExpSniffer
 {
 public:
   IE_Exp_OpenDocument_Sniffer();

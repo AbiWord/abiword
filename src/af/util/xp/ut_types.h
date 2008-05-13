@@ -76,15 +76,24 @@ typedef UT_uint8 UT_Confidence_t;
 #define UT_CONFIDENCE_ZILCH     0
 
 #if defined(WIN32) /* && !defined(__MINGW32__) */
-  #define ABI_EXPORT __declspec(dllexport)
+  #define ABI_PLUGIN_EXPORT __declspec(dllexport)
+  #ifdef ABI_DLL
+     /* we are building an AbiWord plugin and want to use something declared in a library */
+     #define ABI_EXPORT __declspec(dllimport)
+  #else 
+     /* we are building AbiWord and wish for its parts to be used by plugins */
+     #define ABI_EXPORT __declspec(dllexport)
+  #endif
 #elif defined (DISABLE_EXPORTS)
+  #define ABI_PLUGIN_EXPORT
   #define ABI_EXPORT __attribute__ ((visibility ("hidden")))
 #else
+  #define ABI_PLUGIN_EXPORT
   #define ABI_EXPORT
 #endif
 
 /* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */
-#define ABI_FAR_CALL extern "C" ABI_EXPORT
+#define ABI_FAR_CALL extern "C" ABI_PLUGIN_EXPORT
 
 #define _abi_callonce /* only call me once! */
 

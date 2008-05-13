@@ -2,7 +2,7 @@
 noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
-	$(IMPEXP_CPPFLAGS)
+	$(OPENDOCUMENT_CFLAGS)
 
 libxp_la_SOURCES = \
 	ie_imp_OpenDocument.cpp \

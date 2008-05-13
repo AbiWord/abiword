@@ -1,8 +1,9 @@
 
-LOADBINDINGS_CFLAGS=
-LOADBINDINGS_LIBS=
+loadbindings_pkgs="$gsf_req"
 
 if test "$enable_loadbindings" == "yes"; then
+
+PKG_CHECK_MODULES(LOADBINDINGS,[ $loadbindings_pkgs ])
 
 LOADBINDINGS_CFLAGS="$LOADBINDINGS_CFLAGS "'${PLUGIN_CFLAGS}'
 LOADBINDINGS_LIBS="$LOADBINDINGS_LIBS "'${PLUGIN_LIBS}'

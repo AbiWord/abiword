@@ -36,7 +36,7 @@ extern GSList *mime_types;
 
 // The importer/reader for Embedable Components.
 
-class ABI_EXPORT IE_Imp_Component_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_Component_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Component;
@@ -69,7 +69,7 @@ protected:
 
 // The importer/reader for GNOME-Office charts.
 
-class ABI_EXPORT IE_Imp_Component : public IE_Imp
+class ABI_PLUGIN_EXPORT IE_Imp_Component : public IE_Imp
 {
 public:
 	IE_Imp_Component(PD_Document * pDocument);

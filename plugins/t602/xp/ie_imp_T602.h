@@ -30,7 +30,7 @@
 
 // The importer for T602 documents.
 
-class ABI_EXPORT IE_Imp_T602_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_T602_Sniffer : public IE_ImpSniffer
 {
    friend class IE_Imp;
    friend class IE_Imp_T602;
@@ -46,7 +46,7 @@ public:
    virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);
 };
 
-class ABI_EXPORT IE_Imp_T602 : public IE_Imp
+class ABI_PLUGIN_EXPORT IE_Imp_T602 : public IE_Imp
 {
 public:
    IE_Imp_T602(PD_Document * pDocument);

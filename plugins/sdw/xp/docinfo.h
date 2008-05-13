@@ -31,7 +31,7 @@ class PD_Document;
 
 /** Class for reading the DocInfo stream (=metadata) and setting it on a
  * PD_Document */
-class ABI_EXPORT SDWDocInfo {
+class ABI_PLUGIN_EXPORT SDWDocInfo {
 	public:
 		SDWDocInfo();
 		~SDWDocInfo();

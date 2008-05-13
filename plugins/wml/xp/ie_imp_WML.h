@@ -30,7 +30,7 @@ class PD_Document;
 
 // The importer/reader for WML files.
 
-class ABI_EXPORT IE_Imp_WML_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_WML_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -50,7 +50,7 @@ public:
 
 };
 
-class ABI_EXPORT IE_Imp_WML : public IE_Imp_XML
+class ABI_PLUGIN_EXPORT IE_Imp_WML : public IE_Imp_XML
 {
 public:
 	IE_Imp_WML(PD_Document * pDocument);

@@ -38,7 +38,7 @@ typedef struct {
 	const char * szVal;
 } AbiMathViewEntityMapItem;
 
-class ABI_EXPORT IE_Imp_MathML_EntityTable
+class ABI_PLUGIN_EXPORT IE_Imp_MathML_EntityTable
 {
 public:
 	IE_Imp_MathML_EntityTable ();
@@ -53,7 +53,7 @@ private:
 
 // The importer/reader for MathML Files.
 
-class ABI_EXPORT IE_Imp_MathML_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_MathML_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_MathML;
@@ -88,7 +88,7 @@ protected:
 
 // The importer/reader for MathML Files.
 
-class ABI_EXPORT IE_Imp_MathML : public IE_Imp
+class ABI_PLUGIN_EXPORT IE_Imp_MathML : public IE_Imp
 {
 public:
 	IE_Imp_MathML(PD_Document * pDocument, const IE_Imp_MathML_EntityTable & EntityTable);

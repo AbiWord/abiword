@@ -33,7 +33,7 @@ class PD_Document;
 
 // ISCII file stream class
 
-class ABI_EXPORT ImportISCIIStreamFile : public ImportStreamFile
+class ABI_PLUGIN_EXPORT ImportISCIIStreamFile : public ImportStreamFile
 {
 public:
 	ImportISCIIStreamFile(GsfInput *pFile);
@@ -47,7 +47,7 @@ private:
 
 // The importer/reader for ISCII files.
 
-class ABI_EXPORT IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -67,7 +67,7 @@ public:
 
 };
 
-class ABI_EXPORT IE_Imp_ISCII : public IE_Imp_Text
+class ABI_PLUGIN_EXPORT IE_Imp_ISCII : public IE_Imp_Text
 {
 public:
 	IE_Imp_ISCII(PD_Document * pDocument);

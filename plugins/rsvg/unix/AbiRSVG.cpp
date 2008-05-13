@@ -58,7 +58,7 @@ static void _write_flush(png_structp /*png_ptr*/) { } // Empty Fuction.
 
 //------------------------------------------------------------------------------------
 
-class ABI_EXPORT IE_RSVGGraphic : public IE_ImpGraphic
+class ABI_PLUGIN_EXPORT IE_RSVGGraphic : public IE_ImpGraphic
 {
 public:
 
@@ -269,7 +269,7 @@ static IE_SuffixConfidence IE_RSVGGraphic_Sniffer__SuffixConfidence[] = {
 	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
-class ABI_EXPORT IE_RSVGGraphic_Sniffer : public IE_ImpGraphicSniffer
+class ABI_PLUGIN_EXPORT IE_RSVGGraphic_Sniffer : public IE_ImpGraphicSniffer
 {
 public:
 

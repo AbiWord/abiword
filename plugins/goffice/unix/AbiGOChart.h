@@ -36,7 +36,7 @@ class AD_Document;
 class GOChartView;
 class GR_AbiGOChartItems;
 
-class ABI_EXPORT GR_AbiGOChartItems
+class ABI_PLUGIN_EXPORT GR_AbiGOChartItems
 {
  public:
   GR_AbiGOChartItems();
@@ -45,7 +45,7 @@ class ABI_EXPORT GR_AbiGOChartItems
   bool m_bHasSnapshot;
 };
 
-class ABI_EXPORT GR_GOChartManager : public GR_EmbedManager 
+class ABI_PLUGIN_EXPORT GR_GOChartManager : public GR_EmbedManager 
 {
 public:
     GR_GOChartManager(GR_Graphics * pG);
@@ -94,7 +94,7 @@ private:
 };
 
 // FIXME wrapper for libGNOMEOFFICEChart object
-class ABI_EXPORT GOChartView
+class ABI_PLUGIN_EXPORT GOChartView
 {
 public:
 	GOChartView(GR_GOChartManager  * pGOMan);

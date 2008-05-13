@@ -33,7 +33,7 @@
 ABI_PLUGIN_DECLARE("EML")
 #endif
 
-//extern ABI_EXPORT IE_Exp_Text::;
+//extern ABI_PLUGIN_EXPORT IE_Exp_Text::;
 /*****************************************************************/
 /*****************************************************************/
 

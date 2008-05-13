@@ -29,7 +29,7 @@ class PD_Document;
 
 // The importer/reader for XSL-FO files.
 
-class ABI_EXPORT IE_Imp_XSL_FO_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_XSL_FO_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -49,7 +49,7 @@ public:
 
 };
 
-class ABI_EXPORT IE_Imp_XSL_FO : public IE_Imp_XML
+class ABI_PLUGIN_EXPORT IE_Imp_XSL_FO : public IE_Imp_XML
 {
 public:
 	IE_Imp_XSL_FO(PD_Document * pDocument);

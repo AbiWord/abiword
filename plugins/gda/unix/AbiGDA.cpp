@@ -70,7 +70,7 @@ static GdaClient * connection_pool = NULL;
  * we'll open up a new window. If not, we'll act like the data
  * set got pasted in place
  */
-class ABI_EXPORT IE_Imp_GDA : public IE_Imp
+class ABI_PLUGIN_EXPORT IE_Imp_GDA : public IE_Imp
 {
 public:
 

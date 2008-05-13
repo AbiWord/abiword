@@ -25,7 +25,7 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 
-class ABI_EXPORT IE_Imp_OpenWriter_Sniffer : public IE_ImpSniffer
+class ABI_PLUGIN_EXPORT IE_Imp_OpenWriter_Sniffer : public IE_ImpSniffer
 {
 public:
   IE_Imp_OpenWriter_Sniffer () ;
@@ -46,7 +46,7 @@ public:
 			     IEFileType * ft) ;
 };
 
-class ABI_EXPORT IE_Exp_OpenWriter_Sniffer : public IE_ExpSniffer
+class ABI_PLUGIN_EXPORT IE_Exp_OpenWriter_Sniffer : public IE_ExpSniffer
 {
 public:
   IE_Exp_OpenWriter_Sniffer();

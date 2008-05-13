@@ -1,8 +1,9 @@
 
-KWORD_CFLAGS=
-KWORD_LIBS=
+kword_pkgs="$gsf_req"
 
 if test "$enable_kword" == "yes"; then
+
+PKG_CHECK_MODULES(KWORD,[ $kword_pkgs ])
 
 KWORD_CFLAGS="$KWORD_CFLAGS "'${PLUGIN_CFLAGS}'
 KWORD_LIBS="$KWORD_LIBS "'${PLUGIN_LIBS}'

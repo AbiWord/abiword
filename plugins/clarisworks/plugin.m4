@@ -1,8 +1,9 @@
 
-CLARISWORKS_CFLAGS=
-CLARISWORKS_LIBS=
+clarisworks_pkgs="$gsf_req"
 
 if test "$enable_clarisworks" == "yes"; then
+
+PKG_CHECK_MODULES(CLARISWORKS,[ $clarisworks_pkgs ])
 
 CLARISWORKS_CFLAGS="$CLARISWORKS_CFLAGS "'${PLUGIN_CFLAGS}'
 CLARISWORKS_LIBS="$CLARISWORKS_LIBS "'${PLUGIN_LIBS}'
