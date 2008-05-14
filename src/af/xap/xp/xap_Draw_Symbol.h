@@ -34,7 +34,7 @@
 
 class GR_Font;
 
-class XAP_Draw_Symbol : public XAP_Preview
+class ABI_EXPORT XAP_Draw_Symbol : public XAP_Preview
 {
 public:
 

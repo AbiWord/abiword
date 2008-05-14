@@ -31,7 +31,7 @@ class AV_View;
 class XAP_Frame;
 class XAP_Draw_Symbol;
 
-class XAP_Insert_symbol_listener
+class ABI_EXPORT XAP_Insert_symbol_listener
 	{
 	public:
 		virtual ~XAP_Insert_symbol_listener() {}
@@ -40,7 +40,7 @@ class XAP_Insert_symbol_listener
 		virtual bool insertSymbol(UT_UCSChar Char, const char *p_font_name) = 0;
 	};
 
-class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
+class ABI_EXPORT XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 {
  public:
 	XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

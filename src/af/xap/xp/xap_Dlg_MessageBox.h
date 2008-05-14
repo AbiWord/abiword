@@ -23,7 +23,7 @@
 #include "xap_Dialog.h"
 #include "xap_Strings.h"
 
-class XAP_Dialog_MessageBox : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_MessageBox : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

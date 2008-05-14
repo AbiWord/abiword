@@ -46,7 +46,7 @@ class EV_Toolbar;
 
 /*****************************************************************/
 
-class XAP_Toolbar_ControlFactory
+class ABI_EXPORT XAP_Toolbar_ControlFactory
 {
 public:
 	struct _ctl_table

@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #endif
 
-class AP_Toolbar_Icons
+class ABI_EXPORT AP_Toolbar_Icons
 {
 public:
 	AP_Toolbar_Icons(void);

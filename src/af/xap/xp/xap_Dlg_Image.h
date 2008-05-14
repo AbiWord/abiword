@@ -51,7 +51,7 @@ typedef enum _POSITION_TO
 /* #include "xav_View.h" */
 
 
-class XAP_Dialog_Image : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_Image : public XAP_Dialog_NonPersistent
 {
 public:
   

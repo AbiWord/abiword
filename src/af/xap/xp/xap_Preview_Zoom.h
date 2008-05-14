@@ -34,7 +34,7 @@
 
 class GR_Font;
 
-class XAP_Preview_Zoom : public XAP_Preview
+class ABI_EXPORT XAP_Preview_Zoom : public XAP_Preview
 {
 public:
 

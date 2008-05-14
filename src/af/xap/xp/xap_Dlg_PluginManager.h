@@ -34,7 +34,7 @@ class XAP_Module;
 
 // todo: it makes sense to make me modeless
 
-class XAP_Dialog_PluginManager : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_PluginManager : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_PluginManager (XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

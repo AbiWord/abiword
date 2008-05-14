@@ -58,7 +58,7 @@ class AD_Document;
 
 */
 
-class XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 {
   public:
 	XAP_Dialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

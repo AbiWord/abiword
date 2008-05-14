@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class XAP_Dialog_Print : public XAP_Dialog_AppPersistent
+class ABI_EXPORT XAP_Dialog_Print : public XAP_Dialog_AppPersistent
 {
 public:
 	XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

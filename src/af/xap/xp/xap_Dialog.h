@@ -259,7 +259,7 @@ class ABI_EXPORT XAP_NotebookDialog
 {
 public:
 
-	class Page {
+	class ABI_EXPORT Page {
 	public:
 		Page() {}
 		Page(const gchar *title, AbiNativeWidget * widget) 

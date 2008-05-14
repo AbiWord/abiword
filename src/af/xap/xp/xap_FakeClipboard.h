@@ -33,7 +33,7 @@
 
 struct _ClipboardItem;
 
-class XAP_FakeClipboard
+class ABI_EXPORT XAP_FakeClipboard
 {
 public:
 	XAP_FakeClipboard();

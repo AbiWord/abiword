@@ -25,7 +25,7 @@
 
 class XAP_Frame;
 
-class XAP_Dialog_WindowMore : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_WindowMore : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

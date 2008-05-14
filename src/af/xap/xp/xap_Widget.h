@@ -29,7 +29,7 @@ class UT_UTF8String;
 /** virtual widget accessor. This class is pure virtual and
     must be verry lightweight 
 */
-class XAP_Widget
+class ABI_EXPORT XAP_Widget
 {
 protected:
 	XAP_Widget()
