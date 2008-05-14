@@ -1093,7 +1093,7 @@ void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle,
 /*
  * Used to hold tab information by _write_tabdef.
  */
-class _t
+class ABI_EXPORT _t
 {
 public:
 	_t(const char * szTL, const char * szTT, const char * szTK, UT_sint32 tp)

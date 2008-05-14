@@ -415,7 +415,7 @@ IE_Exp_MsWord_97::~IE_Exp_MsWord_97()
 /********************************************************/
 /********************************************************/
 
-class s_MsWord_97_Listener : public PL_Listener
+class ABI_EXPORT s_MsWord_97_Listener : public PL_Listener
 {
 public:
 

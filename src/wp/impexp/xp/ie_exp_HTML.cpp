@@ -406,7 +406,7 @@ class s_HTML_HdrFtr_Listener;
 bool m_bSecondPass = false;
 bool m_bInAFENote = false;
 
-class s_StyleTree : public PL_Listener
+class ABI_EXPORT s_StyleTree : public PL_Listener
 {
 private:
 	PD_Document *	m_pDocument; // root element of tree only (atm, anyway)
@@ -489,7 +489,7 @@ public:
 	bool	signal (UT_uint32 iSignal);
 };
 
-class s_HTML_Listener : public PL_Listener
+class ABI_EXPORT s_HTML_Listener : public PL_Listener
 {
 	friend class s_HTML_HdrFtr_Listener;
 public:
@@ -740,7 +740,7 @@ private:
 	int m_heading_count;
 };
 
-class s_HTML_HdrFtr_Listener : public PL_Listener
+class ABI_EXPORT s_HTML_HdrFtr_Listener : public PL_Listener
 {
 	friend class s_HTML_Listener;
 public:
