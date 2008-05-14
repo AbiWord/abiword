@@ -29,7 +29,7 @@ CLEANFILES = \
 	mht.dll.a
 
 mht.dll: .libs/libmht.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MHT_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MHT_LIBS)
 
 endif # TOOLKIT_WIN
 

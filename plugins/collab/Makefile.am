@@ -30,7 +30,7 @@ CLEANFILES = \
 	collab.dll.a
 
 collab.dll: .libs/libcollab.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(COLLAB_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COLLAB_LIBS)
 
 endif # TOOLKIT_WIN
 

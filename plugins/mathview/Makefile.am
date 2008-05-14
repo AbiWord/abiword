@@ -30,7 +30,7 @@ CLEANFILES = \
 	mathview.dll.a
 
 mathview.dll: .libs/libmathview.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(MATHVIEW_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(MATHVIEW_LIBS)
 
 endif # TOOLKIT_WIN
 

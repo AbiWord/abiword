@@ -20,7 +20,7 @@ CLEANFILES = \
 	gimp.dll.a
 
 gimp.dll: .libs/libgimp.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
 

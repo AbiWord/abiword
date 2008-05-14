@@ -26,7 +26,7 @@ CLEANFILES = \
 	command.dll.a
 
 command.dll: .libs/libcommand.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(COMMAND_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COMMAND_LIBS)
 
 endif # TOOLKIT_WIN
 

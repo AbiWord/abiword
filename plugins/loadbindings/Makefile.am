@@ -20,7 +20,7 @@ CLEANFILES = \
 	loadbindings.dll.a
 
 loadbindings.dll: .libs/libloadbindings.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(LOADBINDINGS_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(LOADBINDINGS_LIBS)
 
 endif # TOOLKIT_WIN
 

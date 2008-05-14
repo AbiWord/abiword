@@ -20,7 +20,7 @@ CLEANFILES = \
 	applix.dll.a
 
 applix.dll: .libs/libapplix.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(APPLIX_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(APPLIX_LIBS)
 
 endif # TOOLKIT_WIN
 

@@ -20,7 +20,7 @@ CLEANFILES = \
 	win32gfx.dll.a
 
 win32gfx.dll: .libs/libwin32gfx.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(WIN32GFX_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(WIN32GFX_LIBS)
 
 endif # TOOLKIT_WIN
 

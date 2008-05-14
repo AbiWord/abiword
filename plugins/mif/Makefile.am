@@ -20,7 +20,7 @@ CLEANFILES = \
 	mif.dll.a
 
 mif.dll: .libs/libmif.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(PLUGIN_LIBS)
 
 endif # TOOLKIT_WIN
 

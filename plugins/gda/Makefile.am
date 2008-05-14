@@ -29,7 +29,7 @@ CLEANFILES = \
 	gda.dll.a
 
 gda.dll: .libs/libgda.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GDA_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GDA_LIBS)
 
 endif # TOOLKIT_WIN
 

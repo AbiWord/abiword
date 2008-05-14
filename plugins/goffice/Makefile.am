@@ -29,7 +29,7 @@ CLEANFILES = \
 	goffice.dll.a
 
 goffice.dll: .libs/libgoffice.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(GOFFICE_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(GOFFICE_LIBS)
 
 endif # TOOLKIT_WIN
 

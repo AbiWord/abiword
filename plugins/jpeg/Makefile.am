@@ -20,7 +20,7 @@ CLEANFILES = \
 	jpeg.dll.a
 
 jpeg.dll: .libs/libjpeg.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(JPEG_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(JPEG_LIBS)
 
 endif # TOOLKIT_WIN
 

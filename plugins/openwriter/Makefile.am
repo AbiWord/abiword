@@ -20,7 +20,7 @@ CLEANFILES = \
 	openwriter.dll.a
 
 openwriter.dll: .libs/libopenwriter.a
-	$(CXX) -shared $^ -o $@ -Wl,--out-implib,$@.a $(OPENWRITER_LIBS)
+	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(OPENWRITER_LIBS)
 
 endif # TOOLKIT_WIN
 
