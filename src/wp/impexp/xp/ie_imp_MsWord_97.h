@@ -107,7 +107,7 @@ struct header
 	}d;
 };
 
-class MsColSpan
+class ABI_EXPORT MsColSpan
 {
 public:
 	MsColSpan(void):iLeft(0),iRight(0),width(0){}
@@ -117,7 +117,7 @@ public:
 	UT_sint32 width;
 };
 
-class emObject
+class ABI_EXPORT emObject
 {
 public:
 	UT_String props1;

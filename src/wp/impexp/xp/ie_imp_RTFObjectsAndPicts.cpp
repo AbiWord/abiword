@@ -731,7 +731,7 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
   Handle the \\sp keyword inside shapes
 */
 
-class IE_Imp_ShpPropParser
+class ABI_EXPORT IE_Imp_ShpPropParser
 	: public IE_Imp_RTFGroupParser
 {
 public:
@@ -854,7 +854,7 @@ bool IE_Imp_ShpPropParser::finalizeParse(void)
 // FIXME: move away from this file. Should belong to the main RTF import
 // or to ie_imp_RTFText.cpp
 
-class IE_Imp_TextParaPropParser
+class ABI_EXPORT IE_Imp_TextParaPropParser
 	: public IE_Imp_RTFGroupParser
 {
 public:
@@ -918,7 +918,7 @@ bool IE_Imp_TextParaPropParser::finalizeParse(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-class IE_Imp_ShpGroupParser
+class ABI_EXPORT IE_Imp_ShpGroupParser
 	: public IE_Imp_RTFGroupParser
 {
 public:

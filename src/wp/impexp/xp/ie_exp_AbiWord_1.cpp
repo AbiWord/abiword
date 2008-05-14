@@ -173,9 +173,9 @@ static void close_gsf_handle(GsfOutput * output)
 /*****************************************************************/
 
 #ifdef ENABLE_RESOURCE_MANAGER
-class s_AbiWord_1_Listener : public PL_Listener, XAP_ResourceManager::Writer
+class ABI_EXPORT s_AbiWord_1_Listener : public PL_Listener, XAP_ResourceManager::Writer
 #else
-class s_AbiWord_1_Listener : public PL_Listener
+class ABI_EXPORT s_AbiWord_1_Listener : public PL_Listener
 #endif
 {
 public:

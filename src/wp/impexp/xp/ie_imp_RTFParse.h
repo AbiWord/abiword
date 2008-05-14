@@ -52,7 +52,7 @@ typedef struct {
   \note even though the methods could have been made as pure virtual, they
   are not to ease subclassing parsers by "just what we need"
  */
-class IE_Imp_RTFGroupParser
+class ABI_EXPORT IE_Imp_RTFGroupParser
 {
 public:
 	IE_Imp_RTFGroupParser()
