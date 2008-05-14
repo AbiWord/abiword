@@ -47,6 +47,8 @@
 #include <stdlib.h> 
 #include <string.h> 
 
+#include <glib.h>
+
 #include "ut_unixDirent.h"
 
 /* 
