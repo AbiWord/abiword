@@ -35,7 +35,7 @@ static UT_UCSChar m_PreviousSymbol = UCS_SPACE;
 static char Symbol_font_selected[32] = "Symbol";
 
 
-class XAP_Draw_Symbol_sample : public XAP_Preview
+class ABI_EXPORT XAP_Draw_Symbol_sample : public XAP_Preview
 {
 public:
 

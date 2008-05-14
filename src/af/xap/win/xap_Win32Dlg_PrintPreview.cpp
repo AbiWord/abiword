@@ -257,7 +257,7 @@ gdip_init (void)
     } \
   } G_STMT_END
 
-class GR_Win32PrintPreviewGraphics : public GR_Win32Graphics
+class ABI_EXPORT GR_Win32PrintPreviewGraphics : public GR_Win32Graphics
 {
 public:
 
