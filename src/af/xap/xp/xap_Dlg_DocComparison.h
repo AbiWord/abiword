@@ -54,7 +54,7 @@ class XAP_StringSet;
 
 const UT_uint32 iResultCount = 4;
 
-class XAP_Dialog_DocComparison : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_DocComparison : public XAP_Dialog_NonPersistent
 {
   public:
 	XAP_Dialog_DocComparison(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

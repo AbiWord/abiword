@@ -32,7 +32,7 @@
 #define PREVIEW_WIDTH 400
 #define PREVIEW_HEIGHT 75
 
-class XAP_FontPreview
+class ABI_EXPORT XAP_FontPreview
 {
 public:
 	XAP_FontPreview();	

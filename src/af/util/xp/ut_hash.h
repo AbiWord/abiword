@@ -307,7 +307,7 @@ private:
 
 
 // bucket for data
-template <class T> class hash_slot
+template <class T> class ABI_EXPORT hash_slot
 {
 public:
 	hash_slot() 

@@ -26,7 +26,7 @@
 
 class XAP_Frame;
 
-class XAP_Dialog_ClipArt : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_ClipArt : public XAP_Dialog_NonPersistent
 {
 public:
 

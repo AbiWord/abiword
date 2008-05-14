@@ -38,7 +38,7 @@
 
 class GR_Graphics;
 
-class XAP_Preview_FontPreview  : public XAP_Preview
+class ABI_EXPORT XAP_Preview_FontPreview  : public XAP_Preview
 {
 public:
 	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
@@ -70,7 +70,7 @@ private:
 
 /*****************************************************************/
 
-class XAP_Dialog_FontChooser : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_FontChooser : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

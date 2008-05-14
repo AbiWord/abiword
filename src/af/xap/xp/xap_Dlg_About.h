@@ -20,6 +20,14 @@
 #ifndef XAP_DIALOG_ABOUT_H
 #define XAP_DIALOG_ABOUT_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
@@ -62,7 +70,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
 GNU General Public License for more details."
 
-class XAP_Dialog_About : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_About : public XAP_Dialog_NonPersistent
 {
  public:
 	XAP_Dialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

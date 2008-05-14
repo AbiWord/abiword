@@ -19,6 +19,14 @@
 #ifndef UT_MUTEX_H
 #define UT_MUTEX_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
 class UT_MutexImpl;
 class UT_MutexAcquirer;
 
@@ -30,7 +38,7 @@ class UT_MutexAcquirer;
  * UT_MutexImpl has the same signature as UT_Mutex except that it's
  * implemented in platform-specific code
  */
-class UT_Mutex
+class ABI_EXPORT UT_Mutex
 {
 	friend class UT_MutexImpl;
 	friend class UT_MutexAcquirer;
@@ -67,7 +75,7 @@ class UT_Mutex
  *   // done transparently by the acquirer
  * }  
  */
-class UT_MutexAcquirer
+class ABI_EXPORT UT_MutexAcquirer
 {
  public:
 

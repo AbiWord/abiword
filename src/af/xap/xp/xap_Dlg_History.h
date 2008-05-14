@@ -59,7 +59,7 @@ const UT_uint32 iHeaderItemCount = 6;
 const UT_uint32 iButtonCount = 2;
 const UT_uint32 iListColumnCount = 3;
 
-class XAP_Dialog_History : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_History : public XAP_Dialog_NonPersistent
 {
   public:
 	XAP_Dialog_History(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

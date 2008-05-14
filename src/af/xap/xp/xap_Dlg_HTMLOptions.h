@@ -53,7 +53,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bMultipart;
 };
 
-class XAP_Dialog_HTMLOptions : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_HTMLOptions : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_HTMLOptions (XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

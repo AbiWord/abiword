@@ -32,7 +32,7 @@ class XAP_Preview_Zoom;
 #define XAP_DLG_ZOOM_MAXIMUM_ZOOM		500			// arbitrary value (percentage)
 #define XAP_DLG_ZOOM_MINIMUM_ZOOM		20			// arbitrary value (percentage)
 
-class XAP_Dialog_Zoom : public XAP_Dialog_NonPersistent
+class ABI_EXPORT XAP_Dialog_Zoom : public XAP_Dialog_NonPersistent
 {
 public:
 	XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
