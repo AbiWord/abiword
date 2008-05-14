@@ -33,7 +33,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32LeftRuler : public AP_LeftRuler
+class ABI_EXPORT AP_Win32LeftRuler : public AP_LeftRuler
 {
 public:
 	AP_Win32LeftRuler(XAP_Frame * pFrame);

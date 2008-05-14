@@ -28,7 +28,7 @@ class AP_Win32Dialog_FormatTOC_General;
 class AP_Win32Dialog_FormatTOC_Sheet;
 class AP_Win32Dialog_FormatTOC_Layout;
 
-class AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC
+class ABI_EXPORT AP_Win32Dialog_FormatTOC: public AP_Dialog_FormatTOC
 {
 public:
 	AP_Win32Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -55,7 +55,7 @@ private:
 
 };
 
-class AP_Win32Dialog_FormatTOC_Sheet : public XAP_Win32PropertySheet
+class ABI_EXPORT AP_Win32Dialog_FormatTOC_Sheet : public XAP_Win32PropertySheet
 {
 
 public:
@@ -75,7 +75,7 @@ private:
 
 };
 
-class AP_Win32Dialog_FormatTOC_General: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_FormatTOC_General: public XAP_Win32PropertyPage
 {	
 public:		
 
@@ -96,7 +96,7 @@ private:
 	
 };
 
-class AP_Win32Dialog_FormatTOC_Layout: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_FormatTOC_Layout: public XAP_Win32PropertyPage
 {	
 public:		
 

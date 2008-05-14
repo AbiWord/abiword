@@ -47,7 +47,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MetaData: public AP_Dialog_MetaData
+class ABI_EXPORT AP_Win32Dialog_MetaData: public AP_Dialog_MetaData
 {
 public:
 	AP_Win32Dialog_MetaData(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -61,7 +61,7 @@ protected:
 
 };
 
-class AP_Win32Dialog_MetaData_General: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_MetaData_General: public XAP_Win32PropertyPage
 {
 	
 public:		
@@ -87,7 +87,7 @@ private:
 	
 };
 
-class AP_Win32Dialog_MetaData_Summary: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_MetaData_Summary: public XAP_Win32PropertyPage
 {
 	public:		
 								AP_Win32Dialog_MetaData_Summary();
@@ -111,7 +111,7 @@ private:
 	
 };
 
-class AP_Win32Dialog_MetaData_Permissions: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_MetaData_Permissions: public XAP_Win32PropertyPage
 {
 public:		
 								AP_Win32Dialog_MetaData_Permissions();

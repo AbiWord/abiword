@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Stylist: public AP_Dialog_Stylist
+class ABI_EXPORT AP_Win32Dialog_Stylist: public AP_Dialog_Stylist
 {
 public:
 	AP_Win32Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

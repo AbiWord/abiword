@@ -28,7 +28,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable
+class ABI_EXPORT AP_Win32Dialog_FormatTable: public AP_Dialog_FormatTable
 {
 public:
 	AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

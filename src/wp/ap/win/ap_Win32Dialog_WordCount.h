@@ -28,7 +28,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_WordCount: public AP_Dialog_WordCount
+class ABI_EXPORT AP_Win32Dialog_WordCount: public AP_Dialog_WordCount
 {
 public:
 	AP_Win32Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

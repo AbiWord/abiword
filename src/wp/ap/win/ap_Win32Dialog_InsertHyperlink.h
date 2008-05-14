@@ -27,7 +27,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_InsertHyperlink: public XAP_Win32DialogBase, public AP_Dialog_InsertHyperlink
+class ABI_EXPORT AP_Win32Dialog_InsertHyperlink: public XAP_Win32DialogBase, public AP_Dialog_InsertHyperlink
 {
 public:
 	AP_Win32Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

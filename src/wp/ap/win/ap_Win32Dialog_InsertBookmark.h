@@ -28,7 +28,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_InsertBookmark: public XAP_Win32DialogBase, public AP_Dialog_InsertBookmark
+class ABI_EXPORT AP_Win32Dialog_InsertBookmark: public XAP_Win32DialogBase, public AP_Dialog_InsertBookmark
 {
 public:
 	AP_Win32Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

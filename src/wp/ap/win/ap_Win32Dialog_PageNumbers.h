@@ -28,7 +28,7 @@ class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id);

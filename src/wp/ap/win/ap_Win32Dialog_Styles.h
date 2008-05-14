@@ -28,7 +28,7 @@
 #define MAX_NEWMODIFY_TOGGLE 4
 /*****************************************************************/
 
-class AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog
 {
 public:
 	typedef enum _StyleType 

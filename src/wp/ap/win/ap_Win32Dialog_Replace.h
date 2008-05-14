@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Replace: public AP_Dialog_Replace
+class ABI_EXPORT AP_Win32Dialog_Replace: public AP_Dialog_Replace
 {
 public:
 	AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

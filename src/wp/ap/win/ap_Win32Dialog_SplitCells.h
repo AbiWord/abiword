@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells
+class ABI_EXPORT AP_Win32Dialog_SplitCells: public AP_Dialog_SplitCells
 {
 public:
 	AP_Win32Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

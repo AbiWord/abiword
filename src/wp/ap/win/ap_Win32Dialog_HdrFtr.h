@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_HdrFtr: public AP_Dialog_HdrFtr, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_HdrFtr: public AP_Dialog_HdrFtr, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

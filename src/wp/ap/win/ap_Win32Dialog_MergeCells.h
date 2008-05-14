@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MergeCells: public AP_Dialog_MergeCells
+class ABI_EXPORT AP_Win32Dialog_MergeCells: public AP_Dialog_MergeCells
 {
 public:
 	AP_Win32Dialog_MergeCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

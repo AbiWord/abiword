@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions
+class ABI_EXPORT AP_Win32Dialog_ListRevisions: public AP_Dialog_ListRevisions
 {
 public:
 	AP_Win32Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

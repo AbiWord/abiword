@@ -28,7 +28,7 @@ class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph
+class ABI_EXPORT AP_Win32Dialog_Paragraph: public AP_Dialog_Paragraph
 {
 public:
 	AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

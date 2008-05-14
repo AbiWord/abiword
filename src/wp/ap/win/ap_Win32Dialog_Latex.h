@@ -28,7 +28,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Latex: public XAP_Win32DialogBase, public AP_Dialog_Latex
+class ABI_EXPORT AP_Win32Dialog_Latex: public XAP_Win32DialogBase, public AP_Dialog_Latex
 {
 public:
 	AP_Win32Dialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

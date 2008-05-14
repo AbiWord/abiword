@@ -33,7 +33,7 @@
 
 /*****************************************************************/
 
-class AP_Win32TopRuler : public AP_TopRuler
+class ABI_EXPORT AP_Win32TopRuler : public AP_TopRuler
 {
 public:
 	AP_Win32TopRuler(XAP_Frame * pFrame);

@@ -29,7 +29,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Columns: public XAP_Win32DialogBase, public AP_Dialog_Columns
+class ABI_EXPORT AP_Win32Dialog_Columns: public XAP_Win32DialogBase, public AP_Dialog_Columns
 {
 public:
 	AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

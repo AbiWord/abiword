@@ -23,7 +23,7 @@
 #include "xap_Dialog.h"
 #include "ap_Dialog_Annotation.h"
 
-class AP_Win32Dialog_Annotation: public AP_Dialog_Annotation
+class ABI_EXPORT AP_Win32Dialog_Annotation: public AP_Dialog_Annotation
 {
 public:
 	AP_Win32Dialog_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

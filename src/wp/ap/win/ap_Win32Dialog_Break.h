@@ -27,7 +27,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Break: public XAP_Win32DialogBase, public AP_Dialog_Break
+class ABI_EXPORT AP_Win32Dialog_Break: public XAP_Win32DialogBase, public AP_Dialog_Break
 {
 public:
 	AP_Win32Dialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
