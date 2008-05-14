@@ -74,7 +74,7 @@
 // This one should really be in the anonymous namespace in this translation
 // unit, but since we don't use namespaces...
 //
-class foo_Bitmap_container
+class ABI_EXPORT foo_Bitmap_container
 {
 public:	// d'tor needs to be public due to buggy MSVC compilers
 	~foo_Bitmap_container();

@@ -41,7 +41,7 @@ typedef enum _AP_String_Id_Enum
 // a sub-class to wrap the compiled-in (english) strings
 //////////////////////////////////////////////////////////////////
 
-class AP_BuiltinStringSet : public XAP_BuiltinStringSet
+class ABI_EXPORT AP_BuiltinStringSet : public XAP_BuiltinStringSet
 {
 public:
 	AP_BuiltinStringSet(XAP_App * pApp, const gchar * szLanguageName);
@@ -61,7 +61,7 @@ protected:
 // a sub-class to deal with disk-based string sets (translations)
 //////////////////////////////////////////////////////////////////
 
-class AP_DiskStringSet : public XAP_DiskStringSet
+class ABI_EXPORT AP_DiskStringSet : public XAP_DiskStringSet
 {
 public:
 	AP_DiskStringSet(XAP_App * pApp);

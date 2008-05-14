@@ -25,7 +25,7 @@ class EV_Win32Toolbar;
 class AV_View;
 
 
-class EV_Win32Toolbar_ViewListener : public AV_Listener
+class ABI_EXPORT EV_Win32Toolbar_ViewListener : public AV_Listener
 {
 public:
 	EV_Win32Toolbar_ViewListener(EV_Win32Toolbar * pWin32Toolbar,

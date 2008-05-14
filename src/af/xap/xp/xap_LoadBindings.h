@@ -26,7 +26,7 @@ class EV_EditBindingMap;
 
 /*****************************************************************/
 
-class XAP_BindingSet
+class ABI_EXPORT XAP_BindingSet
 {
 public:
 	XAP_BindingSet(EV_EditMethodContainer * pemc);

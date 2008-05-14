@@ -3499,7 +3499,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
   HACK: I did move it outside and made everything private to prevent
   anyone else to use it.
  */
-class CellLine
+class ABI_EXPORT CellLine
 {
 private:
 	CellLine(void):

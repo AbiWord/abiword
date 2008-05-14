@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef _AP_COCOAAPPIMPL_H_
-#define _AP_COCOAAPPIMPL_H_
+#ifndef _AP_WIN32APPIMPL_H_
+#define _AP_WIN32APPIMPL_H_
 
 #include "xap_Win32AppImpl.h"
 
-class AP_Win32AppImpl
+class ABI_EXPORT AP_Win32AppImpl
 	: public XAP_Win32AppImpl
 {
 };

@@ -22,7 +22,7 @@
 
 #include "ap_Prefs.h"
 
-class AP_Win32Prefs : public AP_Prefs
+class ABI_EXPORT AP_Win32Prefs : public AP_Prefs
 {
 public:
 	AP_Win32Prefs(XAP_App * pApp);

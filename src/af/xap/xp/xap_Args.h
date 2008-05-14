@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #endif
 
-class XAP_Args
+class ABI_EXPORT XAP_Args
 {
 public:
 	XAP_Args(int argc, const char ** argv);	/* for systems which cut up the command line for us */

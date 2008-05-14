@@ -172,7 +172,7 @@
 **	 fwd		  forwards
 **/
 
-class ap_EditMethods
+class ABI_EXPORT ap_EditMethods
 {
 public:
 	static EV_EditMethod_Fn scrollPageDown;
@@ -1277,7 +1277,7 @@ static XAP_Frame * s_pLoadingFrame = NULL;
 static AD_Document * s_pLoadingDoc = NULL;
 static bool s_LockOutGUI = false;
 
-class _Freq
+class ABI_EXPORT _Freq
 {
 public:
 	_Freq(AV_View * pView,EV_EditMethodCallData * pData, void(* exe)(AV_View * pView,EV_EditMethodCallData * pData)):
@@ -9476,7 +9476,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	return true;
 }
 
-class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
+class ABI_EXPORT FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	{
 	public:
 
@@ -12983,7 +12983,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	return bOK;
 }
 
-class OneShot_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+class ABI_EXPORT OneShot_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
 public:
 

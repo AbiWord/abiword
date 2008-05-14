@@ -30,7 +30,7 @@ using namespace MSXML2;
 #include "ut_xml.h"
 
 // Error Handler
-class SAXErrorHandlerImpl : public ISAXErrorHandler  
+class ABI_EXPORT SAXErrorHandlerImpl : public ISAXErrorHandler  
 {
 public:
 	SAXErrorHandlerImpl();
@@ -146,7 +146,7 @@ unsigned long __stdcall SAXErrorHandlerImpl::Release()
 }
 
 // Content Hanlder
-class AbiXMLHandler : public ISAXContentHandler  
+class ABI_EXPORT AbiXMLHandler : public ISAXContentHandler  
 {
 public:
     AbiXMLHandler();

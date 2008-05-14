@@ -25,7 +25,7 @@
  * This class is responsible for creating and destroying memory buffers
  * It provides a default implementation based on g_try_malloc/g_free
  */
-class UT_Allocator
+class ABI_EXPORT UT_Allocator
 {
  public:
   UT_Allocator ();
@@ -42,7 +42,7 @@ class UT_Allocator
 /*!
  * Returns zeroed memory, either via g_try_malloc&memset or UT_calloc
  */
-class UT_NullAllocator : public UT_Allocator
+class ABI_EXPORT UT_NullAllocator : public UT_Allocator
 {
  public:
   UT_NullAllocator ();

@@ -106,7 +106,7 @@ tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstituti
 }
 
 #define GR_WIN32_USP_FONT_SCALING 20
-class GR_Win32USPItem: public GR_Item
+class ABI_EXPORT GR_Win32USPItem: public GR_Item
 {
 	friend class GR_Win32USPGraphics;
 
@@ -126,7 +126,7 @@ class GR_Win32USPItem: public GR_Item
 	SCRIPT_ITEM m_si;
 };
 
-class GR_Win32USPRenderInfo : public GR_RenderInfo
+class ABI_EXPORT GR_Win32USPRenderInfo : public GR_RenderInfo
 {
   public:
 	GR_Win32USPRenderInfo(GR_ScriptType type):

@@ -7,7 +7,7 @@
 
 XAP_Log *XAP_Log::m_pInstance = 0;
 
-class XAP_LogDestructor
+class ABI_EXPORT XAP_LogDestructor
 {
 public:
 	XAP_LogDestructor() : t_(0) {}

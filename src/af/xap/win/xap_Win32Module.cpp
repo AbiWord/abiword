@@ -35,7 +35,7 @@ static const char szErrNoDllLoaded[]	= "No library loaded";
 static const char szErrAlreadyLoaded[]	= "Library already loaded";
 static const char szErrCouldNotUnload[]	= "Could not unload library";
 
-class XAP_Win32ModuleImpl
+class ABI_EXPORT XAP_Win32ModuleImpl
 {
 public:
 	XAP_Win32ModuleImpl() : m_hMod(0), m_pszErr(0), m_pszModuleName(0) { }

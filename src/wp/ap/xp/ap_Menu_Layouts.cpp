@@ -52,7 +52,7 @@
 		EV_EditMouseContext			m_emc;
 	};
 
-	class _vectt
+	class ABI_EXPORT _vectt
 	{
 	public:
 		_vectt(_tt * orig):

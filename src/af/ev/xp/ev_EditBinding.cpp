@@ -63,7 +63,7 @@ EV_EditMethod * EV_EditBinding::getMethod(void) const
 /*****************************************************************/
 /*****************************************************************/
 
-class ev_EB_MouseTable
+class ABI_EXPORT ev_EB_MouseTable
 {
 public:
 	ev_EB_MouseTable()
@@ -88,7 +88,7 @@ public:
 	EV_EditBinding *	m_peb[EV_COUNT_EMO][EV_COUNT_EMS][EV_COUNT_EMC];
 };
 
-class ev_EB_NVK_Table
+class ABI_EXPORT ev_EB_NVK_Table
 {
 public:
 	ev_EB_NVK_Table()
@@ -110,7 +110,7 @@ public:
 	EV_EditBinding *	m_peb[EV_COUNT_NVK][EV_COUNT_EMS];
 };
 
-class ev_EB_Char_Table
+class ABI_EXPORT ev_EB_Char_Table
 {
 public:
 	ev_EB_Char_Table()
