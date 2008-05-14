@@ -35,7 +35,7 @@
 /*******************************************************************************/
 /*******************************************************************************/
 
-class TOC_Listener : public PL_Listener
+class ABI_EXPORT TOC_Listener : public PL_Listener
 {
 public:
   TOC_Listener(PD_Document * pDocument,
