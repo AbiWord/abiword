@@ -27,7 +27,7 @@ class EV_Toolbar;
 
 /*****************************************************************/
 
-class AP_Win32Toolbar_FontCombo : public EV_Toolbar_Control
+class ABI_EXPORT AP_Win32Toolbar_FontCombo : public EV_Toolbar_Control
 {
 public:
 	AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);

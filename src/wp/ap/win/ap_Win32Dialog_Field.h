@@ -23,7 +23,7 @@
 #include "ap_Dialog_Field.h"
 #include "xap_Frame.h"
 
-class AP_Win32Dialog_Field : public AP_Dialog_Field
+class ABI_EXPORT AP_Win32Dialog_Field : public AP_Dialog_Field
 {
 public:
 	AP_Win32Dialog_Field(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id);

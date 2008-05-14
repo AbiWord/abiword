@@ -34,7 +34,7 @@ enum PSH_PAGES {PG_GENERAL, PG_DOCUMENT, PG_SPELL};
 /*
 	Sheet
 */
-class AP_Win32Dialog_Options_Sheet: public XAP_Win32PropertySheet
+class ABI_EXPORT AP_Win32Dialog_Options_Sheet: public XAP_Win32PropertySheet
 {
 	
 public:	
@@ -56,7 +56,7 @@ private:
 /*
 	Spelling page
 */
-class AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage
 {
 	
 public:		
@@ -82,7 +82,7 @@ private:
 /*
 	General page
 */
-class AP_Win32Dialog_Options_General: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_Options_General: public XAP_Win32PropertyPage
 {
 	
 public:		
@@ -109,7 +109,7 @@ private:
 /*
 	Document page
 */
-class AP_Win32Dialog_Options_Document: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_Options_Document: public XAP_Win32PropertyPage
 {
 	
 public:	
@@ -136,7 +136,7 @@ private:
 
 
 /*****************************************************************/
-class AP_Win32Dialog_Options: public AP_Dialog_Options
+class ABI_EXPORT AP_Win32Dialog_Options: public AP_Dialog_Options
 {
 public:
 	AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -119,7 +119,7 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 /*
 	Callback object used to setup the status bar text
 */
-class ap_usb_TextListener : public AP_StatusBarFieldListener
+class ABI_EXPORT ap_usb_TextListener : public AP_StatusBarFieldListener
 {
 public:
 	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID,

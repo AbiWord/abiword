@@ -28,7 +28,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_New: public AP_Dialog_New, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_New: public AP_Dialog_New, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

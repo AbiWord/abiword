@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Goto: public AP_Dialog_Goto
+class ABI_EXPORT AP_Win32Dialog_Goto: public AP_Dialog_Goto
 {
 public:
 	AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

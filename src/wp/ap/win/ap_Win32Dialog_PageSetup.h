@@ -29,7 +29,7 @@ class AP_Win32Dialog_PageSetup;
 /*
 	Sheet
 */
-class AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet
+class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet
 {
 public:	
 		AP_Win32Dialog_PageSetup_Sheet();				
@@ -48,7 +48,7 @@ private:
 /*
 	Page page
 */
-class AP_Win32Dialog_PageSetup_Page: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_PageSetup_Page: public XAP_Win32PropertyPage
 {
 public:		
 								AP_Win32Dialog_PageSetup_Page();
@@ -74,7 +74,7 @@ private:
 /*
 	Margin page
 */
-class AP_Win32Dialog_PageSetup_Margin: public XAP_Win32PropertyPage
+class ABI_EXPORT AP_Win32Dialog_PageSetup_Margin: public XAP_Win32PropertyPage
 {
 public:		
 								AP_Win32Dialog_PageSetup_Margin();
@@ -101,7 +101,7 @@ private:
 
 
 /*****************************************************************/
-class AP_Win32Dialog_PageSetup: public AP_Dialog_PageSetup
+class ABI_EXPORT AP_Win32Dialog_PageSetup: public AP_Dialog_PageSetup
 {
 friend class AP_Win32Dialog_PageSetup_Sheet;
 friend class AP_Win32Dialog_PageSetup_Page;

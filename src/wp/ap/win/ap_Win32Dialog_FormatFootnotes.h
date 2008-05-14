@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
+class ABI_EXPORT AP_Win32Dialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
 {
 public:
 	AP_Win32Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

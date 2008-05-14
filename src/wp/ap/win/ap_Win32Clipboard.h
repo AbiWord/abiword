@@ -38,7 +38,7 @@
 
 class PD_Document;
 
-class AP_Win32Clipboard : public XAP_Win32Clipboard
+class ABI_EXPORT AP_Win32Clipboard : public XAP_Win32Clipboard
 {
 public:
 	AP_Win32Clipboard(void);

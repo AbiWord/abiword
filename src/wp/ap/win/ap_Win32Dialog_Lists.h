@@ -28,7 +28,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Lists: public AP_Dialog_Lists, XAP_Win32Dialog
+class ABI_EXPORT AP_Win32Dialog_Lists: public AP_Dialog_Lists, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

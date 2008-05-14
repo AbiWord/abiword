@@ -26,7 +26,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Background: public AP_Dialog_Background
+class ABI_EXPORT AP_Win32Dialog_Background: public AP_Dialog_Background
 {
 public:
 	AP_Win32Dialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

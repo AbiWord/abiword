@@ -33,7 +33,7 @@ class XAP_Win32App;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_Win32StatusBar : public AP_StatusBar
+class ABI_EXPORT AP_Win32StatusBar : public AP_StatusBar
 {
 public:
 	AP_Win32StatusBar(XAP_Frame * pFrame);

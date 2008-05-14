@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Spell: public AP_Dialog_Spell
+class ABI_EXPORT AP_Win32Dialog_Spell: public AP_Dialog_Spell
 {
 public:
 	AP_Win32Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

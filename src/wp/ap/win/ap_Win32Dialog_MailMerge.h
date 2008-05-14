@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge
+class ABI_EXPORT AP_Win32Dialog_MailMerge: public AP_Dialog_MailMerge
 {
 public:
 	AP_Win32Dialog_MailMerge(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

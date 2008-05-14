@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Stub: public AP_Dialog_Stub
+class ABI_EXPORT AP_Win32Dialog_Stub: public AP_Dialog_Stub
 {
 public:
 	AP_Win32Dialog_Stub(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

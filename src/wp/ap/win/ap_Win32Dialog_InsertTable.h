@@ -22,7 +22,7 @@
 
 #include "ap_Dialog_InsertTable.h"
 
-class AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable
+class ABI_EXPORT AP_Win32Dialog_InsertTable : public AP_Dialog_InsertTable
 {
 public:
 	
