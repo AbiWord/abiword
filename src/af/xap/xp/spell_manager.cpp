@@ -194,7 +194,7 @@ void SpellChecker::correctWord (const UT_UCSChar * /*toCorrect*/, size_t /*toCor
  */
 SpellManager::~SpellManager ()
 {
-	UT_Vector * pVec = m_map.enumerate();
+	UT_GenericVector<void const *> *pVec = m_map.enumerate();
 	UT_ASSERT(pVec);
 	UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
 	DELETEP(pVec);
