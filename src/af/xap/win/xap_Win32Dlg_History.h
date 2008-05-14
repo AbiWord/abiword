@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_History: public XAP_Dialog_History
+class ABI_EXPORT XAP_Win32Dialog_History: public XAP_Dialog_History
 {
 public:
 	XAP_Win32Dialog_History(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

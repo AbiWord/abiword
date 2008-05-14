@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Language: public XAP_Dialog_Language
+class ABI_EXPORT XAP_Win32Dialog_Language: public XAP_Dialog_Language
 {
 public:
 	XAP_Win32Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

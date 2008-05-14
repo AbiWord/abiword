@@ -25,7 +25,7 @@
 #define COLOUR_SMPLENGTH  20
 #define COLOUR_SMPHIGH   10
 
-class XAP_Win32ColourButton
+class ABI_EXPORT XAP_Win32ColourButton
 {
 public:
 	

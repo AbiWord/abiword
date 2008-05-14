@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_ClipArt: public XAP_Dialog_ClipArt
+class ABI_EXPORT XAP_Win32Dialog_ClipArt: public XAP_Dialog_ClipArt
 {
 public:
 	XAP_Win32Dialog_ClipArt(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

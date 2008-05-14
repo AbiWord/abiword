@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_PrintPreview : public XAP_Dialog_PrintPreview
+class ABI_EXPORT XAP_Win32Dialog_PrintPreview : public XAP_Dialog_PrintPreview
 {
  public:
 	XAP_Win32Dialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

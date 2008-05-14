@@ -22,7 +22,7 @@
 
 #include "xap_Toolbar_ControlFactory.h"
 
-class AP_Win32Toolbar_ControlFactory : public XAP_Toolbar_ControlFactory
+class ABI_EXPORT AP_Win32Toolbar_ControlFactory : public XAP_Toolbar_ControlFactory
 {
 public:
 	AP_Win32Toolbar_ControlFactory();

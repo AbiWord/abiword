@@ -25,7 +25,7 @@ class GR_Win32Image;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_About: public XAP_Dialog_About
+class ABI_EXPORT XAP_Win32Dialog_About: public XAP_Dialog_About
 {
 public:
 	XAP_Win32Dialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

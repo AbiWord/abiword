@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_FontChooser : public XAP_Dialog_FontChooser
+class ABI_EXPORT XAP_Win32Dialog_FontChooser : public XAP_Dialog_FontChooser
 {
 public:
 	XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
