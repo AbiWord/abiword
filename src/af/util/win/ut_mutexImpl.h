@@ -21,7 +21,6 @@
 #define UT_MUTEXIMPL_H
 
 #include <windows.h>
-#include "ut_types.h"
 
 /*!
  * Win32 implementation of a mutex class

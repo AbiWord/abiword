@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiSource Program Utilities
  *
  * Copyright (C) 2001 Mike Nordell <tamlin@alogonet.se>
@@ -64,7 +62,7 @@ template <class T> class ABI_EXPORT UT_GenericStringMap
 {
 public:
 	UT_GenericStringMap(size_t expected_cardinality = 11);
-	virtual ~UT_GenericStringMap();
+	~UT_GenericStringMap();
 
 	// insertion/addition
 	bool insert(const char* key, T value);
@@ -246,15 +244,9 @@ template class ABI_EXPORT UT_GenericStringMap<char *>;
 
 //template class ABI_EXPORT UT_GenericStringMap<void const*>;
 #endif
+typedef UT_GenericStringMap<void const *>  UT_StringPtrMap;
 
-// TODO Rob: try to export like this once plugin loading is fixed:
-// template class ABI_EXPORT UT_GenericStringMap<void const *>;
-class ABI_EXPORT UT_StringPtrMap : public UT_GenericStringMap<void const *> {
-public:
-	UT_StringPtrMap(size_t expected_cardinality = 11)
-	: UT_GenericStringMap<void const *>(expected_cardinality)
-	{}
-};
+
 
 // Template implementation
 
