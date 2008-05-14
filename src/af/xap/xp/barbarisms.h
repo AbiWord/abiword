@@ -26,7 +26,7 @@
 #ifndef BARBARISMS_H
 #define BARBARISMS_H
 
-class BarbarismChecker : public UT_XML::Listener
+class ABI_EXPORT BarbarismChecker : public UT_XML::Listener
 {
 public:	
 	BarbarismChecker();

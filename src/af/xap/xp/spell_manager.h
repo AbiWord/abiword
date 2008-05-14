@@ -42,7 +42,7 @@ struct DictionaryMapping
 	UT_String enc;	// the encoding of the dictionary
 };
 
-class SpellChecker
+class ABI_EXPORT SpellChecker
 {
 	friend class SpellManager;
 
@@ -111,7 +111,7 @@ private:
 	virtual UT_GenericVector<UT_UCSChar*> *_suggestWord(const UT_UCSChar* word, size_t len) = 0;
 };
 
-class SpellManager
+class ABI_EXPORT SpellManager
 {
 public:
 	static SpellManager & instance (void);

@@ -23,7 +23,7 @@
 #include "spell_manager.h"
 #include <enchant.h>
 
-class EnchantChecker : public SpellChecker
+class ABI_EXPORT EnchantChecker : public SpellChecker
 {
 	friend class SpellManager;
 
