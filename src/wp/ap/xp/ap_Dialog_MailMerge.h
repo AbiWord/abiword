@@ -27,7 +27,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_MailMerge : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_MailMerge : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,

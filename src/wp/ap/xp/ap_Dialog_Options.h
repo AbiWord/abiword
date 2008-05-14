@@ -38,7 +38,7 @@
 class XAP_Frame;
 class UT_String;
 
-class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 {
  public:
 
@@ -206,7 +206,7 @@ private:
  */
 class AP_PreferenceSchemeManager;
 
-class AP_PreferenceScheme
+class ABI_EXPORT AP_PreferenceScheme
 {
 private:
 	struct BoolOptionData
@@ -331,7 +331,7 @@ private:
 	struct BoolOptionData			m_BOData[bo__count];
 };
 
-class AP_PreferenceSchemeManager
+class ABI_EXPORT AP_PreferenceSchemeManager
 {
 private:
 	AP_PreferenceSchemeManager();

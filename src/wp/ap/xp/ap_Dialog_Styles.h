@@ -31,7 +31,7 @@ class XAP_Frame;
 #include "xap_Preview.h"
 #include "ap_Preview_Paragraph.h"
 
-class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 {
  public:
 	AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

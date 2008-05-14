@@ -31,7 +31,7 @@ class AP_Preview_Paragraph;
 
 #define SPIN_BUF_TEXT_SIZE	20
 
-class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 {
 	// the preview's block classes want to use some of our protected enums
 	// below for similar alignment, etc.
@@ -108,7 +108,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	XAP_Frame *				m_pFrame;
 
 private:
-	class sControlData
+	class ABI_EXPORT sControlData
 	{
 	private:
 		UT_sint32		m_siData;

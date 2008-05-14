@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include "gr_Graphics.h"
 
-class ap_RulerTicks
+class ABI_EXPORT ap_RulerTicks
 {
 public:
 	ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim);

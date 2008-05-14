@@ -32,7 +32,7 @@ void set##name(const UT_UTF8String & val) { m_##name = val ; } \
 UT_UTF8String get##name() const { return m_##name ; } \
 private: UT_UTF8String m_##name ;
 
-class AP_Dialog_Annotation : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Annotation : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid)

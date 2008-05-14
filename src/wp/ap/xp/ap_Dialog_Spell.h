@@ -33,7 +33,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Spell : public XAP_Dialog_NonPersistent
 {
    
  public:

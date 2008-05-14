@@ -33,7 +33,7 @@
 
 class GR_Font;
 
-class AP_Preview_Abi : public XAP_Preview
+class ABI_EXPORT AP_Preview_Abi : public XAP_Preview
 {
 public:
 

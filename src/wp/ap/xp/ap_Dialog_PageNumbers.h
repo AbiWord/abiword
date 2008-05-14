@@ -30,7 +30,7 @@ class AP_Dialog_Lists;
 class AP_Preview_Paragraph;
 class AP_Preview_PageNumbers;
 
-class AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
 {
  public:
 
@@ -73,7 +73,7 @@ class AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
 	XAP_Frame * m_pFrame;
 };
 
-class AP_Preview_PageNumbers : public XAP_Preview
+class ABI_EXPORT AP_Preview_PageNumbers : public XAP_Preview
 {
 public:
 

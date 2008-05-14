@@ -33,7 +33,7 @@ class UT_String;
 class XAP_App;
 
 // warning: options array is static.
-class AP_Args
+class ABI_EXPORT AP_Args
 {
 public:
 	AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp);

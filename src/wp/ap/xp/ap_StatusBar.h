@@ -64,7 +64,7 @@ enum _progress_flags {
 class AP_StatusBarField;
 
 
-class AP_StatusBar : public AV_Listener
+class ABI_EXPORT AP_StatusBar : public AV_Listener
 {
 public:
     AP_StatusBar(XAP_Frame * pFrame);
@@ -105,7 +105,7 @@ protected:
 // intended for platform specific code
 class AP_StatusBarField; // fwd decl
 
-class AP_StatusBarFieldListener
+class ABI_EXPORT AP_StatusBarFieldListener
 {
 public:
     AP_StatusBarFieldListener(AP_StatusBarField *pStatusBarField) { m_pStatusBarField = pStatusBarField; }
@@ -128,7 +128,7 @@ enum _statusbar_textelement_alignment_method {
 };
 
 // AP_StatusBarField: abstract base class for a status bar field
-class AP_StatusBarField
+class ABI_EXPORT AP_StatusBarField
 {
 public:
     AP_StatusBarField(AP_StatusBar * pSB);
@@ -146,7 +146,7 @@ protected:
     _statusbar_element_fill_method m_fillMethod;
 };
 
-class AP_StatusBarField_TextInfo : public AP_StatusBarField
+class ABI_EXPORT AP_StatusBarField_TextInfo : public AP_StatusBarField
 {
 public:
     AP_StatusBarField_TextInfo(AP_StatusBar * pSB); 
@@ -165,7 +165,7 @@ protected:
 };
 
 // PROGRESSBAR. CURRENTLY UNUSED. MAY BE BROKEN. NEEDS TESTING.
-class AP_StatusBarField_ProgressBar : public AP_StatusBarField
+class ABI_EXPORT AP_StatusBarField_ProgressBar : public AP_StatusBarField
 {
 public:
     AP_StatusBarField_ProgressBar(AP_StatusBar * pSB);

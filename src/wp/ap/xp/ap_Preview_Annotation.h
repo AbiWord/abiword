@@ -32,7 +32,7 @@
 #define PREVIEW_DEFAULT_WIDTH 320
 #define PREVIEW_DEFAULT_HEIGHT 80
 
-class AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_Modeless
 {
 public:
 	AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

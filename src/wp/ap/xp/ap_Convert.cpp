@@ -62,7 +62,7 @@ void AP_Convert::setMergeSource (const char * source)
 
 /////////////////////////////////////////////////////////////////
 
-class Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+class ABI_EXPORT Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
 public:
 	
@@ -106,7 +106,7 @@ private:
 	UT_UTF8String m_expProps;
 };
 
-class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+class ABI_EXPORT Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
 public:
 

@@ -36,14 +36,14 @@ class AP_Dialog_Columns;
 #include "ut_units.h"
 
 
-class AP_Columns_preview_drawer
+class ABI_EXPORT AP_Columns_preview_drawer
 {
 public:
 
 	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines, double maxHeightPercent, double SpaceAfterPercent);
 };
 
-class AP_Columns_preview : public XAP_Preview
+class ABI_EXPORT AP_Columns_preview : public XAP_Preview
 {
 public:
 
@@ -70,7 +70,7 @@ protected:
 
 };
 
-class AP_Dialog_Columns : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Columns : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

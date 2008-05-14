@@ -32,7 +32,7 @@ class XAP_Frame;
 class PD_Document;
 class PD_Style;
 
-class Stylist_row
+class ABI_EXPORT Stylist_row
 {
 public:
 	Stylist_row(void);
@@ -48,7 +48,7 @@ private:
 	UT_UTF8String  m_sRowName;
 };
 
-class Stylist_tree
+class ABI_EXPORT Stylist_tree
 {
 public:
 	Stylist_tree(PD_Document * pDoc);
@@ -70,7 +70,7 @@ private:
 };
 		
 
-class AP_Dialog_Stylist : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_Stylist : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

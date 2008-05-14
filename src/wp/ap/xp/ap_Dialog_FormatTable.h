@@ -42,14 +42,14 @@ class XAP_Frame;
 class fp_TableContainer;
 class AP_Dialog_FormatTable;
 
-class AP_FormatTable_preview_drawer
+class ABI_EXPORT AP_FormatTable_preview_drawer
 {
 public:
 
 	void			draw(GR_Graphics *gc, UT_Rect &rect);
 };
 
-class AP_FormatTable_preview : public XAP_Preview
+class ABI_EXPORT AP_FormatTable_preview : public XAP_Preview
 {
 public:
 
@@ -72,7 +72,7 @@ protected:
 
 };
 
-class AP_Dialog_FormatTable : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_FormatTable : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

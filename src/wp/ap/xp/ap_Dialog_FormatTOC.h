@@ -33,7 +33,7 @@ class PD_Document;
 class PD_Style;
 class PP_AttrProp;
 
-class AP_Dialog_FormatTOC : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_FormatTOC : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
