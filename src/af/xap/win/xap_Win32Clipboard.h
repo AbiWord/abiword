@@ -24,7 +24,7 @@
 #include "ut_vector.h"
 #include "xap_Clipboard.h"
 
-class XAP_Win32Clipboard
+class ABI_EXPORT XAP_Win32Clipboard
 {
 public:
 	XAP_Win32Clipboard(void);

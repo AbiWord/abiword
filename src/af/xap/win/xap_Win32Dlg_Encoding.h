@@ -27,7 +27,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Encoding: public XAP_Win32DialogBase, public XAP_Dialog_Encoding
+class ABI_EXPORT XAP_Win32Dialog_Encoding: public XAP_Win32DialogBase, public XAP_Dialog_Encoding
 {
 public:
 	XAP_Win32Dialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

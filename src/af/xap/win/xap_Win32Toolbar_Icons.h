@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class AP_Win32Toolbar_Icons : public AP_Toolbar_Icons
+class ABI_EXPORT AP_Win32Toolbar_Icons : public AP_Toolbar_Icons
 {
 public:
 	AP_Win32Toolbar_Icons(void);

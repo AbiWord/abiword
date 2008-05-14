@@ -21,7 +21,7 @@
 #include <ddeml.h>
 class XAP_Win32APP;
 
-class XAP_Win32Slurp
+class ABI_EXPORT XAP_Win32Slurp
 {
 public:
 	XAP_Win32Slurp(XAP_Win32App * pApp);

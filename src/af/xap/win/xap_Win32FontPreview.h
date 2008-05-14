@@ -26,7 +26,7 @@
 
 class GR_Win32Graphics;
 
-class XAP_Win32FontPreview : public XAP_FontPreview
+class ABI_EXPORT XAP_Win32FontPreview : public XAP_FontPreview
 {
 public:
 	XAP_Win32FontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);

@@ -29,7 +29,7 @@ class UT_String;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
+class ABI_EXPORT XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
 	XAP_Win32Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

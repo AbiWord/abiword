@@ -27,7 +27,7 @@ class XAP_Frame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_HTMLOptions : public XAP_Win32DialogBase, public XAP_Dialog_HTMLOptions
+class ABI_EXPORT XAP_Win32Dialog_HTMLOptions : public XAP_Win32DialogBase, public XAP_Dialog_HTMLOptions
 {
 public:
 	XAP_Win32Dialog_HTMLOptions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

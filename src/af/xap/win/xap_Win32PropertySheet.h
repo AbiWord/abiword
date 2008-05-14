@@ -39,7 +39,7 @@ class XAP_Win32PropertySheet;
 #define ID_APPLY_NOW                    0x3021
 
 
-class XAP_Win32PropertyPage
+class ABI_EXPORT XAP_Win32PropertyPage
 {
 public:
 	
@@ -73,7 +73,7 @@ private:
 };
 
 
-class XAP_Win32PropertySheet
+class ABI_EXPORT XAP_Win32PropertySheet
 {
 public:
 	XAP_Win32PropertySheet();		

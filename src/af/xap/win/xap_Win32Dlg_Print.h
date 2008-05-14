@@ -26,7 +26,7 @@
 #include <commdlg.h>
 /*****************************************************************/
 
-class XAP_Win32Dialog_Print : public XAP_Dialog_Print
+class ABI_EXPORT XAP_Win32Dialog_Print : public XAP_Dialog_Print
 {
 public:
 	XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

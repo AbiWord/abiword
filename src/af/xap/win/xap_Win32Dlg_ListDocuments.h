@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_ListDocuments: public XAP_Dialog_ListDocuments
+class ABI_EXPORT XAP_Win32Dialog_ListDocuments: public XAP_Dialog_ListDocuments
 {
 public:
 	XAP_Win32Dialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -27,7 +27,7 @@
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_DocComparison: public XAP_Dialog_DocComparison
+class ABI_EXPORT XAP_Win32Dialog_DocComparison: public XAP_Dialog_DocComparison
 {
 public:
 	XAP_Win32Dialog_DocComparison(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

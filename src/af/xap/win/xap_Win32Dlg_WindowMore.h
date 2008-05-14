@@ -26,7 +26,7 @@
 class XAP_Frame;
 /*****************************************************************/
 
-class XAP_Win32Dialog_WindowMore: public XAP_Win32DialogBase, public XAP_Dialog_WindowMore
+class ABI_EXPORT XAP_Win32Dialog_WindowMore: public XAP_Win32DialogBase, public XAP_Dialog_WindowMore
 {
 public:
 	XAP_Win32Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

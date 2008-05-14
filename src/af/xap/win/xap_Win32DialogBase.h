@@ -39,7 +39,7 @@
 class XAP_Frame;
 class XAP_StringSet;
 
-class XAP_Win32DialogBase
+class ABI_EXPORT XAP_Win32DialogBase
 {
 public:
 	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0), m_pSS(0) {}
