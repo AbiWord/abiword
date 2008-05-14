@@ -78,7 +78,7 @@ struct ap_bs_Char_Prefix
 
 typedef bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
 
-class c_lb
+class ABI_EXPORT c_lb
 {
  public:
   c_lb(c_lb * pc_lb);

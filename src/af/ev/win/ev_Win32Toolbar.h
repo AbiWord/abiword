@@ -45,7 +45,7 @@ class EV_Toolbar_Action;
 #define _ev_MENU_OFFSET		1000
 #endif
 
-class EV_Win32Toolbar : public EV_Toolbar
+class ABI_EXPORT EV_Win32Toolbar : public EV_Toolbar
 {
 public:
 	EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,

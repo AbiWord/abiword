@@ -34,7 +34,7 @@
 class AV_View;
 
 
-class EV_Win32Mouse : public EV_Mouse
+class ABI_EXPORT EV_Win32Mouse : public EV_Mouse
 {
 public:
 	EV_Win32Mouse(EV_EditEventMapper * pEEM);

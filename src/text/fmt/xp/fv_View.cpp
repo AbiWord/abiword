@@ -103,7 +103,7 @@
 #define FRAME_MARGIN 144
 /****************************************************************/
 
-class _fmtPair
+class ABI_EXPORT _fmtPair
 {
 public:
 	_fmtPair(const gchar * p,
@@ -118,7 +118,7 @@ public:
 	const gchar *	m_val;
 };
 
-class FV_Caret_Listener : public AV_Listener
+class ABI_EXPORT FV_Caret_Listener : public AV_Listener
 {
 public:
   FV_Caret_Listener(XAP_Frame * pFrame) : m_pFrame (pFrame) {}

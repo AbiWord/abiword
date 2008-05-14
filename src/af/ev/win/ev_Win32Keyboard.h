@@ -27,7 +27,7 @@
 
 class AV_View;
 
-class ev_Win32Keyboard : public EV_Keyboard
+class ABI_EXPORT ev_Win32Keyboard : public EV_Keyboard
 {
 public:
 	ev_Win32Keyboard(EV_EditEventMapper * pEEM);

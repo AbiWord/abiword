@@ -413,7 +413,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
     Class that implements an assert dialogue; this is a private class, we only access it
     through UT_Win32ThrowAssert() function
 */
-class UT_Win32AssertDlg
+class ABI_EXPORT UT_Win32AssertDlg
 {
 	friend int ABI_EXPORT UT_Win32ThrowAssert(const char *, const char *, int, int);
 	

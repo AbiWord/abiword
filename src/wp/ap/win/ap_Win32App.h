@@ -57,7 +57,7 @@ class PD_DocumentRange;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class AP_Win32App : public AP_App
+class ABI_EXPORT AP_Win32App : public AP_App
 {
 public:
 	AP_Win32App(HINSTANCE hInstance, const char * szAppName);

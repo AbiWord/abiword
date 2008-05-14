@@ -25,7 +25,7 @@
 /*!
  * Win32 implementation of a mutex class
  */
-class UT_MutexImpl
+class ABI_EXPORT UT_MutexImpl
 {
  public:
 

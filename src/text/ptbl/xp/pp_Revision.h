@@ -40,7 +40,7 @@ typedef enum {
     provides functions for retrieving information and from merging
     properties
 */
-class PP_Revision: public PP_AttrProp
+class ABI_EXPORT PP_Revision: public PP_AttrProp
 {
   public:
 	PP_Revision(UT_uint32 Id,

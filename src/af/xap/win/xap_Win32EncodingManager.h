@@ -4,7 +4,7 @@
 #include "xap_EncodingManager.h"
 
 /* it's assumed that only one instance of this class will exist */
-class XAP_Win32EncodingManager: public XAP_EncodingManager
+class ABI_EXPORT XAP_Win32EncodingManager: public XAP_EncodingManager
 {
 protected:
     XAP_Win32EncodingManager();

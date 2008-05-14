@@ -42,7 +42,7 @@ typedef struct
 } EV_Menu_Bitmap;	
 
 
-class EV_Win32Menu : public EV_Menu
+class ABI_EXPORT EV_Win32Menu : public EV_Menu
 {
 public:
 	EV_Win32Menu(XAP_Win32App * pWin32App,
@@ -98,7 +98,7 @@ typedef struct
 
 /*****************************************************************/
 
-class EV_Win32MenuBar : public EV_Win32Menu
+class ABI_EXPORT EV_Win32MenuBar : public EV_Win32Menu
 {
 public:
 	EV_Win32MenuBar(XAP_Win32App * pWin32App,
@@ -112,7 +112,7 @@ public:
 
 /*****************************************************************/
 
-class EV_Win32MenuPopup : public EV_Win32Menu
+class ABI_EXPORT EV_Win32MenuPopup : public EV_Win32Menu
 {
 public:
 	EV_Win32MenuPopup(XAP_Win32App * pWin32App,

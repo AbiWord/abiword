@@ -47,7 +47,7 @@ class fp_TableContainer;
 class fl_TOCLayout;
 struct dg_DrawArgs;
 
-class _BL
+class ABI_EXPORT _BL
 	{
 	public:
 		_BL(fl_BlockLayout * pBL,fp_Line * pL) :

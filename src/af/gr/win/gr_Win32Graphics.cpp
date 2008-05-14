@@ -68,7 +68,7 @@ HDC GR_Win32Graphics::m_defPrintHDC = NULL;
 /*****************************************************************/
 
 // A small helper class
-class private_FontReverter
+class ABI_EXPORT private_FontReverter
 {
 public:
 	private_FontReverter(GR_Win32Graphics& gr, GR_Font* pOldFont)
