@@ -72,7 +72,7 @@ AP_StatusBarField_TextInfo::AP_StatusBarField_TextInfo(AP_StatusBar *pSB)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-class ap_sbf_PageInfo : public AP_StatusBarField_TextInfo
+class ABI_EXPORT ap_sbf_PageInfo : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_PageInfo(AP_StatusBar * pSB);
@@ -139,7 +139,7 @@ ap_sbf_PageInfo::~ap_sbf_PageInfo()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class ap_sbf_StatusMessage : public AP_StatusBarField_TextInfo
+class ABI_EXPORT ap_sbf_StatusMessage : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_StatusMessage(AP_StatusBar * pSB);
@@ -176,7 +176,7 @@ void ap_sbf_StatusMessage::update(const UT_UTF8String &sMessage)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class ap_sbf_InputMode : public AP_StatusBarField_TextInfo
+class ABI_EXPORT ap_sbf_InputMode : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_InputMode(AP_StatusBar * pSB);
@@ -212,7 +212,7 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class ap_sbf_InsertMode : public AP_StatusBarField_TextInfo
+class ABI_EXPORT ap_sbf_InsertMode : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_InsertMode(AP_StatusBar * pSB);
@@ -262,7 +262,7 @@ void ap_sbf_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class ap_sbf_Language : public AP_StatusBarField_TextInfo
+class ABI_EXPORT ap_sbf_Language : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_Language(AP_StatusBar * pSB);

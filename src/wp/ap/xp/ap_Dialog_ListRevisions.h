@@ -26,7 +26,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_ListRevisions : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_ListRevisions : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory,

@@ -26,7 +26,7 @@
 #include "xap_Dialog.h"
 #include "fp_PageSize.h"
 
-class AP_Dialog_PageSetup : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_PageSetup : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_PageSetup(XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);

@@ -40,7 +40,7 @@ class XAP_Frame;
 	*much* better off stealing code from another existing dialog which 
 	does something real.  
 */
-class AP_Dialog_Stub : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Stub : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_Stub(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

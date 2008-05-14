@@ -35,7 +35,7 @@ class GR_Font;
 
 // a mini-class representing a block of text to be
 // drawn in the preview
-class AP_Preview_Paragraph_Block
+class ABI_EXPORT AP_Preview_Paragraph_Block
 {
  public:
 	AP_Preview_Paragraph_Block(UT_RGBColor & clr,
@@ -87,7 +87,7 @@ class AP_Preview_Paragraph_Block
 	UT_NumberVector m_widths;
 };
 
-class AP_Preview_Paragraph : public XAP_Preview
+class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 {
  public:
 

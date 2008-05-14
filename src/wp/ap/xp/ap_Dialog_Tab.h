@@ -36,7 +36,7 @@ typedef void (*TabSaveCallBack)(AP_Dialog_Tab * pDlg,
 								FV_View *pView, const char * szTabStops,
 								const char * szDflTabStop, void * closure);
 
-class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 {
  public:
 

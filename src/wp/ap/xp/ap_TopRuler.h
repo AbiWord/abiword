@@ -50,7 +50,7 @@ class  AP_TopRulerTableInfo;
 
 
 /*****************************************************************/
-class AP_TopRulerTableInfo
+class ABI_EXPORT AP_TopRulerTableInfo
 {
 public:
 	UT_sint32 m_iLeftCellPos;
@@ -64,7 +64,7 @@ public:
 
 /*****************************************************************/
 
-class AP_TopRulerInfo 
+class ABI_EXPORT AP_TopRulerInfo 
 {
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE, TRI_MODE_FRAME } Mode;
@@ -182,7 +182,7 @@ public:
 	} u;
 };
 
-class AP_TopRuler : public AV_Listener
+class ABI_EXPORT AP_TopRuler : public AV_Listener
 {
 public:
 	AP_TopRuler(XAP_Frame * pFrame);

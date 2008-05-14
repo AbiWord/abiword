@@ -29,7 +29,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_Field : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Field : public XAP_Dialog_NonPersistent
 {
 public:
 	typedef enum { a_OK, a_CANCEL } tAnswer;

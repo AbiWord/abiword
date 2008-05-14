@@ -26,7 +26,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_MarkRevisions : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_MarkRevisions : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,

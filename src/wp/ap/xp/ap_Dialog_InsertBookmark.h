@@ -30,7 +30,7 @@
 #define BOOKMARK_SIZE_LIMIT 30
 class XAP_Frame;
 
-class AP_Dialog_InsertBookmark : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_InsertBookmark : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,

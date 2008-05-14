@@ -30,7 +30,7 @@ class UT_Worker;
 class XAP_Frame;
 class fp_TableContainer;
 
-class AP_Dialog_SplitCells : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_SplitCells : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

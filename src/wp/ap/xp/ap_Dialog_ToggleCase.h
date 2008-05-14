@@ -25,7 +25,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_ToggleCase : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_ToggleCase : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, 

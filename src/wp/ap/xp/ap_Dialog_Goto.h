@@ -25,7 +25,7 @@
 class FV_View;
 class XAP_Frame;
 
-class AP_Dialog_Goto : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_Goto : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

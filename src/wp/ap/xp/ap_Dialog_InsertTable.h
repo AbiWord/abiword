@@ -28,7 +28,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_InsertTable : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_InsertTable : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

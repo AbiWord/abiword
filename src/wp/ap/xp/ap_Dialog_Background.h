@@ -27,7 +27,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_Background : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_Background : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

@@ -36,7 +36,7 @@ class AP_Preview_Paragraph;
 class AP_Dialog_Lists;
 
 
-class AP_Lists_preview : public XAP_Preview
+class ABI_EXPORT AP_Lists_preview : public XAP_Preview
 {
 public:
 
@@ -60,7 +60,7 @@ protected:
 	bool				m_bFirst;
 };
 		
-class AP_Dialog_Lists : public XAP_Dialog_Modeless
+class ABI_EXPORT AP_Dialog_Lists : public XAP_Dialog_Modeless
 {
 
 public:

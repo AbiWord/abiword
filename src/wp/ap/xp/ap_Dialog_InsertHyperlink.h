@@ -28,7 +28,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_InsertHyperlink : public XAP_Dialog_NonPersistent
+class ABI_EXPORT AP_Dialog_InsertHyperlink : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
