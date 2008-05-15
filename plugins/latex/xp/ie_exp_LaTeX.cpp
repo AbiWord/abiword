@@ -235,7 +235,7 @@ public:
 									PL_StruxDocHandle /*sdh*/,
 									PL_ListenerId /*lid*/,
 									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
+									PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -586,15 +586,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_iBlockType = BT_HEADING3;
 				m_pie->write("\\subsubsection{");
 			}
-			else if (0 == strcmp(szValue, "Chapter Heading")) {
-				// TODO: Clean this...
-				char			szChapterNumber[6];
-				m_iBlockType = BT_HEADING1;
-				sprintf(szChapterNumber, "%d", ChapterNumber++);
-				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
-				m_pie->write(szChapterNumber);
-				m_pie->write(" ");	  // \\newline");
-        		}
 			else if (0 == strcmp(szValue, "Chapter Heading")) {
 				// TODO: Clean this...
 				char			szChapterNumber[6];
