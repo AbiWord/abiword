@@ -140,12 +140,23 @@ private:
 	UT_uint32		m_iPostCutoffIncrement;
 };
 
-#if 0 //def _MSC_VER // have to intialise the templates in order to have class exported
-#include "ut_Win32Vector.h"
-#endif
+// TODO Rob: try to export like this once plugin loading is fixed:
+// template class ABI_EXPORT UT_GenericVector<void const *>;
+class ABI_EXPORT UT_Vector : public UT_GenericVector<void const *> {
+public:
+	UT_Vector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false)
+	: UT_GenericVector<void const *>(sizehint, baseincr, bPrealloc)
+	{}
+};
 
-typedef ABI_EXPORT UT_GenericVector<void const *> UT_Vector;
-typedef ABI_EXPORT UT_GenericVector<UT_sint32> UT_NumberVector;
+// TODO Rob: try to export like this once plugin loading is fixed:
+// template class ABI_EXPORT UT_GenericVector<UT_sint32>;
+class ABI_EXPORT UT_NumberVector : public UT_GenericVector<UT_sint32> {
+public:
+	UT_NumberVector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false)
+	: UT_GenericVector<UT_sint32>(sizehint, baseincr, bPrealloc)
+	{}
+};
 
 #include <stdlib.h>
 #include <string.h>

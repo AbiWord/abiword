@@ -156,7 +156,7 @@ void ISpellChecker::clearIgnores()
 {
 	UT_ASSERT(m_pIgnoreList);
 
-	UT_Vector * pVec = m_pIgnoreList->enumerate();
+	UT_GenericVector<void const *> *pVec = m_pIgnoreList->enumerate();
 	UT_ASSERT(pVec);
 
 	UT_uint32 size = pVec->size();
