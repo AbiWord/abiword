@@ -32,6 +32,7 @@ bool AbiCollab_Regression::execute()
 	for (std::vector<std::string>::const_iterator cit = files.begin(); cit != files.end(); cit++)
 	{
 	}
+	return true;
 }
 
 #ifndef WIN32

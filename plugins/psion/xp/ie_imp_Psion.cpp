@@ -522,6 +522,7 @@ UT_Error IE_Imp_Psion::processHeaderFooter(const psiconv_page_layout_section lay
 		if ((res = readParagraphs(layout->footer->text->paragraphs,NULL)))
 			return res;
 	}
+	return res;
 }
 
 /*!  

@@ -204,6 +204,7 @@ bool DiskSessionRecorder::dumpSession( const std::string& filename )
 			DELETEP(rp);
 		}
 	}
+	return true;
 }
 
 void DiskSessionRecorder::destroy()

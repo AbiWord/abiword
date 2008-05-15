@@ -574,8 +574,7 @@ GR_Image * Presentation::renderPageToImage(UT_sint32 iPage, UT_uint32 iZoom)
 #endif
 bool  Presentation::showNext(void)
 {
-  showNextPage();
-  return true;
+  return showNextPage();
 }
 
 
