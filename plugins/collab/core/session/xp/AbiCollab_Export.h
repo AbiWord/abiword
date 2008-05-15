@@ -38,7 +38,7 @@ class PX_ChangeRecord;
 class ChangeAdjust;
 class AbiCollab;
 
-class  ABI_Collab_Export : public PL_DocChangeListener
+class ABI_Collab_Export : public PL_DocChangeListener
 {
 
 friend class AbiCollab;

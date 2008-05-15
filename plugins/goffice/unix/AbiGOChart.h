@@ -36,7 +36,7 @@ class AD_Document;
 class GOChartView;
 class GR_AbiGOChartItems;
 
-class  GR_AbiGOChartItems
+class GR_AbiGOChartItems
 {
  public:
   GR_AbiGOChartItems();
@@ -45,7 +45,7 @@ class  GR_AbiGOChartItems
   bool m_bHasSnapshot;
 };
 
-class  GR_GOChartManager : public GR_EmbedManager 
+class GR_GOChartManager : public GR_EmbedManager 
 {
 public:
     GR_GOChartManager(GR_Graphics * pG);
@@ -94,7 +94,7 @@ private:
 };
 
 // FIXME wrapper for libGNOMEOFFICEChart object
-class  GOChartView
+class GOChartView
 {
 public:
 	GOChartView(GR_GOChartManager  * pGOMan);

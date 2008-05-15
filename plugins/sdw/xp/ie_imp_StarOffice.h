@@ -59,7 +59,7 @@ void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = NULL) UT_
  * @param cryptor (Optional) The cryptor used for decrypting the string */
 void readByteString(GsfInput* stream, UT_UCS4Char*& str, UT_iconv_t converter, SDWCryptor* cryptor = NULL) UT_THROWS((UT_Error));
 
-class  DocHdr {
+class DocHdr {
 	public:
 		DocHdr() : sBlockName(NULL), converter(reinterpret_cast<UT_iconv_t>(-1)) {}
 		~DocHdr() { if (sBlockName) free(sBlockName); if (UT_iconv_isValid(converter)) UT_iconv_close(converter); }
@@ -161,7 +161,7 @@ struct TextAttr {
 #define IDX_NOCONV_FF 0xFFFC
 
 // Staroffice document sniffer.
-class  IE_Imp_StarOffice_Sniffer : public IE_ImpSniffer
+class IE_Imp_StarOffice_Sniffer : public IE_ImpSniffer
 {
 	public:
 		IE_Imp_StarOffice_Sniffer();
@@ -175,7 +175,7 @@ class  IE_Imp_StarOffice_Sniffer : public IE_ImpSniffer
 };
 
 // Actual Importer
-class  IE_Imp_StarOffice : public IE_Imp
+class IE_Imp_StarOffice : public IE_Imp
 {
 	public:
 		IE_Imp_StarOffice(PD_Document *pDocument);

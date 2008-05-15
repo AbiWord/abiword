@@ -46,7 +46,7 @@ typedef struct wri_image {
 
 // The importer/reader for MS Write Files.
 
-class  IE_Imp_MSWrite_Sniffer : public IE_ImpSniffer
+class IE_Imp_MSWrite_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -67,7 +67,7 @@ public:
 };
 
 
-class  IE_Imp_MSWrite : public IE_Imp
+class IE_Imp_MSWrite : public IE_Imp
 {
 public:
 	IE_Imp_MSWrite(PD_Document * pDocument);

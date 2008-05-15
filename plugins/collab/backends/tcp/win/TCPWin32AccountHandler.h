@@ -29,7 +29,7 @@
 
 #include <backends/tcp/xp/TCPAccountHandler.h>
 
-class  TCPWin32AccountHandler : public TCPAccountHandler
+class TCPWin32AccountHandler : public TCPAccountHandler
 {
 public:
 	TCPWin32AccountHandler();

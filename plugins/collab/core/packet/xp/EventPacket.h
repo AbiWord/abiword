@@ -25,7 +25,7 @@
 #include "ut_string_class.h"
 #include "AbiCollab_Packet.h"
 
-class  EventPacket : public Packet
+class EventPacket : public Packet
 {
 public:
 	DECLARE_ABSTRACT_PACKET(EventPacket);

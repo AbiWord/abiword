@@ -29,14 +29,14 @@
 #include "ut_mbtowc.h"
 #include "pd_Document.h"
 #include <glib.h>
-class   UT_ByteBuf;
-class   ImportStream;
+class  UT_ByteBuf;
+class  ImportStream;
 
 extern GSList *mime_types;
 
 // The importer/reader for Embedable Components.
 
-class  IE_Imp_Component_Sniffer : public IE_ImpSniffer
+class IE_Imp_Component_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Component;
@@ -69,7 +69,7 @@ protected:
 
 // The importer/reader for GNOME-Office charts.
 
-class  IE_Imp_Component : public IE_Imp
+class IE_Imp_Component : public IE_Imp
 {
 public:
 	IE_Imp_Component(PD_Document * pDocument);

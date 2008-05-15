@@ -26,7 +26,7 @@ extern "C" {
 
 class PieceOfText;
 
-class  LinkGrammarWrap
+class LinkGrammarWrap
 {
   public:
   LinkGrammarWrap(void);

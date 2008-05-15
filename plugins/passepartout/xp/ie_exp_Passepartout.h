@@ -29,7 +29,7 @@ class PD_Document;
 
 // The exporter/writer for Plain Passepartout Files.
 
-class  IE_Exp_Passepartout_Sniffer : public IE_ExpSniffer
+class IE_Exp_Passepartout_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 

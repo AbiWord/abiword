@@ -26,7 +26,7 @@ class UT_UTF8String;
 class FakeAccountHandler;
 #endif
 
-class  AbiCollab_Command
+class AbiCollab_Command
 {
 public:
 	AbiCollab_Command(const UT_UTF8String& argv);

@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
-class  AbiGrammarError 
+class AbiGrammarError 
 {
  public:
   AbiGrammarError(void);
@@ -34,7 +34,7 @@ class  AbiGrammarError
   UT_UTF8String m_sErrorDesc;
 };
 
-class  PieceOfText
+class PieceOfText
 {
  public:
   PieceOfText(void);

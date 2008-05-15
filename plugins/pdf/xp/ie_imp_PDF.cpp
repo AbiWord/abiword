@@ -72,7 +72,7 @@ static UT_Error temp_name (UT_String& out_filename)
 	return UT_OK;
 }
 
-class  IE_Imp_PDF : public IE_Imp
+class IE_Imp_PDF : public IE_Imp
 {
 public:
 
@@ -177,7 +177,7 @@ static IE_MimeConfidence IE_Imp_PDF_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_BOGUS, 	"", 				UT_CONFIDENCE_ZILCH 	}
 };
 
-class  IE_Imp_PDF_Sniffer : public IE_ImpSniffer
+class IE_Imp_PDF_Sniffer : public IE_ImpSniffer
 {
 public:
 

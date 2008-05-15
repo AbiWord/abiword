@@ -514,7 +514,7 @@ private:
 /*!
  * Class used to import OpenWriter documents
  */
-class  IE_Imp_OpenWriter : public IE_Imp
+class IE_Imp_OpenWriter : public IE_Imp
 {
 public:
   IE_Imp_OpenWriter (PD_Document * pDocument);
@@ -716,7 +716,7 @@ PD_Document * IE_Imp_OpenWriter::getDocument () const
  * Baseclass for all OpenWriter listeners, basically a shim class
  * to expose a GetDocument() and a GetImporter() method
  */
-class  OpenWriter_Stream_Listener : public virtual UT_XML::Listener
+class OpenWriter_Stream_Listener : public virtual UT_XML::Listener
 {
 private:
   IE_Imp_OpenWriter * m_pImporter;
@@ -824,7 +824,7 @@ static UT_Error handleStream ( GsfInfile * oo,
 /*!
  * Class to handle meta-streams
  */
-class  OpenWriter_MetaStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_MetaStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_MetaStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -929,7 +929,7 @@ UT_Error IE_Imp_OpenWriter::_handleMetaStream ()
 /*!
  * Class to handle the settings stream
  */
-class  OpenWriter_SettingsStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_SettingsStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_SettingsStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -973,7 +973,7 @@ UT_Error IE_Imp_OpenWriter::_handleSettingsStream ()
 /*!
  * Class to handle the styles stream
  */
-class  OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_StylesStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -1172,7 +1172,7 @@ UT_Error IE_Imp_OpenWriter::_handleStylesStream ()
 /*!
  * Class to handle the content stream
  */
-class  OpenWriter_ContentStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_ContentStream_Listener : public OpenWriter_Stream_Listener
 {
 private:
   UT_UCS4String m_charData;

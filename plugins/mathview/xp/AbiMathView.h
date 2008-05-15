@@ -35,7 +35,7 @@ class PD_Document;
 class AD_Document;
 typedef SmartPtr<libxml2_MathView> GR_AbiMathView;
 
-class  GR_AbiMathItems
+class GR_AbiMathItems
 {
  public:
   GR_AbiMathItems();
@@ -44,7 +44,7 @@ class  GR_AbiMathItems
   bool m_bHasSnapshot;
 };
 
-class  GR_MathManager : public GR_EmbedManager 
+class GR_MathManager : public GR_EmbedManager 
 {
 public:
     GR_MathManager(GR_Graphics * pG);
