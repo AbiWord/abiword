@@ -1,5 +1,4 @@
-/* Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2007,2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
