@@ -836,22 +836,19 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			// double underlines or wavy underlines
 			while (q)
 			{
-			  if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
-				{
-					m_pie->write("\\uline{");
-				}
-
-				if (0 == strcmp(q, "overline"))
-				{
-					m_pie->write("$\\overline{\\textrm{");
-				}
-
-				if (0 == strcmp(q, "line-through"))
-				{
-					m_pie->write("\\sout{");
-				}
-
-				q = strtok(NULL, " ");
+			    if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
+			    {
+				m_pie->write("\\uline{");
+			    }
+			    else if(0 == strcmp(q, "overline"))
+			    {
+				m_pie->write("$\\overline{\\textrm{");
+			    }
+			    else if(0 == strcmp(q, "line-through"))
+			    {
+				m_pie->write("\\sout{");
+			    }
+			    q = strtok(NULL, " ");
 			}
 
 			free(p);
@@ -1343,9 +1340,35 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	// If (documentclass == book), numbered headings begin with x.y.
 	// If (documentclass == article), there are no chapter headings.
 	// We redefine a "chapter" as a section*.
-	// TODO: Use correct paper settings from .abw.
-	// Page size appears in <pagesize/> before first <section>
-	m_pie->write("\\documentclass[12pt,a4paper]{article}\n");
+
+	m_pie->write("\\documentclass[");
+	
+	fp_PageSize::Predefined ps = pDocument->m_docPageSize.NameToPredefined(pDocument->m_docPageSize.getPredefinedName());
+	switch(ps)
+	{
+	    case fp_PageSize::psA4:
+		    m_pie->write("a4paper");
+		    break;
+	    case fp_PageSize::psA5:
+		    m_pie->write("a5paper");
+		    break;
+	    case fp_PageSize::psB5:
+		    m_pie->write("b5paper");
+		    break;
+	    case fp_PageSize::psLegal:
+		    m_pie->write("legalpaper");
+		    break;
+	    case fp_PageSize::psLetter:
+	    default:
+		    m_pie->write("letterpaper");
+		    break;
+	}
+	
+	if(pDocument->m_docPageSize.isPortrait())
+	    m_pie->write(",portrait");
+	 else
+	    m_pie->write(",landscape");
+	m_pie->write(",12pt]{article}\n");
 	// Better for ISO-8859-1 than previous: [T1] doesn't work very well
 	// TODO: Use inputenc from .abw.
 	m_pie->write("\\usepackage[latin1]{inputenc}\n");
