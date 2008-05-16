@@ -921,7 +921,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			// TODO: Use a dynamic substitution table
 			if (!strcmp("Symbol", szValue) ||
-				!strcmp("Standard Symbols", szValue))
+				!strcmp("Standard Symbols L", szValue))
 				m_bInSymbol = true;
 			if (!strcmp("Courier", szValue) ||
 				!strcmp("Courier New", szValue) ||
@@ -1085,7 +1085,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
 			if (!strcmp ("Symbol", szValue) ||
-				!strcmp("Standard Symbols", szValue))
+				!strcmp("Standard Symbols L", szValue))
 				m_bInSymbol = false;
 			if (!strcmp("Courier", szValue) ||
 				!strcmp("Courier New", szValue))
@@ -1279,7 +1279,6 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	{
 		// only-if-amssymb
 // 		SUB('\\', "therefore");
-		// todo: $ and ^ don't actually work right.
 
 		SUB('\"', "forall");    SUB('$', "exists");
 		SUB('\'', "ni");        SUB('@', "cong");
