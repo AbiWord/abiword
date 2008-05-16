@@ -1,9 +1,24 @@
 
 mswrite_pkgs="$gsf_req"
+mswrite_deps="no"
 
-if test "$enable_mswrite" == "yes"; then
+if test "$enable_mswrite" != ""; then
+
+PKG_CHECK_EXISTS([ $mswrite_pkgs ], 
+[
+	mswrite_deps="yes"
+], [
+	test "$enable_mswrite" == "auto" && AC_MSG_WARN([mswrite plugin: dependencies not satisfied - $mswrite_pkgs])
+])
+
+fi
+
+if test "$enable_mswrite" == "yes" || \
+   test "$mswrite_deps" == "yes"; then
 
 PKG_CHECK_MODULES(MSWRITE,[ $mswrite_pkgs ])
+
+PLUGINS="$PLUGINS mswrite"
 
 MSWRITE_CFLAGS="$MSWRITE_CFLAGS "'${PLUGIN_CFLAGS}'
 MSWRITE_LIBS="$MSWRITE_LIBS "'${PLUGIN_LIBS}'

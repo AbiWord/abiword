@@ -1,13 +1,25 @@
 
 ots_pkgs="$libglade_req libots-1 >= 0.5.0"
+ots_deps="no"
 
-OTS_CFLAGS=
-OTS_LIBS=
+if test "$enable_ots" != ""; then
 
-if test "$enable_ots" == "yes"; then
+PKG_CHECK_EXISTS([ $ots_pkgs ], 
+[
+	ots_deps="yes"
+], [
+	test "$enable_ots" == "auto" && AC_MSG_WARN([ots plugin: dependencies not satisfied - $ots_pkgs])
+])
+
+fi
+
+if test "$enable_ots" == "yes" || \
+   test "$ots_deps" == "yes"; then
+
+PLUGINS="$PLUGINS ots"
 
 if test "$enable_ots_builtin" == "yes"; then
-AC_MSG_ERROR([static linking is not supported for the `ots' plugin])
+AC_MSG_ERROR([ots plugin: static linking not supported])
 fi
 
 PKG_CHECK_MODULES(OTS,[ $ots_pkgs ])

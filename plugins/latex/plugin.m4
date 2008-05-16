@@ -2,7 +2,9 @@
 LATEX_CFLAGS=
 LATEX_LIBS=
 
-if test "$enable_latex" == "yes"; then
+if test "$enable_latex" != ""; then
+
+PLUGINS="$PLUGINS latex"
 
 LATEX_CFLAGS="$LATEX_CFLAGS "'${PLUGIN_CFLAGS}'
 LATEX_LIBS="$LATEX_LIBS "'${PLUGIN_LIBS}'

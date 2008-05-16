@@ -1,8 +1,29 @@
 
 DASH_CFLAGS=
 DASH_LIBS=
+dash_deps="no"
 
-if test "$enable_dash" == "yes"; then
+if test "$enable_dash" != ""; then
+
+AC_MSG_CHECKING([for unix platform])
+if test "$PLATFORM" == "unix"; then
+  AC_MSG_RESULT([yes])
+  dash_deps="yes"
+else
+  AC_MSG_RESULT([no])
+  if test "$enable_dash" == "auto"; then
+    AC_MSG_WARN([dash plugin: only supported on UNIX platforms])
+  else
+    AC_MSG_ERROR([dash plugin: only supported on UNIX platforms])
+  fi
+fi
+
+fi
+
+if test "$enable_dash" == "yes" || \
+   test "$dash_deps" == "yes"; then
+
+PLUGINS="$PLUGINS dash"
 
 DASH_CFLAGS="$DASH_CFLAGS "'${PLUGIN_CFLAGS}'
 DASH_LIBS="$DASH_LIBS "'${PLUGIN_LIBS}'

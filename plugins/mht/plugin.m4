@@ -1,13 +1,4 @@
 
-# gsf pulls in libxml, so we are ok
-mht_pkgs="$gsf_req"
-
-if test "$enable_mht" == "yes"; then
-
-if test "$enable_mht_builtin" == "yes"; then
-AC_MSG_ERROR([static linking is not supported for the `mht' plugin])
-fi
-
 #
 # Optional packages
 #
@@ -27,6 +18,30 @@ AC_ARG_WITH([libtidy],
 ],[
 	mht_cv_libtidy="auto"
 ])
+
+# gsf pulls in libxml, so we are ok
+mht_pkgs="$gsf_req"
+mht_deps="no"
+
+if test "$enable_mht" != ""; then
+
+PKG_CHECK_EXISTS([ $mht_pkgs ], 
+[
+	mht_deps="yes"
+], [
+	test "$enable_mht" == "auto" && AC_MSG_WARN([mht plugin: dependencies not satisfied - $mht_pkgs])
+])
+
+fi
+
+if test "$enable_mht" == "yes" || \
+   test "$mht_deps" == "yes"; then
+
+PLUGINS="$PLUGINS mht"
+
+if test "$enable_mht_builtin" == "yes"; then
+AC_MSG_ERROR([mht plugin: static linking not supported])
+fi
 
 #
 # Tests
@@ -80,7 +95,7 @@ fi
 AC_SUBST([MHT_CFLAGS])
 AC_SUBST([MHT_LIBS])
 
-# TODO we depend on libxml2, so get rid of alternatives
+# TODO we depend on libxml2 anyways, so get rid of alternatives
 AM_CONDITIONAL([ABI_XHTML_XML2], test /bin/true)
 AM_CONDITIONAL([ABI_XHTML_MHT], test "$mht_cv_inter7eps" == "yes")
 AM_CONDITIONAL([ABI_XHTML_TIDY], test "$mht_cv_libtidy" == "yes")

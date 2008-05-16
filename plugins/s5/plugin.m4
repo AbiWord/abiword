@@ -2,7 +2,9 @@
 S5_CFLAGS=
 S5_LIBS=
 
-if test "$enable_s5" == "yes"; then
+if test "$enable_s5" != ""; then
+
+PLUGINS="$PLUGINS s5"
 
 S5_CFLAGS="$S5_CFLAGS "'${PLUGIN_CFLAGS}'
 S5_LIBS="$S5_LIBS "'${PLUGIN_LIBS}'

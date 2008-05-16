@@ -2,7 +2,9 @@
 NROFF_CFLAGS=
 NROFF_LIBS=
 
-if test "$enable_nroff" == "yes"; then
+if test "$enable_nroff" != ""; then
+
+PLUGINS="$PLUGINS nroff"
 
 NROFF_CFLAGS="$NROFF_CFLAGS "'${PLUGIN_CFLAGS}'
 NROFF_LIBS="$NROFF_LIBS "'${PLUGIN_LIBS}'

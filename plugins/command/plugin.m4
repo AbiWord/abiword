@@ -9,7 +9,7 @@ COMMAND_LIBS=
 if test "$enable_command" == "yes"; then
 
 if test "$enable_command_builtin" == "yes"; then
-AC_MSG_ERROR([static linking is not supported for the `command' plugin])
+AC_MSG_ERROR([command plugin: static linking not supported])
 fi
 
 PKG_CHECK_MODULES(COMMAND,[ $command_pkgs ])
@@ -33,9 +33,9 @@ AC_CHECK_HEADER(readline/readline.h,[
 
 AC_MSG_CHECKING([for readline and friends])
 if [ test "$have_readline" != "yes" ]; then
-	AC_MSG_ERROR([failed])
+	AC_MSG_ERROR([no])
 else
-	AC_MSG_RESULT([ok])
+	AC_MSG_RESULT([yes])
         COMMAND_LIBS="-lreadline -lhistory $COMMAND_LIBS"
 fi
 

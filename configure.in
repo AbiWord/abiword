@@ -135,8 +135,8 @@ AC_ARG_ENABLE([plugins],
 		abi_cv_disable_default_plugins="yes"
 		abi_cv_plugins=""
 	elif test "$enableval" == "yes"; then
-		# just build default plugins
-		abi_cv_plugins=""
+		# auto-detect which plugins can be built
+		abi_cv_plugins="auto"
 	else
 		# custom plugins list
 		abi_cv_plugins="$enableval"
@@ -658,26 +658,32 @@ ALL_PLUGINS=
 for p in $(echo $ALL_PLUGINS_); do ALL_PLUGINS="$ALL_PLUGINS $p"; done
 AC_SUBST([ALL_PLUGINS])
 
-default_plugins="opendocument"
-
 PLUGINS=
-if test "$abi_cv_disable_default_plugins" != "yes"; then
-	PLUGINS="$default_plugins"
+if test "$abi_cv_plugins" == "auto"; then
+
+	# which plugins to auto-enable
+	# this creates variables like "enable_wordperfect=auto"
+	for plugin in `echo $ALL_PLUGINS`; do
+		eval $(echo "enable_$plugin")="auto"
+	done
+else
+	default_plugins="opendocument"
+
+	if test "$abi_cv_disable_default_plugins" != "yes"; then
+		PLUGINS="$default_plugins"
+	fi
+	PLUGINS="$PLUGINS $abi_cv_plugins"
+
+	# which plugins to enable
+	# this creates variables like "enable_wordperfect=yes"
+	for plugin in `echo $PLUGINS`; do
+		eval $(echo "enable_$plugin")="yes"
+	done
 fi
-PLUGINS="$PLUGINS $abi_cv_plugins"
-AC_SUBST([PLUGINS])
-
-BUILTIN_PLUGINS="$abi_cv_builtin_plugins"
-AC_SUBST([BUILTIN_PLUGINS])
-
-# which plugins to enable
-# this creates variables like "enable_wordperfect=yes"
-for plugin in `echo $PLUGINS`; do
-	eval $(echo "enable_$plugin")="yes"
-done
 
 # enable the plugins we want to link statically
 # this creates variables like "enable_wordperfect=yes"
+BUILTIN_PLUGINS="$abi_cv_builtin_plugins"
 for plugin in `echo $BUILTIN_PLUGINS`; do
 	eval $(echo "enable_$plugin")="yes"
 done
@@ -695,11 +701,14 @@ BUILTIN_PLUGINS_LA=
 for plugin in `echo $BUILTIN_PLUGINS`; do
 	BUILTIN_PLUGINS_LA="$BUILTIN_PLUGINS_LA ../../plugins/$plugin/$plugin.la"
 done
-AC_SUBST([BUILTIN_PLUGINS_LA])
 
 m4_include([plugin-builtin.m4])
 
 m4_include([plugin-configure.m4])
+
+AC_SUBST([PLUGINS])
+AC_SUBST([BUILTIN_PLUGINS])
+AC_SUBST([BUILTIN_PLUGINS_LA])
 
 # put all deps on a single line for the .pc file
 ABIWORD_REQUIRED_PKGS=

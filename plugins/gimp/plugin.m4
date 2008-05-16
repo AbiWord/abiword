@@ -2,7 +2,9 @@
 GIMP_CFLAGS=
 GIMP_LIBS=
 
-if test "$enable_gimp" == "yes"; then
+if test "$enable_gimp" != ""; then
+
+PLUGINS="$PLUGINS gimp"
 
 GIMP_CFLAGS="$GIMP_CFLAGS "'${PLUGIN_CFLAGS}'
 GIMP_LIBS="$GIMP_LIBS "'${PLUGIN_LIBS}'

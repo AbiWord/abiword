@@ -2,7 +2,9 @@
 ISCII_CFLAGS=
 ISCII_LIBS=
 
-if test "$enable_iscii" == "yes"; then
+if test "$enable_iscii" != ""; then
+
+PLUGINS="$PLUGINS iscii"
 
 ISCII_CFLAGS="$ISCII_CFLAGS "'${PLUGIN_CFLAGS}'
 ISCII_LIBS="$ISCII_LIBS "'${PLUGIN_LIBS}'

@@ -1,9 +1,24 @@
 
 clarisworks_pkgs="$gsf_req"
+clarisworks_deps="no"
 
-if test "$enable_clarisworks" == "yes"; then
+if test "$enable_clarisworks" != ""; then
+
+PKG_CHECK_EXISTS([ $clarisworks_pkgs ], 
+[
+	clarisworks_deps="yes"
+], [
+	test "$enable_clarisworks" == "auto" && AC_MSG_WARN([clarisworks plugin: dependencies not satisfied - $clarisworks_pkgs])
+])
+
+fi
+
+if test "$enable_clarisworks" == "yes" || \
+   test "$clarisworks_deps" == "yes"; then
 
 PKG_CHECK_MODULES(CLARISWORKS,[ $clarisworks_pkgs ])
+
+PLUGINS="$PLUGINS clarisworks"
 
 CLARISWORKS_CFLAGS="$CLARISWORKS_CFLAGS "'${PLUGIN_CFLAGS}'
 CLARISWORKS_LIBS="$CLARISWORKS_LIBS "'${PLUGIN_LIBS}'

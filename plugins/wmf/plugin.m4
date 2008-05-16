@@ -10,7 +10,7 @@ WMF_LIBS=
 if test "$enable_wmf" == "yes"; then
 
 if test "$enable_wmf_builtin" == "yes"; then
-AC_MSG_ERROR([static linking is not supported for the `wmf' plugin])
+AC_MSG_ERROR([wmf plugin: static linking not supported])
 fi
 
 AC_ARG_WITH([libwmf-config],
