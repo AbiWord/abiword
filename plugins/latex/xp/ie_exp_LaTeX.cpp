@@ -33,6 +33,7 @@
 #include "pt_Types.h"
 #include "ie_exp_LaTeX.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
@@ -103,7 +104,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
-								 UT_uint32 /*release*/)
+				    UT_uint32 /*release*/)
 {
   return 1;
 }
@@ -197,14 +198,14 @@ public:
 	}
 
 	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
-								 const PX_ChangeRecord * /*pcr*/)
+					    const PX_ChangeRecord * /*pcr*/)
 	{
 		return true;	
 	}
 
 	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh)
+						const PX_ChangeRecord * pcr,
+						PL_StruxFmtHandle * psfh)
 	{
 		UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 		const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -224,19 +225,19 @@ public:
 	}
 
 	virtual bool		change(PL_StruxFmtHandle /*sfh*/,
-							   const PX_ChangeRecord * /*pcr*/)
+					const PX_ChangeRecord * /*pcr*/)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
 	virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
-									const PX_ChangeRecord * /*pcr*/,
-									PL_StruxDocHandle /*sdh*/,
-									PL_ListenerId /*lid*/,
-									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+					    const PX_ChangeRecord * /*pcr*/,
+					    PL_StruxDocHandle /*sdh*/,
+					    PL_ListenerId /*lid*/,
+					    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 									PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+									PL_StruxFmtHandle sfhNew))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -1365,9 +1366,33 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	
 	if(pDocument->m_docPageSize.isPortrait())
 	    m_pie->write(",portrait");
-	 else
+	else
 	    m_pie->write(",landscape");
-	m_pie->write(",12pt]{article}\n");
+	
+	//retrieve the actual font size
+	PD_Style * pStyle = NULL;
+	pDocument->getStyle ("Normal", &pStyle);
+	if(pStyle)
+	{
+	    const gchar * szName  = 0;
+	    const gchar * szValue = 0;
+	    for (UT_uint32 i = 0; i < pStyle->getPropertyCount (); i++)
+	    {		
+		if(pStyle->getNthProperty (i, szName, szValue))
+		{
+		    if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
+		    if ((*szName == 0) || (*szValue == 0)) continue;
+		    
+		    if (strcmp (szName, "font-size") == 0)
+		    {
+			m_pie->write(",");
+			m_pie->write(szValue);
+			break;
+		    }
+		}
+	    }
+	}
+	m_pie->write("]{article}\n");
 	// Better for ISO-8859-1 than previous: [T1] doesn't work very well
 	// TODO: Use inputenc from .abw.
 	m_pie->write("\\usepackage[latin1]{inputenc}\n");
