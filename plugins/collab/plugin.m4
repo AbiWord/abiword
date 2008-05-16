@@ -104,7 +104,7 @@ fi
 
 
 AC_ARG_ENABLE([collab-backend-service], 
-    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off)])], 
+    [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
 [
 	enable_collab_backend_service=$enableval
 ], [
@@ -112,7 +112,20 @@ AC_ARG_ENABLE([collab-backend-service],
 ])
 if test $enable_collab_backend_service == "yes"; then
 	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADERS([asio.hpp], [], 
+	AC_CHECK_HEADERS([asio.hpp],
+	[
+		PKG_CHECK_EXISTS(libsoup-2.4 >= 2.4.0, 
+		[
+			collab_req="libsoup-2.4 >= 2.4.0"
+		], [
+			PKG_CHECK_EXISTS(libsoup-2.2 >= 2.2.100,
+			[
+				collab_req="libsoup-2.2 >= 2.2.100"
+			], [
+				AC_MSG_ERROR([libsoup-2.2 or libsoup-2.4 is required for the collab plugin abicollab.net backend])
+			])
+		])
+	], 
 	[
 		AC_MSG_ERROR([Asio is required for the \`abicollab.net' backend, see http://asio.sourceforge.net])
 	])

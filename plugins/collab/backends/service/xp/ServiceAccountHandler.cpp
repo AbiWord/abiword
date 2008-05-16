@@ -1,4 +1,5 @@
 /* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,32 +17,75 @@
  * 02111-1307, USA.
  */
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_DialogFactory.h"
+#include "ut_debugmsg.h"
+#include "ut_sleep.h"
+#include "soa_soup.h"
+#include "abicollab_types.h"
+#include "AsyncWorker.h"
+#include "ProgressiveSoapCall.h"
+#include "RealmBuddy.h"
+#include "ServiceBuddy.h"
 #include "ServiceAccountHandler.h"
+#include "ap_Dialog_GenericInput.h"
+#include <backends/xp/SessionEvent.h>
+#include <core/session/xp/AbiCollabSessionManager.h>
 
-/****************************************
- DocTreeItem
-*****************************************/
-/*DocTreeItem::DocTreeItem()
-	: m_id(0),
-	m_name(""),
-	m_type(DOCTREEITEM_TYPE_NILL), 
-	m_acl(DOCTREEITEM_ACL_PRIVATE), 
-	m_data(0)
+namespace rpv1 = realm::protocolv1;
+
+XAP_Dialog_Id ServiceAccountHandler::m_iDialogGenericInput = 0;
+XAP_Dialog_Id ServiceAccountHandler::m_iDialogGenericProgress = 0;
+AbiCollabSaveInterceptor ServiceAccountHandler::m_saveInterceptor = AbiCollabSaveInterceptor();
+
+bool ServiceAccountHandler::askPassword(const std::string& email, std::string& password)
 {
+	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pFrame, false);
+	
+	// ask for the service password
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_val_if_fail(pFactory, false);
+	AP_Dialog_GenericInput* pDialog = static_cast<AP_Dialog_GenericInput*>(
+				pFactory->requestDialog(ServiceAccountHandler::getDialogGenericInputId())
+			);
+	
+	// Run the dialog
+	// TODO: make this translatable
+	pDialog->setTitle("AbiCollab.net Collaboration Service"); // FIXME: don't hardcode this title to abicollab.net
+	std::string msg = "Please enter your password for account '" + email + "'";
+	pDialog->setQuestion(msg.c_str());
+	pDialog->setLabel("Password:");
+	pDialog->setPassword(true);
+	pDialog->runModal(pFrame);
+	
+	// get the results
+	bool cancel = pDialog->getAnswer() == AP_Dialog_GenericInput::a_CANCEL;
+	if (!cancel)
+		password = pDialog->getInput().utf8_str();
+	pFactory->releaseDialog(pDialog);
+	
+	// the user terminated the input
+	return !cancel;
 }
 
-DocTreeItem::DocTreeItem(UT_sint64 id, const char* name, DocTreeItemType type, DocTreeItemAcl acl)
-	: m_id(id),
-	m_name(name),
-	m_type(type), 
-	m_acl(acl), 
-	m_data(0)
-{
-}*/
-
 ServiceAccountHandler::ServiceAccountHandler()
-	: AccountHandler()
+	: AccountHandler(),
+	m_bOnline(false),
+	m_connections()
 {
+	m_ssl_ca_file = XAP_App::getApp()->getAbiSuiteLibDir();
+#if defined(WIN32)
+	m_ssl_ca_file += "\\certs\\abicollab.net.crt";
+#else
+	m_ssl_ca_file += "/certs/abicollab.net.crt";
+#endif
 }
 
 ServiceAccountHandler::~ServiceAccountHandler()
@@ -51,17 +95,17 @@ ServiceAccountHandler::~ServiceAccountHandler()
 
 UT_UTF8String ServiceAccountHandler::getDescription()
 {
-	return UT_UTF8String_sprintf("AbiWord Collaboration Service");
+    return getProperty("email").c_str();
 }
 
 UT_UTF8String ServiceAccountHandler::getDisplayType()
 {
-	return "AbiWord Collaboration Service";
+	return "AbiCollab.net Collaboration Service";
 }
 
 UT_UTF8String ServiceAccountHandler::getStorageType()
 {
-	return "com.abisource.abiword.abicollab.backend.service";
+	return SERVICE_ACCOUNT_HANDLER_TYPE;
 }
 
 void ServiceAccountHandler::storeProperties()
@@ -69,547 +113,720 @@ void ServiceAccountHandler::storeProperties()
 	UT_DEBUGMSG(("ServiceAccountHandler::storeProperties() - TODO: implement me\n"));
 }
 
+XAP_Dialog_Id ServiceAccountHandler::getDialogGenericInputId()
+{
+	// register the generic input dialog if we haven't already done that
+	// a bit hacky, but it works
+	if (m_iDialogGenericInput == 0)
+	{
+		XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+		m_iDialogGenericInput = pFactory->registerDialog(ap_Dialog_GenericInput_Constructor, XAP_DLGT_NON_PERSISTENT);
+	}
+	return m_iDialogGenericInput;
+}
+
+XAP_Dialog_Id ServiceAccountHandler::getDialogGenericProgressId()
+{
+	// register the generic progress dialog if we haven't already done that
+	// a bit hacky, but it works
+	if (m_iDialogGenericProgress == 0)
+	{
+		XAP_DialogFactory * pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+		m_iDialogGenericProgress = pFactory->registerDialog(ap_Dialog_GenericProgress_Constructor, XAP_DLGT_NON_PERSISTENT);
+	}
+	return m_iDialogGenericProgress;
+}
+
 ConnectResult ServiceAccountHandler::connect()
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::connect()\n"));
 	
-	return CONNECT_INTERNAL_ERROR;
+	if (m_bOnline)
+		return CONNECT_SUCCESS;
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, CONNECT_INTERNAL_ERROR);	
+	
+	m_bOnline = true;
+
+	// we are "connected" now, time to start sending out, and listening to messages (such as events)
+	pManager->registerEventListener(this);
+
+	return CONNECT_SUCCESS;
 }
 
 bool ServiceAccountHandler::disconnect()
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::disconnect() - TODO: implement me\n"));
+	UT_DEBUGMSG(("ServiceAccountHandler::disconnect()\n"));
+	UT_return_val_if_fail(m_bOnline, false);
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);	
+	
+	m_bOnline = false;
+	
+	// TODO: send out an event we are going offline
+	// ...
+	
+	// we are disconnected now, no need to sent out messages (such as events) anymore
+	pManager->unregisterEventListener(this);	
+	
 	return true;
 }
 
 bool ServiceAccountHandler::isOnline()
 {
-	// TODO: implement me
-	return false;
+	return m_bOnline;
 }
 
 Buddy* ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));
-
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
 	return NULL; // TODO: implement me
 }
 
 bool ServiceAccountHandler::send(const Packet* packet)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*)\n"));
-	return false;
-}
-
-bool ServiceAccountHandler::send(const Packet*, const Buddy& buddy)
-{
-	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*, const Buddy& buddy)\n"));
-	return false;
-}
-
-/*
-void s_parse_document(xmlNode* document, DocTreeItem* parent)
-{
-	if (!document || !parent)
-		return;
-
-	if (document->type == XML_ELEMENT_NODE)
-	{
-		DocTreeItem* item = new DocTreeItem();
-		// parse the document properties
-		for (xmlNode* prop = document->children; prop; prop = prop->next)
-		{
-			if (prop->type == XML_TEXT_NODE && prop->next)
-			{
-				prop = prop->next;
-				if (prop->type == XML_ELEMENT_NODE)
-				{
-					if (strcmp(reinterpret_cast<const char*>(prop->name), "id") == 0)
-					{
-						UT_sint32 id = atoi(reinterpret_cast<const char*>(xmlNodeGetContent(prop)));
-						if (id > 0)
-							item->m_id = id;
-					}
-					else if (strcmp(reinterpret_cast<const char*>(prop->name), "name") == 0)
-					{
-						item->m_name = reinterpret_cast<const char*>(xmlNodeGetContent(prop));
-					}
-					else if (strcmp(reinterpret_cast<const char*>(prop->name), "readonly") == 0)
-					{
-						// TODO: ...
-					}
-					else if (strcmp(reinterpret_cast<const char*>(prop->name), "acl") == 0)
-					{
-						// TODO: ...
-					}
-					else
-					{
-						printf("unknown prop name: %s\n", prop->name);
-						UT_ASSERT_HARMLESS(false);
-						continue;
-					}
-				}
-				else
-				{
-					UT_DEBUGMSG(("Unexpected element in document - type: %d, name: %s", prop->type, prop->name));
-					UT_ASSERT_HARMLESS(false);
-				}
-			}
-		}
-		parent->m_vecChildren.push_back(item);
-	}
-}
-
-void s_parse_folder(xmlNode* folder, DocTreeItem* parent)
-{
-	if (!folder || !parent)
-		return;
-
-	if (folder->type == XML_ELEMENT_NODE)
-	{
-		const char* name = reinterpret_cast<const char*>(xmlGetProp(folder, reinterpret_cast<const xmlChar*>("name")));
-		if (!name)
-		{
-			name = "Unknown folder";
-		}
-		// TODO: get a folderId here (but it is not in the XML atm)
-		DocTreeItem* item = new DocTreeItem(0, name, DOCTREEITEM_TYPE_FOLDER, DOCTREEITEM_ALC_NILL);
-		// folders can contain documents or folders
-		xmlNode *folder_child = NULL;
-		for (folder_child = folder->children; folder_child; folder_child = folder_child->next)
-		{
-			if (folder_child->type == XML_ELEMENT_NODE)
-			{
-				if (strcmp(reinterpret_cast<const char*>(folder_child->name), "document") == 0)
-				{
-					s_parse_document(folder_child, item);
-				}
-				else if (strcmp(reinterpret_cast<const char*>(folder_child->name), "folder") == 0)
-				{
-					s_parse_folder(folder_child, item);
-				}
-			}
-		}
-		parent->m_vecChildren.push_back(item);
-	}
-}
-
-void s_parse_group_elements(xmlNode* group, DocTreeItem* parent)
-{
-	xmlNode *group_element = NULL;
-	for (group_element = group->children; group_element; group_element = group_element->next)
-	{
-		if (group_element->type == XML_ELEMENT_NODE)
-		{
-			if (strcmp(reinterpret_cast<const char*>(group_element->name), "document") == 0)
-			{
-				s_parse_document(group_element, parent);
-			}
-			else if (strcmp(reinterpret_cast<const char*>(group_element->name), "folder") == 0)
-			{
-				s_parse_folder(group_element, parent);
-			}
-		}
-	}
-
-}
-
-void s_parse_groups(xmlNode* root, std::vector<DocTreeItem*>& vecDocTreeItems)
-{
-	xmlNode *group = NULL;
-	for (group = root->children; group; group = group->next)
-	{
-		if (group->type == XML_ELEMENT_NODE)
-		{
-			UT_UTF8String prettyName;
-			if (strcmp(reinterpret_cast<const char*>(group->name), "owner") == 0)
-			{
-				prettyName = "My Documents";
-			}
-			else if (strcmp(reinterpret_cast<const char*>(group->name), "friends") == 0)
-			{
-				prettyName = "My Friends' Documents";
-			}
-			else if (strcmp(reinterpret_cast<const char*>(group->name), "groups") == 0)
-			{
-				prettyName = "My Groups' Documents";
-			}
-			else
-			{
-				UT_ASSERT_HARMLESS(false);
-				continue;
-			}
-
-			// First param on the next line is unused for groups
-			DocTreeItem* item = new DocTreeItem(0, prettyName.utf8_str(), DOCTREEITEM_TYPE_ROOT, DOCTREEITEM_ALC_NILL);
-			vecDocTreeItems.push_back(item);
-			s_parse_group_elements(group, item);
-		}
-	}
-}*/
-
-void ServiceAccountHandler::populateDocuments(const UT_UTF8String& packet)
-{
-/*	m_vecDocTreeItems.clear(); // TODO: we have to free all items
-
-	UT_DEBUGMSG(("Incoming packet:\n%s\n", packet.utf8_str()));
-
-    xmlNode *root_element = NULL;
-	xmlDocPtr doc = xmlReadMemory (packet.utf8_str(), packet.length(), 0, "UTF-8", 0);
-    if (doc == NULL)
-	{
-		UT_DEBUGMSG(("Error parsing document XML tree!\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-	
-	root_element = xmlDocGetRootElement(doc);
-	if (root_element)
-	{
-		// we only expect 1 root element (GetDocumentResponse)
-		UT_ASSERT(root_element->next == 0);
-		s_parse_groups(root_element, m_vecDocTreeItems);
-	}
-	xmlCleanupParser();
-	xmlFreeDoc(doc);
-	
-	// signal the listeners we have (atm, that is only the Documents dialog)
-	if (m_pDocDialog)
-	{
-		m_pDocDialog->repopulate();
-	}*/
-}
-
-void ServiceAccountHandler::updateDocumentsAsync()
-{
-/*	UT_return_if_fail(m_pHandler);
-
-	m_pHandler->send(
-			UT_UTF8String("<GetDocumentsRequest/>"), 
-			getAbiterString()
-	);
-	*/
-}
-
-void ServiceAccountHandler::openDocumentAsync(UT_sint64 docId)
-{
-/*	UT_return_if_fail(m_pHandler);
-	char buf[24]; // ick
-	snprintf(buf, sizeof(buf), "%d", docId);
-
-	UT_UTF8String odr;
-	odr += "<OpenDocumentRequest>";
-	odr += "<docId>";
-	odr += &buf[0];
-	odr += "</docId>";
-	odr += "</OpenDocumentRequest>";
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	m_pHandler->send(odr, getAbiterString());*/
-}
-
-
-void ServiceAccountHandler::saveDocumentAsync(UT_sint64 docId, PD_Document * pDoc)
-{
-/*	UT_return_if_fail(m_pHandler); // TODO: notify the user
-
-	UT_UTF8String odr;
-	odr += "<SaveDocumentRequest>";
-
-	UT_UTF8String document;
-	bool b = s_CollabFactoryContainer.fillDocumentString(document, pDoc);
-	UT_return_if_fail(b); // TODO: notify the user
-
-	odr += "<document id=";
-	UT_UTF8String sNum =  UT_UTF8String_sprintf("\"%d\"",docId);
-	odr += sNum;
-	odr += ">";
-    odr += document;
-    odr += "</document>";
-
-    odr += "</SaveDocumentRequest>";
-    UT_UTF8String sCAC = getAbiterString();
-    m_pHandler->send(odr, sCAC.utf8_str());*/
-}
-
-void ServiceAccountHandler::closeDocument(UT_sint64 docId, PD_Document * pDoc)
-{
-/*	UT_return_if_fail(m_pHandler);
-
-	UT_UTF8String odr;
-	odr += "<CloseDocumentRequest>\n";
-	odr += "<docId>";
-	odr += UT_UTF8String_sprintf("%d",docId);
-	odr += "</docId>\n";
-	odr += "</CloseDocumentRequest>";
-	UT_UTF8String sCAC = getAbiterString();
-	UT_DEBUGMSG(("sending |%s| \n to |%s| \n",odr.utf8_str(),sCAC.utf8_str()));
-	m_pHandler->send(odr, sCAC.utf8_str());*/
-}
-
-/*
-
-void  s_handle_service_import_event(UT_Worker * pWorker)
-{
-	AbiCollab* pCollab = reinterpret_cast<AbiCollab*>(pWorker->getInstanceData());
-	pCollab->handleImportEvent();
-}
-
-static bool	s_handle_service_message(const AbiCollab_Packet_Data *pAPD)
-{
-	AbiCollabService* pService = AbiCollabService::getService();
-	UT_return_val_if_fail(pService, false);
-    
-	xmlDocPtr doc = xmlReadMemory (pAPD->packet.utf8_str(), pAPD->packet.length(), 0, "UTF-8", 0);
-	UT_return_val_if_fail(doc, false);
-	UT_DEBUGMSG(("Received service packet\n"));
-	xmlNode *response_element = xmlDocGetRootElement(doc);
-	if (response_element)
-	{
-		// we only expect 1 root element (GetDocumentResponse)
-		UT_ASSERT(response_element->next == 0);
-		
-		UT_DEBUGMSG(("got resp: %s\n", reinterpret_cast<const char*>(response_element->name)));
-		
-		if (strcmp(reinterpret_cast<const char*>(response_element->name), "GetDocumentsResponse") == 0)
-		{
-			// FIXME FIXME: don't re-parse!!!
-			pService->populateDocuments(pAPD->packet);
-		}
-		else if(strcmp(reinterpret_cast<const char*>(response_element->name), "SaveDocumentResponse") == 0)
-		{
-		        UT_DEBUGMSG(("SaveResponsePacked |%s| \n",pAPD->packet.utf8_str()));
-			bool bSavedOK = false;
-			for (xmlNode* document_node = response_element->children; document_node; document_node = document_node->next)
-			{
-				UT_DEBUGMSG(("Document_node type %d \n",document_node->type));
-				if (document_node->type == XML_ELEMENT_NODE)
-				{
-					UT_DEBUGMSG(("Inside Document_node name |%s| \n",document_node->name));
-					if (strcmp(reinterpret_cast<const char*>(document_node->name),"status") == 0)
-					{
-					    UT_DEBUGMSG(("Found Status \n"));
-					    const char* statusVal = reinterpret_cast<const char*>(xmlNodeGetContent(document_node));
-					    if(statusVal)
-					    {
-						UT_UTF8String sStatusVal =statusVal;
-						FREEP(statusVal);
-						if(strcmp(sStatusVal.utf8_str(),"success")==0)
-						{
-						    bSavedOK = true;
-						}
-					    }
-					    else
-					    {
-						break;
-					    }
-					}
-				}
-			}
-			if(!bSavedOK)
-			{
-			    XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-			    pFrame->showMessageBox(szFailedToSave,
-						   XAP_Dialog_MessageBox::b_O,
-						   XAP_Dialog_MessageBox::a_OK);
-
-			}
-			else
-			{
-			    XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-			    PD_Document* pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-			    FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-			    pDoc->setClean();
-			    pView->notifyListeners(AV_CHG_SAVE);
-			}
-		}
-		else if (strcmp(reinterpret_cast<const char*>(response_element->name), "OpenDocumentResponse") == 0)
-		{
-			for (xmlNode* document_node = response_element->children; document_node; document_node = document_node->next)
-			{
-				UT_DEBUGMSG(("Outside Document_node name |%s| \n",document_node->name));
-				UT_DEBUGMSG(("Document_node type %d \n",document_node->type));
-				if (document_node->type == XML_ELEMENT_NODE)
-				{
-					UT_DEBUGMSG(("Inside Document_node name |%s| \n",document_node->name));
-					if (strcmp(reinterpret_cast<const char*>(document_node->name),"document") == 0)
-				  	{
-						UT_UTF8String sID = reinterpret_cast<char *>(xmlGetProp(document_node, reinterpret_cast<const xmlChar*>("id")));
-						UT_DEBUGMSG(("got document!!!!! %s id = %s \n", document_node->name,sID.utf8_str()));
-						UT_sint64 iID = atoi(sID.utf8_str());
-						//printf("doc content:\n%s\n", reinterpret_cast<const char*>(xmlNodeGetContent(document_node)));
-					
-						// TODO: move this out
-						//
-						// Get Document name
-						//
-						const char *szDocname = reinterpret_cast<char *>(xmlGetProp(document_node, reinterpret_cast<const xmlChar*>("name")));					
-						const char* base64gzBuf = reinterpret_cast<const char*>(xmlNodeGetContent(document_node));
-						//printf("from xml: %s\n", base64gzBuf);
-						size_t gzbufLen = gsf_base64_decode_simple((guint8*)base64gzBuf, strlen(base64gzBuf));
-						char* gzBuf = (char*) base64gzBuf;
-						// TODO: do we need to pass false here?
-						GsfInput *source = gsf_input_memory_new((guint8*)gzBuf, gzbufLen, false);
-						GsfInput *gzabwBuf = gsf_input_gzip_new (source, NULL); // todo: don't pass null here, but check for errors
-                                                // unzip the document
-						gsf_off_t abwLen = gsf_input_size(gzabwBuf);
-						char* abwBuf = (char*)malloc(abwLen+1);
-						gsf_input_seek(gzabwBuf, 0, G_SEEK_SET);
-						gsf_input_read(gzabwBuf, abwLen, (guint8*)abwBuf);
-						abwBuf[abwLen] = '\0';
-
-						XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-						if(!pFrame || pFrame->isDirty() || (pFrame->getFilename() != NULL))
-						{
-							pFrame = XAP_App::getApp()->newFrame();
-							if (!pFrame)
-							{
-								return false;
-							}
-
-							// Open a complete but blank frame, then load the document into it
-
-							UT_Error errorCode = pFrame->loadDocument(NULL, IEFT_Unknown);
-							if (!errorCode)
-							{
-					    			pFrame->show();
-							}
-							else
-							{
-								return false;
-							}
-						}
-						PD_Document* pDoc = new PD_Document(XAP_App::getApp());
-						pDoc->createRawDocument();
-						IE_Imp_XML* imp = (IE_Imp_XML*)new IE_Imp_AbiWord_1(pDoc);
-						imp->importFile(abwBuf, abwLen); // todo: check for errors
-						pDoc->finishRawCreation();
-						pFrame->loadDocument(pDoc); 
-						FREEP(abwBuf);
-						DELETEP(imp);
-
-						g_object_unref(G_OBJECT(source));
-						AbiCollabService_Export * pExport = new AbiCollabService_Export(pDoc,iID);
-						UT_uint32 lid = 0;
-						pDoc->addListener(static_cast<PL_Listener *>(pExport), &lid);
-						UT_UTF8String sUTF8("");
-						AbiCollab* pCollab = s_CollabFactoryContainer.create(0, sUTF8, false, NULL);
-						const UT_UTF8String sServer(CAC_SERVER);
-						bool b = pCollab->createHandler(sServer,5222,s_UserName,s_Password,NULL);
-						if(!b)
-						  return false;
-						pCollab->setDocument(pDoc);
-						pCollab->setServiceID(iID);
-						pCollab->setOffering(true);
-						pCollab->startRemoteListener();
-						if(szDocname)
-						{
-						    UT_DEBUGMSG(("Docname %s \n",szDocname));
-						    pDoc->setFilename(const_cast<char *>(szDocname));
-						}
-						pFrame->updateTitle();
-						UT_DEBUGMSG(("We are offering a collaboration from a c.a.c doc!\n"));
-					}
-					else if(strcmp(reinterpret_cast<const char*>(document_node->name),"host")==0)
-					{
-						UT_DEBUGMSG(("Host_node name |%s| \n",document_node->name));
-						UT_UTF8String sID = reinterpret_cast<char *>(xmlGetProp(document_node, reinterpret_cast<const xmlChar*>("docId")));
-						UT_sint64 iID = atoi(sID.utf8_str());
-						const char* szName =  reinterpret_cast<const char*>(xmlNodeGetContent(document_node));
-						//
-						// strip off the resource
-						//
-						UT_String sName = szName;
-						UT_sint32 i = 0;
-						for(i=0; i<sName.size();i++)
-						{
-						     if(sName[i] == '/')
-						       break;
-						}
-						UT_UTF8String sHostUsername = szName;
-						if(i<sName.size())
-							sHostUsername=sName.substr(0,i).c_str();
-						FREEP(szName);
-						UT_DEBUGMSG(("got name !!!!! %s id = %d \n", sHostUsername.utf8_str(),iID));
-						UT_UTF8String sUTF8("");
-						AbiCollab* pCollab = s_CollabFactoryContainer.create(0, sUTF8, false, NULL);
-						const UT_UTF8String sServer(CAC_SERVER);
-						bool b = pCollab->createHandler(sServer,5222,s_UserName,s_Password,sHostUsername.utf8_str());
-						if(!b)
-							return false;
-						pCollab->setServiceID(iID);
-						//
-						// Need to attach a CAC listener to the
-						// document after it has been loaded.
-						// We'll create one here and make
-						// AbiCollab finish the attachments after
-						// loading the remote doc
-						//
-						pCollab->setExportServiceListener(static_cast<PL_DocChangeListener *>(new AbiCollabService_Export(NULL,iID)));
-						pCollab->startRemoteListener();
-					}
-				}
-			}
-		}
-		else
-		{
-		  //
-		  // Authorise a remote user to join the collaboration
-		  //
-		}
-	}
-	//
-	// TODO connect to jabber server and offer this document for
-	// collaboration
-	//
-	xmlFreeDoc(doc);
-}
-
-
-static bool s_handle_service_event(void* data)
-{
-	AbiCollabService* pService = AbiCollabService::getService();
-	UT_return_val_if_fail(pService, false);
-	AbiCollab_ConnectionHandler* pHandler = pService->getConnectionHandler();
-	if(pHandler == NULL)
-	{
-	    return false;
-	}
-	UT_return_val_if_fail(pHandler, false);
-
-
-	if (pHandler->receive().size() > 0)
-	{
-		for (std::list<const AbiCollab_Packet_Data *>::iterator lpos = pHandler->receive().begin(); lpos != pHandler->receive().end(); )
-		{
-			const AbiCollab_Packet_Data* pAPD = pHandler->receive().front();
-			lpos = pHandler->receive().erase(lpos);
-			if (!pAPD)
-			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				break;
-			}
-				
-			// TODO: Check if this message really came from abiter@collaborate.abisource.com/AbiCollabService
-			//       If not, we'll ignore it. We don't want people to flood us with fake content
-			// TODO: Don't hardcode the abiter/server/resource names
-			// TODO: there are more message types than this one :)
-			if (strcmp("abiter@collaborate.abisource.com/AbiCollabService", pAPD->buddy.utf8_str()) == 0)
-			{
-				s_handle_service_message(pAPD);
-			}
-			else
-			{
-				// we've received a service message from someone other than the official
-				// arbiter; ignore it;
-				UT_DEBUGMSG(("Received message from |%s|, content |%s| \n",pAPD->buddy.utf8_str(), pAPD->packet.utf8_str()));
-				UT_DEBUGMSG(("Can't handle this!!!! \n"));
-
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			}
-		}
-	}
-
+	// this are typically announce session broadcast events and the like,
+	// which we don't support in this backend
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
 	return true;
 }
-*/
+
+bool ServiceAccountHandler::send(const Packet* packet, const Buddy& buddy)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*, const Buddy& buddy)\n"));
+
+	const RealmBuddy& ourBuddy = static_cast<const RealmBuddy&>(buddy);
+	uint8_t arr[] = { ourBuddy.realm_connection_id() };
+	std::vector<uint8_t> connection_ids(arr, arr+1);
+
+	boost::shared_ptr<std::string> data(new std::string());
+	_createPacketStream( *data, packet );
+
+	_send(boost::shared_ptr<rpv1::RoutingPacket>(new rpv1::RoutingPacket(connection_ids, data)), ourBuddy.ptr());
+	return true;
+}
+
+void ServiceAccountHandler::_write_handler(const asio::error_code& e, std::size_t bytes_transferred,
+											boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet)
+{
+	if (e)
+	{
+		// TODO: disconnect buddy
+		UT_DEBUGMSG(("Error sending packet: %s\n", e.message().c_str()));
+		return;
+	}
+	
+	UT_DEBUGMSG(("Packet sent: 0x%x\n", packet->type()));
+}										   
+
+void ServiceAccountHandler::getSessionsAsync()
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync()\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);			
+	
+	pManager->beginAsyncOperation(this);
+	SessionBuddyPtr sessions_ptr(new std::vector<SessionBuddyPair>());
+	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
+				new AsyncWorker<acs::SOAP_ERROR>(
+					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
+								getProperty("uri"), getProperty("email"), getProperty("password"), sessions_ptr),
+					boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, sessions_ptr)
+				)
+			);
+	async_list_docs_ptr->start();	
+}
+
+void ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)\n"));
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);		
+	
+	// TODO: we shouldn't ignore the buddy parameter, but for now, we do ;)
+	
+	pManager->beginAsyncOperation(this);
+	SessionBuddyPtr sessions_ptr(new std::vector<SessionBuddyPair>());
+	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
+				new AsyncWorker<acs::SOAP_ERROR>(
+					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
+								getProperty("uri"), getProperty("email"), getProperty("password"), sessions_ptr),
+					boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, sessions_ptr)
+				)
+			);
+	async_list_docs_ptr->start();	
+}
+
+bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
+{
+	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		boost::shared_ptr<RealmConnection> connection_ptr = *it;
+		UT_continue_if_fail(connection_ptr);
+		if (connection_ptr->session_id() == sSessionId.utf8_str())
+			return true;
+	}
+	return AccountHandler::hasSession(sSessionId);
+}
+
+// NOTE: we don't implement the opening of documents asynchronous; we block on it,
+// as it's annoying to opening them async. We need to change this API
+void ServiceAccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync(const Buddy& buddy, DocHandle& docHandle)\n"));
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);		
+	
+	UT_DEBUGMSG(("Joining document %s\n", docHandle.getSessionId().utf8_str()));
+	
+	UT_sint64 doc_id;
+	try {
+		doc_id = boost::lexical_cast<int64_t>(docHandle.getSessionId().utf8_str());
+	} catch (boost::bad_lexical_cast &) {
+		// TODO: report error
+		UT_DEBUGMSG(("Error casting doc_id (%s) to an UT_sint64\n", docHandle.getSessionId().utf8_str()));
+		return;
+	}
+	UT_return_if_fail(doc_id != 0);
+	UT_DEBUGMSG(("doc_id: %lld\n", doc_id));	
+
+	PD_Document* pDoc = NULL;
+	acs::SOAP_ERROR err = openDocument(doc_id, 0, docHandle.getSessionId().utf8_str(), &pDoc, NULL);
+	switch (err)
+	{
+		case acs::SOAP_ERROR_OK:
+			return;
+		case acs::SOAP_ERROR_INVALID_PASSWORD:
+			{
+				// TODO: asking for user input is not really nice in an async function
+				const std::string email = getProperty("email");
+				std::string password;
+				if (askPassword(email, password))
+				{
+					// try again with the new password
+					addProperty("password", password);
+					pManager->storeProfile();
+					joinSessionAsync(buddy, docHandle);				
+				}
+			}
+			return;
+		default:
+			{
+				// TODO: add the document name, error type and perhaps the server name
+				UT_UTF8String msg("Error importing document ");
+				msg += docHandle.getName();
+				msg += ".";
+				XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			}
+			break;
+	}
+}
+
+acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %lld\n", doc_id));
+	
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	const std::string password = getProperty("password");
+		
+	// construct a SOAP method call to gets our documents
+	soa::function_call fc("openDocument", "openDocumentResponse");
+	fc("email", email)("password", password)("doc_id", doc_id)("revision", static_cast<int64_t>(revision));
+
+	// execute the call
+	boost::shared_ptr<ProgressiveSoapCall> call(new ProgressiveSoapCall(uri, fc, m_ssl_ca_file));
+	soa::GenericPtr soap_result;
+	try {
+		soap_result = call->run();
+	} catch (soa::SoapFault& fault) {
+		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+					 fault.string() ? fault.string()->value().c_str() : "(null)"));
+		return acs::error(fault);
+	}
+	UT_return_val_if_fail(soap_result, acs::SOAP_ERROR_GENERIC);
+	
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
+
+	soa::StringPtr realm_address = rcp->get<soa::String>("realm_address");
+	soa::IntPtr realm_port = rcp->get<soa::Int>("realm_port");
+	soa::StringPtr cookie = rcp->get<soa::String>("cookie");
+	
+	// some sanity checking
+	soa::BoolPtr master = rcp->get<soa::Bool>("master");
+	if (!master)
+	{
+		UT_DEBUGMSG(("Error reading master field\n"));
+		return acs::SOAP_ERROR_GENERIC;
+	}
+	if (!realm_address || realm_address->value().size() == 0 || !realm_port || realm_port->value() <= 0 || !cookie || cookie->value().size() == 0)
+	{
+		UT_DEBUGMSG(("Invalid realm login information\n"));
+		return acs::SOAP_ERROR_GENERIC;
+	}
+	soa::StringPtr filename_ptr = rcp->get<soa::String>("filename");
+	if (!filename_ptr)
+	{
+		UT_DEBUGMSG(("Error reading filename field\n"));
+		return acs::SOAP_ERROR_GENERIC;
+	}
+	// check the filename; it shouldn't ever be empty, but just check nonetheless
+	// TODO: append a number if the filename happens to be empty
+	std::string filename = filename_ptr->value().size() > 0 ? filename_ptr->value() : "Untitled";
+	
+	// open the realm connection!
+	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
+	ConnectionPtr connection = 
+		boost::shared_ptr<RealmConnection>(new RealmConnection(realm_address->value(), 
+								realm_port->value(), cookie->value(), doc_id, master->value(), session_id,
+								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
+
+	// TODO: this connect() call is blocking, so it _could_ take a while; we should
+	// display a progress bar in that case
+	if (!connection->connect())
+	{
+		UT_DEBUGMSG(("Error connecting to realm %s:%d\n", realm_address->value().c_str(), realm_port->value()));
+		return acs::SOAP_ERROR_GENERIC;
+	}
+	
+	// load the document
+	acs::SOAP_ERROR open_result = master->value()
+				? _openDocumentMaster(rcp, pDoc, pFrame, session_id, filename)
+				: _openDocumentSlave(connection, pDoc, pFrame, filename);
+
+	if (open_result != acs::SOAP_ERROR_OK)
+	{
+		UT_DEBUGMSG(("Error opening document!\n"));
+		// TODO: also nuke the queue!
+		connection->disconnect();
+		return acs::SOAP_ERROR_GENERIC;
+	}
+	
+	UT_DEBUGMSG(("Slave document loaded successfully\n"));
+	m_connections.push_back(connection);
+	return acs::SOAP_ERROR_OK;
+}
+
+acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
+																 	const std::string& session_id, const std::string& filename)
+{
+	UT_return_val_if_fail(rcp || pDoc, acs::SOAP_ERROR_GENERIC);
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, acs::SOAP_ERROR_GENERIC);	
+	
+	soa::StringPtr document = rcp->get<soa::String>("document");
+	UT_return_val_if_fail(document, acs::SOAP_ERROR_GENERIC);
+	
+	// construct the document
+	UT_return_val_if_fail(AbiCollabSessionManager::deserializeDocument(pDoc, document->value(), true) == UT_OK, acs::SOAP_ERROR_GENERIC);
+	UT_return_val_if_fail(*pDoc, acs::SOAP_ERROR_GENERIC);
+
+	// set the filename
+	gchar* fname = g_strdup(filename.c_str());
+	(*pDoc)->setFilename(fname);
+	
+	// start the session
+	UT_UTF8String sSessionId = session_id.c_str();
+	pManager->startSession(*pDoc, sSessionId, pFrame);
+	
+	return acs::SOAP_ERROR_OK;
+}
+
+acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, const std::string& filename)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_openDocumentSlave()\n"));
+	UT_return_val_if_fail(connection, acs::SOAP_ERROR_GENERIC);
+	UT_return_val_if_fail(pDoc, acs::SOAP_ERROR_GENERIC);
+	
+	// get the progress dialog
+	XAP_Frame* pDlgFrame = XAP_App::getApp()->getLastFocussedFrame();
+	UT_return_val_if_fail(pDlgFrame, acs::SOAP_ERROR_GENERIC);
+
+	XAP_DialogFactory* pFactory = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+	UT_return_val_if_fail(pFactory, acs::SOAP_ERROR_GENERIC);
+
+	AP_Dialog_GenericProgress* pDlg = static_cast<AP_Dialog_GenericProgress*>(
+				pFactory->requestDialog(ServiceAccountHandler::getDialogGenericProgressId())
+			);		
+	pDlg->setTitle("Retrieving Document");
+	pDlg->setInformation("Please wait while retrieving document...");
+
+	// setup the information for the callback to use when the document comes in
+	connection->loadDocumentStart(pDlg, pDoc, pFrame, filename);
+	
+	// run the dialog
+	pDlg->runModal(pDlgFrame);
+	UT_DEBUGMSG(("Progress dialog destroyed...\n"));
+	bool m_cancelled = pDlg->getAnswer() == AP_Dialog_GenericProgress::a_CANCEL;
+	pFactory->releaseDialog(pDlg);		
+	connection->loadDocumentEnd();
+	
+	if (m_cancelled)
+		return acs::SOAP_ERROR_GENERIC;
+
+	return acs::SOAP_ERROR_OK;
+}
+
+// FIXME: this function can be called from another thread; 
+// don't allow it to access data from the main thread
+// NOTE: saveDocument can be called from a thread other than our mainloop;
+// Don't let access or modify any data from the mainloop!
+UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId)
+{
+	UT_DEBUGMSG(("Saving document with session id %s to webservice!\n", sSessionId.utf8_str()));
+	UT_return_val_if_fail(pDoc, UT_ERROR);
+	
+	// find the realm connection beloning to this session to fetch the document id
+	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		boost::shared_ptr<RealmConnection> connection_ptr = *it;
+		UT_continue_if_fail(connection_ptr);
+		if (connection_ptr->session_id() == sSessionId.utf8_str())
+		{
+			UT_DEBUGMSG(("Saving document id %lld\n", connection_ptr->doc_id()));
+			
+			const std::string uri = getProperty("uri");
+			const std::string email = getProperty("email");
+			const std::string password = getProperty("password");
+			boost::shared_ptr<std::string> document(new std::string(""));
+			if (AbiCollabSessionManager::serializeDocument(pDoc, *document, true) != UT_OK)
+				return UT_ERROR;
+			
+			// construct a SOAP method call to gets our documents
+			soa::function_call fc("saveDocument", "saveDocumentResponse");
+			fc("email", email)
+				("password", password)
+				("doc_id", connection_ptr->doc_id())
+				("logmessage", "User initiated save")
+				(soa::Base64Bin("data", document));
+
+			// execute the call and ignore the result (the revision number stored)
+			soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
+			UT_return_val_if_fail(soap_result, UT_ERROR);
+
+			return UT_OK;
+		}
+	}
+
+	return UT_ERROR;
+}
+
+void ServiceAccountHandler::signal(const Event& event, const Buddy* pSource)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::signal()\n"));
+	
+	// NOTE: do NOT let AccountHandler::signal() send broadcast packets!
+	// It will send them to all buddies, including the ones we created
+	// to list the available documents: ServiceBuddies. They are just fake
+	// buddies however, and can't receive real packets. Only RealmBuddy's
+	// can be sent packets
+	
+	switch (event.getClassType())
+	{
+		case PCT_CloseSessionEvent:
+			{
+				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
+				// we shouldn't receive these events over the wire on this backend
+				UT_return_if_fail(!pSource);
+
+				// close all connections with the event's session id
+				// Note that some or all connections are already closed by other means, but it
+				// doesn't really hurt to check twice
+				for (std::vector<ConnectionPtr>::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+				{
+					ConnectionPtr connection = *it;
+					if (connection->session_id() == cse.getSessionId().utf8_str())
+						connection->disconnect();
+				}
+				
+				// Note: there is no real need to pass this to the AccountHandler::signal()
+				// function: that one will send all buddies the 'session is closed'
+				// signal. However, on this backend, the abicollab.net realm will 
+				// handle that for us
+			}
+			break;
+		case PCT_StartSessionEvent:
+			// TODO: users should get this I guess, but I don't know a proper way to implement this yet
+			break;
+		default:	
+			// TODO: implement me
+			break;
+	}
+}
+
+// NOTE: _listDocuments can be called from a thread other than our mainloop;
+// Don't let access or modify any data from the mainloop!
+acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
+					const std::string uri, const std::string email, const std::string password,
+					SessionBuddyPtr sessions_ptr)
+{
+	UT_return_val_if_fail(sessions_ptr, acs::SOAP_ERROR_GENERIC);
+
+	// construct a SOAP method call to gets our documents
+	soa::function_call fc("listDocuments", "listDocumentsResponse");
+	fc("email", email)("password", password);
+
+	soa::GenericPtr soap_result;
+	try {
+		soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
+	} catch (soa::SoapFault& fault) {
+		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+					 fault.string() ? fault.string()->value().c_str() : "(null)"));
+		return acs::error(fault);
+	}
+	if (!soap_result)
+		return acs::SOAP_ERROR_GENERIC;
+
+	// handle the result
+	soa::CollectionPtr rcp = soap_result->as<soa::Collection>("return");
+	UT_return_val_if_fail(rcp, acs::SOAP_ERROR_GENERIC);
+	
+	// load our own files
+	GetSessionsResponseEvent gsre;
+	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre);
+	sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, email.c_str()) ));
+
+	// load the files from our friends
+	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
+		if (abicollab::FriendArrayPtr friends = friends_array->construct<abicollab::Friend>())
+			for (size_t i = 0; i < friends->size(); i++)
+				if (abicollab::FriendPtr friend_ = friends->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a friend: %s <%s>\n", friend_->name.c_str(), friend_->email.c_str()));
+					if (friend_->email != "")
+					{
+						// add this friend's documents by generating a GetSessionsResponseEvent
+						// to populate all the required document structures
+						GetSessionsResponseEvent gsre;
+						_parseSessionFiles(friend_->files, gsre);
+						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, friend_->email.c_str()) ));
+					}				
+				}
+	
+	// load the files from our groups
+	if (soa::ArrayPtr groups_array = rcp->get< soa::Array<soa::GenericPtr> >("groups"))
+		if (abicollab::GroupArrayPtr groups = groups_array->construct<abicollab::Group>())
+			for (size_t i = 0; i < groups->size(); i++)
+				if (abicollab::GroupPtr group_ = groups->operator[](i))
+				{
+					UT_DEBUGMSG(("Got a group: %s\n", group_->name.c_str()));
+					if (group_->name != "")
+					{
+						// add this friend's documents by generating a GetSessionsResponseEvent
+						// to populate all the required document structures
+						GetSessionsResponseEvent gsre;
+						_parseSessionFiles(group_->files, gsre);
+						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, group_->name.c_str()) ));
+					}				
+				}
+	
+	return acs::SOAP_ERROR_OK;
+}
+
+
+void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPtr sessions_ptr)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);			
+
+	pManager->endAsyncOperation(this);
+	
+	UT_return_if_fail(sessions_ptr);
+	
+	switch (error)
+	{
+		case acs::SOAP_ERROR_OK:
+			{
+				std::vector<SessionBuddyPair>& sessions = *sessions_ptr;
+				for (std::vector<SessionBuddyPair>::iterator it = sessions.begin(); it != sessions.end(); it++)
+				{
+					ServiceBuddy* pBuddy = (*it).second;
+					UT_continue_if_fail(pBuddy);
+					Buddy* pExistingBuddy = getBuddy(pBuddy->getName());
+					if (!pExistingBuddy)
+					{
+						pExistingBuddy = pBuddy;
+						addBuddy(pBuddy);
+					}
+					else
+						DELETEP(pBuddy);
+					_handlePacket(&((*it).first), pExistingBuddy);
+				}
+			}
+			break;
+		case acs::SOAP_ERROR_INVALID_PASSWORD:
+			{
+				// FIXME: should we ask for a password in an async callback?
+				const std::string email = getProperty("email");
+				std::string password;
+				if (askPassword(email, password))
+				{
+					// store the new password
+					addProperty("password", password);
+					pManager->storeProfile();
+
+					// re-attempt to fetch the documents list
+					pManager->beginAsyncOperation(this);
+					SessionBuddyPtr new_sessions_ptr(new std::vector<SessionBuddyPair>());
+					boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
+								new AsyncWorker<acs::SOAP_ERROR>(
+									boost::bind(&ServiceAccountHandler::_listDocuments, this, 
+												getProperty("uri"), getProperty("email"), getProperty("password"), new_sessions_ptr),
+									boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, new_sessions_ptr)
+								)
+							);
+					async_list_docs_ptr->start();
+				}
+			}
+			return;
+		default:
+			// FIXME: maybe determine the exact error
+			UT_return_if_fail(error == acs::SOAP_ERROR_OK);
+	}
+}
+
+void ServiceAccountHandler::_handleJoinSessionRequestResponse(
+									JoinSessionRequestResponseEvent* jsre, Buddy* pBuddy, 
+									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename)
+{
+	UT_return_if_fail(jsre);
+	UT_return_if_fail(pBuddy);
+	UT_return_if_fail(pDoc);
+	
+	UT_DEBUGMSG(("_handleJoinSessionRequestResponse() - pFrame: 0x%x\n", pFrame));
+	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+	
+	UT_return_if_fail(AbiCollabSessionManager::deserializeDocument(pDoc, jsre->m_sZABW, false) == UT_OK);
+	UT_return_if_fail(*pDoc);
+
+	gchar* fname = g_strdup(filename.c_str());
+	(*pDoc)->setFilename(fname);
+
+	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, pBuddy, pFrame);
+}
+
+void ServiceAccountHandler::_handleRealmPacket(RealmConnection& connection)
+{
+	UT_return_if_fail(connection.queue().peek());
+
+	rpv1::PacketPtr packet = connection.queue().pop();
+	UT_return_if_fail(packet); // FIXME: disconnect!
+	
+	switch (packet->type())
+	{
+		case rpv1::PACKET_DELIVER:
+			{
+				UT_DEBUGMSG(("Received a 'Deliver' packet!\n"));
+				boost::shared_ptr<rpv1::DeliverPacket> dp =
+						boost::static_pointer_cast<rpv1::DeliverPacket>(packet);					
+				UT_return_if_fail(dp->getMessage());
+				
+				boost::shared_ptr<RealmBuddy> buddy_ptr = 
+						connection.getBuddy(dp->getConnectionId());
+				UT_return_if_fail(buddy_ptr);
+				
+				Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr.get());
+				UT_return_if_fail(pPacket);								
+
+				if (pPacket->getClassType() == PCT_JoinSessionRequestResponseEvent)
+				{
+					UT_DEBUGMSG(("Trapped a JoinSessionRequestResponseEvent!\n"));
+					boost::shared_ptr<PendingDocumentProperties> pdp = connection.getPendingDocProps();
+					UT_return_if_fail(pdp);
+
+					UT_DEBUGMSG(("Joining received document..."));
+					_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr.get(), pdp->pFrame, pdp->pDoc, pdp->filename);
+					DELETEP(pPacket);
+					UT_return_if_fail(pdp->pDlg);
+					pdp->pDlg->close();
+					return;
+				}
+				
+				// let the default handler handle this packet
+				// NOTE: this will delete the packet as well (ugly design)
+				handleMessage(pPacket, buddy_ptr.get());				
+			}
+			return;
+		case rpv1::PACKET_USERJOINED:
+			{
+				UT_DEBUGMSG(("Received a 'User Joined' packet!\n"));
+				boost::shared_ptr<rpv1::UserJoinedPacket> ujp =
+						boost::static_pointer_cast<rpv1::UserJoinedPacket>(packet);
+				if (connection.master())
+				{
+					UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
+					UT_return_if_fail(!ujp->isMaster());
+					connection.addBuddy(boost::shared_ptr<RealmBuddy>(
+							new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), connection)));
+				}
+				else 
+				{
+					if (ujp->isMaster())
+					{
+						UT_DEBUGMSG(("Received master buddy; we're slave, adding it to our buddy list!\n"));
+						boost::shared_ptr<RealmBuddy> master_buddy(
+									new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), connection));
+						connection.addBuddy(master_buddy);
+
+						UT_DEBUGMSG(("Sending join session request to master!\n"));
+						JoinSessionRequestEvent event( connection.session_id().c_str() );
+						send(&event, *master_buddy);
+					}
+					else
+						UT_DEBUGMSG(("Received a slave buddy; we're slave; dropping it on the floor for now\n"));
+				}
+			}
+			return;			
+		case rpv1::PACKET_USERLEFT:
+			{
+				UT_DEBUGMSG(("Received a 'User Left' packet!\n"));
+				boost::shared_ptr<rpv1::UserLeftPacket> ulp =
+						boost::static_pointer_cast<rpv1::UserLeftPacket>(packet);			
+				connection.removeBuddy(ulp->getConnectionId());
+			}
+			return;
+		default:
+			UT_DEBUGMSG(("Dropping unrecognized packet on the floor (type: 0x%x)!\n", packet->type()));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+	}
+}
+
+// NOTE: _parseSessionFiles can be called from a thread other than our mainloop;
+// Don't let access or modify any data from the mainloop!
+void ServiceAccountHandler::_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre)
+{
+	UT_return_if_fail(files_array);
+	
+	if (abicollab::FileArrayPtr files = files_array->construct<abicollab::File>())
+	{
+		for (size_t i = 0; i < files->size(); i++)
+		{
+			if (abicollab::FilePtr file = files->operator[](i))
+			{
+				UT_DEBUGMSG(("Got a file: %s (%s bytes, id: %s)\n", file->filename.c_str(), file->filesize.c_str(), file->doc_id.c_str()));
+				// NOTE: we can safely use the (unique) document id as the session identifier, 
+				// as there is basically only one _ever lasting_ session for each 
+				// document stored on abicollab.net
+				if (file->doc_id != "" && file->access == "readwrite") {
+					gsre.m_Sessions[file->doc_id.c_str()] = file->filename.c_str();
+				}
+			}
+		}
+	}
+}
+

@@ -1,5 +1,4 @@
-/* Copyright (C) 2006,2007 Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 AbiSource Corporation B.V.
+/* Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,31 +16,30 @@
  * 02111-1307, USA.
  */
 
-#ifndef __SERVICEUNIXACCOUNTHANDLER__
-#define __SERVICEUNIXACCOUNTHANDLER__
+#ifndef AP_UNIXDIALOG_GENERICINPUT_H
+#define AP_UNIXDIALOG_GENERICINPUT_H
 
-#include <backends/service/xp/ServiceAccountHandler.h>
+#include <gtk/gtk.h>
+#include <xp/ap_Dialog_GenericInput.h>
 
 class XAP_Frame;
 
-class ServiceUnixAccountHandler : public ServiceAccountHandler
+class AP_UnixDialog_GenericInput : public AP_Dialog_GenericInput
 {
 public:
-	ServiceUnixAccountHandler();
+	AP_UnixDialog_GenericInput(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
+	void						runModal(XAP_Frame * pFrame);
 
-	static AccountHandler*					static_constructor();
-
-	// dialog management 
-	virtual void							embedDialogWidgets(void* pEmbeddingParent);
-	virtual void							removeDialogWidgets(void* pEmbeddingParent);
-	virtual void							storeProperties();
+	void						event_Ok();
 
 private:
-	GtkWidget*								table;
-	GtkWidget*								username_entry;
-	GtkWidget*								password_entry;
-	GtkWidget*								autoconnect_button;
-	
+	GtkWidget*	 				_constructWindow(void);
+	void						_populateWindowData(void);
+
+	GtkWidget*					m_wWindowMain;
+	GtkWidget*					m_wOk;
+	GtkWidget*					m_wInput;
 };
 
-#endif /* __SERVICEUNIXACCOUNTHANDLER__ */
+#endif /* AP_UNIXDIALOG_GENERICINPUT_H */

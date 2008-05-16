@@ -43,7 +43,7 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 	
 	// username	
-	GtkWidget* username_label = gtk_label_new("Username:");
+	GtkWidget* username_label = gtk_label_new("E-mail address:");
 	gtk_misc_set_alignment(GTK_MISC(username_label), 0, 0.5);
 	gtk_table_attach_defaults(GTK_TABLE(table), username_label, 0, 1, 0, 1);
 	username_entry = gtk_entry_new();
@@ -80,8 +80,10 @@ void ServiceUnixAccountHandler::storeProperties()
 {
 	UT_DEBUGMSG(("ServiceUnixAccountHandler::storeProperties()\n"));	
 
+	addProperty("uri", "https://abicollab.net/soap/");
+
 	if (username_entry && GTK_IS_ENTRY(username_entry))
-		addProperty("username", gtk_entry_get_text(GTK_ENTRY(username_entry)));
+		addProperty("email", gtk_entry_get_text(GTK_ENTRY(username_entry)));
 
 	if (password_entry && GTK_IS_ENTRY(password_entry))
 		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
