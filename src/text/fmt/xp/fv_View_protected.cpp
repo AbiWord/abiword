@@ -4350,6 +4350,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
 	UT_sint32 iDocHeight = m_pLayout->getHeight();
+	UT_sint32 iDocWidth = m_pLayout->getWidth();
 
 	// TODO: handle positioning within oversized viewport
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
@@ -4417,16 +4418,25 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	while (pPage)
 	{
+		UT_uint32 iPageNumber		= m_pLayout->findPage(pPage);
+		UT_uint32 iRow 				= iPageNumber/getNumHorizPages();
+		UT_uint32 iCol				= iPageNumber;
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
+		UT_sint32 adjustedTop		= iPageHeight * iRow - m_yScrollOffset;
 		pDSL = pPage->getOwningSection();
+		
+		while (iCol > getNumHorizPages())
+		{
+			iCol -= getNumHorizPages();
+		}
+
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 
-		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep(); //TODO: page boundries
 
 		if (adjustedTop > getWindowHeight())
 		{
@@ -4488,22 +4498,24 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.
-
+			
 			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
-
+			
 			dg_DrawArgs da;
-
+			
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
 			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
 			xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
 			da.yoff = adjustedTop;
-			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
+			
+			UT_DEBUGMSG(("iRow: %d iCol: %d iPageNumber: %d\n", iRow, iCol, iPageNumber));
+			UT_sint32 adjustedLeft	= getPageViewLeftMargin()- m_xScrollOffset + (iPageWidth * iCol); //TODO: plus a bit more for spacing
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
-
+			
 			adjustedBottom -= getPageViewSep();
-
+			
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
@@ -4610,13 +4622,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				adjustedRight += m_pG->tlu(1);
 				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 			}
+			xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
+			curY += iPageHeight + getPageViewSep();
+
+			pPage = pPage->getNext();
 		}
-		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
-		curY += iPageHeight + getPageViewSep();
-
-		pPage = pPage->getNext();
 	}
-
+	
 	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document

@@ -223,7 +223,7 @@ public:
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
-
+	
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
 private: 
@@ -820,7 +820,7 @@ protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
 	
-
+	UT_uint32			getNumHorizPages(void);
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -912,6 +912,9 @@ private:
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
+	
+	UT_uint32			m_iNumHorizPages;
+	
 	//the followingare BiDi specific, but need to be in place because of the
 	//change to the signature of findPointCoords
 	UT_sint32			m_xPoint2;

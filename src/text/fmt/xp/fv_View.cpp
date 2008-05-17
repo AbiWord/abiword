@@ -13773,3 +13773,8 @@ void FV_View::fontMetricsChange()
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
 
+UT_uint32 FV_View::getNumHorizPages()
+{
+	m_iNumHorizPages = 3; //TODO: get this from the default or prefrences.
+	return m_iNumHorizPages;
+}
