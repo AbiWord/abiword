@@ -947,11 +947,9 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
 			// TODO: Use a dynamic substitution table
-			if (!strcmp("Symbol", szValue) ||
-				!strcmp("Standard Symbols L", szValue))
+			if (strstr(szValue, "Symbol"))
 				m_bInSymbol = true;
-			if (!strcmp("Courier", szValue) ||
-				!strcmp("Courier New", szValue) ||
+			if (strstr(szValue, "Courier") ||
 				!strcmp("Luxi Mono",szValue)) {
 				m_bInCourier = true;
 				m_pie->write("\\texttt{");
@@ -1111,11 +1109,10 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
-			if (!strcmp ("Symbol", szValue) ||
-				!strcmp("Standard Symbols L", szValue))
+			if (strstr(szValue, "Symbol"))
 				m_bInSymbol = false;
-			if (!strcmp("Courier", szValue) ||
-				!strcmp("Courier New", szValue))
+			if (strstr(szValue, "Courier") ||
+				!strcmp("Luxi Mono",szValue))
 			{
 				m_pie->write("}");
 				m_bInCourier = false;
