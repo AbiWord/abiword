@@ -243,6 +243,7 @@ public:
 			break;
 		    case PTX_EndCell:
 			m_pTableHelper->CloseCell();
+			break;
 		    default:
 			break;
 		}
