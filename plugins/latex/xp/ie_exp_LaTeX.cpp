@@ -184,17 +184,25 @@ typedef int LIST_TYPE;
 
 class LaTeX_Analysis_Listener : public PL_Listener
 {
+private:
+	ie_Table *  m_pTableHelper;
 public:
 	bool m_hasEndnotes;
+	bool m_hasTable;
+	bool m_hasMultiRow;
 
-	LaTeX_Analysis_Listener(PD_Document * /*pDocument*/,
+	LaTeX_Analysis_Listener(PD_Document * pDocument,
 							IE_Exp_LaTeX * /*pie*/)
-		: m_hasEndnotes(false)
+		: m_hasEndnotes(false),
+		  m_hasTable(false),
+		  m_hasMultiRow(false)
 	{
+	    m_pTableHelper = new ie_Table(pDocument);
 	}
 
 	virtual ~LaTeX_Analysis_Listener()
 	{
+	    DELETEP(m_pTableHelper);
 	}
 
 	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
@@ -203,7 +211,7 @@ public:
 		return true;	
 	}
 
-	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 						const PX_ChangeRecord * pcr,
 						PL_StruxFmtHandle * psfh)
 	{
@@ -212,14 +220,32 @@ public:
 		*psfh = 0;							// we don't need it.
 
 		switch (pcrx->getStruxType())
-			{
-			case PTX_SectionEndnote:
-			case PTX_EndEndnote:
-				m_hasEndnotes = true;
-				break;
-			default:
-				break;
-			}
+		{
+		    case PTX_SectionEndnote:
+		    case PTX_EndEndnote:
+			m_hasEndnotes = true;
+			break;
+		    case PTX_SectionTable:
+		    {
+			m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+			m_hasTable = true;
+			break;
+		    }
+		    case PTX_EndTable:
+		    {
+			m_pTableHelper->CloseTable();
+			break;
+		    }
+		    case PTX_SectionCell:
+			m_pTableHelper->OpenCell(pcr->getIndexAP());
+			if(m_pTableHelper->getBot() - m_pTableHelper->getTop() >1)
+			    this->m_hasMultiRow = true;
+			break;
+		    case PTX_EndCell:
+			m_pTableHelper->CloseCell();
+		    default:
+			break;
+		}
 
 		return true;
 	}
