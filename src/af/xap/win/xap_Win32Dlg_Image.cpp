@@ -67,7 +67,7 @@ void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_IMAGE));
 }
 
-BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// localize dialog title
 	localizeDialogTitle(XAP_STRING_ID_DLG_Image_Title);
@@ -163,7 +163,7 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	return TRUE;
 }
 
-BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -238,14 +238,14 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case XAP_RID_DIALOG_IMAGE_EBX_HEIGHT:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char buf[BUFSIZE];
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			char bufHeight[BUFSIZE];
+			GetDlgItemText( hWnd, wId, bufHeight, BUFSIZE );
 
 			//let the user manually change dimensions too
-			if(!strstr(buf,UT_dimensionName(getPreferedUnits())))
-				strcat(buf,UT_dimensionName(getPreferedUnits()));
+			if(!strstr(bufHeight,UT_dimensionName(getPreferedUnits())))
+				strcat(bufHeight,UT_dimensionName(getPreferedUnits()));
 
-			setHeight( buf );
+			setHeight( bufHeight );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
@@ -254,14 +254,14 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case XAP_RID_DIALOG_IMAGE_EBX_WIDTH:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char buf[BUFSIZE];
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+			char bufWidth[BUFSIZE];
+			GetDlgItemText( hWnd, wId, bufWidth, BUFSIZE );
 
 			//let the user manually change dimensions too
-			if(!strstr(buf,UT_dimensionName(getPreferedUnits())))
-				strcat(buf,UT_dimensionName(getPreferedUnits()));
+			if(!strstr(bufWidth,UT_dimensionName(getPreferedUnits())))
+				strcat(bufWidth,UT_dimensionName(getPreferedUnits()));
 
-			setWidth( buf );
+			setWidth( bufWidth );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}

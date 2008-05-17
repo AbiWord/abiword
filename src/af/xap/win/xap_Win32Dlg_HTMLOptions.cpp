@@ -62,7 +62,7 @@ void XAP_Win32Dialog_HTMLOptions::runModal(XAP_Frame * pFrame)
 
 #define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	localizeDialogTitle(XAP_STRING_ID_DLG_HTMLOPT_ExpTitle);
 
@@ -86,7 +86,7 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -141,7 +141,7 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	}
 }
 
-BOOL XAP_Win32Dialog_HTMLOptions::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL XAP_Win32Dialog_HTMLOptions::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return FALSE;
 }

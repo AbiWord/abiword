@@ -111,7 +111,7 @@ BOOL CALLBACK XAP_Win32Dialog_History::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPara
 	}
 }
 
-BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// set the window title
 	SetWindowText(hWnd, getWindowLabel());
@@ -196,7 +196,7 @@ BOOL XAP_Win32Dialog_History::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPa
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_History::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_History::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 

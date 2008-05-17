@@ -184,7 +184,10 @@ void XAP_Win32App::reallyExit(void)
 	PostQuitMessage (0);
 }
 
-UT_sint32 XAP_Win32App::makeDirectory(const char * szPath, const UT_sint32 mode ) const { return mkdir(szPath); }
+UT_sint32 XAP_Win32App::makeDirectory(const char * szPath, const UT_sint32 /*mode*/ ) const
+{
+	return mkdir(szPath);
+}
 
 XAP_DialogFactory * XAP_Win32App::getDialogFactory(void)
 {
@@ -219,7 +222,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void) // ansi only dirs for n
 {
 	/* return a pointer to a static buffer */
 
-	char * szAbiDir = "AbiSuite";
+	const char * szAbiDir = "AbiSuite";
 
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));

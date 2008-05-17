@@ -138,7 +138,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	}
 }
 
-BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	m_hDlg = hWnd;
 
@@ -222,7 +222,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -253,7 +253,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	}
 }
 
-BOOL XAP_Win32Dialog_Insert_Symbol::_onDeltaPos(NM_UPDOWN * pnmud)\
+BOOL XAP_Win32Dialog_Insert_Symbol::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return FALSE;
 }
@@ -266,7 +266,7 @@ int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLo
 	return pThis->_enumFont(pLogFont, pTextMetric, Font_type);
 }
 
-int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type)
+int XAP_Win32Dialog_Insert_Symbol::_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC * /*pTextMetric*/, DWORD Font_type)
 {
 	if( ((int)Font_type) & TRUETYPE_FONTTYPE ) // Only except true type fonts.
 	{
