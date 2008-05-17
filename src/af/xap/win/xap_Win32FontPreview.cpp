@@ -24,7 +24,7 @@
 #include "xap_Win32FrameImpl.h"
 
 
-XAP_Win32FontPreview::XAP_Win32FontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
+XAP_Win32FontPreview::XAP_Win32FontPreview(XAP_Frame * /*pFrame*/, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {
 	m_left = left;

@@ -43,7 +43,7 @@ XAP_Win32DropTarget::XAP_Win32DropTarget()
 	
 }
 
-STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
+STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID /*riid*/, LPVOID FAR* /*ppvObj*/)
 {
         return S_OK;
 }
@@ -66,7 +66,7 @@ STDMETHODIMP_(ULONG) XAP_Win32DropTarget::Release()
 //      Called when the mouse first enters our DropTarget window
 //	We check which formats we really support
 //
-STDMETHODIMP XAP_Win32DropTarget::DragEnter (LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
+STDMETHODIMP XAP_Win32DropTarget::DragEnter (LPDATAOBJECT pDataObj, DWORD /*grfKeyState*/, POINTL /*pointl*/, LPDWORD pdwEffect)
 {	
 	FORMATETC 	fmte = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
 	
@@ -87,7 +87,7 @@ STDMETHODIMP XAP_Win32DropTarget::DragEnter (LPDATAOBJECT pDataObj, DWORD grfKey
 	return S_OK;
 }
 
-STDMETHODIMP XAP_Win32DropTarget::DragOver(DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
+STDMETHODIMP XAP_Win32DropTarget::DragOver(DWORD /*grfKeyState*/, POINTL /*pointl*/, LPDWORD pdwEffect)
 {        	
 	*pdwEffect = (m_bSupportedFormat) ? DROPEFFECT_COPY : DROPEFFECT_NONE;			
 	
@@ -106,7 +106,7 @@ STDMETHODIMP XAP_Win32DropTarget::DragLeave()
 //
 // Called when the user drops an object
 //
-STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pointl, LPDWORD pdwEffect)
+STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeyState*/, POINTL /*pointl*/, LPDWORD /*pdwEffect*/)
 {
         
 	FORMATETC  	formatetc;
