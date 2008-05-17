@@ -133,7 +133,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 
 */
 static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
-									 XAP_Frame * pFrame, 
+									 XAP_Frame * /*pFrame*/, 
 									 const EV_EditEventMapper * pEEM,
 									 const EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
@@ -693,7 +693,7 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 	XAP_Menu_Id ids[] = { AP_MENU_ID_FILE, AP_MENU_ID_EDIT, AP_MENU_ID_VIEW,AP_MENU_ID_INSERT,
 		AP_MENU_ID_TOOLS, AP_MENU_ID_WINDOW, AP_MENU_ID_HELP,AP_MENU_ID_TABLE, AP_MENU_ID_FORMAT, NULL};
 
-	for (int i=0; i<(sizeof(ids)/sizeof(XAP_Menu_Id)); i++)
+	for (UT_uint32 i=0; i<(sizeof(ids)/sizeof(XAP_Menu_Id)); i++)
 	{
 		if (ids[i]==id)
 		{		

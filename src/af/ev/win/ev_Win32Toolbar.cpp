@@ -1227,7 +1227,8 @@ int EV_Win32Toolbar::_getBandForHwnd(HWND hToolbar) const
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 
 	// If we ever get more than 20 toolbars I don't wanna be around.
-	REBARBANDINFO rbi = { 0 };
+	REBARBANDINFO rbi;
+	memset(&rbi, 0, sizeof(rbi));
 	rbi.cbSize = sizeof(rbi);
 	rbi.fMask  = RBBIM_CHILD;
 	for (int i = 0; i < 20; ++i)
@@ -1255,7 +1256,8 @@ void EV_Win32Toolbar::_addToRebar()
 	UINT iWidth = rc.right - rc.left + 13;
 
 	// add this bar to the rebar
-	REBARBANDINFO  rbbi = { 0 };
+	REBARBANDINFO  rbbi;
+	memset(&rbbi, 0, sizeof(rbbi));
 	// Initialize REBARBANDINFO
 	rbbi.cbSize = sizeof(REBARBANDINFO);
 	rbbi.fMask =	RBBIM_COLORS	|	// clrFore and clrBack are valid

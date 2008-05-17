@@ -289,8 +289,8 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 extern "C"
 int CALLBACK
 win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
-								NEWTEXTMETRICEX* pTextMetric,
-								int Font_type,
+								NEWTEXTMETRICEX* /*pTextMetric*/,
+								int /*Font_type*/,
 								LPARAM lParam)
 {
 	LOGFONT *lf = (LOGFONT*)lParam;
@@ -300,17 +300,19 @@ win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
 
 GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 									 const char* pszFontStyle,
-									 const char* pszFontVariant,
+									 const char* /*pszFontVariant*/,
 									 const char* pszFontWeight,
-									 const char* pszFontStretch,
+									 const char* /*pszFontStretch*/,
 									 const char* pszFontSize,
-									 const char* pszLang)
+									 const char* /*pszLang*/)
 {	
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::findFont %s %s %s\n", pszFontFamily, pszFontStyle, pszFontSize));	
 	#endif
 	
-	LOGFONT lf = { 0 };
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+
 	HDC hPrintDC = m_printHDC ? m_printHDC : m_hdc;
 
 	/*
@@ -362,7 +364,9 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	}
 
 	// Get character set value from the font itself
-	LOGFONT enumlf = { 0 };
+	LOGFONT enumlf;
+	memset(&enumlf, 0, sizeof(enumlf));
+
 	enumlf.lfCharSet = DEFAULT_CHARSET;
 	strcpy(enumlf.lfFaceName, lf.lfFaceName);
 	EnumFontFamiliesEx(m_hdc, &enumlf,
@@ -374,7 +378,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	return _newFont(lf, fPointSize, m_hdc, hPrintDC);
 }
 
-void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void GR_Win32Graphics::drawGlyph(UT_uint32 /*Char*/, UT_sint32 /*xoff*/, UT_sint32 /*yoff*/)
 {
 	UT_ASSERT_HARMLESS(UT_TODO);
 }
@@ -710,7 +714,7 @@ void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
 	//UT_ASSERT(UT_TODO);
 }
 
-UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
+UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * /*height*/)
 {
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::measureUnRemappedChar\n"));	
@@ -954,7 +958,7 @@ bool GR_Win32Graphics::startPrint(void)
 	return m_bStartPrint;
 }
 
-bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+bool GR_Win32Graphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	// need these in 10th of milimiters
@@ -1249,7 +1253,7 @@ HWND GR_Win32Graphics::getHwnd(void) const
 	return m_hwnd;
 }
 
-void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace /*c*/)
 {
 	// TODO:  maybe?
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -1446,8 +1450,11 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	// we borrow some code from GR_Win32Graphics::findFont()
 
-	LOGFONT lf = { 0 };
-	TEXTMETRIC tm = { 0 };
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+
+	TEXTMETRIC tm;
+	memset(&tm, 0, sizeof(tm));
 
 	// TODO i'm not sure why we special case these, but the other
 	// TODO code did, so i'm going to here.
@@ -1847,7 +1854,9 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 		// (whether the 9x version of the function is fully functional I do not know, but
 		// it does glyph index lookup).
 		UINT iIndx;
-		GCP_RESULTSW gcpResult = {0};
+		GCP_RESULTSW gcpResult;
+		memset(&gcpResult, 0, sizeof(gcpResult));
+
 		gcpResult.lStructSize = sizeof(GCP_RESULTS);
 		
 		// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
@@ -1956,7 +1965,7 @@ HFONT GR_Win32Font::getDisplayFont(GR_Graphics * pG)
 	return getFontFromCache(pixels, false, zoom);
 }
 
-UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c, UT_uint32 * height)
+UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c, UT_uint32 * /*height*/)
 {
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	// first of all, handle 0-width spaces ...
@@ -2020,7 +2029,7 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	delete[] points;
 }
 
-bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
+bool GR_Win32Graphics::_setTransform(const GR_Transform & /*tr*/)
 {
 #if 0
 	if(UT_IsWinNT())
@@ -2226,7 +2235,8 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 	
 	// Realloc the buffer so that it can hold all the bits	
 	dwLen += bi.biSizeImage;
-	if (handle = g_try_realloc(hDIB, dwLen))		
+	handle = g_try_realloc(hDIB, dwLen);
+	if (handle)
 		hDIB = handle;	
 	else{
 		g_free(hDIB);		
@@ -2509,7 +2519,6 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
 {
   DWORD neededsize;
   DWORD noprinters;
-  DWORD printer;
   LPPRINTER_INFO_5 printerinfo = NULL;
   int bestres = 0;
   HDC besthdc = 0;
@@ -2528,7 +2537,7 @@ HDC GR_Win32Graphics::createbestmetafilehdc()
       bestres = ReleaseDC(NULL, curhdc); 
     }
       
-    for (int i = 0; i < noprinters; i++) {
+    for (UT_uint32 i = 0; i < noprinters; i++) {
       curhdc = CreateDC("WINSPOOL", printerinfo[i].pPrinterName, NULL, NULL);
       if (curhdc) {
 	int curres = GetDeviceCaps(curhdc, LOGPIXELSX) + GetDeviceCaps(curhdc,
