@@ -754,6 +754,12 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         m_bAcceptingText = true;        
     } else if (!strcmp(pName, "office:annotation")) {
 
+        if (m_bPendingAnnotation) {
+            // Don't crash on empty annotations
+            _insertAnnotation();
+            m_bPendingAnnotation = false;
+        }
+
         m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
         m_pAbiDocument->appendObject(PTO_Annotation, NULL);
         m_bAcceptingText = true;
