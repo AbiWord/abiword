@@ -3,7 +3,7 @@ noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
 	$(OPENXML_CFLAGS) \
-	-I$(srcdir)/../../imp/xp \
+	-I$(srcdir)/../../imp/xp -I$(srcdir)/../../exp/xp \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"
 
 libxp_la_SOURCES = \
