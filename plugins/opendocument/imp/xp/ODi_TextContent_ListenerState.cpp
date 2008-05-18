@@ -1109,7 +1109,10 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 
         if (pStyleName) {
             pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
-            UT_ASSERT(pStyle);
+
+            if (!pStyle) {
+                pStyle = m_pStyles->getTextStyle(pStyleName, m_bOnContentStream);
+            }
             
             // Damn, use the default style
             if (!pStyle) {
@@ -1340,7 +1343,10 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
                     
     if (pStyleName) {
         pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
-        UT_ASSERT(pStyle);
+
+        if (!pStyle) {
+            pStyle = m_pStyles->getTextStyle(pStyleName, m_bOnContentStream);
+        }
         
         // Damn, use the default style
         if (!pStyle) {
