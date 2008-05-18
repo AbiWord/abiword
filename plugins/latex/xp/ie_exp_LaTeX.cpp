@@ -281,8 +281,8 @@ class s_LaTeX_Listener : public PL_Listener
 {
 public:
 	s_LaTeX_Listener(PD_Document * pDocument,
-					 IE_Exp_LaTeX * pie,
-					 LaTeX_Analysis_Listener& analysis);
+			    IE_Exp_LaTeX * pie,
+			    const LaTeX_Analysis_Listener& analysis);
 	virtual ~s_LaTeX_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -348,6 +348,11 @@ protected:
 	bool				m_bFirstSection;
 	int 				ChapterNumber;
 	int                 m_Indent;
+	int		    m_TableWidth;
+	int		    m_CellLeft;
+	int		    m_CellRight;
+	int		    m_CellTop;
+	int		    m_CellBot;
 	
 // Type for the last-processed list  
 	LIST_TYPE			list_type;
@@ -469,25 +474,15 @@ void s_LaTeX_Listener::_closeBlock(void)
 
 void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	const gchar * szValue;
-	
+	this->m_pTableHelper->OpenCell(api);
+	m_CellLeft = this->m_pTableHelper->getLeft();
+	m_CellTop = this->m_pTableHelper->getTop();
+	m_CellRight = this->m_pTableHelper->getRight();
+	m_CellBot = this->m_pTableHelper->getBot();
 	m_bInCell = true;
-	if (bHaveProp && pAP)
-	{
-		pAP->getProperty("left-attach", szValue);
-		if (!strcmp("0",szValue))
-		{
-			pAP->getProperty("top-attach", szValue);
-			if (!strcmp("0",szValue))
-				m_pie->write("\n\\hline\n");
-			else
-				m_pie->write("\\\\\n\\hline\n");
-		}
-		else
-			m_pie->write("&");
-	}
+	
+	if (m_CellLeft != 0)
+	    m_pie->write("&");
 }
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
@@ -979,11 +974,15 @@ void s_LaTeX_Listener::_openTable(PT_AttrPropIndex /*api*/)
 	m_pie->write("\n\\begin{table}[h]\\begin{tabular}{|");
 	for(i = 0; i < m_pTableHelper->getNumCols(); i++) m_pie->write("l|");
 	m_pie->write("}");
+	m_pie->write("\n\\hline\n");
 }
 
 void s_LaTeX_Listener::_closeCell(void)
 {
 	m_bInCell = false;
+	this->m_pTableHelper->CloseCell();
+	if(m_CellRight == m_TableWidth)
+	    m_pie->write("\\\\\n\\hline\n");
 }
 
 void s_LaTeX_Listener::_closeSpan(void)
@@ -1136,7 +1135,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 void s_LaTeX_Listener::_closeTable(void)
 {
-		m_pie->write("\\\\\n\\hline\n\\end{tabular}\n\\end{table}\n");
+	m_pie->write("\\end{tabular}\n\\end{table}\n");
 }
 
 void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -1339,7 +1338,8 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	}
 }
 
-s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, LaTeX_Analysis_Listener& analysis)
+s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
+				    const LaTeX_Analysis_Listener& analysis)
   : m_pDocument(pDocument),
 	m_pie(pie),
 	m_bInBlock(false),
@@ -1435,6 +1435,8 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	if (m_bHaveEndnote)
 		m_pie->write("\\usepackage{endnotes}\n");
 
+	if (analysis.m_hasTable && analysis.m_hasMultiRow)
+	    m_pie->write("\\usepackage{multirow}\n");
 	// Must be as late as possible.
 	m_pie->write("\\usepackage{hyperref}\n");
 
@@ -1669,6 +1671,7 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionTable:
 	{
 		m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+		m_TableWidth = m_pTableHelper->getNumCols();
 		_openTable(pcr->getIndexAP());
 		return true;
 	}
