@@ -100,6 +100,9 @@ private:
     
     void _openEndnote(PT_AttrPropIndex api);
     void _closeEndnote();
+
+    void _openAnnotation(PT_AttrPropIndex api);
+    void _closeAnnotation();
     
     void _openFrame(PT_AttrPropIndex api);
     void _closeFrame();
@@ -141,6 +144,7 @@ private:
     bool m_bInBookmark;
     bool m_bInHyperlink;
     bool m_bInSection;
+    bool m_bInAnnotation;
     
     UT_sint32 m_iInTable;
     UT_sint32 m_iInCell;
