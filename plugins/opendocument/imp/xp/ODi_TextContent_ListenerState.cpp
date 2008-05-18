@@ -460,9 +460,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             const gchar* pVal;
             
             pVal = UT_getAttribute("text:anchor-type", ppAtts);
-            UT_ASSERT(pVal);
             
-            if (pVal && (!strcmp(pVal, "as-char") || !strcmp(pVal, "char"))) {
+            if (!pVal || !strcmp(pVal, "as-char") || !strcmp(pVal, "char")) {
                 _flush();
                 rAction.pushState("Frame");
             } else {

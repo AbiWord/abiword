@@ -48,7 +48,9 @@ ODi_Frame_ListenerState::ODi_Frame_ListenerState(PD_Document* pDocument,
 	    m_pStyles(pStyles),
         m_parsedFrameStartTag(false),
         m_inlinedImage(false),
-        m_iFrameDepth(0)
+        m_iFrameDepth(0),
+        m_pMathBB(NULL),
+        m_bInMath(false)
 {
     if (m_rElementStack.hasElement("office:document-content")) {
         m_bOnContentStream = true;
@@ -64,6 +66,20 @@ ODi_Frame_ListenerState::ODi_Frame_ListenerState(PD_Document* pDocument,
 void ODi_Frame_ListenerState::startElement (const gchar* pName,
                                            const gchar** ppAtts,
                                            ODi_ListenerStateAction& rAction) {
+
+    UT_return_if_fail(pName);
+
+    if(m_bInMath && m_pMathBB && (strcmp(pName, "math:math") != 0))
+    {
+        if (strncmp(pName, "math:", 5) != 0) {
+            return;
+        }
+
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<"), 1);
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>(pName + 5), strlen(pName) - 5); //build the mathml
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
+        return;
+    }
 
     if (!strcmp(pName, "draw:frame")) {
         if (m_parsedFrameStartTag) {
@@ -86,6 +102,14 @@ void ODi_Frame_ListenerState::startElement (const gchar* pName,
         }
     } else if (!strcmp(pName, "draw:object")) {
       _drawObject(ppAtts, rAction);
+
+    } else if (!strcmp(pName, "math:math")) {
+        
+        DELETEP(m_pMathBB);
+        m_pMathBB = new UT_ByteBuf;
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
+
+        m_bInMath = true;
     }
 }
 
@@ -95,6 +119,20 @@ void ODi_Frame_ListenerState::startElement (const gchar* pName,
  */                
 void ODi_Frame_ListenerState::endElement (const gchar* pName,
                                          ODi_ListenerStateAction& rAction) {
+
+    UT_return_if_fail(pName);
+
+    if(m_bInMath && m_pMathBB && (strcmp(pName, "math:math") != 0))
+    {
+        if (strncmp(pName, "math:", 5) != 0) {
+            return;
+        }
+
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>("</"), 2);
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>(pName + 5), strlen(pName) - 5); //build the mathml
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
+        return;
+    }
 
     if (!strcmp(pName, "draw:frame")) {
 
@@ -108,6 +146,26 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 
         // We're done.
         rAction.popState();
+    } else if (!strcmp(pName, "math:math")) {
+        
+        if (m_pMathBB) {
+
+            m_pMathBB->append(reinterpret_cast<const UT_Byte *>("</math>"), 7);
+
+            // Create the data item
+            UT_uint32 id = m_pAbiDocument->getUID(UT_UniqueId::Math);
+            UT_UTF8String sID = UT_UTF8String_sprintf("MathLatex%d", id);
+            m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, NULL, NULL);
+
+            const gchar *atts[3] = { NULL, NULL, NULL };
+            atts[0] = PT_IMAGE_DATAID;
+            atts[1] = sID.utf8_str();
+            m_pAbiDocument->appendObject(PTO_Math, atts);
+
+            DELETEP(m_pMathBB);
+        }
+
+        m_bInMath = false;
     }
 }
 
@@ -115,9 +173,12 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 /**
  * 
  */
-void ODi_Frame_ListenerState::charData (const gchar* /*pBuffer*/, int /*length*/) 
+void ODi_Frame_ListenerState::charData (const gchar* pBuffer, int length) 
 {
-    // Nothing yet...
+    if (m_bInMath && m_pMathBB) {
+        m_pMathBB->append(reinterpret_cast<const UT_Byte *>(pBuffer), length);
+        return;
+    }
 }
 
 
@@ -310,8 +371,6 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
         props = "frame-type:image";
             
         if(!_getFrameProperties(props, ppAtts)) {
-            // Abort mission!
-            rAction.ignoreElement();
             return;
         }
         
