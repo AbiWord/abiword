@@ -388,6 +388,7 @@ void ODe_Text_Listener::closeFootnote(ODe_ListenerAction& rAction) {
     } else {
         // We were inside a footnote.
         _closeODParagraph();
+        _closeODList();
         rAction.popListenerImpl();
     }
 }
@@ -420,6 +421,7 @@ void ODe_Text_Listener::closeEndnote(ODe_ListenerAction& rAction) {
     } else {
         // We were inside an endnote.
         _closeODParagraph();
+        _closeODList();
         rAction.popListenerImpl();
     }
 }
