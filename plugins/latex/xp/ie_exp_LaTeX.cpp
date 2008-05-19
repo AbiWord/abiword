@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <deque>
 
 #include "ut_stack.h"
 #include "ut_debugmsg.h"
@@ -45,6 +46,7 @@
 #include "ut_locale.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
+#include "ut_misc.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register
@@ -356,7 +358,7 @@ protected:
 	
 // Type for the last-processed list  
 	LIST_TYPE			list_type;
-
+	UT_NumberStack          list_stack;
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
@@ -366,8 +368,18 @@ protected:
 	
 	ie_Table *			m_pTableHelper;
 
-//	std::stack<LIST_TYPE>   list_stack;
-	UT_NumberStack          list_stack;
+	int		    m_RowNuminTable; // the current row being handled, starting from 1
+	int		    m_ExpectedLeft; // expected left-attach value for the next cell,
+					    // to deal with cells spanning multiple columns;
+					    // starting from 0
+
+	std::deque<UT_Rect*>	*m_pqRect; // pointer to a UT_Rect (de)queque. each UT_Rect
+					   // instance in this queue has a 1:1 correspondence
+					   // to a cell spanning multiple rows. The queue is
+					   // examined when a table row ends, to output a \hline
+					   // or several \cline as appropriate
+	unsigned int	    m_index; // (dynamic, increase only) index into m_pqRect; it is safe
+				     // to skip anything before m_index
 };
 
 void s_LaTeX_Listener::_closeParagraph(void)
@@ -481,8 +493,82 @@ void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 	m_CellBot = this->m_pTableHelper->getBot();
 	m_bInCell = true;
 	
+	if (this->m_pTableHelper->isNewRow())
+	{
+	    m_ExpectedLeft = 0;
+	    if(m_CellTop != 0)
+		m_pie->write("\\\\");
+	    m_pie->write("\n");
+	    if(!m_pqRect || m_pqRect->empty())
+		m_pie->write("\\hline");
+	    else
+	    {
+		UT_Rect* p;
+		int left=1;
+		while(m_index < m_pqRect->size())
+		{
+		    p = m_pqRect->at(m_index);
+		    if(p->top + p->height -1 > m_RowNuminTable)
+			break;
+		    m_index++;
+		}
+		for(unsigned int i=m_index; i< m_pqRect->size(); i++)
+		{
+		    p = m_pqRect->at(i);
+		    if(m_RowNuminTable < p->top)
+			break;
+		    if(left < p->left)
+		    {
+			UT_String str;
+			UT_String_sprintf(str, "\\cline{%d-%d}", left, p->left-1);
+			m_pie->write(str);
+		    }
+		    
+		    left = p->left + p->width;
+		    if(left > this->m_TableWidth)
+			break;
+		}
+		xxx_UT_DEBUGMSG(("left = %d \n", left));
+		if(left <= m_TableWidth)
+		{
+		    if(1 == left)
+			m_pie->write("\\hline");
+		    else
+		    {
+			UT_String str;
+			UT_String_sprintf(str, "\\cline{%d-%d}", left, m_TableWidth);
+			m_pie->write(str);
+		    }
+		}
+	    }
+	    m_pie->write("\n");
+	    m_RowNuminTable = m_CellTop + 1;
+	}
 	if (m_CellLeft != 0)
-	    m_pie->write("&");
+	{
+	    int i = m_CellLeft - m_ExpectedLeft;
+	    for(; i>0; i--)
+		m_pie->write("&");
+	}
+	if(m_CellRight - m_CellLeft >1)
+	{
+	    UT_String str;
+	    UT_String_sprintf(str, "\\multicolumn{%d}{|l|}{", m_CellRight - m_CellLeft);
+	    m_pie->write(str);
+	}
+	if(m_CellBot - m_CellTop >1)
+	{
+	    UT_String str;
+	    UT_String_sprintf(str, "\\multirow{%d}{*}{", m_CellBot - m_CellTop);
+	    m_pie->write(str);
+	    if(m_pqRect)
+	    {
+		UT_Rect * p = new UT_Rect(m_CellLeft+1, m_CellTop+1, 
+			m_CellRight - m_CellLeft, m_CellBot - m_CellTop);
+		if(p)
+		    m_pqRect->push_back(p);
+	    }
+	}
 }
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
@@ -974,15 +1060,30 @@ void s_LaTeX_Listener::_openTable(PT_AttrPropIndex /*api*/)
 	m_pie->write("\n\\begin{table}[h]\\begin{tabular}{|");
 	for(i = 0; i < m_pTableHelper->getNumCols(); i++) m_pie->write("l|");
 	m_pie->write("}");
-	m_pie->write("\n\\hline\n");
+//	m_pie->write("\n\\hline\n");
+	
+	m_RowNuminTable = 1;
+	m_ExpectedLeft = 0;
+	m_index = 0;
 }
 
 void s_LaTeX_Listener::_closeCell(void)
 {
+	if (m_CellBot - m_CellTop >1)
+	    m_pie->write("}");
+	if (m_CellRight - m_CellLeft >1)
+	    m_pie->write("}");
 	m_bInCell = false;
 	this->m_pTableHelper->CloseCell();
 	if(m_CellRight == m_TableWidth)
-	    m_pie->write("\\\\\n\\hline\n");
+	{
+	    m_ExpectedLeft = 0;
+	}
+	else
+	{
+	    m_ExpectedLeft = m_CellRight;
+	    m_pie->write("&");	    	    
+	}
 }
 
 void s_LaTeX_Listener::_closeSpan(void)
@@ -1135,7 +1236,17 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 void s_LaTeX_Listener::_closeTable(void)
 {
-	m_pie->write("\\end{tabular}\n\\end{table}\n");
+    if(m_pqRect)
+    {
+	for(unsigned int i=0; i<m_pqRect->size(); i++)
+	{
+	    delete m_pqRect->at(i);
+	    m_pqRect->at(i) = NULL;
+	}
+	m_pqRect->clear();
+    }
+    m_pie->write("\\\\\n\\hline\n");
+    m_pie->write("\\end{tabular}\n\\end{table}\n");
 }
 
 void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -1352,7 +1463,8 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInSansSerif(0),
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
-	m_bFirstSection(true)
+	m_bFirstSection(true),
+	m_pqRect(NULL)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -1436,7 +1548,10 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 		m_pie->write("\\usepackage{endnotes}\n");
 
 	if (analysis.m_hasTable && analysis.m_hasMultiRow)
+	{
 	    m_pie->write("\\usepackage{multirow}\n");
+	    m_pqRect = new std::deque<UT_Rect*>;
+	}
 	// Must be as late as possible.
 	m_pie->write("\\usepackage{hyperref}\n");
 
@@ -1462,6 +1577,15 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 	_closeSection();
 	_handleDataItems();
 	DELETEP(m_pTableHelper);
+	if(m_pqRect)
+	{
+	    for(unsigned int i=0; i<m_pqRect->size(); i++)
+	    {
+		delete m_pqRect->at(i);
+		m_pqRect->at(i) = NULL;
+	    }
+	    delete m_pqRect;
+	}
 	if (m_bHaveEndnote)
 		m_pie->write("\n\\theendnotes");
 	m_pie->write("\n\\end{document}\n");
