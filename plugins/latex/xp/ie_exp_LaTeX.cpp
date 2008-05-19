@@ -130,10 +130,7 @@ UT_Error IE_Exp_LaTeX_Sniffer::constructExporter(PD_Document * pDocument,
 {
 	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
 	*ppie = p;
-	if(p)
-	    return UT_OK;
-	else
-	    return UT_OUTOFMEM;
+	return UT_OK;
 }
 
 bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
