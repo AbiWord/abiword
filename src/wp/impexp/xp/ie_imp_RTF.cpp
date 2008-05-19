@@ -64,6 +64,7 @@
 #include "pf_Frag_Strux.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "fp_Run.h"
 #include "wv.h" // for wvLIDToLangConverter
 
 #include "ie_imp_RTFParse.h"
@@ -2386,11 +2387,14 @@ void IE_Imp_RTF::HandleAnnotation(void)
 	else
 	{
 		m_posSavedDocPosition = m_dposPaste;
+		xxx_UT_DEBUGMSG(("Initial Saved doc Postion %d \n",	m_posSavedDocPosition));
 		m_dposPaste = m_pAnnotation->m_Annpos+1;
+		xxx_UT_DEBUGMSG((" Insert Annotation m_dposPaste %d \n",m_dposPaste));
 		insertStrux(PTX_SectionAnnotation,ann_attrs,pszAnn);
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		markPasteBlock();
 		insertStrux(PTX_Block);
+		xxx_UT_DEBUGMSG(("After first strux insert  Saved doc Postion %d \n",m_posSavedDocPosition));
 	}
 }
 
@@ -2463,8 +2467,9 @@ UT_Error IE_Imp_RTF::_parseText()
 					continue;
 				}
 			}
-			else if(m_pAnnotation && (m_pAnnotation->m_iRTFLevel > 0) && !m_bInAnnotation && c != '\\')
+			else if(m_pAnnotation && (m_pAnnotation->m_iRTFLevel > 0) && !m_bInAnnotation && (c != '\\') && (c != '{') && (c != '}'))
 			{
+				SkipBackChar(c);
 				HandleAnnotation();
 				continue;
 			}
@@ -2820,6 +2825,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 // Don't insert anything if we're between a table strux and a cell or between
 // cell's
 //
+	xxx_UT_DEBUGMSG(("Level at check %d \n",m_stateStack.getDepth()));
 	if(isPastedTableOpen() && !forceInsertPara)
 	{
 		return true;
@@ -2910,12 +2916,13 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
 	}
-	if( ok && m_bInAnnotation && m_pAnnotation && (m_stateStack.getDepth() < m_pAnnotation->m_iRTFLevel))
+	xxx_UT_DEBUGMSG(("Annotation level at check %d \n",m_stateStack.getDepth()));
+    if(ok && m_bInAnnotation && m_pAnnotation && (m_stateStack.getDepth() < m_pAnnotation->m_iRTFLevel))
 		{
 			//
 			// Wind up the annotation
 			m_bInAnnotation = false;
-			UT_DEBUGMSG(("Finishing up the annotation depth %d RTFlevel %d \n",m_stateStack.getDepth(), m_pAnnotation->m_iRTFLevel ));
+			xxx_UT_DEBUGMSG(("Finishing up the annotation depth %d RTFlevel %d \n",m_stateStack.getDepth(), m_pAnnotation->m_iRTFLevel ));
 			if(!bUseInsertNotAppend())
 			{
 				FlushStoredChars();
@@ -2924,13 +2931,19 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			}
 			else
 			{
-				insertStrux(PTX_EndAnnotation);
+				xxx_UT_DEBUGMSG(("Inserting EndAnnoation at %d \n",m_dposPaste));
+				getDoc()->insertStrux(m_dposPaste,PTX_EndAnnotation,NULL,NULL);	
+				if(m_posSavedDocPosition > m_dposPaste)
+					m_posSavedDocPosition++;
+				m_dposPaste++;
+
 			}
 			DELETEP(m_pAnnotation);
 			m_pDelayedFrag = NULL;
+			xxx_UT_DEBUGMSG(("After complete annotation Saved doc Postion %d \n",m_posSavedDocPosition));
 			m_dposPaste = m_posSavedDocPosition;
 			m_posSavedDocPosition = 0;
-			UT_DEBUGMSG(("Annotation insert complete \n"));
+			xxx_UT_DEBUGMSG(("Annotation insert complete \n"));
 		}
 //	if( ok && m_bFrameOpen && (static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame))	
 //	{
@@ -3198,6 +3211,8 @@ bool IE_Imp_RTF::ReadContentFromFile(UT_UTF8String & str)
 		if(pCh != 10 &&  pCh != 13 && pCh != '}')
 			str += pCh;
 	} while ((pCh == 10  ||  pCh == 13)  || (pCh != '}'));
+	if(pCh == '}')
+		SkipBackChar('}');
 	return true;
 
 }
@@ -5327,7 +5342,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 	unsigned char keyword_star[MAX_KEYWORD_LEN];
 	UT_sint32 parameter_star = 0;
 	bool parameterUsed_star = false;
-		
+	xxx_UT_DEBUGMSG(("RTF Level in HandlStarKeyword %d \n",m_stateStack.getDepth()));	
 	if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 					MAX_KEYWORD_LEN))
 	{
@@ -5645,14 +5660,17 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					}
 					else
 					{
-				
+						UT_DEBUGMSG(("Pasting EndAnnotation at %d  \n",m_dposPaste));
 						bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, NULL,NULL);
 						
 						if(bRet)
 						{
+							UT_DEBUGMSG(("Pasting End Annotation at %d saved pos %d \n",m_dposPaste,m_posSavedDocPosition));
 							if(m_posSavedDocPosition >m_dposPaste )
 								m_posSavedDocPosition++;
 							m_dposPaste++;
+							UT_DEBUGMSG(("Pasting Begin Annotation at %d dposPaste %d saved pos %d \n",m_pAnnotation->m_Annpos,m_dposPaste,m_posSavedDocPosition));
+
 							bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
 							if(m_posSavedDocPosition >m_dposPaste )
 								m_posSavedDocPosition++;
@@ -5693,14 +5711,17 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					//	return false;
 					//	}
-					m_pAnnotation->m_iRTFLevel = m_stateStack.getDepth()-1;
-					UT_DEBUGMSG(("Found annotation content depth %d \n",m_pAnnotation->m_iRTFLevel));
+					m_pAnnotation->m_iRTFLevel = m_stateStack.getDepth();
+					xxx_UT_DEBUGMSG(("Found annotation content depth %d \n",m_pAnnotation->m_iRTFLevel));
 					return true;
 				}
 				case RTF_KW_atnref:
 				{
 					//
 					// Annotation reference number
+					UT_DEBUGMSG(("Write code to handle atnref \n"));
+					xxx_UT_DEBUGMSG(("RTF Level inside atnref %d \n",m_stateStack.getDepth()));
+					return true;
 				}
 				break;
 				case RTF_KW_atrfstart:
@@ -9853,9 +9874,12 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar
 	}
 	if(!m_bStruxInserted)
 	{
-		if((pView->getHyperLinkRun(m_dposPaste) != NULL) ||(m_iHyperlinkOpen > 0) )
+		fp_Run *pHyperRun = pView->getHyperLinkRun(m_dposPaste);
+		if((pHyperRun != NULL) ||(m_iHyperlinkOpen > 0) )
 		{
-			bInHyperlink = true;
+			fp_HyperlinkRun * pRHyper = static_cast<fp_HyperlinkRun *>(pHyperRun);
+			if(pRHyper->getHyperlinkType() == HYPERLINK_NORMAL)
+				bInHyperlink = true;
 		}
 		fl_BlockLayout * pBL = pView->getBlockAtPosition(m_dposPaste);
 		if(pBL->getPosition() < m_dposPaste)
