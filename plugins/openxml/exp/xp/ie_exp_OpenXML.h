@@ -32,7 +32,7 @@
 #include <gsf/gsf-infile.h>
 
 /**
- * Class used to import OpenXML files
+ * Class used to export OpenXML files
  */
 class IE_Exp_OpenXML : public IE_Exp
 {
