@@ -38,6 +38,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
 #include "xap_Prefs.h"
+#include "xap_EncodingManager.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -134,6 +135,10 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 	m_spelling.createPage(pWin32App, AP_RID_DIALOG_OPT_SPELL, AP_STRING_ID_DLG_Options_TabLabel_Spelling);	
 	sheet.addPage(&m_spelling);	
 
+	m_smartquotes.setContainer(this);
+	m_smartquotes.createPage(pWin32App, AP_RID_DIALOG_OPT_SMARTQUOTES, AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes);
+	sheet.addPage(&m_smartquotes);
+
 	sheet.setApplyButton(true);       
 	sheet.setParent(this);	       
 	if (sheet.runModal(pWin32App, pFrame, AP_STRING_ID_DLG_Options_OptionsTitle)==IDOK)	
@@ -186,7 +191,11 @@ HWND	AP_Win32Dialog_Options::getPage(PSH_PAGES page)
 		case PG_DOCUMENT:
 			hWnd = m_document.getHandle();
 			break;				
-			
+
+		case PG_SMARTQUOTES:
+			hWnd = m_smartquotes.getHandle();
+			break;
+
 		default:
 			break;
 	}
@@ -256,6 +265,15 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		case id_CHECK_GRAMMAR_CHECK:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_GrammarCheck),value);
 			return;
+
+		case id_CHECK_SMART_QUOTES_ENABLE:
+			EnableWindow(GetDlgItem((HWND)getPage(PG_SMARTQUOTES),AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes),value);
+			return;
+
+		case id_CHECK_CUSTOM_SMART_QUOTES:
+			EnableWindow(GetDlgItem((HWND)getPage(PG_SMARTQUOTES),AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE),value);
+			EnableWindow(GetDlgItem((HWND)getPage(PG_SMARTQUOTES),AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE),value);
+			return;
 				
 		default:
 			//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -288,15 +306,6 @@ void	AP_Win32Dialog_Options::_set##Bool(bool b) { 		\
 	m_bool##Bool = b;										\
 }
 
-#define DEFINE_GET_SET_GINT_DUMMY(GInt)						\
-gint	AP_Win32Dialog_Options::_gather##GInt(void) { 		\
-		return m_gint##GInt;								\
-} 															\
-void	AP_Win32Dialog_Options::_set##GInt(gint b) { 		\
-	m_gint##GInt = b;										\
-}
-
-
 DEFINE_GET_SET_BOOL(PG_GENERAL,LanguageWithKeyboard)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AllowCustomToolbars)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AutoLoadPlugins)
@@ -311,6 +320,9 @@ DEFINE_GET_SET_BOOL(PG_SPELL,SpellUppercase)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellNumbers)
 DEFINE_GET_SET_BOOL(PG_SPELL,GrammarCheck)
 
+DEFINE_GET_SET_BOOL(PG_SMARTQUOTES,SmartQuotes)
+DEFINE_GET_SET_BOOL(PG_SMARTQUOTES,CustomSmartQuotes)
+
 /* Not used */
 DEFINE_GET_SET_BOOL_DUMMY (ViewCursorBlink)
 DEFINE_GET_SET_BOOL_DUMMY (EnableSmoothScrolling)
@@ -320,11 +332,6 @@ DEFINE_GET_SET_BOOL_DUMMY (ViewHiddenText)
 DEFINE_GET_SET_BOOL_DUMMY (ViewShowRuler)
 DEFINE_GET_SET_BOOL_DUMMY (ViewShowStatusBar)
 DEFINE_GET_SET_BOOL_DUMMY (ViewUnprintable)
-
-DEFINE_GET_SET_BOOL_DUMMY (SmartQuotes)
-DEFINE_GET_SET_BOOL_DUMMY (CustomSmartQuotes)
-DEFINE_GET_SET_GINT_DUMMY (OuterQuoteStyle)
-DEFINE_GET_SET_GINT_DUMMY (InnerQuoteStyle)
 
 #undef DEFINE_GET_SET_BOOL
 
@@ -448,6 +455,50 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 		m_curLang = stExt;
 }
 
+void AP_Win32Dialog_Options::_setOuterQuoteStyle(gint index)
+{
+	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
+	UT_return_if_fail(hCombo);
+
+	int nCount = SendMessage(hCombo, CB_GETCOUNT, 0, 0);
+	UT_return_if_fail(index >= 0 && index < nCount);
+
+	SendMessage(hCombo, CB_SETCURSEL, index, 0);
+}
+
+void AP_Win32Dialog_Options::_setInnerQuoteStyle(gint index)
+{
+	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
+	UT_return_if_fail(hCombo);
+
+	int nCount = SendMessage(hCombo, CB_GETCOUNT, 0, 0);
+	UT_return_if_fail(index >= 0 && index < nCount);
+
+	SendMessage(hCombo, CB_SETCURSEL, index, 0);
+}
+
+gint AP_Win32Dialog_Options::_gatherOuterQuoteStyle()
+{
+	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
+	UT_return_val_if_fail(hCombo, 0);
+
+	int nIndex = SendMessage(hCombo,  CB_GETCURSEL , 0,0);
+	UT_return_val_if_fail(nIndex != CB_ERR, 0);
+
+	return nIndex;
+}
+
+gint AP_Win32Dialog_Options::_gatherInnerQuoteStyle()
+{
+	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
+	UT_return_val_if_fail(hCombo, 0);
+
+	int nIndex = SendMessage(hCombo,  CB_GETCURSEL , 0,0);
+	UT_return_val_if_fail(nIndex != CB_ERR, 0);
+
+	return nIndex;	
+}
+
 
 /*
 
@@ -501,6 +552,7 @@ int CALLBACK AP_Win32Dialog_Options_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  L
 		PropSheet_SetCurSel(hwnd, 0,0);
 		PropSheet_SetCurSel(hwnd, 0,1);
 		PropSheet_SetCurSel(hwnd, 0,2);		
+		PropSheet_SetCurSel(hwnd, 0,3);
 	}			
 	return 	0;
 }
@@ -841,4 +893,88 @@ bool AP_Win32Dialog_Options_Document::isAutoSaveInRange()
 }
 
 
+/*
 
+	Smart Quotes page
+	
+*/
+AP_Win32Dialog_Options_SmartQuotes::AP_Win32Dialog_Options_SmartQuotes()
+{
+	
+}
+
+
+AP_Win32Dialog_Options_SmartQuotes::~AP_Win32Dialog_Options_SmartQuotes()
+{
+	
+}
+
+
+/*
+	
+*/	
+void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
+{
+	const XAP_StringSet * pSS = getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+
+	// localize controls
+	_DS2(OPTIONS_CHK_SmartQuotes,			DLG_Options_Label_SmartQuotes);
+	_DS2(OPTIONS_CHK_CustomSmartQuotes,		DLG_Options_Label_CustomSmartQuotes);
+	_DS2(OPTIONS_LBL_OuterQuoteStyle,		DLG_Options_Label_OuterQuoteStyle);
+	_DS2(OPTIONS_LBL_InnerQuoteStyle,		DLG_Options_Label_InnerQuoteStyle);
+
+	HWND hComboOuter = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
+	UT_return_if_fail(hComboOuter);
+	HWND hComboInner = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
+	UT_return_if_fail(hComboInner);
+
+	UT_UCSChar buf[4];
+
+	for(size_t i = 0; XAP_EncodingManager::smartQuoteStyles[i].leftQuote != (UT_UCSChar)0; i++)
+	{
+		buf[0] = XAP_EncodingManager::smartQuoteStyles[i].leftQuote;
+		buf[1] = 'O';
+		buf[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
+		buf[3] = NULL;
+
+		gchar *szDisplayString = g_ucs4_to_utf8(buf, -1, NULL, NULL, NULL);
+		if(szDisplayString)
+		{
+			UT_String tmp = AP_Win32App::s_fromUTF8ToWinLocale(szDisplayString);
+			SendMessage(hComboOuter, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
+			SendMessage(hComboInner, CB_ADDSTRING, 0, (LPARAM)tmp.c_str());
+			FREEP(szDisplayString);
+		}
+	}
+}
+
+
+/*
+	
+*/	
+void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wId = LOWORD(wParam);
+	
+	switch (wId)
+	{					
+		case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes:
+		{
+			bool bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes ) == BST_CHECKED);
+			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes), bChecked );
+			return;
+		}
+
+		case AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes:
+		{
+			bool bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes ) == BST_CHECKED);
+			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE), bChecked );
+			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE), bChecked );
+			return;
+		}
+
+		default:
+			break;
+	}
+}

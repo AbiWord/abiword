@@ -31,7 +31,7 @@
 class UT_String;
 class AP_Win32Dialog_Options;
 
-enum PSH_PAGES {PG_GENERAL, PG_DOCUMENT, PG_SPELL};
+enum PSH_PAGES {PG_GENERAL, PG_DOCUMENT, PG_SPELL, PG_SMARTQUOTES};
 
 /*
 	Sheet
@@ -134,7 +134,28 @@ private:
 	
 };
 
+/*
+	Smart Quotes page
+*/
+class ABI_EXPORT AP_Win32Dialog_Options_SmartQuotes: public XAP_Win32PropertyPage
+{
+	
+public:	
+								AP_Win32Dialog_Options_SmartQuotes();
+								~AP_Win32Dialog_Options_SmartQuotes();	
 
+	void						setContainer(AP_Win32Dialog_Options* pParent){m_pParent=pParent;};
+	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
+	
+private:
+
+	void						_onInitDialog();
+	void						_onKillActive(){};
+	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		
+	AP_Win32Dialog_Options*		m_pParent;
+	
+};
 
 
 /*****************************************************************/
@@ -159,6 +180,7 @@ public:
 	AP_Win32Dialog_Options_General		m_general; 
 	AP_Win32Dialog_Options_Document		m_document;
  	AP_Win32Dialog_Options_Spelling		m_spelling; 	 		
+ 	AP_Win32Dialog_Options_SmartQuotes	m_smartquotes;
 	UT_String							m_curLang;
 	BOOL								m_langchanged;
 	HFONT								m_hFont; 	
@@ -182,6 +204,8 @@ public:
 	SET_GATHER			(AutoLoadPlugins, bool);
 	SET_GATHER			(OtherDirectionRtl, bool );
 	SET_GATHER			(AutoSaveFile, bool);
+ 	SET_GATHER			(SmartQuotes,   		bool);
+ 	SET_GATHER			(CustomSmartQuotes,		bool);
 	
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) {}
@@ -198,19 +222,16 @@ public:
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,	bool);
 
- 	SET_GATHER			(SmartQuotes,   		bool);
- 	SET_GATHER			(CustomSmartQuotes,		bool);
-	SET_GATHER			(OuterQuoteStyle,		gint);
-	SET_GATHER			(InnerQuoteStyle,		gint);
-		
-	
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);	
 	virtual void _gatherUILanguage(UT_String &stRetVal);
 	virtual void _setUILanguage(const UT_String &stExt);
-
+	virtual gint _gatherOuterQuoteStyle();
+	virtual gint _gatherInnerQuoteStyle();
+	virtual void _setOuterQuoteStyle(gint index);
+	virtual void _setInnerQuoteStyle(gint index);
 
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);
@@ -223,11 +244,6 @@ public:
 	bool			m_boolViewShowRuler;
 	bool			m_boolViewShowStatusBar;
 	bool			m_boolViewUnprintable;
-
- 	bool			m_boolSmartQuotes;
- 	bool			m_boolCustomSmartQuotes;
-	gint			m_gintOuterQuoteStyle;
-	gint			m_gintInnerQuoteStyle;
 	bool			m_boolViewCursorBlink;
 	
 #undef SET_GATHER

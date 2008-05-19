@@ -83,6 +83,13 @@
 
 #define AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis	  1417
 
+// sub-dialog for the "Smart Quotes" tab
+#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes			1501
+#define AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes		1502
+#define AP_RID_DIALOG_OPTIONS_LBL_OuterQuoteStyle		1503
+#define AP_RID_DIALOG_OPTIONS_LBL_InnerQuoteStyle		1504
+#define AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE			1505
+#define AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE			1506
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -182,7 +189,23 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,91,240,10
 END
 
-
+AP_RID_DIALOG_OPT_SMARTQUOTES DIALOG DISCARDABLE  0, 0, 251, 233
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Enable smart (curly) quotes",AP_RID_DIALOG_OPTIONS_CHK_SmartQuotes,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,217,10
+    CONTROL         "Use custom smart quote style",AP_RID_DIALOG_OPTIONS_CHK_CustomSmartQuotes,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,35,217,10
+    LTEXT           "Outer (double) quote style",AP_RID_DIALOG_OPTIONS_LBL_OuterQuoteStyle,20,
+                    55,217,8
+    LTEXT           "Inner (single) quote style",AP_RID_DIALOG_OPTIONS_LBL_InnerQuoteStyle,20,
+                    85,217,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE,20,65,105,200,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE,20,95,105,200,
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
 
 #endif /* RC_INVOKED */
 

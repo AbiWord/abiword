@@ -357,6 +357,7 @@ dcl(DLG_Options_TabLabel_Other, 		"Other")
 dcl(DLG_Options_TabLabel_Preferences,	"Preference Schemes")
 dcl(DLG_Options_TabLabel_View,			"View")
 dcl(DLG_Options_TabLabel_Misc,	   "Misc.")
+dcl(DLG_Options_TabLabel_SmartQuotes,   "Smart Quotes")
 
 dcl(DLG_Options_Btn_Save,				"Sa&ve")
 dcl(DLG_Options_Btn_Apply,				"Apply")

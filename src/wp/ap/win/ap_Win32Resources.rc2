@@ -75,6 +75,7 @@
 #define AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS	246	// Property Page
 #define AP_RID_DIALOG_LATEX						247
 #define AP_RID_DIALOG_ANNOTATION				248
+#define AP_RID_DIALOG_OPT_SMARTQUOTES				249	// tab-sub-dlg
 
 // Bitmaps IDs
 #define AP_RID_TI_1COLUMN 3000
