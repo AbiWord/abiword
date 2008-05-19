@@ -18,7 +18,7 @@ if test "$enable_t602" == "yes" || \
 
 PKG_CHECK_MODULES(T602,[ $t602_pkgs ])
 
-PLUGINS="$PLUGINS t602"
+test "$enable_t602" == "auto" && PLUGINS="$PLUGINS t602"
 
 T602_CFLAGS="$T602_CFLAGS "'${PLUGIN_CFLAGS}'
 T602_LIBS="$T602_LIBS "'${PLUGIN_LIBS}'

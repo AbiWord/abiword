@@ -33,7 +33,7 @@ PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],
 
 PKG_CHECK_MODULES(WORDPERFECT,[ $deps_pkgs ])
 
-PLUGINS="$PLUGINS wordperfect"
+test "$enable_wordperfect" == "auto" && PLUGINS="$PLUGINS wordperfect"
 
 WORDPERFECT_CFLAGS="$WORDPERFECT_CFLAGS "'${PLUGIN_CFLAGS}'
 WORDPERFECT_LIBS="$WORDPERFECT_LIBS "'${PLUGIN_LIBS}'

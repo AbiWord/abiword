@@ -22,7 +22,7 @@ fi
 
 PKG_CHECK_MODULES(WPG, [ $wpg_pkgs ])
 
-PLUGINS="$PLUGINS wpg"
+test "$enable_wpg" == "auto" && PLUGINS="$PLUGINS wpg"
 
 WPG_CFLAGS="$WPG_CFLAGS "'${PLUGIN_CFLAGS}'
 WPG_LIBS="$WPG_LIBS "'${PLUGIN_LIBS}'

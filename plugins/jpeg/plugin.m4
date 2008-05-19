@@ -40,7 +40,7 @@ fi
 if test "$enable_jpeg" == "yes" || \
    test "$jpeg_deps" == "yes"; then
 
-PLUGINS="$PLUGINS jpeg"
+test "$enable_jpeg" == "auto" && PLUGINS="$PLUGINS jpeg"
 
 JPEG_CFLAGS='${PLUGIN_CFLAGS}'
 JPEG_LIBS="-ljpeg "'${PLUGIN_LIBS}'

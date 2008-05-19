@@ -22,7 +22,7 @@ fi
 
 PKG_CHECK_MODULES(GRAMMAR,[ $grammar_pkgs ])
 
-PLUGINS="$PLUGINS grammar"
+test "$enable_grammar" == "auto" && PLUGINS="$PLUGINS grammar"
 
 GRAMMAR_CFLAGS="$GRAMMAR_CFLAGS "'${PLUGIN_CFLAGS}'
 GRAMMAR_LIBS="$GRAMMAR_LIBS "'${PLUGIN_LIBS}'

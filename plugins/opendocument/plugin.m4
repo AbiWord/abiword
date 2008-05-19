@@ -18,7 +18,7 @@ if test "$enable_opendocument" == "yes" || \
 
 PKG_CHECK_MODULES(OPENDOCUMENT,[ $opendocument_pkgs ])
 
-PLUGINS="$PLUGINS opendocument"
+test "$enable_opendocument" == "auto" && PLUGINS="$PLUGINS opendocument"
 
 OPENDOCUMENT_CFLAGS="$OPENDOCUMENT_CFLAGS "'${PLUGIN_CFLAGS}'
 OPENDOCUMENT_LIBS="$OPENDOCUMENT_LIBS "'${PLUGIN_LIBS}'

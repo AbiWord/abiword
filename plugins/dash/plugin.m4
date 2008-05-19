@@ -23,7 +23,7 @@ fi
 if test "$enable_dash" == "yes" || \
    test "$dash_deps" == "yes"; then
 
-PLUGINS="$PLUGINS dash"
+test "$enable_dash" == "auto" && PLUGINS="$PLUGINS dash"
 
 DASH_CFLAGS="$DASH_CFLAGS "'${PLUGIN_CFLAGS}'
 DASH_LIBS="$DASH_LIBS "'${PLUGIN_LIBS}'

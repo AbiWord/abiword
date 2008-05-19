@@ -18,7 +18,7 @@ if test "$enable_wml" == "yes" || \
 
 PKG_CHECK_MODULES(WML,[ $wml_pkgs ])
 
-PLUGINS="$PLUGINS wml"
+test "$enable_wml" == "auto" && PLUGINS="$PLUGINS wml"
 
 WML_CFLAGS="$WML_CFLAGS "'${PLUGIN_CFLAGS}'
 WML_LIBS="$WML_LIBS "'${PLUGIN_LIBS}'

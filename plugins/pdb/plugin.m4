@@ -18,7 +18,7 @@ if test "$enable_pdb" == "yes" || \
 
 PKG_CHECK_MODULES(PDB,[ $pdb_pkgs ])
 
-PLUGINS="$PLUGINS pdb"
+test "$enable_pdb" == "auto" && PLUGINS="$PLUGINS pdb"
 
 PDB_CFLAGS="$PDB_CFLAGS "'${PLUGIN_CFLAGS}'
 PDB_LIBS="$PDB_LIBS "'${PLUGIN_LIBS}'

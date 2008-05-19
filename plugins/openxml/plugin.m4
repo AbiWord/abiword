@@ -29,7 +29,7 @@ if test "$enable_openxml" == "yes" || \
 
 PKG_CHECK_MODULES(OPENXML,[ $openxml_pkgs ])
 
-PLUGINS="$PLUGINS openxml"
+test "$enable_openxml" == "auto" && PLUGINS="$PLUGINS openxml"
 
 OPENXML_CFLAGS="$OPENXML_CFLAGS "'${PLUGIN_CFLAGS}'
 OPENXML_LIBS="$OPENXML_LIBS "'${PLUGIN_LIBS}'

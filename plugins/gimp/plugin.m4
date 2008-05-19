@@ -4,7 +4,7 @@ GIMP_LIBS=
 
 if test "$enable_gimp" != ""; then
 
-PLUGINS="$PLUGINS gimp"
+test "$enable_gimp" == "auto" && PLUGINS="$PLUGINS gimp"
 
 GIMP_CFLAGS="$GIMP_CFLAGS "'${PLUGIN_CFLAGS}'
 GIMP_LIBS="$GIMP_LIBS "'${PLUGIN_LIBS}'

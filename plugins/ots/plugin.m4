@@ -16,7 +16,7 @@ fi
 if test "$enable_ots" == "yes" || \
    test "$ots_deps" == "yes"; then
 
-PLUGINS="$PLUGINS ots"
+test "$enable_ots" == "auto" && PLUGINS="$PLUGINS ots"
 
 if test "$enable_ots_builtin" == "yes"; then
 AC_MSG_ERROR([ots plugin: static linking not supported])

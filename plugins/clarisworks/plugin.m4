@@ -18,7 +18,7 @@ if test "$enable_clarisworks" == "yes" || \
 
 PKG_CHECK_MODULES(CLARISWORKS,[ $clarisworks_pkgs ])
 
-PLUGINS="$PLUGINS clarisworks"
+test "$enable_clarisworks" == "auto" && PLUGINS="$PLUGINS clarisworks"
 
 CLARISWORKS_CFLAGS="$CLARISWORKS_CFLAGS "'${PLUGIN_CFLAGS}'
 CLARISWORKS_LIBS="$CLARISWORKS_LIBS "'${PLUGIN_LIBS}'

@@ -18,7 +18,7 @@ if test "$enable_mswrite" == "yes" || \
 
 PKG_CHECK_MODULES(MSWRITE,[ $mswrite_pkgs ])
 
-PLUGINS="$PLUGINS mswrite"
+test "$enable_mswrite" == "auto" && PLUGINS="$PLUGINS mswrite"
 
 MSWRITE_CFLAGS="$MSWRITE_CFLAGS "'${PLUGIN_CFLAGS}'
 MSWRITE_LIBS="$MSWRITE_LIBS "'${PLUGIN_LIBS}'

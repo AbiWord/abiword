@@ -33,7 +33,7 @@ fi
 
 PKG_CHECK_MODULES(GDA,[ $gda_pkgs ])
 
-PLUGINS="$PLUGINS gda"
+test "$enable_gda" == "auto" && PLUGINS="$PLUGINS gda"
 
 GDA_CFLAGS="$GDA_CFLAGS "'${PLUGIN_CFLAGS}'
 GDA_LIBS="$GDA_LIBS "'${PLUGIN_LIBS}'

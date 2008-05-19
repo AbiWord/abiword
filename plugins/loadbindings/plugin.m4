@@ -18,7 +18,7 @@ if test "$enable_loadbindings" == "yes" || \
 
 PKG_CHECK_MODULES(LOADBINDINGS,[ $loadbindings_pkgs ])
 
-PLUGINS="$PLUGINS loadbindings"
+test "$enable_loadbindings" == "auto" && PLUGINS="$PLUGINS loadbindings"
 
 LOADBINDINGS_CFLAGS="$LOADBINDINGS_CFLAGS "'${PLUGIN_CFLAGS}'
 LOADBINDINGS_LIBS="$LOADBINDINGS_LIBS "'${PLUGIN_LIBS}'

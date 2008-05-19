@@ -18,7 +18,7 @@ if test "$enable_sdw" == "yes" || \
 
 PKG_CHECK_MODULES(SDW,[ $sdw_pkgs ])
 
-PLUGINS="$PLUGINS sdw"
+test "$enable_sdw" == "auto" && PLUGINS="$PLUGINS sdw"
 
 SDW_CFLAGS="$SDW_CFLAGS "'${PLUGIN_CFLAGS}'
 SDW_LIBS="$SDW_LIBS "'${PLUGIN_LIBS}'

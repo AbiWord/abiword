@@ -4,7 +4,7 @@ PAINT_LIBS=
 
 if test "$enable_paint" != ""; then
 
-PLUGINS="$PLUGINS applix"
+test "$enable_paint" == "auto" && PLUGINS="$PLUGINS paint"
 
 # TODO check for libpng
 if test "$TOOLKIT" == "win"; then

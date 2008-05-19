@@ -23,7 +23,7 @@ fi
 if test "$enable_win32gfx" == "yes" || \
    test "$win32gfx_deps" == "yes"; then
 
-PLUGINS="$PLUGINS win32gfx"
+test "$enable_win32gfx" == "auto" && PLUGINS="$PLUGINS win32gfx"
 
 # TODO check for libpng
 SYSTEM_LIBS="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -ladvapi32 -lshell32 -luuid -lcomctl32 -lole32 -loleaut32 -lpng13"

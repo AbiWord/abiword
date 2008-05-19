@@ -20,7 +20,7 @@ AC_HEADER_TIME
 
 PKG_CHECK_MODULES(DOCBOOK,[ $docbook_pkgs ])
 
-PLUGINS="$PLUGINS docbook"
+test "$enable_docbook" == "auto" && PLUGINS="$PLUGINS docbook"
 
 DOCBOOK_CFLAGS="$DOCBOOK_CFLAGS "'${PLUGIN_CFLAGS}'
 DOCBOOK_LIBS="$DOCBOOK_LIBS "'${PLUGIN_LIBS}'

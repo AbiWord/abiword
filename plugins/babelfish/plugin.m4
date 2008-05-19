@@ -4,7 +4,7 @@ BABELFISH_LIBS=
 
 if test "$enable_babelfish" != ""; then
 
-PLUGINS="$PLUGINS babelfish"
+test "$enable_babelfish" == "auto" && PLUGINS="$PLUGINS babelfish"
 
 BABELFISH_CFLAGS="$BABELFISH_CFLAGS "'${PLUGIN_CFLAGS}'
 BABELFISH_LIBS="$BABELFISH_LIBS "'${PLUGIN_LIBS}'

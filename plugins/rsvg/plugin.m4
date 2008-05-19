@@ -33,7 +33,7 @@ fi
 
 PKG_CHECK_MODULES(RSVG,[ $rsvg_pkgs ])
 
-PLUGINS="$PLUGINS rsvg"
+test "$enable_rsvg" == "auto" && PLUGINS="$PLUGINS rsvg"
 
 RSVG_CFLAGS="$RSVG_CFLAGS "'${PLUGIN_CFLAGS}'
 RSVG_LIBS="$RSVG_LIBS "'${PLUGIN_LIBS}'

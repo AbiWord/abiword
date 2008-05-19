@@ -25,7 +25,7 @@ if test "$enable_gdict" == "yes" || \
 
 AC_TYPE_PID_T
 
-PLUGINS="$PLUGINS gdict"
+test "$enable_gdict" == "auto" && PLUGINS="$PLUGINS gdict"
 
 GDICT_CFLAGS="$GDICT_CFLAGS "'${PLUGIN_CFLAGS} -DUSE_FORK_AND_EXEC_METHOD=1'
 GDICT_LIBS='${PLUGIN_LIBS}'

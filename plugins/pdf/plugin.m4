@@ -21,7 +21,7 @@ if test "$enable_pdf" == "yes" || \
 
 PKG_CHECK_MODULES(PDF,[ $pdf_pkgs ])
 
-PLUGINS="$PLUGINS pdf"
+test "$enable_pdf" == "auto" && PLUGINS="$PLUGINS pdf"
 
 PDF_CFLAGS="$PDF_CFLAGS "'${PLUGIN_CFLAGS}'
 PDF_LIBS="$PDF_LIBS "'${PLUGIN_LIBS}'

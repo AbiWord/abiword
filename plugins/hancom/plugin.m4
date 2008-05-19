@@ -18,7 +18,7 @@ if test "$enable_hancom" == "yes" || \
 
 PKG_CHECK_MODULES(HANCOM,[ $hancom_pkgs ])
 
-PLUGINS="$PLUGINS hancom"
+test "$enable_hancom" == "auto" && PLUGINS="$PLUGINS hancom"
 
 HANCOM_CFLAGS="$HANCOM_CFLAGS "'${PLUGIN_CFLAGS}'
 HANCOM_LIBS="$HANCOM_LIBS "'${PLUGIN_LIBS}'

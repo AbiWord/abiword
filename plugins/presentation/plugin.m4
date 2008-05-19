@@ -4,7 +4,7 @@ PRESENTATION_LIBS=
 
 if test "$enable_presentation" != ""; then
 
-PLUGINS="$PLUGINS presentation"
+test "$enable_presentation" == "auto" && PLUGINS="$PLUGINS presentation"
 
 PRESENTATION_CFLAGS="$PRESENTATION_CFLAGS "'${PLUGIN_CFLAGS}'
 PRESENTATION_LIBS="$PRESENTATION_LIBS "'${PLUGIN_LIBS}'

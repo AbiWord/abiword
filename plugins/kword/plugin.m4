@@ -18,7 +18,7 @@ if test "$enable_kword" == "yes" || \
 
 PKG_CHECK_MODULES(KWORD,[ $kword_pkgs ])
 
-PLUGINS="$PLUGINS kword"
+test "$enable_kword" == "auto" && PLUGINS="$PLUGINS kword"
 
 KWORD_CFLAGS="$KWORD_CFLAGS "'${PLUGIN_CFLAGS}'
 KWORD_LIBS="$KWORD_LIBS "'${PLUGIN_LIBS}'

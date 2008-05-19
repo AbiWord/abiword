@@ -22,7 +22,7 @@ fi
 
 PKG_CHECK_MODULES(MATHVIEW,[ $mathview_pkgs ])
 
-PLUGINS="$PLUGINS mathview"
+test "$enable_mathview" == "auto" && PLUGINS="$PLUGINS mathview"
 
 MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS "'${PLUGIN_CFLAGS}'
 MATHVIEW_LIBS="$MATHVIEW_LIBS "'${PLUGIN_LIBS}'

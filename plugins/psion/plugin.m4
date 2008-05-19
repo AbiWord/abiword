@@ -58,7 +58,7 @@ else
 	AC_MSG_ERROR([version ${psiconv_major_found}.${psiconv_minor_found}.${psiconv_micro_found} (too old!)])
 fi
 
-PLUGINS="$PLUGINS psion"
+test "$enable_psion" == "auto" && PLUGINS="$PLUGINS psion"
 
 PSION_CFLAGS="$PSION_CFLAGS "'${PLUGIN_CFLAGS}'
 PSION_LIBS="$PSION_LIBS "'${PLUGIN_LIBS}'

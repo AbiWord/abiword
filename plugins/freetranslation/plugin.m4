@@ -4,7 +4,7 @@ FREETRANSLATION_LIBS=
 
 if test "$enable_freetranslation" != ""; then
 
-PLUGINS="$PLUGINS freetranslation"
+test "$enable_freetranslation" == "auto" && PLUGINS="$PLUGINS freetranslation"
 
 FREETRANSLATION_CFLAGS="$FREETRANSLATION_CFLAGS "'${PLUGIN_CFLAGS}'
 FREETRANSLATION_LIBS="$FREETRANSLATION_LIBS "'${PLUGIN_LIBS}'

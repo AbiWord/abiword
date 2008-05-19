@@ -4,7 +4,7 @@ NROFF_LIBS=
 
 if test "$enable_nroff" != ""; then
 
-PLUGINS="$PLUGINS nroff"
+test "$enable_nroff" == "auto" && PLUGINS="$PLUGINS nroff"
 
 NROFF_CFLAGS="$NROFF_CFLAGS "'${PLUGIN_CFLAGS}'
 NROFF_LIBS="$NROFF_LIBS "'${PLUGIN_LIBS}'

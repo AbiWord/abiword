@@ -18,7 +18,7 @@ if test "$enable_applix" == "yes" || \
 
 PKG_CHECK_MODULES(APPLIX,[ $applix_pkgs ])
 
-PLUGINS="$PLUGINS applix"
+test "$enable_applix" == "auto" && PLUGINS="$PLUGINS applix"
 
 APPLIX_CFLAGS="$APPLIX_CFLAGS "'${PLUGIN_CFLAGS}'
 APPLIX_LIBS="$APPLIX_LIBS "'${PLUGIN_LIBS}'

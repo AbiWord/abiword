@@ -4,7 +4,7 @@ OPML_LIBS=
 
 if test "$enable_opml" != ""; then
 
-PLUGINS="$PLUGINS opml"
+test "$enable_opml" == "auto" && PLUGINS="$PLUGINS opml"
 
 OPML_CFLAGS="$OPML_CFLAGS "'${PLUGIN_CFLAGS}'
 OPML_LIBS="$OPML_LIBS "'${PLUGIN_LIBS}'

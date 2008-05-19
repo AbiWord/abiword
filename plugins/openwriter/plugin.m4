@@ -18,7 +18,7 @@ if test "$enable_openwriter" == "yes" || \
 
 PKG_CHECK_MODULES(OPENWRITER,[ $openwriter_pkgs ])
 
-PLUGINS="$PLUGINS openwriter"
+test "$enable_openwriter" == "auto" && PLUGINS="$PLUGINS openwriter"
 
 OPENWRITER_CFLAGS="$OPENWRITER_CFLAGS "'${PLUGIN_CFLAGS}'
 OPENWRITER_LIBS="$OPENWRITER_LIBS "'${PLUGIN_LIBS}'

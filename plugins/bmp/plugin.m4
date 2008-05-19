@@ -32,7 +32,7 @@ if test "$enable_bmp_builtin" == "yes"; then
 	BMP_CFLAGS="$BMP_CFLAGS -DABI_PLUGIN_BUILTIN"
 fi
 
-PLUGINS="$PLUGINS bmp"
+test "$enable_bmp" == "auto" && PLUGINS="$PLUGINS bmp"
 
 fi
 

@@ -33,7 +33,7 @@ fi
 
 PKG_CHECK_MODULES(GOFFICE,[ $goffice_pkgs ])
 
-PLUGINS="$PLUGINS goffice"
+test "$enable_goffice" == "auto" && PLUGINS="$PLUGINS goffice"
 
 GOFFICE_CFLAGS="$GOFFICE_CFLAGS "'${PLUGIN_CFLAGS}'
 GOFFICE_LIBS="$GOFFICE_LIBS "'${PLUGIN_LIBS}'

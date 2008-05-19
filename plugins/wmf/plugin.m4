@@ -58,7 +58,7 @@ else
 	AC_MSG_ERROR([version ${libwmf_major_found}.${libwmf_minor_found}.${libwmf_micro_found} (too old!)])
 fi
 
-PLUGINS="$PLUGINS wmf"
+test "$enable_wmf" == "auto" && PLUGINS="$PLUGINS wmf"
 
 WMF_CFLAGS="$WMF_CFLAGS "'${PLUGIN_CFLAGS}'
 WMF_LIBS="$WMF_LIBS "'${PLUGIN_LIBS}'

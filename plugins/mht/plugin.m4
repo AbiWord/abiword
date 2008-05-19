@@ -37,7 +37,7 @@ fi
 if test "$enable_mht" == "yes" || \
    test "$mht_deps" == "yes"; then
 
-PLUGINS="$PLUGINS mht"
+test "$enable_mht" == "auto" && PLUGINS="$PLUGINS mht"
 
 if test "$enable_mht_builtin" == "yes"; then
 AC_MSG_ERROR([mht plugin: static linking not supported])

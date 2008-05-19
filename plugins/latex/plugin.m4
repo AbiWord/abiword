@@ -4,7 +4,7 @@ LATEX_LIBS=
 
 if test "$enable_latex" != ""; then
 
-PLUGINS="$PLUGINS latex"
+test "$enable_latex" == "auto" && PLUGINS="$PLUGINS latex"
 
 LATEX_CFLAGS="$LATEX_CFLAGS "'${PLUGIN_CFLAGS}'
 LATEX_LIBS="$LATEX_LIBS "'${PLUGIN_LIBS}'

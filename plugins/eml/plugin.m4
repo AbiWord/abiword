@@ -4,7 +4,7 @@ EML_LIBS=
 
 if test "$enable_eml" != ""; then
 
-PLUGINS="$PLUGINS eml"
+test "$enable_eml" == "auto" && PLUGINS="$PLUGINS eml"
 
 EML_CFLAGS="$EML_CFLAGS "'${PLUGIN_CFLAGS}'
 EML_LIBS="$EML_LIBS "'${PLUGIN_LIBS}'

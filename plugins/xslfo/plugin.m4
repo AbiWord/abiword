@@ -18,7 +18,7 @@ if test "$enable_xslfo" == "yes" || \
 
 PKG_CHECK_MODULES(XSLFO,[ $xslfo_pkgs ])
 
-PLUGINS="$PLUGINS xslfo"
+test "$enable_xslfo" == "auto" && PLUGINS="$PLUGINS xslfo"
 
 XSLFO_CFLAGS="$XSLFO_CFLAGS "'${PLUGIN_CFLAGS}'
 XSLFO_LIBS="$XSLFO_LIBS "'${PLUGIN_LIBS}'
