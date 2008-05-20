@@ -180,6 +180,7 @@ static bool _convertLettersToSymbols(char c, const char *& subst);
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
 
+#define UNKNOWN_LIST	0
 #define BULLET_LIST	1
 #define NUMBERED_LIST	2
 typedef int LIST_TYPE;
@@ -402,6 +403,8 @@ void s_LaTeX_Listener::_closeList(void)
 			;
 	}
 	list_stack.pop();
+	if (list_stack.getDepth())
+	    list_stack.viewTop(list_type);
 }
 
 void s_LaTeX_Listener::_closeLists()
@@ -594,16 +597,29 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		{
 			int indent = 0;
 			bool bNewList = false;
-			const gchar * szIndent, * szLeft, * szListStyle;
-			
+			const gchar * szIndent, * szLeft, * szListStyle = NULL;
+			LIST_TYPE this_list_type = UNKNOWN_LIST;
 			pAP->getProperty("list-style", szListStyle);
+			
+			if(szListStyle)
+			{
+			    if (0 == strcmp(szListStyle, "Numbered List") )
+				this_list_type = NUMBERED_LIST;
+			    else if (0 == strcmp(szListStyle, "Bullet List") )
+				this_list_type = BULLET_LIST;
+			}
+			
+			if (this_list_type == UNKNOWN_LIST)
+			{
+			    this_list_type = list_type;
+			}
 			
 			if (pAP->getProperty("text-indent", szIndent) && pAP->getProperty("margin-left", szLeft))
 			{
 				indent = UT_convertToDimension(szIndent, DIM_MM) + UT_convertToDimension(szLeft, DIM_MM);
 				if (m_bInList)
 				{
-					UT_DEBUGMSG(("      indent = %d, m_Indent = %d\n", indent, m_Indent));
+					xxx_UT_DEBUGMSG(("      indent = %d, m_Indent = %d\n", indent, m_Indent));
 					if(indent > this->m_Indent) //nested list
 						bNewList = true;
 					else if (indent < this->m_Indent)
@@ -617,16 +633,10 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 						 * of different style with the last one.
 						 */                                    
 					{
-						if(szListStyle)
+						if (this_list_type != list_type)
 						{
-							LIST_TYPE temp = BULLET_LIST;
-							if (0 == strcmp(szListStyle, "Numbered List") )
-								temp = NUMBERED_LIST;
-							if (temp != list_type)
-							{
-								this->_closeList();
-								bNewList = true;
-							}
+							this->_closeList();
+							bNewList = true;
 						}
 					}
 				}
@@ -635,23 +645,18 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			if (bNewList || !m_bInList) 
 				//necessary to build a new (possibly nested) list
 			{
-				if (pAP->getProperty("list-style", szValue))
-				{
-					//if(NULL == list_stack)
-					//  this->list_stack = new std::stack<LIST_TYPE>();
-					if (0 == strcmp(szValue, "Numbered List"))
-					{
-						list_type = NUMBERED_LIST;
-						m_pie->write("\\begin{enumerate}\n");
-					}
-					else if (0 == strcmp(szValue, "Bullet List"))
-					{
-						list_type = BULLET_LIST;
-						m_pie->write("\\begin{itemize}\n");
-					}
-					list_stack.push(list_type);
-				}
-				m_bInList = true;
+			    list_type = this_list_type;
+			    if (list_type == NUMBERED_LIST)
+			    {
+				m_pie->write("\\begin{enumerate}\n");
+			    }
+			    else if (list_type == BULLET_LIST)
+			    {
+				m_pie->write("\\begin{itemize}\n");
+			    }
+			    
+			    list_stack.push(list_type);
+			    m_bInList = true;
 			}
 			
 			if (szIndent && szLeft)
@@ -1464,6 +1469,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
 	m_bFirstSection(true),
+	list_type(BULLET_LIST),
 	m_pqRect(NULL)
 {
 	m_pie->write("%% ================================================================================\n");
@@ -1651,7 +1657,8 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Field:
 
 			  field = pcro->getField();
-			  m_pie->write(field->getValue());
+			  if(field->getValue())
+			      m_pie->write(field->getValue());
 
 				// we do nothing with computed fields.
 				return true;
