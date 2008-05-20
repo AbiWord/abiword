@@ -1,21 +1,9 @@
 
 collab_req="libxml-2.0 >= 2.4.0"
 collab_xmpp_req="loudmouth-1.0 >= 1.0.1"
-# TODO explicitely check for dbus-1 >= 1.0.1 ? dbus-glib depends on it anyways.
 collab_sugar_req="dbus-glib-1 >= 0.70"
-
-COLLAB_CFLAGS=
-COLLAB_LIBS=
-
-if test "$enable_collab" == "yes"; then
-
-if test "$enable_collab_builtin" == "yes"; then
-AC_MSG_ERROR([collab plugin: static linking not supported])
-fi
-
-# check for various boost libs, needs to be done before
-AX_BOOST_BASE([1.33.1])
-
+collab_service_req= 		# tested for libsoup-2.2 or -2.4
+collab_pkgs="$collab_req" 	# accumulate required packages
 
 AC_ARG_ENABLE([collab-backend-fake], 
     [AS_HELP_STRING([--enable-collab-backend-fake], [Fake backend for debugging purposes only (default: off)])], 
@@ -25,122 +13,82 @@ AC_ARG_ENABLE([collab-backend-fake],
 	enable_collab_backend_fake="no"
 ])
 
-
 AC_ARG_ENABLE([collab-backend-xmpp], 
     [AS_HELP_STRING([--enable-collab-backend-xmpp], [Jabber backend (default: auto)])], 
 [
 	enable_collab_backend_xmpp=$enableval
 ], [
-	enable_collab_backend_xmpp="auto"
-])
-if test $enable_collab_backend_xmpp == "yes"; then
-	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
-	[
-		collab_req="$collab_req $collab_xmpp_req"
-	], [
-		AC_MSG_ERROR([$collab_xmpp_req is required for the collab plugin TCP backend])
-	])
-elif test $enable_collab_backend_xmpp == "auto"; then
 	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
 	[
 		enable_collab_backend_xmpp="yes"
-		collab_req="$collab_req $collab_xmpp_req"
-	], [
-		enable_collab_backend_xmpp="no"
 	])
-fi
-
+])
+test "$enable_collab_backend_xmpp" == "yes" && collab_pkgs="$collab_pkgs $collab_xmpp_req"
 
 AC_ARG_ENABLE([collab-backend-tcp], 
     [AS_HELP_STRING([--enable-collab-backend-tcp], [TCP backend (default: auto)])], 
 [
 	enable_collab_backend_tcp=$enableval
-], [
-	enable_collab_backend_tcp="auto"
-])
-if test $enable_collab_backend_tcp == "yes"; then
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([Asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
+		AC_MSG_ERROR([collap plugin: boost asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
-elif test $enable_collab_backend_tcp == "auto"; then
+], [
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], 
 	[
 		enable_collab_backend_tcp="yes"
-	], [
-		enable_collab_backend_tcp="no"
-		AC_MSG_WARN([Asio is required for the TCP backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
-fi
-
+])
 
 AC_ARG_ENABLE([collab-backend-sugar], 
     [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: auto)])], 
 [
 	enable_collab_backend_sugar=$enableval
 ], [
-	enable_collab_backend_sugar="auto"
-])
-if test $enable_collab_backend_sugar == "yes"; then
-	PKG_CHECK_EXISTS([ $collab_sugar_req ],
-	[
-		collab_req="$collab_req $collab_sugar_req"
-	], [
-		AC_MSG_ERROR([$collab_sugar_req is required for the collab plugin Sugar/OLPC backend])
-	])
-elif test $enable_collab_backend_sugar == "auto"; then
-	PKG_CHECK_EXISTS([ $collab_sugar_req ],
+	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
 	[
 		enable_collab_backend_sugar="yes"
-		collab_req="$collab_req $collab_sugar_req"
-	], [
-		enable_collab_backend_sugar="no"
 	])
-fi
-
+])
+test "$enable_collab_backend_sugar" == "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
 
 AC_ARG_ENABLE([collab-backend-service], 
     [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
 [
 	enable_collab_backend_service=$enableval
 ], [
-	enable_collab_backend_service="no"
-])
-if test $enable_collab_backend_service == "yes"; then
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp],
 	[
 		PKG_CHECK_EXISTS(libsoup-2.4 >= 2.4.0, 
 		[
-			collab_req="libsoup-2.4 >= 2.4.0"
+			collab_service_req="libsoup-2.4 >= 2.4.0"
+			enable_collab_backend_service="yes"
 		], [
 			PKG_CHECK_EXISTS(libsoup-2.2 >= 2.2.100,
 			[
-				collab_req="libsoup-2.2 >= 2.2.100"
+				collab_service_req="libsoup-2.2 >= 2.2.100"
+				enable_collab_backend_service="yes"
 			], [
-				AC_MSG_ERROR([libsoup-2.2 or libsoup-2.4 is required for the collab plugin abicollab.net backend])
+				AC_MSG_WARN([collap plugin: libsoup-2.2 >= 2.2.100 or libsoup-2.4 is required for the abicollab.net backend])
 			])
 		])
-	], 
-	[
-		AC_MSG_ERROR([Asio is required for the \`abicollab.net' backend, see http://asio.sourceforge.net])
-	])
-	AC_LANG_POP
-elif test $enable_collab_backend_service == "auto"; then
-	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADERS([asio.hpp], 
-	[
-		enable_collab_backend_service="yes"
 	], [
-		enable_collab_backend_service="no"
+		AC_MSG_WARN([collap plugin: boost asio is required for the the abicollab.net backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
+])
+if test "$enable_collab_backend_service" == "yes"; then
+  # default to 2.4 if neither is found, this will show up in the pkg-config error msg
+  if test "$collab_service_req" == ""; then
+    collab_service_req="libsoup-2.4 >= 2.4.0"
+  fi
+  collab_pkgs="$collab_pkgs $collab_service_req"
 fi
-
 
 AC_ARG_ENABLE([collab-record-always], 
     [AS_HELP_STRING([--enable-collab-record-always], [Always record AbiCollab sessions (default: off)])], 
@@ -150,32 +98,57 @@ AC_ARG_ENABLE([collab-record-always],
 	enable_collab_record_always="no"
 ])
 
+collab_deps="no"
 
-PKG_CHECK_MODULES(COLLAB,[ $collab_req ])
+if test "$enable_collab" != ""; then
 
-if test $enable_collab_backend_fake == "yes"; then
+PKG_CHECK_EXISTS([ $collab_pkgs ], 
+[
+	collab_deps="yes"
+])
+
+fi
+
+if test "$enable_collab" == "yes" || \
+   test "$collab_deps" == "yes"; then
+
+if test "$enable_collab_builtin" == "yes"; then
+AC_MSG_ERROR([collab plugin: static linking not supported])
+fi
+
+# HACK, no way to detect, check only if explicitely enabled
+if test "$enable_collab" == "yes"; then
+# check for various boost libs, needs to be done before
+AX_BOOST_BASE([1.33.1])
+fi
+
+PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
+
+if test "$enable_collab_backend_fake" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"
 fi
-if test $enable_collab_backend_xmpp == "yes"; then
+if test "$enable_collab_backend_xmpp" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_XMPP"
 fi
-if test $enable_collab_backend_tcp == "yes"; then
+if test "$enable_collab_backend_tcp" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_TCP"
 fi
-if test $enable_collab_backend_sugar == "yes"; then
+if test "$enable_collab_backend_sugar" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SUGAR"
 fi
-if test $enable_collab_backend_service == "yes"; then
+if test "$enable_collab_backend_service" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE"
 fi
-if test $enable_collab_record_always == "yes"; then
+if test "$enable_collab_record_always" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_RECORD_ALWAYS"
 fi
 
-if test $enable_collab_backend_tcp == "yes" || \
-   test $enable_collab_backend_service == "yes"; then
+if test "$enable_collab_backend_tcp" == "yes" || \
+   test "$enable_collab_backend_service" == "yes"; then
 	COLLAB_LIBS="$COLLAB_LIBS -lpthread"
 fi
+
+test "$enable_collab" == "auto" && PLUGINS="$PLUGINS collab"
 
 COLLAB_CFLAGS="$COLLAB_CFLAGS "'${PLUGIN_CFLAGS}'
 COLLAB_LIBS="$COLLAB_LIBS "'${PLUGIN_LIBS}'
