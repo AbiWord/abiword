@@ -499,7 +499,7 @@ s_dndDropEvent(GtkWidget        *widget,
 {
 	UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
 
-	g_return_if_fail(widget != NULL);
+	UT_return_if_fail(widget != NULL);
 
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
 	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());

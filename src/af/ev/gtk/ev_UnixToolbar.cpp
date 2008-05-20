@@ -595,7 +595,7 @@ s_fore_color_changed (GOComboColor 	* /*cc*/,
 {
 	UT_UTF8String str;
 
-	g_return_if_fail (wd);
+	UT_return_if_fail (wd);
 
 	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
 								 UINT_RGBA_R (color),
@@ -614,7 +614,7 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 {
 	UT_UTF8String str;
 
-	g_return_if_fail (wd);
+	UT_return_if_fail (wd);
 
 	if (is_default) {
 		str = "transparent";

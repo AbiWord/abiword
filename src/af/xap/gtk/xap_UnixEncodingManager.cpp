@@ -235,7 +235,7 @@ compute_locale_variants (const gchar *locale)
   guint mask;
   guint i;
 
-  g_return_val_if_fail (locale != NULL, NULL);
+  UT_return_val_if_fail (locale != NULL, NULL);
 
   mask = explode_locale (locale, &language, &territory, &codeset, &modifier);
 
