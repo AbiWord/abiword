@@ -195,10 +195,12 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #		include /**/ "ut_unixAssert.h"
 #		define UT_ASSERT(expr)								\
-			((void) ((expr) ||								\
-				(UT_UnixAssertMsg(#expr,					\
-								  __FILE__, __LINE__),		\
-				 0)))
+		{										\
+			static bool __bOnceOnly = false;					\
+			if (!__bOnceOnly && !(expr))						\
+				if (UT_UnixAssertMsg(#expr, __FILE__, __LINE__) == -1)		\
+					__bOnceOnly = true;					\
+		}
 #	endif
 
 #endif
