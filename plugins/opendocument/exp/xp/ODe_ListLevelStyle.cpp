@@ -135,8 +135,8 @@ void ODe_Bullet_ListLevelStyle::fetchAttributesFromAbiBlock(
     // We first load the common attributes.
     ODe_ListLevelStyle::fetchAttributesFromAbiBlock(rAP);
     
-    const gchar* pValue;
-    bool ok;
+    const gchar* pValue = NULL;
+    bool ok = false;
     UT_UCS4Char ucs4Char = 0;
 
     // I'm hardcoding this font because it has all possible bullet characters and
@@ -144,9 +144,8 @@ void ODe_Bullet_ListLevelStyle::fetchAttributesFromAbiBlock(
     m_fontName = "FreeSerif";
     
     ok = rAP.getProperty("list-style", pValue);
-    UT_ASSERT(ok && pValue != NULL);
     
-    if (!strcmp(pValue, "Bullet List")) {
+    if (!pValue || !strcmp(pValue, "Bullet List")) {
         ucs4Char = 8226; // U+2022 BULLET
     } else if (!strcmp(pValue, "Dashed List")) {
         ucs4Char = 8211; // U+2013 EN DASH
@@ -221,13 +220,12 @@ void ODe_Numbered_ListLevelStyle::fetchAttributesFromAbiBlock(
     // We first load the common attributes.
     ODe_ListLevelStyle::fetchAttributesFromAbiBlock(rAP);
     
-    const gchar* pValue;
-    bool ok;
+    const gchar* pValue = NULL;
+    bool ok = false;
 
     ok = rAP.getProperty("list-style", pValue);
-    UT_ASSERT(ok && pValue != NULL);
     
-    if (!strcmp(pValue, "Numbered List")) {
+    if (!pValue || !strcmp(pValue, "Numbered List")) {
         m_numFormat = "1";
     } else if (!strcmp(pValue, "Lower Case List")) {
         m_numFormat = "a";
