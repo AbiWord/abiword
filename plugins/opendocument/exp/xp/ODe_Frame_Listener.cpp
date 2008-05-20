@@ -58,11 +58,10 @@ ODe_Frame_Listener::ODe_Frame_Listener(ODe_AutomaticStyles& rAutomatiStyles,
  */
 void ODe_Frame_Listener::openFrame(const PP_AttrProp* pAP,
                                    ODe_ListenerAction& rAction) {
-    bool ok;
-    const gchar* pValue;
+    bool ok = false;
+    const gchar* pValue = NULL;
     
     ok = pAP->getProperty("frame-type", pValue);
-    UT_ASSERT_HARMLESS(ok && pValue != NULL);
     
     if (pValue && !strcmp(pValue, "textbox")) {
         _openODTextbox(*pAP, rAction);
@@ -129,7 +128,7 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
     UT_UTF8String output;
     UT_UTF8String str;
     bool ok;
-    const gchar* pValue;
+    const gchar* pValue = NULL;
     ODe_Style_Style* pStyle;
     
     pStyle = new ODe_Style_Style();
@@ -163,7 +162,6 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
 
 
     ok = rAP.getProperty("position-to", pValue);
-    UT_ASSERT (ok && pValue != NULL);
 
     if (pValue && !strcmp(pValue, "block-above-text")) {
 

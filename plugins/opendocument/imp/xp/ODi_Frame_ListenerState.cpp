@@ -298,7 +298,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
 void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
 					   ODi_ListenerStateAction& rAction)
 {
-    const gchar* pChar;
+    const gchar* pChar = NULL;
     const ODi_Style_Style* pGraphicStyle;
     UT_String dataId; // id of the data item that contains the object.
     
@@ -509,7 +509,7 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
     const ODi_Style_Style* pGraphicStyle;
     const UT_UTF8String* pWrap;
     const UT_UTF8String* pBackgroundColor;
-    const gchar* pVal;
+    const gchar* pVal = NULL;
     
     pStyleName = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
     UT_ASSERT(pStyleName);
@@ -547,7 +547,7 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
 
     
     pVal = m_rElementStack.getStartTag(0)->getAttributeValue("text:anchor-type");
-    UT_ASSERT_HARMLESS(pVal);
+
     if (pVal && !strcmp(pVal, "paragraph")) {
         rProps += "; position-to:block-above-text";
         
