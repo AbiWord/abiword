@@ -20,6 +20,6 @@
 #ifndef UT_UNIXASSERT_H
 #define UT_UNIXASSERT_H
 
-void UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine);
+int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine);
 
 #endif /* UT_UNIXASSERT_H */
