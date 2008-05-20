@@ -17,6 +17,7 @@
  */
 
 #include <string.h>
+#include "ut_assert.h"
 #include "ev_UnixFontCombo.h"
 
 #define PREVIEW_TEXT "AaBb"

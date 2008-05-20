@@ -6,7 +6,7 @@ AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
 libgtk_la_SOURCES = \
-	ev_UnixFontCombo.c \
+	ev_UnixFontCombo.cpp \
 	ev_UnixFontCombo.h \
 	ev_UnixKeyboard.cpp \
 	ev_UnixKeyboard.h \
