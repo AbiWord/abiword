@@ -85,7 +85,7 @@ public:									// we create...
 		// map the user_data into an object and dispatch the event.
 
 		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
 	}
@@ -95,11 +95,11 @@ public:									// we create...
 		UT_ASSERT(data);
 
 		_wd * wd = static_cast<_wd *>(data);
-		UT_ASSERT(wd && wd->m_pUnixMenu);
+		UT_return_if_fail(wd && wd->m_pUnixMenu);
 
 		// WL_REFACTOR: redundant code
 		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_ASSERT(pFrame);
+		UT_return_if_fail(pFrame);
 		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
 		if (!pLabel)
 		{
@@ -118,10 +118,10 @@ public:									// we create...
 		UT_ASSERT(data);
 
 		_wd * wd = static_cast<_wd *>(data);
-		UT_ASSERT(wd && wd->m_pUnixMenu);
+		UT_return_if_fail(wd && wd->m_pUnixMenu);
 
 		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_ASSERT(pFrame);
+		UT_return_if_fail(pFrame);
 
 		pFrame->setStatusMessage(NULL);
 	}
@@ -129,19 +129,19 @@ public:									// we create...
 	static void s_onInitMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
 	{
 		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 	}
 
 	static void s_onDestroyMenu(GtkMenuItem * /*menuItem*/, gpointer callback_data)
 	{
 		_wd * wd = static_cast<_wd *>(callback_data);
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 
 		// we always clear the status bar when a menu goes away, so we don't
 		// leave a message behind
 		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
-		UT_ASSERT(pFrame);
+		UT_return_if_fail(pFrame);
 		pFrame->setStatusMessage(NULL);
 	}
 
@@ -318,17 +318,17 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	// return true if handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
+	UT_return_val_if_fail(pMenuActionSet, false);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-	UT_ASSERT(pAction);
+	UT_return_val_if_fail(pAction, false);
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
+	UT_return_val_if_fail(pEMC, false);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
@@ -422,7 +422,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		UT_continue_if_fail(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		// VERY BAD HACK!  It will be here until I fix the const correctness of all the functions
