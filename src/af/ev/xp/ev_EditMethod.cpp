@@ -282,9 +282,7 @@ bool ev_EditMethod_invoke (const EV_EditMethod * pEM,
 	  return pEM->Fn(pView, pData);
   }
   pView = pFrame->getCurrentView() ;
-  UT_ASSERT(pView);
-  if (!pView)
-    return false;
+  UT_return_val_if_fail(pView, false);
 
   // return whatever the method says to based on the data at hand
   return pEM->Fn(pView, pData);
@@ -314,17 +312,13 @@ bool ev_EditMethod_invoke (const char * methodName, const UT_UCS4String & data)
 
 bool ev_EditMethod_invoke (const char * methodName, const char * data)
 {
-  UT_ASSERT(data);
-  if(!data) 
-    return false;
+  UT_return_val_if_fail(data, false);
   return ev_EditMethod_invoke ( methodName, UT_String(data) ) ;
 }
 
 bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data)
 {
-  UT_ASSERT(data);
-  if(!data) 
-    return false;
+  UT_return_val_if_fail(data, false);
   return ev_EditMethod_invoke ( methodName, UT_UCS4String(data) ) ;
 }
 

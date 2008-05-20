@@ -150,7 +150,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 							   UT_uint32 dataLength)
 {
 	UT_ASSERT(pView);
-	UT_ASSERT(pEM);
+	UT_return_val_if_fail(pEM, false);
 
 	//UT_DEBUGMSG(("invokeMenuMethod: %s\n",pEM->getName()));
 
@@ -221,13 +221,13 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-			UT_ASSERT(pEMC);
+			UT_return_val_if_fail(pEMC, NULL);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
 			const EV_EditEventMapper * pEEM = getApp()->getEditEventMapper();
-			UT_ASSERT(pEEM);
+			UT_return_val_if_fail(pEEM, NULL);
 
 			const char * string = pEEM->getShortcutFor(pEM);
 			if (string && *string)
@@ -266,7 +266,7 @@ XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &
 	const UT_GenericVector<EV_Menu_Label *> * labels_table = labels->getAllLabels();
 	const EV_Menu_Label *l = 0;
 
-	UT_ASSERT(labels_table);
+	UT_return_val_if_fail(labels_table, 0);
 	UT_uint32 size_labels = labels_table->size();
 	XAP_Menu_Id id = 0;
 
