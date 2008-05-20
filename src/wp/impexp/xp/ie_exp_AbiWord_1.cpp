@@ -568,8 +568,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				UT_UTF8String_sprintf(sVal,"%fin",dInch);
 				tag += "width:";
 				tag += sVal;
-				tag += "\"";
 			}
+			tag += "\"";
 			tag += "/";
 			tag += ">";
 			tag += "</math";
@@ -621,8 +621,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				UT_UTF8String_sprintf(sVal,"%fin",dInch);
 				tag += "width:";
 				tag += sVal;
-				tag += "\"";
 			}
+			tag += "\"";
 			tag += "/";
 			tag += ">";
 			tag += "</embed";

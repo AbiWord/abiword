@@ -1496,7 +1496,7 @@ bool XAP_Prefs::savePrefsFile(void)
 				"\t<!--"
 				"\n\t     Here you can put a list of fonts to limit the fonts that appear "
 				"\n\t     in the font UI:\n"
-				"\n\t\t<face name=\"some face\"/>\n"
+				"\n\t\t<Face name=\"some face\"/>\n"
 				"\n\t     The include attribute of 'Fonts' controls the significance of "
 				"\n\t     the list:"
 				"\n\t     include=\"1\" - limit fonts to those listed"
