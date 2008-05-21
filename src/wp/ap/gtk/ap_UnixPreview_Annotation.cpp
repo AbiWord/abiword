@@ -60,7 +60,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	
 	XAP_App *pApp = XAP_App::getApp();
 	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
+	m_gc = pApp->newGraphics(ai);
 	
 	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	

@@ -60,7 +60,7 @@
  */
 
 GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
-	GR_UnixPangoGraphics(),
+	GR_CairoGraphics(),
 	m_pPixmap(pix)
 {
 	init();

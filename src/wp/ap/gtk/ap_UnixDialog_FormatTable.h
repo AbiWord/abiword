@@ -21,8 +21,8 @@
 #define AP_UNIXDIALOG_FORMATTABLE_H
 
 #include "ap_Dialog_FormatTable.h"
-#include "gr_UnixPangoGraphics.h"
 
+class GR_CairoGraphics;
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -61,7 +61,7 @@ protected:
 	void					_storeWindowData(void);
 	void					_connectSignals(void);
 	
-	GR_UnixPangoGraphics	* 		m_pPreviewWidget;	
+	GR_CairoGraphics * m_pPreviewWidget;	
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

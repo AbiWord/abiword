@@ -199,8 +199,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	GR_UnixAllocInfo ai(m_wPreviewArea->window);
-	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_pPreviewWidget = XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 	_createPreviewFromGC(m_pPreviewWidget,
@@ -248,8 +247,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	GR_UnixAllocInfo ai(m_wPreviewArea->window);
-	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_pPreviewWidget = XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 
@@ -1123,7 +1121,7 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 	UT_return_val_if_fail(pGF, NULL);
 	
 	const std::vector<const char *> & names =
-	    GR_UnixPangoGraphics::getAllFontNames();
+	    GR_CairoGraphics::getAllFontNames();
 	
 	GList *glFonts = NULL;
 	const gchar *currentfont = NULL;

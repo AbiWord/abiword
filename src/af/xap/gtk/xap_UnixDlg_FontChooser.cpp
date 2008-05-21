@@ -893,8 +893,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	const std::vector<const char *> & names =
-	    GR_UnixPangoGraphics::getAllFontNames();
+	const std::vector<const char *> & names = GR_CairoGraphics::getAllFontNames();
 	
 	for (std::vector<const char *>::const_iterator  i = names.begin();
 		 i != names.end(); i++)
@@ -1022,7 +1021,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show ( cf ) ;
 	
 	GR_UnixAllocInfo ai(m_preview->window);
-	m_gc = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_gc = XAP_App::getApp()->newGraphics(ai);
 
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //

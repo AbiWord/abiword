@@ -38,7 +38,7 @@ public:
 //
 // Class to draw into offscreen Pixbuf
 //
-class ABI_EXPORT GR_UnixPangoPixmapGraphics : public GR_UnixPangoGraphics
+class ABI_EXPORT GR_UnixPangoPixmapGraphics : public GR_CairoGraphics
 {
 	friend class GR_UnixImage;
 public:

@@ -28,6 +28,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "gr_UnixPangoGraphics.h"
+
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
@@ -203,7 +205,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pPreviewWidget);
 	GR_UnixAllocInfo ai(m_wpreviewArea->window);
 	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	
 	// Todo: we need a good widget to query with a probable

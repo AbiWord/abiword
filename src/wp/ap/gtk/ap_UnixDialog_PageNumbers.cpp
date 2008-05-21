@@ -122,9 +122,8 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	// make a new Unix GC
 	GR_UnixAllocInfo ai(m_previewArea->window);
 	m_unixGraphics =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
-	
-	
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	// let the widget materialize
 	_createPreviewFromGC(m_unixGraphics,
 		   static_cast<UT_uint32>(m_previewArea->allocation.width),

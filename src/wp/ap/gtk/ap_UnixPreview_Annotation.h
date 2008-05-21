@@ -25,7 +25,7 @@
 #include "ap_Preview_Annotation.h"
 
 class XAP_Frame;
-class GR_UnixPangoGraphics;
+class GR_Graphics;
 
 class AP_UnixPreview_Annotation : public AP_Preview_Annotation
 {
@@ -46,9 +46,9 @@ public:
 	
 private:
 	// parent frame
-	GR_UnixPangoGraphics * 	m_gc;
-	GtkWidget * 			m_pPreviewWindow;
-	GtkWidget * 			m_pDrawingArea;
+	GR_Graphics	*m_gc;
+	GtkWidget	*m_pPreviewWindow;
+	GtkWidget	*m_pDrawingArea;
 };
 
 #endif /* AP_UNIXPREVIEW_ANNOTATION_H */

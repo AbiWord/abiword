@@ -144,8 +144,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	
 	{
 		GR_UnixAllocInfo ai(m_SymbolMap->window);
-		m_unixGraphics =
-			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		m_unixGraphics = XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -159,8 +158,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixarea);
     {
 		GR_UnixAllocInfo ai(m_areaCurrentSym->window);
-		m_unixarea =
-			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		m_unixarea = XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
@@ -702,8 +700,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		return NULL;
 	}
 
-	const std::vector<const char *> & names =
-		GR_UnixPangoGraphics::getAllFontNames();
+	const std::vector<const char *> & names = GR_CairoGraphics::getAllFontNames();
 	
 	GList *glFonts = NULL;
 

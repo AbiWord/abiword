@@ -503,10 +503,10 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	UT_ASSERT(pImpl);
 	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
 	GR_UnixAllocInfo ai(pImpl->m_dArea->window);
-	pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	pG = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
-	GR_UnixPangoGraphics *pUnixGraphics = static_cast<GR_UnixPangoGraphics *>(pG);
+	GR_CairoGraphics *pUnixGraphics = static_cast<GR_CairoGraphics *>(pG);
 	pUnixGraphics->init3dColors(widget->style);
 
 	ENSUREP_RF(pG);

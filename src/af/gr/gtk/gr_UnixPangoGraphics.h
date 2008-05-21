@@ -54,7 +54,7 @@
 /************************************************************************/
 
 class GR_UnixPangoRenderInfo;
-class GR_UnixPangoGraphics;
+class GR_CairoGraphics;
 class XAP_Frame;
 
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
@@ -62,7 +62,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 
   public:
 	GR_UnixPangoFont(const char * pDesc, double dSize,
-					 GR_UnixPangoGraphics * pG,
+					 GR_CairoGraphics * pG,
 					 const char * pLang,
 					 bool bGuiFont = false);
 	
@@ -77,7 +77,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	PangoFont *       getPangoFont() const {return m_pf;}
 
-	void              reloadFont(GR_UnixPangoGraphics * pG);
+	void              reloadFont(GR_CairoGraphics * pG);
 	double            getPointSize() const {return m_dPointSize;}
 	UT_uint32         getZoom() const {return m_iZoom;}
 	bool              isGuiFont () const {return m_bGuiFont;}
@@ -136,14 +136,14 @@ public:
 };
 
 
-class ABI_EXPORT GR_UnixPangoGraphics : public GR_Graphics
+class ABI_EXPORT GR_CairoGraphics : public GR_Graphics
 {
 	friend class GR_UnixImage;
 
 	// all constructors are protected; instances must be created via
 	// GR_GraphicsFactory
 public:
-	virtual ~GR_UnixPangoGraphics();
+	virtual ~GR_CairoGraphics();
 
 	static UT_uint32       s_getClassId() {return GRID_UNIX_PANGO;}
 	virtual UT_uint32      getClassId() {return s_getClassId();}
@@ -305,8 +305,8 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(GdkWindow * win);
-	GR_UnixPangoGraphics();
+	GR_CairoGraphics(GdkWindow * win);
+	GR_CairoGraphics();
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
@@ -389,7 +389,7 @@ private:
     if(print) test inside each function. In order to avoid slowing the screen
     operations, we will use a derrived class.
 */
-class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
+class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 {
 	friend class GR_UnixPangoFont;
   public:

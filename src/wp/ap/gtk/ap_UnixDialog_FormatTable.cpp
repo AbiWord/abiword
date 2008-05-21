@@ -27,6 +27,8 @@
 #include "ut_debugmsg.h"
 #include "ut_unixMisc.h"
 
+#include "gr_UnixPangoGraphics.h"
+
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
@@ -280,8 +282,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
 	GR_UnixAllocInfo ai(m_wPreviewArea->window);
-	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_pPreviewWidget = (GR_CairoGraphics *) XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)

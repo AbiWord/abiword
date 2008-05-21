@@ -294,8 +294,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewWidget);
 	{
 		GR_UnixAllocInfo ai(m_wParaPreviewArea->window);
-		m_pParaPreviewWidget =
-		    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		m_pParaPreviewWidget = XAP_App::getApp()->newGraphics(ai);
 	}
 
 	// let the widget materialize
@@ -311,8 +310,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pCharPreviewWidget);
 	{
 		GR_UnixAllocInfo ai(m_wCharPreviewArea->window);
-		m_pCharPreviewWidget =
-		    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		m_pCharPreviewWidget = XAP_App::getApp()->newGraphics(ai);
 	}
 
 	// let the widget materialize
@@ -1265,8 +1263,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 
 	DELETEP (m_pAbiPreviewWidget);
 	GR_UnixAllocInfo ai(m_wModifyDrawingArea->window);
-	m_pAbiPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	m_pAbiPreviewWidget = XAP_App::getApp()->newGraphics(ai);
 	
 	// let the widget materialize
 

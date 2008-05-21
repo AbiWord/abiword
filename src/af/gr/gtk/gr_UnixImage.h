@@ -26,7 +26,7 @@
 
 class ABI_EXPORT GR_UnixImage : public GR_RasterImage
 {
-	friend class GR_UnixPangoGraphics;
+	friend class GR_CairoGraphics;
 public:
 	GR_UnixImage(const char* pszName);
 	GR_UnixImage(const char* pszName, GdkPixbuf * pPixbif);

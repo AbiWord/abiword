@@ -72,14 +72,14 @@
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
-UT_uint32      GR_UnixPangoGraphics::s_iInstanceCount = 0;
-UT_VersionInfo GR_UnixPangoGraphics::s_Version;
-int            GR_UnixPangoGraphics::s_iMaxScript = 0;
+UT_uint32      GR_CairoGraphics::s_iInstanceCount = 0;
+UT_VersionInfo GR_CairoGraphics::s_Version;
+int            GR_CairoGraphics::s_iMaxScript = 0;
 
 
 class GR_UnixPangoItem: public GR_Item
 {
-	friend class GR_UnixPangoGraphics;
+	friend class GR_CairoGraphics;
 	friend class GR_UnixPangoPrintGraphics;
 	friend class GR_UnixPangoRenderInfo;
 	
@@ -229,7 +229,7 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
-GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
+GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
@@ -254,7 +254,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 }
 
 
-GR_UnixPangoGraphics::GR_UnixPangoGraphics()
+GR_CairoGraphics::GR_CairoGraphics()
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
@@ -279,7 +279,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 }
 
 
-GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
+GR_CairoGraphics::~GR_CairoGraphics()
 {
 	if(m_pAdjustedPangoFont!= NULL)
 	{
@@ -315,7 +315,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	
 }
 
-void GR_UnixPangoGraphics::init()
+void GR_CairoGraphics::init()
 {
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
 	GdkDisplay * gDisplay = NULL;
@@ -462,7 +462,7 @@ void GR_UnixPangoGraphics::init()
 #endif
 }
 
-bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_CairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -477,18 +477,18 @@ bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
+GR_Graphics *   GR_CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
 
 	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
-	return new GR_UnixPangoGraphics(AI.m_win);
+	return new GR_CairoGraphics(AI.m_win);
 }
 
-void GR_UnixPangoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
 	UT_sint32 oldDY = tdu(getPrevYOffset());
@@ -532,43 +532,43 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	setExposePending(true);
 }
 
-bool GR_UnixPangoGraphics::startPrint(void)
+bool GR_CairoGraphics::startPrint(void)
 {
 	UT_ASSERT(0);
 	return false;
 }
 
-bool GR_UnixPangoGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+bool GR_CairoGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
 								bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
 	UT_ASSERT(0);
 	return false;
 }
 
-bool GR_UnixPangoGraphics::endPrint(void)
+bool GR_CairoGraphics::endPrint(void)
 {
 	UT_ASSERT(0);
 	return false;
 }
 
-void GR_UnixPangoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+void GR_CairoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	drawChars(&Char, 0, 1, xoff, yoff, NULL);
 }
 
-void GR_UnixPangoGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
+void GR_CairoGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
 {
 	// we only use ONE color space here now (GdkRGB's space)
 	// and we don't let people change that on us.
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-GR_Graphics::ColorSpace GR_UnixPangoGraphics::getColorSpace(void) const
+GR_Graphics::ColorSpace GR_CairoGraphics::getColorSpace(void) const
 {
 	return m_cs;
 }
 
-void GR_UnixPangoGraphics::setCursor(GR_Graphics::Cursor c)
+void GR_CairoGraphics::setCursor(GR_Graphics::Cursor c)
 {
 	if (m_cursor == c)
 		return;
@@ -692,7 +692,7 @@ void GR_UnixPangoGraphics::setCursor(GR_Graphics::Cursor c)
 	gdk_cursor_unref(cursor);
 }
 
-void GR_UnixPangoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+void GR_CairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 										   GdkBitmap * mask)
 {
 	source
@@ -701,18 +701,18 @@ void GR_UnixPangoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 							pXPM);
 }
 
-GR_Graphics::Cursor GR_UnixPangoGraphics::getCursor(void) const
+GR_Graphics::Cursor GR_CairoGraphics::getCursor(void) const
 {
 	return m_cursor;
 }
 
-void GR_UnixPangoGraphics::setColor3D(GR_Color3D c)
+void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	_setColor(m_3dColors[c]);
 }
 
-bool GR_UnixPangoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
+bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
 {
 	if (m_bHave3DColors) {
 		color.m_red = m_3dColors[name].red >> 8;
@@ -723,7 +723,7 @@ bool GR_UnixPangoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
 	return false;
 }
 
-void GR_UnixPangoGraphics::init3dColors(GtkStyle * pStyle)
+void GR_CairoGraphics::init3dColors(GtkStyle * pStyle)
 {
 	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
@@ -734,7 +734,7 @@ void GR_UnixPangoGraphics::init3dColors(GtkStyle * pStyle)
 	m_bHave3DColors = true;
 }
 
-void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
@@ -744,14 +744,14 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 }
 
 
-UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
+UT_uint32 GR_CairoGraphics::getDeviceResolution(void) const
 {
 	// TODO -- we should get this somewhere from the xft lib
 	return m_iDeviceResolution;
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
+UT_sint32 GR_CairoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
 {
         if (height) { 
 		*height = 0;
@@ -760,11 +760,11 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uin
 	return w;
 }
 
-bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
+bool GR_CairoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
 	// Performance is not of the highest priorty, as this function gets only
 	// called once on each text fragment on load or keyboard entry
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::itemize\n"));
 	UT_return_val_if_fail( m_pContext, false );
  
 	// we need to convert our ucs4 data to utf8 for pango
@@ -860,7 +860,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 }
 
 int *
-GR_UnixPangoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
+GR_CairoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 												UT_BidiCharType iVisDir,
 												const char * pUtf8)
 {
@@ -900,9 +900,9 @@ GR_UnixPangoGraphics::_calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 	return pLogOffsets;
 }
 
-bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
+bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::shape, len %d\n", si.m_iLength));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::shape, len %d\n", si.m_iLength));
 	UT_return_val_if_fail(si.m_pItem &&
 						  si.m_pItem->getClassId() == GRRI_UNIX_PANGO &&
 						  si.m_pFont, false);
@@ -1131,9 +1131,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
+UT_sint32 GR_CairoGraphics::getTextWidth(GR_RenderInfo & ri)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::getTextWidth\n"));
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
@@ -1175,7 +1175,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
  * character postions due to clustering rules, these can be different from
  * the requested values).
  */
-UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
+UT_uint32 GR_CairoGraphics::_measureExtent (PangoGlyphString * pg,
 												PangoFont * pf,
 												UT_BidiCharType iDir,
 												const char * pUtf8,
@@ -1265,7 +1265,7 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
     different segments of partially selected run, this function can be take out
     of the loop.)
 */
-void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
+void GR_CairoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
 	// the only thing we need to do here is to make sure that the glyph metrics
 	// are calculated to a correct zoom level.
@@ -1284,7 +1284,7 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
  * pf is the PangoFont that we are actually using (possibly a different,
  * substituted font).
  */
-PangoFont *  GR_UnixPangoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf)
+PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf)
 {
 	UT_return_val_if_fail(pFont, NULL);
 	
@@ -1329,14 +1329,14 @@ PangoFont *  GR_UnixPangoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont,
 /*!
     The offset passed to us as part of ri is a visual offset
 */
-void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
+void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
 	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars length %d \n",
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::renderChars length %d \n",
 					 RI.m_iLength));
 
 	if(RI.m_iLength == 0)
@@ -1441,7 +1441,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	}
 }
 
-void GR_UnixPangoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
+void GR_CairoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
 {
 	UT_uint32 iZoom = getZoomPercentage();
 	if(RI.m_iZoom == iZoom)
@@ -1466,7 +1466,7 @@ void GR_UnixPangoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
 }
 
 
-void GR_UnixPangoGraphics::_scaleJustification(GR_UnixPangoRenderInfo & RI)
+void GR_CairoGraphics::_scaleJustification(GR_UnixPangoRenderInfo & RI)
 {
 	UT_uint32 iZoom = getZoomPercentage();
 	if(RI.m_iZoom == iZoom)
@@ -1490,7 +1490,7 @@ void GR_UnixPangoGraphics::_scaleJustification(GR_UnixPangoRenderInfo & RI)
        to another, and back we are bound to end up with incorrect metrics due
        to rounding errors.
 */
-void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
+void GR_CairoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
@@ -1503,7 +1503,7 @@ void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 }
 
-void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & /*ri*/,
+void GR_CairoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & /*ri*/,
 													 UT_GrowBuf & /*buf*/) const
 {
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
@@ -1512,7 +1512,7 @@ void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & /*ri*/,
 /*!
     returns true on success
  */
-bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
+bool GR_CairoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 {
 	UT_return_val_if_fail(ri.m_pText && ri.m_pGlyphs && ri.m_pItem, false);
 
@@ -1537,7 +1537,7 @@ bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 	return true;
 }
 
-bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
+bool GR_CairoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 									bool bAfter)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO &&
@@ -1593,14 +1593,14 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 }
 
 
-bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
+bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
 {
 	// something smarter is needed here, so we do not go through this for
 	// langugages that do not need it.
 	return true;
 }
 
-UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
+UT_uint32 GR_CairoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
 													bool bForward)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
@@ -1624,7 +1624,7 @@ UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri,
 	return iOffset;
 }
 
-void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
+void GR_CairoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
@@ -1680,7 +1680,7 @@ void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
+UT_sint32 GR_CairoGraphics::resetJustification(GR_RenderInfo & ri,
 												   bool bPermanent)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
@@ -1715,7 +1715,7 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
 }
 
 
-UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
+UT_sint32 GR_CairoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
@@ -1763,7 +1763,7 @@ UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & r
     amount in a separate array of the ri and add it to the offsets before we
     draw. We will probably need some static buffers to speed things up
  */
-void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
+void GR_CairoGraphics::justify(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &) ri;
@@ -1896,7 +1896,7 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
-UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, 
+UT_uint32 GR_CairoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, 
 											 UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
@@ -1946,7 +1946,7 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	return i;
 }
 
-void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
+void GR_CairoGraphics::positionToXY(const GR_RenderInfo & ri,
 										UT_sint32& x, UT_sint32& /*y*/,
 										UT_sint32& x2, UT_sint32& /*y2*/,
 										UT_sint32& /*height*/, bool& /*bDirection*/) const
@@ -2018,7 +2018,7 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 	x2 = x;
 }
 
-void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
+void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * /*pCharWidth*/)
@@ -2092,7 +2092,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	g_list_free(pItems);
 }
 
-UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
+UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 											  int iCharOffset,
 											  int iLength,
 											  UT_GrowBufElement* pWidths,
@@ -2244,7 +2244,7 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	return iWidth;
 }
 
-void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
+void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {
 	UT_Rect* oldR = NULL;	
 
@@ -2270,7 +2270,7 @@ void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 		g_object_unref (G_OBJECT (oldC));
 }
 
-void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
+void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
 	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
@@ -2287,7 +2287,7 @@ void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 /*!
  * Take a screenshot of the graphics and convert it to an image.
  */
-GR_Image * GR_UnixPangoGraphics::genImageFromRectangle(const UT_Rect &rec)
+GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
 	UT_sint32 idx = _tduX(rec.left);
 	UT_sint32 idy = _tduY(rec.top);
@@ -2315,7 +2315,7 @@ GR_Image * GR_UnixPangoGraphics::genImageFromRectangle(const UT_Rect &rec)
  * doesn't scale if the resolution or zoom changes. Instead you must create
  * a new image.
  */
-GR_Image* GR_UnixPangoGraphics::createNewImage (const char* pszName,
+GR_Image* GR_CairoGraphics::createNewImage (const char* pszName,
 											    const UT_ByteBuf* pBB,
 												UT_sint32 iWidth,
 												UT_sint32 iHeight,
@@ -2333,7 +2333,7 @@ GR_Image* GR_UnixPangoGraphics::createNewImage (const char* pszName,
  * Draw the specified image at the location specified in local units 
  * (xDest,yDest). xDest and yDest are in logical units.
  */
-void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
+void GR_CairoGraphics::drawImage(GR_Image* pImg,
 									 UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
@@ -2366,7 +2366,7 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
 						 0, 0);
 }
 
-void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
+void GR_CairoGraphics::setFont(const GR_Font * pFont)
 {
 	UT_return_if_fail( pFont && pFont->getType() == GR_FONT_UNIX_PANGO);
 
@@ -2380,7 +2380,7 @@ void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
 
 	if (szLCFontName)
 	{
-		xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::setFont: %s\n", szLCFontName));
+		xxx_UT_DEBUGMSG(("GR_CairoGraphics::setFont: %s\n", szLCFontName));
 		if(strstr(szLCFontName,"symbol") != NULL)
 		{
 			/*
@@ -2404,7 +2404,7 @@ void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
 	}
 }
 
-void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
+void GR_CairoGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	// not sure if we should not call GR_UnixGraphics::setZoomPercentage() here
 	// instead
@@ -2416,28 +2416,28 @@ void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
 	}
 }
 
-GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& /*fontFamily*/, 
+GR_Font* GR_CairoGraphics::getDefaultFont(UT_String& /*fontFamily*/, 
 											  const char * /*pLang*/)
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, NULL );
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontAscent()
+UT_uint32 GR_CairoGraphics::getFontAscent()
 {
 	return getFontAscent(m_pPFont);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontDescent()
+UT_uint32 GR_CairoGraphics::getFontDescent()
 {
 	return getFontDescent(m_pPFont);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontHeight()
+UT_uint32 GR_CairoGraphics::getFontHeight()
 {
 	return getFontHeight(m_pPFont);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontAscent(const GR_Font * pFont)
+UT_uint32 GR_CairoGraphics::getFontAscent(const GR_Font * pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
@@ -2445,7 +2445,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontAscent(const GR_Font * pFont)
 	return pFP->getAscent();
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontDescent(const GR_Font *pFont)
+UT_uint32 GR_CairoGraphics::getFontDescent(const GR_Font *pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
@@ -2453,7 +2453,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontDescent(const GR_Font *pFont)
 	return pFP->getDescent();
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontHeight(const GR_Font *pFont)
+UT_uint32 GR_CairoGraphics::getFontHeight(const GR_Font *pFont)
 {
 	UT_return_val_if_fail( pFont, 0 );
 
@@ -2620,7 +2620,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 }
 
 
-GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
+GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
 										 const char* pszFontVariant,
 										 const char* pszFontWeight,
@@ -2698,7 +2698,7 @@ struct _MyPangoCoverage
 
 typedef _MyPangoCoverage MyPangoCoverage;
 
-void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
+void GR_CairoGraphics::getCoverage(UT_NumberVector& coverage)
 {
 	coverage.clear();
 
@@ -2712,7 +2712,7 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	MyPangoCoverage * mpc = (MyPangoCoverage*) pc;
 	UT_uint32 iMaxChar = mpc->n_blocks * 256;
 
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
 	
 	bool bInRange = false;
 	UT_uint32 iRangeStart = 0;
@@ -2743,7 +2743,7 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	}
 }
 
-const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
+const std::vector<const char *> & GR_CairoGraphics::getAllFontNames(void)
 {
 	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 	bool bExclude = false;
@@ -2813,12 +2813,12 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 	return Vec;
 }
 
-UT_uint32 GR_UnixPangoGraphics::getAllFontCount()
+UT_uint32 GR_CairoGraphics::getAllFontCount()
 {
 	return getAllFontNames().size();
 }
 
-GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
+GR_Font * GR_CairoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
 											   const char * pszLang)
 {
 	const char* pszFontFamily = NULL;
@@ -2871,12 +2871,12 @@ GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
 					pszLang);
 }
 
-void GR_UnixPangoGraphics::getColor(UT_RGBColor& clr)
+void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 {
 	clr = m_curColor;
 }
 
-void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
+void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 {
 	UT_ASSERT(m_pGC);
 	GdkColor c;
@@ -2892,7 +2892,7 @@ void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
 	_setColor(c);
 }
 
-void GR_UnixPangoGraphics::_setColor(GdkColor & c)
+void GR_CairoGraphics::_setColor(GdkColor & c)
 {
 	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
 
@@ -2918,7 +2918,7 @@ void GR_UnixPangoGraphics::_setColor(GdkColor & c)
 	}
 }
 
-void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
+void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
 	GdkGCValues gcV;
@@ -2933,7 +2933,7 @@ void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	gdk_draw_line(_getDrawable(), m_pGC, idx1, idy1, idx2, idy2);
 }
 
-void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
+void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	m_iLineWidth = tdu(iLineWidth);
 
@@ -3011,7 +3011,7 @@ static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
 }
 
 
-void GR_UnixPangoGraphics::setLineProperties ( double inWidth, 
+void GR_CairoGraphics::setLineProperties ( double inWidth, 
 										  GR_Graphics::JoinStyle inJoinStyle,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
@@ -3027,7 +3027,7 @@ void GR_UnixPangoGraphics::setLineProperties ( double inWidth,
 								 mapJoinStyle ( inJoinStyle ) ) ;
 }
 
-void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							  UT_sint32 y2)
 {
 	UT_sint32 idx1 = _tduX(x1);
@@ -3039,7 +3039,7 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	gdk_draw_line(_getDrawable(), m_pXORGC, idx1, idy1, idx2, idy2);
 }
 
-void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	// see bug #303 for what this is about
 
@@ -3054,7 +3054,7 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		// one pixel beyond where GDK draws it (even though both coordinate
 		// systems start at 0,0 (?)).  Subtracting one clears this up so
 		// that the poly line is in the correct place relative to where
-		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
+		// the rest of GR_CairoGraphics:: does things (drawing text, clearing
 		// areas, etc.).
 		UT_sint32 idy1 = _tduY(pts[i].y);
 
@@ -3066,7 +3066,7 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
+void GR_CairoGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
 
@@ -3079,7 +3079,7 @@ void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
 			   idw, idh);
 }
 
-void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
+void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
 	if (pRect)
@@ -3110,7 +3110,7 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
-void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
 	// save away the current color, and restore it after we fill the rect
@@ -3143,7 +3143,7 @@ void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32
 }
 
 
-GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
+GR_Font * GR_CairoGraphics::getGUIFont(void)
 {
 	if (!m_pPFontGUI)
 	{
@@ -3177,7 +3177,7 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 /*!
     Convert device units to pango units
 */
-inline int GR_UnixPangoGraphics::dtpu(int d) const
+inline int GR_CairoGraphics::dtpu(int d) const
 {
 	return d * PANGO_SCALE;
 }
@@ -3185,7 +3185,7 @@ inline int GR_UnixPangoGraphics::dtpu(int d) const
 /*!
     Convert pango units to device units
 */
-inline int GR_UnixPangoGraphics::ptdu(int p) const
+inline int GR_CairoGraphics::ptdu(int p) const
 {
 	return PANGO_PIXELS(p);
 }
@@ -3193,7 +3193,7 @@ inline int GR_UnixPangoGraphics::ptdu(int p) const
 /*!
     Convert pango units to layout units
 */
-inline int GR_UnixPangoGraphics::ptlu(int p) const
+inline int GR_CairoGraphics::ptlu(int p) const
 {
 	double d = (double)p * 100.0 * (double) getResolution()/
 		((double)getDeviceResolution()*(double)getZoomPercentage()*(double) PANGO_SCALE) + .5;
@@ -3204,7 +3204,7 @@ inline int GR_UnixPangoGraphics::ptlu(int p) const
 /*!
     Convert layout units to pango units
 */
-inline int GR_UnixPangoGraphics::ltpu(int l) const
+inline int GR_CairoGraphics::ltpu(int l) const
 {
 	double d = (double)l *
 		(double)getDeviceResolution() * (double)PANGO_SCALE * (double)getZoomPercentage()/
@@ -3220,26 +3220,26 @@ inline int GR_UnixPangoGraphics::ltpu(int l) const
     (Pango font units == point size * PANGO_SCALE, hence at zoom of 100% there
     are 20/PANGO_SCALE layout units to each pango font unit.)
 */
-inline int GR_UnixPangoGraphics::pftlu(int pf) const
+inline int GR_CairoGraphics::pftlu(int pf) const
 {
 	double d = (double)pf * 2000.0 / ((double)getZoomPercentage() * (double)PANGO_SCALE);
 	return (int) d;
 }
 
-void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
-void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
-void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
+void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
 	// save away the current color, and restore it after we draw the polygon
@@ -3278,7 +3278,7 @@ void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 									 UT_sint32 width, UT_sint32 height)
 {
 	if (width > 0)
@@ -3294,7 +3294,7 @@ void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 // GR_UnixPangFont implementation
 //
 GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
-								   GR_UnixPangoGraphics * pG,
+								   GR_CairoGraphics * pG,
 								   const char * pLang,
 								   bool bGuiFont):
 	m_dPointSize(dSize),
@@ -3339,7 +3339,7 @@ void GR_UnixPangoFont::setLanguage(const char * pLang)
     Reloads the Pango font associated with this font, taking into account the
     current level of zoom
 */
-void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
+void GR_UnixPangoFont::reloadFont(GR_CairoGraphics * pG)
 {
 	UT_return_if_fail( pG );
 
@@ -3495,7 +3495,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	}
 #endif
 
-	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_UnixPangoGraphics *>(pG))->getContext());
+	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_CairoGraphics *>(pG))->getContext());
 
 	PangoRectangle ink_rect;
 	pango_font_get_glyph_extents(m_pf, iGlyphIndx, &ink_rect, NULL);
@@ -3618,7 +3618,7 @@ bool GR_UnixPangoRenderInfo::isJustified() const
 #ifdef ENABLE_PRINT
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 													 bool isPreview):
-	GR_UnixPangoGraphics(),
+	GR_CairoGraphics(),
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
 	m_dResRatio(1.0),
@@ -3655,7 +3655,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 													 double inWidthDevice,
 													 double inHeightDevice):
-	GR_UnixPangoGraphics(),
+	GR_CairoGraphics(),
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
 	m_dResRatio(1.0),
@@ -3784,7 +3784,7 @@ GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
 GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
 
 	UT_return_val_if_fail(info.isPrinterGraphics(), NULL);
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
@@ -3800,32 +3800,32 @@ GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontAscent())*m_dResRatio);
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontDescent())*m_dResRatio);
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontHeight())*m_dResRatio);
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent(const GR_Font * fnt)
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontAscent(fnt))*m_dResRatio);
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent(const GR_Font * fnt )
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontDescent(fnt))*m_dResRatio);
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(const GR_Font * fnt)
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_CairoGraphics::getFontHeight(fnt))*m_dResRatio);
 }
 
 UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
@@ -3914,7 +3914,7 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
 	
-	if (!GR_UnixPangoGraphics::shape(si,ri))
+	if (!GR_CairoGraphics::shape(si,ri))
 		return false;
 
 	UT_return_val_if_fail( ri, false );
@@ -3941,7 +3941,7 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;

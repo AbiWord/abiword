@@ -21,11 +21,11 @@
 #define AP_UnixDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
-#include "gr_UnixPangoGraphics.h"
 
 #include "ut_types.h"
 #include "ut_string.h"
 
+class GR_CairoGraphics;
 
 /*****************************************************************
 ******************************************************************
@@ -174,7 +174,7 @@ protected:
 	void 		_storeWindowData(void);
 	void            _connectsignals(void);
 
-	GR_UnixPangoGraphics	* 		m_pPreviewWidget;
+	GR_CairoGraphics * m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

@@ -96,15 +96,15 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	if(pGF)
 	{
 		bool bSuccess;
-		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
-									  GR_UnixPangoGraphics::graphicsDescriptor,
-									  GR_UnixPangoGraphics::s_getClassId());
+		bSuccess = pGF->registerClass(GR_CairoGraphics::graphicsAllocator,
+									  GR_CairoGraphics::graphicsDescriptor,
+									  GR_CairoGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 
 		if(bSuccess)
 		{
-			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
+			pGF->registerAsDefault(GR_CairoGraphics::s_getClassId(), true);
 		}
 
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
