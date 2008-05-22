@@ -29,6 +29,7 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
+#include "ut_Language.h"
 #include "ut_units.h"
 #include "ut_wctomb.h"
 #include "pt_Types.h"
@@ -322,6 +323,7 @@ protected:
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_openTable(PT_AttrPropIndex api);
+	void				_outputBabelPackage(void);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleDataItems(void);
 	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
@@ -1454,6 +1456,54 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	}
 }
 
+// _outputBabelPackage should be called only by the constructer, and only once
+void s_LaTeX_Listener::_outputBabelPackage(void)
+{
+	// Language appears in <abiword> as property "lang",
+	// es-ES, en-US, and so forth...
+	
+	const gchar * szLangCode = NULL;
+	m_pDocument->getAttrProp()->getProperty("lang", szLangCode); // language code
+	if(szLangCode && *szLangCode)
+	{
+	    UT_Language lang;
+	    UT_uint32 indx = lang.getIndxFromCode(szLangCode);
+	    if (indx > 0)
+	    {
+		char *strLangName = g_strdup(lang.getNthLangName(indx)); // language name
+		if (strLangName)
+		{
+		    m_pie->write("%% Please revise the following command, if your babel\n");
+		    m_pie->write("%% package does not support ");
+		    m_pie->write(strLangName);
+		    m_pie->write("\n");
+		    
+		    *strLangName = tolower(*strLangName);
+		    
+		    const char *q = strtok(strLangName, " ("); // retrieve the "significant" part
+		    if (strcmp(q, "french") == 0)
+			q="frenchb"; // frenchb.ldf
+		    else if (strcmp(q, "german") == 0)
+			q="germanb"; // germanb.ldf
+		    else if (strcmp(q, "portuguese") == 0)
+			q="portuges"; // portuges.ldf
+		    else if (strcmp(q, "russian") == 0)
+			q="russianb"; // russianb.ldf
+		    else if (strcmp(q, "slovenian") == 0)
+			q="slovene"; // slovene.ldf
+		    else if (strcmp(q, "ukrainian") == 0)
+			q="ukraineb"; // ukraineb.ldf
+		    
+		    m_pie->write("\\usepackage[");
+		    m_pie->write(q);
+		    m_pie->write("]{babel}\n");
+		    
+		    free(strLangName);
+		}
+	    }
+	    
+	}
+}
 s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 				    const LaTeX_Analysis_Listener& analysis)
   : m_pDocument(pDocument),
@@ -1543,11 +1593,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_pie->write("\\usepackage{graphicx}\n");
 	m_pie->write("\\usepackage{multicol}\n");
 	m_pie->write("\\usepackage[normalem]{ulem}\n");
-	// TODO: Use correct language from .abw.
-	// Language appears in <abiword> as property "lang",
-	// es-ES, en-US, and so forth...
-	m_pie->write("%% Please set your language here\n");
-	m_pie->write("\\usepackage[english]{babel}\n");
+
+	_outputBabelPackage();
+	
 	m_pie->write("\\usepackage{color}\n");
 
 	if (m_bHaveEndnote)
