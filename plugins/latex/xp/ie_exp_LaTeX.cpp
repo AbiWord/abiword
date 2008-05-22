@@ -967,7 +967,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			    q = strtok(NULL, " ");
 			}
 
-			free(p);
+			g_free(p);
 		}
 
 		if (pAP->getProperty("text-position", szValue))
@@ -1163,7 +1163,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			g_free(p);
 		}
 
 		if (
@@ -1196,7 +1196,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 				q = strtok(NULL, " ");
 			}
 
-			free(p);
+			g_free(p);
 		}
 
 		if (
@@ -1498,7 +1498,7 @@ void s_LaTeX_Listener::_outputBabelPackage(void)
 		    m_pie->write(q);
 		    m_pie->write("]{babel}\n");
 		    
-		    free(strLangName);
+		    g_free(strLangName);
 		}
 	    }
 	    
