@@ -26,10 +26,15 @@
 
 // AbiWord includes
 #include <ie_exp.h>
-#include <ie_imp.h>
+#include <ut_debugmsg.h>
+#include <ut_types.h>
+#include <ut_assert.h>
 
 // External includes
-#include <gsf/gsf-infile.h>
+#include <gsf/gsf-outfile.h>
+#include <gsf/gsf-outfile-zip.h>
+#include <gsf/gsf-output-stdio.h>
+
 
 /**
  * Class used to export OpenXML files
@@ -44,6 +49,11 @@ protected:
     virtual UT_Error _writeDocument(void);
     
 private:
+	UT_Error writeContentTypes(GsfOutfile* root);
+	UT_Error writeRelations(GsfOutfile* root);
+	UT_Error writeMainPart(GsfOutfile* root);
+	UT_Error writeXmlHeader(GsfOutput* file);
+
 	void _cleanup();
 };
 
