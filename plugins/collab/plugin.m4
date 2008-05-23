@@ -83,9 +83,9 @@ AC_ARG_ENABLE([collab-backend-service],
 	AC_LANG_POP
 ])
 if test "$enable_collab_backend_service" == "yes"; then
-  # default to 2.4 if neither is found, this will show up in the pkg-config error msg
+  # default to 2.2 if neither is found, this will show up in the pkg-config error msg
   if test "$collab_service_req" == ""; then
-    collab_service_req="libsoup-2.4 >= 2.4.0"
+    collab_service_req="libsoup-2.2 >= 2.2.100"
   fi
   collab_pkgs="$collab_pkgs $collab_service_req"
 fi
