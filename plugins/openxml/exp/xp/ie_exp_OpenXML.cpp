@@ -46,14 +46,16 @@ IE_Exp_OpenXML::~IE_Exp_OpenXML ()
 /**
  * Export the OOXML document here
  */
-UT_Error IE_Exp_OpenXML::_writeDocument (){
+UT_Error IE_Exp_OpenXML::_writeDocument ()
+{
 
 	UT_DEBUGMSG(("FRT: Writing the OOXML file started\n"));	
 	
 	//get the file pointer (target file)
 	GsfOutput* sink = getFp();
 
-	if(sink != NULL){
+	if(sink != NULL)
+	{
 		UT_DEBUGMSG(("FRT: Zip root file created successfully\n"));		
 		
 		//create a zip file root based on the target
@@ -71,7 +73,8 @@ UT_Error IE_Exp_OpenXML::_writeDocument (){
 		//finally close the file 
 		gsf_output_close((GsfOutput*)root);
 	}
-	else{
+	else
+	{
 		UT_DEBUGMSG(("FRT: Error, Zip root file couldn't be created\n"));
 		return UT_IE_COULDNOTWRITE;		
 	}
@@ -92,7 +95,8 @@ void IE_Exp_OpenXML::_cleanup ()
 /**
  * Writes the [Content_Types].xml file which describes the contents of the package
  */
-UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root){
+UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root)
+{
 
 	UT_DEBUGMSG(("FRT: Writing the [Content_Types].xml file started\n"));	
 		
@@ -124,7 +128,8 @@ UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root){
  * Writes the relationships for the files within the package 
  * Outputs the _rels folder and _rels/.rels file which defines the package relations.
  */
-UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root){
+UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
+{
 
 	UT_DEBUGMSG(("FRT: Writing the _rels/.rels file started\n"));	
 	//_rels directory
@@ -155,7 +160,8 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root){
 /**
  * Writes the main part of the document to word/document.xml file.
  */
-UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root){
+UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
+{
 	
 	UT_DEBUGMSG(("FRT: Writing the word/document.xml file started\n"));	
 
@@ -190,7 +196,8 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root){
  * Write the simple xml header to the file
  * This function should be called before anything written to file
  */
-UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file){
+UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
+{
 
 	gsf_output_puts(file, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
