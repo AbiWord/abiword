@@ -84,7 +84,7 @@ public:
 private:
 	void _signal()
 	{
-		UT_DEBUGMSG(("IOServerHandler::_signal()"));
+		UT_DEBUGMSG(("IOServerHandler::_signal()\n"));
 		UT_return_if_fail(session_ptr);
 		session_ptr->asyncReadHeader();
 		m_af(this, session_ptr);

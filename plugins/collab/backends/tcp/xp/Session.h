@@ -71,6 +71,7 @@ public:
 
 	void asyncReadHeader()
 	{
+		UT_DEBUGMSG(("Session::asyncReadHeader()\n"));
 		packet_data = 0; // just to be sure we'll never touch a datablock we might have read before
 		asio::async_read(socket, 
 			asio::buffer(&packet_size, 4),
