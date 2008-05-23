@@ -69,6 +69,8 @@
 #define PANGO_GLYPH_EMPTY ((PangoGlyph)0x0FFFFFFF)
 #endif
 
+#define CR_DEBUG(cr_) 	if (cairo_status(cr_) != CAIRO_STATUS_SUCCESS)	g_warning(cairo_status_to_string(cairo_status(cr_)));
+
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
@@ -240,6 +242,7 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
+	 m_cr (gdk_cairo_create(win)),
 	 m_pWin (win),
  	 m_pGC (NULL),
 	 m_pXORGC (NULL),
@@ -265,6 +268,7 @@ GR_CairoGraphics::GR_CairoGraphics()
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
+	 m_cr (NULL),
 	 m_pWin (NULL),
  	 m_pGC (NULL),
 	 m_pXORGC (NULL),
@@ -295,6 +299,9 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
+
+	if (m_cr)
+		cairo_destroy(m_cr);
 
 	if (m_pXftDraw)
 		g_free(m_pXftDraw);
@@ -2921,110 +2928,100 @@ void GR_CairoGraphics::_setColor(GdkColor & c)
 void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	GdkGCValues gcV;
-	gdk_gc_get_values(m_pGC, &gcV);
-	
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
-	
-	gdk_draw_line(_getDrawable(), m_pGC, idx1, idy1, idx2, idy2);
+
+	cairo_move_to (m_cr, idx1, idy1);
+	cairo_line_to (m_cr, idx2, idy2);
+	cairo_stroke (m_cr);
+
+	CR_DEBUG(m_cr);
 }
 
 void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	m_iLineWidth = tdu(iLineWidth);
+	double width = tduD(iLineWidth);
+printf ("%s() %f\n", __FUNCTION__, width);
+	cairo_set_line_width (m_cr, width);
 
-	// Get the current values of the line attributes
-
-	GdkGCValues cur_line_att;
-	gdk_gc_get_values(m_pGC, &cur_line_att);
-	GdkLineStyle cur_line_style = cur_line_att.line_style;
-	GdkCapStyle   cur_cap_style = cur_line_att.cap_style;
-	GdkJoinStyle  cur_join_style = cur_line_att.join_style;
-
-	// Set the new line width
-	gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
-
+	CR_DEBUG(m_cr);
 }
 
-static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
+static cairo_line_cap_t mapCapStyle(GR_Graphics::CapStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::CAP_ROUND :
-			return GDK_CAP_ROUND ;
-		case GR_Graphics::CAP_PROJECTING :
-			return GDK_CAP_PROJECTING ;
-		case GR_Graphics::CAP_BUTT :
-		default:
-			return GDK_CAP_BUTT ;
+	switch (in) {
+	case GR_Graphics::CAP_ROUND:
+		return CAIRO_LINE_CAP_ROUND;
+	case GR_Graphics::CAP_PROJECTING:
+		return CAIRO_LINE_CAP_SQUARE;
+	case GR_Graphics::CAP_BUTT:
+	default:
+		return CAIRO_LINE_CAP_BUTT;
     }
 }
 
-static GdkLineStyle mapLineStyle ( GdkGC				  * pGC, 
-								   GR_Graphics::LineStyle 	in, 
-								   gint 					iWidth )
+/*
+ * \param width line width
+ * \param dashes Array for dash pattern
+ * \param n_dashes IN: length of dashes, OUT: number of needed dash pattern fields
+ */
+static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes, int *n_dashes)
 {
-	iWidth = iWidth == 0 ? 1 : iWidth;
-	switch ( in )
-    {
-		case GR_Graphics::LINE_ON_OFF_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH ;
-		case GR_Graphics::LINE_DOUBLE_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_DOUBLE_DASH ;
-		case GR_Graphics::LINE_DOTTED:
-			{
-				/* strange but 1/3 ratio looks dotted */
-				gint8 dash_list[2] = { iWidth, 3*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH;
-		case GR_Graphics::LINE_SOLID :
-		default:
-			return GDK_LINE_SOLID ;
-    }
+	switch (in) {
+	case GR_Graphics::LINE_ON_OFF_DASH:
+	case GR_Graphics::LINE_DOUBLE_DASH:				// see GDK_LINE_DOUBLE_DASH, but it was never used
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = 4 * width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_DOTTED:
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_SOLID:
+	default:
+		*n_dashes = 0;
+	}
 }
 
-static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
+static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::JOIN_ROUND :
-			return GDK_JOIN_ROUND ;
-		case GR_Graphics::JOIN_BEVEL :
-			return GDK_JOIN_BEVEL ;
-		case GR_Graphics::JOIN_MITER :
-		default:
-			return GDK_JOIN_MITER ;
+	switch ( in ) {
+	case GR_Graphics::JOIN_ROUND:
+		return CAIRO_LINE_JOIN_ROUND;
+	case GR_Graphics::JOIN_BEVEL:
+		return CAIRO_LINE_JOIN_BEVEL;
+	case GR_Graphics::JOIN_MITER:
+	default:
+		return CAIRO_LINE_JOIN_MITER;
     }
 }
-
 
 void GR_CairoGraphics::setLineProperties ( double inWidth, 
 										  GR_Graphics::JoinStyle inJoinStyle,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	gint iWidth = static_cast<gint>(tduD(inWidth));
-	gdk_gc_set_line_attributes ( m_pGC, iWidth,
-								 mapLineStyle ( m_pGC, inLineStyle, iWidth ),
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
-	gdk_gc_set_line_attributes ( m_pXORGC, iWidth,
-								 mapLineStyle ( m_pXORGC, inLineStyle, iWidth ), /* this was m_pGC before */
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
+	double dashes[2];
+	double width;
+	int n_dashes;
+
+printf ("%s() width %f\n", __FUNCTION__, tduD(inWidth));
+
+	cairo_set_line_width (m_cr, tduD(inWidth));
+	cairo_set_line_join (m_cr, mapJoinStyle(inJoinStyle));
+	cairo_set_line_cap (m_cr, mapCapStyle(inCapStyle));
+
+	width = cairo_get_line_width(m_cr);
+	n_dashes = G_N_ELEMENTS(dashes);
+	mapDashStyle(inLineStyle, width, dashes, &n_dashes);
+	cairo_set_dash(m_cr, dashes, n_dashes, 0);
+
+	CR_DEBUG(m_cr);
 }
 
 void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
