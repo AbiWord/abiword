@@ -346,7 +346,6 @@ public:
 	
 	UT_uint32         m_iDeviceResolution;
 
-	cairo_t *         m_cr;
 	GdkWindow *       m_pWin;
 	GdkGC*            m_pGC;
 	GdkGC*            m_pXORGC;
@@ -354,6 +353,7 @@ public:
 	GdkColormap* 	  m_pColormap;
 	int               m_iWindowHeight;
 	int	              m_iWindowWidth;
+	UT_sint32		  m_iLineWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
