@@ -55,7 +55,7 @@ XAP_Frame* AP_Win32Frame::cloneFrame(void)
 	return pClone;
 }
 
-bool AP_Win32Frame::initialize(XAP_FrameMode frameMode)
+bool AP_Win32Frame::initialize(XAP_FrameMode /*frameMode*/)
 {
 	if (!initFrameData())
 		return false;
@@ -104,7 +104,7 @@ bool AP_Win32Frame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	return true;
 }
 
-void AP_Win32Frame::_setViewFocus(AV_View *pView)
+void AP_Win32Frame::_setViewFocus(AV_View * /*pView*/)
 {
 	/* Nothing todo for Win32 at this time */
 }

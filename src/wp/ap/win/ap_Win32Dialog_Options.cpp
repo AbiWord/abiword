@@ -412,7 +412,7 @@ int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
 	return 0;
 }
 
-void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn)
+void AP_Win32Dialog_Options::_setNotebookPageNum(const int /*pn*/)
 {
 
 }
@@ -517,7 +517,7 @@ XAP_Win32PropertySheet()
 /*
 	Sheet window procedure
 */
-int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wID = LOWORD(wParam); 
 	
@@ -544,7 +544,7 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 1;	// The application did not process the message
 }
 
-int CALLBACK AP_Win32Dialog_Options_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
+int CALLBACK AP_Win32Dialog_Options_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM /*lParam*/)
 {	
 	if (uMsg==PSCB_INITIALIZED)
 	{	
@@ -596,7 +596,7 @@ AP_Win32Dialog_Options_Spelling::~AP_Win32Dialog_Options_Spelling()
 	
 }
 
-void AP_Win32Dialog_Options_Spelling::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+void AP_Win32Dialog_Options_Spelling::_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 
 }
@@ -672,7 +672,7 @@ AP_Win32Dialog_Options_General::~AP_Win32Dialog_Options_General()
 /*
 	
 */	
-void AP_Win32Dialog_Options_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+void AP_Win32Dialog_Options_General::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
@@ -711,7 +711,8 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	const gchar *pLangCode;
 	const gchar *pLang;
 	UT_Language	lang;	
-	int	i, nIndex;;
+	UT_uint32 i;
+	int nIndex;
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 	AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp());
 	HWND hCtrlUILang	= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
@@ -809,7 +810,7 @@ AP_Win32Dialog_Options_Document::~AP_Win32Dialog_Options_Document()
 /*
 	
 */	
-void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);	
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
@@ -953,7 +954,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 /*
 	
 */	
-void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+void AP_Win32Dialog_Options_SmartQuotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	

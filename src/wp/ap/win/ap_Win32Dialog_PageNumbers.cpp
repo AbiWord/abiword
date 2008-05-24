@@ -80,7 +80,7 @@ void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
-BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	m_hThisDlg = hWnd;
 
@@ -118,7 +118,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	return 1;	// 0 == we called SetFocus()
 }
 
-BOOL AP_Win32Dialog_PageNumbers::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_PageNumbers::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	const WORD	wId			= LOWORD(wParam);
 
