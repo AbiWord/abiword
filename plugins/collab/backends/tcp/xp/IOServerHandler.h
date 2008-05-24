@@ -92,8 +92,12 @@ private:
 
 	void handleAsyncAccept(const asio::error_code& ec)
 	{
-		UT_DEBUGMSG(("IOServerHandler::handleAsyncAccept()"));
-		UT_return_if_fail(!ec);
+		UT_DEBUGMSG(("IOServerHandler::handleAsyncAccept()\n"));
+		if (ec)
+		{
+			UT_DEBUGMSG(("Error accepting connection: %s\n", ec.message().c_str()));
+			return;
+		}
 		accept_synchronizer.signal();
 	}
 

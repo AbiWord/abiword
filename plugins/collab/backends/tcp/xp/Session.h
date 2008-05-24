@@ -139,7 +139,7 @@ private:
 	{
 		if (error)
 		{
-			UT_DEBUGMSG(("asyncReadHeaderHandler generic error\n"));
+			UT_DEBUGMSG(("asyncReadHeaderHandler error: %s\n", error.message().c_str()));
 			disconnect();
 			return;
 		}
