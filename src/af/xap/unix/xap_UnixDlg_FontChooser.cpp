@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -175,7 +177,7 @@ static gint s_bgcolor_update(GtkWidget * /* widget */,
 	return FALSE;
 }
 
-static void s_select_row_font(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
+static void s_select_row_font(GtkTreeSelection * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_if_fail(dlg);
     // update the row number and show the changed preview
@@ -184,7 +186,7 @@ static void s_select_row_font(GtkWidget * /* widget */, XAP_UnixDialog_FontChoos
 }
 
 
-static void s_select_row_style(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
+static void s_select_row_style(GtkTreeSelection * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_if_fail(dlg);
 
@@ -192,7 +194,7 @@ static void s_select_row_style(GtkWidget * /* widget */, XAP_UnixDialog_FontChoo
 	dlg->styleRowChanged();
 }
 
-static void s_select_row_size(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
+static void s_select_row_size(GtkTreeSelection * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_if_fail(dlg);
 
@@ -288,17 +290,18 @@ void XAP_UnixDialog_FontChooser::transparencyChanged(void)
 void XAP_UnixDialog_FontChooser::fontRowChanged(void)
 {
 	static char szFontFamily[60];
-	GtkTreeSelection* selection;
-	GtkTreeModel* model;
+	GtkTreeSelection *selection;
+	GtkTreeModel *model;
 	GtkTreeIter iter;
-	gchar* text;
+	gchar *text;
 
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_fontList));
 	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_fontList));
 	if ( gtk_tree_selection_get_selected (selection, &model, &iter) )
 	{
 		gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
-		UT_ASSERT(text);
 		g_snprintf(szFontFamily, 50, "%s",text);
+		g_free(text), text = NULL;
 		addOrReplaceVecProp("font-family",static_cast<gchar*>(szFontFamily));
 	}
 
@@ -310,7 +313,6 @@ void XAP_UnixDialog_FontChooser::styleRowChanged(void)
 	GtkTreeSelection* selection;
 	GtkTreeModel* model;
 	GtkTreeIter iter;
-	gchar* text;
 	gint rowNumber;
 	GtkTreePath* path;
 
@@ -320,9 +322,6 @@ void XAP_UnixDialog_FontChooser::styleRowChanged(void)
 		path = gtk_tree_model_get_path(model, &iter);
 		rowNumber = gtk_tree_path_get_indices(path)[0];
 		gtk_tree_path_free(path);
-
-		gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
-		UT_ASSERT(text);
 
 		// perhaps these attributes really should be smashed
 		// into bitfields.  :)
@@ -369,13 +368,9 @@ void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
 	{
 		gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
 		UT_ASSERT(text);
-
 		g_snprintf(szFontSize, 50, "%spt",
 				   static_cast<const gchar *>(XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text)));
-
-//		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0])));
-//		g_snprintf(szFontSize, 50, "%spt",text[0]);
-
+		g_free(text), text = NULL;
 		addOrReplaceVecProp("font-size",static_cast<gchar *>(szFontSize));
 	}
 	updatePreview();
@@ -447,6 +442,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 // the Windows layout, with some changes for color selector
 GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *parent)
 {
+	GtkTreeSelection *selection;
 	GtkWidget *vboxMain;
 	GtkWidget *notebookMain;
 	GtkWidget *labelFont;
@@ -778,19 +774,26 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					   G_CALLBACK(s_transparency_toggled),
 					   static_cast<gpointer>(this));
 
-	g_signal_connect(G_OBJECT(listFonts),
-					   "cursor_changed",
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(listFonts));
+	g_signal_connect(G_OBJECT(selection),
+					   "changed",
 					   G_CALLBACK(s_select_row_font),
 					   static_cast<gpointer>(this));
+	selection = NULL;
 
-	g_signal_connect(G_OBJECT(listStyles),
-					   "cursor_changed",
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(listStyles));
+	g_signal_connect(G_OBJECT(selection),
+					   "changed",
 					   G_CALLBACK(s_select_row_style),
 					   static_cast<gpointer>(this));
-	g_signal_connect(G_OBJECT(listSizes),
-					   "cursor_changed",
+	selection = NULL;
+
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(listSizes));
+	g_signal_connect(G_OBJECT(selection),
+					   "changed",
 					   G_CALLBACK(s_select_row_size),
 					   static_cast<gpointer>(this));
+	selection = NULL;
 
 	// This is a catch-all color selector callback which catches any
 	// real-time updating of the color so we can refresh our preview
