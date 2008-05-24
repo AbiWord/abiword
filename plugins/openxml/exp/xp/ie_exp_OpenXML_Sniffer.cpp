@@ -62,7 +62,7 @@ const IE_SuffixConfidence * IE_Exp_OpenXML_Sniffer::getSuffixConfidence ()
 static IE_MimeConfidence IE_Exp_OpenXML_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document", 	UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.openxmlformats-officedocument.wordprocessingml.template", 	UT_CONFIDENCE_GOOD 	},
-	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word.document", 	UT_CONFIDENCE_SOSO 	}, //will this interfere with doc import?
+	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word.document", 	UT_CONFIDENCE_SOSO 	},
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word.template", 	UT_CONFIDENCE_SOSO 	},
 	{ IE_MIME_MATCH_BOGUS, 	"", 										UT_CONFIDENCE_ZILCH }
 };
