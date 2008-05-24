@@ -1,5 +1,4 @@
-# translation of pt-BR.po to Português do Brasil
-# Translation of Abiword to Brazilian Portuguese
+# Translation of Abiword to Brazilian Portuguese.
 # Copyright (C) 2003, 2004 Free Software Foundation, Inc.
 # Nelson Ferraz <nferraz@gnubis.com.br>, 2004.
 #
@@ -39,7 +38,7 @@ msgstr ""
 #. MENU_STATUSLINE_HELP
 #: po/tmp/ap_String_Id.h.h:23
 msgid " "
-msgstr "Fechar documento"
+msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h.h:25
@@ -47,7 +46,7 @@ msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
 msgstr ""
-"Reservado. \n"
+" - Reservado. \n"
 " Não pode usar este nome. Escolha outro \n"
 
 #. DLG_WordCount_Auto_Update
@@ -327,7 +326,7 @@ msgstr "&Copiar"
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Create and Modify Styles"
-msgstr "&Criar e Modificar"
+msgstr "&Criar e Modificar Estilos"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -2148,9 +2147,8 @@ msgstr "Remover Imagem"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:873
-#, fuzzy
 msgid "Cut Object"
-msgstr "Definir"
+msgstr "Remover Objeto"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:875
@@ -2287,9 +2285,8 @@ msgstr "Remover Imagem"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:931
-#, fuzzy
 msgid "Delete Object"
-msgstr "Apagar &Tabela"
+msgstr "Apagar Objeto"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:933
@@ -2926,9 +2923,8 @@ msgstr "Formatar Cabeçalho/Rodapé"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1192
-#, fuzzy
 msgid "Format Object"
-msgstr "Formatar Tabela"
+msgstr "Formatar Objeto"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1194
