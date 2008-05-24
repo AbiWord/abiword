@@ -348,7 +348,7 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 	// Documents
 
 	tmp = WID ("lblDocuments");
-	localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents);
+	localizeLabel (tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents);
 
 		// Auto Save
 
