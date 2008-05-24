@@ -349,7 +349,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
     // Documents
 
     tmp = WID ( "lblDocuments" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents );
+    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents );
 
     // Auto Save
 
@@ -432,6 +432,9 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
                               AP_STRING_ID_DLG_Options_Label_GrammarCheck );
 
     // Smart Quotes
+
+    tmp = WID ( "lblSmartQuotes" );
+    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes );
 
     m_checkbuttonSmartQuotes = WID ( "chkSmartQuotes" );
     localizeButtonUnderline ( m_checkbuttonSmartQuotes, pSS,
