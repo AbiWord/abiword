@@ -76,7 +76,7 @@ const IE_MimeConfidence * IE_Exp_OpenXML_Sniffer::getMimeConfidence ()
  * Recognize the contents as best we can
  * 
  */
-bool IE_Exp_OpenXML_Sniffer::recognizeSuffix (const char * szSuffix)
+bool IE_Exp_OpenXML_Sniffer::recognizeSuffix (const char * /*szSuffix*/)
 {
 	return true;
 }
