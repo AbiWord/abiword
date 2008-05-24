@@ -193,7 +193,7 @@ Synchronizer::Synchronizer(boost::function<void ()>  signalhandler) // Win32 Imp
 Synchronizer::Synchronizer(boost::function<void ()> signalhandler) // Unix Implementation
 	: m_signalhandler(signalhandler)
 {
-	UT_DEBUGMSG(("~Synchronizer()\n"));
+	UT_DEBUGMSG(("Synchronizer()\n"));
 	// on unix, we use the self-pipe trick to signal the glib main loop
 	fdr = -1;
 	fdw = -1;
