@@ -31,6 +31,7 @@
 #include "ut_base64.h"
 #include "ut_Language.h"
 #include "ut_units.h"
+#include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 #include "pt_Types.h"
 #include "ie_exp_LaTeX.h"
@@ -1744,6 +1745,32 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				else
 				{
 					m_pie->write("}");
+				}
+				return true;
+				
+			  case PTO_Math:
+				_closeSpan () ;
+				if(bHaveProp && pAP && pAP->getAttribute("latexid", szValue))
+				{
+				    	if(szValue == NULL || *szValue == 0)
+					{
+					    UT_DEBUGMSG(("TODO: convert MathML equations to LaTeX ones\n"));
+					    return false;
+					}
+					const UT_ByteBuf * pByteBuf = NULL;
+					UT_UTF8String sLatex;
+					bool bFoundLatexID = m_pDocument->getDataItemDataByName(szValue, 
+						    &pByteBuf,
+						    NULL, NULL);
+					if(!bFoundLatexID)
+					{
+					    return false;
+					}
+					UT_UCS4_mbtowc myWC;
+					sLatex.appendBuf( *pByteBuf, myWC);
+					m_pie->write("$");
+					m_pie->write(sLatex.utf8_str());
+					m_pie->write("$");
 				}
 				return true;
 
