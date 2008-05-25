@@ -779,7 +779,7 @@ void FV_View::replaceGraphics(GR_Graphics * pG)
 //-------------------------
 // Visual Drag stuff
 //
-void FV_View::cutVisualText(UT_sint32 x, UT_sint32 y)
+void FV_View::cutVisualText(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 //
 // Do nothing for now. Only cut on first drag event.
@@ -887,7 +887,7 @@ void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 //Creates a new document, inserts a string into it, selects all, and then copies it
 //onto the system clipboard
 
-void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard)
+void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool /*useClipboard*/)
 {
 	/* create a new hidden document */
   	PD_Document * pDoc = new PD_Document(XAP_App::getApp());

@@ -588,7 +588,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
  * If bBefore is true the contents of source will be prepended into destination otherwise
  * will e appended to the end
  */ 
-bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore)
+bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool /*bBefore*/)
 {
 //
 // get coordinates of source and destination cells
@@ -2657,7 +2657,7 @@ FV_View::_findNext(UT_uint32* pPrefix,
 }
 
 bool
-FV_View::_findPrev(UT_uint32* pPrefix,
+FV_View::_findPrev(UT_uint32* /*pPrefix*/,
 				   bool& bDoneEntireDocument)
 {
 	UT_ASSERT(m_sFind);

@@ -726,7 +726,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 	}
 }
 
-void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
+void fp_Run::setX(UT_sint32 iX, bool /*bDontClearIfNeeded*/)
 {
 	Run_setX(iX, FP_CLEARSCREEN_AUTO);
 }
@@ -2025,7 +2025,7 @@ bool fp_TabRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -2161,7 +2161,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
-void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
+void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 /*iHeight*/)
 {
     if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
@@ -2441,7 +2441,7 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = getBlock()->getPosition() + getBlockOffset();
@@ -2640,7 +2640,7 @@ bool fp_FieldStartRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2650,7 +2650,7 @@ void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_Do
 }
 
 
-void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldStartRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& /*x*/, UT_sint32& /*y*/, UT_sint32& /*x2*/, UT_sint32& /*y2*/, UT_sint32& /*height*/, bool& /*bDirection*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2661,7 +2661,7 @@ void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
-void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
+void fp_FieldStartRun::_draw(dg_DrawArgs* /*pDA*/)
 {
 
 }
@@ -2700,7 +2700,7 @@ bool fp_FieldEndRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2709,7 +2709,7 @@ void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocP
 	bEOL = false;
 }
 
-void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldEndRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& /*x*/, UT_sint32& /*y*/, UT_sint32& /*x2*/, UT_sint32& /*y2*/, UT_sint32& /*height*/, bool& /*bDirection*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2720,7 +2720,7 @@ void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
-void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
+void fp_FieldEndRun::_draw(dg_DrawArgs* /*pDA*/)
 {
 
 }
@@ -3188,7 +3188,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -3578,7 +3578,7 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
@@ -3614,7 +3614,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
 }
 
-void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
+void fp_ImageRun::_clearScreen(bool /*bFullLineHeightRect*/ )
 {
 	//	UT_ASSERT(!isDirty());
 
@@ -4146,7 +4146,7 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
@@ -5501,7 +5501,7 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -5612,7 +5612,7 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
