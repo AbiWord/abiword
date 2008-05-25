@@ -53,7 +53,7 @@ AP_Win32Dialog_Background::~AP_Win32Dialog_Background(void)
 {
 }
 
-UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM wParam,LPARAM lParam)
+UINT CALLBACK AP_Win32Dialog_Background::s_hookProc(HWND hdlg,UINT uiMsg,WPARAM /*wParam*/,LPARAM lParam)
 {
 	AP_Win32Dialog_Background * pThis = NULL;
 	if (uiMsg==WM_INITDIALOG)

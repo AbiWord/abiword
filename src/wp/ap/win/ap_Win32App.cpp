@@ -823,7 +823,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP hBmp)
 //
 //
 //
-void CreateBMP(HWND hwnd, UT_ByteBuf & pBB, PBITMAPINFO pbi, 
+void CreateBMP(HWND /*hwnd*/, UT_ByteBuf & pBB, PBITMAPINFO pbi, 
                   HBITMAP hBMP, HDC hDC) 
 { 
 	BITMAPFILEHEADER hdr;       // bitmap file-header 
@@ -870,7 +870,7 @@ void CreateBMP(HWND hwnd, UT_ByteBuf & pBB, PBITMAPINFO pbi,
 
 
 
-void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting)
+void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/, bool bHonorFormatting)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
@@ -1411,7 +1411,6 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	//
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-		const char * szRequest = NULL;
 		bool bFound = false;	
 		if(Args->m_sPluginArgs[0])
 		{

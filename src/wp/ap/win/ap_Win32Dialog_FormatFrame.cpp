@@ -160,7 +160,7 @@ HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
 	HDC hdc;
 	int x, y;	
@@ -259,7 +259,6 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{			
@@ -435,7 +434,7 @@ void AP_Win32Dialog_FormatFrame::event_previewExposed(void)
 }
 
 
-void AP_Win32Dialog_FormatFrame::setSensitivity(bool bSens)
+void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 {
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);

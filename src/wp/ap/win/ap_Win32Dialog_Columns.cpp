@@ -83,7 +83,7 @@ void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
 	}
 }
 
-BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	localizeDialogTitle(AP_STRING_ID_DLG_Column_ColumnTitle);
 
@@ -158,7 +158,7 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	return 1;	// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -217,7 +217,6 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setSpaceAfter( buf );
 			setControlText(wId, getSpaceAfterString());
@@ -227,7 +226,6 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setMaxHeight( buf );
 			setControlText( wId, getHeightString());
