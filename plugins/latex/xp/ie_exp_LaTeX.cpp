@@ -351,7 +351,6 @@ protected:
   
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
-	bool				m_bFirstSection;
 	int 				ChapterNumber;
 	int                 m_Indent;
 	int		    m_TableWidth;
@@ -823,13 +822,6 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 			m_pie->write(static_cast<const char *> (pszPageMarginLeft));
 			m_pie->write("}\n");
 		}
-	}
-
-	if (m_bFirstSection)
-	{
-		// Document begins
-		m_pie->write ("\n\n\\begin{document}\n");
-		m_bFirstSection = false;
 	}
 
 	if (bMustEmitMulticol)
@@ -1519,7 +1511,6 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInSansSerif(0),
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
-	m_bFirstSection(true),
 	list_type(BULLET_LIST),
 	m_pqRect(NULL)
 {
@@ -1618,8 +1609,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_pie->write("\n");
 	ChapterNumber = 1;
 	m_bInScript = false;
-	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
-	//	m_pie->write("\n");                   // future problems when we will support several sections in the same doc...
+	m_pie->write("\\begin{document}\n\n");
 	
 	m_pTableHelper = new ie_Table(pDocument);
 }
