@@ -57,7 +57,7 @@ AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory *
 	m_wButtonApply = NULL;
 
 	m_wFootnotesStyleMenu = NULL;
-	m_wFootnotesStyleMenu = NULL;
+	m_wFootnoteNumberingMenu = NULL;
 	m_wFootnotesDontRestart = NULL;
 	m_wFootnotesRestartOnSection = NULL;
 	m_wFootnotesRestartOnPage = NULL;
