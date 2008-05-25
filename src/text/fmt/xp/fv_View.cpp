@@ -12471,6 +12471,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 		}
 		setPoint(getPoint()-1);
 	}
+	UT_GenericVector<fl_BlockLayout*>  vBlocks;
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
@@ -12487,6 +12488,47 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	// Hack for bug 2940
 	if (posStart <= 1) posStart=2;
 
+	//
+	// Look to see if the selection spans multiple blocks. If so, pick the
+	// Block containing the largest amount of selected text.
+	//
+	PT_DocPosition posAnnStart;
+	PT_DocPosition posAnnEnd;
+	getBlocksInSelection(&vBlocks);
+	if(vBlocks.getItemCount() > 1)
+	{
+		fl_BlockLayout * pBMax = NULL;
+		UT_sint32 iMaxSize = 0;
+		UT_uint32 j = 0;
+		for(j=0; j<vBlocks.getItemCount(); j++)
+		{
+			UT_sint32 iBSize = 0;
+			fl_BlockLayout * pB = vBlocks.getNthItem(j);
+			iBSize = pB->getLength();
+			if(j == 0)
+			{
+				iBSize = iBSize - (posStart - pB->getPosition(true));
+			}
+			else if(j == (vBlocks.getItemCount() - 1))
+			{
+				iBSize = posEnd - pB->getPosition(true);
+			}
+			if(iBSize > iMaxSize)
+			{
+				iMaxSize = iBSize;
+				pBMax = pB;
+			}
+		}
+		posAnnStart = pBMax->getPosition();
+		posAnnEnd = pBMax->getPosition(true) + pBMax->getLength();
+		if(posAnnStart < posStart)
+			posAnnStart = posStart;
+		if(posAnnEnd > posEnd)
+			posAnnEnd = posEnd;
+		posStart = posAnnStart;
+		posEnd = posAnnEnd;
+	}
+
 	// the selection has to be within a single block
 	// we could implement hyperlinks spaning arbitrary part of the document
 	// but then we could not use <a href=> </a> in the output and
@@ -12500,6 +12542,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		return false;
 	}
+	_clearSelection();
 	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;
