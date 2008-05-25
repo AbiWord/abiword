@@ -18,7 +18,6 @@
  */
 
 #include "xap_Frame.h"
-#include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixFontPreview.h"
 #include "gr_UnixPangoGraphics.h"

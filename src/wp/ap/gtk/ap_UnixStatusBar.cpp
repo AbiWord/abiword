@@ -22,7 +22,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
-#include "xap_Frame.h"
 #include "ap_UnixStatusBar.h"
 #include "xap_UnixDialogHelper.h"
 
