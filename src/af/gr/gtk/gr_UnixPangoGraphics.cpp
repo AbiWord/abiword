@@ -3059,6 +3059,23 @@ void GR_CairoGraphics::invertRect(const UT_Rect* /*pRect*/)
 void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
+	if (pRect) {
+		// TODO Rob: nicify after removal of deprecated code
+		double x1, y1, x2, y2;
+		x1 = _tduX(pRect->left);
+		y1 = _tduY(pRect->top);
+		x2 = x1 + _tduR(pRect->width);
+		y2 = y1 + _tduR(pRect->height);
+		cairo_clip_extents(m_cr, &x1, &y1, &x2, &y2);
+	}
+	else 
+	{
+		cairo_reset_clip (m_cr);
+	}
+
+/*!
+ * \todo Rob deprecated below here
+ */
 	if (pRect)
 	{
 		GdkRectangle r;
