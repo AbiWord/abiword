@@ -4430,6 +4430,8 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 
 }
 
+extern bool _gr_verbose;
+
 void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 {
 	// draw in normal and print layout modes, not online
@@ -4449,7 +4451,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		UT_sint32 bot = rect.top + rect.height - m_pG->tlu(1);
 
 		// first draw the frame
-
+		_gr_verbose = true;
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 		painter.drawLine(left,top,right,top);
 		painter.drawLine(left,top,left,bot);
@@ -4460,6 +4462,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
 		painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
 		painter.drawLine( left, bot + m_pG->tlu(1), right, bot + m_pG->tlu(1));
+		_gr_verbose = false;
 
 		// now draw the default tab style
 
