@@ -1745,7 +1745,7 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				    	if(szValue == NULL || *szValue == 0)
 					{
 					    UT_DEBUGMSG(("TODO: convert MathML equations to LaTeX ones\n"));
-					    return false;
+					    return true;
 					}
 					const UT_ByteBuf * pByteBuf = NULL;
 					UT_UTF8String sLatex;
@@ -1754,7 +1754,7 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 						    NULL, NULL);
 					if(!bFoundLatexID)
 					{
-					    return false;
+					    return true;
 					}
 					UT_UCS4_mbtowc myWC;
 					sLatex.appendBuf( *pByteBuf, myWC);
