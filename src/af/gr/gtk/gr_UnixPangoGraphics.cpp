@@ -245,7 +245,6 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_cr (gdk_cairo_create(win)),
 	 m_pWin (win),
  	 m_pGC (NULL),
-	 m_pXORGC (NULL),
 	 m_pVisual (NULL),
 	 m_pXftDraw (NULL),
 	 m_iXoff (0),
@@ -271,7 +270,6 @@ GR_CairoGraphics::GR_CairoGraphics()
 	 m_cr (NULL),
 	 m_pWin (NULL),
  	 m_pGC (NULL),
-	 m_pXORGC (NULL),
 	 m_pVisual (NULL),
 	 m_pXftDraw (NULL),
 	 m_iXoff (0),
@@ -317,9 +315,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	if (G_IS_OBJECT(m_pGC))
 		g_object_unref (G_OBJECT(m_pGC));
-	if (G_IS_OBJECT(m_pXORGC))
-		g_object_unref (G_OBJECT(m_pXORGC));
-	
 }
 
 void GR_CairoGraphics::init()
@@ -353,19 +348,15 @@ void GR_CairoGraphics::init()
 		// Martin's attempt to make double buffering work.with xft
 		//
 		m_pGC = gdk_gc_new(realDraw);
-		m_pXORGC = gdk_gc_new(realDraw);
 		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
 		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
 
 		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
 								   m_pVisual, m_Colormap);
 			
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
-
 		GdkColor clrWhite;
 		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
 		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
-		gdk_gc_set_foreground(m_pXORGC, &clrWhite);
 
 		GdkColor clrBlack;
 		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
@@ -391,15 +382,9 @@ void GR_CairoGraphics::init()
 								   GDK_CAP_NOT_LAST,
 								   GDK_JOIN_MITER);
 			
-		gdk_gc_set_line_attributes(m_pXORGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
-
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		gdk_gc_set_exposures(m_pGC, 1);
-		gdk_gc_set_exposures(m_pXORGC, 1);
 
 		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 		m_cursor = GR_CURSOR_INVALID;
@@ -716,9 +701,7 @@ GR_Graphics::Cursor GR_CairoGraphics::getCursor(void) const
 void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-
-	UT_RGBColor clr(m_3dColors[c].red >> 8, m_3dColors[c].green >> 8, m_3dColors[c].blue >> 8);
-	setColor(clr);
+	_setColor(m_3dColors[c]);
 }
 
 bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -2887,21 +2870,11 @@ void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 
 void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 {
-	if (m_curColor == clr)
-		return;
-
-	m_curColor = clr;
-
-	if (clr.m_bIsTransparent)
-		cairo_set_source_rgba(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255., 0.);
-	else
-		cairo_set_source_rgb(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
-
-/*!
- * \todo Rob deprecated below here
- */
 	UT_ASSERT(m_pGC);
 	GdkColor c;
+
+	if (m_curColor == clr)
+		return;
 
 	m_curColor = clr;
 	c.red = clr.m_red << 8;
@@ -2911,9 +2884,6 @@ void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 	_setColor(c);
 }
 
-/*!
- * \todo Rob deprecated
- */
 void GR_CairoGraphics::_setColor(GdkColor & c)
 {
 	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
@@ -2928,10 +2898,6 @@ void GR_CairoGraphics::_setColor(GdkColor & c)
 		m_XftColor.color.blue = c.blue;
 		m_XftColor.color.alpha = 0xffff;
 		m_XftColor.pixel = c.pixel;
-		
-		/* Set up the XOR gc */
-		gdk_gc_set_foreground(m_pXORGC, &c);
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
 	}
 	else 
 	{
@@ -3085,17 +3051,9 @@ void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-void GR_CairoGraphics::invertRect(const UT_Rect* pRect)
+void GR_CairoGraphics::invertRect(const UT_Rect* /*pRect*/)
 {
-	UT_ASSERT(pRect);
-
-	UT_sint32 idy = _tduY(pRect->top);
-	UT_sint32 idx = _tduX(pRect->left);
-	UT_sint32 idw = _tduR(pRect->width);
-	UT_sint32 idh = _tduR(pRect->height);
-
-	gdk_draw_rectangle(_getDrawable(), m_pXORGC, 1, idx, idy,
-			   idw, idh);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
@@ -3111,7 +3069,6 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 		r.width = _tduR(pRect->width);
 		r.height = _tduR(pRect->height);
 		gdk_gc_set_clip_rectangle(m_pGC, &r);
-		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
 		XRectangle xRect;
 		xRect.x = r.x;
 		xRect.y = r.y;
@@ -3122,7 +3079,6 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 	else
 	{
 		gdk_gc_set_clip_rectangle(m_pGC, NULL);
-		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
 
 		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
 		XftDrawSetClip(m_pXftDraw, 0);
@@ -3132,23 +3088,33 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	// TODO use doubles?
-	// are there separate x/y conversion functions for doubles?
+	// save away the current color, and restore it after we fill the rect
+	GdkGCValues gcValues;
+	GdkColor oColor;
+
+	memset(&oColor, 0, sizeof(GdkColor));
+
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &nColor);
 	UT_sint32 idx = _tduX(x);
 	UT_sint32 idy = _tduY(y);
 	UT_sint32 idw = _tduR(w);
 	UT_sint32 idh = _tduR(h);
+ 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
 
-	cairo_save(m_cr);
-
-	// TODO Rob just use setColor() after we've gotten rid of the deprecated stuff
-	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
-	cairo_rectangle(m_cr, idx, idy, idw, idh);
-	cairo_fill(m_cr);
-
-	cairo_restore(m_cr);
-
-	CR_DEBUG(m_cr);
+	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
 
@@ -3244,9 +3210,8 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-
-	UT_RGBColor clr(m_3dColors[c].red >> 8, m_3dColors[c].green >> 8, m_3dColors[c].blue >> 8);
-	fillRect(clr, x, y, w, h);
+	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
 void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,

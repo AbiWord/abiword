@@ -349,7 +349,6 @@ public:
 	cairo_t *         m_cr;
 	GdkWindow *       m_pWin;
 	GdkGC*            m_pGC;
-	GdkGC*            m_pXORGC;
 
 	GdkColormap* 	  m_pColormap;
 	int               m_iWindowHeight;
