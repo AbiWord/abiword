@@ -716,7 +716,9 @@ GR_Graphics::Cursor GR_CairoGraphics::getCursor(void) const
 void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	_setColor(m_3dColors[c]);
+
+	UT_RGBColor clr(m_3dColors[c].red >> 8, m_3dColors[c].green >> 8, m_3dColors[c].blue >> 8);
+	setColor(clr);
 }
 
 bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -2885,11 +2887,21 @@ void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 
 void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 {
-	UT_ASSERT(m_pGC);
-	GdkColor c;
-
 	if (m_curColor == clr)
 		return;
+
+	m_curColor = clr;
+
+	if (clr.m_bIsTransparent)
+		cairo_set_source_rgba(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255., 0.);
+	else
+		cairo_set_source_rgb(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
+
+/*!
+ * \todo Rob deprecated below here
+ */
+	UT_ASSERT(m_pGC);
+	GdkColor c;
 
 	m_curColor = clr;
 	c.red = clr.m_red << 8;
@@ -2899,6 +2911,9 @@ void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 	_setColor(c);
 }
 
+/*!
+ * \todo Rob deprecated
+ */
 void GR_CairoGraphics::_setColor(GdkColor & c)
 {
 	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
@@ -3117,33 +3132,23 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	// save away the current color, and restore it after we fill the rect
-	GdkGCValues gcValues;
-	GdkColor oColor;
-
-	memset(&oColor, 0, sizeof(GdkColor));
-
-	gdk_gc_get_values(m_pGC, &gcValues);
-
-	oColor.pixel = gcValues.foreground.pixel;
-
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
+	// TODO use doubles?
+	// are there separate x/y conversion functions for doubles?
 	UT_sint32 idx = _tduX(x);
 	UT_sint32 idy = _tduY(y);
 	UT_sint32 idw = _tduR(w);
 	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
 
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_save(m_cr);
+
+	// TODO Rob just use setColor() after we've gotten rid of the deprecated stuff
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_rectangle(m_cr, idx, idy, idw, idh);
+	cairo_fill(m_cr);
+
+	cairo_restore(m_cr);
+
+	CR_DEBUG(m_cr);
 }
 
 
@@ -3239,8 +3244,9 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+
+	UT_RGBColor clr(m_3dColors[c].red >> 8, m_3dColors[c].green >> 8, m_3dColors[c].blue >> 8);
+	fillRect(clr, x, y, w, h);
 }
 
 void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
