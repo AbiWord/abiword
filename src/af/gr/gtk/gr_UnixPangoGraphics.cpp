@@ -2944,7 +2944,7 @@ void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 void GR_CairoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	double width = tduD(iLineWidth);
-printf ("%s() %f\n", __FUNCTION__, width);
+
 	cairo_set_line_width (m_cr, width);
 
 	CR_DEBUG(m_cr);
@@ -3010,8 +3010,6 @@ void GR_CairoGraphics::setLineProperties ( double inWidth,
 	double width;
 	int n_dashes;
 
-printf ("%s() width %f\n", __FUNCTION__, tduD(inWidth));
-
 	cairo_set_line_width (m_cr, tduD(inWidth));
 	cairo_set_line_join (m_cr, mapJoinStyle(inJoinStyle));
 	cairo_set_line_cap (m_cr, mapCapStyle(inCapStyle));
@@ -3033,7 +3031,16 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 
-	gdk_draw_line(_getDrawable(), m_pXORGC, idx1, idy1, idx2, idy2);
+	cairo_save(m_cr);
+	cairo_set_operator(m_cr, CAIRO_OPERATOR_XOR);
+
+	cairo_move_to(m_cr, idx1, idy1);
+	cairo_line_to(m_cr, idx2, idy2);
+	cairo_stroke(m_cr);
+
+	cairo_restore(m_cr);
+
+	CR_DEBUG(m_cr);
 }
 
 void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
