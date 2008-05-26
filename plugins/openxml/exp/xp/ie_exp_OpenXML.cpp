@@ -30,7 +30,7 @@
 IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
   : IE_Exp (pDocument)
 {
-	UT_DEBUGMSG(("FRT: OOXML Exporter, Inside Constructor\n"));	
+
 }
 
 
@@ -39,7 +39,7 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
  */
 IE_Exp_OpenXML::~IE_Exp_OpenXML ()
 {
-	UT_DEBUGMSG(("FRT: OOXML Exporter, Inside Destructor\n"));	
+
 	_cleanup();
 }
 
@@ -48,38 +48,69 @@ IE_Exp_OpenXML::~IE_Exp_OpenXML ()
  */
 UT_Error IE_Exp_OpenXML::_writeDocument ()
 {
+	//error references to check 
+	GError *err = NULL;	
+	UT_Error error = UT_OK;
 
-	UT_DEBUGMSG(("FRT: Writing the OOXML file started\n"));	
-	
 	//get the file pointer (target file)
 	GsfOutput* sink = getFp();
 
-	if(sink != NULL)
-	{
-		UT_DEBUGMSG(("FRT: Zip root file created successfully\n"));		
+
+
+	/** STEP 1. OPEN NEW FILES FOR WRITING **/
 		
-		//create a zip file root based on the target
-		GsfOutfile* root = gsf_outfile_zip_new(sink, NULL);
+	//create a zip file root based on the target
+	GsfOutfile* root = gsf_outfile_zip_new(sink, &err);
 
-		//unreference sink since we don't need it directly anymore
-		//instead we will be using "root"
-		g_object_unref (G_OBJECT (sink));
-
-
-		writeContentTypes(root);
-		writeRelations(root);
-		writeMainPart(root);
-
-		//finally close the file 
-		gsf_output_close((GsfOutput*)root);
-	}
-	else
+	if(err != NULL || root == NULL)
 	{
-		UT_DEBUGMSG(("FRT: Error, Zip root file couldn't be created\n"));
+		UT_DEBUGMSG(("FRT: ERROR, Zip root file couldn't be created\n"));	
+		UT_DEBUGMSG(("FRT: Stopping the OpenXML exporting process\n"));
 		return UT_IE_COULDNOTWRITE;		
 	}
 
-	UT_DEBUGMSG(("FRT: Writing the OOXML file completed\n"));		
+	//unreference sink since we don't need it directly anymore
+	//instead we will be using "root"
+	g_object_unref (G_OBJECT (sink));
+
+
+	
+	/** STEP 2. WRITE THE FILES **/
+
+	//write the content types
+	error = writeContentTypes(root);
+	if(error != UT_OK)
+	{
+		_cleanup();
+		return error;
+	}	
+
+	//write the relations
+	error = writeRelations(root);
+	if(error != UT_OK)
+	{
+		_cleanup();
+		return error;
+	}
+	
+	//write the main part
+	error = writeMainPart(root);
+	if(error != UT_OK)
+	{
+		_cleanup();
+		return error;
+	}
+
+
+	/** STEP 3. CLOSE THE FILES **/
+
+	//try to close the zip root file and make sure it is closed
+	if(!gsf_output_close((GsfOutput*)root))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
+		_cleanup();
+		return UT_SAVE_EXPORTERROR;		
+	}
 
 	return UT_OK;	
 }
@@ -89,7 +120,7 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
-	UT_DEBUGMSG(("FRT: Cleaning up the OOXML exporter\n"));	
+
 }
 
 /**
@@ -97,28 +128,51 @@ void IE_Exp_OpenXML::_cleanup ()
  */
 UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root)
 {
+	UT_Error err = UT_OK;
 
-	UT_DEBUGMSG(("FRT: Writing the [Content_Types].xml file started\n"));	
+	/** STEP 1. OPEN NEW FILES FOR WRITING **/
 		
 	//[Content_Types].xml file 
 	GsfOutput* contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
+	//check if we get a valid pointer
+	if(contentTypesFile == NULL)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+
+	/** STEP 2. WRITE THE FILES **/
 		
 	//write the basic file contents
 	//we only have .rels and .xml file types in the simple basis file
 	//TODO: extend this for other file types as needed
-	writeXmlHeader(contentTypesFile);
+	err = writeXmlHeader(contentTypesFile);
+	//check if an error occured while writing the xml header
+	if(err != UT_OK)
+	{
+		//try to close the output files since there is an error
+		gsf_output_close(contentTypesFile);
+		return err;
+	}	
 	
-	gsf_output_puts(contentTypesFile, "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
-	gsf_output_puts(contentTypesFile, "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
-	gsf_output_puts(contentTypesFile, "<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
-	gsf_output_puts(contentTypesFile, "<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>");
-	gsf_output_puts(contentTypesFile, "</Types>");
-		
-	
-	//close the file
-	gsf_output_close(contentTypesFile);
-	
-	UT_DEBUGMSG(("FRT: Writing the [Content_Types].xml file completed\n"));	
+	if(!gsf_output_puts(contentTypesFile, "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
+		//try to close the output files since there is an error
+		gsf_output_close(contentTypesFile);
+		return UT_IE_COULDNOTWRITE;
+	}
+
+
+	/** STEP 3. CLOSE THE FILES **/
+
+	//close the [Content_Types].xml file and make sure it is closed
+	if(!gsf_output_close(contentTypesFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
 
 	return UT_OK;
 }
@@ -130,29 +184,68 @@ UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root)
  */
 UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 {
+	UT_Error err = UT_OK;
 
-	UT_DEBUGMSG(("FRT: Writing the _rels/.rels file started\n"));	
+	/** STEP 1. OPEN NEW FILES FOR WRITING **/
+
 	//_rels directory
 	GsfOutfile* relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
+	//check if we get a valid pointer
+	if(relsDir == NULL)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
 	//_rels/.rel file
 	GsfOutput* relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
+	//check if we get a valid pointer
+	if(relFile == NULL)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
+		//try to close the _rels directory since there is an error
+		gsf_output_close((GsfOutput*)relsDir);
+		return UT_SAVE_EXPORTERROR;
+	}
 
+	/** STEP 2. WRITE THE FILES **/
+	
 	//write the basic file content
 	//TODO: extend this for other relations as needed
-	writeXmlHeader(relFile);
+	err = writeXmlHeader(relFile);
+	//check if an error occured while writing the xml header
+	if(err != UT_OK)
+	{
+		//try to close the output files since there is an error
+		gsf_output_close(relFile);
+		gsf_output_close((GsfOutput*)relsDir);
+		return err;
+	}	
 	
-	gsf_output_puts(relFile, "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");		
-	gsf_output_puts(relFile, "<Relationship Id=\"rId1\" ");
-	gsf_output_puts(relFile, 	"Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" ");
-	gsf_output_puts(relFile, 	"Target=\"word/document.xml\"/>");
-	gsf_output_puts(relFile, "</Relationships>");
+	//write to .rels file 
+	if(!gsf_output_puts(relFile, "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/></Relationships>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
+		//try to close the output files since there is an error
+		gsf_output_close(relFile);
+		gsf_output_close((GsfOutput*)relsDir);
+		return UT_IE_COULDNOTWRITE;
+	}
+
 	
+	/** STEP 3. CLOSE THE FILES **/
 
-	//close the .rels file and rels directory
-	gsf_output_close(relFile);
-	gsf_output_close((GsfOutput*)relsDir);
-
-	UT_DEBUGMSG(("FRT: Writing the _rels/.rels file completed\n"));	
+	//close the .rels file and rels directory and make sure they are closed
+	if(!gsf_output_close(relFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+	if(!gsf_output_close((GsfOutput*)relsDir))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
 
 	return UT_OK;
 }
@@ -162,32 +255,80 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
  */
 UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 {
-	
-	UT_DEBUGMSG(("FRT: Writing the word/document.xml file started\n"));	
+	UT_Error err = UT_OK;
 
+
+	/** STEP 1. OPEN NEW FILES FOR WRITING **/
+		
 	//word directory
 	GsfOutfile* wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
+	//make sure we get a valid pointer
+	if(wordDir == NULL)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
 	//word/document.xml file
 	GsfOutput* documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
+	//make sure we get a valid pointer
+	if(documentFile == NULL)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
+		//try to close the word directory since there is an error
+		gsf_output_close((GsfOutput*)wordDir);
+		return UT_SAVE_EXPORTERROR;
+	}	
+
+
+	/** STEP 2. WRITE THE FILES **/
 
 	//write the basic content to document.xml
-	writeXmlHeader(documentFile);
+	err = writeXmlHeader(documentFile);
+	//check if an error occured while writing the xml header
+	if(err != UT_OK)
+	{
+		//try to close the output files since there is an error
+		gsf_output_close(documentFile);
+		gsf_output_close((GsfOutput*)wordDir);
+		return err;
+	}	
 	
-	gsf_output_puts(documentFile, "<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
-	gsf_output_puts(documentFile, 	"xmlns:v=\"urn:schemas-microsoft-com:vml\" ");
-	gsf_output_puts(documentFile,	"xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
-	gsf_output_puts(documentFile, "<w:body>");		
+	//try to write to document.xml and handle if there is an error
+	if(!gsf_output_puts(documentFile, "<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
+		//try to close the output files since there is an error
+		gsf_output_close(documentFile);
+		gsf_output_close((GsfOutput*)wordDir);
+		return UT_IE_COULDNOTWRITE;
+	}
 
 	//TODO: Write the document body here
 
-	gsf_output_puts(documentFile, "</w:body>");		
-	gsf_output_puts(documentFile, "</w:wordDocument>");		
-	
-	//close the document.xml file and word directory
-	gsf_output_close(documentFile);
-	gsf_output_close((GsfOutput*)wordDir);
+	if(!gsf_output_puts(documentFile, "</w:body></w:wordDocument>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
+		//try to close the output files since there is an error
+		gsf_output_close(documentFile);
+		gsf_output_close((GsfOutput*)wordDir);
+		return UT_IE_COULDNOTWRITE;
+	}
 
-	UT_DEBUGMSG(("FRT: Writing the word/document.xml file completed\n"));	
+
+	/** STEP 3. CLOSE THE FILES **/
+	
+	//close the document.xml file and word directory and make sure they are actually closed
+	if(!gsf_output_close(documentFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+	if(!gsf_output_close((GsfOutput*)wordDir))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
 
 	return UT_OK;
 }
@@ -198,10 +339,13 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
  */
 UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 {
+	gboolean successful = gsf_output_puts(file, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");	
 
-	gsf_output_puts(file, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-
-	UT_DEBUGMSG(("FRT: Writing xml header completed\n"));	
+	if(!successful)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, xml header couldn't be written\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 
 	return UT_OK;
 }

@@ -29,6 +29,7 @@
 #include <ut_debugmsg.h>
 #include <ut_types.h>
 #include <ut_assert.h>
+#include <ut_string_class.h>
 
 // External includes
 #include <gsf/gsf-outfile.h>
