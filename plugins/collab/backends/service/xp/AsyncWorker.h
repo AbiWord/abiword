@@ -38,7 +38,7 @@ public:
 	{
 	}
 
-	~AsyncWorker()
+	virtual ~AsyncWorker()
 	{
 		UT_DEBUGMSG(("~AsyncWorker()\n"));
 		if (m_thread_ptr)

@@ -55,7 +55,9 @@
 // forward declarations
 static void s_abicollab_add_menus();
 static void s_abicollab_remove_menus();
+#if defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 static void s_cleanup_old_sessions();
+#endif
 
 // -----------------------------------------------------------------------
 //
@@ -553,7 +555,7 @@ bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
 	pDialog->runModal(pFrame);
 	// Handle the dialog outcome
 	AP_Dialog_CollaborationJoin::tAnswer answer = pDialog->getAnswer();
-	Buddy* pBuddy = pDialog->getBuddy();
+	Buddy* pBuddy = const_cast<Buddy*>(pDialog->getBuddy()); // FIXME: bad const cast (it should probably stay const)
 	DocHandle* pDocHandle = pDialog->getDocHandle();
 	pFactory->releaseDialog(pDialog);
 	

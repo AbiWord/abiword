@@ -125,7 +125,7 @@ bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
 	// the session id should be unique on a specific account handler; let's 
 	// just look it up amonst all our account handlers (not too efficient or
 	// elegant, but it works)
-	for (UT_sint32 i = 0; i < pManager->getAccounts().getItemCount(); i++)
+	for (UT_uint32 i = 0; i < pManager->getAccounts().getItemCount(); i++)
 	{
 		AccountHandler* pHandler = pManager->getAccounts().getNthItem(i);
 		UT_continue_if_fail(pHandler);

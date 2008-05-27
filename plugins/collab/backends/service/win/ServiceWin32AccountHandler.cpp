@@ -51,7 +51,7 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(pEmbeddingParent);
 
 	// our enclosing window must be a HWND
-	HWND hBox = pEmbeddingParent;
+	HWND hBox = reinterpret_cast<HWND>(pEmbeddingParent);
 	
 	/* Non-Tabbable Labels */
 
@@ -81,7 +81,7 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	HFONT hfontPrimary = CreateFontIndirect(&lf);
 	HWND rgFontReceivers[] =
 		{ m_hEmailLabel, m_hEmailEntry, m_hPasswordLabel, m_hPasswordEntry };
-	for (int iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
+	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 }
 
@@ -93,7 +93,7 @@ void ServiceWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(pEmbeddingParent);
 
 	// our enclosing window must be a HWND
-	HWND hBox = pEmbeddingParent;	
+	HWND hBox = reinterpret_cast<HWND>(pEmbeddingParent);
 	
 	DESTROY_WINDOW(m_hEmailLabel);
 	DESTROY_WINDOW(m_hEmailEntry);

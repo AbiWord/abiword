@@ -49,6 +49,7 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	// Switch on resource ID's - where do they come from for these controls?
 	case ABI_RID_DIALOG_COLLABTCP_SERVERRADIO:
 	case ABI_RID_DIALOG_COLLABTCP_JOINRADIO:
+		printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>!!!! serve: %s\n", serve ? "yes" : "no");
 		// These have the ability to enable/disable input controls
 		// By their doing so, they can also enable/disable the "OK" button
 		// which is why there is intentionally no break statement following this section.
@@ -197,8 +198,8 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	
-	// default to join
-	_checkButtonHwnd(m_hJoinRadio, true);
+	// default to serve
+	_checkButtonHwnd(m_hServerRadio, true);
 	
 	// default to autoconnect
 	_checkButtonHwnd(m_hAutoconnectCheck, true);

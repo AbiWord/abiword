@@ -41,6 +41,7 @@ enum packet_type {
 
 class Packet {
 public:
+	virtual ~Packet() {}
 
 	static PacketPtr construct(uint8_t type);
 

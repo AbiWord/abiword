@@ -125,6 +125,12 @@ namespace soup_soa {
 			return soa::GenericPtr();
 
 		guint status = soup_session_send_message (sess.m_session, sess.m_msg);
+		if (!SOUP_STATUS_IS_SUCCESSFUL (status) ||
+			status != SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */)
+		{
+			UT_DEBUGMSG(("Error executing SOAP call: %s\n", sess.m_msg->reason_phrase));
+			return soa::GenericPtr();
+		}
 		
 		// store the SOAP result in a string
 		// FIXME: ineffecient copy
@@ -139,15 +145,7 @@ namespace soup_soa {
 		std::copy(sess.m_msg->response.body, sess.m_msg->response.body+sess.m_msg->response.length, result.begin());
 #endif
 		UT_DEBUGMSG(("SOAP Response: %s\n", result.c_str()));		
-		
-		if (SOUP_STATUS_IS_SUCCESSFUL (sess.m_msg->status_code) || 
-			sess.m_msg->status_code == SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */ ) {
-			// parse and return message response
-			return soa::parse_response(result, mi.function().response());
-		}
-	
-		UT_DEBUGMSG(("Error executing SOAP call: %s\n", sess.m_msg->reason_phrase));
-		return soa::GenericPtr();
+		return soa::parse_response(result, mi.function().response());
 	}
 
 	static void _got_chunk_cb(SoupMessage* msg, SoaSoupSession* progress_info)

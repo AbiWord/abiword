@@ -81,8 +81,12 @@ private:
 
 		if (m_worker_ptr->cancelled())
 		{
+#ifdef SOUP24
+			soup_session_cancel_message(session, msg, SOUP_STATUS_CANCELLED);
+#else
 			soup_message_set_status(msg, SOUP_STATUS_CANCELLED);
 			soup_session_cancel_message(session, msg);	
+#endif
 			return;
 		}
 		
