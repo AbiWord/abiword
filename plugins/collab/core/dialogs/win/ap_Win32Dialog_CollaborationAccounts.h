@@ -44,14 +44,12 @@ public:
 	virtual void			signal(const Event& event, const Buddy* pSource);
 
 private:
-	XAP_Win32DialogHelper *	m_pWin32Dialog;
-	
 	std::map<UT_UTF8String, AccountHandler*> _constructModel();
 	void					_setModel(std::map<UT_UTF8String, AccountHandler*>  model);
 	void					setOnline(AccountHandler* pHandler, bool online);
 	void					_updateSelection();
 	
-	// Handles
+	XAP_Win32DialogHelper *	m_pWin32Dialog;
 	HINSTANCE 				m_hInstance;
 	
 	// Internal states

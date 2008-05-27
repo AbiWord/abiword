@@ -1,0 +1,38 @@
+// AbiWord
+// Copyright (C) 2008 AbiSource Corporation B.V.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+
+
+#define AP_RID_DIALOG_GENERICINPUT 							1050
+#define AP_RID_DIALOG_GENERICINPUT_CANCEL_BUTTON			1051
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+AP_RID_DIALOG_GENERICINPUT DIALOG DISCARDABLE  0, 0, 240, 175
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Input"
+FONT 8, "MS Sans Serif"
+BEGIN
+	DEFPUSHBUTTON	"Cancel",AP_RID_DIALOG_GENERICINPUT_CANCEL_BUTTON,183,154,50,14
+	LTEXT			"(null)", 0, 8, 3, 167, 13 	
+END
+
+#endif /* RC_INVOKED */

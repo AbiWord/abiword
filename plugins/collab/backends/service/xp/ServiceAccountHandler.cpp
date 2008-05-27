@@ -46,6 +46,7 @@ AbiCollabSaveInterceptor ServiceAccountHandler::m_saveInterceptor = AbiCollabSav
 
 bool ServiceAccountHandler::askPassword(const std::string& email, std::string& password)
 {
+	UT_DEBUGMSG(("ServiceAccountHandler::askPassword()\n"));
 	XAP_Frame* pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, false);
 	
@@ -571,6 +572,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 					const std::string uri, const std::string email, const std::string password,
 					SessionBuddyPtr sessions_ptr)
 {
+	UT_DEBUGMSG(("ServiceAccountHandler::_listDocuments()\n"));
 	UT_return_val_if_fail(sessions_ptr, acs::SOAP_ERROR_GENERIC);
 
 	// construct a SOAP method call to gets our documents
@@ -638,6 +640,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 
 void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPtr sessions_ptr)
 {
+	UT_DEBUGMSG(("ServiceAccountHandler::_listDocuments_cb()\n"));
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);			
 
@@ -693,6 +696,8 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 			return;
 		default:
 			// FIXME: maybe determine the exact error
+			/// TODO: show a message box?
+			UT_DEBUGMSG(("Caught SOAP error: %d\n", error));
 			UT_return_if_fail(error == acs::SOAP_ERROR_OK);
 	}
 }

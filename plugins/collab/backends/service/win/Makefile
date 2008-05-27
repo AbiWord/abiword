@@ -26,7 +26,9 @@ TARGETS=			$(OBJS)
 CPPSRCS=			ap_Win32Dialog_GenericInput.cpp \
 				ap_Win32Dialog_GenericProgress.cpp \
 				ServiceWin32AccountHandler.cpp			
-				
+
+RCSRCS=			ap_Win32Res_ServiceDialogs.rc
+
 INCLUDES+=			-I$(shell pwd) \
 				-I$(shell pwd)/../../.. \
 				-I$(shell pwd)/../../../core/packet \

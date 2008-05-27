@@ -125,8 +125,8 @@ namespace soup_soa {
 			return soa::GenericPtr();
 
 		guint status = soup_session_send_message (sess.m_session, sess.m_msg);
-		if (!SOUP_STATUS_IS_SUCCESSFUL (status) ||
-			status != SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */)
+		if (!(SOUP_STATUS_IS_SUCCESSFUL (status) ||
+			status == SOUP_STATUS_INTERNAL_SERVER_ERROR /* used for SOAP Faults */))
 		{
 			UT_DEBUGMSG(("Error executing SOAP call: %s\n", sess.m_msg->reason_phrase));
 			return soa::GenericPtr();

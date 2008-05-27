@@ -19,6 +19,8 @@
 #ifndef AP_WIN32DIALOG_GENERICINPUT_H
 #define AP_WIN32DIALOG_GENERICINPUT_H
 
+#include "ap_Win32Res_DlgGenericInput.rc2"
+
 #include <backends/service/xp/ap_Dialog_GenericInput.h>
 
 class XAP_Frame;
@@ -27,13 +29,16 @@ class AP_Win32Dialog_GenericInput : public AP_Dialog_GenericInput
 {
 public:
 	AP_Win32Dialog_GenericInput(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
+	static XAP_Dialog *			static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void						runModal(XAP_Frame * pFrame);
+	static BOOL CALLBACK		s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	BOOL 						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	void						event_Ok();
 
 private:
-
+	XAP_Win32DialogHelper *		m_pWin32Dialog;
+	HINSTANCE 					m_hInstance;
 };
 
 #endif /* AP_WIN32DIALOG_GENERICINPUT_H */
