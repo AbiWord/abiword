@@ -69,7 +69,10 @@
 #define PANGO_GLYPH_EMPTY ((PangoGlyph)0x0FFFFFFF)
 #endif
 
-#define GR_CAIRO_STATUS(cr_) 	if (cairo_status(cr_) != CAIRO_STATUS_SUCCESS)	g_warning(cairo_status_to_string(cairo_status(cr_)));
+#define GR_CAIRO_STATUS(cr_)									\
+	if (cairo_status(cr_) != CAIRO_STATUS_SUCCESS)				\
+		g_warning(cairo_status_to_string(cairo_status(cr_)));
+
 #define GR_VERBOSE(code_) 	\
 	if (_gr_verbose) {		\
 		code_;				\
@@ -3046,29 +3049,18 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// see bug #303 for what this is about
+	UT_uint32 i;
 
-	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
-	UT_ASSERT(points);
+	UT_return_if_fail(nPoints > 1);
 
-	for (UT_uint32 i = 0; i < nPoints; i++)
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++)
 	{
-		UT_sint32 idx = _tduX(pts[i].x);
-		points[i].x = idx;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_CairoGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		UT_sint32 idy1 = _tduY(pts[i].y);
-
-		points[i].y = idy1 - 1;
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
 	}
-
-	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
-
-	FREEP(points);
+	cairo_stroke(m_cr);
 }
 
 void GR_CairoGraphics::invertRect(const UT_Rect* /*pRect*/)
@@ -3240,43 +3232,28 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	cairo_fill(m_cr);
 }
 
+/*!
+ * \todo Rob find out how to have this function used, and test.
+ */
 void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
-	// save away the current color, and restore it after we draw the polygon
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	UT_uint32 i;
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	UT_return_if_fail(nPoints > 1);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
+	cairo_save(m_cr);
 
-	oColor.pixel = gcValues.foreground.pixel;
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++) {
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	}
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_fill(m_cr);	
 
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-
-	GdkPoint* points = new GdkPoint[nPoints];
-    UT_ASSERT(points);
-
-    for (UT_uint32 i = 0;i < nPoints;i++){
-		UT_sint32 idx = _tduX(pts[i].x);
-        points[i].x = idx;
-		UT_sint32 idy = _tduY(pts[i].y);
-        points[i].y = idy;
-    }
-	gdk_draw_polygon(_getDrawable(), m_pGC, 1, points, nPoints);
-	delete[] points;
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
 
 void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
