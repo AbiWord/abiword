@@ -34,8 +34,8 @@ class XAP_Frame;
 
 struct ShareListItem
 {
-	ShareListItem(Buddy* pBuddy_, DocHandle* pDocHandle_) : pBuddy(pBuddy_), pDocHandle(pDocHandle_) {};
-	Buddy* pBuddy;
+	ShareListItem(const Buddy* pBuddy_, DocHandle* pDocHandle_) : pBuddy(pBuddy_), pDocHandle(pDocHandle_) {};
+	const Buddy* pBuddy;
 	DocHandle* pDocHandle;
 };
 

@@ -45,15 +45,10 @@ AC_ARG_ENABLE([collab-backend-tcp],
 ])
 
 AC_ARG_ENABLE([collab-backend-sugar], 
-    [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: auto)])], 
+    [AS_HELP_STRING([--enable-collab-backend-sugar], [Sugar/OLPC backend (default: off)])], 
 [
 	enable_collab_backend_sugar=$enableval
-], [
-	PKG_CHECK_EXISTS([ $collab_xmpp_req ],
-	[
-		enable_collab_backend_sugar="yes"
-	])
-])
+], [])
 test "$enable_collab_backend_sugar" == "yes" && collab_pkgs="$collab_pkgs $collab_sugar_req"
 
 AC_ARG_ENABLE([collab-backend-service], 

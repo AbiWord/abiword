@@ -71,8 +71,8 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 	: AP_Dialog_CollaborationAddAccount(pDlgFactory, id),
 	m_pWin32Dialog(NULL),
 	m_hOk(NULL),
-	m_hDetails(NULL),
-	m_hInstance(NULL)
+	m_hInstance(NULL),
+	m_hDetails(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -87,8 +87,6 @@ void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
-	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
-	
 	// create the dialog
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_COLLABORATIONADDACCOUNT);
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
@@ -147,7 +145,6 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	
 	AccountHandler* pHandler;
 	switch (wId)

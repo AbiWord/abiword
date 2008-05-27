@@ -43,10 +43,10 @@ static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condi
 
 #define SYNC_CLASSNAME "AbiCollabSynchronizer"
 
-static int Synchronizer::sm_iMessageWindows=0;
+int Synchronizer::sm_iMessageWindows = 0;
 ATOM sm_iClass = 0;
 
-static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) // Win32-only
+LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) // Win32-only
 {
 	Synchronizer * pThis;
 	int swlresult;
@@ -86,7 +86,7 @@ static LRESULT CALLBACK Synchronizer::s_wndProc(HWND hWnd, UINT msg, WPARAM wPar
 	}
 }
 
-static void Synchronizer::_registerWndClass() // Win32-only
+void Synchronizer::_registerWndClass() // Win32-only
 {
  	if (sm_iClass)
  	{
@@ -118,7 +118,7 @@ static void Synchronizer::_registerWndClass() // Win32-only
  	sm_iMessageWindows = 0;
 }
 
-static void Synchronizer::_unregisterWndClass() // Win32-only
+void Synchronizer::_unregisterWndClass() // Win32-only
 {
  	UT_DEBUGMSG(("Synchronizer::_unregisterWndClass()\n"));
  	UT_return_if_fail(sm_iClass);
@@ -136,8 +136,8 @@ static void Synchronizer::_unregisterWndClass() // Win32-only
  	UT_return_if_fail(hInstance);
  
  	UT_DEBUGMSG(("Unregistrating message window class\n"));
- 	UT_return_if_fail(UnregisterClass(sm_iClass, hInstance));
- 	sm_iClass = NULL;
+ 	UT_return_if_fail(UnregisterClass(SYNC_CLASSNAME, hInstance));
+ 	sm_iClass = 0;
 }
 
 #endif

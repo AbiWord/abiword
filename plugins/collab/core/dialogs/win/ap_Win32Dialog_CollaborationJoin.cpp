@@ -95,8 +95,6 @@ void AP_Win32Dialog_CollaborationJoin::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 	
-	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
-	
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_COLLABORATIONJOIN);
 	
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
@@ -157,9 +155,7 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, L
 
 BOOL AP_Win32Dialog_CollaborationJoin::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	
 	switch (wId)
 	{
@@ -269,10 +265,10 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
 
 	// Loop through accounts
-	for (UT_sint32 i = 0; i < accounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < accounts.getItemCount(); i++)
 	{
 		// Loop through buddies in accounts
-		for (UT_sint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
+		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
 			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
 			UT_UTF8String buddyDesc = pBuddy->getDescription();
@@ -284,8 +280,8 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 			tviBuddy.item.stateMask = TVIS_BOLD|TVIS_EXPANDED;
 			tviBuddy.hInsertAfter = TVI_LAST;  // only insert at the end			
 			tviBuddy.hParent = NULL; // top most level Item
-			tviBuddy.item.state = NULL;
-			tviBuddy.item.pszText = sBuddyText.c_str();
+			tviBuddy.item.state = 0;
+			tviBuddy.item.pszText = const_cast<char*>(sBuddyText.c_str());
 			HTREEITEM htiBuddy = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviBuddy);
 			m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiBuddy, ShareListItem(pBuddy, NULL)));
 			
@@ -303,10 +299,10 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 				tviDocument.hInsertAfter = TVI_LAST;  // only insert at the end			
 				tviDocument.hParent = htiBuddy;
 				tviDocument.hInsertAfter = TVI_LAST;
-				tviDocument.item.pszText = sDocText.c_str();
+				tviDocument.item.pszText = const_cast<char*>(sDocText.c_str());
 				// if we are connected to this document, bold it.  Eventually checkboxes would be cooler, that's a TODO
 				tviDocument.item.state = pManager->isActive(item->m_docHandle->getSessionId()) ? TVIS_BOLD : TVIS_EXPANDED;
-				HTREEITEM htiDoc = SendMessage(m_hDocumentTreeview, TVM_INSERTITEM,0,(LPARAM)&tviDocument);
+				HTREEITEM htiDoc = (HTREEITEM)SendMessage(m_hDocumentTreeview, TVM_INSERTITEM, 0, (LPARAM)&tviDocument);
 				m_mTreeItemHandles.insert(std::pair<HTREEITEM, ShareListItem>(htiDoc, ShareListItem(pBuddy, item->m_docHandle)));
 			}
 		}
@@ -336,7 +332,7 @@ void AP_Win32Dialog_CollaborationJoin::_enableBuddyAddition(bool bEnabled)
 void AP_Win32Dialog_CollaborationJoin::_updateSelection()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);	
+	UT_return_if_fail(pManager);	
 	
 	HTREEITEM hSelItem = TreeView_GetSelection(m_hDocumentTreeview);
 	if (hSelItem)
@@ -372,12 +368,12 @@ void AP_Win32Dialog_CollaborationJoin::_updateSelection()
 void AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
+	UT_return_if_fail(pManager);
 
 	std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hItem);
-	UT_return_val_if_fail(cit != m_mTreeItemHandles.end(), false);	
+	UT_return_if_fail(cit != m_mTreeItemHandles.end());	
 
-	Buddy* pBuddy = cit->second.pBuddy;
+	const Buddy* pBuddy = cit->second.pBuddy;
 	UT_return_if_fail(pBuddy);
 
 	DocHandle* pDocHandle = cit->second.pDocHandle;

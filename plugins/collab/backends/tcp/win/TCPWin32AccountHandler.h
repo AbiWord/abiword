@@ -43,7 +43,7 @@ public:
 	BOOL									_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	
 private:
-	XAP_Win32DialogHelper *					p_win32Dialog;
+	XAP_Win32DialogHelper *					m_pWin32Dialog;
 	
 	// handles
 	HINSTANCE								m_hInstance;
