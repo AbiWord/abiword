@@ -754,7 +754,6 @@ UT_uint32 GR_CairoGraphics::getDeviceResolution(void) const
 	return m_iDeviceResolution;
 }
 
-
 UT_sint32 GR_CairoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
 {
         if (height) { 
@@ -1596,7 +1595,6 @@ bool GR_CairoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext,
 	return false;
 }
 
-
 bool GR_CairoGraphics::needsSpecialCaretPositioning(GR_RenderInfo &)
 {
 	// something smarter is needed here, so we do not go through this for
@@ -2276,16 +2274,20 @@ void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 
 void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
-	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
-	UT_sint32 idx = _tduX(r->left);
-	UT_sint32 idy = _tduY(r->top);
+	UT_Rect *rect;
+	GdkPixbuf *pixbuf;
+	UT_sint32 x;
+	UT_sint32 y;
 
+	rect = m_vSaveRect.getNthItem(iIndx);
+	pixbuf = m_vSaveRectBuf.getNthItem(iIndx);
+	x = _tduX(rect->left);
+	y = _tduY(rect->top);
 
-	if (p && r)
-		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
-						 idx, idy,
-						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+	cairo_save(m_cr);
+	gdk_cairo_set_source_pixbuf(m_cr, pixbuf, x, y);
+	cairo_paint(m_cr);
+	cairo_restore(m_cr);
 }
 
 /*!
@@ -2337,37 +2339,33 @@ GR_Image* GR_CairoGraphics::createNewImage (const char* pszName,
  * Draw the specified image at the location specified in local units 
  * (xDest,yDest). xDest and yDest are in logical units.
  */
-void GR_CairoGraphics::drawImage(GR_Image* pImg,
-									 UT_sint32 xDest, UT_sint32 yDest)
+void GR_CairoGraphics::drawImage(GR_Image *pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
+	GR_UnixImage *image;
+	GdkPixbuf *pixbuf;
+	UT_sint32 x;
+	UT_sint32 y;
+	double width;
+	double height;
+
 	UT_ASSERT(pImg);
 
-   	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
+   	image = static_cast<GR_UnixImage *>(pImg);
+	pixbuf = image->getData();
 
-	GdkPixbuf * image = pUnixImage->getData();
-	UT_return_if_fail(image);
+	UT_return_if_fail(pixbuf);
 
-   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
-   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+	x = _tduX(xDest);
+	y = _tduY(yDest);
+   	width = image->getDisplayWidth();
+   	height = image->getDisplayHeight();
 
-	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
-	UT_sint32 idx = _tduX(xDest);
-	UT_sint32 idy = _tduY(yDest);
-
-	xDest = idx; yDest = idy;
-
-	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_draw_pixbuf (_getDrawable(), NULL, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
-	else
-		gdk_draw_pixbuf (_getDrawable(), m_pGC, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
+	cairo_save(m_cr);
+	gdk_cairo_set_source_pixbuf(m_cr, pixbuf, x, y);
+	cairo_scale(m_cr, width / gdk_pixbuf_get_width(pixbuf), 
+					 height / gdk_pixbuf_get_height(pixbuf));
+	cairo_paint(m_cr);
+	cairo_restore(m_cr);
 }
 
 void GR_CairoGraphics::setFont(const GR_Font * pFont)
