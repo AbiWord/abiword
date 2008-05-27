@@ -49,7 +49,6 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	// Switch on resource ID's - where do they come from for these controls?
 	case ABI_RID_DIALOG_COLLABTCP_SERVERRADIO:
 	case ABI_RID_DIALOG_COLLABTCP_JOINRADIO:
-		printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>!!!! serve: %s\n", serve ? "yes" : "no");
 		// These have the ability to enable/disable input controls
 		// By their doing so, they can also enable/disable the "OK" button
 		// which is why there is intentionally no break statement following this section.
