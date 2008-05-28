@@ -28,7 +28,6 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
-#include "xap_Strings.h"
 #include "xap_Frame.h"
 
 #include "xap_UnixApp.h"
@@ -55,7 +54,6 @@
 
 #include <math.h>
 
-#include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 
 #ifdef ENABLE_PRINT
@@ -87,7 +85,6 @@ UT_uint32      GR_CairoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_CairoGraphics::s_Version;
 int            GR_CairoGraphics::s_iMaxScript = 0;
 
-
 class GR_UnixPangoItem: public GR_Item
 {
 	friend class GR_CairoGraphics;
@@ -95,7 +92,7 @@ class GR_UnixPangoItem: public GR_Item
 	friend class GR_UnixPangoRenderInfo;
 	
   public:
-	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
+	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}}
 	
 	virtual GR_ScriptType getType() const {return (GR_ScriptType)m_iType;}
 	
@@ -108,8 +105,8 @@ class GR_UnixPangoItem: public GR_Item
 
   protected:
 	GR_UnixPangoItem(PangoItem *pi);
-	GR_UnixPangoItem() : m_pi(NULL) { }; // just a dummy used to terminate
-	                                     // GR_Itemization list
+	GR_UnixPangoItem() : m_pi(NULL) {} // just a dummy used to terminate
+	                                   // GR_Itemization list
 
 	PangoItem *m_pi;
 	UT_uint32 m_iType;
@@ -373,10 +370,6 @@ void GR_CairoGraphics::init()
 		gScreen = gdk_screen_get_default();
 	}
 
-	
-	m_bIsSymbol = false;
-	m_bIsDingbat = false;
-
 	bool bGotResolution = false;
 	
 	if (gScreen && gDisplay)
@@ -456,9 +449,13 @@ GR_Graphics *   GR_CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	return new GR_CairoGraphics(AI.m_win);
 }
 
+/*!
+ * This method is platform-dependent.
+ */
 void GR_CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
+	// not an elegant way to disable all carets, but it works beautifully - MARCM
+	GR_Painter caretDisablerPainter(this); 
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
@@ -927,8 +924,8 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			
 		GR_UnixPangoFont * pFont = (GR_UnixPangoFont*)si.m_pFont;
 
-		pfs = pango_font_map_load_fontset (getFontMap(),
-										   getContext(),
+		pfs = pango_font_map_load_fontset (m_pFontMap,
+										   m_pContext,
 										   pFont->getPangoDescription(),
 										   pItem->m_pi->analysis.language);
 	}
@@ -1068,7 +1065,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	UT_return_val_if_fail(pfd, false);
-	PangoFont * pf = pango_context_load_font(getContext(), pfd);
+	PangoFont * pf = pango_context_load_font(m_pContext, pfd);
 	pango_font_description_free(pfd);
 	
 	pItem->m_pi->analysis.font = pf;
@@ -1294,7 +1291,7 @@ PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont, Pan
 	{
 		g_object_unref(m_pAdjustedPangoFont);
 	}
-	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
+	m_pAdjustedPangoFont = pango_context_load_font(m_pContext, pfd);
 	m_pAdjustedPangoFontSource = pFont;
 	m_iAdjustedPangoFontZoom = getZoomPercentage();
 	
@@ -2024,7 +2021,7 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 	}
 
 	// this function expect indexes in bytes !!! (stupid)
-	GList * pItems = pango_itemize(getContext(),
+	GList * pItems = pango_itemize(m_pContext,
 								   utf8.utf8_str(),
 								   0, utf8.byteLength(),
 								   NULL, NULL);
@@ -2101,7 +2098,7 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	}
 
 	// this function expect indexes in bytes !!! (stupid)
-	GList * pItems = pango_itemize(getContext(),
+	GList * pItems = pango_itemize(m_pContext,
 								   utf8.utf8_str(),
 								   0, utf8.byteLength(),
 								   NULL, NULL);

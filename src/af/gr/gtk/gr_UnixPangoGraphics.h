@@ -118,11 +118,11 @@ public:
 #ifdef ENABLE_PRINT
 		  m_gpm (NULL),
 #endif
-		  m_bPreview (false), m_bPrinter (false){};
+		  m_bPreview (false), m_bPrinter (false) {}
 	
 #ifdef ENABLE_PRINT
 	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
-		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true){};
+		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true) {}
 #endif
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
 	virtual bool isPrinterGraphics() const {return m_bPrinter;}
@@ -205,9 +205,7 @@ public:
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor &clr);
 	
-	virtual GR_Font * getGUIFont();
-	
-	PangoFontMap * getFontMap() const {return m_pFontMap;}
+	virtual GR_Font * getGUIFont();	
 	PangoContext * getContext() const {return m_pContext;}
 
 	virtual UT_uint32 getFontAscent();
@@ -234,7 +232,7 @@ public:
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	bool isDingbat() const {return m_bIsDingbat;}
-	bool isSymbol() const {return m_bIsSymbol;};
+	bool isSymbol() const {return m_bIsSymbol;}
 	
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
@@ -300,8 +298,6 @@ public:
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
-	GdkWindow *  getWindow () {return m_pWin;}
-
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
