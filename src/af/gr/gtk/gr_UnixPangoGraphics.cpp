@@ -209,14 +209,12 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	static GR_UnixPangoRenderInfo * s_pOwnerLogAttrs;
 };
 
-
 GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerUTF8 = NULL;
 UT_UTF8String *          GR_UnixPangoRenderInfo::sUTF8 = NULL;
 UT_uint32                GR_UnixPangoRenderInfo::s_iInstanceCount = 0;
 UT_uint32                GR_UnixPangoRenderInfo::s_iStaticSize = 0;
 GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerLogAttrs = NULL;
 PangoLogAttr *           GR_UnixPangoRenderInfo::s_pLogAttrs = NULL;
-
 
 bool GR_UnixPangoRenderInfo::getUTF8Text()
 {
@@ -332,23 +330,20 @@ void GR_CairoGraphics::init()
 	GdkDisplay * gDisplay = NULL;
 	GdkScreen *  gScreen = NULL;
 
-	if (_getDrawable())
+	if (m_pWin)
 	{
-		m_pColormap = gdk_rgb_get_colormap();
-		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
-
-		gDisplay = gdk_drawable_get_display(_getDrawable());
-		gScreen = gdk_drawable_get_screen(_getDrawable());
+		gDisplay = gdk_drawable_get_display(GDK_DRAWABLE(m_pWin));
+		gScreen = gdk_drawable_get_screen(GDK_DRAWABLE(m_pWin));
 
 		GdkDrawable * realDraw;
-		if(GDK_IS_WINDOW((_getDrawable())))
+		if(GDK_IS_WINDOW((GDK_DRAWABLE(m_pWin))))
 		{
-				gdk_window_get_internal_paint_info (_getDrawable(), &realDraw,
+				gdk_window_get_internal_paint_info (GDK_DRAWABLE(m_pWin), &realDraw,
 											&m_iXoff, &m_iYoff);
 		}
 		else
 		{
-			    realDraw = _getDrawable();
+			    realDraw = GDK_DRAWABLE(m_pWin);
 				m_iXoff = 0;
 				m_iYoff = 0;
 		}
@@ -362,38 +357,18 @@ void GR_CairoGraphics::init()
 
 		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
 								   m_pVisual, m_Colormap);
-			
-		GdkColor clrWhite;
-		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
-		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
-
-		GdkColor clrBlack;
-		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
-		gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
-		gdk_gc_set_foreground(m_pGC, &clrBlack);
-
-		m_XftColor.color.red = clrBlack.red;
-		m_XftColor.color.green = clrBlack.green;
-		m_XftColor.color.blue = clrBlack.blue;
+		m_XftColor.color.red = 0;
+		m_XftColor.color.green = 0;
+		m_XftColor.color.blue = 0;
 		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = clrBlack.pixel;
+		// Rob: temporarily use this instead of gdk
+		bool ret = XftColorAllocValue(GDK_DISPLAY_XDISPLAY(gDisplay), m_pVisual, m_Colormap, &m_XftColor.color, &m_XftColor);
+		g_assert(ret);
 
-		// I only want to set CAP_NOT_LAST, but the call takes all
-		// arguments (and doesn't have a default value).  Set the
-		// line attributes to not draw the last pixel.
-
-		// We force the line width to be zero because the CAP_NOT_LAST
-		// stuff does not seem to work correctly when the width is set
-		// to one.
-
-		gdk_gc_set_line_attributes(m_pGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
-			
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
-		gdk_gc_set_exposures(m_pGC, 1);
+		// TODO Rob: how to emulate this with the cairo backend?
+		// gdk_gc_set_exposures(m_pGC, 1);
 
 		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 		m_cursor = GR_CURSOR_INVALID;
@@ -533,7 +508,7 @@ void GR_CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	setExposePending(true);
 }
 
-bool GR_CairoGraphics::startPrint(void)
+bool GR_CairoGraphics::startPrint()
 {
 	UT_ASSERT(0);
 	return false;
@@ -546,7 +521,7 @@ bool GR_CairoGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageN
 	return false;
 }
 
-bool GR_CairoGraphics::endPrint(void)
+bool GR_CairoGraphics::endPrint()
 {
 	UT_ASSERT(0);
 	return false;
@@ -564,7 +539,7 @@ void GR_CairoGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-GR_Graphics::ColorSpace GR_CairoGraphics::getColorSpace(void) const
+GR_Graphics::ColorSpace GR_CairoGraphics::getColorSpace() const
 {
 	return m_cs;
 }
@@ -697,12 +672,12 @@ void GR_CairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 										   GdkBitmap * mask)
 {
 	source
-		= gdk_pixmap_colormap_create_from_xpm_d(_getDrawable(),NULL,
+		= gdk_pixmap_colormap_create_from_xpm_d(GDK_DRAWABLE(m_pWin),NULL,
 							&mask, NULL,
 							pXPM);
 }
 
-GR_Graphics::Cursor GR_CairoGraphics::getCursor(void) const
+GR_Graphics::Cursor GR_CairoGraphics::getCursor() const
 {
 	return m_cursor;
 }
@@ -743,12 +718,12 @@ void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
-   	gdk_draw_drawable(_getDrawable(), m_pGC, _getDrawable(), tdu(x_src), tdu(y_src),
+   	gdk_draw_drawable(GDK_DRAWABLE(m_pWin), m_pGC, GDK_DRAWABLE(m_pWin), tdu(x_src), tdu(y_src),
    				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
 
 
-UT_uint32 GR_CairoGraphics::getDeviceResolution(void) const
+UT_uint32 GR_CairoGraphics::getDeviceResolution() const
 {
 	// TODO -- we should get this somewhere from the xft lib
 	return m_iDeviceResolution;
@@ -2262,7 +2237,7 @@ void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idh = _tduR(r.height);
 
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   _getDrawable(),
+												   GDK_DRAWABLE(m_pWin),
 												   NULL,
 												   idx, idy, 0, 0,
 												   idw, idh);
@@ -2302,7 +2277,7 @@ GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
 	GdkColormap* cmp = gdk_colormap_get_system();
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   _getDrawable(),
+												   GDK_DRAWABLE(m_pWin),
 												   cmp,
 												   idx, idy, 0, 0,
 												   idw, idh);
@@ -2745,7 +2720,7 @@ void GR_CairoGraphics::getCoverage(UT_NumberVector& coverage)
 	}
 }
 
-const std::vector<const char *> & GR_CairoGraphics::getAllFontNames(void)
+const std::vector<const char *> & GR_CairoGraphics::getAllFontNames()
 {
 	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 	bool bExclude = false;
@@ -2880,7 +2855,6 @@ void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 
 void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
 {
-	UT_ASSERT(m_pGC);
 	GdkColor c;
 
 	if (m_curColor == clr)
@@ -2900,26 +2874,15 @@ void GR_CairoGraphics::_setColor(GdkColor & c)
 
 	cairo_set_source_rgb(m_cr, c.red/65535., c.green/65535., c.blue/65535.);
 
-// TODO Rob deprecated below here
-// once we do that we can implement all the setColor() variants using the single call above
-	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
-
-	UT_ASSERT(ret == TRUE);
-	if(ret)
-	{
-		gdk_gc_set_foreground(m_pGC, &c);
-		
-		m_XftColor.color.red = c.red;
-		m_XftColor.color.green = c.green;
-		m_XftColor.color.blue = c.blue;
-		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = c.pixel;
-	}
-	else 
-	{
-		g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, "gdk_colormap_alloc_color() "
-			  "failed in %s", __PRETTY_FUNCTION__);
-	}
+/*!
+ * \todo Rob deprecated below here
+ * once we do that we can implement all the setColor() variants using the single call above
+ */
+	m_XftColor.color.red = c.red;
+	m_XftColor.color.green = c.green;
+	m_XftColor.color.blue = c.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = c.pixel;
 }
 
 void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -3071,11 +3034,12 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 	m_pRect = pRect;
 	if (pRect) {
 		// TODO Rob: nicify after removal of deprecated code
+		// also do the "draw sharp lines" thing?
 		double x1, y1, x2, y2;
 		x1 = _tduX(pRect->left);
 		y1 = _tduY(pRect->top);
-		x2 = x1 + _tduR(pRect->width);
-		y2 = y1 + _tduR(pRect->height);
+		x2 = x1 + _tduR(pRect->width) - 1;
+		y2 = y1 + _tduR(pRect->height) - 1;
 		cairo_clip_extents(m_cr, &x1, &y1, &x2, &y2);
 	}
 	else 
@@ -3087,25 +3051,15 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
  */
 	if (pRect)
 	{
-		GdkRectangle r;
-		UT_sint32 idy = _tduY(pRect->top);
-		UT_sint32 idx = _tduX(pRect->left);
-		r.x = idx;
-		r.y = idy;
-		r.width = _tduR(pRect->width);
-		r.height = _tduR(pRect->height);
-		gdk_gc_set_clip_rectangle(m_pGC, &r);
 		XRectangle xRect;
-		xRect.x = r.x;
-		xRect.y = r.y;
-		xRect.width = r.width;
-		xRect.height = r.height;
+		xRect.x = _tduX(pRect->left);
+		xRect.y = _tduY(pRect->top);
+		xRect.width = _tduR(pRect->width);
+		xRect.height = _tduR(pRect->height);
 		XftDrawSetClipRectangles (m_pXftDraw,0,0,&xRect,1);
 	}
 	else
 	{
-		gdk_gc_set_clip_rectangle(m_pGC, NULL);
-
 		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
 		XftDrawSetClip(m_pXftDraw, 0);
 	}
@@ -3125,7 +3079,7 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	cairo_restore(m_cr);
 }
 
-GR_Font * GR_CairoGraphics::getGUIFont(void)
+GR_Font * GR_CairoGraphics::getGUIFont()
 {
 	if (!m_pPFontGUI)
 	{
@@ -4012,7 +3966,7 @@ void GR_UnixPangoPrintGraphics::setLineWidth(UT_sint32 iLineWidth)
 	gnome_print_setlinewidth (m_gpc, m_dLineWidth); 
 }
 
-bool GR_UnixPangoPrintGraphics::_startDocument(void)
+bool GR_UnixPangoPrintGraphics::_startDocument()
 {
 	return true;
 }
@@ -4027,7 +3981,7 @@ bool GR_UnixPangoPrintGraphics::_startPage(const char * szPageLabel)
 	return true;
 }
 
-bool GR_UnixPangoPrintGraphics::_endPage(void)
+bool GR_UnixPangoPrintGraphics::_endPage()
 {
 	if(m_bNeedStroked)
 		gnome_print_stroke(m_gpc);
@@ -4039,7 +3993,7 @@ bool GR_UnixPangoPrintGraphics::_endPage(void)
 	return true;
 }
 
-bool GR_UnixPangoPrintGraphics::_endDocument(void)
+bool GR_UnixPangoPrintGraphics::_endDocument()
 {
 	if(!m_gpm)
 		return true;
@@ -4068,12 +4022,12 @@ bool GR_UnixPangoPrintGraphics::_endDocument(void)
 	return true;
 }
 
-UT_uint32 GR_UnixPangoPrintGraphics::_getResolution(void) const
+UT_uint32 GR_UnixPangoPrintGraphics::_getResolution() const
 {
 	return 72; // was 72
 }
 
-bool GR_UnixPangoPrintGraphics::startPrint(void)
+bool GR_UnixPangoPrintGraphics::startPrint()
 {
 	UT_ASSERT(!m_bStartPrint || !m_gpm);
 	m_bStartPrint = true;
@@ -4103,12 +4057,12 @@ void GR_UnixPangoPrintGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 	m_cs = c;
 }
 
-GR_Graphics::ColorSpace GR_UnixPangoPrintGraphics::getColorSpace(void) const
+GR_Graphics::ColorSpace GR_UnixPangoPrintGraphics::getColorSpace() const
 {
 	return m_cs;
 }
 
-UT_uint32 GR_UnixPangoPrintGraphics::getDeviceResolution(void) const
+UT_uint32 GR_UnixPangoPrintGraphics::getDeviceResolution() const
 {
 	return _getResolution();
 }
@@ -4230,7 +4184,7 @@ void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor )
 	UT_ASSERT_NOT_REACHED ();
 }
 
-GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor(void) const
+GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor() const
 {
 	UT_ASSERT_NOT_REACHED ();
 	return GR_CURSOR_INVALID;

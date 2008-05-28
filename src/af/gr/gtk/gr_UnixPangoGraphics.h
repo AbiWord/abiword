@@ -169,7 +169,7 @@ public:
 										  const char * pszLang);
 	
 	virtual void           setFont(const GR_Font *);
-	virtual void           clearFont(void) {m_pPFont = NULL;} 
+	virtual void           clearFont() {m_pPFont = NULL;} 
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
 	
@@ -205,7 +205,7 @@ public:
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor &clr);
 	
-	virtual GR_Font * getGUIFont(void);
+	virtual GR_Font * getGUIFont();
 	
 	PangoFontMap * getFontMap() const {return m_pFontMap;}
 	PangoContext * getContext() const {return m_pContext;}
@@ -233,8 +233,8 @@ public:
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
-	bool isDingbat(void) const {return m_bIsDingbat;}
-	bool isSymbol(void) const {return m_bIsSymbol;};
+	bool isDingbat() const {return m_bIsDingbat;}
+	bool isSymbol() const {return m_bIsSymbol;};
 	
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
@@ -247,9 +247,9 @@ public:
 	virtual void getCoverage(UT_NumberVector& coverage);
 	virtual void setLineWidth(UT_sint32);
 	virtual void setClipRect(const UT_Rect* pRect);
-	virtual UT_uint32 getDeviceResolution(void) const;
+	virtual UT_uint32 getDeviceResolution() const;
 
-	static  const std::vector<const char *> &       getAllFontNames(void);
+	static  const std::vector<const char *> &       getAllFontNames();
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
 									 const char * pszLang = NULL);
@@ -267,18 +267,18 @@ public:
 									   UT_sint32 iDisplayHeight,
 									   GR_Image::GRType =GR_Image::GRT_Raster);
  
-  	virtual bool		startPrint(void);
-	virtual bool		endPrint(void);
+  	virtual bool		startPrint();
+	virtual bool		endPrint();
 	virtual bool		startPage(const char * szPageLabel,
 								  UT_uint32 pageNumber,
 								  bool bPortrait,
 								  UT_uint32 iWidth, UT_uint32 iHeight);
 
 	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
-	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	virtual GR_Graphics::ColorSpace getColorSpace() const;
 	
 	virtual void		setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual GR_Graphics::Cursor getCursor() const;
 
 	virtual void		setColor3D(GR_Color3D c);
 	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
@@ -308,9 +308,6 @@ public:
 	GR_CairoGraphics(GdkWindow * win);
 	GR_CairoGraphics();
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
-	virtual GdkDrawable * _getDrawable(void)
-	{  return static_cast<GdkDrawable *>(m_pWin);}
-
 	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
 	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
 
@@ -350,7 +347,6 @@ public:
 	GdkWindow *       m_pWin;
 	GdkGC*            m_pGC;
 
-	GdkColormap* 	  m_pColormap;
 	int               m_iWindowHeight;
 	int	              m_iWindowWidth;
 	
@@ -444,16 +440,16 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
-	virtual bool startPrint(void);
+	virtual bool startPrint();
 	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual bool endPrint(void);
+	virtual bool endPrint();
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
-	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	virtual GR_Graphics::ColorSpace getColorSpace() const;
 	
 	virtual void setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual GR_Graphics::Cursor getCursor() const;
 
 	virtual void					setColor3D(GR_Color3D c);
 	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
@@ -465,8 +461,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
-	virtual UT_uint32 getDeviceResolution(void) const;
-	virtual bool      canQuickPrint(void)
+	virtual UT_uint32 getDeviceResolution() const;
+	virtual bool      canQuickPrint()
 	{ return true;}
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
@@ -475,9 +471,9 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	virtual UT_uint32 getFontAscent(const GR_Font *);
 	virtual UT_uint32 getFontDescent(const GR_Font *);
 	virtual UT_uint32 getFontHeight(const GR_Font *);
-	virtual double    getResolutionRatio(void)
+	virtual double    getResolutionRatio()
 	{ return _getResolutionRatio();}
-	GnomePrintContext * getGnomePrintContext(void) { return m_gpc;}
+	GnomePrintContext * getGnomePrintContext() { return m_gpc;}
 
 	static GnomePrintConfig * s_setup_config (double mrgnTop,
 											  double mrgnBottom,
@@ -494,22 +490,22 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 								double width, double height,
 								int copies, bool portrait);
 	
-	void   setPdfWorkaround(void)
+	void   setPdfWorkaround()
 	{ m_bPdfLandscapeWorkaround = true;}
 
   protected:
-	double  _getResolutionRatio(void)
+	double  _getResolutionRatio()
 	{
 		return m_dResRatio;
 	}
 
-	UT_uint32 _getResolution(void) const;
+	UT_uint32 _getResolution() const;
 	void      _drawAnyImage (GR_Image* pImg, UT_sint32 xDest,
 							 UT_sint32 yDest, bool rgb);
-	bool      _startDocument(void);
+	bool      _startDocument();
 	bool      _startPage(const char * szPageLabel);
-	bool      _endPage(void);
-	bool      _endDocument(void);
+	bool      _endPage();
+	bool      _endDocument();
 
 
   private:
