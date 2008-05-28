@@ -247,7 +247,7 @@ public:
 	virtual void getCoverage(UT_NumberVector& coverage);
 	virtual void setLineWidth(UT_sint32);
 	virtual void setClipRect(const UT_Rect* pRect);
-	virtual UT_uint32 getDeviceResolution() const;
+	virtual UT_uint32 getDeviceResolution() const { return m_iDeviceResolution; }
 
 	static  const std::vector<const char *> &       getAllFontNames();
 	static  UT_uint32                         getAllFontCount();
@@ -345,9 +345,6 @@ public:
 
 	cairo_t *         m_cr;
 	GdkWindow *       m_pWin;
-
-	int               m_iWindowHeight;
-	int	              m_iWindowWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;

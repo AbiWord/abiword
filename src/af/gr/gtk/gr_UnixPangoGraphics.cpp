@@ -729,13 +729,6 @@ void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	gdk_region_destroy (region);
 }
 
-
-UT_uint32 GR_CairoGraphics::getDeviceResolution() const
-{
-	// TODO -- we should get this somewhere from the xft lib
-	return m_iDeviceResolution;
-}
-
 UT_sint32 GR_CairoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
 {
         if (height) { 
