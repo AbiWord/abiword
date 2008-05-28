@@ -112,7 +112,7 @@ PP_AttrProp::~PP_AttrProp()
 /*!
  * Returns the number of properties in this PP_AttrProp.
  *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
+ * BE WARY, BE VERY WARY, the count can be greater than the number of valid items
  * stored in the hash -- always check the return value of getNthProperty()
  */
 size_t PP_AttrProp::getPropertyCount (void) const
@@ -126,7 +126,7 @@ size_t PP_AttrProp::getPropertyCount (void) const
 /*!
  * Returns the number of attributes in this PP_AttrProp.
  *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
+ * BE WARY, BE VERY WARY, the count can be greater than the number of valid items
  * stored in the hash -- always check the return value of getNthAttribute()
  */
 size_t PP_AttrProp::getAttributeCount (void) const
@@ -248,10 +248,12 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 		{
 			// p will point to the property name.  q will be the property value.
 			char *p = z;
-			char *q = p;
+			
 			// skip the whitespace before the property name
 			while (isspace(*p))
 				p++;
+
+			char *q = p;
 
 			// skip to the colon to find the value
 			while (*q && (*q != ':'))
