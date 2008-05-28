@@ -31,10 +31,11 @@ public:
 	void						runModal(XAP_Frame * pFrame);
 	static BOOL CALLBACK		s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-
-	void						event_Ok();
+	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 private:
+	UT_UTF8String				_getText(HWND hWnd, int nID);
+	
 	XAP_Win32DialogHelper *		m_pWin32Dialog;
 	HINSTANCE 					m_hInstance;
 };

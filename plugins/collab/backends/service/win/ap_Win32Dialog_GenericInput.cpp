@@ -38,12 +38,12 @@ BOOL CALLBACK AP_Win32Dialog_GenericInput::s_dlgProc(HWND hWnd, UINT msg, WPARAM
 			SetWindowLong(hWnd,DWL_USER,lParam);
 			return pThis->_onInitDialog(hWnd,wParam,lParam);
 		}
-		/*case WM_COMMAND:
+		case WM_COMMAND:
 		{
 			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLong(hWnd,DWL_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
-		}*/
+		}
 		case WM_DESTROY:
 		{
 			AP_Win32Dialog_GenericInput* pThis = (AP_Win32Dialog_GenericInput *)GetWindowLong(hWnd,DWL_USER);
@@ -80,6 +80,9 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
+	// default value
+	m_answer = AP_Dialog_GenericInput::a_CANCEL;		
+
 	// create the dialog
 	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICINPUT,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
@@ -97,11 +100,6 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 	};
 }
 
-void AP_Win32Dialog_GenericInput::event_Ok()
-{
-	// TODO: imeplement me
-}
-
 BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// Get ourselves a custom DialogHelper
@@ -111,5 +109,49 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	// Center Window
 	m_pWin32Dialog->centerDialog();
 
+	// set the dialog title
+	m_pWin32Dialog->setDialogTitle(getTitle().utf8_str());
+
+	// set the question
+	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_QUESTION, getQuestion().utf8_str());
+	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_LABEL, getLabel().utf8_str());
+
+	// set the password char for the password field
+	HWND hPasswordEntry = GetDlgItem(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT);
+	UT_return_val_if_fail(hPasswordEntry != NULL, false)
+	SendMessage(hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
+
 	return true;
+}
+
+#define READ_STRING(E, S) std::string S(255, ' '); S.resize(SendMessage(E, WM_GETTEXT, S.size()-1, (LPARAM)&S[0]));
+
+BOOL AP_Win32Dialog_GenericInput::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wId = LOWORD(wParam);
+	
+	switch (wId)
+	{
+	case AP_RID_DIALOG_GENERICINPUT_OK_BUTTON:
+		_setInput(_getText(hWnd, AP_RID_DIALOG_GENERICINPUT_PASSWORD_EDIT));
+		m_answer = AP_Dialog_GenericInput::a_OK;
+		EndDialog(hWnd, 0);
+		return true;
+	case AP_RID_DIALOG_GENERICINPUT_CANCEL_BUTTON:
+		m_answer = AP_Dialog_GenericInput::a_CANCEL;
+		EndDialog(hWnd, 0);
+		return true;		
+	default:
+		return false;
+	}
+}
+
+UT_UTF8String AP_Win32Dialog_GenericInput::_getText(HWND hWnd, int nID)
+{
+	int buflen = 4096;
+	char szBuff[buflen];
+	*szBuff=0;
+	GetDlgItemText(hWnd, nID, szBuff, buflen);
+	szBuff[buflen-1] = '\0';
+	return AP_Win32App::s_fromWinLocaleToUTF8(szBuff);
 }
