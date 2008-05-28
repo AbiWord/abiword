@@ -19,8 +19,6 @@
 #ifndef AP_WIN32DIALOG_GENERICINPUT_H
 #define AP_WIN32DIALOG_GENERICINPUT_H
 
-#include "ap_Win32Res_DlgGenericInput.rc2"
-
 #include <backends/service/xp/ap_Dialog_GenericInput.h>
 
 class XAP_Frame;

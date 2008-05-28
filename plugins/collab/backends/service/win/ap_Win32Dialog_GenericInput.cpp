@@ -24,6 +24,7 @@
 #include "ut_string_class.h"
 #include <xp/AbiCollabSessionManager.h>
 
+#include "ap_Win32Res_DlgGenericInput.rc2"
 #include "ap_Win32Dialog_GenericInput.h"
 
 BOOL CALLBACK AP_Win32Dialog_GenericInput::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -80,8 +81,7 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(m_hInstance);
 
 	// create the dialog
-	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_GENERICINPUT);
-	int result = DialogBoxParam( m_hInstance, lpTemplate,
+	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICINPUT,
 		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 		(DLGPROC)s_dlgProc, (LPARAM)this );
 	switch (result)
@@ -90,7 +90,7 @@ void AP_Win32Dialog_GenericInput::runModal(XAP_Frame * pFrame)
 			// MSDN: If the function fails because the hWndParent parameter is invalid, the return value is zero.
 			break;
 		case -1:
-			UT_DEBUGMSG(("Win32 error: %d.  lpTemplate: %d, RID:%d\n", GetLastError(), lpTemplate, AP_RID_DIALOG_GENERICINPUT));
+			UT_DEBUGMSG(("Win32 error: %d, RID: %s\n", GetLastError(), AP_RID_DIALOG_GENERICINPUT));
 			break;
 		default:
 			break;
