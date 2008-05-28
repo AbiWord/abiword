@@ -251,7 +251,6 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_iDeviceResolution(96),
 	 m_cr (gdk_cairo_create(win)),
 	 m_pWin (win),
- 	 m_pGC (NULL),
 	 m_pVisual (NULL),
 	 m_pXftDraw (NULL),
 	 m_iXoff (0),
@@ -276,7 +275,6 @@ GR_CairoGraphics::GR_CairoGraphics()
 	 m_iDeviceResolution(96),
 	 m_cr (NULL),
 	 m_pWin (NULL),
- 	 m_pGC (NULL),
 	 m_pVisual (NULL),
 	 m_pXftDraw (NULL),
 	 m_iXoff (0),
@@ -316,12 +314,9 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	// purge saved pixbufs
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
-		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
+		GdkPixbuf * pix = m_vSaveRectBuf.getNthItem(i);
 		g_object_unref (G_OBJECT (pix));
 	}
-
-	if (G_IS_OBJECT(m_pGC))
-		g_object_unref (G_OBJECT(m_pGC));
 }
 
 void GR_CairoGraphics::init()
@@ -348,10 +343,7 @@ void GR_CairoGraphics::init()
 				m_iYoff = 0;
 		}
 
-		//
 		// Martin's attempt to make double buffering work.with xft
-		//
-		m_pGC = gdk_gc_new(realDraw);
 		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
 		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
 
@@ -713,13 +705,28 @@ void GR_CairoGraphics::init3dColors(GtkStyle * pStyle)
 	m_bHave3DColors = true;
 }
 
+/*!
+ * This method is platform-dependent.
+ */
 void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
-   	gdk_draw_drawable(GDK_DRAWABLE(m_pWin), m_pGC, GDK_DRAWABLE(m_pWin), tdu(x_src), tdu(y_src),
-   				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+	GdkRectangle rect;
+	GdkRegion *region;
+
+	// not an elegant way to disable all carets, but it works beautifully - MARCM
+	GR_Painter caretDisablerPainter(this); 
+
+	rect.x = tdu(x_src);
+	rect.y = tdu(y_src);
+	rect.width = tdu(width);
+	rect.height = tdu(height);
+
+	region = gdk_region_rectangle (&rect);
+	gdk_window_move_region (m_pWin, region, x_dest - x_src, y_dest - y_src);
+
+	gdk_region_destroy (region);
 }
 
 
@@ -2221,16 +2228,16 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	return iWidth;
 }
 
-void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
+void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 index)
 {
-	UT_Rect* oldR = NULL;	
+	UT_Rect *oldR = NULL;	
+	GdkPixbuf *oldC = NULL;
 
-	m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
+	m_vSaveRect.setNthItem(index, new UT_Rect(r),&oldR);
 	if(oldR) {
 		delete oldR;
 	}
 
-	GdkPixbuf * oldC = NULL;
 	UT_sint32 idx = _tduX(r.left);
 	UT_sint32 idy = _tduY(r.top);
 	UT_sint32 idw = _tduR(r.width);
@@ -2241,21 +2248,21 @@ void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 												   NULL,
 												   idx, idy, 0, 0,
 												   idw, idh);
-	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
+	m_vSaveRectBuf.setNthItem(index, pix, &oldC);
 
 	if(oldC)
 		g_object_unref (G_OBJECT (oldC));
 }
 
-void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndx)
+void GR_CairoGraphics::restoreRectangle(UT_uint32 index)
 {
 	UT_Rect *rect;
 	GdkPixbuf *pixbuf;
 	UT_sint32 x;
 	UT_sint32 y;
 
-	rect = m_vSaveRect.getNthItem(iIndx);
-	pixbuf = m_vSaveRectBuf.getNthItem(iIndx);
+	rect = m_vSaveRect.getNthItem(index);
+	pixbuf = m_vSaveRectBuf.getNthItem(index);
 	x = _tduX(rect->left);
 	y = _tduY(rect->top);
 
@@ -2287,7 +2294,7 @@ GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
 	pImg->m_image = pix;
 	pImg->setDisplaySize(idw,idh);
-	return static_cast<GR_Image *>(pImg);
+	return pImg;
 }
 
 /*!
@@ -3170,7 +3177,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 }
 
 /*!
- * Rob sez: the original gdk implementation did not restore colours after drawing, 
+ * Rob sez: the original (before cairo) implementation did not restore colours after drawing, 
  * so the cairo one does neither.
  */
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
