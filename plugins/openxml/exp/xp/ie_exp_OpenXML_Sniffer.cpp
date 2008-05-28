@@ -104,8 +104,8 @@ bool IE_Exp_OpenXML_Sniffer::getDlgLabels (const char ** szDesc,
 										const char ** szSuffixList,
 										IEFileType * ft)
 {
-	*szDesc = "OpenXML (.docx, .dotx, .docm, .dotm)";
-	*szSuffixList = "*.docx; *.dotx; *.docm; *.dotm";
+	*szDesc = "OpenXML (.docx)";
+	*szSuffixList = "*.docx";
 	*ft = getFileType();
   
 	return true;
