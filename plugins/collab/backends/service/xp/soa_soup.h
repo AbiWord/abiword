@@ -84,8 +84,12 @@ namespace soup_soa {
 	};
 
 	/* private function prototypes */
-	
+
+#ifdef SOUP24	
+	static void _got_chunk_cb(SoupMessage* msg, SoupBuffer *chunk, SoaSoupSession* progress_info);
+#else
 	static void _got_chunk_cb(SoupMessage *msg, SoaSoupSession* user_data);
+#endif
 	static soa::GenericPtr _invoke(const std::string& url, const soa::method_invocation& mi, SoaSoupSession& sess);
 	
 	/* public functions */
@@ -148,7 +152,11 @@ namespace soup_soa {
 		return soa::parse_response(result, mi.function().response());
 	}
 
+#ifdef SOUP24
+	static void _got_chunk_cb(SoupMessage* msg, SoupBuffer *chunk, SoaSoupSession* progress_info)
+#else
 	static void _got_chunk_cb(SoupMessage* msg, SoaSoupSession* progress_info)
+#endif
 	{
 		UT_return_if_fail(msg && msg->response_headers);
 		if (!progress_info)

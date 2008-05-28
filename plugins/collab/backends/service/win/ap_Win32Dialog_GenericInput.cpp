@@ -124,8 +124,6 @@ BOOL AP_Win32Dialog_GenericInput::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	return true;
 }
 
-#define READ_STRING(E, S) std::string S(255, ' '); S.resize(SendMessage(E, WM_GETTEXT, S.size()-1, (LPARAM)&S[0]));
-
 BOOL AP_Win32Dialog_GenericInput::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	WORD wId = LOWORD(wParam);

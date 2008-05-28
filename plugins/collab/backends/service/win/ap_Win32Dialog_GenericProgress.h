@@ -29,11 +29,17 @@ public:
 	AP_Win32Dialog_GenericProgress(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void						runModal(XAP_Frame * pFrame);
+	static BOOL					s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	virtual void				close();
 	virtual void				setProgress(UT_uint32 progress);
 
 private:
+
+	XAP_Win32DialogHelper *		m_pWin32Dialog;
+	HINSTANCE 					m_hInstance;
 };
 
 #endif /* __AP_WIN32DIALOG_GENERICPROGRESS_H__ */

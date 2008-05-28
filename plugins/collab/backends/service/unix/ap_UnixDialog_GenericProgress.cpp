@@ -104,7 +104,7 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	// set the dialog title
 	abiDialogSetTitle(window, getTitle().utf8_str());
 	
-	// set the question
+	// set the informative label
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbInformation")), getInformation().utf8_str());
 	//gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbLabel")), getLabel().utf8_str());
 
