@@ -55,6 +55,8 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 	//get the file pointer (target file)
 	GsfOutput* sink = getFp();
 
+	if(!sink)
+		return UT_SAVE_EXPORTERROR;
 
 
 	/** STEP 1. OPEN NEW FILES FOR WRITING **/
@@ -66,6 +68,7 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 	{
 		UT_DEBUGMSG(("FRT: ERROR, Zip root file couldn't be created\n"));	
 		UT_DEBUGMSG(("FRT: Stopping the OpenXML exporting process\n"));
+		g_object_unref (G_OBJECT (sink));
 		return UT_IE_COULDNOTWRITE;		
 	}
 
@@ -239,6 +242,7 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 	if(!gsf_output_close(relFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
+		gsf_output_close((GsfOutput*)relsDir);
 		return UT_SAVE_EXPORTERROR;		
 	}
 	if(!gsf_output_close((GsfOutput*)relsDir))
@@ -322,6 +326,7 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 	if(!gsf_output_close(documentFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
+		gsf_output_close((GsfOutput*)wordDir);
 		return UT_SAVE_EXPORTERROR;		
 	}
 	if(!gsf_output_close((GsfOutput*)wordDir))
