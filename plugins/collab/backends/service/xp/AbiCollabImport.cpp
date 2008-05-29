@@ -187,7 +187,7 @@ bool IE_Imp_AbiCollab::_parse(GsfInput * input, std::string& email, std::string&
 			revision_ = reinterpret_cast<const char*>(xmlNodeGetContent(child)); // FIXME: memory leak
 	}
 	
-	UT_return_val_if_fail(email != "" && server != "" & doc_id_ != "" && revision_ != "", false);
+	UT_return_val_if_fail(email != "" && server != "" && doc_id_ != "" && revision_ != "", false);
 	
 	try {
 		doc_id = boost::lexical_cast<int64_t>(doc_id_);
