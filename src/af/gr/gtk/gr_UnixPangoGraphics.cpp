@@ -41,19 +41,9 @@
 #include "ut_vector.h"
 #include "ut_locale.h"
 
-// need this to include what Pango considers 'low-level' api
-#define PANGO_ENABLE_ENGINE
-
-#include <pango/pango-item.h>
-#include <pango/pango-engine.h>
-#include <pango/pangoxft.h>
-
-#ifdef HAVE_PANGOFT2
-  #include <pango/pangoft2.h>
-#endif
-
 #include <math.h>
-
+#include <fontconfig/fontconfig.h>
+#include <pango/pangoxft.h>
 #include <gdk/gdkx.h>
 
 #ifdef ENABLE_PRINT
@@ -248,8 +238,6 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_iDeviceResolution(96),
 	 m_cr (gdk_cairo_create(win)),
 	 m_pWin (win),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
 	 m_iXoff (0),
 	 m_iYoff (0),
 	 m_bIsSymbol (false),
@@ -272,8 +260,6 @@ GR_CairoGraphics::GR_CairoGraphics()
 	 m_iDeviceResolution(96),
 	 m_cr (NULL),
 	 m_pWin (NULL),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
 	 m_iXoff (0),
 	 m_iYoff (0),
 	 m_bIsSymbol (false),
@@ -302,9 +288,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	if (m_cr)
 		cairo_destroy(m_cr);
-
-	if (m_pXftDraw)
-		g_free(m_pXftDraw);
 
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
@@ -341,25 +324,10 @@ void GR_CairoGraphics::init()
 				m_iYoff = 0;
 		}
 
-		// Martin's attempt to make double buffering work.with xft
-		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
-		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
-
-		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
-								   m_pVisual, m_Colormap);
-		m_XftColor.color.red = 0;
-		m_XftColor.color.green = 0;
-		m_XftColor.color.blue = 0;
-		m_XftColor.color.alpha = 0xffff;
-		// Rob: temporarily use this instead of gdk
-		bool ret = XftColorAllocValue(GDK_DISPLAY_XDISPLAY(display), m_pVisual, m_Colormap, &m_XftColor.color, &m_XftColor);
-		g_assert(ret);
-
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		// TODO Rob: how to emulate this with the cairo backend?
 		// gdk_gc_set_exposures(m_pGC, 1);
-
 		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 		m_cursor = GR_CURSOR_INVALID;
 		setCursor(GR_CURSOR_DEFAULT);
@@ -376,51 +344,38 @@ void GR_CairoGraphics::init()
 
 	bool bGotResolution = false;
 	if (screen && display)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(screen);
-
-			FcPattern *pattern = FcPatternCreate();
-			if (pattern)
-			{
-				double dpi;
-				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (screen),
-									  iScreen,
-									  pattern);
-
-				if(FcResultMatch == FcPatternGetDouble (pattern,
-														FC_DPI, 0, &dpi))
-				{
-					m_iDeviceResolution = (UT_uint32)round(dpi);
-					bGotResolution = true;
-				}
-
-				FcPatternDestroy (pattern);
-			}
-			
-			if (!bGotResolution)
-			{
-				// that didn't work. try getting it from the screen
-				m_iDeviceResolution =
-					(UT_uint32)round((gdk_screen_get_width(screen) * 25.4) /
-									 gdk_screen_get_width_mm (screen));
-			}
-
-			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
-						 m_iDeviceResolution));
-			
-		}
-#ifdef HAVE_PANGOFT2
-	else
 	{
-		m_iDeviceResolution = 72;
-		m_pFontMap = pango_ft2_font_map_new ();
-		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
-										  m_iDeviceResolution,
-										  m_iDeviceResolution);	
-		m_pContext = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap));
-		m_bOwnsFontMap = true;
+		static int xftInitialized = XftInit(NULL);
+		int iScreen = gdk_x11_screen_get_screen_number(screen);
+
+		FcPattern *pattern = FcPatternCreate();
+		if (pattern)
+		{
+			double dpi;
+			XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (screen), iScreen, pattern);
+
+			if(FcResultMatch == FcPatternGetDouble (pattern, FC_DPI, 0, &dpi))
+			{
+				m_iDeviceResolution = (UT_uint32)round(dpi);
+				bGotResolution = true;
+				UT_DEBUGMSG(("Resolution is %ddpi (from xft)\n", m_iDeviceResolution));
+			}
+			FcPatternDestroy (pattern);
+		}
+		
+		if (!bGotResolution)
+		{
+			// that didn't work. try getting it from the screen
+			m_iDeviceResolution = (UT_uint32)round((gdk_screen_get_width(screen) * 25.4) /
+								 gdk_screen_get_width_mm (screen));
+			UT_DEBUGMSG(("Resolution is %ddpi (from gdk)\n", m_iDeviceResolution));
+		}
 	}
-#endif
+	else 
+	{
+		m_iDeviceResolution = pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+		UT_DEBUGMSG(("Resolution is %ddpi (cairo default)\n", m_iDeviceResolution));
+	}
 }
 
 bool GR_CairoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -676,7 +631,7 @@ void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS && m_bHave3DColors);
 
-	_setColor(m_3dColors[c]);
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
 }
 
 bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -686,7 +641,7 @@ bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
 	if (m_bHave3DColors) {
 		color.m_red = m_3dColors[name].red >> 8;
 		color.m_grn = m_3dColors[name].green >> 8;
-		color.m_blu =m_3dColors[name].blue >> 8;
+		color.m_blu = m_3dColors[name].blue >> 8;
 		return true;
 	}
 	return false;
@@ -1327,7 +1282,7 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
+	UT_return_if_fail(RI.m_pGlyphs);
 
 	// TODO -- test here for the endpoint as well
 	if(RI.m_iOffset == 0 &&
@@ -2002,8 +1957,6 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * /*pCharWidth*/)
 {
-	UT_return_if_fail(m_pXftDraw);
-
 	UT_UTF8String utf8;
 
 	if(isSymbol())
@@ -2817,36 +2770,11 @@ void GR_CairoGraphics::getColor(UT_RGBColor& clr)
 	clr = m_curColor;
 }
 
-void GR_CairoGraphics::setColor(const UT_RGBColor& clr)
+void GR_CairoGraphics::setColor(const UT_RGBColor& c)
 {
-	GdkColor c;
+	GR_VERBOSE (printf("%s() %02x%02x%02x\n", __FUNCTION__, c.m_red, c.m_grn, c.m_blu));
 
-	if (m_curColor == clr)
-		return;
-
-	m_curColor = clr;
-	c.red = clr.m_red << 8;
-	c.blue = clr.m_blu << 8;
-	c.green = clr.m_grn << 8;
-
-	_setColor(c);
-}
-
-void GR_CairoGraphics::_setColor(GdkColor & c)
-{
-	GR_VERBOSE (printf("%s() %02x%02x%02x\n", __FUNCTION__, c.red>>8, c.green>>8, c.blue>>8));
-
-	cairo_set_source_rgb(m_cr, c.red/65535., c.green/65535., c.blue/65535.);
-
-/*!
- * \todo Rob deprecated below here
- * once we do that we can implement all the setColor() variants using the single call above
- */
-	m_XftColor.color.red = c.red;
-	m_XftColor.color.green = c.green;
-	m_XftColor.color.blue = c.blue;
-	m_XftColor.color.alpha = 0xffff;
-	m_XftColor.pixel = c.pixel;
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
 }
 
 void GR_CairoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -3009,23 +2937,6 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 	else 
 	{
 		cairo_reset_clip (m_cr);
-	}
-/*!
- * \todo Rob deprecated below here
- */
-	if (pRect)
-	{
-		XRectangle xRect;
-		xRect.x = _tduX(pRect->left);
-		xRect.y = _tduY(pRect->top);
-		xRect.width = _tduR(pRect->width);
-		xRect.height = _tduR(pRect->height);
-		XftDrawSetClipRectangles (m_pXftDraw,0,0,&xRect,1);
-	}
-	else
-	{
-		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
-		XftDrawSetClip(m_pXftDraw, 0);
 	}
 }
 

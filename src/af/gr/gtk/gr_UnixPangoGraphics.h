@@ -31,12 +31,8 @@
 #include "ut_string_class.h"
 #include "gr_RenderInfo.h"
 
-#include <pango/pango-font.h>
-
+#include <pango/pango.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
-
-#include <X11/Xft/Xft.h>
 
 #ifdef ENABLE_PRINT
 #include <libgnomeprint/gnome-print.h>
@@ -312,8 +308,6 @@ public:
 	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
-	void         _setColor(GdkColor & c);
-
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
   protected:
@@ -335,15 +329,10 @@ public:
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
-	Drawable				m_Drawable;
-	Visual*					m_pVisual;
-	Colormap				m_Colormap;
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
-	XftDraw*				m_pXftDraw;
-	XftColor				m_XftColor;
 	UT_RGBColor				m_curColor;
 	UT_sint32               m_iXoff;
 	UT_sint32               m_iYoff;

@@ -37,6 +37,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <glib.h>
+#include <X11/Xlib.h>
 
 #include "ut_debugmsg.h"
 #include "ut_path.h"
