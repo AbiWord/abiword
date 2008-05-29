@@ -36,6 +36,7 @@ BeginLayout(FormatOps, AP_STRING_ID_TB_Format, AP_PREF_KEY_FormatBarVisible)
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
