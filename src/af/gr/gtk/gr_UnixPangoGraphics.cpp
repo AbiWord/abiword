@@ -42,9 +42,6 @@
 #include "ut_locale.h"
 
 #include <math.h>
-#include <fontconfig/fontconfig.h>
-#include <pango/pangoxft.h>
-#include <gdk/gdkx.h>
 
 #ifdef ENABLE_PRINT
   #include <libgnomeprint/gnome-print-pango.h>
@@ -299,6 +296,7 @@ void GR_CairoGraphics::init()
 	m_cursor = GR_CURSOR_INVALID;
 	m_pFontMap = pango_cairo_font_map_get_default();
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
 	if (m_pWin)
 	{
@@ -315,44 +313,6 @@ void GR_CairoGraphics::init()
 	{
 		display = gdk_display_get_default();
 		screen = gdk_screen_get_default();
-	}
-
-	bool bGotResolution = false;
-	if (screen && display)
-	{
-		static int xftInitialized = 0;
-		int iScreen = gdk_x11_screen_get_screen_number(screen);
-
-		if (!xftInitialized)
-			xftInitialized = XftInit(NULL);
-
-		FcPattern *pattern = FcPatternCreate();
-		if (pattern)
-		{
-			double dpi;
-			XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (screen), iScreen, pattern);
-
-			if(FcResultMatch == FcPatternGetDouble (pattern, FC_DPI, 0, &dpi))
-			{
-				m_iDeviceResolution = (UT_uint32)round(dpi);
-				bGotResolution = true;
-				UT_DEBUGMSG(("Resolution is %ddpi (from xft)\n", m_iDeviceResolution));
-			}
-			FcPatternDestroy (pattern);
-		}
-		
-		if (!bGotResolution)
-		{
-			// that didn't work. try getting it from the screen
-			m_iDeviceResolution = (UT_uint32)round((gdk_screen_get_width(screen) * 25.4) /
-								 gdk_screen_get_width_mm (screen));
-			UT_DEBUGMSG(("Resolution is %ddpi (from gdk)\n", m_iDeviceResolution));
-		}
-	}
-	else 
-	{
-		m_iDeviceResolution = pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-		UT_DEBUGMSG(("Resolution is %ddpi (cairo default)\n", m_iDeviceResolution));
 	}
 }
 
@@ -3460,12 +3420,6 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 void GR_UnixPangoPrintGraphics::_constructorCommon()
 {
 	setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-	
-	/* ascertain the real dpi that xft will be using, so we can match that
-	 * for our
-	 * gnome-print font map
-	 */
-	GdkScreen *  screen  = gdk_screen_get_default();
 
 	// the parent class' device resolution is the screen's resolution
 	m_iScreenResolution = m_iDeviceResolution;
@@ -3475,29 +3429,8 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
 				 m_iScreenResolution, m_iDeviceResolution));
 
-	if (screen)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(screen);
-			Display * disp = GDK_SCREEN_XDISPLAY (screen);
-
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-		}
-	else
-		{
-#ifdef HAVE_PANGOFT2
-			// hardcode to something sane-ish. printing and unixnull graphics will use this
-			// fallback case
-			m_iScreenResolution = m_iDeviceResolution;
-
-			m_pContext = pango_ft2_get_context(m_iScreenResolution, m_iScreenResolution);
-			m_pFontMap = pango_ft2_font_map_new ();
-			m_bOwnsFontMap = true;
-#else
-			UT_DEBUGMSG(("No screen, no display, and no PangoFT2. We're screwed.\n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-#endif
-		}
+	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
  	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
