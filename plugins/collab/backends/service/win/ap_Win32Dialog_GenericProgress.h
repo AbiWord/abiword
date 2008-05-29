@@ -40,6 +40,8 @@ private:
 
 	XAP_Win32DialogHelper *		m_pWin32Dialog;
 	HINSTANCE 					m_hInstance;
+	HWND						m_hWnd;
+	HWND						m_hProgress;
 };
 
 #endif /* __AP_WIN32DIALOG_GENERICPROGRESS_H__ */

@@ -66,7 +66,9 @@ pt2Constructor ap_Dialog_GenericProgress_Constructor = &AP_Win32Dialog_GenericPr
 AP_Win32Dialog_GenericProgress::AP_Win32Dialog_GenericProgress(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_GenericProgress(pDlgFactory, id),
 	m_pWin32Dialog(NULL),
-	m_hInstance(NULL)	
+	m_hInstance(NULL),
+	m_hWnd(NULL),
+	m_hProgress(NULL)
 {
 	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -81,7 +83,7 @@ void AP_Win32Dialog_GenericProgress::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(m_hInstance);
 
 	// default value
-	m_answer = AP_Dialog_GenericProgress::a_OK;		
+	m_answer = AP_Dialog_GenericProgress::a_CANCEL;		
 
 	// create the dialog
 	int result = DialogBoxParam( m_hInstance, AP_RID_DIALOG_GENERICPROGRESS,
@@ -103,16 +105,16 @@ void AP_Win32Dialog_GenericProgress::runModal(XAP_Frame * pFrame)
 void AP_Win32Dialog_GenericProgress::close()
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_GenericProgress::close()\n"));
-	
-	// TODO: implement me
+	UT_return_if_fail(m_hWnd);
+	m_answer = AP_Dialog_GenericProgress::a_OK;	
+	EndDialog(m_hWnd, 0);
 }
 
 void AP_Win32Dialog_GenericProgress::setProgress(UT_uint32 progress)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_GenericProgress::setProgress() - progress: %d\n", progress));
 	UT_return_if_fail(progress >= 0 && progress <= 100);
-	
-	// TODO: implement me
+	SendMessage(m_hProgress, PBM_SETPOS, progress, 0);
 }
 
 BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -120,6 +122,7 @@ BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	// Get ourselves a custom DialogHelper
 	DELETEP(m_pWin32Dialog);
 	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
+	m_hWnd = hWnd;
 	
 	// Center Window
 	m_pWin32Dialog->centerDialog();
@@ -131,7 +134,15 @@ BOOL AP_Win32Dialog_GenericProgress::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
 	SetDlgItemText(hWnd, AP_RID_DIALOG_GENERICINPUT_INFORMATION, getInformation().utf8_str());
 
 	// add the progress bar
-	// TODO: PROGRESS        AP_RID_DIALOG_GENERICINPUT_PROGRESS,8,16,184,14
+	RECT r;
+	r.left = 8;
+	r.top = 16;
+	r.right = 8 + 184 - 1;
+	r.bottom = 16 + 14 - 1;
+	MapDialogRect(m_hWnd, &r);
+	m_hProgress = CreateWindowEx(WS_EX_NOPARENTNOTIFY, PROGRESS_CLASS, "Progress", WS_CHILD | WS_GROUP | WS_VISIBLE,
+	r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1, m_hWnd, (HMENU) AP_RID_DIALOG_GENERICPROGRESS_PROGRESS, m_hInstance, 0);
+	UT_return_val_if_fail(m_hProgress, false);
 
 	return true;
 }
