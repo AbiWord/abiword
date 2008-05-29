@@ -108,7 +108,7 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 	/** STEP 3. CLOSE THE FILES **/
 
 	//try to close the zip root file and make sure it is closed
-	if(!gsf_output_close((GsfOutput*)root))
+	if(!gsf_output_close(GSF_OUTPUT(root)))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
 		_cleanup();
@@ -207,7 +207,7 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
 		//try to close the _rels directory since there is an error
-		gsf_output_close((GsfOutput*)relsDir);
+		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_SAVE_EXPORTERROR;
 	}
 
@@ -221,7 +221,7 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 	{
 		//try to close the output files since there is an error
 		gsf_output_close(relFile);
-		gsf_output_close((GsfOutput*)relsDir);
+		gsf_output_close(GSF_OUTPUT(relsDir));
 		return err;
 	}	
 	
@@ -231,7 +231,7 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
 		//try to close the output files since there is an error
 		gsf_output_close(relFile);
-		gsf_output_close((GsfOutput*)relsDir);
+		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
@@ -242,10 +242,10 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 	if(!gsf_output_close(relFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
-		gsf_output_close((GsfOutput*)relsDir);
+		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_SAVE_EXPORTERROR;		
 	}
-	if(!gsf_output_close((GsfOutput*)relsDir))
+	if(!gsf_output_close(GSF_OUTPUT(relsDir)))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
@@ -280,7 +280,7 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
 		//try to close the word directory since there is an error
-		gsf_output_close((GsfOutput*)wordDir);
+		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_SAVE_EXPORTERROR;
 	}	
 
@@ -294,7 +294,7 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 	{
 		//try to close the output files since there is an error
 		gsf_output_close(documentFile);
-		gsf_output_close((GsfOutput*)wordDir);
+		gsf_output_close(GSF_OUTPUT(wordDir));
 		return err;
 	}	
 	
@@ -304,7 +304,7 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
 		//try to close the output files since there is an error
 		gsf_output_close(documentFile);
-		gsf_output_close((GsfOutput*)wordDir);
+		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
@@ -315,7 +315,7 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
 		//try to close the output files since there is an error
 		gsf_output_close(documentFile);
-		gsf_output_close((GsfOutput*)wordDir);
+		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
@@ -326,10 +326,10 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 	if(!gsf_output_close(documentFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
-		gsf_output_close((GsfOutput*)wordDir);
+		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_SAVE_EXPORTERROR;		
 	}
-	if(!gsf_output_close((GsfOutput*)wordDir))
+	if(!gsf_output_close(GSF_OUTPUT(wordDir)))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
