@@ -7993,26 +7993,34 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 
 }
 
-
 void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
+	UT_DEBUGMSG(("FV_View::getPageScreenOffsets() \n"));
 	UT_uint32 y = getPageViewTopMargin();
 
 	const fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-//
-// Note this code assumes the page size is the same throughout the document.
-//
+
 	UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
-	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
+	UT_uint32 iPageNumber = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
+	UT_uint32 iRow = iPageNumber/getNumHorizPages();
+	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep(); //Should getMaxHeight(iRow) be used here?
+	
 	if(getViewMode() != VIEW_PRINT)
 	{
 		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	}
 	if(iPage > 0)
 	{
-		iDiff = iDiff*iPage;
+		if(iPageNumber >= getNumHorizPages())
+		{
+			for (int i = 0; i < iRow; i++) //This is probably slowish...
+			{
+				iDiff += getMaxHeight(i);
+			}
+			iDiff += getMaxHeight(iRow) + getPageViewSep();
+		}
 	}
 	else
 	{
@@ -8039,7 +8047,8 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	}
 #endif
 	yoff = y - m_yScrollOffset;
-	xoff = getPageViewLeftMargin() - m_xScrollOffset;
+	xoff = getWidthPrevPagesInRow(iPageNumber) + getPageViewLeftMargin() - m_xScrollOffset;
+	UT_DEBUGMSG(("END FV_View::getPageScreenOffsets()\n"));
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
@@ -13777,4 +13786,54 @@ UT_uint32 FV_View::getNumHorizPages()
 {
 	m_iNumHorizPages = 3; //TODO: get this from the default or prefrences.
 	return m_iNumHorizPages;
+}
+
+UT_uint32 FV_View::getMaxHeight(UT_uint32 iRow)
+{
+	UT_DEBUGMSG(("FV_View::getMaxHeight(%d)\n",iRow));
+	fp_Page * pPage = m_pLayout->getNthPage(iRow * getNumHorizPages());
+	UT_uint32 iMaxPageHeight = 0;
+	
+	for(int i = 0; i < getNumHorizPages(); i++)
+	{
+		UT_sint32 iPageHeight = pPage->getHeight();
+		
+		if (iPageHeight > iMaxPageHeight)
+		{
+			iMaxPageHeight = iPageHeight;
+		}
+		
+		if(pPage->getNext() != NULL)
+		{	
+			pPage = pPage->getNext();
+		}
+	}
+	
+	UT_DEBUGMSG(("getMaxHeight: %d \n", iMaxPageHeight));
+	return iMaxPageHeight;
+}
+
+UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber)
+{
+	UT_DEBUGMSG(("FV_View::getWidthPrevPagesInRow(%d)\n",iPageNumber));
+	UT_uint32 totalWidth = 0;
+	
+	UT_uint32 iRow = iPageNumber/getNumHorizPages(); //yay truncation.
+	UT_DEBUGMSG(("iRow: %d\n",iRow));
+	UT_uint32 iFirstPageInRow = iRow * getNumHorizPages();
+	UT_DEBUGMSG(("iFirstPageInRow: %d\n",iFirstPageInRow));
+	UT_uint32 diff = iPageNumber - iFirstPageInRow; //diff between current & prev pages in row
+	UT_DEBUGMSG(("diff: %d\n",diff));
+	
+	if (iFirstPageInRow != iPageNumber)
+	{
+		for (int i = 0; i < diff; i++)
+		{
+			fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow + i);
+			totalWidth += pPage->getWidth();
+		}
+	}
+	
+	UT_DEBUGMSG(("getWidthPrevPagesInRow: %d\n", totalWidth));
+	return totalWidth;
 }

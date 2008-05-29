@@ -4415,7 +4415,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	while (pPage)
 	{
 		UT_uint32 iPageNumber		= m_pLayout->findPage(pPage);
@@ -4423,7 +4423,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_uint32 iCol				= iPageNumber;
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= iPageHeight * iRow - m_yScrollOffset;
+		UT_sint32 adjustedTop		= iPageHeight * iRow - m_yScrollOffset; //TODO: use getMaxHeight?
 		pDSL = pPage->getOwningSection();
 		
 		while (iCol > getNumHorizPages())
@@ -4506,12 +4506,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
-			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
+			da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
 			xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
-			da.yoff = adjustedTop;
+			//if (iPageNumber % getNumHorizPages() == 0)
+			//{
+				da.yoff = adjustedTop; //TODO: Adjust for multipage?
+			//}
+			
+			adjustedBottom -= getPageViewSep();
 			
 			UT_DEBUGMSG(("iRow: %d iCol: %d iPageNumber: %d\n", iRow, iCol, iPageNumber));
-			UT_sint32 adjustedLeft	= getPageViewLeftMargin()- m_xScrollOffset + (iPageWidth * iCol); //TODO: plus a bit more for spacing
+			UT_sint32 adjustedLeft	= getPageViewLeftMargin()- m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber); //TODO: plus a bit more for spacing
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 			
 			adjustedBottom -= getPageViewSep();
@@ -4623,7 +4628,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 			}
 			xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
-			curY += iPageHeight + getPageViewSep();
+			
+			if (iPageNumber % getNumHorizPages() == 0)
+			{
+				curY += getMaxHeight(iRow) + getPageViewSep(); 
+			}
 
 			pPage = pPage->getNext();
 		}
@@ -4657,6 +4666,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	{
 		m_pG->setClipRect(NULL);
 	}
+	
+	UT_DEBUGMSG(("End _draw\n"));
 
 }
 

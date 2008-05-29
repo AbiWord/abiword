@@ -816,11 +816,15 @@ public:
         bool                isMathLoaded(void);
 	bool                isGrammarLoaded(void);
 	// --
+	
+	UT_uint32			getNumHorizPages(void);
+	UT_uint32			getMaxHeight(UT_uint32 iRow);
+	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber);
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
 	
-	UT_uint32			getNumHorizPages(void);
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
