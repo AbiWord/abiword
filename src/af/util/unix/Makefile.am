@@ -17,7 +17,6 @@ libunix_la_SOURCES = \
 	ut_unixIdle.cpp \
 	ut_unixIdle.h \
 	ut_unixMisc.cpp \
-	ut_unixMisc.h \
 	ut_unixTimer.cpp \
 	ut_unixTimer.h
 

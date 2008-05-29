@@ -316,12 +316,4 @@ const gchar ** UT_splitPropsToArray(gchar * props);
 UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
 UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
-// Hack so we get AbiNativeWidget with an xp include
-#ifdef TOOLKIT_GTK
-#include "ut_unixMisc.h"
-#else
-// TODO maintainers please fix their platform
-typedef void AbiNativeWidget;
-#endif
-
 #endif /* UTMISC_H */

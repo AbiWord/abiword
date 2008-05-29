@@ -25,7 +25,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_unixMisc.h"
 
 #include "gr_UnixPangoGraphics.h"
 
@@ -160,9 +159,8 @@ AP_UnixDialog_FormatTable__onBorderColorClicked (GtkWidget 		*button,
 		gtk_color_button_set_color (colorbtn, &color);
 
 		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBorderColor (*rgb);
-		DELETEP (rgb);
+		UT_RGBColor rgb(color.red >> 8, color.green >> 8, color.blue >> 8);
+		dlg->setBorderColor (rgb);
 		dlg->event_previewExposed ();
 	}
 		
@@ -203,9 +201,8 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 		gtk_color_button_set_color (colorbtn, &color);
 
 		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBackgroundColor (*rgb);
-		DELETEP (rgb);
+		UT_RGBColor rgb(color.red >> 8, color.green >> 8, color.blue >> 8);
+		dlg->setBackgroundColor (rgb);
 		dlg->event_previewExposed ();
 	}
 		
@@ -352,9 +349,11 @@ void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 
 void AP_UnixDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBackgroundColorButton), color);
-	gdk_color_free(color);
+	GdkColor color;
+	color.red = clr.m_red << 8;
+	color.green = clr.m_grn << 8;
+	color.blue = clr.m_blu << 8;
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBackgroundColorButton), &color);
 }
 
 void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)

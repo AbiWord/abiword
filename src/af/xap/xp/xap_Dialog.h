@@ -45,8 +45,8 @@ class XAP_Frame;
 class XAP_Widget;
 class UT_UTF8String;
 class XAP_Dialog;
-
 class AV_View;
+class AbiNativeWidget;
 
 /*****************************************************************
 ******************************************************************

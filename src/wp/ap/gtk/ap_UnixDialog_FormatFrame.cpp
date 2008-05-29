@@ -25,7 +25,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_unixMisc.h"
 
 #include "gr_UnixPangoGraphics.h"
 
@@ -162,9 +161,9 @@ AP_UnixDialog_FormatFrame__onBorderColorClicked (GtkWidget 		*button,
 		gtk_color_button_set_color (colorbtn, &color);
 
 		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBorderColor (*rgb);
-		DELETEP (rgb);
+
+		UT_RGBColor rgb(color.red >> 8, color.green >> 8, color.blue >> 8);
+		dlg->setBorderColor (rgb);
 		dlg->event_previewExposed ();
 	}
 		
@@ -205,9 +204,8 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 		gtk_color_button_set_color (colorbtn, &color);
 
 		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBGColor (*rgb);
-		DELETEP (rgb);
+		UT_RGBColor rgb(color.red >> 8, color.green >> 8, color.blue >> 8);
+		dlg->setBGColor(rgb);
 		dlg->event_previewExposed ();
 	}
 		

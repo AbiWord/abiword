@@ -22,7 +22,6 @@
 #endif
 
 #include "ut_misc.h"
-#include "ut_unixMisc.h"
 #include "ut_assert.h"
 #include <sys/time.h>
 
@@ -117,27 +116,3 @@ bool UT_getEthernetAddress(UT_EthernetAddress &a)
     return false;
 }
 
-#ifndef TOOLKIT_COCOA
-/*!
-* Convert a GdkColor stuct to abi's UT_RGBColor. 
-* The caller is responsible for freeing the returned object.
-*/
-UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color) 
-{
-	return new UT_RGBColor(color.red >> 8, color.green >> 8, color.blue >> 8);
-}
-
-/*!
-* Convert an instance of abi's UT_RGBColor to a GdkColor stuct. 
-* The caller is responsible for freeing the returned object.
-*/
-GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb) 
-{
-	GdkColor color;
-	color.red = (guint16) (rgb.m_red * 256);
-	color.green = (guint16) (rgb.m_grn * 256);
-	color.blue = (guint16) (rgb.m_blu * 256);
-
-	return gdk_color_copy(&color);
-}
-#endif
