@@ -1,14 +1,9 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits src plugins user
+DIST_SUBDIRS = src plugins user
 
-if WITH_GOFFICE_BUILTIN
-SUBDIRS = goffice-bits
-else 
-SUBDIRS =
-endif
-SUBDIRS += src plugins user
+SUBDIRS = src plugins user
 
 desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop

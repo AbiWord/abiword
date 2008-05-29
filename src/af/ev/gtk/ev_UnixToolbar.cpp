@@ -31,8 +31,6 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include <goffice/gtk/go-combo-box.h>
-#include <goffice/gtk/go-combo-color.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ap_Features.h"
@@ -585,6 +583,7 @@ public:									// we create...
 	gulong				m_handlerId;
 };
 
+#if 0
 static void
 s_fore_color_changed (GOComboColor 	* /*cc*/, 
 					  GOColor 		 color,
@@ -627,6 +626,7 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
+#endif
 
 static void s_proxy_activated(GtkAction * action, _wd * wd)
 {
@@ -1104,6 +1104,12 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_ColorFore:
 			case EV_TBIT_ColorBack:
 			{
+				wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
+											    	  pLabel->getToolbarLabel(), NULL, 
+													  (GCallback) _wd::s_callback, (gpointer) wd, 
+													  &(wd->m_handlerId));
+
+#if 0
 				GdkPixbuf 		*pixbuf;
 			    GtkWidget 		*combo;
 				GOColorGroup 	*cg;
@@ -1155,6 +1161,7 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_set_data(G_OBJECT(wwd),
 								  "wd_pointer",
 								  wd);
+#endif
 			}
 			break;
 				

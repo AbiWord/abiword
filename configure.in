@@ -31,7 +31,6 @@ xp_pkgs="
 enchant_req='enchant >= 1.2.0'
 gnomeui_req='libgnomeui-2.0 >= 2.14'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
-goffice_req='libgoffice-0.4'
 gucharmap_req='gucharmap >= 1.4'
 libgnomeprintui_req='libgnomeprintui-2.2 >= 2.2.0'
 hildon_pkgs='hildon-libs hildon-fm dbus-1 libosso libosso-gsf-1'
@@ -42,11 +41,9 @@ opt_pkgs=''
 cocoa_pkgs="$enchant_req"
 
 # gtk deps
-pangoxft_req='pangoxft >= 1.2.0'
 gtk_req='gtk+-2.0 >= 2.6.0'
 libglade_req='libglade-2.0 >= 2.0.0'
 gtk_pkgs="
-  ${pangoxft_req}
   ${gtk_req}
   ${libglade_req}
 "
@@ -69,19 +66,26 @@ AC_PROG_LIBTOOL
 DOLT
 AC_PROG_LN_S
 
+# TODO move to its place
+AC_ARG_ENABLE([toolkit], 
+	[AS_HELP_STRING([--enable-toolkit], [override default toolkit for detected platform])], 
+[
+	TOOLKIT="$enableval"
+])
+
 AC_MSG_CHECKING([for platform and toolkit])
 case ${target_os} in
   *darwin*)
     PLATFORM="unix"
-    TOOLKIT="cocoa"
+    test "$TOOLKIT" == "" && TOOLKIT="cocoa"
     ;;
   *mingw*)
     PLATFORM="win"
-    TOOLKIT="win"
+    test "$TOOLKIT" == "" && TOOLKIT="win"
     ;;
   *)
     PLATFORM="unix"
-    TOOLKIT="gtk"
+    test "$TOOLKIT" == "" && TOOLKIT="gtk"
     ;;
 esac
 AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
@@ -332,34 +336,6 @@ if test "$abi_cv_gnomevfs" == "yes"; then
 	opt_pkgs="$opt_pkgs $gnomevfs_req"
 fi
 
-AC_ARG_WITH([goffice], 
-	[AS_HELP_STRING([--with-goffice], [(gtk only) use goffice library])], 
-[
-	abi_cv_goffice="$withval"
-],[
-	# use goffice if detected
-	if test "$TOOLKIT" == "gtk"; then
-	PKG_CHECK_EXISTS([ $goffice_req ],
-	[
-		abi_cv_goffice="yes"
-	], [
-		abi_cv_goffice="no"
-	])
-	fi
-])
-
-GOFFICE_BUILTIN_CPPFLAGS=
-GOFFICE_BUILTIN_LIBS=
-if test "$PLATFORM" == "unix" && \
-   test "$abi_cv_goffice" == "yes"; then
-	opt_pkgs="$opt_pkgs $goffice_req"
-else
-	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits'
-	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits/libgoffice.la'
-	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
-	AC_SUBST(GOFFICE_BUILTIN_LIBS)
-fi
-
 AC_ARG_WITH([gucharmap], 
 	[AS_HELP_STRING([--with-gucharmap], [(gtk only) use gucharmap library])], 
 [
@@ -447,8 +423,7 @@ AC_SUBST([DEPS_LIBS])
 
 BASE_CPPFLAGS_='
   ${DEPS_CFLAGS} 
-  -I${top_srcdir} 
-  ${GOFFICE_BUILTIN_CPPFLAGS}'
+  -I${top_srcdir}' 
 BASE_CPPFLAGS="$SYSTEM_CFLAGS"
 for f in $(echo $BASE_CPPFLAGS_); do BASE_CPPFLAGS="$BASE_CPPFLAGS $f"; done
 AC_SUBST([BASE_CPPFLAGS])
@@ -640,12 +615,6 @@ if test "$abi_cv_gnomevfs" == "yes"; then
 	AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs])
 fi
 
-if test "$abi_cv_goffice" == "yes"; then
-	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
-fi
-AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], test "$TOOLKIT" == "gtk" && test "$abi_cv_goffice" != "yes")
-AC_SUBST([GOFFICE_BUILTIN_LIBS])
-
 if test "$abi_cv_gucharmap" == "yes"; then
 	AC_DEFINE([WITH_GUCHARMAP], [1], [Define if using gucharmap])
 fi
@@ -720,7 +689,6 @@ AC_SUBST(ABIWORD_REQUIRED_PKGS)
 AC_OUTPUT(
   libabiword.pc
   Makefile
-  goffice-bits/Makefile
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
@@ -798,7 +766,6 @@ Optional features:
 Optional dependencies:
   libgnomeui            ${abi_cv_gnomeui}
   gnome-vfs             ${abi_cv_gnomevfs}
-  goffice               ${abi_cv_goffice}
   gucharmap             ${abi_cv_gucharmap}
 
 Builtin plugins         ${BUILTIN_PLUGINS}

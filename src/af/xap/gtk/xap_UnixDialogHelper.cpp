@@ -41,7 +41,6 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
-#include <goffice/gtk/goffice-gtk.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -600,8 +599,10 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	UT_return_if_fail(parent);
 	UT_return_if_fail(child);
 
+/* TODO Rob: doesn't gtk figure this out by itself now?
 	if (GTK_IS_DIALOG(child))
 	  go_dialog_guess_alternative_button_order(GTK_DIALOG(child));
+*/
 	if(GTK_IS_WINDOW(parent) != TRUE)
 		parent  = gtk_widget_get_parent(parent);
 	xxx_UT_DEBUGMSG(("center IS WIDGET_TOP_LEVL %d \n",(GTK_WIDGET_TOPLEVEL(parent))));

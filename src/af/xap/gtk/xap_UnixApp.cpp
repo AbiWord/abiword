@@ -58,7 +58,6 @@
 #include "gr_UnixPangoGraphics.h"
 #include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
-#include <goffice/goffice.h>
 #include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef WITH_GNOMEVFS
@@ -174,8 +173,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	// let our base class do it's thing.
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
-
-	libgoffice_init();
 
 #ifdef WITH_GNOMEVFS
 	gnome_vfs_init();
