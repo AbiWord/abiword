@@ -334,8 +334,6 @@ public:
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	UT_RGBColor				m_curColor;
-	UT_sint32               m_iXoff;
-	UT_sint32               m_iYoff;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 	
