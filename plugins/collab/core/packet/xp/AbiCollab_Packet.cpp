@@ -484,9 +484,9 @@ static const std::string& getPTObjectTypeStr( PTObjectType p )
 		"PTO_Field", 
 		"PTO_Bookmark", 
 		"PTO_Hyperlink", 
-		"PTO_Annotation", 
 		"PTO_Math", 
-		"PTO_Embed"
+		"PTO_Embed",
+		"PTO_Annotation"
 	};
 	return PTObjectTypeStrs[ int(p) ];
 } 
