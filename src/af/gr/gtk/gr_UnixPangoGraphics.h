@@ -18,8 +18,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef GR_UNIX_PANGOGRAPHICS_H
-#define GR_UNIX_PANGOGRAPHICS_H
+#ifndef GR_UNIXPANGOGRAPHICS_H
+#define GR_UNIXPANGOGRAPHICS_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -42,16 +42,6 @@
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-job.h>
 #endif
-
-// we do not want this to be a plugin for now
-#define GR_UNIXPANGO_BUILTIN
-
-#ifndef GR_UNIXPANGO_BUILTIN
-#define PLUGIN_NAME "Pango graphics class for Unix"
-#endif
-
-/************************************************************************/
-/************************************************************************/
 
 class GR_UnixPangoRenderInfo;
 class GR_CairoGraphics;

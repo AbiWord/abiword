@@ -318,14 +318,15 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 void GR_CairoGraphics::init()
 {
+	GdkDisplay *display;
+	GdkScreen *screen;
+
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
 
 	if (m_pWin)
 	{
-		gDisplay = gdk_drawable_get_display(GDK_DRAWABLE(m_pWin));
-		gScreen = gdk_drawable_get_screen(GDK_DRAWABLE(m_pWin));
+		display = gdk_drawable_get_display(GDK_DRAWABLE(m_pWin));
+		screen = gdk_drawable_get_screen(GDK_DRAWABLE(m_pWin));
 
 		GdkDrawable * realDraw;
 		if(GDK_IS_WINDOW((GDK_DRAWABLE(m_pWin))))
@@ -351,7 +352,7 @@ void GR_CairoGraphics::init()
 		m_XftColor.color.blue = 0;
 		m_XftColor.color.alpha = 0xffff;
 		// Rob: temporarily use this instead of gdk
-		bool ret = XftColorAllocValue(GDK_DISPLAY_XDISPLAY(gDisplay), m_pVisual, m_Colormap, &m_XftColor.color, &m_XftColor);
+		bool ret = XftColorAllocValue(GDK_DISPLAY_XDISPLAY(display), m_pVisual, m_Colormap, &m_XftColor.color, &m_XftColor);
 		g_assert(ret);
 
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
@@ -366,24 +367,23 @@ void GR_CairoGraphics::init()
 	}
 	else
 	{
-		gDisplay = gdk_display_get_default();
-		gScreen = gdk_screen_get_default();
+		display = gdk_display_get_default();
+		screen = gdk_screen_get_default();
 	}
 
+	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+
 	bool bGotResolution = false;
-	
-	if (gScreen && gDisplay)
+	if (screen && display)
 		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+			int iScreen = gdk_x11_screen_get_screen_number(screen);
 
 			FcPattern *pattern = FcPatternCreate();
 			if (pattern)
 			{
 				double dpi;
-				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (screen),
 									  iScreen,
 									  pattern);
 
@@ -401,8 +401,8 @@ void GR_CairoGraphics::init()
 			{
 				// that didn't work. try getting it from the screen
 				m_iDeviceResolution =
-					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
-									 gdk_screen_get_width_mm (gScreen));
+					(UT_uint32)round((gdk_screen_get_width(screen) * 25.4) /
+									 gdk_screen_get_width_mm (screen));
 			}
 
 			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
@@ -451,6 +451,7 @@ GR_Graphics *   GR_CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 
 /*!
  * This method is platform-dependent.
+ * \todo use gdk_window_process_updates() for nicer scrolling
  */
 void GR_CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
@@ -704,6 +705,7 @@ void GR_CairoGraphics::init3dColors(GtkStyle * pStyle)
 
 /*!
  * This method is platform-dependent.
+ * \todo use gdk_window_process_updates() for nicer scrolling
  */
 void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
@@ -1331,8 +1333,10 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iOffset == 0 &&
 	   (RI.m_iLength == (UT_sint32)RI.m_iCharCount || !RI.m_iCharCount))
 	{
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 RI.m_pGlyphs, xoff, yoff);
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, RI.m_pGlyphs);
+		cairo_restore(m_cr);		
 	}
 	else
 	{
@@ -1410,9 +1414,10 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 		gs.glyphs = RI.m_pGlyphs->glyphs + iGlyphsStart;
 		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 &gs, xoff, yoff);
-
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, &gs);
+		cairo_restore(m_cr);
 	}
 }
 
@@ -2054,7 +2059,11 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
+
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoffD, yoffD);
+		pango_cairo_show_glyph_string(m_cr, pf, pGstring);
+		cairo_restore(m_cr);
 
 		// now advance xoff
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
@@ -2491,36 +2500,6 @@ static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *ele
 	return NULL;
 }
 
-static void getDefaultFontmapAndContext(PangoFontMap **fontmap, PangoContext **context, bool *fontmapNeedsFreeing)
-{
-	// todo : use default cairo fontmap and context
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
-
-	*fontmap = 0;
-	*context = 0;
-	*fontmapNeedsFreeing = false;
-
-	gDisplay = gdk_display_get_default();
-	gScreen = gdk_screen_get_default();
-
-	if (gScreen && gDisplay)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			*context = pango_xft_get_context(disp, iScreen);
-			*fontmap = pango_xft_get_font_map(disp, iScreen);
-		}
-#ifdef HAVE_PANGOFT2
-	else
-		{
-			*fontmap = pango_ft2_font_map_new ();
-			*context = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(*fontmap));
-			fontmapNeedsFreeing = true;
-		}
-#endif
-}
-
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2561,11 +2540,8 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 				pango_font_description_set_stretch(d, (PangoStretch)fm->value);				
 			}
 
-		PangoFontMap *fontmap;
-		PangoContext *context;
-		bool ownsFontMap;
-		
-		getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
+		PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+		PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));
 		
 		if (fontmap && context)
 			{
@@ -2579,9 +2555,6 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 					}
 		
 				g_object_unref(context);
-
-				if (ownsFontMap)
-					g_object_unref(fontmap);
 			}
 
 		pango_font_description_free(d);
@@ -2748,11 +2721,8 @@ const std::vector<const char *> & GR_CairoGraphics::getAllFontNames()
 
 
 	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
-	PangoFontMap *fontmap;
-	PangoContext *context;
-	bool ownsFontMap;
-		
-	getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
+	PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+	PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));
 		
 	if (fontmap && context)
 		{
@@ -2779,9 +2749,6 @@ const std::vector<const char *> & GR_CairoGraphics::getAllFontNames()
 				}
 						
 			g_object_unref(context);
-			
-			if (ownsFontMap)
-				g_object_unref(fontmap);
 		}
 
 	return Vec;
@@ -3607,7 +3574,7 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	 * for our
 	 * gnome-print font map
 	 */
-	GdkScreen *  gScreen  = gdk_screen_get_default();
+	GdkScreen *  screen  = gdk_screen_get_default();
 
 	// the parent class' device resolution is the screen's resolution
 	m_iScreenResolution = m_iDeviceResolution;
@@ -3617,10 +3584,10 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
 				 m_iScreenResolution, m_iDeviceResolution));
 
-	if (gScreen)
+	if (screen)
 		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_SCREEN_XDISPLAY (gScreen);
+			int iScreen = gdk_x11_screen_get_screen_number(screen);
+			Display * disp = GDK_SCREEN_XDISPLAY (screen);
 
 			m_pContext = pango_xft_get_context(disp, iScreen);
 			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
