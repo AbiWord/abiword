@@ -313,7 +313,6 @@ public:
   protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
-	bool              m_bOwnsFontMap;
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
@@ -494,7 +493,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	GnomePrintJob     *m_gpm;
 	GnomePrintContext *m_gpc;
 	double             m_width, m_height;
-	bool              m_bPdfLandscapeWorkaround;
+	bool               m_bPdfLandscapeWorkaround;
+	bool               m_bOwnsFontMap;
 };
 #endif // ifdef ENABLE_PRINT
 

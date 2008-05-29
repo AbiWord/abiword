@@ -229,7 +229,6 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
-	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_pAdjustedPangoFont(NULL),
@@ -248,7 +247,6 @@ GR_CairoGraphics::GR_CairoGraphics()
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
-	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_pAdjustedPangoFont(NULL),
@@ -273,9 +271,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	{
 		g_object_unref(m_pContext);
 	}
-	// NB: m_pFontMap is oft owned by Pango
-	if (m_bOwnsFontMap)
-		g_object_unref(m_pFontMap);
 
 	_destroyFonts();
 	delete m_pPFontGUI;
@@ -325,8 +320,11 @@ void GR_CairoGraphics::init()
 	bool bGotResolution = false;
 	if (screen && display)
 	{
-		static int xftInitialized = XftInit(NULL);
+		static int xftInitialized = 0;
 		int iScreen = gdk_x11_screen_get_screen_number(screen);
+
+		if (!xftInitialized)
+			xftInitialized = XftInit(NULL);
 
 		FcPattern *pattern = FcPatternCreate();
 		if (pattern)
@@ -3412,7 +3410,8 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 	m_bStartPage (false),
 	m_gpm (gpm),
 	m_gpc (NULL),
-	m_bPdfLandscapeWorkaround(false)
+	m_bPdfLandscapeWorkaround(false),
+	m_bOwnsFontMap(false)
 {
 	_constructorCommon();
 
@@ -3451,7 +3450,8 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 	m_gpc(ctx),
 	m_width(inWidthDevice),
 	m_height(inHeightDevice),
-	m_bPdfLandscapeWorkaround(false)
+	m_bPdfLandscapeWorkaround(false),
+	m_bOwnsFontMap(false)
 {
 	_constructorCommon();
 	UT_DEBUGMSG(("Constructor 2 width %d height %f \n",m_width,m_height));
@@ -3564,6 +3564,8 @@ GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
 
 GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
 {
+	if (m_bOwnsFontMap)
+		g_object_unref(m_pFontMap);
 }
 
 GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
