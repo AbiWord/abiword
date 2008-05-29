@@ -1006,9 +1006,10 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-#if 0
-		// fmt marks are temporary placeholders for props and
-		// attributes and should not be saved
+#if 1
+		// This code was commented by tf for reasons we can't remember
+		// Reinstate it to fix bug - 11629 blank lines lose their
+		// properties on export.
 		if(m_bOpenChar)
 			_closeTag();
 		_openTag("c","",false,pcr->getIndexAP(),0);
