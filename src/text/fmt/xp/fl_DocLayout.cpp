@@ -1759,7 +1759,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	FV_View * pView = getView(); // add page view dimensions
 	UT_uint32 count = m_vecPages.getItemCount();
 
-	for (int i=0; i<count; i++)
+	for (unsigned int i = 0; i<count; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
 		

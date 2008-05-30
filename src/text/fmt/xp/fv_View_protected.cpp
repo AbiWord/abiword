@@ -4350,7 +4350,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
 	UT_sint32 iDocHeight = m_pLayout->getHeight();
-	UT_sint32 iDocWidth = m_pLayout->getWidth();
+	//UT_sint32 iDocWidth = m_pLayout->getWidth(); //Commented out to get rid of the warning. ;-)
 
 	// TODO: handle positioning within oversized viewport
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
@@ -4423,8 +4423,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		UT_uint32 iCol				= iPageNumber;
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= iPageHeight * iRow - m_yScrollOffset; //TODO: use getMaxHeight?
+		UT_sint32 adjustedTop		= 0;
 		pDSL = pPage->getOwningSection();
+		
+		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
+		{
+			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
+			{
+				adjustedTop += getMaxHeight(i);
+			}
+			adjustedTop += -m_yScrollOffset;
+		}
 		
 		while (iCol > getNumHorizPages())
 		{
@@ -4521,7 +4530,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			
 			adjustedBottom -= getPageViewSep();
 			
-			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
+			if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
@@ -4641,11 +4650,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
-		UT_sint32 y = curY - m_yScrollOffset;
-		UT_sint32 h = getWindowHeight() - y;
+		UT_sint32 yPos = curY - m_yScrollOffset;
+		UT_sint32 h = getWindowHeight() - yPos;
 		if (h > 0)
 		{
-			xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
+			xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d yPos %d curY %d \n",h,getWindowHeight(),yPos,curY));
 	
 			UT_RGBColor clrFillColor;
 			if ((getViewMode() != VIEW_PRINT) ||  pFrame->isMenuScrollHidden())
@@ -4658,7 +4667,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				clrFillColor = clrMargin;
 			}
-			painter.fillRect(clrFillColor, 0, y, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
+			painter.fillRect(clrFillColor, 0, yPos, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
 		}
 	}
 
@@ -5158,7 +5167,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		else if((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 		{
 			bool bSweep = false;
-			while((m_iInsPoint > posBOD) && (iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
+			while( ((m_iInsPoint > posBOD) && (iOldDepth > getEmbedDepth(m_iInsPoint))) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
 				xxx_UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
 				m_iInsPoint--;
@@ -5176,7 +5185,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD))
+			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || (m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD)))
 			{ 
 				xxx_UT_DEBUGMSG(("_charMotion: Sweep backward -2 %d \n",m_iInsPoint));
 				bSweep = true;

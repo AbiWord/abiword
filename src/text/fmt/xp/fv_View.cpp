@@ -8015,7 +8015,7 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 	{
 		if(iPageNumber >= getNumHorizPages())
 		{
-			for (int i = 0; i < iRow; i++) //This is probably slowish...
+			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
 			{
 				iDiff += getMaxHeight(i);
 			}
@@ -13792,9 +13792,9 @@ UT_uint32 FV_View::getMaxHeight(UT_uint32 iRow)
 {
 	UT_DEBUGMSG(("FV_View::getMaxHeight(%d)\n",iRow));
 	fp_Page * pPage = m_pLayout->getNthPage(iRow * getNumHorizPages());
-	UT_uint32 iMaxPageHeight = 0;
+	UT_sint32 iMaxPageHeight = 0;
 	
-	for(int i = 0; i < getNumHorizPages(); i++)
+	for(unsigned int i = 0; i < getNumHorizPages(); i++)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
 		
@@ -13827,7 +13827,7 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber)
 	
 	if (iFirstPageInRow != iPageNumber)
 	{
-		for (int i = 0; i < diff; i++)
+		for (unsigned int i = 0; i < diff; i++)
 		{
 			fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow + i);
 			totalWidth += pPage->getWidth();
