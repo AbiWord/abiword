@@ -21,39 +21,6 @@
 
 #include "gr_UnixPangoPixmapGraphics.h"
 
-#include "xap_App.h"
-#include "xap_Prefs.h"
-#include "xap_EncodingManager.h"
-#include "xap_Strings.h"
-#include "xap_Frame.h"
-
-#include "xap_UnixApp.h"
-#include "xap_UnixFrameImpl.h"
-#include "xap_UnixDialogHelper.h"
-
-#include "gr_UnixImage.h"
-
-#include "ut_debugmsg.h"
-#include "ut_misc.h"
-#include "ut_vector.h"
-#include "ut_locale.h"
-
-// need this to include what Pango considers 'low-level' api
-#define PANGO_ENABLE_ENGINE
-
-#include <pango/pango-item.h>
-#include <pango/pango-engine.h>
-#include <pango/pangoxft.h>
-
-#ifdef HAVE_PANGOFT2
-#include <pango/pangoft2.h>
-#endif
-
-#include <math.h>
-
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-
 /*!
  * The GR_UnixPangoPixmapGraphics is used to draw onto an offscreen 
  * buffer.
@@ -68,7 +35,7 @@ GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix):
 
 GR_UnixPangoPixmapGraphics::~GR_UnixPangoPixmapGraphics(void)
 {
-	gdk_pixmap_unref (m_pPixmap);	
+	gdk_pixmap_unref (m_pPixmap);
 }
 
 GR_Graphics *   GR_UnixPangoPixmapGraphics::graphicsAllocator(GR_AllocInfo& info)
