@@ -38,8 +38,8 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 
-
 class OXML_Section;
+class IE_Exp_OpenXML;
 
 typedef boost::shared_ptr<OXML_Section> OXML_SharedSection;
 
@@ -81,9 +81,9 @@ public:
 
 	//! Writes the OpenXML section and all its content to a file on disk.
 	/*! This method is used during the export process.
-		\param path String indicating the FULL path of the file.  If the file exists, it will be overridden.
+		\param exporter the actual exporter which handles writing the files.
 	*/
-	UT_Error serialize(const std::string & path);
+	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	//! Appends this section and all its content to the Abiword Piecetable.
 	/*! This method is used during the import process.
 		\param pDocument A valid reference to the PD_Document object.

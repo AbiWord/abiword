@@ -48,6 +48,15 @@ IE_Exp_OpenXML::~IE_Exp_OpenXML ()
  */
 UT_Error IE_Exp_OpenXML::_writeDocument ()
 {
+	OXML_Document* doc_ptr = OXML_Document::getNewInstance();
+	return doc_ptr->serialize(this);
+}
+
+/**
+ * Starts exporting the OXML_Document object
+ */
+UT_Error IE_Exp_OpenXML::startDocument()
+{
 	//error references to check 
 	GError *err = NULL;	
 	UT_Error error = UT_OK;
@@ -57,7 +66,6 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 
 	if(!sink)
 		return UT_SAVE_EXPORTERROR;
-
 
 	/** STEP 1. OPEN NEW FILES FOR WRITING **/
 		
@@ -116,6 +124,14 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 	}
 
 	return UT_OK;	
+}
+
+/**
+ * Finishes exporting OXML_Document object
+ */
+UT_Error IE_Exp_OpenXML::finishDocument()
+{
+	return UT_OK;
 }
 
 /**

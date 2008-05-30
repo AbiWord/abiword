@@ -9,4 +9,5 @@ libxp_la_SOURCES = \
 	ie_exp_OpenXML.cpp \
 	ie_exp_OpenXML.h \
 	ie_exp_OpenXML_Sniffer.cpp \
-	ie_exp_OpenXML_Sniffer.h
+	ie_exp_OpenXML_Sniffer.h \
+	OXML_Document.h

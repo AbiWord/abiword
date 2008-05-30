@@ -27,7 +27,8 @@ libxp_la_SOURCES = \
 	OXML_Style.h \
 	OXML_Theme.cpp \
 	OXML_Theme.h \
-	OXML_Types.h
+	OXML_Types.h \
+	ie_exp_OpenXML.h
 
 OXML_LangToScriptConverter.h: $(srcdir)/OXML_LangToScriptConverter.gperf
 	gperf $< >$@

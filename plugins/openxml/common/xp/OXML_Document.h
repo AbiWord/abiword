@@ -34,6 +34,7 @@
 // AbiWord includes
 #include <ut_types.h>
 #include <pd_Document.h>
+#include <ie_exp_OpenXML.h>
 
 // External includes
 #include <string>
@@ -86,9 +87,9 @@ public:
 
 	//! Writes the OpenXML document and all its content to a file on disk.
 	/*! This method is used during the export process.
-		\param path String indicating the FULL path of the file.  If the file exists, it will be overridden.
+		\param exporter the actual exporter which handles writing the files.
 	*/
-	UT_Error serialize(const std::string & path);
+	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	//! Builds the Abiword Piecetable representation of the OpenXML document and all its content.
 	/*! This method is used during the import process.
 		\param pDocument A valid reference to the PD_Document object.

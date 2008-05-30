@@ -31,11 +31,14 @@
 #include <ut_assert.h>
 #include <ut_string_class.h>
 
+#include <OXML_Document.h>
+
 // External includes
 #include <gsf/gsf-outfile.h>
 #include <gsf/gsf-outfile-zip.h>
 #include <gsf/gsf-output-stdio.h>
 
+class OXML_Document;
 
 /**
  * Class used to export OpenXML files
@@ -45,6 +48,8 @@ class IE_Exp_OpenXML : public IE_Exp
 public:
 	IE_Exp_OpenXML (PD_Document * pDocument);
 	virtual ~IE_Exp_OpenXML ();
+	UT_Error startDocument();
+	UT_Error finishDocument();
 
 protected:
     virtual UT_Error _writeDocument(void);

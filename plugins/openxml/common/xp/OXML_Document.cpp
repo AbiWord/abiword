@@ -227,18 +227,23 @@ OXML_SharedFontManager OXML_Document::getFontManager()
 	return m_fontManager;
 }
 
-UT_Error OXML_Document::serialize(const std::string & path)
+UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
-	//Do something here when implementing export filter
+	
+	ret = exporter->startDocument();
+	if(ret != UT_OK)
+		return ret;
 
 	OXML_SectionVector::size_type i;
 	for (i = 0; i < m_sections.size(); i++)
 	{
-		if (m_sections[i]->serialize(path) != UT_OK)
-			ret = UT_ERROR;
+		ret = m_sections[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
 	}
-	return ret;
+	
+	return exporter->finishDocument();
 }
 
 UT_Error OXML_Document::addToPT(PD_Document * pDocument)
