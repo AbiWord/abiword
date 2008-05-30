@@ -37,7 +37,7 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <glib.h>
-#include <X11/Xlib.h>
+#include <glib/gstdio.h>
 
 #include "ut_debugmsg.h"
 #include "ut_path.h"
@@ -201,7 +201,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 	fprintf(getlogfile(),"New Directory created \n");
 #endif
    
-    if (mkdir(szDir,0700) == 0)
+    if (g_mkdir(szDir, 0700) == 0)
 		return true;
     
     
@@ -755,7 +755,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 
 static bool is_so (const char *file) {
 
-	int len = strlen (file);
+	unsigned int len = strlen (file);
 	if (len < (strlen(G_MODULE_SUFFIX) + 2)) // this is ".so" and at least one char for the filename
 		return false;
 	const char *suffix = file+(len-3);
@@ -1203,6 +1203,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			return -1;	// make this something standard?
 		}
 	
+#ifndef WIN32 // TODO Rob: make portable
 		// Setup signal handlers, primarily for segfault
 		// If we segfaulted before here, we *really* blew it
 		struct sigaction sa;
@@ -1221,9 +1222,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		sigaction(SIGILL, &sa, NULL);
 		sigaction(SIGQUIT, &sa, NULL);
 		sigaction(SIGFPE, &sa, NULL);
-
 		// TODO: handle SIGABRT
-	
+#endif
 		// Step 2: Handle all non-window args.
     
 		bool windowlessArgsWereSuccessful = true;
@@ -1294,6 +1294,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
 	bSuccess = true;
 
+#if 0 // TODO Rob: handle this when opening the first frame instead, so we can use gtk_window_parse_geometry()
 	if (Args->m_sGeometry)
     {
 		// [--geometry <X geometry string>]
@@ -1322,6 +1323,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		// set the xap-level geometry for future frame use
 		Args->getApp()->setGeometry(x, y, width, height, f);
 	}
+#endif
 
  	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 

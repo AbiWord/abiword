@@ -235,7 +235,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
 	if (getDocRange())
 	{
-#ifdef WIN32
+#ifdef TOOLKIT_WIN32
 		if (UT_IsWinNT())
 			_setEncoding(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
 #endif

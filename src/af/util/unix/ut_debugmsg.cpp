@@ -44,3 +44,17 @@ void _UT_OutputMessage(const char *s, ...)
 	UT_UNUSED(s);
 #endif
 }
+
+void _UT_WarningMessage(const char *s, ...)
+{
+#define WARNING_MSG "WARNING: "
+	va_list marker;
+
+	va_start(marker, s);
+
+	fwrite(WARNING_MSG, 1, strlen(WARNING_MSG), stderr);
+	vfprintf(stderr, s, marker);
+
+	va_end(marker);
+#undef WARNING_MSG
+}

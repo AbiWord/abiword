@@ -132,9 +132,6 @@
 /* Define if using gnome-vfs */
 #undef WITH_GNOMEVFS
 
-/* Define if using goffice */
-#undef WITH_GOFFICE
-
 /* Define if using gucharmap */
 #undef WITH_GUCHARMAP
 

@@ -32,7 +32,7 @@ class ABI_EXPORT fl_Squiggles
 {
 public:
 	fl_Squiggles(fl_BlockLayout* pOwner, FL_SQUIGGLE_TYPE iType);
-virtual	~fl_Squiggles(void);
+	virtual	~fl_Squiggles(void);
 
 	void					add(fl_PartOfBlock* pPOB);
 	void					markForRedraw(fl_PartOfBlock* pPOB);

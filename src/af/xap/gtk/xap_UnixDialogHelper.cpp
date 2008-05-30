@@ -36,11 +36,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <glib.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

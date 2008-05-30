@@ -71,20 +71,24 @@ AC_ARG_ENABLE([toolkit],
 	[AS_HELP_STRING([--enable-toolkit], [override default toolkit for detected platform])], 
 [
 	TOOLKIT="$enableval"
+	# TODO s/unix/glib
+	if test "$TOOLKIT" == "gtk"; then
+	  PLATFORM="unix"
+	fi
 ])
 
 AC_MSG_CHECKING([for platform and toolkit])
 case ${target_os} in
   *darwin*)
-    PLATFORM="unix"
+    test "$PLATFORM" == "" && PLATFORM="unix"
     test "$TOOLKIT" == "" && TOOLKIT="cocoa"
     ;;
   *mingw*)
-    PLATFORM="win"
+    test "$PLATFORM" == "" && PLATFORM="win"
     test "$TOOLKIT" == "" && TOOLKIT="win"
     ;;
   *)
-    PLATFORM="unix"
+    test "$PLATFORM" == "" && PLATFORM="unix"
     test "$TOOLKIT" == "" && TOOLKIT="gtk"
     ;;
 esac
@@ -98,7 +102,8 @@ function_err='Your operating system or setup seems to be missing one or more req
 header_err='Your operating system or setup seems to be missing one or more required header files'
 
 cocoa_funcs='floor mkdir'
-unix_funcs='alarm gettimeofday'
+#TODO reenable when glib port complete
+#unix_funcs='alarm gettimeofday'
 win_funcs=
 xp_funcs='localeconv strcspn strncasecmp strtoul' # "sqrt" test fails, hmm
 funcs=

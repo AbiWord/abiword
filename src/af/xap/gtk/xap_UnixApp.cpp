@@ -191,7 +191,7 @@ void XAP_UnixApp::reallyExit()
 
 UT_sint32 XAP_UnixApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
 { 
-  return mkdir(szPath, mode); 
+  return g_mkdir(szPath, mode); 
 }
 
 XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
