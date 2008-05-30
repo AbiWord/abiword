@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -20,9 +22,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <X11/keysym.h>
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 
 #include "ut_types.h"
@@ -72,6 +72,7 @@ ev_UnixKeyboard::~ev_UnixKeyboard(void)
 
 bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 {
+printf("%s()\n", __FUNCTION__);
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
@@ -82,6 +83,9 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
 	{
+		printf("%d:%d: control mask\n", __FILE__, __LINE__);
+#if 0 // Rob sez: i can never get this case triggered, neither with <ctrl>, <alt>, <shift>, <apple> or other keys
+	  // normal keys like 'a' don't seem to enter this function at all, hmm.
 		state |= EV_EMS_CONTROL;
 
 		// Gdk does us the favour of working out a translated keyvalue for us,
@@ -90,11 +94,12 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 		KeySym sym = XKeycodeToKeysym(display,
 									  e->hardware_keycode,
 									  e->state & GDK_SHIFT_MASK ? 1 : 0);
-		xxx_UT_DEBUGMSG(("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
+		printf("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
 					 "                                sym: 0x%x\n",
-					 e->keyval, e->hardware_keycode, sym));
+					 e->keyval, e->hardware_keycode, sym);
 
 		charData = sym;
+#endif
 	}
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
@@ -482,6 +487,8 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval)
 
 static GdkModifierType s_getAltMask(void)
 {
+	return GDK_MOD1_MASK;
+#if 0 // Rob sez: can we get away without this magic?
 	//////////////////////////////////////////////////////////////////
 	// find out what modifier mask XL_Alt_{L,R} are bound to.
 	//////////////////////////////////////////////////////////////////
@@ -549,4 +556,5 @@ static GdkModifierType s_getAltMask(void)
 		alt_mask = GDK_MOD1_MASK;
 
 	return static_cast<GdkModifierType>(alt_mask);
+#endif
 }
