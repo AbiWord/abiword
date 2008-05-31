@@ -760,16 +760,27 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				if (height < 0.9 || height > 1.1)
 				{
+				    	char strH[8];
+					
+					/* Assume $baselineskip/fontsize \approx 1.2$, reasonable in most cases */
+					snprintf(strH, 8, "%.2f", height / 1.2);
+					strH[7] = '\0';
+					
 					m_pie->write("\\begin{spacing}{");
-					UT_DEBUGMSG(("m_bLineHeight = true\n"));
+					xxx_UT_DEBUGMSG(("m_bLineHeight = true\n"));
 					m_bLineHeight = true;
+					
+					m_pie->write(strH);
+					m_pie->write("}\n");
 				}
+				/*
 				if (height > 1.4 && height < 1.6)
 					m_pie->write("1.24}\n");
 				else if (height > 1.9 && height < 2.1)
 					m_pie->write("1.66}\n");
 				else if (m_bLineHeight) // glup.  TODO: calculate the spacing :)
 				    m_pie->write("1.0} % Sorry.  I know that you don't expect the 1.0... feel free to fix it! :)\n");
+				 */
 			}
 		}
 	}
