@@ -174,7 +174,6 @@ UT_Error IE_Exp_OpenXML::writeContentTypes()
 	err = writeXmlHeader(contentTypesFile);
 	if(err != UT_OK)
 	{
-		gsf_output_close(contentTypesFile);
 		return err;
 	}	
 	
@@ -186,7 +185,6 @@ UT_Error IE_Exp_OpenXML::writeContentTypes()
 ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
-		gsf_output_close(contentTypesFile);
 		return UT_IE_COULDNOTWRITE;
 	}
 
@@ -219,15 +217,12 @@ UT_Error IE_Exp_OpenXML::writeRelations()
 	if(relFile == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
-		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_SAVE_EXPORTERROR;
 	}
 
 	err = writeXmlHeader(relFile);
 	if(err != UT_OK)
 	{
-		gsf_output_close(relFile);
-		gsf_output_close(GSF_OUTPUT(relsDir));
 		return err;
 	}	
 	
@@ -238,15 +233,12 @@ Target=\"word/document.xml\"/>\
 </Relationships>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
-		gsf_output_close(relFile);
-		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
 	if(!gsf_output_close(relFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
-		gsf_output_close(GSF_OUTPUT(relsDir));
 		return UT_SAVE_EXPORTERROR;		
 	}
 	if(!gsf_output_close(GSF_OUTPUT(relsDir)))
@@ -276,15 +268,12 @@ UT_Error IE_Exp_OpenXML::writeMainPart()
 	if(documentFile == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
-		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_SAVE_EXPORTERROR;
 	}	
 
 	err = writeXmlHeader(documentFile);
 	if(err != UT_OK)
 	{
-		gsf_output_close(documentFile);
-		gsf_output_close(GSF_OUTPUT(wordDir));
 		return err;
 	}	
 	
@@ -295,8 +284,6 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 <w:body>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
-		gsf_output_close(documentFile);
-		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
@@ -305,15 +292,12 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 	if(!gsf_output_puts(documentFile, "</w:body></w:wordDocument>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
-		gsf_output_close(documentFile);
-		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_IE_COULDNOTWRITE;
 	}
 
 	if(!gsf_output_close(documentFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
-		gsf_output_close(GSF_OUTPUT(wordDir));
 		return UT_SAVE_EXPORTERROR;		
 	}
 	if(!gsf_output_close(GSF_OUTPUT(wordDir)))
