@@ -145,7 +145,12 @@ UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root)
 		return err;
 	}	
 	
-	if(!gsf_output_puts(contentTypesFile, "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>"))
+	if(!gsf_output_puts(contentTypesFile, 
+"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
+<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
+<Default Extension=\"xml\" ContentType=\"application/xml\"/>\
+<Override PartName=\"/word/document.xml\" \
+ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
 		gsf_output_close(contentTypesFile);
@@ -193,7 +198,11 @@ UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
 		return err;
 	}	
 	
-	if(!gsf_output_puts(relFile, "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/></Relationships>"))
+	if(!gsf_output_puts(relFile, 
+"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" \
+Target=\"word/document.xml\"/>\
+</Relationships>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
 		gsf_output_close(relFile);
@@ -246,7 +255,11 @@ UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
 		return err;
 	}	
 	
-	if(!gsf_output_puts(documentFile, "<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>"))
+	if(!gsf_output_puts(documentFile, 
+"<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
+<w:body>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
 		gsf_output_close(documentFile);
