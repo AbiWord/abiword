@@ -924,8 +924,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 	{
 		const gchar * szValue;
 
-		if (
-			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-weight", szValue)
 			&& !strcmp(szValue, "bold")
 			)
 		{
@@ -933,8 +932,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			m_NumCloseBrackets++;
 		}
 		
-		if (
-			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-style", szValue)
 			&& !strcmp(szValue, "italic")
 			)
 		{
@@ -1006,10 +1004,10 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-family", szValue))
 		{
 			// TODO: Use a dynamic substitution table
-			if (strstr(szValue, "Symbol"))
+			if (strstr(szValue, "Symbol") && !m_bInHeading)
 				m_bInSymbol = true;
 			if (strstr(szValue, "Courier") ||
 				!strcmp("Luxi Mono",szValue)) {
@@ -1025,7 +1023,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
 		}
 
-		if (pAP->getProperty("text-decoration", szValue) && szValue)
+		if (pAP->getProperty("text-decoration", szValue) && szValue && !m_bInHeading)
 		{
 			gchar* p = g_strdup(szValue);
 
