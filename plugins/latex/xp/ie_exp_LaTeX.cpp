@@ -1398,6 +1398,8 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInSymbol(0),
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
+	m_bOverline(false),
+	m_NumCloseBrackets(0),
 	list_type(BULLET_LIST),
 	m_pqRect(NULL)
 {
