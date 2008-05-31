@@ -82,28 +82,24 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	error = writeContentTypes();
 	if(error != UT_OK)
 	{
-		_cleanup();
 		return error;
 	}	
 
 	error = writeRelations();
 	if(error != UT_OK)
 	{
-		_cleanup();
 		return error;
 	}
 	
 	error = writeMainPart();
 	if(error != UT_OK)
 	{
-		_cleanup();
 		return error;
 	}
 
 	if(!gsf_output_close(GSF_OUTPUT(root)))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
-		_cleanup();
 		return UT_SAVE_EXPORTERROR;		
 	}
 
