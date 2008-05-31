@@ -348,11 +348,13 @@ protected:
  	bool	m_bInSansSerif;
 	bool				m_bInEndnote;
 	bool				m_bHaveEndnote;
+	bool				m_bOverline;
   
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
 	int 				ChapterNumber;
 	int                 m_Indent;
+	int		    m_NumCloseBrackets; // accessed by _openSpan() and _closeSpan()
 	int		    m_TableWidth;
 	int		    m_CellLeft;
 	int		    m_CellRight;
@@ -917,6 +919,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	m_bOverline = false;
+	m_NumCloseBrackets = 0;
 	
 	if (bHaveProp && pAP)
 	{
@@ -928,6 +932,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			)
 		{
 			m_pie->write("\\textbf{");
+			m_NumCloseBrackets++;
 		}
 		
 		if (
@@ -936,44 +941,9 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			)
 		{
 			m_pie->write("\\emph{");
+			m_NumCloseBrackets++;
 		}
 		
-		if (pAP->getProperty("text-decoration", szValue))
-		{
-			const gchar* pszDecor = szValue;
-
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			// See the ulem.sty documentation (available at www.ctan.org)
-			// if you wish to include other kinds of underlines, such as
-			// double underlines or wavy underlines
-			while (q)
-			{
-			    if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
-			    {
-				m_pie->write("\\uline{");
-			    }
-			    else if(0 == strcmp(q, "overline"))
-			    {
-				m_pie->write("$\\overline{\\textrm{");
-			    }
-			    else if(0 == strcmp(q, "line-through"))
-			    {
-				m_pie->write("\\sout{");
-			    }
-			    q = strtok(NULL, " ");
-			}
-
-			g_free(p);
-		}
-
 		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!strcmp("superscript", szValue))
@@ -981,12 +951,14 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 				m_bInScript = true;
 				//m_pie->write("$^{\\mathrm{");
 				m_pie->write("\\textsuperscript{");
+				m_NumCloseBrackets++;
 			}
 			else if (!strcmp("subscript", szValue))
 			{
 				m_bInScript = true;
 				//m_pie->write("$_{\\mathrm{");
 				m_pie->write("\\textsubscript{");
+				m_NumCloseBrackets++;
 			}
 		}
 		
@@ -1002,9 +974,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			m_pie->write("\\textcolor[rgb]{");
 			m_pie->write(szColor);
 			m_pie->write("}{");
+			m_NumCloseBrackets++;
 		      }
-		    else 
-		      m_pie->write("{");
 		  }
 		
 		const gchar* pszBgColor = NULL;
@@ -1020,9 +991,8 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		      m_pie->write("\\colorbox[rgb]{");
 		      m_pie->write(szColor);
 		      m_pie->write("}{");
+		      m_NumCloseBrackets++;
 		    }
-		  else 
-		    m_pie->write("{");
 		}
 
  		if (pAP->getProperty("font-size", szValue) && !m_bInHeading)
@@ -1034,6 +1004,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 				_convertFontSize(szSize, static_cast<const char*>(szValue));
 				m_pie->write(szSize);
 				m_pie->write(" ");
+				m_NumCloseBrackets++;
 			}
 		}
 		
@@ -1046,14 +1017,53 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 				!strcmp("Luxi Mono",szValue)) {
 				m_bInCourier = true;
 				m_pie->write("\\texttt{");
+				m_NumCloseBrackets++;
 			}
 			if (!strcmp("Arial", szValue) ||
 				!strcmp("Helvetic", szValue) ||
 				!strcmp("Luxi Sans",szValue)) {
 				m_bInSansSerif = true;
 				m_pie->write("\\textsf{");
+				m_NumCloseBrackets++;
 			}
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
+		}
+
+		if (pAP->getProperty("text-decoration", szValue) && szValue)
+		{
+			gchar* p = g_strdup(szValue);
+
+			UT_return_if_fail(p);
+			gchar*	q = strtok(p, " ");
+
+			// See the ulem.sty documentation (available at www.ctan.org)
+			// if you wish to include other kinds of underlines, such as
+			// double underlines or wavy underlines
+			while (q)
+			{
+			    if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
+			    {
+				m_pie->write("\\uline{");
+				m_NumCloseBrackets++;
+			    }
+			    else if(0 == strcmp(q, "overline"))
+			    {
+				m_bOverline = true;
+			    }
+			    else if(0 == strcmp(q, "line-through"))
+			    {
+				m_pie->write("\\sout{");
+				m_NumCloseBrackets++;
+			    }
+			    q = strtok(NULL, " ");
+			}
+			
+			/* This should be at the very last, in order to match
+			 * the close brackets in _closeSpan().
+			 */
+			if (m_bOverline)
+			    m_pie->write("$\\overline{\\textrm{");
+			g_free(p);
 		}
 
 		m_bInSpan = true;
@@ -1102,122 +1112,14 @@ void s_LaTeX_Listener::_closeSpan(void)
 	if (!m_bInSpan)
 		return;
 
+	if (m_bOverline)
+	    m_pie->write("}}$");
+	
 	const PP_AttrProp * pAP = m_pAP_Span;
 	
 	if (pAP)
 	{
 		const gchar * szValue;
-		
-		if (pAP->getProperty("color", szValue))
-		{
-			m_pie->write("}");
-		}
-
-		if (pAP->getProperty("bgcolor", szValue))
-		{
-			m_pie->write("}");
-		}
-
-		if ((pAP->getProperty("font-size", szValue) && !m_bInHeading)
-//		    || (pAP->getProperty("font-family", szValue))  // TODO
-			)
-		{
-			if (strcmp (szValue, DEFAULT_SIZE) != 0)
-				m_pie->write("}");
-		}
-
-		if (pAP->getProperty("text-position", szValue))
-		{
-			if (!strcmp("superscript", szValue))
-			{
-				m_bInScript = false;
-				//m_pie->write("}}$");
-				m_pie->write("}\n");
-			}
-			else if (!strcmp("subscript", szValue))
-			{
-				m_bInScript = false;
-				//m_pie->write("}}$");
-				m_pie->write("}\n");
-			}
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const gchar* pszDecor = szValue;
-			
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == strcmp(q, "line-through"))
-				{
-					m_pie->write("}");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			g_free(p);
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const gchar* pszDecor = szValue;
-			
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == strcmp(q, "underline"))
-				{
-					m_pie->write("}");
-				}
-
-				if (0 == strcmp(q, "overline"))
-				{
-					m_pie->write("}}$");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			g_free(p);
-		}
-
-		if (
-			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
-			&& !strcmp(szValue, "italic")
-			)
-		{
-			m_pie->write("}");
-		}
-		
-		if (
-			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
-			&& !strcmp(szValue, "bold")
-			)
-		{
-			m_pie->write("}");
-		}
 
 		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
@@ -1226,17 +1128,18 @@ void s_LaTeX_Listener::_closeSpan(void)
 			if (strstr(szValue, "Courier") ||
 				!strcmp("Luxi Mono",szValue))
 			{
-				m_pie->write("}");
 				m_bInCourier = false;
 			}
 			if (!strcmp("Helvetic", szValue) ||
 				!strcmp("Arial", szValue) ||
 				!strcmp("Luxi Sans", szValue))
 			{
-				m_pie->write("}");
 				m_bInSansSerif = false;
 			}
 		}
+		
+		for(; m_NumCloseBrackets>0; m_NumCloseBrackets--)
+			m_pie->write("}");
 
 		m_pAP_Span = NULL;
 	}
