@@ -28,9 +28,14 @@
  * Constructor
  */
 IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
-  : IE_Exp (pDocument)
+  : IE_Exp (pDocument), 
+	root(NULL),
+	relsDir(NULL),
+	wordDir(NULL),
+	contentTypesFile(NULL),
+	relFile(NULL),
+	documentFile(NULL)
 {
-
 }
 
 /**
@@ -63,7 +68,7 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	if(!sink)
 		return UT_SAVE_EXPORTERROR;
 
-	GsfOutfile* root = gsf_outfile_zip_new(sink, &err);
+	root = gsf_outfile_zip_new(sink, &err);
 
 	if(err != NULL || root == NULL)
 	{
@@ -74,21 +79,21 @@ UT_Error IE_Exp_OpenXML::startDocument()
 
 	g_object_unref (G_OBJECT (sink));
 
-	error = writeContentTypes(root);
+	error = writeContentTypes();
 	if(error != UT_OK)
 	{
 		_cleanup();
 		return error;
 	}	
 
-	error = writeRelations(root);
+	error = writeRelations();
 	if(error != UT_OK)
 	{
 		_cleanup();
 		return error;
 	}
 	
-	error = writeMainPart(root);
+	error = writeMainPart();
 	if(error != UT_OK)
 	{
 		_cleanup();
@@ -118,17 +123,45 @@ UT_Error IE_Exp_OpenXML::finishDocument()
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	if(contentTypesFile && !gsf_output_is_closed(contentTypesFile))
+		gsf_output_close(contentTypesFile);
 
+	if(relFile && !gsf_output_is_closed(relFile))
+		gsf_output_close(relFile);
+
+	if(relsDir)
+	{
+		GsfOutput* rels_out = GSF_OUTPUT(relsDir);
+		if(!gsf_output_is_closed(rels_out))
+			gsf_output_close(rels_out);
+	}
+
+	if(documentFile && !gsf_output_is_closed(documentFile))
+		gsf_output_close(documentFile);
+
+	if(wordDir)
+	{
+		GsfOutput* word_out = GSF_OUTPUT(wordDir);
+		if(!gsf_output_is_closed(word_out))
+			gsf_output_close(word_out);
+	}
+
+	if(root)
+	{
+		GsfOutput* root_out = GSF_OUTPUT(root);
+		if(!gsf_output_is_closed(root_out))
+			gsf_output_close(root_out);
+	}
 }
 
 /**
  * Writes the [Content_Types].xml file which describes the contents of the package
  */
-UT_Error IE_Exp_OpenXML::writeContentTypes(GsfOutfile* root)
+UT_Error IE_Exp_OpenXML::writeContentTypes()
 {
 	UT_Error err = UT_OK;
 
-	GsfOutput* contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
+	contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
 
 	if(contentTypesFile == NULL)
 	{
@@ -171,18 +204,18 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
  * Writes the relationships for the files within the package 
  * Outputs the _rels folder and _rels/.rels file which defines the package relations.
  */
-UT_Error IE_Exp_OpenXML::writeRelations(GsfOutfile* root)
+UT_Error IE_Exp_OpenXML::writeRelations()
 {
 	UT_Error err = UT_OK;
 
-	GsfOutfile* relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
+	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
 	if(relsDir == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	GsfOutput* relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
+	relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
 	if(relFile == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
@@ -228,18 +261,18 @@ Target=\"word/document.xml\"/>\
 /**
  * Writes the main part of the document to word/document.xml file.
  */
-UT_Error IE_Exp_OpenXML::writeMainPart(GsfOutfile* root)
+UT_Error IE_Exp_OpenXML::writeMainPart()
 {
 	UT_Error err = UT_OK;
 
-	GsfOutfile* wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
+	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
 	if(wordDir == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	GsfOutput* documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
+	documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
 	if(documentFile == NULL)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	

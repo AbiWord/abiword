@@ -55,9 +55,16 @@ protected:
     virtual UT_Error _writeDocument(void);
     
 private:
-	UT_Error writeContentTypes(GsfOutfile* root);
-	UT_Error writeRelations(GsfOutfile* root);
-	UT_Error writeMainPart(GsfOutfile* root);
+	GsfOutfile* root; //.docx file zip root
+	GsfOutfile* relsDir; // _rels
+	GsfOutfile* wordDir; // word 
+	GsfOutput* contentTypesFile; // [Content_Types].xml
+	GsfOutput* relFile; // _rels/.rels
+	GsfOutput* documentFile; // word/document.xml
+
+	UT_Error writeContentTypes();
+	UT_Error writeRelations();
+	UT_Error writeMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
 	void _cleanup();
