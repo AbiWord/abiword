@@ -344,8 +344,6 @@ protected:
 	const PP_AttrProp*	m_pAP_Span;
 	bool                m_bMultiCols;
 	bool           m_bInSymbol;
- 	bool	m_bInCourier;
- 	bool	m_bInSansSerif;
 	bool				m_bInEndnote;
 	bool				m_bHaveEndnote;
 	bool				m_bOverline;
@@ -1015,14 +1013,12 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 				m_bInSymbol = true;
 			if (strstr(szValue, "Courier") ||
 				!strcmp("Luxi Mono",szValue)) {
-				m_bInCourier = true;
 				m_pie->write("\\texttt{");
 				m_NumCloseBrackets++;
 			}
 			if (!strcmp("Arial", szValue) ||
 				!strcmp("Helvetic", szValue) ||
 				!strcmp("Luxi Sans",szValue)) {
-				m_bInSansSerif = true;
 				m_pie->write("\\textsf{");
 				m_NumCloseBrackets++;
 			}
@@ -1115,29 +1111,10 @@ void s_LaTeX_Listener::_closeSpan(void)
 	if (m_bOverline)
 	    m_pie->write("}}$");
 	
-	const PP_AttrProp * pAP = m_pAP_Span;
-	
-	if (pAP)
+	if (m_pAP_Span)
 	{
-		const gchar * szValue;
-
-		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
-		{
-			if (strstr(szValue, "Symbol"))
-				m_bInSymbol = false;
-			if (strstr(szValue, "Courier") ||
-				!strcmp("Luxi Mono",szValue))
-			{
-				m_bInCourier = false;
-			}
-			if (!strcmp("Helvetic", szValue) ||
-				!strcmp("Arial", szValue) ||
-				!strcmp("Luxi Sans", szValue))
-			{
-				m_bInSansSerif = false;
-			}
-		}
-		
+		if (m_bInSymbol)
+		    m_bInSymbol = false;
 		for(; m_NumCloseBrackets>0; m_NumCloseBrackets--)
 			m_pie->write("}");
 
@@ -1421,8 +1398,6 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInSpan(false),
 	m_bInFootnote(false),
 	m_bInSymbol(0),
-	m_bInCourier(0),
-	m_bInSansSerif(0),
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
 	list_type(BULLET_LIST),
