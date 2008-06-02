@@ -186,7 +186,7 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
 <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
 <Override PartName=\"/word/document.xml\" \
-ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/></Types>"))
+ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
 		return UT_IE_COULDNOTWRITE;
@@ -200,6 +200,12 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
  */
 UT_Error IE_Exp_OpenXML::finishContentTypes()
 {
+	if(!gsf_output_puts(contentTypesStream, "</Types>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
 	GsfOutput* contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE);
 
 	if(!contentTypesFile)
@@ -250,8 +256,7 @@ UT_Error IE_Exp_OpenXML::startRelations()
 	if(!gsf_output_puts(relStream, 
 "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" \
-Target=\"word/document.xml\"/>\
-</Relationships>"))
+Target=\"word/document.xml\"/>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
 		return UT_IE_COULDNOTWRITE;
@@ -265,6 +270,12 @@ Target=\"word/document.xml\"/>\
  */
 UT_Error IE_Exp_OpenXML::finishRelations()
 {
+	if(!gsf_output_puts(relStream, "</Relationships>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
 	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
 	if(!relsDir)
 	{
@@ -333,14 +344,6 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	//TODO: Write the document body here
-
-	if(!gsf_output_puts(documentStream, "</w:body></w:wordDocument>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-
 	return UT_OK;
 }
 
@@ -349,6 +352,12 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
  */
 UT_Error IE_Exp_OpenXML::finishMainPart()
 {	
+	if(!gsf_output_puts(documentStream, "</w:body></w:wordDocument>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
 	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
 	if(!wordDir)
 	{
