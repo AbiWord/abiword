@@ -1,7 +1,5 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,30 +16,31 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
+#ifndef EV_X11KEYBOARD_H
+#define EV_X11KEYBOARD_H
 
-#include "ut_debugmsg.h"
+#include "ev_UnixKeyboard.h"
 
-void _UT_OutputMessage(const char *s, ...)
+
+class EV_X11Keyboard : public EV_UnixKeyboard
 {
-#ifdef DEBUG
-#define DEBUG_MSG "DEBUG: "
-	va_list marker;
+	friend EV_UnixKeyboard * EV_UnixKeyboard::create(EV_EditEventMapper * pEEM);
 
-	va_start(marker, s);
+public:
+	virtual ~EV_X11Keyboard(void);
 
-	fwrite(DEBUG_MSG, 1, strlen(DEBUG_MSG), stderr);
-	vfprintf(stderr, s, marker);
+	bool keyPressEvent(AV_View * pView, GdkEventKey* e);
+	virtual GdkModifierType getAltModifierMask(void);
 
-	va_end(marker);
-#undef DEBUG_MSG
-#else
-	UT_UNUSED(s);
-#endif
-}
+protected:
+	// only instantiable via parent's factory method create().
+	EV_X11Keyboard(EV_EditEventMapper * pEEM);
+
+private:
+	int m_altMask;
+};
+
+#endif // EV_X11KEYBOARD_H
 

@@ -516,7 +516,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				// regard to what XK_ keysym is bound to it.  therefore, if
 				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
 
-				bool bAltOnMod1 = (ev_UnixKeyboard::getAltModifierMask() == GDK_MOD1_MASK);
+				bool bAltOnMod1 = (EV_UnixKeyboard::instance().getAltModifierMask() == GDK_MOD1_MASK);
 				bool bConflict = false;
 				
 				// Lookup any bindings cooresponding to MOD1-key and the lower-case

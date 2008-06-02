@@ -19,7 +19,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <string.h>
 #include <gdk/gdk.h>
@@ -36,13 +35,6 @@
 #include "ut_mbtowc.h"
 #include "ut_string_class.h"
 
-
-//////////////////////////////////////////////////////////////////
-
-static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval);
-static bool s_isVirtualKeyCode(guint keyval);
-static GdkModifierType s_getAltMask(void);
-
 //////////////////////////////////////////////////////////////////
 // This is used to remember the modifier mask (GDK_MODx_MASK) that
 // is bound to the Alt keys.  We load this once per session.
@@ -51,28 +43,31 @@ static GdkModifierType s_getAltMask(void);
 // TODO If so, recompute this value.
 //
 static GdkModifierType s_alt_mask = GDK_MODIFIER_MASK;	// bogus value
+static EV_UnixAltModifierMask *s_alt_instance = NULL;
 
-GdkModifierType ev_UnixKeyboard::getAltModifierMask(void)
+EV_UnixAltModifierMask & EV_UnixAltModifierMask::instance()
 {
-	return s_alt_mask;
+	return *s_alt_instance;
 }
 
-//////////////////////////////////////////////////////////////////
+GdkModifierType EV_UnixKeyboard::getAltModifierMask(void)
+{
+printf ("EV_UnixKeyboard::getAltModifierMask()\n");
+	return GDK_MOD1_MASK;
+}
 
-ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM)
+EV_UnixKeyboard::EV_UnixKeyboard(EV_EditEventMapper* pEEM)
 	: EV_Keyboard(pEEM)
 {
-	if (s_alt_mask == GDK_MODIFIER_MASK)
-		s_alt_mask = s_getAltMask();
+		s_alt_mask = getAltModifierMask();
+		s_alt_instance = this;
 }
 
-ev_UnixKeyboard::~ev_UnixKeyboard(void)
-{
-}
+EV_UnixKeyboard::~EV_UnixKeyboard(void)
+{}
 
-bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
+bool EV_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 {
-printf("%s()\n", __FUNCTION__);
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
@@ -82,31 +77,13 @@ printf("%s()\n", __FUNCTION__);
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
-	{
-		printf("%d:%d: control mask\n", __FILE__, __LINE__);
-#if 0 // Rob sez: i can never get this case triggered, neither with <ctrl>, <alt>, <shift>, <apple> or other keys
-	  // normal keys like 'a' don't seem to enter this function at all, hmm.
 		state |= EV_EMS_CONTROL;
-
-		// Gdk does us the favour of working out a translated keyvalue for us,
-		// but with the Ctrl keys, we do not want that -- see bug 9545
-		Display * display = GDK_DISPLAY();
-		KeySym sym = XKeycodeToKeysym(display,
-									  e->hardware_keycode,
-									  e->state & GDK_SHIFT_MASK ? 1 : 0);
-		printf("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
-					 "                                sym: 0x%x\n",
-					 e->keyval, e->hardware_keycode, sym);
-
-		charData = sym;
-#endif
-	}
-	if (e->state & (s_alt_mask))
+	if (e->state & getAltModifierMask())
 		state |= EV_EMS_ALT;
 
-	if (s_isVirtualKeyCode(charData))
+	if (isVirtualKeyCode(charData))
 	{
-		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(charData);
+		EV_EditBits nvk = mapVirtualKeyCodeToNVK(charData);
 
 		switch (nvk)
 		{
@@ -157,7 +134,7 @@ printf("%s()\n", __FUNCTION__);
 	return false;
 }
 
-bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const char * text, size_t len)
+bool EV_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const char * text, size_t len)
 {
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
@@ -424,7 +401,7 @@ static const EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier
 };
 
 
-static bool s_isVirtualKeyCode(guint keyval)
+bool EV_UnixKeyboard::isVirtualKeyCode(guint keyval)
 {
 	// X11 has several segregated sets of keys
 	// 0xff00 - 0xffff has most function keys and non-letter keys
@@ -456,7 +433,7 @@ static bool s_isVirtualKeyCode(guint keyval)
 	return false;
 }
 
-static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval)
+EV_EditBits EV_UnixKeyboard::mapVirtualKeyCodeToNVK(guint keyval)
 {
 	// map the given virtual key into a "named virtual key".
 	// these are referenced by NVK_ symbol so that the cross
@@ -481,80 +458,3 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval)
 	return EV_NVK__IGNORE__;
 }
 
-//////////////////////////////////////////////////////////////////
-// deal with keyboard mapping oddities
-//////////////////////////////////////////////////////////////////
-
-static GdkModifierType s_getAltMask(void)
-{
-	return GDK_MOD1_MASK;
-#if 0 // Rob sez: can we get away without this magic?
-	//////////////////////////////////////////////////////////////////
-	// find out what modifier mask XL_Alt_{L,R} are bound to.
-	//////////////////////////////////////////////////////////////////
-
-	int alt_mask = 0;
-
-	Display * display = GDK_DISPLAY();
-
-	KeyCode kcAltL = XKeysymToKeycode(display,XK_Alt_L);
-	KeyCode kcAltR = XKeysymToKeycode(display,XK_Alt_R);
-
-	XModifierKeymap * pModMap = XGetModifierMapping(display);
-	int mkpm = pModMap->max_keypermod;
-	int k,m;
-	int mAltL=-1;
-	int mAltR=-1;
-
-	for (m=0; m<8; m++)
-	{
-		for (k=0; k<mkpm; k++)
-		{
-			KeyCode code = pModMap->modifiermap[m*mkpm + k];
-			if (kcAltL && (code == kcAltL))
-				mAltL = m;
-			if (kcAltR && (code == kcAltR))
-				mAltR = m;
-		}
-	}
-
-	switch (mAltL)
-	{
-	default:							// Should not happen...
-	case -1:							// Alt_L is not a modifier key ??
-	case 0:								// Alt_L is mapped to SHIFT ??
-	case 1:								// Alt_L is mapped to (Caps)LOCK ??
-	case 2:								// Alt_L is mapped to CONTROL ??
-		break;							// ... ignore this key.
-
-	case 3: alt_mask |= GDK_MOD1_MASK; break;
-	case 4: alt_mask |= GDK_MOD2_MASK; break;
-	case 5: alt_mask |= GDK_MOD3_MASK; break;
-	case 6: alt_mask |= GDK_MOD4_MASK; break;
-	case 7: alt_mask |= GDK_MOD5_MASK; break;
-	}
-
-	switch (mAltR)
-	{
-	default:							// Should not happen...
-	case -1:							// Alt_R is not a modifier key ??
-	case 0:								// Alt_R is mapped to SHIFT ??
-	case 1:								// Alt_R is mapped to (Caps)LOCK ??
-	case 2:								// Alt_R is mapped to CONTROL ??
-		break;							// ... ignore this key.
-
-	case 3: alt_mask |= GDK_MOD1_MASK; break;
-	case 4: alt_mask |= GDK_MOD2_MASK; break;
-	case 5: alt_mask |= GDK_MOD3_MASK; break;
-	case 6: alt_mask |= GDK_MOD4_MASK; break;
-	case 7: alt_mask |= GDK_MOD5_MASK; break;
-	}
-
-	XFreeModifiermap(pModMap);
-
-	if (!alt_mask)						// if nothing set, fall back to MOD1
-		alt_mask = GDK_MOD1_MASK;
-
-	return static_cast<GdkModifierType>(alt_mask);
-#endif
-}

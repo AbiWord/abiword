@@ -1078,7 +1078,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
-	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
+	EV_UnixKeyboard * pUnixKeyboard = static_cast<EV_UnixKeyboard *>(pFrame->getKeyboard());
 
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
@@ -1272,7 +1272,7 @@ void XAP_UnixFrameImpl::_initialize()
  	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
  	UT_ASSERT(pEEM);
 
-	m_pKeyboard = new ev_UnixKeyboard(pEEM);
+	m_pKeyboard = EV_UnixKeyboard::create(pEEM);
 	UT_ASSERT(m_pKeyboard);
 
 	m_pMouse = new EV_UnixMouse(pEEM);
@@ -1708,8 +1708,8 @@ void XAP_UnixFrameImpl::_imPreeditChanged_cb (GtkIMContext *context,
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
 	XAP_Frame* pFrame = pImpl->getFrame();
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView ());
-	ev_UnixKeyboard * pUnixKeyboard =
-		static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
+	EV_UnixKeyboard * pUnixKeyboard =
+		static_cast<EV_UnixKeyboard *>(pFrame->getKeyboard());
 
 	// delete previous pre-edit, if there is one
 	if (pImpl->m_iPreeditLen)
@@ -1801,8 +1801,8 @@ void XAP_UnixFrameImpl::_imCommit(GtkIMContext * /*imc*/, const gchar * text)
 {
 	XAP_Frame* pFrame = getFrame();
 	FV_View * pView = static_cast<FV_View*>(getFrame()->getCurrentView ());
-	ev_UnixKeyboard * pUnixKeyboard =
-		static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());
+	EV_UnixKeyboard * pUnixKeyboard =
+		static_cast<EV_UnixKeyboard *>(pFrame->getKeyboard());
 
 	if (m_iPreeditLen)
 		{

@@ -27,16 +27,34 @@
 
 class AV_View;
 
-
-class ev_UnixKeyboard : public EV_Keyboard
+/*!
+ * Restricted interface to query ALT key mapping without an actual
+ * EV_UnixKeyboard at hand.
+ */
+class EV_UnixAltModifierMask 
 {
 public:
-	ev_UnixKeyboard(EV_EditEventMapper * pEEM);
-	virtual ~ev_UnixKeyboard(void);
+	static EV_UnixAltModifierMask & instance();
+
+	virtual GdkModifierType getAltModifierMask(void) = 0;
+};
+
+class EV_UnixKeyboard : public EV_Keyboard, public EV_UnixAltModifierMask
+{
+public:
+	static EV_UnixKeyboard * create(EV_EditEventMapper * pEEM);
+
+	virtual ~EV_UnixKeyboard(void);
 
 	bool keyPressEvent(AV_View * pView, GdkEventKey* e);
 	bool charDataEvent (AV_View * pView, EV_EditBits state, const char * txt, size_t len);
-	static GdkModifierType getAltModifierMask(void);
+	virtual GdkModifierType getAltModifierMask(void);
+
+protected:
+	// only instantiable via factory method create().
+	EV_UnixKeyboard(EV_EditEventMapper * pEEM);
+	EV_EditBits mapVirtualKeyCodeToNVK(guint keyval);
+	bool isVirtualKeyCode(guint keyval);
 };
 
 #endif // EV_UNIXKEYBOARD_H

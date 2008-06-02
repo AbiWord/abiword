@@ -47,7 +47,7 @@ ABI_EXPORT void _UT_OutputMessage(const char *s, ...);
 /*
  * Similar to UT_DEBUGMSG, except exists even in production (non-debug) builds
  */
-#ifdef _WIN32
+#ifdef TOOLKIT_WIN32
 ABI_EXPORT void _UT_WarningMessage(const char *s, ...);
 #else
 #define _UT_WarningMessage _UT_OutputMessage
