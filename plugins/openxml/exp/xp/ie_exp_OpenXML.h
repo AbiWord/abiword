@@ -62,9 +62,12 @@ private:
 	GsfOutput* relFile; // _rels/.rels
 	GsfOutput* documentFile; // word/document.xml
 
-	UT_Error writeContentTypes();
-	UT_Error writeRelations();
-	UT_Error writeMainPart();
+	UT_Error startContentTypes();
+	UT_Error startRelations();
+	UT_Error startMainPart();
+	UT_Error finishContentTypes();
+	UT_Error finishRelations();
+	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
 	void _cleanup();

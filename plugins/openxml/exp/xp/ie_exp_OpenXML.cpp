@@ -79,29 +79,17 @@ UT_Error IE_Exp_OpenXML::startDocument()
 
 	g_object_unref (G_OBJECT (sink));
 
-	error = writeContentTypes();
+	error = startContentTypes();
 	if(error != UT_OK)
-	{
 		return error;
-	}	
 
-	error = writeRelations();
+	error = startRelations();
 	if(error != UT_OK)
-	{
 		return error;
-	}
 	
-	error = writeMainPart();
+	error = startMainPart();
 	if(error != UT_OK)
-	{
 		return error;
-	}
-
-	if(!gsf_output_close(GSF_OUTPUT(root)))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
-		return UT_SAVE_EXPORTERROR;		
-	}
 
 	return UT_OK;	
 }
@@ -111,6 +99,26 @@ UT_Error IE_Exp_OpenXML::startDocument()
  */
 UT_Error IE_Exp_OpenXML::finishDocument()
 {
+	UT_Error error = UT_OK;
+
+	error = finishMainPart();
+	if(error != UT_OK)
+		return error;
+
+	error = finishRelations();
+	if(error != UT_OK)
+		return error;
+
+	error = finishContentTypes();
+	if(error != UT_OK)
+		return error;
+
+	if(!gsf_output_close(GSF_OUTPUT(root)))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+
 	return UT_OK;
 }
 
@@ -151,9 +159,9 @@ void IE_Exp_OpenXML::_cleanup ()
 }
 
 /**
- * Writes the [Content_Types].xml file which describes the contents of the package
+ * Starts the [Content_Types].xml file which describes the contents of the package
  */
-UT_Error IE_Exp_OpenXML::writeContentTypes()
+UT_Error IE_Exp_OpenXML::startContentTypes()
 {
 	UT_Error err = UT_OK;
 
@@ -193,12 +201,19 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 	return UT_OK;
 }
 
+/**
+ * Finishes the [Content_Types].xml file which describes the contents of the package
+ */
+UT_Error IE_Exp_OpenXML::finishContentTypes()
+{
+	return UT_OK;
+}
 
 /**
  * Writes the relationships for the files within the package 
  * Outputs the _rels folder and _rels/.rels file which defines the package relations.
  */
-UT_Error IE_Exp_OpenXML::writeRelations()
+UT_Error IE_Exp_OpenXML::startRelations()
 {
 	UT_Error err = UT_OK;
 
@@ -247,9 +262,17 @@ Target=\"word/document.xml\"/>\
 }
 
 /**
- * Writes the main part of the document to word/document.xml file.
+ * Finishes the relationships
  */
-UT_Error IE_Exp_OpenXML::writeMainPart()
+UT_Error IE_Exp_OpenXML::finishRelations()
+{
+	return UT_OK;
+}
+
+/**
+ * Starts the main part of the document to word/document.xml file.
+ */
+UT_Error IE_Exp_OpenXML::startMainPart()
 {
 	UT_Error err = UT_OK;
 
@@ -302,6 +325,14 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 		return UT_SAVE_EXPORTERROR;		
 	}
 
+	return UT_OK;
+}
+
+/**
+ * Finishes the main part of the document to word/document.xml file.
+ */
+UT_Error IE_Exp_OpenXML::finishMainPart()
+{
 	return UT_OK;
 }
 
