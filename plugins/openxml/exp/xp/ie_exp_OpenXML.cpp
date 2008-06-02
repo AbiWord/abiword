@@ -32,9 +32,9 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	root(NULL),
 	relsDir(NULL),
 	wordDir(NULL),
-	contentTypesFile(NULL),
-	relFile(NULL),
-	documentFile(NULL)
+	contentTypesStream(NULL),
+	relStream(NULL),
+	documentStream(NULL)
 {
 }
 
@@ -127,11 +127,11 @@ UT_Error IE_Exp_OpenXML::finishDocument()
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
-	if(contentTypesFile && !gsf_output_is_closed(contentTypesFile))
-		gsf_output_close(contentTypesFile);
+	if(contentTypesStream && !gsf_output_is_closed(contentTypesStream))
+		gsf_output_close(contentTypesStream);
 
-	if(relFile && !gsf_output_is_closed(relFile))
-		gsf_output_close(relFile);
+	if(relStream && !gsf_output_is_closed(relStream))
+		gsf_output_close(relStream);
 
 	if(relsDir)
 	{
@@ -140,8 +140,8 @@ void IE_Exp_OpenXML::_cleanup ()
 			gsf_output_close(rels_out);
 	}
 
-	if(documentFile && !gsf_output_is_closed(documentFile))
-		gsf_output_close(documentFile);
+	if(documentStream && !gsf_output_is_closed(documentStream))
+		gsf_output_close(documentStream);
 
 	if(wordDir)
 	{
@@ -165,9 +165,9 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 {
 	UT_Error err = UT_OK;
 
-	contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
+	contentTypesStream = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
 
-	if(!contentTypesFile)
+	if(!contentTypesStream)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
@@ -175,13 +175,13 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 
 	//we only have .rels and .xml file types in the simple basis file
 	//TODO: extend this for other file types as needed
-	err = writeXmlHeader(contentTypesFile);
+	err = writeXmlHeader(contentTypesStream);
 	if(err != UT_OK)
 	{
 		return err;
 	}	
 	
-	if(!gsf_output_puts(contentTypesFile, 
+	if(!gsf_output_puts(contentTypesStream, 
 "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
 <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
 <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
@@ -192,7 +192,7 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	if(!gsf_output_close(contentTypesFile))
+	if(!gsf_output_close(contentTypesStream))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
@@ -224,20 +224,20 @@ UT_Error IE_Exp_OpenXML::startRelations()
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
-	if(!relFile)
+	relStream = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
+	if(!relStream)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	err = writeXmlHeader(relFile);
+	err = writeXmlHeader(relStream);
 	if(err != UT_OK)
 	{
 		return err;
 	}	
 	
-	if(!gsf_output_puts(relFile, 
+	if(!gsf_output_puts(relStream, 
 "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" \
 Target=\"word/document.xml\"/>\
@@ -247,7 +247,7 @@ Target=\"word/document.xml\"/>\
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	if(!gsf_output_close(relFile))
+	if(!gsf_output_close(relStream))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
@@ -283,20 +283,20 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 		return UT_SAVE_EXPORTERROR;
 	}
 
-	documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
-	if(!documentFile)
+	documentStream = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
+	if(!documentStream)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}	
 
-	err = writeXmlHeader(documentFile);
+	err = writeXmlHeader(documentStream);
 	if(err != UT_OK)
 	{
 		return err;
 	}	
 	
-	if(!gsf_output_puts(documentFile, 
+	if(!gsf_output_puts(documentStream, 
 "<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
 xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
@@ -308,13 +308,13 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 
 	//TODO: Write the document body here
 
-	if(!gsf_output_puts(documentFile, "</w:body></w:wordDocument>"))
+	if(!gsf_output_puts(documentStream, "</w:body></w:wordDocument>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	if(!gsf_output_close(documentFile))
+	if(!gsf_output_close(documentStream))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		

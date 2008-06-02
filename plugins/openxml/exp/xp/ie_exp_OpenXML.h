@@ -58,9 +58,9 @@ private:
 	GsfOutfile* root; //.docx file zip root
 	GsfOutfile* relsDir; // _rels
 	GsfOutfile* wordDir; // word 
-	GsfOutput* contentTypesFile; // [Content_Types].xml
-	GsfOutput* relFile; // _rels/.rels
-	GsfOutput* documentFile; // word/document.xml
+	GsfOutput* contentTypesStream; // [Content_Types].xml
+	GsfOutput* relStream; // _rels/.rels
+	GsfOutput* documentStream; // word/document.xml
 
 	UT_Error startContentTypes();
 	UT_Error startRelations();
