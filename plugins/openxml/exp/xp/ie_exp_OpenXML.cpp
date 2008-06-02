@@ -70,7 +70,7 @@ UT_Error IE_Exp_OpenXML::startDocument()
 
 	root = gsf_outfile_zip_new(sink, &err);
 
-	if(err != NULL || root == NULL)
+	if(err || !root)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, Zip root file couldn't be created\n"));	
 		g_object_unref (G_OBJECT (sink));
@@ -159,7 +159,7 @@ UT_Error IE_Exp_OpenXML::writeContentTypes()
 
 	contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
 
-	if(contentTypesFile == NULL)
+	if(!contentTypesFile)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
@@ -203,14 +203,14 @@ UT_Error IE_Exp_OpenXML::writeRelations()
 	UT_Error err = UT_OK;
 
 	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
-	if(relsDir == NULL)
+	if(!relsDir)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}
 
 	relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
-	if(relFile == NULL)
+	if(!relFile)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
@@ -254,14 +254,14 @@ UT_Error IE_Exp_OpenXML::writeMainPart()
 	UT_Error err = UT_OK;
 
 	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
-	if(wordDir == NULL)
+	if(!wordDir)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
 	}
 
 	documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
-	if(documentFile == NULL)
+	if(!documentFile)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
 		return UT_SAVE_EXPORTERROR;
