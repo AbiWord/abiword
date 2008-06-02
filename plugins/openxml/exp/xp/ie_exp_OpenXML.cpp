@@ -165,7 +165,7 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 {
 	UT_Error err = UT_OK;
 
-	contentTypesStream = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE); 
+	contentTypesStream = gsf_output_memory_new();
 
 	if(!contentTypesStream)
 	{
@@ -192,12 +192,6 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	if(!gsf_output_close(contentTypesStream))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be closed\n"));	
-		return UT_SAVE_EXPORTERROR;		
-	}
-
 	return UT_OK;
 }
 
@@ -206,6 +200,29 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.doc
  */
 UT_Error IE_Exp_OpenXML::finishContentTypes()
 {
+	GsfOutput* contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE);
+
+	if(!contentTypesFile)
+		return UT_SAVE_EXPORTERROR;		
+
+ 	if(!gsf_output_write(contentTypesFile, gsf_output_size(contentTypesStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(contentTypesStream))))
+	{
+		gsf_output_close(contentTypesFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(contentTypesStream))
+	{
+		gsf_output_close(contentTypesFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(contentTypesFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, [Content_Types].xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
 	return UT_OK;
 }
 
@@ -217,14 +234,7 @@ UT_Error IE_Exp_OpenXML::startRelations()
 {
 	UT_Error err = UT_OK;
 
-	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
-	if(!relsDir)
-	{
-		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be created\n"));	
-		return UT_SAVE_EXPORTERROR;
-	}
-
-	relStream = gsf_outfile_new_child(relsDir, ".rels", FALSE); 
+	relStream = gsf_output_memory_new();
 	if(!relStream)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be created\n"));	
@@ -247,7 +257,40 @@ Target=\"word/document.xml\"/>\
 		return UT_IE_COULDNOTWRITE;
 	}
 
+	return UT_OK;
+}
+
+/**
+ * Finishes the relationships
+ */
+UT_Error IE_Exp_OpenXML::finishRelations()
+{
+	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
+	if(!relsDir)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	GsfOutput* relFile = gsf_outfile_new_child(relsDir, ".rels", FALSE);
+
+	if(!relFile)
+		return UT_SAVE_EXPORTERROR;
+
+ 	if(!gsf_output_write(relFile, gsf_output_size(relStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(relStream))))
+	{
+		gsf_output_close(relFile);
+		return UT_SAVE_EXPORTERROR;
+	}
+
 	if(!gsf_output_close(relStream))
+	{
+		gsf_output_close(relFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(relFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
@@ -257,15 +300,6 @@ Target=\"word/document.xml\"/>\
 		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
 	}
-
-	return UT_OK;
-}
-
-/**
- * Finishes the relationships
- */
-UT_Error IE_Exp_OpenXML::finishRelations()
-{
 	return UT_OK;
 }
 
@@ -276,14 +310,7 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 {
 	UT_Error err = UT_OK;
 
-	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
-	if(!wordDir)
-	{
-		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be created\n"));	
-		return UT_SAVE_EXPORTERROR;
-	}
-
-	documentStream = gsf_outfile_new_child(wordDir, "document.xml", FALSE); 
+	documentStream = gsf_output_memory_new();
 	if(!documentStream)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be created\n"));	
@@ -314,7 +341,40 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 		return UT_IE_COULDNOTWRITE;
 	}
 
+	return UT_OK;
+}
+
+/**
+ * Finishes the main part of the document to word/document.xml file.
+ */
+UT_Error IE_Exp_OpenXML::finishMainPart()
+{	
+	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
+	if(!wordDir)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+	
+	GsfOutput* documentFile = gsf_outfile_new_child(wordDir, "document.xml", FALSE);
+
+	if(!documentFile)
+		return UT_SAVE_EXPORTERROR;
+
+ 	if(!gsf_output_write(documentFile, gsf_output_size(documentStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(documentStream))))
+	{
+		gsf_output_close(documentFile);
+		return UT_SAVE_EXPORTERROR;
+	}
+	
 	if(!gsf_output_close(documentStream))
+	{
+		gsf_output_close(documentFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(documentFile))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
@@ -325,14 +385,6 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
 		return UT_SAVE_EXPORTERROR;		
 	}
 
-	return UT_OK;
-}
-
-/**
- * Finishes the main part of the document to word/document.xml file.
- */
-UT_Error IE_Exp_OpenXML::finishMainPart()
-{
 	return UT_OK;
 }
 

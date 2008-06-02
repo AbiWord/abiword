@@ -37,6 +37,7 @@
 #include <gsf/gsf-outfile.h>
 #include <gsf/gsf-outfile-zip.h>
 #include <gsf/gsf-output-stdio.h>
+#include <gsf/gsf-output-memory.h>
 
 class OXML_Document;
 
