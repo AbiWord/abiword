@@ -42,7 +42,6 @@
  */
 GdkModifierType EV_X11Keyboard::getAltModifierMask(void)
 {
-printf ("EV_X11Keyboard::getAltModifierMask()\n");
 	return static_cast<GdkModifierType>(m_altMask);
 }
 

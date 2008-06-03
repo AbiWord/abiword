@@ -52,7 +52,6 @@ EV_UnixAltModifierMask & EV_UnixAltModifierMask::instance()
 
 GdkModifierType EV_UnixKeyboard::getAltModifierMask(void)
 {
-printf ("EV_UnixKeyboard::getAltModifierMask()\n");
 	return GDK_MOD1_MASK;
 }
 

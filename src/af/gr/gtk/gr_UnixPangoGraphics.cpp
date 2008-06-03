@@ -232,7 +232,7 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
-	 m_cr (gdk_cairo_create(win)),
+	 m_cr(gdk_cairo_create(win)),
 	 m_pWin (win),
 	 m_bIsSymbol (false),
 	 m_bIsDingbat (false)
@@ -250,7 +250,7 @@ GR_CairoGraphics::GR_CairoGraphics()
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
-	 m_cr (NULL),
+	 m_cr(NULL),
 	 m_pWin (NULL),
 	 m_bIsSymbol (false),
 	 m_bIsDingbat (false)
@@ -287,10 +287,7 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 void GR_CairoGraphics::init()
 {
-	GdkDisplay *display;
-	GdkScreen *screen;
-
-	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
+	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n", this));
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -298,21 +295,17 @@ void GR_CairoGraphics::init()
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
+	if (m_cr)
+		cairo_translate(m_cr, 0.5, 0.5);
+
 	if (m_pWin)
 	{
 		setCursor(GR_CURSOR_DEFAULT);
-		display = gdk_drawable_get_display(GDK_DRAWABLE(m_pWin));
-		screen = gdk_drawable_get_screen(GDK_DRAWABLE(m_pWin));
 
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		// TODO Rob: how to emulate this with the cairo backend?
 		// gdk_gc_set_exposures(m_pGC, 1);
-	}
-	else
-	{
-		display = gdk_display_get_default();
-		screen = gdk_screen_get_default();
 	}
 }
 
