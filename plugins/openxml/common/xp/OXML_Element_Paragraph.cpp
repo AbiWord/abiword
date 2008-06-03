@@ -40,8 +40,17 @@ OXML_Element_Paragraph::~OXML_Element_Paragraph()
 
 UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO Whenever we are ready to export
-	return this->serializeChildren(exporter);
+	UT_Error err = UT_OK;
+
+	err = exporter->startParagraph();
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishParagraph();
 }
 
 UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)

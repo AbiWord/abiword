@@ -44,8 +44,17 @@ OXML_Element_Run::~OXML_Element_Run()
 
 UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 {
-	//Empty for now
-	return this->serializeChildren(exporter);
+	UT_Error err = UT_OK;
+
+	err = exporter->startRun();
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishRun();
 }
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)

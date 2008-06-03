@@ -25,6 +25,7 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <ie_exp_OpenXML.h>
 
 // AbiWord includes
 #include <ut_types.h>

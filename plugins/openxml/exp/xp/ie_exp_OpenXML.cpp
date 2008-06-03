@@ -141,6 +141,60 @@ UT_Error IE_Exp_OpenXML::finishSection()
 }
 
 /**
+ * Starts exporting the OXML_Element_Paragraph object
+ */
+UT_Error IE_Exp_OpenXML::startParagraph()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Element_Paragraph object
+ */
+UT_Error IE_Exp_OpenXML::finishParagraph()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Starts exporting the OXML_Element_Text object
+ */
+UT_Error IE_Exp_OpenXML::startText()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Element_Text object
+ */
+UT_Error IE_Exp_OpenXML::finishText()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Starts exporting the OXML_Element_Run object
+ */
+UT_Error IE_Exp_OpenXML::startRun()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Element_Run object
+ */
+UT_Error IE_Exp_OpenXML::finishRun()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()

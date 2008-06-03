@@ -64,8 +64,17 @@ const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 
 UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO whenever we're ready to write the export filter
-	return OXML_Element::serialize(exporter);
+	UT_Error err = UT_OK;
+
+	err = exporter->startText();
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishText();
 }
 
 UT_Error OXML_Element_Text::addToPT(PD_Document * pDocument)

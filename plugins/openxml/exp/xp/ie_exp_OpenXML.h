@@ -53,6 +53,12 @@ public:
 	UT_Error finishDocument();
 	UT_Error startSection();
 	UT_Error finishSection();
+	UT_Error startParagraph();
+	UT_Error finishParagraph();
+	UT_Error startText();
+	UT_Error finishText();
+	UT_Error startRun();
+	UT_Error finishRun();
 
 protected:
     virtual UT_Error _writeDocument(void);
