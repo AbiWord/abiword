@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * 
@@ -137,6 +138,9 @@ public:
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
 	static const char *    graphicsDescriptor(){return "Unix Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
+
+	virtual void _beginPaint();
+	virtual void _endPaint();
 
 	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
 	

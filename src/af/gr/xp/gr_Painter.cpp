@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz <cinamod@hotmail.com>
  *
@@ -40,6 +42,8 @@ GR_Painter::GR_Painter (GR_Graphics * pGr)
 	    pCaret = pGr->getNthCaret(i);
 	}
 	m_pGr->beginPaint ();
+
+	m_pGr->setLineWidth(m_pGr->tlu(1));
 }
 
 
@@ -51,6 +55,8 @@ GR_Painter::GR_Painter (GR_Graphics * pGr, bool bCaret)
 	if(bCaret)
 	  m_pCaretDisabler = NULL;
 	m_pGr->beginPaint ();
+
+	m_pGr->setLineWidth(m_pGr->tlu(1));
 }
 
 GR_Painter::~GR_Painter ()

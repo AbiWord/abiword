@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2004-2007 Tomas Frydrych
  * 
@@ -333,6 +334,16 @@ GR_Graphics *   GR_CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
 	return new GR_CairoGraphics(AI.m_win);
+}
+
+void GR_CairoGraphics::_beginPaint()
+{
+	cairo_save(m_cr);
+}
+
+void GR_CairoGraphics::_endPaint()
+{
+	cairo_restore(m_cr);
 }
 
 /*!

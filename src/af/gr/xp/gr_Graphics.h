@@ -718,7 +718,6 @@ class ABI_EXPORT GR_Graphics
 
 	GR_Graphics();
 
-	// todo: make these pure virtual
 	virtual void _beginPaint () {}
 	virtual void _endPaint () {}
 
