@@ -16,6 +16,8 @@ libxp_la_SOURCES = \
 	OXML_Element_Run.h \
 	OXML_Element_Text.cpp \
 	OXML_Element_Text.h \
+	OXML_Element_Paragraph.cpp \
+	OXML_Element_Paragraph.h \
 	OXML_FontManager.cpp \
 	OXML_LangToScriptConverter.h \
 	OXML_FontManager.h \
