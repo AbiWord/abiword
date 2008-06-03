@@ -37,7 +37,7 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 	else
 		if (szName) // Label defaults to style name.
 			m_sLabel = szName;
-	UT_DEBUGMSG(("~~~~~New Style: Name: %s  Label: %s\n", m_szName, m_sLabel));
+	UT_DEBUGMSG(("~~~~~New Style: Name: %s  Label: %s\n", m_szName, m_sLabel.c_str()));
 }
 
 PD_Style::~PD_Style()
@@ -505,7 +505,7 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 //////////////////////////////////////////////////////////////////
 
 PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed)
-  : PD_Style(pPT, indexAP, szName, NULL, bDisplayed), m_indexAPOrig(indexAP)
+  : PD_Style(pPT, indexAP, szName, szName, bDisplayed), m_indexAPOrig(indexAP)
 {
 }
 
