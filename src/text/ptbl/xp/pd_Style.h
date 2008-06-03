@@ -27,6 +27,7 @@
 #include "pt_Types.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
+#include <string>
 
 class pt_PieceTable;
 
@@ -36,7 +37,7 @@ class pt_PieceTable;
 class ABI_EXPORT PD_Style
 {
 public:
-	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL, bool bDisplayed = true);
+	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL,  const char * szLabel = NULL, bool bDisplayed = true);
 	virtual ~PD_Style();
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
@@ -81,6 +82,7 @@ protected:
 	PT_AttrPropIndex		m_indexAP;
 
 	char * 					m_szName;
+	std::string				m_sLabel;
 	bool					m_bDisplayed;
 	UT_sint32				m_iUsed;
 

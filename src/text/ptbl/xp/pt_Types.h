@@ -136,6 +136,7 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_BASEDON_ATTRIBUTE_NAME		(static_cast<const gchar *>("basedon"))
 #define PT_FOLLOWEDBY_ATTRIBUTE_NAME	(static_cast<const gchar *>("followedby"))
 #define PT_ID_ATTRIBUTE_NAME            (static_cast<const gchar *>("id"))
+#define PT_LABEL_ATTRIBUTE_NAME			(static_cast<const gchar *>("label"))
 #define PT_HEADER_ATTRIBUTE_NAME	    (static_cast<const gchar *>("header"))
 #define PT_HEADEREVEN_ATTRIBUTE_NAME	(static_cast<const gchar *>("header-even"))
 #define PT_HEADERFIRST_ATTRIBUTE_NAME	(static_cast<const gchar *>("header-first"))

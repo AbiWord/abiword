@@ -26,17 +26,23 @@
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 
-PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed) :
+PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, const char * szLabel, bool bDisplayed) :
   m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_bDisplayed(bDisplayed), m_iUsed(0),
-  m_pBasedOn(NULL), m_pFollowedBy(NULL)
+  m_pBasedOn(NULL), m_pFollowedBy(NULL), m_sLabel("")
 {
-  if (szName)
-    m_szName = g_strdup (szName);
+	if (szName)
+		m_szName = g_strdup (szName);
+	if (szLabel)
+		m_sLabel = szLabel;
+	else
+		if (szName) // Label defaults to style name.
+			m_sLabel = szName;
+	UT_DEBUGMSG(("~~~~~New Style: Name: %s  Label: %s\n", m_szName, m_sLabel));
 }
 
 PD_Style::~PD_Style()
 {
-  FREEP(m_szName);
+	FREEP(m_szName);
 }
 
 bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
@@ -499,7 +505,7 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 //////////////////////////////////////////////////////////////////
 
 PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed)
-  : PD_Style(pPT, indexAP, szName, bDisplayed), m_indexAPOrig(indexAP)
+  : PD_Style(pPT, indexAP, szName, NULL, bDisplayed), m_indexAPOrig(indexAP)
 {
 }
 
