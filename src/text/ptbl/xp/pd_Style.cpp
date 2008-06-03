@@ -236,7 +236,7 @@ bool PD_Style::isCharStyle(void) const
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
 			return g_ascii_strcasecmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
-                                               // *INSESITIVE. IF YOU DON'T
+                                               // *INSENSITIVE. IF YOU DON'T
                                                // * I'LL PUT YOUR EMAIL ADDRESS
                                                // * ON SPAM BLACK LIST!
                                                // I'm sick and tired of fixing
@@ -249,12 +249,11 @@ bool PD_Style::isCharStyle(void) const
 bool PD_Style::isList(void) const
 {
 	const char *szListStyle = NULL;
-	if (getPropertyExpand("list-style", szListStyle)) {
+	if (getPropertyExpand("list-style", szListStyle))
 		return (g_ascii_strcasecmp(szListStyle, "None") != 0);
-	}
-	else {
-		return FALSE;
-	}
+	else
+		return false;
+
 }
 
 PD_Style * PD_Style::getBasedOn(void) const
@@ -357,9 +356,8 @@ bool PD_Style::addAttributes(const gchar ** pAtts)
 	else
 	{
 		if(pAP->areAlreadyPresent(pAtts,NULL))
-		{
 			return true;
-		}
+		
 		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(pAtts, NULL, false);
 		UT_return_val_if_fail( pNewAP, false );
 		
@@ -378,7 +376,7 @@ size_t PD_Style::getAttributeCount(void) const
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return 0;
 	else
-	        return pAP->getAttributeCount();
+		return pAP->getAttributeCount();
 }
 
 
@@ -389,7 +387,7 @@ size_t PD_Style::getPropertyCount(void) const
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return 0;
 	else
-	        return pAP->getPropertyCount();
+		return pAP->getPropertyCount();
 }
 	
 bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
@@ -400,22 +398,22 @@ bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return false;
 	else
-	  {
-	        return pAP->getNthAttribute(ndx, szName, szValue);
-	  }
+	{
+		return pAP->getNthAttribute(ndx, szName, szValue);
+	}
 }
 
 bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 			       const gchar *&szValue) const
 {
-  	PP_AttrProp * pAP = NULL;
+	PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return false;
 	else
-	  {
-	        return pAP->getNthProperty(ndx, szName, szValue);
-	  }
+	{
+		return pAP->getNthProperty(ndx, szName, szValue);
+	}
 }
 
 /*!
