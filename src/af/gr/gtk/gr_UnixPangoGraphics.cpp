@@ -276,13 +276,13 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	if (m_cr)
 		cairo_destroy(m_cr);
 
-	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
+	UT_VECTOR_SPARSEPURGEALL(UT_Rect*, m_vSaveRect);
 
 	// purge saved pixbufs
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
-		GdkPixbuf * pix = m_vSaveRectBuf.getNthItem(i);
-		g_object_unref (G_OBJECT (pix));
+		cairo_t *cr = m_vSaveRectBuf.getNthItem(i);
+		cairo_destroy(cr);
 	}
 }
 
@@ -2122,47 +2122,62 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	return iWidth;
 }
 
-void GR_CairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 index)
+void GR_CairoGraphics::saveRectangle(UT_Rect & rect, UT_uint32 index)
 {
-	UT_Rect *oldR = NULL;	
-	GdkPixbuf *oldC = NULL;
+	cairo_t *cr, *oldCr;
+	cairo_surface_t *surface;
+	UT_Rect *oldRect;
+	UT_sint32 x;
+	UT_sint32 y;
+	UT_sint32 width;
+	UT_sint32 height;
 
-	m_vSaveRect.setNthItem(index, new UT_Rect(r),&oldR);
-	if(oldR) {
-		delete oldR;
+	x = _tduX(rect.left);
+	y = _tduY(rect.top);
+	width = _tduR(rect.width);
+	height = _tduR(rect.height);
+
+	surface = cairo_get_target(m_cr);
+	cr = cairo_create(surface);
+	cairo_set_source_surface(cr, surface, x, y);
+	cairo_rectangle (cr, 0, 0, width, height);
+	cairo_fill(cr);
+	
+	oldCr = NULL;
+	m_vSaveRectBuf.setNthItem(index, cr, &oldCr);
+	if(oldCr) {
+		cairo_destroy(oldCr);
 	}
 
-	UT_sint32 idx = _tduX(r.left);
-	UT_sint32 idy = _tduY(r.top);
-	UT_sint32 idw = _tduR(r.width);
-	UT_sint32 idh = _tduR(r.height);
-
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   GDK_DRAWABLE(m_pWin),
-												   NULL,
-												   idx, idy, 0, 0,
-												   idw, idh);
-	m_vSaveRectBuf.setNthItem(index, pix, &oldC);
-
-	if(oldC)
-		g_object_unref (G_OBJECT (oldC));
+	oldRect = NULL;
+	m_vSaveRect.setNthItem(index, new UT_Rect(rect), &oldRect);
+	if(oldRect) {
+		delete oldRect;
+	}
 }
 
 void GR_CairoGraphics::restoreRectangle(UT_uint32 index)
 {
+	cairo_t *cr;
+	cairo_surface_t *surface;
 	UT_Rect *rect;
-	GdkPixbuf *pixbuf;
 	UT_sint32 x;
 	UT_sint32 y;
+	UT_sint32 width;
+	UT_sint32 height;
 
+	cr = m_vSaveRectBuf.getNthItem(index);
 	rect = m_vSaveRect.getNthItem(index);
-	pixbuf = m_vSaveRectBuf.getNthItem(index);
 	x = _tduX(rect->left);
 	y = _tduY(rect->top);
+	width = _tduR(rect->width);
+	height = _tduR(rect->height);
 
 	cairo_save(m_cr);
-	gdk_cairo_set_source_pixbuf(m_cr, pixbuf, x, y);
-	cairo_paint(m_cr);
+	surface = cairo_get_target(cr);
+	cairo_set_source_surface(m_cr, surface, x, y);
+	cairo_rectangle (m_cr, x, y, width, height);
+	cairo_fill(m_cr);
 	cairo_restore(m_cr);
 }
 
@@ -2716,6 +2731,7 @@ void GR_CairoGraphics::setColor(const UT_RGBColor& c)
 {
 	GR_VERBOSE (printf("%s() %02x%02x%02x\n", __FUNCTION__, c.m_red, c.m_grn, c.m_blu));
 
+	m_curColor = c;
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
 }
 

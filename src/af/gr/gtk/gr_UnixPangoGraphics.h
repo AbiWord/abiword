@@ -333,9 +333,10 @@ public:
 	GR_Graphics::ColorSpace	m_cs;
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
 
-	UT_GenericVector<UT_Rect*>     m_vSaveRect;
-	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
+	UT_GenericVector<UT_Rect *> m_vSaveRect;
+	UT_GenericVector<cairo_t *> m_vSaveRectBuf;
 
+	// TODO Rob: is saving the colour really needed, or can we take it from inside cairo?
 	UT_RGBColor				m_curColor;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
