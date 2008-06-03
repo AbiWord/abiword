@@ -39,7 +39,7 @@ public:
 	OXML_Element_Run(std::string id);
 	virtual ~OXML_Element_Run();
 
-	virtual UT_Error serialize(std::string path);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 };
 

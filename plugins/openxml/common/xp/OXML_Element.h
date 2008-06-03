@@ -40,6 +40,7 @@
 #include <boost/shared_ptr.hpp>
 
 class OXML_Element;
+class IE_Exp_OpenXML;
 
 typedef boost::shared_ptr<OXML_Element> OXML_SharedElement;
 typedef std::vector<OXML_SharedElement> OXML_ElementVector;
@@ -78,9 +79,9 @@ public:
 	/*! This method is used during the export process. 
 	 *  WARNING: If you derive OXML_Element, you should probably override this method.
 	 *  If you do, make sure to call the method serializeChildren (if applicable).
-		\param path String indicating the FULL path of the file.  If the file exists, it will be overridden.
+		\param exporter the actual exporter which handles writing the files.
 	*/
-	virtual UT_Error serialize(std::string path);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	//! Appends this section and all its content to the Abiword Piecetable.
 	/*! This method is used during the import process.
 	 *  WARNING: If you derive OXML_Element, you should probably override this method.
@@ -93,7 +94,7 @@ protected:
 	//! Calls the method serialize() on all children.
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */
-	UT_Error serializeChildren(std::string path);
+	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	//! Calls the method addToPT() on all children.
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */

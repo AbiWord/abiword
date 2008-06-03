@@ -42,10 +42,10 @@ OXML_Element_Run::~OXML_Element_Run()
 
 }
 
-UT_Error OXML_Element_Run::serialize(std::string path)
+UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 {
 	//Empty for now
-	return this->serializeChildren(path);
+	return this->serializeChildren(exporter);
 }
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)

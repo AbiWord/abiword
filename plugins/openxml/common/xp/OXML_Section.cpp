@@ -95,19 +95,23 @@ UT_Error OXML_Section::clearChildren()
 	return m_children.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_Section::serialize(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
-	//TODO: do something!
+	
+	ret = exporter->startSection();
+	if(ret != UT_OK)
+		return ret;
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
-		ret = m_children[i]->serialize("");
-		if (ret != UT_OK)
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
 			return ret;
 	}
-	return ret;
+	
+	return exporter->finishSection();
 }
 
 UT_Error OXML_Section::addToPT(PD_Document * pDocument)

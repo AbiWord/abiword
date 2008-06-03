@@ -123,6 +123,24 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 }
 
 /**
+ * Starts exporting the OXML_Section object
+ */
+UT_Error IE_Exp_OpenXML::startSection()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Section object
+ */
+UT_Error IE_Exp_OpenXML::finishSection()
+{
+	//TODO
+	return UT_OK;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()

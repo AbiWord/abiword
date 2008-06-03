@@ -62,10 +62,10 @@ const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 	return m_pString->ucs4_str();
 }
 
-UT_Error OXML_Element_Text::serialize(std::string path)
+UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
 	//TODO whenever we're ready to write the export filter
-	return OXML_Element::serialize(path);
+	return OXML_Element::serialize(exporter);
 }
 
 UT_Error OXML_Element_Text::addToPT(PD_Document * pDocument)

@@ -80,21 +80,22 @@ UT_Error OXML_Element::clearChildren()
 	return m_children.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_Element::serializeChildren(std::string path)
+UT_Error OXML_Element::serializeChildren(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
-		if (m_children[i]->serialize(path) != UT_OK)
-			ret = UT_ERROR;
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
 	}
 
 	return ret;
 }
 
-UT_Error OXML_Element::serialize(std::string path)
+UT_Error OXML_Element::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 	//Do something here when export filter is implemented
@@ -102,8 +103,7 @@ UT_Error OXML_Element::serialize(std::string path)
 	if (ret != UT_OK)
 		return ret;	
 
-	ret = serializeChildren(path);
-	return ret;
+	return serializeChildren(exporter);
 }
 
 UT_Error OXML_Element::addChildrenToPT(PD_Document * pDocument)

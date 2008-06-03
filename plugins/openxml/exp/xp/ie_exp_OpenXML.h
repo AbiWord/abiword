@@ -51,6 +51,8 @@ public:
 	virtual ~IE_Exp_OpenXML ();
 	UT_Error startDocument();
 	UT_Error finishDocument();
+	UT_Error startSection();
+	UT_Error finishSection();
 
 protected:
     virtual UT_Error _writeDocument(void);
