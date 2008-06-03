@@ -68,7 +68,8 @@ bool AP_Win32Toolbar_StyleCombo::populate(void)
 	m_vecContents.clear();
 
 	// populate the vector
-
+	// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
 #if 1
 	// HACK: for now, just hardwire it
 	m_vecContents.addItem("Normal");
@@ -123,7 +124,8 @@ bool AP_Win32Toolbar_StyleCombo::repopulate(void)
 	m_pDocument->enumStyles(pStyles);
 	UT_return_val_if_fail( pStyles, false );
 	UT_uint32 iStyleCount = m_pDocument->getStyleCount();
-
+	PD_Style// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
 	for (UT_uint32 k=0; k < iStyleCount; k++)
 	{
 		pStyle = pStyles->getNthItem(k);

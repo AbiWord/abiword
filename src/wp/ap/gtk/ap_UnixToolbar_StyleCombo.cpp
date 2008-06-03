@@ -74,7 +74,8 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 	m_vecContents.clear();
 
 	// populate the vector
-
+	// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
 #if 1
 	// HACK: for now, just hardwire it
 	// NB if you change the case of the labels, it will stop working
@@ -147,7 +148,8 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	const char * szName;
 	PD_Style * pStyle;
 	GSList *list = NULL;
-
+	// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
 	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,const_cast<const PD_Style**>(&pStyle))); k++)
 	{
 		if (!pStyle) {
@@ -185,7 +187,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 
 const PangoFontDescription* 
 AP_UnixToolbar_StyleCombo::getStyle (const gchar *name) {
-
+	// RP-GSOC08 TODO: This needs to be fixed, using labels instead.
 	const PangoFontDescription *desc = m_mapStyles.pick(name);
 	if (desc == NULL) {
 		repopulate();
