@@ -85,6 +85,4 @@ void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame)
 	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(job, true);
 
 	UT_return_if_fail( m_pPrintGraphics );
-	
-	m_pPrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 }

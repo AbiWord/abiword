@@ -182,8 +182,6 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 
 	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(m_gpm, m_bIsPreview);
 	UT_return_if_fail(m_pPrintGraphics);
-	
-	m_pPrintGraphics->setColorSpace(m_cColorSpace);
 	if(m_bPdfWorkAround)
 	  static_cast<GR_UnixPangoPrintGraphics *>(m_pPrintGraphics)->setPdfWorkaround();
 	m_answer = a_OK;

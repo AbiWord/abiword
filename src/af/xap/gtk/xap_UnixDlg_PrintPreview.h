@@ -23,10 +23,6 @@
 
 #include "xap_Dlg_PrintPreview.h"
 
-class XAP_UnixGnomePrintGraphics;
-
-/*****************************************************************/
-
 class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 {
  public:

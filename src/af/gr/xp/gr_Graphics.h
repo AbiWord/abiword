@@ -513,9 +513,6 @@ class ABI_EXPORT GR_Graphics
 				   GR_COLORSPACE_BW
 	} ColorSpace;
 
-	virtual void      setColorSpace(GR_Graphics::ColorSpace c) = 0;
-	virtual GR_Graphics::ColorSpace getColorSpace(void) const = 0;
-
 	/* multiple cursor support */
 
 	typedef enum { GR_CURSOR_INVALID=0,

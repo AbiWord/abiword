@@ -290,7 +290,6 @@ void GR_CairoGraphics::init()
 {
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n", this));
 
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	m_pFontMap = pango_cairo_font_map_get_default();
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
@@ -417,18 +416,6 @@ bool GR_CairoGraphics::endPrint()
 void GR_CairoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	drawChars(&Char, 0, 1, xoff, yoff, NULL);
-}
-
-void GR_CairoGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
-{
-	// we only use ONE color space here now (GdkRGB's space)
-	// and we don't let people change that on us.
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-}
-
-GR_Graphics::ColorSpace GR_CairoGraphics::getColorSpace() const
-{
-	return m_cs;
 }
 
 void GR_CairoGraphics::setCursor(GR_Graphics::Cursor c)
@@ -3393,6 +3380,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 	m_gpm (gpm),
 	m_gpc (NULL),
 	m_bPdfLandscapeWorkaround(false),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bOwnsFontMap(false)
 {
 	_constructorCommon();
@@ -3433,6 +3421,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 	m_width(inWidthDevice),
 	m_height(inHeightDevice),
 	m_bPdfLandscapeWorkaround(false),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bOwnsFontMap(false)
 {
 	_constructorCommon();
@@ -3441,8 +3430,6 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 
 void GR_UnixPangoPrintGraphics::_constructorCommon()
 {
-	setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-
 	// the parent class' device resolution is the screen's resolution
 	m_iScreenResolution = m_iDeviceResolution;
 	m_iDeviceResolution = 72; // hardcoded in GnomePrint
