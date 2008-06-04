@@ -2898,6 +2898,7 @@ void GR_CairoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 	cairo_save(m_cr);
 
+	//cairo_set_antialias(m_cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
 	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
 	cairo_fill(m_cr);

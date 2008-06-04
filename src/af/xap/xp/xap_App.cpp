@@ -198,6 +198,17 @@ const char* XAP_App::getBuildCompileDate ()
 
 const char* XAP_App::getAbiSuiteHome ()
 {
+	if (!s_szAbiSuite_Home) {
+#ifdef WIN32
+	// FIXME: this string is leaked, but it's static, so should be ok.
+	gchar *prefix;
+	prefix = g_win32_get_package_installation_directory(NULL, NULL);
+	s_szAbiSuite_Home = g_strdup_printf("%s\\share\\%s-%s", prefix, PACKAGE_NAME, ABIWORD_SERIES);
+	g_free(prefix), prefix = NULL;
+#else
+	s_szAbiSuite_Home = ABIWORD_DATADIR;
+#endif
+	}
 	return s_szAbiSuite_Home;
 }
 
