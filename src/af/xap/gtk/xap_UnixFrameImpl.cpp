@@ -600,7 +600,6 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, const char *geometry)
 	m_iPreeditStart(0),
 	m_sGeometry(geometry)
 {
-printf("%s(%s)\n", __FUNCTION__, geometry);
 }
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl()

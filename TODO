@@ -12,9 +12,12 @@ Last sync'd with trunk: r23988.
 	- Screen dirt/redraw problems when selecting/unselecting text.
 	- Tab widget doesn't show up in print view.
 	- Scrolling causes content to vanish.
+	- Hook up the cairo image class.
+	- [DONE] Use only cairo drawing in the screen graphics class.
 
 + Win32 build of abiword/gtk [ongoing].
 	- Implement crash handler properly.
+	- [DONE] Portable implementation of command line --geometry parsing.
 
 + Decouple screen- and print-graphics [ongoing].
 
