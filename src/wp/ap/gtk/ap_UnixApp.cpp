@@ -23,8 +23,6 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#define ABIWORD_INTERNAL
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

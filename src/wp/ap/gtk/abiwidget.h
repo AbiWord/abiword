@@ -442,11 +442,6 @@ G_BEGIN_DECLS
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
 
-#ifdef ABIWORD_INTERNAL
-  /* these functions are used by abiword internally and really aren't exported to the rest of the world */
-  XAP_Frame * abi_widget_get_frame ( AbiWidget * w ) ;
-#endif
-
 G_END_DECLS
 
 #endif /* ABI_WIDGET_H */

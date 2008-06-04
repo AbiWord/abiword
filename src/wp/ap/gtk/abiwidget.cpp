@@ -2392,13 +2392,6 @@ abi_widget_new_with_file (const gchar * file)
 	return GTK_WIDGET (abi);
 }
 
-extern "C" XAP_Frame * 
-abi_widget_get_frame ( AbiWidget * w )
-{
-	UT_return_val_if_fail ( w != NULL, NULL ) ;
-	return w->priv->m_pFrame ;
-}
-
 /**
  * abi_widget_invoke()
  *
