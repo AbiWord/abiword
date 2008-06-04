@@ -2128,9 +2128,15 @@ void GR_CairoGraphics::saveRectangle(UT_Rect & rect, UT_uint32 index)
 	dst = cairo_surface_create_similar(src, CAIRO_CONTENT_COLOR, width, height);
 	cr = cairo_create(dst);
 	cairo_set_source_surface(cr, src, x, y);
-	// clipping should not be needed, the target surface is constrained in size anyways
-	// cairo_rectangle(cr, 0, 0, width, height);
+	cairo_rectangle(cr, 0, 0, width, height);
 	cairo_fill(cr);
+/*
+static bool saved = false;
+if (!saved) {
+	saved = true;
+	cairo_surface_write_to_png(dst, "/home/rstaudinger/Desktop/foo.png");
+}
+*/
 
 	oldCr = NULL;
 	m_vSaveRectBuf.setNthItem(index, cr, &oldCr);
@@ -2872,8 +2878,6 @@ void GR_CairoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
 	if (pRect) {
-		// TODO Rob: nicify after removal of deprecated code
-		// also do the "draw sharp lines" thing?
 		double x1, y1, x2, y2;
 		x1 = _tduX(pRect->left);
 		y1 = _tduY(pRect->top);

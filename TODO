@@ -1,0 +1,39 @@
+
+Rob's GSoC TODO
+===============
+
+Last sync'd with trunk: r23988.
+
+1st Part
+--------
+
++ Use cairo for screen graphics in the gtk version [ongoing].
+	- Caret is causing screen dirt, investigate GR_CairoGraphics::saveRectangle()
+	- Screen dirt/redraw problems when selecting/unselecting text.
+	- Tab widget doesn't show up in print view.
+	- Scrolling causes content to vanish.
+
++ Win32 build of abiword/gtk [ongoing].
+	- Implement crash handler properly.
+
++ Decouple screen- and print-graphics [ongoing].
+
+
+2nd Part
+--------
+
++ Implement/refactor cairo print graphics class.
++ Hook up with GtkPrint infrastructure.
+
+
+Other
+-----
+
++ GOffice removal.
+	- src/af/xap/gtk/xap_UnixDialogHelper.cpp
+	  Doesn't gtk set the button order correctly by itself?
+
++ Support SVG as a native image format.
++ Move the cairo screen graphics to XP land.
++ Move the cairo print graphics to XP land.
+

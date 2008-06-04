@@ -92,9 +92,14 @@ case ${target_os} in
     test "$TOOLKIT" == "" && TOOLKIT="gtk"
     ;;
 esac
-AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
+AC_MSG_RESULT([$PLATFORM/$TOOLKIT])
 AC_SUBST([PLATFORM])
 AC_SUBST([TOOLKIT])
+
+if test "$PLATFORM" == "unix"; then
+  abi_cv_xlib="no"
+  AC_CHECK_HEADERS([X11/Xlib.h], [abi_cv_xlib="yes"])
+fi
 
 # Platform-specific tests
 
@@ -535,6 +540,9 @@ elif test "$TOOLKIT" == "cocoa"; then
 	enable_static="yes"
 else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
+	if test "$abi_cv_xlib" == "yes"; then
+	  AC_DEFINE([WITH_X], [1], [Use X Window System])
+	fi
 	# build static binary by default
 	if test "$enable_dynamic" == "no" && \
 	   test "$enable_static" == "no"; then 
@@ -542,6 +550,7 @@ else
 		enable_static="yes"
 	fi
 fi
+AM_CONDITIONAL([WITH_X], test "$abi_cv_xlib" == "yes")
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_dynamic" == "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
 

@@ -84,6 +84,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the <X11/Xlib.h> header file. */
+#undef HAVE_X11_XLIB_H
+
 /* Define to disable debugging functionality */
 #undef NDEBUG
 
@@ -134,6 +137,9 @@
 
 /* Define if using gucharmap */
 #undef WITH_GUCHARMAP
+
+/* Use X Window System */
+#undef WITH_X
 
 /* do not use XOR drawing functions */
 #undef XAP_DONTUSE_XOR
