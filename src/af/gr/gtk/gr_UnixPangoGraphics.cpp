@@ -2125,7 +2125,7 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 void GR_CairoGraphics::saveRectangle(UT_Rect & rect, UT_uint32 index)
 {
 	cairo_t *cr, *oldCr;
-	cairo_surface_t *surface;
+	cairo_surface_t *src, *dst;
 	UT_Rect *oldRect;
 	UT_sint32 x;
 	UT_sint32 y;
@@ -2137,12 +2137,14 @@ void GR_CairoGraphics::saveRectangle(UT_Rect & rect, UT_uint32 index)
 	width = _tduR(rect.width);
 	height = _tduR(rect.height);
 
-	surface = cairo_get_target(m_cr);
-	cr = cairo_create(surface);
-	cairo_set_source_surface(cr, surface, x, y);
-	cairo_rectangle (cr, 0, 0, width, height);
+	src = cairo_get_target(m_cr);
+	dst = cairo_surface_create_similar(src, CAIRO_CONTENT_COLOR, width, height);
+	cr = cairo_create(dst);
+	cairo_set_source_surface(cr, src, x, y);
+	// clipping should not be needed, the target surface is constrained in size anyways
+	// cairo_rectangle(cr, 0, 0, width, height);
 	cairo_fill(cr);
-	
+
 	oldCr = NULL;
 	m_vSaveRectBuf.setNthItem(index, cr, &oldCr);
 	if(oldCr) {
