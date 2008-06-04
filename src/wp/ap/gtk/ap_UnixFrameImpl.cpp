@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * 
  * This program is free software; you can redistribute it and/or
@@ -39,8 +41,8 @@
 #include "abiword_48.xpm"
 #endif
 
-AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
-	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame)),
+AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, const char *geometry)
+  : XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), geometry),
 	m_dArea(NULL),
 	m_pVadj(NULL),
 	m_pHadj(NULL),

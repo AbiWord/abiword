@@ -131,7 +131,7 @@ public:
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					forgetClones(XAP_Frame * pFrame);
 	virtual bool					getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame);
-	virtual XAP_Frame *				newFrame() = 0;
+	virtual XAP_Frame *				newFrame(const char *geometry = NULL) = 0;
 	virtual void					reallyExit() = 0;
 
 	bool						updateClones(XAP_Frame * pFrame);

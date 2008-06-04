@@ -581,8 +581,8 @@ void XAP_UnixFrameImpl::dragText()
 #endif
 }
 
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
-	XAP_FrameImpl(pFrame),
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, const char *geometry)
+  : XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_wTopLevelWindow(NULL),
 	m_pUnixMenu(NULL),
@@ -597,8 +597,10 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_pUnixPopup(NULL),
 	m_dialogFactory(XAP_App::getApp(), pFrame),
 	m_iPreeditLen (0),
-	m_iPreeditStart (0)
+	m_iPreeditStart(0),
+	m_sGeometry(geometry)
 {
+printf("%s(%s)\n", __FUNCTION__, geometry);
 }
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl()
@@ -1496,7 +1498,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		m_wTopLevelWindow = _createInternalWindow ();
+		m_wTopLevelWindow = _createInternalWindow();
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     XAP_App::getApp()->getApplicationTitleForTitleBar());
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
@@ -1517,7 +1519,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 						GINT_TO_POINTER(FALSE));
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this);
 
-	_setGeometry ();
+	_setGeometry();
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   G_CALLBACK(_fe::realize), NULL);
@@ -1828,110 +1830,58 @@ GtkIMContext * XAP_UnixFrameImpl::getIMContext()
 	return m_imContext;
 }
 
-void XAP_UnixFrameImpl::_setGeometry ()
+void XAP_UnixFrameImpl::_setGeometry()
 {
-	UT_sint32 app_x = 0;
-	UT_sint32 app_y = 0;
-	UT_uint32 app_w = 0;
-	UT_uint32 app_h = 0;
-	UT_uint32 app_f = 0;
+	XAP_UnixApp * pApp;
+	UT_sint32 x;
+	UT_sint32 y;
+	UT_uint32 width, prefWidth;
+	UT_uint32 height, prefHeight;
+	UT_uint32 flags;
 
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp ());
-	pApp->getGeometry (&app_x, &app_y, &app_w, &app_h, &app_f);
-	// (ignore app_x, app_y & app_f since the WM will set them for us just fine)
+	pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
 
-	// This is now done with --geometry parsing.
-	if (app_w == 0 || app_w > USHRT_MAX) app_w = 760;
-        if (app_h == 0 || app_h > USHRT_MAX) app_h = 520;
+	if (m_sGeometry) 
+	{
+		// cmdline param overrides
+		gtk_window_parse_geometry(GTK_WINDOW(m_wTopLevelWindow), m_sGeometry);
+	}
+	else 
+	{
+		// query prefs for window size
+		x = 0;
+		y = 0;
+		width = 0;
+		height = 0;
+		flags = 0;	
+		pApp->getGeometry (&x, &y, &prefWidth, &prefHeight, &flags);
+		// (ignore x, y, app_f & PREF_FLAG_GEOMETRY_POS since the WM will set them for us just fine)
 
-	UT_DEBUGMSG(("xap_UnixFrameImpl: app-width=%lu, app-height=%lu\n",
-				 static_cast<unsigned long>(app_w),static_cast<unsigned long>(app_h)));
-
-	// set geometry hints as the user requested
-	gint user_x = 0;
-	gint user_y = 0;
-	UT_uint32 uuser_w = static_cast<UT_uint32>(app_w);
-	UT_uint32 uuser_h = static_cast<UT_uint32>(app_h);
-	UT_uint32 user_f = 0;
-
-	pApp->getWinGeometry (&user_x, &user_y, &uuser_w, &uuser_h, &user_f);
-	// to avoid bad signedess warnings
-	gint user_w = static_cast<gint>(uuser_w);
-	gint user_h = static_cast<gint>(uuser_h);
-
-	UT_DEBUGMSG(("xap_UnixFrameImpl: user-width=%u, user-height=%u\n",
-				 static_cast<unsigned>(user_w),static_cast<unsigned>(user_h)));
-
-	// Get fall-back defaults from preferences
-	UT_sint32 pref_x = 0;
-	UT_sint32 pref_y = 0;
-	UT_uint32 pref_w = static_cast<UT_uint32>(app_w);
-	UT_uint32 pref_h = static_cast<UT_uint32>(app_h);
-	UT_uint32 pref_f = 0;
-
-	pApp->getPrefs()->getGeometry (&pref_x, &pref_y, &pref_w, &pref_h, &pref_f);
-
-	UT_DEBUGMSG(("xap_UnixFrameImpl: pref-width=%lu, pref-height=%lu\n",
-				 static_cast<unsigned long>(pref_w),static_cast<unsigned long>(pref_h)));
-
-	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_SIZE))
-		if (pref_f & PREF_FLAG_GEOMETRY_SIZE)
-			{
-				user_w = static_cast<guint>(pref_w);
-				user_h = static_cast<guint>(pref_h);
-				user_f |= XAP_UnixApp::GEOMETRY_FLAG_SIZE;
-			}
-	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_POS))
-		if (pref_f & PREF_FLAG_GEOMETRY_POS)
-			{
-				user_x = static_cast<gint>(pref_x);
-				user_y = static_cast<gint>(pref_y);
-				user_f |= XAP_UnixApp::GEOMETRY_FLAG_POS;
-			}
-
-	UT_DEBUGMSG(("xap_UnixFrameImpl: user-x=%d, user-y=%d\n",
-				 static_cast<int>(user_x),static_cast<int>(user_y)));
-
-	if (!(user_f & XAP_UnixApp::GEOMETRY_FLAG_SIZE))
+		if (flags & PREF_FLAG_GEOMETRY_SIZE)
 		{
-			user_w = static_cast<guint>(app_w);
-			user_h = static_cast<guint>(app_h);
+			width = prefWidth;
+			height = prefHeight;
+		}
+		else 
+		{
+			width = 760;
+			height = 520;
 		}
 
-	if (user_w > USHRT_MAX)
-		user_w = app_w;
-        if (user_h > USHRT_MAX)
-		user_h = app_h;
+		GdkScreen *screen = gdk_screen_get_default ();
+		width = (width < (unsigned) gdk_screen_get_width (screen) ? width : gdk_screen_get_width (screen));
+		height = (height < (unsigned) gdk_screen_get_height (screen) ? height : gdk_screen_get_height (screen));
+		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), width, height);
+	}
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		GdkGeometry geom;
-		geom.min_width   = 100;
-		geom.min_height  = 100;
+		geom.min_width = 100;
+		geom.min_height = 100;
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
 									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
-
-		GdkScreen *screen = gdk_screen_get_default ();
-		user_w = (user_w < gdk_screen_get_width (screen) ? user_w : gdk_screen_get_width (screen));
-		user_h = (user_h < gdk_screen_get_height (screen) ? user_h : gdk_screen_get_height (screen));
-		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
-
-	// Because we're clever, we only honor this flag when we
-	// are the first (well, only) top level frame available.
-	// This is so the user's window manager can find better
-	// places for new windows, instead of having our windows
-	// pile upon each other.
-
-	if (pApp->getFrameCount () <= 1)
-		if (user_f & XAP_UnixApp::GEOMETRY_FLAG_POS)
-			{
-				gtk_window_move (GTK_WINDOW(m_wTopLevelWindow), user_x, user_y);
-			}
-
-	// Remember geometry settings for next time
-	pApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
-
 }
 
 /*!

@@ -75,8 +75,6 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 {
 	_setAbiSuiteLibDir();
 
-	memset(&m_geometry, 0, sizeof(m_geometry));
-
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
 
@@ -202,28 +200,6 @@ XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
 XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
 {
 	return &m_controlFactory;
-}
-
-void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
-								 UT_uint32 flags)
-{
-	// TODO : do some range checking?
-	m_geometry.x = x;
-	m_geometry.y = y;
-	m_geometry.width = width;
-	m_geometry.height = height;
-	m_geometry.flags = flags;
-}
-
-void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
-								 UT_uint32 * height, UT_uint32 * flags)
-{
-	UT_ASSERT(x && y && width && height);
-	*x = m_geometry.x;
-	*y = m_geometry.y;
-	*width = m_geometry.width;
-	*height = m_geometry.height;
-	*flags = m_geometry.flags;
 }
 
 const char * XAP_UnixApp::getUserPrivateDirectory()

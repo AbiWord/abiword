@@ -64,7 +64,7 @@ public:
 	virtual ~AP_Win32App(void);
 
 	virtual bool					initialize(void);
-	virtual XAP_Frame *				newFrame(void);
+	virtual XAP_Frame *				newFrame(const char *geometry = NULL);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const gchar * szKey, const gchar ** pszValue) const;

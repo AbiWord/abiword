@@ -57,7 +57,7 @@ public:
 	
 	
 	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
-	virtual XAP_Frame *						newFrame(void) = 0;
+	virtual XAP_Frame *						newFrame(const char *geometry = NULL) = 0;
 	virtual void							reallyExit(void);
 
 	virtual HINSTANCE						getInstance() const;

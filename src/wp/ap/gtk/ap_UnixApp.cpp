@@ -393,9 +393,9 @@ bool AP_UnixApp::initialize(bool has_display)
   Create a new frame based on the current one.  
   \return A pointer to the new frame.  
 */
-XAP_Frame * AP_UnixApp::newFrame(void)
+XAP_Frame * AP_UnixApp::newFrame(const char *geometry)
 {
-    AP_UnixFrame * pUnixFrame = new AP_UnixFrame();
+    AP_UnixFrame * pUnixFrame = new AP_UnixFrame(geometry);
 
     if (pUnixFrame)
 		pUnixFrame->initialize();
@@ -1291,37 +1291,6 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
 	bSuccess = true;
-
-#if 0 // TODO Rob: handle this when opening the first frame instead, so we can use gtk_window_parse_geometry()
-	if (Args->m_sGeometry)
-    {
-		// [--geometry <X geometry string>]
-      
-		// TODO : does X have a dummy geometry value reserved for this?
-		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-		gint x = dummy;
-		gint y = dummy;
-		guint width = 0;
-		guint height = 0;
-		
-		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
-		
-		// use both by default
-		UT_uint32 f = (XAP_UnixApp::GEOMETRY_FLAG_SIZE
-					   | XAP_UnixApp::GEOMETRY_FLAG_POS);
-		
-		// if pos (x and y) weren't provided just use size
-		if (x == dummy || y == dummy)
-			f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
-		
-		// if size (width and height) weren't provided just use pos
-		if (width == 0 || height == 0)
-			f = XAP_UnixApp::GEOMETRY_FLAG_POS;
-		
-		// set the xap-level geometry for future frame use
-		Args->getApp()->setGeometry(x, y, width, height, f);
-	}
-#endif
 
  	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 

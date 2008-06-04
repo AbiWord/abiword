@@ -54,7 +54,7 @@ public:
 	virtual const char * 					getDefaultEncoding () const;
 
 	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
-	virtual XAP_Frame * 					newFrame() = 0;
+	virtual XAP_Frame * 					newFrame(const char *geometry = NULL) = 0;
 	virtual void							reallyExit();
 	virtual void							notifyFrameCountChange ();
 

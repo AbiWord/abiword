@@ -51,7 +51,7 @@ public:
 
 	virtual bool					initialize(void);
 	virtual void					rebuildMenus(void);
-	virtual XAP_Frame *				newFrame(void);
+	virtual XAP_Frame *				newFrame(const char *geometry = NULL);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific, const gchar * szKey, const gchar ** pszValue) const;

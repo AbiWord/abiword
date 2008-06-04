@@ -51,7 +51,7 @@ class EV_UnixMenuPopup;
 class XAP_UnixFrameImpl : public XAP_FrameImpl
 {
  public:
-	XAP_UnixFrameImpl(XAP_Frame *pFrame);
+	XAP_UnixFrameImpl(XAP_Frame *pFrame, const char *geometry = NULL);
 	friend class XAP_Frame;
 
 	virtual ~XAP_UnixFrameImpl();
@@ -181,6 +181,8 @@ protected:
 
 	UT_uint32                   m_iPreeditLen;
 	UT_uint32                   m_iPreeditStart;
+
+	const char 				   *m_sGeometry;
 };
 #endif /* XAP_UNIXFRAME_H */
 

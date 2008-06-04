@@ -61,7 +61,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 
 	if (AP_Args::m_sFiles == NULL) {
 		// no files to open, this is ok
-		XAP_Frame * pFrame = newFrame();
+		XAP_Frame * pFrame = newFrame(AP_Args::m_sGeometry);
 		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 		return true;
 	}

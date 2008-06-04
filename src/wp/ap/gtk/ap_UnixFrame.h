@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -35,7 +37,7 @@ class AP_UnixFrame;
 class AP_UnixFrame : public AP_Frame
 {
 public:
-	AP_UnixFrame();
+	AP_UnixFrame(const char *geometry = NULL);
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 

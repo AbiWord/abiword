@@ -162,11 +162,11 @@ void AP_UnixFrame::setYScrollRange(void)
 }
 
 
-AP_UnixFrame::AP_UnixFrame()
+AP_UnixFrame::AP_UnixFrame(const char *geometry)
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 : AP_Frame(new AP_UnixHildonFrameImpl(this))
 #else
-: AP_Frame(new AP_UnixFrameImpl(this))
+: AP_Frame(new AP_UnixFrameImpl(this, geometry))
 #endif
 {
 	m_pData = NULL;

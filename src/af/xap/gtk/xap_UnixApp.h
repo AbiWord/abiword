@@ -60,7 +60,7 @@ public:
 	  }
 
 	virtual bool					initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
-	virtual XAP_Frame * 					newFrame() = 0;
+	virtual XAP_Frame * 					newFrame(const char *geometry = NULL) = 0;
 	virtual void							reallyExit();
 
 	virtual XAP_DialogFactory *				getDialogFactory();
@@ -82,24 +82,6 @@ public:
 
 	virtual XAP_UnixClipboard * getClipboard () = 0;
 
-	enum
-	{
-		GEOMETRY_FLAG_POS = 	1 << 0,
-		GEOMETRY_FLAG_SIZE = 	1 << 1
-	};
-	
-	struct windowGeometry
-	{
-		int x, y;
-		UT_uint32 width, height;
-		UT_uint32 flags;
-	};
-	
-	virtual	void					setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
-												UT_uint32 flags);
-	virtual	void					getWinGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
-												UT_uint32* flags);
-
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
@@ -112,8 +94,7 @@ protected:
 
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-	
-	windowGeometry			m_geometry;
+
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
