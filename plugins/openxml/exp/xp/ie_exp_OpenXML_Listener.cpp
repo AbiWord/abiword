@@ -27,29 +27,67 @@
  * IE_Exp_OpenXML_Listener Class responsible for listening to the Abiword Document
  */
 
-bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* /* pcr */)
-{
+bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* pcr)
+{	
+	switch (pcr->getType())
+	{
+		case PX_ChangeRecord::PXT_InsertSpan:
+		case PX_ChangeRecord::PXT_InsertObject:
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+		default:
+			return true;
+	}
 	return true;
 }
 
-bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const PX_ChangeRecord* /* pcr */, PL_StruxFmtHandle* /* psfh */)
+bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
 {
+	if(pcr->getType() != PX_ChangeRecord::PXT_InsertStrux)
+		return false;
+
+	const PX_ChangeRecord_Strux* pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
+	switch (pcrx->getStruxType())
+	{
+		case PTX_Section:
+		case PTX_Block:
+		case PTX_SectionHdrFtr:
+		case PTX_SectionEndnote:
+		case PTX_SectionTable:
+		case PTX_SectionCell:
+		case PTX_SectionFootnote:
+		case PTX_SectionMarginnote:
+		case PTX_SectionAnnotation:
+		case PTX_SectionFrame:
+		case PTX_SectionTOC:
+		case PTX_EndCell:
+		case PTX_EndTable:
+		case PTX_EndFootnote:
+		case PTX_EndMarginnote:
+		case PTX_EndEndnote:
+		case PTX_EndAnnotation:
+		case PTX_EndFrame:
+		case PTX_EndTOC:	
+		default:
+			return true;
+	}
+
 	return true;
 }
 
 bool IE_Exp_OpenXML_Listener::change(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* /* pcr */)
 {
-	return true;
+	return false; //this function not used
 }
 
 bool IE_Exp_OpenXML_Listener::insertStrux(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* /* pcr */, PL_StruxDocHandle /* sdhNew */, PL_ListenerId /* lid */,
 				 						  void (* /* pfnBindHandles */)(PL_StruxDocHandle /* sdhNew */, PL_ListenerId /* lid */, PL_StruxFmtHandle /* sfhNew */))
 {
-	return true;
+	return false; //this function not used
 }
 
 bool IE_Exp_OpenXML_Listener::signal(UT_uint32 /* iSignal */)
 {
-	return true;
+	return false; //this function not used
 }
 

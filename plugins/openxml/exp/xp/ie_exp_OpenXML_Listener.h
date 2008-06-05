@@ -24,6 +24,8 @@
 #define _IE_EXP_OPENXMLLISTENER_H_
 
 #include <pd_Document.h>
+#include <px_ChangeRecord.h>
+#include <px_CR_Strux.h>
 
 /**
  * Class responsible for listening to the Abiword Document
