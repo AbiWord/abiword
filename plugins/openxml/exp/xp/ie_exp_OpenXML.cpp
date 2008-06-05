@@ -61,7 +61,6 @@ UT_Error IE_Exp_OpenXML::_writeDocument ()
 		err = doc_ptr->serialize(this);
 		
 	DELETEP(listener);
-	OXML_Document::destroyInstance();
 
 	return err;	
 }

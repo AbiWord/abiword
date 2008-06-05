@@ -27,14 +27,18 @@
  * IE_Exp_OpenXML_Listener Class responsible for listening to the Abiword Document
  */
 
-IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* /*doc*/)
+IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc) 
 {
-	//TODO: register the listener here
+	document = OXML_Document::getNewInstance();
+	
+	if(!doc->tellListener(static_cast<PL_Listener *>(this)))
+		document = NULL;	
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
 {
-	//TODO: cleanup everything
+	OXML_Document::destroyInstance();
+	document = NULL;
 }
 
 bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* pcr)
@@ -103,5 +107,5 @@ bool IE_Exp_OpenXML_Listener::signal(UT_uint32 /* iSignal */)
 
 OXML_Document* IE_Exp_OpenXML_Listener::getDocument()
 {
-	return OXML_Document::getNewInstance();
+	return document;
 }

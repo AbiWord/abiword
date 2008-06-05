@@ -48,6 +48,9 @@ public:
 	virtual bool signal(UT_uint32 iSignal);
 	
 	OXML_Document* getDocument();
+
+private:
+	OXML_Document* document;
 };
 
 #endif //_IE_EXP_OPENXMLLISTENER_H_
