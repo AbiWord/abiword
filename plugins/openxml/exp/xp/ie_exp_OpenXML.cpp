@@ -51,8 +51,19 @@ IE_Exp_OpenXML::~IE_Exp_OpenXML ()
  */
 UT_Error IE_Exp_OpenXML::_writeDocument ()
 {
-	OXML_Document* doc_ptr = OXML_Document::getNewInstance();
-	return doc_ptr->serialize(this);
+	UT_Error err = UT_SAVE_EXPORTERROR;
+	
+	IE_Exp_OpenXML_Listener* listener = new IE_Exp_OpenXML_Listener(getDoc());
+
+	OXML_Document* doc_ptr = listener->getDocument();
+	
+	if(doc_ptr)
+		err = doc_ptr->serialize(this);
+		
+	DELETEP(listener);
+	OXML_Document::destroyInstance();
+
+	return err;	
 }
 
 /**

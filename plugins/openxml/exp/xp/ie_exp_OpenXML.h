@@ -32,6 +32,7 @@
 #include <ut_string_class.h>
 
 #include <OXML_Document.h>
+#include <ie_exp_OpenXML_Listener.h>
 
 // External includes
 #include <gsf/gsf-outfile.h>

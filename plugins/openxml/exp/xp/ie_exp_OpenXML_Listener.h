@@ -26,6 +26,9 @@
 #include <pd_Document.h>
 #include <px_ChangeRecord.h>
 #include <px_CR_Strux.h>
+#include <OXML_Document.h>
+
+class OXML_Document;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -34,13 +37,17 @@
 class IE_Exp_OpenXML_Listener : public PL_Listener
 {
 public:
-
+	IE_Exp_OpenXML_Listener(PD_Document* doc);
+	~IE_Exp_OpenXML_Listener();
+	
 	virtual bool populate(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr); 
 	virtual bool populateStrux(PL_StruxDocHandle sdh, const PX_ChangeRecord * pcr, PL_StruxFmtHandle * psfh);
 	virtual bool change(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr);
 	virtual bool insertStrux(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr, PL_StruxDocHandle sdhNew, PL_ListenerId lid,
 				     		 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew, PL_ListenerId lid, PL_StruxFmtHandle sfhNew));
 	virtual bool signal(UT_uint32 iSignal);
+	
+	OXML_Document* getDocument();
 };
 
 #endif //_IE_EXP_OPENXMLLISTENER_H_
