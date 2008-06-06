@@ -57,6 +57,7 @@ public:
 	UT_Error startParagraph();
 	UT_Error finishParagraph();
 	UT_Error startText();
+	UT_Error writeText(const char* text);
 	UT_Error finishText();
 	UT_Error startRun();
 	UT_Error finishRun();

@@ -62,6 +62,12 @@ const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 	return m_pString->ucs4_str();
 }
 
+const char * OXML_Element_Text::getText()
+{
+	UT_return_val_if_fail(m_pString != NULL, NULL);
+	return m_pString->utf8_str();
+}
+
 UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
@@ -70,10 +76,10 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	err = this->serializeChildren(exporter);
+	err = exporter->writeText(getText());
 	if(err != UT_OK)
 		return err;
-
+	
 	return exporter->finishText();
 }
 

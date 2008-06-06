@@ -27,11 +27,12 @@
  * IE_Exp_OpenXML_Listener Class responsible for listening to the Abiword Document
  */
 
-IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc) 
+IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
+  : pdoc(doc), document(NULL), section(NULL), paragraph(NULL)
 {
 	document = OXML_Document::getNewInstance();
 	
-	if(!doc->tellListener(static_cast<PL_Listener *>(this)))
+	if(!pdoc->tellListener(static_cast<PL_Listener *>(this)))
 		document = NULL;	
 }
 
@@ -46,6 +47,20 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 	switch (pcr->getType())
 	{
 		case PX_ChangeRecord::PXT_InsertSpan:
+		{			
+			const PX_ChangeRecord_Span* pcrs = static_cast<const PX_ChangeRecord_Span*>(pcr);
+			PT_BufIndex buffer = pcrs->getBufIndex();
+
+			UT_UCS4String str(pdoc->getPointer(buffer), pcrs->getLength());
+			OXML_SharedElement shared_element_text(new OXML_Element_Text(str.utf8_str(), str.length()));
+
+			OXML_Element_Run* element_run = new OXML_Element_Run("");
+			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+			if(element_run->appendElement(shared_element_text) != UT_OK)
+				return false;
+			
+			return paragraph->appendElement(shared_element_run) == UT_OK;
+		}
 		case PX_ChangeRecord::PXT_InsertObject:
 		case PX_ChangeRecord::PXT_InsertFmtMark:
 		default:
@@ -64,7 +79,17 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 	switch (pcrx->getStruxType())
 	{
 		case PTX_Section:
+		{
+			section = new OXML_Section();
+			OXML_SharedSection shared_section(section);
+			return document->appendSection(shared_section) == UT_OK;
+		}
 		case PTX_Block:
+		{
+			paragraph = new OXML_Element_Paragraph("");
+			OXML_SharedElement shared_paragraph(static_cast<OXML_Element*>(paragraph));
+			return section->appendElement(shared_paragraph) == UT_OK;
+		}
 		case PTX_SectionHdrFtr:
 		case PTX_SectionEndnote:
 		case PTX_SectionTable:

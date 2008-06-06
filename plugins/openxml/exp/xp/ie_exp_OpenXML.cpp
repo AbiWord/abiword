@@ -137,7 +137,11 @@ UT_Error IE_Exp_OpenXML::finishDocument()
  */
 UT_Error IE_Exp_OpenXML::startSection()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "<wx:sect>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start a new section to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -146,7 +150,11 @@ UT_Error IE_Exp_OpenXML::startSection()
  */
 UT_Error IE_Exp_OpenXML::finishSection()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "</wx:sect>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish section in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -155,7 +163,11 @@ UT_Error IE_Exp_OpenXML::finishSection()
  */
 UT_Error IE_Exp_OpenXML::startParagraph()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "<w:p>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start a new paragraph to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -164,7 +176,11 @@ UT_Error IE_Exp_OpenXML::startParagraph()
  */
 UT_Error IE_Exp_OpenXML::finishParagraph()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "</w:p>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish paragraph in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -173,7 +189,24 @@ UT_Error IE_Exp_OpenXML::finishParagraph()
  */
 UT_Error IE_Exp_OpenXML::startText()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "<w:t>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start a new text to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Writes the actual content of OXML_Element_Text object
+ */
+UT_Error IE_Exp_OpenXML::writeText(const char* text)
+{
+	if(!gsf_output_puts(documentStream, text))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write text to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -182,7 +215,11 @@ UT_Error IE_Exp_OpenXML::startText()
  */
 UT_Error IE_Exp_OpenXML::finishText()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "</w:t>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish text in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -191,7 +228,11 @@ UT_Error IE_Exp_OpenXML::finishText()
  */
 UT_Error IE_Exp_OpenXML::startRun()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "<w:r>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start a new run to document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -200,7 +241,11 @@ UT_Error IE_Exp_OpenXML::startRun()
  */
 UT_Error IE_Exp_OpenXML::finishRun()
 {
-	//TODO
+	if(!gsf_output_puts(documentStream, "</w:r>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish run in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
 	return UT_OK;
 }
 
@@ -419,7 +464,8 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 	if(!gsf_output_puts(documentStream, 
 "<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">\
+xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
 <w:body>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	

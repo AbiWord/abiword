@@ -26,9 +26,14 @@
 #include <pd_Document.h>
 #include <px_ChangeRecord.h>
 #include <px_CR_Strux.h>
+#include <px_CR_Span.h>
 #include <OXML_Document.h>
+#include <OXML_Element_Text.h>
+#include <OXML_Element_Run.h>
+#include <OXML_Element_Paragraph.h>
 
 class OXML_Document;
+class OXML_Element_Paragraph;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -50,7 +55,10 @@ public:
 	OXML_Document* getDocument();
 
 private:
+	PD_Document* pdoc;
 	OXML_Document* document;
+	OXML_Section* section;
+	OXML_Element_Paragraph* paragraph;
 };
 
 #endif //_IE_EXP_OPENXMLLISTENER_H_
