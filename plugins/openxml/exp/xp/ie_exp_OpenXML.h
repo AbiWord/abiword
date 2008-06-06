@@ -64,6 +64,7 @@ public:
 	UT_Error startRunProperties();
 	UT_Error finishRunProperties();
 	UT_Error setBold();
+	UT_Error setItalic();
 
 protected:
     virtual UT_Error _writeDocument(void);

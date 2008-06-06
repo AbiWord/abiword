@@ -81,6 +81,16 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
+	if(getProperty("font-style", szValue) == UT_OK)
+	{
+		if(szValue && !strcmp(szValue, "italic"))
+		{
+			err = exporter->setItalic();
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
 	return exporter->finishRunProperties();
 }
 

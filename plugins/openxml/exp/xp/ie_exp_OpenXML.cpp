@@ -289,6 +289,19 @@ UT_Error IE_Exp_OpenXML::setBold()
 }
 
 /**
+ * Sets italic style
+ */
+UT_Error IE_Exp_OpenXML::setItalic()
+{
+	if(!gsf_output_puts(documentStream, "<w:i/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set italic style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()
