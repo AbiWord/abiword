@@ -47,7 +47,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 	switch (pcr->getType())
 	{
 		case PX_ChangeRecord::PXT_InsertSpan:
-		{			
+		{
 			const PX_ChangeRecord_Span* pcrs = static_cast<const PX_ChangeRecord_Span*>(pcr);
 			PT_BufIndex buffer = pcrs->getBufIndex();
 
@@ -56,6 +56,29 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 
 			OXML_Element_Run* element_run = new OXML_Element_Run("");
 			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+			//add run properties 
+			PT_AttrPropIndex api = pcr->getIndexAP();			
+			const PP_AttrProp* pAP = NULL;
+			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
+
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+				
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						if(element_run->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+			
 			if(element_run->appendElement(shared_element_text) != UT_OK)
 				return false;
 			

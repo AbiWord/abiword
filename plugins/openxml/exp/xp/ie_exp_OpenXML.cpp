@@ -250,6 +250,45 @@ UT_Error IE_Exp_OpenXML::finishRun()
 }
 
 /**
+ * Starts exporting the OXML_Element_Run object's properties
+ */
+UT_Error IE_Exp_OpenXML::startRunProperties()
+{
+	if(!gsf_output_puts(documentStream, "<w:rPr>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start the run properties in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Element_Run object's properties
+ */
+UT_Error IE_Exp_OpenXML::finishRunProperties()
+{
+	if(!gsf_output_puts(documentStream, "</w:rPr>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish the run properties in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets bold style
+ */
+UT_Error IE_Exp_OpenXML::setBold()
+{
+	if(!gsf_output_puts(documentStream, "<w:b/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set bold style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()

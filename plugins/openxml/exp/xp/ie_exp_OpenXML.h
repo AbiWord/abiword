@@ -61,6 +61,9 @@ public:
 	UT_Error finishText();
 	UT_Error startRun();
 	UT_Error finishRun();
+	UT_Error startRunProperties();
+	UT_Error finishRunProperties();
+	UT_Error setBold();
 
 protected:
     virtual UT_Error _writeDocument(void);

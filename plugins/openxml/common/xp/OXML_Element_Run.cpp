@@ -50,11 +50,38 @@ UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	err = serializeProperties(exporter);
+	if(err != UT_OK)
+		return err;
+
 	err = this->serializeChildren(exporter);
 	if(err != UT_OK)
 		return err;
 
 	return exporter->finishRun();
+}
+
+UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
+{
+	//TODO: Add all the property serializations here
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startRunProperties();
+	if(err != UT_OK)
+		return err;
+
+	if(getProperty("font-weight", szValue) == UT_OK)
+	{
+		if(szValue && !strcmp(szValue, "bold"))
+		{
+			err = exporter->setBold();
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	return exporter->finishRunProperties();
 }
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)
