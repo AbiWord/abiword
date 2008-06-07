@@ -83,9 +83,9 @@ ServiceAccountHandler::ServiceAccountHandler()
 {
 	m_ssl_ca_file = XAP_App::getApp()->getAbiSuiteLibDir();
 #if defined(WIN32)
-	m_ssl_ca_file += "\\certs\\abicollab.net.crt";
+	m_ssl_ca_file += "\\certs\\cacert.pem";
 #else
-	m_ssl_ca_file += "/certs/abicollab.net.crt";
+	m_ssl_ca_file += "/certs/cacert.pem";
 #endif
 }
 
