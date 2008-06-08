@@ -509,12 +509,18 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8Str
 			fc("email", email)
 				("password", password)
 				("doc_id", connection_ptr->doc_id())
-				("logmessage", "User initiated save")
 				(soa::Base64Bin("data", document));
 
 			// execute the call and ignore the result (the revision number stored)
-			soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
-			UT_return_val_if_fail(soap_result, UT_ERROR);
+			try {
+				soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
+				UT_return_val_if_fail(soap_result, UT_ERROR);
+			} catch (soa::SoapFault& fault) {
+				UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+						 fault.string() ? fault.string()->value().c_str() : "(null)"));
+				return UT_ERROR;
+			}
 
 			return UT_OK;
 		}
