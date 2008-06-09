@@ -363,6 +363,43 @@ UT_Error IE_Exp_OpenXML::setSubscript()
 }
 
 /**
+ * Sets text color style
+ */
+UT_Error IE_Exp_OpenXML::setTextColor(const gchar* color)
+{
+	if(!gsf_output_printf(documentStream, "<w:color w:val=\"%s\"/>", convertColorToHex(color)))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set color style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets text background color style
+ */
+UT_Error IE_Exp_OpenXML::setTextBackgroundColor(const gchar* color)
+{
+	if(!gsf_output_printf(documentStream, "<w:shd w:fill=\"%s\"/>", convertColorToHex(color)))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set background color style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Converts the color to hexadecimal representation
+ */
+const gchar* IE_Exp_OpenXML::convertColorToHex(const gchar* colorText)
+{
+	UT_RGBColor color(0,0,0);
+	UT_parseColor(colorText, color);
+	UT_HashColor hashColor;
+	return hashColor.setColor(color.m_red, color.m_grn, color.m_blu)+1;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()

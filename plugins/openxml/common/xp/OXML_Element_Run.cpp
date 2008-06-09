@@ -73,7 +73,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("font-weight", szValue) == UT_OK)
 	{
-		if(szValue && !strcmp(szValue, "bold"))
+		if(!strcmp(szValue, "bold"))
 		{
 			err = exporter->setBold();
 			if(err != UT_OK)
@@ -83,7 +83,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("font-style", szValue) == UT_OK)
 	{
-		if(szValue && !strcmp(szValue, "italic"))
+		if(!strcmp(szValue, "italic"))
 		{
 			err = exporter->setItalic();
 			if(err != UT_OK)
@@ -93,21 +93,21 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("text-decoration", szValue) == UT_OK)
 	{
-		if(szValue && strstr(szValue, "underline"))
+		if(strstr(szValue, "underline"))
 		{
 			err = exporter->setUnderline();
 			if(err != UT_OK)
 				return err;
 		}
 
-		if(szValue && strstr(szValue, "overline"))
+		if(strstr(szValue, "overline"))
 		{
 			err = exporter->setOverline();
 			if(err != UT_OK)
 				return err;
 		}
 
-		if(szValue && strstr(szValue, "line-through"))
+		if(strstr(szValue, "line-through"))
 		{
 			err = exporter->setLineThrough();
 			if(err != UT_OK)
@@ -117,19 +117,33 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("text-position", szValue) == UT_OK)
 	{
-		if(szValue && !strcmp(szValue, "superscript"))
+		if(!strcmp(szValue, "superscript"))
 		{
 			err = exporter->setSuperscript();
 			if(err != UT_OK)
 				return err;
 		}
 
-		else if(szValue && !strcmp(szValue, "subscript"))
+		else if(!strcmp(szValue, "subscript"))
 		{
 			err = exporter->setSubscript();
 			if(err != UT_OK)
 				return err;
 		}
+	}
+
+	if(getProperty("color", szValue) == UT_OK)
+	{
+		err = exporter->setTextColor(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("bgcolor", szValue) == UT_OK)
+	{
+		err = exporter->setTextBackgroundColor(szValue);
+		if(err != UT_OK)
+			return err;
 	}
 
 	return exporter->finishRunProperties();

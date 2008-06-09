@@ -28,6 +28,7 @@
 #include <ie_exp.h>
 #include <ut_debugmsg.h>
 #include <ut_types.h>
+#include <ut_misc.h>
 #include <ut_assert.h>
 #include <ut_string_class.h>
 
@@ -70,6 +71,8 @@ public:
 	UT_Error setLineThrough();
 	UT_Error setSuperscript();
 	UT_Error setSubscript();
+	UT_Error setTextColor(const gchar* color);
+	UT_Error setTextBackgroundColor(const gchar* color);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -89,6 +92,8 @@ private:
 	UT_Error finishRelations();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
+
+	const gchar* convertColorToHex(const gchar* colorText);
 
 	void _cleanup();
 };
