@@ -276,6 +276,32 @@ UT_Error IE_Exp_OpenXML::finishRunProperties()
 }
 
 /**
+ * Starts exporting the OXML_Element_Paragraph object's properties
+ */
+UT_Error IE_Exp_OpenXML::startParagraphProperties()
+{
+	if(!gsf_output_puts(documentStream, "<w:pPr>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot start the paragraph properties in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Finishes exporting the OXML_Element_Paragraph object's properties
+ */
+UT_Error IE_Exp_OpenXML::finishParagraphProperties()
+{
+	if(!gsf_output_puts(documentStream, "</w:pPr>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot finish the paragraph properties in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Sets bold style
  */
 UT_Error IE_Exp_OpenXML::setBold()

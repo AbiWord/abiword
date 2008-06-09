@@ -40,6 +40,9 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+
+private:
+	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 };
 
 #endif //_OXML_ELEMENT_PARAGRAPH_H_

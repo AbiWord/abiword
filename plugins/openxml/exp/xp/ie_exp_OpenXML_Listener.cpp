@@ -74,7 +74,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Property: %s=%s\n", szName, szValue));	
+						UT_DEBUGMSG(("Run Property: %s=%s\n", szName, szValue));	
 						if(element_run->setProperty(szName, szValue) != UT_OK)
 							return false;		
 					}
@@ -101,6 +101,10 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 
 	const PX_ChangeRecord_Strux* pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
+	PT_AttrPropIndex api = pcr->getIndexAP();			
+	const PP_AttrProp* pAP = NULL;
+	bool bHaveProp = pdoc->getAttrProp(api,&pAP);
+
 	switch (pcrx->getStruxType())
 	{
 		case PTX_Section:
@@ -113,6 +117,27 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 		{
 			paragraph = new OXML_Element_Paragraph("");
 			OXML_SharedElement shared_paragraph(static_cast<OXML_Element*>(paragraph));
+
+			//add paragraph properties 
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Paragraph Property: %s=%s\n", szName, szValue));	
+						if(paragraph->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+
 			return section->appendElement(shared_paragraph) == UT_OK;
 		}
 		case PTX_SectionHdrFtr:

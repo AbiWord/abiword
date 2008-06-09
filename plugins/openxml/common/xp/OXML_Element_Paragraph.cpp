@@ -46,12 +46,30 @@ UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	err = this->serializeProperties(exporter);
+	if(err != UT_OK)
+		return err;
+
 	err = this->serializeChildren(exporter);
 	if(err != UT_OK)
 		return err;
 
 	return exporter->finishParagraph();
 }
+
+UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
+{
+	//TODO: Add all the property serializations here
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startParagraphProperties();
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishParagraphProperties();
+}
+
 
 UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 {

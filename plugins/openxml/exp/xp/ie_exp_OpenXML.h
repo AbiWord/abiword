@@ -64,6 +64,8 @@ public:
 	UT_Error finishRun();
 	UT_Error startRunProperties();
 	UT_Error finishRunProperties();
+	UT_Error startParagraphProperties();
+	UT_Error finishParagraphProperties();
 	UT_Error setBold();
 	UT_Error setItalic();
 	UT_Error setUnderline();
