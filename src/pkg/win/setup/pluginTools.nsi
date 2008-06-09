@@ -172,6 +172,8 @@ Section "AbiCollab Real-Time Collaboration"
 
 	DoInstall:
 	File "AbiCollab.dll"
+	File "$INSTDIR\..\bin\libsoup-2.4-1.dll"
+	File "$INSTDIR\..\bin\libgthread-2.0-0.dll"
 	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
 	WriteRegStr HKCR ".abicollab" "Content Type" "application/abiword"
 	End:
@@ -479,6 +481,8 @@ Section "Uninstall"
 	
 	; AbiCollab
 	Delete "$INSTDIR\AbiCollab.dll"
+	Delete "$INSTDIR\..\bin\libsoup-2.4-1.dll"
+	Delete "$INSTDIR\..\bin\libgthread-2.0-0.dll"
 	DeleteRegKey HKCR ".abicollab"
 
 	; AbiFreeTranslation
