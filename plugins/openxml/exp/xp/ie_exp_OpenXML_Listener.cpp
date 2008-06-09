@@ -73,6 +73,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 				{
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
+						UT_DEBUGMSG(("Property: %s=%s\n", szName, szValue));	
 						if(element_run->setProperty(szName, szValue) != UT_OK)
 							return false;		
 					}

@@ -65,6 +65,11 @@ public:
 	UT_Error finishRunProperties();
 	UT_Error setBold();
 	UT_Error setItalic();
+	UT_Error setUnderline();
+	UT_Error setOverline();
+	UT_Error setLineThrough();
+	UT_Error setSuperscript();
+	UT_Error setSubscript();
 
 protected:
     virtual UT_Error _writeDocument(void);

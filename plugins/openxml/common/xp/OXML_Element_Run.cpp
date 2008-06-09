@@ -91,6 +91,47 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
+	if(getProperty("text-decoration", szValue) == UT_OK)
+	{
+		if(szValue && strstr(szValue, "underline"))
+		{
+			err = exporter->setUnderline();
+			if(err != UT_OK)
+				return err;
+		}
+
+		if(szValue && strstr(szValue, "overline"))
+		{
+			err = exporter->setOverline();
+			if(err != UT_OK)
+				return err;
+		}
+
+		if(szValue && strstr(szValue, "line-through"))
+		{
+			err = exporter->setLineThrough();
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	if(getProperty("text-position", szValue) == UT_OK)
+	{
+		if(szValue && !strcmp(szValue, "superscript"))
+		{
+			err = exporter->setSuperscript();
+			if(err != UT_OK)
+				return err;
+		}
+
+		else if(szValue && !strcmp(szValue, "subscript"))
+		{
+			err = exporter->setSubscript();
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
 	return exporter->finishRunProperties();
 }
 

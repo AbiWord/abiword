@@ -302,6 +302,67 @@ UT_Error IE_Exp_OpenXML::setItalic()
 }
 
 /**
+ * Sets underline style
+ */
+UT_Error IE_Exp_OpenXML::setUnderline()
+{
+	if(!gsf_output_puts(documentStream, "<w:u w:val=\"single\"/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set underline style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets overline style
+ */
+UT_Error IE_Exp_OpenXML::setOverline()
+{
+	//TODO: Is there an overline option in Word 2007?
+	return UT_OK;
+}
+
+/**
+ * Sets line-through style
+ */
+UT_Error IE_Exp_OpenXML::setLineThrough()
+{
+	if(!gsf_output_puts(documentStream, "<w:strike/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set line-through style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets superscript style
+ */
+UT_Error IE_Exp_OpenXML::setSuperscript()
+{
+	if(!gsf_output_puts(documentStream, "<w:vertAlign w:val=\"superscript\"/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set superscript style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets subscript style
+ */
+UT_Error IE_Exp_OpenXML::setSubscript()
+{
+	if(!gsf_output_puts(documentStream, "<w:vertAlign w:val=\"subscript\"/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set subscript style in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()
