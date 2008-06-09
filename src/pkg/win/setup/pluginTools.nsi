@@ -172,7 +172,8 @@ Section "AbiCollab Real-Time Collaboration"
 
 	DoInstall:
 	File "AbiCollab.dll"
-  
+	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".abicollab" "Content Type" "application/abiword"
 	End:
 SectionEnd
 SubSectionEnd
@@ -478,6 +479,7 @@ Section "Uninstall"
 	
 	; AbiCollab
 	Delete "$INSTDIR\AbiCollab.dll"
+	DeleteRegKey HKCR ".abicollab"
 
 	; AbiFreeTranslation
 	Delete "$INSTDIR\AbiFreeTranslation.dll"
