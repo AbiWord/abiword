@@ -75,6 +75,7 @@ public:
 	UT_Error setSubscript();
 	UT_Error setTextColor(const gchar* color);
 	UT_Error setTextBackgroundColor(const gchar* color);
+	UT_Error setTextAlignment(const gchar* alignment);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -94,8 +95,6 @@ private:
 	UT_Error finishRelations();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
-
-	const gchar* convertColorToHex(const gchar* colorText);
 
 	void _cleanup();
 };

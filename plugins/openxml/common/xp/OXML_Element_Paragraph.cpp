@@ -67,6 +67,29 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(getProperty("text-align", szValue) == UT_OK)
+	{
+		if(!strcmp(szValue, "justify"))
+		{
+			err = exporter->setTextAlignment("both");
+		}
+		else if(!strcmp(szValue, "center"))
+		{
+			err = exporter->setTextAlignment("center");
+		}
+		else if(!strcmp(szValue, "right"))
+		{
+			err = exporter->setTextAlignment("right");
+		}
+		else if(!strcmp(szValue, "left"))
+		{
+			err = exporter->setTextAlignment("left");
+		}
+
+		if(err != UT_OK)
+			return err;
+	}
+
 	return exporter->finishParagraphProperties();
 }
 
