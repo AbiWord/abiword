@@ -13,7 +13,7 @@ SubSection /e "$(TITLE_ssection_loadsaveplugins)" ssection_loadsaveplugins
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  applix
 Section "$(TITLE_section_impexpplugins_applix)" section_impexpplugins_applix
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiapplix.dll"
 SectionEnd
@@ -29,7 +29,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  clarisworks
 Section "$(TITLE_section_impexpplugins_clarisworks)" section_impexpplugins_clarisworks
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiclarisworks.dll"
 SectionEnd
@@ -45,7 +45,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  docbook
 Section "$(TITLE_section_impexpplugins_docbook)" section_impexpplugins_docbook
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abidocbook.dll"
 SectionEnd
@@ -61,7 +61,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  opendocument
 Section "$(TITLE_section_impexpplugins_opendocument)" section_impexpplugins_opendocument
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiopendocument.dll"
 SectionEnd
@@ -77,7 +77,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  openwriter
 Section "$(TITLE_section_impexpplugins_openwriter)" section_impexpplugins_openwriter
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiopenwriter.dll"
 SectionEnd
@@ -93,7 +93,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  iscii_text
 Section "$(TITLE_section_impexpplugins_iscii_text)" section_impexpplugins_iscii_text
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiiscii_text.dll"
 SectionEnd
@@ -109,7 +109,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  eml
 Section "$(TITLE_section_impexpplugins_eml)" section_impexpplugins_eml
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abieml.dll"
 SectionEnd
@@ -125,7 +125,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  palmdoc
 Section "$(TITLE_section_impexpplugins_palmdoc)" section_impexpplugins_palmdoc
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abipalmdoc.dll"
 SectionEnd
@@ -141,7 +141,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wml
 Section "$(TITLE_section_impexpplugins_wml)" section_impexpplugins_wml
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiwml.dll"
 SectionEnd
@@ -157,7 +157,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  xslfo
 Section "$(TITLE_section_impexpplugins_xslfo)" section_impexpplugins_xslfo
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abixslfo.dll"
 SectionEnd
@@ -180,7 +180,7 @@ SubSection /e "$(TITLE_ssection_loadplugins)" ssection_loadplugins
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  openxml
 Section "$(TITLE_section_impexpplugins_openxml)" section_impexpplugins_openxml
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiopenxml.dll"
 SectionEnd
@@ -196,7 +196,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  mswrite
 Section "$(TITLE_section_impexpplugins_mswrite)" section_impexpplugins_mswrite
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abimswrite.dll"
 SectionEnd
@@ -212,7 +212,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  opml
 Section "$(TITLE_section_impexpplugins_opml)" section_impexpplugins_opml
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiopml.dll"
 SectionEnd
@@ -228,7 +228,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  sdw
 Section "$(TITLE_section_impexpplugins_sdw)" section_impexpplugins_sdw
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abisdw.dll"
 SectionEnd
@@ -244,7 +244,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  t602
 Section "$(TITLE_section_impexpplugins_t602)" section_impexpplugins_t602
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abit602.dll"
 SectionEnd
@@ -260,7 +260,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wordperfect
 Section "$(TITLE_section_impexpplugins_wordperfect)" section_impexpplugins_wordperfect
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abiwordperfect.dll"
 SectionEnd
@@ -282,7 +282,7 @@ SubSection /e "$(TITLE_ssection_saveplugins)" ssection_saveplugins
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  hrtext
 Section "$(TITLE_section_impexpplugins_hrtext)" section_impexpplugins_hrtext
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abihrtext.dll"
 SectionEnd
@@ -298,7 +298,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  latex
 Section "$(TITLE_section_impexpplugins_latex)" section_impexpplugins_latex
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\abilatex.dll"
 SectionEnd

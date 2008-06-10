@@ -15,7 +15,7 @@
 SubSection /e "$(TITLE_ssection_fa_shellupdate)" ssection_fa_shellupdate
 
 Section "" section_fa_shellupdate_inv ; invisible section that sets up general application information
-  SectionIn 1 2 3 ${DLSECT}
+  SectionIn ${TYPICALSECT} ${FULLSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${DLSECT}
 
   ; Write the application generic file association keys (define app and how to run it)
   ;CreateApplicationAssociation ApplicationSuite.FileType AppName AppDesc DefIcon ExeCmd
@@ -39,7 +39,7 @@ SectionEnd
 
 ; OPTIONAL (native format, recommended)
 Section "$(TITLE_section_fa_abw)" section_fa_abw
-	SectionIn 1 2 3 ${DLSECT}
+	SectionIn ${TYPICALSECT} ${FULLSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${DLSECT}
 	${CreateFileAssociation} ".abw"  "${appType}" "application/abiword"
 	${CreateFileAssociation} ".awt"  "${appType}" "application/abiword-template"
 	${CreateFileAssociation} ".zabw" "${appType}" "application/abiword-compressed"
@@ -56,7 +56,7 @@ SectionEnd
 
 ; OPTIONAL (Word document, only recommended if lack Word itself)
 Section "$(TITLE_section_fa_doc)" section_fa_doc
-	SectionIn 2 ${DLSECT}
+	SectionIn ${FULLASSOCSECT} ${DLSECT}
 	${CreateFileAssociation} ".doc"  "${appType}" "application/msword"
 SectionEnd
 !macro Remove_${section_fa_doc}
@@ -67,7 +67,7 @@ SectionEnd
 
 ; OPTIONAL (Rich Text, standard Word Processor interchange format, no recommendation)
 Section "$(TITLE_section_fa_rtf)" section_fa_rtf
-	SectionIn 2 ${DLSECT}
+	SectionIn ${FULLASSOCSECT} ${DLSECT}
 	${CreateFileAssociation} ".rtf"  "${appType}" "text/richtext"
 SectionEnd
 !macro Remove_${section_fa_rtf}

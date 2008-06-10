@@ -1,6 +1,7 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Optional [download/included] Dictionary sections/functions/macros
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 !ifndef NODOWNLOADS
 ; NOTE: If downloads are enabled (NODOWNLOADS undefined) then the dictionary
@@ -165,7 +166,7 @@ FunctionEnd
 !macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
 Section '${DICT_LANG}-${DICT_LOCALE}  $(dict_${DICT_NAME})' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
 !ifdef NODOWNLOADS
-	SectionIn 2	${DLSECT}	; Full [and Full with downloads] only
+	SectionIn ${FULLSECT} ${FULLASSOCSECT} ${DLSECT}	; Full [and Full with downloads] only
 	SetOutPath $TEMP
 	File "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
 !else

@@ -11,7 +11,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  AbiMathView
 Section "$(TITLE_section_toolsplugins_mathview)" section_toolsplugins_mathview
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Unzip libmathview into same directory as AbiWord.exe
 	SetOutPath $INSTDIR\${PRODUCT}\bin
@@ -40,7 +40,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  
 Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File "libsoup-2.4-1.dll"
 	
@@ -65,7 +65,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Grammar
 Section "$(TITLE_section_toolsplugins_grammar)" section_toolsplugins_grammar
-	SectionIn  2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLSECT} ${FULLASSOCSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	
 	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File /r "liblink-grammar-4.dll"
@@ -89,7 +89,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  URLDict
 Section "$(TITLE_section_toolsplugins_urldict)" section_toolsplugins_urldict
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\AbiURLDict.dll"
 SectionEnd
@@ -105,7 +105,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Google
 Section "$(TITLE_section_toolsplugins_google)" section_toolsplugins_google
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\AbiGoogle.dll"
 SectionEnd
@@ -121,7 +121,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  wikipedia
 Section "$(TITLE_section_toolsplugins_wikipedia)" section_toolsplugins_wikipedia
-	SectionIn 2 4 ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\AbiWikipedia.dll"
 SectionEnd
@@ -137,7 +137,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  babelfish
 Section "$(TITLE_section_toolsplugins_babelfish)" section_toolsplugins_babelfish
-	SectionIn 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\AbiBabelfish.dll"
 SectionEnd
@@ -153,7 +153,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  freetranslation
 Section "$(TITLE_section_toolsplugins_freetranslation)" section_toolsplugins_freetranslation
-	SectionIn 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\Abifreetranslation.dll"
 SectionEnd
@@ -169,7 +169,7 @@ SectionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  scripthappy
 Section "$(TITLE_section_toolsplugins_scripthappy)" section_toolsplugins_scripthappy
-	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\Abiscripthappy.dll"
 SectionEnd

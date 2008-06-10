@@ -1,6 +1,6 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for templates
-
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 !macro StoreMD5 dir fname
 	md5dll::GetFileMD5 "${dir}\${fname}"
@@ -12,7 +12,7 @@
 
 ; OPTIONAL Installation of Templates
 Section "$(TITLE_section_templates)" section_templates
-	SectionIn 1 2 ${DLSECT}
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\templates"
 

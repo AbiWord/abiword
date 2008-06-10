@@ -1,10 +1,11 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for help files
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 ; OPTIONAL Installation of Help Files
 Section "$(TITLE_section_help)" section_help
-  SectionIn 1 2 ${DLSECT}
+  SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
   SetOutPath $INSTDIR\AbiWord
 
   ; help documents may not be created if peer abiword-docs not found

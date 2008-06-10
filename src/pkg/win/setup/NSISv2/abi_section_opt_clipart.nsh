@@ -1,10 +1,11 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for clipart
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 ; OPTIONAL Installation of Clipart
 Section "$(TITLE_section_clipart)" section_clipart
-	SectionIn 1 2 ${DLSECT}
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\clipart"
 SectionEnd

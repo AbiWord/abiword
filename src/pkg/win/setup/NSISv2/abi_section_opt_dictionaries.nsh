@@ -1,6 +1,7 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for dictionary (hash) files
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
 Section "" section_dictionary_required
@@ -10,7 +11,7 @@ SectionEnd
 
 ; OPTIONAL Installation of Default Dictionary
 Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
-	SectionIn 1 2 ${DLSECT}
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT}
 	SetOutPath $INSTDIR\dictionary
 	File "..\AbiSuite\dictionary\american.hash"
 SectionEnd

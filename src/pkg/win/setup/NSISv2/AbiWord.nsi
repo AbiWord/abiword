@@ -116,9 +116,16 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 ; Install types 
 InstType "Typical (default)"              ;Section 1
-InstType "Full (with file associations)"  ;Section 2
-InstType "Minimal"                        ;Section 3
-InstType "Full"                           ;Section 4
+!define TYPICALSECT 1
+
+InstType "Full"                           ;Section 2
+!define FULLSECT 2
+
+InstType "Full (with file associations)"  ;Section 3
+!define FULLASSOCSECT 3
+
+InstType "Minimal"                        ;Section 4
+!define MINIMALSECT 4
 
 !ifndef NODOWNLOADS
 InstType "Full plus Downloads"		;Section 5
@@ -136,7 +143,7 @@ SubSection /e "$(TITLE_ssection_core)" ssection_core
 
 ; The stuff that must be installed
 Section "" section_abi
-	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${FULLSECT} ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Display installer command line options
@@ -223,7 +230,7 @@ SectionEnd
 
 
 Section "" section_core_inv ; invisible section that must also be installed, sets installer information
-	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${FULLSECT} ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; TODO: determine if we should be using HKCU instead of HKLM for some of these
 	; or see if user has permission and ask them...
@@ -253,7 +260,7 @@ SectionEnd
 
 
 Section "" section_abi_req
-	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${MINIMALSECT} ${FULLSECT} ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; Image plugin for importers & cut-n-paste of 
       ; various standard image formats (BMP, WMF, JPEG) on Windows
