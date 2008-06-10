@@ -1,6 +1,8 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optionally included sections for associating files with AbiWord
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
+
 
 ; Associate file extension and content type with an application entry
 !include "abi_util_fileassoc.nsh"

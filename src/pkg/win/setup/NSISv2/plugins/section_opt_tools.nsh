@@ -1,7 +1,7 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Contains optional tools plugins
 
-; Copyright 2008 AbiSource Corporation B.V.
+; Copyright (C) 2008 AbiSource Corporation B.V.
 
 SubSection /e "$(TITLE_ssection_toolsplugins)" ssection_toolsplugins
 Section "" section_toolsplugins_required

@@ -3,7 +3,7 @@
 ;Author         Kenneth J. Davis <jeremyd@computer.org> (2002,2003)
 ;Copyright      Alan Horkan <horkana@tcd.ie> (2002)
 ;               Michael D. Pritchett <mpritchett@attglobal.net> (2002)
-;               AbiSource Corporation B.V. (by <abiryan@ryand.net> 2008)
+;               Copyright (C) 2008 AbiSource Corporation B.V.
 ;Version        see AbiSource CVS
 
 

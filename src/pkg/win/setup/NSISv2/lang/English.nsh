@@ -2,6 +2,8 @@
 ;FileDesc       Language Strings, descriptions for Sections and SubSections
 ; English ${LANG_English}
 
+; Copyright (C) 2008 AbiSource Corporation B.V.
+
 ; Section titles, what user sees to select components for installation
 ${LSTR} TITLE_ssection_core                 "Primary components"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (required)"
