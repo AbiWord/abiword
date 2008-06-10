@@ -108,7 +108,7 @@ public:
 	bool raise() { return m_pFrameImpl->_raise(); }
 	bool show() { return m_pFrameImpl->_show(); }
 	bool updateTitle() { return m_pFrameImpl->_updateTitle(); }
-	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
+	void setCursor(GR_ScreenGraphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
 	virtual void queue_resize() { m_pFrameImpl->_queue_resize(); }
 	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
 	void hideMenuScroll(bool bHideMenuScroll) { 
@@ -242,7 +242,7 @@ protected:
 	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
 	AV_ListenerId				m_lidScrollbarViewListener;
 	XAP_Frame::tZoomType		m_zoomType;
-	GR_Graphics::Cursor         m_cursor;
+	GR_ScreenGraphics::Cursor         m_cursor;
 	void *						m_pData;		/* app-specific frame data */
 	bool                        m_bHideMenuScroll;
 	

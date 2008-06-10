@@ -244,8 +244,8 @@ public:
 	virtual void			setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace		getColorSpace(void) const;
 
-	virtual void			setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor			getCursor(void) const;
+	virtual void			setCursor(GR_ScreenGraphics::Cursor c);
+	virtual GR_ScreenGraphics::Cursor			getCursor(void) const;
 	virtual void			handleSetCursorMessage(void);
 
 	virtual void			setColor3D(GR_Color3D c);
@@ -323,7 +323,7 @@ protected:
 	LineStyle               m_eLineStyle;
 
 	GR_Graphics::ColorSpace m_cs;
-	GR_Graphics::Cursor		m_cursor;
+	GR_ScreenGraphics::Cursor		m_cursor;
 
 	DWORD					m_clrCurrent;
 	DWORD					m_3dColors[COUNT_3D_COLORS];

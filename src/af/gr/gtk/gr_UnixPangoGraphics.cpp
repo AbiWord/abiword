@@ -223,7 +223,7 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
-GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
+GR_CairoGraphics::GR_CairoGraphics(cairo_t *cr)
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
@@ -233,30 +233,17 @@ GR_CairoGraphics::GR_CairoGraphics(GdkWindow * win)
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
-	 m_cr(gdk_cairo_create(win)),
-	 m_pWin (win),
+	 m_cr(cr),
 	 m_bIsSymbol (false),
 	 m_bIsDingbat (false)
 {
-	init ();
-}
+	xxx_UT_DEBUGMSG(("Initializing GR_CairoGraphics %x \n", this));
 
-GR_CairoGraphics::GR_CairoGraphics()
-	:
-	 m_pFontMap(NULL),
-	 m_pContext(NULL),
-	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL),
-	 m_pAdjustedPangoFont(NULL),
-	 m_pAdjustedPangoFontSource(NULL),
-	 m_iAdjustedPangoFontZoom (0),
-	 m_iDeviceResolution(96),
-	 m_cr(NULL),
-	 m_pWin (NULL),
-	 m_bIsSymbol (false),
-	 m_bIsDingbat (false)
-{
-	init ();
+	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+
+	cairo_translate(m_cr, 0.5, 0.5);
 }
 
 GR_CairoGraphics::~GR_CairoGraphics()
@@ -286,29 +273,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	}
 }
 
-void GR_CairoGraphics::init()
-{
-	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n", this));
-
-	m_cursor = GR_CURSOR_INVALID;
-	m_pFontMap = pango_cairo_font_map_get_default();
-	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-
-	if (m_cr)
-		cairo_translate(m_cr, 0.5, 0.5);
-
-	if (m_pWin)
-	{
-		setCursor(GR_CURSOR_DEFAULT);
-
-		// Set GraphicsExposes so that XCopyArea() causes an expose on
-		// obscured regions rather than just tiling in the default background.
-		// TODO Rob: how to emulate this with the cairo backend?
-		// gdk_gc_set_exposures(m_pGC, 1);
-	}
-}
-
 bool GR_CairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
@@ -324,17 +288,6 @@ bool GR_CairoGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-GR_Graphics *   GR_CairoGraphics::graphicsAllocator(GR_AllocInfo& info)
-{
-	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
-
-	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
-	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
-
-	return new GR_CairoGraphics(AI.m_win);
-}
-
 void GR_CairoGraphics::_beginPaint()
 {
 	cairo_save(m_cr);
@@ -343,55 +296,6 @@ void GR_CairoGraphics::_beginPaint()
 void GR_CairoGraphics::_endPaint()
 {
 	cairo_restore(m_cr);
-}
-
-/*!
- * This method is platform-dependent.
- * \todo use gdk_window_process_updates() for nicer scrolling
- */
-void GR_CairoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
-{
-	// not an elegant way to disable all carets, but it works beautifully - MARCM
-	GR_Painter caretDisablerPainter(this); 
-	UT_sint32 oldDY = tdu(getPrevYOffset());
-	UT_sint32 oldDX = tdu(getPrevXOffset());
-	UT_sint32 newY = getPrevYOffset() + dy;
-	UT_sint32 newX = getPrevXOffset() + dx;
-	UT_sint32 ddx = -(tdu(newX) - oldDX);
-	UT_sint32 ddy = -(tdu(newY) - oldDY);
-	setPrevYOffset(newY);
-	setPrevXOffset(newX);
-	if(ddx == 0 && ddy == 0)
-	{
-		return;
-	}
-	UT_sint32 iddy = labs(ddy);
-	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
-	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
-	if(bEnableSmooth)
-	{
-		if(ddy < 0)
-		{
-			UT_sint32 i = 0;
-			for(i = 0; i< iddy; i++)
-			{
-				gdk_window_scroll(m_pWin,0,-1);
-			}
-		}
-		else
-		{
-			UT_sint32 i = 0;
-			for(i = 0; i< iddy; i++)
-			{
-				gdk_window_scroll(m_pWin,0,1);
-			}
-		}
-	}
-	else
-	{
-		gdk_window_scroll(m_pWin,ddx,ddy);
-	}
-	setExposePending(true);
 }
 
 bool GR_CairoGraphics::startPrint()
@@ -416,200 +320,6 @@ bool GR_CairoGraphics::endPrint()
 void GR_CairoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	drawChars(&Char, 0, 1, xoff, yoff, NULL);
-}
-
-void GR_CairoGraphics::setCursor(GR_Graphics::Cursor c)
-{
-	if (m_cursor == c)
-		return;
-
-	m_cursor = c;
-
-	GdkCursorType cursor_number;
-
-	switch (c)
-	{
-	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		/*FALLTHRU*/
-	case GR_CURSOR_DEFAULT:
-		cursor_number = GDK_LEFT_PTR;
-		break;
-
-	case GR_CURSOR_IBEAM:
-		cursor_number = GDK_XTERM;
-		break;
-
-	//I have changed the shape of the arrow so get a consistent
-	//behaviour in the bidi build; I think the new arrow is better
-	//for the purpose anyway
-
-	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
-		break;
-
-	case GR_CURSOR_LEFTARROW:
-		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
-		break;
-
-	case GR_CURSOR_IMAGE:
-		cursor_number = GDK_FLEUR;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_NW:
-		cursor_number = GDK_TOP_LEFT_CORNER;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_N:
-		cursor_number = GDK_TOP_SIDE;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_NE:
-		cursor_number = GDK_TOP_RIGHT_CORNER;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_E:
-		cursor_number = GDK_RIGHT_SIDE;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_SE:
-		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_S:
-		cursor_number = GDK_BOTTOM_SIDE;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_SW:
-		cursor_number = GDK_BOTTOM_LEFT_CORNER;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_W:
-		cursor_number = GDK_LEFT_SIDE;
-		break;
-
-	case GR_CURSOR_LEFTRIGHT:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
-		break;
-
-	case GR_CURSOR_UPDOWN:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
-		break;
-
-	case GR_CURSOR_EXCHANGE:
-		cursor_number = GDK_EXCHANGE;
-		break;
-
-	case GR_CURSOR_GRAB:
-		cursor_number = GDK_HAND1;
-		break;
-
-	case GR_CURSOR_LINK:
-		cursor_number = GDK_HAND2;
-		break;
-
-	case GR_CURSOR_WAIT:
-		cursor_number = GDK_WATCH;
-		break;
-
-	case GR_CURSOR_HLINE_DRAG:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
-		break;
-
-	case GR_CURSOR_VLINE_DRAG:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
-		break;
-
-	case GR_CURSOR_CROSSHAIR:
-		cursor_number = GDK_CROSSHAIR;
-		break;
-
-	case GR_CURSOR_DOWNARROW:
-		cursor_number = GDK_SB_DOWN_ARROW;
-		break;
-
-	case GR_CURSOR_DRAGTEXT:
-		cursor_number = GDK_TARGET;
-		break;
-
-	case GR_CURSOR_COPYTEXT:
-		cursor_number = GDK_DRAPED_BOX;
-		break;
-	}
-	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
-	GdkCursor * cursor = gdk_cursor_new(cursor_number);
-	gdk_window_set_cursor(m_pWin, cursor);
-	gdk_cursor_unref(cursor);
-}
-
-void GR_CairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
-										   GdkBitmap * mask)
-{
-	source
-		= gdk_pixmap_colormap_create_from_xpm_d(GDK_DRAWABLE(m_pWin),NULL,
-							&mask, NULL,
-							pXPM);
-}
-
-GR_Graphics::Cursor GR_CairoGraphics::getCursor() const
-{
-	return m_cursor;
-}
-
-void GR_CairoGraphics::setColor3D(GR_Color3D c)
-{
-	UT_ASSERT(c < COUNT_3D_COLORS && m_bHave3DColors);
-
-	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
-}
-
-bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
-{
-	UT_ASSERT(m_bHave3DColors);
-
-	if (m_bHave3DColors) {
-		color.m_red = m_3dColors[name].red >> 8;
-		color.m_grn = m_3dColors[name].green >> 8;
-		color.m_blu = m_3dColors[name].blue >> 8;
-		return true;
-	}
-	return false;
-}
-
-void GR_CairoGraphics::init3dColors(GtkStyle * pStyle)
-{
-	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
-
-	m_bHave3DColors = true;
-}
-
-/*!
- * This method is platform-dependent.
- * \todo use gdk_window_process_updates() for nicer scrolling
- */
-void GR_CairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						  UT_sint32 x_src, UT_sint32 y_src,
-						  UT_sint32 width, UT_sint32 height)
-{
-	GdkRectangle rect;
-	GdkRegion *region;
-
-	// not an elegant way to disable all carets, but it works beautifully - MARCM
-	GR_Painter caretDisablerPainter(this); 
-
-	rect.x = tdu(x_src);
-	rect.y = tdu(y_src);
-	rect.width = tdu(width);
-	rect.height = tdu(height);
-
-	region = gdk_region_rectangle (&rect);
-	gdk_window_move_region (m_pWin, region, x_dest - x_src, y_dest - y_src);
-
-	gdk_region_destroy (region);
 }
 
 UT_sint32 GR_CairoGraphics::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height)
@@ -2181,6 +1891,7 @@ void GR_CairoGraphics::restoreRectangle(UT_uint32 index)
  */
 GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
+	/* TODO Rob port to cairo(image)
 	UT_sint32 idx = _tduX(rec.left);
 	UT_sint32 idy = _tduY(rec.top);
 	UT_sint32 idw = _tduR(rec.width);
@@ -2199,6 +1910,8 @@ GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	pImg->m_image = pix;
 	pImg->setDisplaySize(idw,idh);
 	return pImg;
+	*/
+	return new GR_UnixImage("ScreenShot");
 }
 
 /*!
@@ -2989,28 +2702,6 @@ inline int GR_CairoGraphics::pftlu(int pf) const
 	return (int) d;
 }
 
-void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
-{
-	UT_ASSERT(c < COUNT_3D_COLORS);
-
-	fillRect(c,r.left,r.top,r.width,r.height);
-}
-
-/*!
- * Rob sez: the original (before cairo) implementation did not restore colours after drawing, 
- * so the cairo one does neither.
- */
-void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
-{
-	UT_ASSERT(c < COUNT_3D_COLORS);
-
-	GR_VERBOSE (printf("%s[3D]() %d/%d, %dx%d", __FUNCTION__, tdu(x), tdu(y), tdu(w), tdu(h)););
-
-	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
-	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
-	cairo_fill(m_cr);
-}
-
 /*!
  * \todo Rob find out how to have this function used, and test.
  */
@@ -3045,6 +2736,295 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+GR_Graphics * GR_UnixCairoScreenGraphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
+	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
+
+	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
+	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
+
+	return new GR_UnixCairoScreenGraphics(AI.m_win);
+}
+
+GR_UnixCairoScreenGraphics::GR_UnixCairoScreenGraphics(GdkWindow *win)
+  : GR_CairoGraphics(gdk_cairo_create(win)),
+    m_pWin(win)
+{
+	setCursor(GR_CURSOR_DEFAULT);
+}
+
+GR_UnixCairoScreenGraphics::~GR_UnixCairoScreenGraphics()
+{
+	
+}
+
+void GR_UnixCairoScreenGraphics::init3dColors(GtkStyle * pStyle)
+{
+	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
+
+	m_bHave3DColors = true;
+}
+
+void GR_UnixCairoScreenGraphics::setColor3D(GR_Color3D c)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS && m_bHave3DColors);
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+}
+
+bool GR_UnixCairoScreenGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
+{
+	UT_ASSERT(m_bHave3DColors);
+
+	if (m_bHave3DColors) {
+		color.m_red = m_3dColors[name].red >> 8;
+		color.m_grn = m_3dColors[name].green >> 8;
+		color.m_blu = m_3dColors[name].blue >> 8;
+		return true;
+	}
+	return false;
+}
+
+void GR_UnixCairoScreenGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+
+	fillRect(c,r.left,r.top,r.width,r.height);
+}
+
+/*!
+ * Rob sez: the original (before cairo) implementation did not restore colours after drawing, 
+ * so the cairo one does neither.
+ */
+void GR_UnixCairoScreenGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+
+	GR_VERBOSE (printf("%s[3D]() %d/%d, %dx%d", __FUNCTION__, tdu(x), tdu(y), tdu(w), tdu(h)););
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
+	cairo_fill(m_cr);
+}
+
+/*!
+ * This method is platform-dependent.
+ * \todo use gdk_window_process_updates() for nicer scrolling
+ */
+void GR_UnixCairoScreenGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+{
+	// not an elegant way to disable all carets, but it works beautifully - MARCM
+	GR_Painter caretDisablerPainter(this); 
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = tdu(getPrevXOffset());
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
+	UT_sint32 iddy = labs(ddy);
+	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
+	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
+	if(bEnableSmooth)
+	{
+		if(ddy < 0)
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,-1);
+			}
+		}
+		else
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,1);
+			}
+		}
+	}
+	else
+	{
+		gdk_window_scroll(m_pWin,ddx,ddy);
+	}
+	setExposePending(true);
+}
+
+/*!
+ * This method is platform-dependent.
+ * \todo use gdk_window_process_updates() for nicer scrolling
+ */
+void GR_UnixCairoScreenGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						  UT_sint32 x_src, UT_sint32 y_src,
+						  UT_sint32 width, UT_sint32 height)
+{
+	GdkRectangle rect;
+	GdkRegion *region;
+
+	// not an elegant way to disable all carets, but it works beautifully - MARCM
+	GR_Painter caretDisablerPainter(this); 
+
+	rect.x = tdu(x_src);
+	rect.y = tdu(y_src);
+	rect.width = tdu(width);
+	rect.height = tdu(height);
+
+	region = gdk_region_rectangle (&rect);
+	gdk_window_move_region (m_pWin, region, x_dest - x_src, y_dest - y_src);
+
+	gdk_region_destroy (region);
+}
+
+GR_ScreenGraphics::Cursor GR_UnixCairoScreenGraphics::getCursor() const
+{
+	return m_cursor;
+}
+
+void GR_UnixCairoScreenGraphics::setCursor(GR_ScreenGraphics::Cursor c)
+{
+	if (m_cursor == c)
+		return;
+
+	m_cursor = c;
+
+	GdkCursorType cursor_number;
+
+	switch (c)
+	{
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
+	case GR_CURSOR_DEFAULT:
+		cursor_number = GDK_LEFT_PTR;
+		break;
+
+	case GR_CURSOR_IBEAM:
+		cursor_number = GDK_XTERM;
+		break;
+
+	//I have changed the shape of the arrow so get a consistent
+	//behaviour in the bidi build; I think the new arrow is better
+	//for the purpose anyway
+
+	case GR_CURSOR_RIGHTARROW:
+		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
+		break;
+
+	case GR_CURSOR_LEFTARROW:
+		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
+		break;
+
+	case GR_CURSOR_IMAGE:
+		cursor_number = GDK_FLEUR;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = GDK_TOP_LEFT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_N:
+		cursor_number = GDK_TOP_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = GDK_TOP_RIGHT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_E:
+		cursor_number = GDK_RIGHT_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_number = GDK_BOTTOM_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_W:
+		cursor_number = GDK_LEFT_SIDE;
+		break;
+
+	case GR_CURSOR_LEFTRIGHT:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_UPDOWN:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_EXCHANGE:
+		cursor_number = GDK_EXCHANGE;
+		break;
+
+	case GR_CURSOR_GRAB:
+		cursor_number = GDK_HAND1;
+		break;
+
+	case GR_CURSOR_LINK:
+		cursor_number = GDK_HAND2;
+		break;
+
+	case GR_CURSOR_WAIT:
+		cursor_number = GDK_WATCH;
+		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_VLINE_DRAG:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_CROSSHAIR:
+		cursor_number = GDK_CROSSHAIR;
+		break;
+
+	case GR_CURSOR_DOWNARROW:
+		cursor_number = GDK_SB_DOWN_ARROW;
+		break;
+
+	case GR_CURSOR_DRAGTEXT:
+		cursor_number = GDK_TARGET;
+		break;
+
+	case GR_CURSOR_COPYTEXT:
+		cursor_number = GDK_DRAPED_BOX;
+		break;
+	}
+	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
+	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	gdk_window_set_cursor(m_pWin, cursor);
+	gdk_cursor_unref(cursor);
+}
+
+void GR_UnixCairoScreenGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+										   GdkBitmap * mask)
+{
+	source
+		= gdk_pixmap_colormap_create_from_xpm_d(GDK_DRAWABLE(m_pWin),NULL,
+							&mask, NULL,
+							pXPM);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -3983,12 +3963,12 @@ void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c,
 	setColor (old);
 }
 
-void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor )
+void GR_UnixPangoPrintGraphics::setCursor(GR_ScreenGraphics::Cursor )
 {
 	UT_ASSERT_NOT_REACHED ();
 }
 
-GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor() const
+GR_ScreenGraphics::Cursor GR_UnixPangoPrintGraphics::getCursor() const
 {
 	UT_ASSERT_NOT_REACHED ();
 	return GR_CURSOR_INVALID;

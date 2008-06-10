@@ -55,8 +55,8 @@ public:
 							   UT_sint32 /*x_src*/, UT_sint32 /*y_src*/,
 							   UT_sint32 /*width*/, UT_sint32 /*height*/) {}
 	
-	virtual void		setCursor(GR_Graphics::Cursor ){};
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual void		setCursor(GR_ScreenGraphics::Cursor ){};
+	virtual GR_ScreenGraphics::Cursor getCursor(void) const;
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
 protected:

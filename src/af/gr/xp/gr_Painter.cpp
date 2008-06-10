@@ -164,12 +164,12 @@ void GR_Painter::renderChars(GR_RenderInfo & ri)
 }
 
 
-void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r)
+void GR_Painter::fillRect(GR_ScreenGraphics::GR_Color3D c, UT_Rect &r)
 {
 	m_pGr->fillRect (c, r.left, r.top, r.width, r.height);
 }
 
-void GR_Painter::fillRect(GR_Graphics::GR_Color3D c,
+void GR_Painter::fillRect(GR_ScreenGraphics::GR_Color3D c,
 						  UT_sint32 x,
 						  UT_sint32 y,
 						  UT_sint32 w,

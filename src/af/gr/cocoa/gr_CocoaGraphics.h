@@ -147,10 +147,10 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
 	
-	virtual void		setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual void		setCursor(GR_ScreenGraphics::Cursor c);
+	virtual GR_ScreenGraphics::Cursor getCursor(void) const;
 
-	void			setGrabCursor(GR_Graphics::Cursor c) { m_GrabCursor = c; }
+	void			setGrabCursor(GR_ScreenGraphics::Cursor c) { m_GrabCursor = c; }
 
 	virtual void		setColor3D(GR_Color3D c);
 	void				init3dColors();
@@ -266,8 +266,8 @@ private:
 	CapStyle m_capStyle;
 	LineStyle m_lineStyle;
 
-	GR_Graphics::Cursor		m_cursor;
-	GR_Graphics::Cursor		m_GrabCursor;
+	GR_ScreenGraphics::Cursor		m_cursor;
+	GR_ScreenGraphics::Cursor		m_GrabCursor;
 
 	GR_Graphics::ColorSpace	m_cs;
 	

@@ -787,7 +787,7 @@ public:
 	// image selection && resizing && dragging functions
 	//
 	UT_sint32			getImageSelInfo();
-	GR_Graphics::Cursor getImageSelCursor();
+	GR_ScreenGraphics::Cursor getImageSelCursor();
 	bool                isImageSelected(void);
 
 //
@@ -987,7 +987,7 @@ private:
 
 	// properties for image selection
 	UT_Rect				m_selImageRect;
-	GR_Graphics::Cursor	m_imageSelCursor;
+	GR_ScreenGraphics::Cursor	m_imageSelCursor;
 	UT_sint32			m_ixResizeOrigin;
 	UT_sint32			m_iyResizeOrigin;
 	bool				m_bIsResizingImage;

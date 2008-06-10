@@ -87,7 +87,7 @@ protected:
 									  UT_sint32 x, UT_sint32 y);
 	virtual void _setFullScreen(bool isFullScreen);
 	virtual void _nullUpdate (void) const;
-	virtual void _setCursor(GR_Graphics::Cursor cursor);
+	virtual void _setCursor(GR_ScreenGraphics::Cursor cursor);
 
 	static bool _RegisterClass(XAP_Win32App * app);
 

@@ -1264,14 +1264,14 @@ GR_Graphics::ColorSpace GR_Win32Graphics::getColorSpace(void) const
 	return m_cs;
 }
 
-void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)
+void GR_Win32Graphics::setCursor(GR_ScreenGraphics::Cursor c)
 {
 	// set the cursor type, but wait for a WM_SETCURSOR
 	// to do anything about it.
 	m_cursor = c;
 }
 
-GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
+GR_ScreenGraphics::Cursor GR_Win32Graphics::getCursor(void) const
 {
 	return m_cursor;
 }

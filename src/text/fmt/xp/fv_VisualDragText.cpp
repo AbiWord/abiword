@@ -759,7 +759,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	     m_recOrigLeft.height = 2;
 	     m_recOrigLeft.left = x-1;
 	     m_recOrigLeft.top = y-1;
-	     GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	     GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
 	     if(isDoingCopy())
 	     {
 	       cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
@@ -1182,7 +1182,7 @@ void FV_VisualDragText::drawImage(void)
 {
         if(m_bNotDraggingImage)
 	{ 
-	  GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	  GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
 	  if(isDoingCopy())
 	  {
 	      cursor = GR_Graphics::GR_CURSOR_COPYTEXT;

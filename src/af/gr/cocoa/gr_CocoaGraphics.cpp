@@ -1408,9 +1408,9 @@ GR_Graphics::ColorSpace GR_CocoaGraphics::getColorSpace(void) const
 	return m_cs;
 }
 
-void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
+void GR_CocoaGraphics::setCursor(GR_ScreenGraphics::Cursor c)
 {
-	GR_Graphics::Cursor old_cursor = m_cursor;
+	GR_ScreenGraphics::Cursor old_cursor = m_cursor;
 
 	m_cursor = (c == GR_CURSOR_GRAB) ? m_GrabCursor : c;
 
@@ -1565,7 +1565,7 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 	}
 }
 
-GR_Graphics::Cursor GR_CocoaGraphics::getCursor(void) const
+GR_ScreenGraphics::Cursor GR_CocoaGraphics::getCursor(void) const
 {
 	return m_cursor;
 }

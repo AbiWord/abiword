@@ -10414,7 +10414,7 @@ void FV_View::setCursorToContext()
 		return;
 
 	EV_EditMouseContext evMC = getMouseContext(m_iMouseX,m_iMouseY);
-	GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
+	GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 	switch (evMC)
 	{
 	case EV_EMC_UNKNOWN:
@@ -13544,7 +13544,7 @@ UT_sint32 FV_View::getImageSelInfo()
 	return getGraphics()->tlu(m_InlineImage.getImageSelBoxSize());
 }
 
-GR_Graphics::Cursor FV_View::getImageSelCursor()
+GR_ScreenGraphics::Cursor FV_View::getImageSelCursor()
 {
 	return m_imageSelCursor;
 }

@@ -102,7 +102,7 @@ protected:
 	bool _updateTitle();
 	void _createIMContext(GdkWindow* w);
 	UT_sint32 _setInputMode(const char * szName);
-	virtual void _setCursor(GR_Graphics::Cursor cursor);
+	virtual void _setCursor(GR_ScreenGraphics::Cursor cursor);
 
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();

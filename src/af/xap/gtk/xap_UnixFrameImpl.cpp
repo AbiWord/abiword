@@ -1293,7 +1293,7 @@ void XAP_UnixFrameImpl::_initialize()
 #endif
 }
 
-void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
+void XAP_UnixFrameImpl::_setCursor(GR_ScreenGraphics::Cursor c)
 {
 //	if (m_cursor == c)
 //		return;

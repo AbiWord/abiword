@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -50,7 +52,7 @@
 *****************************************************************/
 
 UnixNull_Graphics::UnixNull_Graphics()
-  : GR_CairoGraphics()
+  : GR_CairoGraphics(cairo_create(cairo_image_surface_create(CAIRO_FORMAT_RGB24, 1, 1)))
 {
 }
 
@@ -196,30 +198,30 @@ GR_Graphics::ColorSpace UnixNull_Graphics::getColorSpace(void) const
   return GR_COLORSPACE_COLOR;
 }
 
-void UnixNull_Graphics::setCursor(GR_Graphics::Cursor)
+void UnixNull_Graphics::setCursor(GR_ScreenGraphics::Cursor)
 {
 }
 
-GR_Graphics::Cursor UnixNull_Graphics::getCursor(void) const
+GR_ScreenGraphics::Cursor UnixNull_Graphics::getCursor(void) const
 {
-	return GR_CURSOR_INVALID;
+	return GR_ScreenGraphics::GR_CURSOR_INVALID;
 }
 
-void UnixNull_Graphics::setColor3D(GR_Color3D /*c*/)
+void UnixNull_Graphics::setColor3D(GR_ScreenGraphics::GR_Color3D /*c*/)
 {
 
 }
 
-UT_RGBColor * UnixNull_Graphics::getColor3D(GR_Color3D /*c*/)
+UT_RGBColor * UnixNull_Graphics::getColor3D(GR_ScreenGraphics::GR_Color3D /*c*/)
 {
 	return NULL;
 }
 
-void UnixNull_Graphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
+void UnixNull_Graphics::fillRect(GR_ScreenGraphics::GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
 {
 }
 
-void UnixNull_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
+void UnixNull_Graphics::fillRect(GR_ScreenGraphics::GR_Color3D /*c*/, UT_Rect & /*r*/)
 {
 }
 

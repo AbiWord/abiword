@@ -91,7 +91,7 @@ protected:
 	virtual void _setFullScreen(bool isFullScreen) = 0;
 	virtual void _hideMenuScroll(bool bHideMenuScroll) = 0;
 	virtual void _nullUpdate () const = 0;
-	virtual void _setCursor(GR_Graphics::Cursor cursor) = 0;
+	virtual void _setCursor(GR_ScreenGraphics::Cursor cursor) = 0;
 
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;

@@ -91,7 +91,7 @@ public:
 	virtual void _hideMenuScroll(bool bHideMenuScroll)
 		{ UT_ASSERT(UT_NOT_IMPLEMENTED); }
 	virtual void                _nullUpdate () const;
-	virtual void                _setCursor(GR_Graphics::Cursor c) {}
+	virtual void                _setCursor(GR_ScreenGraphics::Cursor c) {}
 
 	NSWindow *					getTopLevelWindow() const;
 	NSView *					getVBoxWidget() const;

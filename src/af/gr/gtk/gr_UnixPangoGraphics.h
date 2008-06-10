@@ -137,7 +137,6 @@ public:
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
 	static const char *    graphicsDescriptor(){return "Unix Pango";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void _beginPaint();
 	virtual void _endPaint();
@@ -206,10 +205,6 @@ public:
 	virtual UT_uint32 getFontDescent(const GR_Font *);
 	virtual UT_uint32 getFontHeight(const GR_Font *);
 
-	virtual void		fillRect(GR_Color3D c,
-								 UT_sint32 x, UT_sint32 y,
-								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
 	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);  
 	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
@@ -262,21 +257,6 @@ public:
 								  bool bPortrait,
 								  UT_uint32 iWidth, UT_uint32 iHeight);
 
-	virtual void		setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor() const;
-
-	virtual void		setColor3D(GR_Color3D c);
-	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
-	void				init3dColors(GtkStyle * pStyle);
-
-	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
-											GdkBitmap * mask);
-	
-	virtual void		scroll(UT_sint32, UT_sint32);
-	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-							   UT_sint32 x_src, UT_sint32 y_src,
-							   UT_sint32 width, UT_sint32 height);
-
 	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	    restoreRectangle(UT_uint32 iIndx);
     virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
@@ -288,8 +268,7 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_CairoGraphics(GdkWindow * win);
-	GR_CairoGraphics();
+	GR_CairoGraphics(cairo_t *cr);
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
 	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
@@ -324,11 +303,7 @@ public:
 	UT_uint32         m_iDeviceResolution;
 
 	cairo_t *         m_cr;
-	GdkWindow *       m_pWin;
 	
-	GR_Graphics::Cursor	    m_cursor;
-	GdkColor				m_3dColors[COUNT_3D_COLORS];
-
 	UT_GenericVector<UT_Rect *> m_vSaveRect;
 	UT_GenericVector<cairo_t *> m_vSaveRectBuf;
 
@@ -336,12 +311,46 @@ public:
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 	
-	void init();
-
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
+};
+
+class ABI_EXPORT GR_UnixCairoScreenGraphics : public GR_CairoGraphics, public GR_ScreenGraphics
+{
+protected:
+	GR_UnixCairoScreenGraphics(GdkWindow *win);
+
+	GdkWindow					*m_pWin;
+	GR_ScreenGraphics::Cursor	 m_cursor;
+	GdkColor					 m_3dColors[COUNT_3D_COLORS];
+
+public:
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
+
+	~GR_UnixCairoScreenGraphics();
+
+	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
+											GdkBitmap * mask);
+
+	virtual void		fillRect(GR_Color3D c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
+
+	void				init3dColors(GtkStyle * pStyle);
+
+	virtual void		scroll(UT_sint32, UT_sint32);
+	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+							   UT_sint32 x_src, UT_sint32 y_src,
+							   UT_sint32 width, UT_sint32 height);
+
+	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
+	virtual void		setColor3D(GR_Color3D c);
+
+	virtual void		setCursor(GR_ScreenGraphics::Cursor c);
+	virtual GR_ScreenGraphics::Cursor getCursor() const;
 };
 
 #ifdef ENABLE_PRINT
@@ -416,8 +425,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace() const;
 	
-	virtual void setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor() const;
+	virtual void setCursor(GR_ScreenGraphics::Cursor c);
+	virtual GR_ScreenGraphics::Cursor getCursor() const;
 
 	virtual void					setColor3D(GR_Color3D c);
 	virtual UT_RGBColor *			getColor3D(GR_Color3D c);

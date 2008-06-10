@@ -556,7 +556,7 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 	}
 }
 
-void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor /*cursor*/)
+void XAP_Win32FrameImpl::_setCursor(GR_ScreenGraphics::Cursor /*cursor*/)
 {
 	FV_View* pView = (FV_View *) getFrame()->getCurrentView();
 

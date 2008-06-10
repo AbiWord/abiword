@@ -93,13 +93,13 @@ public:
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
 	
-	virtual void setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
+	virtual void setCursor(GR_ScreenGraphics::Cursor c);
+	virtual GR_ScreenGraphics::Cursor getCursor(void) const;
 
-	virtual void					setColor3D(GR_Color3D c);
-	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
-	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+	virtual void		setColor3D(GR_ScreenGraphics::GR_Color3D c);
+	virtual UT_RGBColor *	getColor3D(GR_ScreenGraphics::GR_Color3D c);
+	virtual void fillRect(GR_ScreenGraphics::GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_ScreenGraphics::GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 /*iCount*/) {}
 

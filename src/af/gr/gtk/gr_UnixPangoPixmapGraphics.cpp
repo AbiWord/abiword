@@ -27,10 +27,9 @@
  */
 
 GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
-	GR_CairoGraphics(),
+	GR_CairoGraphics(gdk_cairo_create(GDK_DRAWABLE(pix))),
 	m_pPixmap(pix)
 {
-	init();
 }			
 
 GR_UnixPangoPixmapGraphics::~GR_UnixPangoPixmapGraphics(void)
@@ -64,7 +63,7 @@ bool GR_UnixPangoPixmapGraphics::queryProperties(GR_Graphics::Properties gp) con
 	}
 }
 
-GR_Graphics::Cursor GR_UnixPangoPixmapGraphics::getCursor(void) const
+GR_ScreenGraphics::Cursor GR_UnixPangoPixmapGraphics::getCursor(void) const
 {
-	return GR_CURSOR_DEFAULT;
+	return GR_ScreenGraphics::GR_CURSOR_DEFAULT;
 }

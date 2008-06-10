@@ -454,13 +454,6 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
-	virtual void      scroll(UT_sint32, UT_sint32) = 0;
-	virtual void      scroll(UT_sint32 x_dest,
-							 UT_sint32 y_dest,
-							 UT_sint32 x_src,
-							 UT_sint32 y_src,
-							 UT_sint32 width,
-							 UT_sint32 height) = 0;
 
 	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY } Properties;
 
@@ -513,56 +506,11 @@ class ABI_EXPORT GR_Graphics
 				   GR_COLORSPACE_BW
 	} ColorSpace;
 
-	/* multiple cursor support */
-
-	typedef enum { GR_CURSOR_INVALID=0,
-				   GR_CURSOR_DEFAULT,
-				   GR_CURSOR_IBEAM,
-				   GR_CURSOR_RIGHTARROW,
-				   GR_CURSOR_IMAGE,
-				   GR_CURSOR_IMAGESIZE_NW,
-				   GR_CURSOR_IMAGESIZE_N,
-				   GR_CURSOR_IMAGESIZE_NE,
-				   GR_CURSOR_IMAGESIZE_E,
-				   GR_CURSOR_IMAGESIZE_SE,
-				   GR_CURSOR_IMAGESIZE_S,
-				   GR_CURSOR_IMAGESIZE_SW,
-				   GR_CURSOR_IMAGESIZE_W,
-				   GR_CURSOR_LEFTRIGHT,
-				   GR_CURSOR_UPDOWN,
-				   GR_CURSOR_EXCHANGE,
-				   GR_CURSOR_GRAB,
-				   GR_CURSOR_LINK,
-				   GR_CURSOR_WAIT,
-				   GR_CURSOR_LEFTARROW,
-				   GR_CURSOR_VLINE_DRAG,
-				   GR_CURSOR_HLINE_DRAG,
-				   GR_CURSOR_CROSSHAIR,
-		                   GR_CURSOR_DOWNARROW,
-		                   GR_CURSOR_DRAGTEXT,
-		                   GR_CURSOR_COPYTEXT
-	} Cursor;
-
-	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
-	virtual GR_Graphics::Cursor getCursor(void) const = 0;
-
 	virtual void      setZoomPercentage(UT_uint32 iZoom);
 	inline UT_uint32  getZoomPercentage(void) const {return m_iZoomPercentage; }
 	static UT_uint32  getResolution(void) { return UT_LAYOUT_RESOLUTION; }
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}
-
-	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
-				   CLR3D_Background=1,				/* color of face/background on a 3d object */
-				   CLR3D_BevelUp=2,					/* color of bevel-up  */
-				   CLR3D_BevelDown=3,				/* color of bevel-down */
-				   CLR3D_Highlight=4				/* color half-way between up and down */
-	} GR_Color3D;
-#define COUNT_3D_COLORS 5
-
-	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
-	{ return false; }
 
 	//
 	// Methods to deal with background repainting as used in the Unix FE. These
@@ -751,10 +699,6 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
-	virtual void fillRect(GR_Color3D c,
-						  UT_sint32 x, UT_sint32 y,
-						  UT_sint32 w, UT_sint32 h) = 0;
 	virtual void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
@@ -838,4 +782,66 @@ class ABI_EXPORT GR_Graphics
 	UT_GenericVector<GR_Caret *>  m_vecCarets;
 };
 
+class ABI_EXPORT GR_ScreenGraphics
+{
+public:
+
+	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
+				   CLR3D_Background=1,				/* color of face/background on a 3d object */
+				   CLR3D_BevelUp=2,					/* color of bevel-up  */
+				   CLR3D_BevelDown=3,				/* color of bevel-down */
+				   CLR3D_Highlight=4				/* color half-way between up and down */
+	} GR_Color3D;
+#define COUNT_3D_COLORS 5
+
+	virtual void      setColor3D(GR_Color3D c) = 0;
+	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
+	{ return false; }
+
+	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
+	virtual void fillRect(GR_Color3D c,
+						  UT_sint32 x, UT_sint32 y,
+						  UT_sint32 w, UT_sint32 h) = 0;
+
+	/* multiple cursor support */
+
+	typedef enum { GR_CURSOR_INVALID=0,
+				   GR_CURSOR_DEFAULT,
+				   GR_CURSOR_IBEAM,
+				   GR_CURSOR_RIGHTARROW,
+				   GR_CURSOR_IMAGE,
+				   GR_CURSOR_IMAGESIZE_NW,
+				   GR_CURSOR_IMAGESIZE_N,
+				   GR_CURSOR_IMAGESIZE_NE,
+				   GR_CURSOR_IMAGESIZE_E,
+				   GR_CURSOR_IMAGESIZE_SE,
+				   GR_CURSOR_IMAGESIZE_S,
+				   GR_CURSOR_IMAGESIZE_SW,
+				   GR_CURSOR_IMAGESIZE_W,
+				   GR_CURSOR_LEFTRIGHT,
+				   GR_CURSOR_UPDOWN,
+				   GR_CURSOR_EXCHANGE,
+				   GR_CURSOR_GRAB,
+				   GR_CURSOR_LINK,
+				   GR_CURSOR_WAIT,
+				   GR_CURSOR_LEFTARROW,
+				   GR_CURSOR_VLINE_DRAG,
+				   GR_CURSOR_HLINE_DRAG,
+				   GR_CURSOR_CROSSHAIR,
+		                   GR_CURSOR_DOWNARROW,
+		                   GR_CURSOR_DRAGTEXT,
+		                   GR_CURSOR_COPYTEXT
+	} Cursor;
+
+	virtual void      setCursor(GR_ScreenGraphics::Cursor c) = 0;
+	virtual GR_ScreenGraphics::Cursor getCursor(void) const = 0;
+
+	virtual void      scroll(UT_sint32, UT_sint32) = 0;
+	virtual void      scroll(UT_sint32 x_dest,
+							 UT_sint32 y_dest,
+							 UT_sint32 x_src,
+							 UT_sint32 y_src,
+							 UT_sint32 width,
+							 UT_sint32 height) = 0;
+};
 #endif /* GR_GRAPHICS_H */
