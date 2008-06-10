@@ -90,6 +90,41 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("text-indent", szValue) == UT_OK)
+	{
+		err = exporter->setTextIndentation(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("margin-left", szValue) == UT_OK)
+	{
+		err = exporter->setParagraphLeftMargin(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("margin-right", szValue) == UT_OK)
+	{
+		err = exporter->setParagraphRightMargin(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("margin-bottom", szValue) == UT_OK)
+	{
+		err = exporter->setParagraphBottomMargin(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("margin-top", szValue) == UT_OK)
+	{
+		err = exporter->setParagraphTopMargin(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	return exporter->finishParagraphProperties();
 }
 

@@ -428,6 +428,131 @@ UT_Error IE_Exp_OpenXML::setTextAlignment(const gchar* alignment)
 }
 
 /**
+ * Sets text indentation
+ */
+UT_Error IE_Exp_OpenXML::setTextIndentation(const gchar* indentation)
+{
+	const gchar* twips = convertToPositiveTwips(indentation);
+	if(!twips)
+		return UT_OK;
+
+	gboolean printed = false;
+
+	if(isNegativeQuantity(indentation))
+		printed = gsf_output_printf(documentStream, "<w:ind w:hanging=\"%s\"/>", twips);
+	else
+		printed = gsf_output_printf(documentStream, "<w:ind w:firstLine=\"%s\"/>", twips);
+
+	if(!printed)
+	{	
+		UT_DEBUGMSG(("FRT: ERROR, cannot set text indentation in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
+}
+
+/**
+ * Sets paragraph left margin
+ */
+UT_Error IE_Exp_OpenXML::setParagraphLeftMargin(const gchar* margin)
+{
+	const gchar* twips = convertToTwips(margin);
+	if(!twips)
+		return UT_OK;
+
+	if(!gsf_output_printf(documentStream, "<w:ind w:left=\"%s\"/>", twips))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph left margin in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets paragraph right margin
+ */
+UT_Error IE_Exp_OpenXML::setParagraphRightMargin(const gchar* margin)
+{
+	const gchar* twips = convertToTwips(margin);
+	if(!twips)
+		return UT_OK;
+
+	if(!gsf_output_printf(documentStream, "<w:ind w:right=\"%s\"/>", twips))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph right margin in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets paragraph top margin
+ */
+UT_Error IE_Exp_OpenXML::setParagraphTopMargin(const gchar* margin)
+{
+	const gchar* twips = convertToPositiveTwips(margin);
+	if(!twips)
+		return UT_OK;
+
+	if(!gsf_output_printf(documentStream, "<w:spacing w:before=\"%s\"/>", twips))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph top margin in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Sets paragraph bottom margin
+ */
+UT_Error IE_Exp_OpenXML::setParagraphBottomMargin(const gchar* margin)
+{
+	const gchar* twips = convertToPositiveTwips(margin);
+	if(!twips)
+		return UT_OK;
+
+	if(!gsf_output_printf(documentStream, "<w:spacing w:after=\"%s\"/>", twips))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph bottom margin in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
+ * Checks whether the quantity string is a negative quantity
+ */
+bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
+{
+	return *quantity == '-';
+}
+
+/**
+ * Converts the string str to twips, returns positive whole number or NULL if twips=0
+ */
+const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
+{
+	double pt = UT_convertToPoints(str) * 20;
+	if(pt < 0) 
+		pt = -pt;
+	if(pt < 1.0)
+		return NULL;
+	return UT_convertToDimensionlessString(pt, ".0");
+}
+
+/**
+ * Converts the string str to twips, returns NULL if twips=0
+ */
+const gchar * IE_Exp_OpenXML::convertToTwips(const gchar* str)
+{
+	double pt = UT_convertToPoints(str) * 20;
+	if(pt < 1.0 && pt > -1.0)
+		return NULL;
+	return UT_convertToDimensionlessString(pt, ".0");
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()

@@ -76,6 +76,11 @@ public:
 	UT_Error setTextColor(const gchar* color);
 	UT_Error setTextBackgroundColor(const gchar* color);
 	UT_Error setTextAlignment(const gchar* alignment);
+	UT_Error setTextIndentation(const gchar* indentation);
+	UT_Error setParagraphLeftMargin(const gchar* margin);
+	UT_Error setParagraphRightMargin(const gchar* margin);
+	UT_Error setParagraphTopMargin(const gchar* margin);
+	UT_Error setParagraphBottomMargin(const gchar* margin);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -95,6 +100,10 @@ private:
 	UT_Error finishRelations();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
+
+	const gchar* convertToTwips(const gchar* str);
+	const gchar* convertToPositiveTwips(const gchar* str);
+	bool isNegativeQuantity(const gchar* quantity);
 
 	void _cleanup();
 };
