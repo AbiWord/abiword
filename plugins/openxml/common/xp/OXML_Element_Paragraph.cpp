@@ -125,6 +125,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("line-height", szValue) == UT_OK)
+	{
+		err = exporter->setLineHeight(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	return exporter->finishParagraphProperties();
 }
 

@@ -81,6 +81,7 @@ public:
 	UT_Error setParagraphRightMargin(const gchar* margin);
 	UT_Error setParagraphTopMargin(const gchar* margin);
 	UT_Error setParagraphBottomMargin(const gchar* margin);
+	UT_Error setLineHeight(const gchar* height);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -104,6 +105,7 @@ private:
 	const gchar* convertToTwips(const gchar* str);
 	const gchar* convertToPositiveTwips(const gchar* str);
 	bool isNegativeQuantity(const gchar* quantity);
+	const gchar* convertToLines(const gchar* str);
 
 	void _cleanup();
 };

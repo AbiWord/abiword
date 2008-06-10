@@ -521,6 +521,43 @@ UT_Error IE_Exp_OpenXML::setParagraphBottomMargin(const gchar* margin)
 }
 
 /**
+ * Sets line height
+ */
+UT_Error IE_Exp_OpenXML::setLineHeight(const gchar* height)
+{
+	const gchar* twips = NULL;
+	const gchar* lineRule = NULL;
+
+	if(strstr(height, "pt+")) 
+	{
+		lineRule = "atLeast";
+		std::string h(height);
+		h.resize(h.length()-1); //get rid of '+' char
+		twips = convertToTwips(h.c_str());
+	}
+	else if(strstr(height, "pt")) 
+	{
+		lineRule = "exact";
+		twips = convertToTwips(height);
+	}
+	else 
+	{
+		lineRule = "auto";
+		twips = convertToLines(height);
+	}
+	
+	if(!twips)
+		return UT_OK;
+	
+	if(!gsf_output_printf(documentStream, "<w:spacing w:line=\"%s\" w:lineRule=\"%s\"/>", twips, lineRule))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set line height in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
@@ -547,6 +584,18 @@ const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
 const gchar * IE_Exp_OpenXML::convertToTwips(const gchar* str)
 {
 	double pt = UT_convertToPoints(str) * 20;
+	if(pt < 1.0 && pt > -1.0)
+		return NULL;
+	return UT_convertToDimensionlessString(pt, ".0");
+}
+
+/**
+ * Converts the string str to lines, returns NULL if lines=0
+ */
+const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
+{
+	//1 point == 20 twips; 1 line == 12pts --> 1 line == 20*12=240twips
+	double pt = UT_convertDimensionless(str) * 240;
 	if(pt < 1.0 && pt > -1.0)
 		return NULL;
 	return UT_convertToDimensionlessString(pt, ".0");
