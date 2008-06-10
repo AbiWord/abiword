@@ -3,7 +3,7 @@
 ;Author         Kenneth J. Davis <jeremyd@computer.org> (2002,2003)
 ;Copyright      Alan Horkan <horkana@tcd.ie> (2002)
 ;               Michael D. Pritchett <mpritchett@attglobal.net> (2002)
-;               [add your name here]
+;               AbiSource Corporation B.V. (by <abiryan@ryand.net> 2008)
 ;Version        see AbiSource CVS
 
 
@@ -116,9 +116,10 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 ; Install types 
 InstType "Typical (default)"              ;Section 1
-InstType "Full (with File Associations)"  ;Section 2
+InstType "Full (with file associations)"  ;Section 2
 InstType "Minimal"                        ;Section 3
-InstType "Tiny - ${PROGRAMEXE} only"	;Section 4
+InstType "Full"                           ;Section 4
+
 !ifndef NODOWNLOADS
 InstType "Full plus Downloads"		;Section 5
 !define DLSECT 5
@@ -134,7 +135,7 @@ InstType "Full plus Downloads"		;Section 5
 SubSection /e "$(TITLE_ssection_core)" ssection_core
 
 ; The stuff that must be installed
-Section "$(TITLE_section_abi)" section_abi
+Section "" section_abi
 	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -251,8 +252,8 @@ SectionEnd
 !macroend
 
 
-Section "$(TITLE_section_abi_req)" section_abi_req
-	SectionIn 1 2 3 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
+Section "" section_abi_req
+	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; Image plugin for importers & cut-n-paste of 
       ; various standard image formats (BMP, WMF, JPEG) on Windows
@@ -345,7 +346,25 @@ SubSectionEnd ; core
 !include "abi_section_opt_fileassoc.nsh"
 
 ; *********************************************************************
+; *********************************************************************
+!ifdef OPT_PLUGINS
 
+;!include "plugins\abi_misc_plugins.nsh"
+ 
+; OPTIONAL plugins
+;SubSection /e "$(TITLE_ssection_plugins)" ssection_plugins
+!include "plugins\section_opt_tools.nsh"
+!include "plugins\section_opt_importexport.nsh"
+;SubSectionEnd ; plugins
+;!macro Remove_${ssection_plugins}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+;	DetailPrint "*** ssection_plugins"
+;!macroend
+
+!endif
+; *********************************************************************
 
 SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 
@@ -376,25 +395,7 @@ SubSectionEnd ; helper files
 !macroend
 
 
-; *********************************************************************
-!ifdef OPT_PLUGINS
 
-!include "plugins\abi_misc_plugins.nsh"
- 
-; OPTIONAL plugins
-SubSection /e "$(TITLE_ssection_plugins)" ssection_plugins
-!include "plugins\section_opt_tools.nsh"
-!include "plugins\section_opt_importexport.nsh"
-SubSectionEnd ; plugins
-!macro Remove_${ssection_plugins}
-	; Note: subsection removes called unless every section contained is selected
-	;       so do not actually remove anything that may be necessary
-	;       if subsection is only partially selected
-	DetailPrint "*** ssection_plugins"
-!macroend
-
-!endif
-; *********************************************************************
 
 
 ;--- Add/Remove callback functions: ---
@@ -417,8 +418,8 @@ SubSectionEnd ; plugins
   ${MarkSubSectionStart} "*** ssection_fa_shellupdate:"
   !insertmacro "${MacroName}" "section_fa_shellupdate_inv"
   !insertmacro "${MacroName}" "section_fa_abw"
-  !insertmacro "${MacroName}" "section_fa_awt"
-  !insertmacro "${MacroName}" "section_fa_zabw"
+  ;insertmacro "${MacroName}" "section_fa_awt"
+  ;insertmacro "${MacroName}" "section_fa_zabw"
   !insertmacro "${MacroName}" "section_fa_doc"
   !insertmacro "${MacroName}" "section_fa_rtf"
   !insertmacro "${MacroName}" "ssection_fa_shellupdate"
@@ -442,9 +443,44 @@ SubSectionEnd ; plugins
   !insertmacro "${MacroName}" "ssection_helper_files"
 
 !ifdef OPT_PLUGINS
-  ${MarkSubSectionStart} "*** ssection_plugins:"
-  !include "plugins\plugin_list.nsh"
-  !insertmacro "${MacroName}" "ssection_plugins"
+
+  ; Tools plugins
+  ${MarkSubSectionStart} "*** ssection_toolsplugins:"
+  !insertmacro "${MacroName}" "section_toolsplugins_mathview"
+  !insertmacro "${MacroName}" "section_toolsplugins_abicollab"
+  !insertmacro "${MacroName}" "section_toolsplugins_grammar"
+  !insertmacro "${MacroName}" "section_toolsplugins_urldict"
+  !insertmacro "${MacroName}" "section_toolsplugins_google"
+  !insertmacro "${MacroName}" "section_toolsplugins_wikipedia"
+  !insertmacro "${MacroName}" "section_toolsplugins_babelfish"
+  !insertmacro "${MacroName}" "section_toolsplugins_freetranslation"
+  !insertmacro "${MacroName}" "section_toolsplugins_scripthappy"
+  
+  ; Imp/exp plugins
+  ${MarkSubSectionStart} "*** ssection_impexpplugins:"
+
+  !insertmacro "${MacroName}" "section_impexpplugins_applix"
+  !insertmacro "${MacroName}" "section_impexpplugins_clarisworks"
+  !insertmacro "${MacroName}" "section_impexpplugins_docbook"
+  !insertmacro "${MacroName}" "section_impexpplugins_opendocument"
+  !insertmacro "${MacroName}" "section_impexpplugins_openwriter"
+  !insertmacro "${MacroName}" "section_impexpplugins_iscii_text"
+  !insertmacro "${MacroName}" "section_impexpplugins_eml"
+  !insertmacro "${MacroName}" "section_impexpplugins_palmdoc"
+  !insertmacro "${MacroName}" "section_impexpplugins_wml"
+  !insertmacro "${MacroName}" "section_impexpplugins_xslfo"
+
+  !insertmacro "${MacroName}" "section_impexpplugins_openxml"
+  !insertmacro "${MacroName}" "section_impexpplugins_mswrite"
+  !insertmacro "${MacroName}" "section_impexpplugins_opml"
+  !insertmacro "${MacroName}" "section_impexpplugins_sdw"
+  !insertmacro "${MacroName}" "section_impexpplugins_t602"
+  !insertmacro "${MacroName}" "section_impexpplugins_wordperfect"
+
+  !insertmacro "${MacroName}" "section_impexpplugins_hrtext"
+  !insertmacro "${MacroName}" "section_impexpplugins_latex"
+  
+  ;insertmacro "${MacroName}" "ssection_plugins"
 !endif
 
 !macroend

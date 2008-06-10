@@ -14,7 +14,7 @@ ${LSTR} TITLE_ssection_shortcuts_au         "Shortcuts (All Users)"
 ${LSTR} TITLE_section_sm_shortcuts_au       "Start Menu Shortcuts (All Users)"
 ${LSTR} TITLE_section_desktop_shortcuts_au  "Desktop Shortcut (All Users)"
 ${LSTR} TITLE_ssection_fa_shellupdate       "Update shell file associations"
-${LSTR} TITLE_section_fa_abw                "Associate .abw with AbiWord"
+${LSTR} TITLE_section_fa_abw                "Open .abw, .awt, .zabw with AbiWord"
 ${LSTR} TITLE_section_fa_awt                "Associate .awt with AbiWord"
 ${LSTR} TITLE_section_fa_zabw               "Associate .zabw with AbiWord"
 ${LSTR} TITLE_section_fa_doc                "Associate .doc with AbiWord"
@@ -35,9 +35,7 @@ ${LSTR} TITLE_section_dictinary_def_English "en-US  US English (default)"
 !ifdef OPT_DICTIONARIES
 ${LSTR} TITLE_ssection_dl_opt_dict          "Download optional dictionaries"
 !endif
-!ifdef OPT_PLUGINS
-${LSTR} TITLE_ssection_plugins              "Plugins"
-!endif
+
 
 ; Section descriptions displayed to user when mouse hovers over a section
 ${LSTR} DESC_ssection_core            "Primary (core) set of components for AbiWord to run well."
@@ -47,7 +45,7 @@ ${LSTR} DESC_ssection_shortcuts       "Installs shortcuts in various places to a
 ${LSTR} DESC_ssection_shortcuts_cu    "Installs shortcuts for the currently logged on user."
 ${LSTR} DESC_ssection_shortcuts_au    "Installs shortcuts for all users (or current user on systems without multiple users)."
 ${LSTR} DESC_ssection_fa_shellupdate  "Adds entries to the registry to allow the Explorer shell to use AbiWord to open various document formats."
-${LSTR} DESC_section_fa_abw           "Specifies that AbiWord should be used to open documents in its native format.  (Recommended)"
+${LSTR} DESC_section_fa_abw           "Specifies that AbiWord should be used to open documents in its native formats.  (Recommended)"
 ${LSTR} DESC_section_fa_awt           "Specifies that AbiWord should be used to open templates in its native format.  (Recommended)"
 ${LSTR} DESC_section_fa_zabw          "Specifies that AbiWord should be used to open compressed documents in its native format.  (Recommended)"
 ${LSTR} DESC_section_fa_doc           "Specifies that AbiWord should be used to open Microsoft Word (R) native format documents."
@@ -138,5 +136,48 @@ ${LSTR} dict_Slovensko     "Slovenian"
 ${LSTR} dict_Svenska       "Swedish"
 ${LSTR} dict_Ukrainian     "Ukrainian"
 
+!ifdef OPT_PLUGINS
+${LSTR} TITLE_ssection_plugins              "Plugins"
+${LSTR} TITLE_ssection_toolsplugins         "Optional Tools"
+${LSTR} TITLE_ssection_impexpplugins        "Additional File Format Support"
 
+; Tools Plugins
+${LSTR} TITLE_section_toolsplugins_mathview				"Equation Editor"
+${LSTR} TITLE_section_toolsplugins_abicollab			"AbiCollab Real Time Collaboration"
+${LSTR} TITLE_section_toolsplugins_grammar				"Grammar Checker"
+${LSTR} TITLE_section_toolsplugins_urldict				"Web Dictionary"
+${LSTR} TITLE_section_toolsplugins_google				"Google Search Integration"
+${LSTR} TITLE_section_toolsplugins_wikipedia			"Wikipedia Search Integration"
+${LSTR} TITLE_section_toolsplugins_babelfish			"Babelfish Internet Translation"
+${LSTR} TITLE_section_toolsplugins_freetranslation		"Freetranslation.com Internet Translation"
+${LSTR} TITLE_section_toolsplugins_scripthappy			"Command Output Scripting"
+
+; Imp/Exp Plugins
+${LSTR} TITLE_ssection_loadsaveplugins					"Load and Save Formats"
+${LSTR} TITLE_ssection_loadplugins						"Load-only Formats"
+${LSTR} TITLE_ssection_saveplugins						"Save-only Formats"
+
+${LSTR} TITLE_section_impexpplugins_applix				"ApplixWare"
+${LSTR} TITLE_section_impexpplugins_clarisworks			"ClarisWorks"
+${LSTR} TITLE_section_impexpplugins_docbook				"DocBook"
+${LSTR} TITLE_section_impexpplugins_opendocument		"OpenDocument (ODT)"
+${LSTR} TITLE_section_impexpplugins_openwriter			"OpenWriter (.sxw)"
+${LSTR} TITLE_section_impexpplugins_iscii_text			"Indic Script (ISCII) Text"
+${LSTR} TITLE_section_impexpplugins_eml					"Saved Email (.eml) format"
+${LSTR} TITLE_section_impexpplugins_palmdoc				"Palm DOC (.pdb)"
+${LSTR} TITLE_section_impexpplugins_wml					"Wireless Markup Language"
+${LSTR} TITLE_section_impexpplugins_xslfo				"XSL-FO"
+
+${LSTR} TITLE_section_impexpplugins_openxml				"Microsoft Office Open XML"
+${LSTR} TITLE_section_impexpplugins_mswrite				"Microsoft Write"
+${LSTR} TITLE_section_impexpplugins_opml				"OPML"
+${LSTR} TITLE_section_impexpplugins_sdw					"StarOffice Writer 5.1 (.sdw)"
+${LSTR} TITLE_section_impexpplugins_t602				"T602"
+${LSTR} TITLE_section_impexpplugins_wordperfect			"WordPerfect"
+
+${LSTR} TITLE_section_impexpplugins_hrtext				"Newsgroup text (Hrtext)"
+${LSTR} TITLE_section_impexpplugins_latex				"LaTeX"
+
+
+!endif
 ; End Language descriptions
