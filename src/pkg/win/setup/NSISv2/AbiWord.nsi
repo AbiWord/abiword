@@ -184,13 +184,13 @@ Section "" section_abi
 		File "..\..\..\..\libs\zlib\zlib1.dll"
 		File "libglib-2.0-0.dll"
 		File "libgobject-2.0-0.dll"
+		File "libgthread-2.0-0.dll"
 		File "libgsf-1-114.dll"
 		File "bzip2.dll"
-
-		; system libs, our new 2.6 friend
 		File "iconv.dll"
 		File "intl.dll"
 		File "libxml2-2.dll"
+		
 
 	${EndIf}
 SectionEnd

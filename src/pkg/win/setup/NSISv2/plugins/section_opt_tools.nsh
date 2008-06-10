@@ -43,7 +43,6 @@ Section "$(TITLE_section_toolsplugins_abicollab)" section_toolsplugins_abicollab
 	SectionIn 1 2 4 ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
 	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File "libsoup-2.4-1.dll"
-	File "libgthread-2.0-0.dll"
 	
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
 	File "..\plugins\AbiCollab.dll"
