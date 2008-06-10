@@ -171,9 +171,11 @@ Section "AbiCollab Real-Time Collaboration"
 	Goto End
 
 	DoInstall:
+	SetOutPath $INSTDIR\AbiWord\bin
+	File "..\bin\libsoup-2.4-1.dll"
+	File "..\bin\libgthread-2.0-0.dll"
+	SetOutPath $INSTDIR\AbiWord\Plugins
 	File "AbiCollab.dll"
-	File "$INSTDIR\..\bin\libsoup-2.4-1.dll"
-	File "$INSTDIR\..\bin\libgthread-2.0-0.dll"
 	WriteRegStr HKCR ".abicollab" "" "AbiSuite.AbiWord"
 	WriteRegStr HKCR ".abicollab" "Content Type" "application/abiword"
 	End:
