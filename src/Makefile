@@ -164,7 +164,7 @@ ifneq ($(ABIPKGDIR),)
 	@echo Building distribution packages for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) distribution
 
-    disttools:
+    toolsplugins:
 	@if [ -d $(ABI_ROOT)/../abiword-plugins ]; then \
 		echo Found abiword-plugins in peer directory; \
 	else \
@@ -180,10 +180,12 @@ ifneq ($(ABIPKGDIR),)
 	@echo Building tools plugins...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/tools all
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/wp/scripts/shell
+	
+    disttools: toolsplugins
 	@echo Building distribution tools plugin package for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) disttools
 
-    distimpexp:
+    impexpplugins:
 	@if [ -d $(ABI_ROOT)/../abiword-plugins ]; then \
 		echo Found abiword-plugins in peer directory; \
 	else \
@@ -198,6 +200,8 @@ ifneq ($(ABIPKGDIR),)
 	fi
 	@echo Building importer/exporter plugins...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/wp/impexp all
+	
+    distimpexp: impexpplugins
 	@echo Building distribution importer/exporter plugin package for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) distimpexp
 

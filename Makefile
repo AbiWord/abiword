@@ -109,8 +109,14 @@ canonical:
 distribution: compile canonical
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distribution
 
+toolsplugins:
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src toolsplugins
+
 disttools:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src disttools
+
+impexpplugins:
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src impexpplugins
 
 distimpexp:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distimpexp

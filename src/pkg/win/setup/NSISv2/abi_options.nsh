@@ -31,8 +31,7 @@
 
 ; Define this to include the standard set of plugins
 ; if NODOWNLOADS is defined then the files must be locally available
-; Note that if this is enabled, you must first make canonical, distimpexp, and disttools before make distribution
-; This is because the plugins must actually be compiled before being packaged.
+; if you enable this, you must build make toolsplugins, make impexpplugins, then finally make distribution
 ;!define OPT_PLUGINS
 
 ; If you have upx available in your PATH, enable this for a smaller setup file
