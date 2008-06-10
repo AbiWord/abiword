@@ -22,8 +22,8 @@
 		${MUI_DESCRIPTION_TEXT} ${ssection_core} $(DESC_ssection_core)
 		${MUI_DESCRIPTION_TEXT} ${ssection_fa_shellupdate} $(DESC_ssection_fa_shellupdate)
 		${MUI_DESCRIPTION_TEXT} ${section_fa_abw} $(DESC_section_fa_abw)
-		${MUI_DESCRIPTION_TEXT} ${section_fa_awt} $(DESC_section_fa_awt)
-		${MUI_DESCRIPTION_TEXT} ${section_fa_zabw} $(DESC_section_fa_zabw)
+		;${MUI_DESCRIPTION_TEXT} ${section_fa_awt} $(DESC_section_fa_awt)
+		;${MUI_DESCRIPTION_TEXT} ${section_fa_zabw} $(DESC_section_fa_zabw)
 		${MUI_DESCRIPTION_TEXT} ${section_fa_doc} $(DESC_section_fa_doc)
 		${MUI_DESCRIPTION_TEXT} ${section_fa_rtf} $(DESC_section_fa_rtf)
 		${MUI_DESCRIPTION_TEXT} ${ssection_helper_files} $(DESC_ssection_helper_files)
@@ -56,7 +56,7 @@
 !macro PLUGIN_FUNC id
 		${MUI_DESCRIPTION_TEXT} ${${id}} $(DESC_${id})
 !macroend
-		!include "plugins\plugin_list.nsh"
+		;include "plugins\plugin_list.nsh"
 !endif
 
 

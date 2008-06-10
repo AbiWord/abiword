@@ -39,31 +39,15 @@ SectionEnd
 Section "$(TITLE_section_fa_abw)" section_fa_abw
 	SectionIn 1 2 3 ${DLSECT}
 	${CreateFileAssociation} ".abw"  "${appType}" "application/abiword"
+	${CreateFileAssociation} ".awt"  "${appType}" "application/abiword-template"
+	${CreateFileAssociation} ".zabw" "${appType}" "application/abiword-compressed"
 SectionEnd
 !macro Remove_${section_fa_abw}
 	;Removes this component
 	DetailPrint "*** Removing .abw Registry Association..."
 	${RemoveFileAssociation} ".abw"  "${appType}"
-!macroend
-
-; OPTIONAL (native format, recommended)
-Section "$(TITLE_section_fa_awt)" section_fa_awt
-	SectionIn 1 2 3 ${DLSECT}
-	${CreateFileAssociation} ".awt"  "${appType}" "application/abiword-template"
-SectionEnd
-!macro Remove_${section_fa_awt}
-	;Removes this component
 	DetailPrint "*** Removing .awt Registry Association..."
 	${RemoveFileAssociation} ".awt"  "${appType}"
-!macroend
-
-; OPTIONAL (native format, recommended)
-Section "$(TITLE_section_fa_zabw)" section_fa_zabw
-	SectionIn 1 2 3 ${DLSECT}
-	${CreateFileAssociation} ".zabw" "${appType}" "application/abiword-compressed"
-SectionEnd
-!macro Remove_${section_fa_zabw}
-	;Removes this component
 	DetailPrint "*** Removing .zabw Registry Association..."
 	${RemoveFileAssociation} ".zabw" "${appType}"
 !macroend
