@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2004-2007 Tomas Frydrych
+ * Copyright (C) 2008 Robert Staudinger
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -3342,9 +3343,13 @@ bool GR_UnixPangoRenderInfo::isJustified() const
 }
 
 #ifdef ENABLE_PRINT
+
+/* TODO Rob use pkg-config */
+#include <cairo/cairo-pdf.h>
+
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 													 bool isPreview):
-	GR_CairoGraphics(),
+	GR_CairoGraphics(cairo_create(cairo_pdf_surface_create ("/home/rstaudinger/Desktop/foo.pdf", 1, 1))), /* TODO Rob */
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
 	m_dResRatio(1.0),
@@ -3383,7 +3388,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
 													 double inWidthDevice,
 													 double inHeightDevice):
-	GR_CairoGraphics(),
+	GR_CairoGraphics(cairo_create(cairo_pdf_surface_create ("/home/rstaudinger/Desktop/foo.pdf", 1, 1))), /* TODO Rob */
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
 	m_dResRatio(1.0),
@@ -3484,22 +3489,10 @@ GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
 		g_object_unref(m_pFontMap);
 }
 
-GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
-{
-	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
-
-	UT_return_val_if_fail(info.isPrinterGraphics(), NULL);
-	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
-
-	return new GR_UnixPangoPrintGraphics(AI.m_gpm, AI.m_bPreview);
-}
-
 GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 {
 	return m_gpc;
 }
-
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent()
 {
@@ -3950,89 +3943,6 @@ void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c,
 	
 	// reset color to its original state
 	setColor (old);
-}
-
-void GR_UnixPangoPrintGraphics::setCursor(GR_ScreenGraphics::Cursor )
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-GR_ScreenGraphics::Cursor GR_UnixPangoPrintGraphics::getCursor() const
-{
-	UT_ASSERT_NOT_REACHED ();
-	return GR_CURSOR_INVALID;
-}
-
-void GR_UnixPangoPrintGraphics::xorLine(UT_sint32 /*x1*/, UT_sint32 /*y1*/, UT_sint32 /*x2*/, 
-										UT_sint32 /*y2*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::polyLine(UT_Point * /*pts*/, 
-										 UT_uint32 /*nPoints*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::invertRect(const UT_Rect*)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
-										  UT_sint32 /*width*/, UT_sint32 /*height*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::scroll(UT_sint32 /*x*/, UT_sint32 /*y*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::scroll(UT_sint32 /*x_dest*/,
-									   UT_sint32 /*y_dest*/,
-									   UT_sint32 /*x_src*/,
-									   UT_sint32 /*y_src*/,
-									   UT_sint32 /*width*/,
-									   UT_sint32 /*height*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-UT_RGBColor * GR_UnixPangoPrintGraphics::getColor3D(GR_Color3D )
-{
-	UT_ASSERT_NOT_REACHED ();
-	return NULL;
-}
-
-void GR_UnixPangoPrintGraphics::setColor3D(GR_Color3D)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-GR_Font* GR_UnixPangoPrintGraphics::getGUIFont()
-{
-	UT_ASSERT_NOT_REACHED ();
-	return NULL;
-}
-
-void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/,
-										 UT_sint32 /*w*/, UT_sint32 /*h*/)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D, UT_Rect &)
-{
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void GR_UnixPangoPrintGraphics::setPageSize(char* /*pageSizeName*/,
-											UT_uint32 /*iwidth*/, UT_uint32 /*iheight*/)
-{
-	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::setClipRect(const UT_Rect* )

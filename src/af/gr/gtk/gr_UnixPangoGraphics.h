@@ -364,17 +364,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 									 CapStyle inCapStyle,
 									 LineStyle inLineStyle);
 
-	virtual GR_Font* getGUIFont();
-	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void invertRect(const UT_Rect*);
 	virtual void setClipRect(const UT_Rect*);
-	virtual void scroll(UT_sint32, UT_sint32);
-	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						UT_sint32 x_src, UT_sint32 y_src,
-						UT_sint32 width, UT_sint32 height);
-	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
    	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
@@ -388,15 +379,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace() const;
-	
-	virtual void setCursor(GR_ScreenGraphics::Cursor c);
-	virtual GR_ScreenGraphics::Cursor getCursor() const;
-
-	virtual void					setColor3D(GR_Color3D c);
-	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
-	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(GR_Color3D c, UT_Rect &r);
-	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}

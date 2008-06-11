@@ -1,6 +1,6 @@
 /* The AbiWord library
  *
- * Copyright (C) 2006 Robert Staudinger <robert.staudinger@gmail.com>
+ * Copyright (C) 2006 Robert Staudinger
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
