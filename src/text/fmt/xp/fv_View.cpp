@@ -242,7 +242,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
 		m_selImageRect(-1,-1,-1,-1),
-		m_imageSelCursor(GR_Graphics::GR_CURSOR_IBEAM),
+		m_imageSelCursor(GR_ScreenGraphics::GR_CURSOR_IBEAM),
 		m_ixResizeOrigin(0),
 		m_iyResizeOrigin(0),
 		m_bIsResizingImage(false),
@@ -977,12 +977,12 @@ void FV_View::btn0Frame(UT_sint32 x, UT_sint32 y)
 	xxx_UT_DEBUGMSG(("btn0 called frameEdit mode %d \n",m_FrameEdit.getFrameEditMode()));
 	if(!m_FrameEdit.isActive())
 	{
-		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+		dynamic_cast<GR_ScreenGraphics *>(getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		return;
 	}
 	else if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
 	{
-		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
+		dynamic_cast<GR_ScreenGraphics *>(getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_CROSSHAIR);
 	}
 	else if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_EXISTING_SELECTED)
 	{
@@ -8161,7 +8161,7 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	if (dx == 0)
 		return;
 
-	m_pG->scroll(dx, 0);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->scroll(dx, 0);
 	m_xScrollOffset = v;
 
 	UT_sint32 x1 = 0;
@@ -8196,7 +8196,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	if (dy == 0)
 		return;
 
-	m_pG->scroll(0, dy);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->scroll(0, dy);
 	m_yScrollOffset = v;
 
 	UT_sint32 y1 = 0;
@@ -8297,10 +8297,10 @@ void FV_View::drawSelectionBox(UT_Rect & inBox, bool drawHandles)
 		// Need the painter lock to be released at the end of these draws
 
 		GR_Painter painter(pG);
-		painter.drawLine(left, top, right, top);
-		painter.drawLine(left, top, left, bottom);
-		painter.drawLine(right, top, right, bottom);
-		painter.drawLine(left, bottom, right, bottom);				
+		pG->drawLine(left, top, right, top);
+		pG->drawLine(left, top, left, bottom);
+		pG->drawLine(right, top, right, bottom);
+		pG->drawLine(left, bottom, right, bottom);				
 	}
 	// now, draw the resize boxes around the image
 	if (drawHandles) {
@@ -8346,49 +8346,49 @@ inline void FV_View::_drawResizeHandle(UT_Rect & box)
 	UT_RGBColor color = getColorSelBackground();
 	pG->setColor(color);
 
-	painter.fillRect(color,box.left + pG->tlu(1), box.top + pG->tlu(1), box.width - pG->tlu(3), box.height - pG->tlu(3));
+	pG->fillRect(color,box.left + pG->tlu(1), box.top + pG->tlu(1), box.width - pG->tlu(3), box.height - pG->tlu(3));
 
 	// west
 	pG->setColor(UT_RGBColor(color.m_red - 40,color.m_grn - 40,color.m_blu - 40));
-	painter.drawLine(right, top, right, bottom);
-	painter.drawLine(left, bottom, right, bottom);
+	pG->drawLine(right, top, right, bottom);
+	pG->drawLine(left, bottom, right, bottom);
 	pG->setColor(UT_RGBColor(color.m_red - 20,color.m_grn - 20,color.m_blu - 20));
-	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
-	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 
 
 	// north
 	pG->setColor(UT_RGBColor(color.m_red + 40,color.m_grn + 40,color.m_blu + 40));
-	painter.drawLine(left, top, right, top);
-	painter.drawLine(left, top, left, bottom);
+	pG->drawLine(left, top, right, top);
+	pG->drawLine(left, top, left, bottom);
 	pG->setColor(UT_RGBColor(color.m_red + 20,color.m_grn + 20,color.m_blu + 20));
-	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), top + pG->tlu(1));
-	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), top + pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
 
 /* This is the original code, but rearranged above so we don't have to set the colour so often
 	// west
 	pG->setColor(UT_RGBColor(color.m_red - 40,color.m_grn - 40,color.m_blu - 40));
-	painter.drawLine(right, top, right, bottom);
+	pG->drawLine(right, top, right, bottom);
 	pG->setColor(UT_RGBColor(color.m_red - 20,color.m_grn - 20,color.m_blu - 20));
-	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 
 	// south
 	pG->setColor(UT_RGBColor(color.m_red - 40,color.m_grn - 40,color.m_blu - 40));
-	painter.drawLine(left, bottom, right, bottom);
+	pG->drawLine(left, bottom, right, bottom);
 	pG->setColor(UT_RGBColor(color.m_red - 20,color.m_grn - 20,color.m_blu - 20));
-	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 
 	// north
 	pG->setColor(UT_RGBColor(color.m_red + 40,color.m_grn + 40,color.m_blu + 40));
-	painter.drawLine(left, top, right, top);
+	pG->drawLine(left, top, right, top);
 	pG->setColor(UT_RGBColor(color.m_red + 20,color.m_grn + 20,color.m_blu + 20));
-	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), top + pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), top + pG->tlu(1));
 
 	// east
 	pG->setColor(UT_RGBColor(color.m_red + 40,color.m_grn + 40,color.m_blu + 40));
-	painter.drawLine(left, top, left, bottom);
+	pG->drawLine(left, top, left, bottom);
 	pG->setColor(UT_RGBColor(color.m_red + 20,color.m_grn + 20,color.m_blu + 20));
-	painter.drawLine(left + pG->tlu(1), top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
 */
 }
 
@@ -10383,11 +10383,11 @@ void FV_View::setCursorWait(void)
 	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 
-	m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
 	{
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	}
 }
 
@@ -10402,7 +10402,7 @@ void FV_View::clearCursorWait(void)
 	setCursorToContext();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 }
 
 /*!
@@ -10414,160 +10414,160 @@ void FV_View::setCursorToContext()
 		return;
 
 	EV_EditMouseContext evMC = getMouseContext(m_iMouseX,m_iMouseY);
-	GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
+	GR_ScreenGraphics::Cursor cursor = GR_ScreenGraphics::GR_CURSOR_DEFAULT;
 	switch (evMC)
 	{
 	case EV_EMC_UNKNOWN:
 		break;
 	case EV_EMC_TEXT:
-		cursor = GR_Graphics::GR_CURSOR_IBEAM;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IBEAM;
 		break;
 	case EV_EMC_LEFTOFTEXT:
-		cursor = GR_Graphics::GR_CURSOR_RIGHTARROW;
+		cursor = GR_ScreenGraphics::GR_CURSOR_RIGHTARROW;
 		break;
 	case EV_EMC_MISSPELLEDTEXT:
-		cursor = GR_Graphics::GR_CURSOR_IBEAM;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IBEAM;
 		break;
 	case EV_EMC_IMAGE:
-		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_IMAGESIZE:
 		xxx_UT_DEBUGMSG(("Imagesize context \n"));
 		if(m_InlineImage.getDragWhat() == FV_DragTopLeftCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_NW;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragTopRightCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_NE;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragBotLeftCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_SW;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragBotRightCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_SE;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragTopEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_N;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_InlineImage.getDragWhat() ==FV_DragBotEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_S;
 		}
 		else if(!m_InlineImage.isActive())
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		}
 		else
 		{
-			cursor = GR_Graphics::GR_CURSOR_GRAB;
+			cursor = GR_ScreenGraphics::GR_CURSOR_GRAB;
 		}
 		break;
 	case EV_EMC_FIELD:
-		cursor = GR_Graphics::GR_CURSOR_DEFAULT;
+		cursor = GR_ScreenGraphics::GR_CURSOR_DEFAULT;
 		break;
 	case EV_EMC_HYPERLINK:
-		cursor = GR_Graphics::GR_CURSOR_LINK;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_RIGHTOFTEXT:
-		cursor = GR_Graphics::GR_CURSOR_LEFTARROW;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LEFTARROW;
 		break;
 	case EV_EMC_HYPERLINKTEXT:
-		cursor = GR_Graphics::GR_CURSOR_LINK;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_HYPERLINKMISSPELLED:
-		cursor = GR_Graphics::GR_CURSOR_LINK;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LINK;
 		break;
 	// RIVERA
 	case EV_EMC_ANNOTATIONTEXT:
-		cursor = GR_Graphics::GR_CURSOR_LINK;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_ANNOTATIONMISSPELLED:
-		cursor = GR_Graphics::GR_CURSOR_LINK;
+		cursor = GR_ScreenGraphics::GR_CURSOR_LINK;
 		break;
 	case EV_EMC_VLINE:
 		UT_DEBUGMSG(("setCursor: Set to VLINE_DRAG \n"));
-		cursor = GR_Graphics::GR_CURSOR_VLINE_DRAG;
+		cursor = GR_ScreenGraphics::GR_CURSOR_VLINE_DRAG;
 		break;
 	case EV_EMC_HLINE:
-		cursor = GR_Graphics::GR_CURSOR_HLINE_DRAG;
+		cursor = GR_ScreenGraphics::GR_CURSOR_HLINE_DRAG;
 		break;
 	case EV_EMC_TOPCELL:
 		UT_DEBUGMSG(("setCursor: Set to select Col \n"));
-		cursor = GR_Graphics::GR_CURSOR_DOWNARROW;
+		cursor = GR_ScreenGraphics::GR_CURSOR_DOWNARROW;
 		break;
 	case EV_EMC_VISUALTEXTDRAG:
-		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		break;
 
 	case EV_EMC_FRAME:
 	case EV_EMC_POSOBJECT:
 		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
 		{
-			cursor = GR_Graphics::GR_CURSOR_CROSSHAIR;
+			cursor = GR_ScreenGraphics::GR_CURSOR_CROSSHAIR;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragTopLeftCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_NW;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragTopRightCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_NE;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragBotLeftCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_SW;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragBotRightCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_SE;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragTopEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_N;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_FrameEdit.getDragWhat() ==FV_DragBotEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_S;
 		}
 		else if(m_FrameEdit.isActive() && m_FrameEdit.getDragWhat() ==FV_DragWhole)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGE;
+			cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		}
 		else
 		{
-			cursor = GR_Graphics::GR_CURSOR_GRAB;
+			cursor = GR_ScreenGraphics::GR_CURSOR_GRAB;
 		}
 		break;
 	case EV_EMC_MATH:
-		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_EMBED:
-		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		cursor = GR_ScreenGraphics::GR_CURSOR_IMAGE;
 		break;
 	default:
 		break;
 	}
-	getGraphics()->setCursor(cursor);
+	dynamic_cast<GR_ScreenGraphics *>(getGraphics())->setCursor(cursor);
 }
 
 #ifdef ENABLE_SPELL

@@ -380,7 +380,7 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 		//		UT_RGBColor white(255,255,255);	
 			GR_Painter painter(pG);
 		//	painter.fillRect(white,x,y,width,height);
-			painter.fillRect(grey,x,y,width,height);
+			pG->fillRect(grey,x,y,width,height);
 		}
 		else
 		{
@@ -1317,21 +1317,21 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 					
 					if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
 						{
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(1));
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du + getGraphics()->tlu(2),
+							pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(1));
+							pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du + getGraphics()->tlu(2),
 											 iWidth, getGraphics()->tlu(1));
 							
 						}
 					else if(r_type == PP_REVISION_FMT_CHANGE)
 						{
 							// draw a thick line underneath
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(2));
+							pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(2));
 						}
 					else
 						{
 							// draw a strike-through line
 							
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
+							pG->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3,
 											 iWidth, getGraphics()->tlu(2));
 						}
 				}
@@ -1351,7 +1351,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
-				painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+				pG->drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
 		}
 		else
 		{
@@ -1364,7 +1364,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 										  GR_Graphics::CAP_PROJECTING,
 										  GR_Graphics::LINE_ON_OFF_DASH);
 				
-					painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+					pG->drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
 					pG->setLineProperties(pG->tluD(1.0),
 										  GR_Graphics::JOIN_MITER,
 										  GR_Graphics::CAP_PROJECTING,
@@ -1382,7 +1382,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_DOTTED);
 
-		painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
+		pG->drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
 
 	}
 	m_bIsCleared = false;
@@ -1690,13 +1690,13 @@ be drawn.
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
 			UT_sint32 totx = getUnderlineXoff();
-			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
 			UT_sint32 totx = getOverlineXoff();
-			painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
 	/*
@@ -1713,7 +1713,7 @@ is drawn later.
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
 				 xxx_UT_DEBUGMSG(("Underlining y-logical %d \n",iDrop));
-				 painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				 pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
 		     {
@@ -1726,7 +1726,7 @@ is drawn later.
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
-				painter.drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
 			{
@@ -1741,7 +1741,7 @@ text so we can keep the original code.
 	if ( b_Strikethrough)
 	{
 		iDrop = yoff + getAscent() * 2 / 3;
-		painter.drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+		pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
 	/*
 	   Restore the previous line width.
@@ -1775,14 +1775,14 @@ text so we can keep the original code.
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + pG->tlu(1);
-		painter.fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+		pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
 	  We always draw bottomline right at the bottom so there is no ambiguity
 	*/
 	if ( b_Bottomline)
 	{
-		painter.fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
+		pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+pG->tlu(1), getWidth(), ithick);
 	}
 }
 
@@ -1896,12 +1896,12 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
     UT_uint32 yoffText = yoff - getGraphics()->getFontAscent(pFont) * 2 / 3;
 
-    painter.drawLine(xoff,yoff,xoff + iWidth,yoff);
+    getGraphics()->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight))
 	{
 		Fill(getGraphics(),xoffText,yoffText,iTextWidth,iTextHeight);
-        painter.drawChars(pText,0,iTextLen,xoffText,yoffText);
+        getGraphics()->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
 
@@ -2215,7 +2215,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 	GR_Painter painter(getGraphics());
 
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
-    painter.polygon(clrShowPara,points,NPOINTS);
+    getGraphics()->polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
     			iLeft, iyAxis, cur_linewidth, iMaxWidth));
@@ -2225,11 +2225,11 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(getVisDirection() == UT_BIDI_LTR)
 		{
-		    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		    getGraphics()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 		else
 		{
-	    	painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    	getGraphics()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 #undef NPOINTS
 }
@@ -2281,7 +2281,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -2346,7 +2346,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		}
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iTabTop,wid);
+		pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iTabTop,wid);
 	}
 //
 // Draw underline/overline/strikethough
@@ -2365,7 +2365,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick = getToplineThickness();
-		painter.fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
 
@@ -2592,7 +2592,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
     {
-		painter.fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		getGraphics()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	else
     {
@@ -2602,7 +2602,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     {
 		// Draw pilcrow
 		getGraphics()->setColor(clrShowPara);
-		painter.drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		getGraphics()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
 }
 
@@ -2953,7 +2953,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     UT_RGBColor clrShowPara(_getView()->getColorShowPara());
 
 	GR_Painter painter(pG);
-    painter.polygon(clrShowPara,points,NPOINTS);
+    pG->polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
 }
@@ -3360,7 +3360,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		painter.fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGraphics()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	else
 	{
@@ -3372,7 +3372,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// use the hard-coded colour only if not revised
 		if(!getRevisions() || !pView->isShowRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        painter.drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+        getGraphics()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
 
@@ -3738,7 +3738,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	{
 		// draw the image (always)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
-		painter.drawImage(m_pImage, xoff, yoff);
+		pG->drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers
 		if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -3772,7 +3772,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		painter.fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
+		pG->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
@@ -4344,7 +4344,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		{
 			UT_RGBColor color(_getView()->getColorSelBackground());			
 			pG->setColor(_getView()->getColorSelForeground());
-			painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			pG->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
@@ -4360,7 +4360,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
 	UT_return_if_fail(len);
 
-	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
+	pG->drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
 //
 // Draw underline/overline/strikethough
 //

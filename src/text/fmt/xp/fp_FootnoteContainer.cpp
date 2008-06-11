@@ -194,7 +194,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
 
 		GR_Painter painter (pDA->pG);
-		painter.drawLine(xoffStart, yline, xoffEnd, yline);
+		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 

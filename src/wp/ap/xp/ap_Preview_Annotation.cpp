@@ -212,34 +212,34 @@ void AP_Preview_Annotation::draw(void)
 	// Do the draw chars at last!
 	//
 	m_gc->setColor(FGcolor);
-	painter.drawChars(m_drawString.ucs4_str(), 0, len, iLeft, iTop);
+	m_gc->drawChars(m_drawString.ucs4_str(), 0, len, iLeft, iTop);
 	//
 	// Do the decorations
 	//
 	if(isUnder)
 	{
 		UT_sint32 iDrop = iTop + m_iAscent + m_iDescent/3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isOver)
 	{
 		UT_sint32 iDrop = iTop + m_gc->tlu(1) + (UT_MAX(m_gc->tlu(10),m_iAscent) - m_gc->tlu(10))/8;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isStrike)
 	{
 		UT_sint32 iDrop = iTop + m_iAscent * 2 /3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	
 	// bad hardcoded color, but this will probably [ <-this assumption is the bad thing :) ] never be different anyway
 	m_gc->setColor(UT_RGBColor(0,0,0));
-	painter.drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1),
+	m_gc->drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1),
 					 m_gc->tlu(getWindowHeight()));
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
 					 m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
-	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
+	m_gc->drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
 	
 	// somehow this gets ignored...
 	//activate();
@@ -263,7 +263,7 @@ void AP_Preview_Annotation::clearScreen(void)
 	GR_Painter painter(m_gc);
 	
 	// clear the whole drawing area, except for the border
-	painter.fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
+	m_gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
 }
 
 void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)

@@ -1,4 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -4360,7 +4361,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	*/
 
 	UT_RGBColor clrMargin;
-	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
+	if (!dynamic_cast<GR_ScreenGraphics *>(m_pG)->getColor3D(GR_ScreenGraphics::CLR3D_BevelDown, clrMargin))
 	{
 		clrMargin = getColorMargin();
 	}
@@ -4370,13 +4371,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 		{
 			// fill left margin
-			painter.fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight() + m_pG->tlu(1));
+			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight() + m_pG->tlu(1));
 		}
 
 		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden())
 		{
 			// fill top margin
-			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
+			m_pG->fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
@@ -4507,7 +4508,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
-			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
+			  m_pG->fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter
 // what.
@@ -4528,10 +4529,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
-				painter.drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
-				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
-				painter.drawLine(adjustedLeft, adjustedTop, adjustedLeft, adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedLeft, adjustedBottom);
 			}
 
 //
@@ -4552,7 +4553,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
-				painter.drawLine(adjustedLeft, adjustedBottom, getWindowWidth() + m_pG->tlu(1), adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, getWindowWidth() + m_pG->tlu(1), adjustedBottom);
 				adjustedBottom += m_pG->tlu(1);
 				m_pG->setColor(clr);
 			}
@@ -4563,13 +4564,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				// white (since the whole screen is white).
 				if((getViewMode() != VIEW_PRINT) || pFrame->isMenuScrollHidden())
 				{
-					painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
+					m_pG->fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
 				else
 				{
-					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					m_pG->fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
 				}
 			}
 
@@ -4578,12 +4579,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				if(pPage->getNext() != NULL)
 				{
-					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), getPageViewSep());
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), getPageViewSep());
 				}
 				else // found last page
 				{
 					UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
-					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 				}
 			}
 
@@ -4598,17 +4599,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 				adjustedLeft += m_pG->tlu(3);
 				adjustedBottom += m_pG->tlu(1);
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
 
 				adjustedBottom += m_pG->tlu(1);
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
 
 				adjustedTop += m_pG->tlu(3);
 				adjustedRight += m_pG->tlu(1);
-				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 
 				adjustedRight += m_pG->tlu(1);
-				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 			}
 		}
 		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
@@ -4637,7 +4638,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				clrFillColor = clrMargin;
 			}
-			painter.fillRect(clrFillColor, 0, y, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
+			m_pG->fillRect(clrFillColor, 0, y, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
 		}
 	}
 

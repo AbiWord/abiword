@@ -1197,7 +1197,7 @@ void AP_Lists_preview::draw(void)
 	//
 	if (m_bFirst == true)
 	{
-		painter.clearArea(0, 0, iWidth, iHeight);
+		m_gc->clearArea(0, 0, iWidth, iHeight);
 	}
 	m_gc->setColor(clrBlack);
 	UT_sint32 yoff = m_gc->tlu(5) ;
@@ -1237,7 +1237,7 @@ void AP_Lists_preview::draw(void)
 
 			len = UT_UCS4_strlen(ucs_label);
 			yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
-			//    painter.drawChars(ucs_label,0,len,xoff+indent,yloc);
+			//    m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
 			twidth = m_gc->measureString(ucs_label,0,len,NULL);
 			if(twidth > maxw)
 				maxw = twidth;
@@ -1281,7 +1281,7 @@ void AP_Lists_preview::draw(void)
 		//
 		// First clear the line
 		//
-		painter.clearArea(0, m_iLine_pos[i], iWidth, iHeight);
+		m_gc->clearArea(0, m_iLine_pos[i], iWidth, iHeight);
 		if((i & 1) == 0)
 		{
 			//
@@ -1309,17 +1309,17 @@ void AP_Lists_preview::draw(void)
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
 
 				if(iDirection == UT_BIDI_RTL)
-					painter.drawChars(ucs_label,0,len,iWidth - xoff - indent - maxw,yloc);
+					m_gc->drawChars(ucs_label,0,len,iWidth - xoff - indent - maxw,yloc);
 				else
-					painter.drawChars(ucs_label,0,len,xoff+indent,yloc);
+					m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
 
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
 
 				if(iDirection == UT_BIDI_RTL)
-					painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
+					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
-					painter.fillRect(clrGrey,xy,yy,awidth,aheight);
+					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 			else
 			{
@@ -1327,9 +1327,9 @@ void AP_Lists_preview::draw(void)
 				awidth = iWidth - 2*xoff - xy;
 
 				if(iDirection == UT_BIDI_RTL)
-					painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
+					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
-					painter.fillRect(clrGrey,xy,yy,awidth,aheight);
+					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 		}
 		else
@@ -1338,9 +1338,9 @@ void AP_Lists_preview::draw(void)
 			awidth = iWidth - 2*xoff - xx;
 
 			if(iDirection == UT_BIDI_RTL)
-				painter.fillRect(clrGrey,xoff,yy,awidth,aheight);
+				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 			else
-				painter.fillRect(clrGrey,xy,yy,awidth,aheight);
+				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}
 }

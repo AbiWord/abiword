@@ -122,20 +122,20 @@ void AP_Preview_PageNumbers::draw (void)
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+	dynamic_cast<GR_ScreenGraphics *>(m_gc)->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
 	
 	// actually draw some "text" on the preview for a more realistic appearance
 	
 	m_gc->setLineWidth(m_gc->tlu(1));
-	m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
+	dynamic_cast<GR_ScreenGraphics *>(m_gc)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 	
 	UT_sint32 iFontHeight = m_gc->getFontHeight ();
 	UT_sint32 step = m_gc->tlu(4);
 	
 	for (int txty = pageRect.top + (2 * iFontHeight); txty < pageRect.top + pageRect.height - (2 * iFontHeight); txty += step)
 	{
-		painter.drawLine (pageRect.left + m_gc->tlu(5), txty, pageRect.left + pageRect.width - m_gc->tlu(5), txty);
+		m_gc->drawLine (pageRect.left + m_gc->tlu(5), txty, pageRect.left + pageRect.width - m_gc->tlu(5), txty);
 	}
 	
 	// draw in the page number as a header or footer, properly aligned
@@ -153,6 +153,6 @@ void AP_Preview_PageNumbers::draw (void)
 		case AP_Dialog_PageNumbers::id_FTR : y = pageRect.top + pageRect.height - (int)(1.5 * iFontHeight); break;
 	}
 	
-	//m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
+	//m_gc->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_gc->drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
 }

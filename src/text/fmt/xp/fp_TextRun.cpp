@@ -1932,7 +1932,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		m_pRenderInfo->m_yoff = yTopOfRun;
 		xxx_UT_DEBUGMSG((" _drawText yTopOfRun %d \n",yTopOfRun));
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
-		painter.renderChars(*m_pRenderInfo);
+		pG->renderChars(*m_pRenderInfo);
 		
 #if 0 
 		//DEBUG
@@ -1945,9 +1945,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		
 		UT_DEBUGMSG(("_drawText font %s ascent = %u height = %u descent = %u\n", f->hashKey().c_str(),
 			_ascent, _height, _descent));
-		painter.drawLine(iX, pDA->yoff - _ascent, iX + iSegmentWidth[iSegment], pDA->yoff - _ascent);
-		painter.drawLine(iX, pDA->yoff, iX + iSegmentWidth[iSegment], pDA->yoff);
-		painter.drawLine(iX, pDA->yoff + _descent, iX + iSegmentWidth[iSegment], pDA->yoff + _descent);
+		pG->drawLine(iX, pDA->yoff - _ascent, iX + iSegmentWidth[iSegment], pDA->yoff - _ascent);
+		pG->drawLine(iX, pDA->yoff, iX + iSegmentWidth[iSegment], pDA->yoff);
+		pG->drawLine(iX, pDA->yoff + _descent, iX + iSegmentWidth[iSegment], pDA->yoff + _descent);
 		//end DEBUG
 #endif		
 		if(iVisDir == UT_BIDI_LTR)
@@ -1997,7 +1997,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
 		GR_Painter painter(getGraphics());
-		painter.fillRect(clr, r.left, r.top, r.width, r.height);
+		getGraphics()->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
 
@@ -2204,9 +2204,9 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	m_pRenderInfo->m_iOffset = iVisOffset;
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	pG->setColor(cWhite);
-	painter.renderChars(*m_pRenderInfo);
+	getGraphics()->renderChars(*m_pRenderInfo);
 	pG->setColor(pForeCol);
-	painter.renderChars(*m_pRenderInfo);
+	getGraphics()->renderChars(*m_pRenderInfo);
 #endif
 }
 
@@ -2262,7 +2262,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	m_pRenderInfo->m_pFont = _getFont();
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
-	painter.renderChars(*m_pRenderInfo);
+	pG->renderChars(*m_pRenderInfo);
 #ifdef ENABLE_SPELL
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -2307,7 +2307,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 			else
 				x = xoff + iWidth + (iCharWidth - iRectSize)/2;
 			
-			painter.fillRect(pView->getColorShowPara(), x, iY, iRectSize, iRectSize);
+			getGraphics()->fillRect(pView->getColorShowPara(), x, iY, iRectSize, iRectSize);
 		}
 		UT_uint32 iCW = iCharWidth > 0 && iCharWidth < GR_OC_MAX_WIDTH ? iCharWidth : 0;
 
@@ -2443,7 +2443,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, F
 									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 	
-	painter.polyLine(points, nPoints);
+	getGraphics()->polyLine(points, nPoints);
 
 	if (points != scratchpoints) delete[] points;
 }

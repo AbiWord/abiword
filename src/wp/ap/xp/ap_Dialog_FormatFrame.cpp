@@ -1107,8 +1107,8 @@ void AP_FormatFrame_preview::draw(void)
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
+	dynamic_cast<GR_ScreenGraphics *>(m_gc)->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
 	
 	
 	UT_RGBColor tmpCol;
@@ -1151,7 +1151,7 @@ void AP_FormatFrame_preview::draw(void)
 
 		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
 					pageRect.width - 2*border, pageRect.height - 2*border);
-		painter.drawImage(pImg,pageRect.left + border, pageRect.top + border);
+		m_gc->drawImage(pImg,pageRect.left + border, pageRect.top + border);
 		delete pImg;
 	}
 	else
@@ -1160,7 +1160,7 @@ void AP_FormatFrame_preview::draw(void)
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
-			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+			m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
 
@@ -1171,27 +1171,27 @@ void AP_FormatFrame_preview::draw(void)
 	m_gc->setColor(UT_RGBColor(127,127,127));
 	
 	// top left corner
-	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
+	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
 				   pageRect.left + border, pageRect.top + border);
-	painter.drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
+	m_gc->drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
 				   pageRect.left + border, pageRect.top + border);
 
 	// top right corner
-	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
+	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
-	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
+	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + border);
 
 	// bottom left corner
-	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
+	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
-	painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
+	m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + border, pageRect.top + pageRect.height - border);
 
 	// bottom right corner
-	painter.drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
+	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
-	painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
+	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
 				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 
 //
@@ -1213,7 +1213,7 @@ void AP_FormatFrame_preview::draw(void)
 		UT_sint32 iRightThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessRight().utf8_str());
 		m_gc->setLineWidth(iRightThickness);
 
-		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
+		m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 						 pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 
@@ -1233,7 +1233,7 @@ void AP_FormatFrame_preview::draw(void)
 		UT_sint32 iLeftThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessLeft().utf8_str());
 		m_gc->setLineWidth(iLeftThickness);
 
-		painter.drawLine(pageRect.left + border, pageRect.top + border,
+		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
 						 pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
 
@@ -1252,7 +1252,7 @@ void AP_FormatFrame_preview::draw(void)
 		UT_sint32 iTopThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessTop().utf8_str());
 		m_gc->setLineWidth(iTopThickness);
 
-		painter.drawLine(pageRect.left + border, pageRect.top + border,
+		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
 						 pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
 
@@ -1272,7 +1272,7 @@ void AP_FormatFrame_preview::draw(void)
 		UT_sint32 iBottomThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessBottom().utf8_str());
 		m_gc->setLineWidth(iBottomThickness);
 
-		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
+		m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
 						 pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }

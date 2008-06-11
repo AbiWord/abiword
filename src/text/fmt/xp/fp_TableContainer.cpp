@@ -973,7 +973,7 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	GR_Painter painter(pGr);
 
-	painter.drawLine (left, top, right, bot);
+	pGr->drawLine (left, top, right, bot);
 	
 	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 }
@@ -1527,10 +1527,10 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
 
 		getGraphics()->setColor(clrShowPara);
 		xxx_UT_DEBUGMSG(("SEVIOR: cell boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
-        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -2140,7 +2140,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		{
 			xxx_UT_DEBUGMSG(("Drawing nested selected cell top %d height %d \n",bRec.top,bRec.height));
 		}
-		painter.fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
+		pG->fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
 		if(getPage())
 		{
 			getPage()->expandDamageRect(bRec.left,bRec.top,bRec.width,bRec.height);
@@ -4684,10 +4684,10 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 
 		GR_Painter painter (getGraphics());
 
-        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 
 }
@@ -5414,10 +5414,10 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 
 		GR_Painter painter (getGraphics());
 
-        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 
 }

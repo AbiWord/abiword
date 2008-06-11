@@ -560,7 +560,7 @@ void AP_Preview_Paragraph::_drawPageBackground(void)
 {
 	// clear area
 	GR_Painter painter(m_gc);
-	painter.fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
+	m_gc->fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
 }
 
 void AP_Preview_Paragraph::_drawPageBorder(void)
@@ -569,10 +569,10 @@ void AP_Preview_Paragraph::_drawPageBorder(void)
 
 	// draw a black one pixel border
 	m_gc->setColor(*m_clrBlack);
-	painter.drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()));
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
-	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
+	m_gc->drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()));
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
+	m_gc->drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
 }
 
 
@@ -768,7 +768,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		if(m_dir == UT_BIDI_RTL)
 		    willDrawAt -= ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 
-		painter.drawChars(pBuf, 0, s.size(), willDrawAt >> 8, y);
+		m_gc->drawChars(pBuf, 0, s.size(), willDrawAt >> 8, y);
 
 		if(m_dir == UT_BIDI_LTR)
 		    willDrawAt += ((widths->getNthItem(k)) << 8) + spaceCharWidth;

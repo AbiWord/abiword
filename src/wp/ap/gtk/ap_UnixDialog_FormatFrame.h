@@ -22,7 +22,7 @@
 
 #include "ap_Dialog_FormatFrame.h"
 
-class GR_CairoGraphics;
+class GR_UnixCairoScreenGraphics;
 class XAP_UnixFrame;
 
 /*****************************************************************/
@@ -60,7 +60,7 @@ protected:
 	void					_storeWindowData(void);
 	void                     _connectSignals(void);
 	
-	GR_CairoGraphics * m_pPreviewWidget;	
+	GR_UnixCairoScreenGraphics * m_pPreviewWidget;	
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

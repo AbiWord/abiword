@@ -386,7 +386,7 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			prevRect.left -= pG->tlu(1);
 			prevRect.top -= pG->tlu(1);
-			painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
+			pG->drawImage(m_screenCache,prevRect.left,prevRect.top);
 			DELETEP(m_screenCache);
 		}
 		//
@@ -397,7 +397,7 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		rCache.top -= pG->tlu(1);
 		rCache.width += pG->tlu(2);
 		rCache.height += pG->tlu(2);
-		m_screenCache = painter.genImageFromRectangle(rCache);
+		m_screenCache = pG->genImageFromRectangle(rCache);
 
 		// Draw new image box
 		UT_Rect box(m_recCurFrame.left, m_recCurFrame.top - pG->tlu(1), m_recCurFrame.width - pG->tlu(1), m_recCurFrame.height - pG->tlu(1));
@@ -412,7 +412,7 @@ void FV_VisualInlineImage::clearCursor(void)
 		if(m_pDocUnderCursor)
 		{
 			GR_Painter painter(getGraphics());
-			painter.drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
+			getGraphics()->drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
 			m_bCursorDrawn = false;
 			DELETEP(m_pDocUnderCursor);
 		}
@@ -441,9 +441,9 @@ void FV_VisualInlineImage::drawCursor(PT_DocPosition newPos)
 	m_recCursor.height = heightCaret;
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
-	m_pDocUnderCursor = painter.genImageFromRectangle(m_recCursor);
+	m_pDocUnderCursor = getGraphics()->genImageFromRectangle(m_recCursor);
 	UT_RGBColor black(0,0,0);
-	painter.fillRect( black, m_recCursor);
+	getGraphics()->fillRect( black, m_recCursor);
 	m_bCursorDrawn = true;
 }
 
@@ -540,7 +540,7 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	  m_iInitialOffY = y - m_recCurFrame.top;
 	  GR_Painter painter(getGraphics());
 	  DELETEP(m_pDragImage);
-	  m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
+	  m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
 	//
 	// Record the image attributes/properties
 	//
@@ -1136,7 +1136,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	        UT_Rect prevRect = m_recCurFrame;
 		prevRect.left -= getGraphics()->tlu(1);
 		prevRect.top -= getGraphics()->tlu(1);
-		painter.drawImage(m_screenCache,prevRect.left,prevRect.top);
+		getGraphics()->drawImage(m_screenCache,prevRect.left,prevRect.top);
 		DELETEP(m_screenCache);
 	    }
 	    getGraphics()->setLineProperties(getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
@@ -1170,7 +1170,7 @@ bool FV_VisualInlineImage::drawImage(void)
 	}
 	GR_Painter painter(getGraphics());
 	xxx_UT_DEBUGMSG(("Draw Inline image \n"));
-	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+	getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
 	return true;
 }
 

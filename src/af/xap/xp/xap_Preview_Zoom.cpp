@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -26,8 +28,9 @@
 #include "gr_Painter.h"
 #include "xap_Preview_Zoom.h"
 
-XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
-	: XAP_Preview(gc)
+XAP_Preview_Zoom::XAP_Preview_Zoom(GR_ScreenGraphics * gc)
+  : XAP_Preview((GR_Graphics *) gc), 
+	m_sgc(gc)
 {
 	m_string = NULL;
 	m_pFont = NULL;
@@ -128,7 +131,7 @@ void XAP_Preview_Zoom::draw(void)
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	m_gc->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_sgc->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
 
 	pageRect.left += m_gc->tlu(5);

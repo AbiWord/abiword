@@ -276,18 +276,18 @@ void fp_MathRun::_drawResizeBox(UT_Rect box)
 	
 	// draw some really fancy box here
 	pG->setColor(UT_RGBColor(98,129,131));
-	painter.drawLine(left, top, right, top);
-	painter.drawLine(left, top, left, bottom);
+	pG->drawLine(left, top, right, top);
+	pG->drawLine(left, top, left, bottom);
 	pG->setColor(UT_RGBColor(230,234,238));
-	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
-	painter.drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), right - pG->tlu(1), top+pG->tlu(1));
+	pG->drawLine(box.left+pG->tlu(1), box.top + pG->tlu(1), left + pG->tlu(1), bottom - pG->tlu(1));
 	pG->setColor(UT_RGBColor(98,129,131));
-	painter.drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
-	painter.drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(right - pG->tlu(1), top + pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
+	pG->drawLine(left + pG->tlu(1), bottom - pG->tlu(1), right - pG->tlu(1), bottom - pG->tlu(1));
 	pG->setColor(UT_RGBColor(49,85,82));
-	painter.drawLine(right, top, right, bottom);
-	painter.drawLine(left, bottom, right, bottom);
-	painter.fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
+	pG->drawLine(right, top, right, bottom);
+	pG->drawLine(left, bottom, right, bottom);
+	pG->fillRect(UT_RGBColor(156,178,180),box.left + pG->tlu(2), box.top + pG->tlu(2), box.width - pG->tlu(4), box.height - pG->tlu(4));
 }
 
 bool fp_MathRun::canBreakAfter(void) const
@@ -420,7 +420,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		))
 	{
-		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
 
 	}

@@ -229,14 +229,14 @@ public:
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
-					 GR_Graphics::GR_Color3D clr3d, UT_sint32 x, UT_sint32 w);
+					 GR_ScreenGraphics::GR_Color3D clr3d, UT_sint32 x, UT_sint32 w);
 	void	_drawTickMark(const UT_Rect * pClipRect,
 						  AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
-						  GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
+						  GR_ScreenGraphics::GR_Color3D clr3d, GR_Font * pFont,
 						  UT_sint32 k, UT_sint32 xTick);
 	void	_drawTicks(const UT_Rect * pClipRect,
 					   AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
-					   GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
+					   GR_ScreenGraphics::GR_Color3D clr3d, GR_Font * pFont,
 					   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
 
 	void	_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
@@ -282,7 +282,7 @@ protected:
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
 
 	virtual void	_drawMarginProperties(const UT_Rect * pClipRect,
-									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
+									  AP_TopRulerInfo * pInfo, GR_ScreenGraphics::GR_Color3D clr);
 
 	void		_xorGuide(bool bClear=false);
 

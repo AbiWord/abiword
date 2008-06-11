@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -25,7 +27,7 @@
 
 /* #include "xav_View.h" */
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 class XAP_Preview_Zoom;
 
@@ -59,7 +61,7 @@ protected:
 	void							_updatePreviewZoomPercent(UT_uint32 percent);
 
 	// handle the XP-job of attaching something to our m_zoomPreview
-	void							_createPreviewFromGC(GR_Graphics * gc,
+	void							_createPreviewFromGC(GR_ScreenGraphics * gc,
 														 UT_uint32 width,
 														 UT_uint32 height);
 	

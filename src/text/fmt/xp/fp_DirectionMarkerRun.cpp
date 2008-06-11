@@ -207,7 +207,7 @@ void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 		{
 			xoff -= m_iDrawWidth;
 		}
-		painter.fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
+		getGraphics()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 	}
 }
 
@@ -283,7 +283,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		painter.fillRect(_getView()->getColorSelBackground(),
+		getGraphics()->fillRect(_getView()->getColorSelBackground(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -291,7 +291,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		painter.fillRect(_getColorPG(),
+		getGraphics()->fillRect(_getColorPG(),
 						  m_iXoffText,
 						  m_iYoffText,
 						  m_iDrawWidth,
@@ -303,6 +303,6 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		// use the hard-coded colour only if not revised
 		if(!getRevisions())
 			getGraphics()->setColor(pView->getColorShowPara());
-        painter.drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
+        getGraphics()->drawChars(&cM, 0, 1, m_iXoffText, m_iYoffText);
 	}
 }

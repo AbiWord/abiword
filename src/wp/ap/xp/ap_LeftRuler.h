@@ -181,7 +181,7 @@ protected:
 
 	virtual void		_drawMarginProperties(const UT_Rect * pClipRect,
 											  AP_LeftRulerInfo * pInfo, 
-											  GR_Graphics::GR_Color3D clr);
+											  GR_ScreenGraphics::GR_Color3D clr);
 private:
 
 	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);

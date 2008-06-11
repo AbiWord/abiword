@@ -1613,14 +1613,14 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		return;
 	}
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
 		GR_Graphics * pG = pView->getGraphics();
 		if(pG)
 		{
-			pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+			dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 		}
 		FL_DocLayout * pLayout = pView->getLayout();
 		if(pView->getPoint() > 0)
@@ -1738,7 +1738,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			s_pToUpdateCursor = NULL;
 			if(s_pLoadingFrame != NULL)
 			{
-				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				s_pLoadingFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
 				if(pView)
 				{
@@ -4415,7 +4415,7 @@ Defun1(cursorDefault)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 	}
 	return true;
 }
@@ -4433,7 +4433,7 @@ Defun1(cursorIBeam)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_IBEAM);
 	}
 	static_cast<AV_View *>(pView)->notifyListeners(AV_CHG_MOUSEPOS);
 	return true;
@@ -4452,7 +4452,7 @@ Defun1(cursorTOC)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
 	}
 	return true;
 }
@@ -4470,7 +4470,7 @@ Defun1(cursorRightArrow)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_RIGHTARROW);
 	}
 	return true;
 }
@@ -4489,7 +4489,7 @@ Defun1(cursorVline)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_VLINE_DRAG);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_VLINE_DRAG);
 	}
 	return true;
 }
@@ -4508,7 +4508,7 @@ Defun1(cursorTopCell)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_DOWNARROW);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DOWNARROW);
 	}
 	return true;
 }
@@ -4527,7 +4527,7 @@ Defun1(cursorHline)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_HLINE_DRAG);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_HLINE_DRAG);
 	}
 	return true;
 }
@@ -4545,7 +4545,7 @@ Defun1(cursorLeftArrow)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_LEFTARROW);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTARROW);
 	}
 	return true;
 }
@@ -4563,7 +4563,7 @@ Defun1(cursorImage)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
-		pG->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGE);
 	}
 	return true;
 }
@@ -4582,7 +4582,7 @@ Defun1(cursorImageSize)
 	if (pG)
 	{
 		// set the mouse cursor to the appropriate shape
-		pG->setCursor( pView->getImageSelCursor() );
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor( pView->getImageSelCursor() );
 	}
 	return true;
 }
@@ -10565,8 +10565,12 @@ Defun1(insTextBox)
 
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
+
+	GR_Graphics *pGC;
+
 	static_cast<FV_View *>(pView)->getFrameEdit()->setMode(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT);
-	static_cast<FV_View *>(pView)->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
+	pGC = static_cast<FV_View *>(pView)->getGraphics();
+	dynamic_cast<GR_ScreenGraphics *>(pGC)->setCursor(GR_ScreenGraphics::GR_CURSOR_CROSSHAIR);
 	return true;
 }
 
@@ -13780,7 +13784,7 @@ Defun(hyperlinkStatusBar)
 
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
-		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
+		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
 
 	UT_sint32 xpos = pCallData->m_xPos;
 	UT_sint32 ypos = pCallData->m_yPos;
@@ -14333,7 +14337,7 @@ Defun(beginVDrag)
 	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: VDrag begin \n"));
 	
 	sTopRulerHeight = pTopRuler ? pTopRuler->setTableLineDrag(pos,x,siFixed) : 0;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	return true;
 }
 
@@ -14360,7 +14364,7 @@ Defun(beginHDrag)
 	UT_sint32 y = pCallData->m_yPos;
 	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
 	sLeftRulerPos = pLeftRuler->setTableLineDrag(pos,siFixed,y);
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 
 	return true;
 }
@@ -14412,7 +14416,7 @@ Defun(dragVline)
 		pTopRuler->setViewHidden(pView);
 	}
 	UT_sint32 x = pCallData->m_xPos + siFixed;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	EV_EditModifierState ems = 0; 
 	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: DRagging VLine \n"));
 	pTopRuler->mouseMotion(ems, x, sTopRulerHeight);
@@ -14435,7 +14439,7 @@ Defun(dragHline)
 		pLeftRuler->setViewHidden(pView);
 	}
 	UT_sint32 y = pCallData->m_yPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	EV_EditModifierState ems = 0; 
 	pLeftRuler->mouseMotion(ems, sLeftRulerPos,y);
 	return true;
@@ -14506,7 +14510,7 @@ Defun(btn1InlineImage)
 	UT_DEBUGMSG(("Click on InlineImage \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	if(pView->getMouseContext(x,y) == EV_EMC_IMAGESIZE)
 	{
 	     PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
@@ -14544,7 +14548,7 @@ Defun(copyInlineImage)
 	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	pView->btn1CopyImage(x,y);
 	return true;
 }
@@ -14652,7 +14656,7 @@ Defun(btn1Frame)
 	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	pView->btn1Frame(x,y);
 	return true;
 }
@@ -14819,17 +14823,17 @@ Defun(cutVisualText)
 	pView->cutVisualText(x,y);
 	if(pView->getVisualText()->isNotdraggingImage())
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
-	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
 	  if(	pView->getVisualText()->isDoingCopy())
 	  {
-	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
-	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
 	  }
 	}
 	else
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGE);
 	}
 	return true;
 }
@@ -14847,17 +14851,17 @@ Defun(copyVisualText)
 	pView->copyVisualText(x,y);
 	if(pView->getVisualText()->isNotdraggingImage())
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
-	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
 	  if(	pView->getVisualText()->isDoingCopy())
 	  {
-	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
-	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
 	  }
 	}
 	else
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGE);
 	}
 	return true;
 }
@@ -14879,17 +14883,17 @@ static void sActualVisualDrag(AV_View *  pAV_View, EV_EditMethodCallData * pCall
 	}
 	if(pView->getVisualText()->isNotdraggingImage())
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
-	  pFrame->setCursor(GR_Graphics::GR_CURSOR_DRAGTEXT);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
+	  pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DRAGTEXT);
 	  if(	pView->getVisualText()->isDoingCopy())
 	  {
-	    pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
-	    pFrame->setCursor(GR_Graphics::GR_CURSOR_COPYTEXT);
+	    dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
+	    pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_COPYTEXT);
 	  }
 	}
 	else
 	{
-	  pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	  dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGE);
 	}
 	pView->dragVisualText(x,y);
 }

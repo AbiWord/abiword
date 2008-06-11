@@ -73,6 +73,7 @@ class PP_AttrProp;
 class PP_RevisionAttr;
 
 class GR_Graphics;
+class GR_ScreenGraphics;
 struct dg_DrawArgs;
 
 class UT_Worker;

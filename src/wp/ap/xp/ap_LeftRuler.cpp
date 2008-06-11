@@ -274,7 +274,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
  		m_bBeforeFirstMotion = true;
 		if(m_pG)
 		{
-			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
  		return;
  	}
@@ -287,7 +287,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
  		m_bBeforeFirstMotion = true;
 		if(m_pG)
 		{
-			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
  		return;
  	}
@@ -307,7 +307,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 				m_draggingCell = i;
 				if(m_pG)
 				{
-					m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+					dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 				}
 				xxx_UT_DEBUGMSG(("Grabbed Cell %d \n",i));
 				return;
@@ -349,7 +349,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_bValidMouseClick = false;
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -363,7 +363,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_draggingWhat = DW_NOTHING;
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -392,7 +392,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_draggingWhat = DW_NOTHING;
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -836,7 +836,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 				m_draggingCell = i;
 				if(m_pG)
 				{
-					m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+					dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 				}
 				m_draggingCenter = rCell.top + pG->tlu(2);
 				m_draggingDocPos = pos;
@@ -845,7 +845,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 			}
 		}
 	}
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+	dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics())->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 	return 0;
 }
 
@@ -867,7 +867,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	{
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_WAIT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_WAIT);
 		}
 		return;
 	}
@@ -897,7 +897,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -914,7 +914,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			UT_DEBUGMSG(("In Top Margin box \n"));
 			if(m_pG)
 			{
-				m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_UPDOWN);
 			}
 		}
 		else if (rBottomMargin.containsPoint(x,y))
@@ -922,7 +922,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			UT_DEBUGMSG(("In Bottom Margin box \n"));
 			if(m_pG)
 			{
-				m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_UPDOWN);
 			}
 		}
 		else if (m_infoCache.m_mode ==  AP_LeftRulerInfo::TRI_MODE_TABLE)
@@ -937,7 +937,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 				{
 					if(m_pG)
 					{
-						m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
+						dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_UPDOWN);
 					}
 					bFound = true;
 				}
@@ -946,7 +946,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			{
 				if(m_pG)
 				{
-					m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+					dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 				}
 			}
 		}
@@ -954,7 +954,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		{
 			if(m_pG)
 			{
-				m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -975,7 +975,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		if(m_pG)
 		{
-			m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -987,7 +987,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	// we cannot ignore it.
 	if(m_pG)
 	{
-		m_pG->setCursor( GR_Graphics::GR_CURSOR_GRAB);
+		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor( GR_ScreenGraphics::GR_CURSOR_GRAB);
 	}	
 	switch (m_draggingWhat)
 	{
@@ -1041,7 +1041,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			m_draggingCenter = oldDragCenter;
 		if(m_pG)
 		{
-			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
 		if(m_draggingCenter == oldDragCenter)
 		{
@@ -1123,7 +1123,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			_xorGuide();
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			m_bBeforeFirstMotion = false;
 			UT_sint32 lFixedHeight = pG->tlu(s_iFixedHeight);
@@ -1323,7 +1323,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 
 	// now scroll and draw what we need to.
 	
-	m_pG->scroll(0,dy);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->scroll(0,dy);
 	m_yScrollOffset = yoff;
 	draw(prClip);
 }
@@ -1349,7 +1349,7 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 }
 
 void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
-										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
+										AP_LeftRulerInfo * pInfo, GR_ScreenGraphics::GR_Color3D /*clr*/)
 {
 	//FV_View *pView = static_cast<FV_View *>(m_pView);
 	//bool hdrftr = pView->isHdrFtrEdit();
@@ -1370,35 +1370,35 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	
 	GR_Painter painter(m_pG);
 
-	painter.fillRect(GR_Graphics::CLR3D_Background, rTop);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rTop);
 
-	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
-	painter.drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
-	painter.drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
-	painter.drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	painter.drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
-	painter.drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
+	m_pG->drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
+	m_pG->drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
+	m_pG->drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+	m_pG->drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
+	m_pG->drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
 	
 	// TODO: this isn't the right place for this logic. But it works.
 //	if (hdrftr && !hdr)
 //		return;
 
-	painter.fillRect(GR_Graphics::CLR3D_Background, rBottom);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rBottom);
 
-	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
-	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
-	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
-	painter.drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	painter.drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
-	painter.drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
+	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
+	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
+	m_pG->drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
+	m_pG->drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
 #if 0
-    m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
-	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
+    dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelDown);
+	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
+	m_pG->drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
 #endif
 }
 
@@ -1644,17 +1644,17 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 	UT_sint32 top = prDrag->top;
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(1); // For the clever people: this gives the rect a height of 5 pixels (eg. top:10, bot:14 is 5 pixels)!
 	
-	painter.fillRect(GR_Graphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
 	
-	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine(left,top,right,top);
-	painter.drawLine(left,top,left,bot);
-	painter.drawLine(left,bot,right,bot);
-	painter.drawLine(right,top,right,bot);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->drawLine(left,top,right,top);
+	m_pG->drawLine(left,top,left,bot);
+	m_pG->drawLine(left,bot,right,bot);
+	m_pG->drawLine(right,top,right,bot);
 	
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
-	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
 }
 
 /*****************************************************************/
@@ -1718,7 +1718,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	UT_ASSERT(m_iWidth);
 	// draw the background
 	
-	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background,0,0,
 					 getWidth(),getHeight());
 
 	UT_uint32 xLeft = m_pG->tlu(s_iFixedWidth)/4;
@@ -1738,7 +1738,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = lfi->m_yTopMargin - m_pG->tlu(1);
-		painter.fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
+		dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += lfi->m_yTopMargin + m_pG->tlu(1);
@@ -1749,7 +1749,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = docWithinMarginHeight - m_pG->tlu(1);
-		painter.fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
+		dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Highlight,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + m_pG->tlu(1);
@@ -1761,7 +1761,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 		y = yScrolledOrigin;
 		h = lfi->m_yBottomMargin - m_pG->tlu(1);
-		painter.fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
+		dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	// draw 3D frame around top margin + document + bottom margin rects
@@ -1773,7 +1773,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	UT_uint32 iFontHeight = 0;
 	UT_sint32 k = 0;
 
-	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)
@@ -1794,7 +1794,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = ((k % tick.tickLong) 
 							   ? m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
-				painter.drawLine(x,y,x+w,y);
+				m_pG->drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
@@ -1816,12 +1816,12 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				
 				if(xBar > w)
 					x += (xBar-w)/2;
-				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
+				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
 	}
 
-	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);	
+	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);	
 	
 	// draw everything below the top margin
 	for (k=1; (static_cast<UT_sint32>(k*tick.tickUnit/tick.tickUnitScale) < (static_cast<UT_sint32>(lfi->m_yPageSize) - static_cast<UT_sint32>(lfi->m_yTopMargin))); k++)
@@ -1835,7 +1835,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 w = ((k % tick.tickLong) ? 
 							   m_pG->tlu(2) : m_pG->tlu(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
-				painter.drawLine(x,y,x+w,y);
+				m_pG->drawLine(x,y,x+w,y);
 			}
 			else if (pFont)
 			{
@@ -1859,7 +1859,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 				if(xBar > w)
 					x += (xBar-w)/2;
-				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
+				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
 	}
@@ -1869,7 +1869,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	// 
 	
 	// section properties {left-margin, right-margin};
-	_drawMarginProperties(pClipRect, lfi, GR_Graphics::CLR3D_Foreground);
+	_drawMarginProperties(pClipRect, lfi, GR_ScreenGraphics::CLR3D_Foreground);
 
 	// draw the cell properties for a table
 	_drawCellProperties(lfi);	
@@ -1915,11 +1915,11 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 		// erase old guide
 #if XAP_DONTUSE_XOR
 		if (m_guideCache) {
-			painter.drawImage(m_guideCache, m_guideCacheRect.left, m_guideCacheRect.top);
+			m_pG->drawImage(m_guideCache, m_guideCacheRect.left, m_guideCacheRect.top);
 			DELETEP(m_guideCache);
 		}
 #else
-		painter.xorLine(0, m_yGuide, w, m_yGuide);
+		m_pG->xorLine(0, m_yGuide, w, m_yGuide);
 #endif
 		m_bGuide = false;
 	}
@@ -1934,11 +1934,11 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 		m_guideCacheRect.width = w;
 		m_guideCacheRect.height = pG->tlu(3);
 		DELETEP(m_guideCache);		// make sure it is deleted. we could leak it here
-		m_guideCache = painter.genImageFromRectangle(m_guideCacheRect);
+		m_guideCache = m_pG->genImageFromRectangle(m_guideCacheRect);
 
-		painter.drawLine(0, y, w, y);
+		m_pG->drawLine(0, y, w, y);
 #else
-		painter.xorLine(0, y, w, y);
+		m_pG->xorLine(0, y, w, y);
 #endif
 		// remember this for next time
 		m_yGuide = y;

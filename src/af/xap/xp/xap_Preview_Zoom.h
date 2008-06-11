@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -38,7 +40,7 @@ class ABI_EXPORT XAP_Preview_Zoom : public XAP_Preview
 {
 public:
 
-	XAP_Preview_Zoom(GR_Graphics * gc);
+	XAP_Preview_Zoom(GR_ScreenGraphics * gc);
 	virtual ~XAP_Preview_Zoom(void);
 
 	// example placements useful in zoom
@@ -67,6 +69,8 @@ protected:
 	UT_UCSChar * 			m_string;
 
 	GR_Font *				m_pFont;	// so we can delete it
+
+	GR_ScreenGraphics *		m_sgc;
 };
 
 #endif /* XAP_PREVIEW_ZOOM_H */

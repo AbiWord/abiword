@@ -105,7 +105,7 @@ void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 	m_pGraphics = pGraphics;
 }
 
-void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_ScreenGraphics * gc,
+void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 													  UT_uint32 width,
 													  UT_uint32 height)
 {
@@ -499,7 +499,7 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 /////////////////////////////////////////////////////////////////////////
 
-XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_ScreenGraphics * gc, const gchar * pszClrBackground)
+XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackground)
 	: XAP_Preview(gc),
 		m_pFont(NULL),
 		m_iAscent(0),
@@ -616,7 +616,7 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
-	m_pFont = dynamic_cast<GR_Graphics *>(m_gc)->findFont(pszFamily, pszStyle,
+	m_pFont = GFX(m_gc)->findFont(pszFamily, pszStyle,
 							 pszVariant, pszWeight,
 							 pszStretch, pszSize,
 							 NULL);

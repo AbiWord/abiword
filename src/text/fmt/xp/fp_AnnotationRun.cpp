@@ -144,7 +144,7 @@ void fp_AnnotationRun::_draw(dg_DrawArgs* pDA)
 	{
 	    UT_RGBColor color(_getView()->getColorSelBackground());			
 	    pG->setColor(_getView()->getColorAnnotation(this));
-	    painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+	    pG->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 	}
 	else
@@ -155,7 +155,7 @@ void fp_AnnotationRun::_draw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	pG->setColor(_getView()->getColorAnnotation(this));
 	UT_DEBUGMSG(("Drawing string m_sValue %s \n",m_sValue.utf8_str()));
-	painter.drawChars(m_sValue.ucs4_str().ucs4_str(), 0,m_sValue.ucs4_str().size(), pDA->xoff,iYdraw, NULL);
+	pG->drawChars(m_sValue.ucs4_str().ucs4_str(), 0,m_sValue.ucs4_str().size(), pDA->xoff,iYdraw, NULL);
 //
 // Draw underline/overline/strikethough
 //

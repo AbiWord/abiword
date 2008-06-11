@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -23,7 +25,7 @@
 #include "xap_Preview.h"
 #include "gr_Graphics.h"
 
-XAP_Preview::XAP_Preview(GR_ScreenGraphics * gc) :
+XAP_Preview::XAP_Preview(GR_Graphics * gc) :
 	m_gc(gc), m_iWindowHeight(0), m_iWindowWidth(0)
 {
 	UT_ASSERT(gc);

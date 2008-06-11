@@ -203,10 +203,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	GR_UnixAllocInfo ai(m_wpreviewArea->window);
-	m_pPreviewWidget =
-	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
-	
+	m_pPreviewWidget = new GR_UnixCairoScreenGraphics(m_wpreviewArea->window);	
 	
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)

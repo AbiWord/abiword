@@ -1044,14 +1044,14 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		return;
 	}
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
 		GR_Graphics * pG = pView->getGraphics();
 		if(pG)
 		{
-			pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+			dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 		}
 		FL_DocLayout * pLayout = pView->getLayout();
 		if(pView->getPoint() > 0)
@@ -1164,7 +1164,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			s_pToUpdateCursor = NULL;
 			if(s_pLoadingFrame != NULL)
 			{
-				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				s_pLoadingFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
 				if(pView)
 				{
@@ -1551,7 +1551,7 @@ abi_widget_load_file(AbiWidget * w, const gchar * pszFile, const gchar * extensi
 		AP_UnixFrame * pFrame = w->priv->m_pFrame;
 
 		s_StartStopLoadingCursor( true, pFrame);
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 
 		UT_DEBUGMSG(("Attempting to load %s \n", pszFile));
 		res = (pFrame->loadDocument(pszFile, ieft, true) == UT_OK);
@@ -1597,7 +1597,7 @@ abi_widget_load_file_from_gsf(AbiWidget * w, GsfInput * input)
 	
 	bool res = false;
 	s_StartStopLoadingCursor( true, pFrame);
-	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	res = (pFrame->loadDocument(input,IEFT_Unknown) == UT_OK);
 	s_StartStopLoadingCursor( false, pFrame);
 
@@ -1626,7 +1626,7 @@ abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimet
 		AP_UnixFrame * pFrame = w->priv->m_pFrame;
 
 		s_StartStopLoadingCursor( true, pFrame);
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 
 		UT_DEBUGMSG(("Attempting to load from stream\n"));		
 		res = (pFrame->loadDocument(GSF_INPUT(source), ieft) == UT_OK);

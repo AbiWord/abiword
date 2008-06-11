@@ -781,9 +781,20 @@ public:
 	UT_GenericVector<GR_Caret *>  m_vecCarets;
 };
 
+/*
+ * Just a shortcut, type safety is ensured elsewhere.
+ */
+#define GFX(gr_) ((GR_Graphics *) (gr_))
+
 class ABI_EXPORT GR_ScreenGraphics
 {
 public:
+
+	/*!
+	 * Every screen graphics instance needs to be able to present
+	 * itself as GR_Graphics.
+	 */
+	virtual operator GR_Graphics * () = 0;
 
 	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */

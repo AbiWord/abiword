@@ -563,7 +563,7 @@ void FV_VisualDragText::clearCursor(void)
 		if(m_pDocUnderCursor)
 		{
 			GR_Painter painter(getGraphics());
-			painter.drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
+			getGraphics()->drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
 			m_bCursorDrawn = false;
 			DELETEP(m_pDocUnderCursor);
 		}
@@ -592,9 +592,9 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 	m_recCursor.height = heightCaret;
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
-	m_pDocUnderCursor = painter.genImageFromRectangle(m_recCursor);
+	m_pDocUnderCursor = getGraphics()->genImageFromRectangle(m_recCursor);
 	UT_RGBColor black(0,0,0);
-	painter.fillRect( black, m_recCursor);
+	getGraphics()->fillRect( black, m_recCursor);
 	m_bCursorDrawn = true;
 }
 
@@ -694,7 +694,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_iInitialOffX = x - m_recCurFrame.left;
 		m_iInitialOffY = y - m_recCurFrame.top;
 		GR_Painter painter(getGraphics());
-		m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
+		m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
 		return;
 	}
 	fp_Run * pRunLow2 = NULL;
@@ -759,12 +759,12 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	     m_recOrigLeft.height = 2;
 	     m_recOrigLeft.left = x-1;
 	     m_recOrigLeft.top = y-1;
-	     GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	     GR_ScreenGraphics::Cursor cursor = GR_ScreenGraphics::GR_CURSOR_DRAGTEXT;
 	     if(isDoingCopy())
 	     {
-	       cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
+	       cursor = GR_ScreenGraphics::GR_CURSOR_COPYTEXT;
 	     }
-	     getGraphics()->setCursor(cursor);
+	     dynamic_cast<GR_ScreenGraphics *>(getGraphics())->setCursor(cursor);
 	     return;
 	}
 	m_bNotDraggingImage = false;
@@ -969,7 +969,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	GR_Painter painter(getGraphics());
 	UT_RGBColor black(0,0,0);
 	UT_RGBColor trans(0,0,0,true);
-	m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
+	m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
 }
 
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
@@ -1182,12 +1182,12 @@ void FV_VisualDragText::drawImage(void)
 {
         if(m_bNotDraggingImage)
 	{ 
-	  GR_ScreenGraphics::Cursor cursor = GR_Graphics::GR_CURSOR_DRAGTEXT;
+	  GR_ScreenGraphics::Cursor cursor = GR_ScreenGraphics::GR_CURSOR_DRAGTEXT;
 	  if(isDoingCopy())
 	  {
-	      cursor = GR_Graphics::GR_CURSOR_COPYTEXT;
+	      cursor = GR_ScreenGraphics::GR_CURSOR_COPYTEXT;
 	  }
-	  getGraphics()->setCursor(cursor);
+	  dynamic_cast<GR_ScreenGraphics *>(getGraphics())->setCursor(cursor);
 	  return;
 	}
 	if(m_pDragImage == NULL)
@@ -1210,7 +1210,7 @@ void FV_VisualDragText::drawImage(void)
 		src.width = dest.width;
 		if((src.height > getGraphics()->tlu(2)) && (src.width >getGraphics()->tlu(2)) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			getGraphics()->fillRect(m_pDragImage,&src,&dest);
 		}
 		dest.left = m_recCurFrame.left;
 		dest.top = m_recCurFrame.top + m_recOrigLeft.height ;
@@ -1222,7 +1222,7 @@ void FV_VisualDragText::drawImage(void)
 		src.height = dest.height;
 		if(src.height > getGraphics()->tlu(2) && src.width >getGraphics()->tlu(2) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			getGraphics()->fillRect(m_pDragImage,&src,&dest);
 		}
 		dest.left = m_recCurFrame.left;
 		dest.top = m_recCurFrame.top + m_recCurFrame.height - m_recOrigRight.height;
@@ -1234,9 +1234,9 @@ void FV_VisualDragText::drawImage(void)
 		src.height = m_recOrigRight.height;
 		if((src.height > getGraphics()->tlu(2)) && (src.width >getGraphics()->tlu(2)) )
 		{
-			painter.fillRect(m_pDragImage,&src,&dest);
+			getGraphics()->fillRect(m_pDragImage,&src,&dest);
 		}
 		return;
 	}
-	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+	getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
 }

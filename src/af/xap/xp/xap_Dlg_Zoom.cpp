@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -114,7 +116,7 @@ void XAP_Dialog_Zoom::_updatePreviewZoomPercent(UT_uint32 percent)
 		m_pFrame->quickZoom(percent);
 }
 
-void XAP_Dialog_Zoom::_createPreviewFromGC(GR_Graphics * gc,
+void XAP_Dialog_Zoom::_createPreviewFromGC(GR_ScreenGraphics * gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
 {

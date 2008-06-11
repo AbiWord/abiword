@@ -353,7 +353,7 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 {
 	GR_Painter painter(gc);
 
-	painter.clearArea(rect.left, rect.top, rect.width, rect.height);
+	gc->clearArea(rect.left, rect.top, rect.width, rect.height);
 
 	rect.left += gc->tdu(2);
 	rect.width -= gc->tdu(4);
@@ -408,22 +408,22 @@ void AP_Columns_preview::draw(void)
 	double SpacePercent = m_pColumns->getSpaceAfterPercent();
 	UT_Rect pageRect(m_gc->tlu(5), m_gc->tlu(5), iWidth - m_gc->tlu(10), iHeight - m_gc->tlu(10));
 
-	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	painter.clearArea(pageRect.left, pageRect.top, pageRect.width,
+	dynamic_cast<GR_ScreenGraphics *>(m_gc)->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
 
 	m_gc->setLineWidth(m_gc->tlu(1));
-	m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
-	painter.drawLine(pageRect.left, pageRect.top,
+	dynamic_cast<GR_ScreenGraphics *>(m_gc)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_gc->drawLine(pageRect.left, pageRect.top,
 		       pageRect.left + pageRect.width, pageRect.top);
-	painter.drawLine(pageRect.left, pageRect.top,
+	m_gc->drawLine(pageRect.left, pageRect.top,
 		       pageRect.left, pageRect.top + pageRect.height);
 
 	m_gc->setLineWidth(m_gc->tlu(3));
-	painter.drawLine(pageRect.left + pageRect.width, pageRect.top + m_gc->tlu(1),
+	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + m_gc->tlu(1),
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
-	painter.drawLine(pageRect.left + m_gc->tlu(1), pageRect.top + pageRect.height,
+	m_gc->drawLine(pageRect.left + m_gc->tlu(1), pageRect.top + pageRect.height,
 				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
 
@@ -478,7 +478,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 					curskip = 0;
 					y += iSpace;
 			}
-			painter.drawLine(xLeft, y, xRight, y);
+			gc->drawLine(xLeft, y, xRight, y);
 		}
 	}
 
@@ -488,7 +488,7 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		for (UT_sint32 j = 2; j <= iColumns; j++)
 		{
 			UT_sint32 x = rect.left + (j-1) * rect.width / iColumns;
-			painter.drawLine(x, y_start, x, y_end);
+			gc->drawLine(x, y_start, x, y_end);
 		}
 	}
 }

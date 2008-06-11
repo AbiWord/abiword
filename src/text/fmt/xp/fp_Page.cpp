@@ -1020,17 +1020,17 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 
-        painter.drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
-        painter.drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
+        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
+        pDA->pG->drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
 
-        painter.drawLine(xoffEnd, yoffStart - iTopHeight, xoffEnd, yoffStart);
-        painter.drawLine(xoffEnd, yoffStart, xoffEnd + iRightWidth, yoffStart);
+        pDA->pG->drawLine(xoffEnd, yoffStart - iTopHeight, xoffEnd, yoffStart);
+        pDA->pG->drawLine(xoffEnd, yoffStart, xoffEnd + iRightWidth, yoffStart);
 
-        painter.drawLine(xoffStart, yoffEnd, xoffStart, yoffEnd + iBottomHeight);
-        painter.drawLine(xoffStart - iLeftWidth, yoffEnd, xoffStart, yoffEnd);
+        pDA->pG->drawLine(xoffStart, yoffEnd, xoffStart, yoffEnd + iBottomHeight);
+        pDA->pG->drawLine(xoffStart - iLeftWidth, yoffEnd, xoffStart, yoffEnd);
 
-        painter.drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
-        painter.drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
+        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd, yoffEnd + iBottomHeight);
+        pDA->pG->drawLine(xoffEnd, yoffEnd, xoffEnd + iRightWidth, yoffEnd);
     }
 }
 
@@ -1125,7 +1125,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 				UT_sint32 x = pDA->xoff + (pCol->getX() + pCol->getWidth() + pNextCol->getX()) / 2;
 				UT_sint32 y = pDA->yoff + pCol->getY();
 				pDA->pG->setColor(m_pView->getColorColumnLine());
-				painter.drawLine(x, y, x, y + pCol->getHeight());
+				pDA->pG->drawLine(x, y, x, y + pCol->getHeight());
 			}
 
 			pCol = pNextCol;

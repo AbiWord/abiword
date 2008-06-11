@@ -438,7 +438,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	{
 	  // Need the painter lock to be released at the end of this block
 	        GR_Painter painter(pG);
-		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
 
 		getEmbedManager()->setColor(m_iEmbedUID,_getView()->getColorSelForeground());

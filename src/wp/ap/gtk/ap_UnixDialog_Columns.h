@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 
-class GR_CairoGraphics;
+class GR_UnixCairoScreenGraphics;
 
 /*****************************************************************
 ******************************************************************
@@ -174,7 +174,7 @@ protected:
 	void 		_storeWindowData(void);
 	void            _connectsignals(void);
 
-	GR_CairoGraphics * m_pPreviewWidget;
+	GR_UnixCairoScreenGraphics * m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

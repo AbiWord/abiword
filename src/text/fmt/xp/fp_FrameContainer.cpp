@@ -484,7 +484,7 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 
 	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
 
-	painter.drawLine (left, top, right, bot);
+	pGr->drawLine (left, top, right, bot);
 	
 	pGr->setLineProperties (pGr->tlu(1), js, cs, GR_Graphics::LINE_SOLID);
 }

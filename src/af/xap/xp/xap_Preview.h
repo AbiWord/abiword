@@ -32,12 +32,12 @@
 
 /* #include "ev_EditBits.h" */
 
-class GR_ScreenGraphics;
+class GR_Graphics;
 
 class ABI_EXPORT XAP_Preview
 {
 public:
-	XAP_Preview(GR_ScreenGraphics * gc);
+	XAP_Preview(GR_Graphics * gc);
 	virtual ~XAP_Preview(void);
 
 	void					setWindowSize(UT_sint32, UT_sint32);
@@ -56,7 +56,7 @@ public:
 
 protected:
 	XAP_Preview();
-	GR_ScreenGraphics *		m_gc;
+	GR_Graphics *		m_gc;
 	
 private:
 	// TODO : 

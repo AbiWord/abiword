@@ -1000,10 +1000,10 @@ void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
 
 		getGraphics()->setColor(clrShowPara);
 
-        painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -1800,10 +1800,10 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 											GR_Graphics::CAP_PROJECTING,
 											GR_Graphics::LINE_SOLID);
 
-       	painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-		painter.drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        painter.drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        painter.drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+       	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+		getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -2305,10 +2305,10 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 
 	GR_Painter painter(getGraphics());
 
-	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	painter.drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	painter.drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
     m_bHdrFtrBoxDrawn = true;
 }
@@ -2330,10 +2330,10 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 
 	GR_Painter painter(getGraphics());
 
-	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
-	painter.drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
-	painter.drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
-	painter.drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffEnd, m_iyoffBegin);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffEnd, m_ixoffEnd, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffBegin, m_iyoffBegin, m_ixoffBegin, m_iyoffEnd);
+	getGraphics()->drawLine(m_ixoffEnd, m_iyoffBegin, m_ixoffEnd, m_iyoffEnd);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	m_bHdrFtrBoxDrawn = false;
 }

@@ -27,7 +27,7 @@
 #include "ut_misc.h"
 
 class XAP_Frame;
-class GR_ScreenGraphics;
+class GR_UnixCairoScreenGraphics;
 
 /*****************************************************************/
 
@@ -66,7 +66,7 @@ public:
 	GtkWidget *				m_bgcolorSelector;
 	GtkWidget * 			m_preview;
 	bool					getEntryString(char ** string);
-	GR_ScreenGraphics * 	m_gc;
+	GR_UnixCairoScreenGraphics * 	m_gc;
 
 	bool		 			m_blockUpdate;
 	bool		 			m_doneFirstFont;

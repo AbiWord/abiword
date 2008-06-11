@@ -329,6 +329,8 @@ public:
 	GR_UnixCairoScreenGraphics(GdkWindow *win);
 	~GR_UnixCairoScreenGraphics();
 
+	virtual operator GR_Graphics * () { return this; }
+
 	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
 											GdkBitmap * mask);
 

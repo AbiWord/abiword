@@ -790,7 +790,8 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		      getGraphics()->getCaret()->disable();
 		      m_pView->m_countDisable++;
 		}
-		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+		pSGC->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGESIZE_SE);
 	}
 }
 
@@ -1846,7 +1847,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 			GR_Painter painter (getGraphics());
 			if(m_pFrameLayout->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
 			{
-			      m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
+			      m_pFrameImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
 			}
 			else
 		        {
@@ -1861,6 +1862,6 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	else
 	{
 		GR_Painter painter (getGraphics());
-		painter.drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
+		getGraphics()->drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
 	}
 }
