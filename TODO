@@ -4,6 +4,8 @@ Rob's GSoC TODO
 
 Last sync'd with trunk: r23988.
 
+Currently working on / next task: s,GR_Graphics,GR_ScreenGraphics where appropriate. Get rid of the recently introduced dynamic casts.
+
 1st Part
 --------
 
@@ -19,7 +21,7 @@ Last sync'd with trunk: r23988.
 	- Implement crash handler properly.
 	- [DONE] Portable implementation of command line --geometry parsing.
 
-+ Decouple screen- and print-graphics [ongoing].
++ [DONE] Decouple screen- and print-graphics [ongoing].
 
 
 2nd Part
@@ -36,7 +38,15 @@ Other
 	- src/af/xap/gtk/xap_UnixDialogHelper.cpp
 	  Doesn't gtk set the button order correctly by itself?
 
++ Rename UnixNull_Graphics to GR_UnixNullGraphics
++ Can we prune all the GraphicsFactory infrastructure?
 + Support SVG as a native image format.
-+ Move the cairo screen graphics to XP land.
++ Move the cairo screen graphics to XP land, get rid of XAP_DONTUSE_XOR.
 + Move the cairo print graphics to XP land.
 
+
+Notes for cross platform cairo
+------------------------------
+
++ Use pango or not?
++ Merge GR_Graphics and GR_CairoGraphics.
