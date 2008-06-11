@@ -42,9 +42,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);
 	UT_DEBUGMSG(("gtk_window_move left %d top %d \n",m_left,m_top));
 
-	XAP_App *pApp = XAP_App::getApp();
-	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = pApp->newGraphics(ai);
+	m_gc = new GR_UnixCairoScreenGraphics(m_pDrawingArea->window);
 
 	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }

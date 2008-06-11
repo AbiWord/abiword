@@ -1079,6 +1079,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     return true;
 }
 
+/* TODO Rob seems unused
 bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
 	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
@@ -1114,6 +1115,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	DELETEP(pPrevAbi); // This deletes pNewDoc
 	return true;
 }
+*/
 
 /*****************************************************************/
 /*****************************************************************/
@@ -1128,8 +1130,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixAllocInfo ai(da->window);
-	return XAP_App::getApp()->newGraphics(ai);
+	return new GR_UnixCairoScreenGraphics(da->window);
 }
 
 

@@ -100,13 +100,7 @@ class GR_UnixPangoRenderInfo;
 class ABI_EXPORT GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_UnixAllocInfo(GdkWindow * win)
-		: m_win(win),
-#ifdef ENABLE_PRINT
-		  m_gpm (NULL),
-#endif
-		  m_bPreview (false), m_bPrinter (false) {}
-	
+
 #ifdef ENABLE_PRINT
 	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
 		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true) {}

@@ -58,9 +58,7 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP(m_gc);
 	
-	XAP_App *pApp = XAP_App::getApp();
-	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = pApp->newGraphics(ai);
+	m_gc = new GR_UnixCairoScreenGraphics(m_pDrawingArea->window);
 	
 	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	

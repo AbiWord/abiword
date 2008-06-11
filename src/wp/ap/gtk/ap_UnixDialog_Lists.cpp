@@ -198,8 +198,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
-	GR_UnixAllocInfo ai(m_wPreviewArea->window);
-	m_pPreviewWidget = XAP_App::getApp()->newGraphics(ai);
+	m_pPreviewWidget = new GR_UnixCairoScreenGraphics(m_wPreviewArea->window);
 
 	// let the widget materialize
 	_createPreviewFromGC(m_pPreviewWidget,
@@ -246,8 +245,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
-	GR_UnixAllocInfo ai(m_wPreviewArea->window);
-	m_pPreviewWidget = XAP_App::getApp()->newGraphics(ai);
+	m_pPreviewWidget = new GR_UnixCairoScreenGraphics(m_wPreviewArea->window);
 
 	// let the widget materialize
 

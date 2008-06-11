@@ -120,8 +120,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	
 	DELETEP(m_pG);
 
-	GR_UnixAllocInfo ai(m_wLeftRuler->window);
-	m_pG = XAP_App::getApp()->newGraphics(ai);
+	m_pG = new GR_UnixCairoScreenGraphics(m_wLeftRuler->window);
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
