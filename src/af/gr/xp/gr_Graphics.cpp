@@ -1708,11 +1708,9 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 /* static */
 GR_Graphics* GR_Graphics::newNullGraphics()
 {
-	// todo: support other platforms when possible
-	
+
 #if defined(TOOLKIT_GTK)
-	GR_UnixNullGraphicsAllocInfo ai;
-	return XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, (GR_AllocInfo&)ai);
+	return new UnixNull_Graphics();
 #elif defined(TOOLKIT_WIN)
 	GR_Win32AllocInfo ai (GR_Win32Graphics::createbestmetafilehdc(), GR_Win32Graphics::getDocInfo(), NULL);
 	return XAP_App::getApp()->newGraphics(GRID_WIN32, (GR_AllocInfo&)ai);

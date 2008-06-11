@@ -229,8 +229,3 @@ void UnixNull_Graphics::setPageSize(char*, UT_uint32, UT_uint32)
 {
 }
 
-
-GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo&)
-{
-	return new UnixNull_Graphics();
-}

@@ -27,33 +27,11 @@
 
 class UT_ByteBuf;
 
-/*****************************************************************/
-/*****************************************************************/
-class ABI_EXPORT GR_UnixNullGraphicsAllocInfo : public GR_AllocInfo
-{
-public:
- 	GR_UnixNullGraphicsAllocInfo() 
-	  {}
-
-	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;}
-	virtual bool isPrinterGraphics() const {return false;}
-};
-
-
-
 class ABI_EXPORT UnixNull_Graphics : public GR_CairoGraphics
 {
-	// all constructors are protected; instances must be created via
-	// GR_GraphicsFactory
 public:
+	UnixNull_Graphics();
 	virtual ~UnixNull_Graphics();
-
-	static UT_uint32 s_getClassId() {return GRID_UNIX_NULL;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
-	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
-	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 			       int iCharOffset, int iLength,
@@ -106,10 +84,6 @@ public:
     virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
-
-protected:
-	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	UnixNull_Graphics();
 };
 
 #endif /* GR_UNIXPSGRAPHICS_H */

@@ -78,53 +78,6 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
 
-	// register graphics allocator
-	GR_GraphicsFactory * pGF = getGraphicsFactory();
-	UT_ASSERT( pGF );
-
-	if(pGF)
-	{
-		bool bSuccess;
-		bSuccess = pGF->registerClass(GR_UnixCairoScreenGraphics::graphicsAllocator,
-									  GR_UnixCairoScreenGraphics::graphicsDescriptor,
-									  GR_UnixCairoScreenGraphics::s_getClassId());
-
-		UT_ASSERT( bSuccess );
-
-		if(bSuccess)
-		{
-			pGF->registerAsDefault(GR_CairoGraphics::s_getClassId(), true);
-		}
-
-		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
-									  UnixNull_Graphics::graphicsDescriptor,
-									  UnixNull_Graphics::s_getClassId());
-		UT_ASSERT( bSuccess );
-		
-#ifdef ENABLE_PRINT
-		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
-									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
-									  GR_UnixPangoPrintGraphics::s_getClassId());
-		
-		UT_ASSERT( bSuccess );
-		
-		if(bSuccess)
-		{
-			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
-		}
-#endif
-
-		bSuccess = pGF->registerClass(GR_UnixPangoPixmapGraphics::graphicsAllocator,
-									  GR_UnixPangoPixmapGraphics::graphicsDescriptor,
-									  GR_UnixPangoPixmapGraphics::s_getClassId());
-
-		if(bSuccess)
-		{
-			pGF->registerAsDefault(GR_UnixPangoPixmapGraphics::s_getClassId(), false);
-		}
-
-		UT_ASSERT( bSuccess );
-
 		/* We need to link UnixNull_Graphics because the AbiCommand
 		 * plugin uses it.
 		 *
@@ -133,14 +86,11 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 		 * to force the linker into including it).
 		 */
 		{
-			GR_UnixNullGraphicsAllocInfo ai;
-			nullgraphics =
-				(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
+			nullgraphics = new UnixNull_Graphics();
 
 			delete nullgraphics;
 			nullgraphics = NULL;
 		}
-	}
 }
 
 XAP_UnixApp::~XAP_UnixApp()

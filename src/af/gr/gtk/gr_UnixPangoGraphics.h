@@ -95,28 +95,6 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	UT_uint32              m_iDescent;
 };
 
-class GR_UnixPangoRenderInfo;
-
-class ABI_EXPORT GR_UnixAllocInfo : public GR_AllocInfo
-{
-public:
-
-#ifdef ENABLE_PRINT
-	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
-		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true) {}
-#endif
-	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
-	virtual bool isPrinterGraphics() const {return m_bPrinter;}
-
-	GdkWindow     * m_win;
-#ifdef ENABLE_PRINT
-	GnomePrintJob * m_gpm;
-#endif
-	bool            m_bPreview;
-	bool            m_bPrinter;
-};
-
-
 class ABI_EXPORT GR_CairoGraphics : public GR_Graphics
 {
 	friend class GR_UnixImage;
@@ -315,7 +293,6 @@ protected:
 	GdkColor					 m_3dColors[COUNT_3D_COLORS];
 
 public:
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	static const char *    graphicsDescriptor() { return "Unix Pango"; }
 	static UT_uint32       s_getClassId() { return GRID_UNIX_PANGO; }
 	virtual UT_uint32      getClassId() { return s_getClassId(); }
@@ -365,13 +342,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 							  double inHeightDevice);
 	
 	virtual ~GR_UnixPangoPrintGraphics();
-
-	static UT_uint32 s_getClassId() {return GRID_UNIX_PANGO_PRINT;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
-	virtual GR_Capability  getCapability() {return GRCAP_PRINTER_ONLY;}
-	static const char *    graphicsDescriptor(){return "Unix Pango Print";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	GnomePrintContext *    getGnomePrintContext() const;
 	UT_sint32              scale_ydir (UT_sint32 in) const;

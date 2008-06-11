@@ -2738,17 +2738,6 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-GR_Graphics * GR_UnixCairoScreenGraphics::graphicsAllocator(GR_AllocInfo& info)
-{
-	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	xxx_UT_DEBUGMSG(("GR_CairoGraphics::graphicsAllocator\n"));
-
-	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
-	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
-
-	return new GR_UnixCairoScreenGraphics(AI.m_win);
-}
-
 GR_UnixCairoScreenGraphics::GR_UnixCairoScreenGraphics(GdkWindow *win)
   : GR_CairoGraphics(gdk_cairo_create(win)),
     m_pWin(win)
