@@ -111,6 +111,27 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 		{
 			section = new OXML_Section();
 			OXML_SharedSection shared_section(section);
+
+			//add section properties 
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Section Property: %s=%s\n", szName, szValue));	
+						if(section->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+
 			return document->appendSection(shared_section) == UT_OK;
 		}
 		case PTX_Block:

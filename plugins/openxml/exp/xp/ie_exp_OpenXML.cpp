@@ -32,9 +32,12 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	root(NULL),
 	relsDir(NULL),
 	wordDir(NULL),
+	wordRelsDir(NULL),
 	contentTypesStream(NULL),
 	relStream(NULL),
-	documentStream(NULL)
+	wordRelStream(NULL),
+	documentStream(NULL),
+	stylesStream(NULL)
 {
 }
 
@@ -96,8 +99,16 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	error = startRelations();
 	if(error != UT_OK)
 		return error;
+
+	error = startWordRelations();
+	if(error != UT_OK)
+		return error;
 	
 	error = startMainPart();
+	if(error != UT_OK)
+		return error;
+
+	error = startStyles();
 	if(error != UT_OK)
 		return error;
 
@@ -112,6 +123,14 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 	UT_Error error = UT_OK;
 
 	error = finishMainPart();
+	if(error != UT_OK)
+		return error;
+
+	error = finishStyles();
+	if(error != UT_OK)
+		return error;
+
+	error = finishWordRelations();
 	if(error != UT_OK)
 		return error;
 
@@ -415,6 +434,19 @@ UT_Error IE_Exp_OpenXML::setTextBackgroundColor(const gchar* color)
 }
 
 /**
+ * Sets font size
+ */
+UT_Error IE_Exp_OpenXML::setFontSize(const gchar* size)
+{
+	if(!gsf_output_printf(documentStream, "<w:sz w:val=\"%s\"/>", computeFontSize(size)))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set font size in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+/**
  * Sets text alignment
  */
 UT_Error IE_Exp_OpenXML::setTextAlignment(const gchar* alignment)
@@ -602,15 +634,34 @@ const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
 }
 
 /**
+ * Computes the font-size 
+ */
+const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
+{
+	//font-size=X pt --> return 2*X
+	double pt = UT_convertDimensionless(str) * 2;
+	return UT_convertToDimensionlessString(pt, ".0");
+}
+
+/**
  * Cleans up everything. Called by the destructor.
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	if(stylesStream && !gsf_output_is_closed(stylesStream))
+		gsf_output_close(stylesStream);
+
 	if(contentTypesStream && !gsf_output_is_closed(contentTypesStream))
 		gsf_output_close(contentTypesStream);
 
 	if(relStream && !gsf_output_is_closed(relStream))
 		gsf_output_close(relStream);
+
+	if(wordRelStream && !gsf_output_is_closed(wordRelStream))
+		gsf_output_close(wordRelStream);
+
+	if(documentStream && !gsf_output_is_closed(documentStream))
+		gsf_output_close(documentStream);
 
 	if(relsDir)
 	{
@@ -619,8 +670,12 @@ void IE_Exp_OpenXML::_cleanup ()
 			gsf_output_close(rels_out);
 	}
 
-	if(documentStream && !gsf_output_is_closed(documentStream))
-		gsf_output_close(documentStream);
+	if(wordRelsDir)
+	{
+		GsfOutput* wordRels_out = GSF_OUTPUT(wordRelsDir);
+		if(!gsf_output_is_closed(wordRels_out))
+			gsf_output_close(wordRels_out);
+	}
 
 	if(wordDir)
 	{
@@ -635,6 +690,80 @@ void IE_Exp_OpenXML::_cleanup ()
 		if(!gsf_output_is_closed(root_out))
 			gsf_output_close(root_out);
 	}
+}
+
+/**
+ * Starts the styles.xml file which describes the default styles
+ */
+UT_Error IE_Exp_OpenXML::startStyles()
+{
+	UT_Error err = UT_OK;
+
+	stylesStream = gsf_output_memory_new();
+
+	if(!stylesStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, styles.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(stylesStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+
+	if(!gsf_output_puts(stylesStream, "<w:styles xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to styles.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+ 	err = writeDefaultStyles();
+	if(err != UT_OK)
+	{
+		return err;
+	}
+
+	return UT_OK;
+}
+
+/**
+ * Finishes the [Content_Types].xml file which describes the contents of the package
+ */
+UT_Error IE_Exp_OpenXML::finishStyles()
+{
+	if(!gsf_output_puts(stylesStream, "</w:styles>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to styles.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	GsfOutput* stylesFile = gsf_outfile_new_child(wordDir, "styles.xml", FALSE);
+
+	if(!stylesFile)
+		return UT_SAVE_EXPORTERROR;		
+
+ 	if(!gsf_output_write(stylesFile, gsf_output_size(stylesStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(stylesStream))))
+	{
+		gsf_output_close(stylesFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(stylesStream))
+	{
+		gsf_output_close(stylesFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(stylesFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, styles.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+	return UT_OK;
 }
 
 /**
@@ -665,7 +794,9 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
 <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
 <Override PartName=\"/word/document.xml\" \
-ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>"))
+ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>\
+<Override PartName=\"/word/styles.xml\" \
+ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
 		return UT_IE_COULDNOTWRITE;
@@ -785,13 +916,87 @@ UT_Error IE_Exp_OpenXML::finishRelations()
 		UT_DEBUGMSG(("FRT: ERROR, .rels file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
 	}
-	if(!gsf_output_close(GSF_OUTPUT(relsDir)))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, _rels directory couldn't be closed\n"));	
-		return UT_SAVE_EXPORTERROR;		
-	}
+
 	return UT_OK;
 }
+
+/** 
+ * Outputs the word/_rels folder and word/_rels/document.xml.rels file
+ */
+UT_Error IE_Exp_OpenXML::startWordRelations()
+{
+	UT_Error err = UT_OK;
+
+	wordRelStream = gsf_output_memory_new();
+	if(!wordRelStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, document.xml.rels file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(wordRelStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+	
+	if(!gsf_output_puts(wordRelStream, 
+"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" \
+Target=\"styles.xml\"/>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml.rels file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
+}
+
+/**
+ * Finishes the relationships
+ */
+UT_Error IE_Exp_OpenXML::finishWordRelations()
+{
+	if(!gsf_output_puts(wordRelStream, "</Relationships>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml.rels file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	wordRelsDir = GSF_OUTFILE(gsf_outfile_new_child(wordDir, "_rels", TRUE)); 
+	if(!wordRelsDir)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, word/_rels directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	GsfOutput* wordRelFile = gsf_outfile_new_child(wordRelsDir, "document.xml.rels", FALSE);
+
+	if(!wordRelFile)
+		return UT_SAVE_EXPORTERROR;
+
+ 	if(!gsf_output_write(wordRelFile, gsf_output_size(wordRelStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(wordRelStream))))
+	{
+		gsf_output_close(wordRelFile);
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	if(!gsf_output_close(wordRelStream))
+	{
+		gsf_output_close(wordRelFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(wordRelFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, document.xml.rels file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	return UT_OK;
+}
+
 
 /**
  * Starts the main part of the document to word/document.xml file.
@@ -868,11 +1073,6 @@ UT_Error IE_Exp_OpenXML::finishMainPart()
 		UT_DEBUGMSG(("FRT: ERROR, document.xml file couldn't be closed\n"));	
 		return UT_SAVE_EXPORTERROR;		
 	}
-	if(!gsf_output_close(GSF_OUTPUT(wordDir)))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, word directory couldn't be closed\n"));	
-		return UT_SAVE_EXPORTERROR;		
-	}
 
 	return UT_OK;
 }
@@ -893,3 +1093,20 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 
 	return UT_OK;
 }
+
+/**
+ * Write default styles to styles.xml file
+ * This function should be called before anything is written to styles.xml file
+ */
+UT_Error IE_Exp_OpenXML::writeDefaultStyles()
+{
+	//TODO: add more default settings here
+	if(!gsf_output_puts(stylesStream, "<w:docDefaults><w:rPrDefault><w:rPr></w:rPr></w:rPrDefault></w:docDefaults>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be written\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
+}
+

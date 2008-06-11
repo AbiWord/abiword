@@ -91,6 +91,13 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
+	if(getProperty("font-size", szValue) == UT_OK)
+	{
+		err = exporter->setFontSize(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+	
 	if(getProperty("text-decoration", szValue) == UT_OK)
 	{
 		if(strstr(szValue, "underline"))

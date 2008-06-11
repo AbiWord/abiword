@@ -82,6 +82,7 @@ public:
 	UT_Error setParagraphTopMargin(const gchar* margin);
 	UT_Error setParagraphBottomMargin(const gchar* margin);
 	UT_Error setLineHeight(const gchar* height);
+	UT_Error setFontSize(const gchar* size);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -90,22 +91,31 @@ private:
 	GsfOutfile* root; //.docx file zip root
 	GsfOutfile* relsDir; // _rels
 	GsfOutfile* wordDir; // word 
+	GsfOutfile* wordRelsDir; // word/_rels
 	GsfOutput* contentTypesStream; // [Content_Types].xml
 	GsfOutput* relStream; // _rels/.rels
+	GsfOutput* wordRelStream; // word/_rels/document.xml.rels
 	GsfOutput* documentStream; // word/document.xml
+	GsfOutput* stylesStream; // word/styles.xml
 
+	UT_Error startStyles();
 	UT_Error startContentTypes();
 	UT_Error startRelations();
+	UT_Error startWordRelations();
 	UT_Error startMainPart();
+	UT_Error finishStyles();
 	UT_Error finishContentTypes();
 	UT_Error finishRelations();
+	UT_Error finishWordRelations();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
+	UT_Error writeDefaultStyles();
 
 	const gchar* convertToTwips(const gchar* str);
 	const gchar* convertToPositiveTwips(const gchar* str);
 	bool isNegativeQuantity(const gchar* quantity);
 	const gchar* convertToLines(const gchar* str);
+	const gchar* computeFontSize(const gchar* str);
 
 	void _cleanup();
 };
