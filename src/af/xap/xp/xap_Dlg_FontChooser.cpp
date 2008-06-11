@@ -105,7 +105,7 @@ void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 	m_pGraphics = pGraphics;
 }
 
-void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
+void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_ScreenGraphics * gc,
 													  UT_uint32 width,
 													  UT_uint32 height)
 {
@@ -499,7 +499,7 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 /////////////////////////////////////////////////////////////////////////
 
-XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackground)
+XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_ScreenGraphics * gc, const gchar * pszClrBackground)
 	: XAP_Preview(gc),
 		m_pFont(NULL),
 		m_iAscent(0),
@@ -616,7 +616,7 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
-	m_pFont = m_gc->findFont(pszFamily, pszStyle,
+	m_pFont = dynamic_cast<GR_Graphics *>(m_gc)->findFont(pszFamily, pszStyle,
 							 pszVariant, pszWeight,
 							 pszStretch, pszSize,
 							 NULL);
@@ -653,12 +653,12 @@ void XAP_Preview_FontPreview::draw(void)
 	GR_Painter painter(m_gc);
 
 	if(pszBGColor)
-		painter.fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
+		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
 //
 // Do the draw chars at last!
 //
 	m_gc->setColor(FGcolor);
-	painter.drawChars(m_pszChars, 0, len, iLeft, iTop);
+	m_gc->drawChars(m_pszChars, 0, len, iLeft, iTop);
 
 //
 // Do the decorations
@@ -666,27 +666,27 @@ void XAP_Preview_FontPreview::draw(void)
 	if(isUnder)
 	{
 		UT_sint32 iDrop = iTop + m_iAscent + m_iDescent/3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isOver)
 	{
 		UT_sint32 iDrop = iTop + m_gc->tlu(1) + (UT_MAX(m_gc->tlu(10),m_iAscent) - m_gc->tlu(10))/8;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isStrike)
 	{
 		UT_sint32 iDrop = iTop + m_iAscent * 2 /3;
-		painter.drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
+		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 
 	// bad hardcoded color, but this will probably [ <-this assumption is the bad thing :) ] never be different anyway
 	m_gc->setColor(UT_RGBColor(0,0,0));
-	painter.drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1),
+	m_gc->drawLine(0, 0, m_gc->tlu(getWindowWidth()), 0);
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), 0, m_gc->tlu(getWindowWidth()) - m_gc->tlu(1),
 		       m_gc->tlu(getWindowHeight()));
-	painter.drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
+	m_gc->drawLine(m_gc->tlu(getWindowWidth()) - m_gc->tlu(1), m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0,
 		       m_gc->tlu(getWindowHeight()) - m_gc->tlu(1));
-	painter.drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
+	m_gc->drawLine(0, m_gc->tlu(getWindowHeight()) - m_gc->tlu(1), 0, 0);
 }
 
 void XAP_Preview_FontPreview::clearScreen(void)
@@ -697,5 +697,5 @@ void XAP_Preview_FontPreview::clearScreen(void)
 	GR_Painter painter(m_gc);
 
 	// clear the whole drawing area, except for the border
-	painter.fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
+	m_gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
 }

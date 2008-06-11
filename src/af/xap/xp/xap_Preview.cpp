@@ -23,7 +23,7 @@
 #include "xap_Preview.h"
 #include "gr_Graphics.h"
 
-XAP_Preview::XAP_Preview(GR_Graphics * gc) :
+XAP_Preview::XAP_Preview(GR_ScreenGraphics * gc) :
 	m_gc(gc), m_iWindowHeight(0), m_iWindowWidth(0)
 {
 	UT_ASSERT(gc);

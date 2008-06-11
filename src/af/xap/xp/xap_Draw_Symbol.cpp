@@ -257,7 +257,7 @@ void XAP_Draw_Symbol::draw(void)
 	UT_uint32 tmph = wheight / 7;
 	yoff = wheight / (2 * 7);
 	xoff = wwidth / (2 * 32);
-	painter.clearArea(0, 0, wwidth, wheight);
+	m_gc->clearArea(0, 0, wwidth, wheight);
 	int pos = 0;
 
 	for (i = m_start_base; i < m_vCharSet.size(); i += 2)
@@ -274,7 +274,7 @@ void XAP_Draw_Symbol::draw(void)
 				x = (pos % 32) * tmpw + (tmpw - w) / 2;
 				y = pos / 32 * tmph;
 			
-				painter.drawChars(&j, 0, 1, x, y);
+				m_gc->drawChars(&j, 0, 1, x, y);
 			}
 			
 			++pos;
@@ -290,14 +290,14 @@ void XAP_Draw_Symbol::draw(void)
 	y = 0;
 	for(i = 0; i <= 7; i++)
 	{
-		painter.drawLine(0, y, wwidth - m_areagc->tlu(1), y);
+		m_gc->drawLine(0, y, wwidth - m_areagc->tlu(1), y);
 		y += tmph;
 	}
 
 	x = 0;
 	for(i = 0; i <= 32; i++)
 	{
-		painter.drawLine(x, 0, x, wheight - m_areagc->tlu(1));
+		m_gc->drawLine(x, 0, x, wheight - m_areagc->tlu(1));
 		x += tmpw;
 	}
 }
@@ -393,13 +393,13 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	UT_uint32 h1 = 0;
 	UT_sint32 w1 = m_areagc->measureUnRemappedChar(c, &h1);
 
-	areaPainter.clearArea(0, 0, wwidth, wheight);
+	m_areagc->clearArea(0, 0, wwidth, wheight);
 
 	if(w1 != GR_CW_ABSENT)
 	{
 		x = (m_drawareaWidth - w1) / 2;
 		y = (m_drawareaHeight - h1) / 2;
-		areaPainter.drawChars(&c, 0, 1, x, y);
+		m_areagc->drawChars(&c, 0, 1, x, y);
 	}
 			
 	//
@@ -429,27 +429,27 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	py1 = py + tmph;
 
 	// Redraw the Previous Character in black on White
-	painter.clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
+	m_gc->clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
 
 	if(wp != GR_CW_ABSENT)
 	{
-		painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
+		m_gc->drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
 	}
 	
 	// Redraw only the white box boundaries
 	// you do not notice the missing of the
 	// selected box
-	painter.drawLine(px, py, px1, py);
-	painter.drawLine(px, py1, px1, py1);
-	painter.drawLine(px, py, px, py1);
-	painter.drawLine(px1, py, px1, py1);
+	m_gc->drawLine(px, py, px1, py);
+	m_gc->drawLine(px, py1, px1, py1);
+	m_gc->drawLine(px, py, px, py1);
+	m_gc->drawLine(px1, py, px1, py1);
 
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
-	painter.fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
+	m_gc->fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
 	if(wc != GR_CW_ABSENT)
 	{
-		painter.drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
+		m_gc->drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
 	}
 }
 

@@ -906,11 +906,11 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	{
 	GR_Painter painter(pGr);
-	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
+	pGr->clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
 	if (!file_name)
 	{
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 	    goto Cleanup;
 	}
 
@@ -920,7 +920,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	{
 		if (!S_ISREG(st.st_mode)) 
 		{
-			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+			pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 			goto Cleanup;
 		}
 	}
@@ -938,7 +938,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	IEGraphicFileType ief = IE_ImpGraphic::fileTypeForContents(Buf,4096);
 	if((ief == IEGFT_Unknown) || (ief == IEGFT_Bogus))
 	{
-		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		    pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 			g_object_unref (G_OBJECT (input));
 			goto Cleanup;
 	}
@@ -948,7 +948,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_Byte * bytes = (UT_Byte *) gsf_input_read(input, num_bytes,NULL );
 	if(bytes == NULL)
 	{
-		    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		    pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 			g_object_unref (G_OBJECT (input));
 			goto Cleanup;
 	}
@@ -967,7 +967,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		//
 		// Try a fallback loader here.
 		//
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 		bLoadFailed = true;
 	    goto Cleanup;
 	}
@@ -986,7 +986,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	scaled_height = static_cast<int>(scale_factor * iImageHeight);
 
 	static_cast<GR_UnixImage *>(pImage)->scale(scaled_width,scaled_height);	
-	painter.drawImage(pImage,
+	pGr->drawImage(pImage,
 					  pGr->tlu(static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2)),
 					  pGr->tlu(static_cast<int>((m_preview->allocation.height - scaled_height) / 2)));
 		

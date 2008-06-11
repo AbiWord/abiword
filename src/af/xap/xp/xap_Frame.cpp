@@ -448,12 +448,12 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	const XAP_StringSet * pSS = pApp->getStringSet();
 	UT_String msg;
 	pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding(),msg);
-	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrameImpl->_setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	AV_View * pView = pFrameImpl->m_pFrame->getCurrentView();
 	UT_DEBUGMSG(("SEVIOR: frame view updater \n"));
 	if(!pView)
 	{
-		pFrameImpl->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrameImpl->m_pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		pFrameImpl->m_ViewAutoUpdater->stop();
 		pFrameImpl->m_ViewAutoUpdaterID = 0;
 		DELETEP(pFrameImpl->m_ViewAutoUpdater);
@@ -461,9 +461,9 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	}
 	if(!pView->isLayoutFilling() && (pView->getPoint() > 0))
 	{
-		GR_Graphics * pG = pView->getGraphics();
-		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-		pFrameImpl->m_pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+		pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+		pFrameImpl->m_pFrame->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		pView->setCursorToContext();
 		pFrameImpl->m_ViewAutoUpdater->stop();
 		pFrameImpl->m_ViewAutoUpdaterID = 0;
@@ -474,15 +474,15 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	}
 	if(!pView->isLayoutFilling() && !pFrameImpl->m_pFrame->m_bFirstDraw)
 	{
-		GR_Graphics * pG = pView->getGraphics();
-		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+		pG->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
+		pFrameImpl->_setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 		pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 		return;
 	}
-	GR_Graphics * pG = pView->getGraphics();
-	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+	pG->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
+	pFrameImpl->_setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 	pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 
 	if(pView->getPoint() > 0)

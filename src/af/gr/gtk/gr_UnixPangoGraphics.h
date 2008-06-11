@@ -131,12 +131,8 @@ class ABI_EXPORT GR_CairoGraphics : public GR_Graphics
 	// GR_GraphicsFactory
 public:
 	virtual ~GR_CairoGraphics();
-
-	static UT_uint32       s_getClassId() {return GRID_UNIX_PANGO;}
-	virtual UT_uint32      getClassId() {return s_getClassId();}
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
-	static const char *    graphicsDescriptor(){return "Unix Pango";}
 
 	virtual void _beginPaint();
 	virtual void _endPaint();
@@ -320,15 +316,17 @@ private:
 class ABI_EXPORT GR_UnixCairoScreenGraphics : public GR_CairoGraphics, public GR_ScreenGraphics
 {
 protected:
-	GR_UnixCairoScreenGraphics(GdkWindow *win);
-
 	GdkWindow					*m_pWin;
 	GR_ScreenGraphics::Cursor	 m_cursor;
 	GdkColor					 m_3dColors[COUNT_3D_COLORS];
 
 public:
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
+	static const char *    graphicsDescriptor() { return "Unix Pango"; }
+	static UT_uint32       s_getClassId() { return GRID_UNIX_PANGO; }
+	virtual UT_uint32      getClassId() { return s_getClassId(); }
 
+	GR_UnixCairoScreenGraphics(GdkWindow *win);
 	~GR_UnixCairoScreenGraphics();
 
 	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,

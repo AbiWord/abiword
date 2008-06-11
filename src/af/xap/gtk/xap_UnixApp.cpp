@@ -85,9 +85,9 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	if(pGF)
 	{
 		bool bSuccess;
-		bSuccess = pGF->registerClass(GR_CairoGraphics::graphicsAllocator,
-									  GR_CairoGraphics::graphicsDescriptor,
-									  GR_CairoGraphics::s_getClassId());
+		bSuccess = pGF->registerClass(GR_UnixCairoScreenGraphics::graphicsAllocator,
+									  GR_UnixCairoScreenGraphics::graphicsDescriptor,
+									  GR_UnixCairoScreenGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 
@@ -105,11 +105,9 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
-#endif
 		
 		UT_ASSERT( bSuccess );
 		
-#ifdef ENABLE_PRINT
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);

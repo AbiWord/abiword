@@ -31,51 +31,6 @@ public:
 	GR_Painter (GR_Graphics * pGr, bool bCaret);
 	~GR_Painter ();
 
-	void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
-#if XAP_DONTUSE_XOR
-#else
-	void xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
-	void xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	void xorRect(const UT_Rect& r);
-#endif
-	void invertRect(const UT_Rect* pRect);
-
-	void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-				  UT_sint32 w, UT_sint32 h);
-	void fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
-	void fillRect(const UT_RGBColor& c, const UT_Rect &r);
-
-	void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	void fillRect(GR_ScreenGraphics::GR_Color3D c,
-				  UT_sint32 x,
-				  UT_sint32 y,
-				  UT_sint32 w,
-				  UT_sint32 h);
-
-	void fillRect(GR_ScreenGraphics::GR_Color3D c, UT_Rect &r);
-	void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
-	void polyLine(UT_Point * pts, UT_uint32 nPoints);
-	void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
-	void drawChars(const UT_UCSChar* pChars,
-				   int iCharOffset,
-				   int iLength,
-				   UT_sint32 xoff,
-				   UT_sint32 yoff,
-				   int* pCharWidths = NULL);
-
-	void drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
-				   int iCharOffset,
-				   int iLength,
-				   UT_sint32 xoff,
-				   UT_sint32 yoff,
-				   int* pCharWidths = NULL);
-
-	void renderChars(GR_RenderInfo & ri);
-
-	
-	GR_Image * genImageFromRectangle(const UT_Rect & r);
-
 private:
 
 	GR_Painter ();

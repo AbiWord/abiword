@@ -1020,8 +1020,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// attach a new graphics context
 	gtk_widget_show ( cf ) ;
 	
-	GR_UnixAllocInfo ai(m_preview->window);
-	m_gc = XAP_App::getApp()->newGraphics(ai);
+	m_gc = new GR_UnixCairoScreenGraphics(m_preview->window);
 
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //

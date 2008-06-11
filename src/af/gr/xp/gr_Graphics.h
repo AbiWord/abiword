@@ -678,8 +678,7 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontStretch,
 							   const char* pszFontSize,
 							   const char* pszLang) = 0;
-
-	// only called by GR_Painter
+public:
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
 #if XAP_DONTUSE_XOR
 #else

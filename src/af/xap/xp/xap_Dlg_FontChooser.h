@@ -41,7 +41,7 @@ class GR_Graphics;
 class ABI_EXPORT XAP_Preview_FontPreview  : public XAP_Preview
 {
 public:
-	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
+	explicit XAP_Preview_FontPreview(GR_ScreenGraphics * gc, const gchar * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const UT_Vector * vFontProps);
     const gchar * getVal(const gchar * szProp);
@@ -132,7 +132,7 @@ public:
 	bool							getChangedSubScript(bool * pbSubScript) const;
 
 protected:
-	void                            _createFontPreviewFromGC(GR_Graphics * gc,
+	void                            _createFontPreviewFromGC(GR_ScreenGraphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 

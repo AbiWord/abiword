@@ -408,7 +408,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
   if(pEView->m_pPreview)
   {
       GR_Painter painter(getGraphics());
-      painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
+      getGraphics()->drawImage(pEView->m_pPreview,rec.left,rec.top);
       return;
   }
   else if( pEView->m_bHasSVGSnapshot)
@@ -419,7 +419,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
     pEView->m_pPreview = new GR_VectorImage();
     pEView->m_pPreview->convertFromBuffer(reinterpret_cast<const UT_ByteBuf*>(p->Eview->m_SVGBuf),getGraphics()->tdu(rec.width),getGraphics()->tdu(rec.height));
     GR_Painter painter(getGraphics());
-    painter.drawImage(pEView->m_pPreview,rec.top,rec.left);
+    getGraphics()->drawImage(pEView->m_pPreview,rec.top,rec.left);
     */
     return;
   }
@@ -439,7 +439,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
     }
     pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),pEView->m_PNGBuf,iWidth,iHeight);
     GR_Painter painter(getGraphics());
-    painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
+    getGraphics()->drawImage(pEView->m_pPreview,rec.left,rec.top);
     return;
   }
   else
