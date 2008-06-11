@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
 libxp_la_SOURCES = \
+	gr_CairoGraphics.h \
 	gr_Caret.cpp \
 	gr_Caret.h \
 	gr_CharWidthsCache.cpp \

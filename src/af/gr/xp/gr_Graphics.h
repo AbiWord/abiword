@@ -781,77 +781,9 @@ public:
 	UT_GenericVector<GR_Caret *>  m_vecCarets;
 };
 
-/*
- * Just a shortcut, type safety is ensured elsewhere.
- */
-#define GFX(gr_) ((GR_Graphics *) (gr_))
+// TODO Rob: towards XPization of cairo
+#define INSIDE_GR_GRAPHICS_H
+#include "gr_CairoGraphics.h"
+#undef INSIDE_GR_GRAPHICS_H
 
-class ABI_EXPORT GR_ScreenGraphics
-{
-public:
-
-	/*!
-	 * Every screen graphics instance needs to be able to present
-	 * itself as GR_Graphics.
-	 */
-	virtual operator GR_Graphics * () = 0;
-
-	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
-				   CLR3D_Background=1,				/* color of face/background on a 3d object */
-				   CLR3D_BevelUp=2,					/* color of bevel-up  */
-				   CLR3D_BevelDown=3,				/* color of bevel-down */
-				   CLR3D_Highlight=4				/* color half-way between up and down */
-	} GR_Color3D;
-#define COUNT_3D_COLORS 5
-
-	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
-	{ return false; }
-
-	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
-	virtual void fillRect(GR_Color3D c,
-						  UT_sint32 x, UT_sint32 y,
-						  UT_sint32 w, UT_sint32 h) = 0;
-
-	/* multiple cursor support */
-
-	typedef enum { GR_CURSOR_INVALID=0,
-				   GR_CURSOR_DEFAULT,
-				   GR_CURSOR_IBEAM,
-				   GR_CURSOR_RIGHTARROW,
-				   GR_CURSOR_IMAGE,
-				   GR_CURSOR_IMAGESIZE_NW,
-				   GR_CURSOR_IMAGESIZE_N,
-				   GR_CURSOR_IMAGESIZE_NE,
-				   GR_CURSOR_IMAGESIZE_E,
-				   GR_CURSOR_IMAGESIZE_SE,
-				   GR_CURSOR_IMAGESIZE_S,
-				   GR_CURSOR_IMAGESIZE_SW,
-				   GR_CURSOR_IMAGESIZE_W,
-				   GR_CURSOR_LEFTRIGHT,
-				   GR_CURSOR_UPDOWN,
-				   GR_CURSOR_EXCHANGE,
-				   GR_CURSOR_GRAB,
-				   GR_CURSOR_LINK,
-				   GR_CURSOR_WAIT,
-				   GR_CURSOR_LEFTARROW,
-				   GR_CURSOR_VLINE_DRAG,
-				   GR_CURSOR_HLINE_DRAG,
-				   GR_CURSOR_CROSSHAIR,
-		                   GR_CURSOR_DOWNARROW,
-		                   GR_CURSOR_DRAGTEXT,
-		                   GR_CURSOR_COPYTEXT
-	} Cursor;
-
-	virtual void      setCursor(GR_ScreenGraphics::Cursor c) = 0;
-	virtual GR_ScreenGraphics::Cursor getCursor(void) const = 0;
-
-	virtual void      scroll(UT_sint32, UT_sint32) = 0;
-	virtual void      scroll(UT_sint32 x_dest,
-							 UT_sint32 y_dest,
-							 UT_sint32 x_src,
-							 UT_sint32 y_src,
-							 UT_sint32 width,
-							 UT_sint32 height) = 0;
-};
 #endif /* GR_GRAPHICS_H */
