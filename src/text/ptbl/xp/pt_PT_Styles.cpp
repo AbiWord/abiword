@@ -39,6 +39,7 @@
 #define _s(name, displayed, type, base, follow, props)	\
 	do { const gchar * a[] = {						\
 			PT_NAME_ATTRIBUTE_NAME, name,				\
+            PT_LABEL_ATTRIBUTE_NAME, name,				\
 			PT_TYPE_ATTRIBUTE_NAME, type,				\
 			PT_BASEDON_ATTRIBUTE_NAME, base,			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, follow,		\
