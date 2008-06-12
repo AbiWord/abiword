@@ -4,7 +4,7 @@ Rob's GSoC TODO
 
 Last sync'd with trunk: r23988.
 
-Currently working on / next task: s,GR_Graphics,GR_ScreenGraphics where appropriate. Get rid of the recently introduced dynamic casts.
+Currently working on / next task: Hook up cairo image class.
 
 1st Part
 --------
@@ -21,7 +21,9 @@ Currently working on / next task: s,GR_Graphics,GR_ScreenGraphics where appropri
 	- Implement crash handler properly.
 	- [DONE] Portable implementation of command line --geometry parsing.
 
-+ [DONE] Decouple screen- and print-graphics [ongoing].
++ Decouple screen- and print-graphics [ongoing].
+	- Fix weird inheritance issue, tagged with "// Why i ihave to upcast manually here is beyond me -Rob."
+	- [DONE] s,GR_Graphics,GR_ScreenGraphics where appropriate. Get rid of the recently introduced dynamic casts.
 
 
 2nd Part
