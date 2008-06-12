@@ -31,6 +31,7 @@
 #include <ut_misc.h>
 #include <ut_assert.h>
 #include <ut_string_class.h>
+#include <pp_Property.h>
 
 #include <OXML_Document.h>
 #include <ie_exp_OpenXML_Listener.h>
@@ -66,6 +67,9 @@ public:
 	UT_Error finishRunProperties();
 	UT_Error startParagraphProperties();
 	UT_Error finishParagraphProperties();
+	UT_Error startStyle(const char* name);
+	UT_Error finishStyle();
+	UT_Error writeDefaultStyle();
 	UT_Error setBold();
 	UT_Error setItalic();
 	UT_Error setUnderline();
@@ -83,6 +87,7 @@ public:
 	UT_Error setParagraphBottomMargin(const gchar* margin);
 	UT_Error setLineHeight(const gchar* height);
 	UT_Error setFontSize(const gchar* size);
+	UT_Error setStyleFontSize(const gchar* size);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -109,7 +114,6 @@ private:
 	UT_Error finishWordRelations();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
-	UT_Error writeDefaultStyles();
 
 	const gchar* convertToTwips(const gchar* str);
 	const gchar* convertToPositiveTwips(const gchar* str);

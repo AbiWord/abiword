@@ -34,6 +34,11 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	
 	if(!pdoc->tellListener(static_cast<PL_Listener *>(this)))
 		document = NULL;	
+	if(addDocumentStyles() != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed"));	
+		document = NULL;
+	}
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
@@ -204,4 +209,59 @@ bool IE_Exp_OpenXML_Listener::signal(UT_uint32 /* iSignal */)
 OXML_Document* IE_Exp_OpenXML_Listener::getDocument()
 {
 	return document;
+}
+
+UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
+{
+	UT_Error err = UT_OK;
+
+	const PP_AttrProp * pAP = NULL;
+	const gchar* styleName = NULL; 
+	const gchar* propertyName = NULL; 
+	const gchar* propertyValue = NULL; 
+	PT_AttrPropIndex api = pdoc->getAttrPropIndex();
+	bool bHaveProp = pdoc->getAttrProp(api, &pAP);
+
+	if(!bHaveProp || !pAP)
+		return UT_OK;
+
+	const PD_Style* pStyle = NULL;
+
+	size_t styleCount = pdoc->getStyleCount();
+	size_t k;
+	for(k=0; k<styleCount; k++)
+	{
+		if(!pdoc->enumStyles(k, &styleName, &pStyle))
+			continue;
+
+		if(!pStyle)
+			continue;
+
+		OXML_Style* style = new OXML_Style(styleName, styleName);
+		OXML_SharedStyle shared_style(style);			
+
+		err = document->addStyle(shared_style);
+		if(err != UT_OK)
+			return err;
+
+		size_t propCount = pStyle->getPropertyCount();
+
+		size_t i;
+		for(i=0; i<propCount; i++)
+		{
+			if(!pStyle->getNthProperty(i, propertyName, propertyValue))
+				continue;
+
+			//TODO: Take the debug message out when we are done
+			UT_DEBUGMSG(("Style=%s Property: %s=%s\n", styleName, propertyName, propertyValue));	
+			err = style->setProperty(propertyName, propertyValue);
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("FRT:ERROR, Setting Document Style Property %s=%s failed\n", propertyName, propertyValue));	
+				return err;
+			}
+		}
+	}
+
+	return UT_OK;
 }

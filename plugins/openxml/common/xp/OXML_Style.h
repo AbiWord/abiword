@@ -35,6 +35,8 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+class IE_Exp_OpenXML;
+
 /* \class OXML_Style
  * \brief This class represents a single style in the OpenXML data model.
 */
@@ -57,7 +59,7 @@ public:
 	const std::string & getName() const 
 		{ return m_name; }
 
-	UT_Error serialize(const std::string & path);
+	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	UT_Error addToPT(PD_Document * pDocument);
 
 private:

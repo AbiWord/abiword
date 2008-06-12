@@ -47,10 +47,24 @@ OXML_Style::~OXML_Style()
 {
 }
 
-UT_Error OXML_Style::serialize(const std::string & /*path*/)
+UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+	
+	err = exporter->startStyle(m_name.c_str());
+	if(err != UT_OK)
+		return err;
+
+	//TODO: add more properties
+	if(getProperty("font-size", szValue) == UT_OK)
+	{
+		err = exporter->setStyleFontSize(szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	return exporter->finishStyle();
 }
 
 UT_Error OXML_Style::addToPT(PD_Document * pDocument)

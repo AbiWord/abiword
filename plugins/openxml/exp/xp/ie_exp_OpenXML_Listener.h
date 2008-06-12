@@ -24,6 +24,7 @@
 #define _IE_EXP_OPENXMLLISTENER_H_
 
 #include <pd_Document.h>
+#include <pd_Style.h>
 #include <px_ChangeRecord.h>
 #include <px_CR_Strux.h>
 #include <px_CR_Span.h>
@@ -59,6 +60,8 @@ private:
 	OXML_Document* document;
 	OXML_Section* section;
 	OXML_Element_Paragraph* paragraph;
+
+	UT_Error addDocumentStyles();
 };
 
 #endif //_IE_EXP_OPENXMLLISTENER_H_

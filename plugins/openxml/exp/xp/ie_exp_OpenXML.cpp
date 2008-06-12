@@ -720,12 +720,6 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"))
 		return UT_IE_COULDNOTWRITE;
 	}
 
- 	err = writeDefaultStyles();
-	if(err != UT_OK)
-	{
-		return err;
-	}
-
 	return UT_OK;
 }
 
@@ -1094,14 +1088,47 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 	return UT_OK;
 }
 
-/**
- * Write default styles to styles.xml file
- * This function should be called before anything is written to styles.xml file
- */
-UT_Error IE_Exp_OpenXML::writeDefaultStyles()
+UT_Error IE_Exp_OpenXML::startStyle(const char* style)
+{
+	//TODO: divide this function into startParagraphStyle, startRunStyle for pPr and rPr tags.
+	if(!gsf_output_printf(stylesStream, "<w:style w:styleId=\"%s\"><w:name w:val=\"%s\"/><w:pPr></w:pPr><w:rPr>", style, style))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be started\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
+}
+
+//TODO: update all the set functions so that they can be used for streaming multiple files.
+UT_Error IE_Exp_OpenXML::setStyleFontSize(const gchar* size)
+{
+	if(!gsf_output_printf(stylesStream, "<w:sz w:val=\"%s\"/>", computeFontSize(size)))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot set font size in document.xml file\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+	return UT_OK;
+}
+
+UT_Error IE_Exp_OpenXML::finishStyle()
+{
+	if(!gsf_output_puts(stylesStream, "</w:rPr></w:style>"))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be finished\n"));	
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
+}
+
+UT_Error IE_Exp_OpenXML::writeDefaultStyle()
 {
 	//TODO: add more default settings here
-	if(!gsf_output_puts(stylesStream, "<w:docDefaults><w:rPrDefault><w:rPr></w:rPr></w:rPrDefault></w:docDefaults>"))
+	if(!gsf_output_puts(stylesStream, "<w:docDefaults>\
+<w:pPrDefault><w:pPr><w:pStyle w:val=\"Normal\"/></w:pPr></w:pPrDefault>\
+<w:rPrDefault><w:rPr><w:rStyle w:val=\"Normal\"/></w:rPr></w:rPrDefault>\
+</w:docDefaults>"))
 	{
 		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be written\n"));	
 		return UT_IE_COULDNOTWRITE;
@@ -1109,4 +1136,5 @@ UT_Error IE_Exp_OpenXML::writeDefaultStyles()
 
 	return UT_OK;
 }
+
 
