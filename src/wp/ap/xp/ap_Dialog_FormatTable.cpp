@@ -675,7 +675,7 @@ void AP_FormatTable_preview::draw(void)
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	dynamic_cast<GR_ScreenGraphics *>(m_gc)->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
 	
 	

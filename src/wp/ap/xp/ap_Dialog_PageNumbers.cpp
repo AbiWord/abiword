@@ -122,13 +122,13 @@ void AP_Preview_PageNumbers::draw (void)
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
 	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
 	
-	dynamic_cast<GR_ScreenGraphics *>(m_gc)->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->fillRect(GR_ScreenGraphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
 	
 	// actually draw some "text" on the preview for a more realistic appearance
 	
 	m_gc->setLineWidth(m_gc->tlu(1));
-	dynamic_cast<GR_ScreenGraphics *>(m_gc)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_gc->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 	
 	UT_sint32 iFontHeight = m_gc->getFontHeight ();
 	UT_sint32 step = m_gc->tlu(4);

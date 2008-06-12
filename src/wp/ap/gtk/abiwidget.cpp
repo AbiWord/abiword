@@ -1051,7 +1051,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 		if(pG)
 		{
-			dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
+			pG->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 		}
 		FL_DocLayout * pLayout = pView->getLayout();
 		if(pView->getPoint() > 0)

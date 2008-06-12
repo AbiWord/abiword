@@ -377,7 +377,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 		rClip.width = -dx + m_pG->tlu(10);
 	}
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->scroll(x_dest,y_dest,x_src,y_src,width,height);
+	m_pG->scroll(x_dest,y_dest,x_src,y_src,width,height);
 	m_xScrollOffset = xoff;
 	draw(&rClip);
 }
@@ -409,7 +409,7 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 	// draw the background
 
 	GR_Painter painter(m_pG);
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background,0,0,getWidth (),getHeight ());
+	m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background,0,0,getWidth (),getHeight ());
 
 	// draw the foreground
 
@@ -461,7 +461,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 		UT_Rect r(xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
 		if (!pClipRect || r.intersectsRect(pClipRect)) {
 			GR_Painter painter(m_pG);
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(clr3d,r);
+			m_pG->fillRect(clr3d,r);
 		}
 	}
 }
@@ -491,13 +491,13 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		// draw the ticks
 		UT_uint32 h = ((k % tick.tickLong) ? m_pG->tlu(2) : m_pG->tlu(6));
 		UT_sint32 y = yTop + (yBar-h)/2;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3d);
+		m_pG->setColor3D(clr3d);
 		m_pG->drawLine(xTick,y,xTick,y+h);
 	}
 	else if (pFont)
 	{
 		// draw the number
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3d);
+		m_pG->setColor3D(clr3d);
 		m_pG->setFont(pFont);
 //
 // The graphics class works in logical units almost exclusively.
@@ -1040,7 +1040,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 			UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 			UT_uint32 yBottom = yTop + yBar;
 
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelDown);
+			m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelDown);
 
 			// UT_ASSERT_HARMLESS(pInfo->m_iDefaultTabInterval > 0);
 			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
@@ -1208,24 +1208,24 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 	GR_Painter painter(m_pG);
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rLeft);
+	m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background, rLeft);
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
 	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
 	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
 	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
 	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(2), rLeft.top + m_pG->tlu(1));
 	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(2));
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rRight);
+	m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background, rRight);
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
 	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
 	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
 	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
 	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(2), rRight.top + m_pG->tlu(1));
 	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(2));
 }
@@ -1600,7 +1600,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	_getTabToggleRect(&rToggle);
 	if (rToggle.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_EXCHANGE);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_EXCHANGE);
 		XAP_String_Id baseTabName = AP_STRING_ID_TabToggleLeftTab-1;
 		_displayStatusMessage(baseTabName + m_iDefaultTabType);
 		return true;
@@ -1630,7 +1630,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	if (iTab >= 0)
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, xrel);
 		return true;
 	}
@@ -1645,7 +1645,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 	if (rLeftIndent.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 
 		if(bRTLpara)
 			xrel = xAbsRight - rLeftIndent.left;
@@ -1658,7 +1658,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	if (rRightIndent.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 
 		if(bRTLpara)
 			xrel = xAbsRight - rRightIndent.left;
@@ -1671,7 +1671,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 
 		if(bRTLpara)
 			xrel = xAbsRight - rFirstLineIndent.left;
@@ -1690,7 +1690,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		_getColumnMarkerRect(&m_infoCache,0,_getColumnMarkerXRightEnd(&m_infoCache,0),&rCol);
 		if (rCol.containsPoint(x,y))
 		{
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 			_displayStatusMessage(AP_STRING_ID_ColumnGapStatus, tick, 0);
 			return true;
 		}
@@ -1702,13 +1702,13 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
 	if (rLeftMargin.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, m_infoCache.u.c.m_xaLeftMargin);
 		return true;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, m_infoCache.u.c.m_xaRightMargin);
 		return true;
 	}
@@ -1725,7 +1725,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 			_getCellMarkerRect(&m_infoCache,static_cast<UT_uint32>(iCell), &rCell);
 			if(rCell.containsPoint(x,y))
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTRIGHT);
 				if(iCell < nCells)
 			{
 				_displayStatusMessage(AP_STRING_ID_ColumnStatus, iCell, "");
@@ -1802,7 +1802,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
 	UT_sint32 top = prDrag->top + m_pG->tlu(2);
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,left,bot);
 	m_pG->drawLine(left,bot,right,bot);
 	m_pG->drawLine(right,bot,right,top);
@@ -1812,7 +1812,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 //
 // Draw a bevel up
 //
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
 		left += m_pG->tlu(1);
 		top += m_pG->tlu(1);
 		right -= m_pG->tlu(1);
@@ -1824,7 +1824,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 //
 		left += m_pG->tlu(1);
 		top += m_pG->tlu(1);
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
+		m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
 	}
 }
 
@@ -1984,10 +1984,10 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 			cCell.set(left + m_pG->tlu(1), top, right - left - m_pG->tlu(2), height);
 			rCell.set(right - m_pG->tlu(1), top, m_pG->tlu(1), height);
 			
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, lCell);
+			m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background, lCell);
 			if (cCell.width > 0)
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_BevelDown, cCell);
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rCell);
+				m_pG->fillRect(GR_ScreenGraphics::CLR3D_BevelDown, cCell);
+			m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background, rCell);
 		}
 	}
 }
@@ -2099,7 +2099,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 			m_bBeforeFirstMotion = true;
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			m_draggingCell = i;
 
@@ -2215,7 +2215,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			m_draggingTabLeader = iLeader;
 			m_dragStart = 0;
 			m_bBeforeFirstMotion = true;
- 			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+ 			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
 //
 // if not button 1 delete the tabstop
@@ -2245,7 +2245,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
 			m_draggingWhat = DW_NOTHING;
 			pView->setBlockFormat(properties);
- 			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+ 			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 
 		return;
@@ -2275,7 +2275,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
 
 		m_bBeforeFirstMotion = true;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		return;
 	}
 	if (rRightIndent.containsPoint(x,y))
@@ -2294,7 +2294,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			m_draggingWhat = DW_RIGHTINDENT;
 
 		m_bBeforeFirstMotion = true;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		return;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
@@ -2303,7 +2303,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_FIRSTLINEINDENT;
 		m_bBeforeFirstMotion = true;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		return;
 	}
 
@@ -2319,7 +2319,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			m_bValidMouseClick = true;
 			m_draggingWhat = ((static_cast<UT_sint32>(x) > (rCol.left+(rCol.width/2))) ? DW_COLUMNGAP : DW_COLUMNGAPLEFTSIDE);
 			m_bBeforeFirstMotion = true;
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			return;
 		}
 	}
@@ -2333,7 +2333,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		UT_DEBUGMSG(("hit left margin block\n"));
 		m_bValidMouseClick = true;
 		m_bBeforeFirstMotion = true;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		m_draggingWhat = DW_LEFTMARGIN;
 		return;
 	}
@@ -2343,7 +2343,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTMARGIN;
 		m_bBeforeFirstMotion = true;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		return;
 	}
 
@@ -2405,7 +2405,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			m_bValidMouseClick = true;
 			m_draggingWhat = DW_CELLMARK;
 			m_bBeforeFirstMotion = true;
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			m_draggingCell = i;
 			return;
 		}
@@ -2452,7 +2452,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 		// a drag. Set m_oldX to a negative number so that
 		// mouseMotion() is fooled.
 		m_oldX = -1;
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 	}
 }
 
@@ -2473,7 +2473,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 		m_bValidMouseClick = false;
 		if(m_pG)
 		{
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -2488,7 +2488,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 		m_draggingWhat = DW_NOTHING;
 		if(m_pG)
 		{
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 	}
@@ -2541,7 +2541,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 		UT_DEBUGMSG(("release only\n"));
 		m_draggingWhat = DW_NOTHING;
 		if(m_pG)
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -2562,7 +2562,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		if(m_pG)
 		{
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		}
 		return;
 
@@ -2654,7 +2654,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
@@ -2729,7 +2729,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
@@ -2751,7 +2751,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2814,7 +2814,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2851,7 +2851,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2891,7 +2891,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2918,7 +2918,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2961,7 +2961,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
@@ -2986,7 +2986,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				notify(pView, AV_CHG_HDRFTR);
 				if(m_pG)
 				{
-					dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+					m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 				}
 				return;
 			}				
@@ -3183,14 +3183,14 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		if(m_pG)
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 }
@@ -3277,7 +3277,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView && pView->isLayoutFilling())
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
 		return;
 	}
 	if(pView == NULL)
@@ -3286,7 +3286,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	}
 	if (!m_bValidMouseClick && (m_pG != NULL))
 	{
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+		m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -3304,7 +3304,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			m_bEventIgnored = true;
 		}
 		if(m_pG)
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
 		return;
 	}
 
@@ -3413,7 +3413,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		if(m_pG)
         {	
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
 		UT_sint32 oldDragCenter = m_draggingCenter;
 		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
@@ -3506,7 +3506,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		if(m_pG)
         {	
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+			m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 		}
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
@@ -3569,7 +3569,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_COLUMNGAPLEFTSIDE:
 		{
 			if(m_pG)
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			UT_sint32 xAbsRightGap = xAbsRight2 + m_infoCache.u.c.m_xColumnGap;
@@ -3634,7 +3634,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// paragraph in the document).
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			UT_sint32 xAbsLeft, xrel;
 			UT_sint32 xAbsRight;
@@ -3725,7 +3725,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// first-line-indent (since it is stored in relative
 			// terms.
 			if(m_pG)
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel, xgrid, xgridTagAlong;
@@ -3839,7 +3839,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
@@ -3912,7 +3912,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel;
@@ -3987,7 +3987,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_TABSTOP:
 		{
 			if(m_pG)
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			if (x < xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin)
 				x = xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin;
 			else if (x > xAbsRight - m_infoCache.u.c.m_xaRightMargin)
@@ -4014,7 +4014,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 			if(m_pG)
 			{
-				dynamic_cast<GR_ScreenGraphics *>(m_pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
+				m_pG->setCursor(GR_ScreenGraphics::GR_CURSOR_GRAB);
 			}
 			if (x < xStartPixel - m_xScrollOffset)
 			{
@@ -4248,7 +4248,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	{
 		// fill in the body
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
@@ -4258,13 +4258,13 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw 3d highlights
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+		m_pG->setColor3D(clr3dBevel);
 		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
@@ -4277,7 +4277,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	{
 		// fill in the body
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
@@ -4292,7 +4292,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw 3d highlights
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+		m_pG->setColor3D(clr3dBevel);
 		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
@@ -4300,7 +4300,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw border
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
@@ -4333,7 +4333,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	{
 		// fill in the body
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(13), l+m_pG->tlu(10), t+m_pG->tlu(13));
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(12), l+m_pG->tlu(10), t+m_pG->tlu(12));
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(11), l+m_pG->tlu(10), t+m_pG->tlu(11));
@@ -4348,7 +4348,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw 3d highlights
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+		m_pG->setColor3D(clr3dBevel);
 		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(9),  l+m_pG->tlu(9),  t+m_pG->tlu(9) );
@@ -4356,7 +4356,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw border
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
 		
@@ -4369,7 +4369,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	{
 		// fill in the body
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(7),  l+m_pG->tlu(10), t+m_pG->tlu(7) );
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(6),  l+m_pG->tlu(10), t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(5) );
@@ -4379,13 +4379,13 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 
 		// draw 3d highlights
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+		m_pG->setColor3D(clr3dBevel);
 		m_pG->drawLine( l+m_pG->tlu(5),   t+m_pG->tlu(1),  l,    t+m_pG->tlu(6) );
 		m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(5),  l+m_pG->tlu(1),  t+m_pG->tlu(7) );
 
 		// draw border
 
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
 		
@@ -4407,7 +4407,7 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 
 	// fill in the body
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 	m_pG->drawLine( l+m_pG->tlu(9),   t+m_pG->tlu(1),  l+m_pG->tlu(10), t+m_pG->tlu(1) );
 	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(2),  l+m_pG->tlu(10), t+m_pG->tlu(2) );
 	m_pG->drawLine( l+m_pG->tlu(2),   t+m_pG->tlu(3),  l+m_pG->tlu(10), t+m_pG->tlu(3) );
@@ -4417,14 +4417,14 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 
 	// draw 3d highlights
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(9),  t+m_pG->tlu(1) );
 	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(2),  l+m_pG->tlu(1),  t+m_pG->tlu(4) );
 	m_pG->drawLine( l+m_pG->tlu(1),   t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(8) );
 
 	// draw border
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
 	m_pG->drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
 	
@@ -4453,13 +4453,13 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		UT_sint32 bot = rect.top + rect.height - m_pG->tlu(1);
 
 		// first draw the frame
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelDown);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelDown);
 		m_pG->drawLine(left,top,right,top);
 		m_pG->drawLine(left,top,left,bot);
 		m_pG->drawLine(left,bot,right,bot);
 		m_pG->drawLine(right,top,right,bot);
 		
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
+		m_pG->setColor3D(GR_ScreenGraphics::CLR3D_BevelUp);
 		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
 		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
 		m_pG->drawLine( left, bot + m_pG->tlu(1), right, bot + m_pG->tlu(1));
@@ -4469,7 +4469,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 
 		// fill first if needed
 		if (bErase)
-			dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(GR_ScreenGraphics::CLR3D_Background, rect);
+			m_pG->fillRect(GR_ScreenGraphics::CLR3D_Background, rect);
 
 		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= m_pG->tlu(2);
 		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += m_pG->tlu(2);
@@ -4493,11 +4493,11 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 	GR_Painter painter (m_pG);
 
 	// stroke the vertical first
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
+	m_pG->fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot
-		dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(clr3d, l+ m_pG->tlu(7),   t+ m_pG->tlu(1),    m_pG->tlu(2),   m_pG->tlu(2));
+		m_pG->fillRect(clr3d, l+ m_pG->tlu(7),   t+ m_pG->tlu(1),    m_pG->tlu(2),   m_pG->tlu(2));
 	}
 
 	// figure out the bottom
@@ -4528,7 +4528,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 	}
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
+	m_pG->fillRect(clr3d, l,     t+ m_pG->tlu(4),  r-l,  m_pG->tlu(2));
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
@@ -4545,7 +4545,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	// fill in the body
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(GR_ScreenGraphics::CLR3D_Background);
+	m_pG->setColor3D(GR_ScreenGraphics::CLR3D_Background);
 	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(1),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(1) );
 	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(2),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(2) );
 	m_pG->drawLine(l+ m_pG->tlu(2),   t+ m_pG->tlu(3),  l+w- m_pG->tlu(1),   t+ m_pG->tlu(3) );
@@ -4560,7 +4560,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	// draw 3d highlights
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBevel);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+w2,    t+m_pG->tlu(1) );
 	m_pG->drawLine(l+w2+m_pG->tlu(1),t+m_pG->tlu(1),  l+w-m_pG->tlu(1),   t+m_pG->tlu(1) );
 	m_pG->drawLine(l+m_pG->tlu(1),   t+m_pG->tlu(1),  l+m_pG->tlu(1),     t+m_pG->tlu(10));
@@ -4568,7 +4568,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	// draw border
 
-	dynamic_cast<GR_ScreenGraphics *>(m_pG)->setColor3D(clr3dBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(l,     t,    l+w,     t   );
 	m_pG->drawLine(l,     t,    l,       t+ m_pG->tlu(11));
 	m_pG->drawLine(l+w- m_pG->tlu(1), t,    l+w- m_pG->tlu(1),   t+ m_pG->tlu(11));

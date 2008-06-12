@@ -13787,7 +13787,7 @@ Defun(hyperlinkStatusBar)
 
 	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
-		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
+		pG->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
 
 	UT_sint32 xpos = pCallData->m_xPos;
 	UT_sint32 ypos = pCallData->m_yPos;
