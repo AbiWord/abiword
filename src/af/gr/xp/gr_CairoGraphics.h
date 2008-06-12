@@ -101,7 +101,7 @@ public:
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									 int iCharOffset, int iLength,
 									 UT_sint32 xoff, UT_sint32 yoff,
-									 int * pCharWidth);
+									 int * pCharWidth = NULL);
                     
 	virtual void           drawGlyph(UT_uint32 glyph_idx,
 									 UT_sint32 xoff, UT_sint32 yoff);

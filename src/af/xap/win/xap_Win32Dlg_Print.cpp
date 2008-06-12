@@ -144,7 +144,7 @@ XAP_Win32Dialog_Print::~XAP_Win32Dialog_Print(void)
 	}
 }
 
-GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
+GR_ScreenGraphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -164,7 +164,7 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	return pGr;
 }
 
-void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_ScreenGraphics * pGraphics)
 {
 	if (pGraphics)
 		delete pGraphics;

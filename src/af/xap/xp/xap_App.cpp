@@ -1391,31 +1391,40 @@ const char * XAP_App::getInputMode(void) const
     This is the primary function for allocating graphics classes. It
     determines if screen or priter graphics is required and then
     allocates appropriate graphics respecting current setting.
+	\todo Rob get rid of this
 */
-GR_Graphics * XAP_App::newGraphics(GR_AllocInfo &param) const
+GR_ScreenGraphics * XAP_App::newGraphics(GR_AllocInfo &param) const
 {
 	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 
+	// just make it build for now, this will blow up
+	g_assert(0);
 	if(param.isPrinterGraphics())
 	{
-		return m_pGraphicsFactory->newGraphics(GRID_DEFAULT_PRINT, param);
+		return dynamic_cast<GR_ScreenGraphics *>(m_pGraphicsFactory->newGraphics(GRID_DEFAULT_PRINT, param));
 	}
 	else
 	{
-		return m_pGraphicsFactory->newGraphics(GRID_DEFAULT, param);
+		return dynamic_cast<GR_ScreenGraphics *>(m_pGraphicsFactory->newGraphics(GRID_DEFAULT, param));
 	}
 }
 
 /*!
     Use only if you require specific graphics, otherwise use newGraphics(GR_AllocInfo*)
+	\todo Rob get rid of this
 */
-GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
+GR_ScreenGraphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
 {
 	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 
-	return m_pGraphicsFactory->newGraphics(iClassId, param);
+	// just make it build for now, this will blow up
+	g_assert(0);
+	return dynamic_cast<GR_ScreenGraphics *>(m_pGraphicsFactory->newGraphics(iClassId, param));
 }
 
+/*!
+	\todo Rob get rid of this
+ */
 void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 {
 	if(i == GRID_UNKNOWN)

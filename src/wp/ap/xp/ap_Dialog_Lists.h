@@ -40,7 +40,7 @@ class ABI_EXPORT AP_Lists_preview : public XAP_Preview
 {
 public:
 
-	AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists );
+	AP_Lists_preview(GR_ScreenGraphics * gc, AP_Dialog_Lists * pLists );
 	virtual ~AP_Lists_preview(void);
 
 	// data twiddlers
@@ -109,7 +109,7 @@ public:
 	void						generateFakeLabels(void);
 	UT_UCSChar *				getListLabel(UT_sint32 itemNo);
 	virtual void 				event_PreviewAreaExposed();
-	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+	virtual void 				_createPreviewFromGC(GR_ScreenGraphics * gc, UT_uint32 width, UT_uint32 height);
 	void						setModal(void) {m_bIsModal = true;}
 	bool						isModal(void) const { return m_bIsModal;}
 

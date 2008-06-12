@@ -128,7 +128,7 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
  \param width the width of the gc
  \param height the height of the gc
  */
-void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
+void AP_Dialog_Lists::_createPreviewFromGC(GR_ScreenGraphics* gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
 {
@@ -1130,7 +1130,7 @@ const gchar* AP_Dialog_Lists::_getDingbatsFontName() const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
+AP_Lists_preview::AP_Lists_preview(GR_ScreenGraphics * gc, AP_Dialog_Lists * pLists)
 :	XAP_Preview(gc),
 	m_pLists(pLists),
 	m_pFont(NULL),
@@ -1179,6 +1179,8 @@ void AP_Lists_preview::draw(void)
 	UT_return_if_fail(m_pFont);
 
 	GR_Painter painter(m_gc);
+	// Why i ihave to upcast manually here is beyond me -Rob.
+	GR_Graphics *gc = m_gc;
 
 	m_gc->setFont(m_pFont);
 	
@@ -1317,9 +1319,9 @@ void AP_Lists_preview::draw(void)
 				awidth = iWidth - 2*xoff - xy;
 
 				if(iDirection == UT_BIDI_RTL)
-					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+					gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
-					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+					gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 			else
 			{
@@ -1327,9 +1329,9 @@ void AP_Lists_preview::draw(void)
 				awidth = iWidth - 2*xoff - xy;
 
 				if(iDirection == UT_BIDI_RTL)
-					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+					gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
-					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+					gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 		}
 		else
@@ -1338,9 +1340,9 @@ void AP_Lists_preview::draw(void)
 			awidth = iWidth - 2*xoff - xx;
 
 			if(iDirection == UT_BIDI_RTL)
-				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+				gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 			else
-				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+				gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}
 }

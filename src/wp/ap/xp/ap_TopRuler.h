@@ -198,7 +198,7 @@ public:
 	UT_uint32		getHeight(void) const;
 	void			setWidth(UT_uint32 iWidth);
 	UT_uint32		getWidth(void) const;
-	GR_Graphics *	getGraphics(void) const { return m_pG;}
+	GR_ScreenGraphics *	getGraphics(void) const { return m_pG;}
 	bool            isHidden(void) const
 		{ return m_bIsHidden;}
 	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
@@ -316,7 +316,7 @@ protected:
 	static void			_autoScroll(UT_Worker * pTimer);
 	
 	XAP_Frame *			m_pFrame;
-	GR_Graphics *		m_pG;
+	GR_ScreenGraphics *		m_pG;
 	UT_uint32			m_iLeftRulerWidth; // device
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_xScrollLimit;

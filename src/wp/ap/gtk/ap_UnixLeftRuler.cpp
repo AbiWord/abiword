@@ -277,7 +277,7 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	if (!pUnixLeftRuler)
 		return 0;
 
-	GR_Graphics * pG = pUnixLeftRuler->getGraphics();
+	GR_ScreenGraphics * pG = pUnixLeftRuler->getGraphics();
 	if(pG != NULL)
 	{
 		UT_Rect rClip;
@@ -304,7 +304,7 @@ gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
 //
 	UT_Rect localCopy;
 	AP_UnixLeftRuler * pR = static_cast<AP_UnixLeftRuler *>(p);
-	GR_Graphics * pG = pR->getGraphics();
+	GR_ScreenGraphics * pG = pR->getGraphics();
 	if(pG == NULL || pG->isDontRedraw())
 	{
 //

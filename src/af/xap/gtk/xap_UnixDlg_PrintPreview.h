@@ -23,13 +23,15 @@
 
 #include "xap_Dlg_PrintPreview.h"
 
+class GR_UnixPangoPrintGraphics;
+
 class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 {
  public:
 	XAP_UnixDialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_PrintPreview(void);
 
-	virtual GR_Graphics *			        getPrinterGraphicsContext(void);
+	virtual GR_Graphics *			getPrinterGraphicsContext(void);
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics);
 	virtual void					runModal(XAP_Frame * pFrame);
 
@@ -38,7 +40,7 @@ class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 
  protected:
 
-	GR_Graphics * m_pPrintGraphics;
+	GR_UnixPangoPrintGraphics * m_pPrintGraphics;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINTPREVIEW_H */

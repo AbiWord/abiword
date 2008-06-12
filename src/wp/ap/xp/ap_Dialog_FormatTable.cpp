@@ -236,7 +236,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 	m_pGraphic = pFG->clone();
-	GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+	GR_ScreenGraphics * pG = m_pFormatTablePreview->getGraphics();
 
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	UT_return_if_fail(pView && pView->getDocument());
@@ -420,7 +420,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 						m_sImagePath.clear();
 						m_pGraphic = pFG;
 						m_sImagePath = pFG->getDataId();
-						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+						GR_ScreenGraphics * pG = m_pFormatTablePreview->getGraphics();
 						if(m_pGraphic->getType() == FGT_Raster)
 						{
 							UT_sint32 iImageWidth;
@@ -607,7 +607,7 @@ void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
 	m_bSettingsChanged = true;
 }
 
-void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_FormatTable::_createPreviewFromGC(GR_ScreenGraphics * gc,
 											     UT_uint32 width,
 											     UT_uint32 height)
 {
@@ -657,7 +657,7 @@ bool AP_Dialog_FormatTable::getLeftToggled()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-AP_FormatTable_preview::AP_FormatTable_preview(GR_Graphics * gc, AP_Dialog_FormatTable * pFormatTable)
+AP_FormatTable_preview::AP_FormatTable_preview(GR_ScreenGraphics * gc, AP_Dialog_FormatTable * pFormatTable)
 	: XAP_Preview(gc)
 {
 	m_pFormatTable = pFormatTable;
@@ -728,7 +728,9 @@ void AP_FormatTable_preview::draw(void)
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
-			m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+			// Why i ihave to upcast manually here is beyond me -Rob.
+			GR_Graphics *gc = m_gc;
+			gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
 

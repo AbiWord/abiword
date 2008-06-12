@@ -36,12 +36,12 @@
 #include "xap_Preview.h"
 #include "gr_Graphics.h"
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 class ABI_EXPORT XAP_Preview_FontPreview  : public XAP_Preview
 {
 public:
-	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
+	explicit XAP_Preview_FontPreview(GR_ScreenGraphics * gc, const gchar * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const UT_Vector * vFontProps);
     const gchar * getVal(const gchar * szProp);
@@ -94,7 +94,7 @@ public:
 	const gchar *                getVal(const gchar * szProp) const;
 	void                            setAllPropsFromVec(UT_Vector * vProps);
 
-	void							setGraphicsContext(GR_Graphics * pGraphics);
+	void							setGraphicsContext(GR_ScreenGraphics * pGraphics);
 	void							setFontFamily(const gchar * pFontFamily);
 	void							setFontSize(const gchar * pFontSize);
 	void							setFontWeight(const gchar * pFontWeight);
@@ -132,12 +132,12 @@ public:
 	bool							getChangedSubScript(bool * pbSubScript) const;
 
 protected:
-	void                            _createFontPreviewFromGC(GR_Graphics * gc,
+	void                            _createFontPreviewFromGC(GR_ScreenGraphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
-	GR_Graphics *					m_pGraphics;			/* input */
+	GR_ScreenGraphics *					m_pGraphics;			/* input */
 	const gchar *                m_pColorBackground;
 	gchar *						m_pFontFamily;			/* input/output */
 	gchar *						m_pFontSize;			/* input/output */

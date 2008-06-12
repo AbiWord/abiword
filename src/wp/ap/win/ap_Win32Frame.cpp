@@ -94,7 +94,7 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 
 
 /************** helper methods for _showDocument ************************/
-bool AP_Win32Frame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+bool AP_Win32Frame::_createViewGraphics(GR_ScreenGraphics *& pG, UT_uint32 iZoom)
 {
 	pG = getAPWin32FrameImpl()->createDocWndGraphics();
 	UT_return_val_if_fail(pG, false);
@@ -159,7 +159,7 @@ bool AP_Win32Frame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& p
 	return true;
 }
 
-void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+void AP_Win32Frame::_replaceView(GR_ScreenGraphics * pG, FL_DocLayout *pDocLayout,
 			  AV_View *pView, AV_ScrollObj * pScrollObj,
 			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,

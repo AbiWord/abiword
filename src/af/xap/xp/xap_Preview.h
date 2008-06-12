@@ -32,12 +32,12 @@
 
 /* #include "ev_EditBits.h" */
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 class ABI_EXPORT XAP_Preview
 {
 public:
-	XAP_Preview(GR_Graphics * gc);
+	XAP_Preview(GR_ScreenGraphics * gc);
 	virtual ~XAP_Preview(void);
 
 	void					setWindowSize(UT_sint32, UT_sint32);
@@ -46,7 +46,7 @@ public:
 
 	// we probably don't need this one
 /*
-  inline GR_Graphics * 	getGraphicsContext(void) const { return m_graphics; };
+  inline GR_ScreenGraphics * 	getGraphicsContext(void) const { return m_graphics; };
 */
 
 	// function triggered by platform events to handle any drawing
@@ -56,7 +56,7 @@ public:
 
 protected:
 	XAP_Preview();
-	GR_Graphics *		m_gc;
+	GR_ScreenGraphics *		m_gc;
 	
 private:
 	// TODO : 

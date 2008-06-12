@@ -285,7 +285,7 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	if (!pUnixTopRuler)
 		return 0;
 
-	GR_Graphics * pG = pUnixTopRuler->getGraphics();
+	GR_ScreenGraphics * pG = pUnixTopRuler->getGraphics();
 	if(pG != NULL)
 	{
 		UT_Rect rClip;

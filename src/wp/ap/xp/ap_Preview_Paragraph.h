@@ -39,7 +39,7 @@ class ABI_EXPORT AP_Preview_Paragraph_Block
 {
  public:
 	AP_Preview_Paragraph_Block(UT_RGBColor & clr,
-							   GR_Graphics * gc,
+							   GR_ScreenGraphics * gc,
 							   AP_Dialog_Paragraph::tAlignState m_align,
 							   UT_uint32 fontHeight);
 	virtual ~AP_Preview_Paragraph_Block();
@@ -78,7 +78,7 @@ class ABI_EXPORT AP_Preview_Paragraph_Block
 	UT_uint32 m_fontHeight;
 	UT_RGBColor m_clr;
 
-	GR_Graphics * m_gc;
+	GR_ScreenGraphics * m_gc;
 
 	// when a string is set, we break it into words for
 	// easy layout, and store the word content (UT_UCSChar *)
@@ -91,13 +91,13 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 {
  public:
 
-	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
+	AP_Preview_Paragraph(GR_ScreenGraphics * gc, const UT_UCSChar * text,
 			     AP_Dialog_Paragraph * parent);
 
-	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
+	AP_Preview_Paragraph(GR_ScreenGraphics * gc, const UT_UCSChar * text,
 			     XAP_Dialog * parent);
 
-	AP_Preview_Paragraph(GR_Graphics * gc,
+	AP_Preview_Paragraph(GR_ScreenGraphics * gc,
 			     const UT_UCSChar * text,
 			     AP_Dialog_Lists * dlg);
 

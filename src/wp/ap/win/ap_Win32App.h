@@ -71,7 +71,7 @@ public:
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
-	virtual GR_Graphics *           newDefaultScreenGraphics() const;
+	virtual GR_ScreenGraphics *           newDefaultScreenGraphics() const;
 	
 
 #ifdef COPY_ON_DEMAND

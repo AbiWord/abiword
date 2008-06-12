@@ -48,19 +48,19 @@ class ABI_EXPORT AP_FormatFrame_preview_drawer
 {
 public:
 
-	void			draw(GR_Graphics *gc, UT_Rect &rect);
+	void			draw(GR_ScreenGraphics *gc, UT_Rect &rect);
 };
 
 class ABI_EXPORT AP_FormatFrame_preview : public XAP_Preview
 {
 public:
 
-	AP_FormatFrame_preview(GR_Graphics * gc, AP_Dialog_FormatFrame * pFormatFrame);
+	AP_FormatFrame_preview(GR_ScreenGraphics * gc, AP_Dialog_FormatFrame * pFormatFrame);
 	virtual ~AP_FormatFrame_preview(void);
 
 	// data twiddlers
 	void			draw(void);
-	GR_Graphics *   getGraphics(void) const { return m_gc;} 
+	GR_ScreenGraphics *   getGraphics(void) const { return m_gc;} 
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
@@ -106,7 +106,7 @@ public:
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
-	void								_createPreviewFromGC(GR_Graphics * gc,
+	void								_createPreviewFromGC(GR_ScreenGraphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 	UT_PropVector &						getPropVector() { return m_vecProps; }

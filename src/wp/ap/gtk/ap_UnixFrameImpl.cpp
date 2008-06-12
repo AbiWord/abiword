@@ -391,7 +391,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	GtkAdjustment *pScrollAdjustment = (scrollType == apufi_scrollX) ? m_pHadj : m_pVadj;
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
 
-	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
+	GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(getFrame()->getCurrentView()->getGraphics());
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	if(pScrollAdjustment) //this isn't guaranteed in AbiCommand
 	{

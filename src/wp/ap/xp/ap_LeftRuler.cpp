@@ -250,7 +250,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	pView->getLeftRulerInfo(&m_infoCache);
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
@@ -329,7 +329,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		return;
 	}
 	FV_View * pView = static_cast<FV_View *>(m_pView);
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if(pG == NULL)
 	{
 		return;
@@ -787,7 +787,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	iFixed = pG->tlu(s_iFixedWidth);
 	if(m_pView == NULL)
 	{
@@ -862,7 +862,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	{
 		return;
 	}
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if(m_pG && pView->isLayoutFilling())
 	{
 		if(m_pG)
@@ -1339,7 +1339,7 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 	{
 		return;
 	}
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	UT_uint32 xLeft = pG->tlu(s_iFixedHeight) / 4;
 	UT_sint32 hs = pG->tlu(3);	// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
@@ -1417,7 +1417,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	AP_LeftRulerTableInfo * pLInfo = NULL;
 	if(pInfo->m_iNumRows == 0)
 	{
@@ -1888,7 +1888,8 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 void AP_LeftRuler::_xorGuide(bool bClear)
 {
 	UT_sint32 y = m_draggingCenter;
-	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
+	FV_View *pFV = static_cast<FV_View *>(m_pView);
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pFV->getGraphics());
 	UT_ASSERT(pG);
 
 	GR_Painter painter(pG);

@@ -43,7 +43,7 @@ XAP_FontPreview::~XAP_FontPreview(void)
 	DELETEP(m_pFontPreview);
 }
 
-void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
+void XAP_FontPreview::_createFontPreviewFromGC(GR_ScreenGraphics * gc,
 											   UT_uint32 width,
 											   UT_uint32 height)
 {

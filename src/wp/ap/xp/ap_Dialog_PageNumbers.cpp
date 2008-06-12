@@ -69,7 +69,7 @@ void AP_Dialog_PageNumbers::_updatePreview(AP_Dialog_PageNumbers::tAlign align,
 	m_preview->draw ();
 }
 
-void AP_Dialog_PageNumbers::_createPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_PageNumbers::_createPreviewFromGC(GR_ScreenGraphics * gc,
 						 UT_uint32 width,
 						 UT_uint32 height)
 {
@@ -82,7 +82,7 @@ void AP_Dialog_PageNumbers::_createPreviewFromGC(GR_Graphics * gc,
 
 /**************************************************************************/
 
-AP_Preview_PageNumbers::AP_Preview_PageNumbers (GR_Graphics * gc)
+AP_Preview_PageNumbers::AP_Preview_PageNumbers (GR_ScreenGraphics * gc)
   : XAP_Preview (gc)
 {
 	char fontString [10];

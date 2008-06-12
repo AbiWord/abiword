@@ -61,7 +61,7 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 
  protected:
 	// helper methods for _showDocument
-	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual bool _createViewGraphics(GR_ScreenGraphics *& pG, UT_uint32 iZoom);
 	virtual void _setViewFocus(AV_View *pView);
 	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
 				      ap_ViewListener *& pViewListener, 
@@ -69,7 +69,7 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 				      AV_ListenerId &lid, 
 				      AV_ListenerId &lidScrollbarViewListener);	
 	virtual void _bindToolbars(AV_View *pView) { getAPWin32FrameImpl()->_bindToolbars(pView); }
-	virtual void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+	virtual void _replaceView(GR_ScreenGraphics * pG, FL_DocLayout *pDocLayout,
 			  AV_View *pView, AV_ScrollObj * pScrollObj,
 			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,

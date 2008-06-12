@@ -645,7 +645,7 @@ AP_Dialog_Paragraph::tAnswer AP_Dialog_Paragraph::getAnswer(void) const
 
 #define NUM_CHARS_FOR_SAMPLE 100
 
-void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_Paragraph::_createPreviewFromGC(GR_ScreenGraphics * gc,
 											   UT_uint32 width,
 											   UT_uint32 height)
 {

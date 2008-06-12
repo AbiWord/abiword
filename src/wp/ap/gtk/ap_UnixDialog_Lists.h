@@ -24,7 +24,7 @@
 #include "ut_timer.h"
 
 class XAP_UnixFrame;
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 /*****************************************************************/
 
@@ -93,7 +93,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	} ResponseId ;	
 	
 	GList *					m_glFonts;
-	GR_Graphics *				m_pPreviewWidget;
+	GR_ScreenGraphics *				m_pPreviewWidget;
 
 	bool					m_bManualListStyle;
 	bool					m_bDestroy_says_stopupdating;

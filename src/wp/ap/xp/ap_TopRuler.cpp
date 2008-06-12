@@ -258,7 +258,7 @@ UT_uint32 AP_TopRuler::getWidth(void) const
 	{
 		return 0;
 	}
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if ((m_pG == NULL) && (pG== NULL)) 
 	{
 		return 0;
@@ -886,7 +886,7 @@ UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	UT_return_val_if_fail( pView, 0 );
 	
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 
 	UT_sint32 xFixed = pG ? static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth))) : 0;
 	if(pView->getViewMode() != VIEW_PRINT)
@@ -1464,7 +1464,8 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 void AP_TopRuler::_xorGuide(bool bClear)
 {
-	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
+	FV_View *pFV = static_cast<FV_View *>(m_pView);
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pFV->getGraphics());
 	UT_return_if_fail (pG);
 	UT_uint32 xFixed = static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
@@ -2509,7 +2510,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 	{
 		return;
 	}
-	ap_RulerTicks tick(pView->getGraphics(),m_dim);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+	ap_RulerTicks tick(pSGC,m_dim);
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 
     UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
@@ -3340,7 +3342,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 
 	//UT_DEBUGMSG(("mouseMotion: xAbsRight %d\n", xAbsRight));
-	ap_RulerTicks tick(pView->getGraphics(),m_dim);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+	ap_RulerTicks tick(pSGC,m_dim);
 	// now to test if we are on the view, and scroll if the mouse isn't
 
 	if ((x < xFixed || x > static_cast<UT_sint32>(getWidth())) && m_draggingWhat != DW_TABTOGGLE)
@@ -4184,7 +4187,8 @@ void AP_TopRuler::_ignoreEvent(bool bDone)
 		{
 			// delete the tab
 			m_draggingWhat = dw;
-			ap_RulerTicks tick(pView->getGraphics(),m_dim);
+			GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
+			ap_RulerTicks tick(pSGC,m_dim);
 			_setTabStops(tick, tr_TABINDEX_NONE, FL_LEADER_NONE, true);
 		}
 		break;

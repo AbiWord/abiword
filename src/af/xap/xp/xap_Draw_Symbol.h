@@ -38,18 +38,18 @@ class ABI_EXPORT XAP_Draw_Symbol : public XAP_Preview
 {
 public:
 
-	XAP_Draw_Symbol(GR_Graphics * gc);
+	XAP_Draw_Symbol(GR_ScreenGraphics * gc);
 	virtual ~XAP_Draw_Symbol();
 				
 	// data twiddlers
 	void						setSelectedFont(const char *font);
 	void						setFontString();
 	void						setFontStringarea();
-	void						setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable);
+	void						setFontToGC(GR_ScreenGraphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable);
 	void						setFontfont(GR_Font * font);
 	void						setWindowSize(UT_uint32 width, UT_uint32 height);
 	void						setAreaSize(UT_uint32 width, UT_uint32 height);
-	void						setAreaGc(GR_Graphics *);
+	void						setAreaGc(GR_ScreenGraphics *);
 	void						setRow(UT_uint32 row);
 
 	const char*					getSelectedFont();
@@ -67,10 +67,10 @@ public:
 
 	void						onLeftButtonDown(UT_sint32 x, UT_sint32 y);
 	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
-	GR_Graphics * 				getGraphics(void){return m_areagc;};
+	GR_ScreenGraphics * 				getGraphics(void){return m_areagc;};
 
 protected:
-	GR_Graphics *               m_areagc;
+	GR_ScreenGraphics *               m_areagc;
 	GR_Font *			        m_pFont;	// so we can delete it
 
 	UT_uint32                   m_drawWidth;

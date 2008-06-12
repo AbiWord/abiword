@@ -81,7 +81,7 @@ class ABI_EXPORT AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
  protected:
 
 	// handle the XP-job of attaching something to our m_paragraphPreview
-	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+	void _createPreviewFromGC(GR_ScreenGraphics * gc, UT_uint32 width, UT_uint32 height);
 
 	void 			   	_setMenuItemValue(tControl item, UT_sint32 value, tOperation = op_UICHANGE);
 	UT_sint32 			_getMenuItemValue(tControl item);

@@ -31,7 +31,7 @@
 #define SCALE_MM 10
 #define SCALE_PT 10
 
-ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
+ap_RulerTicks::ap_RulerTicks(GR_ScreenGraphics * pG, UT_Dimension dim)
 {
 	char Buffer[30];
 

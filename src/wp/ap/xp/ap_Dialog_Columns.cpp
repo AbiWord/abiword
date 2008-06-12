@@ -66,7 +66,7 @@ AP_Dialog_Columns::tAnswer AP_Dialog_Columns::getAnswer(void) const
 	return m_answer;
 }
 
-void AP_Dialog_Columns::_createPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_Columns::_createPreviewFromGC(GR_ScreenGraphics * gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
 {
@@ -349,7 +349,7 @@ void AP_Dialog_Columns::setSpaceAfter(const char * szAfter)
 }
 
 
-void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns)
+void AP_Dialog_Columns::_drawColumnButton(GR_ScreenGraphics *gc, UT_Rect rect, UT_uint32 iColumns)
 {
 	GR_Painter painter(gc);
 
@@ -384,7 +384,7 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * /*pFrame*/,const ch
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-AP_Columns_preview::AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns)
+AP_Columns_preview::AP_Columns_preview(GR_ScreenGraphics * gc, AP_Dialog_Columns * pColumns)
 	: XAP_Preview(gc),
 	m_previewDrawer(),
 	m_pColumns(pColumns),
@@ -436,7 +436,7 @@ void AP_Columns_preview::draw(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween, double maxHeightPercent, double SpacePercent)
+void AP_Columns_preview_drawer::draw(GR_ScreenGraphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween, double maxHeightPercent, double SpacePercent)
 {
 	GR_Painter painter(gc);
 

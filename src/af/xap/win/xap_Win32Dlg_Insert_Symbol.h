@@ -39,7 +39,7 @@ class ABI_EXPORT XAP_Draw_Symbol_sample : public XAP_Preview
 {
 public:
 
-	XAP_Draw_Symbol_sample(XAP_Draw_Symbol *pSymbolDraw, GR_Graphics * gc) : XAP_Preview(gc)
+	XAP_Draw_Symbol_sample(XAP_Draw_Symbol *pSymbolDraw, GR_ScreenGraphics * gc) : XAP_Preview(gc)
 		{
 		m_pSymbolDraw = pSymbolDraw;
 		}

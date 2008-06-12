@@ -1381,7 +1381,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			UT_String s = "AbiWord: ";
 			s+= Args->m_sFiles[0];
 			
-			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
+			GR_ScreenGraphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
 			if(!pG)
 			{
 				// do not assert here, if the graphics creation failed, the static
@@ -1565,7 +1565,7 @@ UT_UTF8String	AP_Win32App::s_fromWinLocaleToUTF8(const char* szIn)
 	return sRslt;
 }
 
-GR_Graphics * AP_Win32App::newDefaultScreenGraphics() const
+GR_ScreenGraphics * AP_Win32App::newDefaultScreenGraphics() const
 {
 	XAP_Frame * pFrame = findValidFrame();
 	UT_return_val_if_fail( pFrame, NULL );

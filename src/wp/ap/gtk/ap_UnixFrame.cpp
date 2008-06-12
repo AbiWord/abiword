@@ -74,7 +74,7 @@ void AP_UnixFrame::setXScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_return_if_fail(pFrameImpl);
-	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
+	GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(pFrameImpl->getFrame()->getCurrentView()->getGraphics());
 
 	int width = 0;
 	if(m_pData) //this isn't guaranteed in AbiCommand
@@ -113,7 +113,7 @@ void AP_UnixFrame::setYScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_return_if_fail(pFrameImpl);
-	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
+	GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(pFrameImpl->getFrame()->getCurrentView()->getGraphics());
 
 	int height = 0;
 	if(m_pData) //this isn't guaranteed in AbiCommand
@@ -280,7 +280,8 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// this is exactly the same computation that we do in the scrolling code.
 	// I don't think we need as much precision anymore, now that we have
 	// precise rounding, but it can't really be a bad thing.
-	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
+	FV_View *pV = static_cast<FV_View*>(pView);
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pV->getGraphics());
 
 	UT_sint32 dy = static_cast<UT_sint32>
 		(pG->tluD(static_cast<UT_sint32>(pG->tduD
@@ -321,7 +322,8 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// this is exactly the same computation that we do in the scrolling code.
 	// I don't think we need as much precision anymore, now that we have
 	// precise rounding, but it can't really be a bad thing.
-	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
+	FV_View *pV = static_cast<FV_View *>(pView);
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pV->getGraphics());
 
 	UT_sint32 dx = static_cast<UT_sint32>
 		(pG->tluD(static_cast<UT_sint32>(pG->tduD
@@ -495,7 +497,7 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->hide();
 }
 
-bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+bool AP_UnixFrame::_createViewGraphics(GR_ScreenGraphics *& pG, UT_uint32 iZoom)
 {
 	//WL: experimentally hiding this
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);

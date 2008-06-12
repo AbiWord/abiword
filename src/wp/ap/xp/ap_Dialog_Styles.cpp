@@ -475,11 +475,11 @@ void AP_Dialog_Styles::ModifyFont(void)
 		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
 	UT_return_if_fail (pDialog);
 
-	// stuff the GR_Graphics into the dialog so that it
+	// stuff the GR_ScreenGraphics into the dialog so that it
 	// can query the system for font info relative to our
 	// context.
-
-	pDialog->setGraphicsContext(getView()->getLayout()->getGraphics());
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getView()->getLayout()->getGraphics());
+	pDialog->setGraphicsContext(pSGC);
 
 
 	// stuff font properties into the dialog.
@@ -1181,7 +1181,7 @@ PD_Document * AP_Dialog_Styles::getDoc(void) const
 /*!
  * Create the preview for the Paragraph preview for styles.
  */
-void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_Styles::_createParaPreviewFromGC(GR_ScreenGraphics * gc,
                                                 UT_uint32 width,
 						UT_uint32 height)
 {
@@ -1203,7 +1203,7 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
 }
 
 
-void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_Styles::_createCharPreviewFromGC(GR_ScreenGraphics * gc,
                                                 UT_uint32 width,
 						UT_uint32 height)
 {
@@ -1240,7 +1240,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
  * in a graphics context so all the results of any style change is immediately
  * obvious.
  */
-void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
+void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_ScreenGraphics * gc,
                                                 UT_uint32 width,
 											   UT_uint32 height )
 {

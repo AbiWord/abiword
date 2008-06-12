@@ -60,7 +60,7 @@ class ABI_EXPORT AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
 	void _updatePreview(AP_Dialog_PageNumbers::tAlign, AP_Dialog_PageNumbers::tControl);
 
 	// handle the XP-job of attaching something to our preview
-	void _createPreviewFromGC(GR_Graphics * gc,
+	void _createPreviewFromGC(GR_ScreenGraphics * gc,
 				  UT_uint32 width,
 				  UT_uint32 height);
 
@@ -77,7 +77,7 @@ class ABI_EXPORT AP_Preview_PageNumbers : public XAP_Preview
 {
 public:
 
-	AP_Preview_PageNumbers(GR_Graphics * gc);
+	AP_Preview_PageNumbers(GR_ScreenGraphics * gc);
 	virtual ~AP_Preview_PageNumbers(void);
 
 	// data twiddlers

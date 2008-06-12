@@ -22,7 +22,7 @@
 #ifndef AP_UNIXFRAME_H
 #define AP_UNIXFRAME_H
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 #include "xap_Frame.h"
 #include "ap_Frame.h"
@@ -59,7 +59,7 @@ protected:
 	friend class AP_UnixFrameImpl;
 
 	// implementation of helper methods for AP_Frame::_showDocument
-	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom);
+	virtual bool _createViewGraphics(GR_ScreenGraphics *& pG, UT_uint32 iZoom);
 	virtual void _bindToolbars(AV_View *pView);
 	virtual void _setViewFocus(AV_View *pView);
 	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 

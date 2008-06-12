@@ -41,7 +41,7 @@ class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
 class AV_ScrollObj;
-class GR_Graphics;
+class GR_ScreenGraphics;
 class ap_RulerTicks;
 class fp_CellContainer;
 class fp_TableContainer;
@@ -155,7 +155,7 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	    getDimension() const { return m_dim; }
 	void			    setDimension( UT_Dimension newdim );
-	GR_Graphics *       getGraphics(void) const { return m_pG;}
+	GR_ScreenGraphics *       getGraphics(void) const { return m_pG;}
 protected:
 	void                _refreshView(void);
 
@@ -166,7 +166,7 @@ protected:
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_StringPtrMap *phChanges, void *data );
 	
 	XAP_Frame *			m_pFrame;
-	GR_Graphics *		m_pG;
+	GR_ScreenGraphics *		m_pG;
 
 	// These are in device units.
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */

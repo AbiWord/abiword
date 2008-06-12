@@ -592,7 +592,7 @@ void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit)
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
-	GR_Graphics *pGr = getFrame()->getCurrentView()->getGraphics();
+	GR_ScreenGraphics *pGr = getFrame()->getCurrentView()->getGraphics();
 
 	_getVerticalScrollInfo(&si);
 	si.nPos = pGr->tdu (yoff);
@@ -607,7 +607,7 @@ void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit)
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
-	GR_Graphics *pGr = getFrame()->getCurrentView()->getGraphics();
+	GR_ScreenGraphics *pGr = getFrame()->getCurrentView()->getGraphics();
 
 	HWND hwndH = _getHwndHScroll();
 	GetScrollInfo(hwndH, SB_CTL, &si);
@@ -1099,7 +1099,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		case WM_SETCURSOR:
 		{
 			FV_View * pFV = static_cast<FV_View *>(pView);
-			GR_Graphics * pG = pFV->getGraphics();
+			GR_ScreenGraphics * pG = pFV->getGraphics();
 			GR_Win32Graphics * pGWin32 = static_cast<GR_Win32Graphics *>(pG);
 			pGWin32->handleSetCursorMessage();
 			return 1;
@@ -1343,7 +1343,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		{
 						
 			FV_View * pFV = static_cast<FV_View *>(pView);
-			GR_Graphics * pG = pFV->getGraphics();
+			GR_ScreenGraphics * pG = pFV->getGraphics();
 
 			GR_Painter caretDisablerPainter(pG); // not an elegant way to disable all carets, but it works beautifully - MARCM
 			

@@ -1119,7 +1119,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 
 /*****************************************************************/
 /*****************************************************************/
-GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
+GR_ScreenGraphics * AP_UnixApp::newDefaultScreenGraphics() const
 {
 	XAP_Frame * pFrame = findValidFrame();
 	UT_return_val_if_fail( pFrame, NULL );

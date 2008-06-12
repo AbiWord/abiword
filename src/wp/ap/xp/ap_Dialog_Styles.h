@@ -91,10 +91,10 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 
 protected:
 
-	void				  _createParaPreviewFromGC(GR_Graphics * gc,  UT_uint32 width,  UT_uint32 height);
+	void				  _createParaPreviewFromGC(GR_ScreenGraphics * gc,  UT_uint32 width,  UT_uint32 height);
 
-	void				  _createCharPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
-	void				  _createAbiPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
+	void				  _createCharPreviewFromGC(GR_ScreenGraphics * gc,  UT_uint32 width, UT_uint32 height);
+	void				  _createAbiPreviewFromGC(GR_ScreenGraphics * gc,  UT_uint32 width, UT_uint32 height);
 	void                  _populateAbiPreview(bool isNew);
 	AP_Dialog_Styles::tAnswer	  m_answer;
 	PD_Style *                    m_pCurStyle;

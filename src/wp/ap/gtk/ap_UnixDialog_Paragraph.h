@@ -23,7 +23,7 @@
 #include "ap_Dialog_Paragraph.h"
 
 class XAP_UnixFrame;
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 /*****************************************************************/
 
@@ -72,7 +72,7 @@ public:
 	    BUTTON_TABS = 0
 	  } ResponseId;
 
-	GR_Graphics	*m_unixGraphics;
+	GR_ScreenGraphics *m_unixGraphics;
 	bool		 m_bEditChanged;
 
 	// private construction functions

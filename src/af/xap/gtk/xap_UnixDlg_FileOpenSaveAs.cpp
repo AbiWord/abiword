@@ -881,7 +881,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_return_val_if_fail( pSS, 0 );
 	
 	// attach and clear the area immediately
-	GR_Graphics* pGr = new GR_UnixCairoScreenGraphics(m_preview->window);
+	GR_UnixCairoScreenGraphics* pGr = new GR_UnixCairoScreenGraphics(m_preview->window);
 
 	const gchar * file_name = gtk_file_chooser_get_uri (m_FC);
 	

@@ -72,8 +72,8 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_Error _showDocument(UT_uint32 iZoom = 100);
 
 	// helper methods for _showDocument
-	virtual bool _createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom) = 0;
-	virtual void _replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+	virtual bool _createViewGraphics(GR_ScreenGraphics *& pG, UT_uint32 iZoom) = 0;
+	virtual void _replaceView(GR_ScreenGraphics * pG, FL_DocLayout *pDocLayout,
 			  AV_View *pView, AV_ScrollObj * pScrollObj,
 			  ap_ViewListener *pViewListener, AD_Document *pOldDoc,
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,

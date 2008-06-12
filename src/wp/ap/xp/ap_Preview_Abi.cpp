@@ -56,7 +56,7 @@
 */ 
 /************************************************************************/
 
-AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth, 
+AP_Preview_Abi::AP_Preview_Abi(GR_ScreenGraphics * gc, UT_uint32 iWidth, 
 									 UT_uint32 iHeight, XAP_Frame * pFrame,PreViewMode previewMode, PD_Document * pDoc )
 	: XAP_Preview(gc)
 {

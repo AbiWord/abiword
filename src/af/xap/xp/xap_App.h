@@ -63,6 +63,7 @@ class XAP_Toolbar_Factory;
 class UT_UUIDGenerator;
 class GR_GraphicsFactory;
 class GR_Graphics;
+class GR_ScreenGraphics;
 class GR_AllocInfo;
 class XAP_InputModes;
 class AV_Listener;
@@ -246,10 +247,10 @@ public:
 	GR_GraphicsFactory *				getGraphicsFactory() const { return m_pGraphicsFactory; }
 	void						setDefaultGraphicsId(UT_uint32 i);
 	/* primary graphics allocator */
-	GR_Graphics *					newGraphics(GR_AllocInfo &ai) const;
+	GR_ScreenGraphics *					newGraphics(GR_AllocInfo &ai) const;
 	/* secondary graphics allocator; use only in special cases */
-	GR_Graphics *					newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
-	virtual GR_Graphics *				newDefaultScreenGraphics() const = 0;
+	GR_ScreenGraphics *					newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
+	virtual GR_ScreenGraphics *				newDefaultScreenGraphics() const = 0;
 	
 	virtual UT_sint32				setInputMode(const char * szName, bool bForce=false);
 	const char *					getInputMode() const;

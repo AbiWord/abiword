@@ -56,7 +56,7 @@ public:
 	virtual bool					initialize(bool has_display);
 	virtual XAP_Frame *				newFrame(const char *geometry = NULL);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
-	virtual GR_Graphics *           newDefaultScreenGraphics() const;
+	virtual GR_ScreenGraphics *           newDefaultScreenGraphics() const;
 
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,

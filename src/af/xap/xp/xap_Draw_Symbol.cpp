@@ -35,7 +35,7 @@
 static UT_UCSChar MaxWidthChar = 0;
 static UT_UCSChar MaxHeightChar = 0;
 
-XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
+XAP_Draw_Symbol::XAP_Draw_Symbol(GR_ScreenGraphics * gc)
 	: XAP_Preview(gc),
 	  m_areagc(NULL),
 	  m_pFont(NULL),
@@ -62,7 +62,7 @@ void XAP_Draw_Symbol::setWindowSize( UT_uint32 width, UT_uint32 height)
 	m_drawHeight = m_gc->tlu(height);
 }
 
-void XAP_Draw_Symbol::setAreaGc( GR_Graphics * gc)
+void XAP_Draw_Symbol::setAreaGc( GR_ScreenGraphics * gc)
 {
 	m_areagc = gc;   
 }
@@ -79,7 +79,7 @@ void XAP_Draw_Symbol::setFontString( void )
 	setFontToGC(m_gc, m_drawWidth / 32, m_drawHeight / 7);	
 }
 
-void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable)
+void XAP_Draw_Symbol::setFontToGC(GR_ScreenGraphics *p_gc, UT_uint32 MaxWidthAllowable, UT_uint32 MaxHeightAllowable)
 {
 	UT_ASSERT(p_gc);
 	UT_ASSERT(MaxWidthAllowable);
@@ -446,7 +446,9 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
-	m_gc->fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
+	// Why i ihave to upcast manually here is beyond me -Rob.
+	GR_Graphics *gc = m_gc;
+	gc->fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
 	if(wc != GR_CW_ABSENT)
 	{
 		m_gc->drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);

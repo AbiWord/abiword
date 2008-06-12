@@ -675,12 +675,12 @@ XAP_Dialog * XAP_Win32Dialog_PrintPreview::static_constructor(XAP_DialogFactory 
   return new XAP_Win32Dialog_PrintPreview (pFactory,id);
 }
 
-GR_Graphics * XAP_Win32Dialog_PrintPreview::getPrinterGraphicsContext(void)
+GR_ScreenGraphics * XAP_Win32Dialog_PrintPreview::getPrinterGraphicsContext(void)
 {
   return m_pPrintGraphics;
 }
 
-void XAP_Win32Dialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * /*pGraphics*/)
+void XAP_Win32Dialog_PrintPreview::releasePrinterGraphicsContext(GR_ScreenGraphics * /*pGraphics*/)
 {
   DELETEP(m_pPrintGraphics);
 }

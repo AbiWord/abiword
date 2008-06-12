@@ -100,12 +100,12 @@ void XAP_Dialog_FontChooser::setDrawString(const UT_UCSChar * str)
 	    UT_UCS4_cloneString(&m_drawString, str);
 	}
 }
-void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
+void XAP_Dialog_FontChooser::setGraphicsContext(GR_ScreenGraphics * pGraphics)
 {
 	m_pGraphics = pGraphics;
 }
 
-void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
+void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_ScreenGraphics * gc,
 													  UT_uint32 width,
 													  UT_uint32 height)
 {
@@ -499,7 +499,7 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 /////////////////////////////////////////////////////////////////////////
 
-XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackground)
+XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_ScreenGraphics * gc, const gchar * pszClrBackground)
 	: XAP_Preview(gc),
 		m_pFont(NULL),
 		m_iAscent(0),
@@ -652,8 +652,11 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	GR_Painter painter(m_gc);
 
-	if(pszBGColor)
-		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
+	if(pszBGColor) {
+		// Why i ihave to upcast manually here is beyond me -Rob.
+		GR_Graphics *gc = m_gc;
+		gc->fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
+	}
 //
 // Do the draw chars at last!
 //
@@ -697,5 +700,7 @@ void XAP_Preview_FontPreview::clearScreen(void)
 	GR_Painter painter(m_gc);
 
 	// clear the whole drawing area, except for the border
-	m_gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
+	// Why i ihave to upcast manually here is beyond me -Rob.
+	GR_Graphics *gc = m_gc;	
+	gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
 }

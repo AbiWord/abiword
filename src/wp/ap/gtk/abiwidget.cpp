@@ -1048,7 +1048,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
-		GR_Graphics * pG = pView->getGraphics();
+		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 		if(pG)
 		{
 			dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);

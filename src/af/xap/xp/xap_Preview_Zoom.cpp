@@ -29,7 +29,7 @@
 #include "xap_Preview_Zoom.h"
 
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_ScreenGraphics * gc)
-  : XAP_Preview((GR_Graphics *) gc), 
+  : XAP_Preview((GR_ScreenGraphics *) gc), 
 	m_sgc(gc)
 {
 	m_string = NULL;

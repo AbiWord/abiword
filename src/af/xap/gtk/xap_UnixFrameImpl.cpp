@@ -299,7 +299,7 @@ static void s_pasteFile(const UT_UTF8String & file, XAP_Frame * pFrame)
 		FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 		// we'll share the same graphics context, which won't matter because
 		// we only use it to get font metrics and stuff and not actually draw
-		GR_Graphics *pGraphics = pView->getGraphics();
+		GR_ScreenGraphics *pGraphics = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	    // create a new layout and view object for the doc
 	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
 	    FV_View copyView(pApp,0,pDocLayout);
@@ -795,7 +795,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		pUnixFrameImpl->m_bDoZoomUpdate = false;
 		if(pView && !pFrame->isFrameLocked())
 		{
-				GR_Graphics * pGr = pView->getGraphics ();
+				GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics ());
 				UT_Rect rClip;
 				rClip.left = pGr->tlu(0);
 				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
@@ -831,7 +831,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		pUnixFrameImpl->m_bDoZoomUpdate = false;
 		if(pView && !pFrame->isFrameLocked())
 		{
-				GR_Graphics * pGr = pView->getGraphics ();
+				GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics ());
 				UT_Rect rClip;
 				rClip.left = pGr->tlu(0);
 				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
@@ -1138,7 +1138,7 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	}
 	if(pView)
 	{
-		GR_Graphics * pGr = pView->getGraphics ();
+		GR_ScreenGraphics * pGr = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics ());
 		UT_Rect rClip;
 		xxx_UT_DEBUGMSG(("Expose area: x %d y %d width %d  height %d \n",pExposeEvent->area.x,pExposeEvent->area.y,pExposeEvent->area.width,pExposeEvent->area.height));
 		rClip.left = pGr->tlu(pExposeEvent->area.x);
@@ -1169,7 +1169,7 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 	if(!pV || (pV->getPoint() == 0))
 		return TRUE;
 
-	GR_Graphics * pG = pV->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pV->getGraphics());
 	if(pG->isDontRedraw())
 	{
 //
@@ -1301,7 +1301,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_ScreenGraphics::Cursor c)
 	FV_View * pView = static_cast<FV_View *>(getFrame()->getCurrentView());
 	if(pView)
 	{
-		GR_Graphics * pG = pView->getGraphics();
+		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 		if(pG && pG->queryProperties( GR_Graphics::DGP_PAPER))
 			return;
 	}

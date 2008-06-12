@@ -53,7 +53,7 @@ public:
 	//virtual void	activate(void);
 	
 protected:
-	void			_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
+	void			_createAnnotationPreviewFromGC(GR_ScreenGraphics * gc, UT_uint32 width, UT_uint32 height);
 	UT_sint32		m_width;
 	UT_sint32		m_height;
 	UT_sint32		m_left;

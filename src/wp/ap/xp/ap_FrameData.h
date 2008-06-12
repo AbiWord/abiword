@@ -24,7 +24,7 @@
 #include "ut_types.h"
 #include "fv_View.h"
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 class FL_DocLayout;
 class AP_TopRuler;
 class AP_LeftRuler;
@@ -47,7 +47,7 @@ public:
 
 	FL_DocLayout *		m_pDocLayout;
 	AV_View*            m_pRootView; // set for cloned frames ... must not be freed !!!
-	GR_Graphics *		m_pG;
+	GR_ScreenGraphics *		m_pG;
 
 	bool				m_bInsertMode;
 	bool				m_bShowRuler;

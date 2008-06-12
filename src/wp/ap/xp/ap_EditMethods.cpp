@@ -1617,7 +1617,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
-		GR_Graphics * pG = pView->getGraphics();
+		GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 		if(pG)
 		{
 			dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_WAIT);
@@ -4360,7 +4360,7 @@ Defun1(warpInsPtPrevLine)
 // Finish handling current expose before doing the next movement
 //
 	UT_return_val_if_fail (pView, false);
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if(pG && pG->isExposePending())
 	{
 		return true;
@@ -4384,7 +4384,7 @@ Defun1(warpInsPtNextLine)
 // Finish handling current expose before doing the next movement
 //
 	UT_return_val_if_fail (pView, false);
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if(pG && pG->isExposePending())
 	{
 		return true;
@@ -4412,7 +4412,7 @@ Defun1(cursorDefault)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DEFAULT);
@@ -4430,7 +4430,7 @@ Defun1(cursorIBeam)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_IBEAM);
@@ -4449,7 +4449,7 @@ Defun1(cursorTOC)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
@@ -4467,7 +4467,7 @@ Defun1(cursorRightArrow)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_RIGHTARROW);
@@ -4486,7 +4486,7 @@ Defun1(cursorVline)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_VLINE_DRAG);
@@ -4505,7 +4505,7 @@ Defun1(cursorTopCell)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_DOWNARROW);
@@ -4524,7 +4524,7 @@ Defun1(cursorHline)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_HLINE_DRAG);
@@ -4542,7 +4542,7 @@ Defun1(cursorLeftArrow)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LEFTARROW);
@@ -4560,7 +4560,7 @@ Defun1(cursorImage)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_IMAGE);
@@ -4578,7 +4578,7 @@ Defun1(cursorImageSize)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 	{
 		// set the mouse cursor to the appropriate shape
@@ -5797,7 +5797,7 @@ Defun(insertData)
 //
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	_Freq * pFreq = new _Freq(pView,pNewData,sActualInsertData);
 	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
@@ -7617,11 +7617,12 @@ static bool s_doFontDlg(FV_View * pView)
 	XAP_Dialog_FontChooser * pDialog
 		= static_cast<XAP_Dialog_FontChooser *>(pDialogFactory->requestDialog(id));
 UT_return_val_if_fail(pDialog, false);
-	// stuff the GR_Graphics into the dialog so that it
+	// stuff the GR_ScreenGraphics into the dialog so that it
 	// can query the system for font info relative to our
 	// context.
 
-	pDialog->setGraphicsContext(pView->getLayout()->getGraphics());
+	GR_ScreenGraphics * pGC =  dynamic_cast<GR_ScreenGraphics *>(pView->getLayout()->getGraphics());
+	pDialog->setGraphicsContext(pGC);
 
 	// get current font info from pView
 
@@ -10513,7 +10514,7 @@ Defun1(insFile)
 	
 	// we'll share the same graphics context, which won't matter because
 	// we only use it to get font metrics and stuff and not actually draw
-	GR_Graphics *pGraphics = pView->getGraphics();
+	GR_ScreenGraphics * pGraphics = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	
 	if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
 			      NULL, &pathName, &fType))
@@ -10566,11 +10567,13 @@ Defun1(insTextBox)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
 
-	GR_Graphics *pGC;
+	FV_View *pFV;
+	GR_ScreenGraphics *pGC;
 
-	static_cast<FV_View *>(pView)->getFrameEdit()->setMode(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT);
-	pGC = static_cast<FV_View *>(pView)->getGraphics();
-	dynamic_cast<GR_ScreenGraphics *>(pGC)->setCursor(GR_ScreenGraphics::GR_CURSOR_CROSSHAIR);
+	pFV = static_cast<FV_View *>(pView);
+	pFV->getFrameEdit()->setMode(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT);
+	pGC = dynamic_cast<GR_ScreenGraphics *>(pFV->getGraphics());
+	pGC->setCursor(GR_ScreenGraphics::GR_CURSOR_CROSSHAIR);
 	return true;
 }
 
@@ -13782,7 +13785,7 @@ Defun(hyperlinkStatusBar)
 
 	UT_return_val_if_fail(pView,false);
 
-	GR_Graphics * pG = pView->getGraphics();
+	GR_ScreenGraphics * pG = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	if (pG)
 		dynamic_cast<GR_ScreenGraphics *>(pG)->setCursor(GR_ScreenGraphics::GR_CURSOR_LINK);
 

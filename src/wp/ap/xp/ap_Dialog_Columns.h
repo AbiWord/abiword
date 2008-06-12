@@ -40,14 +40,14 @@ class ABI_EXPORT AP_Columns_preview_drawer
 {
 public:
 
-	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines, double maxHeightPercent, double SpaceAfterPercent);
+	void			draw(GR_ScreenGraphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines, double maxHeightPercent, double SpaceAfterPercent);
 };
 
 class ABI_EXPORT AP_Columns_preview : public XAP_Preview
 {
 public:
 
-	AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns);
+	AP_Columns_preview(GR_ScreenGraphics * gc, AP_Dialog_Columns * pColumns);
 	virtual ~AP_Columns_preview(void);
 
 	// data twiddlers
@@ -98,10 +98,10 @@ public:
 	bool               isMaxHeightChanged(void) const {return m_bMaxHeightChanged;}
 
 protected:
-	void			   _createPreviewFromGC(GR_Graphics * gc,
+	void			   _createPreviewFromGC(GR_ScreenGraphics * gc,
 							UT_uint32 width,
 							UT_uint32 height);
-	void			   _drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns);
+	void			   _drawColumnButton(GR_ScreenGraphics *gc, UT_Rect rect, UT_uint32 iColumns);
 	void			_convertToPreferredUnits(XAP_Frame * pFrame,const
 	char *sz, gchar * pRet);
 	AP_Dialog_Columns::tAnswer m_answer;

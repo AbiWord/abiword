@@ -49,7 +49,7 @@
 #define DEFAULT_LINE_SPACING 0
 
 AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
-													   GR_Graphics * gc,
+													   GR_ScreenGraphics * gc,
 													   AP_Dialog_Paragraph::tAlignState align,
 													   UT_uint32 fontHeight)
 {
@@ -261,7 +261,7 @@ void AP_Preview_Paragraph_Block::setFormat(const gchar * pageLeftMargin,
 
 /************************************************************************/
 
-AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_ScreenGraphics * gc,
 										   const UT_UCSChar * text,
 										   AP_Dialog_Lists * dlg)
   : XAP_Preview(gc), m_dir(UT_BIDI_LTR)
@@ -345,7 +345,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	m_followingBlock->setText(s.ucs4_str().ucs4_str());
 }
 
-AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_ScreenGraphics * gc,
 					   const UT_UCSChar * text,
 										   XAP_Dialog * dlg) : XAP_Preview(gc), m_dir(UT_BIDI_LTR)
 {
@@ -401,7 +401,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	m_followingBlock->setText(s.ucs4_str().ucs4_str());
 }
 
-AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_ScreenGraphics * gc,
 					   const UT_UCSChar * text,
 					   AP_Dialog_Paragraph * dlg)
 	: XAP_Preview(gc),m_dir(UT_BIDI_LTR)
@@ -560,7 +560,9 @@ void AP_Preview_Paragraph::_drawPageBackground(void)
 {
 	// clear area
 	GR_Painter painter(m_gc);
-	m_gc->fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
+	// Why i ihave to upcast manually here is beyond me -Rob.
+	GR_Graphics *gc = m_gc;
+	gc->fillRect(*m_clrWhite, 0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
 }
 
 void AP_Preview_Paragraph::_drawPageBorder(void)

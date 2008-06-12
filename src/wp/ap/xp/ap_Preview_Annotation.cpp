@@ -71,7 +71,7 @@ UT_uint32 AP_Preview_Annotation::getAnnotationID()
 	return m_iAID;
 }
 
-void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height)
+void AP_Preview_Annotation::_createAnnotationPreviewFromGC(GR_ScreenGraphics * gc, UT_uint32 width, UT_uint32 height)
 {
 	UT_ASSERT(gc);
 	m_gc = gc;
@@ -111,7 +111,7 @@ void AP_Preview_Annotation::setSizeFromAnnotation(void)
 
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	UT_return_if_fail(pView);
-	GR_Graphics * pVGraphics = pView->getGraphics();
+	GR_ScreenGraphics * pVGraphics = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 	UT_return_if_fail(pVGraphics);
 	GR_Font * pFont = pVGraphics->findFont(pszFamily, pszStyle,
 							 pszVariant, pszWeight,
@@ -263,7 +263,9 @@ void AP_Preview_Annotation::clearScreen(void)
 	GR_Painter painter(m_gc);
 	
 	// clear the whole drawing area, except for the border
-	m_gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
+	// Why i ihave to upcast manually here is beyond me -Rob.
+	GR_Graphics *gc = m_gc;
+	gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
 }
 
 void AP_Preview_Annotation::setActiveFrame(XAP_Frame *pFrame)

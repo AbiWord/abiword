@@ -44,7 +44,7 @@ public:
 	void							setText(const gchar * pFontFamily);
 	void							draw(void);
 protected:
-	void                            _createFontPreviewFromGC(GR_Graphics * gc,
+	void                            _createFontPreviewFromGC(GR_ScreenGraphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 	const gchar *                m_pColorBackground;

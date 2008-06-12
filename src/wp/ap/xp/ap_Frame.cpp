@@ -61,7 +61,7 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 	{
 		FL_DocLayout * pDocLayout = pView->getLayout();
 		pDocLayout->incrementGraphicTick();
-		GR_Graphics * pOldGraphics = pView->getGraphics();
+		GR_ScreenGraphics * pOldGraphics = dynamic_cast<GR_ScreenGraphics *>(pView->getGraphics());
 		pOldGraphics->setZoomPercentage(iZoom);
 		pOldGraphics->clearFont();
 
@@ -632,7 +632,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 // 	static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(true);
 
-	GR_Graphics * pG = NULL;
+	GR_ScreenGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
 	AV_ScrollObj * pScrollObj = NULL;
@@ -731,7 +731,7 @@ Cleanup:
 	return UT_IE_ADDLISTENERERROR;
 }
 
-void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
+void AP_Frame::_replaceView(GR_ScreenGraphics * pG, FL_DocLayout *pDocLayout,
 			    AV_View *pView, AV_ScrollObj * pScrollObj,
 			    ap_ViewListener *pViewListener, AD_Document *pOldDoc,
 			    ap_Scrollbar_ViewListener *pScrollbarViewListener,
