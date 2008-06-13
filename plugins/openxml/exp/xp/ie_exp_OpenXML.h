@@ -70,10 +70,10 @@ public:
 	UT_Error finishText();
 	UT_Error startRun();
 	UT_Error finishRun();
-	UT_Error startRunProperties();
-	UT_Error finishRunProperties();
-	UT_Error startParagraphProperties();
-	UT_Error finishParagraphProperties();
+	UT_Error startRunProperties(int target);
+	UT_Error finishRunProperties(int target);
+	UT_Error startParagraphProperties(int target);
+	UT_Error finishParagraphProperties(int target);
 	UT_Error startStyle(const char* name);
 	UT_Error finishStyle();
 	UT_Error writeDefaultStyle();

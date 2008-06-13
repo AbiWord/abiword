@@ -63,7 +63,7 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
 
-	err = exporter->startParagraphProperties();
+	err = exporter->startParagraphProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
 
@@ -132,7 +132,7 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
-	return exporter->finishParagraphProperties();
+	return exporter->finishParagraphProperties(TARGET_DOCUMENT);
 }
 
 

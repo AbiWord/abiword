@@ -226,33 +226,33 @@ UT_Error IE_Exp_OpenXML::finishRun()
 /**
  * Starts exporting the OXML_Element_Run object's properties
  */
-UT_Error IE_Exp_OpenXML::startRunProperties()
+UT_Error IE_Exp_OpenXML::startRunProperties(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:rPr>");
+	return writeTargetStream(target, "<w:rPr>");
 }
 
 /**
  * Finishes exporting the OXML_Element_Run object's properties
  */
-UT_Error IE_Exp_OpenXML::finishRunProperties()
+UT_Error IE_Exp_OpenXML::finishRunProperties(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "</w:rPr>");
+	return writeTargetStream(target, "</w:rPr>");
 }
 
 /**
  * Starts exporting the OXML_Element_Paragraph object's properties
  */
-UT_Error IE_Exp_OpenXML::startParagraphProperties()
+UT_Error IE_Exp_OpenXML::startParagraphProperties(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:pPr>");
+	return writeTargetStream(target, "<w:pPr>");
 }
 
 /**
  * Finishes exporting the OXML_Element_Paragraph object's properties
  */
-UT_Error IE_Exp_OpenXML::finishParagraphProperties()
+UT_Error IE_Exp_OpenXML::finishParagraphProperties(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "</w:pPr>");
+	return writeTargetStream(target, "</w:pPr>");
 }
 
 /**
@@ -1015,14 +1015,14 @@ UT_Error IE_Exp_OpenXML::startStyle(const char* style)
 	str += style;
 	str += "\"><w:name w:val=\"";
 	str += style;
-	str += "\"/><w:pPr></w:pPr><w:rPr>";
+	str += "\"/>";
 
 	return writeTargetStream(TARGET_STYLES, str.c_str());
 }
 
 UT_Error IE_Exp_OpenXML::finishStyle()
 {
-	return writeTargetStream(TARGET_STYLES, "</w:rPr></w:style>");
+	return writeTargetStream(TARGET_STYLES, "</w:style>");
 }
 
 UT_Error IE_Exp_OpenXML::writeDefaultStyle()
