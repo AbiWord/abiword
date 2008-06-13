@@ -75,7 +75,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "bold"))
 		{
-			err = exporter->setBold();
+			err = exporter->setBold(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
@@ -85,7 +85,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "italic"))
 		{
-			err = exporter->setItalic();
+			err = exporter->setItalic(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
@@ -93,7 +93,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("font-size", szValue) == UT_OK)
 	{
-		err = exporter->setFontSize(szValue);
+		err = exporter->setFontSize(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
@@ -102,21 +102,21 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(strstr(szValue, "underline"))
 		{
-			err = exporter->setUnderline();
+			err = exporter->setUnderline(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
 
 		if(strstr(szValue, "overline"))
 		{
-			err = exporter->setOverline();
+			err = exporter->setOverline(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
 
 		if(strstr(szValue, "line-through"))
 		{
-			err = exporter->setLineThrough();
+			err = exporter->setLineThrough(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
@@ -126,14 +126,14 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "superscript"))
 		{
-			err = exporter->setSuperscript();
+			err = exporter->setSuperscript(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
 
 		else if(!strcmp(szValue, "subscript"))
 		{
-			err = exporter->setSubscript();
+			err = exporter->setSubscript(TARGET_DOCUMENT);
 			if(err != UT_OK)
 				return err;
 		}
@@ -141,14 +141,14 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("color", szValue) == UT_OK)
 	{
-		err = exporter->setTextColor(szValue);
+		err = exporter->setTextColor(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("bgcolor", szValue) == UT_OK)
 	{
-		err = exporter->setTextBackgroundColor(szValue);
+		err = exporter->setTextBackgroundColor(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}

@@ -321,48 +321,72 @@ UT_Error IE_Exp_OpenXML::finishParagraphProperties()
 }
 
 /**
- * Sets bold style
+ * Writes to the target stream
  */
-UT_Error IE_Exp_OpenXML::setBold()
+UT_Error IE_Exp_OpenXML::writeTargetStream(int target, const char* str)
 {
-	if(!gsf_output_puts(documentStream, "<w:b/>"))
+	if(!str) 
+		return UT_IE_COULDNOTWRITE;
+
+	if(!gsf_output_puts(getTargetStream(target), str))
 	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set bold style in document.xml file\n"));	
+		UT_DEBUGMSG(("FRT: ERROR, cannot write string %s to target stream %d\n", str, target));	
 		return UT_IE_COULDNOTWRITE;
 	}
 	return UT_OK;
+}
+
+/**
+ * Retrieves the target stream
+ */
+GsfOutput* IE_Exp_OpenXML::getTargetStream(int target)
+{
+	switch(target)
+	{
+		case TARGET_STYLES:
+			return stylesStream;
+		case TARGET_DOCUMENT:
+			return documentStream;
+		case TARGET_DOCUMENT_RELATION:
+			return wordRelStream;
+		case TARGET_RELATION:
+			return relStream;
+		case TARGET_CONTENT:
+			return contentTypesStream;
+		default:
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return documentStream;
+	}
+}
+	
+/**
+ * Sets bold style
+ */
+UT_Error IE_Exp_OpenXML::setBold(int target)
+{
+	return writeTargetStream(target, "<w:b/>");
 }
 
 /**
  * Sets italic style
  */
-UT_Error IE_Exp_OpenXML::setItalic()
+UT_Error IE_Exp_OpenXML::setItalic(int target)
 {
-	if(!gsf_output_puts(documentStream, "<w:i/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set italic style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(target, "<w:i/>");
 }
 
 /**
  * Sets underline style
  */
-UT_Error IE_Exp_OpenXML::setUnderline()
+UT_Error IE_Exp_OpenXML::setUnderline(int target)
 {
-	if(!gsf_output_puts(documentStream, "<w:u w:val=\"single\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set underline style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(target, "<w:u w:val=\"single\"/>");
 }
 
 /**
  * Sets overline style
  */
-UT_Error IE_Exp_OpenXML::setOverline()
+UT_Error IE_Exp_OpenXML::setOverline(int /* target */)
 {
 	//TODO: Is there an overline option in Word 2007?
 	return UT_OK;
@@ -371,191 +395,156 @@ UT_Error IE_Exp_OpenXML::setOverline()
 /**
  * Sets line-through style
  */
-UT_Error IE_Exp_OpenXML::setLineThrough()
+UT_Error IE_Exp_OpenXML::setLineThrough(int target)
 {
-	if(!gsf_output_puts(documentStream, "<w:strike/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set line-through style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(target, "<w:strike/>");
 }
 
 /**
  * Sets superscript style
  */
-UT_Error IE_Exp_OpenXML::setSuperscript()
+UT_Error IE_Exp_OpenXML::setSuperscript(int target)
 {
-	if(!gsf_output_puts(documentStream, "<w:vertAlign w:val=\"superscript\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set superscript style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(target, "<w:vertAlign w:val=\"superscript\"/>");
 }
 
 /**
  * Sets subscript style
  */
-UT_Error IE_Exp_OpenXML::setSubscript()
+UT_Error IE_Exp_OpenXML::setSubscript(int target)
 {
-	if(!gsf_output_puts(documentStream, "<w:vertAlign w:val=\"subscript\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set subscript style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(target, "<w:vertAlign w:val=\"subscript\"/>");
 }
 
 /**
  * Sets text color style
  */
-UT_Error IE_Exp_OpenXML::setTextColor(const gchar* color)
+UT_Error IE_Exp_OpenXML::setTextColor(int target, const gchar* color)
 {
-	if(!gsf_output_printf(documentStream, "<w:color w:val=\"%s\"/>", UT_colorToHex(color).c_str()))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set color style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:color w:val=\"");
+	str += UT_colorToHex(color);
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets text background color style
  */
-UT_Error IE_Exp_OpenXML::setTextBackgroundColor(const gchar* color)
+UT_Error IE_Exp_OpenXML::setTextBackgroundColor(int target, const gchar* color)
 {
-	if(!gsf_output_printf(documentStream, "<w:shd w:fill=\"%s\"/>", UT_colorToHex(color).c_str()))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set background color style in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:shd w:fill=\"");
+	str += UT_colorToHex(color);
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets font size
  */
-UT_Error IE_Exp_OpenXML::setFontSize(const gchar* size)
+UT_Error IE_Exp_OpenXML::setFontSize(int target, const gchar* size)
 {
-	if(!gsf_output_printf(documentStream, "<w:sz w:val=\"%s\"/>", computeFontSize(size)))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set font size in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:sz w:val=\"");
+	str += computeFontSize(size);
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets text alignment
  */
-UT_Error IE_Exp_OpenXML::setTextAlignment(const gchar* alignment)
+UT_Error IE_Exp_OpenXML::setTextAlignment(int target, const gchar* alignment)
 {
-	if(!gsf_output_printf(documentStream, "<w:jc w:val=\"%s\"/>", alignment))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set text alignment in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:jc w:val=\"");
+	str += alignment;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets text indentation
  */
-UT_Error IE_Exp_OpenXML::setTextIndentation(const gchar* indentation)
+UT_Error IE_Exp_OpenXML::setTextIndentation(int target, const gchar* indentation)
 {
 	const gchar* twips = convertToPositiveTwips(indentation);
 	if(!twips)
 		return UT_OK;
 
-	gboolean printed = false;
+	std::string str("<w:ind ");
 
 	if(isNegativeQuantity(indentation))
-		printed = gsf_output_printf(documentStream, "<w:ind w:hanging=\"%s\"/>", twips);
+		str += "w:hanging=\"";
 	else
-		printed = gsf_output_printf(documentStream, "<w:ind w:firstLine=\"%s\"/>", twips);
+		str += "w:firstLine=\"";
 
-	if(!printed)
-	{	
-		UT_DEBUGMSG(("FRT: ERROR, cannot set text indentation in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-
-	return UT_OK;
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets paragraph left margin
  */
-UT_Error IE_Exp_OpenXML::setParagraphLeftMargin(const gchar* margin)
+UT_Error IE_Exp_OpenXML::setParagraphLeftMargin(int target, const gchar* margin)
 {
 	const gchar* twips = convertToTwips(margin);
 	if(!twips)
 		return UT_OK;
 
-	if(!gsf_output_printf(documentStream, "<w:ind w:left=\"%s\"/>", twips))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph left margin in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:ind w:left=\"");
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets paragraph right margin
  */
-UT_Error IE_Exp_OpenXML::setParagraphRightMargin(const gchar* margin)
+UT_Error IE_Exp_OpenXML::setParagraphRightMargin(int target, const gchar* margin)
 {
 	const gchar* twips = convertToTwips(margin);
 	if(!twips)
 		return UT_OK;
 
-	if(!gsf_output_printf(documentStream, "<w:ind w:right=\"%s\"/>", twips))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph right margin in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:ind w:right=\"");
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets paragraph top margin
  */
-UT_Error IE_Exp_OpenXML::setParagraphTopMargin(const gchar* margin)
+UT_Error IE_Exp_OpenXML::setParagraphTopMargin(int target, const gchar* margin)
 {
 	const gchar* twips = convertToPositiveTwips(margin);
 	if(!twips)
 		return UT_OK;
 
-	if(!gsf_output_printf(documentStream, "<w:spacing w:before=\"%s\"/>", twips))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph top margin in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:spacing w:before=\"");
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets paragraph bottom margin
  */
-UT_Error IE_Exp_OpenXML::setParagraphBottomMargin(const gchar* margin)
+UT_Error IE_Exp_OpenXML::setParagraphBottomMargin(int target, const gchar* margin)
 {
 	const gchar* twips = convertToPositiveTwips(margin);
 	if(!twips)
 		return UT_OK;
 
-	if(!gsf_output_printf(documentStream, "<w:spacing w:after=\"%s\"/>", twips))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set paragraph bottom margin in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:spacing w:after=\"");
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
  * Sets line height
  */
-UT_Error IE_Exp_OpenXML::setLineHeight(const gchar* height)
+UT_Error IE_Exp_OpenXML::setLineHeight(int target, const gchar* height)
 {
 	const gchar* twips = NULL;
 	const gchar* lineRule = NULL;
@@ -581,12 +570,12 @@ UT_Error IE_Exp_OpenXML::setLineHeight(const gchar* height)
 	if(!twips)
 		return UT_OK;
 	
-	if(!gsf_output_printf(documentStream, "<w:spacing w:line=\"%s\" w:lineRule=\"%s\"/>", twips, lineRule))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set line height in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	std::string str("<w:spacing w:line=\"");
+	str += twips;
+	str += "\" w:lineRule=\"";
+	str += lineRule;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
 }
 
 /**
@@ -1097,17 +1086,6 @@ UT_Error IE_Exp_OpenXML::startStyle(const char* style)
 		return UT_IE_COULDNOTWRITE;
 	}
 
-	return UT_OK;
-}
-
-//TODO: update all the set functions so that they can be used for streaming multiple files.
-UT_Error IE_Exp_OpenXML::setStyleFontSize(const gchar* size)
-{
-	if(!gsf_output_printf(stylesStream, "<w:sz w:val=\"%s\"/>", computeFontSize(size)))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot set font size in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
 	return UT_OK;
 }
 

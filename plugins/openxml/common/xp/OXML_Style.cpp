@@ -59,7 +59,7 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 	//TODO: add more properties
 	if(getProperty("font-size", szValue) == UT_OK)
 	{
-		err = exporter->setStyleFontSize(szValue);
+		err = exporter->setFontSize(TARGET_STYLES, szValue);
 		if(err != UT_OK)
 			return err;
 	}

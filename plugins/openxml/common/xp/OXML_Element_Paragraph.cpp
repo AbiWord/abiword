@@ -71,19 +71,19 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "justify"))
 		{
-			err = exporter->setTextAlignment("both");
+			err = exporter->setTextAlignment(TARGET_DOCUMENT, "both");
 		}
 		else if(!strcmp(szValue, "center"))
 		{
-			err = exporter->setTextAlignment("center");
+			err = exporter->setTextAlignment(TARGET_DOCUMENT, "center");
 		}
 		else if(!strcmp(szValue, "right"))
 		{
-			err = exporter->setTextAlignment("right");
+			err = exporter->setTextAlignment(TARGET_DOCUMENT, "right");
 		}
 		else if(!strcmp(szValue, "left"))
 		{
-			err = exporter->setTextAlignment("left");
+			err = exporter->setTextAlignment(TARGET_DOCUMENT, "left");
 		}
 
 		if(err != UT_OK)
@@ -92,42 +92,42 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("text-indent", szValue) == UT_OK)
 	{
-		err = exporter->setTextIndentation(szValue);
+		err = exporter->setTextIndentation(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-left", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphLeftMargin(szValue);
+		err = exporter->setParagraphLeftMargin(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-right", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphRightMargin(szValue);
+		err = exporter->setParagraphRightMargin(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-bottom", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphBottomMargin(szValue);
+		err = exporter->setParagraphBottomMargin(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-top", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphTopMargin(szValue);
+		err = exporter->setParagraphTopMargin(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("line-height", szValue) == UT_OK)
 	{
-		err = exporter->setLineHeight(szValue);
+		err = exporter->setLineHeight(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}

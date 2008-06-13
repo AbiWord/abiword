@@ -42,6 +42,13 @@
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-output-memory.h>
 
+//target streams
+#define TARGET_STYLES 1
+#define TARGET_DOCUMENT 2
+#define TARGET_DOCUMENT_RELATION 3
+#define TARGET_RELATION 4
+#define TARGET_CONTENT 5
+
 class OXML_Document;
 
 /**
@@ -70,24 +77,23 @@ public:
 	UT_Error startStyle(const char* name);
 	UT_Error finishStyle();
 	UT_Error writeDefaultStyle();
-	UT_Error setBold();
-	UT_Error setItalic();
-	UT_Error setUnderline();
-	UT_Error setOverline();
-	UT_Error setLineThrough();
-	UT_Error setSuperscript();
-	UT_Error setSubscript();
-	UT_Error setTextColor(const gchar* color);
-	UT_Error setTextBackgroundColor(const gchar* color);
-	UT_Error setTextAlignment(const gchar* alignment);
-	UT_Error setTextIndentation(const gchar* indentation);
-	UT_Error setParagraphLeftMargin(const gchar* margin);
-	UT_Error setParagraphRightMargin(const gchar* margin);
-	UT_Error setParagraphTopMargin(const gchar* margin);
-	UT_Error setParagraphBottomMargin(const gchar* margin);
-	UT_Error setLineHeight(const gchar* height);
-	UT_Error setFontSize(const gchar* size);
-	UT_Error setStyleFontSize(const gchar* size);
+	UT_Error setBold(int target);
+	UT_Error setItalic(int target);
+	UT_Error setUnderline(int target);
+	UT_Error setOverline(int target);
+	UT_Error setLineThrough(int target);
+	UT_Error setSuperscript(int target);
+	UT_Error setSubscript(int target);
+	UT_Error setTextColor(int target, const gchar* color);
+	UT_Error setTextBackgroundColor(int target, const gchar* color);
+	UT_Error setTextAlignment(int target, const gchar* alignment);
+	UT_Error setTextIndentation(int target, const gchar* indentation);
+	UT_Error setParagraphLeftMargin(int target, const gchar* margin);
+	UT_Error setParagraphRightMargin(int target, const gchar* margin);
+	UT_Error setParagraphTopMargin(int target, const gchar* margin);
+	UT_Error setParagraphBottomMargin(int target, const gchar* margin);
+	UT_Error setLineHeight(int target, const gchar* height);
+	UT_Error setFontSize(int target, const gchar* size);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -120,6 +126,9 @@ private:
 	bool isNegativeQuantity(const gchar* quantity);
 	const gchar* convertToLines(const gchar* str);
 	const gchar* computeFontSize(const gchar* str);
+
+	GsfOutput* getTargetStream(int target);
+	UT_Error writeTargetStream(int target, const char* str);
 
 	void _cleanup();
 };
