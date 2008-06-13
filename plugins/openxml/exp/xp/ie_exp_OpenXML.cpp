@@ -144,8 +144,8 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 
 	if(!gsf_output_close(GSF_OUTPUT(root)))
 	{
-		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));	
-		return UT_SAVE_EXPORTERROR;		
+		UT_DEBUGMSG(("FRT: ERROR, zip root file couldn't be closed\n"));
+		return UT_SAVE_EXPORTERROR;
 	}
 
 	return UT_OK;
@@ -156,12 +156,7 @@ UT_Error IE_Exp_OpenXML::finishDocument()
  */
 UT_Error IE_Exp_OpenXML::startSection()
 {
-	if(!gsf_output_puts(documentStream, "<wx:sect>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start a new section to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<wx:sect>");
 }
 
 /**
@@ -169,12 +164,7 @@ UT_Error IE_Exp_OpenXML::startSection()
  */
 UT_Error IE_Exp_OpenXML::finishSection()
 {
-	if(!gsf_output_puts(documentStream, "</wx:sect>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish section in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</wx:sect>");
 }
 
 /**
@@ -182,12 +172,7 @@ UT_Error IE_Exp_OpenXML::finishSection()
  */
 UT_Error IE_Exp_OpenXML::startParagraph()
 {
-	if(!gsf_output_puts(documentStream, "<w:p>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start a new paragraph to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<w:p>");
 }
 
 /**
@@ -195,12 +180,7 @@ UT_Error IE_Exp_OpenXML::startParagraph()
  */
 UT_Error IE_Exp_OpenXML::finishParagraph()
 {
-	if(!gsf_output_puts(documentStream, "</w:p>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish paragraph in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</w:p>");
 }
 
 /**
@@ -208,12 +188,7 @@ UT_Error IE_Exp_OpenXML::finishParagraph()
  */
 UT_Error IE_Exp_OpenXML::startText()
 {
-	if(!gsf_output_puts(documentStream, "<w:t>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start a new text to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<w:t>");
 }
 
 /**
@@ -221,12 +196,7 @@ UT_Error IE_Exp_OpenXML::startText()
  */
 UT_Error IE_Exp_OpenXML::writeText(const char* text)
 {
-	if(!gsf_output_puts(documentStream, text))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write text to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, text);
 }
 
 /**
@@ -234,12 +204,7 @@ UT_Error IE_Exp_OpenXML::writeText(const char* text)
  */
 UT_Error IE_Exp_OpenXML::finishText()
 {
-	if(!gsf_output_puts(documentStream, "</w:t>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish text in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</w:t>");
 }
 
 /**
@@ -247,12 +212,7 @@ UT_Error IE_Exp_OpenXML::finishText()
  */
 UT_Error IE_Exp_OpenXML::startRun()
 {
-	if(!gsf_output_puts(documentStream, "<w:r>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start a new run to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<w:r>");
 }
 
 /**
@@ -260,12 +220,7 @@ UT_Error IE_Exp_OpenXML::startRun()
  */
 UT_Error IE_Exp_OpenXML::finishRun()
 {
-	if(!gsf_output_puts(documentStream, "</w:r>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish run in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</w:r>");
 }
 
 /**
@@ -273,12 +228,7 @@ UT_Error IE_Exp_OpenXML::finishRun()
  */
 UT_Error IE_Exp_OpenXML::startRunProperties()
 {
-	if(!gsf_output_puts(documentStream, "<w:rPr>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start the run properties in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<w:rPr>");
 }
 
 /**
@@ -286,12 +236,7 @@ UT_Error IE_Exp_OpenXML::startRunProperties()
  */
 UT_Error IE_Exp_OpenXML::finishRunProperties()
 {
-	if(!gsf_output_puts(documentStream, "</w:rPr>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish the run properties in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</w:rPr>");
 }
 
 /**
@@ -299,12 +244,7 @@ UT_Error IE_Exp_OpenXML::finishRunProperties()
  */
 UT_Error IE_Exp_OpenXML::startParagraphProperties()
 {
-	if(!gsf_output_puts(documentStream, "<w:pPr>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot start the paragraph properties in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "<w:pPr>");
 }
 
 /**
@@ -312,12 +252,7 @@ UT_Error IE_Exp_OpenXML::startParagraphProperties()
  */
 UT_Error IE_Exp_OpenXML::finishParagraphProperties()
 {
-	if(!gsf_output_puts(documentStream, "</w:pPr>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot finish the paragraph properties in document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-	return UT_OK;
+	return writeTargetStream(TARGET_DOCUMENT, "</w:pPr>");
 }
 
 /**
@@ -702,14 +637,11 @@ UT_Error IE_Exp_OpenXML::startStyles()
 		return err;
 	}	
 
-	if(!gsf_output_puts(stylesStream, "<w:styles xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to styles.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
+	std::string str("<w:styles ");
+	str += "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
 
-	return UT_OK;
+	return writeTargetStream(TARGET_STYLES, str.c_str());
 }
 
 /**
@@ -717,10 +649,13 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"))
  */
 UT_Error IE_Exp_OpenXML::finishStyles()
 {
-	if(!gsf_output_puts(stylesStream, "</w:styles>"))
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_STYLES, "</w:styles>");
+	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to styles.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
+		return err;
 	}
 
 	GsfOutput* stylesFile = gsf_outfile_new_child(wordDir, "styles.xml", FALSE);
@@ -771,21 +706,17 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	{
 		return err;
 	}	
-	
-	if(!gsf_output_puts(contentTypesStream, 
-"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
-<Default Extension=\"xml\" ContentType=\"application/xml\"/>\
-<Override PartName=\"/word/document.xml\" \
-ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>\
-<Override PartName=\"/word/styles.xml\" \
-ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
 
-	return UT_OK;
+	std::string str("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
+	str += "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>";
+	str += "<Default Extension=\"xml\" ContentType=\"application/xml\"/>";
+	str += "<Override PartName=\"/word/document.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>";
+	str += "<Override PartName=\"/word/styles.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>";
+	
+	return writeTargetStream(TARGET_CONTENT, str.c_str());
+
 }
 
 /**
@@ -793,10 +724,13 @@ ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.sty
  */
 UT_Error IE_Exp_OpenXML::finishContentTypes()
 {
-	if(!gsf_output_puts(contentTypesStream, "</Types>"))
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_CONTENT, "</Types>");
+	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to [Content_Types].xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
+		return err;
 	}
 
 	GsfOutput* contentTypesFile = gsf_outfile_new_child(root, "[Content_Types].xml", FALSE);
@@ -845,17 +779,14 @@ UT_Error IE_Exp_OpenXML::startRelations()
 	{
 		return err;
 	}	
-	
-	if(!gsf_output_puts(relStream, 
-"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" \
-Target=\"word/document.xml\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
 
-	return UT_OK;
+	std::string str("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+	str += "<Relationship Id=\"rId1\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" ";
+	str += "Target=\"word/document.xml\"/>";
+	
+	return writeTargetStream(TARGET_RELATION, str.c_str());
+
 }
 
 /**
@@ -863,10 +794,13 @@ Target=\"word/document.xml\"/>"))
  */
 UT_Error IE_Exp_OpenXML::finishRelations()
 {
-	if(!gsf_output_puts(relStream, "</Relationships>"))
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_RELATION, "</Relationships>");
+	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to .rels file\n"));	
-		return UT_IE_COULDNOTWRITE;
+		return err;
 	}
 
 	relsDir = GSF_OUTFILE(gsf_outfile_new_child(root, "_rels", TRUE)); 
@@ -922,17 +856,14 @@ UT_Error IE_Exp_OpenXML::startWordRelations()
 	{
 		return err;
 	}	
-	
-	if(!gsf_output_puts(wordRelStream, 
-"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" \
-Target=\"styles.xml\"/>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml.rels file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
 
-	return UT_OK;
+	std::string str("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+	str += "<Relationship Id=\"rId1\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" ";
+	str += "Target=\"styles.xml\"/>";
+	
+	return writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
+
 }
 
 /**
@@ -940,10 +871,13 @@ Target=\"styles.xml\"/>"))
  */
 UT_Error IE_Exp_OpenXML::finishWordRelations()
 {
-	if(!gsf_output_puts(wordRelStream, "</Relationships>"))
+	UT_Error err = UT_OK;
+	
+	err = writeTargetStream(TARGET_DOCUMENT_RELATION, "</Relationships>");
+	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml.rels file\n"));	
-		return UT_IE_COULDNOTWRITE;
+		return err;
 	}
 
 	wordRelsDir = GSF_OUTFILE(gsf_outfile_new_child(wordDir, "_rels", TRUE)); 
@@ -1000,30 +934,27 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 	{
 		return err;
 	}	
-	
-	if(!gsf_output_puts(documentStream, 
-"<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
-<w:body>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
 
-	return UT_OK;
+	std::string str("<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+	str += "xmlns:v=\"urn:schemas-microsoft-com:vml\" ";
+	str += "xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" ";
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>";
+	
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
 }
 
 /**
  * Finishes the main part of the document to word/document.xml file.
  */
 UT_Error IE_Exp_OpenXML::finishMainPart()
-{	
-	if(!gsf_output_puts(documentStream, "</w:body></w:wordDocument>"))
+{
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_DOCUMENT, "</w:body></w:wordDocument>");
+	if(err != UT_OK)
 	{
 		UT_DEBUGMSG(("FRT: ERROR, cannot write to document.xml file\n"));	
-		return UT_IE_COULDNOTWRITE;
+		return err;
 	}
 
 	wordDir = GSF_OUTFILE(gsf_outfile_new_child(root, "word", TRUE)); 
@@ -1080,39 +1011,27 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 UT_Error IE_Exp_OpenXML::startStyle(const char* style)
 {
 	//TODO: divide this function into startParagraphStyle, startRunStyle for pPr and rPr tags.
-	if(!gsf_output_printf(stylesStream, "<w:style w:styleId=\"%s\"><w:name w:val=\"%s\"/><w:pPr></w:pPr><w:rPr>", style, style))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be started\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
+	std::string str("<w:style w:styleId=\"");
+	str += style;
+	str += "\"><w:name w:val=\"";
+	str += style;
+	str += "\"/><w:pPr></w:pPr><w:rPr>";
 
-	return UT_OK;
+	return writeTargetStream(TARGET_STYLES, str.c_str());
 }
 
 UT_Error IE_Exp_OpenXML::finishStyle()
 {
-	if(!gsf_output_puts(stylesStream, "</w:rPr></w:style>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be finished\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
-
-	return UT_OK;
+	return writeTargetStream(TARGET_STYLES, "</w:rPr></w:style>");
 }
 
 UT_Error IE_Exp_OpenXML::writeDefaultStyle()
 {
 	//TODO: add more default settings here
-	if(!gsf_output_puts(stylesStream, "<w:docDefaults>\
-<w:pPrDefault><w:pPr><w:pStyle w:val=\"Normal\"/></w:pPr></w:pPrDefault>\
-<w:rPrDefault><w:rPr><w:rStyle w:val=\"Normal\"/></w:rPr></w:rPrDefault>\
-</w:docDefaults>"))
-	{
-		UT_DEBUGMSG(("FRT: ERROR, styles.xml couldn't be written\n"));	
-		return UT_IE_COULDNOTWRITE;
-	}
+	std::string str("<w:docDefaults>");
+	str += "<w:pPrDefault><w:pPr><w:pStyle w:val=\"Normal\"/></w:pPr></w:pPrDefault>";
+	str += "<w:rPrDefault><w:rPr><w:rStyle w:val=\"Normal\"/></w:rPr></w:rPrDefault>";
+	str += "</w:docDefaults>";
+	return writeTargetStream(TARGET_STYLES, str.c_str());
 
-	return UT_OK;
 }
-
-
