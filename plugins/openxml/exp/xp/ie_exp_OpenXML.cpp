@@ -385,6 +385,19 @@ UT_Error IE_Exp_OpenXML::setFontSize(int target, const gchar* size)
 }
 
 /**
+ * Sets font family
+ */
+UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
+{
+	std::string str("<w:rFonts w:ascii=\"");
+	str += family;
+	str += "\" w:cs=\"";
+	str += family;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Sets text alignment
  */
 UT_Error IE_Exp_OpenXML::setTextAlignment(int target, const gchar* alignment)

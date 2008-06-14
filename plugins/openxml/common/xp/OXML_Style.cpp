@@ -165,6 +165,13 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 		if(err != UT_OK)
 			return err;
 	}
+
+	if(getProperty("font-family", szValue) == UT_OK)
+	{
+		err = exporter->setFontFamily(TARGET_STYLES, szValue);
+		if(err != UT_OK)
+			return err;
+	}
 	
 	if(getProperty("text-decoration", szValue) == UT_OK)
 	{

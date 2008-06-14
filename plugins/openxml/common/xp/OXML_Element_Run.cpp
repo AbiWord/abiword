@@ -71,6 +71,13 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(getProperty("font-family", szValue) == UT_OK)
+	{
+		err = exporter->setFontFamily(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	if(getProperty("font-weight", szValue) == UT_OK)
 	{
 		if(!strcmp(szValue, "bold"))

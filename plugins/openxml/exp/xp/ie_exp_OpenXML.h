@@ -96,6 +96,7 @@ public:
 	UT_Error setParagraphBottomMargin(int target, const gchar* margin);
 	UT_Error setLineHeight(int target, const gchar* height);
 	UT_Error setFontSize(int target, const gchar* size);
+	UT_Error setFontFamily(int target, const gchar* family);
 
 protected:
     virtual UT_Error _writeDocument(void);
