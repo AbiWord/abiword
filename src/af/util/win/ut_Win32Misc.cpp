@@ -514,7 +514,7 @@ UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
 	return m_answer;
 }
 
-BOOL UT_Win32AssertDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL UT_Win32AssertDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	
@@ -571,7 +571,7 @@ void UT_Win32AssertDlg::enableWindows()
 	m_vecDisabledWnds.clear();
 }
 
-BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM lParam)
 {
 	// pause all timers
 	m_bTimersPaused = UT_Win32Timer::timersPaused();
