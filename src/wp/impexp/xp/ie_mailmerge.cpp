@@ -403,7 +403,7 @@ void IE_MailMerge::unregisterMerger (IE_MergeSniffer * s)
 {
 	UT_uint32 ndx = s->getFileType(); // 1:1 mapping
 	
-	UT_return_if_fail(ndx >= 0);
+	UT_return_if_fail(ndx > 0);
 	
 	m_sniffers.deleteNthItem (ndx-1);
 	

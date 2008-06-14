@@ -390,7 +390,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 
   \todo look up the parent label and be more precise about what is added by this label.
  */
-bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel)
+bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_String & /*szLevelNumbers*/, UT_uint32 iLevel)
 {
 	//read the text string into a int array, set the place holders to
 	//values less than zero.
@@ -3275,7 +3275,7 @@ UT_UCS4Char IE_Imp_RTF::ReadHexChar(void)
   no noticeable I/O impact.
   \fixme check that ungetc() works under MacOS
  */
-bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
+bool IE_Imp_RTF::SkipBackChar(unsigned char /*ch*/)
 {
 	if (m_pImportFile)					// if we are reading a file
 	{

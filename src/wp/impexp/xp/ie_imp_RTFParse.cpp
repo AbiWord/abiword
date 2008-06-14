@@ -29,7 +29,7 @@
 
 
 bool 
-IE_Imp_RTFGroupParser::tokenError(IE_Imp_RTF * ie)
+IE_Imp_RTFGroupParser::tokenError(IE_Imp_RTF * /*ie*/)
 {
 //	UT_ASSERT_NOT_REACHED();
 	UT_DEBUGMSG(("tokenError() reached\n"));
@@ -38,14 +38,14 @@ IE_Imp_RTFGroupParser::tokenError(IE_Imp_RTF * ie)
 
 
 bool 
-IE_Imp_RTFGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-									UT_sint32 param, bool paramUsed)
+IE_Imp_RTFGroupParser::tokenKeyword(IE_Imp_RTF * /*ie*/, RTF_KEYWORD_ID /*kwID*/, 
+									UT_sint32 /*param*/, bool /*paramUsed*/)
 {
 	return true;
 }
 
 bool 
-IE_Imp_RTFGroupParser::tokenOpenBrace(IE_Imp_RTF * ie)
+IE_Imp_RTFGroupParser::tokenOpenBrace(IE_Imp_RTF * /*ie*/)
 {
 	m_nested++;
 	return true;
@@ -53,7 +53,7 @@ IE_Imp_RTFGroupParser::tokenOpenBrace(IE_Imp_RTF * ie)
 
 
 bool 
-IE_Imp_RTFGroupParser::tokenCloseBrace(IE_Imp_RTF * ie)
+IE_Imp_RTFGroupParser::tokenCloseBrace(IE_Imp_RTF * /*ie*/)
 {
 	m_nested--;
 	return true;
@@ -61,7 +61,7 @@ IE_Imp_RTFGroupParser::tokenCloseBrace(IE_Imp_RTF * ie)
 
 
 bool 
-IE_Imp_RTFGroupParser::tokenData(IE_Imp_RTF * ie, UT_UTF8String & data)
+IE_Imp_RTFGroupParser::tokenData(IE_Imp_RTF * /*ie*/, UT_UTF8String & /*data*/)
 {
 	return true;
 }
