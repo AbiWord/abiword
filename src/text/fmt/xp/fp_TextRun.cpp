@@ -681,7 +681,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 								 PT_DocPosition& pos, 
-								 bool& bBOL, bool& bEOL, bool &isTOC)
+								 bool& bBOL, bool& bEOL, bool & /*isTOC*/)
 {
 	UT_BidiCharType iVisDirection = getVisDirection();
 	UT_BidiCharType iDomDirection = getBlock()->getDominantDirection();
@@ -1980,7 +1980,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 						   UT_uint32 iPos1,
 						   UT_uint32 iLen,
 						   UT_Rect &r,
-						   GR_Graphics * pG)
+						   GR_Graphics * /*pG*/)
 {
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
@@ -2146,7 +2146,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 	this function expect to have m_pRenderInfo->m_x/yoff set
 	xoff is the right edge of this run !!!
 */
-void fp_TextRun::_drawLastChar(bool bSelection)
+void fp_TextRun::_drawLastChar(bool /*bSelection*/)
 {
 //
 // We appear to no longer need this code. Symptom would be if the last

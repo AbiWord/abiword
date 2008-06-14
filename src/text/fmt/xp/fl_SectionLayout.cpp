@@ -2079,7 +2079,7 @@ void fl_DocSectionLayout::updateDocSection(void)
 	return;
 }
 
-void fl_DocSectionLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
+void fl_DocSectionLayout::_lookupMarginProperties(const PP_AttrProp* /*pSectionAP*/)
 {
 	// force lookup on all container layouts in this section
 
@@ -3348,7 +3348,7 @@ fp_Container* fl_HdrFtrSectionLayout::getLastContainer() const
 	return m_pHdrFtrContainer;
 }
 
-fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * pFirstContainer)
+fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * /*pFirstContainer*/)
 {
 	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth(); // why is this different than the next one ?
@@ -3927,7 +3927,7 @@ void fl_HdrFtrSectionLayout::format(void)
 	layout();
 }
 
-void fl_HdrFtrSectionLayout::updateLayout(bool bDoFull)
+void fl_HdrFtrSectionLayout::updateLayout(bool /*bDoFull*/)
 {
 	bool bredraw = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
@@ -4054,11 +4054,11 @@ bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
 */
-void fl_HdrFtrSectionLayout::_lookupProperties(const PP_AttrProp* pAP)
+void fl_HdrFtrSectionLayout::_lookupProperties(const PP_AttrProp* /*pAP*/)
 {
 }
 
-void fl_HdrFtrSectionLayout::_lookupMarginProperties(const PP_AttrProp* pAP)
+void fl_HdrFtrSectionLayout::_lookupMarginProperties(const PP_AttrProp* /*pAP*/)
 {
 	fl_ContainerLayout * pShadow = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
@@ -4552,7 +4552,7 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_Contain
 /*!
  * Insert a Table at the start of a HdrFtr
  */
-fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionType iType,
+fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionType /*iType*/,
 													const PX_ChangeRecord_Strux * pcrx,
 													PL_StruxDocHandle sdh,
 													PL_ListenerId lid,
@@ -5033,7 +5033,7 @@ fp_Container* fl_HdrFtrShadow::getLastContainer() const
 	return m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 }
 
-fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * pFirstContainer)
+fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * /*pFirstContainer*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -5224,7 +5224,7 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	return NULL;
 }
 
-void fl_HdrFtrShadow::updateLayout(bool bDoAll)
+void fl_HdrFtrShadow::updateLayout(bool /*bDoAll*/)
 {
 	bool bredraw = false;
 	xxx_UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));
@@ -5307,11 +5307,11 @@ bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange 
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
 */
-void fl_HdrFtrShadow::_lookupProperties(const PP_AttrProp* pAP)
+void fl_HdrFtrShadow::_lookupProperties(const PP_AttrProp* /*pAP*/)
 {
 }
 
-void fl_HdrFtrShadow::_lookupMarginProperties(const PP_AttrProp* pAP)
+void fl_HdrFtrShadow::_lookupMarginProperties(const PP_AttrProp* /*pAP*/)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
