@@ -396,6 +396,17 @@ UT_Error IE_Exp_OpenXML::setTextAlignment(int target, const gchar* alignment)
 }
 
 /**
+ * Sets the paragraph style
+ */
+UT_Error IE_Exp_OpenXML::setParagraphStyle(int target, const gchar* style)
+{
+	std::string str("<w:pStyle w:val=\"");
+	str += style;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Sets text indentation
  */
 UT_Error IE_Exp_OpenXML::setTextIndentation(int target, const gchar* indentation)

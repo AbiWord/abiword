@@ -89,6 +89,7 @@ public:
 	UT_Error setTextBackgroundColor(int target, const gchar* color);
 	UT_Error setTextAlignment(int target, const gchar* alignment);
 	UT_Error setTextIndentation(int target, const gchar* indentation);
+	UT_Error setParagraphStyle(int target, const gchar* style);
 	UT_Error setParagraphLeftMargin(int target, const gchar* margin);
 	UT_Error setParagraphRightMargin(int target, const gchar* margin);
 	UT_Error setParagraphTopMargin(int target, const gchar* margin);

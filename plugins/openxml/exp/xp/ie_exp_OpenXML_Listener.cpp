@@ -135,6 +135,19 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 							return false;		
 					}
 				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Section Attribute: %s=%s\n", szName, szValue));	
+						if(section->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
 			}
 
 			return document->appendSection(shared_section) == UT_OK;
@@ -159,6 +172,19 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 						//TODO: Take the debug message out when we are done
 						UT_DEBUGMSG(("Paragraph Property: %s=%s\n", szName, szValue));	
 						if(paragraph->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Paragraph Attribute: %s=%s\n", szName, szValue));	
+						if(paragraph->setAttribute(szName, szValue) != UT_OK)
 							return false;		
 					}
 				}

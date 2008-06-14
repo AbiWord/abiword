@@ -67,6 +67,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) == UT_OK)
+	{
+		err = exporter->setParagraphStyle(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	if(getProperty("text-align", szValue) == UT_OK)
 	{
 		if(!strcmp(szValue, "justify"))
