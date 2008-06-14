@@ -217,6 +217,8 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 
 	const PP_AttrProp * pAP = NULL;
 	const gchar* styleName = NULL; 
+	const gchar* basedOn = NULL;
+	const gchar* followedBy = NULL;
 	const gchar* propertyName = NULL; 
 	const gchar* propertyValue = NULL; 
 	PT_AttrPropIndex api = pdoc->getAttrPropIndex();
@@ -239,6 +241,20 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 
 		OXML_Style* style = new OXML_Style(styleName, styleName);
 		OXML_SharedStyle shared_style(style);			
+
+		PD_Style* basedOnStyle = pStyle->getBasedOn();
+		if(basedOnStyle)
+		{
+			basedOn = basedOnStyle->getName();
+			style->setBasedOn(basedOn);
+		}
+
+		PD_Style* followedByStyle = pStyle->getFollowedBy();
+		if(followedByStyle)
+		{
+			followedBy = followedByStyle->getName();
+			style->setFollowedBy(followedBy);
+		}
 
 		err = document->addStyle(shared_style);
 		if(err != UT_OK)

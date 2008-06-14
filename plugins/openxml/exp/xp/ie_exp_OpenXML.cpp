@@ -1008,14 +1008,16 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 	return UT_OK;
 }
 
-UT_Error IE_Exp_OpenXML::startStyle(const char* style)
+UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby)
 {
-	//TODO: divide this function into startParagraphStyle, startRunStyle for pPr and rPr tags.
-	std::string str("<w:style w:styleId=\"");
-	str += style;
-	str += "\"><w:name w:val=\"";
-	str += style;
-	str += "\"/>";
+	std::string str("");
+	str += "<w:style w:styleId=\"" + style + "\">";
+	str += "<w:name w:val=\"" + style + "\"/>";
+	
+	if(!basedon.empty())
+		str += "<w:basedOn w:val=\"" + basedon + "\"/>";		
+	if(!followedby.empty())
+		str += "<w:next w:val=\"" + followedby + "\"/>";		
 
 	return writeTargetStream(TARGET_STYLES, str.c_str());
 }

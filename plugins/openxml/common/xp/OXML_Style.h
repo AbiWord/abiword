@@ -58,6 +58,10 @@ public:
 		{ m_name = name; setAttribute(PT_NAME_ATTRIBUTE_NAME, name.c_str()); };
 	const std::string & getName() const 
 		{ return m_name; }
+	void setBasedOn(const std::string & basedOn) 
+		{ m_basedon = basedOn; }
+	void setFollowedBy(const std::string & followedBy) 
+		{ m_followedby = followedBy; }
 
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	UT_Error addToPT(PD_Document * pDocument);
@@ -65,6 +69,8 @@ public:
 private:
 	std::string m_id;
 	std::string m_name;
+	std::string m_basedon;
+	std::string m_followedby;
 };
 
 typedef boost::shared_ptr<OXML_Style> OXML_SharedStyle;

@@ -41,6 +41,7 @@
 #include <gsf/gsf-outfile-zip.h>
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-output-memory.h>
+#include <string>
 
 //target streams
 #define TARGET_STYLES 1
@@ -74,7 +75,7 @@ public:
 	UT_Error finishRunProperties(int target);
 	UT_Error startParagraphProperties(int target);
 	UT_Error finishParagraphProperties(int target);
-	UT_Error startStyle(const char* name);
+	UT_Error startStyle(std::string name, std::string basedon, std::string followedby);
 	UT_Error finishStyle();
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);

@@ -38,7 +38,9 @@
 OXML_Style::OXML_Style(const std::string & id, const std::string & name) : 
 	OXML_ObjectWithAttrProp(), 
 	m_id(id), 
-	m_name(name)
+	m_name(name),
+	m_basedon(""),
+	m_followedby("")
 {
 	setAttribute(PT_NAME_ATTRIBUTE_NAME, name.c_str());
 }
@@ -52,7 +54,7 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
 	
-	err = exporter->startStyle(m_name.c_str());
+	err = exporter->startStyle(m_name, m_basedon, m_followedby);
 	if(err != UT_OK)
 		return err;
 
