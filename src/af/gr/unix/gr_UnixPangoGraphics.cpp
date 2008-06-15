@@ -455,7 +455,10 @@ void GR_UnixPangoGraphics::init()
 #ifdef HAVE_PANGOFT2
 	else
 	{
-		m_iDeviceResolution = 72;
+		//
+		// Hardcode the device resolution to what gtk-X11 returns
+		//
+		m_iDeviceResolution = 96;
 		m_pFontMap = pango_ft2_font_map_new ();
 		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
 										  m_iDeviceResolution,
@@ -3646,12 +3649,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	else
 		{
 #ifdef HAVE_PANGOFT2
-			// hardcode to something sane-ish. printing and unixnull graphics will use this
-			// fallback case
-			m_iScreenResolution = m_iDeviceResolution;
-
-			m_pContext = pango_ft2_get_context(m_iScreenResolution, m_iScreenResolution);
-			m_pFontMap = pango_ft2_font_map_new ();
 			m_bOwnsFontMap = true;
 #else
 			UT_DEBUGMSG(("No screen, no display, and no PangoFT2. We're screwed.\n"));
