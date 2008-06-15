@@ -2027,6 +2027,9 @@ bool fp_TabRun::hasLayoutProperties(void) const
 
 void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
+	
+	
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
@@ -2443,6 +2446,8 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow x-axis and y-axis.
+	
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -3190,6 +3195,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 
 void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis. (I think?)
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = true;
@@ -3580,6 +3586,8 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: This one needs fixing for multipage. Get text working first.
+	//TODO: Find everything that calls this and modify them to allow y-axis.
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 	else
@@ -4148,6 +4156,8 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 
 void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
+	
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
@@ -5503,6 +5513,7 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 
 void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
@@ -5614,6 +5625,7 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 
 void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;

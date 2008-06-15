@@ -1753,30 +1753,23 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 
 UT_sint32 FL_DocLayout::getHeight()
 {
-	UT_DEBUGMSG(("FL_DocLayout::getHeight() \n"));
 	UT_sint32 iHeight = 0;
-	UT_DEBUGMSG(("iHeight initial: %d\n", iHeight));
 	FV_View * pView = getView(); // add page view dimensions
 	UT_uint32 count = m_vecPages.getItemCount();
 
 	for (unsigned int i = 0; i<count; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
-		
 		if (count % pView->getNumHorizPages() == 0)
 		{
-			UT_uint32 iRow = i / pView->getNumHorizPages();
-			
-			iHeight += pView->getMaxHeight(iRow);
-			UT_DEBUGMSG(("iRow: %d  iHeight for row: %d\n", iRow, iHeight));
+			UT_uint32 iRow = i / pView->getNumHorizPages();			
+			iHeight += pView->getMaxHeight(iRow); // <- page height problem -- here?
 			
 			if(getView() && (getView()->getViewMode() != VIEW_PRINT))
 			{
 				iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
-				UT_DEBUGMSG(("iHeight for != VIEW_PRINT: %d\n", count));
 			}
 		}
-		
 	}
 	
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -1796,7 +1789,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
-	UT_DEBUGMSG(("returned height %d \n",iHeight));
+	UT_DEBUGMSG(("FL_DocLayout::getHeight - returned height %d \n",iHeight));
 	return iHeight;
 }
 

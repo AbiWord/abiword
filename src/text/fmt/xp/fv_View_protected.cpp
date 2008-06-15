@@ -2434,21 +2434,33 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 	s_pScroll->start();
 }
 
-
+/*! Returns the page the user's mouse click landed in.
+ * 
+ */
 fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick) const
 {
+	UT_DEBUGMSG(("FV_View::_getPageForXY\n"));
 	xClick = xPos + m_xScrollOffset - getPageViewLeftMargin();
 	yClick = yPos + m_yScrollOffset - getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
+		UT_sint32 iPageWidth = pPage->getWidth();
+		UT_uint32 iNumHorizPages = getNumHorizPages();
+		UT_uint32 iPageNumber = m_pLayout->findPage(pPage);
+		UT_uint32 iRow = iPageNumber/getNumHorizPages();
+		UT_uint32 iCol = iPageNumber;
+		while(iCol > iNumHorizPages)
+		{
+			iCol -= iNumHorizPages;
+		}
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pPage->getOwningSection()->getTopMargin() -
 				pPage->getOwningSection()->getBottomMargin();
 		}
-		if (yClick < iPageHeight)
+		if ( (yClick < iPageHeight) && (xClick < iPageWidth + getWidthPrevPagesInRow(iRow)) )
 		{
 			// found it
 			break;
@@ -2475,9 +2487,10 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 		UT_sint32 iPageHeight = pPage->getHeight();
 		yClick += iPageHeight + getPageViewSep();
 	}
-
+	UT_DEBUGMSG(("FV_View::_getPageForXY END\n"));
 	return pPage;
 }
+
 
 /*!
  Compute prefix function for search
@@ -4115,16 +4128,52 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			  *ppBlock = 0;
 			return;
 		}
-
+		
 		fp_Page* pPointPage = pLine->getPage();
 
 		UT_sint32 iPageOffset;
-		getPageYOffset(pPointPage, iPageOffset);
+		getPageYOffset(pPointPage, iPageOffset); // <- look at this later
 
-		yPoint += iPageOffset;
-		xPoint += getPageViewLeftMargin();
-		yPoint2 += iPageOffset;
-		xPoint2 += getPageViewLeftMargin();
+
+		////////////////////////////////////////////////////////////////
+		UT_DEBUGMSG(("_findPositionCoords\n"));
+		UT_uint32 iNumHorizPages = getNumHorizPages();
+		UT_uint32 iPageNumber = m_pLayout->findPage(pPointPage);
+		UT_uint32 iRow = iPageNumber/getNumHorizPages();
+		UT_uint32 iCol = iPageNumber;
+		while(iCol > iNumHorizPages)
+		{
+			iCol -= iNumHorizPages;
+		}
+		
+		#if 0
+		if(iPageNumber >= getNumHorizPages())
+		{
+			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
+			{
+				yPoint += getPageViewTopMargin() + pPointPage->getHeight() + getPageViewSep();
+				yPoint2 += getPageViewTopMargin() + pPointPage->getHeight() + getPageViewSep();
+			}
+		}
+		#endif
+		
+		/*if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
+		{
+			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
+			{
+				yPoint += getMaxHeight(i);
+				yPoint2 += getMaxHeight(i);
+			}
+		}*/
+		
+		//yClick += getWidthPrevPagesInRow(iPageNumber);
+		////////////////////////////////////////////////////////////////
+		
+		yPoint += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
+		xPoint += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
+		yPoint2 += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
+		xPoint2 += getPageViewLeftMargin(); + getWidthPrevPagesInRow(iPageNumber);
+
 
 		// now, we have coords absolute, as if all pages were stacked vertically
 		xPoint -= m_xScrollOffset;
@@ -4416,43 +4465,53 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 #endif
 	bool bNotEnd = false;
 	UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	calculateNumHorizPages();
+	
 	while (pPage)
 	{
 		UT_uint32 iPageNumber		= m_pLayout->findPage(pPage);
+		UT_DEBUGMSG(("FV_View::_draw 1 calling FV_View::getNumHorizPages()"));
 		UT_uint32 iRow 				= iPageNumber/getNumHorizPages();
 		UT_uint32 iCol				= iPageNumber;
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
+		UT_sint32 iHorizPageSpacing	= getHorizPageSpacing();
 		UT_sint32 adjustedTop		= 0;
 		pDSL = pPage->getOwningSection();
-		
-		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
-		{
-			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
-			{
-				adjustedTop += getMaxHeight(i);
-			}
-			adjustedTop += -m_yScrollOffset;
-		}
 		
 		while (iCol > getNumHorizPages())
 		{
 			iCol -= getNumHorizPages();
 		}
 
+		UT_DEBUGMSG(("FV_View::_draw 2 calling FV_View::getNumHorizPages()"));
+		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
+		{
+			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
+			{
+				adjustedTop += pPage->getHeight();
+			}
+		}
+		/*else
+		{
+			adjustedTop = curY - m_yScrollOffset;
+		}*/
+		adjustedTop +=  -m_yScrollOffset + getPageViewTopMargin();
+		
+		UT_DEBUGMSG(("5\n"));
 		if(getViewMode() != VIEW_PRINT)
 		{
 			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
 		}
 
-		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep(); //TODO: page boundries
-
+		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep(); //+ pDSL->getBottomMargin(); //TODO: page boundries?
+		UT_DEBUGMSG(("6\n"));
 		if (adjustedTop > getWindowHeight())
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
-
-			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
+			UT_DEBUGMSG(("a\n"));
+			UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4467,20 +4526,23 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// the end of this page is above the top of
 			// the window, so we don't need to draw it.
-
-			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
+			UT_DEBUGMSG(("b\n"));
+			UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
 							 getWindowHeight()));
+			bNotEnd = true;
+			break; //This break prevents while(pPage) from becoming an endless loop of doom when the vertical scrollbar is used.
+					//TODO: this causes redraw issues
 		}
 		else if (adjustedTop > y + height)
 		{
 			// the top of this page is beyond the end
 			// of the clipping region, so we don't need
 			// to draw it.
-
-			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("c\n"));
+			UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
@@ -4494,21 +4556,23 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// the bottom of this page is above the top
 			// of the clipping region, so we don't need
 			// to draw it.
-
-			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
 							 getWindowHeight(),
 							 y,height));
 			//TF NOTE: Can we break out here?
+			//bNotEnd = true;
+			break; //This break prevents while(pPage) from becoming an endless loop of doom when the window is resized vertically.
+					//TODO: this causes redraw issues
 		}
 		else
 		{
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.
-			
-			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+			UT_DEBUGMSG(("6.1\n"));
+			UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 			
 			dg_DrawArgs da;
@@ -4521,7 +4585,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			//{
 				da.yoff = adjustedTop; //TODO: Adjust for multipage?
 			//}
-			
+			UT_DEBUGMSG(("6.2\n"));
 			adjustedBottom -= getPageViewSep();
 			
 			UT_DEBUGMSG(("iRow: %d iCol: %d iPageNumber: %d\n", iRow, iCol, iPageNumber));
@@ -4529,7 +4593,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 			
 			adjustedBottom -= getPageViewSep();
-			
+			UT_DEBUGMSG(("7\n"));
 			if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
@@ -4614,7 +4678,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// two pixel drop shadow
-
+			UT_DEBUGMSG(("8\n"));
 			if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden() )
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
@@ -4638,6 +4702,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 			xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
 			
+			UT_DEBUGMSG(("FV_View::_draw 5 calling FV_View::getNumHorizPages()"));
 			if (iPageNumber % getNumHorizPages() == 0)
 			{
 				curY += getMaxHeight(iRow) + getPageViewSep(); 
@@ -4645,8 +4710,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			pPage = pPage->getNext();
 		}
+		UT_DEBUGMSG(("after d\n"));
 	}
-	
+	UT_DEBUGMSG(("9\n"));
 	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
@@ -4670,7 +4736,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.fillRect(clrFillColor, 0, yPos, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
 		}
 	}
-
+		UT_DEBUGMSG(("10\n"));
+	
 	if (bClip)
 	{
 		m_pG->setClipRect(NULL);

@@ -817,9 +817,11 @@ public:
 	bool                isGrammarLoaded(void);
 	// --
 	
-	UT_uint32			getNumHorizPages(void);
-	UT_uint32			getMaxHeight(UT_uint32 iRow);
-	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber);
+	UT_uint32			getNumHorizPages(void) const; //////////////////////////////////
+	void				calculateNumHorizPages(void);
+	UT_uint32			getMaxHeight(UT_uint32 iRow) const;
+	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber) const;
+	UT_uint32			getHorizPageSpacing(void) const;
 	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
@@ -913,12 +915,15 @@ protected:
 	void                _adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount);
 	
 private:
+
+	UT_uint32			m_iNumHorizPages; /////////////////////////////////////////////////
+	UT_uint32			m_getNumHorizPagesCachedWindowWidth;
+	bool				m_autoNumHorizPages;
+	UT_uint32			m_horizPageSpacing;
+
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
-	
-	UT_uint32			m_iNumHorizPages;
-	
 	//the followingare BiDi specific, but need to be in place because of the
 	//change to the signature of findPointCoords
 	UT_sint32			m_xPoint2;
