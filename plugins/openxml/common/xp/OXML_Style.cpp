@@ -64,6 +64,13 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(getProperty("widows", szValue) == UT_OK)
+	{
+		err = exporter->setWidows(TARGET_STYLES, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	if(getProperty("text-align", szValue) == UT_OK)
 	{
 		if(!strcmp(szValue, "justify"))

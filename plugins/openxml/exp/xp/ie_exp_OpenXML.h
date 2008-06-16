@@ -97,6 +97,8 @@ public:
 	UT_Error setLineHeight(int target, const gchar* height);
 	UT_Error setFontSize(int target, const gchar* size);
 	UT_Error setFontFamily(int target, const gchar* family);
+	UT_Error setTextDirection(int target, const gchar* direction);
+	UT_Error setWidows(int target, const gchar* widows);
 
 protected:
     virtual UT_Error _writeDocument(void);

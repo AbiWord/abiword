@@ -74,6 +74,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("widows", szValue) == UT_OK)
+	{
+		err = exporter->setWidows(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	if(getProperty("text-align", szValue) == UT_OK)
 	{
 		if(!strcmp(szValue, "justify"))

@@ -160,6 +160,13 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("dir-override", szValue) == UT_OK)
+	{
+		err = exporter->setTextDirection(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	return exporter->finishRunProperties(TARGET_DOCUMENT);
 }
 

@@ -398,6 +398,30 @@ UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
 }
 
 /**
+ * Sets text direction, eg. right-to-left
+ */
+UT_Error IE_Exp_OpenXML::setTextDirection(int target, const gchar* direction)
+{
+	std::string str(direction);
+	if(str.compare("rtl") == 0)
+		return writeTargetStream(target, "<w:rtl v:val=\"on\"/>");
+	else if(str.compare("ltr") == 0)
+		return writeTargetStream(target, "<w:rtl v:val=\"off\"/>");
+	return UT_OK;
+}
+
+/**
+ * Sets the widows 
+ */
+UT_Error IE_Exp_OpenXML::setWidows(int target, const gchar* widows)
+{
+	UT_sint32 wdws = atoi(widows);
+	if(wdws > 0)
+		return writeTargetStream(target, "<w:widowControl w:val=\"on\"/>");
+	return UT_OK;
+}
+
+/**
  * Sets text alignment
  */
 UT_Error IE_Exp_OpenXML::setTextAlignment(int target, const gchar* alignment)
