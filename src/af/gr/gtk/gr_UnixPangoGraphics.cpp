@@ -1892,7 +1892,8 @@ void GR_CairoGraphics::restoreRectangle(UT_uint32 index)
  */
 GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
-	/* TODO Rob port to cairo(image)
+	/* TODO Rob port to cairo(image) */
+	/*
 	UT_sint32 idx = _tduX(rec.left);
 	UT_sint32 idy = _tduY(rec.top);
 	UT_sint32 idw = _tduR(rec.width);
@@ -2741,6 +2742,8 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 GR_UnixCairoScreenGraphics::GR_UnixCairoScreenGraphics(GdkWindow *win)
   : GR_ScreenGraphics(gdk_cairo_create(win)),
+	m_SavePixbufs(8),
+	m_SaveRects(8),
     m_pWin(win)
 {
 	setCursor(GR_CURSOR_DEFAULT);
@@ -2802,6 +2805,56 @@ void GR_UnixCairoScreenGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y
 	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
 	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
 	cairo_fill(m_cr);
+}
+
+/*!
+ * \note Maybe this could be implemented in cairo/XP land, though I could not get it working. -Rob
+ */
+void GR_UnixCairoScreenGraphics::saveRectangle(UT_Rect & rect, UT_uint32 idx)
+{
+	GdkPixbuf *pixbuf, *old;
+	UT_sint32 x, y, width, height;
+
+	x = _tduX(rect.left);
+	y = _tduY(rect.top);
+	width = _tduR(rect.width);
+	height = _tduR(rect.height);
+
+	pixbuf = gdk_pixbuf_get_from_drawable(NULL, m_pWin, NULL,
+						x, y, 0, 0, width, height);
+
+	if (NULL != (old = m_SavePixbufs[idx])) {
+		g_object_unref(G_OBJECT (old));
+	}
+
+	/* takes ownership */
+	m_SavePixbufs[idx] = pixbuf;
+	m_SaveRects[idx] = rect;
+}
+
+/*!
+ * \note Maybe this could be implemented in cairo/XP land, though I could not get it working. -Rob
+ */
+void GR_UnixCairoScreenGraphics::restoreRectangle(UT_uint32 idx)
+{
+	GdkPixbuf *pixbuf;
+	UT_Rect	&rect = m_SaveRects[idx];
+
+	pixbuf = m_SavePixbufs[idx];
+	UT_ASSERT(pixbuf);
+
+/*
+	cairo_save (m_cr);
+	cairo_set_operator (m_cr, CAIRO_OPERATOR_OVER);
+	gdk_cairo_set_source_pixbuf(m_cr, pixbuf, _tduX(rect.left), _tduY(rect.top));
+	cairo_rectangle(m_cr, _tduX(rect.left), _tduY(rect.top), _tduR(rect.width), _tduR(rect.height));
+	cairo_fill(m_cr);
+	cairo_restore (m_cr);
+*/
+
+	gdk_draw_pixbuf (m_pWin, NULL, pixbuf, 0, 0,
+						 _tduX(rect.left), _tduY(rect.top),
+						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }
 
 /*!

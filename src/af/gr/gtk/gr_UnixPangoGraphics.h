@@ -46,6 +46,9 @@ class XAP_Frame;
 
 class ABI_EXPORT GR_UnixCairoScreenGraphics : public GR_ScreenGraphics
 {
+	std::vector<GdkPixbuf *>	m_SavePixbufs;
+	std::vector<UT_Rect>		m_SaveRects;
+
 protected:
 	GdkWindow					*m_pWin;
 	GR_ScreenGraphics::Cursor	 m_cursor;
@@ -68,6 +71,9 @@ public:
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
+
+	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	    restoreRectangle(UT_uint32 iIndx);
 
 	void				init3dColors(GtkStyle * pStyle);
 
@@ -140,8 +146,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 	virtual GR_Graphics::ColorSpace getColorSpace() const;
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
-	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
-	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
 	virtual UT_uint32 getDeviceResolution() const;
 	virtual bool      canQuickPrint()
