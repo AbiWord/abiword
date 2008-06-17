@@ -28,7 +28,7 @@
  */
 
 IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
-  : pdoc(doc), document(NULL), section(NULL), paragraph(NULL)
+  : pdoc(doc), document(NULL), section(NULL), paragraph(NULL), table(NULL), row(NULL), tableHelper(NULL)
 {
 	document = OXML_Document::getNewInstance();
 	
@@ -39,12 +39,14 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed"));	
 		document = NULL;
 	}
+	tableHelper = new ie_Table(doc);
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
 {
 	OXML_Document::destroyInstance();
 	document = NULL;
+	DELETEP(tableHelper);
 }
 
 bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* pcr)
@@ -99,7 +101,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 	return true;
 }
 
-bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
+bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
 {
 	if(pcr->getType() != PX_ChangeRecord::PXT_InsertStrux)
 		return false;
@@ -195,14 +197,108 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle /* sdh */, const P
 		case PTX_SectionHdrFtr:
 		case PTX_SectionEndnote:
 		case PTX_SectionTable:
+		{
+			table = new OXML_Element_Table("");
+			OXML_SharedElement shared_table(static_cast<OXML_Element*>(table));
+
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Table Property: %s=%s\n", szName, szValue));	
+						if(table->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Table Attribute: %s=%s\n", szName, szValue));	
+						if(table->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+
+			tableHelper->OpenTable(sdh, api);
+			return section->appendElement(shared_table) == UT_OK;
+		}
 		case PTX_SectionCell:
+		{
+			OXML_Element_Cell* cell = new OXML_Element_Cell("");
+			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
+
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Cell Property: %s=%s\n", szName, szValue));	
+						if(cell->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Cell Attribute: %s=%s\n", szName, szValue));	
+						if(cell->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+
+			tableHelper->OpenCell(api);
+			if(!row || tableHelper->isNewRow())
+			{
+				row = new OXML_Element_Row("");
+				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
+				if(table->appendElement(shared_row) != UT_OK)
+					return false;
+			}
+
+			return row->appendElement(shared_cell) == UT_OK;
+		}
 		case PTX_SectionFootnote:
 		case PTX_SectionMarginnote:
 		case PTX_SectionAnnotation:
 		case PTX_SectionFrame:
 		case PTX_SectionTOC:
 		case PTX_EndCell:
+		{
+				tableHelper->CloseCell();
+				return true;
+		}
 		case PTX_EndTable:
+		{
+				tableHelper->CloseTable();
+				return true;
+		}
 		case PTX_EndFootnote:
 		case PTX_EndMarginnote:
 		case PTX_EndEndnote:

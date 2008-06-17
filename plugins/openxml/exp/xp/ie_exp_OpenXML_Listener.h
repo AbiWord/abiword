@@ -32,9 +32,15 @@
 #include <OXML_Element_Text.h>
 #include <OXML_Element_Run.h>
 #include <OXML_Element_Paragraph.h>
+#include <OXML_Element_Table.h>
+#include <OXML_Element_Row.h>
+#include <OXML_Element_Cell.h>
+#include <ie_Table.h>
 
 class OXML_Document;
 class OXML_Element_Paragraph;
+class OXML_Element_Table;
+class OXML_Element_Row;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -57,9 +63,12 @@ public:
 
 private:
 	PD_Document* pdoc;
+	ie_Table* tableHelper;
 	OXML_Document* document;
 	OXML_Section* section;
 	OXML_Element_Paragraph* paragraph;
+	OXML_Element_Table* table;
+	OXML_Element_Row* row;
 
 	UT_Error addDocumentStyles();
 };
