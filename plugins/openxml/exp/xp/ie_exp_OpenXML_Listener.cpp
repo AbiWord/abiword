@@ -28,7 +28,7 @@
  */
 
 IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
-  : pdoc(doc), document(NULL), section(NULL), paragraph(NULL), table(NULL), row(NULL), tableHelper(NULL)
+  : pdoc(doc), tableHelper(NULL), document(NULL), section(NULL), paragraph(NULL), table(NULL), row(NULL)
 {
 	document = OXML_Document::getNewInstance();
 	
