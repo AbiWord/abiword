@@ -3610,7 +3610,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 		if (pPGP)
 	  		resRatio = pPGP->_getResolutionRatio();
-		resRatio = 1.0;
+
 	}
 #endif
 	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
@@ -3626,8 +3626,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 		return false;
 	}
 
-	UT_uint32 iSize = (UT_uint32)(0.5 + m_dPointSize * resRatio *(double)pG->getResolution() /
-		(double)pG->getDeviceResolution());
+	UT_uint32 iSize = (UT_uint32)(0.5 + m_dPointSize * resRatio *(double)pG->getResolution() / (double)pG->getDeviceResolution());
 	
 	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
 														 pFace->glyph->metrics.horiBearingX));
