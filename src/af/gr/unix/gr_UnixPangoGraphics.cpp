@@ -1986,7 +1986,7 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 
 				// iSpace is in layout units. Convert to pango units
 
-				RI.m_pJustify[i] = (iSpace);
+				RI.m_pJustify[i] = ltpunz(iSpace);
 
 				// add this amount the pango metrics
 
