@@ -27,35 +27,40 @@
 #include "gr_Graphics.h"
 
 GR_Painter::GR_Painter (GR_Graphics * pGr)
-	: m_pGr (pGr),
-		m_pCaretDisabler(NULL)
+  : m_pGr (pGr),
+	m_pCaretDisabler(NULL)
 {
+	GR_ScreenGraphics *pSGC;
+
 	UT_ASSERT (m_pGr);
-	m_pCaretDisabler = new GR_CaretDisabler(m_pGr->getCaret());
+
+	pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pGr);
+	m_pCaretDisabler = new GR_CaretDisabler(pSGC->getCaret());
 	UT_sint32 i = 0;
-	GR_Caret * pCaret = pGr->getNthCaret(i);
+	GR_Caret * pCaret = pSGC->getNthCaret(i);
 	while(pCaret)
 	{
 	    GR_CaretDisabler * pCaretDisabler = new GR_CaretDisabler(pCaret);
 	    m_vecDisablers.addItem(pCaretDisabler);
 	    i++;
-	    pCaret = pGr->getNthCaret(i);
+	    pCaret = pSGC->getNthCaret(i);
 	}
-	m_pGr->beginPaint ();
 
+	m_pGr->beginPaint ();
 	m_pGr->setLineWidth(m_pGr->tlu(1));
 }
 
 
 GR_Painter::GR_Painter (GR_Graphics * pGr, bool bCaret)
-	: m_pGr (pGr),
-		m_pCaretDisabler(NULL)
+  : m_pGr (pGr),
+	m_pCaretDisabler(NULL)
 {
 	UT_ASSERT (m_pGr);
+
 	if(bCaret)
 	  m_pCaretDisabler = NULL;
-	m_pGr->beginPaint ();
 
+	m_pGr->beginPaint ();
 	m_pGr->setLineWidth(m_pGr->tlu(1));
 }
 

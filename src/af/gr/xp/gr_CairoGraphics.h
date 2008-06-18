@@ -212,8 +212,6 @@ public:
 								  bool bPortrait,
 								  UT_uint32 iWidth, UT_uint32 iHeight);
 
-	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void	    restoreRectangle(UT_uint32 iIndx);
     virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void setLineProperties(double inWidth, 
@@ -256,9 +254,6 @@ public:
 	UT_uint32         m_iDeviceResolution;
 
 	cairo_t *         m_cr;
-	
-	UT_GenericVector<UT_Rect *> m_vSaveRect;
-	UT_GenericVector<cairo_t *> m_vSaveRectBuf;
 
 	UT_RGBColor				m_curColor;
 	bool                    m_bIsSymbol;       
@@ -272,12 +267,17 @@ private:
 
 class ABI_EXPORT GR_ScreenGraphics : public GR_CairoGraphics
 {
+	friend class GR_Caret;
+
+	GR_Caret *		 m_pCaret;
+	UT_GenericVector<GR_Caret *>  m_vecCarets;
+
 protected:
-	GR_ScreenGraphics(cairo_t *cr)
-	  : GR_CairoGraphics(cr)
-	{}
+	GR_ScreenGraphics(cairo_t *cr);
 
 public:
+	~GR_ScreenGraphics();
+
 	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */
 				   CLR3D_BevelUp=2,					/* color of bevel-up  */
@@ -289,6 +289,9 @@ public:
 	virtual void      setColor3D(GR_Color3D c) = 0;
 	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
 	{ return false; }
+
+	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
+	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 
 	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
 	virtual void fillRect(GR_Color3D c,
@@ -327,6 +330,17 @@ public:
 
 	virtual void      setCursor(GR_ScreenGraphics::Cursor c) = 0;
 	virtual GR_ScreenGraphics::Cursor getCursor(void) const = 0;
+
+	void createCaret()
+	{
+		UT_ASSERT_HARMLESS(!m_pCaret);
+		m_pCaret = new GR_Caret(this);
+	}
+
+	GR_Caret *        getCaret() { return m_pCaret; }
+	GR_Caret *        createCaret(UT_UTF8String & sDocUUID);
+	GR_Caret *        getCaret(UT_UTF8String & sDocUUID);
+	GR_Caret *        getNthCaret(UT_sint32 i);
 
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
 	virtual void      scroll(UT_sint32 x_dest,

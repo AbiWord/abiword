@@ -716,9 +716,10 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
 	m_Selection.setTOCSelected(pTOCL);
 	PT_DocPosition pos = pTOCL->getPosition();
 	m_iInsPoint = pos+1;
-	if(m_pG->getCaret())
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	if(pSGC && pSGC->getCaret())
 	{
-		m_pG->getCaret()->disable();
+		pSGC->getCaret()->disable();
 	}
 	m_countDisable++;
 }
@@ -3343,7 +3344,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	m_pDoc->endUserAtomicGlob();
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
-	m_pG->getCaret()->setBlink(false);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	pSGC->getCaret()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();

@@ -28,15 +28,15 @@
 #include "ut_assert.h"
 #include "ut_string_class.h"
 
-class GR_Graphics;
+class GR_ScreenGraphics;
 
 class ABI_EXPORT GR_Caret
 {
-	friend class GR_Graphics;
+	friend class GR_ScreenGraphics;
 
 public:
-	explicit						GR_Caret(GR_Graphics * pG);
-	explicit						GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID);
+	explicit						GR_Caret(GR_ScreenGraphics * pG);
+	explicit						GR_Caret(GR_ScreenGraphics * pG, UT_UTF8String & sDocUUID);
 	~GR_Caret();
 	
 	void							enable();
@@ -92,7 +92,7 @@ private:
 	UT_uint32						m_iPointHeight2;
 	bool							m_bPointDirection;
 	UT_RGBColor *					m_pClr;
-	GR_Graphics *					m_pG;
+	GR_ScreenGraphics *					m_pG;
 
 	UT_uint32						m_iWindowWidth;
 	UT_uint32						m_iWindowHeight;

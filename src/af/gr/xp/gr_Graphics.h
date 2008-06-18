@@ -347,7 +347,6 @@ enum GRShapingResult
 class ABI_EXPORT GR_Graphics
 {
 	friend class GR_Painter;
-	friend class GR_Caret;
 
  public:
 	virtual ~GR_Graphics();
@@ -549,19 +548,6 @@ class ABI_EXPORT GR_Graphics
 							 return true;
 						 }
 
-	void              createCaret()
-		{
-			UT_ASSERT_HARMLESS(!m_pCaret);
-			m_pCaret = new GR_Caret(this);
-		}
-
-	GR_Caret *        getCaret() { return m_pCaret; }
-	GR_Caret *        createCaret(UT_UTF8String & sDocUUID);
-	GR_Caret *        getCaret(UT_UTF8String & sDocUUID);
-	GR_Caret *        getNthCaret(UT_sint32 i);
-	
-	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
-	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 	virtual UT_uint32 getDeviceResolution(void) const = 0;
 //
 // Use these methods to fix off by 1 errors while scrolling. Add the
@@ -753,7 +739,6 @@ public:
 	bool m_bHave3DColors;
 
  private:
-	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
     bool             m_bIsPortrait;
 	bool             m_bSpawnedRedraw;
@@ -778,7 +763,6 @@ public:
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;
 	static UT_UCS4Char      s_cDefaultGlyph;
-	UT_GenericVector<GR_Caret *>  m_vecCarets;
 };
 
 // TODO Rob: towards XPization of cairo

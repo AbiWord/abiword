@@ -126,14 +126,15 @@ public:
 
   virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
   {
-	  GR_Graphics *pG = static_cast<FV_View *>(pView)->getGraphics();
+      FV_View *pFV = static_cast<FV_View *>(pView);
+	  GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(pFV->getGraphics());
 
 	  if (m_pFrame && (mask & (AV_CHG_INSERTMODE)))
       {
 		  AP_FrameData * pData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 		  if (pData) 
 		  {
-			  pG->getCaret()->setInsertMode(pData->m_bInsertMode);
+			  pSGC->getCaret()->setInsertMode(pData->m_bInsertMode);
 			  return true;
 		  }
       }
@@ -146,7 +147,7 @@ public:
 	  		(mask & AV_CHG_MOTION)
 	     )
       {
-		  pG->getCaret()->resetBlinkTimeout();
+		  pSGC->getCaret()->resetBlinkTimeout();
 		  return true;
       }
 
@@ -550,8 +551,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if( pFrame )
 	{
 	    pFrame->repopulateCombos();
-	    m_pG->createCaret();
-		m_pG->getCaret()->enable();
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	    pSGC->createCaret();
+		pSGC->getCaret()->enable();
 		if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
 			m_caretListener = new FV_Caret_Listener (pFrame);
@@ -646,8 +648,9 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	m_pG = pG;
 	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		m_pG->createCaret();
-		m_pG->getCaret()->enable();
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+		pSGC->createCaret();
+		pSGC->getCaret()->enable();
 		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 		m_caretListener = new FV_Caret_Listener (pFrame);
 		addListener(m_caretListener, &m_CaretListID);
@@ -707,7 +710,8 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
 {
 	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
-	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	pCaretProps->m_pCaret = pSGC->createCaret( sDocUUID);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
@@ -2234,11 +2238,14 @@ void FV_View::setPaperColor(const gchar* clr)
 
 void FV_View::killBlink(void)
 {
-	m_pG->getCaret()->setBlink(false);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	pSGC->getCaret()->setBlink(false);
 }
 
 void FV_View::focusChange(AV_Focus focus)
 {
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+
 	m_focus=focus;
 	xxx_UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
 	switch(focus)
@@ -2248,7 +2255,7 @@ void FV_View::focusChange(AV_Focus focus)
 		{
 		  if(m_FrameEdit.getFrameEditMode() != FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
 		  {
-			m_pG->getCaret()->enable();
+			pSGC->getCaret()->enable();
 		  }
 		  else
 		  {
@@ -2257,7 +2264,7 @@ void FV_View::focusChange(AV_Focus focus)
 		}
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->setBlink(m_bCursorBlink);
+			pSGC->getCaret()->setBlink(m_bCursorBlink);
 			_setPoint(getPoint());
 		}
 		m_pApp->rememberFocussedFrame(m_pParentData);
@@ -2265,21 +2272,21 @@ void FV_View::focusChange(AV_Focus focus)
 	case AV_FOCUS_NEARBY:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->disable(true);
+			pSGC->getCaret()->disable(true);
 			m_countDisable++;
 		}
 		break;
 	case AV_FOCUS_MODELESS:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->setBlink(false);
+			pSGC->getCaret()->setBlink(false);
 			_setPoint(getPoint());
 		}
 		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->disable(true);
+			pSGC->getCaret()->disable(true);
 			m_countDisable++;
 		}
 		break;
@@ -2609,8 +2616,11 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		}
 	}
 
-	if (mask & AV_CHG_WINDOWSIZE && m_pG->getCaret())
-		m_pG->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	if (mask & AV_CHG_WINDOWSIZE && pSGC->getCaret()) {
+		
+		pSGC->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
+	}
 
 	// base class does the rest
 	xxx_UT_DEBUGMSG(("FV_View: notifyListeners: this %x \n",this));

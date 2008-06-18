@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* An autonomous caret class.
  *
  * Authors: Patrick Lam
@@ -49,7 +51,7 @@ static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 // there's another draw that happens to take place before 10ms, then
 // your scheduled _blink gets cancelled.
 
-GR_Caret::GR_Caret(GR_Graphics * pG)
+GR_Caret::GR_Caret(GR_ScreenGraphics * pG)
 	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
 		m_xPoint2(0),
@@ -90,7 +92,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 
 // TODO: fix this code duplication just for the extra sDocUUID (what 
 // is it doing here anyway? - MARCM
-GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
+GR_Caret::GR_Caret(GR_ScreenGraphics * pG, UT_UTF8String & sDocUUID)
 	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
 		m_xPoint2(0),

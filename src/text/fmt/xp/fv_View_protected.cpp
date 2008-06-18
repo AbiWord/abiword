@@ -190,8 +190,9 @@ void FV_View::_clearSelection(void)
 	{
 		return;
 	}
-	if (m_pG->getCaret())
-		m_pG->getCaret()->enable();
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	if (pSGC->getCaret())
+		pSGC->getCaret()->enable();
 
 	_fixInsertionPointCoords();
 	if (!m_Selection.isSelected())
@@ -581,7 +582,8 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	{
 		bOK = _charMotion(true,1);
 	}
-	m_pG->getCaret()->enable();
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	pSGC->getCaret()->enable();
 }
 
 /*!
@@ -4210,7 +4212,8 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
 
 void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 {
-	if (m_pG->getCaret() == NULL)
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
+	if (pSGC->getCaret() == NULL)
 		return;
 	if(!bIgnoreAll)
 		_fixAllInsertionPointCoords();
@@ -4254,7 +4257,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getFillType()->getColor();
-		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
+		pSGC->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
 									m_xPoint2, m_yPoint2, m_iPointHeight, 
 									m_bPointDirection, pClr);
 	}
@@ -4281,12 +4284,12 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 			UT_DEBUGMSG(("On image run with fixPointcoords \n"));
 		}
 		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
-		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
+		pSGC->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
 									m_xPoint2, m_yPoint2+yoff, m_iPointHeight-yoff, 
 									m_bPointDirection, pClr);
 	}
 
-	m_pG->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
+	pSGC->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
 
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
@@ -4704,17 +4707,18 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 #endif
 	// So, if there is a selection now, we should disable the cursor; conversely,
 	// if there is no longer a selection, we should enable the cursor.
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
 		if (isSelectionEmpty())
 		{	
 			while(m_countDisable > 0)
 			{
-			  if(m_pG->getCaret())
-			    m_pG->getCaret()->enable();
+			  if(pSGC->getCaret())
+			    pSGC->getCaret()->enable();
 			  m_countDisable--;
 			}
-			if(m_pG->getCaret()) {
-			  m_pG->getCaret()->disable();
-			  m_pG->getCaret()->enable();
+			if(pSGC->getCaret()) {
+			  pSGC->getCaret()->disable();
+			  pSGC->getCaret()->enable();
 			}
 		}
 		else
@@ -4725,8 +4729,8 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 // handle nested disable calls.
 //
 
-		  if(m_pG->getCaret())
-		    m_pG->getCaret()->disable();
+		  if(pSGC->getCaret())
+		    pSGC->getCaret()->disable();
 		  m_countDisable++;
 		}
 	}
@@ -5669,7 +5673,8 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 					 pView->m_bCursorIsOn ? "TRUE" : "FALSE"));
 
 		pView->m_bCursorBlink = b;
-		pView->m_pG->getCaret()->setBlink(b);
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(pView->m_pG);
+		pSGC->getCaret()->setBlink(b);
 	}
 
 

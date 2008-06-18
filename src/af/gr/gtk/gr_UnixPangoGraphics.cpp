@@ -263,15 +263,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	if (m_cr)
 		cairo_destroy(m_cr);
-
-	UT_VECTOR_SPARSEPURGEALL(UT_Rect*, m_vSaveRect);
-
-	// purge saved pixbufs
-	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
-	{
-		cairo_t *cr = m_vSaveRectBuf.getNthItem(i);
-		cairo_destroy(cr);
-	}
 }
 
 bool GR_CairoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -1820,73 +1811,6 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	return iWidth;
 }
 
-void GR_CairoGraphics::saveRectangle(UT_Rect & rect, UT_uint32 index)
-{
-	cairo_t *cr, *oldCr;
-	cairo_surface_t *src, *dst;
-	UT_Rect *oldRect;
-	UT_sint32 x;
-	UT_sint32 y;
-	UT_sint32 width;
-	UT_sint32 height;
-
-	x = _tduX(rect.left);
-	y = _tduY(rect.top);
-	width = _tduR(rect.width);
-	height = _tduR(rect.height);
-
-	src = cairo_get_target(m_cr);
-	dst = cairo_surface_create_similar(src, CAIRO_CONTENT_COLOR, width, height);
-	cr = cairo_create(dst);
-	cairo_set_source_surface(cr, src, x, y);
-	cairo_rectangle(cr, 0, 0, width, height);
-	cairo_fill(cr);
-/*
-static bool saved = false;
-if (!saved) {
-	saved = true;
-	cairo_surface_write_to_png(dst, "/home/rstaudinger/Desktop/foo.png");
-}
-*/
-
-	oldCr = NULL;
-	m_vSaveRectBuf.setNthItem(index, cr, &oldCr);
-	if(oldCr) {
-		cairo_destroy(oldCr);
-	}
-
-	oldRect = NULL;
-	m_vSaveRect.setNthItem(index, new UT_Rect(rect), &oldRect);
-	if(oldRect) {
-		delete oldRect;
-	}
-}
-
-void GR_CairoGraphics::restoreRectangle(UT_uint32 index)
-{
-	cairo_t *cr;
-	cairo_surface_t *surface;
-	UT_Rect *rect;
-	UT_sint32 x;
-	UT_sint32 y;
-	UT_sint32 width;
-	UT_sint32 height;
-
-	cr = m_vSaveRectBuf.getNthItem(index);
-	rect = m_vSaveRect.getNthItem(index);
-	x = _tduX(rect->left);
-	y = _tduY(rect->top);
-	width = _tduR(rect->width);
-	height = _tduR(rect->height);
-
-	cairo_save(m_cr);
-	surface = cairo_get_target(cr);
-	cairo_set_source_surface(m_cr, surface, x, y);
-	cairo_rectangle (m_cr, x, y, width, height);
-	cairo_fill(m_cr);
-	cairo_restore(m_cr);
-}
-
 /*!
  * Take a screenshot of the graphics and convert it to an image.
  */
@@ -2740,6 +2664,51 @@ void GR_CairoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+GR_ScreenGraphics::GR_ScreenGraphics(cairo_t *cr)
+  : GR_CairoGraphics(cr),
+	m_pCaret(NULL)
+{}
+
+GR_ScreenGraphics::~GR_ScreenGraphics()
+{
+	DELETEP(m_pCaret);
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(m_vecCarets.getItemCount());i++)
+	{
+		GR_Caret * pCaret = m_vecCarets.getNthItem(i);
+		DELETEP(pCaret);
+	}
+}
+
+GR_Caret * GR_ScreenGraphics::getNthCaret(UT_sint32 i)
+{
+	if (i>= static_cast<UT_sint32>(m_vecCarets.getItemCount()))
+		return NULL;
+	return m_vecCarets.getNthItem(i);
+}
+
+GR_Caret * GR_ScreenGraphics::getCaret(UT_UTF8String & sDocUUID)
+{
+	UT_uint32 i= 0;
+	for(i=0; i<m_vecCarets.getItemCount();i++)
+	{
+		if(m_vecCarets.getNthItem(i)->getUUID() == sDocUUID)
+		{
+			return m_vecCarets.getNthItem(i);
+		}
+	}
+	return NULL;
+}
+
+GR_Caret * GR_ScreenGraphics::createCaret(UT_UTF8String & sDocUUID)
+{
+	GR_Caret * pCaret = new GR_Caret(this,sDocUUID);
+	m_vecCarets.addItem(pCaret);
+	return pCaret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 GR_UnixCairoScreenGraphics::GR_UnixCairoScreenGraphics(GdkWindow *win)
   : GR_ScreenGraphics(gdk_cairo_create(win)),
 	m_SavePixbufs(8),
@@ -2751,7 +2720,12 @@ GR_UnixCairoScreenGraphics::GR_UnixCairoScreenGraphics(GdkWindow *win)
 
 GR_UnixCairoScreenGraphics::~GR_UnixCairoScreenGraphics()
 {
-	
+	std::vector<GdkPixbuf *>::iterator iter;
+
+	for (iter = m_SavePixbufs.begin(); iter != m_SavePixbufs.end(); ++iter)
+	{
+		g_object_unref (G_OBJECT (*iter));
+	}
 }
 
 void GR_UnixCairoScreenGraphics::init3dColors(GtkStyle * pStyle)
