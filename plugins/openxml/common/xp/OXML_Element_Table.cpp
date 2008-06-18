@@ -38,10 +38,23 @@ OXML_Element_Table::~OXML_Element_Table()
 
 }
 
-UT_Error OXML_Element_Table::serialize(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_Table::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+
+	err = exporter->startTable();
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeProperties(exporter);
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishTable();
 }
 
 UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* /*exporter*/)

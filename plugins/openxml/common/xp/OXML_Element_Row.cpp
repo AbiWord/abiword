@@ -38,10 +38,23 @@ OXML_Element_Row::~OXML_Element_Row()
 
 }
 
-UT_Error OXML_Element_Row::serialize(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_Row::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+
+	err = exporter->startRow();
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeProperties(exporter);
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishRow();
 }
 
 UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* /*exporter*/)

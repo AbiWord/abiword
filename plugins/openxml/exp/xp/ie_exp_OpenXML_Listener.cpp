@@ -28,7 +28,15 @@
  */
 
 IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
-  : pdoc(doc), tableHelper(NULL), document(NULL), section(NULL), paragraph(NULL), table(NULL), row(NULL)
+  : pdoc(doc), 
+	tableHelper(doc), 
+	document(NULL), 
+	section(NULL), 
+	paragraph(NULL), 
+	table(NULL), 
+	row(NULL), 
+	cell(NULL), 
+	bInTable(false)
 {
 	document = OXML_Document::getNewInstance();
 	
@@ -39,14 +47,12 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed"));	
 		document = NULL;
 	}
-	tableHelper = new ie_Table(doc);
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
 {
 	OXML_Document::destroyInstance();
 	document = NULL;
-	DELETEP(tableHelper);
 }
 
 bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* pcr)
@@ -101,7 +107,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 	return true;
 }
 
-bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
+bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
 {
 	if(pcr->getType() != PX_ChangeRecord::PXT_InsertStrux)
 		return false;
@@ -191,13 +197,17 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_Ch
 					}
 				}
 			}
+			
+			if(bInTable)
+				return cell->appendElement(shared_paragraph) == UT_OK;
 
 			return section->appendElement(shared_paragraph) == UT_OK;
 		}
 		case PTX_SectionHdrFtr:
 		case PTX_SectionEndnote:
 		case PTX_SectionTable:
-		{
+		{	
+			bInTable = true;
 			table = new OXML_Element_Table("");
 			OXML_SharedElement shared_table(static_cast<OXML_Element*>(table));
 
@@ -232,13 +242,13 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_Ch
 					}
 				}
 			}
+			tableHelper.OpenTable(sdh, pcr->getIndexAP());
 
-			tableHelper->OpenTable(sdh, api);
 			return section->appendElement(shared_table) == UT_OK;
 		}
 		case PTX_SectionCell:
 		{
-			OXML_Element_Cell* cell = new OXML_Element_Cell("");
+			cell = new OXML_Element_Cell("");
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
 			if(bHaveProp && pAP)
@@ -272,16 +282,16 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_Ch
 					}
 				}
 			}
-
-			tableHelper->OpenCell(api);
-			if(!row || tableHelper->isNewRow())
+			
+			tableHelper.OpenCell(api);
+			if(!row || tableHelper.isNewRow())
 			{
 				row = new OXML_Element_Row("");
 				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
 				if(table->appendElement(shared_row) != UT_OK)
 					return false;
 			}
-
+			
 			return row->appendElement(shared_cell) == UT_OK;
 		}
 		case PTX_SectionFootnote:
@@ -291,13 +301,14 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle  sdh , const PX_Ch
 		case PTX_SectionTOC:
 		case PTX_EndCell:
 		{
-				tableHelper->CloseCell();
-				return true;
+			tableHelper.CloseCell();
+			return true;
 		}
 		case PTX_EndTable:
 		{
-				tableHelper->CloseTable();
-				return true;
+			bInTable = false;
+			tableHelper.CloseTable();
+			return true;
 		}
 		case PTX_EndFootnote:
 		case PTX_EndMarginnote:

@@ -77,6 +77,12 @@ public:
 	UT_Error finishParagraphProperties(int target);
 	UT_Error startStyle(std::string name, std::string basedon, std::string followedby);
 	UT_Error finishStyle();
+	UT_Error startTable();
+	UT_Error finishTable();
+	UT_Error startRow();
+	UT_Error finishRow();
+	UT_Error startCell();
+	UT_Error finishCell();
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);

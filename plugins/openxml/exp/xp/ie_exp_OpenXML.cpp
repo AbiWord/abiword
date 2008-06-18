@@ -256,6 +256,54 @@ UT_Error IE_Exp_OpenXML::finishParagraphProperties(int target)
 }
 
 /**
+ * Starts exporting the OXML_Element_Table object
+ */
+UT_Error IE_Exp_OpenXML::startTable()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:tbl>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Table object
+ */
+UT_Error IE_Exp_OpenXML::finishTable()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "</w:tbl>");
+}
+
+/**
+ * Starts exporting the OXML_Element_Row object
+ */
+UT_Error IE_Exp_OpenXML::startRow()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:tr>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Row object
+ */
+UT_Error IE_Exp_OpenXML::finishRow()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "</w:tr>");
+}
+
+/**
+ * Starts exporting the OXML_Element_Cell object
+ */
+UT_Error IE_Exp_OpenXML::startCell()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:tc>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Cell object
+ */
+UT_Error IE_Exp_OpenXML::finishCell()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "</w:tc>");
+}
+
+/**
  * Writes to the target stream
  */
 UT_Error IE_Exp_OpenXML::writeTargetStream(int target, const char* str)

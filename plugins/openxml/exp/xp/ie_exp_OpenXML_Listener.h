@@ -41,6 +41,7 @@ class OXML_Document;
 class OXML_Element_Paragraph;
 class OXML_Element_Table;
 class OXML_Element_Row;
+class OXML_Element_Cell;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -63,12 +64,15 @@ public:
 
 private:
 	PD_Document* pdoc;
-	ie_Table* tableHelper;
+	ie_Table tableHelper;
 	OXML_Document* document;
 	OXML_Section* section;
 	OXML_Element_Paragraph* paragraph;
 	OXML_Element_Table* table;
 	OXML_Element_Row* row;
+	OXML_Element_Cell* cell;
+
+	bool bInTable;
 
 	UT_Error addDocumentStyles();
 };
