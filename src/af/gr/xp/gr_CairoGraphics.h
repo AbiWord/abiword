@@ -280,9 +280,9 @@ public:
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */
 				   CLR3D_BevelUp=2,					/* color of bevel-up  */
 				   CLR3D_BevelDown=3,				/* color of bevel-down */
-				   CLR3D_Highlight=4				/* color half-way between up and down */
+				   CLR3D_Highlight=4,				/* color half-way between up and down */
+				   COUNT_3D_COLORS=5
 	} GR_Color3D;
-#define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
 	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
