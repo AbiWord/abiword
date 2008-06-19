@@ -35,14 +35,19 @@
 class OXML_Element_Cell : public OXML_Element
 {
 public:
-	OXML_Element_Cell(std::string id);
+	OXML_Element_Cell(std::string id, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);
 	virtual ~OXML_Element_Cell();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	UT_sint32 getLeft();
+	UT_sint32 getRight();
+	UT_sint32 getTop();
+	UT_sint32 getBottom();
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	UT_sint32 m_iLeft, m_iRight, m_iTop, m_iBottom;
 };
 
 #endif //_OXML_ELEMENT_CELL_H_

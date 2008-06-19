@@ -28,9 +28,14 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Cell::OXML_Element_Cell(std::string id) : 
-	OXML_Element(id, TC_TAG, CELL)
+OXML_Element_Cell::OXML_Element_Cell(std::string id, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
+	OXML_Element(id, TC_TAG, CELL),
+	m_iLeft(left), 
+	m_iRight(right), 
+	m_iTop(top), 
+	m_iBottom(bottom)
 {
+
 }
 
 OXML_Element_Cell::~OXML_Element_Cell()
@@ -57,10 +62,41 @@ UT_Error OXML_Element_Cell::serialize(IE_Exp_OpenXML* exporter)
 	return exporter->finishCell();
 }
 
-UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startCellProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	UT_sint32 hspan = getRight()-getLeft();
+	UT_sint32 vspan = getBottom()-getTop();
+	bool isVertCont = getTop() == -1;
+
+	if(hspan > 1)
+	{
+		err = exporter->setGridSpan(TARGET_DOCUMENT, hspan);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(vspan > 1)
+	{
+		err = exporter->setVerticalMerge(TARGET_DOCUMENT, "restart");
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(isVertCont)
+	{
+		err = exporter->setVerticalMerge(TARGET_DOCUMENT, "continue");
+		if(err != UT_OK)
+			return err;
+	}
+
+	return exporter->finishCellProperties(TARGET_DOCUMENT);
 }
 
 
@@ -68,4 +104,25 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * /*pDocument*/)
 {
 	//TODO
 	return UT_OK;
+}
+
+
+UT_sint32 OXML_Element_Cell::getLeft()
+{
+	return m_iLeft;
+}
+
+UT_sint32 OXML_Element_Cell::getRight()
+{
+	return m_iRight;
+}
+
+UT_sint32 OXML_Element_Cell::getTop()
+{
+	return m_iTop;
+}
+
+UT_sint32 OXML_Element_Cell::getBottom()
+{
+	return m_iBottom;
 }

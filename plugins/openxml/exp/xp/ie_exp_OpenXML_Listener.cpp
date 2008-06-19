@@ -86,8 +86,6 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 				{
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
-						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Run Property: %s=%s\n", szName, szValue));	
 						if(element_run->setProperty(szName, szValue) != UT_OK)
 							return false;		
 					}
@@ -177,8 +175,6 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 				{
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
-						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Paragraph Property: %s=%s\n", szName, szValue));	
 						if(paragraph->setProperty(szName, szValue) != UT_OK)
 							return false;		
 					}
@@ -190,8 +186,6 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 				{
 					if(pAP->getNthAttribute(i, szName, szValue))
 					{
-						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("Paragraph Attribute: %s=%s\n", szName, szValue));	
 						if(paragraph->setAttribute(szName, szValue) != UT_OK)
 							return false;		
 					}
@@ -248,7 +242,13 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		}
 		case PTX_SectionCell:
 		{
-			cell = new OXML_Element_Cell("");
+			tableHelper.OpenCell(api);
+			UT_sint32 left = tableHelper.getLeft();
+			UT_sint32 right = tableHelper.getRight();
+			UT_sint32 top = tableHelper.getTop();
+			UT_sint32 bottom = tableHelper.getBot();
+
+			cell = new OXML_Element_Cell("", left, right, top, bottom);
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
 			if(bHaveProp && pAP)
@@ -283,10 +283,10 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 				}
 			}
 			
-			tableHelper.OpenCell(api);
 			if(!row || tableHelper.isNewRow())
 			{
 				row = new OXML_Element_Row("");
+				row->setNumCols(tableHelper.getNumCols());
 				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
 				if(table->appendElement(shared_row) != UT_OK)
 					return false;
@@ -401,8 +401,6 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 			if(!pStyle->getNthProperty(i, propertyName, propertyValue))
 				continue;
 
-			//TODO: Take the debug message out when we are done
-			UT_DEBUGMSG(("Style=%s Property: %s=%s\n", styleName, propertyName, propertyValue));	
 			err = style->setProperty(propertyName, propertyValue);
 			if(err != UT_OK)
 			{

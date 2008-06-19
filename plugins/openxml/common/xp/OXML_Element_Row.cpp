@@ -29,8 +29,8 @@
 #include <pd_Document.h>
 
 OXML_Element_Row::OXML_Element_Row(std::string id) : 
-	OXML_Element(id, TR_TAG, ROW)
-{
+	OXML_Element(id, TR_TAG, ROW), numCols(0)
+{	
 }
 
 OXML_Element_Row::~OXML_Element_Row()
@@ -57,6 +57,61 @@ UT_Error OXML_Element_Row::serialize(IE_Exp_OpenXML* exporter)
 	return exporter->finishRow();
 }
 
+UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+	
+	OXML_ElementVector children = getChildren();
+	
+	UT_sint32 left = 0; 
+	OXML_Element_Cell* cell = NULL;
+
+	//during the loop check to see if we are missing any cells due to vertical merging
+	//if so let's add them manually
+	OXML_ElementVector::size_type i;
+	for(i=0; i < children.size(); i++)
+	{
+		cell = static_cast<OXML_Element_Cell*>(get_pointer(children[i]));
+		
+		for(; left < cell->getLeft(); left++){
+			//top=-1,bottom=0 means vertically continued cell
+			OXML_Element_Cell temp("", left, left+1, -1, 0); 
+			OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
+
+			ret = temp.appendElement(shared_paragraph);
+			if(ret != UT_OK)
+				return ret;			
+
+			ret = temp.serialize(exporter);
+			if(ret != UT_OK)
+				return ret;			
+		}
+
+		left = cell->getRight();
+
+		ret = cell->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	//right most vertically merged cells
+	for(; left < numCols; left++){
+		OXML_Element_Cell temp("", left, left+1, -1, 0); 
+		OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
+
+		ret = temp.appendElement(shared_paragraph);
+		if(ret != UT_OK)
+			return ret;			
+
+		ret = temp.serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return ret;
+}
+
+
 UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
 {
 	//TODO
@@ -68,4 +123,9 @@ UT_Error OXML_Element_Row::addToPT(PD_Document * /*pDocument*/)
 {
 	//TODO
 	return UT_OK;
+}
+
+void OXML_Element_Row::setNumCols(UT_sint32 columns)
+{
+	numCols = columns;	
 }

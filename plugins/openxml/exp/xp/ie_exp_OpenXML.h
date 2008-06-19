@@ -75,6 +75,8 @@ public:
 	UT_Error finishRunProperties(int target);
 	UT_Error startParagraphProperties(int target);
 	UT_Error finishParagraphProperties(int target);
+	UT_Error startCellProperties(int target);
+	UT_Error finishCellProperties(int target);
 	UT_Error startStyle(std::string name, std::string basedon, std::string followedby);
 	UT_Error finishStyle();
 	UT_Error startTable();
@@ -105,6 +107,8 @@ public:
 	UT_Error setFontFamily(int target, const gchar* family);
 	UT_Error setTextDirection(int target, const gchar* direction);
 	UT_Error setWidows(int target, const gchar* widows);
+	UT_Error setGridSpan(int target, UT_sint32 hspan);
+	UT_Error setVerticalMerge(int target, const char* vmerge);
 
 protected:
     virtual UT_Error _writeDocument(void);

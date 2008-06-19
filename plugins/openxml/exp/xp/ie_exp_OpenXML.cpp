@@ -304,6 +304,22 @@ UT_Error IE_Exp_OpenXML::finishCell()
 }
 
 /**
+ * Starts exporting the OXML_Element_Cell object's properties
+ */
+UT_Error IE_Exp_OpenXML::startCellProperties(int target)
+{
+	return writeTargetStream(target, "<w:tcPr>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Cell object's properties
+ */
+UT_Error IE_Exp_OpenXML::finishCellProperties(int target)
+{
+	return writeTargetStream(target, "</w:tcPr>");
+}
+
+/**
  * Writes to the target stream
  */
 UT_Error IE_Exp_OpenXML::writeTargetStream(int target, const char* str)
@@ -605,6 +621,32 @@ UT_Error IE_Exp_OpenXML::setLineHeight(int target, const gchar* height)
 	str += twips;
 	str += "\" w:lineRule=\"";
 	str += lineRule;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets grid span for horizontally merged cells
+ */
+UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", hspan);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+	std::string str("<w:gridSpan w:val=\"");
+	str += buffer;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets vertical merge feature for vertically merged cells
+ */
+UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
+{
+	std::string str("<w:vmerge w:val=\"");
+	str += vmerge;
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
