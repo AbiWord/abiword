@@ -2,6 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2008 Robert Staudinger
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

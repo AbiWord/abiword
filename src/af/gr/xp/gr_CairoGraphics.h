@@ -212,8 +212,6 @@ public:
 								  bool bPortrait,
 								  UT_uint32 iWidth, UT_uint32 iHeight);
 
-    virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
-
 	virtual void setLineProperties(double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
@@ -292,6 +290,8 @@ public:
 
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
+
+	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
 	virtual void fillRect(GR_Color3D c, UT_Rect &r) = 0;
 	virtual void fillRect(GR_Color3D c,

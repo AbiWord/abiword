@@ -75,6 +75,8 @@ public:
 	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	    restoreRectangle(UT_uint32 iIndx);
 
+	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r);
+
 	void				init3dColors(GtkStyle * pStyle);
 
 	virtual void		scroll(UT_sint32, UT_sint32);
@@ -144,8 +146,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_CairoGraphics
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace() const;
-
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
 
 	virtual UT_uint32 getDeviceResolution() const;
 	virtual bool      canQuickPrint()

@@ -397,7 +397,8 @@ void FV_VisualInlineImage::_mouseDrag(UT_sint32 x, UT_sint32 y)
 		rCache.top -= pG->tlu(1);
 		rCache.width += pG->tlu(2);
 		rCache.height += pG->tlu(2);
-		m_screenCache = pG->genImageFromRectangle(rCache);
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+		m_screenCache = pSGC->genImageFromRectangle(rCache);
 
 		// Draw new image box
 		UT_Rect box(m_recCurFrame.left, m_recCurFrame.top - pG->tlu(1), m_recCurFrame.width - pG->tlu(1), m_recCurFrame.height - pG->tlu(1));
@@ -441,7 +442,8 @@ void FV_VisualInlineImage::drawCursor(PT_DocPosition newPos)
 	m_recCursor.height = heightCaret;
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
-	m_pDocUnderCursor = getGraphics()->genImageFromRectangle(m_recCursor);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+	m_pDocUnderCursor = pSGC->genImageFromRectangle(m_recCursor);
 	UT_RGBColor black(0,0,0);
 	getGraphics()->fillRect( black, m_recCursor);
 	m_bCursorDrawn = true;
@@ -540,7 +542,8 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	  m_iInitialOffY = y - m_recCurFrame.top;
 	  GR_Painter painter(getGraphics());
 	  DELETEP(m_pDragImage);
-	  m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+	  GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+	  m_pDragImage = pSGC->genImageFromRectangle(m_recCurFrame);
 	//
 	// Record the image attributes/properties
 	//

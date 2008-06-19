@@ -1812,35 +1812,6 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 }
 
 /*!
- * Take a screenshot of the graphics and convert it to an image.
- */
-GR_Image * GR_CairoGraphics::genImageFromRectangle(const UT_Rect &rec)
-{
-	/* TODO Rob port to cairo(image) */
-	/*
-	UT_sint32 idx = _tduX(rec.left);
-	UT_sint32 idy = _tduY(rec.top);
-	UT_sint32 idw = _tduR(rec.width);
-	UT_sint32 idh = _tduR(rec.height);
-	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
-	GdkColormap* cmp = gdk_colormap_get_system();
-	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
-												   GDK_DRAWABLE(m_pWin),
-												   cmp,
-												   idx, idy, 0, 0,
-												   idw, idh);
-	
-	UT_return_val_if_fail(pix, NULL);
-
-	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
-	pImg->m_image = pix;
-	pImg->setDisplaySize(idw,idh);
-	return pImg;
-	*/
-	return new GR_UnixImage("ScreenShot");
-}
-
-/*!
  * Create a new image from the Raster rgba byte buffer defined by pBB.
  * The dimensions of iWidth and iHeight are in logical units but the image
  * doesn't scale if the resolution or zoom changes. Instead you must create
@@ -2829,6 +2800,30 @@ void GR_UnixCairoScreenGraphics::restoreRectangle(UT_uint32 idx)
 	gdk_draw_pixbuf (m_pWin, NULL, pixbuf, 0, 0,
 						 _tduX(rect.left), _tduY(rect.top),
 						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+}
+
+/*!
+ * Take a screenshot of the graphics and convert it to an image.
+ */
+GR_Image * GR_UnixCairoScreenGraphics::genImageFromRectangle(const UT_Rect &rec)
+{
+	UT_sint32 idx = _tduX(rec.left);
+	UT_sint32 idy = _tduY(rec.top);
+	UT_sint32 idw = _tduR(rec.width);
+	UT_sint32 idh = _tduR(rec.height);
+	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
+
+	GdkPixbuf * pixbuf = gdk_pixbuf_get_from_drawable(NULL,
+												   GDK_DRAWABLE(m_pWin),
+												   NULL,
+												   idx, idy, 0, 0,
+												   idw, idh);
+	
+	UT_return_val_if_fail(pixbuf, NULL);
+
+	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot", pixbuf);
+	pImg->setDisplaySize(idw,idh);
+	return pImg;
 }
 
 /*!

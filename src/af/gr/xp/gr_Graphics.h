@@ -2,6 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2008 Robert Staudinger
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -700,8 +701,6 @@ public:
 											 UT_sint32 xoff,
 											 UT_sint32 yoff,
 											 int* pCharWidths = NULL);
-	
-	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
  private:
 	virtual bool _setTransform(const GR_Transform & /*tr*/)

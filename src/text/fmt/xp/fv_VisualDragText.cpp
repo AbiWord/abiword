@@ -592,7 +592,8 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 	m_recCursor.height = heightCaret;
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
-	m_pDocUnderCursor = getGraphics()->genImageFromRectangle(m_recCursor);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+	m_pDocUnderCursor = pSGC->genImageFromRectangle(m_recCursor);
 	UT_RGBColor black(0,0,0);
 	getGraphics()->fillRect( black, m_recCursor);
 	m_bCursorDrawn = true;
@@ -694,7 +695,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_iInitialOffX = x - m_recCurFrame.left;
 		m_iInitialOffY = y - m_recCurFrame.top;
 		GR_Painter painter(getGraphics());
-		m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+		m_pDragImage = pSGC->genImageFromRectangle(m_recCurFrame);
 		return;
 	}
 	fp_Run * pRunLow2 = NULL;
@@ -969,7 +971,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	GR_Painter painter(getGraphics());
 	UT_RGBColor black(0,0,0);
 	UT_RGBColor trans(0,0,0,true);
-	m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+	m_pDragImage = pSGC->genImageFromRectangle(m_recCurFrame);
 }
 
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)

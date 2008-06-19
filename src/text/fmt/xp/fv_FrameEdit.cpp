@@ -1854,7 +1854,8 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 			GR_Painter painter (getGraphics());
 			if(m_pFrameLayout->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
 			{
-			      m_pFrameImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+			      GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(getGraphics());
+			      m_pFrameImage = pSGC->genImageFromRectangle(m_recCurFrame);
 			}
 			else
 		        {
