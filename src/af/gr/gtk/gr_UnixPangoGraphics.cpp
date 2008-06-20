@@ -2695,7 +2695,8 @@ GR_UnixCairoScreenGraphics::~GR_UnixCairoScreenGraphics()
 
 	for (iter = m_SavePixbufs.begin(); iter != m_SavePixbufs.end(); ++iter)
 	{
-		g_object_unref (G_OBJECT (*iter));
+		if (*iter)
+			g_object_unref (G_OBJECT (*iter));
 	}
 }
 
