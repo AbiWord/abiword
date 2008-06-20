@@ -35,15 +35,17 @@ GR_Painter::GR_Painter (GR_Graphics * pGr)
 	UT_ASSERT (m_pGr);
 
 	pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pGr);
-	m_pCaretDisabler = new GR_CaretDisabler(pSGC->getCaret());
-	UT_sint32 i = 0;
-	GR_Caret * pCaret = pSGC->getNthCaret(i);
-	while(pCaret)
-	{
-	    GR_CaretDisabler * pCaretDisabler = new GR_CaretDisabler(pCaret);
-	    m_vecDisablers.addItem(pCaretDisabler);
-	    i++;
-	    pCaret = pSGC->getNthCaret(i);
+	if (pSGC) {
+		m_pCaretDisabler = new GR_CaretDisabler(pSGC->getCaret());
+		UT_sint32 i = 0;
+		GR_Caret * pCaret = pSGC->getNthCaret(i);
+		while(pCaret)
+		{
+		    GR_CaretDisabler * pCaretDisabler = new GR_CaretDisabler(pCaret);
+		    m_vecDisablers.addItem(pCaretDisabler);
+		    i++;
+		    pCaret = pSGC->getNthCaret(i);
+		}
 	}
 
 	m_pGr->beginPaint ();

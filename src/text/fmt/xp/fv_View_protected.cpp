@@ -4213,7 +4213,7 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
 void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 {
 	GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
-	if (pSGC->getCaret() == NULL)
+	if (!pSGC || pSGC->getCaret() == NULL)
 		return;
 	if(!bIgnoreAll)
 		_fixAllInsertionPointCoords();
