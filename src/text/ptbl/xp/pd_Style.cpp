@@ -36,7 +36,12 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 		m_sLabel = szLabel;
 	else
 		if (szName) // Label defaults to style name.
-			m_sLabel = szName;
+			 m_sLabel = szName;
+	
+	// Store the label in the attrprop as well as a member variable.  Bad idea?
+	// Regardless of whether it's a bad idea, it doesn't work.  When it does,
+	// remove the workaround in pt_PT_Styles.cpp
+	UT_ASSERT(this->addProperty(PT_LABEL_ATTRIBUTE_NAME, m_sLabel.c_str() ));
 	UT_DEBUGMSG(("~~~~~New Style: Name: %s  Label: %s\n", m_szName, m_sLabel.c_str()));
 }
 
