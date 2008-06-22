@@ -36,8 +36,8 @@
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
 
-// Note the label=name kludge here.  Remove when pd_Style
-// handles this correctly on its own.
+// Note the label=name kludge here - this prevents unused built-in
+// styles from being saved.
 
 #define _s(name, displayed, type, base, follow, props)	\
 	do { const gchar * a[] = {						\
