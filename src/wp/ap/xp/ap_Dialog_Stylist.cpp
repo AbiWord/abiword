@@ -101,7 +101,6 @@ void AP_Dialog_Stylist::stopUpdater(void)
 	}
 	m_pAutoUpdater->stop();
 	DELETEP(m_pAutoUpdater);
-	m_pAutoUpdater = NULL;
 }
 
 UT_sint32 AP_Dialog_Stylist::getNumStyles(void) const
