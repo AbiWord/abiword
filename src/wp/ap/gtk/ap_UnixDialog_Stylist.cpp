@@ -99,6 +99,11 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_St
 	  abiDestroyWidget(widget);
 }
 
+static void s_new_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me)
+{
+	me->createStyleFromDocument();
+}
+
 XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
 														  XAP_Dialog_Id id)
 {
@@ -113,6 +118,7 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wApply(NULL),
 	  m_wClose(NULL),
 	  m_wOK(NULL),
+	  m_wNew(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
@@ -269,6 +275,7 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 		m_wOK = glade_xml_get_widget(xml,"btOK");
 	}
 	m_wClose = glade_xml_get_widget(xml,"btClose");
+	m_wNew = glade_xml_get_widget(xml,"btNew");
 
 	// set the dialog title
 	UT_UTF8String s;
@@ -394,6 +401,10 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 {
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response_triggered), this);
+	
+	g_signal_connect(G_OBJECT(m_wNew), "clicked", 
+					 G_CALLBACK(s_new_clicked), this);
+	
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	g_signal_connect(G_OBJECT(m_windowMain),

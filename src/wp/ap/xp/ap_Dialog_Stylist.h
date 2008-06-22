@@ -109,6 +109,8 @@ public:
 		{ m_bStyleChanged = b;}
 	void              setStyleValid(bool bValid)
 		{ m_bStyleValid = bValid;}
+	bool             createStyleFromDocument();
+	bool             redefineStyleFromDocument();
 protected:
 	bool                  m_bIsModal;
 private:

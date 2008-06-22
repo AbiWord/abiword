@@ -193,7 +193,24 @@ void AP_Dialog_Stylist::updateDialog(void)
 			}
 		}
 	}
-}			
+}
+
+/*!
+ * Create a new style, using the properties at the caret.
+ */
+bool  AP_Dialog_Stylist::createStyleFromDocument()
+{
+	// right now just create a hard-coded style
+	const gchar * a[] = {						\
+			PT_NAME_ATTRIBUTE_NAME, "Test",				\
+			PT_LABEL_ATTRIBUTE_NAME, "Label for Test",				\
+			PT_TYPE_ATTRIBUTE_NAME, "P",				\
+			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
+			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
+			PT_PROPS_ATTRIBUTE_NAME, "Text-Decoration:underline",				\
+			0};
+	return true; // does nothing right now.
+}
 
 /*!
  * Finalize the dialog.
