@@ -4708,7 +4708,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	// So, if there is a selection now, we should disable the cursor; conversely,
 	// if there is no longer a selection, we should enable the cursor.
 		GR_ScreenGraphics *pSGC = dynamic_cast<GR_ScreenGraphics *>(m_pG);
-		if (isSelectionEmpty())
+		if (pSGC && isSelectionEmpty())
 		{	
 			while(m_countDisable > 0)
 			{
@@ -4729,7 +4729,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 // handle nested disable calls.
 //
 
-		  if(pSGC->getCaret())
+		  if(pSGC && pSGC->getCaret())
 		    pSGC->getCaret()->disable();
 		  m_countDisable++;
 		}
