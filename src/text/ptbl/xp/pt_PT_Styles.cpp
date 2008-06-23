@@ -320,9 +320,6 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, co
 
 bool pt_PieceTable::appendStyle(const gchar ** attributes)
 {
-	// this function can only be called while loading the document.
-  //UT_ASSERT(m_pts==PTS_Loading);
-
 	// first, store the attributes and properties and get an index to them.
 
 	PT_AttrPropIndex indexAP;
