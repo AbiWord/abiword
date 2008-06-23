@@ -1044,7 +1044,7 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 
 	UT_return_val_if_fail (szName, false);
 
-	getDoc()->getStyle("szName", &pStyle);
+	getDoc()->getStyle(szName, &pStyle);
 	if(pStyle != NULL)
 		return false;
 //
