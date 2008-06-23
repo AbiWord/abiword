@@ -111,6 +111,7 @@ public:
 		{ m_bStyleValid = bValid;}
 	bool             createStyleFromDocument();
 	bool             redefineStyleFromDocument();
+	PD_Document *    	getDoc(void) const;
 protected:
 	bool                  m_bIsModal;
 private:

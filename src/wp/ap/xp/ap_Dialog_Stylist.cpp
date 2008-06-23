@@ -209,7 +209,18 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
 			PT_PROPS_ATTRIBUTE_NAME, "Text-Decoration:underline",				\
 			0};
+	
+	getDoc()->appendStyle(a);
+	
 	return true; // does nothing right now.
+}
+
+/*!
+ * Pointer to current the PD_Document for real document we're working with.
+ */
+PD_Document * AP_Dialog_Stylist::getDoc(void) const
+{
+	return m_pDoc;
 }
 
 /*!
