@@ -229,7 +229,9 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	// when we create a name we won't have dupes.
 	getDoc()->appendStyle(a);
 	
-	
+	//
+	// Change style of current [UNIT_OF_TEXT] to the new one.
+	//
 	
 	return true; // if we made it here, we win
 }

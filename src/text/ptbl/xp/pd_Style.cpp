@@ -32,6 +32,7 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 {
 	if (szName)
 		m_szName = g_strdup (szName);
+	/*  This may return in a different function - but let's keep this non-destructive.
 	if (szLabel)
 		m_sLabel = szLabel;
 	else
@@ -42,6 +43,8 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 	const gchar * pAttr[4] = {PT_LABEL_ATTRIBUTE_NAME,m_sLabel.c_str(),NULL,NULL};
 	UT_ASSERT(addAttributes(pAttr));
 	UT_DEBUGMSG(("~~~~~New Style: Name: %s  Label: %s\n", m_szName, m_sLabel.c_str()));
+	*/
+	
 }
 
 PD_Style::~PD_Style()
