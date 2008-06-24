@@ -1171,7 +1171,7 @@ XAP_Frame * AP_Dialog_Styles::getFrame(void) const
 }
 
 /*!
- * Pointer to current the PD_Document for real document we're working with.
+ * Pointer to the PD_Document for the current document we're working with.
  */
 PD_Document * AP_Dialog_Styles::getDoc(void) const
 {

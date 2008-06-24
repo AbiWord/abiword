@@ -200,6 +200,18 @@ void AP_Dialog_Stylist::updateDialog(void)
  */
 bool  AP_Dialog_Stylist::createStyleFromDocument()
 {
+	//
+	// Load the properties at the current caret location.
+	//
+	
+	//
+	// Find the unique ones (not in the Normal or original style of run)
+	//
+	
+	//
+	// Create a unique, temporary name/label 
+	//
+	
 	// right now just create a hard-coded style
 	const gchar * a[] = {						\
 			PT_NAME_ATTRIBUTE_NAME, "Test",				\
@@ -207,16 +219,23 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 			PT_TYPE_ATTRIBUTE_NAME, "P",				\
 			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
-			PT_PROPS_ATTRIBUTE_NAME, "Text-Decoration:underline",				\
+			PT_PROPS_ATTRIBUTE_NAME, "font-size:22;",				\
 			0};
 	
+	//
+	// Add style to the document
+	//
+	
+	// when we create a name we won't have dupes.
 	getDoc()->appendStyle(a);
 	
-	return true; // does nothing right now.
+	
+	
+	return true; // if we made it here, we win
 }
 
 /*!
- * Pointer to current the PD_Document for real document we're working with.
+ * Pointer to the PD_Document for the current document we're working with.
  */
 PD_Document * AP_Dialog_Stylist::getDoc(void) const
 {

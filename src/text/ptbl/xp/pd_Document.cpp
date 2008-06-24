@@ -2509,7 +2509,7 @@ private:
 
 /*!
  * This method removes the style of name pszName from the styles definition and removes
- * all instances of it from the document including the basedon heiracy and the
+ * all instances of it from the document including the basedon hierarchy and the
  * followed-by sequences.
  */
 bool PD_Document::removeStyle(const gchar * pszName)
