@@ -29,7 +29,6 @@
 #include <goffice/goffice-config.h>
 #include <glib/gi18n-lib.h>
 #endif
-
 #include "ut_go_file.h"
 #include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-input.h>
@@ -45,6 +44,7 @@
 #ifdef WITH_GSF_INPUT_HTTP
 #include <gsf/gsf-input-http.h>
 #endif
+#include <stdio.h>
 
 #ifdef WITH_GNOMEVFS
 #define GOFFICE_WITH_GNOME

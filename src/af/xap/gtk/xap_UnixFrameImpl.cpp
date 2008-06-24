@@ -97,8 +97,15 @@ enum {
 
 static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{(gchar *)"text/uri-list", 	0, TARGET_URI_LIST},
-	{(gchar *)"_NETSCAPE_URL", 	0, TARGET_URL}
-};
+	{(gchar *)"_NETSCAPE_URL", 	0, TARGET_URL},
+	{(gchar *)"image/gif", 	0, TARGET_IMAGE},
+	{(gchar *)"image/jpeg", 	0, TARGET_IMAGE},
+	{(gchar *)"image/png", 	0, TARGET_IMAGE},
+	{(gchar *)"image/tiff", 	0, TARGET_IMAGE},
+	{(gchar *)"image/vnd", 	0, TARGET_IMAGE},
+	{(gchar *)"image/bmp", 	0, TARGET_IMAGE},
+	{(gchar *)"image/x-xpixmap", 	0, TARGET_IMAGE}}
+;
 
 struct DragInfo {
 	GtkTargetEntry * entries;
@@ -530,6 +537,40 @@ s_dndDropEvent(GtkWidget        *widget,
 	{
 		const char * uri = reinterpret_cast<const char *>(selection_data->data);
 		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+		//
+		// Look to see if this is actually an image.
+		//
+		const gchar * suffix = UT_pathSuffix(uri);
+		if (suffix) 
+		{
+			if(suffix[0] == '.')
+				suffix++;
+			UT_UTF8String sSuff = suffix;
+			UT_DEBUGMSG(("SUffix of uri is %s \n",sSuff.utf8_str()));
+			if(sSuff.length() > 0 && ((sSuff.substr(0,3) == "jpg") ||
+									  (sSuff.substr(0,4) == "jpeg") ||
+									  (sSuff.substr(0,3) == "png") ||
+									  (sSuff.substr(0,3) == "svg") ||
+									  (sSuff.substr(0,3) == "gif")))
+			{
+
+				UT_UTF8String sUri = uri;
+				UT_sint32 i = 0;
+				for(i=0;i<sUri.length()-1;i++)
+				{
+					if((sUri.substr(i,1) == "\n") || 
+					   (sUri.substr(i,1) == " ")  )
+					{
+						sUri = sUri.substr(0,i);
+						break;
+					}
+				}
+				UT_DEBUGMSG(("trimmed Uri is (%s) \n",sUri.utf8_str()));
+				s_loadImage(sUri,pView,x,y);
+				g_free (targetName);
+				return;
+			}
+		}
 		pView->cmdInsertHyperlink(uri);
 	}
 
