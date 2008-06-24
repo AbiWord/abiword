@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
@@ -26,7 +28,7 @@
 
 //////////////////////////////////////////////////////////////////
 
-class GR_Graphics;
+class GR_PrintGraphics;
 class PD_Document;
 class ABI_EXPORT AP_Convert
 {
@@ -51,8 +53,8 @@ class ABI_EXPORT AP_Convert
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension = NULL);
-	bool printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
+	bool print(const char * file, GR_PrintGraphics * pGraphics, const char * szFileExtension = NULL);
+	bool printFirstPage(GR_PrintGraphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {
 		m_impProps = props;

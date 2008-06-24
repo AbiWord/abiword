@@ -41,14 +41,14 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			useEnd(void);
 
-	virtual GR_Graphics *	getPrinterGraphicsContext(void);
-	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
+	virtual GR_PrintGraphics *	getPrinterGraphicsContext(void);
+	virtual void			releasePrinterGraphicsContext(GR_PrintGraphics *);
 
 protected:
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
 	virtual void            _getGraphics(void);
 
-	GR_Graphics  *                m_pPrintGraphics;
+	GR_PrintGraphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;
 	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;

@@ -57,8 +57,8 @@ public:
 	bool							getCollate(void) const;
 	GR_Graphics::ColorSpace			getColorSpace(void) const;
 	
-	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
-	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
+	virtual GR_PrintGraphics *			getPrinterGraphicsContext(void) = 0;
+	virtual void					releasePrinterGraphicsContext(GR_PrintGraphics * pGraphics) = 0;
 	
 protected:
 	bool							_getPrintToFilePathname(XAP_Frame * pFrame,

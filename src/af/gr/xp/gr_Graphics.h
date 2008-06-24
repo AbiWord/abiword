@@ -487,16 +487,6 @@ class ABI_EXPORT GR_Graphics
 	virtual bool      queryProperties(GR_Graphics::Properties gp) const = 0;
 	/* the following 3 are only used for printing */
 
-	virtual bool      startPrint(void) = 0;
-
-	virtual bool      startPage(const char * szPageLabel,
-								UT_uint32 pageNumber,
-								bool bPortrait,
-								UT_uint32 iWidth,
-								UT_uint32 iHeight) = 0;
-
-	virtual bool      endPrint(void) = 0;
-
 	virtual void      flush(void);
 
 	/* specific color space support */

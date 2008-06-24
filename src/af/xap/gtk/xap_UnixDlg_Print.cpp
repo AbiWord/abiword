@@ -65,13 +65,13 @@ void XAP_UnixDialog_Print::useEnd(void)
 	XAP_Dialog_Print::useEnd();
 }
 
-GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
+GR_PrintGraphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 	return m_pPrintGraphics;
 }
 
-void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_PrintGraphics * pGraphics)
 {
 	UT_UNUSED(pGraphics);
 	UT_ASSERT(pGraphics == m_pPrintGraphics);	
@@ -180,10 +180,12 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
+/* TODO Rob: use GR_PrintGraphics
 	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(m_gpm, m_bIsPreview);
 	UT_return_if_fail(m_pPrintGraphics);
 	if(m_bPdfWorkAround)
 	  static_cast<GR_UnixPangoPrintGraphics *>(m_pPrintGraphics)->setPdfWorkaround();
+*/
 	m_answer = a_OK;
 }
 

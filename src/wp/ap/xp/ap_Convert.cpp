@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
@@ -111,7 +113,7 @@ class ABI_EXPORT Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Li
 public:
 
 	explicit Print_MailMerge_Listener (PD_Document * pd,
-									   GR_Graphics * pGraphics,
+									   GR_PrintGraphics * pGraphics,
 									   const UT_UTF8String & szFile)
 		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
 		  m_szFile(szFile), m_pGraphics(pGraphics), m_bPrintedFirstPage(false), m_iter(1)
@@ -168,7 +170,7 @@ private:
 	PD_Document *m_doc;
 	UT_UTF8String m_szFile;
 
-	GR_Graphics * m_pGraphics;
+	GR_PrintGraphics * m_pGraphics;
 
 	bool m_bPrintedFirstPage;
 	UT_uint32 m_iter;
@@ -360,7 +362,7 @@ void AP_Convert::setVerbose(int level)
 		m_iVerbose = level;
 }
 
-bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtensionOrMime)
+bool AP_Convert::print(const char * szFile, GR_PrintGraphics * pGraphics, const char * szFileExtensionOrMime)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
@@ -476,7 +478,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 }
 
 
-bool AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
+bool AP_Convert::printFirstPage(GR_PrintGraphics * pGraphics,PD_Document * pDoc)
 {
 		// create a new layout and view object for the doc
 

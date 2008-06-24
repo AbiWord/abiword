@@ -8399,7 +8399,7 @@ static bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
-bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+bool s_actuallyPrint(PD_Document *doc,  GR_PrintGraphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
@@ -8415,7 +8415,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 						   nCopies, bCollate, iWidth, iHeight, pages);
 }
 
-bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+bool s_actuallyPrint(PD_Document *doc,  GR_PrintGraphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
@@ -8576,7 +8576,7 @@ UT_return_val_if_fail(pDialog, false);
 
 		pFrame->setStatusMessage ( static_cast<const gchar *>(msg.c_str()) );
 
-		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+		GR_PrintGraphics * pGraphics = pDialog->getPrinterGraphicsContext();
 
 		if (!pGraphics)
 		{
@@ -8707,7 +8707,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	pDialog->runModal(pFrame);
 
-	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+	GR_PrintGraphics * pGraphics = NULL; /* TODO Rob = pDialog->getPrinterGraphicsContext(); */
 	if (!(pGraphics && pGraphics->queryProperties(GR_Graphics::DGP_PAPER)))
 		{
 			UT_ASSERT_HARMLESS(pGraphics);

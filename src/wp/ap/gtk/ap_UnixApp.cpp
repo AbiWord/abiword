@@ -1296,6 +1296,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	if (Args->m_sPrintTo) 
 	{
 #ifdef ENABLE_PRINT
+/* TODO Rob port to GR_PrintGraphics
 		if (Args->m_sFiles[0])
 	    {
 			AP_Convert conv ;
@@ -1344,6 +1345,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			fprintf(stderr, "Error: no file to print!\n");
 			bSuccess = false;
 	    }
+*/
 #else
 		fprintf(stderr,"Only works in GNOME build \n");
 		bSuccess = false;

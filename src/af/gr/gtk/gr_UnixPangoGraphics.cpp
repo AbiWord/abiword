@@ -290,25 +290,6 @@ void GR_CairoGraphics::_endPaint()
 	cairo_restore(m_cr);
 }
 
-bool GR_CairoGraphics::startPrint()
-{
-	UT_ASSERT(0);
-	return false;
-}
-
-bool GR_CairoGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
-								bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
-{
-	UT_ASSERT(0);
-	return false;
-}
-
-bool GR_CairoGraphics::endPrint()
-{
-	UT_ASSERT(0);
-	return false;
-}
-
 void GR_CairoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	drawChars(&Char, 0, 1, xoff, yoff, NULL);
@@ -1588,6 +1569,7 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * /*pCharWidth*/)
 {
+printf("%s()\n", __FUNCTION__);
 	UT_UTF8String utf8;
 
 	if(isSymbol())

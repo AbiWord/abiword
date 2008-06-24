@@ -204,13 +204,6 @@ public:
 									   UT_sint32 iDisplayWidth,
 									   UT_sint32 iDisplayHeight,
 									   GR_Image::GRType =GR_Image::GRT_Raster);
- 
-  	virtual bool		startPrint();
-	virtual bool		endPrint();
-	virtual bool		startPage(const char * szPageLabel,
-								  UT_uint32 pageNumber,
-								  bool bPortrait,
-								  UT_uint32 iWidth, UT_uint32 iHeight);
 
 	virtual void setLineProperties(double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
@@ -349,6 +342,77 @@ public:
 							 UT_sint32 y_src,
 							 UT_sint32 width,
 							 UT_sint32 height) = 0;
+};
+
+class ABI_EXPORT GR_PrintGraphics : public GR_CairoGraphics
+{
+
+	bool m_bPageStarted;
+
+public:
+	GR_PrintGraphics(cairo_t *cr)
+	  : GR_CairoGraphics(cr),
+		m_bPageStarted(false)
+	{
+printf("%s()\n", __FUNCTION__);
+	}
+
+	virtual ~GR_PrintGraphics()
+	{
+printf("%s() `%s'\n", __FUNCTION__, cairo_status_to_string(cairo_status(m_cr)));
+
+		// TODO Rob: do this in the base class;
+		cairo_surface_t *surface;
+
+		surface = cairo_get_target (m_cr);
+		cairo_surface_finish (surface);
+	}
+
+	virtual bool startPrint()
+	{
+printf("%s()\n", __FUNCTION__);
+		return true;
+	}
+
+	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+	{
+printf("%s(label='%s', #='%d', portrait='%d', width='%d', height='%d') started:%d\n", __FUNCTION__, szPagelabel, pageNumber, bPortrait, iWidth, iHeight, m_bPageStarted);
+		if (m_bPageStarted) {
+			cairo_show_page(m_cr);
+		}
+		m_bPageStarted = true;
+
+		return true;
+	}
+
+	/*!
+	 * TODO we could cairo_destroy(m_cr) here to force the file being flushed 
+	 * to disk. Hmm.
+ 	 */
+	virtual bool endPrint()
+	{
+printf("%s() started: %d\n", __FUNCTION__, m_bPageStarted);
+		if (m_bPageStarted) {
+			cairo_show_page(m_cr);
+		}
+		return true;
+	}
+
+	bool queryProperties(GR_Graphics::Properties gp) const
+	{
+		switch (gp)
+		{
+			case DGP_SCREEN:
+			case DGP_OPAQUEOVERLAY:
+				return false;
+			case DGP_PAPER:
+				return true;
+			default:
+				UT_ASSERT_NOT_REACHED ();
+				return false;
+		}
+	}
 };
 
 #endif /* GR_CAIROGRAPHICS_H */
