@@ -32,6 +32,14 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 {
 	if (szName)
 		m_szName = g_strdup (szName);
+	else
+	{
+		gchar * name=0;
+		getAttribute(PT_NAME_ATTRIBUTE_NAME, name);
+		if (name)
+			m_szName=name;
+	}
+		
 	/*  This may return in a different function - but let's keep this non-destructive.
 	if (szLabel)
 		m_sLabel = szLabel;
