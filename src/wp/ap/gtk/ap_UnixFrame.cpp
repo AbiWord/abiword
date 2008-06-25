@@ -586,3 +586,14 @@ UT_sint32 AP_UnixFrame::_getDocumentAreaHeight()
 {
 	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.height);
 }
+
+
+UT_sint32 AP_UnixFrame::getDocumentAreaXoff()
+{
+	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.x);
+}
+
+UT_sint32 AP_UnixFrame::getDocumentAreaYoff()
+{
+	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.y);
+}

@@ -52,6 +52,8 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
+	virtual UT_sint32 getDocumentAreaXoff();
+	virtual UT_sint32 getDocumentAreaYoff();
 	
 protected:
 	friend class AP_UnixFrameImpl;
