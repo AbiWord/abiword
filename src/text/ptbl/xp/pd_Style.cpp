@@ -34,16 +34,21 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
 		m_szName = g_strdup (szName);
 	else
 	{
-		gchar * name=0;
-		getAttribute(PT_NAME_ATTRIBUTE_NAME, name);
-		if (name)
-			m_szName=name;
+		const gchar * name=0;
+		if (getAttribute( (const gchar*) PT_NAME_ATTRIBUTE_NAME, name) )
+			m_szName=(char *) name;
 	}
-		
-	/*  This may return in a different function - but let's keep this non-destructive.
+	
 	if (szLabel)
 		m_sLabel = szLabel;
 	else
+	{
+		const gchar * label=0;
+		if ( getAttribute((const gchar*) PT_LABEL_ATTRIBUTE_NAME, label) )
+			m_sLabel=label;
+	}
+		
+	/*  This may return in a different function - but let's keep this non-destructive.
 		if (szName) // Label defaults to style name.
 			 m_sLabel = szName;
 	
