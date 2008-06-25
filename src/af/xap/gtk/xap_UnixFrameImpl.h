@@ -59,7 +59,10 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	GtkWidget * getTopLevelWindow() const;
 	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
 	GtkWidget * getVBoxWidget() const;
-
+	gint getNewX(void)
+	{ return m_iNewX;}
+	gint getNewY(void)
+	{ return m_iNewY;}
 	void focusIMIn ();
 	void focusIMOut ();
 	void queueIMReset () {

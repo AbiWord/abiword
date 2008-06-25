@@ -228,7 +228,10 @@ public:
 	UT_RGBColor getColorSelForeground () const;
 
 	void dragText();
-
+	virtual UT_sint32 getDocumentAreaXoff(void)
+	{ return 0;}
+	virtual UT_sint32 getDocumentAreaYoff(void)
+	{ return 0;}
 protected:
 	friend class XAP_FrameImpl;
 

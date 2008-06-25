@@ -66,6 +66,7 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "ap_FrameData.h"
+#include "ap_UnixFrame.h"
 #include "ev_Mouse.h"
 
 #include "ie_types.h"
@@ -228,7 +229,7 @@ static int s_mapMimeToUriType (const char * uri)
 }
 
 static void
-s_loadImage (const UT_UTF8String & file, FV_View * pView,gint x, gint y)
+s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic (file.utf8_str(), 0, &pFG);
@@ -237,19 +238,27 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView,gint x, gint y)
 			UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.utf8_str()));
 			return;
 		}
-	UT_sint32 mouseX = x;
-	UT_sint32 mouseY = y;
+	UT_sint32 xoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaXoff();
+	UT_sint32 yoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaYoff();
+	UT_sint32 mouseX = x - xoff;
+	UT_sint32 mouseY = y - yoff;
+	UT_DEBUGMSG(("x %d xoff %d y %d yoff %d ",y,xoff,y,yoff));
 	if(pView && pView->getGraphics())
-		mouseX = pView->getGraphics()->tlu(x);
+		mouseX = pView->getGraphics()->tlu(mouseX);
 	if(pView && pView->getGraphics())
-		mouseY = pView->getGraphics()->tlu(y);
+		mouseY = pView->getGraphics()->tlu(mouseY);
+	double xInch = (double) mouseX/1440.;
+	double yInch = (double) mouseY/1440.;
 
+	UT_DEBUGMSG(("Insert Image at logical (x,y) %d %d \n",mouseX,mouseY));
+
+	UT_DEBUGMSG(("Insert Image at x %f in y %f in \n",xInch,yInch));
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
 	DELETEP(pFG);
 }
 
 static void
-s_loadImage (UT_ByteBuf * bytes, FV_View * pView, gint x, gint y)
+s_loadImage (UT_ByteBuf * bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
@@ -258,12 +267,15 @@ s_loadImage (UT_ByteBuf * bytes, FV_View * pView, gint x, gint y)
 			UT_DEBUGMSG(("JK: could not import graphic from data buffer\n"));
 			return;
 		}
-	UT_sint32 mouseX = x;
-	UT_sint32 mouseY = y;
+	UT_sint32 xoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaXoff();
+	UT_sint32 yoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaYoff();
+	UT_sint32 mouseX = x - xoff;
+	UT_sint32 mouseY = y - yoff;
+	UT_DEBUGMSG(("x %d newX %d y %d newY %d ",y,xoff,y,yoff));
 	if(pView && pView->getGraphics())
-		mouseX = pView->getGraphics()->tlu(x);
+		mouseX = pView->getGraphics()->tlu(mouseX);
 	if(pView && pView->getGraphics())
-		mouseY = pView->getGraphics()->tlu(y);
+		mouseY = pView->getGraphics()->tlu(mouseY);
 
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
 	DELETEP(pFG);
@@ -338,7 +350,7 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 
 	if (type == TARGET_IMAGE)
 		{
-			s_loadImage (uri, pView,x,y);
+			s_loadImage (uri, pView,pFrame,x,y);
 			return;
 		}
 	else
@@ -363,13 +375,13 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 }
 
 static void
-s_loadUriList (XAP_Frame * pFrame, const char * uriList,gint x, gint y)
+s_loadUriList (XAP_Frame * pFrame,  const char * uriList,gint x, gint y)
 {
 	gchar ** uris = g_uri_list_extract_uris(uriList);
 	gchar ** uriIter = uris;
 
 	while (uriIter && *uriIter) {
-		s_loadUri(pFrame, *uriIter,x,y);
+		s_loadUri(pFrame,*uriIter,x,y);
 		uriIter++;
 	}
 	g_strfreev(uris);
@@ -518,7 +530,7 @@ s_dndDropEvent(GtkWidget        *widget,
 	{
 		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
 		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
-		s_loadUriList (pFrame, rawChar,x,y);
+		s_loadUriList (pFrame,rawChar,x,y);
 	}
 	else if (info == TARGET_DOCUMENT)
 	{
@@ -531,7 +543,7 @@ s_dndDropEvent(GtkWidget        *widget,
 
 		UT_DEBUGMSG(("JK: Image target\n"));
 		bytes->append (selection_data->data, selection_data->length);
-		s_loadImage (bytes, pView,x,y);
+		s_loadImage (bytes, pView,pFrame,x,y);
 	}
 	else if (info == TARGET_URL)
 	{
@@ -566,7 +578,7 @@ s_dndDropEvent(GtkWidget        *widget,
 					}
 				}
 				UT_DEBUGMSG(("trimmed Uri is (%s) \n",sUri.utf8_str()));
-				s_loadImage(sUri,pView,x,y);
+				s_loadImage(sUri,pView,pFrame,x,y);
 				g_free (targetName);
 				return;
 			}
