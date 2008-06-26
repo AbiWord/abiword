@@ -560,7 +560,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 	pie->setLoadStylesOnly(true);
 	pie->setLoadDocProps(bDocProps);
 	errorCode = pie->importFile(szFilename);
-	DELETEP pie;
+	DELETEP(pie);
 
 	if (errorCode)
 	{
