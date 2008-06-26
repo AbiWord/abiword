@@ -27,7 +27,9 @@
 #include "pt_Types.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
+
 #include <string>
+#include <map>
 
 class pt_PieceTable;
 
@@ -77,7 +79,13 @@ public:
 protected:
 	bool					_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
 	bool					_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
+	bool					_simplifyProperties();
+	std::map<std::string, std::string> _returnPropsMap(const gchar * szStyle, bool bReplaceAttributes = true) const;
 
+	
+	pt_PieceTable *			getPT(void) const;
+	PD_Document *			getDoc(void) const;
+		
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;
 

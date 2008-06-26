@@ -520,6 +520,155 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 	return true;
 }
 
+/*!
+ * This method eliminates any properties which are identical
+ * to the "based-on" styles.
+ */
+bool PD_Style::_simplifyProperties()
+{
+	UT_GenericVector<const gchar *> vKeepers, vTheseProps, vBasedOnProps, vAttrs;
+	std::map<std::string, std::string> mBasedOnProps;
+	
+	getAllProperties ( (UT_Vector *) &vTheseProps, (UT_sint32) 0);
+	getBasedOn()-> getAllProperties( (UT_Vector *) &vBasedOnProps, (UT_sint32) 1);
+	
+	
+	// Turn based on props into a map.
+	int i;
+	int iBasedOnPropCount=vBasedOnProps.getItemCount();
+	for (i=0; (i+1<iBasedOnPropCount); i+=2)
+		mBasedOnProps[vBasedOnProps[i]] = vBasedOnProps[i+1];
+	
+	// Keep only unique ones.
+	int iPropCount=vTheseProps.getItemCount();
+	for (i=0; (i+1<iPropCount); i+=2)
+	{
+		if (mBasedOnProps[vTheseProps[i]] != std::string( vTheseProps[i+1]))
+		{
+			vKeepers.push_back(vTheseProps[i]);
+			vKeepers.push_back(vTheseProps[i+1]);
+		}
+	}
+
+	// OK, now replace old stuff.
+	
+	const gchar ** newProps;
+	newProps = new const gchar * [vKeepers.getItemCount()+1];
+	for (i=0; i<vKeepers.getItemCount(); i++)
+		newProps[i]=g_strdup(vKeepers[i]);
+	newProps[i]=0;
+	
+	setAllAttributes (newProps);
+		
+	return getDoc()->updateDocForStyleChange(m_szName,!isCharStyle()); //apparently worked.
+}
+
+/*!
+ * Pointer to the pt_PieceTable for the current document we're working with.
+ */
+pt_PieceTable * PD_Style::getPT(void) const
+{
+	return m_pPT;
+}
+
+/*!
+ * Pointer to the PD_Document corresponding to the current document.
+ */
+PD_Document * PD_Style::getDoc(void) const 
+{
+	return m_pPT->getDocument();
+}
+
+/*!
+ * This method takes a style and extracts all the properties associated with it and
+ * place them in a properties and attributes vector for easy modification by
+ * the code.  Originally from ap_Dialog_Styles
+ */
+std::map<std::string, std::string> PD_Style::_returnPropsMap(const gchar * szStyle, bool bReplaceAttributes) const
+{
+	PD_Style * pStyle = NULL;
+	/*
+	m_vecAllProps.clear();
+	if( bReplaceAttributes)
+		m_vecAllAttribs.clear();
+	*/
+	
+	std::map<std::string, std::string> mProperties;
+	std::map<std::string, std::string> mAttributes;
+	
+	if(szStyle == NULL || ! getDoc()->getStyle(szStyle,&pStyle))
+	{
+		return std::map<std::string, std::string>();
+	}
+
+	const static gchar * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
+
+	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
+
+	const static gchar * charFields[] =
+	{"bgcolor","color","font-family","font-size","font-stretch","font-style",
+	 "font-variant", "font-weight","text-decoration","lang"};
+
+	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
+
+	const static gchar * attribs[] =
+	{PT_FOLLOWEDBY_ATTRIBUTE_NAME,PT_BASEDON_ATTRIBUTE_NAME,PT_LISTID_ATTRIBUTE_NAME,PT_PARENTID_ATTRIBUTE_NAME,PT_LEVEL_ATTRIBUTE_NAME,PT_NAME_ATTRIBUTE_NAME,PT_STYLE_ATTRIBUTE_NAME,PT_TYPE_ATTRIBUTE_NAME};
+
+	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
+	UT_uint32 i;
+	UT_DEBUGMSG(("Looking at Style %s \n",szStyle));
+	UT_Vector vecAllProps;
+	vecAllProps.clear();
+//
+// Loop through all Paragraph properties and add those with non-null values
+//
+	for(i = 0; i < nParaFlds; i++)
+	{
+		const gchar * szName = paraFields[i];
+		const gchar * szValue = NULL;
+		pStyle->getProperty(szName,szValue);
+		if(szValue)
+			mProperties[szName]=szValue;
+	}
+//
+// Loop through all Character properties and add those with non-null values
+//
+	for(i = 0; i < nCharFlds; i++)
+	{
+		const gchar * szName = charFields[i];
+		const gchar * szValue = NULL;
+		pStyle->getProperty(szName,szValue);
+		if(szValue)
+		{
+			xxx_UT_DEBUGMSG(("Adding char prop %s value %s \n",szName,szValue));
+			mProperties[szName]=szValue;
+		}
+	}
+//
+// Loop through all the attributes and add those with non-null values
+//
+	xxx_UT_DEBUGMSG(("Replace Attributes %d \n",bReplaceAttributes));
+	if(bReplaceAttributes)
+	{
+		UT_Vector vecAllAtts;
+		vecAllAtts.clear();
+		for(i = 0; i < nattribs; i++)
+		{
+			const gchar * szName = attribs[i];
+			const gchar * szValue = NULL;
+			pStyle->getAttributeExpand(szName,szValue);
+			if(szValue)
+				mAttributes[szName]=szValue;
+		}
+	}
+	else
+	{
+		UT_DEBUGMSG(("Attributes NOT updated \n"));
+	}
+	return mProperties;
+}
+
+
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
