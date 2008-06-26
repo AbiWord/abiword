@@ -185,12 +185,18 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   return found;
 }
 
-// RIVERA TODO not working and may not be needed
+/*!
+ * RIVERA TODO not working and may not be needed
+ */
 void PD_Document::setAnnotationProp ( const UT_String & /*key*/,
 									  const UT_UTF8String & /*value*/ )
 {
 	return; // TODO something!
 }
+
+/*!
+ * Always returns true and "Dummy value" - effectively not implemented.
+ */
 bool PD_Document::getAnnotationProp (const UT_String & /*key*/, UT_UTF8String & outProp) const
 {
 	bool found = true;//false;
@@ -258,12 +264,12 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	UT_UTF8String terr (locale.getTerritory());
 
 	/* try *6* combinations of the form:
-	   1) /templates/normal.awt-en_US
-	   2) /templates/normal.awt-en
-	   3) /templates/normal.awt
-	   4) /templates/normal.awt-en_US
-	   5) /templates/normal.awt-en
-	   6) /templates/normal.awt
+	   1) ~/templates/normal.awt-en_US
+	   2) ~/templates/normal.awt-en
+	   3) ~/templates/normal.awt
+	   4) ABILIBDIR/templates/normal.awt-en_US
+	   5) ABILIBDIR/templates/normal.awt-en
+	   6) ABILIBDIR/templates/normal.awt
 	*/
 
 	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
@@ -510,6 +516,10 @@ UT_Error PD_Document::readFromFile(GsfInput *input, int ieft,
 	return _importFile(input, ieft, true, true, false, impProps);
 }
 
+/*!
+ * Loads styles from a file in a supported format (at least ABW) and merges
+ * them with those in the current doc, using a "styles-only" load in the importer.
+ */
 UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocProps)
 {
 	if (!szFilename || !*szFilename)
@@ -550,7 +560,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 	pie->setLoadStylesOnly(true);
 	pie->setLoadDocProps(bDocProps);
 	errorCode = pie->importFile(szFilename);
-	delete pie;
+	DELETEP pie;
 
 	if (errorCode)
 	{
@@ -1094,8 +1104,8 @@ bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Fra
 }
 
 /*!
-    appends given fmt to the last strux in document
-*/
+ * appends given fmt to the last strux in document
+ */
 bool PD_Document::appendLastStruxFmt(PTStruxType pts, const gchar ** attributes, const gchar ** props,
 									 bool bSkipEmbededSections)
 {
@@ -1458,7 +1468,7 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions,
 }
 
 /*!
- * This medthod modifies the attributes of a section strux without
+ * This method modifies the attributes of a section strux without
  * generating a change record. Use with extreme care!!
  */
 bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
@@ -1502,7 +1512,7 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 
  /*!
  * Create a changerecord object and broadcast it to all the listeners.
- * If bsave is true save the CR in th eunod stack.
+ * If bsave is true save the CR in the unod(?) stack.
  */
 bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
@@ -1513,8 +1523,8 @@ bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSav
  * This method deletes a strux of the type specified at the position
  * requested.
  * if bRecordChange is fale no change record is recorded.
- * This method was created soled for the use of AbiCollab.
-  * Use with extreme care. Should only be needed by AbiCollab
+ * This method was created solely for the use of AbiCollab.
+ * Use with extreme care. Should only be needed by AbiCollab
  */
 bool PD_Document::deleteStrux(PT_DocPosition dpos,
 							  PTStruxType /*pts*/,
@@ -1548,7 +1558,7 @@ bool PD_Document::deleteStrux(PT_DocPosition dpos,
 
 /*!
  * This method deletes a strux without throwing a change record.
- * sdh is the StruxDocHandle that gets deleted..
+ * sdh is the StruxDocHandle that gets deleted.
  * Use with extreme care. Should only be used for document import.
  */
 bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
@@ -4311,7 +4321,7 @@ PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh
 /*!
  * This methods changes the attributes /properties of a style (basedon,followedby)
  * plus the properties. We have to save the indexAP of the pre-existing style
- * and broadcast it out witht e change records.
+ * and broadcast it out with the change records.
  *
 \param szStyleName the const gchar * name of the style
 \param pAttribs The list of attributes/properties of the updated style.
