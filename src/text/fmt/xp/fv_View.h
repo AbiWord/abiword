@@ -821,6 +821,7 @@ public:
 	void				calculateNumHorizPages(void);
 	UT_uint32			getMaxHeight(UT_uint32 iRow) const;
 	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber) const;
+	UT_uint32			getWidthPagesInRow(fp_Page *page) const;
 	UT_uint32			getHorizPageSpacing(void) const;
 	
 protected:

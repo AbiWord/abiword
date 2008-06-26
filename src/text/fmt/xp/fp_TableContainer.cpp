@@ -2133,9 +2133,11 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	//
 	else if(m_bIsSelected && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
-			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		FV_View * pView = getPage()->getDocLayout()->getView();
+		
+		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
+			UT_ASSERT((bRec.left + bRec.width) < pView->getWidthPagesInRow(getPage()) ); /////////////////////////////////////
+		
 		if(bIsNested)
 		{
 			xxx_UT_DEBUGMSG(("Drawing nested selected cell top %d height %d \n",bRec.top,bRec.height));

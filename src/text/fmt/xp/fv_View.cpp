@@ -6900,7 +6900,6 @@ void FV_View::extSelTo(FV_DocPos dp)
  */
 PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, bool bNotFrames)
 {
-	UT_DEBUGMSG(("FV_View::getDocPositionFromXY\n"));
 	// Figure out which page we clicked on.
 	// Pass the click down to that page.
 	UT_sint32 xClick, yClick;
@@ -6916,9 +6915,8 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 		bUseHdrFtr = false;
 	}
 	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
-	xxx_UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
+	UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
 	return iNewPoint;
-	UT_DEBUGMSG(("FV_View::getDocPositionFromXY END\n"));
 }
 
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
@@ -8001,7 +7999,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
-	UT_DEBUGMSG(("FV_View::getPageScreenOffsets() \n"));
+	//UT_DEBUGMSG(("FV_View::getPageScreenOffsets() \n"));
 	UT_uint32 y = getPageViewTopMargin();
 
 	const fp_Page* pPage = m_pLayout->getFirstPage();
@@ -8050,7 +8048,7 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 #endif
 	yoff = y - m_yScrollOffset;
 	xoff = getWidthPrevPagesInRow(iPageNumber) + getPageViewLeftMargin() - m_xScrollOffset;
-	UT_DEBUGMSG(("END FV_View::getPageScreenOffsets()\n"));
+	//UT_DEBUGMSG(("END FV_View::getPageScreenOffsets()\n"));
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
@@ -8077,15 +8075,17 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 	//
 	// Causes weirdness -- up arrow key jumps up to the top of the page
 	//
-//#if 0
+
 	if(iPage >= getNumHorizPages())
 	{
-		for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
+		for (unsigned int i = 0; i < iRow-1; i++) //This is probably slowish...
 		{
-			iDiff += pPage->getHeight() + getPageViewSep();
+			//TODO: The cursor is still very slightly off vertically where iRow > 0.
+			//Having a hard time fixing this because the second row of pages is not being redrawn properly right now.
+			//Suspect that it's because I never did figure out the page height thing.
+			iDiff += getMaxHeight(iRow) + getPageViewSep() - pDSL->getTopMargin() - pDSL->getBottomMargin();;
 		}
 	}
-//#endif
 	else
 	{
 		iDiff = 0;
@@ -9907,7 +9907,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
-	UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
+	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos = 0;
 	bool bBOL = false;
@@ -9928,6 +9928,10 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return m_prevMouseContext;
 	}
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	//UT_uint32 iPageNumber m_pLayout->findPage(pPage);
+	//UT_uint32 iRow = iPageNumber/getNumHorizPages();
+	
+	
 	if (!pPage)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (1)\n"));
@@ -9937,7 +9941,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	if (   (yClick < 0)
 		   || (xClick < 0)
-		   || (xClick > pPage->getWidth()) )
+		   || (xClick > getWidthPagesInRow(pPage)) )
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (2)\n"));
 		m_prevMouseContext = EV_EMC_UNKNOWN;
@@ -9990,7 +9994,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			}
 		}
  
-		   
+		//TODO: this needs fixing for multipage, I think?
 		//
 		// OK find the coordinates of the frame.
 		//
@@ -13821,7 +13825,7 @@ void FV_View::calculateNumHorizPages()
 		m_getNumHorizPagesCachedWindowWidth = windowWidth;
 		UT_uint32 widthPagesInRow = 0;
 		UT_uint32 iFirstPageInRow = 0; //iRow * m_iNumHorizPages; //TODO:make this use the row of the current page.
-		UT_uint32 iLastPageInRow = iFirstPageInRow + m_iNumHorizPages;
+		//UT_uint32 iLastPageInRow = iFirstPageInRow + m_iNumHorizPages;
 		fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow);
 		
 		for (unsigned int i = 0; i < m_iNumHorizPages; i++) //Find the width of the tiled pages
@@ -13861,13 +13865,17 @@ UT_uint32 FV_View::getMaxHeight(UT_uint32 iRow) const
 			iMaxPageHeight = iPageHeight;
 		}
 		
-		if(pPage->getNext() != NULL)
+		if(pPage->getNext())
 		{	
 			pPage = pPage->getNext();
 		}
+		else
+		{
+			break;
+		}
 	}
 	
-	UT_DEBUGMSG(("getMaxHeight: %d \n", iMaxPageHeight));
+	
 	return iMaxPageHeight;
 }
 
@@ -13887,6 +13895,13 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 		}
 	}
 	return totalWidth;
+}
+
+UT_uint32 FV_View::getWidthPagesInRow(fp_Page *page) const
+{
+	UT_uint32 iPageNumber	= m_pLayout->findPage(page);
+	fp_Page * pPage = m_pLayout->getNthPage(iPageNumber);
+	return (getWidthPrevPagesInRow(iPageNumber) + pPage->getWidth());
 }
 
 UT_uint32 FV_View::getHorizPageSpacing() const

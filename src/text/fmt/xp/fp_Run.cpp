@@ -5513,7 +5513,6 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 
 void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
-	//TODO: Find everything that calls this and modify them to allow y-axis.
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
