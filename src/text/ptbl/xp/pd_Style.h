@@ -48,8 +48,8 @@ public:
 	bool					getProperty(const gchar * szName, const gchar *& szValue) const;
 	const PP_PropertyType *	getPropertyType(const gchar * szName, tProperty_type Type) const;
 	bool					getAttribute(const gchar * szName, const gchar *& szValue) const;
-	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue) const;
-	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue);
+	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth = -1) const;
+	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth = -1);
 	
 	PD_Style *				getBasedOn(void) const;
 	PD_Style *				getFollowedBy(void) const;
@@ -77,8 +77,6 @@ public:
 	inline const char * getName (void) const {return m_szName;}
 
 protected:
-	bool					_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
-	bool					_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
 	bool					_simplifyProperties();
 	std::map<std::string, std::string> _returnPropsMap(const gchar * szStyle, bool bReplaceAttributes = true) const;
 

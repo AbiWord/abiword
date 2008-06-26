@@ -87,7 +87,7 @@ bool PD_Style::getProperty(const gchar * szName, const gchar *& szValue) const
 }
 
 
-bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) const
+bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -106,7 +106,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 			PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL)
 			{
-				return pStyle->_getPropertyExpand(szName,szValue, 0);
+				return pStyle->getPropertyExpand(szName,szValue, iDepth + 1);
 			}
 			else
 			{
@@ -117,40 +117,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 	return false;
 }
 
-
-bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
-{
-	const PP_AttrProp * pAP = NULL;
-	
-	
-	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
-	{
-		return false;
-	}
-	else
-	{
-		if( pAP->getProperty(szName, szValue))
-		{
-			return true;
-		}
-		else
-		{
-			PD_Style * pStyle = getBasedOn();
-			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
-			{
-				return pStyle->_getPropertyExpand(szName,szValue, iDepth+1);
-			}
-			else
-			{
-				return false;
-			}
-		}
-	}
-	return false;
-}
-
-
-bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
+bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -170,39 +137,7 @@ bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
 			PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL )
 			{
-				return pStyle->_getAttributeExpand(szName,szValue, 0);
-			}
-			else
-			{
-				return false;
-			}
-		}
-	}
-	return false;
-}
-
-
-bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
-{
-	const PP_AttrProp * pAP = NULL;
-	
-	
-	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
-	{
-		return false;
-	}
-	else
-	{
-		if( pAP->getAttribute(szName, szValue))
-		{
-			return true;
-		}
-		else
-		{
-			PD_Style * pStyle = getBasedOn();
-			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
-			{
-				return pStyle->_getAttributeExpand(szName,szValue, iDepth+1);
+				return pStyle->getAttributeExpand(szName,szValue, iDepth + 1);
 			}
 			else
 			{
