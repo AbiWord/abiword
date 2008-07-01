@@ -132,6 +132,7 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wClose(NULL),
 	  m_wOK(NULL),
 	  m_wNew(NULL),
+      m_wEdit(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
