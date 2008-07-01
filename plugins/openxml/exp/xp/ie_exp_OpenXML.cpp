@@ -475,9 +475,9 @@ UT_Error IE_Exp_OpenXML::setTextColor(int target, const gchar* color)
 }
 
 /**
- * Sets text background color style
+ * Sets background color style
  */
-UT_Error IE_Exp_OpenXML::setTextBackgroundColor(int target, const gchar* color)
+UT_Error IE_Exp_OpenXML::setBackgroundColor(int target, const gchar* color)
 {
 	std::string str("<w:shd w:fill=\"");
 	str += UT_colorToHex(color);
@@ -702,13 +702,31 @@ UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
 /**
  * Sets table border style for the specified border in the table
  */
-UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const char* style)
+UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const char* type, const char* color, const char* size)
 {
+	UT_return_val_if_fail(type, UT_OK);
+	
 	std::string str("<w:");
 	str += border;
 	str += " w:val=\"";
-	str += style;
-	str += "\"/>";
+	str += type;
+	str += "\"";
+
+	if(color)
+	{
+		str += " w:color=\"";
+		str += UT_colorToHex(color);
+		str += "\"";
+	}
+
+	if(size)
+	{
+		str += " w:sz=\"";
+		str += computeBorderWidth(size);
+		str += "\"";
+	}
+
+	str += "/>";
 	return writeTargetStream(target, str.c_str());
 }
 
@@ -801,6 +819,18 @@ const gchar * IE_Exp_OpenXML::convertToLines(const gchar* str)
 	double pt = UT_convertDimensionless(str) * 240;
 	if(pt < 1.0 && pt > -1.0)
 		return NULL;
+	return UT_convertToDimensionlessString(pt, ".0");
+}
+
+/**
+ * Converts the string str to eighths of a point
+ */
+const gchar * IE_Exp_OpenXML::computeBorderWidth(const gchar* str)
+{
+	//in eighths of a point
+	double pt = UT_convertDimensionless(str) * 160;
+	if(pt < 1.0 && pt > -1.0)
+		return "0";
 	return UT_convertToDimensionlessString(pt, ".0");
 }
 

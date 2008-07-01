@@ -155,7 +155,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("bgcolor", szValue) == UT_OK)
 	{
-		err = exporter->setTextBackgroundColor(TARGET_DOCUMENT, szValue);
+		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
 	}

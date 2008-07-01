@@ -98,22 +98,6 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "top", "single");
-	if(err != UT_OK)
-		return err;
-
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", "single");
-	if(err != UT_OK)
-		return err;
-
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", "single");
-	if(err != UT_OK)
-		return err;
-	
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "bottom", "single");
-	if(err != UT_OK)
-		return err;
-
 	err = exporter->finishTableBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;

@@ -230,7 +230,7 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("bgcolor", szValue) == UT_OK)
 	{
-		err = exporter->setTextBackgroundColor(TARGET_STYLES, szValue);
+		err = exporter->setBackgroundColor(TARGET_STYLES, szValue);
 		if(err != UT_OK)
 			return err;
 	}

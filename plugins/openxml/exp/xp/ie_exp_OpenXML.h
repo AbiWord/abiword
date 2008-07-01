@@ -102,7 +102,7 @@ public:
 	UT_Error setSuperscript(int target);
 	UT_Error setSubscript(int target);
 	UT_Error setTextColor(int target, const gchar* color);
-	UT_Error setTextBackgroundColor(int target, const gchar* color);
+	UT_Error setBackgroundColor(int target, const gchar* color);
 	UT_Error setTextAlignment(int target, const gchar* alignment);
 	UT_Error setTextIndentation(int target, const gchar* indentation);
 	UT_Error setParagraphStyle(int target, const gchar* style);
@@ -117,7 +117,7 @@ public:
 	UT_Error setWidows(int target, const gchar* widows);
 	UT_Error setGridSpan(int target, UT_sint32 hspan);
 	UT_Error setVerticalMerge(int target, const char* vmerge);
-	UT_Error setTableBorder(int target, const char* border, const char* type);
+	UT_Error setTableBorder(int target, const char* border, const char* type, const char* color, const char* size);
 	UT_Error setGridCol(int target, const char* column);
 	UT_Error setColumnWidth(int target, const char* width);
 
@@ -152,6 +152,7 @@ private:
 	bool isNegativeQuantity(const gchar* quantity);
 	const gchar* convertToLines(const gchar* str);
 	const gchar* computeFontSize(const gchar* str);
+	const gchar* computeBorderWidth(const gchar* str);
 
 	GsfOutput* getTargetStream(int target);
 	UT_Error writeTargetStream(int target, const char* str);

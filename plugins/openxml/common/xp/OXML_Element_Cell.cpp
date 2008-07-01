@@ -67,6 +67,9 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
+	const gchar* borderType = NULL;
+	const gchar* color = NULL;
+	const gchar* size = NULL;
 
 	err = exporter->startCellProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
@@ -79,22 +82,121 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 	err = exporter->setColumnWidth(TARGET_DOCUMENT, table->getColumnWidth(getLeft()).c_str());
 	if(err != UT_OK)
 		return err;
+
+	if(getProperty("background-color", szValue) == UT_OK)
+	{
+		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
+		if(err != UT_OK)
+			return err;
+	}
 	
 	err = exporter->startCellBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", "single");
+	//left border
+	borderType = "single";
+	if(getProperty("left-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("left-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("left-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", borderType, color, size);
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", "single");
+	//right border
+	borderType = "single";
+	if(getProperty("right-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("right-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("right-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", borderType, color, size);
 	if(err != UT_OK)
 		return err;
 
 	if(!isVertCont)
 	{
-		err = exporter->setTableBorder(TARGET_DOCUMENT, "top", "single");
+		//top border
+		borderType = "single";
+		if(getProperty("top-style", szValue) == UT_OK)
+		{
+			if(strcmp(szValue, "1") != 0)
+			{
+				 borderType = "dashed";
+			}
+		}
+
+		color = NULL; 
+		if(getProperty("top-color", szValue) == UT_OK)
+		{
+			color = szValue;
+		}
+
+		size = NULL;
+		if(getProperty("top-thickness", szValue) == UT_OK)
+		{
+			size = szValue;
+		}
+		err = exporter->setTableBorder(TARGET_DOCUMENT, "top", borderType, color, size);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(vspan == 1)
+	{
+		//bottom border
+		borderType = "single";
+		if(getProperty("bot-style", szValue) == UT_OK)
+		{
+			if(strcmp(szValue, "1") != 0)
+			{
+				 borderType = "dashed";
+			}
+		}
+	
+		color = NULL; 
+		if(getProperty("bot-color", szValue) == UT_OK)
+		{
+			color = szValue;
+		}
+	
+		size = NULL;
+		if(getProperty("bot-thickness", szValue) == UT_OK)
+		{
+			size = szValue;
+		}
+		err = exporter->setTableBorder(TARGET_DOCUMENT, "bottom", borderType, color, size);
 		if(err != UT_OK)
 			return err;
 	}
