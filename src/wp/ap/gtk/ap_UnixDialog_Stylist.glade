@@ -39,13 +39,13 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkButton" id="btApply">
+              <widget class="GtkButton" id="btEdit">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="label">gtk-apply</property>
+                <property name="receives_default">True</property>
+                <property name="label" translatable="yes">gtk-edit</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">-10</property>
+                <property name="response_id">0</property>
               </widget>
               <packing>
                 <property name="position">1</property>
@@ -62,6 +62,19 @@
               </widget>
               <packing>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="btApply">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="label">gtk-apply</property>
+                <property name="use_stock">True</property>
+                <property name="response_id">-10</property>
+              </widget>
+              <packing>
+                <property name="position">3</property>
               </packing>
             </child>
           </widget>

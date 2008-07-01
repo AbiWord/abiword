@@ -29,6 +29,9 @@
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
+#include "fv_View.h"
+#include "pd_Document.h"
+#include "pd_Style.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -99,9 +102,19 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_St
 	  abiDestroyWidget(widget);
 }
 
-static void s_new_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * me)
+static void s_new_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 {
 	me->createStyleFromDocument();
+}
+
+static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
+{
+	UT_UTF8String sStyle = me->getSelectedStyle();
+	FV_View * pView = static_cast<FV_View *>( me->getActiveFrame()->getCurrentView() );
+	PD_Document * pDoc = pView->getDocument();
+	PD_Style * pStyle;
+	pDoc->getStyle(sStyle.utf8_str(), & pStyle);
+	pStyle->_simplifyProperties();
 }
 
 XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
@@ -276,6 +289,7 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	}
 	m_wClose = glade_xml_get_widget(xml,"btClose");
 	m_wNew = glade_xml_get_widget(xml,"btNew");
+	m_wEdit = glade_xml_get_widget(xml,"btEdit");
 
 	// set the dialog title
 	UT_UTF8String s;
@@ -404,6 +418,9 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 	
 	g_signal_connect(G_OBJECT(m_wNew), "clicked", 
 					 G_CALLBACK(s_new_clicked), this);
+	
+	g_signal_connect(G_OBJECT(m_wEdit), "clicked", 
+					 G_CALLBACK(s_edit_clicked), this);
 	
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs

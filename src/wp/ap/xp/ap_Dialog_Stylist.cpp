@@ -203,6 +203,11 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	//
 	// Load the properties at the current caret location.
 	//
+	const gchar ** paraProps = NULL;
+//	getView()->getBlockFormat(&paraProps,true);
+	
+	const gchar ** charProps = NULL;
+//	getView()->getCharFormat(&charProps,true);
 	
 	//
 	// Find the unique ones (not in the Normal or original style of run)

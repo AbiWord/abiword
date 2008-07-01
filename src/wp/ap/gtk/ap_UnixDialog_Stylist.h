@@ -57,6 +57,7 @@ private:
 	GtkWidget * m_wClose;
 	GtkWidget * m_wOK;
 	GtkWidget * m_wNew;
+	GtkWidget * m_wEdit;
 	GtkCellRenderer * m_wRenderer;
 	GtkTreeStore * m_wModel;
 	GtkWidget * m_wStyleListContainer;
