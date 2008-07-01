@@ -81,10 +81,18 @@ public:
 	UT_Error finishStyle();
 	UT_Error startTable();
 	UT_Error finishTable();
+	UT_Error startTableProperties(int target);
+	UT_Error finishTableProperties(int target);
+	UT_Error startTableBorderProperties(int target);
+	UT_Error finishTableBorderProperties(int target);
+	UT_Error startCellBorderProperties(int target);
+	UT_Error finishCellBorderProperties(int target);
 	UT_Error startRow();
 	UT_Error finishRow();
 	UT_Error startCell();
 	UT_Error finishCell();
+	UT_Error startTableGrid(int target);
+	UT_Error finishTableGrid(int target);
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
@@ -109,6 +117,9 @@ public:
 	UT_Error setWidows(int target, const gchar* widows);
 	UT_Error setGridSpan(int target, UT_sint32 hspan);
 	UT_Error setVerticalMerge(int target, const char* vmerge);
+	UT_Error setTableBorder(int target, const char* border, const char* type);
+	UT_Error setGridCol(int target, const char* column);
+	UT_Error setColumnWidth(int target, const char* width);
 
 protected:
     virtual UT_Error _writeDocument(void);

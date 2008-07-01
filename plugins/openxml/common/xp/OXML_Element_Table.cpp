@@ -57,10 +57,68 @@ UT_Error OXML_Element_Table::serialize(IE_Exp_OpenXML* exporter)
 	return exporter->finishTable();
 }
 
-UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	if(getProperty("table-column-props", szValue) == UT_OK)
+	{
+		err = exporter->startTableGrid(TARGET_DOCUMENT);
+		if(err != UT_OK)
+			return err;
+
+		std::string col(szValue);
+		std::string token("");
+
+		std::string::size_type prev = -1;
+		std::string::size_type pos = col.find_first_of("/");
+		
+		while (pos != std::string::npos) 
+		{
+			token = col.substr(prev+1, pos-prev-1);
+			columnWidth.push_back(token);
+			err = exporter->setGridCol(TARGET_DOCUMENT, token.c_str());
+			if(err != UT_OK)
+				return err;
+			prev = pos;	
+			pos = col.find_first_of("/", pos + 1);
+		}
+		
+		err = exporter->finishTableGrid(TARGET_DOCUMENT);
+		if(err != UT_OK)
+			return err;
+	}
+
+	err = exporter->startTableProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->startTableBorderProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "top", "single");
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", "single");
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", "single");
+	if(err != UT_OK)
+		return err;
+	
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "bottom", "single");
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->finishTableBorderProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishTableProperties(TARGET_DOCUMENT);
 }
 
 
@@ -69,3 +127,11 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * /*pDocument*/)
 	//TODO
 	return UT_OK;
 }
+
+std::string OXML_Element_Table::getColumnWidth(int colIndex)
+{
+	if((colIndex < 0) || (colIndex >= (int)columnWidth.size()))
+		return "0in"; 
+	return columnWidth.at(colIndex);
+}
+

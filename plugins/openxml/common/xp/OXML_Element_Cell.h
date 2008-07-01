@@ -25,6 +25,7 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <OXML_Element_Table.h>
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
@@ -32,10 +33,12 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
+class OXML_Element_Table;
+
 class OXML_Element_Cell : public OXML_Element
 {
 public:
-	OXML_Element_Cell(std::string id, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);
+	OXML_Element_Cell(std::string id, OXML_Element_Table* table, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);
 	virtual ~OXML_Element_Cell();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
@@ -48,6 +51,7 @@ public:
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	UT_sint32 m_iLeft, m_iRight, m_iTop, m_iBottom;
+	OXML_Element_Table* table; 
 };
 
 #endif //_OXML_ELEMENT_CELL_H_

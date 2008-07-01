@@ -248,7 +248,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			UT_sint32 top = tableHelper.getTop();
 			UT_sint32 bottom = tableHelper.getBot();
 
-			cell = new OXML_Element_Cell("", left, right, top, bottom);
+			cell = new OXML_Element_Cell("", table, left, right, top, bottom);
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
 			if(bHaveProp && pAP)
@@ -285,7 +285,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			
 			if(!row || tableHelper.isNewRow())
 			{
-				row = new OXML_Element_Row("");
+				row = new OXML_Element_Row("", table);
 				row->setNumCols(tableHelper.getNumCols());
 				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
 				if(table->appendElement(shared_row) != UT_OK)

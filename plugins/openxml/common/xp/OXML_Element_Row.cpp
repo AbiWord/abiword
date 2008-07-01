@@ -28,8 +28,8 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Row::OXML_Element_Row(std::string id) : 
-	OXML_Element(id, TR_TAG, ROW), numCols(0)
+OXML_Element_Row::OXML_Element_Row(std::string id, OXML_Element_Table* tbl) : 
+	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl)
 {	
 }
 
@@ -75,7 +75,7 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 		
 		for(; left < cell->getLeft(); left++){
 			//top=-1,bottom=0 means vertically continued cell
-			OXML_Element_Cell temp("", left, left+1, -1, 0); 
+			OXML_Element_Cell temp("", table, left, left+1, -1, 0); 
 			OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
 
 			ret = temp.appendElement(shared_paragraph);
@@ -96,7 +96,7 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 
 	//right most vertically merged cells
 	for(; left < numCols; left++){
-		OXML_Element_Cell temp("", left, left+1, -1, 0); 
+		OXML_Element_Cell temp("", table, left, left+1, -1, 0); 
 		OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
 
 		ret = temp.appendElement(shared_paragraph);

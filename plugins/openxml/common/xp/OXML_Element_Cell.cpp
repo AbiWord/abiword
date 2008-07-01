@@ -28,12 +28,13 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Cell::OXML_Element_Cell(std::string id, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
+OXML_Element_Cell::OXML_Element_Cell(std::string id, OXML_Element_Table* tbl, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
 	OXML_Element(id, TC_TAG, CELL),
 	m_iLeft(left), 
 	m_iRight(right), 
 	m_iTop(top), 
-	m_iBottom(bottom)
+	m_iBottom(bottom),
+	table(tbl)
 {
 
 }
@@ -74,6 +75,33 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_sint32 hspan = getRight()-getLeft();
 	UT_sint32 vspan = getBottom()-getTop();
 	bool isVertCont = getTop() == -1;
+	
+	err = exporter->setColumnWidth(TARGET_DOCUMENT, table->getColumnWidth(getLeft()).c_str());
+	if(err != UT_OK)
+		return err;
+	
+	err = exporter->startCellBorderProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", "single");
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", "single");
+	if(err != UT_OK)
+		return err;
+
+	if(!isVertCont)
+	{
+		err = exporter->setTableBorder(TARGET_DOCUMENT, "top", "single");
+		if(err != UT_OK)
+			return err;
+	}
+
+	err = exporter->finishCellBorderProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
 
 	if(hspan > 1)
 	{

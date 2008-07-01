@@ -272,6 +272,54 @@ UT_Error IE_Exp_OpenXML::finishTable()
 }
 
 /**
+ * Starts exporting the OXML_Element_Table's properties
+ */
+UT_Error IE_Exp_OpenXML::startTableProperties(int target)
+{
+	return writeTargetStream(target, "<w:tblPr>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Table's properties
+ */
+UT_Error IE_Exp_OpenXML::finishTableProperties(int target)
+{
+	return writeTargetStream(target, "</w:tblPr>");
+}
+
+/**
+ * Starts exporting the OXML_Element_Table's border properties
+ */
+UT_Error IE_Exp_OpenXML::startTableBorderProperties(int target)
+{
+	return writeTargetStream(target, "<w:tblBorders>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Table's border properties
+ */
+UT_Error IE_Exp_OpenXML::finishTableBorderProperties(int target)
+{
+	return writeTargetStream(target, "</w:tblBorders>");
+}
+
+/**
+ * Starts exporting the OXML_Element_Cell's border properties
+ */
+UT_Error IE_Exp_OpenXML::startCellBorderProperties(int target)
+{
+	return writeTargetStream(target, "<w:tcBorders>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Cell's border properties
+ */
+UT_Error IE_Exp_OpenXML::finishCellBorderProperties(int target)
+{
+	return writeTargetStream(target, "</w:tcBorders>");
+}
+
+/**
  * Starts exporting the OXML_Element_Row object
  */
 UT_Error IE_Exp_OpenXML::startRow()
@@ -648,6 +696,67 @@ UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
 	std::string str("<w:vmerge w:val=\"");
 	str += vmerge;
 	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets table border style for the specified border in the table
+ */
+UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const char* style)
+{
+	std::string str("<w:");
+	str += border;
+	str += " w:val=\"";
+	str += style;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Starts table grid
+ */
+UT_Error IE_Exp_OpenXML::startTableGrid(int target)
+{
+	return writeTargetStream(target, "<w:tblGrid>");
+}
+
+/**
+ * Finishes table grid
+ */
+UT_Error IE_Exp_OpenXML::finishTableGrid(int target)
+{
+	return writeTargetStream(target, "</w:tblGrid>");
+}
+
+/**
+ * Sets grid column
+ */
+UT_Error IE_Exp_OpenXML::setGridCol(int target, const char* column)
+{
+	const gchar* twips = convertToPositiveTwips(column);
+	if(!twips || !*twips)
+		return UT_OK;
+
+	std::string str("");
+	str += "<w:gridCol w:w=\"";
+	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets column width
+ */
+UT_Error IE_Exp_OpenXML::setColumnWidth(int target, const char* width)
+{
+	const gchar* twips = convertToPositiveTwips(width);
+	if(!twips || !*twips)
+		return UT_OK;
+
+	std::string str("");
+	str += "<w:tcW w:w=\"";
+	str += twips;
+	str += "\" w:type=\"dxa\"/>";
 	return writeTargetStream(target, str.c_str());
 }
 
