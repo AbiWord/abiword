@@ -383,7 +383,7 @@ bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
+bool PD_Style::getAllAttributes( UT_GenericVector<const gchar *> * vAttribs, UT_sint32 depth)
 {
 //
 // This method will be recursively called to basedon style
@@ -405,8 +405,8 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 		}
 		if(!bfound)
 		{
-			vAttribs->addItem((void *) szName);
-			vAttribs->addItem((void *) szValue);
+			vAttribs->addItem(szName);
+			vAttribs->addItem(szValue);
 		}
 	}
 	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
@@ -422,7 +422,7 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
+bool PD_Style::getAllProperties( UT_GenericVector<const gchar *> * vProps, UT_sint32 depth)
 {
 //
 // This method will be recursively called to basedon style
@@ -444,8 +444,8 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 		}
 		if(!bfound)
 		{
-			vProps->addItem((void *) szName);
-			vProps->addItem((void *) szValue);
+			vProps->addItem(szName);
+			vProps->addItem(szValue);
 		}
 	}
 	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
@@ -464,8 +464,8 @@ bool PD_Style::_simplifyProperties()
 	UT_GenericVector<const gchar *> vKeepers, vTheseProps, vBasedOnProps, vAttrs;
 	std::map<std::string, std::string> mBasedOnProps;
 	
-	getAllProperties ( (UT_Vector *) &vTheseProps, (UT_sint32) 0);
-	getBasedOn()-> getAllProperties( (UT_Vector *) &vBasedOnProps, (UT_sint32) 1);
+	getAllProperties (&vTheseProps, (UT_sint32) 0);
+	getBasedOn()-> getAllProperties(&vBasedOnProps, (UT_sint32) 1);
 	
 	
 	// Turn based on props into a map.

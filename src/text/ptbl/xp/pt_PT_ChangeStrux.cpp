@@ -542,7 +542,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		PTChangeFmt ptcs = PTC_RemoveFmt;
 		getDocument()->getStyle(szStyle,&pStyle);
 		UT_return_val_if_fail (pStyle,false);
-		UT_Vector vProps;
+		UT_GenericVector<const gchar *> vProps;
 //
 // Get the vector of properties
 //

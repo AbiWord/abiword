@@ -1508,8 +1508,8 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 
         if(pszStyle && (strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
         {
-			UT_Vector vAttrs;
-			UT_Vector vProps;
+			UT_GenericVector<const gchar *> vAttrs;
+			UT_GenericVector<const gchar *> vProps;
 
 			UT_uint32 i;
 

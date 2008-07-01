@@ -65,8 +65,8 @@ public:
 	bool					addProperties(const gchar ** pProperties);
 	bool					setAllAttributes(const gchar ** pAtts);
 	bool					addAttributes(const gchar ** pAtts);
-	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth);
-	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth);
+	bool                    getAllProperties( UT_GenericVector<const gchar *> * vProps, UT_sint32 depth);
+	bool                    getAllAttributes( UT_GenericVector<const gchar *> * vAttribs, UT_sint32 depth);
 	size_t getPropertyCount(void) const;
 	size_t getAttributeCount(void) const;
 	bool getNthProperty (int ndx, const gchar *&szName,

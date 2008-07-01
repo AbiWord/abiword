@@ -443,7 +443,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		UT_return_val_if_fail (szStyle,false);
 		getDocument()->getStyle(szStyle,&pStyle);
 		UT_return_val_if_fail (pStyle,false);
-		UT_Vector vProps;
+		UT_GenericVector<const gchar *> vProps;
 //
 // Get the vector of properties
 //

@@ -956,7 +956,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	PD_Style * pBasedon = NULL;
 	if(szBasedon && m_pDoc->getStyle(szBasedon,&pBasedon))
 	{
-		UT_Vector vecProps;
+		UT_GenericVector<const gchar *> vecProps;
 		pBasedon->getAllProperties(&vecProps,0);
 		for(i=0; i<vecProps.getItemCount(); i+=2)
 		{

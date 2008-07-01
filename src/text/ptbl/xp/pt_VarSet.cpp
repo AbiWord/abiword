@@ -356,7 +356,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				}
 			}
 			
-			UT_Vector vProps, vAttribs;
+			UT_GenericVector<const gchar *> vProps, vAttribs;
 		
 			pStyle->getAllProperties(&vProps,0);
 		
