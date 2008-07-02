@@ -121,9 +121,14 @@ static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	
 	UT_UTF8String sStyle = me->getSelectedStyle();
 	FV_View * pView = static_cast<FV_View *>( me->getActiveFrame()->getCurrentView() );
+	UT_return_if_fail(pView);
+	
 	PD_Document * pDoc = pView->getDocument();
-	PD_Style * pStyle;
-	pDoc->getStyle(sStyle.utf8_str(), & pStyle);
+	UT_return_if_fail(pDoc);
+	
+	PD_Style * pStyle = pDoc->getStyle(sStyle.utf8_str(), & pStyle);
+	UT_return_if_fail(pStyle);
+	
 	pStyle->_simplifyProperties();
 }
 
