@@ -77,6 +77,8 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 							   GtkTreeViewColumn * /*arg2*/,
 							   AP_UnixDialog_Stylist * me)
 {
+	UT_return_if_fail(me);
+	
 	// simulate the effects of a single click
 	s_types_clicked (treeview, me);
 	me->event_Apply ();
@@ -84,12 +86,16 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 
 static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * /*me*/ )
 {
-    abiDestroyWidget( wid ) ;// will emit signals for us
+	UT_return_if_fail(me);
+	
+	abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
 static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
 {
-   me->event_Close();
+	UT_return_if_fail(me);
+	
+	me->event_Close();
 }
 
 static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Stylist * dlg)
@@ -104,11 +110,15 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_St
 
 static void s_new_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 {
+	UT_return_if_fail(me);
+	
 	me->createStyleFromDocument();
 }
 
 static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 {
+	UT_return_if_fail(me);
+	
 	UT_UTF8String sStyle = me->getSelectedStyle();
 	FV_View * pView = static_cast<FV_View *>( me->getActiveFrame()->getCurrentView() );
 	PD_Document * pDoc = pView->getDocument();
