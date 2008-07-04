@@ -120,6 +120,14 @@ UT_Error OXML_Document::addStyle(const OXML_SharedStyle & obj)
 	return UT_OK;
 }
 
+UT_Error OXML_Document::addList(const OXML_SharedList & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_lists_by_id[obj->getId()] = obj;
+	return UT_OK;
+}
+
 UT_Error OXML_Document::clearStyles()
 {
 	m_styles_by_id.clear();
@@ -238,6 +246,13 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	OXML_StyleMap::iterator it1;
 	for (it1 = m_styles_by_id.begin(); it1 != m_styles_by_id.end(); it1++) {
 		ret = it1->second->serialize(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	OXML_ListMap::iterator it2;
+	for (it2 = m_lists_by_id.begin(); it2 != m_lists_by_id.end(); it2++) {
+		ret = it2->second->serialize(exporter);
 		if (ret != UT_OK)
 			return ret;
 	}

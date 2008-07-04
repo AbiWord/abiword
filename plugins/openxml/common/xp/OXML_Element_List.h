@@ -20,8 +20,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_PARAGRAPH_H_
-#define _OXML_ELEMENT_PARAGRAPH_H_
+#ifndef _OXML_ELEMENT_LIST_H_
+#define _OXML_ELEMENT_LIST_H_
 
 // Internal includes
 #include <OXML_Element.h>
@@ -32,19 +32,18 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-class OXML_Element_Paragraph : public OXML_Element
+class OXML_Element_List : public OXML_Element
 {
 public:
-	OXML_Element_Paragraph(std::string id);
-	virtual ~OXML_Element_Paragraph();
+	OXML_Element_List(std::string id);
+	virtual ~OXML_Element_List();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 };
 
-#endif //_OXML_ELEMENT_PARAGRAPH_H_
+#endif //_OXML_ELEMENT_LIST_H_
 

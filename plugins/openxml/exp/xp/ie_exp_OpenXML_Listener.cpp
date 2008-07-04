@@ -44,7 +44,12 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 		document = NULL;	
 	if(addDocumentStyles() != UT_OK)
 	{
-		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed"));	
+		UT_DEBUGMSG(("FRT: ERROR, Adding Document Styles Failed\n"));	
+		document = NULL;
+	}
+	if(addLists() != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, Adding Lists Failed\n"));	
 		document = NULL;
 	}
 }
@@ -98,6 +103,48 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			return paragraph->appendElement(shared_element_run) == UT_OK;
 		}
 		case PX_ChangeRecord::PXT_InsertObject:
+		{
+			PT_AttrPropIndex api = pcr->getIndexAP();			
+			const PP_AttrProp* pAP = NULL;
+			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
+
+			OXML_Element_List* element_list = new OXML_Element_List("");
+			OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
+
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+				
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
+						if(element_list->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
+						if(element_list->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+			}
+
+			return paragraph->appendElement(shared_element_list) == UT_OK;;			
+		}
 		case PX_ChangeRecord::PXT_InsertFmtMark:
 		default:
 			return true;
@@ -408,6 +455,48 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 				return err;
 			}
 		}
+	}
+
+	return UT_OK;
+}
+
+UT_Error IE_Exp_OpenXML_Listener::addLists()
+{
+	UT_Error err = UT_OK;
+
+	const PP_AttrProp * pAP = NULL;
+
+	PT_AttrPropIndex api = pdoc->getAttrPropIndex();
+	bool bHaveProp = pdoc->getAttrProp(api, &pAP);
+
+	if(!bHaveProp || !pAP)
+		return UT_OK;
+
+	fl_AutoNum* pList = NULL;
+
+	size_t listCount = pdoc->getListsCount();
+	size_t k;
+	for(k=0; k<listCount; k++)
+	{
+		if(!pdoc->enumLists(k, &pList))
+			continue;
+
+		if(!pList)
+			continue;
+
+		OXML_List* list = new OXML_List();
+		OXML_SharedList shared_list(list);			
+
+		list->setId(pList->getID());
+		list->setParentId(pList->getParentID());
+		list->setLevel(pList->getLevel());
+		list->setDelim(pList->getDelim());
+		list->setDecimal(pList->getDecimal());
+		list->setStartValue(pList->getStartValue32());
+		
+		err = document->addList(shared_list);
+		if(err != UT_OK)
+			return err;
 	}
 
 	return UT_OK;

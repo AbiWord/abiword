@@ -67,13 +67,15 @@ enum OXML_ElementTag {
 	LN_BREAK, 
 	TBL_TAG,
 	TR_TAG,
-	TC_TAG
+	TC_TAG,
+	LST_TAG
 };
 
 enum OXML_ElementType {
 	BLOCK, 
 	SPAN, 
-	TABLE, 
+	TABLE,
+	LIST, 
 	ROW,
 	CELL
 };

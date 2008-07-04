@@ -57,6 +57,26 @@ UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 	return exporter->finishParagraph();
 }
 
+UT_Error OXML_Element_Paragraph::serializeChildren(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	OXML_ElementVector::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		// LIST children are handled in serializeProperties function
+		if(children[i]->getType() != LIST)
+		{
+			ret = children[i]->serialize(exporter);
+			if(ret != UT_OK)
+				return ret;
+		}
+	}
+
+	return ret;
+}
+
 UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
@@ -144,6 +164,21 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 		err = exporter->setLineHeight(TARGET_DOCUMENT, szValue);
 		if(err != UT_OK)
 			return err;
+	}
+
+	//serialize List here if any list appended to the paragraph since we need properties of
+	//list to be included in paragraph properties section
+
+	OXML_ElementVector::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		if(children[i]->getType() == LIST)
+		{
+			err = children[i]->serialize(exporter);
+			if(err != UT_OK)
+				return err;
+		}
 	}
 
 	return exporter->finishParagraphProperties(TARGET_DOCUMENT);

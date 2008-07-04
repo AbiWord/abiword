@@ -37,7 +37,8 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	relStream(NULL),
 	wordRelStream(NULL),
 	documentStream(NULL),
-	stylesStream(NULL)
+	stylesStream(NULL),
+	numberingStream(NULL)
 {
 }
 
@@ -112,6 +113,10 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	if(error != UT_OK)
 		return error;
 
+	error = startNumbering();
+	if(error != UT_OK)
+		return error;
+
 	return UT_OK;	
 }
 
@@ -123,6 +128,10 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 	UT_Error error = UT_OK;
 
 	error = finishMainPart();
+	if(error != UT_OK)
+		return error;
+
+	error = finishNumbering();
 	if(error != UT_OK)
 		return error;
 
@@ -320,6 +329,22 @@ UT_Error IE_Exp_OpenXML::finishCellBorderProperties(int target)
 }
 
 /**
+ * Starts exporting the OXML_Element_List properties
+ */
+UT_Error IE_Exp_OpenXML::startListProperties(int target)
+{
+	return writeTargetStream(target, "<w:numPr>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_List properties
+ */
+UT_Error IE_Exp_OpenXML::finishListProperties(int target)
+{
+	return writeTargetStream(target, "</w:numPr>");
+}
+
+/**
  * Starts exporting the OXML_Element_Row object
  */
 UT_Error IE_Exp_OpenXML::startRow()
@@ -400,6 +425,8 @@ GsfOutput* IE_Exp_OpenXML::getTargetStream(int target)
 			return relStream;
 		case TARGET_CONTENT:
 			return contentTypesStream;
+		case TARGET_NUMBERING:
+			return numberingStream;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return documentStream;
@@ -779,6 +806,28 @@ UT_Error IE_Exp_OpenXML::setColumnWidth(int target, const char* width)
 }
 
 /**
+ * Sets list level
+ */
+UT_Error IE_Exp_OpenXML::setListLevel(int target, const char* level)
+{
+	std::string str("<w:ilvl w:val=\"");
+	str += level;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets list format
+ */
+UT_Error IE_Exp_OpenXML::setListFormat(int target, const char* format)
+{
+	std::string str("<w:numId w:val=\"");
+	str += format;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
@@ -849,6 +898,9 @@ const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	if(numberingStream && !gsf_output_is_closed(numberingStream))
+		gsf_output_close(numberingStream);
+
 	if(stylesStream && !gsf_output_is_closed(stylesStream))
 		gsf_output_close(stylesStream);
 
@@ -894,6 +946,72 @@ void IE_Exp_OpenXML::_cleanup ()
 }
 
 /**
+ * Starts the numbering.xml file which describes the default list styles
+ */
+UT_Error IE_Exp_OpenXML::startNumbering()
+{
+	UT_Error err = UT_OK;
+
+	numberingStream = gsf_output_memory_new();
+
+	if(!numberingStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, numbering.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(numberingStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+
+	std::string str("<w:numbering>");
+
+	return writeTargetStream(TARGET_NUMBERING, str.c_str());
+}
+
+/**
+ * Finishes the numbering.xml file which describes the contents of the package
+ */
+UT_Error IE_Exp_OpenXML::finishNumbering()
+{
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_NUMBERING, "</w:numbering>");
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to numbering.xml file\n"));	
+		return err;
+	}
+
+	GsfOutput* numberingFile = gsf_outfile_new_child(wordDir, "numbering.xml", FALSE);
+
+	if(!numberingFile)
+		return UT_SAVE_EXPORTERROR;		
+
+ 	if(!gsf_output_write(numberingFile, gsf_output_size(numberingStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(numberingStream))))
+	{
+		gsf_output_close(numberingFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(numberingStream))
+	{
+		gsf_output_close(numberingFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(numberingFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, numbering.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+	return UT_OK;
+}
+
+/**
  * Starts the styles.xml file which describes the default styles
  */
 UT_Error IE_Exp_OpenXML::startStyles()
@@ -922,7 +1040,7 @@ UT_Error IE_Exp_OpenXML::startStyles()
 }
 
 /**
- * Finishes the [Content_Types].xml file which describes the contents of the package
+ * Finishes the styles.xml file which describes the contents of the package
  */
 UT_Error IE_Exp_OpenXML::finishStyles()
 {
@@ -1138,6 +1256,9 @@ UT_Error IE_Exp_OpenXML::startWordRelations()
 	str += "<Relationship Id=\"rId1\" ";
 	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" ";
 	str += "Target=\"styles.xml\"/>";
+	str += "<Relationship Id=\"rId2\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" ";
+	str += "Target=\"numbering.xml\"/>";
 	
 	return writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
 

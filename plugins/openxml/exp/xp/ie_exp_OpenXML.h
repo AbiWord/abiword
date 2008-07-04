@@ -49,6 +49,7 @@
 #define TARGET_DOCUMENT_RELATION 3
 #define TARGET_RELATION 4
 #define TARGET_CONTENT 5
+#define TARGET_NUMBERING 6
 
 class OXML_Document;
 
@@ -87,6 +88,8 @@ public:
 	UT_Error finishTableBorderProperties(int target);
 	UT_Error startCellBorderProperties(int target);
 	UT_Error finishCellBorderProperties(int target);
+	UT_Error startListProperties(int target);
+	UT_Error finishListProperties(int target);
 	UT_Error startRow();
 	UT_Error finishRow();
 	UT_Error startCell();
@@ -120,6 +123,8 @@ public:
 	UT_Error setTableBorder(int target, const char* border, const char* type, const char* color, const char* size);
 	UT_Error setGridCol(int target, const char* column);
 	UT_Error setColumnWidth(int target, const char* width);
+	UT_Error setListLevel(int target, const char* level);
+	UT_Error setListFormat(int target, const char* format);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -134,12 +139,15 @@ private:
 	GsfOutput* wordRelStream; // word/_rels/document.xml.rels
 	GsfOutput* documentStream; // word/document.xml
 	GsfOutput* stylesStream; // word/styles.xml
+	GsfOutput* numberingStream; // word/numbering.xml
 
+	UT_Error startNumbering();
 	UT_Error startStyles();
 	UT_Error startContentTypes();
 	UT_Error startRelations();
 	UT_Error startWordRelations();
 	UT_Error startMainPart();
+	UT_Error finishNumbering();
 	UT_Error finishStyles();
 	UT_Error finishContentTypes();
 	UT_Error finishRelations();

@@ -64,6 +64,8 @@ public:
 	UT_Error addStyle(const OXML_SharedStyle & obj);
 	UT_Error clearStyles();
 
+	UT_Error addList(const OXML_SharedList& obj);
+
 	//! Returns a reference to the FIRST header with corresponding ID OR empty SharedSection if none found.
 	OXML_SharedSection getHeader(const std::string & id);
 	UT_Error addHeader(const OXML_SharedSection & obj);
@@ -111,6 +113,8 @@ private:
 
 	OXML_SharedTheme m_theme;
 	OXML_SharedFontManager m_fontManager;
+
+	OXML_ListMap m_lists_by_id;
 
 	void _assignHdrFtrIds();
 };

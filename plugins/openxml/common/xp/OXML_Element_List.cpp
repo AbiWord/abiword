@@ -20,31 +20,54 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_PARAGRAPH_H_
-#define _OXML_ELEMENT_PARAGRAPH_H_
-
-// Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+// Class definition include
+#include <OXML_Element_List.h>
 
 // AbiWord includes
 #include <ut_types.h>
 #include <ut_string.h>
 #include <pd_Document.h>
 
-class OXML_Element_Paragraph : public OXML_Element
+OXML_Element_List::OXML_Element_List(std::string id) : 
+	OXML_Element(id, LST_TAG, LIST)
 {
-public:
-	OXML_Element_Paragraph(std::string id);
-	virtual ~OXML_Element_Paragraph();
+}
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+OXML_Element_List::~OXML_Element_List()
+{
 
-private:
-	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
-};
+}
 
-#endif //_OXML_ELEMENT_PARAGRAPH_H_
+UT_Error OXML_Element_List::serialize(IE_Exp_OpenXML* exporter)
+{
+	//TODO: serialize list here
+	return serializeProperties(exporter);
+}
 
+UT_Error OXML_Element_List::serializeProperties(IE_Exp_OpenXML* exporter)
+{
+	//TODO: Add all the property serializations here
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startListProperties(TARGET_DOCUMENT);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setListLevel(TARGET_DOCUMENT, "0");
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setListFormat(TARGET_DOCUMENT, "1");
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishListProperties(TARGET_DOCUMENT);
+}
+
+
+UT_Error OXML_Element_List::addToPT(PD_Document * /*pDocument*/)
+{
+	//TODO
+	return UT_OK;
+}

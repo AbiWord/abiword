@@ -20,31 +20,57 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_PARAGRAPH_H_
-#define _OXML_ELEMENT_PARAGRAPH_H_
+#ifndef _OXML_LIST_H_
+#define _OXML_LIST_H_
 
 // Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+#include <OXML_Types.h>
+#include <OXML_ObjectWithAttrProp.h>
 
 // AbiWord includes
 #include <ut_types.h>
-#include <ut_string.h>
 #include <pd_Document.h>
 
-class OXML_Element_Paragraph : public OXML_Element
-{
-public:
-	OXML_Element_Paragraph(std::string id);
-	virtual ~OXML_Element_Paragraph();
+// External includes
+#include <string>
+#include <boost/shared_ptr.hpp>
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+class IE_Exp_OpenXML;
+
+class OXML_List : public OXML_ObjectWithAttrProp
+{
+
+public:
+	OXML_List();
+	virtual ~OXML_List();
+
+	virtual void setId(UT_uint32 id);
+	virtual void setParentId(UT_uint32 id);
+	virtual void setLevel(UT_uint32 id);
+	virtual void setDelim(const gchar* delim);
+	virtual void setDecimal(const gchar* decimal);
+	virtual void setStartValue(UT_uint32 id);
+
+	UT_uint32 getId();
+	UT_uint32 getParentId();
+	UT_uint32 getLevel();
+	UT_uint32 getStartValue();
+	const gchar* getDelim();
+	const gchar* getDecimal();
+	
+	UT_Error serialize(IE_Exp_OpenXML* exporter);
+	UT_Error addToPT(PD_Document * pDocument);
 
 private:
-	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	UT_uint32 id;
+	UT_uint32 parentId;
+	UT_uint32 level;
+	UT_uint32 startValue;
+	const gchar* delim;
+	const gchar* decimal;
 };
 
-#endif //_OXML_ELEMENT_PARAGRAPH_H_
+typedef boost::shared_ptr<OXML_List> OXML_SharedList;
+
+#endif //_OXML_LIST_H_
 
