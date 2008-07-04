@@ -329,6 +329,10 @@ protected:
 	void				_handleDataItems(void);
 	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
 	void				_convertColor(UT_String& szDest, const char* pszColor);
+	void				_writeImage (const UT_ByteBuf * pByteBuf,
+								   const UT_UTF8String & imagedir,
+								   const UT_UTF8String & filename);
+	void				_handleImage(const PP_AttrProp * pAP);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_LaTeX *		m_pie;
@@ -1565,21 +1569,11 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				// TODO we *will* create separate image files.
-				// (we will borrow the code from HTML export)
 				// LaTeX assumes images are EPS.
 				// PDFLaTeX assumes images are PNG.
-				m_pie->write("\\includegraphics[height=");
-				pAP->getProperty("height", szValue);
-				m_pie->write(szValue);
-				pAP->getProperty("width", szValue);
-				m_pie->write(",width=");
-				m_pie->write(szValue);
-				m_pie->write("]{");
-				pAP->getAttribute("dataid", szValue);
-				m_pie->write(szValue);
-				m_pie->write("}");
-
+				// Currently we can create PNG images only
+				// TODO: is it possible to create EPS images after the cairo integration? 
+				_handleImage(pAP);
 				return true;
 
 			case PTO_Field:
@@ -1883,6 +1877,76 @@ void s_LaTeX_Listener::_handleDataItems(void)
 }
 
 
+/* Code taken from the HTML exporter
+ *
+ * imagedir is the name of the directory in which we'll write the image
+ * filename is the name of the file to which we'll write the image
+ */
+void s_LaTeX_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
+									const UT_UTF8String & imagedir,
+									const UT_UTF8String & filename)
+{
+	UT_go_directory_create(imagedir.utf8_str(), 0750, NULL);
+
+	UT_UTF8String path(imagedir);
+	path += "/";
+	path += filename;
+
+	GsfOutput * out = UT_go_file_create (path.utf8_str (), NULL);
+	if (out)
+	{
+		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
+		gsf_output_close (out);
+		g_object_unref (G_OBJECT (out));
+	}
+}
+
+void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
+{	
+	/* Part of code taken from the HTML exporter */
+	const UT_ByteBuf * pByteBuf;
+	UT_ByteBuf decodedByteBuf;				
+	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL, *szMimeType = NULL;
+	
+	if (! pAP)
+		return;
+	if (! pAP->getAttribute("dataid", szDataID))
+		return;
+
+	if (! m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(&szMimeType), NULL))
+		return;
+	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+
+	if (strcmp (szMimeType, "image/png") != 0)
+	{
+		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+		return;
+	}
+
+	UT_UTF8String imagedir = UT_go_dirname_from_uri(m_pie->getFileName(), true);
+			
+	UT_UTF8String filename(szDataID);
+	filename += ".png";
+	
+	/* save the image as imagedir/filename */
+	_writeImage (pByteBuf, imagedir, filename);
+	
+	m_pie->write("\\includegraphics");
+	if (pAP->getProperty("height", szHeight) && pAP->getProperty("width", szWidth))
+	{
+		m_pie->write("[height=");
+		m_pie->write(szHeight);
+		m_pie->write(",width=");
+		m_pie->write(szWidth);
+		m_pie->write("]");
+	}
+
+	m_pie->write("{");
+	m_pie->write(szDataID);
+	m_pie->write("}\n");
+
+	return;	
+}
 /*
   This is a copy from wv. Returns 1 if was translated, 0 if wasn't.
   It can convert to empty string.
