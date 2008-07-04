@@ -205,7 +205,10 @@ UT_Error IE_Exp_OpenXML::startText()
  */
 UT_Error IE_Exp_OpenXML::writeText(const char* text)
 {
-	return writeTargetStream(TARGET_DOCUMENT, text);
+	UT_UTF8String sEscText = text;
+	sEscText.escapeXML();
+
+	return writeTargetStream(TARGET_DOCUMENT, sEscText.utf8_str());
 }
 
 /**
@@ -528,10 +531,13 @@ UT_Error IE_Exp_OpenXML::setFontSize(int target, const gchar* size)
  */
 UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
 {
+	UT_UTF8String sEscFamily = family;
+	sEscFamily.escapeXML();
+
 	std::string str("<w:rFonts w:ascii=\"");
-	str += family;
+	str += sEscFamily.utf8_str();
 	str += "\" w:cs=\"";
-	str += family;
+	str += sEscFamily.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
@@ -576,8 +582,11 @@ UT_Error IE_Exp_OpenXML::setTextAlignment(int target, const gchar* alignment)
  */
 UT_Error IE_Exp_OpenXML::setParagraphStyle(int target, const gchar* style)
 {
+	UT_UTF8String sEscStyle = style;
+	sEscStyle.escapeXML();
+
 	std::string str("<w:pStyle w:val=\"");
-	str += style;
+	str += sEscStyle.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
@@ -1408,14 +1417,34 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 
 UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby)
 {
+	UT_UTF8String sEscStyle = style.c_str();
+	UT_UTF8String sEscBasedOn = basedon.c_str();
+	UT_UTF8String sEscFollowedBy = followedby.c_str();
+
+	sEscStyle.escapeXML();
+	sEscBasedOn.escapeXML();
+	sEscFollowedBy.escapeXML();
+
 	std::string str("");
-	str += "<w:style w:styleId=\"" + style + "\">";
-	str += "<w:name w:val=\"" + style + "\"/>";
+	str += "<w:style w:styleId=\"";
+	str += sEscStyle.utf8_str();
+	str += "\">";
+	str += "<w:name w:val=\"";
+	str += sEscStyle.utf8_str();
+	str += "\"/>";
 	
 	if(!basedon.empty())
-		str += "<w:basedOn w:val=\"" + basedon + "\"/>";		
+	{
+		str += "<w:basedOn w:val=\"";
+		str += sEscBasedOn.utf8_str();
+		str += "\"/>";		
+	}
 	if(!followedby.empty())
-		str += "<w:next w:val=\"" + followedby + "\"/>";		
+	{
+		str += "<w:next w:val=\"";
+		str += sEscFollowedBy.utf8_str();
+		str += "\"/>";
+	}
 
 	return writeTargetStream(TARGET_STYLES, str.c_str());
 }
