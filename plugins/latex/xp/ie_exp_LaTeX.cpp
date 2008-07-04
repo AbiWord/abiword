@@ -1573,7 +1573,8 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				// PDFLaTeX assumes images are PNG.
 				// Currently we can create PNG images only
 				// TODO: is it possible to create EPS images after the cairo integration? 
-				_handleImage(pAP);
+				if(bHaveProp)
+					_handleImage(pAP);
 				return true;
 
 			case PTO_Field:
