@@ -86,8 +86,6 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 
 static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_Stylist * /*me*/ )
 {
-	UT_return_if_fail(me);
-	
 	abiDestroyWidget( wid ) ;// will emit signals for us
 }
 
@@ -126,7 +124,8 @@ static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_if_fail(pDoc);
 	
-	PD_Style * pStyle = pDoc->getStyle(sStyle.utf8_str(), & pStyle);
+	PD_Style * pStyle;
+	pDoc->getStyle(sStyle.utf8_str(), & pStyle);
 	UT_return_if_fail(pStyle);
 	
 	pStyle->_simplifyProperties();

@@ -75,9 +75,10 @@ public:
 			     const gchar *&szValue) const;
 
 	inline const char * getName (void) const {return m_szName;}
+	
+	bool					_simplifyProperties();
 
 protected:
-	bool					_simplifyProperties();
 	std::map<std::string, std::string> _returnPropsMap(const gchar * szStyle, bool bReplaceAttributes = true) const;
 
 	
