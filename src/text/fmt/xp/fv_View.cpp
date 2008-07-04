@@ -8076,7 +8076,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 	// Causes weirdness -- up arrow key jumps up to the top of the page
 	//
 
-	if(iPage >= getNumHorizPages())
+	if(iPage >= (signed)getNumHorizPages())
 	{
 		for (unsigned int i = 0; i < iRow-1; i++) //This is probably slowish...
 		{
@@ -13888,10 +13888,16 @@ UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 	
 	if (iFirstPageInRow != iPageNumber)
 	{
+		fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow);
+		
 		for (unsigned int i = 0; i < diff; i++)
 		{
-			fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow + i);
 			totalWidth += getHorizPageSpacing() + pPage->getWidth();
+			
+			if (pPage->getNext())
+			{
+				pPage = pPage->getNext();
+			}
 		}
 	}
 	return totalWidth;
@@ -13901,7 +13907,10 @@ UT_uint32 FV_View::getWidthPagesInRow(fp_Page *page) const
 {
 	UT_uint32 iPageNumber	= m_pLayout->findPage(page);
 	fp_Page * pPage = m_pLayout->getNthPage(iPageNumber);
-	return (getWidthPrevPagesInRow(iPageNumber) + pPage->getWidth());
+	UT_uint32 iRow = iPageNumber/getNumHorizPages();
+	UT_uint32 iLastPageInRow = iRow * getNumHorizPages() + (getNumHorizPages() - 1);
+	
+	return (getWidthPrevPagesInRow(iLastPageInRow) + pPage->getWidth());
 }
 
 UT_uint32 FV_View::getHorizPageSpacing() const

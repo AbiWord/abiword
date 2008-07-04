@@ -2442,55 +2442,32 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	xClick = xPos + m_xScrollOffset - getPageViewLeftMargin();
 	yClick = yPos + m_yScrollOffset - getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
-	while (pPage)
+	
+	if (xClick <= (signed)getWidthPagesInRow(pPage))  //So we can't select the next row by clicking outside 
 	{
-		UT_sint32 iPageHeight = pPage->getHeight();
-		UT_sint32 iPageWidth = pPage->getWidth();
-		UT_uint32 iNumHorizPages = getNumHorizPages();
-		UT_uint32 iPageNumber = m_pLayout->findPage(pPage);
-		UT_uint32 iRow = iPageNumber/getNumHorizPages();
-		UT_uint32 iCol = iPageNumber;
-		bool yClickGood = false;
-		bool xClickGood = false;
-		bool lastPageInColumn = false;
-		
-		while(iCol > iNumHorizPages)
+		while (pPage) //First, find the row the page is in
 		{
-			iCol -= iNumHorizPages;
-		}
-		
-		if(getViewMode() != VIEW_PRINT)
-		{
-			iPageHeight = iPageHeight - pPage->getOwningSection()->getTopMargin() -
-				pPage->getOwningSection()->getBottomMargin();
-		}
-		
-		//TODO: The second column is being registered as the first. Why?
-		//TODO: Bug? The text on the 3rd+ row of pages in a nine page document are not rendered when zoomed out.
-		if (xClick > iPageWidth)
-		{
-			xClickGood = false;
-			if (iCol < iNumHorizPages - 1) //TODO: Supposed to prevent the next page from being selected by moving mouse to the right off the grid of pages
+			UT_uint32 iNumHorizPages = getNumHorizPages();
+			UT_sint32 iPageHeight = pPage->getHeight();
+			
+			if(getViewMode() != VIEW_PRINT)
 			{
-				xClick -= iPageWidth + getHorizPageSpacing();
+				iPageHeight = iPageHeight - pPage->getOwningSection()->getTopMargin() -
+					pPage->getOwningSection()->getBottomMargin();
 			}
 			
-		}
-		else
-		{
-			xClickGood = true;
-		}
-		
-		if (yClick < iPageHeight && yClick > 0)
-		{
-			yClickGood = true;
-		}
-		else
-		{
-			yClickGood = false;
-			yClick -= iPageHeight + getPageViewSep();
-
-			for (int i = 0; i < iNumHorizPages - 1; i++)
+			if (yClick < iPageHeight)
+			{
+				//Found the first page in the row
+				break;
+			}
+			else
+			{
+				yClick -= iPageHeight + getPageViewSep();
+			}
+			
+			//Loop because we're jumping entire rows
+			for (unsigned int i = 0; i < iNumHorizPages; i++)
 			{
 				if (pPage->getNext())
 				{
@@ -2499,14 +2476,23 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 			}
 		}
 		
-		if (yClickGood && xClickGood)
+		while (pPage) //Now, find the page in the row.
 		{
-			// found it
-			UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, iPageNumber));
-			UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d\n", iPageHeight, iPageWidth));
-			break;
+			UT_sint32 iPageWidth = pPage->getWidth();
+			
+			if (xClick > iPageWidth)
+			{
+				xClick -= iPageWidth + getHorizPageSpacing();
+			}
+			else
+			{
+				//Found the page. Huzzah!
+				xxx_UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, m_pLayout->findPage(pPage)));
+				xxx_UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d | %d\n", pPage->getHeight(), iPageWidth, getWidthPagesInRow(pPage)));
+				break;
+			}
+			pPage = pPage->getNext();
 		}
-		pPage = pPage->getNext();
 	}
 
 	if (!pPage)
@@ -4174,7 +4160,6 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		////////////////////////////////////////////////////////////////
 		UT_uint32 iNumHorizPages = getNumHorizPages();
 		UT_uint32 iPageNumber = m_pLayout->findPage(pPointPage);
-		UT_uint32 iRow = iPageNumber/getNumHorizPages();
 		UT_uint32 iCol = iPageNumber;
 		while(iCol > iNumHorizPages)
 		{
@@ -4182,6 +4167,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		}
 		
 		#if 0
+		UT_uint32 iRow = iPageNumber/getNumHorizPages();
+		
 		if(iPageNumber >= getNumHorizPages())
 		{
 			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
@@ -4207,7 +4194,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		yPoint += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
 		xPoint += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
 		yPoint2 += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
-		xPoint2 += getPageViewLeftMargin(); + getWidthPrevPagesInRow(iPageNumber);
+		xPoint2 += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
 
 
 		// now, we have coords absolute, as if all pages were stacked vertically
@@ -4504,20 +4491,14 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	
 	while (pPage)
 	{
+		bool jumpDownARow = false;
 		UT_uint32 iPageNumber		= m_pLayout->findPage(pPage);
 		UT_uint32 iRow 				= iPageNumber/getNumHorizPages();
-		UT_uint32 iCol				= iPageNumber;
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 iHorizPageSpacing	= getHorizPageSpacing();
 		UT_sint32 adjustedTop		= 0;
 		pDSL = pPage->getOwningSection();
 		
-		while (iCol > getNumHorizPages())
-		{
-			iCol -= getNumHorizPages();
-		}
-
 		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
 		{
 			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
@@ -4542,11 +4523,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
-			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
+			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d iPageNumber=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 getWindowHeight()));
+							 getWindowHeight(),
+							 iPageNumber));
 
 			// since all other pages are below this one, we
 			// don't need to draw them either.	exit loop now.
@@ -4562,9 +4544,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 curY,
 							 m_yScrollOffset,
 							 getWindowHeight()));
-			bNotEnd = true;
-			break; //This break prevents while(pPage) from becoming an endless loop of doom when the vertical scrollbar is used.
-					//TODO: this causes redraw issues
+			jumpDownARow = true;
+			break;
 		}
 		else if (adjustedTop > y + height)
 		{
@@ -4578,13 +4559,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 getWindowHeight(),
 							 y,height));
 			bNotEnd = true;
-			break;
 		}
 		else if (adjustedBottom < y)
 		{
 			// the bottom of this page is above the top
 			// of the clipping region, so we don't need
 			// to draw it.
+			
 			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
@@ -4592,9 +4573,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 getWindowHeight(),
 							 y,height));
 			//TF NOTE: Can we break out here?
-			//bNotEnd = true;
-			break; //This break prevents while(pPage) from becoming an endless loop of doom when the window is resized vertically.
-					//TODO: this causes redraw issues
 		}
 		else
 		{
@@ -4613,7 +4591,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			//{
 				da.yoff = adjustedTop; //TODO: Adjust for multipage?
 			//}
-			//adjustedBottom -= getPageViewSep();
+			//adjustedBottom -= getPageViewSep(); ///////////////////////
 			
 			xxx_UT_DEBUGMSG(("iRow: %d iCol: %d iPageNumber: %d\n", iRow, iCol, iPageNumber));
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin()- m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber); //TODO: plus a bit more for spacing
@@ -4725,13 +4703,27 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				adjustedRight += m_pG->tlu(1);
 				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 			}
-			xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
-			
-			if (iPageNumber % getNumHorizPages() == 0)
-			{
-				curY += getMaxHeight(iRow) + getPageViewSep(); 
-			}
+		}
+		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
+		
+		if (iPageNumber % getNumHorizPages() == 0)
+		{
+			curY += getMaxHeight(iRow) + getPageViewSep(); 
+		}
 
+		if (jumpDownARow)
+		{
+			UT_DEBUGMSG(("Jumping down a row\n"));
+			for(unsigned int i = 0; i < getNumHorizPages(); i++)
+			{
+				if (pPage->getNext())
+				{
+					pPage = pPage->getNext();
+				}
+			}
+		}
+		else
+		{
 			pPage = pPage->getNext();
 		}
 	}
