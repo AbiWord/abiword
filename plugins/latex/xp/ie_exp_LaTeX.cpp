@@ -128,7 +128,7 @@ bool IE_Exp_LaTeX_Sniffer::recognizeSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Exp_LaTeX_Sniffer::constructExporter(PD_Document * pDocument,
-													 IE_Exp ** ppie)
+						 IE_Exp ** ppie)
 {
 	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
 	*ppie = p;
@@ -136,8 +136,8 @@ UT_Error IE_Exp_LaTeX_Sniffer::constructExporter(PD_Document * pDocument,
 }
 
 bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
-										const char ** pszSuffixList,
-										IEFileType * ft)
+					const char ** pszSuffixList,
+					IEFileType * ft)
 {
 	*pszDesc = "LaTeX (.latex)";
 	*pszSuffixList = "*.tex; *.latex";
@@ -291,22 +291,22 @@ public:
 	virtual ~s_LaTeX_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr);
+					const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
+						const PX_ChangeRecord * pcr,
+						PL_StruxFmtHandle * psfh);
 
 	virtual bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr);
+					const PX_ChangeRecord * pcr);
 
 	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+						const PX_ChangeRecord * pcr,
+						PL_StruxDocHandle sdh,
+						PL_ListenerId lid,
+						void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+							PL_ListenerId lid,
+							PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
 
@@ -633,11 +633,11 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 						this->_closeList();
 					}
 					else
-						/*
-						 * now we have indent == this->m_Indent,
-						 * but it is possible that the current list item is
-						 * of different style with the last one.
-						 */                                    
+					/*
+					 * now we have indent == this->m_Indent,
+					 * but it is possible that the current list item is
+					 * of different style with the last one.
+					 */                                    
 					{
 						if (this_list_type != list_type)
 						{
@@ -777,14 +777,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 					m_pie->write(strH);
 					m_pie->write("}\n");
 				}
-				/*
-				if (height > 1.4 && height < 1.6)
-					m_pie->write("1.24}\n");
-				else if (height > 1.9 && height < 2.1)
-					m_pie->write("1.66}\n");
-				else if (m_bLineHeight) // glup.  TODO: calculate the spacing :)
-				    m_pie->write("1.0} % Sorry.  I know that you don't expect the 1.0... feel free to fix it! :)\n");
-				 */
 			}
 		}
 	}
@@ -817,7 +809,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		pAP->getProperty("page-margin-left", pszPageMarginRight);
 
 		if (pszNbCols != NULL && ((0 == strcmp(pszNbCols, "2"))
-								  || (0 == strcmp(pszNbCols, "3"))))
+						|| (0 == strcmp(pszNbCols, "3"))))
 		{
 			bMustEmitMulticol = true;
 			m_bMultiCols = true;
@@ -1039,7 +1031,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			// double underlines or wavy underlines
 			while (q)
 			{
-			    if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
+			    if (0 == strcmp(q, "underline"))
 			    {
 				m_pie->write("\\uline{");
 				m_NumCloseBrackets++;
