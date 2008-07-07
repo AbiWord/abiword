@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
@@ -200,18 +201,39 @@ void AP_Dialog_Stylist::updateDialog(void)
  */
 bool  AP_Dialog_Stylist::createStyleFromDocument()
 {
+	
 	//
 	// Load the properties at the current caret location.
 	//
+	if(!getActiveFrame())
+		return false;
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	
 	const gchar ** paraProps = NULL;
-//	getView()->getBlockFormat(&paraProps,true);
+	pView->getBlockFormat(&paraProps,true);
 	
 	const gchar ** charProps = NULL;
-//	getView()->getCharFormat(&charProps,true);
+	pView->getCharFormat(&charProps,true);
 	
 	//
 	// Find the unique ones (not in the Normal or original style of run)
 	//
+	
+	// Right now just putting them all together
+	std::string sProps;
+	int i=0;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
+	while(paraProps[i] != NULL)
+	{
+		szName = paraProps[i];
+		szValue = paraProps[i+1];
+		if(strstr(szName,"toc-") == NULL)
+		{
+			sProps += std::string(szName) + ":" + std::string(szValue) + ";";
+		}
+		i = i + 2;
+	}
 	
 	//
 	// Create a unique, temporary name/label 
@@ -224,7 +246,7 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 			PT_TYPE_ATTRIBUTE_NAME, "P",				\
 			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
-			PT_PROPS_ATTRIBUTE_NAME, "font-size:22;",				\
+			PT_PROPS_ATTRIBUTE_NAME, sProps.c_str(),				\
 			0};
 	
 	//
