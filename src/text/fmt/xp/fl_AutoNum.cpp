@@ -965,7 +965,7 @@ PL_StruxDocHandle fl_AutoNum::getLastItemInHeiracy(void)
        return pLastItem;
 }
 
-const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
+bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 {
 	if (m_pItems.findItem(const_cast<void *>(pItem)) == -1)
 		return false;
@@ -973,7 +973,7 @@ const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 		return true;
 }
 
-const bool fl_AutoNum::isEmpty()
+bool fl_AutoNum::isEmpty()
 {
 	if (m_pItems.getItemCount() > 0)
 		return false;

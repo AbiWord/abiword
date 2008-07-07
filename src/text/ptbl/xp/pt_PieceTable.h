@@ -60,7 +60,7 @@ public:
 	~pt_PieceTable();
 
 	void					setPieceTableState(PTState pts);
-	const PTState           getPieceTableState() const {return m_pts;}
+	PTState					getPieceTableState() const {return m_pts;}
 	void					beginMultiStepGlob(void);
 	void					endMultiStepGlob(void);
 	void					beginUserAtomicGlob(void);

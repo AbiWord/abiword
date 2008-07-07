@@ -550,7 +550,7 @@ void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
  * handled.
  * Returns true if the exposed redraw method is running.
  */
-const bool  GR_Graphics::isSpawnedRedraw(void) const
+bool GR_Graphics::isSpawnedRedraw(void) const
 {
 	return m_bSpawnedRedraw;
 }
@@ -558,7 +558,7 @@ const bool  GR_Graphics::isSpawnedRedraw(void) const
 /*!
  * sets/clears the redraw running variable
  */
-void  GR_Graphics::setSpawnedRedraw( bool exposeState)
+void GR_Graphics::setSpawnedRedraw( bool exposeState)
 {
 	m_bSpawnedRedraw = exposeState;
 }
@@ -567,7 +567,7 @@ void  GR_Graphics::setSpawnedRedraw( bool exposeState)
  * Informs if there are unprocessed expose information present
  * Returns true is so.
  */
-const bool GR_Graphics::isExposePending(void) const
+bool GR_Graphics::isExposePending(void) const
 {
 	return m_bExposePending;
 }
@@ -598,7 +598,7 @@ void GR_Graphics::setRecentRect(UT_Rect * pRect)
  * Informs if a process is accessing the global merged expose area.
  * Returns true is so.
  */
-const bool GR_Graphics::isExposedAreaAccessed(void) const
+bool GR_Graphics::isExposedAreaAccessed(void) const
 {
 	return m_bIsExposedAreaAccessed;
 }
