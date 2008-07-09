@@ -557,7 +557,7 @@ int itex2MML_displaymode = 0;
 "\\Box" |
 "\\square" {yylval=itex2MML_copy_string("&square;"); return MOL;}
 "\\emptyset" |
-"\\empty" {yylval=itex2MML_copy_string("&emptyset;"); return MI;}
+"\\empty" {yylval=itex2MML_copy_string("&emptyv;"); return MI;}
 "\\exists" {yylval=itex2MML_copy_string("&Exists;"); return MOL;}
 "\\circ" {yylval=itex2MML_copy_string("&SmallCircle;"); return MOL;}
 "\\rhd" {yylval=itex2MML_copy_string("&RightTriangle;"); return MOL;}
