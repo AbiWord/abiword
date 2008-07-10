@@ -235,6 +235,9 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 		i = i + 2;
 	}
 	
+	// Remove trailing semicolon
+	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';') sProps.resize(sProps.size()-1);
+	
 	//
 	// Create a unique, temporary name/label 
 	//
@@ -254,7 +257,7 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	//
 	
 	// when we create a name we won't have dupes.
-	getDoc()->appendStyle(a);
+	UT_return_val_if_fail(getDoc()->appendStyle(a), false);
 	
 	//
 	// Change style of current [UNIT_OF_TEXT] to the new one.
