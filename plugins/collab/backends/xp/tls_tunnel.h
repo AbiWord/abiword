@@ -325,7 +325,6 @@ protected:
 	}
 
 	void disconnect_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
-printf(">>> disconnect_ (this: %lld)\n", this);
 		// shutdown the tls session (ignore any error condition)
 		if (session_ptr)
 			gnutls_bye(*session_ptr, GNUTLS_SHUT_RDWR);
