@@ -181,7 +181,8 @@ public:
 	}
 
 	void run() {
-		io_service_.run();
+		asio::error_code ec;
+		io_service_.run(ec);
 	}
 
 	void stop() {
@@ -324,17 +325,19 @@ protected:
 	}
 
 	void disconnect_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, socket_ptr_t remote_socket_ptr) {
+printf(">>> disconnect_ (this: %lld)\n", this);
 		// shutdown the tls session (ignore any error condition)
 		if (session_ptr)
 			gnutls_bye(*session_ptr, GNUTLS_SHUT_RDWR);
 
 		// shutdown the sockets belonging to this tunnel
 		asio::error_code ec;
-		if (local_socket_ptr) {
+		if (local_socket_ptr && local_socket_ptr->is_open()) {
 			local_socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 			local_socket_ptr->close(ec);
 		}
-		if (remote_socket_ptr) {	
+
+		if (remote_socket_ptr && remote_socket_ptr->is_open()) {	
 			remote_socket_ptr->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
 			remote_socket_ptr->close(ec);
 		}

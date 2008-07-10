@@ -56,7 +56,7 @@ bool RealmConnection::connect()
 	try {
 		// setup our local TLS tunnel to the realm
 		m_tls_tunnel_ptr.reset(new tls_tunnel::ClientProxy(m_address, m_port, m_ca_file, false));
-		asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr.get()));
+		asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr));
 
 		// connect to the tunnel
 		asio::ip::tcp::resolver::query query(m_tls_tunnel_ptr->local_address(), boost::lexical_cast<std::string>(m_tls_tunnel_ptr->local_port()));
@@ -98,12 +98,13 @@ bool RealmConnection::connect()
 
 void RealmConnection::disconnect()
 {
-	UT_DEBUGMSG(("RealmConnection::disconnect()\n"));
+	UT_DEBUGMSG(("RealmConnection::disconnect\n"));
 	
 	if (m_socket.is_open())
 	{
-		m_socket.cancel();
-		m_socket.close();
+		asio::error_code ac;
+		m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ac);
+		m_socket.close(ac);
 	}
 	
 	if (m_thread_ptr)
