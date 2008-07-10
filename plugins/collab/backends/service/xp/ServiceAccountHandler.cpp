@@ -388,7 +388,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	// open the realm connection!
 	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, cookie: %s\n", realm_address->value().c_str(), realm_port->value(), cookie->value().c_str()));
 	ConnectionPtr connection = 
-		boost::shared_ptr<RealmConnection>(new RealmConnection(realm_address->value(), 
+		boost::shared_ptr<RealmConnection>(new RealmConnection(m_ssl_ca_file, realm_address->value(), 
 								realm_port->value(), cookie->value(), doc_id, master->value(), session_id,
 								boost::bind(&ServiceAccountHandler::_handleRealmPacket, this, _1)));
 

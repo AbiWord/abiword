@@ -29,6 +29,7 @@
 #include "RealmGrowBuffer.h"
 #include "RealmProtocol.h"
 #include <backends/xp/SynchronizedQueue.h>
+#include <backends/xp/tls_tunnel.h>
 
 class AP_Dialog_GenericProgress;
 
@@ -50,8 +51,8 @@ struct PendingDocumentProperties
 class RealmConnection : public boost::enable_shared_from_this<RealmConnection>
 {
 public:
-	RealmConnection(const std::string& address, int port, const std::string& cookie,
-					UT_sint64 doc_id, bool master, const std::string& session_id,
+	RealmConnection(const std::string& ca_file, const std::string& address, int port, 
+					const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
 					boost::function<void (RealmConnection&)> sig);
 	
 	bool								connect();
@@ -96,8 +97,9 @@ private:
 												PacketPtr packet_ptr);
 
 	asio::io_service					m_io_service;
-	asio::ip::tcp::resolver				m_resolver;
-	asio::ip::tcp::resolver::query		m_query;
+	std::string							m_ca_file;
+	std::string							m_address;
+	int									m_port;
 	asio::ip::tcp::socket				m_socket;
 	boost::shared_ptr<asio::thread>		m_thread_ptr;
 	std::string							m_cookie;
@@ -111,6 +113,8 @@ private:
 
 	boost::shared_ptr<PendingDocumentProperties>
 										m_pdp_ptr;
+	boost::shared_ptr<tls_tunnel::ClientProxy>
+										m_tls_tunnel_ptr;
 };
 
 typedef boost::shared_ptr<RealmConnection> ConnectionPtr;

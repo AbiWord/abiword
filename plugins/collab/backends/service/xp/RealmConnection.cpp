@@ -25,13 +25,14 @@
 
 namespace rpv1 = realm::protocolv1;
 
-RealmConnection::RealmConnection(const std::string& address, int port, const std::string& cookie, 
-								 UT_sint64 doc_id, bool master, const std::string& session_id,
+RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, 
+								 const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
 								 boost::function<void (RealmConnection&)> sig)
 	: m_io_service(),
 	m_socket(m_io_service),
-	m_resolver(m_io_service),
-	m_query(address.c_str(), boost::lexical_cast<std::string>(port).c_str()),
+	m_ca_file(ca_file),
+	m_address(address),
+	m_port(port),
 	m_thread_ptr(),
 	m_cookie(cookie),
 	m_doc_id(doc_id),
@@ -41,7 +42,8 @@ RealmConnection::RealmConnection(const std::string& address, int port, const std
 	m_packet_queue(boost::bind(&RealmConnection::_signal, this)),
 	m_sig(sig),
 	m_buddies(),
-	m_pdp_ptr()
+	m_pdp_ptr(),
+	m_tls_tunnel_ptr()
 {
 }
 
@@ -50,13 +52,31 @@ bool RealmConnection::connect()
 	UT_DEBUGMSG(("RealmConnection::connect()\n"));
 	UT_return_val_if_fail(!m_thread_ptr, false);
 	
-	try
-	{
-		asio::ip::tcp::resolver::iterator iterator(m_resolver.resolve(m_query));
+
+	try {
+		// setup our local TLS tunnel to the realm
+		m_tls_tunnel_ptr.reset(new tls_tunnel::ClientProxy(m_address, m_port, m_ca_file, false));
+		asio::thread thread(boost::bind(&tls_tunnel::ClientProxy::run, m_tls_tunnel_ptr.get()));
+
+		// connect to the tunnel
+		asio::ip::tcp::resolver::query query(m_tls_tunnel_ptr->local_address(), boost::lexical_cast<std::string>(m_tls_tunnel_ptr->local_port()));
+		asio::ip::tcp::resolver resolver(m_io_service);
+		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		m_socket.connect(*iterator);
+	}
+	catch (tls_tunnel::Exception& e)
+	{
+		UT_DEBUGMSG(("tls_tunnel exception connecting to realm: %s\n", e.message().c_str()));
+		return false;
+	}
+	catch (asio::system_error& se)
+	{
+		UT_DEBUGMSG(("Error connecting to realm: %s\n", se.what()));
+		return false;
 	}
 	catch (...)
 	{
+		UT_DEBUGMSG(("Error connecting to realm!\n"));
 		return false;
 	}
 	
@@ -92,6 +112,12 @@ void RealmConnection::disconnect()
 		m_thread_ptr->join();
 	}
 	m_thread_ptr.reset();
+
+	if (m_tls_tunnel_ptr)
+	{
+		m_tls_tunnel_ptr->stop();
+		m_tls_tunnel_ptr.reset();
+	}
 }
 
 void RealmConnection::addBuddy(boost::shared_ptr<RealmBuddy> buddy_ptr)
@@ -136,7 +162,7 @@ void RealmConnection::_signal()
 
 bool RealmConnection::_login()
 {
-	UT_DEBUGMSG(("RealmConnection::_asyncWriteProtocolHeader()\n"));
+	UT_DEBUGMSG(("RealmConnection::_login()\n"));
 	
 	// FIXME: make this a combined asio buffer
 	boost::shared_ptr<std::string> header_ptr(new std::string(2*sizeof(UT_uint32) + m_cookie.size(), '\0'));

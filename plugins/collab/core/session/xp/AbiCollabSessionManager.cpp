@@ -73,6 +73,13 @@
 #include <backends/service/xp/ServiceAccountHandler.h>
 #endif
 
+#ifdef ABICOLLAB_HANDLER_SERVICE
+// The TLS tunnel is generic code, but we don't want to include it
+// unconditionally as it drags in gnutls. Therefor we only include it if at 
+// least one backend is enabled that needs TLS support
+#include <backends/xp/tls_tunnel.h>
+#endif
+
 // event includes
 #include <backends/xp/Event.h>
 #include <backends/xp/EventListener.h>
@@ -239,7 +246,8 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	addAccount(pSugarHandler);
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
-	m_regAccountHandlers.push_back(ServiceAccountHandlerConstructor);
+	if (tls_tunnel::tls_tunnel_init())
+		m_regAccountHandlers.push_back(ServiceAccountHandlerConstructor);
 #endif
 	return true;
 }
@@ -247,7 +255,10 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 bool AbiCollabSessionManager::unregisterAccountHandlers(void)
 {
 	// no need to "free/delete" items, as they are just function pointers (ie. basic types)
-	m_regAccountHandlers.clear(); 
+	m_regAccountHandlers.clear();
+#ifdef ABICOLLAB_HANDLER_SERVICE
+	tls_tunnel::tls_tunnel_deinit();
+#endif
 	return true;
 }
 
