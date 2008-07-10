@@ -159,8 +159,6 @@ RealmBuddyPtr RealmConnection::getBuddy(UT_uint8 realm_connection_id)
 			return *it;
 		}		
 	}
-	
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return RealmBuddyPtr();
 }
 

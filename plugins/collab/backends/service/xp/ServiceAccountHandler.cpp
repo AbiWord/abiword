@@ -853,7 +853,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 					{
 						if (ujp->isMaster())
 						{
-							UT_DEBUGMSG(("Received master buddy; we're slave, adding it to our buddy list!\n"));
+							UT_DEBUGMSG(("Received master buddy (id: %d); we're slave, adding it to our buddy list!\n", ujp->getConnectionId()));
 							boost::shared_ptr<RealmBuddy> master_buddy(
 										new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
 							connection.addBuddy(master_buddy);
@@ -873,7 +873,8 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 					boost::shared_ptr<rpv1::UserLeftPacket> ulp =
 							boost::static_pointer_cast<rpv1::UserLeftPacket>(packet);
 					RealmBuddyPtr realm_buddy_ptr = connection.getBuddy(ulp->getConnectionId());
-					UT_return_if_fail(realm_buddy_ptr);
+					if (!realm_buddy_ptr)
+						return; // we don't store slave buddies at the moment, so this happens when a slave disconnects
 					UT_DEBUGMSG(("removing %s buddy with connection id %d from all sessions\n", realm_buddy_ptr->master() ? "master" : "slave", realm_buddy_ptr->realm_connection_id()));
 					pManager->removeBuddy(realm_buddy_ptr.get(), false);
 					connection.removeBuddy(ulp->getConnectionId());
