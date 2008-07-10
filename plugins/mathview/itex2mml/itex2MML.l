@@ -1,11 +1,11 @@
-/*             itex2MML 1.2
- *   itex2MML.l last modified 4/4/2007
+/*             itex2MML 1.3.5
+ *   itex2MML.l last modified 2/29/2008
  */
 
 %{
 %}
 %option noyywrap
-%x MATH ATTRIBUTELIST BBOLD FRAKTUR CALLIGRAPHIC ROMAN PLAINTEXT INT1 INT2 INT3 MATHENV
+%x MATH ATTRIBUTELIST BBOLD FRAKTUR CALLIGRAPHIC ROMAN PLAINTEXT INT1 INT2 INT3 MATHENV SVGENV
 %{
 #include <string.h>
 
@@ -46,6 +46,7 @@ int itex2MML_displaymode = 0;
 
 "$"{1,2} |
 "\\]"           {BEGIN(INITIAL); return ENDMATH;}
+
 
 "^"            return SUP;
 "_"            return SUB; 
@@ -134,6 +135,8 @@ int itex2MML_displaymode = 0;
 
 "+"    {if (itex2MML_rowposn==1) return UNARYPLUS; else {yylval=itex2MML_copy_string("+"); return MO;}}
 
+"\\#" {yylval=itex2MML_copy_string("#"); return MOL;}
+
 ","   |
 ":"   |
 "!"   |
@@ -145,9 +148,11 @@ int itex2MML_displaymode = 0;
 "`"   |
 "*"        {yylval=itex2MML_copy_string(yytext); return MOL;}
 
+"\\prime"  {yylval=itex2MML_copy_string("&prime;"); return MOLL;}
 "'"        {yylval=itex2MML_copy_string("&prime;"); return MOL;}
 "''"     {yylval=itex2MML_copy_string("&Prime;"); return MOL;}
 "'''"  {yylval=itex2MML_copy_string("&#8244;"); return MOL;}
+"''''"  {yylval=itex2MML_copy_string("&#8279;"); return MOL;}
 
 "\\alpha"   |
 "\\beta" |
@@ -326,7 +331,7 @@ int itex2MML_displaymode = 0;
 "\\curvearrowleft"       {yylval=itex2MML_copy_string("&#x293A;"); return MOL;}
 "\\curvearrowbotright"   {yylval=itex2MML_copy_string("&#x293B;"); return MOL;}
 "\\downdownarrows"       {yylval=itex2MML_copy_string("&downdownarrows;"); return MOL;}
-"\\leftleftarrows"       {yylval=itex2MML_copy_string("&leftleftarrow;"); return MOL;}
+"\\leftleftarrows"       {yylval=itex2MML_copy_string("&leftleftarrows;"); return MOL;}
 "\\leftrightarrows"      {yylval=itex2MML_copy_string("&leftrightarrows;"); return MOL;}
 "\\righttoleftarrow"     {yylval=itex2MML_copy_string("&#x27F2;"); return MOL;}
 "\\lefttorightarrow"     {yylval=itex2MML_copy_string("&#x27F3;"); return MOL;}
@@ -458,6 +463,7 @@ int itex2MML_displaymode = 0;
 "\\nsupseteq" |
 "\\propto" |
 "\\equiv" |
+"\\nequiv" |
 "\\frown" |
 "\\triangleright" |
 "\\ncong" |
@@ -494,7 +500,6 @@ int itex2MML_displaymode = 0;
 "\\div" |
 "\\rtimes" |
 "\\bot" |
-"\\prime" |
 "\\therefore" |
 "\\thickapprox" |
 "\\thicksim" |
@@ -554,6 +559,8 @@ int itex2MML_displaymode = 0;
 "\\wp" |
 "\\Re" {yylval=itex2MML_copy2(yytext, ";"); if (yylval != itex2MML_empty_string) yylval[0]='&'; return MI;}
 
+"\\Perp" |
+"\\Vbar" {yylval=itex2MML_copy_string("&Vbar;"); return MOL;}
 "\\Box" |
 "\\square" {yylval=itex2MML_copy_string("&square;"); return MOL;}
 "\\emptyset" |
@@ -636,7 +643,7 @@ int itex2MML_displaymode = 0;
 
 "\\bigodot"    {yylval=itex2MML_copy_string("&bigodot;"); return MOB;}
 "\\bigsqcup"    {yylval=itex2MML_copy_string("&bigsqcup;"); return MOB;}
-"\\bigsuplus"    {yylval=itex2MML_copy_string("&biguplus;"); return MOB;}
+"\\biguplus"    {yylval=itex2MML_copy_string("&biguplus;"); return MOB;}
 
 "\\wedge"       {yylval=itex2MML_copy_string("&wedge;"); return MOL;}
 "\\Wedge"  |
@@ -687,6 +694,7 @@ int itex2MML_displaymode = 0;
 "\\overset"      {return OVER;}
 
 "\\over"         {return TEXOVER;}
+"\\atop"         {return TEXATOP;}
 
 "\\underoverset"  {return UNDEROVER;}
 
@@ -732,6 +740,8 @@ int itex2MML_displaymode = 0;
 
 "\\mathfrak" |
 "\\mathfr"       {BEGIN(FRAKTUR); return FRAK;}
+
+"\\slash"       {return SLASHED;}
 
 "\\mathcal"       {BEGIN(CALLIGRAPHIC); return CAL;}
 
@@ -792,8 +802,10 @@ int itex2MML_displaymode = 0;
 
 "\\href"        {BEGIN(PLAINTEXT); return HREF;}
 
-
+"\\operatorname" |
 "\\mathop"       {BEGIN(PLAINTEXT); return MATHOP;}
+
+"\\includegraphics"(\[[^\]]*\])?\{[^}]*\}	;
 
 "\\"[a-zA-Z]+    {yylval=itex2MML_copy_string(yytext+1); return MOP;}
 
@@ -822,6 +834,12 @@ int itex2MML_displaymode = 0;
 "\{aligned\}" {BEGIN(MATH); return ALIGNED;}
 "\{gathered\}" {BEGIN(MATH); return GATHERED;}
 "\{split\}" {BEGIN(MATH); return ALIGNED;}
+"\{svg\}" {BEGIN(SVGENV); return SVG;}
+}
+
+<SVGENV>{
+"\\end\{svg\}" {BEGIN(MATH); return ENDSVG;}
+[^\\]* {yylval=itex2MML_copy_string(yytext); BEGIN(SVGENV); return XMLSTRING;}
 }
 
 <ROMAN>{
