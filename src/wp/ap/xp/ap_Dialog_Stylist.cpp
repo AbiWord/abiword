@@ -220,6 +220,9 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	//
 	
 	// Right now just putting them all together
+	// Possibly just simplify style afterward?
+	
+	// TODO: Can I also tack on the character props here?
 	std::string sProps;
 	int i=0;
 	const gchar * szName = NULL;
@@ -236,13 +239,20 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	}
 	
 	// Remove trailing semicolon
+	// property string has semicolon delimiters but a trailing semicolon will cause a failure.
 	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';') sProps.resize(sProps.size()-1);
 	
 	//
 	// Create a unique, temporary name/label 
 	//
 	
-	// right now just create a hard-coded style
+	// TODO
+	
+	//
+	// Assemble attrprop array
+	//
+	
+	// right now just create a nearly hard-coded style with the para props
 	const gchar * a[] = {						\
 			PT_NAME_ATTRIBUTE_NAME, "Test",				\
 			PT_LABEL_ATTRIBUTE_NAME, "Label for Test",				\
@@ -256,13 +266,17 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	// Add style to the document
 	//
 	
-	// when we create a name we won't have dupes.
+	// when we create a name we won't have dupes, now they just get ignored.
 	UT_return_val_if_fail(getDoc()->appendStyle(a), false);
 	
 	//
 	// Change style of current [UNIT_OF_TEXT] to the new one.
 	//
 	
+	// TODO
+	
+	// Update stylist since it apparently likes to lag.
+	updateDialog();
 	return true; // if we made it here, we win
 }
 
