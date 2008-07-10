@@ -24,6 +24,33 @@
             <property name="position">2</property>
           </packing>
         </child>
+        <child>
+          <widget class="GtkHBox" id="dialog-settings">
+            <property name="visible">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <widget class="GtkCheckButton" id="btShowAll">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="label" translatable="yes">Show all styles</property>
+                <property name="focus_on_click">False</property>
+                <property name="response_id">0</property>
+                <property name="draw_indicator">True</property>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
         <child internal-child="action_area">
           <widget class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
@@ -39,12 +66,11 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkButton" id="btEdit">
+              <widget class="GtkButton" id="btRedefine">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-edit</property>
-                <property name="use_stock">True</property>
+                <property name="label" translatable="yes">Redefine</property>
                 <property name="response_id">0</property>
               </widget>
               <packing>
@@ -52,13 +78,13 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="btClose">
+              <widget class="GtkButton" id="btEdit">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="label">gtk-close</property>
+                <property name="receives_default">True</property>
+                <property name="label" translatable="yes">gtk-edit</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">-7</property>
+                <property name="response_id">0</property>
               </widget>
               <packing>
                 <property name="position">2</property>
@@ -75,6 +101,19 @@
               </widget>
               <packing>
                 <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="btClose">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="label">gtk-close</property>
+                <property name="use_stock">True</property>
+                <property name="response_id">-7</property>
+              </widget>
+              <packing>
+                <property name="position">4</property>
               </packing>
             </child>
           </widget>

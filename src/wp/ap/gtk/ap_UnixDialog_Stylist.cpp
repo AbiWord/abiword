@@ -146,7 +146,9 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wClose(NULL),
 	  m_wOK(NULL),
 	  m_wNew(NULL),
+      m_wRedefine(NULL),
       m_wEdit(NULL),
+      m_wShowAll(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
@@ -304,12 +306,16 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	}
 	m_wClose = glade_xml_get_widget(xml,"btClose");
 	m_wNew = glade_xml_get_widget(xml,"btNew");
+	m_wRedefine = glade_xml_get_widget(xml,"btRedefine");
 	m_wEdit = glade_xml_get_widget(xml,"btEdit");
+	m_wShowAll = glade_xml_get_widget(xml,"btShowAll");
 
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
 	abiDialogSetTitle(m_windowMain, s.utf8_str());
+	
+	// TODO: Localize btRedefine and btShowAll
 	
 	return m_windowMain;
 }
@@ -434,8 +440,14 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wNew), "clicked", 
 					 G_CALLBACK(s_new_clicked), this);
 	
+//	g_signal_connect(G_OBJECT(m_wRedefine), "clicked", 
+//					 G_CALLBACK(s_redefine_clicked), this);
+	
 	g_signal_connect(G_OBJECT(m_wEdit), "clicked", 
 					 G_CALLBACK(s_edit_clicked), this);
+	
+//	g_signal_connect(G_OBJECT(m_wShowAll), "clicked", 
+//					 G_CALLBACK(s_show_all_clicked), this);
 	
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
