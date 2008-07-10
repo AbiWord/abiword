@@ -280,7 +280,8 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
 			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
-		
+			UT_continue_if_fail(pBuddy);
+
 			gtk_tree_store_append (model, &iter, NULL);
 			gtk_tree_store_set (model, &iter, 
 					DESCRIPTION_COLUMN, pBuddy->getDescription().utf8_str(), 
@@ -294,22 +295,18 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			GtkTreeIter child_iter;
 			for (const DocTreeItem* item = pBuddy->getDocTreeItems(); item; item = item->m_next)
 			{
-				if (item->m_docHandle)
-				{
-					UT_DEBUGMSG(("DocHandle document name: %s\n", item->m_docHandle->getName().utf8_str()));
+				UT_continue_if_fail(item->m_docHandle);
+				UT_DEBUGMSG(("DocHandle document name: %s\n", item->m_docHandle->getName().utf8_str()));
 				
-					// TODO: handle the DocTreeItem type
-					gtk_tree_store_append (model, &child_iter, &iter);
-					gtk_tree_store_set (model, &child_iter, 
-							DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
-							CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
-							DOCHANDLE_COLUMN, item->m_docHandle,
-							BUDDY_COLUMN, pBuddy,
-							VISIBLE_COLUMN, true,
-							-1);
-				}
-				else
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				// TODO: handle the DocTreeItem type
+				gtk_tree_store_append (model, &child_iter, &iter);
+				gtk_tree_store_set (model, &child_iter, 
+						DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
+						CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
+						DOCHANDLE_COLUMN, item->m_docHandle,
+						BUDDY_COLUMN, pBuddy,
+						VISIBLE_COLUMN, true,
+						-1);
 			}
 		}
 	}

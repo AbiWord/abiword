@@ -57,9 +57,14 @@ public:
 	
 	bool								connect();
 	void								disconnect();
-	void								addBuddy(boost::shared_ptr<RealmBuddy> buddy_ptr);
+	bool								isConnected();
+	
+	void								addBuddy(RealmBuddyPtr buddy_ptr);
 	void								removeBuddy(UT_uint8 realm_connection_id);
-	boost::shared_ptr<RealmBuddy>		getBuddy(UT_uint8 realm_connection_id);
+	RealmBuddyPtr						getBuddy(UT_uint8 realm_connection_id);
+	std::vector<RealmBuddyPtr>&			getBuddies()
+		{ return m_buddies; }
+	
 	UT_sint64							doc_id()
 		{ return m_doc_id; }	
 	bool								master()
@@ -109,7 +114,7 @@ private:
 	realm::GrowBuffer					m_buf;
 	SynchronizedQueue<PacketPtr>		m_packet_queue;
 	boost::function<void (RealmConnection&)> m_sig;
-	std::vector<boost::shared_ptr<RealmBuddy> > m_buddies;
+	std::vector<RealmBuddyPtr>			m_buddies;
 
 	boost::shared_ptr<PendingDocumentProperties>
 										m_pdp_ptr;

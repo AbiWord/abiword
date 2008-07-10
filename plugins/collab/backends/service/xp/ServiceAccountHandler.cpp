@@ -413,7 +413,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 		return acs::SOAP_ERROR_GENERIC;
 	}
 	
-	UT_DEBUGMSG(("Slave document loaded successfully\n"));
+	UT_DEBUGMSG(("Document loaded successfully\n"));
 	m_connections.push_back(connection);
 	return acs::SOAP_ERROR_OK;
 }
@@ -483,6 +483,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 // don't allow it to access data from the main thread
 // NOTE: saveDocument can be called from a thread other than our mainloop;
 // Don't let access or modify any data from the mainloop!
+// FIXME FIXME FIXME: we should NOT touch m_connections!!!!
 UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId)
 {
 	UT_DEBUGMSG(("Saving document with session id %s to webservice!\n", sSessionId.utf8_str()));
@@ -538,29 +539,34 @@ void ServiceAccountHandler::signal(const Event& event, const Buddy* pSource)
 	// to list the available documents: ServiceBuddies. They are just fake
 	// buddies however, and can't receive real packets. Only RealmBuddy's
 	// can be sent packets
+
+
+	// Note: there is no real need to pass the PCT_CloseSessionEvent and
+	// PCT_DisjoinSessionEvent signals to the AccountHandler::signal()
+	// function: that one will send all buddies the 'session is closed'
+	// signal. However, on this backend, the abicollab.net realm will 
+	// handle that for us
 	
 	switch (event.getClassType())
 	{
 		case PCT_CloseSessionEvent:
 			{
+				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent, disconnecting the realm connection...\n"));
 				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
-				// we shouldn't receive these events over the wire on this backend
-				UT_return_if_fail(!pSource);
-
-				// close all connections with the event's session id
-				// Note that some or all connections are already closed by other means, but it
-				// doesn't really hurt to check twice
-				for (std::vector<ConnectionPtr>::iterator it = m_connections.begin(); it != m_connections.end(); it++)
-				{
-					ConnectionPtr connection = *it;
-					if (connection->session_id() == cse.getSessionId().utf8_str())
-						connection->disconnect();
-				}
-				
-				// Note: there is no real need to pass this to the AccountHandler::signal()
-				// function: that one will send all buddies the 'session is closed'
-				// signal. However, on this backend, the abicollab.net realm will 
-				// handle that for us
+				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
+				ConnectionPtr connection_ptr = _getConnection(cse.getSessionId().utf8_str());
+				UT_return_if_fail(connection_ptr);
+				connection_ptr->disconnect();
+			}
+			break;
+		case PCT_DisjoinSessionEvent:
+			{
+				UT_DEBUGMSG(("Got a PCT_DisjoinSessionEvent, disconnecting the realm connection...\n"));
+				const DisjoinSessionEvent dse = static_cast<const DisjoinSessionEvent&>(event);
+				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
+				ConnectionPtr connection_ptr = _getConnection(dse.getSessionId().utf8_str());
+				UT_return_if_fail(connection_ptr);
+				connection_ptr->disconnect();
 			}
 			break;
 		case PCT_StartSessionEvent:
@@ -671,7 +677,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 					}
 					else
 						DELETEP(pBuddy);
-					_handlePacket(&((*it).first), pExistingBuddy);
+					_handlePacket(&((*it).first), pExistingBuddy, false);
 				}
 			}
 			break;
@@ -732,88 +738,159 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 
 void ServiceAccountHandler::_handleRealmPacket(RealmConnection& connection)
 {
-	UT_return_if_fail(connection.queue().peek());
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
 
-	rpv1::PacketPtr packet = connection.queue().pop();
-	UT_return_if_fail(packet); // FIXME: disconnect!
-	
-	switch (packet->type())
+	// make sure we have handled _all_ packets in the queue before checking
+	// the disconnected status
+	bool disconnected = !connection.isConnected();
+	_handleMessages(connection);
+
+	if (disconnected)
 	{
-		case rpv1::PACKET_DELIVER:
-			{
-				UT_DEBUGMSG(("Received a 'Deliver' packet!\n"));
-				boost::shared_ptr<rpv1::DeliverPacket> dp =
-						boost::static_pointer_cast<rpv1::DeliverPacket>(packet);					
-				UT_return_if_fail(dp->getMessage());
-				
-				boost::shared_ptr<RealmBuddy> buddy_ptr = 
-						connection.getBuddy(dp->getConnectionId());
-				UT_return_if_fail(buddy_ptr);
-				
-				Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr.get());
-				UT_return_if_fail(pPacket);								
+		UT_DEBUGMSG(("RealmConnection is not connected anymore (this was a %s connection)!\n", connection.master() ? "master" : "slave"));
+		std::vector<RealmBuddyPtr> buddies = connection.getBuddies();
+		for (std::vector<RealmBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
+		{
+			RealmBuddyPtr realm_buddy_ptr = *it;
+			UT_continue_if_fail(realm_buddy_ptr);
+			UT_DEBUGMSG(("Lost connection to buddy with connection id: %d\n", realm_buddy_ptr->realm_connection_id()));
+			pManager->removeBuddy(realm_buddy_ptr.get(), false);
+		}
+		
+		// remove the connection from our connection list
+		_removeConnection(connection.session_id());
+	}
 
-				if (pPacket->getClassType() == PCT_JoinSessionRequestResponseEvent)
-				{
-					UT_DEBUGMSG(("Trapped a JoinSessionRequestResponseEvent!\n"));
-					boost::shared_ptr<PendingDocumentProperties> pdp = connection.getPendingDocProps();
-					UT_return_if_fail(pdp);
+	// check other things here if needed...
+}
 
-					UT_DEBUGMSG(("Joining received document..."));
-					_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr.get(), pdp->pFrame, pdp->pDoc, pdp->filename);
-					DELETEP(pPacket);
-					UT_return_if_fail(pdp->pDlg);
-					pdp->pDlg->close();
-					return;
-				}
-				
-				// let the default handler handle this packet
-				// NOTE: this will delete the packet as well (ugly design)
-				handleMessage(pPacket, buddy_ptr.get());				
-			}
+ConnectionPtr ServiceAccountHandler::_getConnection(const std::string& session_id)
+{
+	for (std::vector<ConnectionPtr>::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		if ((*it)->session_id() == session_id)
+			return *it;
+	}
+}
+
+void ServiceAccountHandler::_removeConnection(const std::string& session_id)
+{
+	UT_DEBUGMSG(("ServiceAccountHandler::_removeConnection()\n"));
+	for (std::vector<ConnectionPtr>::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		ConnectionPtr connection = *it;
+		UT_DEBUGMSG(("looking at connection with session id <%s>, closing session <%s>\n", connection->session_id().c_str(), session_id.c_str()));
+		if (connection->session_id() == session_id)
+		{
+			UT_DEBUGMSG(("connection dropped\n"));
+			m_connections.erase(it);
 			return;
-		case rpv1::PACKET_USERJOINED:
-			{
-				UT_DEBUGMSG(("Received a 'User Joined' packet!\n"));
-				boost::shared_ptr<rpv1::UserJoinedPacket> ujp =
-						boost::static_pointer_cast<rpv1::UserJoinedPacket>(packet);
-				if (connection.master())
-				{
-					UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
-					UT_return_if_fail(!ujp->isMaster());
-					connection.addBuddy(boost::shared_ptr<RealmBuddy>(
-							new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), connection)));
-				}
-				else 
-				{
-					if (ujp->isMaster())
-					{
-						UT_DEBUGMSG(("Received master buddy; we're slave, adding it to our buddy list!\n"));
-						boost::shared_ptr<RealmBuddy> master_buddy(
-									new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), connection));
-						connection.addBuddy(master_buddy);
+		}
+	}
+}
 
-						UT_DEBUGMSG(("Sending join session request to master!\n"));
-						JoinSessionRequestEvent event( connection.session_id().c_str() );
-						send(&event, *master_buddy);
+void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_if_fail(pManager);
+
+	while (connection.queue().peek())
+	{
+		rpv1::PacketPtr packet = connection.queue().pop();
+		UT_continue_if_fail(packet);
+
+		switch (packet->type())
+		{
+			case rpv1::PACKET_DELIVER:
+				{
+					UT_DEBUGMSG(("Received a 'Deliver' packet!\n"));
+					boost::shared_ptr<rpv1::DeliverPacket> dp =
+							boost::static_pointer_cast<rpv1::DeliverPacket>(packet);					
+					UT_return_if_fail(dp->getMessage());
+				
+					boost::shared_ptr<RealmBuddy> buddy_ptr = 
+							connection.getBuddy(dp->getConnectionId());
+					UT_return_if_fail(buddy_ptr);
+				
+					Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr.get());
+					UT_return_if_fail(pPacket);								
+
+					if (pPacket->getClassType() == PCT_JoinSessionRequestResponseEvent)
+					{
+						UT_DEBUGMSG(("Trapped a JoinSessionRequestResponseEvent!\n"));
+						boost::shared_ptr<PendingDocumentProperties> pdp = connection.getPendingDocProps();
+						UT_return_if_fail(pdp);
+
+						UT_DEBUGMSG(("Joining received document..."));
+						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr.get(), pdp->pFrame, pdp->pDoc, pdp->filename);
+						DELETEP(pPacket);
+						UT_return_if_fail(pdp->pDlg);
+						pdp->pDlg->close();
+						continue;
+					}
+				
+					// let the default handler handle this packet
+					// NOTE: this will delete the packet as well (ugly design)
+					handleMessage(pPacket, buddy_ptr.get());				
+				}
+				break;
+			case rpv1::PACKET_USERJOINED:
+				{
+					UT_DEBUGMSG(("Received a 'User Joined' packet!\n"));
+					boost::shared_ptr<rpv1::UserJoinedPacket> ujp =
+							boost::static_pointer_cast<rpv1::UserJoinedPacket>(packet);
+					if (connection.master())
+					{
+						UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
+						UT_return_if_fail(!ujp->isMaster());
+						connection.addBuddy(boost::shared_ptr<RealmBuddy>(
+								new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
 					}
 					else
-						UT_DEBUGMSG(("Received a slave buddy; we're slave; dropping it on the floor for now\n"));
+					{
+						if (ujp->isMaster())
+						{
+							UT_DEBUGMSG(("Received master buddy; we're slave, adding it to our buddy list!\n"));
+							boost::shared_ptr<RealmBuddy> master_buddy(
+										new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
+							connection.addBuddy(master_buddy);
+
+							UT_DEBUGMSG(("Sending join session request to master!\n"));
+							JoinSessionRequestEvent event( connection.session_id().c_str() );
+							send(&event, *master_buddy);
+						}
+						else
+							UT_DEBUGMSG(("Received a slave buddy (id: %d); we're slave; dropping it on the floor for now\n", ujp->getConnectionId()));
+					}
 				}
-			}
-			return;			
-		case rpv1::PACKET_USERLEFT:
-			{
-				UT_DEBUGMSG(("Received a 'User Left' packet!\n"));
-				boost::shared_ptr<rpv1::UserLeftPacket> ulp =
-						boost::static_pointer_cast<rpv1::UserLeftPacket>(packet);			
-				connection.removeBuddy(ulp->getConnectionId());
-			}
-			return;
-		default:
-			UT_DEBUGMSG(("Dropping unrecognized packet on the floor (type: 0x%x)!\n", packet->type()));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
+				break;			
+			case rpv1::PACKET_USERLEFT:
+				{
+					UT_DEBUGMSG(("Received a 'User Left' packet!\n"));
+					boost::shared_ptr<rpv1::UserLeftPacket> ulp =
+							boost::static_pointer_cast<rpv1::UserLeftPacket>(packet);
+					RealmBuddyPtr realm_buddy_ptr = connection.getBuddy(ulp->getConnectionId());
+					UT_return_if_fail(realm_buddy_ptr);
+					UT_DEBUGMSG(("removing %s buddy with connection id %d from all sessions\n", realm_buddy_ptr->master() ? "master" : "slave", realm_buddy_ptr->realm_connection_id()));
+					pManager->removeBuddy(realm_buddy_ptr.get(), false);
+					connection.removeBuddy(ulp->getConnectionId());
+					// if this was the master, then we can close the realm connection
+					if (realm_buddy_ptr->master())
+					{
+						UT_DEBUGMSG(("The master buddy left; disconnecting the realm connection!\n"));
+						connection.disconnect();
+						return;
+					}
+				}
+				break;
+			default:
+				UT_DEBUGMSG(("Dropping unrecognized packet on the floor (type: 0x%x)!\n", packet->type()));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
+		}
 	}
 }
 

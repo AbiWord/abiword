@@ -828,7 +828,7 @@ void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy, bool graceful)
 {
 	UT_return_if_fail(pBuddy);
 	
-	UT_DEBUGMSG(("Dropping buddy %s from all sessions\n", pBuddy->getName().utf8_str()));
+	UT_DEBUGMSG(("Dropping buddy '%s' from all sessions\n", pBuddy->getName().utf8_str()));
 	// TODO: should we send out events for every buddy we drop, or session
 	// we delete?
 	

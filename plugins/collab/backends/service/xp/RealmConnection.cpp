@@ -118,9 +118,18 @@ void RealmConnection::disconnect()
 		m_tls_tunnel_ptr->stop();
 		m_tls_tunnel_ptr.reset();
 	}
+
+	// signal the packet queue, so the listener will be informed of the 
+	// disconnect; this is a bit wacky (design wise), but it works
+	m_packet_queue.signal();
 }
 
-void RealmConnection::addBuddy(boost::shared_ptr<RealmBuddy> buddy_ptr)
+bool RealmConnection::isConnected()
+{
+	return m_socket.is_open();
+}
+
+void RealmConnection::addBuddy(RealmBuddyPtr buddy_ptr)
 {
 	m_buddies.push_back(buddy_ptr);
 }
@@ -140,7 +149,7 @@ void RealmConnection::removeBuddy(UT_uint8 realm_connection_id)
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
-boost::shared_ptr<RealmBuddy> RealmConnection::getBuddy(UT_uint8 realm_connection_id)
+RealmBuddyPtr RealmConnection::getBuddy(UT_uint8 realm_connection_id)
 {
 	for (std::vector<boost::shared_ptr<RealmBuddy> >::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
 	{
@@ -152,7 +161,7 @@ boost::shared_ptr<RealmBuddy> RealmConnection::getBuddy(UT_uint8 realm_connectio
 	}
 	
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	return boost::shared_ptr<RealmBuddy>();
+	return RealmBuddyPtr();
 }
 
 void RealmConnection::_signal()
