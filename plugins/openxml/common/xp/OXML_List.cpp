@@ -164,7 +164,11 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 		std::string txt(delim);
 		const char* search = "%L";
 		size_t index = txt.find(search, 0, 2);
-		txt = txt.replace(index+1, 1, 1, '1'+i);
+		
+		if(index != std::string::npos)
+		{
+			txt = txt.replace(index+1, 1, 1, '1'+i);
+		}
 	
 		const gchar* listType = "bullet";
 		switch(type)
