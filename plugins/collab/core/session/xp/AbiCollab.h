@@ -131,7 +131,7 @@ public:
 	XAP_Frame*							getFrame(void) const
 		{ return m_pFrame; }
 
-	const UT_UTF8String&				getSessionId() const
+	const UT_UTF8String					getSessionId() const
 		{ return m_sId; }
 	bool								isLocallyControlled() const
 		{ return m_pController == NULL; }
