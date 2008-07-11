@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-CLEANFILES = abi_ver.cpp
+CLEANFILES = 
 ALL_LOCAL_DEPS =
 INSTALL_EXEC_LOCAL_DEPS =
 
@@ -36,9 +36,6 @@ bin_PROGRAMS = abiword
 abiword_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
 abiword_SOURCES = abi_ver.cpp UnixMain.cpp
 
-abi_ver.cpp:	@PLUGIN_LIST@
-	cp $(srcdir)/../xp/abi_ver.cpp .
-
 # Hack together a shared library for testing purposes (e.g. olpc).
 # Not using libtool because of the increased binary size, 
 # in fear of Tomas' wrath
@@ -53,11 +50,11 @@ ABIWORD_LIBRARY = libabiword-$(ABIWORD_SERIES).so
 ABIWORD_SODIR = $(shell pwd)
 ABIWORD_DYNBINARY = abiword-dynamic
 
-$(ABIWORD_LIBRARY): $(ABI_LIBS) $(srcdir)/libabiword.cpp abi_ver.cpp
+$(ABIWORD_LIBRARY): $(ABI_LIBS) $(srcdir)/libabiword.cpp $(srcdir)/../xp/abi_ver.cpp
 	$(CXX) -shared -Wl,-soname,$(ABIWORD_LIBRARY) -o $@ 		\
 		$(CPPFLAGS) $(CXXFLAGS) $(INCLUDES)			\
 		-DPACKAGE="\"$(PACKAGE)\""				\
-		abi_ver.cpp						\
+		$(srcdir)/../xp/abi_ver.cpp				\
 		$(srcdir)/libabiword.cpp				\
 		-Wl,--whole-archive $(ABI_LIBS) 			\
 		-Wl,--no-whole-archive $(PLATFORM_LIBS) $(OTHER_LIBS)	\
