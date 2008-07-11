@@ -39,7 +39,7 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 	m_master(master),
 	m_session_id(session_id),
 	m_buf(1024), // always have a reasonable block of free memory available to cut back on the memory allocations a bit,
-	m_packet_queue(boost::bind(&RealmConnection::_signal, this)),
+	m_packet_queue(boost::bind(&RealmConnection::_signal, this)), // TODO: shouldn't this be a shared pointer? Can't we handle signals in this way while this object has been already deleted? - MARCM
 	m_sig(sig),
 	m_buddies(),
 	m_pdp_ptr(),
@@ -51,7 +51,6 @@ bool RealmConnection::connect()
 {
 	UT_DEBUGMSG(("RealmConnection::connect()\n"));
 	UT_return_val_if_fail(!m_thread_ptr, false);
-	
 
 	try {
 		// setup our local TLS tunnel to the realm
@@ -83,7 +82,7 @@ bool RealmConnection::connect()
 	if (!_login())
 	{
 		UT_DEBUGMSG(("RealmConnection login failed!\n"));
-		disconnect();
+		_disconnect();
 		return false;
 	}
 
@@ -98,31 +97,13 @@ bool RealmConnection::connect()
 
 void RealmConnection::disconnect()
 {
-	UT_DEBUGMSG(("RealmConnection::disconnect\n"));
-	
+	UT_DEBUGMSG(("RealmConnection::disconnect()\n"));
 	if (m_socket.is_open())
 	{
 		asio::error_code ac;
 		m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ac);
 		m_socket.close(ac);
 	}
-	
-	if (m_thread_ptr)
-	{
-		m_io_service.stop();
-		m_thread_ptr->join();
-	}
-	m_thread_ptr.reset();
-
-	if (m_tls_tunnel_ptr)
-	{
-		m_tls_tunnel_ptr->stop();
-		m_tls_tunnel_ptr.reset();
-	}
-
-	// signal the packet queue, so the listener will be informed of the 
-	// disconnect; this is a bit wacky (design wise), but it works
-	m_packet_queue.signal();
 }
 
 bool RealmConnection::isConnected()
@@ -161,6 +142,35 @@ RealmBuddyPtr RealmConnection::getBuddy(UT_uint8 realm_connection_id)
 		}		
 	}
 	return RealmBuddyPtr();
+}
+
+void RealmConnection::_disconnect()
+{
+	UT_DEBUGMSG(("RealmConnection::_disconnect()\n"));
+
+	if (m_socket.is_open())
+	{
+		asio::error_code ac;
+		m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ac);
+		m_socket.close(ac);
+	}
+	
+	if (m_thread_ptr)
+	{
+		m_io_service.stop();
+		m_thread_ptr->join();
+		m_thread_ptr.reset();
+	}
+
+	if (m_tls_tunnel_ptr)
+	{
+		m_tls_tunnel_ptr->stop();
+		m_tls_tunnel_ptr.reset();
+	}
+
+	// signal the packet queue, so the listener will be informed of the 
+	// disconnect; this is a bit wacky (design wise), but it works
+	m_packet_queue.signal();
 }
 
 void RealmConnection::_signal()
@@ -243,7 +253,7 @@ void RealmConnection::_message(const asio::error_code& e, std::size_t bytes_tran
 	if (e)
 	{
 		UT_DEBUGMSG(("Error reading message: %s\n", e.message().c_str()));
-		disconnect();		
+		_disconnect();		
 		return;
 	}	
 	UT_DEBUGMSG(("Constructing packet of type: 0x%x\n", (*msg_ptr)[0]));
@@ -290,7 +300,7 @@ void RealmConnection::_complete(const asio::error_code& e, std::size_t bytes_tra
 	if (e)
 	{
 		UT_DEBUGMSG(("Error reading message: %s\n", e.message().c_str()));
-		disconnect();		
+		_disconnect();		
 		return;
 	}	
 	m_buf.commit(bytes_transferred);

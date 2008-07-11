@@ -90,6 +90,7 @@ public:
 	
 	
 private:
+	void								_disconnect();
 	void								_signal();
 	bool								_login();
 	void								_receive();
