@@ -108,7 +108,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			const PP_AttrProp* pAP = NULL;
 			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
 
-			OXML_Element_List* element_list = new OXML_Element_List("");
+			OXML_Element_List* element_list = new OXML_Element_List("", paragraph);
 			OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
 
 			if(bHaveProp && pAP)
@@ -493,6 +493,7 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 		list->setDelim(pList->getDelim());
 		list->setDecimal(pList->getDecimal());
 		list->setStartValue(pList->getStartValue32());
+		list->setType(pList->getType());
 		
 		err = document->addList(shared_list);
 		if(err != UT_OK)

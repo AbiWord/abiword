@@ -90,6 +90,12 @@ public:
 	UT_Error finishCellBorderProperties(int target);
 	UT_Error startListProperties(int target);
 	UT_Error finishListProperties(int target);
+	UT_Error startAbstractNumbering(int target, UT_uint32 id);
+	UT_Error finishAbstractNumbering(int target);
+	UT_Error startNumbering(int target, UT_uint32 id);
+	UT_Error finishNumbering(int target);
+	UT_Error startNumberingLevel(int target, UT_uint32 level);
+	UT_Error finishNumberingLevel(int target);
 	UT_Error startRow();
 	UT_Error finishRow();
 	UT_Error startCell();
@@ -125,6 +131,12 @@ public:
 	UT_Error setColumnWidth(int target, const char* width);
 	UT_Error setListLevel(int target, const char* level);
 	UT_Error setListFormat(int target, const char* format);
+	UT_Error setListStartValue(int target, UT_uint32 startValue);
+	UT_Error setListLevelText(int target, const char* text);
+	UT_Error setListType(int target, const char* type);
+	UT_Error setAbstractNumberingId(int target, UT_uint32 id);
+	UT_Error setNumberingFormat(int target, const char* format);
+	UT_Error setMultilevelType(int target, const char* type);
 
 protected:
     virtual UT_Error _writeDocument(void);

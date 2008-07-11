@@ -348,6 +348,78 @@ UT_Error IE_Exp_OpenXML::finishListProperties(int target)
 }
 
 /**
+ * Starts exporting the OXML_List abstract numbering
+ */
+UT_Error IE_Exp_OpenXML::startAbstractNumbering(int target, UT_uint32 id)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", id);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+
+	std::string str("<w:abstractNum w:abstractNumId=\"");
+	str += buffer;
+	str += "\">";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_List abstract numbering
+ */
+UT_Error IE_Exp_OpenXML::finishAbstractNumbering(int target)
+{
+	return writeTargetStream(target, "</w:abstractNum>");
+}
+
+/**
+ * Starts exporting the OXML_List numbering
+ */
+UT_Error IE_Exp_OpenXML::startNumbering(int target, UT_uint32 id)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", id);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+
+	std::string str("<w:num w:numId=\"");
+	str += buffer;
+	str += "\">";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_List numbering definition
+ */
+UT_Error IE_Exp_OpenXML::finishNumbering(int target)
+{
+	return writeTargetStream(target, "</w:num>");
+}
+
+/**
+ * Starts exporting the OXML_List abstract numbering level
+ */
+UT_Error IE_Exp_OpenXML::startNumberingLevel(int target, UT_uint32 id)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", id);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+
+	std::string str("<w:lvl w:ilvl=\"");
+	str += buffer;
+	str += "\">";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_List abstract numbering level
+ */
+UT_Error IE_Exp_OpenXML::finishNumberingLevel(int target)
+{
+	return writeTargetStream(target, "</w:lvl>");
+}
+
+/**
  * Starts exporting the OXML_Element_Row object
  */
 UT_Error IE_Exp_OpenXML::startRow()
@@ -837,6 +909,85 @@ UT_Error IE_Exp_OpenXML::setListFormat(int target, const char* format)
 }
 
 /**
+ * Sets list type
+ */
+UT_Error IE_Exp_OpenXML::setListType(int target, const char* type)
+{
+	std::string str("<w:numFmt w:val=\"");
+	str += type;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets the start value of the list
+ */
+UT_Error IE_Exp_OpenXML::setListStartValue(int target, UT_uint32 startValue)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", startValue);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+
+	std::string str("<w:start w:val=\"");
+	str += buffer;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets list level text
+ */
+UT_Error IE_Exp_OpenXML::setListLevelText(int target, const char* text)
+{
+	UT_UTF8String sEscText = text;
+	sEscText.escapeXML();
+
+	std::string str("<w:lvlText w:val=\"");
+	str += sEscText.utf8_str();
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets abstract numbering id
+ */
+UT_Error IE_Exp_OpenXML::setAbstractNumberingId(int target, UT_uint32 id)
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", id);
+	if(len <= 0)
+		return UT_IE_COULDNOTWRITE;
+
+	std::string str("<w:abstractNumId w:val=\"");
+	str += buffer;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets the numbering format of the list
+ */
+UT_Error IE_Exp_OpenXML::setNumberingFormat(int target, const char* format)
+{
+	std::string str("<w:numFmt w:val=\"");
+	str += format;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets the multilevel type of the list
+ */
+UT_Error IE_Exp_OpenXML::setMultilevelType(int target, const char* type)
+{
+	std::string str("<w:multiLevelType w:val=\"");
+	str += type;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
@@ -975,7 +1126,9 @@ UT_Error IE_Exp_OpenXML::startNumbering()
 		return err;
 	}	
 
-	std::string str("<w:numbering>");
+	std::string str("<w:numbering ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
+	str += ">";
 
 	return writeTargetStream(TARGET_NUMBERING, str.c_str());
 }
@@ -1118,9 +1271,10 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>";
 	str += "<Override PartName=\"/word/styles.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>";
+	str += "<Override PartName=\"/word/numbering.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/>";
 	
 	return writeTargetStream(TARGET_CONTENT, str.c_str());
-
 }
 
 /**

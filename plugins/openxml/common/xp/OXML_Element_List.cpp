@@ -28,8 +28,8 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_List::OXML_Element_List(std::string id) : 
-	OXML_Element(id, LST_TAG, LIST)
+OXML_Element_List::OXML_Element_List(std::string id, OXML_Element_Paragraph* paragraph) : 
+	OXML_Element(id, LST_TAG, LIST), parent(paragraph)
 {
 }
 
@@ -54,11 +54,21 @@ UT_Error OXML_Element_List::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setListLevel(TARGET_DOCUMENT, "0");
+	const gchar* listLevel = parent->getListLevel();
+	if(!listLevel)
+	{
+		listLevel = "0";
+	}
+	err = exporter->setListLevel(TARGET_DOCUMENT, listLevel);
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->setListFormat(TARGET_DOCUMENT, "1");
+	const gchar* listId = parent->getListId();
+	if(!listId)
+	{
+		listId = "1";
+	}
+	err = exporter->setListFormat(TARGET_DOCUMENT, listId);
 	if(err != UT_OK)
 		return err;
 

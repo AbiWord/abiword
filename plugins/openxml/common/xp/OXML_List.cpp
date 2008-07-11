@@ -42,7 +42,8 @@ OXML_List::OXML_List() :
 	level(0),
 	startValue(0),
 	delim(NULL),
-	decimal(NULL)
+	decimal(NULL),
+	type(NUMBERED_LIST)
 {
 
 }
@@ -81,6 +82,11 @@ void OXML_List::setDecimal(const gchar* dcml)
 	decimal = dcml;
 }
 
+void OXML_List::setType(FL_ListType typ)
+{
+	type = typ;
+}
+
 UT_uint32 OXML_List::getId()
 {
 	return id;
@@ -111,17 +117,185 @@ const gchar* OXML_List::getDecimal()
 	return decimal;
 }
 
-UT_Error OXML_List::serialize(IE_Exp_OpenXML* /*exporter*/)
+FL_ListType OXML_List::getType()
 {
-	UT_DEBUGMSG(("Serializing List Started\n"));
-	UT_DEBUGMSG(("Id=%d\n", id));
-	UT_DEBUGMSG(("ParentId=%d\n", parentId));
-	UT_DEBUGMSG(("Level=%d\n", level));
-	UT_DEBUGMSG(("StartValue=%d\n", startValue));
-	UT_DEBUGMSG(("Delim=%s\n", delim));
-	UT_DEBUGMSG(("Decimal=%s\n", decimal));
-	UT_DEBUGMSG(("Serializing List Finished\n"));
+	return type;
+}
+
+/**
+ * Serializes the abstract numbering definitions. Numbering definitions are serialized
+ * in serializeNumbering function.
+ */
+UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
+{
+	UT_Error err = UT_OK;
+
+	err = exporter->startAbstractNumbering(TARGET_NUMBERING, id);
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: Can't start Abstract Numbering\n"));
+		return err;
+	}
+
+	err = exporter->setMultilevelType(TARGET_NUMBERING, "hybridMultilevel");
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: Can't set Multilevel Type\n"));
+		return err;
+	}
+
+	int i;
+	for(i=0; i<=8; i++)
+	{
+		err = exporter->startNumberingLevel(TARGET_NUMBERING, i); //level
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't start Numbering Level\n"));
+			return err;
+		}
+	
+		err = exporter->setListStartValue(TARGET_NUMBERING, startValue);
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't start List Start Value\n"));
+			return err;
+		}
+	
+		std::string txt(delim);
+		const char* search = "%L";
+		size_t index = txt.find(search, 0, 2);
+		txt = txt.replace(index+1, 1, 1, '1'+i);
+	
+		const gchar* listType = "bullet";
+		switch(type)
+		{
+			case NUMBERED_LIST:
+				if((i % 3) == 1){
+					listType = "decimal";
+				}
+				else if((i % 3) == 2){
+					listType = "lowerLetter";
+				}
+				else{
+					listType = "lowerRoman";
+				}
+				break;
+			
+			case UPPERCASE_LIST:
+				listType = "upperLetter";
+				break;
+	
+			case LOWERCASE_LIST:
+				listType = "lowerLetter";
+				break;
+	
+			case UPPERROMAN_LIST:
+				listType = "upperRoman";
+				break;
+	
+			case LOWERROMAN_LIST:
+				listType = "lowerRoman";
+				break;
+	
+			case ARABICNUMBERED_LIST:
+				listType = "arabicAbjad";
+				break;
+	
+			case HEBREW_LIST:
+				listType = "hebrew1";
+				break;
+	
+			//the rest is bullet
+			case DASHED_LIST:
+				txt = DASH;
+				break;
+			case SQUARE_LIST:
+				txt = SQUARE;
+				break;
+			case TRIANGLE_LIST:
+				txt = TRIANGLE;
+				break;
+			case DIAMOND_LIST:
+				txt = DIAMOND;
+				break;
+			case STAR_LIST:
+				txt = STAR;
+				break;
+			case IMPLIES_LIST:
+				txt = IMPLIES;
+				break;
+			case BOX_LIST:
+				txt = BOX;
+				break;
+			case HAND_LIST:
+				txt = HAND;
+				break;
+			case HEART_LIST:
+				txt = HEART;
+				break;
+			case BULLETED_LIST:
+				txt = BULLET;
+				break;
+			default:
+				txt = BULLET;
+				break;
+		}
+	
+		err = exporter->setListType(TARGET_NUMBERING, listType);
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't set List Type\n"));
+			return err;
+		}
+	
+		err = exporter->setListLevelText(TARGET_NUMBERING, txt.c_str());
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't set List Level Text\n"));
+			return err;
+		}
+	
+		err = exporter->finishNumberingLevel(TARGET_NUMBERING);
+		if(err != UT_OK)
+		{
+			UT_DEBUGMSG(("FRT: Can't finish Numbering Level\n"));
+			return err;
+		}	
+	}	
+	
+	err = exporter->finishAbstractNumbering(TARGET_NUMBERING);
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: Can't finish Abstract Numbering\n"));
+		return err;
+	}
+
 	return UT_OK;
+}
+
+/**
+ * Serializes the numbering definitions. Numbering definitions have to 
+ * come after all the abstract numbering definitions. 
+ */
+UT_Error OXML_List::serializeNumbering(IE_Exp_OpenXML* exporter)
+{
+	UT_Error err = UT_OK;
+
+	err = exporter->startNumbering(TARGET_NUMBERING, id);
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: Can't start Numbering\n"));
+		return err;
+	}
+
+	err = exporter->setAbstractNumberingId(TARGET_NUMBERING, id);
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: Can't set Abstract Numbering Id\n"));
+		return err;
+	}
+
+	return exporter->finishNumbering(TARGET_NUMBERING);
 }
 
 UT_Error OXML_List::addToPT(PD_Document * /*pDocument*/)

@@ -30,10 +30,23 @@
 // AbiWord includes
 #include <ut_types.h>
 #include <pd_Document.h>
+#include <fl_AutoNum.h>
 
 // External includes
 #include <string>
 #include <boost/shared_ptr.hpp>
+
+//bullet characters
+#define BULLET "&#8226;"
+#define SQUARE "&#9632;"
+#define TRIANGLE "&#9654;"
+#define DIAMOND "&#x25C6;"
+#define BOX "&#9633;"
+#define HAND "&#9758;"
+#define HEART "&#9829;"
+#define STAR "*"
+#define IMPLIES "->"
+#define DASH "-"
 
 class IE_Exp_OpenXML;
 
@@ -50,6 +63,7 @@ public:
 	virtual void setDelim(const gchar* delim);
 	virtual void setDecimal(const gchar* decimal);
 	virtual void setStartValue(UT_uint32 id);
+	virtual void setType(FL_ListType type);
 
 	UT_uint32 getId();
 	UT_uint32 getParentId();
@@ -57,8 +71,10 @@ public:
 	UT_uint32 getStartValue();
 	const gchar* getDelim();
 	const gchar* getDecimal();
+	FL_ListType getType();
 	
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
+	UT_Error serializeNumbering(IE_Exp_OpenXML* exporter);
 	UT_Error addToPT(PD_Document * pDocument);
 
 private:
@@ -68,6 +84,7 @@ private:
 	UT_uint32 startValue;
 	const gchar* delim;
 	const gchar* decimal;
+	FL_ListType type;
 };
 
 typedef boost::shared_ptr<OXML_List> OXML_SharedList;

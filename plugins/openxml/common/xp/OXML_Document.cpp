@@ -250,9 +250,18 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 			return ret;
 	}
 
+	//serialize abstract numbering definitions
 	OXML_ListMap::iterator it2;
 	for (it2 = m_lists_by_id.begin(); it2 != m_lists_by_id.end(); it2++) {
 		ret = it2->second->serialize(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize actual numbering definitions
+	OXML_ListMap::iterator it3;
+	for (it3 = m_lists_by_id.begin(); it3 != m_lists_by_id.end(); it3++) {
+		ret = it3->second->serializeNumbering(exporter);
 		if (ret != UT_OK)
 			return ret;
 	}

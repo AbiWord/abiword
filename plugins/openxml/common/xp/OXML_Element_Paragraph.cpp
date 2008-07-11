@@ -192,3 +192,29 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 	//instead of generic OXML_Element object for representing a paragraph
 	return OXML_Element::addToPT(pDocument);
 }
+
+const gchar* OXML_Element_Paragraph::getListLevel()
+{
+	UT_Error err = UT_OK;
+	const gchar* szValue;
+
+	err = getAttribute("level", szValue);
+	if(err != UT_OK)
+	{
+		return NULL;
+	}
+	return szValue;
+}
+
+const gchar* OXML_Element_Paragraph::getListId()
+{
+	UT_Error err = UT_OK;
+	const gchar* szValue;
+
+	err = getAttribute("listid", szValue);
+	if(err != UT_OK)
+	{
+		return NULL;
+	}
+	return szValue;
+}

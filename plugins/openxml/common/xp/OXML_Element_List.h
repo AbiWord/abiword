@@ -26,16 +26,19 @@
 // Internal includes
 #include <OXML_Element.h>
 #include <ie_exp_OpenXML.h>
+#include <OXML_Element_Paragraph.h>
 
 // AbiWord includes
 #include <ut_types.h>
 #include <ut_string.h>
 #include <pd_Document.h>
 
+class OXML_Element_Paragraph;
+
 class OXML_Element_List : public OXML_Element
 {
 public:
-	OXML_Element_List(std::string id);
+	OXML_Element_List(std::string id, OXML_Element_Paragraph* paragraph);
 	virtual ~OXML_Element_List();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
@@ -43,6 +46,7 @@ public:
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	OXML_Element_Paragraph* parent;
 };
 
 #endif //_OXML_ELEMENT_LIST_H_
