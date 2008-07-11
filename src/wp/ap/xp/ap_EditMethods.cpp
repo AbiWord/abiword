@@ -1395,6 +1395,20 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	bRunning = false;
 }
 
+/*!
+ * Look to see if the save interceptor is loaded. If it is use that for fileSave.
+ */
+static bool bFileSaveAbiCollabIfNeeded(AV_View*   pAV_View,   EV_EditMethodCallData *	pCallData)
+{
+#define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
+	const EV_EditMethod * pEM = ev_EditMethod_lookup (SAVE_INTERCEPTOR_EM);
+	if(pEM)
+	{
+		return pEM->Fn(pAV_View,pCallData);
+	}
+	return EX(fileSave);
+}
+
 #ifdef ENABLE_SPELL
 Defun1(toggleAutoSpell)
 {
@@ -2564,8 +2578,10 @@ Defun(saveImmediate)
 	// can only save without prompting if filename already known
 
 	if (!pFrame->getFilename())
-   		return EX(fileSaveAs);
-
+	{
+		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+		//   		return EX(fileSaveAs);
+	}
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
 	
@@ -2621,15 +2637,19 @@ Defun(fileSave)
 	// can only save without prompting if filename already known
 
 	if (!pFrame->getFilename())
-   		return EX(fileSaveAs);
-
+	{
+		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+		//   		return EX(fileSaveAs);
+	}
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
 	
 	// if it has a problematic extension save as instead
 	if (errSaved == UT_EXTENSIONERROR)
-		return EX(fileSaveAs);
-
+	{
+		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+			//		return EX(fileSaveAs);
+	}
 	if (errSaved)
 	{
 		// throw up a dialog
@@ -3611,7 +3631,8 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		{
 		case XAP_Dialog_MessageBox::a_YES:				// save it first
 		{
-			bool bRet = EX(fileSave);
+			bool bRet = bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+			//			bool bRet = EX(fileSave);
 			if (!bRet)								// didn't successfully save,
 				return false;					//	  so don't close
 		}
