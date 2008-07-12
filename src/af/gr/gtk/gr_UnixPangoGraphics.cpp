@@ -133,6 +133,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	GR_UnixPangoRenderInfo(GR_ScriptType t):
 		GR_RenderInfo(t),
 		m_pGlyphs(NULL),
+		m_pScaledGlyphs(NULL),
 		m_pLogOffsets(NULL),
 		m_pJustify(NULL),
 		m_iZoom(0),
@@ -149,6 +150,8 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		delete [] m_pJustify; delete [] m_pLogOffsets;
 		if(m_pGlyphs)
 			pango_glyph_string_free(m_pGlyphs);
+		if(m_pScaledGlyphs)
+			pango_glyph_string_free(m_pScaledGlyphs);
 		s_iInstanceCount--;
 
 		if(!s_iInstanceCount)
@@ -183,6 +186,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	    }
 
 	PangoGlyphString* m_pGlyphs;
+	PangoGlyphString* m_pScaledGlyphs;
 	int *             m_pLogOffsets;
 	int *             m_pJustify;
 	UT_uint32         m_iZoom;
@@ -233,10 +237,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
+	 m_pLayoutFontMap(NULL),
+	 m_pLayoutContext(NULL),
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_pAdjustedPangoFont(NULL),
+	 m_pAdjustedLayoutPangoFont(NULL),
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
@@ -258,10 +265,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
+	 m_pLayoutFontMap(NULL),
+	 m_pLayoutContext(NULL),
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_pAdjustedPangoFont(NULL),
+	 m_pAdjustedLayoutPangoFont(NULL),
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
@@ -285,6 +295,10 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	{
 		g_object_unref(m_pAdjustedPangoFont);
 	}
+	if(m_pAdjustedLayoutPangoFont!= NULL)
+	{
+		g_object_unref(m_pAdjustedLayoutPangoFont);
+	}
 	if (m_pContext != NULL)
 	{
 		g_object_unref(m_pContext);
@@ -295,6 +309,8 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
+	g_object_unref(m_pLayoutFontMap);
+	g_object_unref(m_pLayoutContext);
 
 	if (m_pXftDraw)
 		g_free(m_pXftDraw);
@@ -448,18 +464,21 @@ void GR_UnixPangoGraphics::init()
 						 m_iDeviceResolution));
 			
 		}
-#ifdef HAVE_PANGOFT2
 	else
 	{
-		m_iDeviceResolution = 72;
-		m_pFontMap = pango_ft2_font_map_new ();
-		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
-										  m_iDeviceResolution,
-										  m_iDeviceResolution);	
-		m_pContext = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap));
+		//
+		m_iDeviceResolution = 72.;
+		m_pFontMap = pango_cairo_font_map_new ();
+		pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap), 
+											(double) m_iDeviceResolution);	
+		m_pContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap));
 		m_bOwnsFontMap = true;
 	}
-#endif
+	m_pLayoutFontMap = pango_cairo_font_map_new ();
+	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
+										(double) getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n",	m_pLayoutFontMap,	m_pLayoutContext));
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -1053,7 +1072,14 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_pGlyphs = NULL;
 	}
 	
+	if(RI->m_pScaledGlyphs)
+	{
+		pango_glyph_string_free(RI->m_pScaledGlyphs);
+		RI->m_pScaledGlyphs = NULL;
+	}
+	
 	RI->m_pGlyphs = pango_glyph_string_new();
+	RI->m_pScaledGlyphs = pango_glyph_string_new();
 
 	/*
 	 * We want to do the shaping on a font at it's actual point size, so we
@@ -1090,7 +1116,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	UT_return_val_if_fail(pfd, false);
-	PangoFont * pf = pango_context_load_font(getContext(), pfd);
+	PangoFont * pf = pango_context_load_font(getLayoutContext(), pfd);
 	pango_font_description_free(pfd);
 	
 	pItem->m_pi->analysis.font = pf;
@@ -1100,6 +1126,8 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pGlyphs);
+	pango_shape(utf8.utf8_str(), utf8.byteLength(),
+				&(pItem->m_pi->analysis), RI->m_pScaledGlyphs);
 
 	if (pPangoFontOrig)
 		pItem->m_pi->analysis.font = pPangoFontOrig;
@@ -1143,7 +1171,13 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) RI.m_pFont;
 	UT_return_val_if_fail( pFont, 0 );
 	
-	PangoFont * pf = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
+	//
+	// Actually want the layout font here
+	//
+	PangoFont * pf = _adjustedLayoutPangoFont(pFont, pItem->m_pi->analysis.font);
+	PangoFont * pfa = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
+	
+	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf,pfa));
 	UT_return_val_if_fail( pf, 0 );
 
 	UT_sint32 iStart = RI.m_iOffset;
@@ -1229,7 +1263,11 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 	}
 
 	UT_ASSERT_HARMLESS( iOffsetStart >= 0 );
-	
+
+	PangoFontDescription * pfd = pango_font_describe (pf);
+	int isize = pango_font_description_get_size(pfd);
+	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n",isize));
+
 	if(iOffsetEnd < 0 && iDir == UT_BIDI_LTR)
 	{
 		// to the end
@@ -1254,7 +1292,7 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 	xxx_UT_DEBUGMSG(("::getTextWidth start %d, end %d, w %d, x %d\n",
 				 iOffsetStart, iOffsetEnd, LR.width, LR.x));
 
-	return ptlu(LR.width + LR.x);
+	return ptlunz(LR.width + LR.x);
 }
 
 
@@ -1279,7 +1317,7 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 }
 
 /*
- * This is used to get PangoFont that is correct for present zoom level.
+ * This is used to get device zoomed PangoFont that is correct for present zoom level.
  * pFont is the font that we are supposed to be using (the user-selected font)
  * pf is the PangoFont that we are actually using (possibly a different,
  * substituted font).
@@ -1306,23 +1344,87 @@ PangoFont *  GR_UnixPangoGraphics::_adjustedPangoFont (GR_UnixPangoFont * pFont,
 	PangoFontDescription * pfd = pango_font_describe (pf);
 
 	double dSize = pFont->getPointSize ();
-	dSize =
-		(gint)(dSize*(double)PANGO_SCALE *(double)getZoomPercentage() / 100.0);
-	
-	pango_font_description_set_size (pfd, (gint)dSize);
 
 	/* We cache this font to avoid all this huha if we can */
+	if (m_pAdjustedLayoutPangoFont) 
+	{
+		g_object_unref(m_pAdjustedLayoutPangoFont);
+	}
 	if (m_pAdjustedPangoFont) 
 	{
 		g_object_unref(m_pAdjustedPangoFont);
 	}
-	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
+	pango_font_description_set_size (pfd, (gint)dSize * PANGO_SCALE);
+	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
 	m_pAdjustedPangoFontSource = pFont;
+
+	dSize =
+		(gint)(dSize*(double)PANGO_SCALE *(double)getZoomPercentage() / 100.0);
+	pango_font_description_set_size (pfd, (gint)dSize);
+	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
 	m_iAdjustedPangoFontZoom = getZoomPercentage();
 	
 	pango_font_description_free(pfd);
 	
 	return m_pAdjustedPangoFont;
+}
+
+
+/*
+ * This is used to get Layout PangoFont that is correct for present zoom level.
+ * pFont is the font that we are supposed to be using (the user-selected font)
+ * pf is the PangoFont that we are actually using (possibly a different,
+ * substituted font).
+ */
+PangoFont *  GR_UnixPangoGraphics::_adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf)
+{
+	UT_return_val_if_fail(pFont, NULL);
+	
+	if (!pf)
+		{
+			xxx_UT_DEBUGMSG(("Getting Layout font \n"));
+			return pFont->getPangoLayoutFont();
+		}
+	/* See if this is not the font we have currently cached */
+	if (pFont == m_pAdjustedPangoFontSource &&
+		m_iAdjustedPangoFontZoom == getZoomPercentage())
+	{
+		return m_pAdjustedLayoutPangoFont;
+	}
+
+	/*
+	 * When Pango is doing font substitution for us, the substitute font
+	 * we are getting always has size 12pt, so we have to use the size of
+	 * our own font to fix this.
+	 */
+	PangoFontDescription * pfd = pango_font_describe (pf);
+
+	double dSize = pFont->getPointSize()*(double)PANGO_SCALE;
+   
+	xxx_UT_DEBUGMSG(("Setting adjustedLayout point size %f \n",dSize));
+	pango_font_description_set_size (pfd, (gint)dSize);
+
+	/* We cache this font to avoid all this huha if we can */
+	if (m_pAdjustedLayoutPangoFont) 
+	{
+		g_object_unref(m_pAdjustedLayoutPangoFont);
+	}
+	if (m_pAdjustedPangoFont )
+	{
+		g_object_unref(m_pAdjustedPangoFont);
+	}
+	m_pAdjustedLayoutPangoFont = pango_context_load_font(getLayoutContext(), pfd);
+	m_pAdjustedPangoFontSource = pFont;
+
+	dSize =
+		(gint)(dSize* (double)getZoomPercentage() / 100.0);
+	pango_font_description_set_size (pfd, (gint)dSize);
+	m_pAdjustedPangoFont = pango_context_load_font(getContext(), pfd);
+	m_iAdjustedPangoFontZoom = getZoomPercentage();
+	
+	pango_font_description_free(pfd);
+	
+	return m_pAdjustedLayoutPangoFont;
 }
 
 
@@ -1342,6 +1444,9 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
+	//
+	// Actually want the zoomed device font here
+	//
 	PangoFont * pf = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
 
 	xxx_UT_DEBUGMSG(("Pango renderChars: xoff %d yoff %d\n",
@@ -1350,14 +1455,15 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
+	UT_return_if_fail(m_pXftDraw && RI.m_pScaledGlyphs);
 
 	// TODO -- test here for the endpoint as well
 	if(RI.m_iOffset == 0 &&
 	   (RI.m_iLength == (UT_sint32)RI.m_iCharCount || !RI.m_iCharCount))
 	{
+		xxx_UT_DEBUGMSG(("Doing XFT Render now.\n")); 
 		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 RI.m_pGlyphs, xoff, yoff);
+						 RI.m_pScaledGlyphs, xoff, yoff);
 	}
 	else
 	{
@@ -1382,7 +1488,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		{
 			// it seems the iterator run out on us
 			// this should probably not happen
-			UT_DEBUGMSG(("gr_UnixPangoGraphics::renderChars: iterator too short\n"));
+			xxx_UT_DEBUGMSG(("gr_UnixPangoGraphics::renderChars: iterator too short\n"));
 			return;
 		}
 		
@@ -1411,12 +1517,12 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		UT_sint32 iGlyphsEnd = -1;
 		
 		i = 0;
-		while(i < (UT_uint32)RI.m_pGlyphs->num_glyphs)
+		while(i < (UT_uint32)RI.m_pScaledGlyphs->num_glyphs)
 		{
-			if(iGlyphsStart < 0 && RI.m_pGlyphs->log_clusters[i] == iOffsetStart)
+			if(iGlyphsStart < 0 && RI.m_pScaledGlyphs->log_clusters[i] == iOffsetStart)
 				iGlyphsStart = i;
 
-			if(RI.m_pGlyphs->log_clusters[i] == iOffsetEnd)
+			if(RI.m_pScaledGlyphs->log_clusters[i] == iOffsetEnd)
 			{
 				iGlyphsEnd = i;
 				break;
@@ -1432,7 +1538,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 					 iOffsetStart, iOffsetEnd));
 		
 		gs.num_glyphs = iGlyphsEnd - iGlyphsStart + 1; // including the last glyph
-		gs.glyphs = RI.m_pGlyphs->glyphs + iGlyphsStart;
+		gs.glyphs = RI.m_pScaledGlyphs->glyphs + iGlyphsStart;
 		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
 		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
@@ -1444,39 +1550,26 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 void GR_UnixPangoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
 {
 	UT_uint32 iZoom = getZoomPercentage();
-	if(RI.m_iZoom == iZoom)
-		return;
 
+	xxx_UT_DEBUGMSG(("_scaleCharacterMetrics... \n"));
 	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
 	{
-		RI.m_pGlyphs->glyphs[i].geometry.x_offset =
-			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.x_offset *
-				  (double)iZoom / (double)RI.m_iZoom + 0.5) ;
+		RI.m_pScaledGlyphs->glyphs[i].geometry.x_offset =
+			_tduX(RI.m_pGlyphs->glyphs[i].geometry.x_offset);
 
-		RI.m_pGlyphs->glyphs[i].geometry.y_offset =
-			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.y_offset *
-				  (double)iZoom / (double)RI.m_iZoom  + 0.5);
 
-		RI.m_pGlyphs->glyphs[i].geometry.width =
-			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.width *
-				  (double)iZoom / (double)RI.m_iZoom + 0.5);
+		RI.m_pScaledGlyphs->glyphs[i].geometry.y_offset = _tduY(RI.m_pGlyphs->glyphs[i].geometry.y_offset);
+
+		RI.m_pScaledGlyphs->glyphs[i].geometry.width =_tduX(RI.m_pGlyphs->glyphs[i].geometry.width );
 	}
-
 	RI.m_iZoom = iZoom;
 }
 
 
 void GR_UnixPangoGraphics::_scaleJustification(GR_UnixPangoRenderInfo & RI)
 {
-	UT_uint32 iZoom = getZoomPercentage();
-	if(RI.m_iZoom == iZoom)
-		return;
-
-	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
-	{
-		RI.m_pJustify[i] =
-			(int)((double)RI.m_pJustify[i] * (double)iZoom / (double)RI.m_iZoom + 0.5) ;
-	}
+	RI.m_iZoom = getZoomPercentage();
+	return;
 }
 
 
@@ -1679,7 +1772,10 @@ void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 	// but in both cases we will let the delete proceed as is
 }
 
-
+/*!
+ * I believe this code clears all the justification points. MES June 2008
+ * It returns the total space assigned to justify the text in layout units.
+ */
 UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
 												   bool bPermanent)
 {
@@ -1689,8 +1785,6 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
 	if(!RI.m_pJustify)
 		return 0;
 
-	if(RI.m_iZoom != getZoomPercentage())
-		_scaleCharacterMetrics(RI);
 	
 	UT_sint32 iWidth2 = 0;
 	for(UT_sint32 i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
@@ -1700,6 +1794,10 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
 		// TODO here we need to substract the amount from pango metrics
 		RI.m_pGlyphs->glyphs[i].geometry.width -= RI.m_pJustify[i];
 	}
+	//
+	// This sets the glyphs that will be displayed on screen.
+	//
+	_scaleCharacterMetrics(RI);
 
 	if(bPermanent)
 	{
@@ -1711,7 +1809,9 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri,
 		memset(RI.m_pJustify, 0, RI.m_pGlyphs->num_glyphs * sizeof(int));
 	}
 	
-	return ptlu(-iWidth2);
+	// Justification in pango units. Convert to layout units.
+
+	return -ptlunz(iWidth2);
 }
 
 
@@ -1762,6 +1862,10 @@ UT_sint32 GR_UnixPangoGraphics::countJustificationPoints(const GR_RenderInfo & r
     We take the same approach as with Uniscribe; we store the justification
     amount in a separate array of the ri and add it to the offsets before we
     draw. We will probably need some static buffers to speed things up
+
+It requires as input RI.m_iJustificationAmount and RI.m_iJustificationPoints.
+These are determined in fp_TextRun using calculations in layout units
+
  */
 void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 {
@@ -1772,8 +1876,9 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 		return;
 
 	// make sure that we are not adding apples to oranges
-	if(RI.m_iZoom != getZoomPercentage())
-		_scaleCharacterMetrics(RI);
+	// We don't need this now.
+	//	if(RI.m_iZoom != getZoomPercentage())
+	//	_scaleCharacterMetrics(RI);
 	
 	if(!RI.m_pJustify)
 		RI.m_pJustify = new int[RI.m_pGlyphs->num_glyphs];
@@ -1783,6 +1888,9 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 	
 	UT_uint32 iExtraSpace = RI.m_iJustificationAmount;
 	UT_uint32 iPoints     = RI.m_iJustificationPoints;
+
+	xxx_UT_DEBUGMSG(("::Justify Extra justification space %d \n",iExtraSpace));
+	xxx_UT_DEBUGMSG(("::Justify Number of justification points %d \n",iPoints));
 
 	UT_return_if_fail(RI.m_pText);
 	
@@ -1797,6 +1905,8 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 	
 	UT_sint32 i; // glyph index
 	UT_sint32 j; // text index
+
+	UT_uint32 iSpace = iExtraSpace/iPoints;
 	
 	if (iDir == UT_BIDI_LTR)
 	{
@@ -1812,13 +1922,16 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 			if(c == UCS_SPACE)
 			{
 			
-				UT_uint32 iSpace = iExtraSpace/iPoints;
-				iExtraSpace -= iSpace;
+
+				// iSpace is in layout units. Convert to pango units
+
+				RI.m_pJustify[i] = ltpunz(iSpace);
+
 				iPoints--;
 
-				RI.m_pJustify[i] = ltpu(iSpace);
+				// add this amount the pango units
+				xxx_UT_DEBUGMSG(("Justify-1 Prev geom width %d additional %d \n",RI.m_pGlyphs->glyphs[i].geometry.width,RI.m_pJustify[i]));
 
-				// add this amount the pango metrics
 				RI.m_pGlyphs->glyphs[i].geometry.width += RI.m_pJustify[i];
 			
 				if(!iPoints)
@@ -1859,13 +1972,15 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 			if(c == UCS_SPACE)
 			{
 			
-				UT_uint32 iSpace = iExtraSpace/iPoints;
-				iExtraSpace -= iSpace;
 				iPoints--;
 
-				RI.m_pJustify[i] = ltpu(iSpace);
+				// iSpace is in layout units. Convert to pango units
+
+				RI.m_pJustify[i] = ltpunz(iSpace);
 
 				// add this amount the pango metrics
+
+				xxx_UT_DEBUGMSG(("Justify-2 Prev geom width %d additional %d \n",RI.m_pGlyphs->glyphs[i].geometry.width,RI.m_pJustify[i]));
 				RI.m_pGlyphs->glyphs[i].geometry.width += RI.m_pJustify[i];
 			
 				if(!iPoints)
@@ -1893,9 +2008,16 @@ void GR_UnixPangoGraphics::justify(GR_RenderInfo & ri)
 		}
 	}
 	
-	UT_ASSERT_HARMLESS( !iExtraSpace );
+	//
+ 	// Now scale the metrics for the drawing glyphs
+ 	//
+ 	_scaleCharacterMetrics(RI);
 }
 
+/*!
+ * This function takes (x,y) in layout units and determines the location in the
+ * pango string.
+ */
 UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, 
 											 UT_sint32 /*y*/) const
 {
@@ -1914,7 +2036,10 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 		utf8 += RI.m_pText->getChar();
 	}
 	
-	int x_pos = ltpu(x);
+	// Since the glyphs are measured in pango units
+	// we need to convert from layout units
+
+	int x_pos = ltpunz(x);
 	int len = utf8.byteLength();
 	int iPos = len;
 	int iTrailing;
@@ -1946,6 +2071,9 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	return i;
 }
 
+/*!
+ * Return a location in layout units (x,y) of a pango glyph.
+ */
 void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 										UT_sint32& x, UT_sint32& /*y*/,
 										UT_sint32& x2, UT_sint32& /*y2*/,
@@ -2014,7 +2142,10 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 								   bTrailing,
 								   &x);
 
-	x = ptlu(x);
+	//
+	// Since the glyphs are measured in pango units we need to convert to layout
+	//
+	x = ptlunz(x);
 	x2 = x;
 }
 
@@ -2124,14 +2255,14 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	}
 
 	// this function expect indexes in bytes !!! (stupid)
-	GList * pItems = pango_itemize(getContext(),
+	GList * pItems = pango_itemize(getLayoutContext(),
 								   utf8.utf8_str(),
 								   0, utf8.byteLength(),
 								   NULL, NULL);
 	
 	PangoGlyphString * pGstring = pango_glyph_string_new();
 
-	PangoFont * pf = m_pPFont->getPangoFont();
+	PangoFont * pf = m_pPFont->getPangoLayoutFont();
 	PangoRectangle LR;
 	UT_uint32 iOffset = 0;
 	GList * l = pItems;
@@ -2160,8 +2291,9 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 					pGstring);
 
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
-		iWidth += ptlu(LR.width + LR.x);
-		UT_uint32 h = ptlu(LR.height);
+		iWidth += ((double) LR.width + (double)LR.x)/PANGO_SCALE;
+		UT_uint32 h = LR.height/PANGO_SCALE;
+		xxx_UT_DEBUGMSG(("measure string iWidth %d height %d \n",iWidth,h));
 		if (height && *height < h)
 			*height = h;
 
@@ -3195,8 +3327,19 @@ inline int GR_UnixPangoGraphics::ptdu(int p) const
 */
 inline int GR_UnixPangoGraphics::ptlu(int p) const
 {
-	double d = (double)p * 100.0 * (double) getResolution()/
+	double d = (double)p * (double) getResolution() * 100.0 /
 		((double)getDeviceResolution()*(double)getZoomPercentage()*(double) PANGO_SCALE) + .5;
+
+	return (int) d;
+}
+
+
+/*!
+    Convert pango units to layout units without zoom
+*/
+inline int GR_UnixPangoGraphics::ptlunz(int p) const
+{
+	double d = ((double)p / ((double) PANGO_SCALE)) + .5; //getDeviceResolution
 
 	return (int) d;
 }
@@ -3208,7 +3351,18 @@ inline int GR_UnixPangoGraphics::ltpu(int l) const
 {
 	double d = (double)l *
 		(double)getDeviceResolution() * (double)PANGO_SCALE * (double)getZoomPercentage()/
-		((double)getResolution() * 100.0) + .5;
+		(100.0 * (double) getResolution()) + .5; 
+	
+	return (int) d;
+}
+
+
+/*!
+    Convert layout units to pango units without zoom
+*/
+inline int GR_UnixPangoGraphics::ltpunz(int l) const
+{
+	double d = (double)l * PANGO_SCALE  + .5; //getDeviceResolution()
 	
 	return (int) d;
 }
@@ -3302,16 +3456,18 @@ GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
 	m_pf(NULL),
 	m_bGuiFont(bGuiFont),
 	m_pCover(NULL),
-	m_pfd(NULL),
+	m_pfdDev(NULL),
+	m_pfdLay(NULL),
 	m_pPLang(NULL),
 	m_iAscent(0),
-	m_iDescent(0)
+	m_iDescent(0),
+	m_pLayoutF(NULL)
 {
 	m_eType = GR_FONT_UNIX_PANGO;
 	UT_return_if_fail( pDesc && pG && pLang);
 
+	m_sLayoutDesc = pDesc;
 	m_sDesc = pDesc;
-	
 	setLanguage(pLang);
 	reloadFont(pG);
 	UT_DEBUGMSG(("Created UnixPangOFont %x \n",this));
@@ -3325,7 +3481,12 @@ GR_UnixPangoFont::~GR_UnixPangoFont()
 	{
 		g_object_unref(m_pf);
 	}
-	pango_font_description_free(m_pfd);
+	if (m_pLayoutF) 
+	{
+		g_object_unref(m_pLayoutF);
+	}
+	pango_font_description_free(m_pfdDev);
+	pango_font_description_free(m_pfdLay);
 }
 
 void GR_UnixPangoFont::setLanguage(const char * pLang)
@@ -3350,38 +3511,57 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	m_iZoom = iZoom;
 	
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
-	UT_String s;
+ 	UT_String sLay;
+ 	UT_String sDev;
 	if(!m_bGuiFont && pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
+ 	{
+ 		UT_String_sprintf(sDev, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
+ 		UT_String_sprintf(sLay, "%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
+ 	}
 	else
-		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize);
-		
+ 	{
+ 		UT_String_sprintf(sDev, "%s %f", m_sDesc.c_str(), m_dPointSize);
+ 		UT_String_sprintf(sLay, "%s %f", m_sLayoutDesc.c_str(), m_dPointSize);
+ 	}		
+  
+ 	if(m_pfdLay)
+  	{
+ 		pango_font_description_free(m_pfdLay);
+ 		m_pfdLay = NULL;
+  	}
+ 
+ 
+ 	if(m_pfdDev)
+ 	{
+ 		pango_font_description_free(m_pfdDev);
+ 		m_pfdDev = NULL;
+ 	}
 
-	if(m_pfd)
-	{
-		pango_font_description_free(m_pfd);
-		m_pfd = NULL;
-	}
-	
-	m_pfd = pango_font_description_from_string(s.c_str());
-	UT_return_if_fail(m_pfd);
+ 	m_pfdLay = pango_font_description_from_string(sLay.c_str());
+ 	UT_return_if_fail(m_pfdLay);
+  
+ 	m_pfdDev = pango_font_description_from_string(sDev.c_str());
+ 	UT_return_if_fail(m_pfdDev);
 
 	if (m_pf) {
 		g_object_unref(m_pf);
 	}
-	m_pf = pango_context_load_font(pG->getContext(), m_pfd);
+	m_pf = pango_context_load_font(pG->getContext(), m_pfdDev);
+	m_pLayoutF = pango_context_load_font(pG->getLayoutContext(), m_pfdLay);
 
 	UT_return_if_fail( m_pf );
+ 	UT_return_if_fail( m_pLayoutF );
 	// FIXME: we probably want the real language from somewhere
-	PangoFontMetrics * pfm = pango_font_get_metrics(m_pf, m_pPLang);
+ 	PangoFontMetrics * pfm = pango_font_get_metrics(m_pLayoutF, m_pPLang);
 	UT_return_if_fail( pfm);
 
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
-	m_iAscent = (UT_uint32) pG->ptlu(pango_font_metrics_get_ascent(pfm));
-	m_iDescent = (UT_uint32) pG->ptlu(pango_font_metrics_get_descent(pfm));
-	UT_DEBUGMSG(("UnixPangeFont: Reloaded Pango Font %x \n",m_pf));
-	xxx_UT_DEBUGMSG(("Reload font: Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
+ 	m_iAscent = (UT_uint32) pango_font_metrics_get_ascent(pfm)/PANGO_SCALE;
+ 	m_iDescent = (UT_uint32) pango_font_metrics_get_descent(pfm)/PANGO_SCALE;
+ 	xxx_UT_DEBUGMSG(("Layout Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
+
+	UT_return_if_fail( pfm);
 }
 
 
@@ -3492,13 +3672,14 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 		if (pPGP)
 	  		resRatio = pPGP->_getResolutionRatio();
+
 	}
 #endif
 
-	guint iGlyphIndx = getGlyphForChar(g, m_pf, (static_cast<GR_UnixPangoGraphics *>(pG))->getContext());
+	guint iGlyphIndx = getGlyphForChar(g, m_pLayoutF, (static_cast<GR_UnixPangoGraphics *>(pG))->getContext());
 
 	PangoRectangle ink_rect;
-	pango_font_get_glyph_extents(m_pf, iGlyphIndx, &ink_rect, NULL);
+	pango_font_get_glyph_extents(m_pLayoutF, iGlyphIndx, &ink_rect, NULL);
 
 	UT_uint32 iSize = (UT_uint32)(0.5 + resRatio *(double)pG->getResolution() /
 								  (double)pG->getDeviceResolution());
@@ -3519,9 +3700,9 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 const char* GR_UnixPangoFont::getFamily() const
 {
-	UT_return_val_if_fail( m_pfd, NULL );
+	UT_return_val_if_fail( m_pfdLay, NULL );
 	
-	return pango_font_description_get_family(m_pfd);
+	return pango_font_description_get_family(m_pfdLay);
 }
 
 
@@ -3700,18 +3881,8 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 		}
 	else
 		{
-#ifdef HAVE_PANGOFT2
-			// hardcode to something sane-ish. printing and unixnull graphics will use this
-			// fallback case
-			m_iScreenResolution = m_iDeviceResolution;
 
-			m_pContext = pango_ft2_get_context(m_iScreenResolution, m_iScreenResolution);
-			m_pFontMap = pango_ft2_font_map_new ();
 			m_bOwnsFontMap = true;
-#else
-			UT_DEBUGMSG(("No screen, no display, and no PangoFT2. We're screwed.\n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-#endif
 		}
  	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
@@ -3800,32 +3971,32 @@ GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent()));
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent()));
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight()
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight())*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight()));
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent(const GR_Font * fnt)
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent(fnt)));
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent(const GR_Font * fnt )
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent(fnt)));
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(const GR_Font * fnt)
 {
-	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight(fnt))*m_dResRatio);
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight(fnt)));
 }
 
 UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
@@ -3920,7 +4091,7 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	UT_return_val_if_fail( ri, false );
 
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
-
+#if 0
 	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
 	{
 		RI.m_pGlyphs->glyphs[i].geometry.x_offset =
@@ -3935,13 +4106,13 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.width *
 				  (double)m_iDeviceResolution / (double)m_iScreenResolution + 0.5);
 	}
-
+#endif
 	return true;
 }
 
 void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	UT_DEBUGMSG(("GR_UnixPangoPrintGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
@@ -3951,11 +4122,11 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
-	UT_sint32 yoff = scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
+	UT_sint32 yoff = scale_ydir(_tduY((RI.m_yoff + getFontAscent(pFont))));
 
-	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
 				 xoff, yoff));
 
 	UT_return_if_fail(m_gpc);
@@ -3976,10 +4147,24 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	pango_font_description_free (pfd);
 
 #define _N 1440
-	xxx_UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
+	UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
 				 _N, tdu(_N), _N, _tduX(_N), _N, _tduY(_N)));
 #undef _N
-	gnome_print_pango_glyph_string(m_gpc, pf, RI.m_pGlyphs);
+
+	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
+	{
+		RI.m_pScaledGlyphs->glyphs[i].geometry.x_offset =
+			_tduX(RI.m_pGlyphs->glyphs[i].geometry.x_offset);
+
+
+		RI.m_pScaledGlyphs->glyphs[i].geometry.y_offset = 
+			_tduY(RI.m_pGlyphs->glyphs[i].geometry.y_offset);
+
+		RI.m_pScaledGlyphs->glyphs[i].geometry.width =
+			_tduX(RI.m_pGlyphs->glyphs[i].geometry.width );
+	}
+
+	gnome_print_pango_glyph_string(m_gpc, pf, RI.m_pScaledGlyphs);
 
 	gnome_print_grestore (m_gpc);
 }

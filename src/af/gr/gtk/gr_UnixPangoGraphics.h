@@ -76,6 +76,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	virtual bool      doesGlyphExist(UT_UCS4Char g);
 	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	PangoFont *       getPangoFont() const {return m_pf;}
+	PangoFont *       getPangoLayoutFont() const {return m_pLayoutF;}
 
 	void              reloadFont(GR_UnixPangoGraphics * pG);
 	double            getPointSize() const {return m_dPointSize;}
@@ -84,7 +85,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	const UT_String & getDescription() const {return m_sDesc;}
 
 	virtual const char* getFamily() const;
-	const PangoFontDescription * getPangoDescription() const {return m_pfd;}
+	const PangoFontDescription * getPangoDescription() const {return m_pfdLay;}
 
 	// ascent/descent in layout units
 	UT_uint32         getAscent() const {return m_iAscent;}
@@ -96,16 +97,19 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	
   private:
 	UT_String              m_sDesc;
+	UT_String              m_sLayoutDesc;
 	double                 m_dPointSize;
 	UT_uint32              m_iZoom;
 	PangoFont *            m_pf;
 	bool                   m_bGuiFont;
 	mutable PangoCoverage *m_pCover;
-	PangoFontDescription * m_pfd;
+	PangoFontDescription * m_pfdDev;
+	PangoFontDescription * m_pfdLay;
 	PangoLanguage *        m_pPLang;
 
 	UT_uint32              m_iAscent;
 	UT_uint32              m_iDescent;
+	PangoFont *            m_pLayoutF;
 };
 
 class GR_UnixPangoRenderInfo;
@@ -209,6 +213,8 @@ public:
 	
 	PangoFontMap * getFontMap() const {return m_pFontMap;}
 	PangoContext * getContext() const {return m_pContext;}
+	PangoFontMap * getLayoutFontMap() const {return m_pLayoutFontMap;}
+	PangoContext * getLayoutContext() const {return m_pLayoutContext;}
 
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
@@ -257,7 +263,9 @@ public:
 	int dtpu(int d) const;
 	int ptdu(int p) const;
 	int ptlu(int p) const;
+	int ptlunz(int p) const;
 	int ltpu(int l) const;
+	int ltpunz(int l) const;
 	int pftlu(int pf) const;
 
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
@@ -332,15 +340,19 @@ public:
 	void         _setColor(GdkColor & c);
 
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
+	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
   protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
+	PangoFontMap *    m_pLayoutFontMap;
+	PangoContext *    m_pLayoutContext;
 	bool              m_bOwnsFontMap;
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
 	PangoFont *       m_pAdjustedPangoFont;
+	PangoFont *       m_pAdjustedLayoutPangoFont;
 	GR_UnixPangoFont* m_pAdjustedPangoFontSource;
 	UT_uint32         m_iAdjustedPangoFontZoom;
 	
