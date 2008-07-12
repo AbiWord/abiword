@@ -1553,10 +1553,11 @@ Defun1(fileNew)
 		pNewFrame = pApp->newFrame();
 	else
 	{		
+		//fileSave(NULL, NULL);		
 		pNewFrame = pApp->getFrame(0);
 		if (pNewFrame->isDirty())
 		{
-			if(! bFileSaveAbiCollabIfNeeded(pAV_View, NULL))
+			if(!fileSave(pAV_View, NULL))
 			{
 				// we cannot just close the dirty file when the user clicked cancel -- if
 				// she really want to loose unsaved changes, let her close it manually
@@ -2579,6 +2580,7 @@ Defun(saveImmediate)
 	if (!pFrame->getFilename())
 	{
 		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+		//   		return EX(fileSaveAs);
 	}
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
@@ -2637,6 +2639,7 @@ Defun(fileSave)
 	if (!pFrame->getFilename())
 	{
 		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+		//   		return EX(fileSaveAs);
 	}
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
@@ -2645,6 +2648,7 @@ Defun(fileSave)
 	if (errSaved == UT_EXTENSIONERROR)
 	{
 		return bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+			//		return EX(fileSaveAs);
 	}
 	if (errSaved)
 	{
@@ -3628,6 +3632,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		case XAP_Dialog_MessageBox::a_YES:				// save it first
 		{
 			bool bRet = bFileSaveAbiCollabIfNeeded(pAV_View,pCallData);
+			//			bool bRet = EX(fileSave);
 			if (!bRet)								// didn't successfully save,
 				return false;					//	  so don't close
 		}
