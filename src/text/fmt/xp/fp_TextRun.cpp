@@ -1405,7 +1405,7 @@ bool fp_TextRun::_addupCharWidths(void)
 	m_pRenderInfo->m_pFont = _getFont();
 	
 	iWidth = getGraphics()->getTextWidth(*m_pRenderInfo);
-	UT_DEBUGMSG(("Run %x Width %d \n",this,iWidth)); 
+	xxx_UT_DEBUGMSG(("Run %x Width %d \n",this,iWidth)); 
 	if(iWidth != getWidth())
 	{
 		_setWidth(iWidth);

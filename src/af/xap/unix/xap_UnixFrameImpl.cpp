@@ -1803,7 +1803,7 @@ void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 	pUnixKeyboard->charDataEvent(pView, static_cast<EV_EditBits>(0),
 								 text, strlen(text));
 
-	UT_DEBUGMSG(("<<<<<<<<_imCommit: text %s, len %d\n", text, strlen(text)));
+	xxx_UT_DEBUGMSG(("<<<<<<<<_imCommit: text %s, len %d\n", text, strlen(text)));
 }
 
 GtkIMContext * XAP_UnixFrameImpl::getIMContext()
