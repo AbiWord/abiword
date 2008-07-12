@@ -75,13 +75,6 @@ private:
 	void								_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
 	bool								_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, const Buddy& collaborator, bool inGlob = false);
 
-	bool								getStruxType(UT_UTF8String& sInPacket, PTStruxType& struxType,
-													UT_UTF8String& sAttributes, UT_UTF8String& sOutpacket)
-		{ return true; }
-	bool								getObjectType(UT_UTF8String& sInPacket,PTObjectType& objectType,
-													UT_UTF8String& sAttributes, UT_UTF8String& sOutpacket)
-		{ return true; }
-
 	PD_Document*						m_pDoc;
 	AbiCollab *							m_pAbiCollab;
 	std::map<std::string, UT_sint32>	m_remoteRevs; // maintained by the importer, used by the exporter

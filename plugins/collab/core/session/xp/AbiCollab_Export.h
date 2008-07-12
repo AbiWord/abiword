@@ -47,12 +47,12 @@ public:
 	ABI_Collab_Export(AbiCollab* pAbiCollab, PD_Document* pDoc);
 	virtual ~ABI_Collab_Export();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord* pcr) { return true; }
+	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
+								 const PX_ChangeRecord* /*pcr*/) { return true; }
 
-	virtual bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord* pcr,
-									  PL_StruxFmtHandle* psfh) { return true; }
+	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
+									  const PX_ChangeRecord* /*pcr*/,
+									  PL_StruxFmtHandle* /*psfh*/) { return true; }
 
 	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord* pcr);

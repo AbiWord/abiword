@@ -254,7 +254,7 @@ public:
 		m_sSource.resize( pos + Count );
 		memcpy( &m_sSource[pos], Buffer, Count );
 	}
-	virtual void Skip( unsigned int Count )
+	virtual void Skip( unsigned int /*Count*/ )
 	{
 #if !defined(SERIALIZATION_TEST)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
