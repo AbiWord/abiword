@@ -601,6 +601,31 @@ UT_Confidence_t IE_Imp_OpenWriter_Sniffer::recognizeContents (GsfInput * input)
 
 					g_object_unref (G_OBJECT (pInput));
 				}
+			// there's no mimetype stream, so let's check for a content.xml file instead
+			else
+				{
+					pInput = gsf_infile_child_by_name(zip, "content.xml");
+
+					gsf_off_t size = 0;
+					if (pInput)
+						size = gsf_input_size(pInput);
+
+					if (size > 0)
+						{
+							int min = UT_MIN(size, 150);
+
+							UT_UTF8String content;
+							content.append((const char *)gsf_input_read(pInput, min, NULL));
+
+							if (strstr(content.utf8_str(), "<!DOCTYPE office:document-content PUBLIC"))
+								confidence = UT_CONFIDENCE_GOOD;
+
+						}
+
+					if (pInput)
+						g_object_unref (G_OBJECT (pInput));
+
+				}
 			g_object_unref (G_OBJECT (zip));
 		}
 
@@ -894,9 +919,8 @@ UT_Error IE_Imp_OpenWriter::_handleMimetype ()
   GsfInput * input = gsf_infile_child_by_name(m_oo, "mimetype");
 
   if (!input) {
-    UT_DEBUGMSG(("Error: didn't get a mimetype. Bailing out.\n"));
-    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-    return UT_ERROR;
+    // not all sxw and stw files have a mimetype stream (see Bug 11686)
+    return UT_OK;
   }
 
   UT_UTF8String mimetype;
