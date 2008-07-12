@@ -463,9 +463,6 @@ void GR_UnixPangoGraphics::init()
 					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
 									 gdk_screen_get_width_mm (gScreen));
 			}
-			pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
-										  getResolution(),
-										  getResolution());	
 
 			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
 						 m_iDeviceResolution));
@@ -474,7 +471,6 @@ void GR_UnixPangoGraphics::init()
 #ifdef HAVE_PANGOFT2
 	else
 	{
-		//
 		m_iDeviceResolution = 72.;
 		m_pFontMap = pango_ft2_font_map_new ();
 		pango_ft2_font_map_set_resolution(reinterpret_cast<PangoFT2FontMap*>(m_pFontMap), 
