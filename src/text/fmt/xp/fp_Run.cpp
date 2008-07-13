@@ -2288,10 +2288,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		}
 		while (cumWidth < getWidth() && i < 151)
 		{
-			if(pG && pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
-			{
-				wid[i] = static_cast<UT_sint32>(wid[i]*pG->getResolutionRatio());
-			}
 			cumWidth += wid[i++];
 		}
 		i = (i>=3) ? i - 2 : 1;
