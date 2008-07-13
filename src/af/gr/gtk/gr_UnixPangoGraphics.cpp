@@ -2152,7 +2152,7 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
-									 int * /*pCharWidth*/)
+									 int * pCharWidth)
 {
 	UT_return_if_fail(m_pXftDraw);
 
@@ -2211,6 +2211,14 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
+		if(pCharWidth)
+		{
+			for(int j=0; j<pGstring->num_glyphs; j++)
+			{
+
+				pGstring->glyphs[j].geometry.width = _tduX(pCharWidth[j]*PANGO_SCALE);
+			}
+		}
 		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
 
 		// now advance xoff
