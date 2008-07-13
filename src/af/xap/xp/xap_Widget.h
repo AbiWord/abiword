@@ -21,7 +21,7 @@
 #ifndef __XAP_WIDGET_H__
 #define __XAP_WIDGET_H__
 
-
+#include "ut_types.h"
 
 class UT_UTF8String;
 
