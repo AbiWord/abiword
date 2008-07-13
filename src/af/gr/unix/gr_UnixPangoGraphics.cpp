@@ -2215,6 +2215,14 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
+		if(pCharWidth)
+		{
+			for(int j=0; j<pGstring->num_glyphs; j++)
+			{
+
+				pGstring->glyphs[j].geometry.width = _tduX(pCharWidth[j]*PANGO_SCALE);
+			}
+		}
 		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
 
 		// now advance xoff
