@@ -34,7 +34,7 @@ REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
 bin_PROGRAMS = abiword
 abiword_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
-abiword_SOURCES = abi_ver.cpp UnixMain.cpp
+abiword_SOURCES = $(srcdir)/../xp/abi_ver.cpp UnixMain.cpp
 
 # Hack together a shared library for testing purposes (e.g. olpc).
 # Not using libtool because of the increased binary size, 
