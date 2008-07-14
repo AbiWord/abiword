@@ -193,6 +193,7 @@ Section "" section_abi
 		File "libgobject-2.0-0.dll"
 		File "libgthread-2.0-0.dll"
 		File "libgsf-1-114.dll"
+		File "mingwm10.dll"
 		File "bzip2.dll"
 		File "iconv.dll"
 		File "intl.dll"
