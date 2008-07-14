@@ -102,6 +102,8 @@ public:
 	UT_Error finishCell();
 	UT_Error startTableGrid(int target);
 	UT_Error finishTableGrid(int target);
+	UT_Error startHyperlink();
+	UT_Error finishHyperlink();
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);

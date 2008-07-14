@@ -28,6 +28,7 @@
 #include <px_ChangeRecord.h>
 #include <px_CR_Strux.h>
 #include <px_CR_Span.h>
+#include <px_CR_Object.h>
 #include <fl_AutoNum.h>
 #include <OXML_Document.h>
 #include <OXML_Element_Text.h>
@@ -37,6 +38,7 @@
 #include <OXML_Element_Row.h>
 #include <OXML_Element_Cell.h>
 #include <OXML_Element_List.h>
+#include <OXML_Element_Hyperlink.h>
 #include <OXML_List.h>
 #include <ie_Table.h>
 
@@ -46,6 +48,7 @@ class OXML_Element_Table;
 class OXML_Element_Row;
 class OXML_Element_Cell;
 class OXML_Element_List;
+class OXML_Element_Hyperlink;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -75,8 +78,10 @@ private:
 	OXML_Element_Table* table;
 	OXML_Element_Row* row;
 	OXML_Element_Cell* cell;
+	OXML_Element_Hyperlink* hyperlink;
 
 	bool bInTable;
+	bool bInHyperlink;
 
 	UT_Error addDocumentStyles();
 	UT_Error addLists();

@@ -36,7 +36,9 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	table(NULL), 
 	row(NULL), 
 	cell(NULL), 
-	bInTable(false)
+	hyperlink(NULL),
+	bInTable(false),
+	bInHyperlink(false)
 {
 	document = OXML_Document::getNewInstance();
 	
@@ -99,51 +101,129 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			
 			if(element_run->appendElement(shared_element_text) != UT_OK)
 				return false;
+
+			if(bInHyperlink)
+			{
+				//make sure hyperlinks are blue and underlined
+				if(element_run->setProperty("text-decoration", "underline") != UT_OK)
+					return false;
+				if(element_run->setProperty("color", "0000FF") != UT_OK) 
+					return false;
+				return hyperlink->appendElement(shared_element_run) == UT_OK;
+			}
 			
 			return paragraph->appendElement(shared_element_run) == UT_OK;
 		}
 		case PX_ChangeRecord::PXT_InsertObject:
 		{
+			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();			
 			const PP_AttrProp* pAP = NULL;
 			bool bHaveProp = pdoc->getAttrProp(api,&pAP);
 
-			OXML_Element_List* element_list = new OXML_Element_List("", paragraph);
-			OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
+			const gchar* szValue;
+			const gchar* szName;
 
-			if(bHaveProp && pAP)
+			switch (pcro->getObjectType())
 			{
-				const gchar* szValue;
-				const gchar* szName;
-				size_t propCount = pAP->getPropertyCount();
+				case PTO_Field:
+				{
+					OXML_Element_List* element_list = new OXML_Element_List("", paragraph);
+					OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
+
+					if(bHaveProp && pAP)
+					{
+						size_t propCount = pAP->getPropertyCount();
 				
-				size_t i;
-				for(i=0; i<propCount; i++)
-				{
-					if(pAP->getNthProperty(i, szName, szValue))
-					{
-						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
-						if(element_list->setProperty(szName, szValue) != UT_OK)
-							return false;		
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
+								if(element_list->setProperty(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
+								if(element_list->setAttribute(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
 					}
+
+					return paragraph->appendElement(shared_element_list) == UT_OK;			
 				}
 
-				size_t attrCount = pAP->getAttributeCount();
-
-				for(i=0; i<attrCount; i++)
+				case PTO_Hyperlink:
 				{
-					if(pAP->getNthAttribute(i, szName, szValue))
+					if(bInHyperlink)
 					{
-						//TODO: Take the debug message out when we are done
-						UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
-						if(element_list->setAttribute(szName, szValue) != UT_OK)
-							return false;		
+						bInHyperlink = false;
+						return true;
 					}
+
+					bInHyperlink = true;
+
+					hyperlink = new OXML_Element_Hyperlink("");
+					OXML_SharedElement shared_element_hyperlink(static_cast<OXML_Element*>(hyperlink));
+
+					if(bHaveProp && pAP)
+					{
+						size_t propCount = pAP->getPropertyCount();
+				
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Hyperlink Property %s=%s\n", szName, szValue));
+								if(hyperlink->setProperty(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Hyperlink Attribute: %s=%s\n", szName, szValue));	
+								if(hyperlink->setAttribute(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+					}
+
+					return paragraph->appendElement(shared_element_hyperlink) == UT_OK;
 				}
+
+				case PTO_Image:			
+				{
+					//TODO
+					return true;
+				}
+				case PTO_Bookmark:
+				{
+					//TODO
+					return true;
+				}
+				default:
+					return true;
 			}
 
-			return paragraph->appendElement(shared_element_list) == UT_OK;;			
 		}
 		case PX_ChangeRecord::PXT_InsertFmtMark:
 		default:

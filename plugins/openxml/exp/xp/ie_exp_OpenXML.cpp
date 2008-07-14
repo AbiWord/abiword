@@ -468,6 +468,22 @@ UT_Error IE_Exp_OpenXML::finishCellProperties(int target)
 }
 
 /**
+ * Starts exporting the OXML_Element_Hyperlink object
+ */
+UT_Error IE_Exp_OpenXML::startHyperlink()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:hyperlink>");
+}
+
+/**
+ * Finishes exporting the OXML_Element_Hyperlink object
+ */
+UT_Error IE_Exp_OpenXML::finishHyperlink()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "</w:hyperlink>");
+}
+
+/**
  * Writes to the target stream
  */
 UT_Error IE_Exp_OpenXML::writeTargetStream(int target, const char* str)
