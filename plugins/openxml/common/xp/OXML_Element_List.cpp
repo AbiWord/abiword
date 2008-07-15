@@ -48,7 +48,6 @@ UT_Error OXML_Element_List::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
-	const gchar* szValue = NULL;
 
 	err = exporter->startListProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)

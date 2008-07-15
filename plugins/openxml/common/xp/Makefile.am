@@ -28,6 +28,8 @@ libxp_la_SOURCES = \
 	OXML_Element_List.h \
 	OXML_Element_Hyperlink.cpp \
 	OXML_Element_Hyperlink.h \
+	OXML_Element_Bookmark.cpp \
+	OXML_Element_Bookmark.h \
 	OXML_FontManager.cpp \
 	OXML_LangToScriptConverter.h \
 	OXML_FontManager.h \

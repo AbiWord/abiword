@@ -69,7 +69,8 @@ enum OXML_ElementTag {
 	TR_TAG,
 	TC_TAG,
 	LST_TAG,
-	HYPR_TAG
+	HYPR_TAG,
+	BOOK_TAG
 };
 
 enum OXML_ElementType {
@@ -79,7 +80,8 @@ enum OXML_ElementType {
 	LIST, 
 	ROW,
 	CELL, 
-	HYPRLNK
+	HYPRLNK,
+	BOOKMRK
 };
 
 enum OXML_HeaderFooterType {

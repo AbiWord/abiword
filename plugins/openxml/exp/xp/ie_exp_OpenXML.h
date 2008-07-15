@@ -102,8 +102,11 @@ public:
 	UT_Error finishCell();
 	UT_Error startTableGrid(int target);
 	UT_Error finishTableGrid(int target);
-	UT_Error startHyperlink();
+	UT_Error startExternalHyperlink(const gchar* id);
+	UT_Error startInternalHyperlink(const gchar* anchor);
 	UT_Error finishHyperlink();
+	UT_Error startBookmark(const gchar* id, const gchar* name);
+	UT_Error finishBookmark(const gchar* id);
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
@@ -139,6 +142,7 @@ public:
 	UT_Error setAbstractNumberingId(int target, UT_uint32 id);
 	UT_Error setNumberingFormat(int target, const char* format);
 	UT_Error setMultilevelType(int target, const char* type);
+	UT_Error setHyperlinkRelation(int target, const char* id, const char* addr, const char* mode);
 
 protected:
     virtual UT_Error _writeDocument(void);

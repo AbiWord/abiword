@@ -39,6 +39,7 @@
 #include <OXML_Element_Cell.h>
 #include <OXML_Element_List.h>
 #include <OXML_Element_Hyperlink.h>
+#include <OXML_Element_Bookmark.h>
 #include <OXML_List.h>
 #include <ie_Table.h>
 
@@ -49,6 +50,7 @@ class OXML_Element_Row;
 class OXML_Element_Cell;
 class OXML_Element_List;
 class OXML_Element_Hyperlink;
+class OXML_Element_Bookmark;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -79,12 +81,17 @@ private:
 	OXML_Element_Row* row;
 	OXML_Element_Cell* cell;
 	OXML_Element_Hyperlink* hyperlink;
+	OXML_Element_Bookmark* bookmark;
 
 	bool bInTable;
 	bool bInHyperlink;
+	bool bInBookmark;
+	int idCount;
+	std::string bookmarkId;
 
 	UT_Error addDocumentStyles();
 	UT_Error addLists();
+	std::string getNextId();
 };
 
 #endif //_IE_EXP_OPENXMLLISTENER_H_

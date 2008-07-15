@@ -21,63 +21,57 @@
  */
 
 // Class definition include
-#include <OXML_Element_Hyperlink.h>
+#include <OXML_Element_Bookmark.h>
 
 // AbiWord includes
 #include <ut_types.h>
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Hyperlink::OXML_Element_Hyperlink(std::string id) : 
-	OXML_Element(id, HYPR_TAG, HYPRLNK)
+OXML_Element_Bookmark::OXML_Element_Bookmark(std::string id) : 
+	OXML_Element(id, BOOK_TAG, BOOKMRK)
 {
 }
 
-OXML_Element_Hyperlink::~OXML_Element_Hyperlink()
+OXML_Element_Bookmark::~OXML_Element_Bookmark()
 {
 
 }
 
-UT_Error OXML_Element_Hyperlink::serialize(IE_Exp_OpenXML* exporter)
+UT_Error OXML_Element_Bookmark::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
-	const gchar* szValue;
+	const gchar* type;
+	const gchar* name;
 
-	if(getAttribute("xlink:href", szValue) == UT_OK)
-	{	
-		if(*szValue != '#')
+	err = getAttribute("name", name);
+	if(err != UT_OK)
+		return UT_OK;
+
+	if(getAttribute("type", type) == UT_OK)
+	{
+		if(strcmp(type, "start") == 0)
 		{
-			//external reference
-			std::string relId("rId");
-			relId += getId();
-
-			err = exporter->setHyperlinkRelation(TARGET_DOCUMENT_RELATION, relId.c_str(), szValue, "External");
+			err = exporter->startBookmark(getId().c_str(), name);
 			if(err != UT_OK)
 				return err;
-
-			err = exporter->startExternalHyperlink(relId.c_str());
+		}
+		else if(strcmp(type, "end") == 0)
+		{
+			err = exporter->finishBookmark(getId().c_str());
 			if(err != UT_OK)
 				return err;
 		}
 		else
 		{
-			//hyperlink to a bookmark, internal reference
-			err = exporter->startInternalHyperlink(szValue+1);
-			if(err != UT_OK)
-				return err;
+			UT_DEBUGMSG(("FRT: Unknown Bookmark type\n"));
 		}
-
-		err = this->serializeChildren(exporter);
-		if(err != UT_OK)
-			return err;
-	
-		return exporter->finishHyperlink();
 	}
-
+	
 	return UT_OK;
 }
 
-UT_Error OXML_Element_Hyperlink::addToPT(PD_Document* /*pDocument*/)
+UT_Error OXML_Element_Bookmark::addToPT(PD_Document* /*pDocument*/)
 {
 	//TODO
 	return UT_OK;

@@ -37,8 +37,12 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	row(NULL), 
 	cell(NULL), 
 	hyperlink(NULL),
+	bookmark(NULL),
 	bInTable(false),
-	bInHyperlink(false)
+	bInHyperlink(false),
+	bInBookmark(false),
+	idCount(10), //the first ten IDs are reserved for the XML file references
+	bookmarkId("")
 {
 	document = OXML_Document::getNewInstance();
 	
@@ -74,7 +78,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			UT_UCS4String str(pdoc->getPointer(buffer), pcrs->getLength());
 			OXML_SharedElement shared_element_text(new OXML_Element_Text(str.utf8_str(), str.length()));
 
-			OXML_Element_Run* element_run = new OXML_Element_Run("");
+			OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
 			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
 
 			//add run properties 
@@ -128,7 +132,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			{
 				case PTO_Field:
 				{
-					OXML_Element_List* element_list = new OXML_Element_List("", paragraph);
+					OXML_Element_List* element_list = new OXML_Element_List(getNextId(), paragraph);
 					OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
 
 					if(bHaveProp && pAP)
@@ -174,7 +178,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 
 					bInHyperlink = true;
 
-					hyperlink = new OXML_Element_Hyperlink("");
+					hyperlink = new OXML_Element_Hyperlink(getNextId());
 					OXML_SharedElement shared_element_hyperlink(static_cast<OXML_Element*>(hyperlink));
 
 					if(bHaveProp && pAP)
@@ -217,8 +221,45 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 				}
 				case PTO_Bookmark:
 				{
-					//TODO
-					return true;
+					if(!bInBookmark)
+					{
+						bookmarkId = getNextId();
+					}
+					bInBookmark = !bInBookmark;
+
+					bookmark = new OXML_Element_Bookmark(bookmarkId);
+					OXML_SharedElement shared_element_bookmark(static_cast<OXML_Element*>(bookmark));
+
+					if(bHaveProp && pAP)
+					{
+						size_t propCount = pAP->getPropertyCount();
+				
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Bookmark Property %s=%s\n", szName, szValue));
+								if(bookmark->setProperty(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Bookmark Attribute: %s=%s\n", szName, szValue));	
+								if(bookmark->setAttribute(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+					}
+					return paragraph->appendElement(shared_element_bookmark) == UT_OK;
 				}
 				default:
 					return true;
@@ -287,7 +328,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		}
 		case PTX_Block:
 		{
-			paragraph = new OXML_Element_Paragraph("");
+			paragraph = new OXML_Element_Paragraph(getNextId());
 			OXML_SharedElement shared_paragraph(static_cast<OXML_Element*>(paragraph));
 
 			//add paragraph properties 
@@ -329,7 +370,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		case PTX_SectionTable:
 		{	
 			bInTable = true;
-			table = new OXML_Element_Table("");
+			table = new OXML_Element_Table(getNextId());
 			OXML_SharedElement shared_table(static_cast<OXML_Element*>(table));
 
 			if(bHaveProp && pAP)
@@ -375,7 +416,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			UT_sint32 top = tableHelper.getTop();
 			UT_sint32 bottom = tableHelper.getBot();
 
-			cell = new OXML_Element_Cell("", table, left, right, top, bottom);
+			cell = new OXML_Element_Cell(getNextId(), table, left, right, top, bottom);
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
 			if(bHaveProp && pAP)
@@ -412,7 +453,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			
 			if(!row || tableHelper.isNewRow())
 			{
-				row = new OXML_Element_Row("", table);
+				row = new OXML_Element_Row(getNextId(), table);
 				row->setNumCols(tableHelper.getNumCols());
 				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
 				if(table->appendElement(shared_row) != UT_OK)
@@ -581,4 +622,16 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 	}
 
 	return UT_OK;
+}
+
+std::string IE_Exp_OpenXML_Listener::getNextId()
+{
+	char buffer[12]; 
+	int len = snprintf(buffer, 12, "%d", ++idCount);
+	if(len <= 0)
+		return "";
+
+	std::string str("");
+	str += buffer;
+	return str;
 }

@@ -197,7 +197,7 @@ UT_Error IE_Exp_OpenXML::finishParagraph()
  */
 UT_Error IE_Exp_OpenXML::startText()
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:t>");
+	return writeTargetStream(TARGET_DOCUMENT, "<w:t xml:space=\"preserve\">");
 }
 
 /**
@@ -470,9 +470,26 @@ UT_Error IE_Exp_OpenXML::finishCellProperties(int target)
 /**
  * Starts exporting the OXML_Element_Hyperlink object
  */
-UT_Error IE_Exp_OpenXML::startHyperlink()
+UT_Error IE_Exp_OpenXML::startExternalHyperlink(const gchar* id)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:hyperlink>");
+	std::string str("<w:hyperlink r:id=\"");
+	str += id;
+	str += "\">";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Starts exporting the OXML_Element_Hyperlink object
+ */
+UT_Error IE_Exp_OpenXML::startInternalHyperlink(const gchar* anchor)
+{
+	UT_UTF8String sEscAnchor = anchor;
+	sEscAnchor.escapeXML();
+
+	std::string str("<w:hyperlink w:anchor=\"");
+	str += sEscAnchor.utf8_str();
+	str += "\">";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
 }
 
 /**
@@ -481,6 +498,34 @@ UT_Error IE_Exp_OpenXML::startHyperlink()
 UT_Error IE_Exp_OpenXML::finishHyperlink()
 {
 	return writeTargetStream(TARGET_DOCUMENT, "</w:hyperlink>");
+}
+
+/**
+ * Exports the OXML_Element_BookmarkStart object
+ */
+UT_Error IE_Exp_OpenXML::startBookmark(const gchar* id, const gchar* name)
+{
+	UT_UTF8String sEscName = name;
+	sEscName.escapeXML();
+
+	std::string str("<w:bookmarkStart w:id=\"");
+	str += id;
+	str += "\" ";
+	str += "w:name=\"";
+	str += sEscName.utf8_str();
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Exports the OXML_Element_BookmarkFinish object
+ */
+UT_Error IE_Exp_OpenXML::finishBookmark(const gchar* id)
+{
+	std::string str("<w:bookmarkEnd w:id=\"");
+	str += id;
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
 }
 
 /**
@@ -741,6 +786,27 @@ UT_Error IE_Exp_OpenXML::setParagraphTopMargin(int target, const gchar* margin)
 
 	std::string str("<w:spacing w:before=\"");
 	str += twips;
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets the necessary relationship for hyperlink target address
+ */
+UT_Error IE_Exp_OpenXML::setHyperlinkRelation(int target, const char* id, const char* addr, const char* mode)
+{
+	UT_UTF8String sEscAddr = addr;
+	sEscAddr.escapeURL();
+
+	std::string str("<Relationship Id=\"");
+	str += id;
+	str += "\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" ";
+	str += "Target=\"";
+	str += sEscAddr.utf8_str();
+	str += "\" ";
+	str += "TargetMode=\"";
+	str += mode;
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
 }
