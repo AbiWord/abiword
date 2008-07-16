@@ -136,7 +136,7 @@ static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	pDoc->getStyle(sStyle.utf8_str(), & pStyle);
 	UT_return_if_fail(pStyle);
 	
-	pStyle->_simplifyProperties();
+	pStyle->simplifyProperties();
 }
 
 static void s_show_all_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me) {

@@ -459,7 +459,7 @@ bool PD_Style::getAllProperties( UT_GenericVector<const gchar *> * vProps, UT_si
  * This method eliminates any properties which are identical
  * to the "based-on" styles.
  */
-bool PD_Style::_simplifyProperties()
+bool PD_Style::simplifyProperties()
 {
 	if (!getBasedOn())
 		return true; // not based on anything, thus, simplified.
