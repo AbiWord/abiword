@@ -205,7 +205,9 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	// Get properties at the caret location.
 	//
 	
-	gchar * caretProps = getPropsAtCaret ();
+	gchar * sz_caretProps = getPropsAtCaret ();
+	if (!sz_caretProps)
+		return false;
 	
 	//
 	// Create a unique, temporary name/label 
@@ -224,7 +226,7 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 			PT_TYPE_ATTRIBUTE_NAME, "P",				\
 			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
-			PT_PROPS_ATTRIBUTE_NAME, caretProps,				\
+			PT_PROPS_ATTRIBUTE_NAME, sz_caretProps,				\
 			0};
 	
 	//
@@ -257,32 +259,53 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	// Get properties at the caret location.
 	//
 	
-	gchar * caretProps = getPropsAtCaret ();
+	gchar * sz_caretProps = getPropsAtCaret ();
+	if (!sz_caretProps)
+		return false;
 	
 	//
-	// Get our currently selected style and its attrprop
+	// Get our currently selected style
 	//
 	
-	// TODO
+	PD_Style * p_curStyle = 0;
+	if (getDoc())
+		getDoc()->getStyle(getSelectedStyle().utf8_str(), & p_curStyle);
+	else
+		return false;
+	
+	UT_GenericVector<const gchar *> vAttributes;
+	UT_return_val_if_fail(p_curStyle->getAllAttributes(& vAttributes), false);
 	
 	//
 	// Replace the properties string with the caret one
 	//
 	
-	// TODO
+	int i;
+	const gchar ** a;
+	a = new const gchar * [vAttributes.getItemCount()+1];
+	for(i = 0; i < vAttributes.getItemCount() ; i += 2)
+	{
+		a[i]=vAttributes[i];
+		if (0 == strcmp(PT_PROPS_ATTRIBUTE_NAME, (const char *) vAttributes[i]))
+			a[i+1]=sz_caretProps;
+		else
+			a[i+1]=vAttributes[i+1];
+	}
+	// null terminate array
+	a[i]=0;
 	
 	//
 	// Apply changes
 	//
 	
-	// TODO
+	UT_return_val_if_fail(p_curStyle->setAllAttributes(a), false);
 	
 	//
 	// Simplify style? TODO: Decide if this is a good idea
 	//
 	
 	
-	// Doin' nothing, we do it well.
+	// if we made it here we succeeded
 	return true;
 }
 
@@ -292,14 +315,14 @@ gchar * AP_Dialog_Stylist::getPropsAtCaret() const
 	// Load the properties at the current caret location.
 	//
 	if(!getActiveFrame())
-		return false;
+		return 0;
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	
 	const gchar ** paraProps = NULL;
-	pView->getBlockFormat(&paraProps,true);
+	UT_return_val_if_fail(pView->getBlockFormat(&paraProps,true), 0);
 	
 	const gchar ** charProps = NULL;
-	pView->getCharFormat(&charProps,true);
+	UT_return_val_if_fail(pView->getCharFormat(&charProps,true), 0);
 	
 	//
 	// Find the unique ones (not in the Normal or original style of run)
