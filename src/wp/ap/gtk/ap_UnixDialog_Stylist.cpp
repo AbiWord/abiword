@@ -113,6 +113,14 @@ static void s_new_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	me->createStyleFromDocument();
 }
 
+static void s_redefine_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
+{
+	// redefine selected style using props at caret
+	
+	// TODO
+	return;
+}
+
 static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 {
 	UT_return_if_fail(me);
@@ -129,6 +137,13 @@ static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	UT_return_if_fail(pStyle);
 	
 	pStyle->_simplifyProperties();
+}
+
+static void s_show_all_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me) {
+	// toggle show all vs. minimal toolbar list mode
+	
+	// TODO
+	return;
 }
 
 XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
@@ -440,14 +455,14 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wNew), "clicked", 
 					 G_CALLBACK(s_new_clicked), this);
 	
-//	g_signal_connect(G_OBJECT(m_wRedefine), "clicked", 
-//					 G_CALLBACK(s_redefine_clicked), this);
+	g_signal_connect(G_OBJECT(m_wRedefine), "clicked", 
+					 G_CALLBACK(s_redefine_clicked), this);
 	
 	g_signal_connect(G_OBJECT(m_wEdit), "clicked", 
 					 G_CALLBACK(s_edit_clicked), this);
 	
-//	g_signal_connect(G_OBJECT(m_wShowAll), "clicked", 
-//					 G_CALLBACK(s_show_all_clicked), this);
+	g_signal_connect(G_OBJECT(m_wShowAll), "clicked", 
+					 G_CALLBACK(s_show_all_clicked), this);
 	
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
