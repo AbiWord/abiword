@@ -201,46 +201,11 @@ void AP_Dialog_Stylist::updateDialog(void)
  */
 bool  AP_Dialog_Stylist::createStyleFromDocument()
 {
-	
 	//
-	// Load the properties at the current caret location.
-	//
-	if(!getActiveFrame())
-		return false;
-	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
-	
-	const gchar ** paraProps = NULL;
-	pView->getBlockFormat(&paraProps,true);
-	
-	const gchar ** charProps = NULL;
-	pView->getCharFormat(&charProps,true);
-	
-	//
-	// Find the unique ones (not in the Normal or original style of run)
+	// Get properties at the caret location.
 	//
 	
-	// Right now just putting them all together
-	// Possibly just simplify style afterward?
-	
-	// TODO: Can I also tack on the character props here?
-	std::string sProps;
-	int i=0;
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
-	while(paraProps[i] != NULL)
-	{
-		szName = paraProps[i];
-		szValue = paraProps[i+1];
-		if(strstr(szName,"toc-") == NULL)
-		{
-			sProps += std::string(szName) + ":" + std::string(szValue) + ";";
-		}
-		i = i + 2;
-	}
-	
-	// Remove trailing semicolon
-	// property string has semicolon delimiters but a trailing semicolon will cause a failure.
-	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';') sProps.resize(sProps.size()-1);
+	gchar * caretProps = getPropsAtCaret ();
 	
 	//
 	// Create a unique, temporary name/label 
@@ -259,7 +224,7 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 			PT_TYPE_ATTRIBUTE_NAME, "P",				\
 			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
-			PT_PROPS_ATTRIBUTE_NAME, sProps.c_str(),				\
+			PT_PROPS_ATTRIBUTE_NAME, caretProps,				\
 			0};
 	
 	//
@@ -276,8 +241,111 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	// TODO
 	
 	// Update stylist since it apparently likes to lag.
+	// You still have to click the doc to update, TODO
 	updateDialog();
+	
 	return true; // if we made it here, we win
+}
+
+/*!
+ * Called by platform dialog code to redefine selected style in dialog
+ * with the properties of the current caret location.
+ */
+bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
+{
+	//
+	// Get properties at the caret location.
+	//
+	
+	gchar * caretProps = getPropsAtCaret ();
+	
+	//
+	// Get our currently selected style and its attrprop
+	//
+	
+	// TODO
+	
+	//
+	// Replace the properties string with the caret one
+	//
+	
+	// TODO
+	
+	//
+	// Apply changes
+	//
+	
+	// TODO
+	
+	//
+	// Simplify style? TODO: Decide if this is a good idea
+	//
+	
+	
+	// Doin' nothing, we do it well.
+	return true;
+}
+
+gchar * AP_Dialog_Stylist::getPropsAtCaret() const
+{
+	//
+	// Load the properties at the current caret location.
+	//
+	if(!getActiveFrame())
+		return false;
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
+	
+	const gchar ** paraProps = NULL;
+	pView->getBlockFormat(&paraProps,true);
+	
+	const gchar ** charProps = NULL;
+	pView->getCharFormat(&charProps,true);
+	
+	//
+	// Find the unique ones (not in the Normal or original style of run)
+	//
+	
+	// Right now just putting them all together
+
+	std::string sProps;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
+	
+	// Paragraph Properties
+	int i=0;
+	while(paraProps[i] != NULL)
+	{
+		szName = paraProps[i];
+		szValue = paraProps[i+1];
+		if(strstr(szName,"toc-") == NULL)
+		{
+			sProps += std::string(szName) + ":" + std::string(szValue) + ";";
+		}
+		i = i + 2;
+	}
+	
+	// Character Properties
+	i=0;
+	while(charProps[i] != NULL)
+	{
+		szName = charProps[i];
+		szValue = charProps[i+1];
+		if(strstr(szName,"toc-") == NULL)
+		{
+			sProps += std::string(szName) + ":" + std::string(szValue) + ";";
+		}
+		i = i + 2;
+	}
+	
+	// Remove trailing semicolon
+	// property string has semicolon delimiters but a trailing semicolon will cause a failure.
+	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';')
+	{
+		sProps.resize(sProps.size()-1);
+	}
+	
+	// duplicate the string and return it
+	return g_strdup(sProps.c_str());
 }
 
 /*!

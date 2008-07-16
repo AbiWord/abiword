@@ -115,6 +115,7 @@ public:
 protected:
 	bool                  m_bIsModal;
 private:
+	gchar *               getPropsAtCaret() const;
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
 	UT_uint32             m_iTick;
