@@ -294,7 +294,7 @@ bool PD_Style::addProperties(const gchar ** pProperties)
 
 /*!
  * This method replaces the previous set of attributes/properties with
- * a new one defined in pAtts. It is imperitive that updateDocForStyleChange
+ * a new one defined in pAtts. It is imperative that updateDocForStyleChange
  * be called after this method.
  \param const gchar ** pAtts list of attributes with an extended properties
  *                        string
