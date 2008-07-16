@@ -461,6 +461,9 @@ bool PD_Style::getAllProperties( UT_GenericVector<const gchar *> * vProps, UT_si
  */
 bool PD_Style::_simplifyProperties()
 {
+	if (!getBasedOn())
+		return true; // not based on anything, thus, simplified.
+	
 	UT_GenericVector<const gchar *> vKeepers, vTheseProps, vBasedOnProps, vAttrs;
 	std::map<std::string, std::string> mBasedOnProps;
 	
