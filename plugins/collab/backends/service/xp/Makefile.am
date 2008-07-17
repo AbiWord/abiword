@@ -29,6 +29,7 @@ libxp_la_SOURCES = \
 	RealmConnection.cpp \
 	RealmGrowBuffer.h \
 	RealmProtocol.cpp \
+	RealmProtocol.h \
 	ServiceAccountHandler.cpp \
 	ServiceAccountHandler.h \
 	ServiceBuddy.h \
