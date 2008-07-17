@@ -26,6 +26,8 @@
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 
+#include <string>
+
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, const char * szLabel, bool bDisplayed) :
   m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_sLabel(""), m_bDisplayed(bDisplayed), m_iUsed(0),
   m_pBasedOn(NULL), m_pFollowedBy(NULL)
@@ -377,6 +379,74 @@ bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 	}
 }
 
+/*
+ * This method takes a property vector and
+ * replaces the properties entirely with the ones provided.
+ */
+bool PD_Style::setAllProperties (const gchar ** v_szProperties)
+{
+	std::string sProps;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
+	int i=0;
+	
+	while(v_szProperties[i] != NULL)
+	{
+		szName = v_szProperties[i];
+		szValue = v_szProperties[i+1];
+		if(strstr(szName,"toc-") == NULL)
+		{
+			sProps += std::string(szName) + ":" + std::string(szValue) + ";";
+		}
+		i = i + 2;
+	}
+	
+	// Remove trailing semicolon
+	// property string has semicolon delimiters but a trailing semicolon will cause a failure.
+	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';')
+	{
+		sProps.resize(sProps.size()-1);
+	}
+	
+	// duplicate the string and use it
+	return setAllProperties(g_strdup(sProps.c_str()));
+	
+	
+}
+
+/*
+ * This method takes a property string (with : and ; delimiters) and
+ * replaces the properties entirely with the ones provided.
+ */
+bool PD_Style::setAllProperties(const gchar * szProperties)
+{
+	
+	UT_GenericVector<const gchar *> vAttributes;
+	UT_return_val_if_fail(getAllAttributes(& vAttributes), false)
+	
+	int i;
+	const gchar ** a;
+	a = new const gchar * [vAttributes.getItemCount()+1];
+	for(i = 0; i < vAttributes.getItemCount() ; i += 2)
+	{
+		a[i]=vAttributes[i];
+		if (0 == strcmp(PT_PROPS_ATTRIBUTE_NAME, (const char *) vAttributes[i]))
+			a[i+1]=szProperties;
+		else
+			a[i+1]=vAttributes[i+1];
+	}
+	// null terminate array
+	a[i]=0;
+	
+	//
+	// Apply changes
+	//
+	
+	UT_return_val_if_fail(setAllAttributes(a), false);
+	
+	return true;
+}
+
 /*!
  * This method fills a vector structure with all the attributes defined
  * in this style, including the basedon style.
@@ -496,7 +566,7 @@ bool PD_Style::simplifyProperties()
 		newProps[i]=g_strdup(vKeepers[i]);
 	newProps[i]=0;
 	
-	setAllAttributes (newProps);
+	setAllProperties(newProps);
 		
 	return getDoc()->updateDocForStyleChange(m_szName,!isCharStyle()); //apparently worked.
 }
