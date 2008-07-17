@@ -4381,9 +4381,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					bool bDirtyRunsOnly, bool bClip)
 {
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
-					 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
+					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
-					 m_yScrollOffset,getWindowHeight()));
+					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
 	
 	GR_Painter painter(m_pG);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
@@ -4421,7 +4421,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
 	UT_sint32 iDocHeight = m_pLayout->getHeight();
-	//UT_sint32 iDocWidth = m_pLayout->getWidth(); //Commented out to get rid of the warning. ;-)
 
 	// TODO: handle positioning within oversized viewport
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
@@ -4451,7 +4450,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
-
+	
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	fl_DocSectionLayout * pDSL = NULL;
@@ -4486,7 +4485,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	calculateNumHorizPages();
 	
 	while (pPage)
@@ -4494,24 +4493,19 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		bool jumpDownARow = false;
 		UT_uint32 iPageNumber		= m_pLayout->findPage(pPage);
 		UT_uint32 iRow 				= iPageNumber/getNumHorizPages();
+		UT_uint32 iCol				= iPageNumber - iRow * getNumHorizPages();
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
-		UT_sint32 adjustedTop		= 0;
+		UT_sint32 adjustedTop		= getPageViewTopMargin() - m_yScrollOffset;
 		pDSL = pPage->getOwningSection();
 		
 		if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
 		{
 			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
 			{
-				adjustedTop += pPage->getHeight() + getPageViewSep();
+				adjustedTop += getMaxHeight(iRow) + getPageViewSep();
 			}
 		}
-		/*else
-		{
-			adjustedTop = curY - m_yScrollOffset;
-		}*/
-		adjustedTop +=  -m_yScrollOffset + getPageViewTopMargin();
-		
 
 		if(getViewMode() != VIEW_PRINT)
 		{
@@ -4544,8 +4538,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 curY,
 							 m_yScrollOffset,
 							 getWindowHeight()));
-			jumpDownARow = true;
-			break;
+			//jumpDownARow = true;
+			//break;
 		}
 		else if (adjustedTop > y + height)
 		{
@@ -4558,7 +4552,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 m_yScrollOffset,
 							 getWindowHeight(),
 							 y,height));
+			jumpDownARow = true;
 			bNotEnd = true;
+			break;
 		}
 		else if (adjustedBottom < y)
 		{
@@ -4585,19 +4581,28 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
-			da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
 			xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
-			//if (iPageNumber % getNumHorizPages() == 0)
-			//{
-				da.yoff = adjustedTop; //TODO: Adjust for multipage?
-			//}
-			//adjustedBottom -= getPageViewSep(); ///////////////////////
+			da.yoff = adjustedTop;
 			
-			xxx_UT_DEBUGMSG(("iRow: %d iCol: %d iPageNumber: %d\n", iRow, iCol, iPageNumber));
-			UT_sint32 adjustedLeft	= getPageViewLeftMargin()- m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber); //TODO: plus a bit more for spacing
-			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
+			UT_sint32 adjustedLeft = 0;
+			UT_sint32 adjustedRight = 0;
+			
+			if (!rtlPages()) // Left to right display of pages 
+			{
+				da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
+				adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
+				adjustedRight = adjustedLeft + iPageWidth;
+			}
+			else // Right to left display of pages
+			{
+				da.xoff = getWindowWidth() - getPageViewLeftMargin() - m_xScrollOffset - getWidthPrevPagesInRow(iPageNumber);
+				adjustedRight = getWindowWidth() - getPageViewLeftMargin() - m_xScrollOffset - getWidthPrevPagesInRow(iPageNumber);
+				adjustedLeft = adjustedRight - iPageWidth;
+			}
+			
 			
 			adjustedBottom -= getPageViewSep();
+			
 			if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
@@ -4661,7 +4666,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
-				else
+				else if (iCol +1 == getNumHorizPages()) // Fill to the right of the pages with gray
+				{
+					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+				}
+				else if (pPage->getNext() != NULL) //Fill between the pages with gray
+				{
+					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+				}
+				else //Fill to the right of the last page if it's not at the end of the last column.
 				{
 					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
 				}
@@ -4682,6 +4695,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// two pixel drop shadow
+			
 			if(!isPreview() && (getViewMode() == VIEW_PRINT) && !pFrame->isMenuScrollHidden() )
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),

@@ -1756,19 +1756,21 @@ UT_sint32 FL_DocLayout::getHeight()
 	UT_sint32 iHeight = 0;
 	FV_View * pView = getView(); // add page view dimensions
 	UT_uint32 count = m_vecPages.getItemCount();
+	UT_uint32 numRows = count / pView->getNumHorizPages();
+	if (count > (pView->getNumHorizPages() * numRows))
+	{
+		numRows++;
+	}
 
-	for (unsigned int i = 0; i<count; i++)
+	for (unsigned int i = 0; i<numRows; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
-		if (count % pView->getNumHorizPages() == 0)
+		UT_uint32 iRow = i / pView->getNumHorizPages();			
+		iHeight += pView->getMaxHeight(iRow);
+		
+		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
 		{
-			UT_uint32 iRow = i / pView->getNumHorizPages();			
-			iHeight += pView->getMaxHeight(iRow); // <- page height problem -- here?
-			
-			if(getView() && (getView()->getViewMode() != VIEW_PRINT))
-			{
-				iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
-			}
+			iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
 		}
 	}
 	
@@ -1789,7 +1791,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
-	UT_DEBUGMSG(("FL_DocLayout::getHeight - returned height %d \n",iHeight));
+	UT_DEBUGMSG(("FL_DocLayout::getHeight() - returned height %d \n",iHeight));
 	return iHeight;
 }
 

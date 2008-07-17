@@ -8018,6 +8018,10 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 		for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
 		{
 			iDiff += getMaxHeight(i);
+			if (i % getNumHorizPages() == 0)
+			{
+				iDiff += getPageViewSep();
+			}
 		}
 		iDiff += getMaxHeight(iRow) + getPageViewSep();
 	}
@@ -8083,7 +8087,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 			//TODO: The cursor is still very slightly off vertically where iRow > 0.
 			//Having a hard time fixing this because the second row of pages is not being redrawn properly right now.
 			//Suspect that it's because I never did figure out the page height thing.
-			iDiff += getMaxHeight(iRow) + getPageViewSep() - pDSL->getTopMargin() - pDSL->getBottomMargin();;
+			iDiff += getMaxHeight(iRow) + getPageViewSep();// - pDSL->getTopMargin() - pDSL->getBottomMargin();;
 		}
 	}
 	else
@@ -13806,21 +13810,20 @@ void FV_View::fontMetricsChange()
 
 UT_uint32 FV_View::getNumHorizPages() const
 {
+	//To update m_iNumHorizPages, call FV_View::calculateNumHorizPages() first
 	return m_iNumHorizPages;
 }
 
 void FV_View::calculateNumHorizPages()
 {
 	//TODO: If the user is on the page width zoom setting, m_autoNumHorizPages should be disabled.
-	
-	if (!m_autoNumHorizPages || m_iNumHorizPages > 20 || m_iNumHorizPages < 1) //20 seems like a reasonable max...
-	{
-		m_iNumHorizPages = 3; //TODO: get this from the default or prefrences.
-	}
-	
 	UT_uint32 windowWidth = getWindowWidth();
 	
-	if (m_getNumHorizPagesCachedWindowWidth != windowWidth) //The window width has changed; find the new m_iNumPages
+	if (!m_autoNumHorizPages || getViewMode() != VIEW_PRINT || m_iNumHorizPages > 20 || m_iNumHorizPages < 1) //20 seems like a reasonable max...
+	{
+		m_iNumHorizPages = 1; //TODO: get this from the default or prefrences.
+	}
+	else if (m_getNumHorizPagesCachedWindowWidth != windowWidth) //The window width has changed; find the new m_iNumPages
 	{
 		m_getNumHorizPagesCachedWindowWidth = windowWidth;
 		UT_uint32 widthPagesInRow = 0;
@@ -13848,6 +13851,16 @@ void FV_View::calculateNumHorizPages()
 		}
 		UT_DEBUGMSG(("m_iNumHorizPages %d | windowWidth %d | widthPagesInRow %d | pPage->getWidth() %d\n", m_iNumHorizPages,windowWidth,widthPagesInRow,pPage->getWidth()));
 	}
+	
+	if (m_iNumHorizPages > 1)
+	{
+		XAP_App::getApp()->setEnableSmoothScrolling(false);
+	}
+	else
+	{
+		XAP_App::getApp()->setEnableSmoothScrolling(true);
+	}
+	
 	return;
 }
 
@@ -13917,4 +13930,9 @@ UT_uint32 FV_View::getHorizPageSpacing() const
 {
 	//TODO: Make this change depending on the amount of free space when m_autoNumHorizPages == false
 	return m_horizPageSpacing;
+}
+
+UT_uint32 FV_View::rtlPages() const
+{
+	return false;
 }
