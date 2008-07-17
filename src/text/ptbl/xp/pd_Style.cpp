@@ -379,7 +379,7 @@ bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 	}
 }
 
-/*
+/*!
  * This method takes a property vector and
  * replaces the properties entirely with the ones provided.
  */
@@ -414,7 +414,7 @@ bool PD_Style::setAllProperties (const gchar ** v_szProperties)
 	
 }
 
-/*
+/*!
  * This method takes a property string (with : and ; delimiters) and
  * replaces the properties entirely with the ones provided.
  */
@@ -450,7 +450,7 @@ bool PD_Style::setAllProperties(const gchar * szProperties)
 /*!
  * This method fills a vector structure with all the attributes defined
  * in this style, including the basedon style.
-\param vProps the vector containing const gchar * (name,value) pairs
+\param vAttribs the vector containing const gchar * (name,value) pairs
 */
 
 bool PD_Style::getAllAttributes( UT_GenericVector<const gchar *> * vAttribs, UT_sint32 depth)
