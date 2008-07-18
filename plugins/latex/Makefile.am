@@ -1,5 +1,9 @@
 
+if HAVE_LIBXSLT
+SUBDIRS = xp xsltml
+else
 SUBDIRS = xp
+endif
 
 if LATEX_BUILTIN
 noinst_LTLIBRARIES = latex.la
