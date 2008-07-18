@@ -74,11 +74,6 @@
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 
-#ifdef WITH_GNOMEVFS
-  #include <libgnomevfs/gnome-vfs.h>
-  #include <libgnomevfs/gnome-vfs-mime-utils.h>
-#endif
-
 #ifdef HAVE_GCONF
 #include "ev_GnomeToolbar.h"
 #endif
@@ -192,29 +187,32 @@ static int s_mapMimeToUriType (const char * uri)
 	int target = TARGET_UNKNOWN;
 
 	gchar *mimeType;
-#ifdef WITH_GNOMEVFS
-	mimeType = gnome_vfs_get_mime_type (uri);
-#else
-	const gchar * suffix = UT_pathSuffix(uri);
-	if (suffix) {
-		if(suffix[0] == '.')
-			suffix++;
-		const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
-		if (!mt) {
-			mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
-		}
-		if (mt) {
-			/* we to g_free that later */
-			mimeType = g_strdup(mt);
+
+	mimeType = UT_go_get_mime_type (uri);
+
+	if (g_ascii_strcasecmp (mimeType, "application/octet-stream") == 0) {
+		FREEP (mimeType);
+		const gchar * suffix = UT_pathSuffix(uri);
+		if (suffix) {
+			if(suffix[0] == '.')
+				suffix++;
+			const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
+			if (!mt) {
+				mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
+			}
+			if (mt) {
+				/* we to g_free that later */
+				mimeType = g_strdup(mt);
+			}
+			else {
+				return target;
+			}
 		}
 		else {
 			return target;
 		}
 	}
-	else {
-		return target;
-	}
-#endif
+
 	UT_DEBUGMSG(("DOM: mimeType %s dropped into AbiWord(%s)\n", mimeType, uri));
 
 	DragInfo * dragInfo = s_getDragInfo();

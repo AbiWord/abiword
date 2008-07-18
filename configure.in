@@ -31,6 +31,7 @@ xp_pkgs="
 enchant_req='enchant >= 1.2.0'
 gnomeui_req='libgnomeui-2.0 >= 2.14'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
+gio_req='gio-2.0'
 goffice_req='libgoffice-0.4'
 gucharmap_req='gucharmap >= 1.4'
 libgnomeprintui_req='libgnomeprintui-2.2 >= 2.2.0'
@@ -330,6 +331,24 @@ AC_ARG_WITH([gnomevfs],
 
 if test "$abi_cv_gnomevfs" == "yes"; then
 	opt_pkgs="$opt_pkgs $gnomevfs_req"
+fi
+
+AC_ARG_WITH([gio], 
+	[AS_HELP_STRING([--with-gio], [use GIO library])], 
+[
+	abi_cv_gio="$withval"
+],[
+	# use gio if detected
+	PKG_CHECK_EXISTS([ $gio_req ],
+	[
+		abi_cv_gio="yes"
+	], [
+		abi_cv_gio="no"
+	])
+])
+
+if test "$abi_cv_gio" == "yes"; then
+	opt_pkgs="$opt_pkgs $gio_req"
 fi
 
 AC_ARG_WITH([goffice], 
@@ -640,6 +659,10 @@ if test "$abi_cv_gnomevfs" == "yes"; then
 	AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs])
 fi
 
+if test "$abi_cv_gio" == "yes"; then
+	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
+fi
+
 if test "$abi_cv_goffice" == "yes"; then
 	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
 fi
@@ -798,6 +821,7 @@ Optional features:
 Optional dependencies:
   libgnomeui            ${abi_cv_gnomeui}
   gnome-vfs             ${abi_cv_gnomevfs}
+  gio			${abi_cv_gio}
   goffice               ${abi_cv_goffice}
   gucharmap             ${abi_cv_gucharmap}
 
