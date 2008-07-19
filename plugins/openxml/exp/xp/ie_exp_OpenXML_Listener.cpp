@@ -58,6 +58,11 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 		UT_DEBUGMSG(("FRT: ERROR, Adding Lists Failed\n"));	
 		document = NULL;
 	}
+	if(addImages() != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, Adding Images Failed\n"));	
+		document = NULL;
+	}
 }
 
 IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
@@ -216,9 +221,47 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 
 				case PTO_Image:			
 				{
-					//TODO
-					return true;
+					OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+					OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+					if(paragraph->appendElement(shared_element_run) != UT_OK)
+						return false;
+
+					OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
+					OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));					
+
+					if(bHaveProp && pAP)
+					{
+						size_t propCount = pAP->getPropertyCount();
+				
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Image Property %s=%s\n", szName, szValue));
+								if(element_image->setProperty(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Image Attribute: %s=%s\n", szName, szValue));	
+								if(element_image->setAttribute(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+					}
+					return element_run->appendElement(shared_element_image) == UT_OK;
 				}
+
 				case PTO_Bookmark:
 				{
 					if(!bInBookmark)
@@ -619,6 +662,47 @@ UT_Error IE_Exp_OpenXML_Listener::addLists()
 		err = document->addList(shared_list);
 		if(err != UT_OK)
 			return err;
+	}
+
+	return UT_OK;
+}
+
+UT_Error IE_Exp_OpenXML_Listener::addImages()
+{
+	UT_Error err = UT_OK;
+
+	const char* szName = NULL;
+	const char* szMimeType = NULL;
+	const char** pszMimeType = &szMimeType;
+	const UT_ByteBuf* pByteBuf = NULL;
+
+	UT_uint32 k = 0;
+	while (pdoc->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
+	{
+		k++;
+
+		if(!szName || (*szName == '\0') || !szMimeType || (*szMimeType == '\0') || !pByteBuf || (pByteBuf->getLength() == 0) || (strcmp(szMimeType, "image/png") != 0))
+		{
+		 szName = NULL;
+		 szMimeType = NULL;
+		 pByteBuf = NULL;
+		 continue;
+		}
+
+		OXML_Image* image = new OXML_Image();
+		const OXML_SharedImage shared_image(image);			
+
+		image->setId(szName);
+		image->setMimeType(szMimeType);
+		image->setData(pByteBuf);
+
+		err = document->addImage(shared_image);
+		if(err != UT_OK)
+			return err;
+		
+		szName = NULL;
+		szMimeType = NULL;
+		pByteBuf = NULL;
 	}
 
 	return UT_OK;

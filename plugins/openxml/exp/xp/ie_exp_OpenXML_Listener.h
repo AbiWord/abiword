@@ -38,9 +38,11 @@
 #include <OXML_Element_Row.h>
 #include <OXML_Element_Cell.h>
 #include <OXML_Element_List.h>
+#include <OXML_Element_Image.h>
 #include <OXML_Element_Hyperlink.h>
 #include <OXML_Element_Bookmark.h>
 #include <OXML_List.h>
+#include <OXML_Image.h>
 #include <ie_Table.h>
 
 class OXML_Document;
@@ -51,6 +53,7 @@ class OXML_Element_Cell;
 class OXML_Element_List;
 class OXML_Element_Hyperlink;
 class OXML_Element_Bookmark;
+class OXML_Image;
 
 /**
  * Class responsible for listening to the Abiword Document
@@ -91,6 +94,7 @@ private:
 
 	UT_Error addDocumentStyles();
 	UT_Error addLists();
+	UT_Error addImages();
 	std::string getNextId();
 };
 

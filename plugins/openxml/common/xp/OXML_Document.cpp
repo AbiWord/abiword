@@ -128,6 +128,16 @@ UT_Error OXML_Document::addList(const OXML_SharedList & obj)
 	return UT_OK;
 }
 
+UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	std::string str("");
+	str += obj->getId();
+	m_images_by_id[str] = obj;
+	return UT_OK;
+}
+
 UT_Error OXML_Document::clearStyles()
 {
 	m_styles_by_id.clear();
@@ -262,6 +272,13 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	OXML_ListMap::iterator it3;
 	for (it3 = m_lists_by_id.begin(); it3 != m_lists_by_id.end(); it3++) {
 		ret = it3->second->serializeNumbering(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	OXML_ImageMap::iterator it4;
+	for (it4 = m_images_by_id.begin(); it4 != m_images_by_id.end(); it4++) {
+		ret = it4->second->serialize(exporter);
 		if (ret != UT_OK)
 			return ret;
 	}

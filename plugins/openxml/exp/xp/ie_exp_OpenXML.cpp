@@ -33,6 +33,7 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	relsDir(NULL),
 	wordDir(NULL),
 	wordRelsDir(NULL),
+	wordMediaDir(NULL),
 	contentTypesStream(NULL),
 	relStream(NULL),
 	wordRelStream(NULL),
@@ -104,6 +105,10 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	error = startWordRelations();
 	if(error != UT_OK)
 		return error;
+
+	error = startWordMedia();
+	if(error != UT_OK)
+		return error;
 	
 	error = startMainPart();
 	if(error != UT_OK)
@@ -136,6 +141,10 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 		return error;
 
 	error = finishStyles();
+	if(error != UT_OK)
+		return error;
+
+	error = finishWordMedia();
 	if(error != UT_OK)
 		return error;
 
@@ -1070,11 +1079,101 @@ UT_Error IE_Exp_OpenXML::setMultilevelType(int target, const char* type)
 }
 
 /**
+ * Sets the image 
+ */
+UT_Error IE_Exp_OpenXML::setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height)
+{
+	std::string str("");
+	std::string h("");
+	std::string w("");
+
+	h += convertToPositiveEmus(height);
+	w += convertToPositiveEmus(width);
+
+	str += "<w:drawing>";
+	str += "<wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">";
+	str += "<wp:extent cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "<wp:docPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<a:graphic>";
+	str += "<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
+	str += "<pic:pic>";
+	str += "<pic:nvPicPr>";
+	str += "<pic:cNvPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<pic:cNvPicPr/>";
+	str += "</pic:nvPicPr>";
+	str += "<pic:blipFill>";
+	str += "<a:blip r:embed=\"";
+	str += relId;
+	str += "\"/>";
+	str += "</pic:blipFill>";
+	str += "<pic:spPr>";
+	str += "<a:xfrm>";
+	str += "<a:off x=\"0\" y=\"0\"/>";
+	str += "<a:ext cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "</a:xfrm>";
+	str += "<a:prstGeom prst=\"rect\">";
+	str += "<a:avLst/>";
+	str += "</a:prstGeom>";
+	str += "</pic:spPr>";
+	str += "</pic:pic>";
+	str += "</a:graphicData>";
+	str += "</a:graphic>";
+	str += "</wp:inline>";
+	str += "</w:drawing>";
+
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Sets the relation of the image 
+ */
+UT_Error IE_Exp_OpenXML::setImageRelation(const char* filename, const char* id)
+{
+	std::string str("<Relationship Id=\"");
+	str += id;
+	str += "\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" ";
+	str += "Target=\"media/";
+	str += filename;
+	str += "\"/>";
+
+	return writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
 {
 	return *quantity == '-';
+}
+
+/**
+ * Converts the string str to EMUs, returns non-negative whole number
+ */
+const gchar * IE_Exp_OpenXML::convertToPositiveEmus(const gchar* str)
+{
+	//1 inch = 914400 EMUs
+	double emu = UT_convertToInches(str) * 914400;
+	if(emu < 1.0) 
+		return "0";
+	return UT_convertToDimensionlessString(emu, ".0");
 }
 
 /**
@@ -1163,6 +1262,13 @@ void IE_Exp_OpenXML::_cleanup ()
 		GsfOutput* rels_out = GSF_OUTPUT(relsDir);
 		if(!gsf_output_is_closed(rels_out))
 			gsf_output_close(rels_out);
+	}
+
+	if(wordMediaDir)
+	{
+		GsfOutput* wordMedia_out = GSF_OUTPUT(wordMediaDir);
+		if(!gsf_output_is_closed(wordMedia_out))
+			gsf_output_close(wordMedia_out);
 	}
 
 	if(wordRelsDir)
@@ -1349,6 +1455,7 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	std::string str("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 	str += "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>";
 	str += "<Default Extension=\"xml\" ContentType=\"application/xml\"/>";
+	str += "<Default Extension=\"png\" ContentType=\"image/png\"/>";
 	str += "<Override PartName=\"/word/document.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>";
 	str += "<Override PartName=\"/word/styles.xml\" ";
@@ -1557,6 +1664,57 @@ UT_Error IE_Exp_OpenXML::finishWordRelations()
 	return UT_OK;
 }
 
+/** 
+ * Does nothing for now. 
+ * If we need a default file in word/media folder we should create the necessary stream here.
+ */
+UT_Error IE_Exp_OpenXML::startWordMedia()
+{
+	return UT_OK;
+}
+
+/**
+ * Exports all the image streams to actual files in the word/media folder
+ */
+UT_Error IE_Exp_OpenXML::finishWordMedia()
+{
+	wordMediaDir = GSF_OUTFILE(gsf_outfile_new_child(wordDir, "media", TRUE)); 
+	if(!wordMediaDir)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, word/media directory couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	std::map<std::string, GsfOutput*>::iterator it;
+	for (it = mediaStreams.begin(); it != mediaStreams.end(); it++) {
+
+		GsfOutput* imageFile = gsf_outfile_new_child(wordMediaDir, it->first.c_str(), FALSE);
+
+		if(!imageFile)
+			return UT_SAVE_EXPORTERROR;
+
+	 	if(!gsf_output_write(imageFile, gsf_output_size(it->second), 
+						 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(it->second))))
+		{
+			gsf_output_close(imageFile);
+			return UT_SAVE_EXPORTERROR;
+		}
+	
+		if(!gsf_output_close(it->second))
+		{
+			gsf_output_close(imageFile);
+			return UT_SAVE_EXPORTERROR;		
+		}
+
+		if(!gsf_output_close(imageFile))
+		{
+			UT_DEBUGMSG(("FRT: ERROR, image file couldn't be closed\n"));	
+			return UT_SAVE_EXPORTERROR;		
+		}
+	}
+	
+	return UT_OK;
+}
 
 /**
  * Starts the main part of the document to word/document.xml file.
@@ -1581,6 +1739,9 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 	std::string str("<w:wordDocument xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
 	str += "xmlns:v=\"urn:schemas-microsoft-com:vml\" ";
 	str += "xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" ";
+	str += "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" ";
+	str += "xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
+	str += "xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" ";
 	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>";
 	
 	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
@@ -1699,4 +1860,27 @@ UT_Error IE_Exp_OpenXML::writeDefaultStyle()
 	str += "</w:docDefaults>";
 	return writeTargetStream(TARGET_STYLES, str.c_str());
 
+}
+
+UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ByteBuf* data)
+{
+	GsfOutput* imageStream = gsf_output_memory_new();
+
+	if(!imageStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, image file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}	
+
+ 	if(!gsf_output_write(imageStream, data->getLength(), data->getPointer(0)))
+	{
+		gsf_output_close(imageStream);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	std::string str("");
+	str += filename;
+	mediaStreams[str] = imageStream;
+		
+	return UT_OK;
 }

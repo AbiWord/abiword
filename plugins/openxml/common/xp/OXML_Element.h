@@ -28,6 +28,7 @@
 #include <OXML_ObjectWithAttrProp.h>
 #include "OXML_Style.h"
 #include "OXML_List.h"
+#include "OXML_Image.h"
 
 // AbiWord includes
 #include <ut_types.h>
@@ -110,6 +111,7 @@ private:
 
 typedef std::map<std::string, OXML_SharedStyle > OXML_StyleMap;
 typedef std::map<UT_uint32, OXML_SharedList > OXML_ListMap;
+typedef std::map<std::string, OXML_SharedImage > OXML_ImageMap;
 
 #endif //_OXML_ELEMENT_H_
 

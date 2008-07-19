@@ -69,6 +69,7 @@ enum OXML_ElementTag {
 	TR_TAG,
 	TC_TAG,
 	LST_TAG,
+	IMG_TAG,
 	HYPR_TAG,
 	BOOK_TAG
 };
@@ -79,6 +80,7 @@ enum OXML_ElementType {
 	TABLE,
 	LIST, 
 	ROW,
+	IMAGE,
 	CELL, 
 	HYPRLNK,
 	BOOKMRK

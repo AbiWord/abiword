@@ -26,6 +26,8 @@ libxp_la_SOURCES = \
 	OXML_Element_Cell.h \
 	OXML_Element_List.cpp \
 	OXML_Element_List.h \
+	OXML_Element_Image.cpp \
+	OXML_Element_Image.h \
 	OXML_Element_Hyperlink.cpp \
 	OXML_Element_Hyperlink.h \
 	OXML_Element_Bookmark.cpp \
@@ -41,6 +43,8 @@ libxp_la_SOURCES = \
 	OXML_Style.h \
 	OXML_List.h \
 	OXML_List.cpp \
+	OXML_Image.h \
+	OXML_Image.cpp \
 	OXML_Theme.cpp \
 	OXML_Theme.h \
 	OXML_Types.h \

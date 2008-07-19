@@ -42,6 +42,7 @@
 #include <gsf/gsf-output-stdio.h>
 #include <gsf/gsf-output-memory.h>
 #include <string>
+#include <map>
 
 //target streams
 #define TARGET_STYLES 1
@@ -143,6 +144,9 @@ public:
 	UT_Error setNumberingFormat(int target, const char* format);
 	UT_Error setMultilevelType(int target, const char* type);
 	UT_Error setHyperlinkRelation(int target, const char* id, const char* addr, const char* mode);
+	UT_Error setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height);
+	UT_Error setImageRelation(const char* filename, const char* id);
+	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -152,29 +156,34 @@ private:
 	GsfOutfile* relsDir; // _rels
 	GsfOutfile* wordDir; // word 
 	GsfOutfile* wordRelsDir; // word/_rels
+	GsfOutfile* wordMediaDir; // word/media
 	GsfOutput* contentTypesStream; // [Content_Types].xml
 	GsfOutput* relStream; // _rels/.rels
 	GsfOutput* wordRelStream; // word/_rels/document.xml.rels
 	GsfOutput* documentStream; // word/document.xml
 	GsfOutput* stylesStream; // word/styles.xml
 	GsfOutput* numberingStream; // word/numbering.xml
+	std::map<std::string, GsfOutput*> mediaStreams; // all image filename, stream pairs
 
 	UT_Error startNumbering();
 	UT_Error startStyles();
 	UT_Error startContentTypes();
 	UT_Error startRelations();
 	UT_Error startWordRelations();
+	UT_Error startWordMedia();
 	UT_Error startMainPart();
 	UT_Error finishNumbering();
 	UT_Error finishStyles();
 	UT_Error finishContentTypes();
 	UT_Error finishRelations();
 	UT_Error finishWordRelations();
+	UT_Error finishWordMedia();
 	UT_Error finishMainPart();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
 	const gchar* convertToTwips(const gchar* str);
 	const gchar* convertToPositiveTwips(const gchar* str);
+	const gchar* convertToPositiveEmus(const gchar* str);
 	bool isNegativeQuantity(const gchar* quantity);
 	const gchar* convertToLines(const gchar* str);
 	const gchar* computeFontSize(const gchar* str);
