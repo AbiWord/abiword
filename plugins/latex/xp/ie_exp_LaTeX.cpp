@@ -24,6 +24,14 @@
 #include <string.h>
 #include <deque>
 
+#ifdef HAVE_LIBXSLT
+#include <libxml/DOCBparser.h>
+#include <libxslt/xslt.h>
+#include <libxslt/xsltInternals.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
+#endif
+
 #include "ut_stack.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -42,6 +50,7 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "xap_App.h"
 #include "xap_EncodingManager.h"
 #include "fd_Field.h"
 #include "ie_Table.h"
@@ -309,7 +318,10 @@ public:
 							PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-
+#ifdef HAVE_LIBXSLT	
+	static	bool		convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
+							UT_UTF8String & sLaTeX);
+#endif
 protected:
 	void				_closeBlock(void);
 	void				_closeCell(void);
@@ -1521,6 +1533,59 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 	m_pie->write("\n\\end{document}\n");
 }
 
+#ifdef HAVE_LIBXSLT
+bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
+											UT_UTF8String & sLaTeX)
+{
+	xsltStylesheet *cur = NULL;
+	xmlDocPtr doc, res;
+	xmlChar * pLatex = NULL;
+	int len;
+	
+	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+	path += "/xsltml/mmltex.xsl";
+
+	cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
+	if (!cur)
+	{
+		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing stylesheet failed\n"));
+		return false;
+	}
+	
+	doc = xmlParseDoc((const xmlChar*)(sMathML.utf8_str()));
+	if (!doc)
+	{
+		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing MathML document failed\n"));
+		xsltFreeStylesheet(cur);
+		return false;
+	}	
+	
+	res = xsltApplyStylesheet(cur, doc, NULL);
+	if (!res)
+	{
+		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Applying stylesheet failed\n"));
+		xmlFreeDoc(doc);
+		xsltFreeStylesheet(cur);
+		return false;
+	}
+	
+	if (xsltSaveResultToString(&pLatex, &len, res, cur) != 0)
+	{
+		xmlFreeDoc(res);
+		xmlFreeDoc(doc);
+		xsltFreeStylesheet(cur);
+		return false;
+	}
+	sLaTeX.assign((const char*)pLatex, len);
+	
+	g_free(pLatex);
+	xmlFreeDoc(res);
+	xmlFreeDoc(doc);
+	xsltFreeStylesheet(cur);
+	return true;
+}
+#endif
+
 bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								   const PX_ChangeRecord * pcr)
 {
@@ -1616,27 +1681,53 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				
 			  case PTO_Math:
 				_closeSpan () ;
-				if(bHaveProp && pAP && pAP->getAttribute("latexid", szValue))
+				if(bHaveProp && pAP)
 				{
-				    	if(szValue == NULL || *szValue == 0)
-					{
-					    UT_DEBUGMSG(("TODO: convert MathML equations to LaTeX ones\n"));
-					    return true;
-					}
-					const UT_ByteBuf * pByteBuf = NULL;
 					UT_UTF8String sLatex;
-					bool bFoundLatexID = m_pDocument->getDataItemDataByName(szValue, 
+					const UT_ByteBuf * pByteBuf = NULL;
+					UT_UCS4_mbtowc myWC;
+					
+					if(pAP->getAttribute("latexid", szValue) &&	szValue 
+							&& *szValue)
+					{					
+						bool bFoundLatex = m_pDocument->getDataItemDataByName(szValue, 
 						    &pByteBuf,
 						    NULL, NULL);
-					if(!bFoundLatexID)
-					{
-					    return true;
+						if(!bFoundLatex)
+						{
+							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
+							return true;
+						}
+						sLatex.appendBuf(*pByteBuf, myWC);
+						
+						m_pie->write("$");
+						m_pie->write(sLatex.utf8_str());
+						m_pie->write("$");
 					}
-					UT_UCS4_mbtowc myWC;
-					sLatex.appendBuf( *pByteBuf, myWC);
-					m_pie->write("$");
-					m_pie->write(sLatex.utf8_str());
-					m_pie->write("$");
+#ifdef HAVE_LIBXSLT
+					else if(pAP->getAttribute("dataid", szValue) &&	szValue 
+							&& *szValue)
+					{
+						UT_UTF8String sMathML;
+						bool bFoundMathML = m_pDocument->getDataItemDataByName(szValue, 
+						    &pByteBuf,
+						    NULL, NULL);
+						if(!bFoundMathML)
+						{
+							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
+							return true;
+						}
+						
+						sMathML.appendBuf(*pByteBuf, myWC);
+						
+						if(!convertMathMLtoLaTeX(sMathML, sLatex))
+							return true;
+						/*The converted sLatex already contains $s*/
+						m_pie->write(sLatex.utf8_str());
+					}
+#endif
+					else
+						return true;
 				}
 				return true;
 
