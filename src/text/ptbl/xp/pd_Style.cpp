@@ -560,6 +560,12 @@ bool PD_Style::simplifyProperties()
 		}
 	}
 
+	//
+	// Eliminate Defaults
+	//
+	
+	// TODO
+	
 	// OK, now replace old stuff.
 	
 	const gchar ** newProps;
@@ -567,10 +573,8 @@ bool PD_Style::simplifyProperties()
 	for (i=0; i<vKeepers.getItemCount(); i++)
 		newProps[i]=g_strdup(vKeepers[i]);
 	newProps[i]=0;
-	
-	setAllProperties(newProps);
 		
-	return getDoc()->updateDocForStyleChange(m_szName,!isCharStyle()); //apparently worked.
+	return setAllProperties(newProps); //apparently worked.
 }
 
 /*!
