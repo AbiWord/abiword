@@ -296,8 +296,7 @@ bool PD_Style::addProperties(const gchar ** pProperties)
 
 /*!
  * This method replaces the previous set of attributes/properties with
- * a new one defined in pAtts. It is imperative that updateDocForStyleChange
- * be called after this method.
+ * a new one defined in pAtts.
  \param const gchar ** pAtts list of attributes with an extended properties
  *                        string
  */
@@ -306,7 +305,10 @@ bool PD_Style::setAllAttributes(const gchar ** pAtts)
 	bool bres =	m_pPT->getVarSet().storeAP(pAtts, &m_indexAP);
 	m_pFollowedBy = NULL;
 	m_pBasedOn = NULL;
-	return bres;
+	if (bres)
+		return getDoc()->updateDocForStyleChange(m_szName,!isCharStyle());
+	else
+		return bres;
 }
 
 

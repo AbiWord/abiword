@@ -4328,7 +4328,6 @@ PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh
 */
 bool	PD_Document::setAllStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs)
 {
-	PD_Style * pS;
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
@@ -4342,7 +4341,7 @@ bool	PD_Document::setAllStyleAttributes(const gchar * szStyleName, const gchar *
 //
 	(*ppS)->getBasedOn();
 	(*ppS)->getFollowedBy();
-	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
+	return true;
 }
 
 /*!
