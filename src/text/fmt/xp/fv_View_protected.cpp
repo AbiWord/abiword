@@ -2480,15 +2480,24 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 		{
 			UT_sint32 iPageWidth = pPage->getWidth();
 			
-			if (xClick > iPageWidth)
+			if (xClick > iPageWidth && !rtlPages()) // Left to right
 			{
 				xClick -= iPageWidth + getHorizPageSpacing();
 			}
+			else if (xClick < getWidthPrevPagesInRow(m_pLayout->findPage(pPage)) && rtlPages()) // Right to left
+			{
+				//Don't need to do anything.
+			}
 			else
 			{
+				if (rtlPages())
+				{
+					xClick -= getWidthPrevPagesInRow(m_pLayout->findPage(pPage));
+				}
+				
 				//Found the page. Huzzah!
-				xxx_UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, m_pLayout->findPage(pPage)));
-				xxx_UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d | %d\n", pPage->getHeight(), iPageWidth, getWidthPagesInRow(pPage)));
+				UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, m_pLayout->findPage(pPage)));
+				UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d | %d\n", pPage->getHeight(), iPageWidth, getWidthPagesInRow(pPage)));
 				break;
 			}
 			pPage = pPage->getNext();
@@ -4587,17 +4596,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_sint32 adjustedLeft = 0;
 			UT_sint32 adjustedRight = 0;
 			
-			if (!rtlPages()) // Left to right display of pages 
+			if (!rtlPages() || getNumHorizPages() == 1) // Left to right display of pages 
 			{
 				da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
-				adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
+				adjustedLeft = da.xoff;
 				adjustedRight = adjustedLeft + iPageWidth;
 			}
 			else // Right to left display of pages
 			{
-				da.xoff = getWindowWidth() - getPageViewLeftMargin() - m_xScrollOffset - getWidthPrevPagesInRow(iPageNumber);
-				adjustedRight = getWindowWidth() - getPageViewLeftMargin() - m_xScrollOffset - getWidthPrevPagesInRow(iPageNumber);
-				adjustedLeft = adjustedRight - iPageWidth;
+				da.xoff = getPageViewLeftMargin() - m_xScrollOffset + getWidthPrevPagesInRow(iPageNumber);
+				adjustedLeft = da.xoff;
+				adjustedRight = adjustedLeft + iPageWidth;
 			}
 			
 			
@@ -4666,17 +4675,40 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
-				else if (iCol +1 == getNumHorizPages()) // Fill to the right of the pages with gray
+				else if (!rtlPages() || getNumHorizPages() == 1) //Fill in the margins for right to left
 				{
-					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					if (iCol +1 == getNumHorizPages()) // Fill to the right of the pages with gray
+					{
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					}
+					else if (pPage->getNext() != NULL) //Fill between the pages with gray
+					{
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+					}
+					else //Fill to the right of the last page if it's not at the end of the last column.
+					{
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					}
 				}
-				else if (pPage->getNext() != NULL) //Fill between the pages with gray
+				else //Fill in the margins for left to right
 				{
-					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
-				}
-				else //Fill to the right of the last page if it's not at the end of the last column.
-				{
-					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					/*if (iCol +1 == getNumHorizPages()) //Fill to the left of the pages with gray
+					{
+						painter.fillRect(clrMargin, getPageViewLeftMargin(), adjustedTop, adjustedLeft - m_xScrollOffset, iPageHeight + m_pG->tlu(3));
+					}*/
+					if (iCol % getNumHorizPages() == 0) // Fill to the right of the pages with gray
+					{
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
+					}
+					else if (pPage->getNext() != NULL) //Fill between the pages with gray
+					{
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(2), iPageHeight + m_pG->tlu(3));
+						//painter.fillRect(clrMargin, adjustedLeft - getHorizPageSpacing() + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+					}
+					/*else //Fill to the left of the last page if it's not at the end of the last column.
+					{
+						painter.fillRect(clrMargin, 0, adjustedTop, adjustedRight + m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+					}*/
 				}
 			}
 

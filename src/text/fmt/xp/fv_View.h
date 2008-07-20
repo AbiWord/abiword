@@ -823,7 +823,7 @@ public:
 	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber) const;
 	UT_uint32			getWidthPagesInRow(fp_Page *page) const;
 	UT_uint32			getHorizPageSpacing(void) const;
-	UT_uint32			rtlPages(void) const;
+	bool				rtlPages(void) const;
 	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);

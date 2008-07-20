@@ -13894,22 +13894,42 @@ UT_uint32 FV_View::getMaxHeight(UT_uint32 iRow) const
 
 UT_uint32 FV_View::getWidthPrevPagesInRow(UT_uint32 iPageNumber) const
 {
+	if (getNumHorizPages() == 1)
+	{
+		return 0;
+	}
+	
 	UT_uint32 totalWidth = 0;
 	UT_uint32 iRow = iPageNumber/getNumHorizPages(); //yay truncation.
-	UT_uint32 iFirstPageInRow = iRow * getNumHorizPages();
-	UT_uint32 diff = iPageNumber - iFirstPageInRow; //diff between current & prev pages in row
+	UT_uint32 iFirstPageInRow = 0;
+	UT_uint32 diff = 0; //diff between current & prev pages in row
+	
+	if(!rtlPages())
+	{
+		iFirstPageInRow = iRow * getNumHorizPages();
+		diff = iPageNumber - iFirstPageInRow;
+	}
+	else
+	{
+		iFirstPageInRow = (iRow * getNumHorizPages()) + (getNumHorizPages() -1);
+		diff = iFirstPageInRow - iPageNumber;
+	}
 	
 	if (iFirstPageInRow != iPageNumber)
 	{
-		fp_Page * pPage = m_pLayout->getNthPage(iFirstPageInRow);
+		fp_Page * pPage = 0;
 		
-		for (unsigned int i = 0; i < diff; i++)
+		if (m_pLayout->getNthPage(iFirstPageInRow))
 		{
-			totalWidth += getHorizPageSpacing() + pPage->getWidth();
-			
-			if (pPage->getNext())
+			pPage = m_pLayout->getNthPage(iFirstPageInRow);
+			for (unsigned int i = 0; i < diff; i++)
 			{
-				pPage = pPage->getNext();
+				totalWidth += getHorizPageSpacing() + pPage->getWidth();
+				
+				if (pPage->getNext())
+				{
+					pPage = pPage->getNext();
+				}
 			}
 		}
 	}
@@ -13921,7 +13941,16 @@ UT_uint32 FV_View::getWidthPagesInRow(fp_Page *page) const
 	UT_uint32 iPageNumber	= m_pLayout->findPage(page);
 	fp_Page * pPage = m_pLayout->getNthPage(iPageNumber);
 	UT_uint32 iRow = iPageNumber/getNumHorizPages();
-	UT_uint32 iLastPageInRow = iRow * getNumHorizPages() + (getNumHorizPages() - 1);
+	UT_uint32 iLastPageInRow = 0;
+	
+	if(!rtlPages())
+	{
+		iLastPageInRow = iRow * getNumHorizPages() + (getNumHorizPages() - 1);
+	}
+	else
+	{
+		iLastPageInRow = iRow * getNumHorizPages();
+	}
 	
 	return (getWidthPrevPagesInRow(iLastPageInRow) + pPage->getWidth());
 }
@@ -13932,7 +13961,7 @@ UT_uint32 FV_View::getHorizPageSpacing() const
 	return m_horizPageSpacing;
 }
 
-UT_uint32 FV_View::rtlPages() const
+bool FV_View::rtlPages() const
 {
-	return false;
+	return TRUE;
 }
