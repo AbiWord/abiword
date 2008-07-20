@@ -279,7 +279,7 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	//
 	// Replace the properties string with the caret one
 	//
-	
+	/*
 	int i;
 	const gchar ** a;
 	a = new const gchar * [vAttributes.getItemCount()+1];
@@ -293,12 +293,12 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	}
 	// null terminate array
 	a[i]=0;
-	
+	*/
 	//
 	// Apply changes
 	//
 	
-	UT_return_val_if_fail(p_curStyle->setAllAttributes(a), false);
+	UT_return_val_if_fail(p_curStyle->setAllProperties(sz_caretProps), false);
 	
 	//
 	// Simplify style? TODO: Decide if this is a good idea
