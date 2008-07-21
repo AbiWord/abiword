@@ -1422,10 +1422,12 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 }
 
 #define PROPERTY(x) \
-	if (pAP->getProperty(x, szValue)) \
+	if (pAP->getProperty(x, szValue) && szValue && *szValue) \
 	{ \
+		UT_UTF8String esc = szValue; \
+		esc.escapeXML(); \
 		buf += " "x"=\""; \
-		buf += szValue; \
+		buf += esc.utf8_str(); \
 		buf += "\""; \
 	}
 
