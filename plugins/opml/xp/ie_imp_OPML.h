@@ -57,6 +57,7 @@ private:
 	void			_createBullet(void);
 	void			_createList(void);
 
+	bool			m_bOpenedBlock;
 	UT_uint32		m_iCurListID;
 	UT_uint32		m_iOutlineDepth;
 	UT_UTF8String	m_sMetaTag;

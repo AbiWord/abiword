@@ -174,6 +174,7 @@ bool IE_Imp_OPML_Sniffer::getDlgLabels (const char ** pszDesc,
 
 IE_Imp_OPML::IE_Imp_OPML(PD_Document * pDocument)
 	: IE_Imp_XML (pDocument, false),
+	m_bOpenedBlock(false),
 	m_iCurListID(AUTO_LIST_RESERVED),
 	m_iOutlineDepth(0),
 	m_sMetaTag("")
@@ -363,6 +364,10 @@ void IE_Imp_OPML::endElement(const gchar *name)
 		case TT_DOCUMENT:
 		{
 			X_VerifyParseState(_PS_Doc);
+
+			if(!m_bOpenedBlock)
+				X_CheckError(appendStrux(PTX_Block, NULL));
+
 			m_parseState = _PS_Init;
 			return;
 		}
@@ -470,6 +475,7 @@ void IE_Imp_OPML::_createBullet(void)
 	buf[9] = (gchar *)g_strdup(val.c_str());
 
 	X_CheckError(appendStrux(PTX_Block, const_cast<const gchar **>(buf)));
+	m_bOpenedBlock = true;
 
 	// add the list label
 	const gchar * buf2 [3];
