@@ -263,6 +263,9 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 		{
 			X_VerifyParseState(_PS_Init);
 			m_parseState = _PS_Doc;
+			// append the section here (rather than the TT_SECTION case) in case
+			// the file is lacking a body element
+			X_CheckError(appendStrux(PTX_Section, NULL));
 			return;
 		}
 
@@ -271,7 +274,6 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 			X_VerifyParseState(_PS_Doc);
 			m_parseState = _PS_Sec;
 		
-			X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
 			return;
 		}
 
