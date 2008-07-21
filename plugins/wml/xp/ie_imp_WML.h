@@ -70,6 +70,7 @@ public:
 	void closeCell(void);
 	void createImage(const char *name, const gchar **atts);
 
+	bool						m_bOpenedSection;
 	UT_sint32					m_iColumns;
 	UT_uint32					m_iImages;
 	UT_sint32					m_iOpenedColumns;

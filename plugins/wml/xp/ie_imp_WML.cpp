@@ -113,6 +113,7 @@ IE_Imp_WML::~IE_Imp_WML()
 
 IE_Imp_WML::IE_Imp_WML (PD_Document * pDocument) :
 	IE_Imp_XML(pDocument,false),
+	m_bOpenedSection(false),
 	m_iColumns(0),
 	m_iImages(0),
 	m_iOpenedColumns(0),
@@ -310,6 +311,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 		// Keep this appendStrux() call here to support files with more
 		// than one <card>
 		X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
+		m_bOpenedSection = true;
 		return;
 	}
 
@@ -621,6 +623,13 @@ void IE_Imp_WML::endElement(const gchar *name)
 	case TT_DOCUMENT:
 	{
 		X_VerifyParseState(_PS_Doc);
+
+		if(!m_bOpenedSection)
+		{
+			X_CheckError(appendStrux(PTX_Section, NULL));
+			X_CheckError(appendStrux(PTX_Block, NULL));
+		}
+
 		m_parseState = _PS_Init;
 		return;
 	}
