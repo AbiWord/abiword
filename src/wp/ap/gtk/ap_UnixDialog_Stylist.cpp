@@ -116,8 +116,9 @@ static void s_new_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 static void s_redefine_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 {
 	// redefine selected style using props at caret
+	UT_return_if_fail(me);
 	
-	// TODO
+	me->redefineStyleFromDocument();
 	return;
 }
 
