@@ -399,7 +399,14 @@ protected:
 					   // or several \cline as appropriate
 	unsigned int	    m_index; // (dynamic, increase only) index into m_pqRect; it is safe
 				     // to skip anything before m_index
+#ifdef HAVE_LIBXSLT
+	static xsltStylesheet *cur;
+#endif
 };
+
+#ifdef HAVE_LIBXSLT
+	xsltStylesheet * s_LaTeX_Listener::cur = NULL;
+#endif
 
 void s_LaTeX_Listener::_closeParagraph(void)
 {
@@ -1514,6 +1521,13 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 s_LaTeX_Listener::~s_LaTeX_Listener()
 {
 	//if (!m_bInFootnote) return;
+#ifdef HAVE_LIBXSLT
+	if(cur)
+	{
+		xsltFreeStylesheet(cur);
+		cur = NULL;
+	}	
+#endif
 	_closeSpan();
 	_closeBlock();
 	_closeSection();
@@ -1537,26 +1551,30 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 											UT_UTF8String & sLaTeX)
 {
-	xsltStylesheet *cur = NULL;
+	//static xsltStylesheet *cur = NULL;
 	xmlDocPtr doc, res;
 	xmlChar * pLatex = NULL;
 	int len;
 	
-	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
-	path += "/xsltml/mmltex.xsl";
-
-	cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
+	if (sMathML.empty())
+		// Nothing has failed, but we have nothing to do anyway
+		return false;
 	if (!cur)
 	{
-		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing stylesheet failed\n"));
-		return false;
+		UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+		path += "/xsltml/mmltex.xsl";
+
+		cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
+		if (!cur)
+		{
+			UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing stylesheet failed\n"));
+			return false;
+		}
 	}
-	
 	doc = xmlParseDoc((const xmlChar*)(sMathML.utf8_str()));
 	if (!doc)
 	{
 		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing MathML document failed\n"));
-		xsltFreeStylesheet(cur);
 		return false;
 	}	
 	
@@ -1565,7 +1583,6 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 	{
 		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Applying stylesheet failed\n"));
 		xmlFreeDoc(doc);
-		xsltFreeStylesheet(cur);
 		return false;
 	}
 	
@@ -1573,7 +1590,6 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 	{
 		xmlFreeDoc(res);
 		xmlFreeDoc(doc);
-		xsltFreeStylesheet(cur);
 		return false;
 	}
 	sLaTeX.assign((const char*)pLatex, len);
@@ -1581,7 +1597,6 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 	g_free(pLatex);
 	xmlFreeDoc(res);
 	xmlFreeDoc(doc);
-	xsltFreeStylesheet(cur);
 	return true;
 }
 #endif
