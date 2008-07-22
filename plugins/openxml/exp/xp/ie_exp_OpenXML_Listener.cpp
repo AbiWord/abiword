@@ -137,40 +137,88 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 			{
 				case PTO_Field:
 				{
-					OXML_Element_List* element_list = new OXML_Element_List(getNextId(), paragraph);
-					OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
-
-					if(bHaveProp && pAP)
+					fd_Field* field = pcro->getField();
+					
+					switch(field->getFieldType())
 					{
-						size_t propCount = pAP->getPropertyCount();
+						case fd_Field::FD_ListLabel:
+						{
+
+							OXML_Element_List* element_list = new OXML_Element_List(getNextId(), paragraph);
+							OXML_SharedElement shared_element_list(static_cast<OXML_Element*>(element_list));
+
+							if(bHaveProp && pAP)
+							{
+								size_t propCount = pAP->getPropertyCount();
 				
-						size_t i;
-						for(i=0; i<propCount; i++)
-						{
-							if(pAP->getNthProperty(i, szName, szValue))
-							{
-								//TODO: Take the debug message out when we are done
-								UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
-								if(element_list->setProperty(szName, szValue) != UT_OK)
-									return false;		
+								size_t i;
+								for(i=0; i<propCount; i++)
+								{
+									if(pAP->getNthProperty(i, szName, szValue))
+									{
+										//TODO: Take the debug message out when we are done
+										UT_DEBUGMSG(("List Property %s=%s\n", szName, szValue));
+										if(element_list->setProperty(szName, szValue) != UT_OK)
+											return false;		
+									}
+								}
+
+								size_t attrCount = pAP->getAttributeCount();
+
+								for(i=0; i<attrCount; i++)
+								{
+									if(pAP->getNthAttribute(i, szName, szValue))
+									{
+										//TODO: Take the debug message out when we are done
+										UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
+										if(element_list->setAttribute(szName, szValue) != UT_OK)
+											return false;		
+									}
+								}
 							}
+
+							return paragraph->appendElement(shared_element_list) == UT_OK;			
 						}
-
-						size_t attrCount = pAP->getAttributeCount();
-
-						for(i=0; i<attrCount; i++)
+						
+						default:
 						{
-							if(pAP->getNthAttribute(i, szName, szValue))
-							{
-								//TODO: Take the debug message out when we are done
-								UT_DEBUGMSG(("List Attribute: %s=%s\n", szName, szValue));	
-								if(element_list->setAttribute(szName, szValue) != UT_OK)
-									return false;		
-							}
-						}
-					}
+							OXML_Element_Field* element_field = new OXML_Element_Field(getNextId(), field->getFieldType(), field->getValue());
+							OXML_SharedElement shared_element_field(static_cast<OXML_Element*>(element_field));
 
-					return paragraph->appendElement(shared_element_list) == UT_OK;			
+							if(bHaveProp && pAP)
+							{
+								size_t propCount = pAP->getPropertyCount();
+				
+								size_t i;
+								for(i=0; i<propCount; i++)
+								{
+									if(pAP->getNthProperty(i, szName, szValue))
+									{
+										//TODO: Take the debug message out when we are done
+										UT_DEBUGMSG(("Field Property %s=%s\n", szName, szValue));
+										if(element_field->setProperty(szName, szValue) != UT_OK)
+											return false;		
+									}
+								}
+
+								size_t attrCount = pAP->getAttributeCount();
+
+								for(i=0; i<attrCount; i++)
+								{
+									if(pAP->getNthAttribute(i, szName, szValue))
+									{
+										//TODO: Take the debug message out when we are done
+										UT_DEBUGMSG(("Field Attribute: %s=%s\n", szName, szValue));	
+										if(element_field->setAttribute(szName, szValue) != UT_OK)
+											return false;		
+									}
+								}
+							}
+
+							return paragraph->appendElement(shared_element_field) == UT_OK;			
+						}
+						
+					}		
 				}
 
 				case PTO_Hyperlink:

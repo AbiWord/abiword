@@ -1157,6 +1157,29 @@ UT_Error IE_Exp_OpenXML::setImageRelation(const char* filename, const char* id)
 }
 
 /**
+ * Sets the simple field
+ */
+UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
+{
+	UT_UTF8String sEscInstr = instr;
+	sEscInstr.escapeXML();
+	UT_UTF8String sEscValue = value;
+	sEscValue.escapeXML();
+	
+	std::string str("");
+	str += "<w:fldSimple w:instr=\"";
+	str += sEscInstr.utf8_str();
+	str += "\">";
+	str += "<w:r>";
+	str += "<w:t>";
+	str += sEscValue.utf8_str();
+	str += "</w:t>";
+	str += "</w:r>";
+	str += "</w:fldSimple>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)

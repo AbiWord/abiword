@@ -147,6 +147,7 @@ public:
 	UT_Error setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height);
 	UT_Error setImageRelation(const char* filename, const char* id);
 	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
+	UT_Error setSimpleField(const char* instr, const char* value);
 
 protected:
     virtual UT_Error _writeDocument(void);

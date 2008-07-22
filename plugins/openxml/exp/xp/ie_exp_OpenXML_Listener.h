@@ -30,6 +30,7 @@
 #include <px_CR_Span.h>
 #include <px_CR_Object.h>
 #include <fl_AutoNum.h>
+#include <fd_Field.h>
 #include <OXML_Document.h>
 #include <OXML_Element_Text.h>
 #include <OXML_Element_Run.h>
@@ -41,6 +42,7 @@
 #include <OXML_Element_Image.h>
 #include <OXML_Element_Hyperlink.h>
 #include <OXML_Element_Bookmark.h>
+#include <OXML_Element_Field.h>
 #include <OXML_List.h>
 #include <OXML_Image.h>
 #include <ie_Table.h>
@@ -53,6 +55,7 @@ class OXML_Element_Cell;
 class OXML_Element_List;
 class OXML_Element_Hyperlink;
 class OXML_Element_Bookmark;
+class OXML_Element_Field;
 class OXML_Image;
 
 /**
