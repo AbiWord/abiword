@@ -460,6 +460,10 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	}
 }
 
+/*!
+ * This method takes consumes pAP, do not attempt to access pAP after 
+calling this method.
+*/
 bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 {
 	// Add the AP to our tables iff it is unique.

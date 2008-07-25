@@ -60,6 +60,7 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 
 	// store the old/normale editmethod to fall back when a document is not under service control
 	m_pOldSaveEM = pEMC->findEditMethodByName("fileSave");
+
 	UT_return_if_fail(m_pOldSaveEM);
 	// install the edit method we will use to save to the webapp
 	EV_EditMethod* mySaveInterceptor = new EV_EditMethod (

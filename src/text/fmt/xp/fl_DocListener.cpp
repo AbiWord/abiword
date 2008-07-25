@@ -1645,6 +1645,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	        bResult = true;
 		goto finish_up;
 	}	
+	case PX_ChangeRecord::PXT_ChangeDocProp:
+	{
+	        bResult = true;
+		goto finish_up;
+	}	
 	default:
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

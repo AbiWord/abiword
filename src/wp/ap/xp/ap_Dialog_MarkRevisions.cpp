@@ -177,7 +177,7 @@ void AP_Dialog_MarkRevisions::addRevision()
 		iId = m_pRev->getId() + 1;
 
 	time_t tStart = time(NULL);
-	m_pDoc->addRevision(iId,m_pComment2, UT_UCS4_strlen(m_pComment2), tStart, 0);
+	m_pDoc->addRevision(iId,m_pComment2, UT_UCS4_strlen(m_pComment2), tStart, 0, true);
 	m_pRev = NULL;
 }
 

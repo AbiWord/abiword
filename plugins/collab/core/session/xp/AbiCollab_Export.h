@@ -70,7 +70,7 @@ public:
 
 	virtual bool		signal(UT_uint32 iSignal);
 
-	virtual	PLListenerType getType() const { return PTL_CollabExport; }
+	virtual	PLListenerType getType() const;
 
 	virtual void		setNewDocument(PD_Document * pDoc);
 	virtual void		removeDocument(void);

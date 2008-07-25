@@ -1510,6 +1510,55 @@ bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSav
 }
 
 /*!
+ * method used to import document property changes
+ */
+bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
+{
+	PP_AttrProp  AP;
+	if(pAtts)
+		AP.setAttributes(pAtts);
+	if(pProps)
+		AP.setProperties(pProps);
+	const gchar * szValue=NULL;
+	bool b= AP.getAttribute( PT_DOCPROP_ATTRIBUTE_NAME,szValue);
+	if(!b || (szValue == NULL))
+		return false;
+	gchar * szLCValue = g_utf8_strdown (szValue, -1);
+	if(strcmp(szLCValue,"revision") == 0)
+    {
+		const gchar * szID=NULL;
+		const gchar * szDesc=NULL;
+		const gchar * szTime=NULL;
+		const gchar * szVersion=NULL;
+		AP.getAttribute(PT_REVISION_ATTRIBUTE_NAME,szID);
+		AP.getAttribute(PT_REVISION_DESC_ATTRIBUTE_NAME,szDesc);
+		AP.getAttribute(PT_REVISION_TIME_ATTRIBUTE_NAME,szTime);
+		AP.getAttribute(PT_REVISION_VERSION_ATTRIBUTE_NAME,szVersion);
+		UT_DEBUGMSG(("Received revision ID %s szDesc %s time %s ver %s \n",szID,szDesc,szTime,szVersion));
+		UT_uint32 id = atoi(szID);
+		UT_UTF8String sDesc = szDesc; 
+		time_t iTime = atoi(szTime);
+		UT_uint32 iVer = atoi(szVersion);
+		UT_UCS4Char * pD = NULL;
+		UT_uint32 iLen = sDesc.ucs4_str().size();
+		pD = new UT_UCS4Char [iLen+1];
+		UT_UCS4_strncpy(pD,sDesc.ucs4_str().ucs4_str(),iLen);
+		pD[iLen] = 0;
+		AD_Document::addRevision(id,pD,iTime,iVer, false);
+	}
+	g_free (szLCValue);
+	return true;
+}
+
+/*!
+ * This method creates DocProp Change Record and broadcasts it to the listeners
+ */
+bool PD_Document::createAndSendDocPropCR( const gchar ** pAtts,const gchar ** pProps )
+{
+	return m_pPieceTable->createAndSendDocPropCR(pAtts,pProps);
+}
+
+/*!
  * This method deletes a strux of the type specified at the position
  * requested.
  * if bRecordChange is fale no change record is recorded.

@@ -1835,9 +1835,11 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
-	if (pszField != NULL && isField && strcmp(pszField, "NULL"))
+	xxx_UT_DEBUGMSG(("findFont::field-font is %s isField %d \n",pszField,isField));
+	if ((pszField != NULL) && isField && (strcmp(pszField, "NULL") != 0))
 		pszFamily = pszField;
 
+	xxx_UT_DEBUGMSG(("findFont::pszFamily is %s \n",pszFamily));
 	// for superscripts and subscripts, we'll automatically shrink the font size
 	if ((0 == strcmp(pszPosition, "superscript")) ||
 		(0 == strcmp(pszPosition, "subscript")))

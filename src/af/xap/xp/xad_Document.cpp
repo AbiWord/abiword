@@ -22,7 +22,6 @@
 
 #include <stdlib.h>
 #include <cstring>
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -681,7 +680,7 @@ const AD_Revision * AD_Document::getHighestRevision() const
 	return r;
 }
 
-bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart, UT_uint32 iVer)
+bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart, UT_uint32 iVer, bool bGenCR)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -691,16 +690,14 @@ bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart,
 	}
 
 	AD_Revision * pRev = new AD_Revision(iId, pDesc, tStart, iVer);
-
-	m_vRevisions.addItem(pRev);
-	forceDirty();
+	addRevision(pRev, bGenCR);
 	m_iRevisionID = iId;
 	return true;
 }
 
 bool AD_Document::addRevision(UT_uint32 iId,
 							  const UT_UCS4Char * pDesc, UT_uint32 iLen,
-							  time_t tStart, UT_uint32 iVer)
+							  time_t tStart, UT_uint32 iVer,bool bGenCR)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -719,10 +716,33 @@ bool AD_Document::addRevision(UT_uint32 iId,
 	}
 	
 	AD_Revision * pRev = new AD_Revision(iId, pD, tStart, iVer);
-
-	m_vRevisions.addItem(pRev);
-	forceDirty();
+	addRevision(pRev,bGenCR);
 	m_iRevisionID = iId;
+	return true;
+}
+
+bool AD_Document::addRevision(AD_Revision * pRev, bool bGenCR)
+{
+	m_vRevisions.addItem(pRev);
+	if(bGenCR)
+	{
+		const gchar * szAtts[11]={"docprop","revision",
+							 "revision",NULL,
+							 "revision-desc",NULL,
+							 "revision-time",NULL,
+							 "revision-ver",NULL,NULL};
+		UT_UTF8String sID,sTime,sVer;
+		UT_UTF8String_sprintf(sID,"%d",pRev->getId());
+		UT_UTF8String_sprintf(sTime,"%d",pRev->getStartTime());
+		UT_UTF8String_sprintf(sVer,"%d",pRev->getVersion());
+		UT_UTF8String sDesc(pRev->getDescription());
+		szAtts[3]= sID.utf8_str();
+		szAtts[5] = sDesc.utf8_str();
+		szAtts[7] = sTime.utf8_str();
+		szAtts[9] = sVer.utf8_str();
+		createAndSendDocPropCR(szAtts,NULL);
+	}
+	forceDirty();
 	return true;
 }
 

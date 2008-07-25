@@ -9837,6 +9837,8 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	va.addItem("listid"); 		va.addItem(lid);
 	va.addItem("parentid");		va.addItem(pid);
 	va.addItem("level");		va.addItem(buf);
+	va.addItem("style");        va.addItem(style);
+
 	vp.addItem("start-value");	vp.addItem(pszStart);
 
 	if(m_iDomDirection == UT_BIDI_RTL)

@@ -111,6 +111,19 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
+bool pt_PieceTable::createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps)
+{
+	PT_AttrPropIndex indexAP = 0;
+	PP_AttrProp * pAP = new PP_AttrProp();
+	pAP->setAttributes(pAtts);
+	pAP->setProperties(pProps);
+	bool b = m_varset.addIfUniqueAP(pAP,&indexAP);
+	PX_ChangeRecord * pcr= new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeDocProp,0,indexAP,0);
+	m_pDocument->notifyListeners(NULL, pcr);
+	delete pcr;
+	return b;
+}
+
 bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
 	PX_ChangeRecord::PXType cType = static_cast< PX_ChangeRecord::PXType>(iType);

@@ -2033,6 +2033,14 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	for(i = 0; i < RI.m_iLength; ++i, ++(*(RI.m_pText)))
 	{
 		UT_return_val_if_fail(RI.m_pText->getStatus() == UTIter_OK, 0);
+		if(isSymbol())
+		{
+			utf8 += adobeToUnicode(RI.m_pText->getChar());
+		}
+		else if(isDingbat())
+		{
+			utf8 += adobeDingbatsToUnicode(RI.m_pText->getChar());
+		}
 		utf8 += RI.m_pText->getChar();
 	}
 	
@@ -2093,6 +2101,14 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 	for(i = 0; i < RI.m_iLength; ++i, ++(*(RI.m_pText)))
 	{
 		UT_return_if_fail(RI.m_pText->getStatus() == UTIter_OK);
+		if(isSymbol())
+		{
+			utf8 += adobeToUnicode(RI.m_pText->getChar());
+		}
+		else if(isDingbat())
+		{
+			utf8 += adobeDingbatsToUnicode(RI.m_pText->getChar());
+		}
 		utf8 += RI.m_pText->getChar();
 	}
 
@@ -2157,7 +2173,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	UT_return_if_fail(m_pXftDraw);
 
 	UT_UTF8String utf8;
-
+	xxx_UT_DEBUGMSG(("isDingBat %d \n",isDingbat()));
 	if(isSymbol())
 	{
 		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)

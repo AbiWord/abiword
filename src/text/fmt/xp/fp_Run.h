@@ -338,7 +338,6 @@ public:
 	bool        deleteFollowingIfAtInsPoint() const;
 
 	bool        displayAnnotations(void);
-
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);

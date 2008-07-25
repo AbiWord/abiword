@@ -444,7 +444,6 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 	}
-
 	// here we handle background colour -- we parse the property into
 	// m_pColorHL and then call updateHighlightColor() to overlay any
 	// colour from higher layout elements
@@ -1109,7 +1108,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	if(m_pRevisions && bShow)
 	{
 		bool bMark = pView->isMarkRevisions();
-		const PP_Revision * r = m_pRevisions->getLastRevision();
+		const gchar * szID=NULL;
+		UT_uint32 iId = 0;
+		const PP_Revision * r = NULL;
+		r = m_pRevisions->getLastRevision();
 
 		UT_return_val_if_fail(r != NULL, _getColorFG());
 
@@ -1121,9 +1123,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 			bRevColor = true;
 		}
 
-		UT_uint32 iId = r->getId();
+
 		UT_uint32 iShowId = pView->getRevisionLevel();
-		
+
+		xxx_UT_DEBUGMSG(("fp_Run Revision ID %d ShowRevision ID %d \n",iId,iShowId));
 		if(bMark && iShowId == 0)
 		{
 			// this is the case where we are in marking mode and are
@@ -1206,7 +1209,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// this run is marked as hidden, nothing to do
 		return;
 	}
-	
 	m_bIsCleared = false;
 	fp_Line * pLine = getLine();
 	if (pLine)
@@ -4045,7 +4047,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		_setFont(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, pG));
 	}
-
+	xxx_UT_DEBUGMSG(("Field font is set to %s \n",_getFont()->getFamily()));
 	_setAscent(pG->getFontAscent(_getFont()));
 	_setDescent(pG->getFontDescent(_getFont()));
 	_setHeight(pG->getFontHeight(_getFont()));
@@ -4351,7 +4353,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	}
 
 	pG->setFont(_getFont());
-	
+	xxx_UT_DEBUGMSG(("Field draw with font %s \n",_getFont()->getFamily()));
 
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
 	UT_return_if_fail(len);
@@ -4362,7 +4364,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 //
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
 	                                                 //character dirt
-	UT_DEBUGMSG(("xoff infield before drawdecors %d \n",pDA->xoff));
+	xxx_UT_DEBUGMSG(("xoff infield before drawdecors %d \n",pDA->xoff));
 	drawDecors( pDA->xoff, yTopOfRun,pG);
 
 }

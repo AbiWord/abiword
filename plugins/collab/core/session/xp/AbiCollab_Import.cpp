@@ -831,6 +831,20 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						delete pBuf;
 						return res;
 					}
+					case PX_ChangeRecord::PXT_ChangeDocProp:
+					{
+						UT_DEBUGMSG(("ChangeDocProp CR \n"));
+						const Props_ChangeRecordSessionPacket* pcrsp = static_cast<const Props_ChangeRecordSessionPacket*>( crp );
+						//
+						// Assemble the Attributes for different properties
+						//
+						const gchar** szAtts = const_cast<const gchar **>(pcrsp->getAtts());
+						const gchar** szProps = const_cast<const gchar **>(pcrsp->getProps());
+						//
+						// Now direct the document to make the changes
+						//
+						return m_pDoc->changeDocPropeties(szAtts,szProps);
+					}
 					default:
 					{
 						UT_DEBUGMSG(("Unimplemented crp->getPXType(): %d\n", crp->getPXType()));
