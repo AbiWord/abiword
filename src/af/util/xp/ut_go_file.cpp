@@ -1187,6 +1187,19 @@ UT_go_file_open (char const *uri, GError **err)
 }
 
 static GsfOutput *
+gsf_output_proxy_create (GsfOutput *wrapped, char const *uri, GError **err)
+{
+	if (!wrapped) {
+		g_set_error (err, gsf_output_error_id (), 0,
+			     "Unable to write to %s", uri);
+		return NULL;
+	}
+	
+	/* guarantee that file descriptors will be seekable */
+	return gsf_output_proxy_new (wrapped);
+}
+
+static GsfOutput *
 UT_go_file_create_impl (char const *uri, GError **err)
 {
 	char *filename;
@@ -1209,18 +1222,12 @@ UT_go_file_create_impl (char const *uri, GError **err)
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "wb") : NULL;
 		GsfOutput *result = fil ? gsf_output_stdio_new_FILE (uri, fil, FALSE) : NULL;
 
-		if (!result) {
-			g_set_error (err, gsf_output_error_id (), 0,
-				     "Unable to write to %s", uri);
-			return NULL;
-		}
-
 		/* guarantee that file descriptors will be seekable */
-		return gsf_output_proxy_new (result);
+		return gsf_output_proxy_create(result, uri, err);
 	}
 
 #if defined(WITH_GIO)
-	return gsf_output_gio_new_for_uri (uri, err);
+	return gsf_output_proxy_create(gsf_output_gio_new_for_uri (uri, err), uri, err);
 #elif defined(GOFFICE_WITH_GNOME)
 	return gsf_output_gnomevfs_new (uri, err);
 #else
