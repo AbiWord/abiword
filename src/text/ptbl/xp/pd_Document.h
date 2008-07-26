@@ -487,9 +487,10 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
-	fp_PageSize				m_docPageSize;
 	bool					setPageSizeFromFile(const gchar ** attributes);
-
+	const	fp_PageSize	*	getPageSize(void) const	
+	{ return & m_docPageSize;}
+	fp_PageSize             m_docPageSize; // Move this to private later
 	bool					isBookmarkUnique(const gchar * pName) const;
 	bool					isBookmarkRelativeLink(const gchar * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}

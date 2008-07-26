@@ -195,6 +195,81 @@ fp_PageSize& fp_PageSize::operator=(const fp_PageSize& rhs)
   return *this;
 }
 
+/*!
+ * Set all pagesize parameters via const gchar attributes
+ */
+bool fp_PageSize::Set(const gchar ** attributes)
+{
+	const gchar * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
+	double width=0.0;
+	double height=0.0;
+	double scale =1.0;
+	UT_Dimension u = DIM_IN;
+
+	for (const gchar ** a = attributes; (*a); a++)
+	{
+	  UT_DEBUGMSG(("PageSize  -prop %s value %s \n",a[0],a[1]));
+		if (strcmp(a[0],"pagetype") == 0)
+		        szPageSize = a[1];
+		else if (strcmp(a[0], "orientation") == 0)
+			szOrientation = a[1];
+		else if (strcmp(a[0], "width") == 0)
+			szWidth = a[1];
+		else if (strcmp(a[0], "height") == 0)
+			szHeight = a[1];
+		else if (strcmp(a[0], "units") == 0)
+			szUnits = a[1];
+		else if (strcmp(a[0], "page-scale") == 0)
+			szPageScale = a[1];
+		a++;
+	}
+	if(!szPageSize)
+		return false;
+	if(!szOrientation)
+		return false;
+	Set(static_cast<const char *>(szPageSize));
+
+	if( szWidth && szHeight && szUnits && szPageScale)
+	  {
+		if(g_ascii_strcasecmp(szPageSize,"Custom") == 0)
+		  {
+		    width = UT_convertDimensionless(szWidth);
+		    height = UT_convertDimensionless(szHeight);
+		    if(strcmp(szUnits,"cm") == 0)
+		      u = DIM_CM;
+		    else if(strcmp(szUnits,"mm") == 0)
+		      u = DIM_MM;
+		    else if(strcmp(szUnits,"inch") == 0)
+		      u = DIM_IN;
+		    Set(width,height,u);
+		  }
+
+		scale =  UT_convertDimensionless(szPageScale);
+		setScale(scale);
+	  }
+
+	// set portrait by default
+	setPortrait();
+	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
+	{
+		width = UT_convertDimensionless(szWidth);
+		height = UT_convertDimensionless(szHeight);
+		if(strcmp(szUnits,"cm") == 0)
+			u = DIM_CM;
+		else if(strcmp(szUnits,"mm") == 0)
+			u = DIM_MM;
+		else if(strcmp(szUnits,"inch") == 0)
+			u = DIM_IN;
+		setLandscape();
+		//
+		// Setting landscape causes the width and height to be swapped
+		// so
+		Set(height,width,u); // swap them so they out right
+	}
+	UT_DEBUGMSG(("PageSize - Height %d Width %d \n",m_iHeight,m_iWidth));
+	return true;
+}
+
 // all Set() calls ultimately go through this function
 void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 {

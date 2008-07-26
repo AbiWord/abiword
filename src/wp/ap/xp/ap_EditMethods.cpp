@@ -9121,22 +9121,22 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	fp_PageSize::Predefined orig_def,final_def;
 	double orig_wid = -1, orig_ht = -1, final_wid = -1, final_ht = -1;
 	UT_Dimension orig_ut = DIM_IN, final_ut = DIM_IN;
-	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
+	fp_PageSize pSize(pDoc->getPageSize()->getPredefinedName());
 	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
 	//
 	// Set first page of the dialog properties.
 	//
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =	AP_Dialog_PageSetup::PORTRAIT;
-	if(pDoc->m_docPageSize.isPortrait() == false)
+	if(pDoc->getPageSize()->isPortrait() == false)
 	{
 		orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	}
 	if (orig_def == fp_PageSize::psCustom)
 	{
-		orig_ut = pDoc->m_docPageSize.getDims();
-		orig_wid = pDoc->m_docPageSize.Width(orig_ut);
-		orig_ht = pDoc->m_docPageSize.Height(orig_ut);
+		orig_ut = pDoc->getPageSize()->getDims();
+		orig_wid = pDoc->getPageSize()->Width(orig_ut);
+		orig_ht = pDoc->getPageSize()->Height(orig_ut);
 		if(orig_ori == AP_Dialog_PageSetup::LANDSCAPE)
 		{
 			pSize.Set(orig_ht, orig_wid, orig_ut);
@@ -9150,8 +9150,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	pDialog->setPageOrientation(orig_ori);
 	UT_Dimension orig_unit,final_unit,orig_margu,final_margu;
 	double orig_scale,final_scale;
-	orig_unit = pDoc->m_docPageSize.getDims();
-	orig_scale = pDoc->m_docPageSize.getScale();
+	orig_unit = pDoc->getPageSize()->getDims();
+	orig_scale = pDoc->getPageSize()->getScale();
 
 	// respect units set in the dialogue constructer from prefs
 	UT_Dimension orig_uprefs = DIM_IN;
@@ -9288,104 +9288,41 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
 	{
+		final_wid = pDialog->getPageSize().Width(final_ut);
+		final_ht = pDialog->getPageSize().Height(final_ut);
 		//
 		// Set the new Page Stuff
 		//
- 		pDoc->m_docPageSize.Set(final_def,final_unit);
-
+		const gchar * szAttr[14] = {"pagetype",NULL,
+									"orientation",NULL,
+									"width",NULL,
+									"height",NULL,
+									"units",NULL,
+									"page-scale",NULL,
+									NULL,NULL};
+		UT_UTF8String sType,sOri,sWidth,sHeight,sUnits,sScale;
+		sType = pSize.getPredefinedName();
+		sUnits = UT_dimensionName(final_ut);
+		sWidth = UT_formatDimensionString(final_ut,final_wid);
+		sHeight = UT_formatDimensionString(final_ut,final_ht);
+		UT_UTF8String_sprintf(sScale,"%f",final_scale);
 		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-		if (final_def == fp_PageSize::psCustom)
-		{
-			pDoc->m_docPageSize.Set(final_wid,
-									final_ht,
-									final_ut);
-			pDoc->m_docPageSize.Set(final_def,final_ut);
-		}
-		if( p == true )
-		{
-			pDoc->m_docPageSize.setPortrait();
-		}
+		if(p)
+			sOri = "portrait";
 		else
-		{
-			pDoc->m_docPageSize.setLandscape();
-		}
-//
-// Landscape out and custom then swap
-//
-		if(!p && (final_def == fp_PageSize::psCustom))
-		{
-			final_ut = pDialog->getPageSize().getDims();
-			final_wid = pDialog->getPageSize().Width(final_ut);
-			final_ht = pDialog->getPageSize().Height(final_ut);
-//
-// Page size swaps width for height in landscape orientation.
-//
-			pDoc->m_docPageSize.Set(final_ht,
-									final_wid,
-									final_ut);
-			pDoc->m_docPageSize.Set(final_def,final_ut);
-		}
-		pDoc->m_docPageSize.setScale(final_scale);
-		FL_DocLayout * pLayout = pView->getLayout();
-		pLayout->m_docViewPageSize = pDoc->m_docPageSize;
-		//
-		// Get all clones of this frame and set the new page dimensions
-		//
-
-		UT_GenericVector<XAP_Frame*> vClones;
-		if(pFrame->getViewNumber() > 0)
-		{
-			pApp->getClones(&vClones,pFrame);
-			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+			sOri = "landscape";
+		szAttr[1] = sType.utf8_str();
+		szAttr[3] = sOri.utf8_str();
+		szAttr[5] = sWidth.utf8_str();
+		szAttr[7] = sHeight.utf8_str();
+		szAttr[9] = sUnits.utf8_str();
+		szAttr[11] = sScale.utf8_str();
+		for (const gchar ** a = szAttr; (*a); a++)
 			{
-				XAP_Frame * f = vClones.getNthItem(i);
-				UT_sint32 iZoom = f->getZoomPercentage();
-				XAP_Frame::tZoomType zt = f->getZoomType();
-				FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
-				if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
-				{
-					if(pV->isHdrFtrEdit())
-					{
-						pV->clearHdrFtrEdit();
-						pV->warpInsPtToXY(0,0,false);
-					} 
-					if(zt == XAP_Frame::z_PAGEWIDTH)
-					{
-						iZoom = pV->calculateZoomPercentForPageWidth();
-					}
-					if(zt == XAP_Frame::z_WHOLEPAGE)
-					{
-						iZoom = pV->calculateZoomPercentForWholePage();
-					}
-				}
-				f->setZoomPercentage(iZoom);
-				pLayout = pV->getLayout();
-				pLayout->m_docViewPageSize = pDoc->m_docPageSize;
+				UT_DEBUGMSG(("apEditMethods attrib %s value %s \n",a[0],a[1]));
+				a++;
 			}
-		}
-		else
-		{
-			FV_View * pV =	static_cast<FV_View *>(pFrame->getCurrentView());
-			if(pV->isHdrFtrEdit())
-			{
-				pV->clearHdrFtrEdit();
-				pV->warpInsPtToXY(0,0,false);
-			}
-			UT_sint32 iZoom = pFrame->getZoomPercentage();
-			XAP_Frame::tZoomType zt = pFrame->getZoomType();
-			if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
-			{
-				if(zt == XAP_Frame::z_PAGEWIDTH)
-				{
-					iZoom = pV->calculateZoomPercentForPageWidth();
-				}
-				if(zt == XAP_Frame::z_WHOLEPAGE)
-				{
-					iZoom = pV->calculateZoomPercentForWholePage();
-				}
-			}
-			pFrame->setZoomPercentage(iZoom);
-		}
+		pDoc->setPageSizeFromFile(szAttr);
 	}
 
 	// I am not entirely sure about this; perhaps the units should only be modifiable
@@ -9432,29 +9369,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	dHeaderMargin = static_cast<double>(pDialog->getMarginHeader());
 	dFooterMargin = static_cast<double>(pDialog->getMarginFooter());
 
-#if 0
-	docMargUnits = DIM_IN;
-	if(final_margu == DIM_CM)
-	{
-		docMargUnits = DIM_CM;
-		dLeftMargin = dLeftMargin / 2.54;
-		dRightMargin = dRightMargin / 2.54;
-		dTopMargin = dTopMargin / 2.54;
-		dBottomMargin = dBottomMargin / 2.54;
-		dFooterMargin = dFooterMargin / 2.54;
-		dHeaderMargin = dHeaderMargin / 2.54;
-	}
-	else if (final_margu == DIM_MM)
-	{
-		docMargUnits = DIM_MM;
-		dLeftMargin = dLeftMargin / 25.4;
-		dRightMargin = dRightMargin / 25.4;
-		dTopMargin = dTopMargin / 25.4;
-		dBottomMargin = dBottomMargin / 25.4;
-		dFooterMargin = dFooterMargin / 25.4;
-		dHeaderMargin = dHeaderMargin / 25.4;
-	}
-#endif
 	//
 	// Convert them into const char strings and change the section format
 	//

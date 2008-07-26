@@ -1546,6 +1546,19 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 		pD[iLen] = 0;
 		AD_Document::addRevision(id,pD,iTime,iVer, false);
 	}
+	else if(strcmp(szLCValue,"pagesize") == 0)
+    {
+		UT_sint32 i = 0;
+		UT_DEBUGMSG(("pagesize docprop received \n"));
+		const gchar * szP = pProps[i];
+		while(szP != NULL)
+		{
+			UT_DEBUGMSG(("property %s value %s \n",pProps[i],pProps[i+1]));
+			i += 2;
+			szP = pProps[i];
+		}
+		setPageSizeFromFile(pProps);
+	}
 	g_free (szLCValue);
 	return true;
 }
@@ -5024,73 +5037,17 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 
 bool PD_Document:: setPageSizeFromFile(const gchar ** attributes)
 {
-	const gchar * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
-	double width=0.0;
-	double height=0.0;
-	double scale =1.0;
-	UT_Dimension u = DIM_IN;
 
-	for (const gchar ** a = attributes; (*a); a++)
+	bool b =  m_docPageSize.Set(attributes);
+	UT_DEBUGMSG(("SetPageSize m_bLoading %d \n",m_bLoading));
+	if(!m_bLoading)
 	{
-		if (strcmp(a[0],"pagetype") == 0)
-		        szPageSize = a[1];
-		else if (strcmp(a[0], "orientation") == 0)
-			szOrientation = a[1];
-		else if (strcmp(a[0], "width") == 0)
-			szWidth = a[1];
-		else if (strcmp(a[0], "height") == 0)
-			szHeight = a[1];
-		else if (strcmp(a[0], "units") == 0)
-			szUnits = a[1];
-		else if (strcmp(a[0], "page-scale") == 0)
-			szPageScale = a[1];
+		const gchar * szAtts[] = {PT_DOCPROP_ATTRIBUTE_NAME,"pagesize",
+								  NULL,NULL};
+		UT_DEBUGMSG(("Sending page size CR \n"));
+		createAndSendDocPropCR(szAtts,attributes);
 	}
-
-	if(!szPageSize)
-		return false;
-	if(!szOrientation)
-		return false;
-	m_docPageSize.Set(static_cast<const char *>(szPageSize));
-
-	if( szWidth && szHeight && szUnits && szPageScale)
-	  {
-		if(g_ascii_strcasecmp(szPageSize,"Custom") == 0)
-		  {
-		    width = UT_convertDimensionless(szWidth);
-		    height = UT_convertDimensionless(szHeight);
-		    if(strcmp(szUnits,"cm") == 0)
-		      u = DIM_CM;
-		    else if(strcmp(szUnits,"mm") == 0)
-		      u = DIM_MM;
-		    else if(strcmp(szUnits,"inch") == 0)
-		      u = DIM_IN;
-		    m_docPageSize.Set(width,height,u);
-		  }
-
-		scale =  UT_convertDimensionless(szPageScale);
-		m_docPageSize.setScale(scale);
-	  }
-
-	// set portrait by default
-	m_docPageSize.setPortrait();
-	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
-	{
-		width = UT_convertDimensionless(szWidth);
-		height = UT_convertDimensionless(szHeight);
-		if(strcmp(szUnits,"cm") == 0)
-			u = DIM_CM;
-		else if(strcmp(szUnits,"mm") == 0)
-			u = DIM_MM;
-		else if(strcmp(szUnits,"inch") == 0)
-			u = DIM_IN;
-		m_docPageSize.setLandscape();
-		//
-		// Setting landscape causes the width and height to be swapped
-		// so
-		m_docPageSize.Set(height,width,u); // swap them so they out right
-	}
-
-	return true;
+	return b;
 }
 
 void PD_Document::addBookmark(const gchar * pName)

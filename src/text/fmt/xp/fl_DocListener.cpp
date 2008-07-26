@@ -904,7 +904,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 {
 	UT_return_val_if_fail( sfh, false );
 	
-	//UT_DEBUGMSG(("fl_DocListener::change\n"));
+	UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 	AV_ChangeMask chgMask = AV_CHG_NONE;
 	
@@ -1647,7 +1647,21 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	}	
 	case PX_ChangeRecord::PXT_ChangeDocProp:
 	{
-	        bResult = true;
+	        PT_AttrPropIndex iAP = pcr->getIndexAP();
+		const PP_AttrProp * pAP = NULL;
+		m_pLayout->getDocument()->getAttrProp(iAP, &pAP);
+		const gchar * szValue=NULL;
+		bool b= pAP->getAttribute( PT_DOCPROP_ATTRIBUTE_NAME,szValue);
+		UT_DEBUGMSG(("Doing DocProp change value %s \n",szValue));
+		if(!b)
+		{
+		    bResult = false;
+		    goto finish_up;
+		}
+		if(strcmp(szValue,"pagesize") == 0)
+		{
+		    bResult = m_pLayout->setDocViewPageSize(pAP);
+		}
 		goto finish_up;
 	}	
 	default:

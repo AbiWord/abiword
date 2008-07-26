@@ -345,7 +345,8 @@ public:
 	{ return m_bIsQuickPrint;}
 	GR_EmbedManager * getQuickPrintEmbedManager(const char * szEmbedType);
 	fp_PageSize	m_docViewPageSize;
-	
+	bool            setDocViewPageSize(const PP_AttrProp * pAP);
+
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
