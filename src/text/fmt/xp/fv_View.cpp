@@ -1523,10 +1523,10 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 }
 
 /*!
- * Returns true if the suppiled position is not is a sepecial structure
+ * Returns true if the supplied position is not in a special structure
  * like a frame or table or whatever.
  *
- * pos defaults to 0. Ifpos == 0, I assume you actually what the values of
+ * pos defaults to 0. If pos == 0, I assume you actually want the values of
  * getPoint()
  */
 
