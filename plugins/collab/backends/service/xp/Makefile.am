@@ -37,4 +37,6 @@ libxp_la_SOURCES = \
 	soa.h \
 	soa_result.h \
 	soa_soup.h \
-	soa_types.h 
+	soa_types.h \
+	tls_tunnel.cpp \
+	tls_tunnel.h

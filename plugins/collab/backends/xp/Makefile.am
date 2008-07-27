@@ -23,6 +23,5 @@ libxp_la_SOURCES = \
 	SessionEvent.cpp \
 	SessionEvent.h \
 	SynchronizedQueue.h \
-	tls_tunnel.h \
 	Synchronizer.cpp \
 	Synchronizer.h
