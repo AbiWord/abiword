@@ -337,7 +337,7 @@ try
 {
 	for (unsigned short port = MIN_CLIENT_PORT; port <= MAX_CLIENT_PORT; port++) {
 		try {
-			acceptor_ptr.reset(new asio::ip::tcp::acceptor(transport_.io_service(), asio::ip::tcp::endpoint(asio::ip::address_v4::from_string(local_address_), port)));
+			acceptor_ptr.reset(new asio::ip::tcp::acceptor(transport_.io_service(), asio::ip::tcp::endpoint(asio::ip::address_v4::from_string(local_address_), port), false));
 			local_port_ = port;
 			break;
 		} catch (asio::system_error& se) {
