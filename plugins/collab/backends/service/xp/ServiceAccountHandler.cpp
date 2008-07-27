@@ -773,6 +773,7 @@ ConnectionPtr ServiceAccountHandler::_getConnection(const std::string& session_i
 		if ((*it)->session_id() == session_id)
 			return *it;
 	}
+	return ConnectionPtr();
 }
 
 void ServiceAccountHandler::_removeConnection(const std::string& session_id)
