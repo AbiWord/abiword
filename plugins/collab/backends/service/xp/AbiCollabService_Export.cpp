@@ -109,8 +109,8 @@ bool AbiCollabService_Export::signal(UT_uint32 iSignal)
 		m_pDoc->ignoreSignals();
 		pService->saveDocumentAsync(m_iID,m_pDoc);
 		m_pDoc->dontIgnoreSignals();
-	}
-	return true;*/
+	}*/
+	return true;
 }
 
 /*!
