@@ -97,7 +97,7 @@ class IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
 {
 public:
     IE_Imp_WordPerfect(PD_Document * pDocument);
-    ~IE_Imp_WordPerfect();
+    virtual ~IE_Imp_WordPerfect();
     
     virtual void pasteFromBuffer(PD_DocumentRange * pDocRange,
 				 UT_uint8 * pData, UT_uint32 lenData, const char * szEncoding = 0);
