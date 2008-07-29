@@ -154,6 +154,9 @@ static const char * szCollaborationJoinTip = "Join a collaboration session";
 static const char * szCollaborationAccounts = "Accounts";
 static const char * szCollaborationAccountsTip = "Manage collaboration accounts";
 
+static const char * szCollaborationShowAuthors = "Show Authors";
+static const char * szCollaborationShowAuthorsTip = "Show who wrote each piece of text by with different colors";
+
 #if defined(DEBUG)
 #if !defined(ABICOLLAB_RECORD_ALWAYS)
 static const char * szCollaborationRecord = "Record this Session";
@@ -170,6 +173,7 @@ static const char * szEndCollaboration = "EndCollaboration";
 static bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_accounts(AV_View* v, EV_EditMethodCallData *d);
+static bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
@@ -190,6 +194,28 @@ bool any_accounts_online( const UT_GenericVector<AccountHandler *>& vecAccounts 
 		}
 	}
 	return false;
+}
+/*!
+ * returns checked true if current document is marked for show authors
+ */
+Defun_EV_GetMenuItemState_Fn(collab_GetState_ShowAuthors)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
+
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	PD_Document* pDoc = pView->getDocument();
+	UT_return_val_if_fail (pDoc, EV_MIS_Gray);
+	if (!pManager->isInSession(pDoc))
+	{
+		return EV_MIS_Gray;
+	}
+	if(pDoc->isShowAuthors())
+	{
+		return EV_MIS_Toggled;
+	}
+	return EV_MIS_ZERO;
 }
 
 /*!
@@ -363,11 +389,33 @@ void s_abicollab_add_menus()
 	);
 	pEMC->addEditMethod(myEditMethodAccounts);
 
+	// The Show Authors item
+	XAP_Menu_Id ShowAuthorId = pFact->addNewMenuAfter("Main", NULL, collabAccountsId, EV_MLF_Normal);
+    pFact->addNewLabel(NULL, ShowAuthorId,  szCollaborationShowAuthors,  szCollaborationShowAuthorsTip);
+	EV_Menu_Action* myActionShowAuthors = new EV_Menu_Action (
+		ShowAuthorId,   	  // id that the layout said we could use
+		0,                      // no, we don't have a sub menu.
+		0,                      // no, we don't raise a dialog.
+		1,                      // yes, we have a checkbox.
+		0,                      // no radio buttons for me, thank you
+		"s_abicollab_authors",    // name of callback function to call.
+		collab_GetState_ShowAuthors, // Function for whether not label is enabled/disabled checked/unchecked
+		NULL                    // Function to compute Menu Label "Dynamic Label"
+	);
+	pActionSet->addAction(myActionShowAuthors);
+	EV_EditMethod *myEditMethodShowAuthors = new EV_EditMethod (
+		"s_abicollab_authors",    // name of callback function
+		s_abicollab_authors,      // callback function itself.
+		0,                      // no additional data required.
+		""                      // description -- allegedly never used for anything
+	);
+	pEMC->addEditMethod(myEditMethodShowAuthors);
+
 	// The Record session connect item
 #if defined(DEBUG)
 
 #if !defined(ABICOLLAB_RECORD_ALWAYS)
-	XAP_Menu_Id collabRecordId = pFact->addNewMenuAfter("Main", NULL, collabAccountsId, EV_MLF_Normal);
+	XAP_Menu_Id collabRecordId = pFact->addNewMenuAfter("Main", NULL,ShowAuthorId , EV_MLF_Normal);
     pFact->addNewLabel(NULL, collabRecordId, szCollaborationRecord, szCollaborationRecordTip);
 	EV_Menu_Action* myActionRecord = new EV_Menu_Action (
 		collabRecordId,   		// id that the layout said we could use
@@ -390,7 +438,7 @@ void s_abicollab_add_menus()
 	
 	XAP_Menu_Id followupMenuId = collabRecordId;
 #else
-	XAP_Menu_Id followupMenuId = collabAccountsId;
+	XAP_Menu_Id followupMenuId = ShowAuthorId;
 #endif /* !defined(ABICOLLAB_RECORD_ALWAYS) */
 	
 	XAP_Menu_Id collabViewRecordId = pFact->addNewMenuAfter("Main", NULL, followupMenuId, EV_MLF_Normal);
@@ -416,7 +464,7 @@ void s_abicollab_add_menus()
 	
 	XAP_Menu_Id lastMenuId = collabViewRecordId;
 #else
-	XAP_Menu_Id lastMenuId = collabAccountsId;
+	XAP_Menu_Id lastMenuId = collabShowAuthorId;
 #endif /* defined(DEBUG) */
 
 	// End of the Collaboration menu
@@ -472,6 +520,10 @@ void s_abicollab_remove_menus()
 	pEM = ev_EditMethod_lookup ( "s_abicollab_accounts" ) ;
 	pEMC->removeEditMethod ( pEM ) ;
 	DELETEP( pEM ) ;
+
+	pEM = ev_EditMethod_lookup ( "s_abicollab_authors" ) ;
+	pEMC->removeEditMethod ( pEM ) ;
+	DELETEP( pEM ) ;
 	
 #if !defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 	pEM = ev_EditMethod_lookup ( "s_abicollab_record" ) ;
@@ -497,6 +549,7 @@ void s_abicollab_remove_menus()
 	pFact->removeMenuItem("Main", NULL, szCollaborationOffer);
 	pFact->removeMenuItem("Main", NULL, szCollaborationJoin);
 	pFact->removeMenuItem("Main", NULL, szCollaborationAccounts);	
+	pFact->removeMenuItem("Main", NULL, szCollaborationShowAuthors);	
 #if !defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 	pFact->removeMenuItem("Main", NULL, szCollaborationRecord);	
 #endif
@@ -535,6 +588,17 @@ bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d)
 		UT_UTF8String sSessionId("");
 		pManager->startSession(pDoc, sSessionId, NULL);
 	}
+	return true;
+}
+
+bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d)
+{
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+	FV_View * pView = static_cast<FV_View *>(v);
+	PD_Document * pDoc = pView->getDocument();
+	bool b = pDoc->isShowAuthors();
+	pDoc->setShowAuthors(!b);
 	return true;
 }
 

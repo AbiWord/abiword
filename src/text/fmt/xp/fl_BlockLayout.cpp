@@ -428,6 +428,19 @@ void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vec
 }
 
 /*!
+ * This method is used to reset the colorization such as what occurs
+ * when showAuthors state is changed.
+ */ 
+void fl_BlockLayout::refreshRunProperties(void)
+{
+	fp_Run * pRun = getFirstRun();
+	while(pRun)
+	{
+		pRun->lookupProperties();
+		pRun = pRun->getNextRun();
+	}
+}
+/*!
     this function is only to be called by fl_ContainerLayout::lookupMarginProperties()
     all other code must call lookupMarginProperties() instead
 

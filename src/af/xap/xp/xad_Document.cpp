@@ -98,6 +98,8 @@ AD_Document::AD_Document() :
 	m_pMyUUID->setUUID(s);
 	UT_UTF8String OrigS;
 	m_pOrigUUID->toString(OrigS);
+	m_pOrigUUID->toString(m_sOrigUUIDString);
+	m_pMyUUID->toString(m_sMyUUIDString);
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.utf8_str()));
 }
@@ -564,6 +566,7 @@ void AD_Document::setOrigUUID(const char * s)
 		if(!m_pOrigUUID->isValid())
 			m_pOrigUUID->makeUUID();
 	}
+	m_pOrigUUID->toString(m_sOrigUUIDString);
 }
 
 
@@ -585,6 +588,7 @@ void AD_Document::setMyUUID(const char * s)
 		if(!m_pMyUUID->isValid())
 			m_pMyUUID->makeUUID();
 	}
+	m_pMyUUID->toString(m_sMyUUIDString);
 }
 
 /*!
@@ -607,9 +611,7 @@ const char * AD_Document::getDocUUIDString() const
 const char * AD_Document::getOrigDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pOrigUUID, NULL);
-	static UT_UTF8String s;
-	m_pOrigUUID->toString(s);
-	return s.utf8_str();
+	return m_sOrigUUIDString.utf8_str();
 }
 
 
@@ -623,9 +625,7 @@ const char * AD_Document::getOrigDocUUIDString() const
 UT_UTF8String AD_Document::getMyUUIDString() const
 {
 	UT_return_val_if_fail(m_pMyUUID, "");
-	UT_UTF8String s;
-	m_pMyUUID->toString(s);
-	return s;
+	return m_sMyUUIDString;
 }
 
 ///////////////////////////////////////////////////////////////////

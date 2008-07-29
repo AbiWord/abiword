@@ -1009,7 +1009,8 @@ bool fp_TextRun::canMergeWithNext(void)
 		    && !(*getRevisions() == *(pNext->getRevisions()))) //
 															   //non-null but different
 		|| (pNext->getVisibility() != getVisibility())
-
+		// Different authors
+		|| (pNext->getAuthorNum() != getAuthorNum())
 #if 0
 		// I do not think this should happen at all
 		|| ((pNext->m_bRenderInfo->isJustified() && m_bRenderInfo->isJustified())
@@ -1193,7 +1194,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setVisDirection(iVisDirection);
 
 	pNew->_setHyperlink(this->getHyperlink());
-
+	pNew->setAuthorNum(this->getAuthorNum());
 	// when revisions are present, this gets bit trickier
 	if(getRevisions() != NULL)
 	{

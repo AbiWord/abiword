@@ -141,7 +141,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bDrawSelection(false),
 	m_iSelLow(0),
 	m_iSelHigh(0),
-	m_bMustClearScreen(false)
+	m_bMustClearScreen(false),
+	m_iAuthorColor(0)
 #ifdef DEBUG
 	,m_iFontAllocNo(0)
 #endif
@@ -476,7 +477,19 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			_lookupProperties(NULL, pBlockAP, pSectionAP,pG);
 	}
-
+	const char * szAuthorUUID = NULL;	
+	if(pSpanAP && pDoc->isShowAuthors())
+	{
+		if(pSpanAP->getAttribute(PT_AUTHOR_NAME,szAuthorUUID))
+		{
+			if(szAuthorUUID)
+				m_iAuthorColor = pDoc->getNumFromAuthorUUID(szAuthorUUID);
+		}
+	}
+	else
+	{
+		m_iAuthorColor = 0;
+	}
 	// here we used to set revision-based visibility, but that has to
 	// be done inside getSpanAP() because we need to know whether the
 	// revision is to be visible or not before we can properly apply
@@ -1094,7 +1107,6 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	FV_View * pView = _getView();
 	UT_return_val_if_fail(pView, s_fgColor);
 	bool bShow = pView->isShowRevisions();
-	
 	if(getBlock()->getDocLayout()->displayAnnotations())
 	{
 		if(getLine() && getLine()->getContainer() && getLine()->getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION)
@@ -1153,12 +1165,17 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	}
 	else if(m_pHyperlink && (m_pHyperlink->getHyperlinkType() == HYPERLINK_ANNOTATION))
 	{
-			if(getBlock()->getDocLayout()->displayAnnotations())
-			{
-				s_fgColor =	_getView()->getColorAnnotation(this);
-			}
-			else
-				return _getColorFG();
+		if(getBlock()->getDocLayout()->displayAnnotations())
+		{
+			s_fgColor =	_getView()->getColorAnnotation(this);
+		}
+		else
+			return _getColorFG();
+	}
+	else if(m_iAuthorColor > 0)
+	{
+		s_fgColor = _getView()->getColorRevisions(m_iAuthorColor);
+		return s_fgColor;
 	}
 	else
 		return _getColorFG();

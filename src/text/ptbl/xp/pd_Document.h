@@ -192,6 +192,14 @@ public:
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 	bool                    isDoingTheDo(void) const;
 
+	const char *            getAuthorUUIDFromNum(UT_sint32 id);
+	UT_sint32               getNumFromAuthorUUID(const char * szUUID);
+	void                    setShowAuthors(bool bAuthors);
+	bool                    isShowAuthors(void) const
+	{ return m_bShowAuthors;}
+	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut);
+	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
+
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
@@ -745,6 +753,8 @@ private:
 	bool                    m_bIgnoreSignals;
 
 	bool					m_bCoalescingMask;
+	bool                    m_bShowAuthors;
+	UT_GenericVector<UT_UTF8String *>  m_vecAuthorUUIDs;
 };
 
 #endif /* PD_DOCUMENT_H */

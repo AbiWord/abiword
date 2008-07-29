@@ -730,6 +730,21 @@ void FL_DocLayout::fillLayouts(void)
 }
 
 /*!
+ *  This method is used to reset the colorization such as what occurs
+ * when showAuthors state is changed.
+ */ 
+void FL_DocLayout::refreshRunProperties(void)
+{
+    fl_DocSectionLayout * pDSL = getFirstSection();
+    fl_BlockLayout * pBL = pDSL->getFirstBlock();
+    while(pBL)
+    {
+        pBL->refreshRunProperties();
+	pBL = pBL->getNextBlockInDocument();
+    }
+}
+
+/*!
  * Starting from page iStartPage, set the page numbers of the frames in the
  * document.
  */

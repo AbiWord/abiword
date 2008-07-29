@@ -68,6 +68,7 @@
 #include "fl_BlockLayout.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
+#include "fv_View.h"
 
 #include "ut_go_file.h"
 
@@ -115,7 +116,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iCRCounter(0),
 	  m_iUpdateCount(0),
 	  m_bIgnoreSignals(false),
-	  m_bCoalescingMask(false)
+	  m_bCoalescingMask(false),
+	  m_bShowAuthors(true) // FIXME should default to false, testing only
 {
 	m_pApp = pApp;
 	
@@ -124,6 +126,9 @@ PD_Document::PD_Document(XAP_App *pApp)
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
+	UT_UTF8String sDoc;
+	getOrigDocUUID()->toString(sDoc);
+	getNumFromAuthorUUID(sDoc.utf8_str());
 }
 
 PD_Document::~PD_Document()
@@ -146,6 +151,7 @@ PD_Document::~PD_Document()
 	m_mailMergeMap.purgeData();
 	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
+	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecAuthorUUIDs);
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -239,6 +245,132 @@ bool PD_Document::isMarginChangeOnly(void) const
 	return m_bMarginChangeOnly;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+/*!
+ * Author methods, get an integer that locates a given UUID. If this UUID
+ * is not recognized, add it to the list.
+ */
+UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
+{
+	UT_uint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< m_vecAuthorUUIDs.getItemCount(); i++)
+	{
+		if(strcmp(m_vecAuthorUUIDs.getNthItem(i)->utf8_str(),szUUID)==0)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+		return i;
+	m_vecAuthorUUIDs.addItem(new UT_UTF8String());
+	*m_vecAuthorUUIDs.getNthItem(i) = szUUID;
+	return i;
+}
+
+/*!
+ * get a UUID from it's location. If it's not present return NULL
+ */
+const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i)
+{
+	if(i< static_cast<UT_sint32>(m_vecAuthorUUIDs.getItemCount()))
+		return m_vecAuthorUUIDs.getNthItem(i)->utf8_str();
+	return NULL;
+}
+
+/*!
+ * Add the current documents UUID as the author to the attribute list if 
+ * the author attribute is not present.
+ * The caller must delete [] the szAttsOut after use.
+  * Returns true if author attribute is present. 
+*/
+bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut)
+{
+	// Set Author attribute
+	UT_sint32 icnt =  0;
+	bool bFound = false;
+	const gchar * sz = NULL;
+	if(szAttsIn)
+	{
+		sz = szAttsIn[0];
+		while(sz != NULL)
+		{
+			sz = szAttsIn[icnt];
+			if(sz && (strcmp(sz,PT_AUTHOR_NAME) == 0))
+				bFound = true;
+			icnt++;
+		}
+	}
+	if(bFound)
+		szAttsOut = new const gchar * [icnt+1];
+	else
+		szAttsOut = new const gchar * [icnt+3];
+	UT_sint32 i = 0;
+	for(i = 0; i< icnt; i++)
+		szAttsOut[i] =  const_cast<const gchar*>(szAttsIn[i]);
+	if(bFound)
+	{
+		szAttsOut[icnt] = NULL;
+		return bFound;
+	}
+	szAttsOut[icnt] = PT_AUTHOR_NAME;
+	szAttsOut[icnt+1] = getOrigDocUUIDString();
+	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
+	szAttsOut[icnt+2] = NULL;
+	return false;
+}
+
+void PD_Document::setShowAuthors(bool bAuthors)
+{ 
+	bool bChanged = (bAuthors != m_bShowAuthors);
+	m_bShowAuthors = bAuthors;
+	//
+	// Could do this with a listner but that might screw up other stuff
+	//
+	if(bChanged)
+	{
+		UT_GenericVector<AV_View *> vecViews;
+		getAllViews(&vecViews);
+		UT_sint32 i = 0;
+		for(i = 0; i<vecViews.getItemCount(); i++)
+		{
+			FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
+			FL_DocLayout * pL = pView->getLayout();
+			pL->refreshRunProperties();
+			pView->updateScreen(false ); // redraw the whole thing
+		}
+	}
+
+}
+
+/*!
+ * Add the current documents UUID as the author to the ppAttrProps 
+ * if the attribute is not set.
+ * returns true if author is set
+ */
+bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
+{
+	xxx_UT_DEBUGMSG(("Doing addAuthorAttributeIfBlank PAP \n"));
+	if(!p_AttrProp)
+	{
+		static PP_AttrProp p;
+		p.setAttribute(PT_AUTHOR_NAME,getMyUUIDString().utf8_str());
+		p_AttrProp = &p;
+		return false;
+	}
+	const gchar * sz = NULL;
+	if(p_AttrProp->getAttribute(PT_AUTHOR_NAME,sz))
+	{
+		xxx_UT_DEBUGMSG(("Found athor att %s \n",sz));
+		if(sz)
+			return true;
+	}
+	p_AttrProp->setAttribute(PT_AUTHOR_NAME,getOrigDocUUIDString());
+	return false;
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -843,6 +975,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	{
 		return false;
 	}
+	addAuthorAttributeIfBlank(p_AttrProp);
 	if(p_AttrProp)
 	{
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
@@ -963,7 +1096,10 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	}
 	bool f;
 	deferNotifications();
-	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,szAttsAuthor,properties);
+	delete [] szAttsAuthor;
 	processDeferredNotifications();
 	return f;
 }
@@ -990,7 +1126,11 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 	{
 		return false;
 	}
-	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties,ppfs_ret);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b =  m_pPieceTable->insertStrux(dpos,pts,szAttsAuthor,properties,ppfs_ret);
+	delete [] szAttsAuthor;
+	return b;
 }
 
 

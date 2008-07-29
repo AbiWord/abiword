@@ -489,10 +489,12 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, const Buddy& collabo
 
 	// set the temporary document UUID, so all generated changerecords during
 	// import will inherit this UUID
+
+
 	UT_UTF8String sRealDocname = m_pDoc->getOrigDocUUIDString();
 	UT_DEBUGMSG(("Temp. setting document UUID to %s\n", packet.getDocUUID().utf8_str()));
 	m_pDoc->setMyUUID(packet.getDocUUID().utf8_str());
-	
+
 	// disable layout/view updates
 	UT_GenericVector<AV_View *> vecViews;
 	_disableUpdates(vecViews, packet.getClassType() == PCT_GlobSessionPacket);
@@ -661,13 +663,13 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 								UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 								return false;
 							}
-							const char * szName =  pStyle->getName();
-							const char * atts[3] = {PT_STYLE_ATTRIBUTE_NAME,szName,NULL};
+							const gchar * szName =  pStyle->getName();
+							const gchar * atts[3] = {PT_STYLE_ATTRIBUTE_NAME,szName,NULL};
 							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, atts, const_cast<const gchar**>( szProps ) );
 						}
 						else
 						{
-							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ) );
+							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, const_cast<const gchar**>(szAtts), const_cast<const gchar**>( szProps ) );
 						}
 						break;
 					}

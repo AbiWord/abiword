@@ -134,7 +134,7 @@ public:
 	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
-
+	void            refreshRunProperties(void);
 	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,

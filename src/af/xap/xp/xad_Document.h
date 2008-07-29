@@ -338,6 +338,8 @@ private:
 	UT_UUID *       m_pMyUUID;
 	bool            m_bDoNotAdjustHistory;
 	bool            m_bAfterFirstSave;
+ 	UT_UTF8String   m_sMyUUIDString;
+ 	UT_UTF8String   m_sOrigUUIDString;
 };
 
 

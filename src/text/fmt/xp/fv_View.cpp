@@ -714,7 +714,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
 	pCaretProps->m_pCaret->setBlink(true);
 	pCaretProps->m_pCaret->enable();
 	pCaretProps->m_sDocUUID = sDocUUID;
-	UT_sint32 icnt = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_sint32 icnt = m_pDoc->getNumFromAuthorUUID(sDocUUID.utf8_str());
 	pCaretProps->m_caretColor = m_colorRevisions[icnt];
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
 	_setPoint(pCaretProps,docPos,0);

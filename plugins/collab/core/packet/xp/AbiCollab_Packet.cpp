@@ -75,7 +75,8 @@ const gchar * szAbiCollab_Packet_PTName[] =
     PT_IMAGE_DESCRIPTION,
     PT_DATA_PREVIEW,
     PT_HYPERLINK_TARGET_NAME,
-    PT_ANNOTATION_NUMBER
+    PT_ANNOTATION_NUMBER,
+    PT_AUTHOR_NAME
 };
 
 UT_sint16 getPacket_PTName_Index( const gchar* name )

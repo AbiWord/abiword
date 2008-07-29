@@ -391,6 +391,11 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		UT_uint32 k = 0;
 		while (pAP->getNthAttribute (k++, szName, szValue))
 		{
+			//
+			// Strip out Author attributes for now.
+			//
+			if(strcmp(szName,PT_AUTHOR_NAME) == 0)
+				continue;
 			tag += " ";
 			tag += szName;
 			tag += "=\"";
@@ -493,6 +498,11 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			// TODO consider scanning the value to see if it has one
 			// TODO in it and escaping it or using single-quotes.
 			// Let's also escape ampersands and other goodies.
+			//
+			// Strip out Author attributes for now.
+			//
+			if(strcmp(szName,PT_AUTHOR_NAME) == 0)
+				continue;
 
 			m_pie->write(" ");
 			m_pie->write(static_cast<const char*>(szName));
