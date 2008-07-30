@@ -3216,7 +3216,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine2->setBlock(this);
 				if(pContainer)
 				{
-			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine2), static_cast<fp_Container *>(pOldLastLine));
 					m_iLinePosInContainer = pContainer->findCon(pLine2)+1;
 					pLine2->setContainer(pContainer);
 				}
