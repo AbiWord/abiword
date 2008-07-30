@@ -46,7 +46,7 @@ UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 
-	err = exporter->startRun();
+	err = exporter->startRun(TARGET);
 	if(err != UT_OK)
 		return err;
 
@@ -58,7 +58,7 @@ UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	return exporter->finishRun();
+	return exporter->finishRun(TARGET);
 }
 
 UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
@@ -67,13 +67,13 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
 
-	err = exporter->startRunProperties(TARGET_DOCUMENT);
+	err = exporter->startRunProperties(TARGET);
 	if(err != UT_OK)
 		return err;
 
 	if(getProperty("font-family", szValue) == UT_OK)
 	{
-		err = exporter->setFontFamily(TARGET_DOCUMENT, szValue);
+		err = exporter->setFontFamily(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
@@ -82,7 +82,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "bold"))
 		{
-			err = exporter->setBold(TARGET_DOCUMENT);
+			err = exporter->setBold(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
@@ -92,7 +92,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "italic"))
 		{
-			err = exporter->setItalic(TARGET_DOCUMENT);
+			err = exporter->setItalic(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
@@ -100,7 +100,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("font-size", szValue) == UT_OK)
 	{
-		err = exporter->setFontSize(TARGET_DOCUMENT, szValue);
+		err = exporter->setFontSize(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
@@ -109,21 +109,21 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(strstr(szValue, "underline"))
 		{
-			err = exporter->setUnderline(TARGET_DOCUMENT);
+			err = exporter->setUnderline(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
 
 		if(strstr(szValue, "overline"))
 		{
-			err = exporter->setOverline(TARGET_DOCUMENT);
+			err = exporter->setOverline(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
 
 		if(strstr(szValue, "line-through"))
 		{
-			err = exporter->setLineThrough(TARGET_DOCUMENT);
+			err = exporter->setLineThrough(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
@@ -133,14 +133,14 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "superscript"))
 		{
-			err = exporter->setSuperscript(TARGET_DOCUMENT);
+			err = exporter->setSuperscript(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
 
 		else if(!strcmp(szValue, "subscript"))
 		{
-			err = exporter->setSubscript(TARGET_DOCUMENT);
+			err = exporter->setSubscript(TARGET);
 			if(err != UT_OK)
 				return err;
 		}
@@ -148,26 +148,26 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("color", szValue) == UT_OK)
 	{
-		err = exporter->setTextColor(TARGET_DOCUMENT, szValue);
+		err = exporter->setTextColor(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("bgcolor", szValue) == UT_OK)
 	{
-		err = exporter->setBackgroundColor(TARGET_DOCUMENT, szValue);
+		err = exporter->setBackgroundColor(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("dir-override", szValue) == UT_OK)
 	{
-		err = exporter->setTextDirection(TARGET_DOCUMENT, szValue);
+		err = exporter->setTextDirection(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
-	return exporter->finishRunProperties(TARGET_DOCUMENT);
+	return exporter->finishRunProperties(TARGET);
 }
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)

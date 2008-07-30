@@ -294,6 +294,59 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 		if(ret != UT_OK)
 			return ret;
 	}
+
+	ret = exporter->startSectionProperties();
+	if(ret != UT_OK)
+		return ret;
+
+	bool firstPageHdrFtr = false;
+	bool evenPageHdrFtr = false;
+
+	//serialize headers
+	OXML_SectionMap::iterator it5;
+	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++) {
+
+		if(it5->second->hasFirstPageHdrFtr())
+			firstPageHdrFtr = true;	
+		if(it5->second->hasEvenPageHdrFtr())
+			evenPageHdrFtr = true;	
+
+		ret = it5->second->serializeHeader(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize footers
+	OXML_SectionMap::iterator it6;
+	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++) {
+
+		if(it6->second->hasFirstPageHdrFtr())
+			firstPageHdrFtr = true;	
+		if(it6->second->hasEvenPageHdrFtr())
+			evenPageHdrFtr = true;	
+
+		ret = it6->second->serializeFooter(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	if(firstPageHdrFtr)
+	{
+		ret = exporter->setTitlePage();
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	if(evenPageHdrFtr)
+	{
+		ret = exporter->setEvenAndOddHeaders();
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	ret = exporter->finishSectionProperties();
+	if(ret != UT_OK)
+		return ret;
 	
 	return exporter->finishDocument();
 }

@@ -38,8 +38,11 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	relStream(NULL),
 	wordRelStream(NULL),
 	documentStream(NULL),
+	settingsStream(NULL),
 	stylesStream(NULL),
-	numberingStream(NULL)
+	numberingStream(NULL),
+	headerStream(NULL),
+	footerStream(NULL)
 {
 }
 
@@ -94,6 +97,14 @@ UT_Error IE_Exp_OpenXML::startDocument()
 
 	g_object_unref (G_OBJECT (sink));
 
+	error = startHeaders();
+	if(error != UT_OK)
+		return error;
+
+	error = startFooters();
+	if(error != UT_OK)
+		return error;
+
 	error = startContentTypes();
 	if(error != UT_OK)
 		return error;
@@ -111,6 +122,10 @@ UT_Error IE_Exp_OpenXML::startDocument()
 		return error;
 	
 	error = startMainPart();
+	if(error != UT_OK)
+		return error;
+
+	error = startSettings();
 	if(error != UT_OK)
 		return error;
 
@@ -136,6 +151,10 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 	if(error != UT_OK)
 		return error;
 
+	error = finishSettings();
+	if(error != UT_OK)
+		return error;
+
 	error = finishNumbering();
 	if(error != UT_OK)
 		return error;
@@ -157,6 +176,14 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 		return error;
 
 	error = finishContentTypes();
+	if(error != UT_OK)
+		return error;
+
+	error = finishHeaders();
+	if(error != UT_OK)
+		return error;
+
+	error = finishFooters();
 	if(error != UT_OK)
 		return error;
 
@@ -186,62 +213,78 @@ UT_Error IE_Exp_OpenXML::finishSection()
 }
 
 /**
+ * Starts exporting the OXML_Section object's properties
+ */
+UT_Error IE_Exp_OpenXML::startSectionProperties()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:sectPr>");
+}
+
+/**
+ * Finishes exporting the OXML_Section object's properties
+ */
+UT_Error IE_Exp_OpenXML::finishSectionProperties()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "</w:sectPr>");
+}
+
+/**
  * Starts exporting the OXML_Element_Paragraph object
  */
-UT_Error IE_Exp_OpenXML::startParagraph()
+UT_Error IE_Exp_OpenXML::startParagraph(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:p>");
+	return writeTargetStream(target, "<w:p>");
 }
 
 /**
  * Finishes exporting the OXML_Element_Paragraph object
  */
-UT_Error IE_Exp_OpenXML::finishParagraph()
+UT_Error IE_Exp_OpenXML::finishParagraph(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "</w:p>");
+	return writeTargetStream(target, "</w:p>");
 }
 
 /**
  * Starts exporting the OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::startText()
+UT_Error IE_Exp_OpenXML::startText(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:t xml:space=\"preserve\">");
+	return writeTargetStream(target, "<w:t xml:space=\"preserve\">");
 }
 
 /**
  * Writes the actual content of OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::writeText(const char* text)
+UT_Error IE_Exp_OpenXML::writeText(int target, const char* text)
 {
 	UT_UTF8String sEscText = text;
 	sEscText.escapeXML();
 
-	return writeTargetStream(TARGET_DOCUMENT, sEscText.utf8_str());
+	return writeTargetStream(target, sEscText.utf8_str());
 }
 
 /**
  * Finishes exporting the OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::finishText()
+UT_Error IE_Exp_OpenXML::finishText(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "</w:t>");
+	return writeTargetStream(target, "</w:t>");
 }
 
 /**
  * Starts exporting the OXML_Element_Run object
  */
-UT_Error IE_Exp_OpenXML::startRun()
+UT_Error IE_Exp_OpenXML::startRun(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "<w:r>");
+	return writeTargetStream(target, "<w:r>");
 }
 
 /**
  * Finishes exporting the OXML_Element_Run object
  */
-UT_Error IE_Exp_OpenXML::finishRun()
+UT_Error IE_Exp_OpenXML::finishRun(int target)
 {
-	return writeTargetStream(TARGET_DOCUMENT, "</w:r>");
+	return writeTargetStream(target, "</w:r>");
 }
 
 /**
@@ -572,6 +615,12 @@ GsfOutput* IE_Exp_OpenXML::getTargetStream(int target)
 			return contentTypesStream;
 		case TARGET_NUMBERING:
 			return numberingStream;
+		case TARGET_HEADER:
+			return headerStream;
+		case TARGET_FOOTER:
+			return footerStream;
+		case TARGET_SETTINGS:
+			return settingsStream;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return documentStream;
@@ -818,6 +867,78 @@ UT_Error IE_Exp_OpenXML::setHyperlinkRelation(int target, const char* id, const 
 	str += mode;
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets the necessary relationships for header
+ */
+UT_Error IE_Exp_OpenXML::setHeaderRelation(const char* relId, const char* headerId)
+{
+	UT_Error err = UT_OK;
+
+	std::string str("<Relationship Id=\"");
+	str += relId;
+	str += "\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header\" ";
+	str += "Target=\"header";
+	str += headerId;
+	str += ".xml\"/>";
+
+	err = writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
+	if(err != UT_OK)
+		return err;
+
+	str = "";
+	str += "<Override PartName=\"/word/header";
+	str += headerId;
+	str += ".xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml\"/>";
+
+	return writeTargetStream(TARGET_CONTENT, str.c_str());
+}
+
+/**
+ * Sets the titlePg tag for the first page headers/footers
+ */
+UT_Error IE_Exp_OpenXML::setTitlePage()
+{
+	return writeTargetStream(TARGET_DOCUMENT, "<w:titlePg/>");
+}
+
+/**
+ * Sets the evenAndOddHeaders tag for the even/odd page headers/footers
+ */
+UT_Error IE_Exp_OpenXML::setEvenAndOddHeaders()
+{
+	return writeTargetStream(TARGET_SETTINGS, "<w:evenAndOddHeaders/>");
+}
+
+/**
+ * Sets the necessary relationship for footer
+ */
+UT_Error IE_Exp_OpenXML::setFooterRelation(const char* relId, const char* footerId)
+{
+	UT_Error err = UT_OK;
+
+	std::string str("<Relationship Id=\"");
+	str += relId;
+	str += "\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer\" ";
+	str += "Target=\"footer";
+	str += footerId;
+	str += ".xml\"/>";
+
+	err = writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
+	if(err != UT_OK)
+		return err;
+
+	str = "";
+	str += "<Override PartName=\"/word/footer";
+	str += footerId;
+	str += ".xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml\"/>";
+
+	return writeTargetStream(TARGET_CONTENT, str.c_str());
 }
 
 /**
@@ -1180,6 +1301,36 @@ UT_Error IE_Exp_OpenXML::setSimpleField(const char* instr, const char* value)
 }
 
 /**
+ * Set the header reference
+ */
+UT_Error IE_Exp_OpenXML::setHeaderReference(const char* id, const char* type)
+{
+	std::string str("");
+	str += "<w:headerReference w:type=\"";
+	str += type;
+	str += "\" ";
+	str += "r:id=\"";
+	str += id;
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Set the footer reference
+ */
+UT_Error IE_Exp_OpenXML::setFooterReference(const char* id, const char* type)
+{
+	std::string str("");
+	str += "<w:footerReference w:type=\"";
+	str += type;
+	str += "\" ";
+	str += "r:id=\"";
+	str += id;
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
  * Checks whether the quantity string is a negative quantity
  */
 bool IE_Exp_OpenXML::isNegativeQuantity(const gchar* quantity)
@@ -1262,6 +1413,15 @@ const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	if(settingsStream && !gsf_output_is_closed(settingsStream))
+		gsf_output_close(settingsStream);
+
+	if(headerStream && !gsf_output_is_closed(headerStream))
+		gsf_output_close(headerStream);
+	
+	if(footerStream && !gsf_output_is_closed(footerStream))
+		gsf_output_close(footerStream);
+	
 	if(numberingStream && !gsf_output_is_closed(numberingStream))
 		gsf_output_close(numberingStream);
 
@@ -1483,6 +1643,8 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>";
 	str += "<Override PartName=\"/word/styles.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>";
+	str += "<Override PartName=\"/word/settings.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>";
 	str += "<Override PartName=\"/word/numbering.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/>";
 	
@@ -1634,6 +1796,9 @@ UT_Error IE_Exp_OpenXML::startWordRelations()
 	str += "<Relationship Id=\"rId2\" ";
 	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" ";
 	str += "Target=\"numbering.xml\"/>";
+	str += "<Relationship Id=\"rId3\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" ";
+	str += "Target=\"settings.xml\"/>";
 	
 	return writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
 
@@ -1819,6 +1984,169 @@ UT_Error IE_Exp_OpenXML::finishMainPart()
 }
 
 /**
+ * Starts the settings of the document in word/settings.xml file.
+ */
+UT_Error IE_Exp_OpenXML::startSettings()
+{
+	UT_Error err = UT_OK;
+
+	settingsStream = gsf_output_memory_new();
+	if(!settingsStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, settings.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}	
+
+	err = writeXmlHeader(settingsStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+
+	std::string str("<w:settings xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+	
+	return writeTargetStream(TARGET_SETTINGS, str.c_str());
+}
+
+/**
+ * Finishes the settings of the document in word/setting.xml file.
+ */
+UT_Error IE_Exp_OpenXML::finishSettings()
+{
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_SETTINGS, "</w:settings>");
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to settings.xml file\n"));	
+		return err;
+	}
+	
+	GsfOutput* settingsFile = gsf_outfile_new_child(wordDir, "settings.xml", FALSE);
+
+	if(!settingsFile)
+		return UT_SAVE_EXPORTERROR;
+
+ 	if(!gsf_output_write(settingsFile, gsf_output_size(settingsStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(settingsStream))))
+	{
+		gsf_output_close(settingsFile);
+		return UT_SAVE_EXPORTERROR;
+	}
+	
+	if(!gsf_output_close(settingsStream))
+	{
+		gsf_output_close(settingsFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(settingsFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, setting.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	return UT_OK;
+}
+
+/**
+ * Does nothing for now.
+ */
+UT_Error IE_Exp_OpenXML::startHeaders()
+{
+	return UT_OK;
+}
+
+/**
+ * Finishes the headers in word/header.xml file.
+ */
+UT_Error IE_Exp_OpenXML::finishHeaders()
+{
+	std::map<std::string, GsfOutput*>::iterator it;
+	for (it = headerStreams.begin(); it != headerStreams.end(); it++) {
+
+		std::string filename("header");
+		filename += it->first.c_str();
+		filename += ".xml";
+
+		GsfOutput* headerFile = gsf_outfile_new_child(wordDir, filename.c_str(), FALSE);
+
+		if(!headerFile)
+			return UT_SAVE_EXPORTERROR;
+
+	 	if(!gsf_output_write(headerFile, gsf_output_size(it->second), 
+						 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(it->second))))
+		{
+			gsf_output_close(headerFile);
+			return UT_SAVE_EXPORTERROR;
+		}
+	
+		if(!gsf_output_close(it->second))
+		{
+			gsf_output_close(headerFile);
+			return UT_SAVE_EXPORTERROR;		
+		}
+
+		if(!gsf_output_close(headerFile))
+		{
+			UT_DEBUGMSG(("FRT: ERROR, header file couldn't be closed\n"));	
+			return UT_SAVE_EXPORTERROR;		
+		}
+	}
+	
+	return UT_OK;
+}
+
+/**
+ * Does nothing for now.
+ */
+UT_Error IE_Exp_OpenXML::startFooters()
+{
+	return UT_OK;
+}
+
+/**
+ * Finishes the headers in word/footer.xml file.
+ */
+UT_Error IE_Exp_OpenXML::finishFooters()
+{
+	std::map<std::string, GsfOutput*>::iterator it;
+	for (it = footerStreams.begin(); it != footerStreams.end(); it++) {
+
+		std::string filename("footer");
+		filename += it->first.c_str();
+		filename += ".xml";
+
+		GsfOutput* footerFile = gsf_outfile_new_child(wordDir, filename.c_str(), FALSE);
+
+		if(!footerFile)
+			return UT_SAVE_EXPORTERROR;
+
+	 	if(!gsf_output_write(footerFile, gsf_output_size(it->second), 
+						 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(it->second))))
+		{
+			gsf_output_close(footerFile);
+			return UT_SAVE_EXPORTERROR;
+		}
+	
+		if(!gsf_output_close(it->second))
+		{
+			gsf_output_close(footerFile);
+			return UT_SAVE_EXPORTERROR;		
+		}
+
+		if(!gsf_output_close(footerFile))
+		{
+			UT_DEBUGMSG(("FRT: ERROR, footer file couldn't be closed\n"));	
+			return UT_SAVE_EXPORTERROR;		
+		}
+	}
+	
+	return UT_OK;
+}
+
+/**
  * Write the simple xml header to the file
  * This function should be called before anything written to file
  */
@@ -1906,4 +2234,64 @@ UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ByteBuf* data
 	mediaStreams[str] = imageStream;
 		
 	return UT_OK;
+}
+
+UT_Error IE_Exp_OpenXML::startHeaderStream(const char* id)
+{
+	UT_Error err = UT_OK;
+
+	headerStream = gsf_output_memory_new();
+	if(!headerStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, header.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(headerStream);
+	if(err != UT_OK)
+		return err;
+
+	std::string str("<w:hdr xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+
+	std::string strId("");
+	strId += id;
+	headerStreams[strId] = headerStream;
+	
+	return writeTargetStream(TARGET_HEADER, str.c_str());
+}
+
+UT_Error IE_Exp_OpenXML::finishHeaderStream()
+{
+	return writeTargetStream(TARGET_HEADER, "</w:hdr>");
+}
+
+UT_Error IE_Exp_OpenXML::startFooterStream(const char* id)
+{
+	UT_Error err = UT_OK;
+
+	footerStream = gsf_output_memory_new();
+	if(!footerStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, footer.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(footerStream);
+	if(err != UT_OK)
+		return err;
+
+	std::string str("<w:ftr xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+
+	std::string strId("");
+	strId += id;
+	footerStreams[strId] = footerStream;
+	
+	return writeTargetStream(TARGET_FOOTER, str.c_str());
+}
+
+UT_Error IE_Exp_OpenXML::finishFooterStream()
+{
+	return writeTargetStream(TARGET_FOOTER, "</w:ftr>");
 }

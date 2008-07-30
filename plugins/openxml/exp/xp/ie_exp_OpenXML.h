@@ -45,12 +45,15 @@
 #include <map>
 
 //target streams
+#define TARGET_DOCUMENT 0
 #define TARGET_STYLES 1
-#define TARGET_DOCUMENT 2
-#define TARGET_DOCUMENT_RELATION 3
-#define TARGET_RELATION 4
-#define TARGET_CONTENT 5
-#define TARGET_NUMBERING 6
+#define TARGET_DOCUMENT_RELATION 2
+#define TARGET_RELATION 3
+#define TARGET_CONTENT 4
+#define TARGET_NUMBERING 5
+#define TARGET_HEADER 6
+#define TARGET_FOOTER 7
+#define TARGET_SETTINGS 8
 
 class OXML_Document;
 
@@ -66,13 +69,15 @@ public:
 	UT_Error finishDocument();
 	UT_Error startSection();
 	UT_Error finishSection();
-	UT_Error startParagraph();
-	UT_Error finishParagraph();
-	UT_Error startText();
-	UT_Error writeText(const char* text);
-	UT_Error finishText();
-	UT_Error startRun();
-	UT_Error finishRun();
+	UT_Error startSectionProperties();
+	UT_Error finishSectionProperties();
+	UT_Error startParagraph(int target);
+	UT_Error finishParagraph(int target);
+	UT_Error startText(int target);
+	UT_Error writeText(int target, const char* text);
+	UT_Error finishText(int target);
+	UT_Error startRun(int target);
+	UT_Error finishRun(int target);
 	UT_Error startRunProperties(int target);
 	UT_Error finishRunProperties(int target);
 	UT_Error startParagraphProperties(int target);
@@ -105,6 +110,8 @@ public:
 	UT_Error finishTableGrid(int target);
 	UT_Error startExternalHyperlink(const gchar* id);
 	UT_Error startInternalHyperlink(const gchar* anchor);
+	UT_Error setHeaderRelation(const char* relId, const char* headerId);
+	UT_Error setFooterRelation(const char* relId, const char* footerId);
 	UT_Error finishHyperlink();
 	UT_Error startBookmark(const gchar* id, const gchar* name);
 	UT_Error finishBookmark(const gchar* id);
@@ -148,6 +155,14 @@ public:
 	UT_Error setImageRelation(const char* filename, const char* id);
 	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
 	UT_Error setSimpleField(const char* instr, const char* value);
+	UT_Error setHeaderReference(const char* id, const char* type);
+	UT_Error setFooterReference(const char* id, const char* type);
+	UT_Error startHeaderStream(const char* id);
+	UT_Error finishHeaderStream();
+	UT_Error startFooterStream(const char* id);
+	UT_Error finishFooterStream();
+	UT_Error setTitlePage();
+	UT_Error setEvenAndOddHeaders();
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -162,9 +177,14 @@ private:
 	GsfOutput* relStream; // _rels/.rels
 	GsfOutput* wordRelStream; // word/_rels/document.xml.rels
 	GsfOutput* documentStream; // word/document.xml
+	GsfOutput* settingsStream; // word/settings.xml
 	GsfOutput* stylesStream; // word/styles.xml
 	GsfOutput* numberingStream; // word/numbering.xml
+	GsfOutput* headerStream; //word/headerXX.xml
+	GsfOutput* footerStream; //word/footerXX.xml
 	std::map<std::string, GsfOutput*> mediaStreams; // all image filename, stream pairs
+	std::map<std::string, GsfOutput*> headerStreams; //all header id, stream pairs
+	std::map<std::string, GsfOutput*> footerStreams; //all footer id, stream pairs
 
 	UT_Error startNumbering();
 	UT_Error startStyles();
@@ -173,6 +193,9 @@ private:
 	UT_Error startWordRelations();
 	UT_Error startWordMedia();
 	UT_Error startMainPart();
+	UT_Error startHeaders();
+	UT_Error startFooters();
+	UT_Error startSettings();
 	UT_Error finishNumbering();
 	UT_Error finishStyles();
 	UT_Error finishContentTypes();
@@ -180,6 +203,9 @@ private:
 	UT_Error finishWordRelations();
 	UT_Error finishWordMedia();
 	UT_Error finishMainPart();
+	UT_Error finishHeaders();
+	UT_Error finishFooters();
+	UT_Error finishSettings();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
 	const gchar* convertToTwips(const gchar* str);

@@ -84,6 +84,9 @@ public:
 		\param exporter the actual exporter which handles writing the files.
 	*/
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
+	UT_Error serializeHeader(IE_Exp_OpenXML* exporter);
+	UT_Error serializeFooter(IE_Exp_OpenXML* exporter);
+
 	//! Appends this section and all its content to the Abiword Piecetable.
 	/*! This method is used during the import process.
 		\param pDocument A valid reference to the PD_Document object.
@@ -91,12 +94,17 @@ public:
 	UT_Error addToPT(PD_Document * pDocument);
 	UT_Error addToPTAsHdrFtr(PD_Document * pDocument);
 
+	void setTarget(int target);
+	bool hasFirstPageHdrFtr();
+	bool hasEvenPageHdrFtr();
+
 private:
 	std::string m_id;
 	OXML_SectionBreakType m_breakType;
 	OXML_ElementVector m_children;
 	char * m_headerIds[3];
 	char * m_footerIds[3];
+	int TARGET;
 
 	UT_Error _setReferenceIds();
 };

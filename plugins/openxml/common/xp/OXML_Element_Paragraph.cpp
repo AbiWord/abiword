@@ -42,7 +42,7 @@ UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 
-	err = exporter->startParagraph();
+	err = exporter->startParagraph(TARGET);
 	if(err != UT_OK)
 		return err;
 
@@ -54,7 +54,7 @@ UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	return exporter->finishParagraph();
+	return exporter->finishParagraph(TARGET);
 }
 
 UT_Error OXML_Element_Paragraph::serializeChildren(IE_Exp_OpenXML* exporter)
@@ -83,20 +83,20 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
 
-	err = exporter->startParagraphProperties(TARGET_DOCUMENT);
+	err = exporter->startParagraphProperties(TARGET);
 	if(err != UT_OK)
 		return err;
 
 	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) == UT_OK)
 	{
-		err = exporter->setParagraphStyle(TARGET_DOCUMENT, szValue);
+		err = exporter->setParagraphStyle(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("widows", szValue) == UT_OK)
 	{
-		err = exporter->setWidows(TARGET_DOCUMENT, szValue);
+		err = exporter->setWidows(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
@@ -105,19 +105,19 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	{
 		if(!strcmp(szValue, "justify"))
 		{
-			err = exporter->setTextAlignment(TARGET_DOCUMENT, "both");
+			err = exporter->setTextAlignment(TARGET, "both");
 		}
 		else if(!strcmp(szValue, "center"))
 		{
-			err = exporter->setTextAlignment(TARGET_DOCUMENT, "center");
+			err = exporter->setTextAlignment(TARGET, "center");
 		}
 		else if(!strcmp(szValue, "right"))
 		{
-			err = exporter->setTextAlignment(TARGET_DOCUMENT, "right");
+			err = exporter->setTextAlignment(TARGET, "right");
 		}
 		else if(!strcmp(szValue, "left"))
 		{
-			err = exporter->setTextAlignment(TARGET_DOCUMENT, "left");
+			err = exporter->setTextAlignment(TARGET, "left");
 		}
 
 		if(err != UT_OK)
@@ -126,42 +126,42 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 
 	if(getProperty("text-indent", szValue) == UT_OK)
 	{
-		err = exporter->setTextIndentation(TARGET_DOCUMENT, szValue);
+		err = exporter->setTextIndentation(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-left", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphLeftMargin(TARGET_DOCUMENT, szValue);
+		err = exporter->setParagraphLeftMargin(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-right", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphRightMargin(TARGET_DOCUMENT, szValue);
+		err = exporter->setParagraphRightMargin(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-bottom", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphBottomMargin(TARGET_DOCUMENT, szValue);
+		err = exporter->setParagraphBottomMargin(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("margin-top", szValue) == UT_OK)
 	{
-		err = exporter->setParagraphTopMargin(TARGET_DOCUMENT, szValue);
+		err = exporter->setParagraphTopMargin(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
 
 	if(getProperty("line-height", szValue) == UT_OK)
 	{
-		err = exporter->setLineHeight(TARGET_DOCUMENT, szValue);
+		err = exporter->setLineHeight(TARGET, szValue);
 		if(err != UT_OK)
 			return err;
 	}
@@ -181,7 +181,7 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
-	return exporter->finishParagraphProperties(TARGET_DOCUMENT);
+	return exporter->finishParagraphProperties(TARGET);
 }
 
 

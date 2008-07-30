@@ -36,7 +36,8 @@
 #include <string>
 
 OXML_Element::OXML_Element(std::string id, OXML_ElementTag tag, OXML_ElementType type) : 
-	OXML_ObjectWithAttrProp(), 
+	OXML_ObjectWithAttrProp(),
+	TARGET(0), 
 	m_id(id), 
 	m_tag(tag), 
 	m_type(type)
@@ -71,6 +72,9 @@ UT_Error OXML_Element::appendElement(OXML_SharedElement obj)
 		UT_DEBUGMSG(("Bad alloc!\n"));
 		return UT_OUTOFMEM;
 	} UT_END_CATCH
+
+	obj->setTarget(TARGET); //propagate the target
+
 	return UT_OK;
 }
 
@@ -174,3 +178,7 @@ UT_Error OXML_Element::addToPT(PD_Document * pDocument)
 	return ret;
 }
 
+void OXML_Element::setTarget(int target)
+{
+	TARGET = target;
+}

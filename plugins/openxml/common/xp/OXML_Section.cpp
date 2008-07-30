@@ -39,6 +39,7 @@
 
 OXML_Section::OXML_Section() : 
 	OXML_ObjectWithAttrProp(), 
+	TARGET(0),
 	m_id(""), 
 	m_breakType(NEXTPAGE_BREAK)
 {
@@ -49,6 +50,7 @@ OXML_Section::OXML_Section() :
 
 OXML_Section::OXML_Section(const std::string & id) : 
 	OXML_ObjectWithAttrProp(), 
+	TARGET(0),
 	m_id(id), 
 	m_breakType(NEXTPAGE_BREAK)
 {
@@ -86,6 +88,9 @@ UT_Error OXML_Section::appendElement(OXML_SharedElement obj)
 		UT_DEBUGMSG(("Bad alloc!\n"));
 		return UT_OUTOFMEM;
 	} UT_END_CATCH
+
+	obj->setTarget(TARGET);
+
 	return UT_OK;
 }
 
@@ -112,6 +117,153 @@ UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 	}
 	
 	return exporter->finishSection();
+}
+
+bool OXML_Section::hasFirstPageHdrFtr()
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* headerType;
+
+	ret = getAttribute("type", headerType);
+	if(ret != UT_OK)
+		return false;
+
+	return strstr(headerType, "first");
+}
+
+bool OXML_Section::hasEvenPageHdrFtr()
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* headerType;
+
+	ret = getAttribute("type", headerType);
+	if(ret != UT_OK)
+		return false;
+
+	return strstr(headerType, "even");
+}
+
+/**
+ * Serialize the section as a header
+ */
+UT_Error OXML_Section::serializeHeader(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* headerId;
+	const gchar* headerType;
+
+	ret = getAttribute("id", headerId);
+	if(ret != UT_OK)
+		return UT_OK;
+
+	ret = getAttribute("type", headerType);
+	if(ret != UT_OK)
+		return UT_OK;
+
+	const gchar* type = "default";
+	//OOXML includes default, first and even.  
+	if(strstr(headerType, "first"))
+	{
+		type = "first";
+	}
+	else if(strstr(headerType, "even"))
+	{
+		type = "even";
+	}
+	else if(strstr(headerType, "last"))
+	{
+		//last not implemented in OOXML
+		return UT_OK;
+	}
+			
+	std::string header("hId");
+	header += headerId;
+
+	ret = exporter->setHeaderReference(header.c_str(), type);
+	if(ret != UT_OK)
+		return ret;
+
+	ret = exporter->setHeaderRelation(header.c_str(), headerId);
+	if(ret != UT_OK)
+		return ret;	
+
+	ret = exporter->startHeaderStream(headerId);
+	if(ret != UT_OK)
+		return ret;	
+
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return exporter->finishHeaderStream();
+}
+
+/**
+ * Serialize the section as a footer
+ */
+UT_Error OXML_Section::serializeFooter(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* footerId;
+	const gchar* footerType;
+
+	ret = getAttribute("id", footerId);
+	if(ret != UT_OK)
+		return UT_OK;
+		
+	std::string footer("fId");
+	footer += footerId;
+
+	ret = getAttribute("type", footerType);
+	if(ret != UT_OK)
+		return UT_OK;
+
+	const gchar* type = "default";
+	//OOXML includes default, first and even.  
+	if(strstr(footerType, "first"))
+	{
+		type = "first";
+	}
+	else if(strstr(footerType, "even"))
+	{
+		type = "even";
+	}
+	else if(strstr(footerType, "last"))
+	{
+		//last not implemented in OOXML
+		return UT_OK;
+	}
+
+
+	ret = exporter->setFooterReference(footer.c_str(), type);
+	if(ret != UT_OK)
+		return ret;
+
+	ret = exporter->setFooterRelation(footer.c_str(), footerId);
+	if(ret != UT_OK)
+		return ret;	
+
+	ret = exporter->startFooterStream(footerId);
+	if(ret != UT_OK)
+		return ret;	
+
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return exporter->finishFooterStream();
 }
 
 UT_Error OXML_Section::addToPT(PD_Document * pDocument)
@@ -214,3 +366,7 @@ UT_Error OXML_Section::_setReferenceIds()
 	return UT_OK;
 }
 
+void OXML_Section::setTarget(int target)
+{
+	TARGET = target;
+}

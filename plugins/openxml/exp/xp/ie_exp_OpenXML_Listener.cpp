@@ -108,9 +108,6 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 				}
 			}
 			
-			if(element_run->appendElement(shared_element_text) != UT_OK)
-				return false;
-
 			if(bInHyperlink)
 			{
 				//make sure hyperlinks are blue and underlined
@@ -118,10 +115,15 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 					return false;
 				if(element_run->setProperty("color", "0000FF") != UT_OK) 
 					return false;
-				return hyperlink->appendElement(shared_element_run) == UT_OK;
+				if(hyperlink->appendElement(shared_element_run) != UT_OK)
+					return false;
 			}
-			
-			return paragraph->appendElement(shared_element_run) == UT_OK;
+			else
+			{
+				if(paragraph->appendElement(shared_element_run) != UT_OK)
+					return false;
+			}
+			return element_run->appendElement(shared_element_text) == UT_OK;
 		}
 		case PX_ChangeRecord::PXT_InsertObject:
 		{
@@ -380,6 +382,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		case PTX_Section:
 		{
 			section = new OXML_Section();
+			section->setTarget(TARGET_DOCUMENT);
 			OXML_SharedSection shared_section(section);
 
 			//add section properties 
@@ -457,7 +460,89 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			return section->appendElement(shared_paragraph) == UT_OK;
 		}
 		case PTX_SectionHdrFtr:
+        {
+			section = new OXML_Section(getNextId());
+			OXML_SharedSection shared_section(static_cast<OXML_Section*>(section));
+
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Header/Footer Property: %s=%s\n", szName, szValue));	
+						if(section->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Header/Footer Attribute: %s=%s\n", szName, szValue));	
+						if(section->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				if(pAP->getAttribute("type", szValue))
+				{
+					if(strstr(szValue, "header"))
+					{
+						section->setTarget(TARGET_HEADER);
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(strstr(szValue, "footer"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						return document->addFooter(shared_section) == UT_OK;
+					}
+				}				
+			}
+			return true;			
+		}
 		case PTX_SectionEndnote:
+        {
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Endnote Property: %s=%s\n", szName, szValue));	
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Endnote Attribute: %s=%s\n", szName, szValue));	
+					}
+				}
+			}
+
+			return true;
+		}
 		case PTX_SectionTable:
 		{	
 			bInTable = true;
@@ -554,6 +639,37 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			return row->appendElement(shared_cell) == UT_OK;
 		}
 		case PTX_SectionFootnote:
+        {
+			if(bHaveProp && pAP)
+			{
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Footnote Property: %s=%s\n", szName, szValue));	
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("Footnote Attribute: %s=%s\n", szName, szValue));	
+					}
+				}
+			}
+
+			return true;
+		}
 		case PTX_SectionMarginnote:
 		case PTX_SectionAnnotation:
 		case PTX_SectionFrame:

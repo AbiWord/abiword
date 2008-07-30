@@ -72,15 +72,15 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 
-	err = exporter->startText();
+	err = exporter->startText(TARGET);
 	if(err != UT_OK)
 		return err;
 
-	err = exporter->writeText(getText());
+	err = exporter->writeText(TARGET, getText());
 	if(err != UT_OK)
 		return err;
 	
-	return exporter->finishText();
+	return exporter->finishText(TARGET);
 }
 
 UT_Error OXML_Element_Text::addToPT(PD_Document * pDocument)

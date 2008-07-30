@@ -92,6 +92,8 @@ public:
 	*/
 	virtual UT_Error addToPT(PD_Document * pDocument);
 
+	void setTarget(int target);
+
 protected:
 	//! Calls the method serialize() on all children.
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
@@ -102,11 +104,14 @@ protected:
 	 */
 	UT_Error addChildrenToPT(PD_Document * pDocument);
 
+	int TARGET;
+
 private:
 	std::string m_id;
 	OXML_ElementTag m_tag;
 	OXML_ElementType m_type;
 	OXML_ElementVector m_children;
+
 };
 
 typedef std::map<std::string, OXML_SharedStyle > OXML_StyleMap;
