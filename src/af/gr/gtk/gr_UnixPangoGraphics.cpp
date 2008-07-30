@@ -291,6 +291,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
+	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
 	if(m_pAdjustedPangoFont!= NULL)
 	{
 		g_object_unref(m_pAdjustedPangoFont);
@@ -3716,7 +3717,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	
 	rec.height = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.height));
 
-	UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
+	xxx_UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
 				 (char)g, rec.left,rec.width,rec.top,rec.height));
 
 	return true;
@@ -4136,7 +4137,7 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoPrintGraphics::renderChars\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoPrintGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
@@ -4146,11 +4147,11 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	xxx_UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = scale_ydir(_tduY((RI.m_yoff + getFontAscent(pFont))));
 
-	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
 				 xoff, yoff));
 
 	UT_return_if_fail(m_gpc);
@@ -4171,7 +4172,7 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	pango_font_description_free (pfd);
 
 #define _N 1440
-	UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
+	xxx_UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
 				 _N, tdu(_N), _N, _tduX(_N), _N, _tduY(_N)));
 #undef _N
 
