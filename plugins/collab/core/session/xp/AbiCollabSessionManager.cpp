@@ -1289,6 +1289,7 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 	XAP_Frame* pCurFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pCurFrame, false);
 
+	bool isNewFrame = false;
 	PD_Document * pFrameDoc = static_cast<PD_Document *>(pCurFrame->getCurrentDoc());
 	if (pFrameDoc != pDoc)
 	{
@@ -1302,6 +1303,7 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 			// the current frame has already a document loaded, let's create
 			// a new frame
 			pCurFrame = XAP_App::getApp()->newFrame();
+			isNewFrame = true;
 		}
 
 	}
@@ -1319,6 +1321,9 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 	}
 	else
 		UT_DEBUGMSG(("Not loading the document in the frame, as the frame already has it\n"));
+	
+	if (isNewFrame)
+		(*pFrame)->show();
 	
 	return true;
 }
