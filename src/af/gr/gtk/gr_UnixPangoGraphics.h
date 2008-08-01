@@ -384,8 +384,6 @@ public:
 	UT_sint32               m_iYoff;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
-	
-	void init();
 
 private:
 	static UT_uint32 s_iInstanceCount;

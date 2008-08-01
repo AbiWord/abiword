@@ -258,54 +258,6 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_bIsSymbol (false),
 	 m_bIsDingbat (false)
 {
-	init ();
-}
-
-GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
-{
-	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
-	if(m_pAdjustedPangoFont!= NULL)
-	{
-		g_object_unref(m_pAdjustedPangoFont);
-	}
-	if(m_pAdjustedLayoutPangoFont!= NULL)
-	{
-		g_object_unref(m_pAdjustedLayoutPangoFont);
-	}
-	if (m_pContext != NULL)
-	{
-		g_object_unref(m_pContext);
-	}
-	// NB: m_pFontMap is oft owned by Pango
-	if (m_bOwnsFontMap)
-		g_object_unref(m_pFontMap);
-
-	_destroyFonts();
-	delete m_pPFontGUI;
-	g_object_unref(m_pLayoutFontMap);
-	g_object_unref(m_pLayoutContext);
-
-	if (m_pXftDraw)
-		g_free(m_pXftDraw);
-
-	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
-
-	// purge saved pixbufs
-	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
-	{
-		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
-		g_object_unref (G_OBJECT (pix));
-	}
-
-	if (G_IS_OBJECT(m_pGC))
-		g_object_unref (G_OBJECT(m_pGC));
-	if (G_IS_OBJECT(m_pXORGC))
-		g_object_unref (G_OBJECT(m_pXORGC));
-	
-}
-
-void GR_UnixPangoGraphics::init()
-{
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
 	GdkDisplay * gDisplay = NULL;
 	GdkScreen *  gScreen = NULL;
@@ -452,6 +404,49 @@ void GR_UnixPangoGraphics::init()
 										(double) getResolution());	
 	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
 	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n",	m_pLayoutFontMap,	m_pLayoutContext));
+}
+
+GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
+{
+	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
+	if(m_pAdjustedPangoFont!= NULL)
+	{
+		g_object_unref(m_pAdjustedPangoFont);
+	}
+	if(m_pAdjustedLayoutPangoFont!= NULL)
+	{
+		g_object_unref(m_pAdjustedLayoutPangoFont);
+	}
+	if (m_pContext != NULL)
+	{
+		g_object_unref(m_pContext);
+	}
+	// NB: m_pFontMap is oft owned by Pango
+	if (m_bOwnsFontMap)
+		g_object_unref(m_pFontMap);
+
+	_destroyFonts();
+	delete m_pPFontGUI;
+	g_object_unref(m_pLayoutFontMap);
+	g_object_unref(m_pLayoutContext);
+
+	if (m_pXftDraw)
+		g_free(m_pXftDraw);
+
+	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
+
+	// purge saved pixbufs
+	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	{
+		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
+		g_object_unref (G_OBJECT (pix));
+	}
+
+	if (G_IS_OBJECT(m_pGC))
+		g_object_unref (G_OBJECT(m_pGC));
+	if (G_IS_OBJECT(m_pXORGC))
+		g_object_unref (G_OBJECT(m_pXORGC));
+	
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
