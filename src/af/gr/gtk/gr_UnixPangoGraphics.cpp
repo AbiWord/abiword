@@ -247,7 +247,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
-	 m_cr (win ? gdk_cairo_create (GDK_DRAWABLE (win)) : NULL),
+	 m_cr (NULL),
 	 m_pWin (win),
  	 m_pGC (NULL),
 	 m_pXORGC (NULL),
@@ -264,6 +264,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 
 	if (_getDrawable())
 	{
+		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
+		cairo_translate(m_cr, 0.5, 0.5);
+
 		m_pColormap = gdk_rgb_get_colormap();
 		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
 
@@ -696,7 +699,8 @@ GR_Graphics::Cursor GR_UnixPangoGraphics::getCursor(void) const
 void GR_UnixPangoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	_setColor(m_3dColors[c]);
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
 }
 
 bool GR_UnixPangoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -3002,44 +3006,8 @@ void GR_UnixPangoGraphics::getColor(UT_RGBColor& clr)
 
 void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
 {
-	UT_ASSERT(m_pGC);
-	GdkColor c;
-
-	if (m_curColor == clr)
-		return;
-
 	m_curColor = clr;
-	c.red = clr.m_red << 8;
-	c.blue = clr.m_blu << 8;
-	c.green = clr.m_grn << 8;
-
-	_setColor(c);
-}
-
-void GR_UnixPangoGraphics::_setColor(GdkColor & c)
-{
-	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
-
-	UT_ASSERT(ret == TRUE);
-	if(ret)
-	{
-		gdk_gc_set_foreground(m_pGC, &c);
-		
-		m_XftColor.color.red = c.red;
-		m_XftColor.color.green = c.green;
-		m_XftColor.color.blue = c.blue;
-		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = c.pixel;
-		
-		/* Set up the XOR gc */
-		gdk_gc_set_foreground(m_pXORGC, &c);
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
-	}
-	else 
-	{
-		g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, "gdk_colormap_alloc_color() "
-			  "failed in %s", __PRETTY_FUNCTION__);
-	}
+	cairo_set_source_rgb(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
 }
 
 void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -3054,24 +3022,16 @@ void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 	
-	gdk_draw_line(_getDrawable(), m_pGC, idx1, idy1, idx2, idy2);
+	cairo_move_to (m_cr, idx1, idy1);
+	cairo_line_to (m_cr, idx2, idy2);
+	cairo_stroke (m_cr);
 }
 
 void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	m_iLineWidth = tdu(iLineWidth);
+	double width = tduD(iLineWidth);
 
-	// Get the current values of the line attributes
-
-	GdkGCValues cur_line_att;
-	gdk_gc_get_values(m_pGC, &cur_line_att);
-	GdkLineStyle cur_line_style = cur_line_att.line_style;
-	GdkCapStyle   cur_cap_style = cur_line_att.cap_style;
-	GdkJoinStyle  cur_join_style = cur_line_att.join_style;
-
-	// Set the new line width
-	gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
-
+	cairo_set_line_width (m_cr, width);
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )

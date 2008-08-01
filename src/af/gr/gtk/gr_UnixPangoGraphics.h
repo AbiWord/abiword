@@ -336,8 +336,6 @@ public:
 	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
-	void         _setColor(GdkColor & c);
-
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
@@ -365,7 +363,6 @@ public:
 	GdkColormap* 	  m_pColormap;
 	int               m_iWindowHeight;
 	int	              m_iWindowWidth;
-	UT_sint32		  m_iLineWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
