@@ -247,6 +247,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pAdjustedPangoFontSource(NULL),
 	 m_iAdjustedPangoFontZoom (0),
 	 m_iDeviceResolution(96),
+	 m_cr (win ? gdk_cairo_create (GDK_DRAWABLE (win)) : NULL),
 	 m_pWin (win),
  	 m_pGC (NULL),
 	 m_pXORGC (NULL),
@@ -259,35 +260,6 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 {
 	init ();
 }
-
-
-GR_UnixPangoGraphics::GR_UnixPangoGraphics()
-	:
-	 m_pFontMap(NULL),
-	 m_pContext(NULL),
-	 m_pLayoutFontMap(NULL),
-	 m_pLayoutContext(NULL),
-	 m_bOwnsFontMap(false),
-	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL),
-	 m_pAdjustedPangoFont(NULL),
-	 m_pAdjustedLayoutPangoFont(NULL),
-	 m_pAdjustedPangoFontSource(NULL),
-	 m_iAdjustedPangoFontZoom (0),
-	 m_iDeviceResolution(96),
-	 m_pWin (NULL),
- 	 m_pGC (NULL),
-	 m_pXORGC (NULL),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
-	 m_iXoff (0),
-	 m_iYoff (0),
-	 m_bIsSymbol (false),
-	 m_bIsDingbat (false)
-{
-	init ();
-}
-
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {

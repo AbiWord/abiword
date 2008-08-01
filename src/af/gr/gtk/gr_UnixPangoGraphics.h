@@ -313,8 +313,7 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(GdkWindow * win);
-	GR_UnixPangoGraphics();
+	GR_UnixPangoGraphics(GdkWindow * win = NULL);
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
@@ -358,6 +357,7 @@ public:
 	
 	UT_uint32         m_iDeviceResolution;
 
+	cairo_t	*         m_cr;
 	GdkWindow *       m_pWin;
 	GdkGC*            m_pGC;
 	GdkGC*            m_pXORGC;
