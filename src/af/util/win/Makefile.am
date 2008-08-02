@@ -10,7 +10,6 @@ libwin_la_SOURCES = \
 	ut_path.cpp \
 	ut_sleep.cpp \
 	ut_sleep.h \
-	ut_threadImpl.h \
 	ut_Win32Idle.cpp \
 	ut_Win32Idle.h \
 	ut_Win32Locale.cpp \

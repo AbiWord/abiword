@@ -59,8 +59,7 @@ class ABI_EXPORT UT_WorkerFactory
 
 /*!
  * This class is a generic "worker" class which will
- * serve as a base-class for UT_Timers, UT_Idles, and
- * UT_Threads
+ * serve as a base-class for UT_Timers and UT_Idles
  */
 class ABI_EXPORT UT_Worker
 {
