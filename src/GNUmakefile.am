@@ -1,4 +1,4 @@
 
-SUBDIRS = config tools af text other pkg wp bindings
+SUBDIRS = config tools af text other pkg wp
 
 EXTRA_DIST = README.TXT Makefile

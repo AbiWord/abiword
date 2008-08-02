@@ -320,51 +320,6 @@ AC_ARG_ENABLE(peer-config,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-peer-config) ;;
       esac],[peerconfig=true])
 
-AC_ARG_ENABLE(scripting,
-    [  --enable-scripting   Enable the perl scripting interface ],
-     [case "${enableval}" in
-       yes) script=true ;;
-       no)  script=false ;; 
-       *) AC_MSG_ERROR(bad value ${enableval} for --enable-scripting) ;;
-     esac],[script=false])
-
-dnl if test "x$script" = "xtrue"; then
-dnl 	AC_MSG_WARN([scripting not currently supported - please contact your priest for details])
-dnl 	script=false
-dnl fi
-
-dnl this isn't actually used anywhere, but we provide it anyway
-AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
-
-case "$script" in
-     "true" ) 
-	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
-   AC_MSG_CHECKING(for perl)
-   ABI_WHICH_PERL="`which perl 2>&1 | grep -v no\ perl`"
-   dnl I had an actual check, but the error-if-absent part didn't work, and I was/am too drunk to figure out why
-   AC_MSG_RESULT(${ABI_WHICH_PERL})
-   AC_MSG_CHECKING(perl version)
-   ABI_PERL_VERSION=`perl -V:version | tr -d "version=" | tr -d "\'" | tr -d "\;" | tr -d . | awk '{printf "%d", [$]1 * 10}'`
-			if test "$ABI_PERL_VERSION" -le 5699; then
-			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool -DNOT_PERL_5_8"
-			else
-			    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
-			fi
-   AC_MSG_RESULT($ABI_PERL_VERSION)
-		AC_MSG_CHECKING(for perl xsubpp precompiler)
-		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
-		if test -n "${XSUBPPDIR}"; then
-			AC_MSG_RESULT(${XSUBPPDIR})
-		else
-			AC_MSG_ERROR(not found)
-		fi
-	    ;;
-     * )     
-    	    SCRIPT_CFLAGS=""
-	    SCRIPT_LIBS=""
-	    ;;
-esac
-
 if test "$PLATFORM" = "unix"; then
 	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $FREETYPE_CFLAGS $GOFFICE_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
 	PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $FREETYPE_LIBS $BONOBO_LIBS $GNOMEVFS_LIBS $GNOMEUI_LIBS"
@@ -400,8 +355,6 @@ AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
-AC_SUBST(SCRIPT_CFLAGS)
-AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(PLATFORM_LIBS)
 AC_SUBST(XSUBPPDIR)
@@ -583,9 +536,6 @@ AC_CONFIG_FILES([
  src/tools/po2str/xp/GNUmakefile
  src/tools/scripts/GNUmakefile
  src/tools/scripts/unix/GNUmakefile
- src/bindings/GNUmakefile
- src/bindings/perl/GNUmakefile
- src/bindings/perl/examples/GNUmakefile
  user/GNUmakefile
  user/wp/GNUmakefile
  user/wp/scripts/GNUmakefile

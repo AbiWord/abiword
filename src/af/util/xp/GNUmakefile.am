@@ -27,11 +27,7 @@ INCLUDES = 			\
 
 noinst_LIBRARIES = libUtil_xp.a
 
-if SCRIPT
-SCRIPT_OBJ=ut_PerlBindings.cpp
-else
 SCRIPT_OBJ=
-endif
 
 if HAVE_THREADS
 THREAD_OBJ=ut_thread.cpp
