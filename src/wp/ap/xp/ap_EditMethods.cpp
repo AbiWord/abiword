@@ -2556,14 +2556,14 @@ Defun(saveImmediate)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 	//
-	// If we're connected to CAC just save back to CAC
+	// If we're connected let the remote document know.
 	// We do this with the docsaved signal
 	//
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
 		PD_Document * pDoc = pView->getDocument();
-		if(pDoc && pDoc->isCACConnected())
+		if(pDoc && pDoc->isConnected())
 		{
 			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
 			if (pFrame->getViewNumber() > 0)
@@ -2613,14 +2613,14 @@ Defun(fileSave)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 	//
-	// If we're connected to CAC just save back to CAC
+	// If we're connected let the remote document know
 	// We do this with the docsaved signal
 	//
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
 		PD_Document * pDoc = pView->getDocument();
-		if(pDoc && pDoc->isCACConnected())
+		if(pDoc && pDoc->isConnected())
 		{
 			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
 			if (pFrame->getViewNumber() > 0)

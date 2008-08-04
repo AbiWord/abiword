@@ -3463,9 +3463,9 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 }
 
 /*!
- * Return true if the document has a C.A.C. connection
+ * Return true if the document has an abicollab connection
  */
-bool PD_Document::isCACConnected(void)
+bool PD_Document::isConnected(void)
 {
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -3474,7 +3474,7 @@ bool PD_Document::isCACConnected(void)
 		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
-			if(pListener->getType() == PTL_CollabServiceExport)
+			if(pListener->getType() >= PTL_CollabExport)
 			{
 				return true;
 			}
