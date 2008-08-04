@@ -1216,7 +1216,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x line %x \n",this, getLine()));
 	GR_Graphics * pG = pDA->pG;
 	// shortcircuit drawing if we're way off base.
-	long imax = (1 << 15) - 1;
+	long imax = (1 << 30) - 1; // This draws four rows of pages. Increase the 30 to view more rows.
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 

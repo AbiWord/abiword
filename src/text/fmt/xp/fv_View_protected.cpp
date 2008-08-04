@@ -2496,8 +2496,8 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 				}
 				
 				//Found the page. Huzzah!
-				UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, m_pLayout->findPage(pPage)));
-				UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d | %d\n", pPage->getHeight(), iPageWidth, getWidthPagesInRow(pPage)));
+				xxx_UT_DEBUGMSG(("     yClick %d \t     xClick %d\tPage %d\n", yClick, xClick, m_pLayout->findPage(pPage)));
+				xxx_UT_DEBUGMSG(("iPageHeight %d \t iPageWidth %d | %d\n", pPage->getHeight(), iPageWidth, getWidthPagesInRow(pPage)));
 				break;
 			}
 			pPage = pPage->getNext();
@@ -3754,7 +3754,6 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				return true;
 			}
 			pLine->getScreenOffsets(pCurRun, xoff, yoff);
-
 			dg_DrawArgs da;
 			da.bDirtyRunsOnly = false;
 			da.pG = m_pG;
@@ -4164,41 +4163,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		UT_sint32 iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset); // <- look at this later
-
-
-		////////////////////////////////////////////////////////////////
-		UT_uint32 iNumHorizPages = getNumHorizPages();
+		
 		UT_uint32 iPageNumber = m_pLayout->findPage(pPointPage);
-		UT_uint32 iCol = iPageNumber;
-		while(iCol > iNumHorizPages)
-		{
-			iCol -= iNumHorizPages;
-		}
-		
-		#if 0
-		UT_uint32 iRow = iPageNumber/getNumHorizPages();
-		
-		if(iPageNumber >= getNumHorizPages())
-		{
-			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
-			{
-				yPoint += getPageViewTopMargin() + pPointPage->getHeight() + getPageViewSep();
-				yPoint2 += getPageViewTopMargin() + pPointPage->getHeight() + getPageViewSep();
-			}
-		}
-		#endif
-		
-		/*if(iPageNumber >= getNumHorizPages()) //Add the height of all previous rows. Works with pages of different height.
-		{
-			for (unsigned int i = 0; i < iRow; i++) //This is probably slowish...
-			{
-				yPoint += getMaxHeight(i);
-				yPoint2 += getMaxHeight(i);
-			}
-		}*/
-		
-		//yClick += getWidthPrevPagesInRow(iPageNumber);
-		////////////////////////////////////////////////////////////////
+		UT_uint32 iRow = iPageNumber / getNumHorizPages();
+		UT_uint32 iCol = iPageNumber - (iRow * getNumHorizPages());
 		
 		yPoint += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
 		xPoint += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);
@@ -4219,7 +4187,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		x2 = xPoint2;
 		y2 = yPoint2;
-		xxx_UT_DEBUGMSG(("x pos in view %d \n",x));
+		xxx_UT_DEBUGMSG(("x,y pos in view %d,%d \n",x,y));
+		xxx_UT_DEBUGMSG(("x2,y2 pos in view %d,%d \n",x2,y2));
 
 		height = iPointHeight;
 	}
@@ -4692,22 +4661,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				}
 				else //Fill in the margins for left to right
 				{
-					/*if (iCol +1 == getNumHorizPages()) //Fill to the left of the pages with gray
-					{
-						painter.fillRect(clrMargin, getPageViewLeftMargin(), adjustedTop, adjustedLeft - m_xScrollOffset, iPageHeight + m_pG->tlu(3));
-					}*/
 					if (iCol % getNumHorizPages() == 0) // Fill to the right of the pages with gray
 					{
 						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
 					}
 					else if (pPage->getNext() != NULL) //Fill between the pages with gray
 					{
-						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(2), iPageHeight + m_pG->tlu(3));
-						//painter.fillRect(clrMargin, adjustedLeft - getHorizPageSpacing() + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+						painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getHorizPageSpacing() - m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
 					}
-					/*else //Fill to the left of the last page if it's not at the end of the last column.
+					/*else if (iCol + 1 != getNumHorizPages()) //Fill to the left of the last page if it's not at the end of the last column.
 					{
-						painter.fillRect(clrMargin, 0, adjustedTop, adjustedRight + m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
+						painter.fillRect(clrMargin, getPageViewLeftMargin() - m_xScrollOffset, adjustedTop, adjustedLeft + m_pG->tlu(1), iPageHeight + m_pG->tlu(3));
 					}*/
 				}
 			}

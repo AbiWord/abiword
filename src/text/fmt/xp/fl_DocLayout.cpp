@@ -1791,7 +1791,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
-	UT_DEBUGMSG(("FL_DocLayout::getHeight() - returned height %d \n",iHeight));
+	xxx_UT_DEBUGMSG(("FL_DocLayout::getHeight() - returned height %d \n",iHeight));
 	return iHeight;
 }
 
