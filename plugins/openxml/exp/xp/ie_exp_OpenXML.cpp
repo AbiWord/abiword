@@ -2337,7 +2337,7 @@ UT_Error IE_Exp_OpenXML::finishFootnotes()
 }
 
 /**
- * Starts the endnotes.xml file which describes the footnotes
+ * Starts the endnotes.xml file which describes the endnotes
  */
 UT_Error IE_Exp_OpenXML::startEndnotes()
 {

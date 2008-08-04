@@ -39,9 +39,9 @@
 
 OXML_Section::OXML_Section() : 
 	OXML_ObjectWithAttrProp(), 
-	TARGET(0),
 	m_id(""), 
-	m_breakType(NEXTPAGE_BREAK)
+	m_breakType(NEXTPAGE_BREAK),
+	TARGET(0)
 {
 	m_headerIds[0] = NULL; m_headerIds[1] = NULL; m_headerIds[2] = NULL;
 	m_footerIds[0] = NULL; m_footerIds[1] = NULL; m_footerIds[2] = NULL;
@@ -50,9 +50,9 @@ OXML_Section::OXML_Section() :
 
 OXML_Section::OXML_Section(const std::string & id) : 
 	OXML_ObjectWithAttrProp(), 
-	TARGET(0),
 	m_id(id), 
-	m_breakType(NEXTPAGE_BREAK)
+	m_breakType(NEXTPAGE_BREAK),
+	TARGET(0)
 {
 	m_headerIds[0] = NULL; m_headerIds[1] = NULL; m_headerIds[2] = NULL;
 	m_footerIds[0] = NULL; m_footerIds[1] = NULL; m_footerIds[2] = NULL;
