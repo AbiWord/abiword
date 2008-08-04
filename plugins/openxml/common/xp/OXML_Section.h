@@ -86,6 +86,8 @@ public:
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	UT_Error serializeHeader(IE_Exp_OpenXML* exporter);
 	UT_Error serializeFooter(IE_Exp_OpenXML* exporter);
+	UT_Error serializeFootnote(IE_Exp_OpenXML* exporter);
+	UT_Error serializeEndnote(IE_Exp_OpenXML* exporter);
 
 	//! Appends this section and all its content to the Abiword Piecetable.
 	/*! This method is used during the import process.

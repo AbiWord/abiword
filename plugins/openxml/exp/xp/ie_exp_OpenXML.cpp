@@ -42,7 +42,9 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	stylesStream(NULL),
 	numberingStream(NULL),
 	headerStream(NULL),
-	footerStream(NULL)
+	footerStream(NULL),
+	footnoteStream(NULL),
+	endnoteStream(NULL)
 {
 }
 
@@ -96,6 +98,14 @@ UT_Error IE_Exp_OpenXML::startDocument()
 	}
 
 	g_object_unref (G_OBJECT (sink));
+
+	error = startEndnotes();
+	if(error != UT_OK)
+		return error;
+
+	error = startFootnotes();
+	if(error != UT_OK)
+		return error;
 
 	error = startHeaders();
 	if(error != UT_OK)
@@ -184,6 +194,14 @@ UT_Error IE_Exp_OpenXML::finishDocument()
 		return error;
 
 	error = finishFooters();
+	if(error != UT_OK)
+		return error;
+
+	error = finishFootnotes();
+	if(error != UT_OK)
+		return error;
+
+	error = finishEndnotes();
 	if(error != UT_OK)
 		return error;
 
@@ -621,6 +639,10 @@ GsfOutput* IE_Exp_OpenXML::getTargetStream(int target)
 			return footerStream;
 		case TARGET_SETTINGS:
 			return settingsStream;
+		case TARGET_FOOTNOTE:
+			return footnoteStream;
+		case TARGET_ENDNOTE:
+			return endnoteStream;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return documentStream;
@@ -1067,6 +1089,44 @@ UT_Error IE_Exp_OpenXML::finishTableGrid(int target)
 }
 
 /**
+ * Starts footnote
+ */
+UT_Error IE_Exp_OpenXML::startFootnote(const char* id)
+{
+	std::string str("<w:footnote w:id=\"");
+	str += id;
+	str += "\">";
+	return writeTargetStream(TARGET_FOOTNOTE, str.c_str());
+}
+
+/**
+ * Finishes footnote
+ */
+UT_Error IE_Exp_OpenXML::finishFootnote()
+{
+	return writeTargetStream(TARGET_FOOTNOTE, "</w:footnote>");
+}
+
+/**
+ * Starts endnote
+ */
+UT_Error IE_Exp_OpenXML::startEndnote(const char* id)
+{
+	std::string str("<w:endnote w:id=\"");
+	str += id;
+	str += "\">";
+	return writeTargetStream(TARGET_ENDNOTE, str.c_str());
+}
+
+/**
+ * Finishes endnote
+ */
+UT_Error IE_Exp_OpenXML::finishEndnote()
+{
+	return writeTargetStream(TARGET_ENDNOTE, "</w:endnote>");
+}
+
+/**
  * Sets grid column
  */
 UT_Error IE_Exp_OpenXML::setGridCol(int target, const char* column)
@@ -1316,6 +1376,52 @@ UT_Error IE_Exp_OpenXML::setHeaderReference(const char* id, const char* type)
 }
 
 /**
+ * Set the footnote reference
+ */
+UT_Error IE_Exp_OpenXML::setFootnoteReference(const char* id)
+{
+	std::string str("");
+	str += "<w:footnoteReference ";
+	str += "w:id=\"";
+	str += id;
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Set the footnoteRef tag
+ */
+UT_Error IE_Exp_OpenXML::setFootnoteRef()
+{
+	std::string str("");
+	str += "<w:footnoteRef/>";
+	return writeTargetStream(TARGET_FOOTNOTE, str.c_str());
+}
+
+/**
+ * Set the endnote reference
+ */
+UT_Error IE_Exp_OpenXML::setEndnoteReference(const char* id)
+{
+	std::string str("");
+	str += "<w:endnoteReference ";
+	str += "w:id=\"";
+	str += id;
+	str += "\"/>";
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Set the endnoteRef tag
+ */
+UT_Error IE_Exp_OpenXML::setEndnoteRef()
+{
+	std::string str("");
+	str += "<w:endnoteRef/>";
+	return writeTargetStream(TARGET_ENDNOTE, str.c_str());
+}
+
+/**
  * Set the footer reference
  */
 UT_Error IE_Exp_OpenXML::setFooterReference(const char* id, const char* type)
@@ -1413,6 +1519,12 @@ const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	if(footnoteStream && !gsf_output_is_closed(footnoteStream))
+		gsf_output_close(footnoteStream);
+
+	if(endnoteStream && !gsf_output_is_closed(endnoteStream))
+		gsf_output_close(endnoteStream);
+
 	if(settingsStream && !gsf_output_is_closed(settingsStream))
 		gsf_output_close(settingsStream);
 
@@ -1647,7 +1759,11 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>";
 	str += "<Override PartName=\"/word/numbering.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/>";
-	
+	str += "<Override PartName=\"/word/footnotes.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml\"/>";
+	str += "<Override PartName=\"/word/endnotes.xml\" ";
+	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml\"/>";
+
 	return writeTargetStream(TARGET_CONTENT, str.c_str());
 }
 
@@ -1799,7 +1915,13 @@ UT_Error IE_Exp_OpenXML::startWordRelations()
 	str += "<Relationship Id=\"rId3\" ";
 	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" ";
 	str += "Target=\"settings.xml\"/>";
-	
+	str += "<Relationship Id=\"rId4\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" ";
+	str += "Target=\"footnotes.xml\"/>";
+	str += "<Relationship Id=\"rId5\" ";
+	str += "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes\" ";
+	str += "Target=\"endnotes.xml\"/>";
+
 	return writeTargetStream(TARGET_DOCUMENT_RELATION, str.c_str());
 
 }
@@ -2143,6 +2265,142 @@ UT_Error IE_Exp_OpenXML::finishFooters()
 		}
 	}
 	
+	return UT_OK;
+}
+
+/**
+ * Starts the footnotes.xml file which describes the footnotes
+ */
+UT_Error IE_Exp_OpenXML::startFootnotes()
+{
+	UT_Error err = UT_OK;
+
+	footnoteStream = gsf_output_memory_new();
+
+	if(!footnoteStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, footnotes.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(footnoteStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+
+	std::string str("<w:footnotes ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
+	str += ">";
+
+	return writeTargetStream(TARGET_FOOTNOTE, str.c_str());
+}
+
+/**
+ * Finishes the footnotes.xml file 
+ */
+UT_Error IE_Exp_OpenXML::finishFootnotes()
+{
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_FOOTNOTE, "</w:footnotes>");
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to footnotes.xml file\n"));	
+		return err;
+	}
+
+	GsfOutput* footnoteFile = gsf_outfile_new_child(wordDir, "footnotes.xml", FALSE);
+
+	if(!footnoteFile)
+		return UT_SAVE_EXPORTERROR;		
+
+ 	if(!gsf_output_write(footnoteFile, gsf_output_size(footnoteStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(footnoteStream))))
+	{
+		gsf_output_close(footnoteFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(footnoteStream))
+	{
+		gsf_output_close(footnoteFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(footnoteFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, footnotes.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
+	return UT_OK;
+}
+
+/**
+ * Starts the endnotes.xml file which describes the footnotes
+ */
+UT_Error IE_Exp_OpenXML::startEndnotes()
+{
+	UT_Error err = UT_OK;
+
+	endnoteStream = gsf_output_memory_new();
+
+	if(!endnoteStream)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, endnotes.xml file couldn't be created\n"));	
+		return UT_SAVE_EXPORTERROR;
+	}
+
+	err = writeXmlHeader(endnoteStream);
+	if(err != UT_OK)
+	{
+		return err;
+	}	
+
+	std::string str("<w:endnotes ");
+	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
+	str += ">";
+
+	return writeTargetStream(TARGET_ENDNOTE, str.c_str());
+}
+
+/**
+ * Finishes the endnotes.xml file 
+ */
+UT_Error IE_Exp_OpenXML::finishEndnotes()
+{
+	UT_Error err = UT_OK;
+
+	err = writeTargetStream(TARGET_ENDNOTE, "</w:endnotes>");
+	if(err != UT_OK)
+	{
+		UT_DEBUGMSG(("FRT: ERROR, cannot write to endnotes.xml file\n"));	
+		return err;
+	}
+
+	GsfOutput* endnoteFile = gsf_outfile_new_child(wordDir, "endnotes.xml", FALSE);
+
+	if(!endnoteFile)
+		return UT_SAVE_EXPORTERROR;		
+
+ 	if(!gsf_output_write(endnoteFile, gsf_output_size(endnoteStream), 
+					 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(endnoteStream))))
+	{
+		gsf_output_close(endnoteFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(endnoteStream))
+	{
+		gsf_output_close(endnoteFile);
+		return UT_SAVE_EXPORTERROR;		
+	}
+
+	if(!gsf_output_close(endnoteFile))
+	{
+		UT_DEBUGMSG(("FRT: ERROR, endnotes.xml file couldn't be closed\n"));	
+		return UT_SAVE_EXPORTERROR;		
+	}
 	return UT_OK;
 }
 

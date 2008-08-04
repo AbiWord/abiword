@@ -266,6 +266,62 @@ UT_Error OXML_Section::serializeFooter(IE_Exp_OpenXML* exporter)
 	return exporter->finishFooterStream();
 }
 
+/**
+ * Serialize the section as a footnote
+ */
+UT_Error OXML_Section::serializeFootnote(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* footnoteId;
+
+	ret = getAttribute("footnote-id", footnoteId);
+	if(ret != UT_OK)
+		return UT_OK;
+
+	ret = exporter->startFootnote(footnoteId);
+	if(ret != UT_OK)
+		return ret;	
+
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return exporter->finishFootnote();
+}
+
+/**
+ * Serialize the section as a endnote
+ */
+UT_Error OXML_Section::serializeEndnote(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	const gchar* endnoteId;
+
+	ret = getAttribute("endnote-id", endnoteId);
+	if(ret != UT_OK)
+		return UT_OK;
+
+	ret = exporter->startEndnote(endnoteId);
+	if(ret != UT_OK)
+		return ret;	
+
+	OXML_ElementVector::size_type i;
+	for (i = 0; i < m_children.size(); i++)
+	{
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return exporter->finishEndnote();
+}
+
 UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;

@@ -82,7 +82,9 @@ private:
 	ie_Table tableHelper;
 	OXML_Document* document;
 	OXML_Section* section;
+	OXML_Section* savedSection;
 	OXML_Element_Paragraph* paragraph;
+	OXML_Element_Paragraph* savedParagraph;
 	OXML_Element_Table* table;
 	OXML_Element_Row* row;
 	OXML_Element_Cell* cell;

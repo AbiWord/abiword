@@ -54,6 +54,8 @@
 #define TARGET_HEADER 6
 #define TARGET_FOOTER 7
 #define TARGET_SETTINGS 8
+#define TARGET_FOOTNOTE 9
+#define TARGET_ENDNOTE 10
 
 class OXML_Document;
 
@@ -115,6 +117,10 @@ public:
 	UT_Error finishHyperlink();
 	UT_Error startBookmark(const gchar* id, const gchar* name);
 	UT_Error finishBookmark(const gchar* id);
+	UT_Error startFootnote(const gchar* id);
+	UT_Error finishFootnote();
+	UT_Error startEndnote(const gchar* id);
+	UT_Error finishEndnote();
 	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
@@ -157,6 +163,10 @@ public:
 	UT_Error setSimpleField(const char* instr, const char* value);
 	UT_Error setHeaderReference(const char* id, const char* type);
 	UT_Error setFooterReference(const char* id, const char* type);
+	UT_Error setFootnoteReference(const char* id);
+	UT_Error setFootnoteRef();
+	UT_Error setEndnoteReference(const char* id);
+	UT_Error setEndnoteRef();
 	UT_Error startHeaderStream(const char* id);
 	UT_Error finishHeaderStream();
 	UT_Error startFooterStream(const char* id);
@@ -182,6 +192,8 @@ private:
 	GsfOutput* numberingStream; // word/numbering.xml
 	GsfOutput* headerStream; //word/headerXX.xml
 	GsfOutput* footerStream; //word/footerXX.xml
+	GsfOutput* footnoteStream; //word/footnotes.xml
+	GsfOutput* endnoteStream; //word/endnotes.xml
 	std::map<std::string, GsfOutput*> mediaStreams; // all image filename, stream pairs
 	std::map<std::string, GsfOutput*> headerStreams; //all header id, stream pairs
 	std::map<std::string, GsfOutput*> footerStreams; //all footer id, stream pairs
@@ -196,6 +208,8 @@ private:
 	UT_Error startHeaders();
 	UT_Error startFooters();
 	UT_Error startSettings();
+	UT_Error startFootnotes();
+	UT_Error startEndnotes();
 	UT_Error finishNumbering();
 	UT_Error finishStyles();
 	UT_Error finishContentTypes();
@@ -206,6 +220,8 @@ private:
 	UT_Error finishHeaders();
 	UT_Error finishFooters();
 	UT_Error finishSettings();
+	UT_Error finishFootnotes();
+	UT_Error finishEndnotes();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
 	const gchar* convertToTwips(const gchar* str);

@@ -261,6 +261,120 @@ UT_Error OXML_Element_Field::serialize(IE_Exp_OpenXML* exporter)
 			//TODO
 			return UT_OK;
 		}	
+		case fd_Field::FD_Endnote_Ref:
+		{
+			UT_Error err = UT_OK;
+			const gchar* endnoteId;
+			
+			err = getAttribute("endnote-id", endnoteId);
+			if(err != UT_OK)
+				return UT_OK;
+		
+			err = exporter->startRun(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->startRunProperties(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setSuperscript(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->finishRunProperties(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+			
+			err = exporter->setEndnoteReference(endnoteId);			
+			if(err != UT_OK)
+				return err;
+
+			return exporter->finishRun(TARGET_DOCUMENT);			
+		}
+		case fd_Field::FD_Endnote_Anchor:
+		{
+			UT_Error err = UT_OK;
+
+			err = exporter->startRun(TARGET_ENDNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->startRunProperties(TARGET_ENDNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setSuperscript(TARGET_ENDNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->finishRunProperties(TARGET_ENDNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setEndnoteRef();
+			if(err != UT_OK)
+				return err;
+
+			return exporter->finishRun(TARGET_ENDNOTE);
+		}
+		case fd_Field::FD_Footnote_Ref:
+		{
+			UT_Error err = UT_OK;
+			const gchar* footnoteId;
+			
+			err = getAttribute("footnote-id", footnoteId);
+			if(err != UT_OK)
+				return UT_OK;
+		
+			err = exporter->startRun(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->startRunProperties(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setSuperscript(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->finishRunProperties(TARGET_DOCUMENT);
+			if(err != UT_OK)
+				return err;
+			
+			err = exporter->setFootnoteReference(footnoteId);			
+			if(err != UT_OK)
+				return err;
+
+			return exporter->finishRun(TARGET_DOCUMENT);
+		}
+		case fd_Field::FD_Footnote_Anchor:
+		{
+			UT_Error err = UT_OK;
+
+			err = exporter->startRun(TARGET_FOOTNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->startRunProperties(TARGET_FOOTNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setSuperscript(TARGET_FOOTNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->finishRunProperties(TARGET_FOOTNOTE);
+			if(err != UT_OK)
+				return err;
+
+			err = exporter->setFootnoteRef();
+			if(err != UT_OK)
+				return err;
+
+			return exporter->finishRun(TARGET_FOOTNOTE);
+		}
 
 		default:
 			return UT_OK;

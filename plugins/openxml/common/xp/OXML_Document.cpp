@@ -73,6 +73,8 @@ OXML_Document::OXML_Document() :
 	clearHeaders();
 	clearFooters();
 	clearSections();
+	clearFootnotes();
+	clearEndnotes();
 }
 
 OXML_Document::~OXML_Document()
@@ -81,6 +83,8 @@ OXML_Document::~OXML_Document()
 	clearHeaders();
 	clearFooters();
 	clearSections();
+	clearFootnotes();
+	clearEndnotes();
 }
 
 OXML_SharedStyle OXML_Document::getStyleById(const std::string & id)
@@ -164,6 +168,34 @@ UT_Error OXML_Document::clearHeaders()
 {
 	m_headers.clear();
 	return m_headers.size() == 0 ? UT_OK : UT_ERROR;
+}
+
+UT_Error OXML_Document::addFootnote(const OXML_SharedSection & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_footnotes[obj->getId()] = obj;
+	return UT_OK;
+}
+
+UT_Error OXML_Document::clearFootnotes()
+{
+	m_footnotes.clear();
+	return m_footnotes.size() == 0 ? UT_OK : UT_ERROR;
+}
+
+UT_Error OXML_Document::addEndnote(const OXML_SharedSection & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_endnotes[obj->getId()] = obj;
+	return UT_OK;
+}
+
+UT_Error OXML_Document::clearEndnotes()
+{
+	m_endnotes.clear();
+	return m_endnotes.size() == 0 ? UT_OK : UT_ERROR;
 }
 
 OXML_SharedSection OXML_Document::getFooter(const std::string & id)
@@ -347,6 +379,22 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	ret = exporter->finishSectionProperties();
 	if(ret != UT_OK)
 		return ret;
+
+	//serialize footnotes
+	OXML_SectionMap::iterator it7;
+	for (it7 = m_footnotes.begin(); it7 != m_footnotes.end(); it7++) {
+		ret = it7->second->serializeFootnote(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize endnotes
+	OXML_SectionMap::iterator it8;
+	for (it8 = m_endnotes.begin(); it8 != m_endnotes.end(); it8++) {
+		ret = it8->second->serializeEndnote(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
 	
 	return exporter->finishDocument();
 }
@@ -398,4 +446,3 @@ void OXML_Document::_assignHdrFtrIds()
 		index++;
 	}
 }
-

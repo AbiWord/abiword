@@ -67,6 +67,12 @@ public:
 	UT_Error addList(const OXML_SharedList& obj);
 	UT_Error addImage(const OXML_SharedImage& obj);
 
+	UT_Error addFootnote(const OXML_SharedSection & obj);
+	UT_Error clearFootnotes();
+
+	UT_Error addEndnote(const OXML_SharedSection & obj);
+	UT_Error clearEndnotes();
+
 	//! Returns a reference to the FIRST header with corresponding ID OR empty SharedSection if none found.
 	OXML_SharedSection getHeader(const std::string & id);
 	UT_Error addHeader(const OXML_SharedSection & obj);
@@ -108,6 +114,8 @@ private:
 
 	OXML_SectionMap m_headers;
 	OXML_SectionMap m_footers;
+	OXML_SectionMap m_footnotes;
+	OXML_SectionMap m_endnotes;
 
 	OXML_StyleMap m_styles_by_id;
 	OXML_StyleMap m_styles_by_name;

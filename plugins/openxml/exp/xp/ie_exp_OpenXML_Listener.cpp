@@ -32,7 +32,9 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	tableHelper(doc), 
 	document(NULL), 
 	section(NULL), 
+	savedSection(NULL),
 	paragraph(NULL), 
+	savedParagraph(NULL),
 	table(NULL), 
 	row(NULL), 
 	cell(NULL), 
@@ -513,6 +515,14 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		}
 		case PTX_SectionEndnote:
         {
+			savedSection = section; //save the current section
+			savedParagraph = paragraph; //save the current paragraph
+
+			section = new OXML_Section(getNextId());
+			OXML_SharedSection shared_section(static_cast<OXML_Section*>(section));
+
+			section->setTarget(TARGET_ENDNOTE);
+
 			if(bHaveProp && pAP)
 			{
 				const gchar* szValue;
@@ -526,6 +536,8 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 					{
 						//TODO: Take the debug message out when we are done
 						UT_DEBUGMSG(("Endnote Property: %s=%s\n", szName, szValue));	
+						if(section->setProperty(szName, szValue) != UT_OK)
+							return false;		
 					}
 				}
 
@@ -537,11 +549,13 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 					{
 						//TODO: Take the debug message out when we are done
 						UT_DEBUGMSG(("Endnote Attribute: %s=%s\n", szName, szValue));	
+						if(section->setAttribute(szName, szValue) != UT_OK)
+							return false;		
 					}
 				}
 			}
 
-			return true;
+			return document->addEndnote(shared_section) == UT_OK;
 		}
 		case PTX_SectionTable:
 		{	
@@ -640,6 +654,14 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 		}
 		case PTX_SectionFootnote:
         {
+			savedSection = section; //save the current section
+			savedParagraph = paragraph; //save the current paragraph
+
+			section = new OXML_Section(getNextId());
+			OXML_SharedSection shared_section(static_cast<OXML_Section*>(section));
+
+			section->setTarget(TARGET_FOOTNOTE);
+			
 			if(bHaveProp && pAP)
 			{
 				const gchar* szValue;
@@ -653,6 +675,8 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 					{
 						//TODO: Take the debug message out when we are done
 						UT_DEBUGMSG(("Footnote Property: %s=%s\n", szName, szValue));	
+						if(section->setProperty(szName, szValue) != UT_OK)
+							return false;		
 					}
 				}
 
@@ -664,11 +688,13 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 					{
 						//TODO: Take the debug message out when we are done
 						UT_DEBUGMSG(("Footnote Attribute: %s=%s\n", szName, szValue));	
+						if(section->setAttribute(szName, szValue) != UT_OK)
+							return false;		
 					}
 				}
 			}
 
-			return true;
+			return document->addFootnote(shared_section) == UT_OK;
 		}
 		case PTX_SectionMarginnote:
 		case PTX_SectionAnnotation:
@@ -686,8 +712,18 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			return true;
 		}
 		case PTX_EndFootnote:
+		{
+			section = savedSection; //recover the last section
+			paragraph = savedParagraph; //recover the last paragraph
+			return true;
+		}
 		case PTX_EndMarginnote:
 		case PTX_EndEndnote:
+		{
+			section = savedSection; //recover the last section
+			paragraph = savedParagraph; //recover the last paragraph
+			return true;
+		}
 		case PTX_EndAnnotation:
 		case PTX_EndFrame:
 		case PTX_EndTOC:	
