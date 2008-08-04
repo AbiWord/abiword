@@ -170,6 +170,11 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
 	m_metaDataMap.set (key, ptrvalue);
+	const gchar * atts[3] = { PT_DOCPROP_ATTRIBUTE_NAME,"metadata",NULL};
+	const gchar * props[3] = {NULL,NULL,NULL};
+	props[0] = key.c_str();
+	props[1] = value.utf8_str();
+	createAndSendDocPropCR(atts,props);
 }
 
 UT_sint32  PD_Document::getNextCRNumber(void)
@@ -1698,6 +1703,23 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 			szP = pProps[i];
 		}
 		setPageSizeFromFile(pProps);
+	}
+	else if(strcmp(szLCValue,"metadata") == 0)
+    {
+		UT_sint32 i = 0;
+		UT_DEBUGMSG(("metadata docprop received \n"));
+		const gchar * szName = pProps[i];
+		while(szName != NULL)
+		{
+			szValue = pProps[i+1];
+			UT_DEBUGMSG(("property %s value %s \n",szName,szValue));
+			const UT_String sName = szName;
+			const UT_UTF8String sValue = szValue;
+			setMetaDataProp(sName,sValue);
+			i += 2;
+			szName = pProps[i];
+		}
+
 	}
 	g_free (szLCValue);
 	return true;
