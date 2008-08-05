@@ -47,7 +47,6 @@ public:
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setStyleInGUI(void);
 	void			destroyCreateDialog();
-	void			finishCreatingStyle();
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
@@ -71,8 +70,6 @@ private:
 	GtkWidget * m_wStyleListContainer;
 		
 	GtkWidget * m_windowCreate;
-	GtkWidget * m_wAdd;
-	GtkWidget * m_wCancel;
 	GtkWidget * m_wEntry;
 	gchar * m_szPropsTemp;
 };

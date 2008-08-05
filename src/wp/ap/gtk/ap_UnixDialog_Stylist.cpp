@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <gtk/gtk.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -170,8 +171,7 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL),
 	  m_windowCreate(NULL),
-	  m_wAdd(NULL),
-	  m_wCancel(NULL),
+	  m_wEntry(NULL),
 	  m_szPropsTemp(NULL)
 {
 }
@@ -495,31 +495,8 @@ void AP_UnixDialog_Stylist::destroyCreateDialog()
 {
 	gtk_widget_destroy(m_windowCreate);
 	m_windowCreate = NULL;
-	m_wAdd = NULL;
-	m_wCancel = NULL;
+	m_wEntry = NULL;
 	FREEP(m_szPropsTemp);
-}
-
-void AP_UnixDialog_Stylist::finishCreatingStyle()
-{
-	_createNamedStyle (g_strdup(gtk_entry_get_text ( (GtkEntry *)m_wEntry )), m_szPropsTemp);
-	m_szPropsTemp = 0;
-	destroyCreateDialog();
-}
-/*!
- * Callback for the style naming dialog.  Closes dialog and returns
- * to the process of creating a style.
- */
-static void s_create_add_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
-{
-	UT_DEBUGMSG(("Add clicked in the create window.\n"));
-	me->finishCreatingStyle();
-}
-
-static void s_create_cancel_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
-{
-	UT_DEBUGMSG(("Cancel clicked in the create window.\n"));
-	me->destroyCreateDialog();
 }
 
 /*!
@@ -547,15 +524,7 @@ bool	AP_UnixDialog_Stylist::_getNameForNewStyle(gchar * props)
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
 	m_windowCreate   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist_create");
-	m_wAdd = glade_xml_get_widget(xml,"btAdd");
-	m_wCancel = glade_xml_get_widget(xml,"btCancel");
 	m_wEntry = glade_xml_get_widget(xml,"wEntry");
-	/*
-	UT_return_val_if_fail(m_windowCreate);
-	UT_return_val_if_fail(m_wAdd);
-	UT_return_val_if_fail(m_wCancel);
-	UT_return_val_if_fail(m_wEntry);
-	*/
 	
 	// set the dialog title
 	/*
@@ -564,22 +533,23 @@ bool	AP_UnixDialog_Stylist::_getNameForNewStyle(gchar * props)
 	abiDialogSetTitle(m_windowCreate, s.utf8_str());
 	*/
 	// TODO: Localize dialog title and textPrompt
-	
-	
-	g_signal_connect(G_OBJECT(m_wAdd), "clicked", 
-					 G_CALLBACK(s_create_add_clicked), this);
-	
-	g_signal_connect(G_OBJECT(m_wCancel), "clicked", 
-					 G_CALLBACK(s_create_cancel_clicked), this);
-	
-	
-	//gtk_set_transient_for(m_windowCreate, m_windowMain);
-	UT_DEBUGMSG(("Created 'create' window... do you see it?\n"));
-	// TODO
-	//_createNamedStyle (g_strdup("Test"), m_szPropsTemp);
-	//m_szPropsTemp = 0;
-	// Fire off the dialog, and when it is filled in successfully,
-	// return control by executing _createNamedStyle (from AP_Dialog_Stylist)
-	// then zeroing our member pointer (without deleting the string)
+	gint response;
+	switch ( response=gtk_dialog_run ( GTK_DIALOG(m_windowCreate)) )
+	{
+		case 1: // Add
+			UT_DEBUGMSG(("Add clicked... \n"));
+			_createNamedStyle (g_strdup(gtk_entry_get_text ( (GtkEntry *)m_wEntry )), m_szPropsTemp);
+			m_szPropsTemp = 0;
+			break;
+		case 2: // Cancel
+			UT_DEBUGMSG(("Cancel clicked... \n"));
+			break;
+		default: // other stuff
+			UT_DEBUGMSG(("Unrecognized response... %d \n", response));
+			break;
+	}
+
+	destroyCreateDialog ();
+
 	return true;
 }
