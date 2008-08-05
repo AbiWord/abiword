@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Mon Aug  4 21:00:05 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Aug  5 13:37:02 2008 -->
 <glade-interface>
-  <widget class="GtkDialog" id="AP_UnixDialog_Stylist_create">
+  <widget class="GtkDialog" id="ap_UnixDialog_Stylist_create">
     <property name="border_width">5</property>
-    <property name="type">GTK_WINDOW_POPUP</property>
     <property name="modal">True</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
@@ -51,7 +50,7 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkButton" id="btCreate">
+              <widget class="GtkButton" id="btAdd">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
