@@ -156,6 +156,7 @@ glade_DATA = \
 	ap_UnixDialog_New.glade \
 	ap_UnixDialog_Styles.glade \
 	ap_UnixDialog_Stylist.glade \
+	ap_UnixDialog_Stylist_create.glade \
 	ap_UnixDialog_Stylist_modal.glade \
 	ap_UnixDialog_Tab.glade	\
 	ap_UnixDialog_WordCount.glade \

@@ -40,16 +40,22 @@ public:
 	// callbacks can fire these events
 	void			event_Close(void);
 	void            event_Apply(void);
+	void			event_ShowAllUpdate(void) { /*m_bShowAll = gtk_toggle_button_get_active( (GtkCheckButton*) m_wShowAll);*/ return; }
 	void            styleClicked(UT_sint32 row, UT_sint32 col);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setStyleInGUI(void);
+	void			destroyCreateDialog();
+	void			finishCreatingStyle();
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
 	void            _connectSignals(void);
 	void            _fillTree(void);
+	virtual bool	_getNameForNewStyle(gchar * props);
+		
+	bool			m_bShowAll;
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wStyleList;
@@ -63,6 +69,12 @@ private:
 	GtkCellRenderer * m_wRenderer;
 	GtkTreeStore * m_wModel;
 	GtkWidget * m_wStyleListContainer;
+		
+	GtkWidget * m_windowCreate;
+	GtkWidget * m_wAdd;
+	GtkWidget * m_wCancel;
+	GtkWidget * m_wEntry;
+	gchar * m_szPropsTemp;
 };
 
 #endif /* AP_UNIXDIALOG_STYLIST_H */

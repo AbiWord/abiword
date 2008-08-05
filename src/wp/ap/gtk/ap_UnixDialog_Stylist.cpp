@@ -140,9 +140,9 @@ static void s_edit_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me)
 	pStyle->simplifyProperties();
 }
 
-static void s_show_all_clicked(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me) {
+static void s_show_all_toggled(GtkWidget * /* wid */, AP_UnixDialog_Stylist * me) {
 	// toggle show all vs. minimal toolbar list mode
-	
+	me->event_ShowAllUpdate();
 	// TODO
 	return;
 }
@@ -156,7 +156,8 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_Stylist(pDlgFactory,id), 
-	  m_windowMain(NULL),
+	  m_bShowAll(false),
+      m_windowMain(NULL),
 	  m_wStyleList(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
@@ -167,7 +168,11 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
       m_wShowAll(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
-	  m_wStyleListContainer(NULL)
+	  m_wStyleListContainer(NULL),
+	  m_windowCreate(NULL),
+	  m_wAdd(NULL),
+	  m_wCancel(NULL),
+	  m_szPropsTemp(NULL)
 {
 }
 
@@ -462,8 +467,8 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wEdit), "clicked", 
 					 G_CALLBACK(s_edit_clicked), this);
 	
-	g_signal_connect(G_OBJECT(m_wShowAll), "clicked", 
-					 G_CALLBACK(s_show_all_clicked), this);
+	g_signal_connect(G_OBJECT(m_wShowAll), "toggled", 
+					 G_CALLBACK(s_show_all_toggled), this);
 	
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
@@ -475,4 +480,93 @@ void  AP_UnixDialog_Stylist::_connectSignals(void)
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
+}
+
+/*
+ *
+ *
+ * Create New Style Dialog Zone
+ *
+ *
+ */
+
+void AP_UnixDialog_Stylist::destroyCreateDialog()
+{
+	gtk_widget_destroy(m_windowCreate);
+	m_windowCreate = NULL;
+	m_wAdd = NULL;
+	m_wCancel = NULL;
+	FREEP(m_szPropsTemp);
+}
+
+void AP_UnixDialog_Stylist::finishCreatingStyle()
+{
+	_createNamedStyle (g_strdup(gtk_entry_get_text ( (GtkEntry *)m_wEntry )), m_szPropsTemp);
+	m_szPropsTemp = 0;
+	destroyCreateDialog();
+}
+/*!
+ * Callback for the style naming dialog.  Closes dialog and returns
+ * to the process of creating a style.
+ */
+static void s_create_add_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
+{
+	me->finishCreatingStyle();
+}
+
+static void s_create_cancel_clicked(GtkWidget * /*wid*/, AP_UnixDialog_Stylist * me )
+{
+	me->destroyCreateDialog();
+}
+
+/*!
+ * Called by AP_Dialog_Stylist in the process of creating a new style,
+ * to prompt for the name in the socially-acceptable way for this
+ * toolkit.  Sets up a short-lived dialog to prompt, when dialog
+ * is closed affirmatively (in the Add button callback), _createNamedStyle
+ * is called.
+ */
+bool	AP_UnixDialog_Stylist::_getNameForNewStyle(gchar * props)
+{
+	m_szPropsTemp = props;
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	
+	glade_path += "/ap_UnixDialog_Stylist_create.glade";
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return false;
+	
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+
+	m_windowCreate   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist_create");
+	m_wAdd = glade_xml_get_widget(xml,"btCreate");
+	m_wCancel = glade_xml_get_widget(xml,"btCancel");
+	m_wEntry = glade_xml_get_widget(xml,"wEntry");
+
+	// set the dialog title
+	/*
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Create_Title,s);
+	abiDialogSetTitle(m_windowCreate, s.utf8_str());
+	*/
+	// TODO: Localize dialog title and textPrompt
+	
+	
+	g_signal_connect(G_OBJECT(m_wAdd), "clicked", 
+					 G_CALLBACK(s_create_add_clicked), this);
+	
+	g_signal_connect(G_OBJECT(m_wCancel), "clicked", 
+					 G_CALLBACK(s_create_cancel_clicked), this);
+	
+	// TODO
+	//_createNamedStyle (g_strdup("Test"), m_szPropsTemp);
+	//m_szPropsTemp = 0;
+	// Fire off the dialog, and when it is filled in successfully,
+	// return control by executing _createNamedStyle (from AP_Dialog_Stylist)
+	// then zeroing our member pointer (without deleting the string)
+	return true;
 }

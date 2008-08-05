@@ -210,43 +210,50 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 		return false;
 	
 	//
-	// Create a unique, temporary name/label 
+	// Create a name/label 
 	//
 	
-	// TODO
+	_getNameForNewStyle(sz_caretProps);
+	
+	// When the GUI returns, it will call _createNamedStyle to finish.
 	
 	//
 	// Assemble attrprop array
 	//
 	
-	// right now just create a nearly hard-coded style with the para props
+
+	
+	return true; // if we made it here, we win
+}
+
+bool AP_Dialog_Stylist::_createNamedStyle(gchar * name, gchar * props) {
 	const gchar * a[] = {						\
-			PT_NAME_ATTRIBUTE_NAME, "Test",				\
-			PT_LABEL_ATTRIBUTE_NAME, "Label for Test",				\
+			PT_NAME_ATTRIBUTE_NAME, name,				\
+			PT_LABEL_ATTRIBUTE_NAME, name,				\
 			PT_TYPE_ATTRIBUTE_NAME, "P",				\
 			PT_BASEDON_ATTRIBUTE_NAME, "Normal",			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, "Current Settings",		\
-			PT_PROPS_ATTRIBUTE_NAME, sz_caretProps,				\
+			PT_PROPS_ATTRIBUTE_NAME, props,				\
 			0};
 	
 	//
 	// Add style to the document
 	//
 	
-	// when we create a name we won't have dupes, now they just get ignored.
+	// Dupes are dropped silently
 	UT_return_val_if_fail(getDoc()->appendStyle(a), false);
 	
 	//
 	// Change style of current [UNIT_OF_TEXT] to the new one.
 	//
 	
-	// TODO
+	// TODO maybe?  Probably ideal.
 	
 	// Update stylist since it apparently likes to lag.
 	// You still have to click the doc to update, TODO
 	updateDialog();
 	
-	return true; // if we made it here, we win
+	return true;
 }
 
 /*!
@@ -276,24 +283,6 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	UT_GenericVector<const gchar *> vAttributes;
 	UT_return_val_if_fail(p_curStyle->getAllAttributes(& vAttributes), false);
 	
-	//
-	// Replace the properties string with the caret one
-	//
-	/*
-	int i;
-	const gchar ** a;
-	a = new const gchar * [vAttributes.getItemCount()+1];
-	for(i = 0; i < vAttributes.getItemCount() ; i += 2)
-	{
-		a[i]=vAttributes[i];
-		if (0 == strcmp(PT_PROPS_ATTRIBUTE_NAME, (const char *) vAttributes[i]))
-			a[i+1]=sz_caretProps;
-		else
-			a[i+1]=vAttributes[i+1];
-	}
-	// null terminate array
-	a[i]=0;
-	*/
 	//
 	// Apply changes
 	//

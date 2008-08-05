@@ -114,6 +114,8 @@ public:
 	PD_Document *    	getDoc(void) const;
 protected:
 	bool                  m_bIsModal;
+	virtual bool		_getNameForNewStyle(gchar * props)  {return true;};
+	bool 				_createNamedStyle(gchar * name, gchar * props);
 private:
 	gchar *               getPropsAtCaret() const;
 	PD_Document *         m_pDoc;
