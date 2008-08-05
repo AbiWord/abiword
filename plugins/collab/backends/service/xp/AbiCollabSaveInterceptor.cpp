@@ -36,7 +36,7 @@
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabSaveInterceptor.h"
 
-#define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
+
 
 static bool AbiCollabSaveInterceptor_interceptor(AV_View * v, EV_EditMethodCallData * d)
 {
@@ -104,25 +104,10 @@ AbiCollabSaveInterceptor::AbiCollabSaveInterceptor()
 	pBindingSet->_loadChar(pEbMap, CharTable, 2, NULL, 0);	
 }
 
-bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
+bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 {
-	UT_DEBUGMSG(("AbiCollabSaveInterceptor_intercept\n"));
-	UT_return_val_if_fail(v, false);
-	FV_View* pView = static_cast<FV_View*>(v);
-	
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	UT_return_val_if_fail(pManager, false);
-
-	PD_Document* pDoc = pView->getDocument();
-	UT_return_val_if_fail(pDoc, false);
-	
-	if (!pManager->isInSession(pDoc))
-		return m_pOldSaveEM->Fn(v, d);
-
-	UT_DEBUGMSG(("Document is in a collaboration session!\n"));
 	AbiCollab* pSession = pManager->getSession(pDoc);
-	UT_return_val_if_fail(pSession, m_pOldSaveEM->Fn(v, d));
-	
 	// the session id should be unique on a specific account handler; let's 
 	// just look it up amonst all our account handlers (not too efficient or
 	// elegant, but it works)
@@ -147,17 +132,39 @@ bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
 			async_save_ptr->start();
 			
 			// make the document clean (even if it isn't _yet_)
-			pSession->getDocument()->setClean();
-			pSession->getDocument()->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);
-			pSession->getDocument()->signalListeners(PD_SIGNAL_DOCSAVED);
-		
-			XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-			if (pFrame->getViewNumber() > 0)
-				XAP_App::getApp()->updateClones(pFrame);
-			return true;
+			pDoc->setClean();
+			pDoc->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);
 		}
 	}
+	return false;
+}
+
+bool AbiCollabSaveInterceptor::intercept(AV_View * v, EV_EditMethodCallData * d)
+{
+	UT_DEBUGMSG(("AbiCollabSaveInterceptor_intercept\n"));
+	UT_return_val_if_fail(v, false);
+	FV_View* pView = static_cast<FV_View*>(v);
 	
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	UT_return_val_if_fail(pManager, false);
+
+	PD_Document* pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+	
+	if (!pManager->isInSession(pDoc))
+		return m_pOldSaveEM->Fn(v, d);
+
+	UT_DEBUGMSG(("Document is in a collaboration session!\n"));
+	AbiCollab* pSession = pManager->getSession(pDoc);
+	UT_return_val_if_fail(pSession, m_pOldSaveEM->Fn(v, d));
+
+	if(saveRemotely(pDoc))
+	{
+	    XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	    if (pFrame->getViewNumber() > 0)
+	      XAP_App::getApp()->updateClones(pFrame);
+	    return true;
+	}
 	UT_DEBUGMSG(("This session does not use the abicollab webservice; saving the old fashioned way...\n"));
 	return m_pOldSaveEM->Fn(v, d);
 }

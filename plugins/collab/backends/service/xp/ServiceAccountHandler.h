@@ -34,6 +34,7 @@
 #include "RealmProtocol.h"
 #include "AsioRealmProtocol.h"
 #include "ServiceErrorCodes.h"
+#include "pl_Listener.h"
 
 namespace acs = abicollab::service;
 namespace rpv1 = realm::protocolv1;
@@ -42,6 +43,7 @@ class PD_Document;
 class GetSessionsResponseEvent;
 class JoinSessionRequestResponseEvent;
 class ServiceBuddy;
+class AbiCollabService_Export;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
@@ -89,7 +91,7 @@ public:
 	virtual void							joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
 	acs::SOAP_ERROR							openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId);
-
+	void                                                            removeExporter(void); 
 	// signal management
 	virtual void							signal(const Event& event, const Buddy* pSource);
 
@@ -135,6 +137,9 @@ private:
 														// communicate with abicollab.net or not
 	std::vector<ConnectionPtr>				m_connections;
 	std::string								m_ssl_ca_file;
+	PL_ListenerId             m_iListenerID;
+	AbiCollabService_Export * m_pExport;
+	  
 };
 
 #endif /* __SERVICEACCOUNTHANDLER__ */

@@ -20,17 +20,19 @@
 #define __ABICOLLAB_SAVE_INTERCEPTOR__
 
 #include "ev_EditMethod.h"
+#define SAVE_INTERCEPTOR_EM "com.abisource.abiword.abicollab.servicesaveinterceptor"
 
 class AV_View;
 class EV_EditMethodCallData;
 class EV_EditMethod;
-
+class PD_Document;
 class AbiCollabSaveInterceptor
 {
 public:
 	AbiCollabSaveInterceptor();
 	
 	bool intercept(AV_View * v, EV_EditMethodCallData * d);
+	bool saveRemotely(PD_Document * pDoc);
 	
 private:
 	void _save_cb(UT_Error error, AbiCollab* pSession);

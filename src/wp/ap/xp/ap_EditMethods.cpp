@@ -2557,7 +2557,7 @@ Defun(saveImmediate)
 	UT_return_val_if_fail (pFrame, false);
 	//
 	// If we're connected let the remote document know.
-	// We do this with the docsaved signal
+	// We do this with the savedoc signal
 	//
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -2565,7 +2565,7 @@ Defun(saveImmediate)
 		PD_Document * pDoc = pView->getDocument();
 		if(pDoc && pDoc->isConnected())
 		{
-			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
+			pDoc->signalListeners(PD_SIGNAL_SAVEDOC);
 			if (pFrame->getViewNumber() > 0)
 			{
 				XAP_App * pApp = XAP_App::getApp();
@@ -2573,7 +2573,8 @@ Defun(saveImmediate)
 
 				pApp->updateClones(pFrame);
 			}
-			return true;
+			if(!pDoc->isDirty())
+				return true;
 		}
 	}
 	// can only save without prompting if filename already known
@@ -2614,7 +2615,7 @@ Defun(fileSave)
 	UT_return_val_if_fail (pFrame, false);
 	//
 	// If we're connected let the remote document know
-	// We do this with the docsaved signal
+	// We do this with the savedoc signal
 	//
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -2622,7 +2623,7 @@ Defun(fileSave)
 		PD_Document * pDoc = pView->getDocument();
 		if(pDoc && pDoc->isConnected())
 		{
-			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
+			pDoc->signalListeners(PD_SIGNAL_SAVEDOC);
 			if (pFrame->getViewNumber() > 0)
 			{
 				XAP_App * pApp = XAP_App::getApp();
@@ -2630,7 +2631,8 @@ Defun(fileSave)
 
 				pApp->updateClones(pFrame);
 			}
-			return true;
+			if(!pDoc->isDirty())
+				return true;
 		}
 	}
 	// can only save without prompting if filename already known
@@ -3617,16 +3619,36 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 	}
 
 	// is this the last view on a dirty document?
+	bool bRemoteSave = false;
+	bool bRet = true;
 	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
 	{
-		XAP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
+		
+		XAP_Dialog_MessageBox::tAnswer ans;
+
+		ans = s_AskSaveFile(pFrame);
 
 		switch (ans)
 		{
 		case XAP_Dialog_MessageBox::a_YES:				// save it first
 		{
-			bool bRet = EX(fileSave);
+			//
+			// If we're connected let the remote document know.
+			// We do this with the savedoc signal
+			//
+			FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+			if(pView)
+			{
+				PD_Document * pDoc = pView->getDocument();
+				if(pDoc && pDoc->isConnected())
+				{
+					pDoc->signalListeners(PD_SIGNAL_SAVEDOC);
+				}
+				bRemoteSave = pDoc->isDirty();
+			}
+			if(!bRemoteSave)
+				bRet = EX(fileSave);
 			if (!bRet)								// didn't successfully save,
 				return false;					//	  so don't close
 		}
@@ -3634,13 +3656,14 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 		case XAP_Dialog_MessageBox::a_NO:				// just close it
 			break;
-
+			
 		case XAP_Dialog_MessageBox::a_CANCEL:			// don't close it
 			return false;
-
+			
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
+			
 		}
 	}
 

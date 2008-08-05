@@ -822,7 +822,6 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
-	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -882,7 +881,6 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
-	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -915,7 +913,6 @@ UT_Error PD_Document::_save(void)
 	
 	errorCode = pie->writeFile(getFilename());
 	delete pie;
-	signalListeners(PD_SIGNAL_DOCSAVED);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));

@@ -546,8 +546,12 @@ bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle sfh,
  */
 bool ABI_Collab_Export::signal(UT_uint32 iSignal)
 {
-	UT_DEBUGMSG(("ABI_Collab_Export::signal()!\n"));
+	UT_DEBUGMSG(("ABI_Collab_Export::signal()! %d \n",iSignal));
 	
+	if(iSignal == PD_SIGNAL_SAVEDOC)
+	{
+			return true;
+	}
 	SignalSessionPacket* ssp = new SignalSessionPacket(m_pAbiCollab->getSessionId(), m_pDoc->getOrigDocUUIDString(), iSignal);
 	if(m_pGlobPacket)
 	{

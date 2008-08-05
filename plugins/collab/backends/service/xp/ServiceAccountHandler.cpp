@@ -37,6 +37,7 @@
 #include "ap_Dialog_GenericInput.h"
 #include <backends/xp/SessionEvent.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
+#include "AbiCollabService_Export.h"
 
 namespace rpv1 = realm::protocolv1;
 
@@ -79,7 +80,9 @@ bool ServiceAccountHandler::askPassword(const std::string& email, std::string& p
 ServiceAccountHandler::ServiceAccountHandler()
 	: AccountHandler(),
 	m_bOnline(false),
-	m_connections()
+	  m_connections(),
+	  m_iListenerID(0),
+	  m_pExport(NULL)
 {
 	m_ssl_ca_file = XAP_App::getApp()->getAbiSuiteLibDir();
 #if defined(WIN32)
@@ -171,8 +174,19 @@ bool ServiceAccountHandler::disconnect()
 	
 	// we are disconnected now, no need to sent out messages (such as events) anymore
 	pManager->unregisterEventListener(this);	
-	
+	removeExporter();
 	return true;
+}
+
+void ServiceAccountHandler::removeExporter(void)
+{
+	if(m_pExport)
+        {
+	    PD_Document * pDoc = m_pExport->getDocument();
+	    pDoc->removeListener(m_iListenerID);
+	    m_iListenerID = 0;
+	    DELETEP(m_pExport);
+	}
 }
 
 bool ServiceAccountHandler::isOnline()
@@ -437,6 +451,11 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rc
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 	
+	// Now register a serviceExporter to handle remote saves
+	// via a signal.
+	m_pExport = new AbiCollabService_Export(*pDoc,this);
+	(*pDoc)->addListener(m_pExport,	&m_iListenerID);
+	
 	// start the session
 	UT_UTF8String sSessionId = session_id.c_str();
 	pManager->startSession(*pDoc, sSessionId, pFrame);
@@ -475,6 +494,11 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	
 	if (m_cancelled)
 		return acs::SOAP_ERROR_GENERIC;
+	// Now register a serviceExporter to handle remote saves
+	// via a signal.
+
+	m_pExport = new AbiCollabService_Export(*pDoc,this);
+	(*pDoc)->addListener(m_pExport,&m_iListenerID);
 
 	return acs::SOAP_ERROR_OK;
 }
