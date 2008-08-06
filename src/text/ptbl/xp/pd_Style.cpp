@@ -426,16 +426,28 @@ bool PD_Style::setAllProperties(const gchar * szProperties)
 	UT_GenericVector<const gchar *> vAttributes;
 	UT_return_val_if_fail(getAllAttributes(& vAttributes), false)
 	
-	int i;
+	int i=0;
+	bool copied=false;
 	const gchar ** a;
-	a = new const gchar * [vAttributes.getItemCount()+1];
-	for(i = 0; i < vAttributes.getItemCount() ; i += 2)
+	a = new const gchar * [vAttributes.getItemCount()+3];
+	while (i<vAttributes.getItemCount() && vAttributes[i]!=0)
 	{
 		a[i]=vAttributes[i];
 		if (0 == strcmp(PT_PROPS_ATTRIBUTE_NAME, (const char *) vAttributes[i]))
+		{
 			a[i+1]=szProperties;
+			copied=true;
+		}
 		else
-			a[i+1]=vAttributes[i+1];
+			a[i+1]=g_strdup(vAttributes[i+1]);
+		i+=2;
+	}
+	if (!copied)
+	{
+		UT_DEBUGMSG(("No attribute named props in the style during redefine.\n"));
+		a[i]=strdup(PT_PROPS_ATTRIBUTE_NAME);
+		a[i+1]=szProperties;
+		a+=2;
 	}
 	// null terminate array
 	a[i]=0;
