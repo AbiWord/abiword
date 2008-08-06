@@ -37,7 +37,8 @@
 #include "ap_Strings.h"
 #include "xap_Prefs.h"
 #include "ap_Frame.h"
-
+#include "pp_Author.h"
+#include "pp_AttrProp.h"
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -110,7 +111,10 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 	// maskExport();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 	GsfOutput* gzSink = gsf_output_gzip_new(GSF_OUTPUT(sink), NULL);
+	bool bAuthor = pDoc->isExportAuthorAtts();
+	const_cast<PD_Document *>(pDoc)->setExportAuthorAtts(true);
 	UT_Error result = const_cast<PD_Document*>(pDoc)->saveAs(GSF_OUTPUT(gzSink), IE_Exp::fileTypeForSuffix(".abw"), true);
+	const_cast<PD_Document *>(pDoc)->setExportAuthorAtts(bAuthor);
 	gsf_output_close(GSF_OUTPUT(gzSink));
 	// unmaskExport();
 	
@@ -706,6 +710,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
 #endif	
 	
+
 	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
 	m_vecSessions.push_back(pSession);
 
@@ -713,6 +718,18 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	JoinSessionEvent event(sSessionId);
 	event.addRecipient(pCollaborator);
 	signal(event);
+	//
+	// uwog!!! Look Here!!! This is where you can set the 
+	// author name, email, session-id etc!
+	//
+	UT_sint32 iNextFree = pDoc->findFirstFreeAuthorInt();
+	if(pDoc->getNumAuthors() == 0)
+		iNextFree++;
+	pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(),iNextFree);
+	PP_AttrProp * pPA = pA->getAttrProp();
+	pPA->setProperty("sessionid",sSessionId.utf8_str());
+	pDoc->setMyAuthorInt(iNextFree);
+	pDoc->sendAddAuthorCR(pA);
 }
 
 void AbiCollabSessionManager::joinSession(AbiCollab* pSession, Buddy* pCollaborator)

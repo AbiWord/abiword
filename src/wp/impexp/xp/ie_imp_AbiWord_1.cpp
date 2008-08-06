@@ -43,6 +43,8 @@
 #include "ie_impexp_AbiWord_1.h"
 #include "ie_imp_AbiWord_1.h"
 #include "ie_types.h"
+#include "pp_Author.h"
+#include "pp_AttrProp.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -244,9 +246,11 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 #define TT_VERSION         33 //<version>
 #define TT_TOC             34 //<toc> (Table of Contents
 #define TT_MATH            35 //<math> Math Run
-#define TT_EMBED            36 //<embed> Generic Embeded Run
-#define TT_ANN             37 //<ann> Annotate region
-#define TT_ANNOTATE        38 //<annotate> Annotation content
+#define TT_EMBED           36 //<embed> Generic Embeded Run
+#define TT_AUTHORSECTION   37 //<authors>
+#define TT_AUTHOR          38 //<author>
+#define TT_ANN             39 //<ann> Annotate region
+#define TT_ANNOTATE        40 //<annotate> Annotation content
 
 
 /*
@@ -271,6 +275,8 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"abiword",		TT_DOCUMENT		},
 	{	"ann",		    TT_ANN  		},
 	{	"annotate",		TT_ANNOTATE		},
+	{   "author",       TT_AUTHOR      },
+	{   "authors",      TT_AUTHORSECTION},
 	{	"awml",			TT_DOCUMENT		},
 	{	"bookmark",		TT_BOOKMARK		},
 	{	"br",			TT_BREAK		},
@@ -779,6 +785,36 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		goto cleanup;
 	}
 
+	case TT_AUTHORSECTION:
+	{
+				
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_AuthorSec;
+		goto cleanup;
+	}
+
+	case TT_AUTHOR:
+	{
+		X_VerifyParseState(_PS_AuthorSec);
+		m_parseState = _PS_Author;
+
+		const gchar * szUUID = UT_getAttribute("uuid",atts);
+		const gchar * szInt = UT_getAttribute("authorint",atts);
+		UT_sint32 iAuthorInt = atoi(szInt);
+		pp_Author * pA = getDoc()->addAuthor(szUUID,iAuthorInt);
+		PP_AttrProp * pPA = pA->getAttrProp();
+		const gchar * szProps = UT_getAttribute(PT_PROPS_ATTRIBUTE_NAME,atts);
+		if(szProps)
+		{
+			const gchar * szExtraAtts[3] = {PT_PROPS_ATTRIBUTE_NAME,
+											szProps,
+											NULL};
+			pPA->setAttributes(szExtraAtts);
+		}
+		goto cleanup;
+	}
+
+
 	case TT_HISTORYSECTION:
 	{
 				
@@ -1186,6 +1222,18 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		}
 		
 		m_parseState = _PS_RevisionSec;
+		return;
+
+
+	case TT_AUTHORSECTION:
+		X_VerifyParseState(_PS_AuthorSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_AUTHOR:
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Author);
+		m_parseState = _PS_AuthorSec;
 		return;
 
 	case TT_LISTSECTION:

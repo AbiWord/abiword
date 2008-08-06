@@ -62,6 +62,7 @@
 #include "ut_sleep.h"
 #include "ut_path.h"
 #include "ut_locale.h"
+#include "pp_Author.h"
 
 // these are needed because of the exportGetVisDirectionAtPosition() mechanism
 #include "fp_Run.h"
@@ -117,7 +118,9 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iUpdateCount(0),
 	  m_bIgnoreSignals(false),
 	  m_bCoalescingMask(false),
-	  m_bShowAuthors(true) // FIXME should default to false, testing only
+	  m_bShowAuthors(true),
+	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
+	  m_iMyAuthorInt(-1)
 {
 	m_pApp = pApp;
 	
@@ -151,7 +154,7 @@ PD_Document::~PD_Document()
 	m_mailMergeMap.purgeData();
 	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
-	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecAuthorUUIDs);
+	UT_VECTOR_PURGEALL(pp_Author *, m_vecAuthors);
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -255,34 +258,170 @@ bool PD_Document::isMarginChangeOnly(void) const
 
 /*!
  * Author methods, get an integer that locates a given UUID. If this UUID
- * is not recognized, add it to the list.
+ * is not found return -1
  */
 UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
 {
+	if(!szUUID)
+		return NULL;
 	UT_uint32 i = 0;
 	bool bFound = false;
-	for(i=0; i< m_vecAuthorUUIDs.getItemCount(); i++)
+	for(i=0; i< m_vecAuthors.getItemCount(); i++)
 	{
-		if(strcmp(m_vecAuthorUUIDs.getNthItem(i)->utf8_str(),szUUID)==0)
+		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
 		{
 			bFound = true;
 			break;
 		}
 	}
 	if(bFound)
-		return i;
-	m_vecAuthorUUIDs.addItem(new UT_UTF8String());
-	*m_vecAuthorUUIDs.getNthItem(i) = szUUID;
+		return m_vecAuthors.getNthItem(i)->getAuthorInt();
+	return -1;
+}
+
+UT_sint32 PD_Document::getNumAuthors()
+{
+	return static_cast<UT_sint32>(m_vecAuthors.getItemCount());
+}
+
+pp_Author *  PD_Document::getNthAuthor(UT_sint32 i)
+{
+	return m_vecAuthors.getNthItem(i);
+}
+
+pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID)
+{
+	if(!szUUID)
+		return NULL;
+	UT_uint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< m_vecAuthors.getItemCount(); i++)
+	{
+		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+		return m_vecAuthors.getNthItem(i);
+	return NULL;
+}
+
+pp_Author *  PD_Document::addAuthor(const gchar * szUUID, UT_sint32 iAuthor)
+{
+	UT_DEBUGMSG(("creating author with int %d \n",iAuthor));
+	m_vecAuthors.addItem(new pp_Author(this,szUUID,iAuthor));
+	return 	m_vecAuthors.getNthItem(m_vecAuthors.getItemCount()-1);
+}
+
+bool PD_Document::sendAddAuthorCR(pp_Author * pAuthor)
+{
+	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"addauthor",NULL};
+	const gchar ** szProps = NULL;
+	_buildAuthorProps(pAuthor, szProps);
+	bool b= createAndSendDocPropCR(szAtts,szProps);
+	delete [] szProps;
+	return b;
+}
+
+
+bool PD_Document::sendChangeAuthorCR(pp_Author * pAuthor)
+{
+	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"changeauthor",NULL};
+	const gchar ** szProps = NULL;
+	_buildAuthorProps(pAuthor, szProps);
+	bool b= createAndSendDocPropCR(szAtts,szProps);
+	delete [] szProps;
+	return b;
+}
+
+bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps)
+{
+	PP_AttrProp * pAP = pAuthor->getAttrProp();
+	UT_uint32 iCnt= pAP->getPropertyCount();
+	szProps = new const gchar * [2*iCnt +5];
+	szProps[0] = "uuid";
+	szProps[1] = pAuthor->getUUID();
+	static UT_String sVal;
+	UT_DEBUGMSG(("_buildAuthorProps getAuthorInt %d \n",pAuthor->getAuthorInt()));
+	UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
+	szProps[2] = "authorint";
+	szProps[3] = sVal.c_str();
+	UT_uint32 i = 0;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
+	UT_uint32 j = 4;
+	for(i=0;i<iCnt;i++)
+	{
+		pAP->getNthProperty(i,szName,szValue);
+		if(*szValue)
+		{
+			szProps[j++] = szName;
+			szProps[j++] = szValue;
+		}
+	}
+	szProps[j] = NULL;
+	return true;
+}
+
+UT_sint32 PD_Document::findFirstFreeAuthorInt(void)
+{
+	UT_sint32 i= 0;
+	for(i=0;i<1000;i++)
+	{
+		if(getAuthorByInt(i) == NULL)
+			break;
+	}
 	return i;
 }
+pp_Author * PD_Document::getAuthorByInt(UT_sint32 i)
+{
+	UT_uint32 j = 0;
+	for(j=0; j< m_vecAuthors.getItemCount(); j++)
+	{
+		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
+			return m_vecAuthors.getNthItem(j);
+	}
+	return NULL;
+}
+/*!
+ * True if the Author attributes should be exported.
+ */
+bool  PD_Document::isExportAuthorAtts(void) const
+{
+	return m_bExportAuthorAtts;
+}
+
+void  PD_Document::setExportAuthorAtts(bool bAuthor)
+{
+	m_bExportAuthorAtts = bAuthor;
+}
+/*!
+ * Returns the integer mapping for this session
+ */
+UT_sint32 PD_Document::getMyAuthorInt(void) const
+{
+	return m_iMyAuthorInt;
+}
+
+void PD_Document::setMyAuthorInt(UT_sint32 i)
+{
+	m_iMyAuthorInt = i;	
+}
+
 
 /*!
  * get a UUID from it's location. If it's not present return NULL
  */
 const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i)
 {
-	if(i< static_cast<UT_sint32>(m_vecAuthorUUIDs.getItemCount()))
-		return m_vecAuthorUUIDs.getNthItem(i)->utf8_str();
+	UT_uint32 j = 0;
+	for(j=0; j< m_vecAuthors.getItemCount(); j++)
+	{
+		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
+			return m_vecAuthors.getNthItem(j)->getUUID();
+	}
 	return NULL;
 }
 
@@ -322,7 +461,16 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		return bFound;
 	}
 	szAttsOut[icnt] = PT_AUTHOR_NAME;
-	szAttsOut[icnt+1] = getOrigDocUUIDString();
+	UT_String sNum;
+	if(getMyAuthorInt() == -1)
+	{
+		UT_sint32 k = findFirstFreeAuthorInt();
+		setMyAuthorInt(k);
+		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		sendAddAuthorCR(pA);
+	}
+	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	szAttsOut[icnt+1] = sNum.c_str();
 	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
 	szAttsOut[icnt+2] = NULL;
 	return false;
@@ -339,7 +487,7 @@ void PD_Document::setShowAuthors(bool bAuthors)
 	{
 		UT_GenericVector<AV_View *> vecViews;
 		getAllViews(&vecViews);
-		UT_sint32 i = 0;
+		UT_uint32 i = 0;
 		for(i = 0; i<vecViews.getItemCount(); i++)
 		{
 			FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
@@ -359,10 +507,19 @@ void PD_Document::setShowAuthors(bool bAuthors)
 bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 {
 	xxx_UT_DEBUGMSG(("Doing addAuthorAttributeIfBlank PAP \n"));
+	UT_String sNum;
+	if(getMyAuthorInt() == -1)
+	{
+		UT_sint32 k = findFirstFreeAuthorInt();
+		setMyAuthorInt(k);
+		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		sendAddAuthorCR(pA);
+	}
+	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
 	if(!p_AttrProp)
 	{
 		static PP_AttrProp p;
-		p.setAttribute(PT_AUTHOR_NAME,getMyUUIDString().utf8_str());
+		p.setAttribute(PT_AUTHOR_NAME,sNum.c_str());
 		p_AttrProp = &p;
 		return false;
 	}
@@ -373,7 +530,7 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 		if(sz)
 			return true;
 	}
-	p_AttrProp->setAttribute(PT_AUTHOR_NAME,getOrigDocUUIDString());
+	p_AttrProp->setAttribute(PT_AUTHOR_NAME,sNum.c_str());
 	return false;
 }
 //////////////////////////////////////////////////////////////////
@@ -1717,6 +1874,64 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 			szName = pProps[i];
 		}
 
+	}
+	else if(strcmp(szLCValue,"addauthor") == 0)
+	{
+		const gchar * szUUID=NULL;
+		const gchar * szInt=NULL;
+		AP.getProperty("uuid",szUUID);
+		AP.getProperty("authorint",szInt);
+		UT_DEBUGMSG(("addauthor docprop CR received uuid %s int %d \n",szUUID,szInt));
+		if(szUUID && szInt)
+		{
+			UT_sint32 iAuthor = atoi(szInt);
+			pp_Author * pA = addAuthor(szUUID,iAuthor);
+			UT_uint32 j = 0;
+			const gchar * szName = NULL;
+			szValue = NULL;
+			PP_AttrProp * pAP = pA->getAttrProp();
+			while(AP.getNthProperty(j++,szName,szValue))
+			{
+				if(strcmp(szName,"uuid") == 0)
+					continue;
+				if(strcmp(szName,"author-int") == 0)
+					continue;
+				if(*szValue)
+					pAP->setProperty(szName,szValue);
+			}
+			sendAddAuthorCR(pA);
+		}
+	}
+	else if(strcmp(szLCValue,"changeauthor") == 0)
+	{
+		const gchar * szUUID=NULL;
+		const gchar * szInt=NULL;
+		pp_Author * pA = NULL;
+		if(AP.getProperty("author-int",szInt) && szInt && *szInt)
+	    {
+			UT_sint32 iAuthor = atoi(szInt);
+			pA = getAuthorByInt(iAuthor);
+		}
+		else if( AP.getProperty("uuid",szUUID) && szUUID && *szUUID)
+		{
+			pA = getAuthorByUUID(szUUID);
+		}
+		if(pA)
+		{
+			PP_AttrProp * pAP = pA->getAttrProp();
+			UT_uint32 j = 0;
+			const gchar * szName = NULL;
+			while(AP.getNthProperty(j++,szName,szValue))
+			{
+				if(strcmp(szName,"uuid") == 0)
+					continue;
+				if(strcmp(szName,"author-int") == 0)
+					continue;
+				if(*szValue)
+					pAP->setProperty(szName,szValue);
+			}
+			sendChangeAuthorCR(pA);
+		}
 	}
 	g_free (szLCValue);
 	return true;

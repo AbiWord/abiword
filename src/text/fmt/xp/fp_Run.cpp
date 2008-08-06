@@ -477,13 +477,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			_lookupProperties(NULL, pBlockAP, pSectionAP,pG);
 	}
-	const char * szAuthorUUID = NULL;	
+	const char * szAuthorInt = NULL;	
 	if(pSpanAP && pDoc->isShowAuthors())
 	{
-		if(pSpanAP->getAttribute(PT_AUTHOR_NAME,szAuthorUUID))
+		if(pSpanAP->getAttribute(PT_AUTHOR_NAME,szAuthorInt))
 		{
-			if(szAuthorUUID)
-				m_iAuthorColor = pDoc->getNumFromAuthorUUID(szAuthorUUID);
+			if(szAuthorInt)
+				m_iAuthorColor = atoi(szAuthorInt);
 		}
 	}
 	else
@@ -1174,7 +1174,11 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	}
 	else if(m_iAuthorColor > 0)
 	{
-		s_fgColor = _getView()->getColorRevisions(m_iAuthorColor);
+		UT_sint32 iRange = m_iAuthorColor % 12;
+		//
+		// FIXME We can also set this from the color property of the author ID 
+		//
+		s_fgColor = _getView()->getColorRevisions(iRange);
 		return s_fgColor;
 	}
 	else

@@ -98,5 +98,6 @@ libxp_la_SOURCES = \
 	px_CR_Strux.h \
 	px_CR_Style.cpp \
 	px_CR_Style.h \
-	px_CR_TestRoutines.cpp
+	px_CR_TestRoutines.cpp \
+	pp_Author.h
 

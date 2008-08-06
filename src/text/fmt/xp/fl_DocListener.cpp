@@ -1662,6 +1662,18 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 		    bResult = m_pLayout->setDocViewPageSize(pAP);
 		}
+		else if(strcmp(szValue,"changeauthor") == 0)
+		{
+		  	m_pLayout->refreshRunProperties();
+			FV_View * pView = m_pLayout->getView();
+			pView->updateScreen(false ); 
+		}
+		else if(strcmp(szValue,"addauthor") == 0)
+		{
+		  	m_pLayout->refreshRunProperties();
+			FV_View * pView = m_pLayout->getView();
+			pView->updateScreen(false ); 
+		}
 		goto finish_up;
 	}	
 	default:

@@ -61,6 +61,7 @@ class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
+class pp_Author;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -192,6 +193,8 @@ public:
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 	bool                    isDoingTheDo(void) const;
 
+	// Author methods
+
 	const char *            getAuthorUUIDFromNum(UT_sint32 id);
 	UT_sint32               getNumFromAuthorUUID(const char * szUUID);
 	void                    setShowAuthors(bool bAuthors);
@@ -199,7 +202,22 @@ public:
 	{ return m_bShowAuthors;}
 	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut);
 	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
-
+	bool                    isExportAuthorAtts(void) const;
+	void                    setExportAuthorAtts(bool bExport);
+	UT_sint32               getMyAuthorInt(void) const;
+	void                    setMyAuthorInt(UT_sint32 iAuthor);
+	UT_sint32               getNumAuthors(void);
+	pp_Author *             getNthAuthor(UT_sint32 i);
+	pp_Author *             getAuthorByInt(UT_sint32 i);
+	pp_Author *             getAuthorByUUID(const gchar * szUUID);
+	pp_Author *             addAuthor(const gchar * szUUID, UT_sint32 iAuthor);
+	bool                    sendAddAuthorCR(pp_Author * pAuthor);
+	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
+	UT_sint32               findFirstFreeAuthorInt(void);
+ private:
+	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps);
+ public:
+	//
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
@@ -754,7 +772,9 @@ private:
 
 	bool					m_bCoalescingMask;
 	bool                    m_bShowAuthors;
-	UT_GenericVector<UT_UTF8String *>  m_vecAuthorUUIDs;
+	UT_GenericVector<pp_Author *>  m_vecAuthors;
+	bool                    m_bExportAuthorAtts;
+	UT_sint32               m_iMyAuthorInt;
 };
 
 #endif /* PD_DOCUMENT_H */

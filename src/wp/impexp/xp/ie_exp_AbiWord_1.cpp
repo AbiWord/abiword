@@ -43,6 +43,7 @@
 #include "pd_Style.h"
 
 #include "pp_AttrProp.h"
+#include "pp_Author.h"
 
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
@@ -234,6 +235,7 @@ protected:
     void                _handleMetaData(void);
 	void                _handleRevisions(void);
 	void                _handleHistory(void);
+	void                _handleAuthors(void);
 
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
@@ -394,7 +396,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			//
 			// Strip out Author attributes for now.
 			//
-			if(strcmp(szName,PT_AUTHOR_NAME) == 0)
+			if( !m_pDocument->isExportAuthorAtts() && strcmp(szName,PT_AUTHOR_NAME) == 0)
 				continue;
 			tag += " ";
 			tag += szName;
@@ -501,7 +503,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			//
 			// Strip out Author attributes for now.
 			//
-			if(strcmp(szName,PT_AUTHOR_NAME) == 0)
+			if( !m_pDocument->isExportAuthorAtts() && strcmp(szName,PT_AUTHOR_NAME) == 0)
 				continue;
 
 			m_pie->write(" ");
@@ -808,6 +810,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	_handleStyles();
 	_handleLists();
 	_handlePageSize();
+	if(m_pDocument->isExportAuthorAtts())
+		_handleAuthors();
 }
 
 s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
@@ -1758,4 +1762,47 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		m_pie->write("</history>\n");
 
 	return;
+}
+
+void s_AbiWord_1_Listener::_handleAuthors(void)
+{
+	UT_sint32 nAuthors = m_pDocument-> getNumAuthors();
+	if(nAuthors <= 0)
+		return;
+	m_pie->write("<authors>\n");
+	UT_sint32 i = 0;
+	UT_String sVal;
+	for(i=0;i<nAuthors;i++)
+	{
+		pp_Author * pAuthor = m_pDocument->getNthAuthor(i);
+		m_pie->write("<author uuid=\"");
+		m_pie->write(pAuthor->getUUID());
+		m_pie->write("\" authorint=\"");
+		UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
+		m_pie->write(sVal.c_str());
+		m_pie->write("\" ");
+		PP_AttrProp * pAP = pAuthor->getAttrProp();
+		if(pAP->getPropertyCount()>0)
+		{
+			m_pie->write(static_cast<const char*>(PT_PROPS_ATTRIBUTE_NAME));
+			m_pie->write("=\"");
+			const gchar * szName = NULL;
+			const gchar * szValue = NULL;
+			UT_uint32 j = 0;
+			while (pAP->getNthProperty(j++,szName,szValue))
+			{
+				if (szName && *szName && szValue && *szValue)
+				{
+					if(j>1)
+						m_pie->write("; ");
+					m_pie->write(static_cast<const char*>(szName));
+					m_pie->write(":");
+					_outputXMLChar(szValue, strlen(szValue));
+				}
+			}
+		m_pie->write("\"");
+		}
+		m_pie->write("/>\n");
+	}
+	m_pie->write("</authors>\n");
 }

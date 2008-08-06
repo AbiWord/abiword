@@ -126,6 +126,8 @@ protected:
 				   _PS_Meta,
 				   _PS_RevisionSec,
 				   _PS_Revision,
+				   _PS_AuthorSec,
+				   _PS_Author,
 				   _PS_HistorySec,
 				   _PS_Table,
 				   _PS_Cell,
