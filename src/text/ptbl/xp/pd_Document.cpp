@@ -1894,7 +1894,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 			{
 				if(strcmp(szName,"uuid") == 0)
 					continue;
-				if(strcmp(szName,"author-int") == 0)
+				if(strcmp(szName,"authorint") == 0)
 					continue;
 				if(*szValue)
 					pAP->setProperty(szName,szValue);
@@ -1907,7 +1907,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 		const gchar * szUUID=NULL;
 		const gchar * szInt=NULL;
 		pp_Author * pA = NULL;
-		if(AP.getProperty("author-int",szInt) && szInt && *szInt)
+		if(AP.getProperty("authorint",szInt) && szInt && *szInt)
 	    {
 			UT_sint32 iAuthor = atoi(szInt);
 			pA = getAuthorByInt(iAuthor);
@@ -1925,7 +1925,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 			{
 				if(strcmp(szName,"uuid") == 0)
 					continue;
-				if(strcmp(szName,"author-int") == 0)
+				if(strcmp(szName,"authorint") == 0)
 					continue;
 				if(*szValue)
 					pAP->setProperty(szName,szValue);
