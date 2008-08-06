@@ -166,6 +166,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("tabstops", szValue) == UT_OK)
+	{
+		err = exporter->setTabstops(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
 	//serialize List here if any list appended to the paragraph since we need properties of
 	//list to be included in paragraph properties section
 

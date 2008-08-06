@@ -1016,6 +1016,68 @@ UT_Error IE_Exp_OpenXML::setLineHeight(int target, const gchar* height)
 }
 
 /**
+ * Sets tab stops
+ */
+UT_Error IE_Exp_OpenXML::setTabstops(int target, const gchar* tabstops)
+{
+	std::string tabs("<w:tabs>");
+
+	std::string str("");
+	str += tabstops;
+	str += ",";
+
+	std::string::size_type prev = -1;
+	std::string::size_type pos = str.find_first_of(",");
+		
+	while (pos != std::string::npos) 
+	{
+		std::string token("");
+		token = str.substr(prev+1, pos-prev-1);
+
+		std::string::size_type typePos = token.find_first_of("/");
+
+		if(typePos != std::string::npos)
+		{
+			std::string tabStopType = token.substr(typePos+1, 1);
+			std::string type = token.substr(typePos+2, token.length()-1);		
+			token = token.substr(0, typePos);
+
+			if(strstr(tabStopType.c_str(), "L"))
+				tabs += "<w:tab w:val=\"left\" ";
+			else if(strstr(tabStopType.c_str(), "R"))
+				tabs += "<w:tab w:val=\"right\" ";
+			else if(strstr(tabStopType.c_str(), "C"))
+				tabs += "<w:tab w:val=\"center\" ";
+			else if(strstr(tabStopType.c_str(), "D"))
+				tabs += "<w:tab w:val=\"decimal\" ";
+			else if(strstr(tabStopType.c_str(), "B"))
+				tabs += "<w:tab w:val=\"bar\" ";
+			else
+				tabs += "<w:tab w:val=\"clear\" ";
+
+
+			if(strstr(type.c_str(), "1"))
+				tabs += "w:leader=\"underscore\" ";
+			else if(strstr(type.c_str(), "2"))
+				tabs += "w:leader=\"dot\" ";
+			else if(strstr(type.c_str(), "3"))
+				tabs += "w:leader=\"hyphen\" ";
+		
+			tabs += "w:pos=\"";
+			tabs += convertToPositiveTwips(token.c_str());
+			tabs += "\"/>";	
+		}
+	
+		prev = pos;	
+		pos = str.find_first_of(",", pos + 1);
+	}
+
+	tabs += "</w:tabs>";
+
+	return writeTargetStream(target, tabs.c_str());
+}
+
+/**
  * Sets grid span for horizontally merged cells
  */
 UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
