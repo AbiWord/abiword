@@ -3121,34 +3121,30 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 
-	gdk_draw_line(_getDrawable(), m_pXORGC, idx1, idy1, idx2, idy2);
+	cairo_save(m_cr);
+	cairo_set_operator(m_cr, CAIRO_OPERATOR_XOR);
+
+	cairo_move_to(m_cr, idx1, idy1);
+	cairo_line_to(m_cr, idx2, idy2);
+	cairo_stroke(m_cr);
+
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// see bug #303 for what this is about
+	UT_uint32 i;
 
-	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
-	UT_ASSERT(points);
+	UT_return_if_fail(nPoints > 1);
 
-	for (UT_uint32 i = 0; i < nPoints; i++)
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++)
 	{
-		UT_sint32 idx = _tduX(pts[i].x);
-		points[i].x = idx;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		UT_sint32 idy1 = _tduY(pts[i].y);
-
-		points[i].y = idy1 - 1;
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
 	}
-
-	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
-
-	FREEP(points);
+	cairo_stroke(m_cr);
 }
 
 void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
