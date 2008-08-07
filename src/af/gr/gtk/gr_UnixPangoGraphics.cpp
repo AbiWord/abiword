@@ -266,6 +266,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	{
 		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
 		cairo_translate(m_cr, 0.5, 0.5);
+		cairo_set_line_width (m_cr, 1);
 
 		m_pColormap = gdk_rgb_get_colormap();
 		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
