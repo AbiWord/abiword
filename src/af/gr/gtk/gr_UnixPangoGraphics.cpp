@@ -3198,33 +3198,13 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	// save away the current color, and restore it after we fill the rect
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	cairo_save(m_cr);
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
+	cairo_fill(m_cr);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
-
-	oColor.pixel = gcValues.foreground.pixel;
-
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-	UT_sint32 idx = _tduX(x);
-	UT_sint32 idy = _tduY(y);
-	UT_sint32 idw = _tduR(w);
-	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
 
 
@@ -3342,8 +3322,10 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
+	cairo_fill(m_cr);
 }
 
 void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
