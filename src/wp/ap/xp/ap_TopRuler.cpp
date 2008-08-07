@@ -272,22 +272,24 @@ UT_uint32 AP_TopRuler::getWidth(void) const
 
 /*****************************************************************/
 
+/////////////////////////REFRESH///////////////////// called by mouseRelease
 bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
+	UT_DEBUGMSG(("AP_TopRuler::notify called\n"));
 	// Handle AV_Listener events on the view.
 	if(isHidden())
 	{
 		return true;
 	}
 	UT_ASSERT_HARMLESS(pView==m_pView);
-	xxx_UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
+	UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
 
 	// if the column containing the caret has changed or any
 	// properties on the section (like the number of columns
 	// or the margins) or on the block (like the paragraph
 	// indents), then we redraw the ruler.
 //#bidi
-	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
+	if (1) //(mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
 	{
 		UT_Rect pClipRect;
 		pClipRect.top = 0;
@@ -386,6 +388,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 {
+	UT_DEBUGMSG(("========================DRAW\n"));
 	if (!m_pG)
 		return;
 
@@ -429,7 +432,8 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 
 	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
 	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
-	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
+	UT_sint32 xFixed = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); //////////////OFF///////////////
+	//UT_sint32 xFixed = /*static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)))*/ + _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 
 	// convert page-relative coordinates into absolute coordinates.
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
@@ -565,7 +569,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	//	UT_ASSERT_HARMLESS(xFrom >= 0); can have xFrom <0 for normal mode
 	UT_ASSERT_HARMLESS(xTo >= 0);
 
-	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
+	UT_sint32 xFixed = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); //////////OFF///////////////////
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -1234,6 +1238,7 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 {
+	UT_DEBUGMSG(("========================_DRAW\n"));
 	UT_sint32 sum;
 	UT_uint32 k;
 
@@ -1251,8 +1256,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		return;
 
 	if (pUseInfo)
+	{
 		// if we are given an info arg, use it
 		pInfo = pUseInfo;
+	}
 	else
 	{
 		// otherwise we calculate our own.
@@ -1267,11 +1274,11 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		}
 		if(pView->getDocument()->isPieceTableChanging())
 		{
+			UT_DEBUGMSG(("isPieceTableChanging()\n"));
 			return;
 		}
 		pView->getTopRulerInfo(pInfo);
 	}
-
 	// draw the tab toggle inside the fixed area in the left-hand corner
 	_drawTabToggle(pClipRect, false);
 
@@ -1288,13 +1295,15 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	bool bRTL;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
 
-    UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) * pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap;
+    UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) 
+    					* pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap 
+    					+ _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 
     if(bRTL)
     {
-		sum = xAbsRight;
+		sum = xAbsRight; //rtlPages()
 		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+ m_pG->tlu(1),pInfo->u.c.m_xaRightMargin- m_pG->tlu(1));
-		//sum -= pInfo->u.c.m_xColumnWidth;
+		sum -= pInfo->u.c.m_xColumnWidth; 
     }
     else
 	{
@@ -1308,26 +1317,35 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		sum = width;
 	}
 
+	UT_DEBUGMSG(("m_pG->tlu(s_iFixedWidth) %d\n",m_pG->tlu(s_iFixedWidth)));
+	UT_DEBUGMSG(("pClipRect %d\n", pClipRect));
+	if (!pUseInfo)
+		UT_DEBUGMSG(("AP_TopRulerInfo * pUseInfo passed as 0x0\n"));
+	UT_DEBUGMSG(("AP_TopRulerInfo * pInfo %d\n", pInfo->u.c.m_xColumnWidth));
+	UT_DEBUGMSG(("========================"));
+	UT_DEBUGMSG(("m_infoCache %d\n", m_infoCache.u.c.m_xColumnWidth));
+
 
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw white bar over this column
 		if(bRTL)
-			sum -= pInfo->u.c.m_xColumnWidth;
-
+			sum -= pInfo->u.c.m_xColumnWidth;// + _getFirstPixelInColumn(pInfo, k); //rtlPages()
+		
+		UT_DEBUGMSG(("pInfo->u.c.m_xColumnWidth %d\n", pInfo->u.c.m_xColumnWidth));
 		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+ m_pG->tlu(1), pInfo->u.c.m_xColumnWidth- m_pG->tlu(1));
 
 		if(!bRTL)
-			sum += pInfo->u.c.m_xColumnWidth;
+			sum += pInfo->u.c.m_xColumnWidth;// + _getFirstPixelInColumn(pInfo, k);//puts the gray directly to the right off
 
 		// if another column after this one, draw dark gray-gap
 
-		if (k+1 < pInfo->m_iNumColumns)
+		if (k+1 < pInfo->m_iNumColumns) //FREM: drawing too far
 		{
 			if(bRTL)
 				sum -= pInfo->u.c.m_xColumnGap;
 
-			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1), pInfo->u.c.m_xColumnGap- m_pG->tlu(1));
+			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum + m_pG->tlu(1), pInfo->u.c.m_xColumnGap- m_pG->tlu(1));
 
 			if(!bRTL)
 				sum += pInfo->u.c.m_xColumnGap;
@@ -1341,7 +1359,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1),pInfo->u.c.m_xaLeftMargin- m_pG->tlu(1));
 	}
 	else
-		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+ m_pG->tlu(1),pInfo->u.c.m_xaRightMargin- m_pG->tlu(1));
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum + m_pG->tlu(1),pInfo->u.c.m_xaRightMargin- m_pG->tlu(1));
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -1355,7 +1373,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// right.
 	UT_sint32 xTickOrigin = 0;
 
-	if(bRTL)
+	if(bRTL) //FREM rtlPages();
 	{
 	    xTickOrigin = xAbsRight;
 		if (pInfo->m_iCurrentColumn > 0)
@@ -1370,13 +1388,13 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		}
 
 		if (pInfo->m_iCurrentColumn > 0)
-			xTickOrigin += pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
+			xTickOrigin += pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);// + _getFirstPixelInColumn(pInfo, pInfo->m_iCurrentColumn);
     }
 
 	sum = 0;
 
 	// draw negative ticks over left margin.
-	if(bRTL)
+	if(bRTL) //FREM rtlPages()
 	{
 		sum = xTickOrigin + pInfo->u.c.m_xaRightMargin;
 		if(pInfo->u.c.m_xaRightMargin)
@@ -1440,7 +1458,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	}
 	else if(pInfo->u.c.m_xaRightMargin)
 	{
-		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin+_getFirstPixelInColumn(pInfo, pInfo->m_iCurrentColumn), sum, sum+pInfo->u.c.m_xaRightMargin);
 	}
 
 	// draw the various widgets for the:
@@ -1582,11 +1600,12 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	{
 		return false;
 	}
-// Sevior: Look to cache this.
+	// Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
-	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
+	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache); //////////////CACHE////////////
 	//UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 	//UT_sint32 xStartPixel = xFixed + static_cast<UT_sint32>(m_infoCache.m_xPageViewMargin);
+	
 
 	UT_Rect rToggle;
 
@@ -2124,6 +2143,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 							 EV_EditMouseButton emb , UT_uint32 x, UT_uint32 y)
 {
 	//UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+	UT_DEBUGMSG(("mousePress: [emb 0x%08lx][x %ld][y %ld]\n",emb,x,y));
 
 	// get the complete state of what should be on the ruler at the time of the grab.
 	// we assume that nothing in the document can change during our grab unless we
@@ -2457,8 +2477,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 
 /*****************************************************************/
 
+//////////////////////REFRESH//////////////////////////
 void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
+	UT_DEBUGMSG(("mouseRelease\n"));
 	if (m_bValidMouseClick && m_draggingWhat == DW_TABTOGGLE)
 	{
 		m_draggingWhat = DW_NOTHING;
@@ -3272,6 +3294,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 //	{
 //		return;
 //	}
+
+  	UT_DEBUGMSG(("mouseMotion "));
+
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView && pView->isLayoutFilling())
 	{
@@ -3290,7 +3315,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	m_bEventIgnored = false;
 
-  	xxx_UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
@@ -3324,7 +3349,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
-	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock(); //FREM
 	
 	bool bRTL = false;
 
@@ -3482,7 +3507,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			newMargin = m_draggingCenter - xAbsLeft;
 			deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
-			m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin;
+			m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin; //////CACHE///////
 			m_infoCache.u.c.m_xColumnWidth -= deltaLeftMargin / static_cast<UT_sint32>(m_infoCache.m_iNumColumns);
 			draw(NULL, &m_infoCache);
 			m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
@@ -4072,9 +4097,12 @@ double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & ti
 }
 
 UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol)
-{
+{//////////////////////////////////////////////////////////////////////////////////////////////
 	// return absolute pixel value for the first pixel in this column.
-	FV_View * pView = static_cast<FV_View *>(m_pView);
+	
+	FV_View * pView = static_cast<FV_View *>(m_pView); //FREM
+	UT_sint32 widthPrevPagesInRow = pView->getWidthPrevPagesInRow(pView->getCurrentPageNumber()-1);
+
 	if(pView == NULL)
 		return 0;
 
@@ -4094,7 +4122,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 		}
 		xFixed = 0;
 	}
-	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset;
+	UT_sint32 xAbsLeft = xFixed + ixMargin + xOrigin - m_xScrollOffset + widthPrevPagesInRow;
 
 	bool bRTL;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);

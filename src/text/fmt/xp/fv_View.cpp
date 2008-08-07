@@ -13792,8 +13792,8 @@ UT_uint32 FV_View::getNumHorizPages() const
 
 void FV_View::calculateNumHorizPages()
 {
-	//TODO: If the user is on the page width zoom setting, m_autoNumHorizPages should be disabled.
-	UT_uint32 windowWidth = getWindowWidth();
+	UT_uint32 scrollbarWidth = 1000; //Because my scrollbar is about this wide.
+	UT_uint32 windowWidth = getWindowWidth() - scrollbarWidth;
 	
 	if (!m_autoNumHorizPages || getViewMode() != VIEW_PRINT || m_iNumHorizPages < 1)
 	{
@@ -13942,5 +13942,9 @@ UT_uint32 FV_View::getHorizPageSpacing() const
 
 bool FV_View::rtlPages() const
 {
+	/*bool bRTL; //This doesn't seem to be working.
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const gchar *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTL);
+	return bRTL;*/
+	
 	return FALSE;
 }
