@@ -5540,7 +5540,8 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				case RTF_KW_bkmkend:
 					return HandleBookmark (RBT_END);
 				case RTF_KW_cs:
-					UT_DEBUGMSG(("Found cs in readword stream \n"));
+					UT_DEBUGMSG(("Found cs in readword stream just ignore \n"));
+					return true;
 					break;
 #if 1
 //
