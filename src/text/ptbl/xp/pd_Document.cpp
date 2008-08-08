@@ -120,7 +120,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bCoalescingMask(false),
 	  m_bShowAuthors(true),
 	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
-	  m_iMyAuthorInt(-1)
+	  m_iMyAuthorInt(-1),
+	  m_iLastAuthorInt(-1)
 {
 	m_pApp = pApp;
 	
@@ -409,6 +410,14 @@ void PD_Document::setMyAuthorInt(UT_sint32 i)
 {
 	m_iMyAuthorInt = i;	
 }
+/*!
+ * Returns the most recently received author int
+ */
+UT_sint32 PD_Document::getLastAuthorInt(void) const
+{
+	return m_iLastAuthorInt;
+}
+
 
 
 /*!
@@ -444,7 +453,12 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		{
 			sz = szAttsIn[icnt];
 			if(sz && (strcmp(sz,PT_AUTHOR_NAME) == 0))
+			{
 				bFound = true;
+				const gchar * sz1 = szAttsIn[icnt+1];
+				if(sz1 && *sz1)
+					m_iLastAuthorInt = atoi(sz1);
+			}
 			icnt++;
 		}
 	}
@@ -466,10 +480,12 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 	{
 		UT_sint32 k = findFirstFreeAuthorInt();
 		setMyAuthorInt(k);
+		m_iLastAuthorInt = k;
 		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
 		sendAddAuthorCR(pA);
 	}
 	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	m_iLastAuthorInt = getMyAuthorInt();
 	szAttsOut[icnt+1] = sNum.c_str();
 	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
 	szAttsOut[icnt+2] = NULL;
@@ -516,6 +532,7 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 		sendAddAuthorCR(pA);
 	}
 	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	m_iLastAuthorInt = getMyAuthorInt();
 	if(!p_AttrProp)
 	{
 		static PP_AttrProp p;
@@ -528,7 +545,10 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 	{
 		xxx_UT_DEBUGMSG(("Found athor att %s \n",sz));
 		if(sz)
+		{
+			m_iLastAuthorInt = atoi(sz);
 			return true;
+		}
 	}
 	p_AttrProp->setAttribute(PT_AUTHOR_NAME,sNum.c_str());
 	return false;

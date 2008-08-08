@@ -173,11 +173,11 @@ fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
 	m_bPointEOL(false),
 	m_iPointHeight(0),
 	m_caretColor(0,0,0),
-    m_sDocUUID(""),
 	m_PropCaretListner(NULL),
 	m_pCaret(NULL),
 	m_ListenerID(0),
-	m_pView(pView)
+	m_pView(pView),
+	m_iAuthorId(-1)
 {
 }
 
@@ -670,21 +670,16 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
-	bool bFoundUUID = false;
+	UT_sint32 iLastAuthor = m_pDoc->getLastAuthorInt();
+	bool bFoundID = false;
 	for(i=0; i<iCount;i++)
 	{
 			pCaretProps = m_vecCarets.getNthItem(i);
 			pCaretProps->m_pCaret->resetBlinkTimeout();
-			if(pCaretProps->m_sDocUUID == sUUID)
+			if((pCaretProps->m_iAuthorId == iLastAuthor) && (iLen > 0))
 			{
-				if(iLen >= 0)
-				{
-						_setPoint(pCaretProps,docPos,iLen);
-				}
-				else
-				{
-						_setPoint(pCaretProps,docPos,0);
-				}
+				_setPoint(pCaretProps,docPos,iLen);
+				bFoundID = true;
 			}
 			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
 			{
@@ -694,27 +689,32 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 			{
 				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
 			}
-			if(sUUID == pCaretProps->m_sDocUUID)
-				bFoundUUID = true;
 	}
-	if(!bLocal && !bFoundUUID)
+	if(iLen > 0 && !bFoundID && !bLocal)
 	{
-			addCaret(docPos,sUUID);
+			addCaret(docPos, iLastAuthor);
 	}
 }
 
-void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
+void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 {
+	//
+	// Don't add an extra caret for the local user
+	//
+	if(m_pDoc->getMyUUIDString() == m_sDocUUID)
+		return;
 	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
-	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));
+	pCaretProps->m_pCaret = m_pG->createCaret( iAuthorId);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
 	pCaretProps->m_pCaret->setBlink(true);
 	pCaretProps->m_pCaret->enable();
-	pCaretProps->m_sDocUUID = sDocUUID;
-	UT_sint32 icnt = m_pDoc->getNumFromAuthorUUID(sDocUUID.utf8_str());
+	pCaretProps->m_iAuthorId = iAuthorId;
+	UT_sint32 icnt = iAuthorId;
+	icnt = icnt % 12;
 	pCaretProps->m_caretColor = m_colorRevisions[icnt];
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
 	_setPoint(pCaretProps,docPos,0);

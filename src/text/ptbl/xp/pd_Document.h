@@ -206,6 +206,7 @@ public:
 	void                    setExportAuthorAtts(bool bExport);
 	UT_sint32               getMyAuthorInt(void) const;
 	void                    setMyAuthorInt(UT_sint32 iAuthor);
+	UT_sint32               getLastAuthorInt(void) const;
 	UT_sint32               getNumAuthors(void);
 	pp_Author *             getNthAuthor(UT_sint32 i);
 	pp_Author *             getAuthorByInt(UT_sint32 i);
@@ -775,6 +776,7 @@ private:
 	UT_GenericVector<pp_Author *>  m_vecAuthors;
 	bool                    m_bExportAuthorAtts;
 	UT_sint32               m_iMyAuthorInt;
+	UT_sint32               m_iLastAuthorInt;
 };
 
 #endif /* PD_DOCUMENT_H */

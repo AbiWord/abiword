@@ -210,12 +210,12 @@ GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i)
 	return m_vecCarets.getNthItem(i);
 }
 
-GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sDocUUID)
+GR_Caret * GR_Graphics::getCaret(UT_sint32 iID)
 {
 	UT_uint32 i= 0;
 	for(i=0; i<m_vecCarets.getItemCount();i++)
 	{
-		if(m_vecCarets.getNthItem(i)->getUUID() == sDocUUID)
+		if(m_vecCarets.getNthItem(i)->getID() == iID)
 		{
 			return m_vecCarets.getNthItem(i);
 		}
@@ -223,9 +223,9 @@ GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sDocUUID)
 	return NULL;
 }
 
-GR_Caret * GR_Graphics::createCaret(UT_UTF8String & sDocUUID)
+GR_Caret * GR_Graphics::createCaret(UT_sint32 id)
 {
-	GR_Caret * pCaret = new GR_Caret(this,sDocUUID);
+	GR_Caret * pCaret = new GR_Caret(this,id);
 	m_vecCarets.addItem(pCaret);
 	return pCaret;
 }

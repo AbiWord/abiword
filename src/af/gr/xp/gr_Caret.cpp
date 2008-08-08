@@ -69,7 +69,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_insertMode (true),
 		m_bRemote(false),
 		m_clrRemote(0,0,0),
-		m_sDocUUID(""),
+		m_iID(-1),
 		m_iCaretNumber(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
@@ -90,7 +90,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 
 // TODO: fix this code duplication just for the extra sDocUUID (what 
 // is it doing here anyway? - MARCM
-GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
+GR_Caret::GR_Caret(GR_Graphics * pG, UT_sint32 id)
 	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
 		m_yPoint(0),
 		m_xPoint2(0),
@@ -110,7 +110,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 		m_insertMode (true),
 		m_bRemote(true),
 		m_clrRemote(0,0,0),
-		m_sDocUUID(sDocUUID),
+		m_iID(id),
 		m_iCaretNumber(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
@@ -221,9 +221,9 @@ void GR_Caret::setRemoteColor(UT_RGBColor clrRemote)
 	m_clrRemote = clrRemote;
 }
 
-UT_UTF8String GR_Caret::getUUID(void)
+UT_sint32 GR_Caret::getID(void)
 {
-	return m_sDocUUID;
+	return m_iID;
 }
 
 

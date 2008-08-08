@@ -176,11 +176,11 @@ public:
 	bool                            m_bPointEOL;
 	UT_uint32			m_iPointHeight;
 	UT_RGBColor                     m_caretColor;
-	UT_UTF8String                   m_sDocUUID;
 	FV_Caret_Listener *             m_PropCaretListner;
 	GR_Caret *                      m_pCaret;
 	UT_uint32                       m_ListenerID;
 	FV_View *                       m_pView;
+	UT_sint32                       m_iAuthorId;
 };
 								
 class ABI_EXPORT FV_View : public AV_View
@@ -653,7 +653,7 @@ public:
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
         void                removeCaret(UT_UTF8String & sDocUUID);
-	void                addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID);
+		void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
 	void                setPointRemote(PT_DocPosition docPos);
 	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);   
 	void		    fixInsertionPointCoords(void);

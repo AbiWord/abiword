@@ -1672,6 +1672,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 		  	m_pLayout->refreshRunProperties();
 			FV_View * pView = m_pLayout->getView();
+			const gchar * szAuthorId = NULL;
+			pAP->getProperty("authorint",szAuthorId);
+			if(szAuthorId && *szAuthorId)
+			{
+			    UT_sint32 id = atoi(szAuthorId);
+			    pView->addCaret(0,id);
+			}
 			pView->updateScreen(false ); 
 		}
 		goto finish_up;
