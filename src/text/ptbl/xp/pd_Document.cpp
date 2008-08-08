@@ -1127,7 +1127,11 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	{
 		return false;
 	}
-	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties);
+	delete [] szAttsAuthor;
+	return b;
 }
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
@@ -1140,9 +1144,12 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 		return false;
 	}
 	pf_Frag_Object * pfo = NULL;
-	bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties, &pfo);
+	delete [] szAttsAuthor;
 	*pField = pfo->getField();
-	return bres;
+	return b;
 }
 
 bool PD_Document::insertSpan(PT_DocPosition dpos,
