@@ -1377,6 +1377,7 @@ RTFStateStore::RTFStateStore()
 	m_internalState = risNorm;
 	m_unicodeAlternateSkipCount = 1;
 	m_unicodeInAlternate = 0;
+	m_bInKeywordStar = false;
 }
 
 
@@ -3002,7 +3003,6 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 	{
 		m_currentRTFState.m_internalState = RTFStateStore::risNorm;
 	}
-
 	switch (m_currentRTFState.m_destinationState)
 	{
 		case RTFStateStore::rdsSkip:
@@ -3135,7 +3135,11 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* p
     // Read the numeric parameter (if there is one)
 	// According to the specs, a dttm parameter (e.g. \revdttm), which is a long, has the
 	// individual bytes emited as ASCII characters
-	if (isdigit(ch) || ch == ' ')
+	//
+	// Some * keywords have the numeric parameter after a space
+	// We need to hand this special case. Stupid RTF!!
+	//
+	if (isdigit(ch) || (m_currentRTFState.m_bInKeywordStar && ch == ' '))
 	{
 		*pParamUsed = true;
 		while (isdigit(ch) || ch == ' ')
@@ -5343,6 +5347,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 	UT_sint32 parameter_star = 0;
 	bool parameterUsed_star = false;
 	xxx_UT_DEBUGMSG(("RTF Level in HandlStarKeyword %d \n",m_stateStack.getDepth()));	
+	m_currentRTFState.m_bInKeywordStar = true;
 	if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 					MAX_KEYWORD_LEN))
 	{
