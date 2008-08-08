@@ -46,7 +46,7 @@
 #endif
 #include <stdio.h>
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 #  include <gsf/gsf-input-gio.h>
 #  include <gsf/gsf-output-gio.h>
 #elif defined(WITH_GNOMEVFS)
@@ -921,7 +921,7 @@ UT_go_shell_arg_to_uri (const char *arg)
 		return res;
 	}
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	{
 		GFile *f = g_file_new_for_commandline_arg (arg);
 		char *uri = g_file_get_uri (f);
@@ -968,7 +968,7 @@ UT_go_basename_from_uri (const char *uri)
 {
 	char *res;
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	char *basename = g_file_get_basename (f);
 	g_object_unref (G_OBJECT (f));
@@ -1032,7 +1032,7 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 gboolean 
 UT_go_directory_create (char const *uri, int mode, GError **error)
 {
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_make_directory (f, NULL, error);
 	g_object_unref (G_OBJECT (f));
@@ -1143,7 +1143,7 @@ UT_go_file_open_impl (char const *uri, GError **err)
 		return result;
 	}
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	return gsf_input_gio_new_for_uri (uri, err);
 #elif defined(GOFFICE_WITH_GNOME)
 	return gsf_input_gnomevfs_new (uri, err);
@@ -1232,7 +1232,7 @@ UT_go_file_create_impl (char const *uri, GError **err)
 		return gsf_output_proxy_create(result, uri, err);
 	}
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	return gsf_output_proxy_create(gsf_output_gio_new_for_uri (uri, err), uri, err);
 #elif defined(GOFFICE_WITH_GNOME)
 	return gsf_output_gnomevfs_new (uri, err);
@@ -1272,7 +1272,7 @@ UT_go_file_remove (char const *uri, GError ** err)
 	}
 
 
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 
 	{
 		GFile *f = g_file_new_for_uri (uri);
@@ -1345,7 +1345,7 @@ UT_go_file_split_urls (const char *data)
 gboolean
 UT_go_file_exists (char const *uri)
 {
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_query_exists (f, NULL);
 	g_object_unref (G_OBJECT (f));
@@ -1819,7 +1819,7 @@ UT_go_url_check_extension (gchar const *uri,
 gchar *
 UT_go_get_mime_type (gchar const *uri)
 {
-#if defined(WITH_GIO)
+#if HAVE_GSF_GIO
 	gboolean content_type_uncertain = FALSE;
 	char *content_type = g_content_type_guess (uri, NULL, 0, &content_type_uncertain);
 	if (content_type) {

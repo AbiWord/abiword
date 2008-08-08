@@ -51,8 +51,14 @@
 /* Define to 1 if you have the <eps/eps.h> header file. */
 #undef HAVE_EPS_EPS_H
 
+/* GSF has GIO support */
+#undef HAVE_GSF_GIO
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `jpeg' library (-ljpeg). */
+#undef HAVE_LIBJPEG
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
