@@ -1086,7 +1086,12 @@ UT_Error IE_Exp_OpenXML::setColumns(int target, const gchar* num, const gchar* s
 		return UT_OK;
 
 	if((strcmp(sep, "on") != 0) && (strcmp(sep, "off") != 0))
+	{
+		// this code should never be reached due to the string checks in
+		// OXML_Section::serializeProperties()
+		UT_ASSERT_NOT_REACHED();
 		return UT_OK;
+	}
 
 	std::string str("");
 	str += "<w:cols ";
