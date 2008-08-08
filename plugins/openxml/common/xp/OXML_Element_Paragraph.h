@@ -43,9 +43,11 @@ public:
 	virtual UT_Error addToPT(PD_Document * pDocument);
 	virtual const gchar* getListLevel();
 	virtual const gchar* getListId();
+	virtual void setPageBreak();
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	bool pageBreak;
 };
 
 #endif //_OXML_ELEMENT_PARAGRAPH_H_

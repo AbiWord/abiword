@@ -1078,6 +1078,30 @@ UT_Error IE_Exp_OpenXML::setTabstops(int target, const gchar* tabstops)
 }
 
 /**
+ * Sets the columns for the section
+ */
+UT_Error IE_Exp_OpenXML::setColumns(int target, const gchar* num, const gchar* sep)
+{
+	if(UT_convertDimensionless(num) <= 0)
+		return UT_OK;
+
+	if((strcmp(sep, "on") != 0) && (strcmp(sep, "off") != 0))
+		return UT_OK;
+
+	std::string str("");
+	str += "<w:cols ";
+	str += "w:num=\"";
+	str += num;
+	str += "\" ";
+	str += "w:sep=\"";
+	str += sep;
+	str += "\" ";
+	str += "w:equalWidth=\"1\"/>";
+
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Sets grid span for horizontally merged cells
  */
 UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
@@ -1100,6 +1124,16 @@ UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
 	std::string str("<w:vmerge w:val=\"");
 	str += vmerge;
 	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+
+/**
+ * Sets page break
+ */
+UT_Error IE_Exp_OpenXML::setPageBreak(int target)
+{
+	std::string str("<w:pageBreakBefore/>");
 	return writeTargetStream(target, str.c_str());
 }
 

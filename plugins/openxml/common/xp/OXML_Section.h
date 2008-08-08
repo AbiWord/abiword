@@ -84,6 +84,8 @@ public:
 		\param exporter the actual exporter which handles writing the files.
 	*/
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
+	UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+
 	UT_Error serializeHeader(IE_Exp_OpenXML* exporter);
 	UT_Error serializeFooter(IE_Exp_OpenXML* exporter);
 	UT_Error serializeFootnote(IE_Exp_OpenXML* exporter);

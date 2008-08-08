@@ -29,7 +29,7 @@
 #include <pd_Document.h>
 
 OXML_Element_Paragraph::OXML_Element_Paragraph(std::string id) : 
-	OXML_Element(id, P_TAG, BLOCK)
+	OXML_Element(id, P_TAG, BLOCK), pageBreak(false)
 {
 }
 
@@ -86,6 +86,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 	err = exporter->startParagraphProperties(TARGET);
 	if(err != UT_OK)
 		return err;
+
+	if(pageBreak)
+	{
+		err = exporter->setPageBreak(TARGET);
+		if(err != UT_OK)
+			return err;	
+	}
 
 	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) == UT_OK)
 	{
@@ -225,3 +232,9 @@ const gchar* OXML_Element_Paragraph::getListId()
 	}
 	return szValue;
 }
+
+void OXML_Element_Paragraph::setPageBreak()
+{
+	pageBreak = true;
+}
+

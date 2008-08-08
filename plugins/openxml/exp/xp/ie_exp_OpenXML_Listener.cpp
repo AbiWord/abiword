@@ -81,8 +81,15 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 		{
 			const PX_ChangeRecord_Span* pcrs = static_cast<const PX_ChangeRecord_Span*>(pcr);
 			PT_BufIndex buffer = pcrs->getBufIndex();
+			const UT_UCSChar* pData = pdoc->getPointer(buffer);		
 
-			UT_UCS4String str(pdoc->getPointer(buffer), pcrs->getLength());
+			if(*pData == UCS_FF)
+			{
+				paragraph->setPageBreak();
+				return true;
+			}
+
+			UT_UCS4String str(pData, pcrs->getLength());
 			OXML_SharedElement shared_element_text(new OXML_Element_Text(str.utf8_str(), str.length()));
 
 			OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());

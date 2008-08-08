@@ -174,6 +174,8 @@ public:
 	UT_Error finishFooterStream();
 	UT_Error setTitlePage();
 	UT_Error setEvenAndOddHeaders();
+	UT_Error setColumns(int target, const gchar* num, const gchar* sep);
+	UT_Error setPageBreak(int target);
 
 protected:
     virtual UT_Error _writeDocument(void);

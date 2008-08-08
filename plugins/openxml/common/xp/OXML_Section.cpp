@@ -108,6 +108,10 @@ UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 	if(ret != UT_OK)
 		return ret;
 
+	ret = this->serializeProperties(exporter);
+	if(ret != UT_OK)
+		return ret;
+
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
@@ -117,6 +121,30 @@ UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 	}
 	
 	return exporter->finishSection();
+}
+
+UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
+{
+	//TODO: Add all the property serializations here
+	UT_Error err = UT_OK;
+	const gchar* num = NULL;
+	const gchar* sep = "off";
+
+	if(getProperty("columns", num) != UT_OK)
+		return UT_OK;
+
+	if((getProperty("column-line", sep) != UT_OK) || (strcmp(sep, "on") != 0))
+		sep = "off";
+
+	err = exporter->startSectionProperties();
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->setColumns(TARGET, num, sep);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishSectionProperties();
 }
 
 bool OXML_Section::hasFirstPageHdrFtr()
