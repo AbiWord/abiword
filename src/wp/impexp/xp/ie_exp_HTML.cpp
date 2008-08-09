@@ -1789,26 +1789,16 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			{
 				if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
-				if (*szValue != '#')
-					m_utf8_1  = "#";
-				else
-					m_utf8_1.clear();
-
-				m_utf8_1 += static_cast<const char *>(szValue);
+				m_utf8_1 = UT_colorToHex(szValue, true);
 			}
 			else m_utf8_1 = static_cast<const char *>(szValue);
 
 			styleNameValue (szName, m_utf8_1);
 		}
 		szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
-		if(szValue && !IS_TRANSPARENT_COLOR (szValue))
+		if(szValue && *szValue && !IS_TRANSPARENT_COLOR (szValue))
 		{
-			if (*szValue != '#')
-				m_utf8_1  = "#";
-			else
-				m_utf8_1.clear();
-
-			m_utf8_1 += static_cast<const char *>(szValue);
+			m_utf8_1 = UT_colorToHex(szValue, true);
 
 			styleNameValue ("background-color", m_utf8_1);
 		}
@@ -2920,15 +2910,10 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				}
 			}
 		}
-		if (szP_Color)
+		if (szP_Color && *szP_Color)
 			if (!IS_TRANSPARENT_COLOR (szP_Color))
 			{
-				if (*szP_Color != '#')
-					m_utf8_0  = "#";
-				else
-					m_utf8_0.clear();
-
-				m_utf8_0 += szP_Color;
+				m_utf8_0 = UT_colorToHex(szP_Color, true);
 
 				if (!compareStyle ("color", m_utf8_0.utf8_str ()))
 				{
@@ -2938,15 +2923,10 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					first = false;
 				}
 			}
-		if (szP_BgColor)
+		if (szP_BgColor && *szP_BgColor)
 			if (!IS_TRANSPARENT_COLOR (szP_BgColor))
 			{
-				if (*szP_BgColor != '#')
-					m_utf8_0  = "#";
-				else
-					m_utf8_0.clear();
-
-				m_utf8_0 += szP_BgColor;
+				m_utf8_0 = UT_colorToHex(szP_BgColor, true);
 
 				if (!compareStyle ("background", m_utf8_0.utf8_str ()))
 				{
@@ -5994,19 +5974,9 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * _style_name, PD_Sty
 		}
 		else if ((name == "color") || (name == "background-color"))
 		{
-			if (value != "transparent")
+			if (!value.empty() && (value != "transparent"))
 			{
-				if(value.substr(0, 1) != "#")
-				{
-					value  = "#";
-				}
-				else
-				{
-					xxx_UT_DEBUGMSG(("HTML exporter: encountered RGB color with '#' prefixed\n"));
-					value.clear();
-				}
-
-				value += szValue;
+				value = UT_colorToHex(szValue, true);
 			}
 		}
 		else if (strstr(name.utf8_str(), "width"))
