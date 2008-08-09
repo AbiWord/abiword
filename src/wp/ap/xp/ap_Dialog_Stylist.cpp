@@ -212,18 +212,10 @@ bool  AP_Dialog_Stylist::createStyleFromDocument()
 	//
 	// Create a name/label 
 	//
-	
-	_getNameForNewStyle(sz_caretProps);
-	
 	// When the GUI returns, it will call _createNamedStyle to finish.
-	
-	//
-	// Assemble attrprop array
-	//
-	
 
-	
-	return true; // if we made it here, we win
+
+	return _getNameForNewStyle(sz_caretProps);; // if we made it here, we win
 }
 
 bool AP_Dialog_Stylist::_createNamedStyle(gchar * name, gchar * props) {
@@ -244,14 +236,15 @@ bool AP_Dialog_Stylist::_createNamedStyle(gchar * name, gchar * props) {
 	UT_return_val_if_fail(getDoc()->appendStyle(a), false);
 	
 	//
+	// Update stylist dialog - code modified from updateDialog
 	// Change style of current [UNIT_OF_TEXT] to the new one.
 	//
-	
-	// TODO maybe?  Probably ideal.
-	
-	// Update stylist since it apparently likes to lag.
-	// You still have to click the doc to update, TODO
-	updateDialog();
+
+	m_pStyleTree->buildStyles(m_pDoc);
+	m_sCurStyle = name;
+	m_bStyleTreeChanged =true;
+	setStyleInGUI();
+	Apply();
 	
 	return true;
 }
