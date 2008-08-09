@@ -899,15 +899,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     bool ok;
     
     ok = rAP.getProperty("bgcolor", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if (len==6) {
-            // It should be a RGB color.
-            UT_UTF8String_sprintf(m_backgroundColor, "#%s", pValue);
-        } else if((len==7) || (strcmp("transparent", pValue)==0)) {
+    if (ok && pValue && *pValue) {
+        if (!strcmp("transparent", pValue)) { 
             m_backgroundColor = pValue;
         } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            m_backgroundColor = UT_colorToHex(pValue, true);
         }
     }
     
@@ -1112,15 +1108,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     bool ok;
     
     ok = rAP.getProperty("color", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if (len == 6) {
-            UT_UTF8String_sprintf(m_color, "#%s", pValue);
-        } else if ((len == 7) && (pValue[0] == '#')){
-            m_color = pValue;
-        } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+    if (ok && pValue && *pValue) {
+        // TODO: handle transparent?
+        m_color = UT_colorToHex(pValue, true);
     }
     
     ok = rAP.getProperty("text-decoration", pValue);
@@ -1219,15 +1209,11 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
 
 
     ok = rAP.getProperty("bgcolor", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if (len==6) {
-            // It should be an RGB color.
-            UT_UTF8String_sprintf(m_backgroundColor, "#%s", pValue);
-        } else if ((len == 7) || (strcmp("transparent", pValue) == 0)) {
+    if (ok && pValue && *pValue) {
+        if (!strcmp("transparent", pValue)) {
             m_backgroundColor = pValue;
         } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            m_backgroundColor = UT_colorToHex(pValue, true);
         }
     }
 
@@ -1344,15 +1330,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     bool ok;
     
     ok = rAP.getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if(len == 6) {
-            UT_UTF8String_sprintf(m_backgroundColor, "#%s", pValue);
-        } else if (len == 7) {
-            m_backgroundColor = pValue;
-        } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+    if (ok && pValue && *pValue) {
+        // TODO: handle transparent?
+        m_backgroundColor = UT_colorToHex(pValue, true);
     }
     
     ok = rAP.getProperty("table-column-props", pValue);
@@ -1645,15 +1625,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Background color
     
     ok = rAP.getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if(len == 6) {
-            UT_UTF8String_sprintf(m_backgroundColor, "#%s", pValue);
-        } else if (len == 7) {
-            m_backgroundColor = pValue;
-        } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+    if (ok && pValue && *pValue) {
+        // TODO: handle transparent?
+        m_backgroundColor = UT_colorToHex(pValue, true);
     }
 }
 
@@ -1845,15 +1819,9 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Background color
     
     ok = rAP.getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if(len == 6) {
-            UT_UTF8String_sprintf(m_backgroundColor, "#%s", pValue);
-        } else if (len == 7) {
-            m_backgroundColor = pValue;
-        } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+    if (ok && pValue && *pValue) {
+        // TODO: handle transparent?
+        m_backgroundColor = UT_colorToHex(pValue, true);
     }
     
     
