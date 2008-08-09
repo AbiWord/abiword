@@ -98,7 +98,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 		if (!strcmp(rqst->pName, "jc")) {
 			const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
-			UT_return_if_fail( _error_if_fail(val != NULL) );
+
+			if (!val || !*val)
+				return;
+
 			if (!strcmp(val, "left")) {
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("text-align", "left") ));
 			} else if (!strcmp(val, "center")) {
