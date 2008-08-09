@@ -277,17 +277,12 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	UT_return_val_if_fail(p_curStyle->getAllAttributes(& vAttributes), false);
 	
 	//
-	// Apply changes
+	// Apply changes to style and to example text
 	//
 	
 	UT_return_val_if_fail(p_curStyle->setAllProperties(sz_caretProps), false);
-	
-	//
-	// Simplify style? TODO: Decide if this is a good idea
-	//
-	
-	
-	// if we made it here we succeeded
+	Apply();
+
 	return true;
 }
 
