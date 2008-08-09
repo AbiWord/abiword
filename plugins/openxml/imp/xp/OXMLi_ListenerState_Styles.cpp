@@ -63,11 +63,16 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 	} else if (!strcmp(rqst->pName, "style")) {
 		const gchar * id = UT_getAttribute("w:styleId", rqst->ppAtts);
 		const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
-		UT_return_if_fail( _error_if_fail( id != NULL && type != NULL ));
+		UT_return_if_fail( _error_if_fail( id != NULL ));
 		if (!strcmp(id, "Normal")) id = "_Normal"; //Cannot interfere with document defaults
 		m_pCurrentStyle = new OXML_Style(id, ""); //TODO: wrap this in try/catch
 
-		if (!strcmp(type, "character")) {
+		if (!type || !*type) {
+			// default to paragraph in the case of a missing/blank attribute
+			// (as specified by the spec: 2.7.3.17)
+			type = "P";
+		}
+		else if (!strcmp(type, "character")) {
 			type = "C"; //Type is C for "character"
 		} else {
 			type = "P"; //Type is P for "paragraph", "numbering", and "table"

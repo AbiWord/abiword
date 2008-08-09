@@ -2532,6 +2532,8 @@ UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std:
 	sEscBasedOn.escapeXML();
 	sEscFollowedBy.escapeXML();
 
+	// TODO: export w:type (character or paragraph)
+
 	std::string str("");
 	str += "<w:style w:styleId=\"";
 	str += sEscStyle.utf8_str();
