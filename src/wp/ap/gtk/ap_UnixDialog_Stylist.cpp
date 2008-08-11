@@ -475,7 +475,49 @@ void AP_UnixDialog_Stylist::_fillCommonTree(void)
 	GtkTreeIter iter;
 	GtkTreeIter child_iter;
 	GtkTreeSelection *sel;
+	int count=0;
 	
+	buildCommonStyles (m_pDoc);
+	std::vector<const gchar *> list = getCommonStyleTree ();
+	std::vector<const gchar *>::iterator iterList=list.begin();
+	
+	m_wModel = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	while (iterList != list.end())
+	{
+		gtk_tree_store_append (m_wModel, &iter, NULL);
+		gtk_tree_store_set (m_wModel, &iter, 0, *iterList, 1, count, -1);
+		iterList++;
+		count++;
+	}
+	
+	// create a new treeview
+	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
+	g_object_unref (G_OBJECT (m_wModel));
+	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
+	
+	// get the current selection
+	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
+	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
+	gtk_tree_selection_set_select_function (sel, tree_select_filter,
+														 NULL, NULL);
+	
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	m_wRenderer = gtk_cell_renderer_text_new ();
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles,s);
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
+												 -1, s.utf8_str(),
+												 m_wRenderer, "text", 0, NULL); 	
+
+	gtk_container_add (GTK_CONTAINER (m_wStyleListContainer), m_wStyleList);
+
+	g_signal_connect_after(G_OBJECT(m_wStyleList),
+						   "cursor-changed",
+						   G_CALLBACK(s_types_clicked),
+						   static_cast<gpointer>(this));
+
+	gtk_widget_show_all(m_wStyleList);
+	setStyleTreeChanged(false);
 	
 }
 

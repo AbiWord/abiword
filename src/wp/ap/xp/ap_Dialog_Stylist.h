@@ -118,12 +118,13 @@ public:
 	bool             redefineStyleFromDocument();
 	PD_Document *    	getDoc(void) const;
 protected:
-	bool                  m_bIsModal;
 	virtual bool		_getNameForNewStyle(gchar * /* props*/)  {return true;};
 	bool 				_createNamedStyle(gchar * name, gchar * props);
+
+	bool                  m_bIsModal;
+	PD_Document *         m_pDoc;
 private:
 	gchar *               getPropsAtCaret() const;
-	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
 	UT_uint32             m_iTick;
 	UT_UTF8String         m_sCurStyle;
