@@ -40,7 +40,7 @@ public:
 	// callbacks can fire these events
 	void			event_Close(void);
 	void            event_Apply(void);
-	void			event_ShowAllUpdate(void) { /*m_bShowAll = gtk_toggle_button_get_active( (GtkCheckButton*) m_wShowAll);*/ return; }
+	void			event_ShowAllUpdate(void) { m_bShowAll = gtk_toggle_button_get_active( (GtkToggleButton*) m_wShowAll); _fillTree ();}
 	void            styleClicked(UT_sint32 row, UT_sint32 col);
 	virtual void            destroy(void);
 	virtual void            activate(void);

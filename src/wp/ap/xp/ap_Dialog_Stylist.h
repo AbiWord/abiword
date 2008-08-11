@@ -20,6 +20,8 @@
 #ifndef AP_DIALOG_STYLIST_H
 #define AP_DIALOG_STYLIST_H
 
+#include <vector>
+
 #include "ut_types.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
@@ -88,6 +90,8 @@ public:
 	void              finalize(void);
 	Stylist_tree *  getStyleTree(void) const
 		{ return m_pStyleTree;}
+	std::vector<const gchar *>  getCommonStyleTree(void) const
+		{ return m_vCommonStyles;}
 	const UT_UTF8String *   getCurStyle(void) const
 		{ return &m_sCurStyle;}
 	UT_UTF8String     getSelectedStyle(void) const
@@ -98,6 +102,7 @@ public:
 	virtual void      setStyleInGUI(void) = 0;       
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
+	void			 buildCommonStyles(PD_Document * pDoc);
 	bool              isStyleChanged(void) const
 		{ return m_bStyleChanged;}
 	bool              isStyleTreeChanged(void) const
@@ -114,7 +119,7 @@ public:
 	PD_Document *    	getDoc(void) const;
 protected:
 	bool                  m_bIsModal;
-	virtual bool		_getNameForNewStyle(gchar * props)  {return true;};
+	virtual bool		_getNameForNewStyle(gchar * /* props*/)  {return true;};
 	bool 				_createNamedStyle(gchar * name, gchar * props);
 private:
 	gchar *               getPropsAtCaret() const;
@@ -124,6 +129,7 @@ private:
 	UT_UTF8String         m_sCurStyle;
 	Stylist_tree *        m_pStyleTree;
 	bool                  m_bStyleTreeChanged;
+	std::vector<const gchar *> m_vCommonStyles;
 	bool                  m_bStyleChanged;
 	bool                  m_bStyleValid;
 };

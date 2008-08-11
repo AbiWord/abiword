@@ -157,7 +157,7 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
 	: AP_Dialog_Stylist(pDlgFactory,id), 
-	  m_bShowAll(false),
+	  m_bShowAll(true),
       m_windowMain(NULL),
 	  m_wStyleList(NULL),
 	  m_wApply(NULL),
@@ -366,7 +366,6 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
 	if(m_wRenderer)
 	{
-//		g_object_unref (G_OBJECT (m_wRenderer));
 		gtk_widget_destroy (m_wStyleList);
 		m_wRenderer = NULL;
 	}

@@ -17,10 +17,9 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <string>
+#include <algorithm>
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
@@ -284,6 +283,43 @@ bool AP_Dialog_Stylist::redefineStyleFromDocument(void)
 	Apply();
 
 	return true;
+}
+/*!
+ * This method builds the simple list of styles for the dialog. Since this is
+ * just building a vector, we store the data in the AP_Dialog_Stylist class
+ * instead of building a new class like for the tree layout.
+ */
+void AP_Dialog_Stylist::buildCommonStyles(PD_Document * pDoc)
+{
+	UT_DEBUGMSG(("In Build Common Styles num styles\n"));
+
+	PD_Style * pStyle = NULL;
+	UT_uint32 k;
+	const gchar * szName = NULL;
+	m_vCommonStyles.clear();
+	
+	// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
+	for (k=0; (pDoc->enumStyles(k,&szName,const_cast<const PD_Style **>(&pStyle))); k++)
+	{
+		if (!pStyle)
+		{
+			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
+		}
+		else
+		{
+			if (!pStyle->isDisplayed() && 
+				!(dynamic_cast<PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed()))
+			{
+				continue;
+			}
+		}
+
+		m_vCommonStyles.push_back(szName);
+	}
+	
+	std::sort(m_vCommonStyles.begin(), m_vCommonStyles.end());
+	
 }
 
 gchar * AP_Dialog_Stylist::getPropsAtCaret() const
