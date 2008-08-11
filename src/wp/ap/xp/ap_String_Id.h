@@ -268,9 +268,9 @@ dcl(DLG_Styles_ErrStyleCantDelete, "Cannot delete this style")
 dcl(DLG_Styles_ErrBlankName, "Style name cannot be left blank")
 dcl(DLG_Styles_StylesLocked,	"Disable all formatting commands, except styles")
 
-/* Stylist dialog */
+/* Stylist (Style Tool) dialog */
 
-dcl(DLG_Stylist_Title, "Style and Structure Tool")
+dcl(DLG_Stylist_Title, "Style Tool")
 dcl(DLG_Stylist_ListStyles, "List Styles")
 dcl(DLG_Stylist_HeadingStyles, "Heading Styles")
 dcl(DLG_Stylist_FootnoteStyles, "Note Styles")
@@ -967,7 +967,7 @@ dcl(MENU_LABEL_FMT_TOGGLECASE,"C&hange Case")
 dcl(MENU_LABEL_FMT_BACKGROUND,"Page Background")
 dcl(MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR,"Page C&olor")
 dcl(MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE,"Page Image")
-dcl(MENU_LABEL_FMT_STYLIST, "Sty&list")
+dcl(MENU_LABEL_FMT_STYLIST, "Sty&le Tool")
 dcl(MENU_LABEL_FMT_STYLE,"St&yle")
 dcl(MENU_LABEL_FMT_STYLE_DEFINE, "&Create and Modify Styles")
 dcl(MENU_LABEL_FMT_TABS,"&Tabs")
