@@ -270,13 +270,18 @@ dcl(DLG_Styles_StylesLocked,	"Disable all formatting commands, except styles")
 
 /* Stylist dialog */
 
-dcl(DLG_Stylist_Title, "Stylist")
+dcl(DLG_Stylist_Title, "Style and Structure Tool")
 dcl(DLG_Stylist_ListStyles, "List Styles")
 dcl(DLG_Stylist_HeadingStyles, "Heading Styles")
 dcl(DLG_Stylist_FootnoteStyles, "Note Styles")
 dcl(DLG_Stylist_UserStyles, "User defined Styles")
 dcl(DLG_Stylist_MiscStyles, "Miscellaneous Styles")
 dcl(DLG_Stylist_Styles, "Styles")
+dcl(DLG_Stylist_Redefine, "&Redefine selected")
+dcl(DLG_Stylist_ShowAll, "&Show all styles")
+
+dcl(DLG_Stylist_Create_Title, "Enter Style Name")
+dcl(DLG_Stylist_Create_Prompt, "Enter a unique name for your new style.")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle, 		"Paragraph")

@@ -52,6 +52,8 @@ private:
 	void			_populateWindowData(void);
 	void            _connectSignals(void);
 	void            _fillTree(void);
+	void			_fillFullTree(void);
+	void			_fillCommonTree(void);
 	virtual bool	_getNameForNewStyle(gchar * props);
 		
 	bool			m_bShowAll;

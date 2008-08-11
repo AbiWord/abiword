@@ -336,8 +336,8 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
 	abiDialogSetTitle(m_windowMain, s.utf8_str());
 	
-	// TODO: Localize btRedefine and btShowAll
-	
+	localizeButtonUnderline (m_wRedefine, pSS, AP_STRING_ID_DLG_Stylist_Redefine);
+	localizeLabelUnderline (m_wShowAll, pSS, AP_STRING_ID_DLG_Stylist_ShowAll);	
 	
 	return m_windowMain;
 }
@@ -368,12 +368,35 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	{
 //		g_object_unref (G_OBJECT (m_wRenderer));
 		gtk_widget_destroy (m_wStyleList);
+		m_wRenderer = NULL;
 	}
 
+	if (m_bShowAll)
+	{
+		//
+		// Show full, "tree-style" list of styles
+		//
+		_fillFullTree();
+		
+	}
+	else
+	{
+		//
+		// Show the limited list of common and used styles
+		//
+		_fillCommonTree();
+	}
+	
+}
+
+void AP_UnixDialog_Stylist::_fillFullTree(void)
+{
 	GtkTreeIter iter;
 	GtkTreeIter child_iter;
 	GtkTreeSelection *sel;
 	UT_sint32 row,col, page;
+	
+	Stylist_tree * pStyleTree = getStyleTree();
 
 	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
@@ -447,6 +470,16 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	gtk_widget_show_all(m_wStyleList);
 	setStyleTreeChanged(false);
 }
+
+void AP_UnixDialog_Stylist::_fillCommonTree(void)
+{
+	GtkTreeIter iter;
+	GtkTreeIter child_iter;
+	GtkTreeSelection *sel;
+	
+	
+}
+
 
 void  AP_UnixDialog_Stylist::_populateWindowData(void)
 {
@@ -527,12 +560,11 @@ bool	AP_UnixDialog_Stylist::_getNameForNewStyle(gchar * props)
 	m_wEntry = glade_xml_get_widget(xml,"wEntry");
 	
 	// set the dialog title
-	/*
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Create_Title,s);
 	abiDialogSetTitle(m_windowCreate, s.utf8_str());
-	*/
-	// TODO: Localize dialog title and textPrompt
+	localizeLabel (glade_xml_get_widget(xml,"textPrompt"), pSS, AP_STRING_ID_DLG_Stylist_Create_Prompt);
+
 	gint response;
 	switch ( response=gtk_dialog_run ( GTK_DIALOG(m_windowCreate)) )
 	{
