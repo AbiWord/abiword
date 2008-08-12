@@ -25,6 +25,9 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
+#include "pd_Style.h"
+#include "ut_string.h"
+
 class XAP_Frame;
 
 class ABI_EXPORT AP_Dialog_EditStyle : public XAP_Dialog_NonPersistent
@@ -34,13 +37,17 @@ public:
 	virtual ~AP_Dialog_EditStyle(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
+	void							setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle);
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
-	AP_Dialog_EditStyle::tAnswer		getAnswer(void) const;
+	AP_Dialog_EditStyle::tAnswer	getAnswer(void) const;
 	
 protected:
 	
+	// data we need
+	UT_UTF8String m_sName;
+	PD_Style * m_pStyle;
 	AP_Dialog_EditStyle::tAnswer		m_answer;
 
 };

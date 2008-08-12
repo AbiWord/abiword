@@ -116,6 +116,7 @@ public:
 		{ m_bStyleValid = bValid;}
 	bool             createStyleFromDocument();
 	bool             redefineStyleFromDocument();
+	bool			 editSelectedStyle();
 	PD_Document *    	getDoc(void) const;
 	bool 			isShowAll() { return m_bShowAll; }
 protected:

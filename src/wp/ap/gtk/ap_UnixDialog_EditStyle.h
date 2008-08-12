@@ -42,6 +42,8 @@ protected:
 	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
+											   
+	
 /*
 	GtkWidget * _findRadioByID(AP_Dialog_Break::breakType b);
 	AP_Dialog_Break::breakType _getActiveRadioItem(void);

@@ -111,7 +111,7 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Break");
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_EditStyle");
 	//m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
 
 	// set the dialog title

@@ -47,7 +47,8 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_COLUMNS,				/* Columns Dialog */
 	AP_DIALOG_ID_PAGE_NUMBERS, /* Page Numbers/ Header Footer Dialog */
 	AP_DIALOG_ID_STYLES,       /* define/edit/delete styles */
-	AP_DIALOG_ID_STYLIST,
+	AP_DIALOG_ID_STYLIST,				/* Style Tool */
+	AP_DIALOG_ID_EDITSTYLE, 			/* Style property editor */
 	AP_DIALOG_ID_AUTOTEXT,   /* insert some autotext */
 	AP_DIALOG_ID_TOGGLECASE, /* change the case of a run of text */
 	AP_DIALOG_ID_BACKGROUND, /* change the doc's bg color */

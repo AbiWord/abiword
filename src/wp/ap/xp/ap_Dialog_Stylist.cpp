@@ -25,10 +25,12 @@
 #include "ut_debugmsg.h"
 
 #include "ap_Dialog_Stylist.h"
+#include "ap_Dialog_EditStyle.h"
 #include "ap_Strings.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
+#include "ap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 #include "fv_View.h"
@@ -383,6 +385,42 @@ gchar * AP_Dialog_Stylist::getPropsAtCaret() const
 	
 	// duplicate the string and return it
 	return g_strdup(sProps.c_str());
+}
+
+/*!
+ * Simplified style and invokes the manual style property editor.
+ */
+bool AP_Dialog_Stylist::editSelectedStyle()
+{
+	UT_UTF8String sStyle = getSelectedStyle();
+	FV_View * pView = static_cast<FV_View *>( getActiveFrame()->getCurrentView() );
+	UT_return_val_if_fail(pView, false);
+	
+	PD_Style * pStyle;
+	m_pDoc->getStyle(sStyle.utf8_str(), & pStyle);
+	UT_return_val_if_fail(pStyle, false);
+	
+	pStyle->simplifyProperties();
+	
+	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_EditStyle * pDialog
+		= static_cast<AP_Dialog_EditStyle *>(pDialogFactory->requestDialog(AP_DIALOG_ID_EDITSTYLE));
+	UT_return_val_if_fail(pDialog, false);
+	
+	pDialog->setStyleToEdit(sStyle, pStyle);
+	
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_EditStyle::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_EditStyle::a_OK);
+	
+	return bOK;
 }
 
 /*!

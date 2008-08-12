@@ -70,6 +70,7 @@
 #endif
 #	include "ap_UnixDialog_Styles.h"
 #   include "ap_UnixDialog_Stylist.h"
+#	include "ap_UnixDialog_EditStyle.h"
 #	include "ap_UnixDialog_Tab.h"
 #	include "ap_UnixDialog_Insert_DateTime.h"
 #	include "ap_UnixDialog_WordCount.h"
@@ -162,6 +163,7 @@
 #endif
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_UnixDialog_Styles, 				FALSE)
 	DeclareDialog(AP_DIALOG_ID_STYLIST,			AP_UnixDialog_Stylist, 				FALSE)
+	DeclareDialog(AP_DIALOG_ID_EDITSTYLE,		AP_UnixDialog_EditStyle,			FALSE)
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_UnixDialog_PageNumbers, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph, 			FALSE)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options, 				TRUE)

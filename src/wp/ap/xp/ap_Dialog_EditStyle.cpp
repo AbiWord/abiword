@@ -39,6 +39,13 @@ AP_Dialog_EditStyle::~AP_Dialog_EditStyle(void)
 {
 }
 
+void AP_Dialog_EditStyle::setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle)
+{
+	m_sName=sName;
+	m_pStyle=pStyle;
+	
+}
+
 AP_Dialog_EditStyle::tAnswer AP_Dialog_EditStyle::getAnswer(void) const
 {
 	return m_answer;
