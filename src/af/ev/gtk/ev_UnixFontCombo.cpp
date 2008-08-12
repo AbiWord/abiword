@@ -248,7 +248,7 @@ static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
 static void
 renderer_popup_opened_cb (AbiFontCombo		*self, 
 		   GdkRectangle		*position, 
-		   GtkCellRenderer 	*renderer)
+		   GtkCellRenderer 	* /*renderer*/)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[POPUP_OPENED],
 		       0, position);
@@ -257,7 +257,7 @@ renderer_popup_opened_cb (AbiFontCombo		*self,
 static void
 renderer_prelight_cb (AbiFontCombo		*self, 
 		   const gchar		*text, 
-		   GtkCellRenderer 	*renderer)
+		   GtkCellRenderer 	* /*renderer*/)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[PRELIGHT],
 		       0, text);
@@ -265,7 +265,7 @@ renderer_prelight_cb (AbiFontCombo		*self,
 
 static void
 renderer_popup_closed_cb (AbiFontCombo		*self, 
-		  GtkCellRenderer 	*renderer)
+		  GtkCellRenderer 	* /*renderer*/)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[POPUP_CLOSED],
 		       0);
