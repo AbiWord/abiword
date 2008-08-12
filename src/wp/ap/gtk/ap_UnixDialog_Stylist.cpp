@@ -217,20 +217,47 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 
 	if(isStyleTreeChanged())
 		_fillTree();
-
-	getStyleTree()->findStyle(sCurStyle,row,col);
-	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
-	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
-	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
-	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
-	GtkTreePath * gPathRow = gtk_tree_path_new_from_string (sPathRow.utf8_str());
-	GtkTreePath * gPathFull = gtk_tree_path_new_from_string (sPathFull.utf8_str());
-	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
-	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
+	if (m_bShowAll) {
+		getStyleTree()->findStyle(sCurStyle,row,col);
+		UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
+		UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
+		UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
+		UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
+		GtkTreePath * gPathRow = gtk_tree_path_new_from_string (sPathRow.utf8_str());
+		GtkTreePath * gPathFull = gtk_tree_path_new_from_string (sPathFull.utf8_str());
+		gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
+		gtk_tree_path_free(gPathRow);
+		gtk_tree_path_free(gPathFull);
+	}
+	else
+	{
+		// common styles only
+		std::vector<const gchar *>::iterator iter=m_vCommonStyles.begin();
+		row=0;
+		while (strcmp(*iter, sCurStyle.utf8_str())!=0 && iter!=m_vCommonStyles.end()) {
+			row ++;
+			iter++;
+		}
+		if (strcmp(*iter, sCurStyle.utf8_str())!=0)
+		{
+			// could not find current style in list - list creation must be
+			// broken
+			
+			// This should not happen!
+			UT_DEBUGMSG(("For some reason, the current style is not in the common list!  Rats!\n"));
+			return;
+		}
+		UT_UTF8String sPathCommon = UT_UTF8String_sprintf("%d",row);
+		GtkTreePath * gPathCommon = gtk_tree_path_new_from_string (sPathCommon.utf8_str());
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathCommon,NULL,TRUE,0.5,0.5);
+		gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathCommon,NULL,TRUE);
+		gtk_tree_path_free(gPathCommon);
+		
+	}
 	setStyleChanged(false);
-	gtk_tree_path_free(gPathRow);
-	gtk_tree_path_free(gPathFull);
+	
 }
 
 void AP_UnixDialog_Stylist::destroy(void)
