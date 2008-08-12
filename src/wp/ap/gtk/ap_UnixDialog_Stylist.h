@@ -67,6 +67,7 @@ private:
 	GtkWidget * m_wShowAll;
 	GtkCellRenderer * m_wRenderer;
 	GtkTreeStore * m_wModel;
+	GtkListStore * m_wListModel;
 	GtkWidget * m_wStyleListContainer;
 		
 	GtkWidget * m_windowCreate;

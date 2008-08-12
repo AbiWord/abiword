@@ -82,6 +82,14 @@ tree_select_filter (GtkTreeSelection * /*selection*/, GtkTreeModel * /*model*/,
 	return FALSE;
 }
 
+static gboolean
+tree_select_filter_common (GtkTreeSelection * /*selection*/, GtkTreeModel * /*model*/,
+								  GtkTreePath *path, gboolean /*path_selected*/,
+								  gpointer /*data*/)
+{
+	return TRUE;
+}
+
 static void s_types_dblclicked(GtkTreeView *treeview,
 							   GtkTreePath * /*arg1*/,
 							   GtkTreeViewColumn * /*arg2*/,
@@ -464,7 +472,7 @@ void AP_UnixDialog_Stylist::_fillFullTree(void)
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
 	gtk_tree_selection_set_select_function (sel, tree_select_filter,
-														 NULL, NULL);
+											NULL, NULL);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
@@ -500,25 +508,25 @@ void AP_UnixDialog_Stylist::_fillCommonTree(void)
 	std::vector<const gchar *> list = getCommonStyleTree ();
 	std::vector<const gchar *>::iterator iterList=list.begin();
 	
-	m_wModel = gtk_tree_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	m_wListModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
 	while (iterList != list.end())
 	{
-		gtk_tree_store_append (m_wModel, &iter, NULL);
-		gtk_tree_store_set (m_wModel, &iter, 0, *iterList, 1, count, -1);
+		gtk_list_store_append (m_wListModel, &iter);
+		gtk_list_store_set (m_wListModel, &iter, 0, *iterList, 1, count, -1);
 		iterList++;
 		count++;
 	}
 	
 	// create a new treeview
-	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
-	g_object_unref (G_OBJECT (m_wModel));
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
+	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wListModel));
+	g_object_unref (G_OBJECT (m_wListModel));
+	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), false);
 	
 	// get the current selection
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
-	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);
-	gtk_tree_selection_set_select_function (sel, tree_select_filter,
-														 NULL, NULL);
+	gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+	gtk_tree_selection_set_select_function (sel, tree_select_filter_common,
+											NULL, NULL);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
