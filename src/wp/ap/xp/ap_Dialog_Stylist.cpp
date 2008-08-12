@@ -243,6 +243,7 @@ bool AP_Dialog_Stylist::_createNamedStyle(gchar * name, gchar * props) {
 	//
 
 	m_pStyleTree->buildStyles(m_pDoc);
+	buildCommonStyles (m_pDoc);
 	m_sCurStyle = name;
 	m_bStyleTreeChanged =true;
 	setStyleInGUI();
