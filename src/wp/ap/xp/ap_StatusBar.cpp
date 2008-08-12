@@ -278,7 +278,7 @@ ap_sbf_Language::ap_sbf_Language(AP_StatusBar * pSB)
     m_sRepresentativeString = "mm-MM";
 }
 
-void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask mask)
+void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask /*mask*/)
 {
     // TODO do we want our own bit for language change?
     //if (mask & (AV_CHG_INSERTMODE))
@@ -517,7 +517,7 @@ void AP_StatusBar::setStatusProgressType(int /*start*/, int /*end*/, int /*flags
 // 	}
 }
 
-void AP_StatusBar::setStatusProgressValue(int value) {
+void AP_StatusBar::setStatusProgressValue(int /*value*/) {
 // 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
 // 	if(pf)
 // 	{

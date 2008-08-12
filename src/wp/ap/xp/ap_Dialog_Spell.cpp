@@ -232,8 +232,6 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   if (!inChangeAll()) 
 		   {
 			   // try ignore all list and user dictionaries here, too
-			   XAP_App * pApp = XAP_App::getApp();
-
 			   if (!_spellCheckWord(m_pWord, m_iWordLength)) 
 			   {
 				   // unknown word... update dialog
