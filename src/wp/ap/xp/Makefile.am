@@ -86,6 +86,8 @@ libxp_la_SOURCES = \
 	ap_Dialog_Break.h \
 	ap_Dialog_Columns.cpp \
 	ap_Dialog_Columns.h \
+	ap_Dialog_EditStyle.cpp \
+	ap_Dialog_EditStyle.h \
 	ap_Dialog_Field.cpp \
 	ap_Dialog_Field.h \
 	ap_Dialog_FormatFootnotes.cpp \

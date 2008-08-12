@@ -44,6 +44,8 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_Columns.cpp \
 	ap_UnixDialog_Columns.h \
 	ap_UnixDialogFactory.cpp \
+	ap_UnixDialog_EditStyle.cpp \
+	ap_UnixDialog_EditStyle.h \
 	ap_UnixDialog_Field.cpp \
 	ap_UnixDialog_Field.h \
 	ap_UnixDialog_FormatFootnotes.cpp \
@@ -137,6 +139,7 @@ gladedir=$(ABIWORD_GLADEDIR)
 glade_DATA = \
 	ap_UnixDialog_Annotation.glade \
 	ap_UnixDialog_Break.glade \
+	ap_UnixDialog_EditStyle.glade \
 	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_FormatTOC.glade \
 	ap_UnixDialog_FormatFootnotes.glade \
