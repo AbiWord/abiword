@@ -4169,7 +4169,11 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	
 	// This might need to be updated for textbox (and wrapped-image?) changes that
 	// occured in 2.3. 
-	pAP->getProperty("wrap-mode", tempProp); // Get the wrap mode
+
+	// Get the wrap mode
+	if(!pAP->getProperty("wrap-mode", tempProp) || !tempProp || !*tempProp)
+		tempProp = "wrapped-both"; // this seems like a sane default
+
 	if(!strcmp(tempProp, "wrapped-both"))
 		m_utf8_1 += " clear: none;";
 	else if(!strcmp(tempProp, "wrapped-left"))
