@@ -36,8 +36,8 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
-#include "ap_Dialog_Break.h"
-#include "ap_UnixDialog_Break.h"
+#include "ap_Dialog_EditStyle.h"
+#include "ap_UnixDialog_EditStyle.h"
 
 /*****************************************************************/
 
@@ -55,8 +55,8 @@ XAP_Dialog * AP_UnixDialog_EditStyle::static_constructor(XAP_DialogFactory * pFa
 
 AP_UnixDialog_EditStyle::AP_UnixDialog_EditStyle(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Break(pDlgFactory,id),
-	m_windowMain(NULL);
+	: AP_Dialog_EditStyle(pDlgFactory,id),
+	m_windowMain(NULL)
 {
 }
 
@@ -81,10 +81,10 @@ void AP_UnixDialog_EditStyle::runModal(XAP_Frame * pFrame)
 								 pFrame, this, CUSTOM_RESPONSE_INSERT, false ) )
 	{
 		case CUSTOM_RESPONSE_INSERT:
-			m_answer = AP_Dialog_Break::a_OK;
+			m_answer = AP_Dialog_EditStyle::a_OK;
 			break;
 		default:
-			m_answer = AP_Dialog_Break::a_CANCEL;
+			m_answer = AP_Dialog_EditStyle::a_CANCEL;
 			break;
 	}
 
@@ -165,7 +165,7 @@ void AP_UnixDialog_EditStyle::_storeWindowData(void)
 /*
 // TODO if this function is useful elsewhere, move it to Unix dialog
 // TODO helpers and standardize on a user-data tag for WIDGET_ID_TAG_KEY
-GtkWidget * AP_UnixDialog_EditStyle::_findRadioByID(AP_Dialog_Break::breakType b)
+GtkWidget * AP_UnixDialog_EditStyle::_findRadioByID(AP_Dialog_EditStyle::breakType b)
 {
 	UT_ASSERT(m_radioGroup);
 	for (GSList * item = m_radioGroup ; item ; item = item->next)
@@ -178,20 +178,20 @@ GtkWidget * AP_UnixDialog_EditStyle::_findRadioByID(AP_Dialog_Break::breakType b
 	return NULL;
 }
 
-AP_Dialog_Break::breakType AP_UnixDialog_EditStyle::_getActiveRadioItem(void)
+AP_Dialog_EditStyle::breakType AP_UnixDialog_EditStyle::_getActiveRadioItem(void)
 {
 	UT_ASSERT(m_radioGroup);
 	for (GSList * item = m_radioGroup ; item ; item = item->next)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
 		{
-			return (AP_Dialog_Break::breakType)
+			return (AP_Dialog_EditStyle::breakType)
 				GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY));
 		}
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	return AP_Dialog_Break::b_PAGE;
+	return AP_Dialog_EditStyle::b_PAGE;
 }
 */

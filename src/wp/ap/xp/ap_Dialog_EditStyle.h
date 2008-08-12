@@ -42,7 +42,7 @@ public:
 protected:
 	
 	AP_Dialog_EditStyle::tAnswer		m_answer;
-	AP_Dialog_EditStyle::breakType		m_break;
+
 };
 
 #endif /* AP_DIALOG_EDITSTYLE_H */
