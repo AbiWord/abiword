@@ -462,11 +462,14 @@ fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 AC_SUBST([DEPS_CFLAGS])
-PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
+if test "$abi_cv_gio" == "yes"; then
+	PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
                  [abi_cv_gsf_gio=no])
-if test $abi_cv_gsf_gio = yes 
-then
-    AC_DEFINE([HAVE_GSF_GIO], [1], [GSF has GIO support])
+	if test "$abi_cv_gsf_gio" == "yes" ; then
+		AC_DEFINE([HAVE_GSF_GIO], [1], [GSF has GIO support])
+	fi
+else
+	abi_cv_gsf_gio=no
 fi
 
 DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
