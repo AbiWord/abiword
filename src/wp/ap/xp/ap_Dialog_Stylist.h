@@ -117,12 +117,15 @@ public:
 	bool             createStyleFromDocument();
 	bool             redefineStyleFromDocument();
 	PD_Document *    	getDoc(void) const;
+	bool 			isShowAll() { return m_bShowAll; }
 protected:
 	virtual bool		_getNameForNewStyle(gchar * /* props*/)  {return true;};
 	bool 				_createNamedStyle(gchar * name, gchar * props);
-
-	bool                  m_bIsModal;
-	PD_Document *         m_pDoc;
+		
+	bool				m_bShowAll;
+	bool                m_bIsModal;
+	PD_Document *       m_pDoc;
+	std::vector<const gchar *> m_vCommonStyles;
 private:
 	gchar *               getPropsAtCaret() const;
 	UT_Timer *            m_pAutoUpdater;
@@ -130,7 +133,6 @@ private:
 	UT_UTF8String         m_sCurStyle;
 	Stylist_tree *        m_pStyleTree;
 	bool                  m_bStyleTreeChanged;
-	std::vector<const gchar *> m_vCommonStyles;
 	bool                  m_bStyleChanged;
 	bool                  m_bStyleValid;
 };

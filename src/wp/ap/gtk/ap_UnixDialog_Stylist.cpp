@@ -41,8 +41,9 @@
 static void s_types_clicked(GtkTreeView *treeview,
                             AP_UnixDialog_Stylist * dlg)
 {
-	UT_ASSERT(treeview && dlg);
+	UT_return_if_fail(treeview && dlg);
 
+	
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
 	GtkTreeModel * model;
@@ -58,9 +59,17 @@ static void s_types_clicked(GtkTreeView *treeview,
 	gtk_tree_model_get_value (model, &iter,1,&value);
 	row = g_value_get_int(&value);
 	g_value_unset (&value);
-	gtk_tree_model_get_value (model, &iter,2,&value);
-	col = g_value_get_int(&value);
+	if (dlg->isShowAll()) {
+		gtk_tree_model_get_value (model, &iter,2,&value);
+		col = g_value_get_int(&value);
+	}
+	else
+	{
+		// Simple (common) style list - use dummy value for col
+		col = 0;
+	}
 	dlg->styleClicked(row,col);
+	
 }
 
 static gboolean
@@ -82,6 +91,8 @@ static void s_types_dblclicked(GtkTreeView *treeview,
 	
 	// simulate the effects of a single click
 	s_types_clicked (treeview, me);
+	
+	// Then, apply newly-selected style
 	me->event_Apply ();
 }
 
@@ -156,8 +167,7 @@ XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFact
 
 AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 												   XAP_Dialog_Id id)
-	: AP_Dialog_Stylist(pDlgFactory,id), 
-	  m_bShowAll(true),
+	: AP_Dialog_Stylist(pDlgFactory,id),
       m_windowMain(NULL),
 	  m_wStyleList(NULL),
 	  m_wApply(NULL),
@@ -240,18 +250,28 @@ void AP_UnixDialog_Stylist::notifyActiveFrame(XAP_Frame * /*pFrame*/)
  */
 void AP_UnixDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 {
-	UT_UTF8String sStyle;
+	
 	UT_DEBUGMSG(("row %d col %d clicked \n",row,col));
+	if (m_bShowAll)
+	{
+		UT_UTF8String sStyle;
+		if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
+			return;
+		else if(col == 0)
+			getStyleTree()->getStyleAtRowCol(sStyle,row,col);
+		else
+			getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
 
-	if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
-		return;
-	else if(col == 0)
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
+		setCurStyle(sStyle);
+		UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
+	}
 	else
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
-
-	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
-	setCurStyle(sStyle);
+	{
+		// common styles only - disregard default value in "col"
+		UT_UTF8String sCommonStyle = m_vCommonStyles[row];
+		setCurStyle (sCommonStyle);
+	}
+	
 }
 
 void AP_UnixDialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -473,7 +493,6 @@ void AP_UnixDialog_Stylist::_fillFullTree(void)
 void AP_UnixDialog_Stylist::_fillCommonTree(void)
 {
 	GtkTreeIter iter;
-	GtkTreeIter child_iter;
 	GtkTreeSelection *sel;
 	int count=0;
 	
@@ -516,6 +535,11 @@ void AP_UnixDialog_Stylist::_fillCommonTree(void)
 						   G_CALLBACK(s_types_clicked),
 						   static_cast<gpointer>(this));
 
+	g_signal_connect_after(G_OBJECT(m_wStyleList),
+						   "row-activated",
+						   G_CALLBACK(s_types_dblclicked),
+						   static_cast<gpointer>(this));
+	
 	gtk_widget_show_all(m_wStyleList);
 	setStyleTreeChanged(false);
 	

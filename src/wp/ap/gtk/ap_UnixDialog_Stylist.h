@@ -55,8 +55,6 @@ private:
 	void			_fillFullTree(void);
 	void			_fillCommonTree(void);
 	virtual bool	_getNameForNewStyle(gchar * props);
-		
-	bool			m_bShowAll;
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wStyleList;
