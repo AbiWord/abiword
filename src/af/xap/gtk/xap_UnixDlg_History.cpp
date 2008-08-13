@@ -114,10 +114,8 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_History.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_History.xml";
 	
 	// load the dialog from the glade file
 	m_pXML = abiDialogNewFromXML( glade_path.c_str() );

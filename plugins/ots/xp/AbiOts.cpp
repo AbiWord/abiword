@@ -59,7 +59,7 @@ static const char* Ots_MenuTooltip = "Summarize your document or selected text";
 static int getSummaryPercent(void)
 {
   UT_String glade_path(OTS_GLADE_DIR);
-  glade_path += "/ots.glade";
+  std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ots.xml";
   
   // load the dialog from the glade file
   GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );

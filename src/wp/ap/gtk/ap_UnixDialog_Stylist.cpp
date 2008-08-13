@@ -240,16 +240,14 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	// get the path where our UI file is located
 	if(m_bIsModal)
 	{
-		glade_path += "/ap_UnixDialog_Stylist_modal.glade";
+		std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist_modal.xml";
 	}
 	else
 	{
-		glade_path += "/ap_UnixDialog_Stylist.glade";
+		std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist.xml";
 	}
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );

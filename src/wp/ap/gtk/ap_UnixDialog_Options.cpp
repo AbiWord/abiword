@@ -167,10 +167,8 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    // get the path where our glade file is located
-    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*> ( m_pApp );
-    UT_String glade_path ( pApp->getAbiSuiteAppGladeDir() );
-    glade_path += "/ap_UnixDialog_Options_ColorSel.glade";
+    // get the path where our UI file is located
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options_ColorSel.xml";
 
     GladeXML *xml = abiDialogNewFromXML ( glade_path.c_str() );
     if ( !xml )
@@ -512,13 +510,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     GtkWidget *mainWindow;
 
-    // get the path where our glade file is located
-    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*> ( m_pApp );
-    UT_String glade_path ( pApp->getAbiSuiteAppGladeDir() );
+    // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    glade_path += "/ap_UnixHildonDialog_Options.glade";
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixHildonDialog_Options.xml";
 #else
-    glade_path += "/ap_UnixDialog_Options.glade";
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options.xml";
 #endif
 
     // Update member variables with the important widgets that

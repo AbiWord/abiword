@@ -100,10 +100,8 @@ GtkWidget * AP_Win32Dialog_CollaborationAddBuddy::_constructWindow(void)
 	GtkWidget* window;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_Win32App * pApp = static_cast<XAP_Win32App*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_Win32Dialog_CollaborationAddBuddy.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_Win32Dialog_CollaborationAddBuddy.xml";
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 	if (!xml)
