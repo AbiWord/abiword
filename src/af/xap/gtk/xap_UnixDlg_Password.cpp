@@ -109,7 +109,7 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	gtk_window_set_title (GTK_WINDOW(mMainWindow), s.utf8_str());
 
 	/* localize labels */
-	localizeLabel (glade_xml_get_widget (xml, "lbPassword"), pSS, XAP_STRING_ID_DLG_Password_Password);
+	localizeLabel (GTK_WIDGET(gtk_builder_get_object(builder, "lbPassword")), pSS, XAP_STRING_ID_DLG_Password_Password);
 	
 	g_signal_connect (G_OBJECT(mTextEntry), "activate",
 					  G_CALLBACK(s_return_hit),

@@ -257,7 +257,7 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-	m_wDialog = glade_xml_get_widget (pXML, "ap_UnixDialog_Spell");
+	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Spell"));
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -265,37 +265,37 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle,s);
 	gtk_window_set_title (GTK_WINDOW( m_wDialog), s.utf8_str());
 
-	localizeLabelUnderline(glade_xml_get_widget (pXML, "lbNotInDict"), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
-	localizeLabelUnderline(glade_xml_get_widget (pXML, "lbChangeTo"), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
+	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbNotInDict")), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
+	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbChangeTo")), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
 
-	m_txWrong = glade_xml_get_widget (pXML, "txWrong");
-	m_eChange = glade_xml_get_widget (pXML, "eChange");
-	m_lvSuggestions = glade_xml_get_widget (pXML, "tvSuggestions");
+	m_txWrong = GTK_WIDGET(gtk_builder_get_object(builder, "txWrong"));
+	m_eChange = GTK_WIDGET(gtk_builder_get_object(builder, "eChange"));
+	m_lvSuggestions = GTK_WIDGET(gtk_builder_get_object(builder, "tvSuggestions"));
 
 	// localise
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btIgnore"), pSS, AP_STRING_ID_DLG_Spell_Ignore);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btIgnoreAll"), pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btChange"), pSS, AP_STRING_ID_DLG_Spell_Change);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btChangeAll"), pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnore")), pSS, AP_STRING_ID_DLG_Spell_Ignore);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnoreAll")), pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChange")), pSS, AP_STRING_ID_DLG_Spell_Change);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChangeAll")), pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
 
 	// attach signals
-	g_signal_connect (glade_xml_get_widget (pXML, "btAdd"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btAdd")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onAddClicked), 
 					  (gpointer)this);
-	g_signal_connect (glade_xml_get_widget (pXML, "btIgnore"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnore")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onIgnoreClicked), 
 					  (gpointer)this);
-	g_signal_connect (glade_xml_get_widget (pXML, "btIgnoreAll"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnoreAll")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onIgnoreAllClicked), 
 					  (gpointer)this);
-	g_signal_connect (glade_xml_get_widget (pXML, "btChange"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btChange")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onChangeClicked), 
 					  (gpointer)this);
-	g_signal_connect (glade_xml_get_widget (pXML, "btChangeAll"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btChangeAll")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onChangeAllClicked), 
 					  (gpointer)this);
