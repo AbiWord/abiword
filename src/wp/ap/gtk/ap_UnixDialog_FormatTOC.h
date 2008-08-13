@@ -68,7 +68,7 @@ private:
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
-	GladeXML *  m_pXML;
+	GtkBuilder * m_pBuilder;
 	UT_Vector   m_vecChangeStyleBtns;
 	UT_Vector   m_vecStyleEntries;
 	UT_Vector   m_vecTextTypes;
