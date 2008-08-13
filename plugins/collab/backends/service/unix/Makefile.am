@@ -17,10 +17,10 @@ libunix_la_SOURCES = \
 	ServiceUnixAccountHandler.cpp \
 	ServiceUnixAccountHandler.h
 
-gladedir=$(ABIWORD_GLADEDIR)
-glade_DATA = \
-	ap_UnixDialog_GenericInput.glade \
-	ap_UnixDialog_GenericProgress.glade
+uidir=$(ABIWORD_UIDIR)
+ui_DATA = \
+	ap_UnixDialog_GenericInput.xml \
+	ap_UnixDialog_GenericProgress.xml
 
 EXTRA_DIST = \
-	$(glade_DATA)
+	$(xml_DATA)

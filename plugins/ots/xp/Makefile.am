@@ -4,15 +4,15 @@ noinst_LTLIBRARIES = libxp.la
 AM_CPPFLAGS = \
 	$(OTS_CFLAGS) \
 	-DABI_BUILD_VERSION=\"$(VERSION)\" \
-	-DOTS_GLADE_DIR=\"$(ABIWORD_GLADEDIR)\"
+	-DOTS_UI_DIR=\"$(ABIWORD_UIDIR)\"
 
 libxp_la_SOURCES = \
 	AbiOts.cpp
 
-gladedir=$(ABIWORD_GLADEDIR)
-glade_DATA = \
-	ots.glade
+uidir=$(ABIWORD_UIDIR)
+ui_DATA = \
+	ots.xml
 
 EXTRA_DIST = \
-	$(glade_DATA)
+	$(ui_DATA)
 
