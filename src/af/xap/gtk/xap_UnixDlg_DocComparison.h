@@ -44,7 +44,6 @@ private:
 
 	void _populateWindowData();
 	GtkWidget *             constructWindow();
-	GladeXML *              m_pXML;
 	GtkWidget *             m_windowMain;
 };
 

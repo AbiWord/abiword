@@ -88,10 +88,9 @@ public:
 	
 private: 
 
-	void 	   _connectSignals 	 (GladeXML *pXML);
+	void 	   _connectSignals 	 (GtkBuilder *builder);
 	UT_sint32  _getSelectedIndex (void);
 
-	GladeXML  *m_pXML; 
 	GtkWidget *m_wDialog;
 	GtkWidget *m_sbDefaultTab;
 	GtkWidget *m_exUserTabs;

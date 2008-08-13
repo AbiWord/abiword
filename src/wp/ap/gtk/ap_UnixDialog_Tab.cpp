@@ -171,7 +171,6 @@ AP_UnixDialog_Tab::static_constructor (XAP_DialogFactory *pDlgFactory,
 AP_UnixDialog_Tab::AP_UnixDialog_Tab (XAP_DialogFactory *pDlgFactory,
 									  XAP_Dialog_Id 	 id)
   : AP_Dialog_Tab  (pDlgFactory, id),
-	m_pXML		   (NULL), 
 	m_wDialog	   (NULL),
 	m_sbDefaultTab (NULL),
 	m_exUserTabs   (NULL),
@@ -356,14 +355,14 @@ AP_UnixDialog_Tab::_constructWindow ()
 	m_LeaderMapping[FL_LEADER_THICKLINE] = NULL;
 	m_LeaderMapping[FL_LEADER_EQUALSIGN] = NULL;
 
-	_connectSignals (m_pXML);
+	_connectSignals (builder);
 
 	return wDialog;
 }
 
 //! Connect callbacks.
 void
-AP_UnixDialog_Tab::_connectSignals (GladeXML *pXML)
+AP_UnixDialog_Tab::_connectSignals (GtkBuilder *builder)
 {
     m_hSigDefaultTabChanged = g_signal_connect (m_sbDefaultTab, 
 					  "value-changed", 

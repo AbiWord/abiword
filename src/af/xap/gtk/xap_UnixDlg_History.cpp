@@ -75,7 +75,6 @@ XAP_Dialog * XAP_UnixDialog_History::static_constructor(XAP_DialogFactory * pFac
 XAP_UnixDialog_History::XAP_UnixDialog_History(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_History(pDlgFactory,id),
-	  m_pXML(NULL),
 	  m_windowMain(NULL),
 	  m_wListWindow(NULL),
 	  m_wTreeView(NULL)
