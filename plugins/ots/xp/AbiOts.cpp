@@ -61,10 +61,9 @@ static int getSummaryPercent(void)
   UT_String glade_path(OTS_GLADE_DIR);
   std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ots.xml";
   
-  // load the dialog from the glade file
-  GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-  if (!xml)
-    return 20;
+  // load the dialog from the UI file
+  GtkBuilder* builder = gtk_builder_new();
+  gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
   
   GtkWidget * window = glade_xml_get_widget(xml, "otsDlg");
   GtkWidget * spin = glade_xml_get_widget(xml, "summarySpin");

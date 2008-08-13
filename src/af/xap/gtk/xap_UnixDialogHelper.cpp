@@ -769,10 +769,9 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * tit
  */
 GladeXML * abiDialogNewFromXML(const char * glade_file)
 {
-	// load the dialog from the glade file
-	GladeXML *xml = glade_xml_new(glade_file, NULL, NULL);
-	
-	// make sure we could load the glade file
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	if (!xml) {
 		GtkWidget* dialog = gtk_message_dialog_new (NULL,
 					GTK_DIALOG_DESTROY_WITH_PARENT,

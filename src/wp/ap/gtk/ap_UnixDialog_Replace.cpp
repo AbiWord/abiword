@@ -280,10 +280,9 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Replace.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML(glade_path.c_str());
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	m_windowMain = glade_xml_get_widget(xml,"ap_UnixDialog_Replace");
 	m_buttonFind = glade_xml_get_widget(xml,"btnFind");

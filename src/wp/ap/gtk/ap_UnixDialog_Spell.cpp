@@ -253,10 +253,9 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Spell.xml";
 
-	// load the dialog from the glade file
-	GladeXML * pXML = abiDialogNewFromXML (glade_path.c_str() );
-	if (!pXML)
-    		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	m_wDialog = glade_xml_get_widget (pXML, "ap_UnixDialog_Spell");
 

@@ -459,10 +459,9 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Image");
 	m_wHeightSpin = glade_xml_get_widget(xml, "sbHeight");

@@ -117,10 +117,9 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_History.xml";
 	
-	// load the dialog from the glade file
-	m_pXML = abiDialogNewFromXML( glade_path.c_str() );
-	if (!m_pXML)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

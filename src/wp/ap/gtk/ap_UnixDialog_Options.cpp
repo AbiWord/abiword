@@ -520,10 +520,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
-    // load the dialog from the glade file
-    GladeXML *xml = abiDialogNewFromXML ( glade_path.c_str() );
-    if ( !xml )
-        return NULL;
+    // load the dialog from the UI file
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
     _constructWindowContents ( xml );
 

@@ -234,10 +234,9 @@ AP_UnixDialog_Tab::_constructWindow ()
     // get the path where our UI file is located
     std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Tab.xml";
 
-    // load the dialog from the glade file
-    m_pXML = abiDialogNewFromXML (glade_path.c_str ());
-	UT_return_val_if_fail (m_pXML != NULL, NULL);
-
+    // load the dialog from the UI file
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
     GtkWidget *wDialog = glade_xml_get_widget (m_pXML, "ap_UnixDialog_Tab");
 	m_exUserTabs = glade_xml_get_widget (m_pXML, "exUserTabs");
 

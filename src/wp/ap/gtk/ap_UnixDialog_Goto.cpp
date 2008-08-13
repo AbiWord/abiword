@@ -413,10 +413,9 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 
-	// load the dialog from the glade file
-	UT_String glade_path (pApp->getAbiSuiteAppGladeDir ());
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Goto.xml";
-	GladeXML *xml = abiDialogNewFromXML (glade_path.c_str());
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	if (!xml)
 		return;
 
