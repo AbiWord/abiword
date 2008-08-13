@@ -2,24 +2,29 @@
 mathview_pkgs='mathview-frontend-libxml2 >= 0.7.5'
 mathview_deps="no"
 
+# test hashmap availablity
+HASHMAP_CFLAGS=""
+AC_LANG(C++)
+AC_CHECK_HEADER(hash_map,
+[
+	HASHMAP_CFLAGS="-DHAVE_HASH_MAP"
+], [
+	AC_CHECK_HEADER(ext/hash_map,
+	[
+		HASHMAP_CFLAGS="-DHAVE_EXT_HASH_MAP"
+	], [
+		AC_MSG_WARN([mathview plugin: dependencies not satisfied - missing 'hash_map' or 'ext/hash_map' header])
+	])
+])
+AC_LANG(C)
+
+if test "$HASHMAP_CFLAGS" != ""; then
+
 if test "$enable_mathview" != ""; then
 
 PKG_CHECK_EXISTS([ $mathview_pkgs ], 
 [
-	AC_LANG(C++)
-	AC_CHECK_HEADER(hash_map,
-	[
-		mathview_deps="yes"
-		MATHVIEW_CFLAGS="-DHAVE_HASH_MAP $MATHVIEW_CFLAGS"
-	], [
-		AC_CHECK_HEADER(ext/hash_map,
-		[
-			mathview_deps="yes"
-			MATHVIEW_CFLAGS="-DHAVE_EXT_HASH_MAP $MATHVIEW_CFLAGS"
-		])
-	])
-	AC_LANG(C)
-
+	mathview_deps="yes"
 ], [
 	test "$enable_mathview" == "auto" && AC_MSG_WARN([mathview plugin: dependencies not satisfied - $mathview_pkgs])
 ])
@@ -37,8 +42,10 @@ PKG_CHECK_MODULES(MATHVIEW,[ $mathview_pkgs ])
 
 test "$enable_mathview" == "auto" && PLUGINS="$PLUGINS mathview"
 
-MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS "'${PLUGIN_CFLAGS}'
+MATHVIEW_CFLAGS="$MATHVIEW_CFLAGS $HASHMAP_CFLAGS "'${PLUGIN_CFLAGS}'
 MATHVIEW_LIBS="$MATHVIEW_LIBS "'${PLUGIN_LIBS}'
+
+fi
 
 fi
 
