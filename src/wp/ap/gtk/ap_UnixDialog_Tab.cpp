@@ -231,20 +231,20 @@ void AP_UnixDialog_Tab::runModal (XAP_Frame *pFrame)
 GtkWidget * 
 AP_UnixDialog_Tab::_constructWindow ()
 {
-    // get the path where our UI file is located
-    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Tab.xml";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Tab.xml";
 
-    // load the dialog from the UI file
-    GtkBuilder* builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-    GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Tab"));
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Tab"));
 	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(builder, "exUserTabs"));
 
 	// localise	
 	UT_UTF8String s;
-    const XAP_StringSet *pSS = m_pApp->getStringSet ();
+	const XAP_StringSet *pSS = m_pApp->getStringSet ();
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_TabTitle, s);
-    gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
+	gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
 	
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
@@ -353,7 +353,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvTabs), 0);
 	gtk_tree_view_column_set_sort_column_id (column, COLUMN_TAB);
 
-	// FIXME not implemented dialog before move to glade
+	// FIXME not implemented dialog before move to GtkBuilder
 	m_LeaderMapping[FL_LEADER_THICKLINE] = NULL;
 	m_LeaderMapping[FL_LEADER_EQUALSIGN] = NULL;
 
