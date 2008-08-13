@@ -34,27 +34,27 @@ enum
 	HANDLER_COLUMN
 };
 
-static void s_add_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAccounts * dlg)
+static void s_add_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAccounts * dlg)
 {
 	dlg->eventAdd();
 }
 
-static void s_properties_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAccounts * dlg)
+static void s_properties_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAccounts * dlg)
 {
 	dlg->eventProperties();
 }
 
-static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAccounts * dlg)
+static void s_delete_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAccounts * dlg)
 {
 	dlg->eventDelete();
 }
 
-static void s_account_selected(GtkWidget * wid, AP_UnixDialog_CollaborationAccounts * dlg)
+static void s_account_selected(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAccounts * dlg)
 {
 	dlg->eventSelectAccount();
 }
 
-static void s_online_toggled (GtkCellRendererToggle *cell,
+static void s_online_toggled (GtkCellRendererToggle * /*cell*/,
 	      gchar                 *path_str,
 	      gpointer               data)
 {
@@ -347,7 +347,7 @@ void AP_UnixDialog_CollaborationAccounts::eventOnline(AccountHandler* pHandler, 
 	}
 }
 
-void AP_UnixDialog_CollaborationAccounts::signal(const Event& event, const Buddy* pSource)
+void AP_UnixDialog_CollaborationAccounts::signal(const Event& event, const Buddy* /*pSource*/)
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationAccounts::signal()\n"));
 	switch (event.getClassType())

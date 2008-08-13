@@ -32,7 +32,7 @@ enum
 	HANDLER_COLUMN
 };
 
-static void s_ok_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAddBuddy * dlg)
+static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAddBuddy * dlg)
 {
 	dlg->event_Ok();
 }

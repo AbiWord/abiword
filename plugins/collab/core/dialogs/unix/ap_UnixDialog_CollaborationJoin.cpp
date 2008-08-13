@@ -39,22 +39,22 @@ enum
 	NUM_COLUMNS
 };
 
-static void s_add_buddy_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_add_buddy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventAddBuddy();
 }
 
-static void s_refresh_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_refresh_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventRefresh();
 }
 
-static void s_connect_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_connect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventConnect();
 }
 
-static void s_disconnect_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_disconnect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventDisconnect();
 }

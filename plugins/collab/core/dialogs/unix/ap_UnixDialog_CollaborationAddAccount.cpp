@@ -28,12 +28,12 @@
 
 #include "ap_UnixDialog_CollaborationAddAccount.h"
 
-static void s_ok_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAddAccount * dlg)
+static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAddAccount * dlg)
 {
 	dlg->eventOk();
 }
 
-static void s_account_type_changed(GtkWidget * wid, AP_UnixDialog_CollaborationAddAccount * dlg)
+static void s_account_type_changed(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAddAccount * dlg)
 {
 	dlg->eventAccountTypeChanged();
 }

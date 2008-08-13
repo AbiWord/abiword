@@ -123,7 +123,7 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 	_enableBuddyAddition(bEnableAddition);
 }
 
-void AP_Dialog_CollaborationJoin::signal(const Event& event, const Buddy* pSource)
+void AP_Dialog_CollaborationJoin::signal(const Event& event, const Buddy* /*pSource*/)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationJoin::signal()\n"));
 	switch (event.getClassType())
