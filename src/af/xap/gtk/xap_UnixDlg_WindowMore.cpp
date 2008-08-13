@@ -145,8 +145,8 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableDocuments"), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btView"), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments")), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btView")), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
 
 	// add a column to our TreeViews
 

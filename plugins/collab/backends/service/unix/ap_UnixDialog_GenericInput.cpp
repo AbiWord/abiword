@@ -93,8 +93,8 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	abiDialogSetTitle(window, getTitle().utf8_str());
 	
 	// set the question
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbQuestion")), getQuestion().utf8_str());
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbLabel")), getLabel().utf8_str());
+	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbQuestion"))), getQuestion().utf8_str());
+	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
 	// connect our signals
 	g_signal_connect(G_OBJECT(m_wOk),

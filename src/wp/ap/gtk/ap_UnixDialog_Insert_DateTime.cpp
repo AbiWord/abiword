@@ -154,8 +154,8 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFormats")), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 	
 	// add a column to our TreeView
 	renderer = gtk_cell_renderer_text_new ();

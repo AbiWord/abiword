@@ -209,19 +209,19 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbHeaderProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeaderProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
 	localizeButton(m_wHdrFtrCheck[HdrEven], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
 	localizeButton(m_wHdrFtrCheck[HdrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
 	localizeButton(m_wHdrFtrCheck[HdrLast], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderLast);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFooterProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFooterProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
 	localizeButton(m_wHdrFtrCheck[FtrEven], pSS, AP_STRING_ID_DLG_HdrFtr_FooterEven);
 	localizeButton(m_wHdrFtrCheck[FtrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_FooterFirst);
 	localizeButton(m_wHdrFtrCheck[FtrLast], pSS, AP_STRING_ID_DLG_HdrFtr_FooterLast);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPageNumberProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPageNumberProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
 	localizeButton(m_wRestartButton, pSS, AP_STRING_ID_DLG_HdrFtr_RestartCheck);
-	localizeLabel(glade_xml_get_widget(xml, "lbRestartNumbering"), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartNumbering")), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
 
 	// Now set initial state of the dialog
 	

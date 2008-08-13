@@ -102,8 +102,8 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	abiDialogSetTitle(window, getTitle().utf8_str());
 	
 	// set the informative label
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbInformation")), getInformation().utf8_str());
-	//gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml, "lbLabel")), getLabel().utf8_str());
+	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbInformation"))), getInformation().utf8_str());
+	//gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
 	return window;
 }

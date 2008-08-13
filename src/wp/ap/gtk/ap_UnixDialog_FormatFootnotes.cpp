@@ -455,23 +455,23 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFootnote"), pSS, AP_STRING_ID_DLG_FormatFootnotes_Footnotes);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnote")), pSS, AP_STRING_ID_DLG_FormatFootnotes_Footnotes);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteStyle")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteRestart"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteRestart")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFootnoteValue")), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbEndnote"), pSS, AP_STRING_ID_DLG_FormatFootnotes_Endnotes);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnote")), pSS, AP_STRING_ID_DLG_FormatFootnotes_Endnotes);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbEndnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnoteStyle")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbEndnotePlacement"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnotePlacement")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbEndnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEndnoteValue")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
 
-	localizeButton(glade_xml_get_widget(xml, "cbSectionRestart"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "cbSectionRestart")), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
 
 //
 // Now extract widgets from the menu items

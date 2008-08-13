@@ -177,13 +177,13 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFields"), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFields")), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFieldName"), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
 
-	localizeLabel(glade_xml_get_widget(xml, "lbOpenFile"), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbOpenFile")), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
 
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",

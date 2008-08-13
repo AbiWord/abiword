@@ -498,13 +498,13 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_window_set_title (GTK_WINDOW (window), s.utf8_str());
 
 	// list of styles goes in the top left
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbStyles"), pSS, AP_STRING_ID_DLG_Styles_Available);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbStyles")), pSS, AP_STRING_ID_DLG_Styles_Available);
 	
 	// treeview
 	m_tvStyles = GTK_WIDGET(gtk_builder_get_object(builder, "tvStyles"));
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);	
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbList"), pSS, AP_STRING_ID_DLG_Styles_List);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbList")), pSS, AP_STRING_ID_DLG_Styles_List);
 
 	m_rbList1 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList1"));
 	localizeButton(m_rbList1, pSS, AP_STRING_ID_DLG_Styles_LBL_InUse);
@@ -515,21 +515,21 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	
 	// previewing and description goes in the top right
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbParagraph"), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraph")), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
 	GtkWidget *frameParaPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameParagraph"));
 	m_wParaPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), m_wParaPreviewArea);
 	gtk_widget_show(m_wParaPreviewArea);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbCharacter"), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbCharacter")), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
 	GtkWidget *frameCharPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameCharacter"));
 	m_wCharPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wCharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), m_wCharPreviewArea);
 	gtk_widget_show(m_wCharPreviewArea);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Styles_Description);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Styles_Description);
 	m_lbAttributes = GTK_WIDGET(gtk_builder_get_object(builder, "lbAttributes"));
 
 	// Pack buttons at the bottom of the dialog

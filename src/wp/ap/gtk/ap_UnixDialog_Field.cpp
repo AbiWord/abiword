@@ -306,10 +306,10 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTypes")), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFields")), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbExtraParameters")), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	// add a column to our TreeViews
 

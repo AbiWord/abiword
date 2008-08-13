@@ -167,9 +167,9 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	abiDialogSetTitle(window, s.utf8_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabel(glade_xml_get_widget(xml, "lbTitle"), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbAuthor"), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;

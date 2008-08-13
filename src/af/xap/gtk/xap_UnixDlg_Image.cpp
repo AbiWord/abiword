@@ -488,29 +488,29 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
 	abiDialogSetTitle(mMainWindow, s.utf8_str());
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSize"), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbWrapType"), pSS, XAP_STRING_ID_DLG_Image_WrapType);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSize")), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImageDescription")), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapping")), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImagePlacement")), pSS, XAP_STRING_ID_DLG_Image_Placement);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapType")), pSS, XAP_STRING_ID_DLG_Image_WrapType);
 	
-	localizeLabel(glade_xml_get_widget(xml,"lbHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
-	localizeLabel(glade_xml_get_widget(xml,"lbWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
-	localizeLabel(glade_xml_get_widget(xml,"lbTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeLabel(glade_xml_get_widget(xml,"lbDescription"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeight")), pSS, XAP_STRING_ID_DLG_Image_Height);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWidth")), pSS, XAP_STRING_ID_DLG_Image_Width);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 
-	localizeButton(glade_xml_get_widget(xml,"rbInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
-	localizeButton(glade_xml_get_widget(xml,"rbNone"), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine")), pSS, XAP_STRING_ID_DLG_Image_InLine);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbNone")), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight")), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedLeft")), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedBoth")), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
 
-	localizeButton(glade_xml_get_widget(xml,"rbPlaceParagraph"), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
-	localizeButton(glade_xml_get_widget(xml,"rbPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
-	localizeButton(glade_xml_get_widget(xml,"rbPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceParagraph")), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn")), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage")), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
 
-	localizeButton(glade_xml_get_widget(xml,"rbSquareWrap"), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
-	localizeButton(glade_xml_get_widget(xml,"rbTightWrap"), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap")), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap")), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
 
 	m_wPlaceTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbPlacement"));
 	m_wrbInLine = GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine"));

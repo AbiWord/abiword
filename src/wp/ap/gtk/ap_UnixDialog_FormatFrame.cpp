@@ -488,22 +488,22 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBorder"), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
-	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
-	localizeLabel(glade_xml_get_widget(xml, "lbBorderThickness"), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
-	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackgroundColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
 
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSetImageBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetImageBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
 
 // Radio buttons to position type of the Frame
 		
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPositionTo"), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToPage"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPositionTo")), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToParagraph")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToColumn")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToPage")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
 	m_wPosParagraph = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToParagraph"));
 	m_wPosColumn = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToColumn"));
 	m_wPosPage = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToPage"));
@@ -513,18 +513,18 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	m_wWrapButton = GTK_WIDGET(gtk_builder_get_object(builder, "btTextWrapState"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapState"), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
 
 //	add the buttons for background image to the dialog.
 
 	m_wSelectImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSelectImage"));
 	m_wNoImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSetNoImage"));
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatFrame_SelectImage);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSelectImage")), pSS, AP_STRING_ID_DLG_FormatFrame_SelectImage);
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbSetNoImage"), pSS, AP_STRING_ID_DLG_FormatFrame_NoImageBackground);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetNoImage")), pSS, AP_STRING_ID_DLG_FormatFrame_NoImageBackground);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatFrame_Preview);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_FormatFrame_Preview);
 	
 	m_wBorderColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBorderColorButton"));
 	m_wBackgroundColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBackgroundColorButton"));

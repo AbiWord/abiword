@@ -212,7 +212,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Zoom"));
-	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
+	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent200")) ));
 	m_radio200 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent200"));
 	m_radio100 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent100"));
 	m_radio75 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent75"));
@@ -229,7 +229,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbZoom"), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbZoom")), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
 
 	localizeButton(m_radio200, pSS, XAP_STRING_ID_DLG_Zoom_200);
 	g_object_set_data (G_OBJECT (m_radio200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));

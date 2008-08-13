@@ -120,7 +120,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableLanguages")), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 	getDocDefaultLangDescription(s);
 	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
 	getDocDefaultLangCheckboxLabel(s);

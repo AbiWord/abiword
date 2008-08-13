@@ -361,12 +361,12 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbActivePlugins"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPluginDetails"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
-	localizeLabel(glade_xml_get_widget(xml, "lbNameLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
-	localizeLabel(glade_xml_get_widget(xml, "lbDescriptionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
-	localizeLabel(glade_xml_get_widget(xml, "lbAuthorLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
-	localizeLabel(glade_xml_get_widget(xml, "lbVersionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbActivePlugins")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginDetails")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNameLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescriptionLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthorLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
 	GtkWidget * btInstall = GTK_WIDGET(gtk_builder_get_object(builder, "btInstall"));
 

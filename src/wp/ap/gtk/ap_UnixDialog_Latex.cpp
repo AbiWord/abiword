@@ -187,9 +187,9 @@ void AP_UnixDialog_Latex::constructDialog(void)
 
 	localizeButtonUnderline(m_wInsert, pSS, AP_STRING_ID_DLG_InsertButton);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLatexEquation"), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbLatexEquation")), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbExample"), pSS, AP_STRING_ID_DLG_Latex_Example);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbExample")), pSS, AP_STRING_ID_DLG_Latex_Example);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());
