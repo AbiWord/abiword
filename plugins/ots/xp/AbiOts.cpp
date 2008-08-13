@@ -49,7 +49,6 @@
 
 #ifdef TOOLKIT_GTK
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include "xap_UnixDialogHelper.h"
 #endif
 

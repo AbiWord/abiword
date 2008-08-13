@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"

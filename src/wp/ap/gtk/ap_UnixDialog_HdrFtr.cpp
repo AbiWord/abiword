@@ -23,7 +23,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <glade/glade.h>
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.

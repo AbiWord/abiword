@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 #include <gdk/gdk.h>
 #include "ut_locale.h"
 

@@ -22,7 +22,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include <glade/glade.h>
 
 #include "xap_UnixDialogHelper.h"
 

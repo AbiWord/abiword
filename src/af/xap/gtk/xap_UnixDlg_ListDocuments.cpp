@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"

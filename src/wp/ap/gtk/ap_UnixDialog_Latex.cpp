@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"

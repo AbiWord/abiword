@@ -21,7 +21,6 @@
 #include <time.h>
 #include <stdio.h>
 #include "ut_string.h"
-#include <glade/glade.h>
 #include "xap_UnixDialogHelper.h"
 #include "ut_string.h"
 #include "ut_assert.h"
