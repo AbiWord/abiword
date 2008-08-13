@@ -1,5 +1,5 @@
 
-ots_pkgs="$libglade_req libots-1 >= 0.5.0"
+ots_pkgs="libots-1 >= 0.5.0"
 ots_deps="no"
 
 if test "$enable_ots" != ""; then
