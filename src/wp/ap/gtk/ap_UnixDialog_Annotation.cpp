@@ -156,10 +156,10 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Annotation");
-	m_entryTitle = glade_xml_get_widget(xml, "enTitle");
-	m_entryAuthor = glade_xml_get_widget(xml, "enAuthor");
-	m_textDescription = glade_xml_get_widget(xml, "tvDescription");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Annotation"));
+	m_entryTitle = GTK_WIDGET(gtk_builder_get_object(builder, "enTitle"));
+	m_entryAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enAuthor"));
+	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
 	
 	// set the dialog title
 	UT_UTF8String s;
@@ -180,8 +180,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
 	}
 	
-	GtkWidget * wOK = glade_xml_get_widget(xml, "btOK");
-	GtkWidget * wReplace = glade_xml_get_widget(xml, "btReplace");
+	GtkWidget * wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
+	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
 	gtk_button_set_label(GTK_BUTTON(wReplace),s.utf8_str()); 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);

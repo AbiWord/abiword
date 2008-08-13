@@ -190,16 +190,16 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_HdrFtr");
-	m_wHdrFtrCheck[HdrEven] = glade_xml_get_widget(xml, "cbHeaderFacingPages");
-	m_wHdrFtrCheck[HdrFirst] = glade_xml_get_widget(xml, "cbHeaderFirstPage");
-	m_wHdrFtrCheck[HdrLast] = glade_xml_get_widget(xml, "cbHeaderLastPage");
-	m_wHdrFtrCheck[FtrEven] = glade_xml_get_widget(xml, "cbFooterFacingPages");
-	m_wHdrFtrCheck[FtrFirst] = glade_xml_get_widget(xml, "cbFooterFirstPage");
-	m_wHdrFtrCheck[FtrLast] = glade_xml_get_widget(xml, "cbFooterLastPage");
-	m_wRestartLabel = glade_xml_get_widget(xml, "lbRestartNumbering");
-	m_wRestartButton = glade_xml_get_widget(xml, "lbRestartPageNumbers");
-	m_wSpin = glade_xml_get_widget(xml, "sbRestartNumberingAt");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_HdrFtr"));
+	m_wHdrFtrCheck[HdrEven] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderFacingPages"));
+	m_wHdrFtrCheck[HdrFirst] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderFirstPage"));
+	m_wHdrFtrCheck[HdrLast] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderLastPage"));
+	m_wHdrFtrCheck[FtrEven] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterFacingPages"));
+	m_wHdrFtrCheck[FtrFirst] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterFirstPage"));
+	m_wHdrFtrCheck[FtrLast] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterLastPage"));
+	m_wRestartLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartNumbering"));
+	m_wRestartButton = GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartPageNumbers"));
+	m_wSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbRestartNumberingAt"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_wSpin) );
 	
 	// set the dialog title

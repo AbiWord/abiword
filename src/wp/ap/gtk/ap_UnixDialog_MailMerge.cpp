@@ -163,9 +163,9 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
-	m_entry = glade_xml_get_widget(xml, "edFieldName");
-	m_treeview = glade_xml_get_widget(xml, "tvAvailableFields");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_MailMerge"));
+	m_entry = GTK_WIDGET(gtk_builder_get_object(builder, "edFieldName"));
+	m_treeview = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableFields"));
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	

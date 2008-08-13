@@ -166,13 +166,13 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationJoin");
-	m_wAddBuddy = glade_xml_get_widget(xml, "btAddBuddy");
-	m_wDeleteBuddy = glade_xml_get_widget(xml, "btDeleteBuddy");
-	m_wRefresh = glade_xml_get_widget(xml, "btRefresh");	
-	m_wBuddyTree = glade_xml_get_widget(xml, "tvBuddies");
-	m_wConnect = glade_xml_get_widget(xml, "btConnect");
-	m_wDisconnect = glade_xml_get_widget(xml, "btDisconnect");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationJoin"));
+	m_wAddBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btAddBuddy"));
+	m_wDeleteBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btDeleteBuddy"));
+	m_wRefresh = GTK_WIDGET(gtk_builder_get_object(builder, "btRefresh"));
+	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
+	m_wConnect = GTK_WIDGET(gtk_builder_get_object(builder, "btConnect"));
+	m_wDisconnect = GTK_WIDGET(gtk_builder_get_object(builder, "btDisconnect"));
 	
 	_refreshAccounts();
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();

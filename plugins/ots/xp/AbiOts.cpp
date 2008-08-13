@@ -65,8 +65,8 @@ static int getSummaryPercent(void)
   GtkBuilder* builder = gtk_builder_new();
   gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
   
-  GtkWidget * window = glade_xml_get_widget(xml, "otsDlg");
-  GtkWidget * spin = glade_xml_get_widget(xml, "summarySpin");
+  GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));
+  GtkWidget * spin = GTK_WIDGET(gtk_builder_get_object(builder, "summarySpin"));
 
   abiRunModalDialog (GTK_DIALOG(window), XAP_App::getApp()->getLastFocussedFrame () , 
 		     NULL, GTK_RESPONSE_CLOSE, false);

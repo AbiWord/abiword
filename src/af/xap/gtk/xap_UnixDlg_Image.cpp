@@ -463,15 +463,15 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Image");
-	m_wHeightSpin = glade_xml_get_widget(xml, "sbHeight");
-	m_wHeightEntry = glade_xml_get_widget(xml, "edHeight");
-	m_wWidthSpin = glade_xml_get_widget(xml, "sbWidth");
-	m_wWidthEntry = glade_xml_get_widget(xml, "edWidth");
-	m_wAspectCheck = glade_xml_get_widget(xml, "cbAspect");
+	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
+	m_wHeightSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbHeight"));
+	m_wHeightEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edHeight"));
+	m_wWidthSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbWidth"));
+	m_wWidthEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edWidth"));
+	m_wAspectCheck = GTK_WIDGET(gtk_builder_get_object(builder, "cbAspect"));
 
-	m_wTitleEntry = glade_xml_get_widget(xml, "edTitle");
-	m_wDescriptionEntry = glade_xml_get_widget(xml, "edDescription");
+	m_wTitleEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edTitle"));
+	m_wDescriptionEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edDescription"));
 
 	m_bAspect = getPreserveAspect();
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
@@ -512,20 +512,20 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeButton(glade_xml_get_widget(xml,"rbSquareWrap"), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
 	localizeButton(glade_xml_get_widget(xml,"rbTightWrap"), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
 
-	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
-	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
-	m_wrbNone = glade_xml_get_widget(xml,"rbNone");
-	m_wrbWrappedRight = glade_xml_get_widget(xml,"rbWrappedRight");
-	m_wrbWrappedLeft = glade_xml_get_widget(xml,"rbWrappedLeft");
-	m_wrbWrappedBoth = glade_xml_get_widget(xml,"rbWrappedBoth");
+	m_wPlaceTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbPlacement"));
+	m_wrbInLine = GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine"));
+	m_wrbNone = GTK_WIDGET(gtk_builder_get_object(builder, "rbNone"));
+	m_wrbWrappedRight = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight"));
+	m_wrbWrappedLeft = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedLeft"));
+	m_wrbWrappedBoth = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedBoth"));
 
-	m_wrbPlaceParagraph = glade_xml_get_widget(xml,"rbPlaceParagraph");
-	m_wrbPlaceColumn = glade_xml_get_widget(xml,"rbPlaceColumn");
-	m_wrbPlacePage = glade_xml_get_widget(xml,"rbPlacePage");
+	m_wrbPlaceParagraph = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceParagraph"));
+	m_wrbPlaceColumn = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn"));
+	m_wrbPlacePage = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage"));
 
-	m_wWrapTable = glade_xml_get_widget(xml,"tbWrapTable");
-	m_wrbSquareWrap = glade_xml_get_widget(xml,"rbSquareWrap");
-	m_wrbTightWrap = glade_xml_get_widget(xml,"rbTightWrap");
+	m_wWrapTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbWrapTable"));
+	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
+	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
 
 // the check button already contains a label. We have to remove this

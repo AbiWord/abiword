@@ -419,18 +419,18 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	if (!xml)
 		return;
 
-	m_wDialog = glade_xml_get_widget(xml, "ap_UnixDialog_Goto");
-	m_lbPage = glade_xml_get_widget(xml, "lbPage");
-	m_lbLine = glade_xml_get_widget(xml, "lbLine");
-	m_lbPage = glade_xml_get_widget(xml, "lbPage");
-	m_lbBookmarks = glade_xml_get_widget(xml, "lbBookmarks");
-	m_sbPage = glade_xml_get_widget(xml, "sbPage");
-	m_sbLine = glade_xml_get_widget(xml, "sbLine");
-	m_lvBookmarks = glade_xml_get_widget(xml, "lvBookmarks");
-	m_btJump = glade_xml_get_widget(xml, "btJump");
-	m_btPrev = glade_xml_get_widget(xml, "btPrev");
-	m_btNext = glade_xml_get_widget(xml, "btNext");
-	m_btClose = glade_xml_get_widget(xml, "btClose");
+	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
+	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
+	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
+	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
+	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
+	m_sbPage = GTK_WIDGET(gtk_builder_get_object(builder, "sbPage"));
+	m_sbLine = GTK_WIDGET(gtk_builder_get_object(builder, "sbLine"));
+	m_lvBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lvBookmarks"));
+	m_btJump = GTK_WIDGET(gtk_builder_get_object(builder, "btJump"));
+	m_btPrev = GTK_WIDGET(gtk_builder_get_object(builder, "btPrev"));
+	m_btNext = GTK_WIDGET(gtk_builder_get_object(builder, "btNext"));
+	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 
 	// localise	

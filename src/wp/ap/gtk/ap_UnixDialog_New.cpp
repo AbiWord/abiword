@@ -311,14 +311,14 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_mainWindow = glade_xml_get_widget(xml, "ap_UnixDialog_New");
+	m_mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_New"));
 	gtk_window_set_title(GTK_WINDOW(m_mainWindow), 
 						 pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
 
-	m_radioNew = glade_xml_get_widget(xml, "rdTemplate");
-	m_radioExisting = glade_xml_get_widget(xml, "rdOpen");
-	m_buttonFilename = glade_xml_get_widget(xml, "btFile");
-	m_choicesList = glade_xml_get_widget(xml, "tvTemplates");
+	m_radioNew = GTK_WIDGET(gtk_builder_get_object(builder, "rdTemplate"));
+	m_radioExisting = GTK_WIDGET(gtk_builder_get_object(builder, "rdOpen"));
+	m_buttonFilename = GTK_WIDGET(gtk_builder_get_object(builder, "btFile"));
+	m_choicesList = GTK_WIDGET(gtk_builder_get_object(builder, "tvTemplates"));
 
 	localizeButton(m_radioNew, pSS, AP_STRING_ID_DLG_NEW_Create);
 	localizeButton(m_radioExisting, pSS, AP_STRING_ID_DLG_NEW_Open);

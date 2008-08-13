@@ -137,20 +137,20 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_MetaData");
-	m_entryTitle = glade_xml_get_widget(xml, "enTitle");
-	m_entrySubject = glade_xml_get_widget(xml, "enSubject");
-	m_entryAuthor = glade_xml_get_widget(xml, "enAuthor");
-	m_entryPublisher = glade_xml_get_widget(xml, "enPublisher");
-	m_entryCoAuthor = glade_xml_get_widget(xml, "enContributors");
-	m_entryCategory = glade_xml_get_widget(xml, "enCategory");
-	m_entryKeywords = glade_xml_get_widget(xml, "enKeywords");
-	m_entryLanguages = glade_xml_get_widget(xml, "enLanguages");
-	m_textDescription = glade_xml_get_widget(xml, "tvDescription");
-	m_entrySource = glade_xml_get_widget(xml, "enSource");
-	m_entryRelation = glade_xml_get_widget(xml, "enRelation");
-	m_entryCoverage = glade_xml_get_widget(xml, "enCoverage");
-	m_entryRights = glade_xml_get_widget(xml, "enRights");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_MetaData"));
+	m_entryTitle = GTK_WIDGET(gtk_builder_get_object(builder, "enTitle"));
+	m_entrySubject = GTK_WIDGET(gtk_builder_get_object(builder, "enSubject"));
+	m_entryAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enAuthor"));
+	m_entryPublisher = GTK_WIDGET(gtk_builder_get_object(builder, "enPublisher"));
+	m_entryCoAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enContributors"));
+	m_entryCategory = GTK_WIDGET(gtk_builder_get_object(builder, "enCategory"));
+	m_entryKeywords = GTK_WIDGET(gtk_builder_get_object(builder, "enKeywords"));
+	m_entryLanguages = GTK_WIDGET(gtk_builder_get_object(builder, "enLanguages"));
+	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
+	m_entrySource = GTK_WIDGET(gtk_builder_get_object(builder, "enSource"));
+	m_entryRelation = GTK_WIDGET(gtk_builder_get_object(builder, "enRelation"));
+	m_entryCoverage = GTK_WIDGET(gtk_builder_get_object(builder, "enCoverage"));
+	m_entryRights = GTK_WIDGET(gtk_builder_get_object(builder, "enRights"));
 	
 	// set the dialog title
 	UT_UTF8String s;

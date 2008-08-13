@@ -135,13 +135,13 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_ListDocuments");
-	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_ListDocuments"));
+	m_listWindows = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableDocuments"));
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), _getTitle());
-	w = glade_xml_get_widget(xml, "lbAvailableDocuments");
+	w = GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments"));
 	gtk_label_set_text(GTK_LABEL(w), _getHeading());
-	w = glade_xml_get_widget(xml, "btView");
+	w = GTK_WIDGET(gtk_builder_get_object(builder, "btView"));
 
 	// add a column to our TreeViews
 

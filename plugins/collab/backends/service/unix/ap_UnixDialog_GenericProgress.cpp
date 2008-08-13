@@ -94,9 +94,9 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_GenericProgress");
-	m_wCancel = glade_xml_get_widget(xml, "btCancel");
-	m_wProgress = glade_xml_get_widget(xml, "pbProgress");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_GenericProgress"));
+	m_wCancel = GTK_WIDGET(gtk_builder_get_object(builder, "btCancel"));
+	m_wProgress = GTK_WIDGET(gtk_builder_get_object(builder, "pbProgress"));
 
 	// set the dialog title
 	abiDialogSetTitle(window, getTitle().utf8_str());

@@ -352,12 +352,12 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_PluginManager");
-	m_list = glade_xml_get_widget(xml, "tvPlugins");
-	m_name = glade_xml_get_widget(xml, "lbPluginName");
-	m_author = glade_xml_get_widget(xml, "lbPluginAuthor");
-	m_version = glade_xml_get_widget(xml, "lbPluginVersion");
-	m_desc = glade_xml_get_widget(xml, "lbPluginDescription");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_PluginManager"));
+	m_list = GTK_WIDGET(gtk_builder_get_object(builder, "tvPlugins"));
+	m_name = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginName"));
+	m_author = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginAuthor"));
+	m_version = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginVersion"));
+	m_desc = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginDescription"));
 
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
 
@@ -368,7 +368,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	localizeLabel(glade_xml_get_widget(xml, "lbAuthorLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
 	localizeLabel(glade_xml_get_widget(xml, "lbVersionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
-	GtkWidget * btInstall = glade_xml_get_widget(xml, "btInstall");
+	GtkWidget * btInstall = GTK_WIDGET(gtk_builder_get_object(builder, "btInstall"));
 
 	localizeButton(btInstall, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
 

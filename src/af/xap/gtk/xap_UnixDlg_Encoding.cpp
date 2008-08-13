@@ -132,8 +132,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Encoding");
-	m_listEncodings = glade_xml_get_widget(xml, "encodingList");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Encoding"));
+	m_listEncodings = GTK_WIDGET(gtk_builder_get_object(builder, "encodingList"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle,s);

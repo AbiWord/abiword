@@ -141,8 +141,8 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Insert_DateTime");
-	m_tvFormats = glade_xml_get_widget(xml, "tvFormats");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Insert_DateTime"));
+	m_tvFormats = GTK_WIDGET(gtk_builder_get_object(builder, "tvFormats"));
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		

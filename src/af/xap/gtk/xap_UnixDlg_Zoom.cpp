@@ -211,15 +211,15 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "xap_UnixDlg_Zoom");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Zoom"));
 	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
-	m_radio200 = glade_xml_get_widget(xml, "rbPercent200");
-	m_radio100 = glade_xml_get_widget(xml, "rbPercent100");
-	m_radio75 = glade_xml_get_widget(xml, "rbPercent75");
-	m_radioPageWidth = glade_xml_get_widget(xml, "rbPageWidth");
-	m_radioWholePage = glade_xml_get_widget(xml, "rbWholePage");
-	m_radioPercent = glade_xml_get_widget(xml, "rbPercent");
-	m_spinPercent = glade_xml_get_widget(xml, "sbPercent");
+	m_radio200 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent200"));
+	m_radio100 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent100"));
+	m_radio75 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent75"));
+	m_radioPageWidth = GTK_WIDGET(gtk_builder_get_object(builder, "rbPageWidth"));
+	m_radioWholePage = GTK_WIDGET(gtk_builder_get_object(builder, "rbWholePage"));
+	m_radioPercent = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent"));
+	m_spinPercent = GTK_WIDGET(gtk_builder_get_object(builder, "sbPercent"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
 
 	// set the dialog title

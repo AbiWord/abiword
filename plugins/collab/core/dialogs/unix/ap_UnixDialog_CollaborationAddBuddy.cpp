@@ -92,10 +92,10 @@ GtkWidget * AP_UnixDialog_CollaborationAddBuddy::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationAddBuddy");
-	m_wOk = glade_xml_get_widget(xml, "btOK");
-	m_wName = glade_xml_get_widget(xml, "edName");
-	m_wAccount = glade_xml_get_widget(xml, "cbAccount");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationAddBuddy"));
+	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
+	m_wName = GTK_WIDGET(gtk_builder_get_object(builder, "edName"));
+	m_wAccount = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccount"));
 
 	// set the dialog title
 	// TODO

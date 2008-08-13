@@ -139,8 +139,8 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_WindowMore");
-	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_WindowMore"));
+	m_listWindows = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableDocuments"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows,s);

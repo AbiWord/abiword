@@ -255,17 +255,17 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist");
-	m_wStyleListContainer  = glade_xml_get_widget(xml,"TreeViewContainer");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Stylist"));
+	m_wStyleListContainer  = GTK_WIDGET(gtk_builder_get_object(builder, "TreeViewContainer"));
 	if(m_bIsModal)
 	{
-		m_wApply = glade_xml_get_widget(xml,"btApply");
+		m_wApply = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	}
 	else
 	{
-		m_wOK = glade_xml_get_widget(xml,"btOK");
+		m_wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	}
-	m_wClose = glade_xml_get_widget(xml,"btClose");
+	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 	// set the dialog title
 	UT_UTF8String s;

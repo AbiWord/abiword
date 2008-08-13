@@ -447,7 +447,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_FormatFootnotes");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFootnotes"));
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
@@ -481,14 +481,14 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
 	
 		
-	m_wFootnotesStyleMenu = glade_xml_get_widget(xml, "omFootnoteStyle");
+	m_wFootnotesStyleMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omFootnoteStyle"));
 	UT_ASSERT(m_wFootnotesStyleMenu );
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wFootnotesStyleMenu), 
 							 abiGtkMenuFromCStrVector(*footnoteTypeList, G_CALLBACK(s_menu_item_footnote_style), 
 													  reinterpret_cast<gpointer>(this)));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wFootnotesStyleMenu), 0);
 
-	m_wEndnotesStyleMenu = glade_xml_get_widget(xml, "omEndnoteStyle");
+	m_wEndnotesStyleMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omEndnoteStyle"));
 	UT_ASSERT(m_wEndnotesStyleMenu);
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wEndnotesStyleMenu), 
 							 abiGtkMenuFromCStrVector(*footnoteTypeList, G_CALLBACK(s_menu_item_endnote_style), 
@@ -498,7 +498,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Footnotes number menu
 //
-	m_wFootnoteNumberingMenu = glade_xml_get_widget(xml, "omNumbering");
+	m_wFootnoteNumberingMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
 	GtkWidget * wMenuFoot = gtk_menu_new ();
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
@@ -522,7 +522,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Endnotes placement menu
 //
-	m_wEndnotesPlaceMenu = glade_xml_get_widget(xml, "omEndnotePlacement");
+	m_wEndnotesPlaceMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
 	GtkWidget * wMenuPlace = gtk_menu_new();
 
@@ -541,21 +541,21 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Now grab widgets for the remaining controls.
 //
-	m_wEndnotesRestartOnSection = glade_xml_get_widget(xml, "cbSectionRestart");
+	m_wEndnotesRestartOnSection = GTK_WIDGET(gtk_builder_get_object(builder, "cbSectionRestart"));
 	UT_ASSERT(m_wEndnotesRestartOnSection );
 // Endnote Initial Value Control
 
-	m_wEndnotesInitialValText = glade_xml_get_widget(xml, "endSpinValueText");
+	m_wEndnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "endSpinValueText"));
 	UT_ASSERT(m_wEndnotesInitialValText );
-	m_wEndnoteSpin = glade_xml_get_widget(xml, "endnoteSpin");
+	m_wEndnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "endnoteSpin"));
 	m_oEndnoteSpinAdj = GTK_OBJECT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wEndnoteSpin)));
 
 // Footnote Initial Value Control
 
-	m_wFootnoteSpin = glade_xml_get_widget(xml, "footnoteSpin");
+	m_wFootnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "footnoteSpin"));
 	UT_ASSERT(m_wFootnoteSpin );
 	m_oFootnoteSpinAdj = GTK_OBJECT(gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wFootnoteSpin)));
-	m_wFootnotesInitialValText = glade_xml_get_widget(xml, "footSpinValueText");
+	m_wFootnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "footSpinValueText"));
 	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();
 	refreshVals();

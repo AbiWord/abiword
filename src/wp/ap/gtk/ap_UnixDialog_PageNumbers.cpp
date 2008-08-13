@@ -171,8 +171,8 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_PageNumbers");
-	m_previewArea = glade_xml_get_widget(xml, "daPreview");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_PageNumbers"));
+	m_previewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
 	// set the dialog title
 	UT_UTF8String s;
@@ -186,25 +186,25 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPosition"), pSS, AP_STRING_ID_DLG_PageNumbers_Position_No_Colon);
 	
-	GtkWidget * radioHeader = glade_xml_get_widget(xml, "rbHeader");
+	GtkWidget * radioHeader = GTK_WIDGET(gtk_builder_get_object(builder, "rbHeader"));
 	localizeButton(radioHeader, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
 	g_object_set_data(G_OBJECT(radioHeader), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));	
 	
-	GtkWidget * radioFooter = glade_xml_get_widget(xml, "rbFooter");
+	GtkWidget * radioFooter = GTK_WIDGET(gtk_builder_get_object(builder, "rbFooter"));
 	localizeButton(glade_xml_get_widget(xml, "rbFooter"), pSS, AP_STRING_ID_DLG_PageNumbers_Footer);	
 	g_object_set_data(G_OBJECT(radioFooter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon);
 	
-	GtkWidget * radioLeft =	glade_xml_get_widget(xml, "rbLeft");
+	GtkWidget * radioLeft =	GTK_WIDGET(gtk_builder_get_object(builder, "rbLeft"));
 	localizeButton(radioLeft, pSS, AP_STRING_ID_DLG_PageNumbers_Left);	
 	g_object_set_data(G_OBJECT(radioLeft), "user_data",  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
 	
-	GtkWidget * radioCenter = glade_xml_get_widget(xml, "rbCenter");
+	GtkWidget * radioCenter = GTK_WIDGET(gtk_builder_get_object(builder, "rbCenter"));
 	localizeButton(radioCenter, pSS, AP_STRING_ID_DLG_PageNumbers_Center);	
 	g_object_set_data(G_OBJECT(radioCenter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
 
-	GtkWidget * radioRight = glade_xml_get_widget(xml, "rbRight");
+	GtkWidget * radioRight = GTK_WIDGET(gtk_builder_get_object(builder, "rbRight"));
 	localizeButton(radioRight, pSS, AP_STRING_ID_DLG_PageNumbers_Right);	
 	g_object_set_data(G_OBJECT(radioRight), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
 	

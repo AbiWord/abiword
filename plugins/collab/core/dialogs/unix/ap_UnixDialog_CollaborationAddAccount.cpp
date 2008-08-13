@@ -92,10 +92,10 @@ GtkWidget * AP_UnixDialog_CollaborationAddAccount::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationAddAccount");
-	m_wAccountType = glade_xml_get_widget(xml, "cbAccountType");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationAddAccount"));
+	m_wAccountType = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccountType"));
 	m_wEmbeddingParent = GTK_VBOX(glade_xml_get_widget(xml, "vbWidgetEmbedding"));
-	m_wOk = glade_xml_get_widget(xml, "btOK");
+	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
 	// set the dialog title
 	// TODO

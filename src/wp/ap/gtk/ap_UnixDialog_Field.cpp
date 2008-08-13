@@ -290,10 +290,10 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Field");
-	m_listTypes = glade_xml_get_widget(xml, "tvTypes");
-	m_listFields = glade_xml_get_widget(xml, "tvFields");
-	m_entryParam = glade_xml_get_widget(xml, "edExtraParameters");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Field"));
+	m_listTypes = GTK_WIDGET(gtk_builder_get_object(builder, "tvTypes"));
+	m_listFields = GTK_WIDGET(gtk_builder_get_object(builder, "tvFields"));
+	m_entryParam = GTK_WIDGET(gtk_builder_get_object(builder, "edExtraParameters"));
 	
 	// set the single selection mode for the TreeViews
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listTypes)), GTK_SELECTION_SINGLE);	

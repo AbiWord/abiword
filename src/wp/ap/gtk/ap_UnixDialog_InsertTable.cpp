@@ -115,11 +115,11 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_InsertTable");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_InsertTable"));
 	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbAutoColSize") ));
-	m_pColSpin = glade_xml_get_widget(xml, "sbNumCols");
-	m_pRowSpin = glade_xml_get_widget(xml, "sbNumRows");
-	m_pColWidthSpin = glade_xml_get_widget(xml, "sbColSize");
+	m_pColSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbNumCols"));
+	m_pRowSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbNumRows"));
+	m_pColWidthSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbColSize"));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColSpin), getNumCols());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pRowSpin), getNumRows());
 

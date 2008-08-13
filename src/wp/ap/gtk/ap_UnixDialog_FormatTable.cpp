@@ -440,11 +440,11 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_FormatTable");
-	m_wLineTop = glade_xml_get_widget(xml, "tbBorderTop");
-	m_wLineLeft = glade_xml_get_widget(xml, "tbBorderLeft");
-	m_wLineRight = glade_xml_get_widget(xml, "tbBorderRight");
-	m_wLineBottom = glade_xml_get_widget(xml, "tbBorderBottom");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatTable"));
+	m_wLineTop = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderTop"));
+	m_wLineLeft = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
+	m_wLineRight = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
+	m_wLineBottom = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 	
 	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
 	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
@@ -458,7 +458,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
 	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
 	
-	m_wPreviewArea = glade_xml_get_widget(xml, "daPreview");
+	m_wPreviewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
 	// set the dialog title
 	ConstructWindowName();
@@ -482,8 +482,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 //	add the buttons for background image to the dialog.
 
-	m_wSelectImageButton = glade_xml_get_widget(xml, "btSelectImage");
-	m_wNoImageButton = glade_xml_get_widget(xml, "btNoImageBackground");
+	m_wSelectImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSelectImage"));
+	m_wNoImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btNoImageBackground"));
 	
 	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatTable_SelectImage);
 	
@@ -493,18 +493,18 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 	localizeLabel(glade_xml_get_widget(xml, "lbApplyTo"), pSS, AP_STRING_ID_DLG_FormatTable_Apply_To);
 
-	m_wBorderColorButton = glade_xml_get_widget(xml, "cbtBorderColorButton");
-	m_wBackgroundColorButton = glade_xml_get_widget(xml, "cbtBackgroundColorButton");
+	m_wBorderColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBorderColorButton"));
+	m_wBackgroundColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBackgroundColorButton"));
 
 //
 // Now the Border Thickness Option menu
 // 
-	m_wBorderThickness = glade_xml_get_widget(xml, "omBorderThickness");
+	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
 
 	// add the options to the "Apply to" menu
 	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
 	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
-	m_wApplyToMenu = glade_xml_get_widget(xml, "omApplyTo");
+	m_wApplyToMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omApplyTo"));
 	GtkWidget * menu = gtk_menu_new();
 	
 	gchar * unixstr = NULL;	// used for conversions
@@ -535,8 +535,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 
 	// add the apply and ok buttons to the dialog
-	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
-	m_wApplyButton = glade_xml_get_widget(xml, "btApply");
+	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
+	m_wApplyButton = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	
 	return window;
 }

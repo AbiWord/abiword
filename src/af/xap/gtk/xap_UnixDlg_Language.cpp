@@ -112,10 +112,10 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
-	m_pLanguageList = glade_xml_get_widget(xml, "tvAvailableLanguages");
-	m_lbDefaultLanguage = glade_xml_get_widget(xml, "lbDefaultLanguage");
-	m_cbDefaultLanguage = glade_xml_get_widget(xml, "cbDefaultLanguage");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Language"));
+	m_pLanguageList = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableLanguages"));
+	m_lbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "lbDefaultLanguage"));
+	m_cbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "cbDefaultLanguage"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);

@@ -85,9 +85,9 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_GenericInput");
-	m_wOk = glade_xml_get_widget(xml, "btOK");
-	m_wInput = glade_xml_get_widget(xml, "edInput");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_GenericInput"));
+	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
+	m_wInput = GTK_WIDGET(gtk_builder_get_object(builder, "edInput"));
 
 	// set the dialog title
 	abiDialogSetTitle(window, getTitle().utf8_str());

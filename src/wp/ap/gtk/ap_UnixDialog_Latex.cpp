@@ -178,10 +178,10 @@ void AP_UnixDialog_Latex::constructDialog(void)
 
         // Update our member variables with the important widgets that
         // might need to be queried or altered later
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Latex");
-	m_wClose = glade_xml_get_widget(xml, "wClose");
-	m_wInsert =  glade_xml_get_widget(xml, "wInsert");
-	m_wText = glade_xml_get_widget(xml, "wTextView");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Latex"));
+	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "wClose"));
+	m_wInsert =  GTK_WIDGET(gtk_builder_get_object(builder, "wInsert"));
+	m_wText = GTK_WIDGET(gtk_builder_get_object(builder, "wTextView"));
 
 	// localize the strings in our dialog, and set tags for some widgets
 
