@@ -55,7 +55,7 @@
 #define WIDGET_MENU_OPTION_PTR  "menuoptionptr"
 #define WIDGET_MENU_VALUE_TAG  "value"
 
-#define WID(widget)   glade_xml_get_widget(xml,widget)
+#define WID(widget)   GTK_WIDGET(gtk_builder_get_object(builder, widget))
 
 /*****************************************************************/
 
@@ -170,9 +170,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     // get the path where our UI file is located
     std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options_ColorSel.xml";
 
-    GladeXML *xml = abiDialogNewFromXML ( glade_path.c_str() );
-    if ( !xml )
-        return;
+    // load the dialog from the UI file
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -180,7 +180,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     colorsel = WID ( "csColorSel" );
 
-    // quiet hacky. Fetch defaults button from colsel glade file and store it inside
+    // quiet hacky. Fetch defaults button from colsel GtkBuilder UI file and store it inside
     // the main dialog, because we'll need this for sensitivity toggling
     m_buttonColSel_Defaults = WID ( "btnDefaults" );
 
@@ -276,7 +276,7 @@ void AP_UnixDialog_Options::_setupUnitMenu ( GtkWidget *optionmenu, const XAP_St
     gtk_option_menu_set_menu ( GTK_OPTION_MENU ( optionmenu ), menu );
 }
 
-void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
+void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 {
     const XAP_StringSet *pSS = m_pApp->getStringSet();
     //const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
@@ -524,12 +524,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     GtkBuilder* builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-    _constructWindowContents ( xml );
+    _constructWindowContents ( builder );
 
     // create the accelerators from &'s
     // createLabelAccelerators(mainWindow);
 
-    mainWindow = glade_xml_get_widget ( xml,"ap_UnixDialog_Options" );
+    mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
 
     //////////////////////////////////////////////////////////////////////
     // the control buttons
