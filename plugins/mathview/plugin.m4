@@ -6,7 +6,20 @@ if test "$enable_mathview" != ""; then
 
 PKG_CHECK_EXISTS([ $mathview_pkgs ], 
 [
-	mathview_deps="yes"
+	AC_LANG(C++)
+	AC_CHECK_HEADER(hash_map,
+	[
+		mathview_deps="yes"
+		MATHVIEW_CFLAGS="-DHAVE_HASH_MAP $MATHVIEW_CFLAGS"
+	], [
+		AC_CHECK_HEADER(ext/hash_map,
+		[
+			mathview_deps="yes"
+			MATHVIEW_CFLAGS="-DHAVE_EXT_HASH_MAP $MATHVIEW_CFLAGS"
+		])
+	])
+	AC_LANG(C)
+
 ], [
 	test "$enable_mathview" == "auto" && AC_MSG_WARN([mathview plugin: dependencies not satisfied - $mathview_pkgs])
 ])
