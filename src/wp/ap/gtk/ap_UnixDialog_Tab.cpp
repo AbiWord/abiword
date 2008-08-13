@@ -227,7 +227,6 @@ void AP_UnixDialog_Tab::runModal (XAP_Frame *pFrame)
 	m_wDialog = NULL;
 }
 
-//! Load dialog from glade.
 GtkWidget * 
 AP_UnixDialog_Tab::_constructWindow ()
 {
