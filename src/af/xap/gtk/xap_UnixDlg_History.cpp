@@ -123,12 +123,12 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(m_pXML, "xap_UnixDlg_History");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_History"));
 	UT_ASSERT(m_windowMain);
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_History_WindowLabel,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	m_wListWindow = glade_xml_get_widget(m_pXML, "wListWindow");
+	m_wListWindow = GTK_WIDGET(gtk_builder_get_object(builder, "wListWindow"));
 
 	_fillHistoryTree();
 
@@ -202,20 +202,20 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
 void XAP_UnixDialog_History::_populateWindowData(void)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocumentDetails"), pSS, XAP_STRING_ID_DLG_History_DocumentDetails);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocumentName"), getHeaderLabel(0));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocNameVal"), getHeaderValue(0));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbVersion"), getHeaderLabel(1));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbVersionVal"), getHeaderValue(1));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbCreated"), getHeaderLabel(2));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbCreatedVal"), getHeaderValue(2));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbSaved"), getHeaderLabel(3));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbSavedVal"), getHeaderValue(3));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbEditTime"), getHeaderLabel(4));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbEditTimeVal"), getHeaderValue(4));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbIdentifier"), getHeaderLabel(5));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbIdentifierVal"), getHeaderValue(5));
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbVersionHistory"), getListTitle());
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentDetails")), pSS, XAP_STRING_ID_DLG_History_DocumentDetails);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentName")), getHeaderLabel(0));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocNameVal")), getHeaderValue(0));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersion")), getHeaderLabel(1));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionVal")), getHeaderValue(1));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreated")), getHeaderLabel(2));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreatedVal")), getHeaderValue(2));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSaved")), getHeaderLabel(3));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSavedVal")), getHeaderValue(3));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTime")), getHeaderLabel(4));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTimeVal")), getHeaderValue(4));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifier")), getHeaderLabel(5));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifierVal")), getHeaderValue(5));
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionHistory")), getListTitle());
 
 }
 

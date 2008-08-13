@@ -235,7 +235,7 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	m_labelTitle   = GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle"));
 
 	m_labelLabelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWords"));
- 	m_labelWNFCount     = glade_xml_get_widget(xml ,"lbWordsNoFootnotes");
+ 	m_labelWNFCount     = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsNoFootnotes"));
 	m_labelLabelPCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraphs"));
 	m_labelLabelCCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersSpaces"));
 	m_labelLabelCNCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersNoSpaces"));

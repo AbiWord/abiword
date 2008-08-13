@@ -86,7 +86,7 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(m_pXML, "xap_UnixDlg_DocComparison");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_DocComparison"));
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_DocComparison_WindowLabel,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
@@ -98,18 +98,18 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 void XAP_UnixDialog_DocComparison::_populateWindowData(void)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocCompared"), pSS, XAP_STRING_ID_DLG_DocComparison_DocsCompared);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument1"), getPath1());
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument2"), getPath2());
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbResults"), pSS, XAP_STRING_ID_DLG_DocComparison_Results);
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbRelationship"), pSS, XAP_STRING_ID_DLG_DocComparison_Relationship);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbRelationshipRes"), getResultValue(0));
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbContent"), pSS, XAP_STRING_ID_DLG_DocComparison_Content);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbContentRes"), getResultValue(1));
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbFormat"), pSS, XAP_STRING_ID_DLG_DocComparison_Fmt);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbFormatRes"), getResultValue(2));
-	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbStyles"), pSS, XAP_STRING_ID_DLG_DocComparison_Styles);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbStylesRes"),getResultValue(3));
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocCompared")), pSS, XAP_STRING_ID_DLG_DocComparison_DocsCompared);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocument1")), getPath1());
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocument2")), getPath2());
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbResults")), pSS, XAP_STRING_ID_DLG_DocComparison_Results);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbRelationship")), pSS, XAP_STRING_ID_DLG_DocComparison_Relationship);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbRelationshipRes")), getResultValue(0));
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbContent")), pSS, XAP_STRING_ID_DLG_DocComparison_Content);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbContentRes")), getResultValue(1));
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbFormat")), pSS, XAP_STRING_ID_DLG_DocComparison_Fmt);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbFormatRes")), getResultValue(2));
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbStyles")), pSS, XAP_STRING_ID_DLG_DocComparison_Styles);
+	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbStylesRes")),getResultValue(3));
 }
 
 
