@@ -446,7 +446,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	m_wLineRight = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
 	m_wLineBottom = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 	
-	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
+	// the toggle buttons created by GtkBuilder already contain a label, remove that, so we can add a pixmap as a child
 	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
 	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
 	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));

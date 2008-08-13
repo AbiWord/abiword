@@ -501,11 +501,11 @@ AP_UnixDialog_Goto::updateWindow ()
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
-	// pages, page increment of 10 is pretty arbitrary (set in glade)
+	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
-	// lines, line increment of 10 is pretty arbitrary (set in glade)
+	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentLine = 1; /* FIXME get current line */
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
 	
