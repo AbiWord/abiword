@@ -45,7 +45,7 @@ cocoa_pkgs="$enchant_req"
 
 # gtk deps
 pangoxft_req='pangoxft >= 1.2.0'
-gtk_req='gtk+-2.0 >= 2.6.0'
+gtk_req='gtk+-2.0 >= 2.12.0'
 gtk_pkgs="
   ${pangoxft_req}
   ${gtk_req}
