@@ -66,8 +66,6 @@ void XAP_UnixDialog_DocComparison::runModal(XAP_Frame * pFrame)
 	GtkWidget * cf = constructWindow();    
 	UT_return_if_fail(cf);	
 	
-	_populateWindowData();  
-
 	abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE,false );
 	abiDestroyWidget(cf);
 }
@@ -90,11 +88,13 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_DocComparison_WindowLabel,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
   
+	_populateWindowData(builder);
+
 	return m_windowMain;
 }
 
 
-void XAP_UnixDialog_DocComparison::_populateWindowData(void)
+void XAP_UnixDialog_DocComparison::_populateWindowData(GtkBuilder* builder)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocCompared")), pSS, XAP_STRING_ID_DLG_DocComparison_DocsCompared);

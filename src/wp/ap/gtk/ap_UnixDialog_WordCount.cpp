@@ -221,8 +221,6 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-		return;
-	}
 
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_WordCount"));
 	m_labelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsVal"));

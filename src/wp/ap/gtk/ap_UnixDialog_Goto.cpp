@@ -411,13 +411,13 @@ void
 AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
 	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Break.xml";
 
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-	if (!xml)
-		return;
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
 	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));

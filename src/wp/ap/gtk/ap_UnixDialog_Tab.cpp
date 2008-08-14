@@ -171,6 +171,7 @@ AP_UnixDialog_Tab::static_constructor (XAP_DialogFactory *pDlgFactory,
 AP_UnixDialog_Tab::AP_UnixDialog_Tab (XAP_DialogFactory *pDlgFactory,
 									  XAP_Dialog_Id 	 id)
   : AP_Dialog_Tab  (pDlgFactory, id),
+	m_pBuilder(NULL),
 	m_wDialog	   (NULL),
 	m_sbDefaultTab (NULL),
 	m_exUserTabs   (NULL),
@@ -233,10 +234,10 @@ AP_UnixDialog_Tab::_constructWindow ()
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Tab.xml";
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Tab"));
-	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(builder, "exUserTabs"));
+	m_pBuilder = gtk_builder_new();
+	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
+	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "ap_UnixDialog_Tab"));
+	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "exUserTabs"));
 
 	// localise	
 	UT_UTF8String s;
@@ -244,26 +245,26 @@ AP_UnixDialog_Tab::_constructWindow ()
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_TabTitle, s);
 	gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
 	
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbPosition")), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbAlignment")), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbLeader")), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbPosition")), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbAlignment")), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbLeader")), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
 
 
 	// initialise
 
-	m_sbDefaultTab = GTK_WIDGET(gtk_builder_get_object(builder, "sbDefaultTab"));
+	m_sbDefaultTab = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "sbDefaultTab"));
 	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbDefaultTab), UT_getDimensionPrecisicion (m_dim));
  	// FIXME set max that fits on page gtk_spin_button_set_range (GTK_SPIN_BUTTON (m_sbDefaultTab),	0, ...);
 
-	m_btDelete = GTK_WIDGET(gtk_builder_get_object(builder, "btDelete"));
+	m_btDelete = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "btDelete"));
 
-	m_sbPosition = GTK_WIDGET(gtk_builder_get_object(builder, "sbPosition"));
+	m_sbPosition = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "sbPosition"));
 	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbPosition), UT_getDimensionPrecisicion (m_dim));
  	// FIXME set max that fits on page gtk_spin_button_set_range (GTK_SPIN_BUTTON (m_sbPosition),	0, ...);
 
-	GtkWidget *tblNew = GTK_WIDGET(gtk_builder_get_object(builder, "tblNew"));
+	GtkWidget *tblNew = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "tblNew"));
 
 	m_cobAlignment = gtk_combo_box_new_text ();
 	gtk_widget_show (m_cobAlignment);
@@ -336,7 +337,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 	
 
 	// liststore and -view
-	m_lvTabs = GTK_WIDGET(gtk_builder_get_object(builder, "lvTabs"));
+	m_lvTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lvTabs"));
 	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvTabs), GTK_TREE_MODEL (store));
 	g_object_unref (G_OBJECT (store));
@@ -355,7 +356,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 	m_LeaderMapping[FL_LEADER_THICKLINE] = NULL;
 	m_LeaderMapping[FL_LEADER_EQUALSIGN] = NULL;
 
-	_connectSignals (builder);
+	_connectSignals (m_pBuilder);
 
 	return wDialog;
 }
@@ -830,13 +831,13 @@ AP_UnixDialog_Tab::_lookupWidget (tControl id)
 			return m_cobLeader;
 
 		case id_BUTTON_SET:
-			return GTK_WIDGET(gtk_builder_get_object(builder, "btAdd"));
+			return GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "btAdd"));
 		case id_BUTTON_CLEAR:
 		case id_BUTTON_CLEAR_ALL:
-			return GTK_WIDGET(gtk_builder_get_object(builder, "btDelete"));
+			return GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "btDelete"));
 		case id_BUTTON_OK:
 		case id_BUTTON_CANCEL:
-			return GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
+			return GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "btClose"));
 		
 		default:
 			return NULL;
@@ -857,6 +858,6 @@ AP_UnixDialog_Tab::_controlEnable (tControl id,
 	// en/dis able tab modification buttons with delete button
 	// if we can delete we can also modify
 	if (id == id_BUTTON_CLEAR) {
-		gtk_widget_set_sensitive (GTK_WIDGET(gtk_builder_get_object(builder, "tblNew")), value);
+		gtk_widget_set_sensitive (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "tblNew")), value);
 	}
 }

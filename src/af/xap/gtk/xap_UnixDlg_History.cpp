@@ -91,8 +91,6 @@ void XAP_UnixDialog_History::runModal(XAP_Frame * pFrame)
 	// build the dialog
 	GtkWidget * cf = _constructWindow();    
 	UT_return_if_fail(cf);	
-	
-	_populateWindowData();  
 
 	switch (abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE,false ))
 	{
@@ -141,6 +139,9 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 						   static_cast<gpointer>(this));
 #endif
 	gtk_widget_show_all(m_wTreeView);	
+
+	_populateWindowData(builder);
+
 	return m_windowMain;
 }
 
@@ -198,7 +199,7 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
 
 }
 
-void XAP_UnixDialog_History::_populateWindowData(void)
+void XAP_UnixDialog_History::_populateWindowData(GtkBuilder* builder)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentDetails")), pSS, XAP_STRING_ID_DLG_History_DocumentDetails);

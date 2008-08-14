@@ -91,6 +91,7 @@ private:
 	void 	   _connectSignals 	 (GtkBuilder *builder);
 	UT_sint32  _getSelectedIndex (void);
 
+	GtkBuilder *m_pBuilder;
 	GtkWidget *m_wDialog;
 	GtkWidget *m_sbDefaultTab;
 	GtkWidget *m_exUserTabs;

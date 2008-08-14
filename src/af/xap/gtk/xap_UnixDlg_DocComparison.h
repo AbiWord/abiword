@@ -42,7 +42,7 @@ public:
 	
 private:
 
-	void _populateWindowData();
+	void _populateWindowData(GtkBuilder* builder);
 	GtkWidget *             constructWindow();
 	GtkWidget *             m_windowMain;
 };

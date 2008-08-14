@@ -484,7 +484,7 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 */
 const std::string& AP_UnixApp::getAbiSuiteAppUIDir(void) const
 {
-	static const std::string dir = std::string(getAbiSuiteLibDir()) + "/ui");
+	static const std::string dir = std::string(getAbiSuiteLibDir()) + "/ui";
 	return dir;
 }
 

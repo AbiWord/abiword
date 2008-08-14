@@ -63,7 +63,7 @@ public:
 									       const gchar * szKey, const gchar ** pszValue) const;
 	virtual const XAP_StringSet *	                getStringSet(void) const;
 	virtual const char *			        getAbiSuiteAppDir(void) const;
-	virtual const std::string&				getAbiSuiteAppUIDir(void) const;
+	virtual const std::string&			getAbiSuiteAppUIDir(void) const;
 
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
