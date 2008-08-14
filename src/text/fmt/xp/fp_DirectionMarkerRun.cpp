@@ -146,11 +146,11 @@ bool fp_DirectionMarkerRun::_deleteFollowingIfAtInsPoint() const
 }
 
 void fp_DirectionMarkerRun::mapXYToPosition(UT_sint32 x,
-											UT_sint32 y,
+											UT_sint32 /*y*/,
 											PT_DocPosition& pos,
 											bool& bBOL,
 											bool& bEOL,
-											bool & isTOC)
+											bool & /*isTOC*/)
 {
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();

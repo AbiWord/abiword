@@ -2604,7 +2604,9 @@ void fp_Line::layout(void)
 		clearScreenFromRunToEnd((UT_uint32)iIndxToEraseFrom);
 	}
 	else
+	{
 		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): nothing to clear\n", this));
+	}
 
 }
 
