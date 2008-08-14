@@ -1036,6 +1036,7 @@ UT_go_directory_create (char const *uri, int mode, GError **error)
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_make_directory (f, NULL, error);
 	g_object_unref (G_OBJECT (f));
+	UT_UNUSED(mode);
 	return res;
 #elif defined(GOFFICE_WITH_GNOME)
 	GnomeVFSResult vfs_result;
@@ -1878,6 +1879,8 @@ gchar
 	 */
 	return g_strdup ("text/plain");
 #else
+	UT_UNUSED(data);
+	UT_UNUSED(data_size);
 	return g_strdup ("application/octet-stream");
 #endif
 }
