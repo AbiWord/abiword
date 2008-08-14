@@ -4449,23 +4449,13 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szName = 0;
 	const char * szMimeType = 0;
 	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
-		
-	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-		{
-			k++;
-			if (szName == 0) continue;
-			if (strcmp (szDataID, szName) == 0) break;
-				
-			szName = 0;
-			szMimeType = 0;
-			pByteBuf = 0;
-		}
+
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+		return;
 	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
 		
 
@@ -4635,23 +4625,13 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szName = 0;
 	const char * szMimeType = 0;
 	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
-	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-	{
-		k++;
-		if (szName == 0) continue;
-		if (strcmp (szDataID, szName) == 0) break;
-
-		szName = 0;
-		szMimeType = 0;
-		pByteBuf = 0;
-	}
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+		return;
 	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
 
 	if (strcmp (szMimeType, "image/png") != 0)
@@ -4866,23 +4846,13 @@ void s_HTML_Listener::_handlePendingImages ()
 		const UT_UTF8String * saved_url = val;
 		UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
 
-		const char * szName = 0;
 		const char * szMimeType = 0;
 		const char ** pszMimeType = &szMimeType;
 
 		const UT_ByteBuf * pByteBuf = 0;
 
-		UT_uint32 k = 0;
-		while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-		{
-			k++;
-			if (szName == 0) continue;
-			if (strcmp (dataid, szName) == 0) break;
-
-			szName = 0;
-			szMimeType = 0;
-			pByteBuf = 0;
-		}
+		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+			return;
 		if (pByteBuf) // this should always be found, but just in case...
 		{
 			multiBoundary ();
