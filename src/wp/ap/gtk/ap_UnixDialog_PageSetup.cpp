@@ -488,8 +488,8 @@ AP_UnixDialog_PageSetup::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_PageSetup::AP_UnixDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id) 
 	: AP_Dialog_PageSetup (pDlgFactory, id),
-    m_PageSize(fp_PageSize::psLetter),
-    m_pBuilder(NULL)
+    m_pBuilder(NULL),
+    m_PageSize(fp_PageSize::psLetter)
 {
   // nada
 }
