@@ -39,11 +39,82 @@ AP_Dialog_EditStyle::~AP_Dialog_EditStyle(void)
 {
 }
 
+/*!
+ * Sets initial data about the target of our operations in this dialog.
+ * Called before runModal by the calling procedure.
+ */
 void AP_Dialog_EditStyle::setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle)
 {
 	m_sName=sName;
 	m_pStyle=pStyle;
+}
+
+/*!
+ * Takes the style pointed to by m_pStyle (m_sName) and creates the member
+ * vectors and other data. Used before populating the dialog at a platform level.
+ */
+bool AP_Dialog_EditStyle::_deconstructStyle()
+{
+
+	// DO NOT CHANGE without also changing the enum in the header and
+	// ap_stringid.h!
+	const gchar * fields [] = {"text-align", "text-indent",
+		"margin-left", "margin-right", "margin-top", "margin-bottom",
+		"line-height", "tabstops", "start-value", "list-delim", "list-style",
+		"list-decimal", "field-font", "field-color", "keep-together",
+		"keep-with-next", "orphans", "widows", "dom-dir", "nulldummy",
+		"bgcolor", "color", "font-family",
+		"font-size", "font-stretch", "font-style", "font-variant",
+		"font-weight", "text-decoration", "lang", "\0"};
 	
+	UT_return_val_if_fail(m_pStyle, false);
+	UT_GenericVector<const gchar *> vProps;
+		
+	m_pStyle->getAllProperties(&vProps, pp_BASEDON_DEPTH_LIMIT); // using limit to
+											// only get this style's props
+	
+	m_sUnrecognizedProps="";
+	
+	const gchar * pszName;
+	const gchar * pszVal;
+	int i=0;
+	int k=0;
+	while (i<vProps.size()-1)
+	{
+		pszName=vProps.getNthItem(i);
+		pszVal=vProps.getNthItem(i+1);
+		k=0;
+		while (strcmp(pszName, fields[k])!=0 && *fields[k]!='\0')
+		{
+			k++;
+		}
+		if (*fields[k]=='\0')
+		{
+			m_sUnrecognizedProps+= std::string(pszName) + ':' + std::string(pszVal) + ';';
+			UT_DEBUGMSG(("Unrecognized prop in a style, sticking on the 'do not edit' pile.\n"));
+			UT_DEBUGMSG(("%s\n", m_sUnrecognizedProps.c_str() ));
+		}
+		else
+		{
+			// k now holds the ENUM value of the property name.
+			m_vPropertyID.push_back(k);
+			m_vPropertyValues.push_back(pszVal);
+		}
+		i+=2;	
+	}
+		
+}
+
+/*!
+ * Reverses the _deconstructStyle() - called in the process of closing the
+ * dialog at a platform level.  Updates the target style with the current
+ * status of the dialog's member variables.  Please do update those variables
+ * on a platform level before calling, or the user won't get what they ask for!
+ */
+bool AP_Dialog_EditStyle::_reconstructStyle()
+{
+	// TODO
+	return true;
 }
 
 AP_Dialog_EditStyle::tAnswer AP_Dialog_EditStyle::getAnswer(void) const

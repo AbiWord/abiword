@@ -21,12 +21,16 @@
 #ifndef AP_DIALOG_EDITSTYLE_H
 #define AP_DIALOG_EDITSTYLE_H
 
+#include <vector>
+#include <string>
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
 #include "pd_Style.h"
 #include "ut_string.h"
+#include "ut_vector.h"
 
 class XAP_Frame;
 
@@ -40,15 +44,37 @@ public:
 	void							setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle);
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
+	
+	typedef enum { P_TEXT_ALIGN, P_TEXT_INDENT, P_MARGIN_LEFT, P_MARGIN_RIGHT,
+		P_MARGIN_TOP, P_MARGIN_BOTTOM,
+		P_LINE_HEIGHT, P_TABSTOPS, P_START_VALUE, P_LIST_DELIM, P_LIST_STYLE,
+		P_LIST_DECIMAL, P_FIELD_FONT, P_FIELD_COLOR, P_KEEP_TOGETHER,
+		P_KEEP_WITH_NEXT, P_ORPHANS, P_WIDOWS, P_DOM_DIR, P_LAST,
+		C_BGCOLOR, C_COLOR, C_FONT_FAMILY, C_FONT_SIZE, C_FONT_STRETCH,
+		C_FONT_STYLE, C_FONT_VARIANT, C_FONT_WEIGHT, C_TEXT_DECORATION,
+		C_LANG } tProperty;
 
 	AP_Dialog_EditStyle::tAnswer	getAnswer(void) const;
 	
 protected:
-	
+	// methods for constructing data structures
+	bool							_deconstructStyle();
+	bool							_reconstructStyle();
+		
 	// data we need
 	UT_UTF8String m_sName;
 	PD_Style * m_pStyle;
 	AP_Dialog_EditStyle::tAnswer		m_answer;
+		
+	std::vector<int>			m_vPropertyID;
+	std::vector<std::string>	m_vPropertyValues;
+	std::string					m_sUnrecognizedProps;
+	
+	std::string					m_sAllProperties;
+		
+	std::string					m_sBasedOn;
+	std::string					m_sType;
+	std::string					m_sFollowedBy;
 
 };
 
