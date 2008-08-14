@@ -2,21 +2,19 @@
 LATEX_CFLAGS=
 LATEX_LIBS=
 
-if test "$enable_latex" != ""; then
-
-test "$enable_latex" == "auto" && PLUGINS="$PLUGINS latex"
-
-libxslt_req='libxslt'
-
 # use libxslt if detected
+libxslt_req='libxslt'
 PKG_CHECK_EXISTS([ $libxslt_req ],
 [
 	abi_cv_libxslt="yes"
 ], [
 	abi_cv_libxslt="no"
 ])
-
 AM_CONDITIONAL([HAVE_LIBXSLT], test "$abi_cv_libxslt" == "yes")
+
+if test "$enable_latex" != ""; then
+
+test "$enable_latex" == "auto" && PLUGINS="$PLUGINS latex"
 
 if test "$abi_cv_libxslt" == "yes"; then
 	PKG_CHECK_MODULES(LIBXSLT,[$libxslt_req])
