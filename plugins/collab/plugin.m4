@@ -32,7 +32,7 @@ AC_ARG_ENABLE([collab-backend-tcp],
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([collap plugin: boost asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
+		AC_MSG_ERROR([collab plugin: boost asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 ], [
@@ -69,11 +69,11 @@ AC_ARG_ENABLE([collab-backend-service],
 				collab_service_req="libsoup-2.2 >= 2.2.100"
 				enable_collab_backend_service="yes"
 			], [
-				AC_MSG_WARN([collap plugin: libsoup-2.2 >= 2.2.100 or libsoup-2.4 is required for the abicollab.net backend])
+				AC_MSG_WARN([collab plugin: libsoup-2.2 >= 2.2.100 or libsoup-2.4 is required for the abicollab.net backend])
 			])
 		])
 	], [
-		AC_MSG_WARN([collap plugin: boost asio is required for the the abicollab.net backend, see http://asio.sourceforge.net])
+		AC_MSG_WARN([collab plugin: boost asio is required for the the abicollab.net backend, see http://asio.sourceforge.net])
 	])
 	AC_LANG_POP
 ])
