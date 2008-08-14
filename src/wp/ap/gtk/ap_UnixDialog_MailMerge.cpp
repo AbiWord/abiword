@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -155,21 +154,18 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_MailMerge.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_MailMerge.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
-	m_entry = glade_xml_get_widget(xml, "edFieldName");
-	m_treeview = glade_xml_get_widget(xml, "tvAvailableFields");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_MailMerge"));
+	m_entry = GTK_WIDGET(gtk_builder_get_object(builder, "edFieldName"));
+	m_treeview = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableFields"));
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	
@@ -181,13 +177,13 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFields"), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFields")), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFieldName"), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
 
-	localizeLabel(glade_xml_get_widget(xml, "lbOpenFile"), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbOpenFile")), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
 
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",

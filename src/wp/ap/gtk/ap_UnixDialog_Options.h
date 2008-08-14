@@ -131,7 +131,7 @@ public:
 
 	// private construction functions
 	void	    _setupUnitMenu(GtkWidget *optionmenu, const XAP_StringSet *pSS);
-	void	    _constructWindowContents(GladeXML *xml);
+	void	    _constructWindowContents(GtkBuilder *builder);
 	GtkWidget * _constructWindow(void);
 
 	// pointers to widgets we need to query/set

@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 #include <gdk/gdk.h>
 #include "ut_locale.h"
 
@@ -451,25 +450,22 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_FormatFrame.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatFrame.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_FormatFrame");
-	m_wLineTop = glade_xml_get_widget(xml, "tbBorderTop");
-	m_wLineLeft = glade_xml_get_widget(xml, "tbBorderLeft");
-	m_wLineRight = glade_xml_get_widget(xml, "tbBorderRight");
-	m_wLineBottom = glade_xml_get_widget(xml, "tbBorderBottom");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFrame"));
+	m_wLineTop = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderTop"));
+	m_wLineLeft = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
+	m_wLineRight = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
+	m_wLineBottom = GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 
-	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
+	// the toggle buttons created by GtkBuilder already contain a label, remove that, so we can add a pixmap as a child
 	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
 	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
 	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));
@@ -481,7 +477,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
 	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
 	
-	m_wPreviewArea = glade_xml_get_widget(xml, "daPreview");
+	m_wPreviewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
 	// set the dialog title
 	ConstructWindowName();
@@ -492,55 +488,55 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBorder"), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
-	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
-	localizeLabel(glade_xml_get_widget(xml, "lbBorderThickness"), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
-	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackgroundColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
 
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSetImageBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetImageBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
 
 // Radio buttons to position type of the Frame
 		
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPositionTo"), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
-	localizeButton(glade_xml_get_widget(xml, "rbSetToPage"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
-	m_wPosParagraph = glade_xml_get_widget(xml, "rbSetToParagraph");
-	m_wPosColumn = glade_xml_get_widget(xml, "rbSetToColumn");
-	m_wPosPage = glade_xml_get_widget(xml, "rbSetToPage");
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPositionTo")), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToParagraph")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToColumn")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToPage")), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
+	m_wPosParagraph = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToParagraph"));
+	m_wPosColumn = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToColumn"));
+	m_wPosPage = GTK_WIDGET(gtk_builder_get_object(builder, "rbSetToPage"));
 
 //  Button and label for text wrapping
 
-	m_wWrapButton = glade_xml_get_widget(xml, "btTextWrapState");
+	m_wWrapButton = GTK_WIDGET(gtk_builder_get_object(builder, "btTextWrapState"));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapState"), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
 
 //	add the buttons for background image to the dialog.
 
-	m_wSelectImageButton = glade_xml_get_widget(xml, "btSelectImage");
-	m_wNoImageButton = glade_xml_get_widget(xml, "btSetNoImage");
+	m_wSelectImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSelectImage"));
+	m_wNoImageButton = GTK_WIDGET(gtk_builder_get_object(builder, "btSetNoImage"));
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatFrame_SelectImage);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSelectImage")), pSS, AP_STRING_ID_DLG_FormatFrame_SelectImage);
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbSetNoImage"), pSS, AP_STRING_ID_DLG_FormatFrame_NoImageBackground);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetNoImage")), pSS, AP_STRING_ID_DLG_FormatFrame_NoImageBackground);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatFrame_Preview);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPreview")), pSS, AP_STRING_ID_DLG_FormatFrame_Preview);
 	
-	m_wBorderColorButton = glade_xml_get_widget(xml, "cbtBorderColorButton");
-	m_wBackgroundColorButton = glade_xml_get_widget(xml, "cbtBackgroundColorButton");
+	m_wBorderColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBorderColorButton"));
+	m_wBackgroundColorButton = GTK_WIDGET(gtk_builder_get_object(builder, "cbtBackgroundColorButton"));
 
 //
 // Now the Border Thickness Option menu
 // 
-	m_wBorderThickness = glade_xml_get_widget(xml, "omBorderThickness");
+	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
 	
 	// add the apply and ok buttons to the dialog
-	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
-	m_wApplyButton = glade_xml_get_widget(xml, "btApply");
+	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
+	m_wApplyButton = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	
 	return window;
 }

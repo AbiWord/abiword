@@ -128,32 +128,29 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_MetaData.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_MetaData.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_MetaData");
-	m_entryTitle = glade_xml_get_widget(xml, "enTitle");
-	m_entrySubject = glade_xml_get_widget(xml, "enSubject");
-	m_entryAuthor = glade_xml_get_widget(xml, "enAuthor");
-	m_entryPublisher = glade_xml_get_widget(xml, "enPublisher");
-	m_entryCoAuthor = glade_xml_get_widget(xml, "enContributors");
-	m_entryCategory = glade_xml_get_widget(xml, "enCategory");
-	m_entryKeywords = glade_xml_get_widget(xml, "enKeywords");
-	m_entryLanguages = glade_xml_get_widget(xml, "enLanguages");
-	m_textDescription = glade_xml_get_widget(xml, "tvDescription");
-	m_entrySource = glade_xml_get_widget(xml, "enSource");
-	m_entryRelation = glade_xml_get_widget(xml, "enRelation");
-	m_entryCoverage = glade_xml_get_widget(xml, "enCoverage");
-	m_entryRights = glade_xml_get_widget(xml, "enRights");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_MetaData"));
+	m_entryTitle = GTK_WIDGET(gtk_builder_get_object(builder, "enTitle"));
+	m_entrySubject = GTK_WIDGET(gtk_builder_get_object(builder, "enSubject"));
+	m_entryAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enAuthor"));
+	m_entryPublisher = GTK_WIDGET(gtk_builder_get_object(builder, "enPublisher"));
+	m_entryCoAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enContributors"));
+	m_entryCategory = GTK_WIDGET(gtk_builder_get_object(builder, "enCategory"));
+	m_entryKeywords = GTK_WIDGET(gtk_builder_get_object(builder, "enKeywords"));
+	m_entryLanguages = GTK_WIDGET(gtk_builder_get_object(builder, "enLanguages"));
+	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
+	m_entrySource = GTK_WIDGET(gtk_builder_get_object(builder, "enSource"));
+	m_entryRelation = GTK_WIDGET(gtk_builder_get_object(builder, "enRelation"));
+	m_entryCoverage = GTK_WIDGET(gtk_builder_get_object(builder, "enCoverage"));
+	m_entryRights = GTK_WIDGET(gtk_builder_get_object(builder, "enRights"));
 	
 	// set the dialog title
 	UT_UTF8String s;
@@ -161,25 +158,25 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	abiDialogSetTitle(window, s.utf8_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabel(glade_xml_get_widget(xml, "lbTitle"), pSS, AP_STRING_ID_DLG_MetaData_Title_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbSubject"), pSS, AP_STRING_ID_DLG_MetaData_Subject_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbAuthor"), pSS, AP_STRING_ID_DLG_MetaData_Author_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbPublisher"), pSS, AP_STRING_ID_DLG_MetaData_Publisher_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbContributors"), pSS, AP_STRING_ID_DLG_MetaData_CoAuthor_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_MetaData_Title_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSubject")), pSS, AP_STRING_ID_DLG_MetaData_Subject_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_MetaData_Author_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPublisher")), pSS, AP_STRING_ID_DLG_MetaData_Publisher_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbContributors")), pSS, AP_STRING_ID_DLG_MetaData_CoAuthor_LBL);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbCategory"), pSS, AP_STRING_ID_DLG_MetaData_Category_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbKeywords"), pSS, AP_STRING_ID_DLG_MetaData_Keywords_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbLanguages"), pSS, AP_STRING_ID_DLG_MetaData_Languages_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_MetaData_Description_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbCategory")), pSS, AP_STRING_ID_DLG_MetaData_Category_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbKeywords")), pSS, AP_STRING_ID_DLG_MetaData_Keywords_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbLanguages")), pSS, AP_STRING_ID_DLG_MetaData_Languages_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_MetaData_Description_LBL);
 
-	localizeLabel(glade_xml_get_widget(xml, "lbSource"), pSS, AP_STRING_ID_DLG_MetaData_Source_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbRelation"), pSS, AP_STRING_ID_DLG_MetaData_Relation_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbCoverage"), pSS, AP_STRING_ID_DLG_MetaData_Coverage_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbRights"), pSS, AP_STRING_ID_DLG_MetaData_Rights_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSource")), pSS, AP_STRING_ID_DLG_MetaData_Source_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRelation")), pSS, AP_STRING_ID_DLG_MetaData_Relation_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbCoverage")), pSS, AP_STRING_ID_DLG_MetaData_Coverage_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRights")), pSS, AP_STRING_ID_DLG_MetaData_Rights_LBL);
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbGeneral_Tab"), pSS, AP_STRING_ID_DLG_MetaData_TAB_General);
-	localizeLabel(glade_xml_get_widget(xml, "lbSummary_Tab"), pSS, AP_STRING_ID_DLG_MetaData_TAB_Summary);
-	localizeLabel(glade_xml_get_widget(xml, "lbPermissions_Tab"), pSS, AP_STRING_ID_DLG_MetaData_TAB_Permission);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbGeneral_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_General);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbSummary_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_Summary);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPermissions_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_Permission);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;

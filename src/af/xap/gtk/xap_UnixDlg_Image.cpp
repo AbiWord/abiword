@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -457,25 +456,22 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_Image.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Image.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Image");
-	m_wHeightSpin = glade_xml_get_widget(xml, "sbHeight");
-	m_wHeightEntry = glade_xml_get_widget(xml, "edHeight");
-	m_wWidthSpin = glade_xml_get_widget(xml, "sbWidth");
-	m_wWidthEntry = glade_xml_get_widget(xml, "edWidth");
-	m_wAspectCheck = glade_xml_get_widget(xml, "cbAspect");
+	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
+	m_wHeightSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbHeight"));
+	m_wHeightEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edHeight"));
+	m_wWidthSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbWidth"));
+	m_wWidthEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edWidth"));
+	m_wAspectCheck = GTK_WIDGET(gtk_builder_get_object(builder, "cbAspect"));
 
-	m_wTitleEntry = glade_xml_get_widget(xml, "edTitle");
-	m_wDescriptionEntry = glade_xml_get_widget(xml, "edDescription");
+	m_wTitleEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edTitle"));
+	m_wDescriptionEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edDescription"));
 
 	m_bAspect = getPreserveAspect();
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
@@ -492,44 +488,44 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
 	abiDialogSetTitle(mMainWindow, s.utf8_str());
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSize"), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbWrapType"), pSS, XAP_STRING_ID_DLG_Image_WrapType);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSize")), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImageDescription")), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapping")), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImagePlacement")), pSS, XAP_STRING_ID_DLG_Image_Placement);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapType")), pSS, XAP_STRING_ID_DLG_Image_WrapType);
 	
-	localizeLabel(glade_xml_get_widget(xml,"lbHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
-	localizeLabel(glade_xml_get_widget(xml,"lbWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
-	localizeLabel(glade_xml_get_widget(xml,"lbTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeLabel(glade_xml_get_widget(xml,"lbDescription"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeight")), pSS, XAP_STRING_ID_DLG_Image_Height);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWidth")), pSS, XAP_STRING_ID_DLG_Image_Width);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 
-	localizeButton(glade_xml_get_widget(xml,"rbInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
-	localizeButton(glade_xml_get_widget(xml,"rbNone"), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
-	localizeButton(glade_xml_get_widget(xml,"rbWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine")), pSS, XAP_STRING_ID_DLG_Image_InLine);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbNone")), pSS, XAP_STRING_ID_DLG_Image_WrappedNone);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight")), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedLeft")), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedBoth")), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
 
-	localizeButton(glade_xml_get_widget(xml,"rbPlaceParagraph"), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
-	localizeButton(glade_xml_get_widget(xml,"rbPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
-	localizeButton(glade_xml_get_widget(xml,"rbPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceParagraph")), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn")), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage")), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
 
-	localizeButton(glade_xml_get_widget(xml,"rbSquareWrap"), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
-	localizeButton(glade_xml_get_widget(xml,"rbTightWrap"), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap")), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap")), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
 
-	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
-	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
-	m_wrbNone = glade_xml_get_widget(xml,"rbNone");
-	m_wrbWrappedRight = glade_xml_get_widget(xml,"rbWrappedRight");
-	m_wrbWrappedLeft = glade_xml_get_widget(xml,"rbWrappedLeft");
-	m_wrbWrappedBoth = glade_xml_get_widget(xml,"rbWrappedBoth");
+	m_wPlaceTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbPlacement"));
+	m_wrbInLine = GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine"));
+	m_wrbNone = GTK_WIDGET(gtk_builder_get_object(builder, "rbNone"));
+	m_wrbWrappedRight = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight"));
+	m_wrbWrappedLeft = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedLeft"));
+	m_wrbWrappedBoth = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedBoth"));
 
-	m_wrbPlaceParagraph = glade_xml_get_widget(xml,"rbPlaceParagraph");
-	m_wrbPlaceColumn = glade_xml_get_widget(xml,"rbPlaceColumn");
-	m_wrbPlacePage = glade_xml_get_widget(xml,"rbPlacePage");
+	m_wrbPlaceParagraph = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceParagraph"));
+	m_wrbPlaceColumn = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn"));
+	m_wrbPlacePage = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage"));
 
-	m_wWrapTable = glade_xml_get_widget(xml,"tbWrapTable");
-	m_wrbSquareWrap = glade_xml_get_widget(xml,"rbSquareWrap");
-	m_wrbTightWrap = glade_xml_get_widget(xml,"rbTightWrap");
+	m_wWrapTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbWrapTable"));
+	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
+	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
 
 // the check button already contains a label. We have to remove this

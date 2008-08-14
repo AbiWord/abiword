@@ -123,25 +123,22 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_Encoding.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Encoding.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Encoding");
-	m_listEncodings = glade_xml_get_widget(xml, "encodingList");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Encoding"));
+	m_listEncodings = GTK_WIDGET(gtk_builder_get_object(builder, "encodingList"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblEncoding"), pSS, XAP_STRING_ID_DLG_UENC_EncLabel);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lblEncoding")), pSS, XAP_STRING_ID_DLG_UENC_EncLabel);
 
 	// add a column to our TreeViews
 

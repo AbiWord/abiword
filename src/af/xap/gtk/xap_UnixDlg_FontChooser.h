@@ -92,8 +92,6 @@ protected:
 		LIST_STYLE_BOLD_ITALIC
 	} listStyle;
 
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
 	virtual GtkWidget *             constructWindow(void);
 	GtkWidget *                     constructWindowContents(GtkWidget *);
 

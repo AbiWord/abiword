@@ -150,7 +150,7 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 	  m_windowMain(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
-	  m_pXML(NULL),
+	  m_pBuilder(NULL),
 	  m_iIndentValue(1),
 	  m_iStartValue(1)
 {
@@ -315,30 +315,25 @@ void AP_UnixDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint32 iLevel)
 {
-	if(m_pXML == NULL)
-	{
-		return NULL;
-	}
+	UT_return_val_if_fail(m_pBuilder, NULL);
+
 	UT_String sLocal = szNameBase;
 	if(iLevel > 0)
 	{
 		UT_String sVal = UT_String_sprintf("%d",iLevel);
 		sLocal += sVal;
 	}
-	return glade_xml_get_widget(m_pXML, sLocal.c_str());
+	return GTK_WIDGET(gtk_builder_get_object(m_pBuilder, sLocal.c_str()));
 }
 
 GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_FormatTOC.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatTOC.xml";
 
-	// load the dialog from the glade file
-	m_pXML = abiDialogNewFromXML( glade_path.c_str() );
-	if (!m_pXML)
-		return NULL;
+	// load the dialog from the UI file
+	m_pBuilder = gtk_builder_new();
+	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

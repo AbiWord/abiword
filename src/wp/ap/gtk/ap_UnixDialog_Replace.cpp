@@ -277,28 +277,25 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	char * unixstr;
 
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Replace.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Replace.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML(glade_path.c_str());
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	m_windowMain = glade_xml_get_widget(xml,"ap_UnixDialog_Replace");
-	m_buttonFind = glade_xml_get_widget(xml,"btnFind");
-	m_buttonFindReplace = glade_xml_get_widget(xml,"btnFindReplace");
-	m_buttonReplaceAll = glade_xml_get_widget(xml,"btnReplaceAll");
-	m_comboFind = glade_xml_get_widget(xml,"comboFind");
-	m_comboReplace = glade_xml_get_widget(xml,"comboReplace");
-	m_checkbuttonMatchCase = glade_xml_get_widget(xml,"chkMatchCase");
-	m_checkbuttonWholeWord = glade_xml_get_widget(xml,"chkWholeWord");
-	m_checkbuttonReverseFind = glade_xml_get_widget(xml,"chkReverseFind");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Replace"));
+	m_buttonFind = GTK_WIDGET(gtk_builder_get_object(builder, "btnFind"));
+	m_buttonFindReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btnFindReplace"));
+	m_buttonReplaceAll = GTK_WIDGET(gtk_builder_get_object(builder, "btnReplaceAll"));
+	m_comboFind = GTK_WIDGET(gtk_builder_get_object(builder, "comboFind"));
+	m_comboReplace = GTK_WIDGET(gtk_builder_get_object(builder, "comboReplace"));
+	m_checkbuttonMatchCase = GTK_WIDGET(gtk_builder_get_object(builder, "chkMatchCase"));
+	m_checkbuttonWholeWord = GTK_WIDGET(gtk_builder_get_object(builder, "chkWholeWord"));
+	m_checkbuttonReverseFind = GTK_WIDGET(gtk_builder_get_object(builder, "chkReverseFind"));
 
-	GtkWidget * labelFind = glade_xml_get_widget(xml,"lblFind");
-	GtkWidget * labelReplace = glade_xml_get_widget(xml,"lblReplace");
+	GtkWidget * labelFind = GTK_WIDGET(gtk_builder_get_object(builder, "lblFind"));
+	GtkWidget * labelReplace = GTK_WIDGET(gtk_builder_get_object(builder, "lblReplace"));
 
 	ConstructWindowName();
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), m_WindowName);

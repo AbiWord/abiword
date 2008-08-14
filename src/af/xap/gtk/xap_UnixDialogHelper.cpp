@@ -765,35 +765,6 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * tit
 }
 
 /*!
- * Create a new GtkDialog from a glade file
- */
-GladeXML * abiDialogNewFromXML(const char * glade_file)
-{
-	// load the dialog from the glade file
-	GladeXML *xml = glade_xml_new(glade_file, NULL, NULL);
-	
-	// make sure we could load the glade file
-	if (!xml) {
-		GtkWidget* dialog = gtk_message_dialog_new (NULL,
-					GTK_DIALOG_DESTROY_WITH_PARENT,
-					GTK_MESSAGE_ERROR,
-					GTK_BUTTONS_CLOSE,
-					"Could not load glade file '%s'.\n\nPlease reinstall AbiWord!",
-					glade_file);
-		gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
-		return NULL;
-        }
-	
-	// connect any signal handler functions... 
-	// MARCM: Nope, we don't do autoconnecting signals, and I doubt we ever will
-	// glade_xml_signal_autoconnect(xml);
-	
-	return xml;
-}
-	
-
-/*!
  * Returns a GtkMenu with items having label fetched from UTF-8 CStr 
  * from UT_Vector.
  * All menu item will have the index of the item stored in its user-data

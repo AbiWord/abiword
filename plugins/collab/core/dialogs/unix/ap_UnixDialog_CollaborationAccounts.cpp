@@ -137,22 +137,19 @@ GtkWidget * AP_UnixDialog_CollaborationAccounts::_constructWindow(void)
 	GtkWidget* window;
 	//const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_CollaborationAccounts.glade";
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_CollaborationAccounts.xml";
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationAccounts");
-	m_wAdd = glade_xml_get_widget(xml, "btAdd");
-	m_wProperties = glade_xml_get_widget(xml, "btProperties");
-	m_wDelete = glade_xml_get_widget(xml, "btDelete");
-	m_wAccountsTree = glade_xml_get_widget(xml, "tvAccounts");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationAccounts"));
+	m_wAdd = GTK_WIDGET(gtk_builder_get_object(builder, "btAdd"));
+	m_wProperties = GTK_WIDGET(gtk_builder_get_object(builder, "btProperties"));
+	m_wDelete = GTK_WIDGET(gtk_builder_get_object(builder, "btDelete"));
+	m_wAccountsTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvAccounts"));
 
 	// set the dialog title
 	// TODO

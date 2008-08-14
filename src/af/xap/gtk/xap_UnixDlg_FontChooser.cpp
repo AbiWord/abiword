@@ -438,7 +438,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	return windowFontSelection;
 }
 
-// Glade generated dialog, using fixed widgets to closely match
+// GtkBuilder generated dialog, using fixed widgets to closely match
 // the Windows layout, with some changes for color selector
 GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *parent)
 {

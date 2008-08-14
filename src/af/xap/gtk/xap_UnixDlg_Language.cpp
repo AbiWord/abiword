@@ -21,7 +21,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -104,27 +103,24 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_Language.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Language.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
-	m_pLanguageList = glade_xml_get_widget(xml, "tvAvailableLanguages");
-	m_lbDefaultLanguage = glade_xml_get_widget(xml, "lbDefaultLanguage");
-	m_cbDefaultLanguage = glade_xml_get_widget(xml, "cbDefaultLanguage");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Language"));
+	m_pLanguageList = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableLanguages"));
+	m_lbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "lbDefaultLanguage"));
+	m_cbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "cbDefaultLanguage"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
+	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableLanguages")), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 	getDocDefaultLangDescription(s);
 	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
 	getDocDefaultLangCheckboxLabel(s);

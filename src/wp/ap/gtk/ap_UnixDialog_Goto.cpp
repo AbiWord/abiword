@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -412,27 +411,26 @@ void
 AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
 	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 
-	// load the dialog from the glade file
-	UT_String glade_path (pApp->getAbiSuiteAppGladeDir ());
-	glade_path += "/ap_UnixDialog_Goto.glade";
-	GladeXML *xml = abiDialogNewFromXML (glade_path.c_str());
-	if (!xml)
-		return;
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Break.xml";
 
-	m_wDialog = glade_xml_get_widget(xml, "ap_UnixDialog_Goto");
-	m_lbPage = glade_xml_get_widget(xml, "lbPage");
-	m_lbLine = glade_xml_get_widget(xml, "lbLine");
-	m_lbPage = glade_xml_get_widget(xml, "lbPage");
-	m_lbBookmarks = glade_xml_get_widget(xml, "lbBookmarks");
-	m_sbPage = glade_xml_get_widget(xml, "sbPage");
-	m_sbLine = glade_xml_get_widget(xml, "sbLine");
-	m_lvBookmarks = glade_xml_get_widget(xml, "lvBookmarks");
-	m_btJump = glade_xml_get_widget(xml, "btJump");
-	m_btPrev = glade_xml_get_widget(xml, "btPrev");
-	m_btNext = glade_xml_get_widget(xml, "btNext");
-	m_btClose = glade_xml_get_widget(xml, "btClose");
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+
+	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
+	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
+	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
+	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
+	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
+	m_sbPage = GTK_WIDGET(gtk_builder_get_object(builder, "sbPage"));
+	m_sbLine = GTK_WIDGET(gtk_builder_get_object(builder, "sbLine"));
+	m_lvBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lvBookmarks"));
+	m_btJump = GTK_WIDGET(gtk_builder_get_object(builder, "btJump"));
+	m_btPrev = GTK_WIDGET(gtk_builder_get_object(builder, "btPrev"));
+	m_btNext = GTK_WIDGET(gtk_builder_get_object(builder, "btNext"));
+	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 
 	// localise	
@@ -503,11 +501,11 @@ AP_UnixDialog_Goto::updateWindow ()
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
-	// pages, page increment of 10 is pretty arbitrary (set in glade)
+	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
-	// lines, line increment of 10 is pretty arbitrary (set in glade)
+	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentLine = 1; /* FIXME get current line */
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
 	

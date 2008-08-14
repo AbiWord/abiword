@@ -84,20 +84,20 @@ libgtk_la_SOURCES = \
 	xap_UnixWidget.cpp \
 	xap_UnixWidget.h
 
-gladedir=$(ABIWORD_GLADEDIR)
-glade_DATA = \
-	xap_UnixDlg_Encoding.glade \
-	xap_UnixDlg_Language.glade \
-	xap_UnixDlg_Password.glade \
-	xap_UnixDlg_PluginManager.glade \
-	xap_UnixDlg_WindowMore.glade \
-	xap_UnixDlg_Image.glade	\
-	xap_UnixDlg_Zoom.glade \
-	xap_UnixDlg_History.glade \
-	xap_UnixDlg_DocComparison.glade \
-	xap_UnixDlg_ListDocuments.glade
+uidir=$(ABIWORD_UIDIR)
+ui_DATA = \
+	xap_UnixDlg_Encoding.xml \
+	xap_UnixDlg_Language.xml \
+	xap_UnixDlg_Password.xml \
+	xap_UnixDlg_PluginManager.xml \
+	xap_UnixDlg_WindowMore.xml \
+	xap_UnixDlg_Image.xml	\
+	xap_UnixDlg_Zoom.xml \
+	xap_UnixDlg_History.xml \
+	xap_UnixDlg_DocComparison.xml \
+	xap_UnixDlg_ListDocuments.xml
 
 EXTRA_DIST = \
 	$(conditional_src) \
-	$(glade_DATA)
+	$(ui_DATA)
 

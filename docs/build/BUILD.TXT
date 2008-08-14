@@ -59,10 +59,6 @@ Xft2/fontconfig
 
 AbiWord takes advantage of the Xft2/FontConfig X11 font extensions. Your copy of AbiWord will look so pretty that you'll be the envy of all of your friends, peers, and coworkers. Get these at http://www.fontconfig.org/.
 
-LibGlade
-
-Libglade is a powerful and easy way to build GTK+ dialogs. AbiWord requires libglade >= 2.0.
-
 perl
 
 AbiWord can be scripted (controlled and added onto via extensions) via a PERL interface if you so wish. PERL is available from http://www.perl.org/. See also: configure --enable-scripting

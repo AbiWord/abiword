@@ -158,24 +158,21 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 	GtkWidget* window;
 	//const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_CollaborationJoin.glade";
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_CollaborationJoin.xml";
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationJoin");
-	m_wAddBuddy = glade_xml_get_widget(xml, "btAddBuddy");
-	m_wDeleteBuddy = glade_xml_get_widget(xml, "btDeleteBuddy");
-	m_wRefresh = glade_xml_get_widget(xml, "btRefresh");	
-	m_wBuddyTree = glade_xml_get_widget(xml, "tvBuddies");
-	m_wConnect = glade_xml_get_widget(xml, "btConnect");
-	m_wDisconnect = glade_xml_get_widget(xml, "btDisconnect");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationJoin"));
+	m_wAddBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btAddBuddy"));
+	m_wDeleteBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btDeleteBuddy"));
+	m_wRefresh = GTK_WIDGET(gtk_builder_get_object(builder, "btRefresh"));
+	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
+	m_wConnect = GTK_WIDGET(gtk_builder_get_object(builder, "btConnect"));
+	m_wDisconnect = GTK_WIDGET(gtk_builder_get_object(builder, "btDisconnect"));
 	
 	_refreshAccounts();
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();

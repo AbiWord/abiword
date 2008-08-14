@@ -53,7 +53,7 @@ public:
 	// pointers to all the action items
 	GtkWidget * m_window;
 	GtkWidget * m_wHelp;
-	GladeXML *  m_pXML;
+	GtkBuilder * m_pBuilder;
 
 	typedef enum
 		{

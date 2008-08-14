@@ -20,7 +20,9 @@
 #define _GOFFICE_GTK_H_
 
 #include <gtk/gtkmessagedialog.h>
+#if 0 /* dropped, since abiword doesn't depend on libglade */
 #include <glade/glade-xml.h>
+#endif
 #include <gtk/gtkfilechooser.h>
 #include <goffice/app/goffice-app.h>
 #include <goffice/utils/go-image.h>
@@ -29,8 +31,10 @@ G_BEGIN_DECLS
 
 void	   go_gtk_editable_enters (GtkWindow *window, GtkWidget *w);
 
+#if 0 /* dropped, since abiword doesn't depend on libglade */
 GladeXML  *go_libglade_new (char const *gladefile, char const *root,
 			    char const *domain, GOCmdContext *cc);
+#endif
 
 GdkPixbuf *go_pixbuf_new_from_file	(char const *filename);
 GdkPixbuf *go_pixbuf_intelligent_scale	(GdkPixbuf *pixbuf, 
@@ -59,8 +63,10 @@ void	   go_gtk_help_button_init	(GtkWidget *w, char const *data_dir,
 void       go_gtk_nonmodal_dialog	(GtkWindow *toplevel, GtkWindow *dialog);
 gboolean   go_gtk_file_sel_dialog	(GtkWindow *toplevel, GtkWidget *w);
 char	  *go_gtk_select_image		(GtkWindow *toplevel, const char *initial);
+#if 0 /* dropped, since abiword doesn't depend on libglade */
 char      *gui_get_image_save_info 	(GtkWindow *toplevel, GSList *supported_formats,
 					 GOImageFormat *ret_format, double *dpi);
+#endif
 
 gboolean   go_gtk_url_is_writeable	(GtkWindow *parent, char const *url,
 					 gboolean overwrite_by_default);

@@ -479,21 +479,13 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 }
 
 /*!
-  This returns the directory that holds the application .glade files.
+  This returns the directory that holds the application UI files.
   \return A const string containting the directory path
 */
-const char * AP_UnixApp::getAbiSuiteAppGladeDir(void) const
+const std::string& AP_UnixApp::getAbiSuiteAppUIDir(void) const
 {
-	static const gchar *dir = NULL;
-
-	if (!dir) {
-		UT_UTF8String s ("");
-		s += getAbiSuiteLibDir();
-		s += "/glade";
-		dir = g_strdup (s.utf8_str ());
-	}
-	
-    return dir;
+	static const std::string dir = std::string(getAbiSuiteLibDir()) + "/ui";
+	return dir;
 }
 
 

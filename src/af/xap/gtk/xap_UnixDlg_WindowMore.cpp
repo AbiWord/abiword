@@ -22,7 +22,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include <glade/glade.h>
 
 #include "xap_UnixDialogHelper.h"
 
@@ -131,26 +130,23 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_WindowMore.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_WindowMore.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_WindowMore");
-	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_WindowMore"));
+	m_listWindows = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableDocuments"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableDocuments"), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btView"), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments")), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btView")), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
 
 	// add a column to our TreeViews
 

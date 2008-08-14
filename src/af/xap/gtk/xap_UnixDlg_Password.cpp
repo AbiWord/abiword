@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -93,27 +92,24 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_Password.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Password.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Password");
-	mTextEntry = glade_xml_get_widget(xml, "enPassword");
+	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Password"));
+	mTextEntry = GTK_WIDGET(gtk_builder_get_object(builder, "enPassword"));
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title,s);
 	gtk_window_set_title (GTK_WINDOW(mMainWindow), s.utf8_str());
 
 	/* localize labels */
-	localizeLabel (glade_xml_get_widget (xml, "lbPassword"), pSS, XAP_STRING_ID_DLG_Password_Password);
+	localizeLabel (GTK_WIDGET(gtk_builder_get_object(builder, "lbPassword")), pSS, XAP_STRING_ID_DLG_Password_Password);
 	
 	g_signal_connect (G_OBJECT(mTextEntry), "activate",
 					  G_CALLBACK(s_return_hit),

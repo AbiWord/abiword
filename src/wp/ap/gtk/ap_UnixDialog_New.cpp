@@ -25,7 +25,6 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -303,26 +302,23 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_New.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_New.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_mainWindow = glade_xml_get_widget(xml, "ap_UnixDialog_New");
+	m_mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_New"));
 	gtk_window_set_title(GTK_WINDOW(m_mainWindow), 
 						 pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
 
-	m_radioNew = glade_xml_get_widget(xml, "rdTemplate");
-	m_radioExisting = glade_xml_get_widget(xml, "rdOpen");
-	m_buttonFilename = glade_xml_get_widget(xml, "btFile");
-	m_choicesList = glade_xml_get_widget(xml, "tvTemplates");
+	m_radioNew = GTK_WIDGET(gtk_builder_get_object(builder, "rdTemplate"));
+	m_radioExisting = GTK_WIDGET(gtk_builder_get_object(builder, "rdOpen"));
+	m_buttonFilename = GTK_WIDGET(gtk_builder_get_object(builder, "btFile"));
+	m_choicesList = GTK_WIDGET(gtk_builder_get_object(builder, "tvTemplates"));
 
 	localizeButton(m_radioNew, pSS, AP_STRING_ID_DLG_NEW_Create);
 	localizeButton(m_radioExisting, pSS, AP_STRING_ID_DLG_NEW_Open);
