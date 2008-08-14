@@ -106,7 +106,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_BUILTIN_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	// doesn't really matter as it will fail to load if the imports don't match.
 	return 1; 
