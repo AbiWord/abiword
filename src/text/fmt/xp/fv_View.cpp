@@ -2195,7 +2195,7 @@ UT_UCSChar FV_View::getChar(PT_DocPosition pos, UT_sint32 *x, UT_sint32 *y, UT_u
   pt_PieceTable *piece = getDocument()->getPieceTable();
   pf_Frag *p;
   PT_BlockOffset offset;
-  UT_UCSChar ret;
+  UT_UCSChar ret = 0;
   if (piece->getFragFromPosition(pos, &p, &offset))
   {
     if (p->getType() == 0) // PFT_Text)
@@ -4442,7 +4442,7 @@ bool FV_View::getStyle(const gchar ** style)
 
 bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
 {
-	bool bRet;
+	bool bRet = false;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -12360,7 +12360,6 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_
 	//
 	// Set the annotation properties
 	//
-	posStart;
 	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	pszAnn[0] = "annotation-author";
 	pszAnn[1] = sAuthor.utf8_str();
@@ -13539,7 +13538,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			UT_uint32 iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
 			UT_uint32 iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
 			UT_uint32 iWindowWidth   = getWindowWidth() - iLeftGrayWidth > 0 ? getWindowWidth() - iLeftGrayWidth : 0;
-			UT_uint32 iPortHeight;
+			UT_uint32 iPortHeight = 0;
 			if( adjustedBottom <= getWindowHeight() && adjustedTop >=0)
 			{
 				iPortHeight = adjustedBottom - adjustedTop;
@@ -13556,9 +13555,10 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			{
 				iPortHeight = getWindowHeight();
 			}
-			else
+			else 
+			{
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			
+			}
 			
 			
 			UT_uint32 iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);
