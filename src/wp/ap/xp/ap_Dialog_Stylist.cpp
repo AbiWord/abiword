@@ -414,7 +414,7 @@ bool AP_Dialog_Stylist::editSelectedStyle()
 		= static_cast<AP_Dialog_EditStyle *>(pDialogFactory->requestDialog(AP_DIALOG_ID_EDITSTYLE));
 	UT_return_val_if_fail(pDialog, false);
 	
-	pDialog->setStyleToEdit(sStyle, pStyle);
+	pDialog->setDialogData(sStyle, pStyle, m_pDoc);
 	
 	pDialog->runModal(pFrame);
 

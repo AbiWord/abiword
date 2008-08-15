@@ -287,6 +287,12 @@ dcl(DLG_Stylist_Create_Prompt, "Enter a unique name for your new style.")
 dcl(DLG_EditStyle_Title, "Edit Style")
 dcl(DLG_EditStyle_PropName, "Property Name")
 dcl(DLG_EditStyle_PropValue, "Value")
+dcl(DLG_EditStyle_Name, "Name")
+dcl(DLG_EditStyle_Type, "Type:")
+dcl(DLG_EditStyle_Paragraph, "Paragraph")
+dcl(DLG_EditStyle_Character, "Character")
+dcl(DLG_EditStyle_BasedOn, "Modifies")
+dcl(DLG_EditStyle_FollowedBy, "Followed By")
 
 /* Property names for the Edit Style dialog */
 /* DO NOT CHANGE ORDER HERE UNDER PENALTY OF BAD THINGS HAPPENING TO YOU */
@@ -321,6 +327,8 @@ dcl(DLG_EditStyle_Prop_C_FONT_VARIANT,		"Font Variant")
 dcl(DLG_EditStyle_Prop_C_FONT_WEIGHT,		"Font Weight")
 dcl(DLG_EditStyle_Prop_C_TEXT_DECORATION,	"Text Decoration")
 dcl(DLG_EditStyle_Prop_C_LANG,				"Language")
+/* end of edit style list of immutable order */
+/* we return you to your regularly-scheduled strings */
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle, 		"Paragraph")

@@ -29,6 +29,7 @@
 #include "xav_View.h"
 
 #include "pd_Style.h"
+#include "pd_Document.h"
 #include "ut_string.h"
 #include "ut_vector.h"
 
@@ -41,7 +42,7 @@ public:
 	virtual ~AP_Dialog_EditStyle(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
-	void							setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle);
+	void							setDialogData(UT_UTF8String sName, PD_Style * pStyle, PD_Document * pDoc);
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 	
@@ -60,21 +61,27 @@ protected:
 	// methods for constructing data structures
 	bool							_deconstructStyle();
 	bool							_reconstructStyle();
-		
+
 	// data we need
 	UT_UTF8String m_sName;
+	PD_Document * m_pDoc;
 	PD_Style * m_pStyle;
 	AP_Dialog_EditStyle::tAnswer		m_answer;
-		
+	
+	// produced by _deconstructStyle
 	std::vector<int>			m_vPropertyID;
 	std::vector<std::string>	m_vPropertyValues;
 	std::string					m_sUnrecognizedProps;
-	
-	std::string					m_sAllProperties;
-		
+	std::vector<std::string>	m_vAllStyles;
+	int							m_iBasedOn;
+	int							m_iFollowedBy;
+	bool						m_bIsCharStyle;
 	std::string					m_sBasedOn;
 	std::string					m_sType;
 	std::string					m_sFollowedBy;
+
+	// produced by _reconstructStyle
+	std::string					m_sAllProperties;
 
 };
 

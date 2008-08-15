@@ -44,16 +44,25 @@ protected:
 	void 		_storeWindowData(void);
 											   
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-	GtkWidget * m_wPropList;
+	GtkWidget * 		m_windowMain;
+	GtkWidget * 		m_enName;
+	GtkWidget * 		m_cbBasedOn;
+	GtkWidget * 		m_cbFollowedBy;
+	GSList *			m_radioGroup;
+
+	GtkWidget * 		m_wPropListContainer;
+	GtkWidget * 		m_wPropList;
+
+	GtkWidget * 		m_btAdd;
+	GtkWidget * 		m_btRemove;
+	GtkWidget * 		m_btClose;
 	
-	GtkCellRenderer * m_wNameRenderer;
-	GtkCellRenderer * m_wValueRenderer;
-	GtkListStore * m_wModel;
-	GtkWidget * m_wPropListContainer;
-	
-	// group of radio buttons for easy traversal
-	//GSList *	m_radioGroup;
+	GtkCellRenderer * 	m_wNameRenderer;
+	GtkCellRenderer * 	m_wValueRenderer;
+	GtkCellRenderer *	m_wComboRenderer;
+	GtkListStore * 		m_wModel;
+	GtkListStore * 		m_wStyleModel;
+
 };
 
 #endif /* AP_UNIXDIALOG_EDITSTYLE_H */

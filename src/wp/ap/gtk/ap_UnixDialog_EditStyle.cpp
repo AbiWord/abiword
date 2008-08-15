@@ -57,12 +57,23 @@ AP_UnixDialog_EditStyle::AP_UnixDialog_EditStyle(XAP_DialogFactory * pDlgFactory
 										 XAP_Dialog_Id id)
 	: AP_Dialog_EditStyle(pDlgFactory,id),
 	m_windowMain(NULL),
+	m_enName(NULL),
+	m_cbBasedOn(NULL),
+	m_cbFollowedBy(NULL),
+	m_radioGroup(NULL),
+
+	m_wPropListContainer(NULL),
 	m_wPropList(NULL),
+
+	m_btAdd(NULL),
+	m_btRemove(NULL),
+	m_btClose(NULL),
+
 	m_wNameRenderer(NULL),
 	m_wValueRenderer(NULL),
+	m_wComboRenderer(NULL),
 	m_wModel(NULL),
-	m_wPropListContainer(NULL)
-
+	m_wStyleModel(NULL)
 {
 }
 
@@ -117,41 +128,28 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_EditStyle");
-	//m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
+	window = 		glade_xml_get_widget(xml, "ap_UnixDialog_EditStyle");
+	m_enName = 		glade_xml_get_widget(xml, "enName");
+	m_cbBasedOn = 	glade_xml_get_widget(xml, "cbBasedOn");
+	m_cbFollowedBy= glade_xml_get_widget(xml, "cbFollowedBy");
 	m_wPropListContainer = glade_xml_get_widget(xml, "TreeViewContainer");
 	
+	m_radioGroup = 	gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPara") ));
+
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_Title,s);
 	abiDialogSetTitle(window, s.utf8_str());
 	
-	/*
-	// localize the strings in our dialog, and set tags for some widgets
+	// localize the strings in our dialog
+	localizeLabel(glade_xml_get_widget(xml, "lbName"), pSS, AP_STRING_ID_DLG_EditStyle_Name);
+	localizeLabel(glade_xml_get_widget(xml, "lbType"), pSS, AP_STRING_ID_DLG_EditStyle_Type);
+	localizeLabel(glade_xml_get_widget(xml, "lbBasedOn"), pSS, AP_STRING_ID_DLG_EditStyle_BasedOn);
+	localizeLabel(glade_xml_get_widget(xml, "lbFollowedBy"), pSS, AP_STRING_ID_DLG_EditStyle_FollowedBy);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertBreak"), pSS, AP_STRING_ID_DLG_Break_Insert);
-	
-	localizeButton(glade_xml_get_widget(xml, "rbPageBreak"), pSS, AP_STRING_ID_DLG_Break_PageBreak);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbPageBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
+	localizeLabel(glade_xml_get_widget(xml, "rbPara"), pSS, AP_STRING_ID_DLG_EditStyle_Paragraph);
+	localizeLabel(glade_xml_get_widget(xml, "rbChar"), pSS, AP_STRING_ID_DLG_EditStyle_Character);
 
-	localizeButton(glade_xml_get_widget(xml, "rbColumnBreak"), pSS, AP_STRING_ID_DLG_Break_ColumnBreak);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbColumnBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
-
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertSectionBreak"), pSS, AP_STRING_ID_DLG_Break_SectionBreaks_Capital);
-	
-	localizeButton(glade_xml_get_widget(xml, "rbNextPage"), pSS, AP_STRING_ID_DLG_Break_NextPage);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbNextPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
-
-	localizeButton(glade_xml_get_widget(xml, "rbContinuous"), pSS, AP_STRING_ID_DLG_Break_Continuous);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbContinuous")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
-
-	localizeButton(glade_xml_get_widget(xml, "rbEvenPage"), pSS, AP_STRING_ID_DLG_Break_EvenPage);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbEvenPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
-
-	localizeButton(glade_xml_get_widget(xml, "rbOddPage"), pSS, AP_STRING_ID_DLG_Break_OddPage);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbOddPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
-	*/
 	return window;
 }
 
@@ -163,21 +161,59 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	UT_UTF8String s;
 	
 	//
+	// Prepare the private members!
+	//
+	
+	_deconstructStyle ();
+	
+	//
 	// Fill in attributes of the style, etc.
 	//
 	
+	// Name
+	gtk_entry_set_text( (GtkEntry *) m_enName, m_sName.utf8_str() );
 	
+	// Type
+	gtk_toggle_button_set_active((GtkToggleButton *) (m_radioGroup->data), (m_bIsCharStyle) ? TRUE : FALSE);
+	gtk_toggle_button_set_active((GtkToggleButton *) (m_radioGroup->next->data), (!m_bIsCharStyle) ? TRUE : FALSE);
+
 	
+	// Based On (Modifies) and Followed By
+	
+	// fill both combo boxes identically
+	// from the same model, even, until I figure out "None" and "Current Settings"
+	// Hence, TODO
+	
+	m_wStyleModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	
+	unsigned int i=0;
+	for (i=0; i< m_vAllStyles.size(); i++)
+	{
+		gtk_list_store_append (m_wStyleModel, &iter);
+		gtk_list_store_set (m_wStyleModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
+	}
+	m_wComboRenderer = gtk_cell_renderer_text_new ();
+	
+	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wStyleModel));
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbBasedOn), m_wComboRenderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wComboRenderer,
+                                "text", 0, NULL);
+	
+	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wStyleModel));
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wComboRenderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wComboRenderer,
+                                "text", 0, NULL);
+	
+	// Set their values individually
+
+	// TODO
 	
 	//
 	// Fill in the properties treeview
 	//
 	
-	_deconstructStyle ();
-	
 	m_wModel = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
 	
-	unsigned int i=0;
 	for (i=0; i< m_vPropertyID.size(); i++)
 	{
 		// use the property id as an offset in the string table - yikes!
@@ -193,10 +229,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	
 	// get the current selection
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wPropList));
-	gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
-//	gtk_tree_selection_set_select_function (sel, tree_select_filter_common,
-//											NULL, NULL);
-	
+	gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);	
 
 	m_wNameRenderer = gtk_cell_renderer_text_new ();
 	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_PropName,s);
@@ -226,44 +259,24 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 						   static_cast<gpointer>(this));
 	*/
 	gtk_widget_show_all(m_wPropList);
-	//setStyleTreeChanged(false);
 	
 }
 
 void AP_UnixDialog_EditStyle::_storeWindowData(void)
 {
-	//m_break = _getActiveRadioItem();
+	//
+	// Update data structures with status of window
+	//
+	
+	// TODO
+	
+	//
+	// Rebuild properties
+	//
+	_reconstructStyle ();
+	
+	//
+	// Possibly modify the style? (Maybe in _reconstructStyle () ?)
+	//
+	
 }
-/*
-// TODO if this function is useful elsewhere, move it to Unix dialog
-// TODO helpers and standardize on a user-data tag for WIDGET_ID_TAG_KEY
-GtkWidget * AP_UnixDialog_EditStyle::_findRadioByID(AP_Dialog_EditStyle::breakType b)
-{
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY)) ==
-			static_cast<gint>(b))
-			return static_cast<GtkWidget *>(item->data);
-	}
-
-	return NULL;
-}
-
-AP_Dialog_EditStyle::breakType AP_UnixDialog_EditStyle::_getActiveRadioItem(void)
-{
-	UT_ASSERT(m_radioGroup);
-	for (GSList * item = m_radioGroup ; item ; item = item->next)
-	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
-		{
-			return (AP_Dialog_EditStyle::breakType)
-				GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY));
-		}
-	}
-
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return AP_Dialog_EditStyle::b_PAGE;
-}
-*/

@@ -31,6 +31,7 @@
 
 AP_Dialog_EditStyle::AP_Dialog_EditStyle(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogeditstyle"),
+	m_pDoc(NULL),
 	m_answer(a_OK),
 	m_sAllProperties("")
 {
@@ -44,10 +45,11 @@ AP_Dialog_EditStyle::~AP_Dialog_EditStyle(void)
  * Sets initial data about the target of our operations in this dialog.
  * Called before runModal by the calling procedure.
  */
-void AP_Dialog_EditStyle::setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle)
+void AP_Dialog_EditStyle::setDialogData(UT_UTF8String sName, PD_Style * pStyle, PD_Document * pDoc)
 {
 	m_sName=sName;
 	m_pStyle=pStyle;
+	m_pDoc=pDoc;
 }
 
 /*!
@@ -56,9 +58,81 @@ void AP_Dialog_EditStyle::setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle)
  */
 bool AP_Dialog_EditStyle::_deconstructStyle()
 {
-
+	//
+	// Get a list of styles - not strictly part of this style, but close enough
+	//
+	PD_Style * pStyle = NULL;
+	UT_uint32 index;
+	unsigned int i=0;
+	unsigned int k=0;
+	int j=0;
+	const gchar * szName = NULL;
+	m_vAllStyles.clear();
+	
+	// RP-GSOC08 TODO: This needs to be fixed, localizing style labels
+	// as required.
+	for (index=0; (m_pDoc->enumStyles(index,&szName,const_cast<const PD_Style **>(&pStyle))); index++)
+	{
+		m_vAllStyles.push_back(szName);
+	}
+	
+	std::sort(m_vAllStyles.begin(), m_vAllStyles.end());
+	
+	//
+	// Handle basic useful attributes of all sorts, like name, style type, etc.
+	//
+	
+	// Name already handled in setDialogData
+	
+	m_bIsCharStyle = m_pStyle->isCharStyle();
+	
+	//
+	// Handle the two attributes which involve picking from a list of styles
+	//
+	
+	const gchar * szBasedOn=0;
+	PD_Style * pBasedOn = m_pStyle->getBasedOn();
+	if (pBasedOn)
+	{
+		pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szBasedOn);
+		
+		j=0;
+		while ((unsigned int) j < m_vAllStyles.size() && std::string(szBasedOn) != m_vAllStyles[j])
+			j++;
+		if ((unsigned int) j >= m_vAllStyles.size())
+		{
+			UT_DEBUGMSG(("Oh dear, we couldn't find the based-on style %s in the vector.\n",
+						 szBasedOn));
+			j=-1;
+		}
+		m_iBasedOn=j;
+	}
+	
+	
+	const gchar * szFollowedBy=0;
+	PD_Style * pFollowedBy = m_pStyle->getFollowedBy();
+	if (pFollowedBy)
+	{
+		pFollowedBy->getAttribute(PT_NAME_ATTRIBUTE_NAME, szFollowedBy);
+		
+		j=0;
+		while ((unsigned int) j < m_vAllStyles.size() && std::string(szFollowedBy) != m_vAllStyles[j])
+			j++;
+		if ((unsigned int) j >= m_vAllStyles.size())
+		{
+			UT_DEBUGMSG(("Oh dear, we couldn't find the followed-by style %s in the vector.\n",
+						 szFollowedBy));
+			j=-1;
+		}
+		m_iFollowedBy=j;
+	}
+	
+	//
+	// Handle properties
+	//
+	
 	// DO NOT CHANGE without also changing below and the enum in the header and
-	// ap_stringid.h!
+	// ap_string_id.h!
 	const gchar * fields [] = {"text-align", "text-indent",
 		"margin-left", "margin-right", "margin-top", "margin-bottom",
 		"line-height", "tabstops", "start-value", "list-delim", "list-style",
@@ -78,8 +152,6 @@ bool AP_Dialog_EditStyle::_deconstructStyle()
 	
 	const gchar * pszName;
 	const gchar * pszVal;
-	unsigned int i=0;
-	unsigned int k=0;
 	while (i<vProps.size()-1)
 	{
 		pszName=vProps.getNthItem(i);
@@ -103,7 +175,8 @@ bool AP_Dialog_EditStyle::_deconstructStyle()
 		}
 		i+=2;	
 	}
-		
+	
+	return true; // apparently worked
 }
 
 /*!
@@ -118,7 +191,7 @@ bool AP_Dialog_EditStyle::_reconstructStyle()
 	
 	
 	// DO NOT CHANGE without also changing above and the enum in the header and
-	// ap_stringid.h!
+	// ap_string_id.h!
 	const gchar * fields [] = {"text-align", "text-indent",
 		"margin-left", "margin-right", "margin-top", "margin-bottom",
 		"line-height", "tabstops", "start-value", "list-delim", "list-style",
