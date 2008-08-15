@@ -56,7 +56,13 @@ XAP_Dialog * AP_UnixDialog_EditStyle::static_constructor(XAP_DialogFactory * pFa
 AP_UnixDialog_EditStyle::AP_UnixDialog_EditStyle(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_EditStyle(pDlgFactory,id),
-	m_windowMain(NULL)
+	m_windowMain(NULL),
+	m_wPropList(NULL),
+	m_wNameRenderer(NULL),
+	m_wValueRenderer(NULL),
+	m_wModel(NULL),
+	m_wPropListContainer(NULL)
+
 {
 }
 
@@ -113,12 +119,13 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_EditStyle");
 	//m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
-
-	// set the dialog title
+	m_wPropListContainer = glade_xml_get_widget(xml, "TreeViewContainer");
 	
+	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_Title,s);
 	abiDialogSetTitle(window, s.utf8_str());
+	
 	/*
 	// localize the strings in our dialog, and set tags for some widgets
 	
