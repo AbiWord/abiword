@@ -63,6 +63,7 @@ AC_ARG_ENABLE([collab-backend-service],
 		[
 			collab_service_req="libsoup-2.4 >= 2.4.0"
 			enable_collab_backend_service="yes"
+			collab_soup_24="yes"
 		], [
 			PKG_CHECK_EXISTS(libsoup-2.2 >= 2.2.100,
 			[
@@ -119,6 +120,9 @@ fi
 
 PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
 
+if test "$collab_soup_24" == "yes"; then
+	COLLAB_CFLAGS="$COLLAB_CFLAGS -DSOUP24"   	
+fi
 if test "$enable_collab_backend_fake" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"
 fi
