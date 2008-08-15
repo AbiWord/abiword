@@ -1846,10 +1846,10 @@ ie_imp_table_control::ie_imp_table_control(PD_Document * pDoc):
 
 ie_imp_table_control::~ie_imp_table_control(void)
 {
-	while(m_sLastTable.getDepth() > 1)
+	while(m_sLastTable.size() > 1)
 	{
-		ie_imp_table * pT = NULL;
-		m_sLastTable.pop(reinterpret_cast<void **>(&pT));
+		ie_imp_table * pT = m_sLastTable.top();
+		m_sLastTable.pop();
 		if(pT->wasTableUsed())
 		{
 //			pT->removeExtraneousCells();
@@ -1864,27 +1864,25 @@ ie_imp_table_control::~ie_imp_table_control(void)
 
 UT_sint32 ie_imp_table_control::getNestDepth(void)
 {
-	return m_sLastTable.getDepth() -1;
+	return m_sLastTable.size() - 1;
 }
 
 void ie_imp_table_control::OpenTable(void)
 {
-	ie_imp_table * pT = new ie_imp_table(m_pDoc);
-	m_sLastTable.push(static_cast<void *>(pT));
+	m_sLastTable.push(new ie_imp_table(m_pDoc));
 }
 
 
 UT_sint32 ie_imp_table_control::OpenCell(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	return pT->OpenCell();
 }
 
 void ie_imp_table_control::CloseTable(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.pop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
+	m_sLastTable.pop();
 	if(pT->wasTableUsed())
 	{
 //		pT->removeExtraneousCells();
@@ -1898,15 +1896,13 @@ void ie_imp_table_control::CloseTable(void)
 
 void ie_imp_table_control::CloseCell(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	pT->CloseCell();
 }
 
 ie_imp_table *  ie_imp_table_control::getTable(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	return pT;
 }
 

@@ -22,10 +22,11 @@
 
 #ifndef IE_TABLES
 #define IE_TABLES
+
+#include <stack>
 #include "pd_Document.h"
 #include "pt_Types.h"
 #include "ut_wctomb.h"
-#include "ut_stack.h"
 
 class PD_Document;
 class UT_Stack;
@@ -265,7 +266,7 @@ public:
 	void                SaveRowInfo(void);
 	void                RemoveRowInfo(void);
 private:
-	UT_Stack            m_sLastTable;
+	std::stack<ie_imp_table*> m_sLastTable;
 	PD_Document *       m_pDoc;
 };
 
