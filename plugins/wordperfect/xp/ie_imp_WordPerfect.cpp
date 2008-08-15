@@ -131,7 +131,7 @@ const uint8_t * AbiWordperfectInputStream::read(size_t numBytes, size_t &numByte
 
 int AbiWordperfectInputStream::seek(long offset, WPX_SEEK_TYPE seekType) 
 {
-	GSeekType gsfSeekType;
+	GSeekType gsfSeekType = G_SEEK_SET;
 	switch(seekType)
 	{
 	case WPX_SEEK_CUR:

@@ -136,19 +136,19 @@ private:
 
 public:
 	// The following three base class methods should never be called.
-	virtual bool change(PL_StruxFmtHandle sfh,
-	                       const PX_ChangeRecord * pcr)
+	virtual bool change(PL_StruxFmtHandle /*sfh*/,
+						const PX_ChangeRecord * /*pcr*/)
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
-	virtual bool insertStrux(PL_StruxFmtHandle sfh,
-	                            const PX_ChangeRecord * pcr,
-	                            PL_StruxDocHandle sdh,
-	                            PL_ListenerId lid,
-	                            void (* pfnBindHandles)
+	virtual bool insertStrux(PL_StruxFmtHandle /*sfh*/,
+							 const PX_ChangeRecord * /*pcr*/,
+							 PL_StruxDocHandle /*sdh*/,
+							 PL_ListenerId /*lid*/,
+							 void (* /*pfnBindHandles*/)
 	                                            (PL_StruxDocHandle sdhNew,
 	                                             PL_ListenerId lid,
 	                                             PL_StruxFmtHandle sfhNew))
 		                     { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
-	virtual bool signal(UT_uint32 iSignal) 
+	virtual bool signal(UT_uint32 /*iSignal*/) 
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 
 };
