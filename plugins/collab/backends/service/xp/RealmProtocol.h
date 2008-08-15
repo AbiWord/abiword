@@ -62,7 +62,7 @@ public:
 		return 0;
 	}
 		
-	uint8_t type() const {
+	const uint8_t & type() const {
 		return m_type;
 	}	
 

@@ -203,7 +203,6 @@ namespace soa {
 		return parent;
 	}
 
-#if 0 // static not used
 	static GenericPtr parse_response(const std::string& response, const std::string& method_name) {
 
 		// process the soap request
@@ -266,7 +265,7 @@ namespace soa {
 		}
 		return GenericPtr();
 	}
-#endif
+
 }
 
 #endif /* __SOA_RESULT__ */
