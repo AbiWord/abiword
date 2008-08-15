@@ -31,7 +31,8 @@
 
 AP_Dialog_EditStyle::AP_Dialog_EditStyle(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogeditstyle"),
-	m_answer(a_OK)
+	m_answer(a_OK),
+	m_sAllProperties("")
 {
 }
 
@@ -56,7 +57,7 @@ void AP_Dialog_EditStyle::setStyleToEdit(UT_UTF8String sName, PD_Style * pStyle)
 bool AP_Dialog_EditStyle::_deconstructStyle()
 {
 
-	// DO NOT CHANGE without also changing the enum in the header and
+	// DO NOT CHANGE without also changing below and the enum in the header and
 	// ap_stringid.h!
 	const gchar * fields [] = {"text-align", "text-indent",
 		"margin-left", "margin-right", "margin-top", "margin-bottom",
@@ -77,8 +78,8 @@ bool AP_Dialog_EditStyle::_deconstructStyle()
 	
 	const gchar * pszName;
 	const gchar * pszVal;
-	int i=0;
-	int k=0;
+	unsigned int i=0;
+	unsigned int k=0;
 	while (i<vProps.size()-1)
 	{
 		pszName=vProps.getNthItem(i);
@@ -113,7 +114,37 @@ bool AP_Dialog_EditStyle::_deconstructStyle()
  */
 bool AP_Dialog_EditStyle::_reconstructStyle()
 {
-	// TODO
+	// we can rebuild it, we can make it better.
+	
+	
+	// DO NOT CHANGE without also changing above and the enum in the header and
+	// ap_stringid.h!
+	const gchar * fields [] = {"text-align", "text-indent",
+		"margin-left", "margin-right", "margin-top", "margin-bottom",
+		"line-height", "tabstops", "start-value", "list-delim", "list-style",
+		"list-decimal", "field-font", "field-color", "keep-together",
+		"keep-with-next", "orphans", "widows", "dom-dir", "nulldummy",
+		"bgcolor", "color", "font-family",
+		"font-size", "font-stretch", "font-style", "font-variant",
+		"font-weight", "text-decoration", "lang", "\0"};
+	
+	std::string sProps=m_sUnrecognizedProps;
+	unsigned int i;
+	
+	for (i=0; i<m_vPropertyID.size(); i++)
+	{
+		sProps += std::string(fields[m_vPropertyID[i]]) + ":" + m_vPropertyValues[i] + ";";
+	}
+	
+	// Remove trailing semicolon
+	// property string has semicolon delimiters but a trailing semicolon will cause a failure.
+	if (sProps.size() > 0 && sProps[sProps.size()-1] == ';')
+	{
+		sProps.resize(sProps.size()-1);
+	}
+	
+	m_sAllProperties = sProps;
+	
 	return true;
 }
 
