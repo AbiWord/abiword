@@ -76,7 +76,7 @@ void AP_UnixDialog_GenericProgress::close()
 void AP_UnixDialog_GenericProgress::setProgress(UT_uint32 progress)
 {
 	UT_return_if_fail(m_wProgress);
-	UT_return_if_fail(progress >= 0 && progress <= 100);
+	UT_return_if_fail(/*progress >= 0 &&*/ progress <= 100);
 	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_wProgress), progress / 100.0f);
 }
 

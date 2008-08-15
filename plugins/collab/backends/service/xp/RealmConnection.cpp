@@ -29,10 +29,10 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 								 const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
 								 boost::function<void (RealmConnection&)> sig)
 	: m_io_service(),
-	m_socket(m_io_service),
 	m_ca_file(ca_file),
 	m_address(address),
 	m_port(port),
+	m_socket(m_io_service),
 	m_thread_ptr(),
 	m_cookie(cookie),
 	m_doc_id(doc_id),
@@ -247,7 +247,7 @@ void RealmConnection::_receive()
 			asio::placeholders::error, asio::placeholders::bytes_transferred, msg_ptr));
 }
 
-void RealmConnection::_message(const asio::error_code& e, std::size_t bytes_transferred, boost::shared_ptr<std::string> msg_ptr)
+void RealmConnection::_message(const asio::error_code& e, std::size_t /*bytes_transferred*/, boost::shared_ptr<std::string> msg_ptr)
 {
 	UT_DEBUGMSG(("RealmConnection::_message()\n"));
 	if (e)

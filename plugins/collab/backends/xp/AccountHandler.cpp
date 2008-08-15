@@ -117,7 +117,7 @@ void AccountHandler::deleteBuddies()
 	m_vecBuddies.clear();
 }
 
-void AccountHandler::forceDisconnectBuddy(Buddy* buddy)
+void AccountHandler::forceDisconnectBuddy(Buddy* /*buddy*/)
 {
 }
 		

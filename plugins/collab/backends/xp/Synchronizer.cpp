@@ -25,7 +25,7 @@
 #include <ut_debugmsg.h>
 
 #ifndef WIN32
-static gboolean s_glib_mainloop_callback(GIOChannel *channel, GIOCondition condition, Synchronizer* synchronizer)
+static gboolean s_glib_mainloop_callback(GIOChannel * /*channel*/, GIOCondition /*condition*/, Synchronizer* synchronizer)
 {
 	synchronizer->callMainloop();
 	return TRUE;

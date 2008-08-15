@@ -26,7 +26,7 @@
 
 #include "ap_UnixDialog_GenericInput.h"
 
-static void s_ok_clicked(GtkWidget * wid, AP_UnixDialog_GenericInput * dlg)
+static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_GenericInput * dlg)
 {
 	dlg->event_Ok();
 }

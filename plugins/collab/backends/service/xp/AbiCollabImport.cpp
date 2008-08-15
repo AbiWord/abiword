@@ -215,7 +215,7 @@ ServiceAccountHandler* IE_Imp_AbiCollab::_getAccount(const std::string& email, c
 	// if not, we'll create it
 	ServiceAccountHandler* pExistingServiceAccount = NULL;
 	const UT_GenericVector<AccountHandler *> accounts = pManager->getAccounts();
-	for (UT_sint32 i = 0; i < accounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < accounts.getItemCount(); i++)
 	{
 		AccountHandler* pAccount = accounts.getNthItem(i);
 		UT_continue_if_fail(pAccount);

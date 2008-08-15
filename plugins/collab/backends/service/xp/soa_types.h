@@ -54,7 +54,7 @@ public:
 		return name_;
 	}
 
-	const Type type() const {
+	Type type() const {
 		return type_;
 	}
 

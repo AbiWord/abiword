@@ -58,11 +58,11 @@ public:
 
 	// should be overwritten when the packet 'has a body'
 	// returns: the number of bytes read, -1 on error
-	virtual int parse(const char* buf, size_t size) {
+	virtual int parse(const char* /*buf*/, size_t /*size*/) {
 		return 0;
 	}
 		
-	const uint8_t& type() const {
+	uint8_t type() const {
 		return m_type;
 	}	
 

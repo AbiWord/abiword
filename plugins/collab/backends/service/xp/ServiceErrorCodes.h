@@ -47,6 +47,7 @@ enum SOAP_ERROR
 	// TODO: add more errors
 };
 
+#if 0 // static not used.
 static SOAP_ERROR error(const soa::SoapFault& fault)
 {
 	if (!fault.string())
@@ -57,6 +58,7 @@ static SOAP_ERROR error(const soa::SoapFault& fault)
 		return SOAP_ERROR_GENERIC;
 	}
 }
+#endif
 
 }
 }

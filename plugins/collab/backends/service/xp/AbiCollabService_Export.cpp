@@ -38,7 +38,7 @@ AbiCollabService_Export::~AbiCollabService_Export()
 {
 }
 
-bool AbiCollabService_Export::populate(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr)
+bool AbiCollabService_Export::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -49,9 +49,9 @@ bool AbiCollabService_Export::populate(PL_StruxFmtHandle sfh, const PX_ChangeRec
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle sdh,
-				      const PX_ChangeRecord * pcr,
-				      PL_StruxFmtHandle * psfh)
+bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle /*sdh*/,
+                                            const PX_ChangeRecord * /*pcr*/,
+                                            PL_StruxFmtHandle * /*psfh*/)
 {
 	return true;
 }
@@ -62,8 +62,8 @@ bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle sdh,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::change(PL_StruxFmtHandle sfh,
-				const PX_ChangeRecord * pcr)
+bool AbiCollabService_Export::change(PL_StruxFmtHandle /*sfh*/,
+                                     const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -75,11 +75,11 @@ bool AbiCollabService_Export::change(PL_StruxFmtHandle sfh,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
+                                          const PX_ChangeRecord * /*pcr*/,
+                                          PL_StruxDocHandle /*sdh*/,
+                                          PL_ListenerId /*lid*/,
+                                          void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
@@ -127,7 +127,7 @@ bool AbiCollabService_Export::signal(UT_uint32 iSignal)
  * This virtual method is called from the AbiWord main tree upon doing a replace document with an attached
  * AbiCollab_Export connected to the document.
  */
-void AbiCollabService_Export::setNewDocument(PD_Document * pDoc)
+void AbiCollabService_Export::setNewDocument(PD_Document * /*pDoc*/)
 {
 	UT_DEBUGMSG(("AbiCollabService_Export::setNewDocument()\n"));
 /*	ServiceAccountHandler* pService = ServiceAccountHandler::getService();

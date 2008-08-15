@@ -129,7 +129,7 @@ private:
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(RealmConnection& connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
-	virtual	void							_handlePacket(Packet* packet, Buddy* buddy, bool autoAddBuddyOnJoin)
+	virtual	void							_handlePacket(Packet* packet, Buddy* buddy, bool /*autoAddBuddyOnJoin*/)
 		{ AccountHandler::_handlePacket(packet, buddy, false); }
 
 
