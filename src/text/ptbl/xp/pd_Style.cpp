@@ -551,8 +551,8 @@ bool PD_Style::simplifyProperties()
 	UT_GenericVector<const gchar *> vKeepers, vTheseProps, vBasedOnProps, vAttrs;
 	std::map<std::string, std::string> mBasedOnProps;
 	
-	getAllProperties (&vTheseProps, (UT_sint32) 0);
-	getBasedOn()-> getAllProperties(&vBasedOnProps, (UT_sint32) 1);
+	getAllProperties (&vTheseProps);
+	getBasedOn()-> getAllProperties(&vBasedOnProps);
 	
 	
 	// Turn based on props into a map.
