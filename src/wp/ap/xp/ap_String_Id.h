@@ -289,6 +289,8 @@ dcl(DLG_EditStyle_PropName, "Property Name")
 dcl(DLG_EditStyle_PropValue, "Value")
 
 /* Property names for the Edit Style dialog */
+/* DO NOT CHANGE ORDER HERE UNDER PENALTY OF BAD THINGS HAPPENING TO YOU */
+/* That is, unless you also change ap_Dialog_EditStyle.cpp/h to match */
 dcl(DLG_EditStyle_Prop_P_TEXT_ALIGN,		"Text Alignment")
 dcl(DLG_EditStyle_Prop_P_TEXT_INDENT,		"Text Indent")
 dcl(DLG_EditStyle_Prop_P_MARGIN_LEFT,		"Left Margin")
