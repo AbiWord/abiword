@@ -162,6 +162,16 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	
+	//
+	// Fill in attributes of the style, etc.
+	//
+	
+	
+	
+	
+	//
+	// Fill in the properties treeview
+	//
 	
 	_deconstructStyle ();
 	
@@ -200,7 +210,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_PropValue,s);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wPropList),
 												 -1, s.utf8_str(),
-												 m_wValueRenderer, "text", 0, NULL); 	
+												 m_wValueRenderer, "text", 1, NULL); 	
 
 	gtk_container_add (GTK_CONTAINER (m_wPropListContainer), m_wPropList);
 

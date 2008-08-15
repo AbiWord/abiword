@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Thu Aug 14 21:01:42 2008 -->
+<!--Generated with glade3 3.4.5 on Thu Aug 14 21:29:25 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="ap_UnixDialog_EditStyle">
     <property name="border_width">5</property>
@@ -27,33 +27,47 @@
                   <placeholder/>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="enName">
+                  <widget class="GtkLabel" id="lbFollowedBy">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="label" translatable="yes">Followed by</property>
                   </widget>
                   <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkComboBox" id="cbBasedOn">
-                    <property name="visible">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">4</property>
-                    <property name="right_attach">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkComboBox" id="cbFollowedBy">
-                    <property name="visible">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">4</property>
-                    <property name="right_attach">5</property>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">4</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="lbBasedOn">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Modifies</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">4</property>
+                    <property name="y_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="lbType">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Style Type</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="lbName">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Style Name</property>
+                  </widget>
+                  <packing>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -89,50 +103,50 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="lbName">
+                  <widget class="GtkComboBox" id="cbFollowedBy">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Style Name</property>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="lbType">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Style Type</property>
                   </widget>
                   <packing>
+                    <property name="left_attach">4</property>
+                    <property name="right_attach">5</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="lbBasedOn">
+                  <widget class="GtkComboBox" id="cbBasedOn">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Modifies</property>
                   </widget>
                   <packing>
-                    <property name="left_attach">3</property>
-                    <property name="right_attach">4</property>
+                    <property name="left_attach">4</property>
+                    <property name="right_attach">5</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="lbFollowedBy">
+                  <widget class="GtkEntry" id="enName">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Followed by</property>
+                    <property name="can_focus">True</property>
                   </widget>
                   <packing>
-                    <property name="left_attach">3</property>
-                    <property name="right_attach">4</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
             </child>
             <child>
               <widget class="GtkScrolledWindow" id="TreeViewContainer">
+                <property name="height_request">200</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
