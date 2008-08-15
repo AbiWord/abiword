@@ -29,7 +29,6 @@
 #include "ut_wctomb.h"
 
 class PD_Document;
-class UT_Stack;
 class PX_ChangeRecord_Object;
 class PP_AttrProp;
 class ie_imp_table;
@@ -117,7 +116,7 @@ class ABI_EXPORT ie_Table
 	void             incCurRow(void);
  private:
 	PD_Document *     m_pDoc;
-	UT_Stack          m_sLastTable;
+	std::stack<ie_PartTable*> m_sLastTable;
 	bool              m_bNewRow;
 	PL_StruxDocHandle  m_sdhLastCell;
 };			
