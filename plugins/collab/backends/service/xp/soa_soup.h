@@ -124,7 +124,7 @@ namespace soup_soa {
 	
 	/* private functions */
 	
-	static soa::GenericPtr _invoke(const std::string& url, const soa::method_invocation& mi, SoaSoupSession& sess) {
+	static soa::GenericPtr _invoke(const std::string& /*url*/, const soa::method_invocation& mi, SoaSoupSession& sess) {
 		if (!sess.m_session || !sess.m_msg )
 			return soa::GenericPtr();
 
@@ -153,7 +153,7 @@ namespace soup_soa {
 	}
 
 #ifdef SOUP24
-	static void _got_chunk_cb(SoupMessage* msg, SoupBuffer *chunk, SoaSoupSession* progress_info)
+	static void _got_chunk_cb(SoupMessage* msg, SoupBuffer * /*chunk*/, SoaSoupSession* progress_info)
 #else
 	static void _got_chunk_cb(SoupMessage* msg, SoaSoupSession* progress_info)
 #endif

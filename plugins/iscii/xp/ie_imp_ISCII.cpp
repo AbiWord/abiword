@@ -62,7 +62,8 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 		return false;
 
 	// prefetch lookahead byte
-	if (m_bNeedByte)
+	if (m_bNeedByte) 
+    {
 		if (!_getByte(m_cLookAhead))
 		{
 			m_cLookAhead = 0;
@@ -70,7 +71,7 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 		}
 		else
 			m_bNeedByte = false;
-
+    }
 	if (!_get_eof())
 	{
 		c = m_cLookAhead;

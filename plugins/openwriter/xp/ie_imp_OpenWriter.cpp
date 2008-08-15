@@ -267,27 +267,29 @@ public:
     const gchar * val2 = NULL;
 
     val = UT_getAttribute ("fo:text-align", props);
-    if (val)
-      if (!strcmp(val, "end"))
-	m_align = "text-align: right;";
-      else if (!strcmp(val, "center"))
-	m_align = "text-align: center;";
-      else if (!strcmp(val, "justify"))
-	m_align = "text-align: justify;";
-      else
-	m_align = "text-align: left;";
-    
+    if (val) {
+        if (!strcmp(val, "end"))
+            m_align = "text-align: right;";
+        else if (!strcmp(val, "center"))
+            m_align = "text-align: center;";
+        else if (!strcmp(val, "justify"))
+            m_align = "text-align: justify;";
+        else
+            m_align = "text-align: left;";
+    }
+
     val = UT_getAttribute ("fo:font-weight", props);
-    if(val)
-      if (!strcmp(val, "bold"))
-	m_fontWeight = "font-weight: bold;";
-      else
-	m_fontWeight = "font-weight: normal;";
-    
+    if(val) {
+        if (!strcmp(val, "bold"))
+            m_fontWeight = "font-weight: bold;";
+        else
+            m_fontWeight = "font-weight: normal;";
+    }
+
     val = UT_getAttribute("fo:font-style", props);
     if (val)
-      if (!strcmp(val, "italic"))
-	m_fontStyle = "font-style: italic;";
+        if (!strcmp(val, "italic"))
+            m_fontStyle = "font-style: italic;";
       
     val = UT_getAttribute("fo:color", props);
     if (val)
@@ -395,17 +397,17 @@ public:
       m_lineHeight = UT_String_sprintf ("line-height: %s+;", val);
     
     val = UT_getAttribute ("fo:line-height", props);
-    if (val)
-      if (strstr(val, "%") != NULL) {
-	int spacing;
-	
-	sscanf (val, "%d%%", &spacing);	
-	UT_LocaleTransactor lt(LC_NUMERIC, "C");
-	m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
-      }
-      else
-	m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
-    
+    if (val) {
+        if (strstr(val, "%") != NULL) {
+            int spacing;
+            
+            sscanf (val, "%d%%", &spacing);	
+            UT_LocaleTransactor lt(LC_NUMERIC, "C");
+            m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
+        }
+        else
+            m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
+    }
     val = UT_getAttribute("fo:keep-with-next", props);
     if (val)
       m_keepWithNext = UT_String_sprintf ("keep-with-next: %s;", !strcmp(val, "true") ? "yes" : "no");

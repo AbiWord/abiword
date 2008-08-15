@@ -232,7 +232,9 @@ bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 
 			for (char *p = translate; p && *p; ++p)
 			{
-				if (*p == ' ' || *p == '%' || *p == '&' || *p == '?' || *p > 127)
+				if (*p == ' ' || *p == '%' || *p == '&' || *p == '?' 
+					|| (*p & 128)) // sometime char is signed. 
+					               // do bitwise comparison for portability
 				{
 					char temp[4] = "";
 					sprintf(&temp[0], "%%%x", *p);

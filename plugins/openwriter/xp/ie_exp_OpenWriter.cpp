@@ -388,7 +388,7 @@ void OO_StylesContainer::addFont(UT_String & font)
 	}
 }
 
-const int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
+int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
 {
    if (int *val = m_spanStylesHash.pick(key.c_str())) {
       return *val;
@@ -397,7 +397,7 @@ const int OO_StylesContainer::getSpanStyleNum(UT_String &key) const
       return 0;
 }
 
-const int OO_StylesContainer::getBlockStyleNum(UT_String & /*styleAtts*/, UT_String & styleProps) const
+int OO_StylesContainer::getBlockStyleNum(UT_String & /*styleAtts*/, UT_String & styleProps) const
 {
 	UT_GenericVector<const UT_String*> *keys = m_blockAttsHash.keys();
 

@@ -25,7 +25,6 @@
 #include <deque>
 
 #ifdef HAVE_LIBXSLT
-#include <libxml/DOCBparser.h>
 #include <libxslt/xslt.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>

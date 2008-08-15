@@ -132,8 +132,8 @@ public:
    void addSpanStyle(UT_String &key);
    void addBlockStyle(UT_String & styleAtts, UT_String & styleProps);
    void addFont(UT_String & font);
-   const int getSpanStyleNum(UT_String &key) const;
-   const int getBlockStyleNum(UT_String & styleAtts, UT_String & styleProps) const;
+   int getSpanStyleNum(UT_String &key) const;
+   int getBlockStyleNum(UT_String & styleAtts, UT_String & styleProps) const;
    UT_GenericVector<int*> * enumerateSpanStyles() const;
    UT_String * pickBlockAtts(const UT_String *key);
    UT_GenericVector<const UT_String*> * getSpanStylesKeys() const;

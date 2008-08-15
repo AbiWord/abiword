@@ -420,7 +420,7 @@ static bool SaveBindings_invoke(AV_View * /*v*/, EV_EditMethodCallData* d)
 			doneMouseContexts.insert( bits & ~EV_EMO__MASK__ );
 			
 			// get button
-			int button;
+			int button = 0;
 			switch (bits & EV_EMB__MASK__) {
 				case EV_EMB_BUTTON0: button = 0; break;
 				case EV_EMB_BUTTON1: button = 1; break;
