@@ -73,6 +73,16 @@
     <property name="page_size">10</property>
     <property name="step_increment">0.1</property>
   </object>
+  <object class="GtkListStore" id="model1">
+    <columns>
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">fake</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkDialog" id="ap_UnixDialog_PageSetup">
     <property name="border_width">5</property>
     <property name="visible">True</property>
@@ -344,6 +354,13 @@
                                     <property name="visible">True</property>
                                     <property name="add_tearoffs">False</property>
                                     <property name="focus_on_click">True</property>
+                                    <property name="model">model1</property>
+                                    <child>
+                                      <object class="GtkCellRendererText" id="renderer1"/>
+                                      <attributes>
+                                        <attribute name="text">0</attribute>
+                                      </attributes>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>

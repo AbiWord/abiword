@@ -291,6 +291,7 @@
 			      <child>
 				<widget class="GtkComboBox" id="comboPageSize">
 				  <property name="visible">True</property>
+				  <property name="items" translatable="yes">fake</property>
 				  <property name="add_tearoffs">False</property>
 				  <property name="focus_on_click">True</property>
 				</widget>
