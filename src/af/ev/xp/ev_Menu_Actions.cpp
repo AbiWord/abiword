@@ -148,7 +148,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
 								  const UT_String& stScriptName)
 {
-	EV_Menu_Action * pTmpAction;
+	EV_Menu_Action * pTmpAction = NULL;
 
 	if ((id < m_first) || (id >= m_first + static_cast<UT_sint32>(m_actionTable.size())))
 		return false;

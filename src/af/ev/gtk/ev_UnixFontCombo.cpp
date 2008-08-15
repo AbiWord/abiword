@@ -211,6 +211,7 @@ abi_cell_renderer_font_get_type (void)
                         sizeof (AbiCellRendererFont),
                         0,              /* n_preallocs */
                         (GInstanceInitFunc) abi_cell_renderer_font_instance_init,
+						NULL
                 };
                 type = g_type_register_static (GTK_TYPE_CELL_RENDERER_TEXT, 
 					       "AbiCellRendererFont", &info, 
@@ -361,6 +362,7 @@ abi_font_combo_get_type (void)
                         sizeof (AbiFontCombo),
                         0,              /* n_preallocs */
                         (GInstanceInitFunc) abi_font_combo_init,
+						NULL
                 };
                 type = g_type_register_static (GTK_TYPE_COMBO_BOX, 
 					       "AbiFontCombo", &info, 

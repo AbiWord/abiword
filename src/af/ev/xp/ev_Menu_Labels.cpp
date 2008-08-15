@@ -104,7 +104,7 @@ bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 								const char * szMenuLabel,
 								const char * szStatusMsg)
 {
-	EV_Menu_Label * pTmpLbl;
+	EV_Menu_Label * pTmpLbl = NULL;
 	XAP_Menu_Id last = m_first + m_labelTable.size();
 	
 	if (id < m_first || id >= last)
