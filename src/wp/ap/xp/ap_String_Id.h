@@ -285,7 +285,8 @@ dcl(DLG_Stylist_Create_Prompt, "Enter a unique name for your new style.")
 
 /* Edit Style (manual prop edit) dialog */
 dcl(DLG_EditStyle_Title, "Edit Style")
-dcl(DLG_EditStyle_Whatever, "More")
+dcl(DLG_EditStyle_PropName, "Property Name")
+dcl(DLG_EditStyle_PropValue, "Value")
 
 /* Property names for the Edit Style dialog */
 dcl(DLG_EditStyle_Prop_P_TEXT_ALIGN,		"Text Alignment")

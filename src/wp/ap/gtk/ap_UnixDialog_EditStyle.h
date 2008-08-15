@@ -43,14 +43,15 @@ protected:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 											   
-	
-/*
-	GtkWidget * _findRadioByID(AP_Dialog_Break::breakType b);
-	AP_Dialog_Break::breakType _getActiveRadioItem(void);
-	*/
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-
+	GtkWidget * m_wPropList;
+	
+	GtkCellRenderer * m_wNameRenderer;
+	GtkCellRenderer * m_wValueRenderer;
+	GtkListStore * m_wModel;
+	GtkWidget * m_wPropListContainer;
+	
 	// group of radio buttons for easy traversal
 	//GSList *	m_radioGroup;
 };

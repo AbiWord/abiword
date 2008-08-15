@@ -115,11 +115,11 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 	//m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
 
 	// set the dialog title
-	/* TODO i18n
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle_Capital,s);
-	abiDialogSetTitle(window, s.utf8_str());
 	
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_Title,s);
+	abiDialogSetTitle(window, s.utf8_str());
+	/*
 	// localize the strings in our dialog, and set tags for some widgets
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertBreak"), pSS, AP_STRING_ID_DLG_Break_Insert);
@@ -150,12 +150,67 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 
 void AP_UnixDialog_EditStyle::_populateWindowData(void)
 {
-	/*
-	GtkWidget * widget = _findRadioByID(m_break);
-	UT_ASSERT(widget);
+	GtkTreeIter iter;
+	GtkTreeSelection *sel;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
 	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
+	
+	_deconstructStyle ();
+	
+	m_wModel = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+	
+	unsigned int i=0;
+	for (i=0; i< m_vPropertyID.size(); i++)
+	{
+		// use the property id as an offset in the string table - yikes!
+		pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_Prop_P_TEXT_ALIGN +m_vPropertyID[i],s);
+		gtk_list_store_append (m_wModel, &iter);
+		gtk_list_store_set (m_wModel, &iter, 0, g_strdup(s.utf8_str()), 1, m_vPropertyValues[i].c_str(), 2, i, -1);
+	}
+	
+	// create a new treeview
+	m_wPropList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
+	g_object_unref (G_OBJECT (m_wModel));
+	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wPropList), true);
+	
+	// get the current selection
+	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wPropList));
+	gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+//	gtk_tree_selection_set_select_function (sel, tree_select_filter_common,
+//											NULL, NULL);
+	
+
+	m_wNameRenderer = gtk_cell_renderer_text_new ();
+	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_PropName,s);
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wPropList),
+												 -1, s.utf8_str(),
+												 m_wNameRenderer, "text", 0, NULL); 
+	
+	m_wValueRenderer = gtk_cell_renderer_text_new ();
+	g_object_set(m_wValueRenderer, "editable", TRUE, NULL);
+	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_EditStyle_PropValue,s);
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wPropList),
+												 -1, s.utf8_str(),
+												 m_wValueRenderer, "text", 0, NULL); 	
+
+	gtk_container_add (GTK_CONTAINER (m_wPropListContainer), m_wPropList);
+
+	/*
+	g_signal_connect_after(G_OBJECT(m_wPropList),
+						   "cursor-changed",
+						   G_CALLBACK(s_types_clicked),
+						   static_cast<gpointer>(this));
+
+	g_signal_connect_after(G_OBJECT(m_wPropList),
+						   "row-activated",
+						   G_CALLBACK(s_types_dblclicked),
+						   static_cast<gpointer>(this));
 	*/
+	gtk_widget_show_all(m_wPropList);
+	//setStyleTreeChanged(false);
+	
 }
 
 void AP_UnixDialog_EditStyle::_storeWindowData(void)
