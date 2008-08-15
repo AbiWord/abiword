@@ -150,44 +150,40 @@ static void s_menu_item_activate (GtkWidget * widget)
 
 static void s_Landscape_changed(GtkWidget * w,  AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(w);
-	UT_ASSERT(dlg);
+	UT_return_if_fail(w && dlg);
 	dlg->event_LandscapeChanged();
 }
 
-static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
-				 AP_UnixDialog_PageSetup *dlg)
+static void s_page_size_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(w && dlg);
-
-	fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_list_child_position (GTK_LIST(w), child);
+	UT_return_if_fail(w && dlg);
+	fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_combo_box_get_active(GTK_COMBO_BOX(w));
 	dlg->event_PageSizeChanged (pos);
 }
 
 static void s_page_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(w && dlg);
+	UT_return_if_fail(w && dlg);
 	s_menu_item_activate (w);
 	dlg->event_PageUnitsChanged ();
 }
 
 static void s_margin_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(w && dlg);
-
+	UT_return_if_fail(w && dlg);
 	s_menu_item_activate (w);
 	dlg->event_MarginUnitsChanged ();
 }
 
-static void s_entryPageWidth_changed(GtkWidget * widget, AP_UnixDialog_PageSetup *dlg)
+static void s_entryPageWidth_changed(GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(w && dlg);
  	dlg->doWidthEntry();
 }
 
-static void s_entryPageHeight_changed(GtkWidget * widget, AP_UnixDialog_PageSetup *dlg)
+static void s_entryPageHeight_changed(GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(w && dlg);
 	dlg->doHeightEntry();
 }
 
@@ -291,7 +287,6 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_updatePageSizeList();
-
 }
 
 void AP_UnixDialog_PageSetup::doHeightEntry(void)
@@ -312,14 +307,13 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 /* The paper size may have changed, update the Paper Size listbox */
 void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 {
-	xxx_UT_DEBUGMSG(("_updatePageSize set to %s \n",m_PageSize.getPredefinedName()));
-	gint last_page_size = static_cast<gint>(fp_PageSize::NameToPredefined 
+	UT_DEBUGMSG(("AP_UnixDialog_PageSetup::_updatePageSize set to %s \n", m_PageSize.getPredefinedName()));
+	gint page_index = static_cast<gint>(fp_PageSize::NameToPredefined 
 						(m_PageSize.getPredefinedName ()));
 
-	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
-	g_signal_handler_block(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
-	gtk_list_select_item (optionPageSizeList, last_page_size);
-	g_signal_handler_unblock(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
+	g_signal_handler_block(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_comboPageSize), page_index);
+	g_signal_handler_unblock(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
 }
 
 void AP_UnixDialog_PageSetup::event_OK (void)
@@ -585,7 +579,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	m_window = _getWidget("ap_UnixDialog_PageSetup");
 	m_wHelp = _getWidget("wHelp");
 
-	m_optionPageSize = _getWidget("comboPageSize");
+	m_comboPageSize = _getWidget("comboPageSize");
 	m_entryPageWidth = _getWidget("wWidthSpin");
 	m_entryPageHeight = _getWidget("wHeightSpin");
 	m_optionPageUnits = _getWidget("optionPageUnits");
@@ -638,7 +632,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	/* setup page width and height */
 	if (!getPageOrientation () == PORTRAIT)
 	{
-	m_PageSize.setLandscape();
+		m_PageSize.setLandscape();
 	}
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageWidth), m_PageSize.Width (getPageUnits ()));
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageHeight), m_PageSize.Height (getPageUnits ()));
@@ -654,13 +648,22 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	/* setup scale number */
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinPageScale), static_cast<float>(getPageScale ()));
 
-	// create the drop-down menu with all of our supported page sizes
-	GList *popdown_items = NULL;
-	for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_); i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
-		popdown_items = g_list_append (popdown_items, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)) );
-	gtk_combo_set_popdown_strings (GTK_COMBO (m_optionPageSize), popdown_items);
-	GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
-	m_iOptionPageSizeListID = g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",  G_CALLBACK(s_page_size_changed), static_cast<gpointer>(this));
+	// fill the combobox all of our supported page sizes
+	GtkListStore* pagesize_store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
+	GtkTreeIter pagesize_iter;
+	for (UT_uint32 i = fp_PageSize::_first_predefined_pagesize_; i < fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+	{
+		gtk_list_store_append(pagesize_store, &pagesize_iter);
+		gtk_list_store_set(pagesize_store, &pagesize_iter,
+					0, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)),
+					1, this,
+					-1);
+	}
+	gtk_combo_box_set_model(GTK_COMBO_BOX(m_comboPageSize), GTK_TREE_MODEL(pagesize_store));
+	m_iComboPageSizeListID = g_signal_connect(G_OBJECT(m_comboPageSize),
+							"changed",
+							G_CALLBACK(s_page_size_changed),
+							static_cast<gpointer>(this));
 
 	/* setup page units menu */
 	optionPageUnits_menu = gtk_menu_new ();

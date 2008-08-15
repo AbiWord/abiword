@@ -63,7 +63,7 @@ public:
 	
  private:
 	// pointers to widgets that we may need to query
-	GtkWidget * m_optionPageSize;
+	GtkWidget * m_comboPageSize;	
 	GtkWidget * m_entryPageWidth;
 	GtkWidget * m_entryPageHeight;
 	GtkWidget * m_optionPageUnits;
@@ -89,7 +89,7 @@ public:
 
 	guint m_iEntryPageWidthID;
 	guint m_iEntryPageHeightID;
-	guint m_iOptionPageSizeListID;
+	guint m_iComboPageSizeListID;
 	guint m_iOptionPageUnitsListID;
 
     XAP_Frame * m_pFrame;
