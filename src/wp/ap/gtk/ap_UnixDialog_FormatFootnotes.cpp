@@ -116,6 +116,7 @@ static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_FormatFootnot
 
 static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
 	UT_DEBUGMSG(("Initial Footnote Val changed \n")); 
 	dlg->event_FootInitialValueChange();
@@ -123,6 +124,7 @@ static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dl
 
 static void s_EndInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
 	UT_DEBUGMSG(("Initial Endnote Val changed \n")); 
 

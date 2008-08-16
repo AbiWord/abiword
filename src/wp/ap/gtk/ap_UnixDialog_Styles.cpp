@@ -164,12 +164,14 @@ s_closebtn_clicked (GtkWidget * /*w*/, gpointer d)
 
 static void s_remove_property(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_RemoveProperty();
 }
 
 static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->new_styleName();
 }
@@ -177,6 +179,7 @@ static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -186,6 +189,7 @@ static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -195,6 +199,7 @@ static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -203,6 +208,7 @@ static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_paraPreviewExposed();
 	return FALSE;
@@ -211,6 +217,7 @@ static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 
 static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_charPreviewExposed();
 	return FALSE;
@@ -219,6 +226,7 @@ static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 
 static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_ModifyPreviewExposed();
 	return FALSE;
@@ -285,9 +293,6 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
-	
 	UT_ASSERT(m_wParaPreviewArea && m_wParaPreviewArea->window);
 
 	// make a new Unix GC
@@ -1259,8 +1264,6 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
         abiSetupModalDialog(GTK_DIALOG(m_wModifyDialog), getFrame(), this, BUTTON_MODIFY_CANCEL);
 
 	// make a new Unix GC
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
 
 	DELETEP (m_pAbiPreviewWidget);
 	GR_UnixAllocInfo ai(m_wModifyDrawingArea->window);

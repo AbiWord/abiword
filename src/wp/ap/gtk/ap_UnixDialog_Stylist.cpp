@@ -50,7 +50,7 @@ static void s_types_clicked(GtkTreeView *treeview,
 	}
 
 	// Get the row and col number
-	GValue value = {0,};
+	GValue value = {0,{{NULL}}};
 	gtk_tree_model_get_value (model, &iter,1,&value);
 	row = g_value_get_int(&value);
 	g_value_unset (&value);

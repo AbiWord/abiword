@@ -800,7 +800,7 @@ gint AP_UnixDialog_Options::_gatherInnerQuoteStyle ( void )
 typedef struct {
     int index;
     int found;
-    gchar *key;
+    const gchar *key;
     gpointer data;
 } search_data;
 
@@ -822,7 +822,7 @@ static void search_for_value ( GtkWidget *widget, gpointer _value )
 }
 
 // returns -1 if not found
-static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
+static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, const gchar *key )
 {
     UT_ASSERT ( option_menu && key && GTK_IS_OPTION_MENU ( option_menu ) );
 
@@ -844,8 +844,10 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gcha
         gtk_option_menu_set_history ( GTK_OPTION_MENU ( option_menu ), data.found );
         //UT_DEBUGMSG(("search found %d\n", data.found ));
     }
-    else
+    else 
+    {
         UT_DEBUGMSG ( ( "%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ) );
+    }
 
     return data.found;
 }
@@ -860,8 +862,9 @@ void    AP_UnixDialog_Options::_setViewRulerUnits ( UT_Dimension dim )
 
     int r = option_menu_set_by_key ( m_menuUnits, reinterpret_cast<gpointer> ( dim ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
 void AP_UnixDialog_Options::_setOuterQuoteStyle ( gint nIndex )
 {
@@ -869,8 +872,9 @@ void AP_UnixDialog_Options::_setOuterQuoteStyle ( gint nIndex )
 
     int r = option_menu_set_by_key ( m_omOuterQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
 
 void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
@@ -879,8 +883,9 @@ void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
 
     int r = option_menu_set_by_key ( m_omInnerQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
 
 DEFINE_GET_SET_BOOL ( ViewCursorBlink )
@@ -928,6 +933,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 /*static*/ void AP_UnixDialog_Options::s_defaults_clicked ( GtkWidget *widget, gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+    UT_UNUSED ( widget );
     UT_ASSERT ( widget && dlg );
     dlg->_event_SetDefaults();
 
@@ -956,6 +962,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 /*static*/ void AP_UnixDialog_Options::s_chooseTransparentColor ( GtkWidget *widget, gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+    UT_UNUSED ( widget );
     UT_ASSERT ( widget && dlg );
     dlg->event_ChooseTransparentColor();
 }
@@ -988,6 +995,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
 
+    UT_UNUSED ( dlg );
     UT_ASSERT ( widget && dlg );
 
     GtkWidget *option_menu = static_cast<GtkWidget *> ( g_object_get_data ( G_OBJECT ( widget ),
