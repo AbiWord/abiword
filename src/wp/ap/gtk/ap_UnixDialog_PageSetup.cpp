@@ -494,7 +494,8 @@ AP_UnixDialog_PageSetup::AP_UnixDialog_PageSetup (XAP_DialogFactory *pDlgFactory
 
 AP_UnixDialog_PageSetup::~AP_UnixDialog_PageSetup (void)
 {
-	// nada
+  if (m_pBuilder)
+    g_object_unref(G_OBJECT(m_pBuilder));
 }
 
 void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)

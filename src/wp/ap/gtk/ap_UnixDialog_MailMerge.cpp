@@ -206,6 +206,8 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
+
+	g_object_unref(G_OBJECT(builder));
 			   
 	return m_windowMain;			   
 }

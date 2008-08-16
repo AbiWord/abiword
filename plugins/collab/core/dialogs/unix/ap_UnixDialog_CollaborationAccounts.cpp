@@ -177,7 +177,9 @@ GtkWidget * AP_UnixDialog_CollaborationAccounts::_constructWindow(void)
 	g_signal_connect(G_OBJECT(m_wAccountsTree),
 							"cursor-changed",
 							G_CALLBACK(s_account_selected),
-							static_cast<gpointer>(this));	
+							static_cast<gpointer>(this));
+
+	g_object_unref (G_OBJECT(builder));
 	
 	return window;
 }

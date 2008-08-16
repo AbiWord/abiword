@@ -137,6 +137,8 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 													   NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_pLanguageList), column);
 	  
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

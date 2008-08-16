@@ -117,5 +117,7 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	
 	gtk_widget_grab_focus(mTextEntry);
 
+	g_object_unref(G_OBJECT(builder));
+
 	return mMainWindow;
 }

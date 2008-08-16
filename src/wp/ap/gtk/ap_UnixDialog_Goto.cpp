@@ -488,6 +488,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 					  G_CALLBACK (AP_UnixDialog_Goto__onDialogResponse), static_cast <gpointer>(this));
 	g_signal_connect (m_wDialog, "delete-event",
 					  G_CALLBACK (AP_UnixDialog_Goto__onDeleteWindow), static_cast <gpointer>(this));
+
+	g_object_unref(G_OBJECT(builder));
 }
 
 /*!

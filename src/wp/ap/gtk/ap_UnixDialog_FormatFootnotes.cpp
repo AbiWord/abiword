@@ -559,6 +559,9 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();
 	refreshVals();
+
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

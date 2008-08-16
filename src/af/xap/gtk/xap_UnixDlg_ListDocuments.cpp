@@ -160,6 +160,8 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 						   G_CALLBACK(s_list_dblclicked),
 						   static_cast<gpointer>(this));
   
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

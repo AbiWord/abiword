@@ -157,6 +157,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 						   G_CALLBACK(s_encoding_dblclicked),
 						   static_cast<gpointer>(this));
   
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

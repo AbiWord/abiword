@@ -542,6 +542,8 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 	_connectSignals();
+
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

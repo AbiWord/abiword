@@ -273,6 +273,8 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
 	abiDialogSetTitle(m_windowMain, s.utf8_str());
+
+	g_object_unref(G_OBJECT(builder));
 	
 	return m_windowMain;
 }

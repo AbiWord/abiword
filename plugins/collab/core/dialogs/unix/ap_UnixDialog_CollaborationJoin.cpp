@@ -214,6 +214,7 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 							G_CALLBACK(s_selection_changed),
 							static_cast<gpointer>(this));
 
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

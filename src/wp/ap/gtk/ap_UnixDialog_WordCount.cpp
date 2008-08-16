@@ -255,5 +255,6 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);
+	g_object_unref(G_OBJECT(builder));
 }
 

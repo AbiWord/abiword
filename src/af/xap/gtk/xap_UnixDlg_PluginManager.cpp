@@ -392,6 +392,8 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 						   G_CALLBACK(s_list_clicked),
 						   static_cast<gpointer>(this));
 
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

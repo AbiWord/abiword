@@ -260,6 +260,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	// the zoom spin button
 	g_signal_connect(G_OBJECT(m_spinAdj), "value_changed", G_CALLBACK(s_spin_Percent_changed), static_cast<gpointer>(this));
 
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

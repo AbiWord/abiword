@@ -140,6 +140,8 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbOddPage"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
 	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

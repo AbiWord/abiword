@@ -171,6 +171,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 						   G_CALLBACK(s_date_dblclicked),
 						   static_cast<gpointer>(this));
 	
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

@@ -199,6 +199,9 @@ AP_UnixDialog_Tab::~AP_UnixDialog_Tab (void)
 			g_free (m_LeaderMapping[i]);
 			m_LeaderMapping[i] = NULL;
 	}
+
+	if (m_pBuilder)
+		g_object_unref(G_OBJECT(m_pBuilder));
 }
 
 

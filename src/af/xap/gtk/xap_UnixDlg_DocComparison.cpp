@@ -90,6 +90,8 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
   
 	_populateWindowData(builder);
 
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 
@@ -110,5 +112,3 @@ void XAP_UnixDialog_DocComparison::_populateWindowData(GtkBuilder* builder)
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbStyles")), pSS, XAP_STRING_ID_DLG_DocComparison_Styles);
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbStylesRes")),getResultValue(3));
 }
-
-

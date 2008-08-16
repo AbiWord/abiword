@@ -73,6 +73,7 @@ static int getSummaryPercent(void)
   int value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(spin));
   fprintf (stderr, "DOM: percentage is %d\n", value);
   abiDestroyWidget (window);
+  g_object_unref(G_OBJECT(builder));
 
   return value;
 }

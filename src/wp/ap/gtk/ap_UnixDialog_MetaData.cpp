@@ -209,5 +209,7 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 		gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
 	}	
 	
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }

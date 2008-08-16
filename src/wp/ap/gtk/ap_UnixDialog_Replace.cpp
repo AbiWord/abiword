@@ -407,6 +407,9 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 					   (gpointer) this);
 	
 	gtk_widget_queue_resize (m_windowMain);
+
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

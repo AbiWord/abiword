@@ -253,6 +253,8 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	_connectSignals();
   	
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

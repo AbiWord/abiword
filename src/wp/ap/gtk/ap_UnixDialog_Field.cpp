@@ -341,6 +341,8 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 						   G_CALLBACK(s_field_dblclicked),
 						   static_cast<gpointer>(this));
 
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

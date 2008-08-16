@@ -105,6 +105,7 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbInformation"))), getInformation().utf8_str());
 	//gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbLabel"))), getLabel().utf8_str());
 
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

@@ -201,6 +201,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_textDescription) ) ;
 		gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
 	}	
+
+	g_object_unref(G_OBJECT(builder));
 	
 	return window;
 }

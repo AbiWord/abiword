@@ -338,6 +338,9 @@ AP_UnixDialog_Spell::_constructWindow (void)
 				  (gpointer)this);
 
 	gtk_widget_show_all (m_wDialog);
+
+	g_object_unref(G_OBJECT(builder));
+
 	return m_wDialog;
 }
 

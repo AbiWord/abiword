@@ -537,6 +537,8 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 	m_wApplyButton = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
+
+	g_object_unref(G_OBJECT(builder));
 	
 	return window;
 }

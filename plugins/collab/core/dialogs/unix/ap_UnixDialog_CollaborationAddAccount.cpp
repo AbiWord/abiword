@@ -113,6 +113,7 @@ GtkWidget * AP_UnixDialog_CollaborationAddAccount::_constructWindow(void)
 							"changed",
 							G_CALLBACK(s_account_type_changed),
 							static_cast<gpointer>(this));
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

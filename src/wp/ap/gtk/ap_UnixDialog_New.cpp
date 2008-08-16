@@ -418,6 +418,8 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 					G_CALLBACK(s_radiobutton_clicked),
 					(gpointer)this);
 
+	g_object_unref(G_OBJECT(builder));
+
 	return m_mainWindow;
 }
 

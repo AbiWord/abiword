@@ -216,6 +216,8 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 // Finish up here after a close or window delete signal.
 //
     abiDestroyWidget ( dlg );
+
+	g_object_unref(G_OBJECT(builder));
 }
 
 void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
@@ -567,6 +569,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                                G_CALLBACK ( s_control_changed ),
                                static_cast<gpointer> ( this ) );
     }
+
+	g_object_unref(G_OBJECT(builder));
 
     return mainWindow;
 }

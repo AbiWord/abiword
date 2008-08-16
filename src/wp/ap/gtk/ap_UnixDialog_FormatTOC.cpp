@@ -158,6 +158,8 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 
 AP_UnixDialog_FormatTOC::~AP_UnixDialog_FormatTOC(void)
 {
+  if (m_pBuilder)
+    g_object_unref(G_OBJECT(m_pBuilder));
 }
 
 void AP_UnixDialog_FormatTOC::event_Close(void)

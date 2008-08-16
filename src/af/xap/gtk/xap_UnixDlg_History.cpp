@@ -142,6 +142,8 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 
 	_populateWindowData(builder);
 
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

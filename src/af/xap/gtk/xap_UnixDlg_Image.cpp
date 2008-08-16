@@ -543,5 +543,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
 	_connectSignals ();
 	
+	g_object_unref(G_OBJECT(builder));
+
 	return mMainWindow;
 }
