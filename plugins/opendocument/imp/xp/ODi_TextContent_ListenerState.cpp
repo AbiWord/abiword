@@ -186,13 +186,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         const gchar* pSpaceCount;
         UT_uint32 spaceCount, i;
+        UT_sint32 tmpSpaceCount = 0;
         UT_UCS4String string;
         
         pSpaceCount = UT_getAttribute("text:c", ppAtts);
         
-        if (pSpaceCount) {
-            i = sscanf(pSpaceCount, "%d", &spaceCount);
-            UT_ASSERT(i==1);
+        if (pSpaceCount && *pSpaceCount) {
+            i = sscanf(pSpaceCount, "%d", &tmpSpaceCount);
+            if ((i != 1) || (tmpSpaceCount <= 1)) {
+                spaceCount = 1;
+            } else {
+                spaceCount = tmpSpaceCount;
+            }
         } else {
             // From the OpenDocument specification:
             // "A missing text:c attribute is interpreted as meaning a
