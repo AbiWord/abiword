@@ -133,7 +133,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			const PP_AttrProp * pAP;
 			pf_Frag::PFType eType = pf1->getType();
 			UT_uint32 iLen = 1;
-			PTStruxType eStruxType;
+			PTStruxType eStruxType = PTX_StruxDummy;
 
 			if(eType == pf_Frag::PFT_Text)
 			{
@@ -1624,7 +1624,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 			{
 				_getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
 			}
-			bool bResult, bResult2;
+			bool bResult = false;
+			bool bResult2;
 			pf_Frag_Object *pO = static_cast<pf_Frag_Object *>(pf_First);
 			switch(pO->getObjectType())
 			{

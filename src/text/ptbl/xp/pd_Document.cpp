@@ -2656,7 +2656,8 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
 										  UT_sint32 * numRows, UT_sint32 * numCols)
 {
-	UT_sint32 iRight, iBot;
+	UT_sint32 iRight = 0;
+    UT_sint32 iBot = 0;
 	const char * szRight = NULL;
 	const char * szBot = NULL;
 	PL_StruxDocHandle cellSDH;

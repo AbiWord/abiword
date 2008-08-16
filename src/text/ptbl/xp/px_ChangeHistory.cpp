@@ -232,7 +232,8 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 		else
 		{
 			PT_DocPosition low, high;
-			PT_DocPosition lowWork, highWork;
+			PT_DocPosition lowWork = 0;
+            PT_DocPosition highWork;
 			UT_sint32 iAccumOffset = 0;
 			getCRRange(pcr, low, high);
 			for (UT_sint32 i = 0; i<m_iAdjustOffset;i++)
