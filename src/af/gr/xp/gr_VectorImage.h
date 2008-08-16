@@ -24,7 +24,6 @@
 #include "gr_Image.h"
 
 #include "ut_xml.h"
-#include "ut_stack.h"
 #include "ut_vector.h"
 
 class UT_svg;
@@ -52,8 +51,6 @@ public:
 
 private:
    	bool m_status;
-   	UT_Stack *m_context;
-	UT_Vector m_elements;  
    
 	UT_sint32 m_iDisplayOx;
 	UT_sint32 m_iDisplayOy;
