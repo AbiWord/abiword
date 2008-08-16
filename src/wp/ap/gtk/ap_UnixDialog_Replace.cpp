@@ -83,7 +83,6 @@ static void s_find_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dl
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_Find();
 }
 
@@ -91,7 +90,6 @@ static void s_find_entry_change(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_FindEntryChange();
 }
 
@@ -99,7 +97,6 @@ static void s_replace_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace *
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_Replace();
 }
 
@@ -107,7 +104,6 @@ static void s_match_case_toggled(GtkWidget * widget, AP_UnixDialog_Replace * dlg
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_MatchCaseToggled();
 }
 
@@ -115,7 +111,6 @@ static void s_whole_word_toggled(GtkWidget * widget, AP_UnixDialog_Replace * dlg
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_WholeWordToggled();
 }
 
@@ -123,7 +118,6 @@ static void s_reverse_find_toggled(GtkWidget * widget, AP_UnixDialog_Replace * d
 {
 	UT_UNUSED(widget);
 	UT_ASSERT(widget && dlg);
-	UT_UNUSED(widget);
 	dlg->event_ReverseFindToggled();
 }
 
