@@ -59,9 +59,11 @@ protected:
 	
 	GtkCellRenderer * 	m_wNameRenderer;
 	GtkCellRenderer * 	m_wValueRenderer;
-	GtkCellRenderer *	m_wComboRenderer;
+	GtkCellRenderer *	m_wBOComboRenderer;
+	GtkCellRenderer *	m_wFBComboRenderer;
 	GtkListStore * 		m_wModel;
-	GtkListStore * 		m_wStyleModel;
+	GtkListStore * 		m_wBasedOnModel;
+	GtkListStore * 		m_wFollowedByModel;
 
 };
 

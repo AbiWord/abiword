@@ -71,9 +71,11 @@ AP_UnixDialog_EditStyle::AP_UnixDialog_EditStyle(XAP_DialogFactory * pDlgFactory
 
 	m_wNameRenderer(NULL),
 	m_wValueRenderer(NULL),
-	m_wComboRenderer(NULL),
+	m_wBOComboRenderer(NULL),
+	m_wFBComboRenderer(NULL),
 	m_wModel(NULL),
-	m_wStyleModel(NULL)
+	m_wBasedOnModel(NULL),
+	m_wFollowedByModel(NULL)
 {
 }
 
@@ -181,27 +183,39 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	// Based On (Modifies) and Followed By
 	
 	// fill both combo boxes identically
-	// from the same model, even, until I figure out "None" and "Current Settings"
+	// must figure out "None" and "Current Settings"..
 	// Hence, TODO
 	
-	m_wStyleModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
-	
 	unsigned int i=0;
+	
+	// Based On
+	m_wBasedOnModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	
 	for (i=0; i< m_vAllStyles.size(); i++)
 	{
-		gtk_list_store_append (m_wStyleModel, &iter);
-		gtk_list_store_set (m_wStyleModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
+		gtk_list_store_append (m_wBasedOnModel, &iter);
+		gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
 	}
-	m_wComboRenderer = gtk_cell_renderer_text_new ();
+	m_wBOComboRenderer = gtk_cell_renderer_text_new ();
 	
-	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wStyleModel));
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbBasedOn), m_wComboRenderer, TRUE);
-	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wComboRenderer,
+	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wBasedOnModel));
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer,
                                 "text", 0, NULL);
 	
-	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wStyleModel));
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wComboRenderer, TRUE);
-	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wComboRenderer,
+	// Followed By
+	m_wFollowedByModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	
+	for (i=0; i< m_vAllStyles.size(); i++)
+	{
+		gtk_list_store_append (m_wFollowedByModel, &iter);
+		gtk_list_store_set (m_wFollowedByModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
+	}
+	m_wFBComboRenderer = gtk_cell_renderer_text_new ();
+	
+	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wFollowedByModel));
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer,
                                 "text", 0, NULL);
 	
 	// Set their values individually
