@@ -213,7 +213,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	}
 	m_wFBComboRenderer = gtk_cell_renderer_text_new ();
 	
-	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wFollowedByModel));
+	gtk_combo_box_set_model( (GtkComboBox *) m_cbFollowedBy, GTK_TREE_MODEL(m_wFollowedByModel));
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer,
                                 "text", 0, NULL);
