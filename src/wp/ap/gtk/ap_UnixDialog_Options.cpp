@@ -316,10 +316,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     tmp = WID ( "lblUserInterface" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI );
 
-    m_checkbuttonViewCursorBlink = WID ( "chkCursorBlink" );
-    localizeButtonUnderline ( m_checkbuttonViewCursorBlink, pSS,
-                              AP_STRING_ID_DLG_Options_Label_ViewCursorBlink );
-
     m_checkbuttonAllowCustomToolbars = WID ( "chkCustomToolbars" );
     localizeButtonUnderline ( m_checkbuttonAllowCustomToolbars, pSS,
                               AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars );
@@ -636,9 +632,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
         case id_LIST_VIEW_RULER_UNITS:
             return m_menuUnits;
 
-        case id_CHECK_VIEW_CURSOR_BLINK:
-            return m_checkbuttonViewCursorBlink;
-
         case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
             return m_checkbuttonAllowCustomToolbars;
 
@@ -887,8 +880,6 @@ void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
     }
 }
-
-DEFINE_GET_SET_BOOL ( ViewCursorBlink )
 
 DEFINE_GET_SET_BOOL ( AllowCustomToolbars )
 DEFINE_GET_SET_BOOL ( AutoLoadPlugins )

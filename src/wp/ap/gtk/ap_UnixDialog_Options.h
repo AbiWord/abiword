@@ -66,9 +66,12 @@ public:
 
 		// User Interface
 
-		SET_GATHER (ViewCursorBlink,	 bool);
 		SET_GATHER (AllowCustomToolbars, bool);
 		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
+
+	// not implemented
+	virtual bool _gatherViewCursorBlink(void) { return true; }
+	virtual void _setViewCursorBlink(const bool) {}
 
 		// Application Startup
 		SET_GATHER (AutoLoadPlugins,	 bool);
@@ -150,7 +153,6 @@ public:
 
 		// User Interface
 
-		GtkWidget *m_checkbuttonViewCursorBlink;
 		GtkWidget *m_checkbuttonAllowCustomToolbars;
 		GtkWidget *m_pushbuttonNewTransparentColor;
 		GtkWidget *m_menuUnits;
