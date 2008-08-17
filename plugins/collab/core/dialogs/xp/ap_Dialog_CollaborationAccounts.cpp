@@ -87,7 +87,9 @@ void AP_Dialog_CollaborationAccounts::createNewAccount()
 				pHandler->connect(); // connect the account
 		}
 		else
+		{
 			UT_DEBUGMSG(("No account handler selected, ignoring...\n"));
+		}
 	}
 	pFactory->releaseDialog(pDialog);
 }

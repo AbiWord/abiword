@@ -117,6 +117,7 @@ bool AbiCollab_Command::execute()
 
 bool AbiCollab_Command::_doCmdRegression(const UT_UTF8String& sSessionFile)
 {
+	UT_UNUSED(sSessionFile);
 	UT_DEBUGMSG(("_doCmdRegression() - sSessionFile: %s\n", sSessionFile.utf8_str()));
 	
 #ifdef ABICOLLAB_HANDLER_FAKE
@@ -140,8 +141,10 @@ bool AbiCollab_Command::_doCmdRegression(const UT_UTF8String& sSessionFile)
 #endif
 }
 
-bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool bSingleStep)
+bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool /*bSingleStep*/)
 {
+	UT_UNUSED(sServerSessionFile);
+	UT_UNUSED(sClientSessionFile);
 	UT_DEBUGMSG(("_doCmdDebug() - sServerSessionFile: %s, sClientSessionFile: %s\n", sServerSessionFile.utf8_str(), sClientSessionFile.utf8_str()));
 	
 #ifdef ABICOLLAB_HANDLER_FAKE

@@ -25,7 +25,7 @@ AccountHandler * TCPUnixAccountHandler::static_constructor()
 	return static_cast<AccountHandler *>(new TCPUnixAccountHandler());
 }
 
-void s_group_changed(GtkToggleButton* button, TCPUnixAccountHandler* pHandler)
+void s_group_changed(GtkToggleButton* /*button*/, TCPUnixAccountHandler* pHandler)
 {
 	pHandler->eventGroupChanged();
 }

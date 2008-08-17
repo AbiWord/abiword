@@ -389,8 +389,10 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 					}
 					pManager->joinSession( jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL );
 				}
-				else
+				else 
+				{
 					UT_DEBUGMSG(("AccountHandler::_handlePacket() - deserializing document failed!\n"));
+				}
 			}
 			break;
 		}

@@ -252,9 +252,13 @@ void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 	// FIXME: we should do this for all frames that display this document!
 	EV_Mouse* pMouse = pFrame->getMouse();
 	if (pMouse)
+    {
 		m_iMouseLID = pMouse->registerListener(this);
+    }
 	else
+    {
 		UT_DEBUGMSG(("No current frame!\n"));
+    }
 
 	// add the new export listeners
 	UT_uint32 lid = 0;
@@ -325,7 +329,9 @@ void AbiCollab::push( Packet* pPacket )
 					// send!
 					bool res = pHandler->send(pPacket, *pCollaborator);
 					if (!res)
+                    {
 						UT_DEBUGMSG(("Error sending a packet!\n"));
+                    }
 				}
 			}
 			else
@@ -350,7 +356,9 @@ bool AbiCollab::push( Packet* pPacket, const Buddy& collaborator)
 	// send!
 	bool res = pHandler->send(pPacket, collaborator);
 	if (!res)
+    {
 		UT_DEBUGMSG(("Error sending a packet to collaborator %s!\n", collaborator.getName().utf8_str()));
+    }
 	return res;
 }
 
@@ -471,7 +479,7 @@ void AbiCollab::stopRecording()
 	DELETEP(m_pRecorder);
 }
 
-void AbiCollab::signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos)
+void AbiCollab::signalMouse(EV_EditBits eb, UT_sint32 /*xPos*/, UT_sint32 /*yPos*/)
 {
 	switch (eb & EV_EMO__MASK__)
 	{

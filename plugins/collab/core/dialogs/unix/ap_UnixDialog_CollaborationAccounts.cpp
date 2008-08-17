@@ -277,7 +277,9 @@ void AP_UnixDialog_CollaborationAccounts::eventProperties()
 		UT_DEBUGMSG(("An account handler is selected!\n"));
 	}
 	else
+	{
 		UT_DEBUGMSG(("No account handler selected!\n"));
+	}
 }
 
 void AP_UnixDialog_CollaborationAccounts::eventDelete()
@@ -317,7 +319,9 @@ void AP_UnixDialog_CollaborationAccounts::eventDelete()
 		}
 	}
 	else
+	{
 		UT_DEBUGMSG(("No account handler selected!\n"));
+	}
 }
 
 void AP_UnixDialog_CollaborationAccounts::eventSelectAccount()

@@ -115,13 +115,14 @@ public:
 		{
 			asio::error_code ecs;
 			socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
-			if (ecs)
+			if (ecs) {
 				UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
-
+			}
 			asio::error_code ecc;
 			socket.close(ecc);
-			if (ecc)
+			if (ecc) {
 				UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
+			}
 		}
 		UT_DEBUGMSG(("Socket closed, signalling mainloop\n"));
 		signal();

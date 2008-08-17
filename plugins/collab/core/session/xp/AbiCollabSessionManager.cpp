@@ -138,7 +138,9 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 		}
 	} 
 	else
+    {
 		UT_DEBUGMSG(("Failed to export! Handle this gracefully!\n"));
+    }
 
 	g_object_unref(G_OBJECT(gzSink));
 	g_object_unref(G_OBJECT(sink));
@@ -390,7 +392,9 @@ void AbiCollabSessionManager::loadProfile()
 		g_object_unref(G_OBJECT(in));
 	}
 	else
+    {
 		UT_DEBUGMSG(("Failed to open an existing AbiCollab profile\n"));
+    }
 	FREEP(uri);
 }
 
@@ -476,15 +480,21 @@ void AbiCollabSessionManager::storeProfile()
 				g_object_unref(G_OBJECT(out));
 			}
 			else
+            {
 				UT_DEBUGMSG(("Error creating AbiCollab Profile %s: %s!\n", profile.utf8_str(), error ? error->message : "unknown error"));
+            }
 			FREEP(uri);
 		}
 		else
+        {
 			UT_DEBUGMSG(("Error creating XML output writer\n"));
+        }
 		xmlBufferFree(doc);
 	}
 	else
+    {
 		UT_DEBUGMSG(("Error creating XML output buffer\n"));
+    }
 }
 
 bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
@@ -1180,7 +1190,9 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 					}
 				}
 				else
+                {
 					UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.utf8_str()));
+                }
 				return true;
 			}
 			
@@ -1325,7 +1337,9 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 
 	}
 	else
+    {
 		UT_DEBUGMSG(("This document is already in the current frame; using this frame\n"));
+    }
 	
 	UT_return_val_if_fail(pCurFrame, false);
 	*pFrame = pCurFrame;
@@ -1337,7 +1351,9 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 		(*pFrame)->loadDocument(pDoc);
 	}
 	else
+    {
 		UT_DEBUGMSG(("Not loading the document in the frame, as the frame already has it\n"));
+    }
 	
 	if (isNewFrame)
 		(*pFrame)->show();

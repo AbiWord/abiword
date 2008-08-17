@@ -194,6 +194,8 @@ void AP_UnixDialog_CollaborationAddAccount::eventAccountTypeChanged()
 		UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
 		_setAccountHandler(pHandler);
 	}
-	else
+	else 
+	{
 		UT_DEBUGMSG(("No account handler types to select; this makes abicollab kinda pointless...\n"));
+	}
 }

@@ -464,7 +464,7 @@ void s_abicollab_add_menus()
 	
 	XAP_Menu_Id lastMenuId = collabViewRecordId;
 #else
-	XAP_Menu_Id lastMenuId = collabShowAuthorId;
+	XAP_Menu_Id lastMenuId = ShowAuthorId;
 #endif /* defined(DEBUG) */
 
 	// End of the Collaboration menu

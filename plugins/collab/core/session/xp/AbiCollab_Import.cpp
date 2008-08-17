@@ -116,7 +116,9 @@ void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
 			break;
 		}
 		else
+        {
 			UT_DEBUGMSG(("Killing off matching change: %d\n", iStart));
+        }
 	}
 }
 
@@ -236,9 +238,10 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 					break;
 				}
 				else
+                {
 					UT_DEBUGMSG(("No (fatal) overlap detected for incoming pos: %d, incoming length: %d, pChange->getLocalPos(): %d, pChange->getLocalLength(): %d\n", 
 							acrsp.getPos(), acrsp.getLength(), pChange->getLocalPos(), pChange->getLocalLength()));
-
+                }
 				
 				if (static_cast<UT_sint32>(pChange->getLocalPos()) < acrsp.getPos()+iIncomingStateAdjust)
 				{
@@ -337,10 +340,14 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 									pC->setLocalPos(pC->getLocalPos() - pChange->getLocalAdjust());
 								}
 								else
+                                {
 									UT_DEBUGMSG(("No need to adjust change pos %d\n", j));
+                                }
 							}
 							else
+                            {
 								UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+                            }
 						}
 						
 						// kill off the item
@@ -348,13 +355,17 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 						delete pChange;
 					}
 					else
+                    {
 						UT_DEBUGMSG(("Skipping undo of remote change\n"));
+                    }
 				}
 				else
 					break;
 			}
 			else
+            {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            }
 		}
 
 		m_pAbiCollab->setIsReverting(false); // unmask all changes in the exporter
