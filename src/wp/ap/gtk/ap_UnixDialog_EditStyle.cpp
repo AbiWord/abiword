@@ -183,8 +183,6 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	// Based On (Modifies) and Followed By
 	
 	// fill both combo boxes identically
-	// must figure out "None" and "Current Settings"..
-	// Hence, TODO
 	
 	unsigned int i=0;
 	
@@ -196,6 +194,11 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 		gtk_list_store_append (m_wBasedOnModel, &iter);
 		gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
 	}
+	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s); // "None" entry
+	gtk_list_store_append (m_wBasedOnModel, &iter);
+	gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(s.utf8_str()), 1, i, -1);
+	
 	m_wBOComboRenderer = gtk_cell_renderer_text_new ();
 	
 	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wBasedOnModel));
@@ -211,6 +214,11 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 		gtk_list_store_append (m_wFollowedByModel, &iter);
 		gtk_list_store_set (m_wFollowedByModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
 	}
+	
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s); // "Current Settings" entry
+	gtk_list_store_append (m_wFollowedByModel, &iter);
+	gtk_list_store_set (m_wFollowedByModel, &iter, 0, g_strdup(s.utf8_str()), 1, i, -1);
+	
 	m_wFBComboRenderer = gtk_cell_renderer_text_new ();
 	
 	gtk_combo_box_set_model( (GtkComboBox *) m_cbFollowedBy, GTK_TREE_MODEL(m_wFollowedByModel));
