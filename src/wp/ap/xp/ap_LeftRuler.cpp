@@ -318,7 +318,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
 /*****************************************************************/
 
-void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y)
+void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton /*emb*/, UT_sint32 x, UT_sint32 y)
 {
 	if(m_pView == NULL)
 	{

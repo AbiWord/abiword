@@ -1422,11 +1422,13 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		// if another column after this one, skip over the gap
 		// (we don't draw ticks on the gap itself).
 
-		if (k+1 < pInfo->m_iNumColumns)
+		if (k+1 < pInfo->m_iNumColumns) 
+		{
 			if(bRTL)
 				sum -= pInfo->u.c.m_xColumnGap;
 			else
 				sum += pInfo->u.c.m_xColumnGap;
+		}
 	}
 
 	// draw ticks over the right margin
@@ -3265,7 +3267,7 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 
 /*****************************************************************/
 
-void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
+void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint32 y)
 {
 	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
 //	if(m_pG == NULL)
@@ -3633,8 +3635,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			{
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			}
-			UT_sint32 xAbsLeft, xrel;
-			UT_sint32 xAbsRight;
+			UT_sint32 xrel;
+			UT_sint32 xAbsLeft = 0;
+			UT_sint32 xAbsRight = 0;
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 	 		xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion), m_draggingCenter (1) %d\n", m_draggingCenter));
 
