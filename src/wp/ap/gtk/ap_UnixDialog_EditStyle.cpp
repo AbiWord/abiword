@@ -159,6 +159,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 {
 	GtkTreeIter iter;
 	GtkTreeSelection *sel;
+	unsigned int i=0;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	
@@ -181,10 +182,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 
 	
 	// Based On (Modifies) and Followed By
-	
-	// fill both combo boxes identically
-	
-	unsigned int i=0;
+	// fill both combo boxes, then set their current value
 	
 	// Based On
 	m_wBasedOnModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
@@ -200,11 +198,12 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(s.utf8_str()), 1, i, -1);
 	
 	m_wBOComboRenderer = gtk_cell_renderer_text_new ();
-	
 	gtk_combo_box_set_model( (GtkComboBox *) m_cbBasedOn, GTK_TREE_MODEL(m_wBasedOnModel));
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer,
                                 "text", 0, NULL);
+	
+	gtk_combo_box_set_active((GtkComboBox *) m_cbBasedOn, m_iBasedOn);
 	
 	// Followed By
 	m_wFollowedByModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
@@ -220,15 +219,12 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	gtk_list_store_set (m_wFollowedByModel, &iter, 0, g_strdup(s.utf8_str()), 1, i, -1);
 	
 	m_wFBComboRenderer = gtk_cell_renderer_text_new ();
-	
 	gtk_combo_box_set_model( (GtkComboBox *) m_cbFollowedBy, GTK_TREE_MODEL(m_wFollowedByModel));
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer,
                                 "text", 0, NULL);
 	
-	// Set their values individually
-
-	// TODO
+	gtk_combo_box_set_active((GtkComboBox *) m_cbFollowedBy, m_iFollowedBy);
 	
 	//
 	// Fill in the properties treeview
