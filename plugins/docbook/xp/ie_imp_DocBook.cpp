@@ -2477,8 +2477,9 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 		m_utnsTagStack.pop((UT_sint32*)&i);
 		xxx_UT_DEBUGMSG(("Popping %d off of stack\n",i));
 
-		if(i != tokenIndex)
+		if(i != tokenIndex) {
 			UT_DEBUGMSG(("DocBook: Parse error!\n"));
+        }
 	}
 }
 

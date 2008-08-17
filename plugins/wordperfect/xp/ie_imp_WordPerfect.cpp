@@ -1166,8 +1166,9 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
 {
 	UT_DEBUGMSG(("AbiWordPerfect: Updating document list definition (iLevel: %i)\n", iLevel));
 
-	if (iLevel > 1)
-	UT_DEBUGMSG(("WLACH: Parent's list id is.. %i\n", pListDefinition->getListID((iLevel-1))));
+	if (iLevel > 1) {
+        UT_DEBUGMSG(("WLACH: Parent's list id is.. %i\n", pListDefinition->getListID((iLevel-1))));
+    }
 
 	// finally, set the document's list identification info..
 	fl_AutoNum * pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));

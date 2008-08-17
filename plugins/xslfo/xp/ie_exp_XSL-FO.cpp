@@ -145,7 +145,9 @@ void s_XSL_FO_Listener::_tagClose(UT_uint32 tagID, const UT_UTF8String & content
 	xxx_UT_DEBUGMSG(("XSL-FO export: Popping %d off of stack\n",i));
 
 	if(i != tagID)
+	{
 		UT_DEBUGMSG(("XSL-FO export: possible mismatched tag. Requested: %d, Popped: %d\n",tagID,i));
+	}
 }
 
 void s_XSL_FO_Listener::_tagOpen(UT_uint32 tagID, const UT_UTF8String & content, bool newline)
