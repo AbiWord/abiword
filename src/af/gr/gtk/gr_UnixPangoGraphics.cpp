@@ -3014,9 +3014,6 @@ void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
 void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	GdkGCValues gcV;
-	gdk_gc_get_values(m_pGC, &gcV);
-	
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
@@ -3035,81 +3032,74 @@ void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
 	cairo_set_line_width (m_cr, width);
 }
 
-static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
+static cairo_line_cap_t mapCapStyle(GR_Graphics::CapStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::CAP_ROUND :
-			return GDK_CAP_ROUND ;
-		case GR_Graphics::CAP_PROJECTING :
-			return GDK_CAP_PROJECTING ;
-		case GR_Graphics::CAP_BUTT :
-		default:
-			return GDK_CAP_BUTT ;
+	switch (in) {
+	case GR_Graphics::CAP_ROUND:
+		return CAIRO_LINE_CAP_ROUND;
+	case GR_Graphics::CAP_PROJECTING:
+		return CAIRO_LINE_CAP_SQUARE;
+	case GR_Graphics::CAP_BUTT:
+	default:
+		return CAIRO_LINE_CAP_BUTT;
     }
 }
 
-static GdkLineStyle mapLineStyle ( GdkGC				  * pGC, 
-								   GR_Graphics::LineStyle 	in, 
-								   gint 					iWidth )
+/*
+ * \param width line width
+ * \param dashes Array for dash pattern
+ * \param n_dashes IN: length of dashes, OUT: number of needed dash pattern fields
+ */
+static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes, int *n_dashes)
 {
-	iWidth = iWidth == 0 ? 1 : iWidth;
-	switch ( in )
-    {
-		case GR_Graphics::LINE_ON_OFF_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH ;
-		case GR_Graphics::LINE_DOUBLE_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_DOUBLE_DASH ;
-		case GR_Graphics::LINE_DOTTED:
-			{
-				/* strange but 1/3 ratio looks dotted */
-				gint8 dash_list[2] = { iWidth, 3*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH;
-		case GR_Graphics::LINE_SOLID :
-		default:
-			return GDK_LINE_SOLID ;
-    }
+	switch (in) {
+	case GR_Graphics::LINE_ON_OFF_DASH:
+	case GR_Graphics::LINE_DOUBLE_DASH:				// see GDK_LINE_DOUBLE_DASH, but it was never used
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = 4 * width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_DOTTED:
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_SOLID:
+	default:
+		*n_dashes = 0;
+	}
 }
 
-static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
+static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::JOIN_ROUND :
-			return GDK_JOIN_ROUND ;
-		case GR_Graphics::JOIN_BEVEL :
-			return GDK_JOIN_BEVEL ;
-		case GR_Graphics::JOIN_MITER :
-		default:
-			return GDK_JOIN_MITER ;
+	switch ( in ) {
+	case GR_Graphics::JOIN_ROUND:
+		return CAIRO_LINE_JOIN_ROUND;
+	case GR_Graphics::JOIN_BEVEL:
+		return CAIRO_LINE_JOIN_BEVEL;
+	case GR_Graphics::JOIN_MITER:
+	default:
+		return CAIRO_LINE_JOIN_MITER;
     }
 }
-
 
 void GR_UnixPangoGraphics::setLineProperties ( double inWidth, 
 										  GR_Graphics::JoinStyle inJoinStyle,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	gint iWidth = static_cast<gint>(tduD(inWidth));
-	gdk_gc_set_line_attributes ( m_pGC, iWidth,
-								 mapLineStyle ( m_pGC, inLineStyle, iWidth ),
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
-	gdk_gc_set_line_attributes ( m_pXORGC, iWidth,
-								 mapLineStyle ( m_pXORGC, inLineStyle, iWidth ), /* this was m_pGC before */
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
+	double dashes[2];
+	double width;
+	int n_dashes;
+
+	cairo_set_line_width (m_cr, tduD(inWidth));
+	cairo_set_line_join (m_cr, mapJoinStyle(inJoinStyle));
+	cairo_set_line_cap (m_cr, mapCapStyle(inCapStyle));
+
+	width = cairo_get_line_width(m_cr);
+	n_dashes = G_N_ELEMENTS(dashes);
+	mapDashStyle(inLineStyle, width, dashes, &n_dashes);
+	cairo_set_dash(m_cr, dashes, n_dashes, 0);
 }
 
 void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
@@ -3133,18 +3123,29 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	UT_uint32 i;
+	// see bug #303 for what this is about
 
-	UT_return_if_fail(nPoints > 1);
+	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
+	UT_ASSERT(points);
 
-	i = 0;
-	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
-	i++;
-	for (; i < nPoints; i++)
+	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+		UT_sint32 idx = _tduX(pts[i].x);
+		points[i].x = idx;
+		// It seems that Windows draws each pixel along the the Y axis
+		// one pixel beyond where GDK draws it (even though both coordinate
+		// systems start at 0,0 (?)).  Subtracting one clears this up so
+		// that the poly line is in the correct place relative to where
+		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
+		// areas, etc.).
+		UT_sint32 idy1 = _tduY(pts[i].y);
+
+		points[i].y = idy1 - 1;
 	}
-	cairo_stroke(m_cr);
+
+	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
+
+	FREEP(points);
 }
 
 void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
@@ -3194,13 +3195,33 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	cairo_save(m_cr);
+	// save away the current color, and restore it after we fill the rect
+	GdkGCValues gcValues;
+	GdkColor oColor;
 
-	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
-	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
-	cairo_fill(m_cr);
+	memset(&oColor, 0, sizeof(GdkColor));
 
-	cairo_restore(m_cr);
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &nColor);
+	UT_sint32 idx = _tduX(x);
+	UT_sint32 idy = _tduY(y);
+	UT_sint32 idw = _tduR(w);
+	UT_sint32 idh = _tduR(h);
+ 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
+
+	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
 
@@ -3317,11 +3338,18 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	UT_ASSERT(c < COUNT_3D_COLORS);
+/* TODO: cairo. Seems to be this is what's breaking the tab toggle.
+	cairo_save (m_cr);
 
 	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
 	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
 	cairo_fill(m_cr);
+
+	cairo_restore (m_cr);
+*/
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
 void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
