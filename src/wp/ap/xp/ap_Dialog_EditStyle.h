@@ -75,6 +75,7 @@ protected:
 	std::vector<std::string>	m_vAllStyles;
 	int							m_iBasedOn;
 	int							m_iFollowedBy;
+	int							m_iSelf;
 	bool						m_bIsCharStyle;
 	std::string					m_sBasedOn;
 	std::string					m_sType;

@@ -190,8 +190,11 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	
 	for (i=0; i< m_vAllStyles.size(); i++)
 	{
-		gtk_list_store_append (m_wBasedOnModel, &iter);
-		gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
+		if (i!=m_iSelf) // can't be based on self
+		{
+			gtk_list_store_append (m_wBasedOnModel, &iter);
+			gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);
+		}
 	}
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s); // "None" entry
@@ -204,7 +207,8 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer,
                                 "text", 0, NULL);
 	
-	gtk_combo_box_set_active((GtkComboBox *) m_cbBasedOn, m_iBasedOn);
+	// The conditional in this line adjusts for removal of ourselves from the combobox
+	gtk_combo_box_set_active((GtkComboBox *) m_cbBasedOn, (m_iBasedOn<m_iSelf) ? m_iBasedOn : m_iBasedOn-1);
 	
 	// Followed By
 	m_wFollowedByModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);

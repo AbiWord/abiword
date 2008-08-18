@@ -32,7 +32,14 @@
 AP_Dialog_EditStyle::AP_Dialog_EditStyle(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogeditstyle"),
 	m_pDoc(NULL),
+	m_pStyle(NULL),
 	m_answer(a_OK),
+
+	m_iBasedOn(-2),
+	m_iFollowedBy(-2),
+	m_iSelf(-2),
+	m_bIsCharStyle(false),
+
 	m_sAllProperties("")
 {
 }
@@ -126,6 +133,19 @@ bool AP_Dialog_EditStyle::_deconstructStyle()
 		}
 		m_iFollowedBy=j;
 	}
+	
+	// Also find self in the vector - since we can't be based on self, etc.
+	j=0;
+	while ((unsigned int) j < m_vAllStyles.size() && std::string(m_sName.utf8_str()) != m_vAllStyles[j])
+		j++;
+	if ((unsigned int) j >= m_vAllStyles.size())
+	{
+		UT_DEBUGMSG(("Oh dear, we couldn't find the current style %s in the vector. (?!)\n",
+					 szFollowedBy));
+		j=-1;
+	}
+	m_iSelf=j;
+
 	
 	//
 	// Handle properties
