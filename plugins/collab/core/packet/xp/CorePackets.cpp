@@ -21,6 +21,7 @@
 
 #include "AbiCollab_Packet.h"
 
+/* session packets */
 REGISTER_PACKET(ChangeRecordSessionPacket)
 REGISTER_PACKET(Props_ChangeRecordSessionPacket)
 REGISTER_PACKET(InsertSpan_ChangeRecordSessionPacket)
@@ -33,3 +34,15 @@ REGISTER_PACKET(GlobSessionPacket)
 REGISTER_PACKET(SignalSessionPacket)
 REGISTER_PACKET(RevertSessionPacket)
 REGISTER_PACKET(RevertAckSessionPacket)
+
+/* session takeover packets */
+REGISTER_PACKET(SessionTakeoverRequestPacket);
+REGISTER_PACKET(SessionTakeoverAckPacket);
+REGISTER_PACKET(SessionBuddyTransferRequestPacket);
+REGISTER_PACKET(SessionBuddyTransferAckPacket);
+REGISTER_PACKET(MasterChangeRequestPacket);
+REGISTER_PACKET(MasterChangeAckPacket);
+REGISTER_PACKET(SessionReconnectRequestPacket);
+REGISTER_PACKET(SessionReconnectAckPacket);
+REGISTER_PACKET(SessionTakeoverFinalizePacket);
+REGISTER_PACKET(SessionRestartPacket);

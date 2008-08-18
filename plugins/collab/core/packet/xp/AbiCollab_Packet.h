@@ -82,6 +82,21 @@ enum PClassType // send over the net to identify classes
 	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChange and _PCT_LastChangeRecord if you move this
 
 	//
+	// control functions
+	//
+	/* session takeover packets */
+	PCT_SessionTakeoverRequestPacket = 0x40,
+	PCT_SessionTakeoverAckPacket,
+	PCT_SessionBuddyTransferRequestPacket,
+	PCT_SessionBuddyTransferAckPacket,
+	PCT_MasterChangeRequestPacket,
+	PCT_MasterChangeAckPacket,
+	PCT_SessionReconnectRequestPacket,
+	PCT_SessionReconnectAckPacket,
+	PCT_SessionTakeoverFinalizePacket,
+	PCT_SessionRestartPacket,
+
+	//
 	// events
 	//
 	PCT_AccountNewEvent = 0x80,
@@ -541,6 +556,102 @@ public:
 
 private:
 	UT_sint32			m_iRev;
+};
+
+
+/*************************************************************
+ * Session Takeover Packets                                  *
+ *************************************************************/
+
+class SessionTakeoverRequestPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionTakeoverRequestPacket);
+	SessionTakeoverRequestPacket() {}
+	SessionTakeoverRequestPacket(bool bPromote);
+
+	bool				promote() const
+		{ return m_bPromote; }
+
+private:
+	bool				m_bPromote;
+};
+
+class SessionTakeoverAckPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionTakeoverAckPacket);
+	SessionTakeoverAckPacket() {}
+};
+
+class SessionBuddyTransferRequestPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionBuddyTransferRequestPacket);
+	SessionBuddyTransferRequestPacket() {}
+	SessionBuddyTransferRequestPacket(const std::vector<std::string>& vBuddyIdentifiers);
+
+	const std::vector<std::string>& getBuddyIdentifiers() const
+		{ return m_vBuddyIdentifiers; }
+
+private:
+	std::vector<std::string>	m_vBuddyIdentifiers;
+};
+
+class SessionBuddyTransferAckPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionBuddyTransferAckPacket);
+	SessionBuddyTransferAckPacket() {}
+};
+
+class MasterChangeRequestPacket : public Packet
+{
+public:
+	DECLARE_PACKET(MasterChangeRequestPacket);
+	MasterChangeRequestPacket() {}
+	MasterChangeRequestPacket(const std::string& sBuddyIdentifier);
+
+	const std::string&			getBuddyIdentifier()
+		{ return m_sBuddyIdentifier; }
+
+private:
+	std::string					m_sBuddyIdentifier;
+};
+
+class MasterChangeAckPacket : public Packet
+{
+public:
+	DECLARE_PACKET(MasterChangeAckPacket);
+	MasterChangeAckPacket() {}
+};
+
+class SessionReconnectRequestPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionReconnectRequestPacket);
+	SessionReconnectRequestPacket() {}
+};
+
+class SessionReconnectAckPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionReconnectAckPacket);
+	SessionReconnectAckPacket() {}
+};
+
+class SessionTakeoverFinalizePacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionTakeoverFinalizePacket);
+	SessionTakeoverFinalizePacket() {}
+};
+
+class SessionRestartPacket : public Packet
+{
+public:
+	DECLARE_PACKET(SessionRestartPacket);
+	SessionRestartPacket() {}
 };
 
 #endif /* ABICOLLAB_PACKET_H */

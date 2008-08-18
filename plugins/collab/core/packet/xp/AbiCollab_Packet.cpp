@@ -821,3 +821,30 @@ std::string RevertAckSessionPacket::toStr() const
 	return SessionPacket::toStr() +
 		str(boost::format("RevertAckSessionPacket: m_iRev: %1%\n") % m_iRev);
 }
+
+/* ***************************************************** */
+/* *             SessionTakeoverRequestPacket            */
+/* ***************************************************** */
+
+SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(bool bPromote)
+	: m_bPromote(bPromote)
+{
+}
+
+/* ***************************************************** */
+/* *             SessionBuddyTransferRequestPacket       */
+/* ***************************************************** */
+
+SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(const std::vector<std::string>& vBuddyIdentifiers)
+	: m_vBuddyIdentifiers(vBuddyIdentifiers)
+{
+}
+
+/* ***************************************************** */
+/* *             MasterChangeRequestPacket               */
+/* ***************************************************** */
+
+MasterChangeRequestPacket::MasterChangeRequestPacket(const std::string& sBuddyIdentifier)
+	: m_sBuddyIdentifier(sBuddyIdentifier)
+{
+}
