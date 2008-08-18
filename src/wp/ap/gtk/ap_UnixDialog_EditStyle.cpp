@@ -149,6 +149,7 @@ GtkWidget * AP_UnixDialog_EditStyle::_constructWindow(void)
 	localizeLabel(glade_xml_get_widget(xml, "lbBasedOn"), pSS, AP_STRING_ID_DLG_EditStyle_BasedOn);
 	localizeLabel(glade_xml_get_widget(xml, "lbFollowedBy"), pSS, AP_STRING_ID_DLG_EditStyle_FollowedBy);
 	
+	// These two calls don't work, apparently we can't cast a radio button to a label. TODO
 	localizeLabel(glade_xml_get_widget(xml, "rbPara"), pSS, AP_STRING_ID_DLG_EditStyle_Paragraph);
 	localizeLabel(glade_xml_get_widget(xml, "rbChar"), pSS, AP_STRING_ID_DLG_EditStyle_Character);
 

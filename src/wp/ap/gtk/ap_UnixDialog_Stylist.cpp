@@ -372,6 +372,7 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	m_wNew = glade_xml_get_widget(xml,"btNew");
 	m_wRedefine = glade_xml_get_widget(xml,"btRedefine");
 	m_wEdit = glade_xml_get_widget(xml,"btEdit");
+	// This call doesn't work, apparently we can't cast a check button to a label. TODO
 	m_wShowAll = glade_xml_get_widget(xml,"btShowAll");
 
 	// set the dialog title
