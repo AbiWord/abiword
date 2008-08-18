@@ -189,7 +189,7 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	
 	for (i=0; i< m_vAllStyles.size(); i++)
 	{
-		if (i!=m_iSelf) // can't be based on self
+		if ((int) i!=m_iSelf) // can't be based on self
 		{
 			gtk_list_store_append (m_wBasedOnModel, &iter);
 			gtk_list_store_set (m_wBasedOnModel, &iter, 0, g_strdup(m_vAllStyles[i].c_str()), 1, i, -1);

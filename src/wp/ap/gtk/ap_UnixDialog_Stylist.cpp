@@ -84,7 +84,7 @@ tree_select_filter (GtkTreeSelection * /*selection*/, GtkTreeModel * /*model*/,
 
 static gboolean
 tree_select_filter_common (GtkTreeSelection * /*selection*/, GtkTreeModel * /*model*/,
-								  GtkTreePath *path, gboolean /*path_selected*/,
+								  GtkTreePath * /*path*/, gboolean /*path_selected*/,
 								  gpointer /*data*/)
 {
 	return TRUE;
