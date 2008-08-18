@@ -372,7 +372,6 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	m_wNew = glade_xml_get_widget(xml,"btNew");
 	m_wRedefine = glade_xml_get_widget(xml,"btRedefine");
 	m_wEdit = glade_xml_get_widget(xml,"btEdit");
-	// This call doesn't work, apparently we can't cast a check button to a label. TODO
 	m_wShowAll = glade_xml_get_widget(xml,"btShowAll");
 
 	// set the dialog title
@@ -381,7 +380,7 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	abiDialogSetTitle(m_windowMain, s.utf8_str());
 	
 	localizeButtonUnderline (m_wRedefine, pSS, AP_STRING_ID_DLG_Stylist_Redefine);
-	localizeLabelUnderline (m_wShowAll, pSS, AP_STRING_ID_DLG_Stylist_ShowAll);	
+	localizeButtonUnderline (m_wShowAll, pSS, AP_STRING_ID_DLG_Stylist_ShowAll);	
 	
 	return m_windowMain;
 }
