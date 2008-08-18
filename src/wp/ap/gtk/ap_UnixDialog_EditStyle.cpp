@@ -206,8 +206,16 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbBasedOn), m_wBOComboRenderer,
                                 "text", 0, NULL);
 	
-	// The conditional in this line adjusts for removal of ourselves from the combobox
-	gtk_combo_box_set_active((GtkComboBox *) m_cbBasedOn, (m_iBasedOn<m_iSelf) ? m_iBasedOn : m_iBasedOn-1);
+	if (m_iBasedOn >= 0)
+	{
+		// The conditional in this line adjusts for removal of ourselves from the combobox
+		gtk_combo_box_set_active((GtkComboBox *) m_cbBasedOn,
+								 (m_iBasedOn<m_iSelf) ? m_iBasedOn : m_iBasedOn-1);
+	}
+	else
+	{
+		UT_DEBUGMSG(("Unselectable value for Based On combobox: %d\n", m_iBasedOn));
+	}
 	
 	// Followed By
 	m_wFollowedByModel = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
@@ -228,7 +236,14 @@ void AP_UnixDialog_EditStyle::_populateWindowData(void)
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (m_cbFollowedBy), m_wFBComboRenderer,
                                 "text", 0, NULL);
 	
-	gtk_combo_box_set_active((GtkComboBox *) m_cbFollowedBy, m_iFollowedBy);
+	if (m_iFollowedBy >= 0)
+	{
+		gtk_combo_box_set_active((GtkComboBox *) m_cbFollowedBy, m_iFollowedBy);
+	}
+	else
+	{
+		UT_DEBUGMSG(("Unselectable value for Followed By combobox: %d\n", m_iFollowedBy));
+	}
 	
 	//
 	// Fill in the properties treeview
