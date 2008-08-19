@@ -3,6 +3,7 @@
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 One Laptop Per Child
+ * Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -846,5 +847,14 @@ SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(const std::
 
 MasterChangeRequestPacket::MasterChangeRequestPacket(const std::string& sBuddyIdentifier)
 	: m_sBuddyIdentifier(sBuddyIdentifier)
+{
+}
+
+/* ***************************************************** */
+/* *             SessionReconnectAckPacket               */
+/* ***************************************************** */
+
+SessionReconnectAckPacket::SessionReconnectAckPacket(UT_sint32 iRev)
+	: m_iRev(iRev)
 {
 }

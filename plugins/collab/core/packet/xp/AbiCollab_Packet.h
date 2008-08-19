@@ -2,6 +2,7 @@
  * AbiCollab - Code to enable the modification of remote documents.
  * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 One Laptop Per Child
+ * Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -638,6 +639,13 @@ class SessionReconnectAckPacket : public Packet
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
+	SessionReconnectAckPacket(UT_sint32 iRev);
+
+	UT_sint32					getRev() const
+		{ return m_iRev; }
+
+private
+	UT_sint32					m_iRev;
 };
 
 class SessionTakeoverFinalizePacket : public Packet
