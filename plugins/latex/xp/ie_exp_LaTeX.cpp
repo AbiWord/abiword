@@ -2019,13 +2019,14 @@ void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
 		return;
 	}
 
-	UT_UTF8String imagedir = UT_go_dirname_from_uri(m_pie->getFileName(), true);
-			
+	gchar *imagedir = UT_go_dirname_from_uri(m_pie->getFileName(), true);
+	
 	UT_UTF8String filename(szDataID);
 	filename += ".png";
 	
 	/* save the image as imagedir/filename */
 	_writeImage (pByteBuf, imagedir, filename);
+	FREEP(imagedir);
 	
 	m_pie->write("\\includegraphics");
 	if (pAP->getProperty("height", szHeight) && pAP->getProperty("width", szWidth))
