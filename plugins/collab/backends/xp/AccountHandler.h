@@ -133,6 +133,7 @@ public:
 	virtual void							getSessionsAsync(const Buddy& buddy);
 	virtual void							joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
+	virtual bool							allowsSessionTakeover() = 0;
 
 	// generic session management packet implementation
 	virtual void 							handleMessage(const RawPacket& pRp);

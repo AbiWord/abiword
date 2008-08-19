@@ -66,6 +66,10 @@ public:
 		{ return false; }
 	virtual void							forceDisconnectBuddy(Buddy* pBuddy);
 
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return false; }
+
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, const Buddy& buddy);

@@ -54,7 +54,11 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(Buddy* buddy);
-		
+
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return false; }
+
 	// packet management
 	virtual bool							send(const Packet* packet);
 	virtual bool							send(const Packet*, const Buddy& buddy);

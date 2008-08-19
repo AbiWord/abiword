@@ -644,7 +644,7 @@ public:
 	UT_sint32					getRev() const
 		{ return m_iRev; }
 
-private
+private:
 	UT_sint32					m_iRev;
 };
 

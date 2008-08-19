@@ -74,6 +74,10 @@ public:
 	virtual bool			allowsManualBuddies()
 		{ return true; }
 	
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet	
+	
 		// packet management
 	virtual bool			send(const Packet* pPacket);
 	virtual bool 			send(const Packet* pPacket, const Buddy& buddy);

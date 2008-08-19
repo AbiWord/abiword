@@ -92,6 +92,11 @@ public:
 	acs::SOAP_ERROR							openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId);
 	void                                                            removeExporter(void); 
+	
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return true; }
+
 	// signal management
 	virtual void							signal(const Event& event, const Buddy* pSource);
 
