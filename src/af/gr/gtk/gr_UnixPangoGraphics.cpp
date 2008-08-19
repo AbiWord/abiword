@@ -239,7 +239,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pContext(NULL),
 	 m_pLayoutFontMap(NULL),
 	 m_pLayoutContext(NULL),
-	 m_bOwnsFontMap(false),
+	 m_bOwnsFontMap(false),		// TODO get rid of this
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_pAdjustedPangoFont(NULL),
@@ -349,60 +349,14 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 		gDisplay = gdk_display_get_default();
 		gScreen = gdk_screen_get_default();
 	}
-
 	
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
-
-	bool bGotResolution = false;
 	
-	if (gScreen && gDisplay)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
-			FcPattern *pattern = FcPatternCreate();
-			if (pattern)
-			{
-				double dpi;
-				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
-									  iScreen,
-									  pattern);
-
-				if(FcResultMatch == FcPatternGetDouble (pattern,
-														FC_DPI, 0, &dpi))
-				{
-					m_iDeviceResolution = (UT_uint32)round(dpi);
-					bGotResolution = true;
-				}
-
-				FcPatternDestroy (pattern);
-			}
-			
-			if (!bGotResolution)
-			{
-				// that didn't work. try getting it from the screen
-				m_iDeviceResolution =
-					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
-									 gdk_screen_get_width_mm (gScreen));
-			}
-
-			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
-						 m_iDeviceResolution));
-			
-		}
-	else
-	{
-		//
-		m_iDeviceResolution = 72.;
-		m_pFontMap = pango_cairo_font_map_new ();
-		pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap), 
-											(double) m_iDeviceResolution);	
-		m_pContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap));
-		m_bOwnsFontMap = true;
-	}
 	m_pLayoutFontMap = pango_cairo_font_map_new ();
 	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
 										(double) getResolution());	
@@ -1434,9 +1388,11 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iOffset == 0 &&
 	   (RI.m_iLength == (UT_sint32)RI.m_iCharCount || !RI.m_iCharCount))
 	{
-		xxx_UT_DEBUGMSG(("Doing XFT Render now.\n")); 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 RI.m_pScaledGlyphs, xoff, yoff);
+		xxx_UT_DEBUGMSG(("Doing Cairo Render now.\n")); 
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, RI.m_pScaledGlyphs);
+		cairo_restore(m_cr);
 	}
 	else
 	{
@@ -1514,9 +1470,10 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		gs.glyphs = RI.m_pScaledGlyphs->glyphs + iGlyphsStart;
 		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 &gs, xoff, yoff);
-
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, &gs);
+		cairo_restore(m_cr);
 	}
 }
 
@@ -2208,7 +2165,11 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 				pGstring->glyphs[j].geometry.width = _tduX(pCharWidth[j]*PANGO_SCALE);
 			}
 		}
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
+
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoffD, yoffD);
+		pango_cairo_show_glyph_string(m_cr, pf, pGstring);
+		cairo_restore(m_cr);
 
 		// now advance xoff
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
