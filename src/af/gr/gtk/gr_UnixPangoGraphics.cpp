@@ -3123,29 +3123,18 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// see bug #303 for what this is about
+	UT_uint32 i;
 
-	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
-	UT_ASSERT(points);
+	UT_return_if_fail(nPoints > 1);
 
-	for (UT_uint32 i = 0; i < nPoints; i++)
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++)
 	{
-		UT_sint32 idx = _tduX(pts[i].x);
-		points[i].x = idx;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		UT_sint32 idy1 = _tduY(pts[i].y);
-
-		points[i].y = idy1 - 1;
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
 	}
-
-	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
-
-	FREEP(points);
+	cairo_stroke(m_cr);
 }
 
 void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
@@ -3195,35 +3184,15 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	// save away the current color, and restore it after we fill the rect
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	cairo_save(m_cr);
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	//cairo_set_antialias(m_cr, CAIRO_ANTIALIAS_NONE);
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
+	cairo_fill(m_cr);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
-
-	oColor.pixel = gcValues.foreground.pixel;
-
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-	UT_sint32 idx = _tduX(x);
-	UT_sint32 idy = _tduY(y);
-	UT_sint32 idw = _tduR(w);
-	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
-
 
 GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 {
@@ -3336,6 +3305,10 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
+/*!
+ * Rob sez: the original (before cairo) implementation did not restore colours after drawing, 
+ * so the cairo one does neither.
+ */
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 /* TODO: cairo. Seems to be this is what's breaking the tab toggle.
@@ -3352,43 +3325,28 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_s
 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
+/*!
+ * \todo Rob find out how to have this function used, and test.
+ */
 void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
-	// save away the current color, and restore it after we draw the polygon
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	UT_uint32 i;
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	UT_return_if_fail(nPoints > 1);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
+	cairo_save(m_cr);
 
-	oColor.pixel = gcValues.foreground.pixel;
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++) {
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	}
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_fill(m_cr);	
 
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-
-	GdkPoint* points = new GdkPoint[nPoints];
-    UT_ASSERT(points);
-
-    for (UT_uint32 i = 0;i < nPoints;i++){
-		UT_sint32 idx = _tduX(pts[i].x);
-        points[i].x = idx;
-		UT_sint32 idy = _tduY(pts[i].y);
-        points[i].y = idy;
-    }
-	gdk_draw_polygon(_getDrawable(), m_pGC, 1, points, nPoints);
-	delete[] points;
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
