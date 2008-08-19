@@ -233,46 +233,36 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+// TODO: Remove members:
+// m_pGC
+
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
-	:
-	 m_pFontMap(NULL),
-	 m_pContext(NULL),
-	 m_pLayoutFontMap(NULL),
-	 m_pLayoutContext(NULL),
-	 m_bOwnsFontMap(false),		// TODO get rid of this
-	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL),
-	 m_pAdjustedPangoFont(NULL),
-	 m_pAdjustedLayoutPangoFont(NULL),
-	 m_pAdjustedPangoFontSource(NULL),
-	 m_iAdjustedPangoFontZoom (0),
-	 m_iDeviceResolution(96),
-	 m_cr (NULL),
-	 m_pWin (win),
- 	 m_pGC (NULL),
-	 m_pXORGC (NULL),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
-	 m_iXoff (0),
-	 m_iYoff (0),
-	 m_bIsSymbol (false),
-	 m_bIsDingbat (false)
+  :	m_pFontMap(NULL),
+	m_pContext(NULL),
+	m_pLayoutFontMap(NULL),
+	m_pLayoutContext(NULL),
+	m_pPFont(NULL),
+	m_pPFontGUI(NULL),
+	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedLayoutPangoFont(NULL),
+	m_pAdjustedPangoFontSource(NULL),
+	m_iAdjustedPangoFontZoom (0),
+	m_iDeviceResolution(96),
+	m_cr (NULL),
+	m_pWin (win),
+ 	m_pGC (NULL),
+	m_iXoff (0),
+	m_iYoff (0),
+	m_bIsSymbol (false),
+	m_bIsDingbat (false)
 {
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
 
 	if (_getDrawable())
 	{
 		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
 		cairo_translate(m_cr, 0.5, 0.5);
 		cairo_set_line_width (m_cr, 1);
-
-		m_pColormap = gdk_rgb_get_colormap();
-		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
-
-		gDisplay = gdk_drawable_get_display(_getDrawable());
-		gScreen = gdk_drawable_get_screen(_getDrawable());
 
 		GdkDrawable * realDraw;
 		if(GDK_IS_WINDOW((_getDrawable())))
@@ -291,30 +281,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 		// Martin's attempt to make double buffering work.with xft
 		//
 		m_pGC = gdk_gc_new(realDraw);
-		m_pXORGC = gdk_gc_new(realDraw);
-		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
-		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
-
-		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
-								   m_pVisual, m_Colormap);
 			
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
-
 		GdkColor clrWhite;
 		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
-		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
-		gdk_gc_set_foreground(m_pXORGC, &clrWhite);
 
 		GdkColor clrBlack;
 		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
-		gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
 		gdk_gc_set_foreground(m_pGC, &clrBlack);
-
-		m_XftColor.color.red = clrBlack.red;
-		m_XftColor.color.green = clrBlack.green;
-		m_XftColor.color.blue = clrBlack.blue;
-		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = clrBlack.pixel;
 
 		// I only want to set CAP_NOT_LAST, but the call takes all
 		// arguments (and doesn't have a default value).  Set the
@@ -328,30 +301,16 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 								   GDK_LINE_SOLID,
 								   GDK_CAP_NOT_LAST,
 								   GDK_JOIN_MITER);
-			
-		gdk_gc_set_line_attributes(m_pXORGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
 
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
 		gdk_gc_set_exposures(m_pGC, 1);
-		gdk_gc_set_exposures(m_pXORGC, 1);
 
 		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 		m_cursor = GR_CURSOR_INVALID;
 		setCursor(GR_CURSOR_DEFAULT);
 		
 	}
-	else
-	{
-		gDisplay = gdk_display_get_default();
-		gScreen = gdk_screen_get_default();
-	}
-	
-	m_bIsSymbol = false;
-	m_bIsDingbat = false;
 	
 	m_pFontMap = pango_cairo_font_map_get_default();
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
@@ -379,17 +338,11 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	{
 		g_object_unref(m_pContext);
 	}
-	// NB: m_pFontMap is oft owned by Pango
-	if (m_bOwnsFontMap)
-		g_object_unref(m_pFontMap);
 
 	_destroyFonts();
 	delete m_pPFontGUI;
 	g_object_unref(m_pLayoutFontMap);
 	g_object_unref(m_pLayoutContext);
-
-	if (m_pXftDraw)
-		g_free(m_pXftDraw);
 
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
@@ -401,10 +354,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	}
 
 	if (G_IS_OBJECT(m_pGC))
-		g_object_unref (G_OBJECT(m_pGC));
-	if (G_IS_OBJECT(m_pXORGC))
-		g_object_unref (G_OBJECT(m_pXORGC));
-	
+		g_object_unref (G_OBJECT(m_pGC));	
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -1382,7 +1332,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	UT_return_if_fail(m_pXftDraw && RI.m_pScaledGlyphs);
+	UT_return_if_fail(RI.m_pScaledGlyphs);
 
 	// TODO -- test here for the endpoint as well
 	if(RI.m_iOffset == 0 &&
@@ -2100,8 +2050,6 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * pCharWidth)
 {
-	UT_return_if_fail(m_pXftDraw);
-
 	UT_UTF8String utf8;
 	xxx_UT_DEBUGMSG(("isDingBat %d \n",isDingbat()));
 	if(isSymbol())
@@ -3100,15 +3048,15 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
 {
+/* TODO Rob
 	UT_ASSERT(pRect);
 
 	UT_sint32 idy = _tduY(pRect->top);
 	UT_sint32 idx = _tduX(pRect->left);
 	UT_sint32 idw = _tduR(pRect->width);
 	UT_sint32 idh = _tduR(pRect->height);
-
-	gdk_draw_rectangle(_getDrawable(), m_pXORGC, 1, idx, idy,
-			   idw, idh);
+*/
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
@@ -3116,29 +3064,17 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 	m_pRect = pRect;
 	if (pRect)
 	{
-		GdkRectangle r;
-		UT_sint32 idy = _tduY(pRect->top);
-		UT_sint32 idx = _tduX(pRect->left);
-		r.x = idx;
-		r.y = idy;
-		r.width = _tduR(pRect->width);
-		r.height = _tduR(pRect->height);
-		gdk_gc_set_clip_rectangle(m_pGC, &r);
-		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
-		XRectangle xRect;
-		xRect.x = r.x;
-		xRect.y = r.y;
-		xRect.width = r.width;
-		xRect.height = r.height;
-		XftDrawSetClipRectangles (m_pXftDraw,0,0,&xRect,1);
+		double x, y, width, height;
+		x = _tduX(pRect->left);
+		y = _tduY(pRect->top);
+		width = _tduR(pRect->width);
+		height = _tduR(pRect->height);
+		cairo_rectangle(m_cr, x, y, width, height);
+		cairo_clip(m_cr);
 	}
-	else
+	else 
 	{
-		gdk_gc_set_clip_rectangle(m_pGC, NULL);
-		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
-
-		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
-		XftDrawSetClip(m_pXftDraw, 0);
+		cairo_reset_clip(m_cr);
 	}
 }
 
@@ -3147,7 +3083,6 @@ void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32
 {
 	cairo_save(m_cr);
 
-	//cairo_set_antialias(m_cr, CAIRO_ANTIALIAS_NONE);
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
 	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
 	cairo_fill(m_cr);
@@ -3267,12 +3202,11 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 }
 
 /*!
- * Rob sez: the original (before cairo) implementation did not restore colours after drawing, 
- * so the cairo one does neither.
+ * Rob sez: the original (before cairo) implementation did not restore colours after drawing.
+ * We're trying to do the right thing here instead.
  */
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-/* TODO: cairo. Seems to be this is what's breaking the tab toggle.
 	cairo_save (m_cr);
 
 	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
@@ -3280,10 +3214,6 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_s
 	cairo_fill(m_cr);
 
 	cairo_restore (m_cr);
-*/
-	UT_ASSERT(c < COUNT_3D_COLORS);
-	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
 }
 
 /*!
@@ -3752,17 +3682,11 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	if (gScreen)
 		{
 			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_SCREEN_XDISPLAY (gScreen);
 
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+			m_pFontMap = pango_cairo_font_map_get_default();
+			m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 		}
-	else
-		{
 
-			m_bOwnsFontMap = true;
-		}
- 	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
 }

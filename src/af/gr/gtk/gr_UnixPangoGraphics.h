@@ -344,7 +344,6 @@ public:
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
 	PangoContext *    m_pLayoutContext;
-	bool              m_bOwnsFontMap;
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
@@ -358,24 +357,17 @@ public:
 	cairo_t	*         m_cr;
 	GdkWindow *       m_pWin;
 	GdkGC*            m_pGC;
-	GdkGC*            m_pXORGC;
 
-	GdkColormap* 	  m_pColormap;
 	int               m_iWindowHeight;
 	int	              m_iWindowWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
-	Drawable				m_Drawable;
-	Visual*					m_pVisual;
-	Colormap				m_Colormap;
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
-	XftDraw*				m_pXftDraw;
-	XftColor				m_XftColor;
 	UT_RGBColor				m_curColor;
 	UT_sint32               m_iXoff;
 	UT_sint32               m_iYoff;
