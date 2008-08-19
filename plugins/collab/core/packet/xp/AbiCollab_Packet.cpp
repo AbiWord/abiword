@@ -824,14 +824,29 @@ std::string RevertAckSessionPacket::toStr() const
 }
 
 /* ***************************************************** */
+/* *            AbstractSessionTakeoverPacket            */
+/* ***************************************************** */
+
+bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
+{
+	return (packet.getClassType() >= _PCT_FirstSessionTakeoverPacket && packet.getClassType() <= _PCT_LastSessionTakeoverPacket);
+}
+
+/* ***************************************************** */
 /* *             SessionTakeoverRequestPacket            */
 /* ***************************************************** */
 
 SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, bool bPromote)
-	: SessionPacket(sSessionId, sDocUUID),
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_bPromote(bPromote)
 {
+}
+
+void SessionTakeoverRequestPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_bPromote;
 }
 
 /* ***************************************************** */
@@ -840,9 +855,15 @@ SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 
 SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::vector<std::string>& vBuddyIdentifiers)
-	: SessionPacket(sSessionId, sDocUUID),
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_vBuddyIdentifiers(vBuddyIdentifiers)
 {
+}
+
+void SessionBuddyTransferRequestPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_vBuddyIdentifiers;
 }
 
 /* ***************************************************** */
@@ -851,9 +872,15 @@ SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(
 
 MasterChangeRequestPacket::MasterChangeRequestPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::string& sBuddyIdentifier)
-	: SessionPacket(sSessionId, sDocUUID),
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_sBuddyIdentifier(sBuddyIdentifier)
 {
+}
+
+void MasterChangeRequestPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_sBuddyIdentifier;
 }
 
 /* ***************************************************** */
@@ -862,7 +889,13 @@ MasterChangeRequestPacket::MasterChangeRequestPacket(
 
 SessionReconnectAckPacket::SessionReconnectAckPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
-	: SessionPacket(sSessionId, sDocUUID),
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_iRev(iRev)
 {
+}
+
+void SessionReconnectAckPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_iRev;
 }

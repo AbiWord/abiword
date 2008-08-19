@@ -398,9 +398,10 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 
 	// execute an alternative packet handling path when this session is being 
 	// taken over by another collaborator
-	if (m_eTakeoveState != STS_NONE)
+	if (AbstractSessionTakeoverPacket::isInstanceOf(*pPacket))
 	{
-		_handleSessionTakeover(pPacket, collaborator);
+		AbstractSessionTakeoverPacket* pASTP = static_cast<AbstractSessionTakeoverPacket*>(pPacket);
+		_handleSessionTakeover(pASTP, collaborator);
 		return;
 	}
 
@@ -562,11 +563,46 @@ void AbiCollab::_releaseMouseDrag()
 	m_vecIncomingQueue.clear();
 }
 
-void AbiCollab::_handleSessionTakeover(SessionPacket* pPacket, const Buddy& collaborator)
+void AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator)
 {
 	UT_DEBUGMSG(("AbiCollab::_handleSessionTakeover()\n"));
 	UT_return_if_fail(pPacket);
 
-	// TODO: implement me
+	switch (m_eTakeoveState)
+	{
+		case STS_NONE:
+			// TODO: implement me
+			break;
+		case STS_TAKEOVER_REQUEST:
+			// TODO: implement me
+			break;
+		case STS_TAKEOVER_ACK:
+			// TODO: implement me
+			break;
+		case STS_BUDDY_TRANSFER_REQUEST:
+			// TODO: implement me
+			break;
+		case STS_BUDDY_TRANSFER_ACK:
+			// TODO: implement me
+			break;
+		case STS_MASTER_CHANGE_REQUEST:
+			// TODO: implement me
+			break;
+		case STS_MASTER_CHANGE_ACK:
+			// TODO: implement me
+			break;
+		case STS_SESSION_RECONNECT_REQUEST:
+			// TODO: implement me
+			break;
+		case STS_SESSION_RECONNECT_ACK:
+			// TODO: implement me
+			break;
+		case STS_SESSION_TAKEOVER_FINALIZE:
+			// TODO: implement me
+			break;
+		default:
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// TODO: drop the buddy sending the invalid packet?
+			break;
+	}
 }
-

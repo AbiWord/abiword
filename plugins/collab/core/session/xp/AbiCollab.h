@@ -180,7 +180,7 @@ private:
 	void								_releaseMouseDrag();
 
 	// session takeover
-	void								_handleSessionTakeover(SessionPacket* pPacket, const Buddy& collaborator);
+	void								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
 
 
 	PD_Document *						m_pDoc;
