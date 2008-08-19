@@ -47,16 +47,10 @@
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
-#include <pango/pangoxft.h>
-
-#ifdef HAVE_PANGOFT2
-  #include <pango/pangoft2.h>
-#endif
 
 #include <math.h>
 
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 
 #ifdef ENABLE_PRINT
   #include <libgnomeprint/gnome-print-pango.h>
@@ -248,13 +242,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	m_pAdjustedPangoFontSource(NULL),
 	m_iAdjustedPangoFontZoom (0),
 	m_iDeviceResolution(96),
-	m_cr (NULL),
-	m_pWin (win),
- 	m_pGC (NULL),
-	m_iXoff (0),
-	m_iYoff (0),
-	m_bIsSymbol (false),
-	m_bIsDingbat (false)
+	m_cr(NULL),
+	m_pWin(win),
+ 	m_pGC(NULL),
+	m_iXoff(0),
+	m_iYoff(0),
+	m_bIsSymbol(false),
+	m_bIsDingbat(false)
 {
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
 
@@ -642,7 +636,6 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 {
-	// TODO -- we should get this somewhere from the xft lib
 	return m_iDeviceResolution;
 }
 
@@ -2555,36 +2548,6 @@ static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *ele
 	return NULL;
 }
 
-static void getDefaultFontmapAndContext(PangoFontMap **fontmap, PangoContext **context, bool *fontmapNeedsFreeing)
-{
-	// todo : use default cairo fontmap and context
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
-
-	*fontmap = 0;
-	*context = 0;
-	*fontmapNeedsFreeing = false;
-
-	gDisplay = gdk_display_get_default();
-	gScreen = gdk_screen_get_default();
-
-	if (gScreen && gDisplay)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			*context = pango_xft_get_context(disp, iScreen);
-			*fontmap = pango_xft_get_font_map(disp, iScreen);
-		}
-#ifdef HAVE_PANGOFT2
-	else
-		{
-			*fontmap = pango_ft2_font_map_new ();
-			*context = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(*fontmap));
-			fontmapNeedsFreeing = true;
-		}
-#endif
-}
-
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2625,12 +2588,8 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 				pango_font_description_set_stretch(d, (PangoStretch)fm->value);				
 			}
 
-		PangoFontMap *fontmap;
-		PangoContext *context;
-		bool ownsFontMap;
-		
-		getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
-		
+		PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+		PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));		
 		if (fontmap && context)
 			{
 				PangoFont *font = pango_font_map_load_font(fontmap, context, d);
@@ -2641,11 +2600,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 						pango_font_description_free(new_desc);
 						g_object_unref(font);
 					}
-		
-				g_object_unref(context);
-
-				if (ownsFontMap)
-					g_object_unref(fontmap);
+				g_object_unref(G_OBJECT (context)), context = NULL;
 			}
 
 		pango_font_description_free(d);
@@ -2812,12 +2767,8 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 
 
 	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
-	PangoFontMap *fontmap;
-	PangoContext *context;
-	bool ownsFontMap;
-		
-	getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
-		
+	PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+	PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));	
 	if (fontmap && context)
 		{
 			PangoFontFamily **font_families;
@@ -2841,11 +2792,7 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 					
 					Vec.push_back(family);
 				}
-						
-			g_object_unref(context);
-			
-			if (ownsFontMap)
-				g_object_unref(fontmap);
+			g_object_unref (G_OBJECT (context)), context = NULL;
 		}
 
 	return Vec;
@@ -3197,7 +3144,8 @@ inline int GR_UnixPangoGraphics::pftlu(int pf) const
 
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-	UT_ASSERT(c < COUNT_3D_COLORS);
+	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
@@ -3207,6 +3155,8 @@ void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
  */
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
+	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+
 	cairo_save (m_cr);
 
 	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
@@ -3669,7 +3619,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	 * for our
 	 * gnome-print font map
 	 */
-	GdkScreen *  gScreen  = gdk_screen_get_default();
 
 	// the parent class' device resolution is the screen's resolution
 	m_iScreenResolution = m_iDeviceResolution;
@@ -3678,14 +3627,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 		static_cast<double>(m_iScreenResolution);
 	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
 				 m_iScreenResolution, m_iDeviceResolution));
-
-	if (gScreen)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-
-			m_pFontMap = pango_cairo_font_map_get_default();
-			m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-		}
 
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
