@@ -3,6 +3,7 @@
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 by One Laptop Per Child
+ * Copyright (C) 2008 by AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +46,20 @@ class PX_ChangeRecord;
 class CommandLine;
 class Buddy;
 class AccountHandler;
+
+enum SessionTakeoverState
+{
+	STS_NONE,
+	STS_TAKEOVER_REQUEST,
+	STS_TAKEOVER_ACK,
+	STS_BUDDY_TRANSFER_REQUEST,
+	STS_BUDDY_TRANSFER_ACK,
+	STS_MASTER_CHANGE_REQUEST,
+	STS_MASTER_CHANGE_ACK,
+	STS_SESSION_RECONNECT_REQUEST,
+	STS_SESSION_RECONNECT_ACK,
+	STS_SESSION_TAKEOVER_FINALIZE
+};	
 
 class ChangeAdjust
 {
@@ -139,15 +154,17 @@ public:
 	void								setIsReverting(bool bIsReverting)
 		{ m_bIsReverting = bIsReverting; }
 	
+	// session takeover
+	void								initiateSessionTakeover(const Buddy* pNewMaster);
+	
 	// session recording functionality
 	bool								isRecording()
 		{ return m_pRecorder != NULL; }
 	void								startRecording( SessionRecorderInterface* pRecorder );
 	void								stopRecording();
 
-	// mouse listener callbacks
+	// mouse listener functionality
 	virtual void						signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
-	void								_releaseMouseDrag();
 
 private:
 	void								_removeCollaborator(UT_sint32 index);
@@ -158,6 +175,13 @@ private:
 		{ m_iDocListenerId = iDocListenerId; }
 	
 	void								_fillRemoteRev( Packet* pPacket, const Buddy& ); 
+
+	// mouse listener functionality
+	void								_releaseMouseDrag();
+
+	// session takeover
+	void								_handleSessionTakeover(SessionPacket* pPacket, const Buddy& collaborator);
+
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;
@@ -183,6 +207,8 @@ private:
 	UT_sint32							m_iMouseLID;
 	bool								m_bDoingMouseDrag;
 	std::vector<std::pair<SessionPacket*,Buddy*> >		m_vecIncomingQueue;
+	
+	SessionTakeoverState				m_eTakeoveState;
 	
 protected:
 	class PacketVector : public std::vector<Packet*>

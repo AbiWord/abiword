@@ -3,6 +3,7 @@
 /* AbiCollab- Code to enable the modification of remote documents.
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
+ * Copyright (C) 2008 by AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1070,7 +1071,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 	
 	// check if this is a simple import-meh-now-packet
 	PClassType pct = packet->getClassType();
-	if (pct>=_PCT_FirstChange && pct<=_PCT_LastChange) 
+	if (pct >= _PCT_FirstSessionPacket && pct <= _PCT_LastSessionPacket)
 	{
 		// lookup session
 		SessionPacket* dsp = static_cast<SessionPacket*>( packet );

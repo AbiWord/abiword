@@ -181,7 +181,7 @@ void SessionPacket::serialize( Archive& ar )
 
 bool SessionPacket::isInstanceOf(const Packet& packet)
 {
-	return (packet.getClassType() >= _PCT_FirstChange && packet.getClassType() <= _PCT_LastChange);
+	return (packet.getClassType() >= _PCT_FirstSessionPacket && packet.getClassType() <= _PCT_LastSessionPacket);
 }
 
 std::string SessionPacket::toStr() const
@@ -827,8 +827,10 @@ std::string RevertAckSessionPacket::toStr() const
 /* *             SessionTakeoverRequestPacket            */
 /* ***************************************************** */
 
-SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(bool bPromote)
-	: m_bPromote(bPromote)
+SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, bool bPromote)
+	: SessionPacket(sSessionId, sDocUUID),
+	m_bPromote(bPromote)
 {
 }
 
@@ -836,8 +838,10 @@ SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(bool bPromote)
 /* *             SessionBuddyTransferRequestPacket       */
 /* ***************************************************** */
 
-SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(const std::vector<std::string>& vBuddyIdentifiers)
-	: m_vBuddyIdentifiers(vBuddyIdentifiers)
+SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::vector<std::string>& vBuddyIdentifiers)
+	: SessionPacket(sSessionId, sDocUUID),
+	m_vBuddyIdentifiers(vBuddyIdentifiers)
 {
 }
 
@@ -845,8 +849,10 @@ SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(const std::
 /* *             MasterChangeRequestPacket               */
 /* ***************************************************** */
 
-MasterChangeRequestPacket::MasterChangeRequestPacket(const std::string& sBuddyIdentifier)
-	: m_sBuddyIdentifier(sBuddyIdentifier)
+MasterChangeRequestPacket::MasterChangeRequestPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::string& sBuddyIdentifier)
+	: SessionPacket(sSessionId, sDocUUID),
+	m_sBuddyIdentifier(sBuddyIdentifier)
 {
 }
 
@@ -854,7 +860,9 @@ MasterChangeRequestPacket::MasterChangeRequestPacket(const std::string& sBuddyId
 /* *             SessionReconnectAckPacket               */
 /* ***************************************************** */
 
-SessionReconnectAckPacket::SessionReconnectAckPacket(UT_sint32 iRev)
-	: m_iRev(iRev)
+SessionReconnectAckPacket::SessionReconnectAckPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+	: SessionPacket(sSessionId, sDocUUID),
+	m_iRev(iRev)
 {
 }

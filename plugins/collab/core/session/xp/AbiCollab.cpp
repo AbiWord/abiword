@@ -4,6 +4,7 @@
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006,2007 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 by One Laptop Per Child
+ * Copyright (C) 2008 by AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,8 +87,8 @@ AbiCollab::AbiCollab(PD_Document* pDoc, const UT_UTF8String& sSessionId, XAP_Fra
 	m_bIsReverting(false),
 	m_pRecorder(NULL),
 	m_iMouseLID(-1),
-	m_bDoingMouseDrag(false)
-
+	m_bDoingMouseDrag(false),
+	m_eTakeoveState(STS_NONE)
 {
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
@@ -119,7 +120,8 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	m_bIsReverting(false),
 	m_pRecorder(NULL),
 	m_iMouseLID(-1),
-	m_bDoingMouseDrag(false)
+	m_bDoingMouseDrag(false),
+	m_eTakeoveState(STS_NONE)
 {
 	// TODO: this can be made a lil' more efficient, as setDocument
 	// will create import and export listeners, which is kinda useless
@@ -389,10 +391,18 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 					std::make_pair(	static_cast<SessionPacket*>(pPacket->clone()), collaborator.clone() ));
 		return;
 	}
-	
+
 	// record the incoming packet
 	if (m_pRecorder)
 		m_pRecorder->storeIncoming( pPacket, collaborator );
+
+	// execute an alternative packet handling path when this session is being 
+	// taken over by another collaborator
+	if (m_eTakeoveState != STS_NONE)
+	{
+		_handleSessionTakeover(pPacket, collaborator);
+		return;
+	}
 
 	// import the packet; note that it might be denied due to collisions
 	maskExport();
@@ -437,6 +447,26 @@ void AbiCollab::addChangeAdjust(ChangeAdjust* pAdjust)
 	}
 
 	m_Export.getAdjusts()->addItem(pAdjust);
+}
+
+void AbiCollab::initiateSessionTakeover(const Buddy* pNewMaster)
+{
+	UT_return_if_fail(pNewMaster);
+
+	SessionTakeoverRequestPacket promoteTakeoverPacket(m_sId, m_pDoc->getOrigDocUUIDString(), true);
+	SessionTakeoverRequestPacket normalTakeoverPacket(m_sId, m_pDoc->getOrigDocUUIDString(), false);
+	for (std::vector<Buddy*>::iterator it = m_vecCollaborators.begin(); it != m_vecCollaborators.end(); it++)
+	{
+		Buddy* pBuddy = *it;
+		UT_continue_if_fail(pBuddy);
+
+		AccountHandler* pHandler = pBuddy->getHandler();
+		UT_continue_if_fail(pHandler);
+		
+		pHandler->send(pNewMaster == pBuddy ? &promoteTakeoverPacket : &normalTakeoverPacket, *pBuddy);
+	}
+
+	m_eTakeoveState = STS_TAKEOVER_REQUEST;
 }
 
 void AbiCollab::startRecording( SessionRecorderInterface* pRecorder )
@@ -531,3 +561,12 @@ void AbiCollab::_releaseMouseDrag()
 		 
 	m_vecIncomingQueue.clear();
 }
+
+void AbiCollab::_handleSessionTakeover(SessionPacket* pPacket, const Buddy& collaborator)
+{
+	UT_DEBUGMSG(("AbiCollab::_handleSessionTakeover()\n"));
+	UT_return_if_fail(pPacket);
+
+	// TODO: implement me
+}
+

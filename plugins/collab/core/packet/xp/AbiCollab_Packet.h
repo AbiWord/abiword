@@ -65,7 +65,7 @@ enum PClassType // send over the net to identify classes
 	PCT_ProtocolErrorPacket,
 	
 	//
-	// packets
+	// session packets
 	//
 	/* misc. session packets */
 	PCT_SignalSessionPacket = 0x10,				// update _PCT_FirstChange if you move this
@@ -80,11 +80,7 @@ enum PClassType // send over the net to identify classes
 	PCT_DeleteStrux_ChangeRecordSessionPacket,
 	PCT_Object_ChangeRecordSessionPacket,
 	PCT_Data_ChangeRecordSessionPacket,
-	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChange and _PCT_LastChangeRecord if you move this
-
-	//
-	// control functions
-	//
+	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChangeRecord if you move this
 	/* session takeover packets */
 	PCT_SessionTakeoverRequestPacket = 0x40,
 	PCT_SessionTakeoverAckPacket,
@@ -95,7 +91,7 @@ enum PClassType // send over the net to identify classes
 	PCT_SessionReconnectRequestPacket,
 	PCT_SessionReconnectAckPacket,
 	PCT_SessionTakeoverFinalizePacket,
-	PCT_SessionRestartPacket,
+	PCT_SessionRestartPacket,					// update _PCT_LastChange if you move this
 
 	//
 	// events
@@ -121,9 +117,8 @@ enum PClassType // send over the net to identify classes
 	//
 	// meta values (KEEP THESE UPDATED WHEN ADDING NEW PACKET TYPES!!)
 	//
-	// FIXME: rename _PCT_FirstChange to _PCT_FirstSession
-	_PCT_FirstChange = PCT_SignalSessionPacket,
-	_PCT_LastChange = PCT_Glob_ChangeRecordSessionPacket,
+	_PCT_FirstSessionPacket = PCT_SignalSessionPacket,
+	_PCT_LastSessionPacket = PCT_SessionRestartPacket,
 	
 	_PCT_FirstChangeRecord = PCT_ChangeRecordSessionPacket,
 	_PCT_LastChangeRecord = PCT_Glob_ChangeRecordSessionPacket,
@@ -564,12 +559,12 @@ private:
  * Session Takeover Packets                                  *
  *************************************************************/
 
-class SessionTakeoverRequestPacket : public Packet
+class SessionTakeoverRequestPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionTakeoverRequestPacket);
 	SessionTakeoverRequestPacket() {}
-	SessionTakeoverRequestPacket(bool bPromote);
+	SessionTakeoverRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, bool bPromote);
 
 	bool				promote() const
 		{ return m_bPromote; }
@@ -578,19 +573,20 @@ private:
 	bool				m_bPromote;
 };
 
-class SessionTakeoverAckPacket : public Packet
+class SessionTakeoverAckPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionTakeoverAckPacket);
 	SessionTakeoverAckPacket() {}
 };
 
-class SessionBuddyTransferRequestPacket : public Packet
+class SessionBuddyTransferRequestPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionBuddyTransferRequestPacket);
 	SessionBuddyTransferRequestPacket() {}
-	SessionBuddyTransferRequestPacket(const std::vector<std::string>& vBuddyIdentifiers);
+	SessionBuddyTransferRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+			const std::vector<std::string>& vBuddyIdentifiers);
 
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
@@ -599,19 +595,20 @@ private:
 	std::vector<std::string>	m_vBuddyIdentifiers;
 };
 
-class SessionBuddyTransferAckPacket : public Packet
+class SessionBuddyTransferAckPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionBuddyTransferAckPacket);
 	SessionBuddyTransferAckPacket() {}
 };
 
-class MasterChangeRequestPacket : public Packet
+class MasterChangeRequestPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(MasterChangeRequestPacket);
 	MasterChangeRequestPacket() {}
-	MasterChangeRequestPacket(const std::string& sBuddyIdentifier);
+	MasterChangeRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+			const std::string& sBuddyIdentifier);
 
 	const std::string&			getBuddyIdentifier()
 		{ return m_sBuddyIdentifier; }
@@ -620,26 +617,27 @@ private:
 	std::string					m_sBuddyIdentifier;
 };
 
-class MasterChangeAckPacket : public Packet
+class MasterChangeAckPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(MasterChangeAckPacket);
 	MasterChangeAckPacket() {}
 };
 
-class SessionReconnectRequestPacket : public Packet
+class SessionReconnectRequestPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionReconnectRequestPacket);
 	SessionReconnectRequestPacket() {}
 };
 
-class SessionReconnectAckPacket : public Packet
+class SessionReconnectAckPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
-	SessionReconnectAckPacket(UT_sint32 iRev);
+	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+			UT_sint32 iRev);
 
 	UT_sint32					getRev() const
 		{ return m_iRev; }
@@ -648,14 +646,14 @@ private:
 	UT_sint32					m_iRev;
 };
 
-class SessionTakeoverFinalizePacket : public Packet
+class SessionTakeoverFinalizePacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionTakeoverFinalizePacket);
 	SessionTakeoverFinalizePacket() {}
 };
 
-class SessionRestartPacket : public Packet
+class SessionRestartPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SessionRestartPacket);
