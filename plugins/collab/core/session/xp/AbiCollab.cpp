@@ -400,10 +400,37 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 	// taken over by another collaborator
 	if (AbstractSessionTakeoverPacket::isInstanceOf(*pPacket))
 	{
-		AbstractSessionTakeoverPacket* pASTP = static_cast<AbstractSessionTakeoverPacket*>(pPacket);
-		_handleSessionTakeover(pASTP, collaborator);
+		AbstractSessionTakeoverPacket* astp = static_cast<AbstractSessionTakeoverPacket*>(pPacket);
+		bool res = _handleSessionTakeover(astp, collaborator);
+		if (!res)
+		{
+			// TODO: implement/handle an offending collaborator
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 		return;
 	}
+
+	/*
+	Session packets are only allowed to come in from a collaborator when:
+
+	1. no session takeover is in progress, or 
+	2a. if this session is a slave: as long as we are in the STS_TAKEOVER_ACK
+		state: this means the slave didn't receive a MasterChangeRequest or 
+		SessionBuddyTransferRequest packet yet. 
+		When we do receive such a packet, it means all in-transit session packets
+		that were sent before the SessionTakeoverRequest packet arrived at the slave 
+		have been flushed from all slaves to all slaves.
+		In that case we are officially in the 'exclusive' session takeover process.
+	2b. if this session is a master: until the collaborator has responded to a 
+		SessionTakeoverRequest from us with a SessionTakeoverAck packet
+	*/
+
+	// TODO: implement/handle an offending collaborator
+	UT_return_if_fail(
+				(m_eTakeoveState == STS_NONE) || /* everyone can be in this state */
+				(m_eTakeoveState == STS_TAKEOVER_ACK) || /* only a slave can be in this state */
+				(m_eTakeoveState == STS_TAKEOVER_REQUEST && !_hasAckedSessionTakeover(collaborator)) /* only a master can be in this state */
+			);
 
 	// import the packet; note that it might be denied due to collisions
 	maskExport();
@@ -563,15 +590,32 @@ void AbiCollab::_releaseMouseDrag()
 	m_vecIncomingQueue.clear();
 }
 
-void AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator)
+bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator)
 {
 	UT_DEBUGMSG(("AbiCollab::_handleSessionTakeover()\n"));
-	UT_return_if_fail(pPacket);
+	UT_return_val_if_fail(pPacket, false);
+	UT_return_val_if_fail(collaborator.getHandler(), false);
 
 	switch (m_eTakeoveState)
 	{
 		case STS_NONE:
-			// TODO: implement me
+			{
+				// only the SessionTakeoverRequestPacket initiates the whole
+				// session takeover process
+				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverRequestPacket, false);
+
+				// we can only receive a takeover request from the controller
+				UT_return_val_if_fail(m_pController == &collaborator, false);
+	
+				SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
+				// TODO: handle the SessionTakeoverRequestPacket packet
+
+				// inform the master that we receive the takeover initiation request
+				SessionTakeoverAckPacket stap;
+				collaborator.getHandler()->send(&stap, collaborator);
+
+				m_eTakeoveState = STS_TAKEOVER_ACK;
+			}
 			break;
 		case STS_TAKEOVER_REQUEST:
 			// TODO: implement me
@@ -605,4 +649,12 @@ void AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 			// TODO: drop the buddy sending the invalid packet?
 			break;
 	}
+
+	return false;
+}
+
+bool AbiCollab::_hasAckedSessionTakeover(const Buddy& collaborator)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
 }

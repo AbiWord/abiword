@@ -167,6 +167,7 @@ public:
 	virtual void						signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
 
 private:
+	// collaborator management
 	void								_removeCollaborator(UT_sint32 index);
 
 	// document management
@@ -180,8 +181,8 @@ private:
 	void								_releaseMouseDrag();
 
 	// session takeover
-	void								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
-
+	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
+	bool								_hasAckedSessionTakeover(const Buddy& collaborator);
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;
