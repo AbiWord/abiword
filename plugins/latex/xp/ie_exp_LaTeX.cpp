@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <deque>
+#include <stack>
 
 #ifdef HAVE_LIBXSLT
 #include <libxslt/xslt.h>
@@ -31,7 +32,7 @@
 #include <libxslt/xsltutils.h>
 #endif
 
-#include "ut_stack.h"
+#include "fp_types.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -189,11 +190,6 @@ static bool _convertLettersToSymbols(char c, const char *& subst);
 #define BT_HEADING3		4
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
-
-#define UNKNOWN_LIST	0
-#define BULLET_LIST	1
-#define NUMBERED_LIST	2
-typedef int LIST_TYPE;
 
 class LaTeX_Analysis_Listener : public PL_Listener
 {
@@ -375,8 +371,8 @@ protected:
 	int		    m_CellBot;
 	
 // Type for the last-processed list  
-	LIST_TYPE			list_type;
-	UT_NumberStack          list_stack;
+	FL_ListType			list_type;
+	std::stack<FL_ListType>	list_stack;
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
@@ -420,22 +416,24 @@ void s_LaTeX_Listener::_closeList(void)
 		case NUMBERED_LIST:
 			m_pie->write("\\end{enumerate}\n");
 			break;
-		case BULLET_LIST:
+		case BULLETED_LIST:
 			m_pie->write("\\end{itemize}\n");
 			break;
 		default:
 			;
 	}
 	list_stack.pop();
-	if (list_stack.getDepth())
-	    list_stack.viewTop(list_type);
+	if (!list_stack.empty())
+	{
+		list_type = list_stack.top();
+	}
 }
 
 void s_LaTeX_Listener::_closeLists()
 {
 	do{
 		_closeList();
-	} while(list_stack.getDepth());
+	} while(!list_stack.empty());
 	m_bInList = false;
 }
 
@@ -622,7 +620,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			int indent = 0;
 			bool bNewList = false;
 			const gchar * szIndent, * szLeft, * szListStyle = NULL;
-			LIST_TYPE this_list_type = UNKNOWN_LIST;
+			FL_ListType this_list_type = NOT_A_LIST;
 			pAP->getProperty("list-style", szListStyle);
 			
 			if(szListStyle)
@@ -630,10 +628,10 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			    if (0 == strcmp(szListStyle, "Numbered List") )
 				this_list_type = NUMBERED_LIST;
 			    else if (0 == strcmp(szListStyle, "Bullet List") )
-				this_list_type = BULLET_LIST;
+				this_list_type = BULLETED_LIST;
 			}
 			
-			if (this_list_type == UNKNOWN_LIST)
+			if (this_list_type == NOT_A_LIST)
 			{
 			    this_list_type = list_type;
 			}
@@ -674,7 +672,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			    {
 				m_pie->write("\\begin{enumerate}\n");
 			    }
-			    else if (list_type == BULLET_LIST)
+			    else if (list_type == BULLETED_LIST)
 			    {
 				m_pie->write("\\begin{itemize}\n");
 			    }
@@ -1414,7 +1412,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bHaveEndnote(analysis.m_hasEndnotes),
 	m_bOverline(false),
 	m_NumCloseBrackets(0),
-	list_type(BULLET_LIST),
+	list_type(BULLETED_LIST),
 	m_pqRect(NULL)
 {
 	m_pie->write("%% ================================================================================\n");
