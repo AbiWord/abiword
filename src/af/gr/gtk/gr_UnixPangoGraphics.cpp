@@ -227,6 +227,7 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+// TODO maybe consolidate a common constructor again?
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
   :	m_pFontMap(NULL),
 	m_pContext(NULL),
@@ -246,13 +247,18 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
 	m_bIsSymbol(false),
 	m_bIsDingbat(false)
 {
-	GR_UnixPangoGraphics();
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_cursor = GR_CURSOR_INVALID;
 
-	UT_ASSERT(m_cr);
-	UT_ASSERT(m_pFontMap);
-	UT_ASSERT(m_pContext);
-	UT_ASSERT(m_pLayoutFontMap);
-	UT_ASSERT(m_pLayoutContext);
+	m_pFontMap = pango_cairo_font_map_get_default();
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+
+	m_pLayoutFontMap = pango_cairo_font_map_new();
+	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
+										(double) getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
 }
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
@@ -297,16 +303,19 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
-	m_pLayoutFontMap = pango_cairo_font_map_new ();
+	m_pLayoutFontMap = pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
 										(double) getResolution());	
 	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
-	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n",	m_pLayoutFontMap,	m_pLayoutContext));
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
 }
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
+
+	cairo_destroy(m_cr), m_cr = NULL;
+
 	if(m_pAdjustedPangoFont!= NULL)
 	{
 		g_object_unref(m_pAdjustedPangoFont);

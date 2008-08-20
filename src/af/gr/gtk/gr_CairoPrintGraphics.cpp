@@ -21,7 +21,8 @@
 #include "gr_CairoPrintGraphics.h"
 
 GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr)
-  : GR_UnixPangoGraphics(cr)
+  : GR_UnixPangoGraphics(cr),
+	m_bDoShowPage(false)
 {}
 	
 GR_CairoPrintGraphics::~GR_CairoPrintGraphics()
@@ -44,19 +45,35 @@ bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 bool GR_CairoPrintGraphics::GR_CairoPrintGraphics::startPrint(void)
 {
+	printf("%s() %d\n", __FUNCTION__, m_bDoShowPage);
+
 	/* TODO */
 	return true;
 }
 
-bool GR_CairoPrintGraphics::startPage(const char * szPagelabel, UT_uint32 pageNumber,
-									  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool GR_CairoPrintGraphics::startPage(const char * /*szPagelabel*/, UT_uint32 /*pageNumber*/,
+									  bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
+	printf("%s() %d\n", __FUNCTION__, m_bDoShowPage);
+
+	if (m_bDoShowPage) {
+		cairo_show_page(m_cr);
+	}
+
+	m_bDoShowPage = true;
+
 	/* TODO */
 	return true;
 }
 
-bool GR_CairoPrintGraphics::GR_CairoPrintGraphics::endPrint(void)
+bool GR_CairoPrintGraphics::endPrint(void)
 {
+	printf("%s() %d\n", __FUNCTION__, m_bDoShowPage);
+
+	if (m_bDoShowPage) {
+		cairo_show_page(m_cr);
+	}
+
 	/* TODO */
 	return true;
 }

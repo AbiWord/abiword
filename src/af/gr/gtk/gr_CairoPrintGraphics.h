@@ -29,7 +29,8 @@
 
 class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixPangoGraphics
 {
-	friend class GR_UnixPangoFont;
+	bool m_bDoShowPage;
+
 public:
 	GR_CairoPrintGraphics(cairo_t *cr);
 	
@@ -44,14 +45,14 @@ public:
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
 	virtual bool startPrint(void);
-	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
-							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool startPage(const char * /*szPagelabel*/, UT_uint32 /*pageNumber*/,
+						   bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/);
 	virtual bool endPrint(void);
 
-	virtual void setCursor(GR_Graphics::Cursor c) { UT_ASSERT_NOT_REACHED(); }
-	virtual GR_Graphics::Cursor getCursor(void) const { UT_ASSERT_NOT_REACHED(); }
+	virtual void setCursor(GR_Graphics::Cursor /*c*/) { UT_ASSERT_NOT_REACHED(); }
+	virtual GR_Graphics::Cursor getCursor(void) const { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
 
-	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0) { UT_ASSERT_NOT_REACHED(); }
+	virtual void setPageSize(char * /*pageSizeName*/, UT_uint32 /*iwidth*/ = 0, UT_uint32 /*iheight*/=0) { UT_ASSERT_NOT_REACHED(); }
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { UT_ASSERT_NOT_REACHED(); return NULL;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
