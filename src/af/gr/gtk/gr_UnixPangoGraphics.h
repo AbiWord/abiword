@@ -36,8 +36,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
-#include <X11/Xft/Xft.h>
-
 #ifdef ENABLE_PRINT
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-job.h>

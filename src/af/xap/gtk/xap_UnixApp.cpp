@@ -69,7 +69,6 @@
 static UnixNull_Graphics * nullgraphics = NULL;
 
 /*****************************************************************/
-// #include <sys/time.h> // tmp just to measure the time that XftInit takes
 
 XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	: XAP_App(szAppName),
@@ -77,11 +76,6 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	  m_controlFactory(),
 	  m_szTmpFile(NULL)
 {
-#if FC_MINOR > 2
-	FcInit();
-#else
-	XftInit(NULL);
-#endif
 	_setAbiSuiteLibDir();
 
 	memset(&m_geometry, 0, sizeof(m_geometry));
