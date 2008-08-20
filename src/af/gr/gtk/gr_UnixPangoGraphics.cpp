@@ -228,9 +228,26 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 }
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
-  :	GR_UnixPangoGraphics(),
-	m_cr(cr)
-{}
+  :	m_pFontMap(NULL),
+	m_pContext(NULL),
+	m_pLayoutFontMap(NULL),
+	m_pLayoutContext(NULL),
+	m_pPFont(NULL),
+	m_pPFontGUI(NULL),
+	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedLayoutPangoFont(NULL),
+	m_pAdjustedPangoFontSource(NULL),
+	m_iAdjustedPangoFontZoom (0),
+	m_iDeviceResolution(96),
+	m_cr(cr),
+	m_pWin(NULL),
+	m_iXoff(0),
+	m_iYoff(0),
+	m_bIsSymbol(false),
+	m_bIsDingbat(false)
+{
+	GR_UnixPangoGraphics();
+}
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
   :	m_pFontMap(NULL),
