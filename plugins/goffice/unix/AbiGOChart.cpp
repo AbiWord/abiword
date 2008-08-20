@@ -40,11 +40,10 @@
 #include <goffice/graph/gog-data-allocator.h>
 #include <goffice/graph/gog-series.h>
 #include <goffice/graph/gog-guru.h>
-#include <goffice/graph/gog-renderer-cairo.h>
+#include <goffice/graph/gog-renderer.h>
 #include <goffice/graph/gog-data-set.h>
 #include <goffice/graph/gog-object-xml.h>
 #include <goffice/data/go-data-simple.h>
-#include <goffice/graph/gog-renderer-gnome-print.h>
 #include <goffice/utils/go-locale.h>
 #include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-output-memory.h>
@@ -82,7 +81,7 @@ AbiGO_LocaleTransactor::~AbiGO_LocaleTransactor ()
 	FREEP(mOldLocale);
 }
 
-typedef struct _AbiControlGUI
+struct _AbiControlGUI
 {
 	GObject base;
 	char *object_id;
@@ -115,7 +114,7 @@ abi_cmd_context_init (GOCmdContextClass *iface)
 //
 
 static void
-abi_data_allocator_allocate (GogDataAllocator *dalloc, GogPlot *plot)
+abi_data_allocator_allocate (G_GNUC_UNUSED GogDataAllocator *dalloc, G_GNUC_UNUSED GogPlot *plot)
 {
 //	SheetControlGUI *scg = wbcg_cur_scg (WORKBOOK_CONTROL_GUI (dalloc));
 //	sv_selection_to_plot (sc_view (SHEET_CONTROL (scg)), plot);
@@ -217,10 +216,10 @@ graph_dim_editor_free (GraphDimEditor *editor)
 }
 
 static gpointer
-abi_data_allocator_editor (GogDataAllocator *dalloc,
+abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 			    GogDataset *dataset, int dim_i, GogDataType data_type)
 {
-	AbiControlGUI *acg = ABI_CONTROL_GUI (dalloc);
+//	AbiControlGUI *acg = ABI_CONTROL_GUI (dalloc);
 	GraphDimEditor *editor;
 	GOData *val;
 
@@ -333,9 +332,7 @@ cb_update_graph (GogGraph *graph, gpointer data)
 	else
 	{
 		XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
 		FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
-		PT_DocPosition pos = pView->getPoint();
 		pView->cmdInsertEmbed(&myByteBuf,pView->getPoint(),mimetypeGOChart,szProps);
 	}
 	g_object_unref (xml);
@@ -356,27 +353,26 @@ guru_destroyed_cb (GOChartView *pView)
 //
 
 bool 
-AbiGOChart_Create(AV_View* v, EV_EditMethodCallData *d)
+AbiGOChart_Create(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData *d)
 {
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-    FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	UT_ByteBuf myByteBuf;
-	static unsigned id = 0;
 
-	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_CONTROL_GUI_TYPE, NULL));
+	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_CONTROL_GUI_TYPE, NULL));
 
-	GogGraph *graph = (GogGraph *) g_object_new (GOG_GRAPH_TYPE, NULL);
+	GogGraph *graph = (GogGraph *) g_object_new(GOG_GRAPH_TYPE, NULL);
 	/* by default, create one chart and add it to the graph */
-	gog_object_add_by_name (GOG_OBJECT (graph), "Chart", NULL);
-	GClosure *closure = g_cclosure_new (G_CALLBACK (cb_update_graph), acg,
+	gog_object_add_by_name(GOG_OBJECT(graph), "Chart", NULL);
+	GClosure *closure = g_cclosure_new(G_CALLBACK (cb_update_graph), acg,
 					(GClosureNotify) graph_user_config_free_data);
-	GtkWidget *dialog = gog_guru (graph, GOG_DATA_ALLOCATOR (acg),
-		       NULL /*GO_CMD_CONTEXT (wbcg)*/, GTK_WINDOW(pFrameImpl->getTopLevelWindow()),
-		       closure);
-	g_closure_sink (closure);
+	GtkWidget *dialog = gog_guru(graph, GOG_DATA_ALLOCATOR (acg),
+		       NULL /*GO_CMD_CONTEXT (wbcg)*/, closure);
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
+	g_closure_sink(closure);
+	gtk_widget_show_all (dialog);
 
-	g_object_unref (G_OBJECT (graph));
+	g_object_unref (G_OBJECT(graph));
 
 	return true;
 }
@@ -448,7 +444,7 @@ void GR_GOChartManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
   pGOChartView->setDefaultFontSize(iSize);
 }
 
-UT_sint32 GR_GOChartManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, const char * szDataID)
+UT_sint32 GR_GOChartManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
   if(m_pDoc == NULL)
   {
@@ -480,7 +476,7 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
   UT_return_if_fail(bHaveProp);
   const char * pszDataID = NULL;
-  bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+  pSpanAP->getAttribute("dataid", pszDataID);
   if(pItem->m_bHasSnapshot)
     {
        updatePNGSnapshot(static_cast<AD_Document *>(m_pDoc),rec,pszDataID);
@@ -509,8 +505,8 @@ bool GR_GOChartManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
   {
     return false;
   }
-  GR_Painter painter(getGraphics());
-  GR_Image * pImage = painter.genImageFromRectangle(rec);
+  // TODO: use the goffice framework to get a high resolution png.
+  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -539,8 +535,8 @@ bool GR_GOChartManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
   {
     return false;
   }
-  GR_Painter painter(getGraphics());
-  GR_Image * pImage = painter.genImageFromRectangle(rec);
+  // TODO: use the goffice framework to get a high resolution png.
+  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -562,12 +558,12 @@ bool GR_GOChartManager::modify(UT_sint32 uid)
   return false;
 }
 
-bool  GR_GOChartManager::isEdittable(UT_sint32 uid)
+bool  GR_GOChartManager::isEdittable(G_GNUC_UNUSED UT_sint32 uid)
 {
   return true;
 }
 
-void GR_GOChartManager::initializeEmbedView(UT_sint32 uid)
+void GR_GOChartManager::initializeEmbedView(G_GNUC_UNUSED UT_sint32 uid)
 {
   // FIXME write code for this.
 }
@@ -603,28 +599,28 @@ void GR_GOChartManager::loadEmbedData(UT_sint32 uid)
   _loadGOChartXML(uid, sGOChartXML);
 }
 
-UT_sint32 GR_GOChartManager::getWidth(UT_sint32 uid)
+UT_sint32 GR_GOChartManager::getWidth(G_GNUC_UNUSED UT_sint32 uid)
 {
     // FIXME write code this draws a square
     return 5000;
 }
 
 
-UT_sint32 GR_GOChartManager::getAscent(UT_sint32 uid)
+UT_sint32 GR_GOChartManager::getAscent(G_GNUC_UNUSED UT_sint32 uid)
 {
   // FIXME write code this draws a square
   return 5000;
 }
 
 
-UT_sint32 GR_GOChartManager::getDescent(UT_sint32 uid)
+UT_sint32 GR_GOChartManager::getDescent(G_GNUC_UNUSED UT_sint32 uid)
 {
   // FIXME write code
  return 0;
 
 }
 
-void GR_GOChartManager::setColor(UT_sint32 uid, UT_RGBColor c)
+void GR_GOChartManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_RGBColor c)
 {
   // FIXME write code
 }
@@ -648,7 +644,7 @@ void GR_GOChartManager::releaseEmbedView(UT_sint32 uid)
   m_vecGOChartView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
 }
 
-bool GR_GOChartManager::convert(UT_uint32 iConType, UT_ByteBuf & From, UT_ByteBuf & To)
+bool GR_GOChartManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
 {
   return false;
 }
@@ -698,7 +694,6 @@ void GR_GOChartManager::buildContextualMenu ()
 void GR_GOChartManager::removeContextualMenu ()
 {
     XAP_App *pApp = XAP_App::getApp();
-    EV_Menu_ActionSet* pActionSet = pApp->getMenuActionSet();
 	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 	pFact->removeContextMenu (ChartMenuID);
 }
@@ -707,7 +702,7 @@ GOChartView::GOChartView(GR_GOChartManager * pGOMan): m_pGOMan(pGOMan)
 {
 	m_Graph = NULL;
 	m_Image = NULL;
-	m_Renderer = GOG_RENDERER (g_object_new (GOG_RENDERER_CAIRO_TYPE, NULL));
+	m_Renderer = GOG_RENDERER(g_object_new(GOG_RENDERER_TYPE, NULL));
 	pix_width = pix_height = 0;
 	width = height = 0;
 	m_Guru = NULL;
@@ -731,69 +726,25 @@ void GOChartView::render(UT_Rect & rec)
 	{
 		return;
 	}
-	GR_Graphics *pUGG = m_pGOMan->getGraphics();
-	if (pUGG->queryProperties(GR_Graphics::DGP_PAPER))
+	GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+	cairo_t *cr = pUGG->getCairo ();
+	UT_sint32 _width = pUGG->tdu(rec.width);
+	UT_sint32 _height = pUGG->tdu(rec.height);
+	UT_sint32 x = pUGG->tdu(rec.left);
+	UT_sint32 y = pUGG->tdu(rec.top)-pUGG->tdu(rec.height);
+	UT_sint32 zoom = pUGG->getZoomPercentage ();
+	UT_sint32 real_width = _width * 100 / zoom;
+	UT_sint32 real_height = _height * 100 / zoom;
+	if (real_width != width || real_height != height)
 	{
-		GnomePrintContext *ctx = NULL;
-		UT_sint32 myWidth = pUGG->tdu(rec.width);
-		UT_sint32 myHeight = pUGG->tdu(rec.height);
-		UT_sint32 x = pUGG->tdu(rec.left);
-		UT_sint32 y = pUGG->tdu(rec.top);
-		//
-		// gnome_print places y = 0 at the bottom of the page
-		// and as y increases, it gets placed further from the bottom.
-		//
-		// This is the opposite of AbiWord where y = 0 is the top
-		// and y > 0 is further from the top.
-		//
-		// scale_ydir fixes this (and gets the landscape/portrait right 
-		// too).
-		//
-#ifdef ENABLE_PRINT
-		GR_UnixPangoPrintGraphics *pUPPG = static_cast< GR_UnixPangoPrintGraphics *>(pUGG);
-		ctx = pUPPG->getGnomePrintContext();
-		y = pUPPG->scale_ydir(y);
-#endif
-		if (!ctx)
-			return;
-		
-		gnome_print_gsave (ctx);
-
-		gnome_print_translate (ctx, x, y+myHeight);
-		gog_graph_print_to_gnome_print(m_Graph,ctx,myWidth,myHeight);
-		gnome_print_grestore(ctx);
+		width = real_width;
+		height = real_height;
+		gog_graph_set_size (m_Graph, width, height);
 	}
-	else 
-	{
-		UT_sint32 _width = pUGG->tdu(rec.width);
-		UT_sint32 _height = pUGG->tdu(rec.height);
-		UT_sint32 x = pUGG->tdu(rec.left);
-		UT_sint32 y = pUGG->tdu(rec.top);
-		UT_sint32 zoom = pUGG->getZoomPercentage ();
-		UT_sint32 real_width = _width * 100 / zoom;
-		UT_sint32 real_height = _height * 100 / zoom;
-		if (real_width != width || real_height != height)
-		{
-			width = real_width;
-			height = real_height;
-			gog_graph_set_size (m_Graph, width, height);
-		}
-		if (_width != pix_width || _height != pix_height)
-		{
-			GdkPixbuf *pixbuf;
-			pix_width = _width;
-			pix_height = _height;
-			gog_renderer_cairo_update (GOG_RENDERER_CAIRO (m_Renderer), _width, _height, 1.0);	
-			if (m_Image)
-				delete m_Image;
-			pixbuf = gog_renderer_cairo_get_pixbuf (GOG_RENDERER_CAIRO (m_Renderer));
-			m_Image = new GR_UnixImage(NULL, pixbuf);
-			g_object_ref(pixbuf);
-			m_Image->scaleImageTo(m_pGOMan->getGraphics(),rec);
-		}
-		GR_Painter painter(m_pGOMan->getGraphics());
-		painter.drawImage (m_Image, rec.left, rec.top - rec.height);
-	}
+	cairo_save (cr);
+	cairo_translate (cr, x, y);
+	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
+	cairo_restore (cr);
 }
 
 void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
@@ -811,7 +762,7 @@ void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
 }
 
 
-void GOChartView::setDefaultFontSize( UT_sint32 iSize)
+void GOChartView::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 iSize)
 {
 
 }
@@ -829,9 +780,10 @@ void GOChartView::modify()
 	GClosure *closure = g_cclosure_new (G_CALLBACK (cb_update_graph), acg,
 					(GClosureNotify) graph_user_config_free_data);
 	GtkWidget *dialog = gog_guru (m_Graph, GOG_DATA_ALLOCATOR (acg),
-		       NULL /*GO_CMD_CONTEXT (wbcg)*/, GTK_WINDOW(pFrameImpl->getTopLevelWindow()),
-		       closure);
+		       NULL /*GO_CMD_CONTEXT (wbcg)*/, closure);
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	g_closure_sink (closure);
+	
 	acg->pView->SetGuru (dialog);
 	g_signal_connect_swapped (G_OBJECT (dialog), "destroy", G_CALLBACK (guru_destroyed_cb), acg->pView);
 }

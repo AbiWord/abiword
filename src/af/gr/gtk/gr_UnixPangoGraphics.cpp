@@ -247,6 +247,12 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
 	m_bIsDingbat(false)
 {
 	GR_UnixPangoGraphics();
+
+	UT_ASSERT(m_cr);
+	UT_ASSERT(m_pFontMap);
+	UT_ASSERT(m_pContext);
+	UT_ASSERT(m_pLayoutFontMap);
+	UT_ASSERT(m_pLayoutContext);
 }
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)

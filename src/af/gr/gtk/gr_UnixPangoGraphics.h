@@ -307,8 +307,8 @@ public:
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
 	GdkWindow *  getWindow () {return m_pWin;}
+	cairo_t* getCairo () {return m_cr;}
 
-	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_UnixPangoGraphics(cairo_t *cr);

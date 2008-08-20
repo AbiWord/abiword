@@ -82,7 +82,7 @@ const IE_MimeConfidence * IE_Imp_Object_Sniffer::getMimeConfidence ()
  the Encoded Text importer.
  */
 UT_Confidence_t IE_Imp_Object_Sniffer::recognizeContents(const char * szBuf,
-													   UT_uint32 iNumbytes)
+													   G_GNUC_UNUSED UT_uint32 iNumbytes)
 {
 	const char * magic1 = "<?xml version=\"1.0\"";
 	const char * magic2 = "<GogObject type=\"GogGraph\">";
@@ -104,9 +104,9 @@ UT_Error IE_Imp_Object_Sniffer::constructImporter(PD_Document * pDocument,
 	return UT_OK;
 }
 
-bool IE_Imp_Object_Sniffer::getDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
+bool IE_Imp_Object_Sniffer::getDlgLabels(G_GNUC_UNUSED const char ** pszDesc,
+									   G_GNUC_UNUSED const char ** pszSuffixList,
+									   G_GNUC_UNUSED IEFileType * ft)
 {
 /*	*pszDesc = "GNOME Office Chart (.xml)";
 	*pszSuffixList = "*.xml";
@@ -178,10 +178,8 @@ UT_Error IE_Imp_Object::_parseStream(ImportStream * pStream)
 {
 	UT_return_val_if_fail(pStream, UT_ERROR);
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
     FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 
-	bool bFirstChar = true;
 	UT_UCSChar c;
 	unsigned char uc;
 	while (pStream->getChar(c))
