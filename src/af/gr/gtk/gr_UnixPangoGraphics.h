@@ -311,6 +311,7 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	GR_UnixPangoGraphics(cairo_t *cr);
 	GR_UnixPangoGraphics(GdkWindow * win = NULL);
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	virtual GdkDrawable * _getDrawable(void)

@@ -227,6 +227,11 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
+  :	GR_UnixPangoGraphics(),
+	m_cr(cr)
+{}
+
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
   :	m_pFontMap(NULL),
 	m_pContext(NULL),
@@ -248,6 +253,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 {
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
 
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_cursor = GR_CURSOR_INVALID;
+
 	if (_getDrawable())
 	{
 		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
@@ -259,11 +267,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 		// TODO: is this still needed with cairo, and if yes can it be emulated
 		// without having m_pGC any more?
 		// gdk_gc_set_exposures(m_pGC, 1);
-
-		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-		m_cursor = GR_CURSOR_INVALID;
-		setCursor(GR_CURSOR_DEFAULT);
-		
+		setCursor(GR_CURSOR_DEFAULT);	
 	}
 	
 	m_pFontMap = pango_cairo_font_map_get_default();
