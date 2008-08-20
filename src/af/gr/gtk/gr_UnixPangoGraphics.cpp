@@ -259,6 +259,8 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
 										(double) getResolution());	
 	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
 	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
+
+printf("%s() %d\n", __FUNCTION__, m_iDeviceResolution);
 }
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
