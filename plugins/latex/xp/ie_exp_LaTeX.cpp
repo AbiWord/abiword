@@ -522,49 +522,49 @@ void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 	{
 	    m_ExpectedLeft = 0;
 	    if(m_CellTop != 0)
-		m_pie->write("\\\\");
+			m_pie->write("\\\\");
 	    m_pie->write("\n");
 	    if(!m_pqRect || m_pqRect->empty())
-		m_pie->write("\\hline");
+			m_pie->write("\\hline");
 	    else
 	    {
-		UT_Rect* p;
-		int left=1;
-		while(m_index < m_pqRect->size())
-		{
-		    p = m_pqRect->at(m_index);
-		    if(p->top + p->height -1 > m_RowNuminTable)
-			break;
-		    m_index++;
-		}
-		for(unsigned int i=m_index; i< m_pqRect->size(); i++)
-		{
-		    p = m_pqRect->at(i);
-		    if(m_RowNuminTable < p->top)
-			break;
-		    if(left < p->left)
-		    {
-			UT_String str;
-			UT_String_sprintf(str, "\\cline{%d-%d}", left, p->left-1);
-			m_pie->write(str);
-		    }
+			UT_Rect* p;
+			int left=1;
+			while(m_index < m_pqRect->size())
+			{
+				p = m_pqRect->at(m_index);
+				if(p->top + p->height -1 > m_RowNuminTable)
+					break;
+				m_index++;
+			}
+			for(unsigned int i=m_index; i< m_pqRect->size(); i++)
+			{
+				p = m_pqRect->at(i);
+				if(m_RowNuminTable < p->top)
+					break;
+				if(left < p->left)
+				{
+					UT_String str;
+					UT_String_sprintf(str, "\\cline{%d-%d}", left, p->left-1);
+					m_pie->write(str);
+				}
 		    
-		    left = p->left + p->width;
-		    if(left > this->m_TableWidth)
-			break;
-		}
-		xxx_UT_DEBUGMSG(("left = %d \n", left));
-		if(left <= m_TableWidth)
-		{
-		    if(1 == left)
-			m_pie->write("\\hline");
-		    else
-		    {
-			UT_String str;
-			UT_String_sprintf(str, "\\cline{%d-%d}", left, m_TableWidth);
-			m_pie->write(str);
-		    }
-		}
+				left = p->left + p->width;
+				if(left > this->m_TableWidth)
+					break;
+			}
+			xxx_UT_DEBUGMSG(("left = %d \n", left));
+			if(left <= m_TableWidth)
+			{
+				if(1 == left)
+					m_pie->write("\\hline");
+				else
+				{
+					UT_String str;
+					UT_String_sprintf(str, "\\cline{%d-%d}", left, m_TableWidth);
+					m_pie->write(str);
+				}
+			}
 	    }
 	    m_pie->write("\n");
 	    m_RowNuminTable = m_CellTop + 1;
@@ -573,7 +573,7 @@ void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 	{
 	    int i = m_CellLeft - m_ExpectedLeft;
 	    for(; i>0; i--)
-		m_pie->write("&");
+			m_pie->write("&");
 	}
 	if(m_CellRight - m_CellLeft >1)
 	{
@@ -670,11 +670,11 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			    list_type = this_list_type;
 			    if (list_type == NUMBERED_LIST)
 			    {
-				m_pie->write("\\begin{enumerate}\n");
+					m_pie->write("\\begin{enumerate}\n");
 			    }
 			    else if (list_type == BULLETED_LIST)
 			    {
-				m_pie->write("\\begin{itemize}\n");
+					m_pie->write("\\begin{itemize}\n");
 			    }
 			    
 			    list_stack.push(list_type);
@@ -730,7 +730,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
 				m_pie->write(szChapterNumber);
 				m_pie->write(" ");	  // \\newline");
-        		}
+        	}
 			else if(0 == strcmp(szValue, "Block Text"))
 			{
 				m_iBlockType = BT_BLOCKTEXT;
@@ -971,18 +971,18 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		const gchar* pszColor = NULL;
 		pAP->getProperty("color", pszColor);
 		if (pszColor)
-		  {
+		{
 		    if ((0 != strcmp("000000", pszColor)) &&
 			(0 != strcmp("transparent", pszColor)))
-		      {
- 		 	UT_String szColor;
-			_convertColor(szColor,(const char*)pszColor);
-			m_pie->write("\\textcolor[rgb]{");
-			m_pie->write(szColor);
-			m_pie->write("}{");
-			m_NumCloseBrackets++;
-		      }
-		  }
+		    {
+				UT_String szColor;
+				_convertColor(szColor,(const char*)pszColor);
+				m_pie->write("\\textcolor[rgb]{");
+				m_pie->write(szColor);
+				m_pie->write("}{");
+				m_NumCloseBrackets++;
+		    }
+		}
 		
 		const gchar* pszBgColor = NULL;
 		pAP->getProperty("bgcolor", pszBgColor);
@@ -1047,17 +1047,17 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 			    if (0 == strcmp(q, "underline"))
 			    {
-				m_pie->write("\\uline{");
-				m_NumCloseBrackets++;
+					m_pie->write("\\uline{");
+					m_NumCloseBrackets++;
 			    }
 			    else if(0 == strcmp(q, "overline"))
 			    {
-				m_bOverline = true;
+					m_bOverline = true;
 			    }
 			    else if(0 == strcmp(q, "line-through"))
 			    {
-				m_pie->write("\\sout{");
-				m_NumCloseBrackets++;
+					m_pie->write("\\sout{");
+					m_NumCloseBrackets++;
 			    }
 			    q = strtok(NULL, " ");
 			}
@@ -1137,12 +1137,12 @@ void s_LaTeX_Listener::_closeTable(void)
 {
     if(m_pqRect)
     {
-	for(unsigned int i=0; i<m_pqRect->size(); i++)
-	{
-	    delete m_pqRect->at(i);
-	    m_pqRect->at(i) = NULL;
-	}
-	m_pqRect->clear();
+		for(unsigned int i=0; i<m_pqRect->size(); i++)
+		{
+			delete m_pqRect->at(i);
+			m_pqRect->at(i) = NULL;
+		}
+		m_pqRect->clear();
     }
     m_pie->write("\\\\\n\\hline\n");
     m_pie->write("\\end{tabular}\n\\end{table}\n");
