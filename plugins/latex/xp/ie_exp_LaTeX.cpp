@@ -354,7 +354,7 @@ protected:
 	bool				m_bBetweenQuotes;
 	const PP_AttrProp*	m_pAP_Span;
 	bool                m_bMultiCols;
-	bool           m_bInSymbol;
+	bool				m_bInSymbol;
 	bool				m_bInEndnote;
 	bool				m_bHaveEndnote;
 	bool				m_bOverline;
@@ -807,7 +807,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
-	bool bMustEmitMulticol = false;
 	const gchar* pszNbCols = NULL;
 
 	m_bBetweenQuotes = false;
@@ -827,7 +826,6 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		if (pszNbCols != NULL && ((0 == strcmp(pszNbCols, "2"))
 						|| (0 == strcmp(pszNbCols, "3"))))
 		{
-			bMustEmitMulticol = true;
 			m_bMultiCols = true;
 		}
 		if (pszPageMarginLeft != NULL)
@@ -847,7 +845,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		}
 	}
 
-	if (bMustEmitMulticol)
+	if (m_bMultiCols)
 	{
 		m_pie->write("\\begin{multicols}{");
 		m_pie->write(static_cast<const char *> (pszNbCols));
