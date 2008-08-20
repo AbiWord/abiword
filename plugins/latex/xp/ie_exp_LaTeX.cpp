@@ -608,6 +608,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	m_iBlockType = BT_NORMAL;
 	
 	if (bHaveProp && pAP)
 	{
@@ -689,7 +690,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			this->_closeLists();
 		}
 
-		m_iBlockType = BT_NORMAL;
 		if (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			if (strstr(szValue, "Heading"))
@@ -789,10 +789,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				}
 			}
 		}
-	}
-	else 
-	{
-		m_iBlockType = BT_NORMAL;
 	}
 	
 	m_bInBlock = true;
