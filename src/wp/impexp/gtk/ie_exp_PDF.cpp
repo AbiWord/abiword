@@ -158,7 +158,9 @@ public:
 		     1, true, 
 		     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
 		     pages);
-    
+
+    DELETEP(print_graphics);
+
     // copy filename back into getFp()
     if(_copyFile(filename))
       exit_status = UT_OK;
