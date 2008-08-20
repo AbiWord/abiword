@@ -227,9 +227,6 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
-// TODO: Remove members:
-// m_pGC
-
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
   :	m_pFontMap(NULL),
 	m_pContext(NULL),
@@ -244,7 +241,6 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	m_iDeviceResolution(96),
 	m_cr(NULL),
 	m_pWin(win),
- 	m_pGC(NULL),
 	m_iXoff(0),
 	m_iYoff(0),
 	m_bIsSymbol(false),
@@ -258,47 +254,11 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 		cairo_translate(m_cr, 0.5, 0.5);
 		cairo_set_line_width (m_cr, 1);
 
-		GdkDrawable * realDraw;
-		if(GDK_IS_WINDOW((_getDrawable())))
-		{
-				gdk_window_get_internal_paint_info (_getDrawable(), &realDraw,
-											&m_iXoff, &m_iYoff);
-		}
-		else
-		{
-			    realDraw = _getDrawable();
-				m_iXoff = 0;
-				m_iYoff = 0;
-		}
-
-		//
-		// Martin's attempt to make double buffering work.with xft
-		//
-		m_pGC = gdk_gc_new(realDraw);
-			
-		GdkColor clrWhite;
-		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
-
-		GdkColor clrBlack;
-		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
-		gdk_gc_set_foreground(m_pGC, &clrBlack);
-
-		// I only want to set CAP_NOT_LAST, but the call takes all
-		// arguments (and doesn't have a default value).  Set the
-		// line attributes to not draw the last pixel.
-
-		// We force the line width to be zero because the CAP_NOT_LAST
-		// stuff does not seem to work correctly when the width is set
-		// to one.
-
-		gdk_gc_set_line_attributes(m_pGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
-
 		// Set GraphicsExposes so that XCopyArea() causes an expose on
 		// obscured regions rather than just tiling in the default background.
-		gdk_gc_set_exposures(m_pGC, 1);
+		// TODO: is this still needed with cairo, and if yes can it be emulated
+		// without having m_pGC any more?
+		// gdk_gc_set_exposures(m_pGC, 1);
 
 		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 		m_cursor = GR_CURSOR_INVALID;
@@ -346,9 +306,6 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
 		g_object_unref (G_OBJECT (pix));
 	}
-
-	if (G_IS_OBJECT(m_pGC))
-		g_object_unref (G_OBJECT(m_pGC));	
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -628,9 +585,14 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
+	GdkGC *gc;
+
 	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
-   	gdk_draw_drawable(_getDrawable(), m_pGC, _getDrawable(), tdu(x_src), tdu(y_src),
-   				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+
+	gc = gdk_gc_new(_getDrawable());
+   	gdk_draw_drawable(_getDrawable(), gc, _getDrawable(), tdu(x_src), tdu(y_src),
+					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+	g_object_unref(G_OBJECT(gc)), gc = NULL;
 }
 
 
@@ -2381,20 +2343,15 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
 	UT_sint32 idx = _tduX(xDest);
 	UT_sint32 idy = _tduY(yDest);
 
-	xDest = idx; yDest = idy;
+	cairo_save(m_cr);
 
-	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_draw_pixbuf (_getDrawable(), NULL, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
-	else
-		gdk_draw_pixbuf (_getDrawable(), m_pGC, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
+	gdk_cairo_set_source_pixbuf(m_cr, image, idx, idy);
+	cairo_pattern_t *pattern = cairo_get_source(m_cr);
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
+	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);
+	cairo_fill(m_cr);
+
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)

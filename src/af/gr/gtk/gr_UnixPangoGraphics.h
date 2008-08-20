@@ -356,10 +356,6 @@ public:
 
 	cairo_t	*         m_cr;
 	GdkWindow *       m_pWin;
-	GdkGC*            m_pGC;
-
-	int               m_iWindowHeight;
-	int	              m_iWindowWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
