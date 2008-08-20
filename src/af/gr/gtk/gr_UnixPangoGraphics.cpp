@@ -1007,9 +1007,8 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	// Actually want the layout font here
 	//
 	PangoFont * pf = _adjustedLayoutPangoFont(pFont, pItem->m_pi->analysis.font);
-	PangoFont * pfa = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
-	
-	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf,pfa));
+
+	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf));
 	UT_return_val_if_fail( pf, 0 );
 
 	UT_sint32 iStart = RI.m_iOffset;
@@ -1096,9 +1095,8 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 
 	UT_ASSERT_HARMLESS( iOffsetStart >= 0 );
 
-	PangoFontDescription * pfd = pango_font_describe (pf);
-	int isize = pango_font_description_get_size(pfd);
-	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n",isize));
+	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n", 
+						pango_font_description_get_size(pango_font_describe (pf))));
 
 	if(iOffsetEnd < 0 && iDir == UT_BIDI_LTR)
 	{
@@ -2950,7 +2948,7 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	cairo_stroke(m_cr);
 }
 
-void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
+void GR_UnixPangoGraphics::invertRect(const UT_Rect* /* pRect */)
 {
 /* TODO Rob
 	UT_ASSERT(pRect);
@@ -3790,8 +3788,8 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	UT_return_val_if_fail( ri, false );
 
-	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
 #if 0
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
 	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
 	{
 		RI.m_pGlyphs->glyphs[i].geometry.x_offset =
