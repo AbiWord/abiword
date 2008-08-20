@@ -884,7 +884,7 @@ void SessionBuddyTransferRequestPacket::serialize( Archive& ar )
 std::string SessionBuddyTransferRequestPacket::toStr() const
 {
 	std::string str = SessionPacket::toStr() +
-		str(boost::format("SessionBuddyTransferRequestPacket:\n"));
+		"SessionBuddyTransferRequestPacket:\n";
 	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
 		str += std::string("  Buddy: ") + *it + "\n";
 	return str;
