@@ -583,6 +583,8 @@ public:
 
 	bool				promote() const
 		{ return m_bPromote; }
+		
+	virtual std::string toStr() const;
 
 private:
 	bool				m_bPromote;
@@ -593,6 +595,8 @@ class SessionTakeoverAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverAckPacket);
 	SessionTakeoverAckPacket() {}
+
+	virtual std::string toStr() const;	
 };
 
 class SessionBuddyTransferRequestPacket : public AbstractSessionTakeoverPacket
@@ -606,6 +610,8 @@ public:
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
 
+	virtual std::string toStr() const;
+
 private:
 	std::vector<std::string>	m_vBuddyIdentifiers;
 };
@@ -615,6 +621,8 @@ class SessionBuddyTransferAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionBuddyTransferAckPacket);
 	SessionBuddyTransferAckPacket() {}
+
+	virtual std::string toStr() const;
 };
 
 class MasterChangeRequestPacket : public AbstractSessionTakeoverPacket
@@ -628,6 +636,8 @@ public:
 	const std::string&			getBuddyIdentifier()
 		{ return m_sBuddyIdentifier; }
 
+	virtual std::string toStr() const;
+
 private:
 	std::string					m_sBuddyIdentifier;
 };
@@ -637,6 +647,8 @@ class MasterChangeAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(MasterChangeAckPacket);
 	MasterChangeAckPacket() {}
+
+	virtual std::string toStr() const;
 };
 
 class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
@@ -644,6 +656,8 @@ class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectRequestPacket);
 	SessionReconnectRequestPacket() {}
+
+	virtual std::string toStr() const;
 };
 
 class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
@@ -657,6 +671,8 @@ public:
 	UT_sint32					getRev() const
 		{ return m_iRev; }
 
+	virtual std::string toStr() const;
+
 private:
 	UT_sint32					m_iRev;
 };
@@ -666,6 +682,8 @@ class SessionTakeoverFinalizePacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverFinalizePacket);
 	SessionTakeoverFinalizePacket() {}
+
+	virtual std::string toStr() const;
 };
 
 class SessionRestartPacket : public AbstractSessionTakeoverPacket
@@ -673,6 +691,8 @@ class SessionRestartPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionRestartPacket);
 	SessionRestartPacket() {}
+
+	virtual std::string toStr() const;
 };
 
 #endif /* ABICOLLAB_PACKET_H */

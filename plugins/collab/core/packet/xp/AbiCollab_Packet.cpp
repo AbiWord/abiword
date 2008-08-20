@@ -849,6 +849,21 @@ void SessionTakeoverRequestPacket::serialize( Archive& ar )
 	ar << m_bPromote;
 }
 
+std::string SessionTakeoverRequestPacket::toStr() const
+{
+	return SessionPacket::toStr() +
+		str(boost::format("SessionTakeoverRequestPacket: m_bPromote: %1%\n") % m_bPromote);
+}
+
+/* ***************************************************** */
+/* *             SessionTakeoverAckPacket                */
+/* ***************************************************** */
+
+std::string SessionTakeoverAckPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionTakeoverAckPacket\n";
+}
+
 /* ***************************************************** */
 /* *             SessionBuddyTransferRequestPacket       */
 /* ***************************************************** */
@@ -864,6 +879,24 @@ void SessionBuddyTransferRequestPacket::serialize( Archive& ar )
 {
 	SessionPacket::serialize( ar );
 	ar << m_vBuddyIdentifiers;
+}
+
+std::string SessionBuddyTransferRequestPacket::toStr() const
+{
+	std::string str = SessionPacket::toStr() +
+		str(boost::format("SessionBuddyTransferRequestPacket:\n"));
+	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
+		str += std::string("  Buddy: ") + *it + "\n";
+	return str;
+}
+
+/* ***************************************************** */
+/* *             SessionBuddyTransferAckPacket           */
+/* ***************************************************** */
+
+std::string SessionBuddyTransferAckPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionBuddyTransferAckPacket\n";
 }
 
 /* ***************************************************** */
@@ -883,6 +916,30 @@ void MasterChangeRequestPacket::serialize( Archive& ar )
 	ar << m_sBuddyIdentifier;
 }
 
+std::string MasterChangeRequestPacket::toStr() const
+{
+	return SessionPacket::toStr() +
+		std::string("MasterChangeRequestPacket: m_sBuddyIdentifier: ") + m_sBuddyIdentifier + "\n";
+}
+
+/* ***************************************************** */
+/* *             MasterChangeAckPacket                   */
+/* ***************************************************** */
+
+std::string MasterChangeAckPacket::toStr() const
+{
+	return SessionPacket::toStr() + "MasterChangeAckPacket\n";
+}
+
+/* ***************************************************** */
+/* *             SessionReconnectRequestPacket           */
+/* ***************************************************** */
+
+std::string SessionReconnectRequestPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionReconnectRequestPacket\n";
+}
+
 /* ***************************************************** */
 /* *             SessionReconnectAckPacket               */
 /* ***************************************************** */
@@ -898,4 +955,28 @@ void SessionReconnectAckPacket::serialize( Archive& ar )
 {
 	SessionPacket::serialize( ar );
 	ar << m_iRev;
+}
+
+std::string SessionReconnectAckPacket::toStr() const
+{
+	return SessionPacket::toStr() +
+		str(boost::format("SessionReconnectAckPacket: m_iRev: %1%\n") % m_iRev);
+}
+
+/* ***************************************************** */
+/* *             SessionTakeoverFinalizePacket           */
+/* ***************************************************** */
+
+std::string SessionTakeoverFinalizePacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionTakeoverFinalizePacket\n";
+}
+
+/* ***************************************************** */
+/* *             SessionRestartPacket                    */
+/* ***************************************************** */
+
+std::string SessionRestartPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionRestartPacket\n";
 }
