@@ -414,7 +414,7 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 	Session packets are only allowed to come in from a collaborator when:
 
 	1. no session takeover is in progress, or 
-	2a. if this session is a slave: as long as we are in the STS_TAKEOVER_ACK
+	2a. if this session is a slave: as long as we are in the STS_SENT_TAKEOVER_ACK
 		state: this means the slave didn't receive a MasterChangeRequest or 
 		SessionBuddyTransferRequest packet yet. 
 		When we do receive such a packet, it means all in-transit session packets
@@ -428,8 +428,8 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 	// TODO: implement/handle an offending collaborator
 	UT_return_if_fail(
 				(m_eTakeoveState == STS_NONE) || /* everyone can be in this state */
-				(m_eTakeoveState == STS_TAKEOVER_ACK) || /* only a slave can be in this state */
-				(m_eTakeoveState == STS_TAKEOVER_REQUEST && !_hasAckedSessionTakeover(collaborator)) /* only a master can be in this state */
+				(m_eTakeoveState == STS_SENT_TAKEOVER_ACK) || /* only a slave can be in this state */
+				(m_eTakeoveState == STS_SENT_TAKEOVER_REQUEST && !_hasAckedSessionTakeover(collaborator)) /* only a master can be in this state */
 			);
 
 	// import the packet; note that it might be denied due to collisions
@@ -494,7 +494,7 @@ void AbiCollab::initiateSessionTakeover(const Buddy* pNewMaster)
 		pHandler->send(pNewMaster == pBuddy ? &promoteTakeoverPacket : &normalTakeoverPacket, *pBuddy);
 	}
 
-	m_eTakeoveState = STS_TAKEOVER_REQUEST;
+	m_eTakeoveState = STS_SENT_TAKEOVER_REQUEST;
 }
 
 void AbiCollab::startRecording( SessionRecorderInterface* pRecorder )
@@ -600,48 +600,131 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 	{
 		case STS_NONE:
 			{
-				// only the SessionTakeoverRequestPacket initiates the whole
+				// only the SessionTakeoverRequest packet initiates the whole
 				// session takeover process
 				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverRequestPacket, false);
-
-				// we can only receive a takeover request from the controller
+				// we can only allow a SessionTakeoverRequest packet from the controller
 				UT_return_val_if_fail(m_pController == &collaborator, false);
-	
+
 				SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
-				// TODO: handle the SessionTakeoverRequestPacket packet
+				// TODO: handle the SessionTakeoverRequest packet
 
 				// inform the master that we receive the takeover initiation request
 				SessionTakeoverAckPacket stap;
 				collaborator.getHandler()->send(&stap, collaborator);
 
-				m_eTakeoveState = STS_TAKEOVER_ACK;
+				m_eTakeoveState = STS_SENT_TAKEOVER_ACK;
 			}
+			return true;
+		case STS_SENT_TAKEOVER_REQUEST:
+			// we only accept SessionTakeoverAck packets
+			UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverAckPacket, false);
+			// we can only receive SessionTakeoverAck packets when we are the master
+			UT_return_val_if_fail(!m_pController, false);
+			// a slave should only ack once
+			UT_return_val_if_fail(!_hasAckedSessionTakeover(collaborator), false);
+
+			// TODO: handle the SessionTakeoverAck packet
 			break;
-		case STS_TAKEOVER_REQUEST:
+		case STS_SENT_TAKEOVER_ACK:
+			// we only accept a SessionBuddyTransferRequest or MasterChangeRequest packet
+			UT_return_val_if_fail(
+						pPacket->getClassType() == PCT_SessionBuddyTransferRequestPacket ||
+						pPacket->getClassType() == PCT_MasterChangeRequestPacket,
+						false
+					);
+			// we only accept said packets when we are a slave
+			UT_return_val_if_fail(m_pController != NULL, false);
+
+			if (pPacket->getClassType() == PCT_SessionBuddyTransferRequestPacket)
+			{
+				// TODO: implement me
+				return true;
+			}
+			else if (pPacket->getClassType() == PCT_MasterChangeRequestPacket)
+			{
+				// TODO: implement me
+				return true;
+			}
+
+			return false;
+		case STS_SENT_BUDDY_TRANSFER_REQUEST:
+			// we only accept SessionBuddyTransferAck packets
+			UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionBuddyTransferAckPacket, false);
+			// we can only receive a SessionBuddyTransferAck packet when we are the master
+			UT_return_val_if_fail(!m_pController, false);
+			// we only allow an incoming SessionBuddyTransferAck packet from the proposed new master
+			// TODO: implement this
+
+			// the proposed new master is waiting now for collaborators to connect;
+			// inform all our slaves that they should reconnect
+			// TODO: implement me
+
+			m_eTakeoveState = STS_SENT_MASTER_CHANGE_REQUEST;
+			break;
+		case STS_SENT_BUDDY_TRANSFER_ACK:
+			// we only accept incoming SessionReconnectRequest packets or a SessionTakeoverFinalize packet
+			UT_return_val_if_fail(
+						pPacket->getClassType() == PCT_SessionReconnectRequestPacket ||
+						pPacket->getClassType() == PCT_SessionTakeoverFinalizePacket,
+						false
+					);
+
+			// we only allow an incoming SessionReconnectRequest or SessionTakeoverFinalize packet when we 
+			// are the proposed new master
+			// TODO: implement me
+
+			if (pPacket->getClassType() == PCT_SessionReconnectRequestPacket)
+			{
+				// we only allow an incoming SessionReconnectRequest packet from a buddy 
+				// that is in the buddy list we received from the master, and we didn't receive
+				// such a packet from him before
+				// TODO: implement me
+
+				// TODO: implement me
+				// ...
+
+				return true;
+			}
+			else if (pPacket->getClassType() == PCT_SessionTakeoverFinalizePacket)
+			{
+				// we can only allow a SessionTakeoverFinalize packet from the controller
+				UT_return_val_if_fail(m_pController == &collaborator, false);
+
+				// session takeover is done; drop the old master
+				m_pController = NULL;
+
+				// restart the collaboratin session!
+				SessionRestartPacket srp;
+				for (std::vector<Buddy*>::iterator it = m_vecCollaborators.begin(); it != m_vecCollaborators.end(); it++)
+				{
+					Buddy* pBuddy = *it;
+					UT_continue_if_fail(pBuddy);
+
+					AccountHandler* pHandler = pBuddy->getHandler();
+					UT_continue_if_fail(pHandler);
+
+					pHandler->send(&srp, *pBuddy);
+				}
+
+				m_eTakeoveState = STS_NONE;
+				return true;
+			}
+
+			return false;
+		case STS_SENT_MASTER_CHANGE_REQUEST:
 			// TODO: implement me
 			break;
-		case STS_TAKEOVER_ACK:
+		case STS_SENT_MASTER_CHANGE_ACK:
 			// TODO: implement me
 			break;
-		case STS_BUDDY_TRANSFER_REQUEST:
+		case STS_SENT_SESSION_RECONNECT_REQUEST:
 			// TODO: implement me
 			break;
-		case STS_BUDDY_TRANSFER_ACK:
+		case STS_SENT_SESSION_RECONNECT_ACK:
 			// TODO: implement me
 			break;
-		case STS_MASTER_CHANGE_REQUEST:
-			// TODO: implement me
-			break;
-		case STS_MASTER_CHANGE_ACK:
-			// TODO: implement me
-			break;
-		case STS_SESSION_RECONNECT_REQUEST:
-			// TODO: implement me
-			break;
-		case STS_SESSION_RECONNECT_ACK:
-			// TODO: implement me
-			break;
-		case STS_SESSION_TAKEOVER_FINALIZE:
+		case STS_SENT_SESSION_TAKEOVER_FINALIZE:
 			// TODO: implement me
 			break;
 		default:
