@@ -688,6 +688,8 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		} else if (m_bInList) {
 			this->_closeLists();
 		}
+
+		m_iBlockType = BT_NORMAL;
 		if (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			if (strstr(szValue, "Heading"))
@@ -741,14 +743,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_iBlockType = BT_PLAINTEXT;
 				m_pie->write("\\texttt{");
 			}
-			else 
-			{
-				m_iBlockType = BT_NORMAL;
-			}	
-		}
-		else 
-		{
-			m_iBlockType = BT_NORMAL;
 		}
 		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
