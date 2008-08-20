@@ -183,6 +183,9 @@ private:
 	// session takeover
 	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
 	bool								_hasAckedSessionTakeover(const Buddy& collaborator);
+	bool								_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
+	bool								_hasAckedMaskedChange(const Buddy& collaborator);
+	bool								_al1SlavesAckedMasterChange();
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;
@@ -208,8 +211,12 @@ private:
 	UT_sint32							m_iMouseLID;
 	bool								m_bDoingMouseDrag;
 	std::vector<std::pair<SessionPacket*,Buddy*> >		m_vecIncomingQueue;
-	
+
+
+	// session takeover functionality
 	SessionTakeoverState				m_eTakeoveState;
+	bool								m_bProposedController;
+	Buddy*								m_pProposedController;
 	
 protected:
 	class PacketVector : public std::vector<Packet*>

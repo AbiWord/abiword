@@ -1063,6 +1063,14 @@ void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericV
 	}
 }
 
+Buddy* AbiCollabSessionManager::constructBuddy(const std::string& identifier)
+{
+	UT_DEBUGMSG(("AbiCollabSessionManager::constructBuddy()\n"));
+
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
 bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, Buddy* buddy) 
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::processPacket()\n"));
