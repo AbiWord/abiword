@@ -616,7 +616,7 @@ fi
 if test "$abi_cv_menubutton" == "yes"; then
 	AC_DEFINE([ENABLE_MENUBUTTON], [1], [Define if building printing support])
 fi
-AM_CONDITIONAL([ENABLE_PRINT], test "$abi_cv_menubutton" == "yes")
+AM_CONDITIONAL([ENABLE_MENUBUTTON], test "$abi_cv_menubutton" == "yes")
 
 if test "$abi_cv_print" == "yes"; then
 	AC_DEFINE([ENABLE_PRINT], [1], [Define if building printing support])
