@@ -57,8 +57,7 @@ enum SessionTakeoverState
 	STS_SENT_MASTER_CHANGE_REQUEST,
 	STS_SENT_MASTER_CHANGE_ACK,
 	STS_SENT_SESSION_RECONNECT_REQUEST,
-	STS_SENT_SESSION_RECONNECT_ACK,
-	STS_SENT_SESSION_TAKEOVER_FINALIZE
+	STS_SENT_SESSION_RECONNECT_ACK
 };	
 
 class ChangeAdjust
@@ -186,6 +185,7 @@ private:
 	bool								_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
 	bool								_hasAckedMaskedChange(const Buddy& collaborator);
 	bool								_al1SlavesAckedMasterChange();
+	bool								_restartSession(UT_sint32 iRev);
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;

@@ -665,16 +665,8 @@ class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
-	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-			UT_sint32 iRev);
-
-	UT_sint32					getRev() const
-		{ return m_iRev; }
-
+	
 	virtual std::string toStr() const;
-
-private:
-	UT_sint32					m_iRev;
 };
 
 class SessionTakeoverFinalizePacket : public AbstractSessionTakeoverPacket
@@ -691,8 +683,15 @@ class SessionRestartPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionRestartPacket);
 	SessionRestartPacket() {}
+	SessionRestartPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+			UT_sint32 iRev);
+
+	UT_sint32					getRev() const
+		{ return m_iRev; }
 
 	virtual std::string toStr() const;
+private:
+	UT_sint32					m_iRev;	
 };
 
 #endif /* ABICOLLAB_PACKET_H */

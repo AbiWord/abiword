@@ -944,23 +944,9 @@ std::string SessionReconnectRequestPacket::toStr() const
 /* *             SessionReconnectAckPacket               */
 /* ***************************************************** */
 
-SessionReconnectAckPacket::SessionReconnectAckPacket(
-	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
-	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
-	m_iRev(iRev)
-{
-}
-
-void SessionReconnectAckPacket::serialize( Archive& ar )
-{
-	SessionPacket::serialize( ar );
-	ar << m_iRev;
-}
-
 std::string SessionReconnectAckPacket::toStr() const
 {
-	return SessionPacket::toStr() +
-		str(boost::format("SessionReconnectAckPacket: m_iRev: %1%\n") % m_iRev);
+	return SessionPacket::toStr() + "SessionReconnectAckPacket\n";
 }
 
 /* ***************************************************** */
@@ -976,7 +962,22 @@ std::string SessionTakeoverFinalizePacket::toStr() const
 /* *             SessionRestartPacket                    */
 /* ***************************************************** */
 
+
+SessionRestartPacket::SessionRestartPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
+	m_iRev(iRev)
+{
+}
+
+void SessionRestartPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_iRev;
+}
+
 std::string SessionRestartPacket::toStr() const
 {
-	return SessionPacket::toStr() + "SessionRestartPacket\n";
+	return SessionPacket::toStr() +
+		str(boost::format("SessionRestartPacket: m_iRev: %1%\n") % m_iRev);
 }

@@ -772,37 +772,63 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 				// he can restart the session
 				SessionTakeoverFinalizePacket stfp;
 				// TODO: send the packet
+
+				// the session transfer is done; time to close this session
+				// TODO: implement me
 			}
 
 			return true;
 		case STS_SENT_MASTER_CHANGE_ACK:
-			// we only accept SessionRestart packets
-			UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionRestartPacket, false);
-			// we only accept said packets when we are a slave
-			UT_return_val_if_fail(m_pController != NULL, false);
-			// we only accept said packets when we are not the proposed master
-			// TODO: implement me
+			{
+				// we only accept a SessionRestart packet
+				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionRestartPacket, false);
+				// we only accept said packet when we are a slave
+				UT_return_val_if_fail(m_pController != NULL, false);
+				// we only accept said packet when we are not the proposed master
+				UT_return_val_if_fail(!m_bProposedController, false);
+				// we only accept said packet from the proposed master
+				// TODO: implement me
 
-			// handle the SessionRestart packet
-			// TODO: implement me
+				// handle the SessionRestart packet
+				SessionRestartPacket* srp = static_cast<SessionRestartPacket*>(pPacket);
+				// Nuke the current collaboration state, and restart with the
+				// given revision from the proposed master
+				_restartSession(srp->getRev());
 
+				m_eTakeoveState = STS_NONE;
+			}
 			return true;
 		case STS_SENT_SESSION_RECONNECT_REQUEST:
-			// TODO: implement me
-			break;
-		case STS_SENT_SESSION_RECONNECT_ACK:
-			// we only accept SessionTakeoverFinalize packets
-			UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverFinalizePacket, false);
-			// we only accept said packets when we are a slave
-			UT_return_val_if_fail(m_pController != NULL, false);
-			// we only accept said packets when we are the proposed master
-			// TODO: implement me
+			{
+				// we only accept a SessionReconnectAck packet
+				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionReconnectAckPacket, false);
+				// we only accept said packet when we are a slave
+				UT_return_val_if_fail(m_pController != NULL, false);
+				// we only accept said packet when we are not the proposed master
+				UT_return_val_if_fail(!m_bProposedController, false);
+				// we only accept said packet from the proposed master
+				UT_return_val_if_fail(m_pProposedController == &collaborator, false);
 
-			// TODO: implement me
-			break;
-		case STS_SENT_SESSION_TAKEOVER_FINALIZE:
-			// TODO: implement me
-			break;
+				// inform the master that the proposed slave has accepted us
+				MasterChangeAckPacket mcrp;
+				m_pController->getHandler()->send(&mcrp, *m_pController);
+
+				m_eTakeoveState = STS_SENT_MASTER_CHANGE_ACK;
+			}
+			return true;
+		case STS_SENT_SESSION_RECONNECT_ACK:
+			{
+				// we only accept SessionTakeoverFinalize packets
+				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverFinalizePacket, false);
+				// we only accept said packets when we are a slave
+				UT_return_val_if_fail(m_pController != NULL, false);
+				// we only accept said packets when we are the proposed master
+				UT_return_val_if_fail(m_bProposedController, false)
+
+				// handle the SessionTakeoverFinalize packet
+				// TODO: implement me
+			}
+			return true;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// TODO: drop the buddy sending the invalid packet?
@@ -831,6 +857,12 @@ bool AbiCollab::_hasAckedMaskedChange(const Buddy& collaborator)
 }
 
 bool AbiCollab::_al1SlavesAckedMasterChange()
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
+}
+
+bool AbiCollab::_restartSession(UT_sint32 iRev)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
