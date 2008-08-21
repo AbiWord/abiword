@@ -182,7 +182,7 @@ private:
 	// session takeover
 	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
 	bool								_hasAckedSessionTakeover(const Buddy& collaborator);
-	bool								_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
+	bool								_allSlavesAckedMasterChange(std::vector<std::string>& buddyIdentifiers);
 	bool								_hasAckedMasterChange(const Buddy& collaborator);
 	bool								_al1SlavesAckedMasterChange();
 	void								_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev);

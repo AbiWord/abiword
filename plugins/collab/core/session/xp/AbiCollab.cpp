@@ -650,7 +650,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 				// a SessionTakeoverAck packet from all slaves
 				// TODO: ... or until a timeout has expired?
 				std::vector<std::string> buddyIdentifiers;
-				if (_al1SlavesAckedSessionTakover(buddyIdentifiers))
+				if (_allSlavesAckedMasterChange(buddyIdentifiers))
 				{
 					// transfer the list of slaves that acknowledged the session
 					// takeover to the new proposed master
@@ -857,7 +857,7 @@ bool AbiCollab::_hasAckedMasterChange(const Buddy& collaborator)
 	return (*it).second;
 }
 
-bool AbiCollab::_al1SlavesAckedMasterChange()
+bool AbiCollab::_allSlavesAckedMasterChange()
 {
 	// FIXME: what happens when someone leaves during the session takeover
 	// process? We should probably add a timeout, or some other signal to
