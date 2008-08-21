@@ -43,6 +43,7 @@
 #include <OXML_Element_Hyperlink.h>
 #include <OXML_Element_Bookmark.h>
 #include <OXML_Element_Field.h>
+#include <OXML_Element_TextBox.h>
 #include <OXML_List.h>
 #include <OXML_Image.h>
 #include <ie_Table.h>
@@ -56,6 +57,7 @@ class OXML_Element_List;
 class OXML_Element_Hyperlink;
 class OXML_Element_Bookmark;
 class OXML_Element_Field;
+class OXML_Element_TextBox;
 class OXML_Image;
 
 /**
@@ -90,10 +92,12 @@ private:
 	OXML_Element_Cell* cell;
 	OXML_Element_Hyperlink* hyperlink;
 	OXML_Element_Bookmark* bookmark;
+	OXML_Element_TextBox* textbox;
 
 	bool bInTable;
 	bool bInHyperlink;
 	bool bInBookmark;
+	bool bInTextbox;
 	int idCount;
 	std::string bookmarkId;
 

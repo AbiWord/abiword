@@ -100,6 +100,8 @@ public:
 	UT_Error finishListProperties(int target);
 	UT_Error startAbstractNumbering(int target, UT_uint32 id);
 	UT_Error finishAbstractNumbering(int target);
+	UT_Error startTextBox(int target, const gchar* id);
+	UT_Error finishTextBox(int target);
 	UT_Error startNumbering(int target, UT_uint32 id);
 	UT_Error finishNumbering(int target);
 	UT_Error startNumberingLevel(int target, UT_uint32 level);
@@ -176,6 +178,8 @@ public:
 	UT_Error setEvenAndOddHeaders();
 	UT_Error setColumns(int target, const gchar* num, const gchar* sep);
 	UT_Error setPageBreak(int target);
+	UT_Error setLanguage(int target, const gchar* lang);
+	UT_Error setNoProof(int target);
 
 protected:
     virtual UT_Error _writeDocument(void);

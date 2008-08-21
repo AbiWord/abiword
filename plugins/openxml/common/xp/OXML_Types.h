@@ -72,7 +72,8 @@ enum OXML_ElementTag {
 	IMG_TAG,
 	HYPR_TAG,
 	BOOK_TAG,
-	FLD_TAG
+	FLD_TAG,
+	TXTBX_TAG
 };
 
 enum OXML_ElementType {
@@ -85,7 +86,8 @@ enum OXML_ElementType {
 	CELL, 
 	HYPRLNK,
 	BOOKMRK,
-	FIELD
+	FIELD,
+	TEXTBOX
 };
 
 enum OXML_HeaderFooterType {

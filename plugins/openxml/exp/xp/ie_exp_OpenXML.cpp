@@ -599,6 +599,33 @@ UT_Error IE_Exp_OpenXML::finishBookmark(const gchar* id)
 }
 
 /**
+ * Starts exporting the OXML_Element_TextBox object
+ */
+UT_Error IE_Exp_OpenXML::startTextBox(int target, const gchar* id)
+{
+	std::string str("");
+	str += "<w:pict>";
+	str += "<v:shape w:id=\"";
+	str += id;
+	str += "\">";
+	str += "<v:textbox>";
+	str += "<w:txbxContent>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_Element_TextBox object
+ */
+UT_Error IE_Exp_OpenXML::finishTextBox(int target)
+{
+	std::string str("</w:txbxContent>");
+	str += "</v:textbox>";
+	str += "</v:shape>";
+	str += "</w:pict>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Writes to the target stream
  */
 UT_Error IE_Exp_OpenXML::writeTargetStream(int target, const char* str)
@@ -753,6 +780,28 @@ UT_Error IE_Exp_OpenXML::setFontFamily(int target, const gchar* family)
 	str += sEscFamily.utf8_str();
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets language
+ */
+UT_Error IE_Exp_OpenXML::setLanguage(int target, const gchar* lang)
+{
+	UT_UTF8String sEscLang = lang;
+	sEscLang.escapeXML();
+
+	std::string str("<w:lang w:val=\"");
+	str += sEscLang.utf8_str();
+	str += "\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets no proof
+ */
+UT_Error IE_Exp_OpenXML::setNoProof(int target)
+{
+	return writeTargetStream(target, "<w:noProof/>");
 }
 
 /**

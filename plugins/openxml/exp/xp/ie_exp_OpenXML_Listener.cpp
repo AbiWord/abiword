@@ -40,9 +40,11 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	cell(NULL), 
 	hyperlink(NULL),
 	bookmark(NULL),
+	textbox(NULL),
 	bInTable(false),
 	bInHyperlink(false),
 	bInBookmark(false),
+	bInTextbox(false),
 	idCount(10), //the first ten IDs are reserved for the XML file references
 	bookmarkId("")
 {
@@ -465,6 +467,8 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			
 			if(bInTable)
 				return cell->appendElement(shared_paragraph) == UT_OK;
+			else if(bInTextbox)
+				return textbox->appendElement(shared_paragraph) == UT_OK;
 
 			return section->appendElement(shared_paragraph) == UT_OK;
 		}
@@ -703,10 +707,69 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 
 			return document->addFootnote(shared_section) == UT_OK;
 		}
-		case PTX_SectionMarginnote:
-		case PTX_SectionAnnotation:
 		case PTX_SectionFrame:
-		case PTX_SectionTOC:
+        {
+			const gchar* frameType = NULL;
+
+			if(!(bHaveProp && pAP))
+				return true;
+
+			if(!(pAP->getProperty("frame-type",frameType) && frameType && *frameType))
+				return true;
+
+			if(!strcmp(frameType,"textbox"))
+			{
+				bInTextbox = true;
+			}
+			else if(!strcmp(frameType,"image"))
+			{
+				// TODO: handle positioned images
+			}
+
+			if(bInTextbox)
+			{
+				textbox = new OXML_Element_TextBox(getNextId());
+				OXML_SharedElement shared_textbox(static_cast<OXML_Element*>(textbox));
+
+				OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+				OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+				if(element_run->appendElement(shared_textbox) != UT_OK)
+					return false;
+
+				const gchar* szValue;
+				const gchar* szName;
+				size_t propCount = pAP->getPropertyCount();
+
+				size_t i;
+				for(i=0; i<propCount; i++)
+				{
+					if(pAP->getNthProperty(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("TextBox Property: %s=%s\n", szName, szValue));	
+						if(textbox->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						//TODO: Take the debug message out when we are done
+						UT_DEBUGMSG(("TextBox Attribute: %s=%s\n", szName, szValue));	
+						if(textbox->setAttribute(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				return paragraph->appendElement(shared_element_run) == UT_OK;
+			}
+			return true;
+		}
 		case PTX_EndCell:
 		{
 			tableHelper.CloseCell();
@@ -724,15 +787,23 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			paragraph = savedParagraph; //recover the last paragraph
 			return true;
 		}
-		case PTX_EndMarginnote:
 		case PTX_EndEndnote:
 		{
 			section = savedSection; //recover the last section
 			paragraph = savedParagraph; //recover the last paragraph
 			return true;
 		}
-		case PTX_EndAnnotation:
 		case PTX_EndFrame:
+		{
+			if(bInTextbox)
+				bInTextbox = false;
+			return true;
+		}
+		case PTX_SectionMarginnote:
+		case PTX_SectionAnnotation:
+		case PTX_SectionTOC:
+		case PTX_EndMarginnote:
+		case PTX_EndAnnotation:
 		case PTX_EndTOC:	
 		default:
 			return true;

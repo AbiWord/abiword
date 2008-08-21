@@ -34,6 +34,8 @@ libxp_la_SOURCES = \
 	OXML_Element_Bookmark.h \
 	OXML_Element_Field.cpp \
 	OXML_Element_Field.h \
+	OXML_Element_TextBox.cpp \
+	OXML_Element_TextBox.h \
 	OXML_FontManager.cpp \
 	OXML_LangToScriptConverter.h \
 	OXML_FontManager.h \
