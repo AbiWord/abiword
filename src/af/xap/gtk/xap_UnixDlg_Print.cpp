@@ -1,4 +1,4 @@
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 2003 Dom Lachowicz
  * 
@@ -21,6 +21,7 @@
 #include "xap_UnixDlg_Print.h"
 
 #include <gtk/gtk.h>
+#include <gtk/gtkprintunixdialog.h>
 #include <libgnomeprintui/gnome-print-dialog.h>
 
 #include "ut_assert.h"
@@ -31,7 +32,7 @@
 #include "xap_Frame.h"
 #include "ut_misc.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoPrintGraphics.h"
 
 #include "fv_View.h"
 
@@ -45,24 +46,12 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id),
 	  m_pPrintGraphics (NULL),
-	  m_bIsPreview(false),
-	  m_bPdfWorkAround(false)
+	  m_bIsPreview(false)
 {
 }
 
 XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
 {
-}
-
-
-void XAP_UnixDialog_Print::useStart(void)
-{
-	XAP_Dialog_Print::useStart();
-}
-
-void XAP_UnixDialog_Print::useEnd(void)
-{
-	XAP_Dialog_Print::useEnd();
 }
 
 GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
@@ -81,6 +70,7 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 /*****************************************************************/
 /*****************************************************************/
 
+#if 0
 void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	GtkWidget *gpd;
@@ -175,23 +165,31 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_answer = a_OK;
 	abiDestroyWidget (gpd);
 }
-
-void XAP_UnixDialog_Print::_getGraphics(void)
-{
-	UT_ASSERT(m_answer == a_OK);
-
-	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(m_gpm, m_bIsPreview);
-	UT_return_if_fail(m_pPrintGraphics);
-	
-	m_pPrintGraphics->setColorSpace(m_cColorSpace);
-	if(m_bPdfWorkAround)
-	  static_cast<GR_UnixPangoPrintGraphics *>(m_pPrintGraphics)->setPdfWorkaround();
-	m_answer = a_OK;
-}
+#endif
 
 void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame) 
 {
-       _raisePrintDialog(pFrame);              
-       if (m_answer == a_OK)
-         _getGraphics();
+	GtkWidget	*dialog;
+	gint		 response;
+
+	dialog = gtk_print_unix_dialog_new (NULL, NULL);
+
+	response = abiRunModalDialog (GTK_DIALOG (dialog), pFrame, this, GTK_RESPONSE_CANCEL, false);
+	switch (response) {
+	case GTK_RESPONSE_APPLY:
+		// TODO preview
+		printf ("preview\n");
+		m_answer = a_OK;
+		break;
+	case GTK_RESPONSE_OK:
+		// TODO print
+		printf ("print\n");
+		m_answer = a_OK;
+		break;
+	default:
+		printf ("cancel\n");
+		m_answer = a_CANCEL; 
+	}
+
+	gtk_widget_destroy (dialog), dialog = NULL;
 }

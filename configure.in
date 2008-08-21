@@ -54,7 +54,7 @@ cocoa_pkgs="$enchant_req"
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps'
-gtk_req='gtk+-2.0 >= 2.6.0'
+gtk_req='gtk+-2.0 >= 2.6.0 gtk+-unix-print-2.0'
 libglade_req='libglade-2.0 >= 2.0.0'
 gtk_pkgs="
   ${cairo_req}
