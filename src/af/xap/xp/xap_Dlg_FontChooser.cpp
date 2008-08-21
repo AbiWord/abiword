@@ -92,7 +92,6 @@ void XAP_Dialog_FontChooser::setDrawString(const UT_UCSChar * str)
 	UT_sint32 len = UT_UCS4_strlen(str);
 	if(len <= 0)
 	{
-		FREEP(str);
 		UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 	}
 	else
@@ -100,6 +99,7 @@ void XAP_Dialog_FontChooser::setDrawString(const UT_UCSChar * str)
 	    UT_UCS4_cloneString(&m_drawString, str);
 	}
 }
+
 void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 {
 	m_pGraphics = pGraphics;
