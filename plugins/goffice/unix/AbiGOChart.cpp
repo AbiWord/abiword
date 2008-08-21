@@ -773,7 +773,7 @@ void GOChartView::modify()
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
 	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_CONTROL_GUI_TYPE, NULL));
-	
+
 	acg->pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
 	acg->pView = this;
 
@@ -782,8 +782,9 @@ void GOChartView::modify()
 	GtkWidget *dialog = gog_guru (m_Graph, GOG_DATA_ALLOCATOR (acg),
 		       NULL /*GO_CMD_CONTEXT (wbcg)*/, closure);
 	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
+	gtk_widget_show_all (dialog);
 	g_closure_sink (closure);
-	
+
 	acg->pView->SetGuru (dialog);
 	g_signal_connect_swapped (G_OBJECT (dialog), "destroy", G_CALLBACK (guru_destroyed_cb), acg->pView);
 }
