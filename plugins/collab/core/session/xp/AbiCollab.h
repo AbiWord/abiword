@@ -24,6 +24,7 @@
 #ifndef ABI_COLLAB_H
 #define ABI_COLLAB_H
 
+#include <map>
 #include <vector>
 #include "ev_EditBits.h"
 #include "ev_MouseListener.h"
@@ -153,7 +154,7 @@ public:
 		{ m_bIsReverting = bIsReverting; }
 	
 	// session takeover
-	void								initiateSessionTakeover(const Buddy* pNewMaster);
+	void								initiateSessionTakeover(Buddy* pNewMaster);
 	
 	// session recording functionality
 	bool								isRecording()
@@ -182,7 +183,7 @@ private:
 	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
 	bool								_hasAckedSessionTakeover(const Buddy& collaborator);
 	bool								_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
-	bool								_hasAckedMaskedChange(const Buddy& collaborator);
+	bool								_hasAckedMasterChange(const Buddy& collaborator);
 	bool								_al1SlavesAckedMasterChange();
 	void								_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_promoteToMaster();
@@ -217,6 +218,8 @@ private:
 	SessionTakeoverState				m_eTakeoveState;
 	bool								m_bProposedController;
 	Buddy*								m_pProposedController;
+	std::map<UT_UTF8String, bool>		m_mAckedSessionTakeoverBuddies; // only used by the session controller
+	std::map<UT_UTF8String, bool>		m_mAckedMasterChangeBuddies; // only used by the session controller
 	
 protected:
 	class PacketVector : public std::vector<Packet*>

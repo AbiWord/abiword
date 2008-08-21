@@ -484,9 +484,15 @@ void AbiCollab::addChangeAdjust(ChangeAdjust* pAdjust)
 	m_Export.getAdjusts()->addItem(pAdjust);
 }
 
-void AbiCollab::initiateSessionTakeover(const Buddy* pNewMaster)
+void AbiCollab::initiateSessionTakeover(Buddy* pNewMaster)
 {
 	UT_return_if_fail(pNewMaster);
+	
+	// reset any old session takeover state
+	m_bProposedController = false;
+	m_pProposedController = pNewMaster;
+	m_mAckedSessionTakeoverBuddies.clear();
+	m_mAckedMasterChangeBuddies.clear();
 
 	SessionTakeoverRequestPacket promoteTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), true);
 	SessionTakeoverRequestPacket normalTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), false);
@@ -618,6 +624,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 
 				SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
 				m_bProposedController = strp->promote();
+				m_pProposedController = NULL; // will be filled in later when we are not the one being promoted
 
 				// inform the master that we receive the takeover initiation request
 				SessionTakeoverAckPacket stap;
@@ -631,12 +638,13 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 				// we only accept SessionTakeoverAck packets
 				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverAckPacket, false);
 				// we can only receive SessionTakeoverAck packets when we are the master
-				UT_return_val_if_fail(!m_pController, false);
+				// and not the new proposed controller
+				UT_return_val_if_fail(m_pController != NULL && m_pProposedController != NULL, false);
 				// a slave should only ack once
 				UT_return_val_if_fail(!_hasAckedSessionTakeover(collaborator), false);
 
 				// handle the SessionTakeoverAck packet
-				// TODO: implement me
+				m_mAckedSessionTakeoverBuddies[collaborator.getName()] = true;
 
 				// send the buddy list to the new proposed master if we received
 				// a SessionTakeoverAck packet from all slaves
@@ -751,7 +759,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 			// we can only receive a MasterChangeAck packet when we are the master
 			UT_return_val_if_fail(!m_pController, false);
 			// a slave should only ack a master change request once
-			UT_return_val_if_fail(!_hasAckedMaskedChange(collaborator), false);
+			UT_return_val_if_fail(!_hasAckedMasterChange(collaborator), false);
 
 			// handle the MasterChangeAck packet
 			// TODO: implement me
@@ -816,26 +824,46 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 
 bool AbiCollab::_hasAckedSessionTakeover(const Buddy& collaborator)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	std::map<UT_UTF8String, bool>::iterator it = m_mAckedSessionTakeoverBuddies.find(collaborator.getName());
+	if (it == m_mAckedSessionTakeoverBuddies.end())
+		return false;
+	return (*it).second;
 }
 
 bool AbiCollab::_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers)
 {	
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	// FIXME: what happens when someone leaves during the session takeover
+	// process? We should probably add a timeout, or some other signal to
+	// not make us wait forever
+	bool res = m_mAckedSessionTakeoverBuddies.size() == m_vecCollaborators.size();
+	if (res)
+	{
+		buddyIdentifiers.clear();
+		for (std::vector<Buddy*>::iterator it = m_vecCollaborators.begin(); it != m_vecCollaborators.end(); it++)
+		{
+			Buddy* pBuddy = *it;
+			UT_continue_if_fail(pBuddy);
+			// TODO: add the buddy identifier
+		}
+	}
+	return res;
 }
 
-bool AbiCollab::_hasAckedMaskedChange(const Buddy& collaborator)
+bool AbiCollab::_hasAckedMasterChange(const Buddy& collaborator)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	std::map<UT_UTF8String, bool>::iterator it = m_mAckedMasterChangeBuddies.find(collaborator.getName());
+	if (it == m_mAckedMasterChangeBuddies.end())
+		return false;
+	return (*it).second;
 }
 
 bool AbiCollab::_al1SlavesAckedMasterChange()
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	// FIXME: what happens when someone leaves during the session takeover
+	// process? We should probably add a timeout, or some other signal to
+	// not make us wait forever
+	return (m_vecCollaborators.size() == 0) || 
+		(m_mAckedMasterChangeBuddies.size() == m_vecCollaborators.size() - 1 /* the proposed new master should not ack */);
 }
 
 void AbiCollab::_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
