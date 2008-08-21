@@ -41,26 +41,16 @@
 
 ABI_Collab_Export::ABI_Collab_Export(AbiCollab * pAbiCollab, PD_Document* pDoc) 
 :	m_pDoc(pDoc),
-	m_chgMaskCached(0),
-	m_bCacheChanges(false),
-	m_iBlockIndex(-1),
-	m_iSectionIndex(-1),
-	m_pAbiCollab(pAbiCollab),
-	m_pGlobPacket( NULL )
+	m_pAbiCollab(pAbiCollab)
 {
-	UT_DEBUGMSG(("Constructing Generic Exporter \n"));
+	UT_DEBUGMSG(("Constructing AbiCollab Exporter \n"));
+	_init();
 }
 
 ABI_Collab_Export::~ABI_Collab_Export()
 {
 	UT_DEBUGMSG(("AbiCollab Export deleted %x \n",this));
-	UT_sint32 i = static_cast<UT_sint32>(m_vecAdjusts.getItemCount());
-	while(i > 0)
-	{
-		delete  m_vecAdjusts.getNthItem(i-1);
-		i--;
-	}
-	DELETEP( m_pGlobPacket );
+	_cleanup();
 }
 
 /*!
@@ -599,11 +589,53 @@ void ABI_Collab_Export::removeDocument(void)
 	// pManager->destroySession(m_pAbiCollab); // disconnect destroys us automatically
 }
 
-void ABI_Collab_Export::addFakeImportAdjust(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev) // used to initialize the adjustment stack when a remote document is received
+void ABI_Collab_Export::masterInit()
 {
-	UT_DEBUGMSG(("ABI_Collab_Export::addFakeImportAdjust() - docUUID: %s, iRev: %d\n", docUUID.utf8_str(), iRemoteRev));
+	UT_DEBUGMSG(("ABI_Collab_Export::masterInit()\n"));
+
+	// NOTE: it's important that this function resets all state, as it can be
+	// called in the middle of an already running collaboration session
+	// (eg. when a session takeover happens)
+
+	_cleanup();
+	_init();
+}
+
+void ABI_Collab_Export::slaveInit(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev)
+{
+	UT_DEBUGMSG(("ABI_Collab_Export::slaveInit() - docUUID: %s, iRev: %d\n", docUUID.utf8_str(), iRemoteRev));
+
+	// NOTE: it's important that this function resets all state, as it can be
+	// called in the middle of an already running collaboration session
+	// (eg. when a session takeover happens)
+
+	_cleanup();
+	_init();
+
+	// initialize the adjustment stack
 	ChangeRecordSessionPacket voidPacket;
 	voidPacket.setDocUUID(docUUID);
 	voidPacket.setRev(iRemoteRev);
 	m_pAbiCollab->addChangeAdjust(new ChangeAdjust(voidPacket, static_cast<PT_DocPosition>(0), docUUID));
+}
+
+void ABI_Collab_Export::_init()
+{
+	m_chgMaskCached = 0;
+	m_bCacheChanges = false;
+	m_iBlockIndex = -1;
+	m_iSectionIndex = -1;
+	m_pGlobPacket = NULL;
+	m_vecAdjusts.clear();
+}
+
+void ABI_Collab_Export::_cleanup()
+{
+	UT_sint32 i = static_cast<UT_sint32>(m_vecAdjusts.getItemCount());
+	while(i > 0)
+	{
+		delete m_vecAdjusts.getNthItem(i-1);
+		i--;
+	}
+	DELETEP( m_pGlobPacket );
 }

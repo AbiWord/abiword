@@ -55,8 +55,9 @@ public:
 	std::map<std::string, UT_sint32>&	getRemoteRevisions()
 		{ return m_remoteRevs; }
 	PT_DocPosition						getEndOfDoc();
-	void								setInitialRemoteRev(const UT_UTF8String& collaborator, UT_sint32 iRev)
-		{ UT_return_if_fail(m_remoteRevs[collaborator.utf8_str()] == 0); m_remoteRevs[collaborator.utf8_str()] = iRev; }
+	void								masterInit();
+	void								slaveInit(const UT_UTF8String& collaborator, UT_sint32 iRev);
+
 private:
 	bool								_isOverlapping(UT_sint32 pos1, UT_sint32 length1, UT_sint32 pos2, UT_sint32 length2);
 	void								_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev, 

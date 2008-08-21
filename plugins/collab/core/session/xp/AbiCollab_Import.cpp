@@ -885,3 +885,27 @@ PT_DocPosition ABI_Collab_Import::getEndOfDoc(void)
         m_pDoc->getBounds(true,posEnd);
         return posEnd;
 }
+
+void ABI_Collab_Import::masterInit()
+{
+	// NOTE: it's important that this function resets all state, as it can be
+	// called in the middle of an already running collaboration session
+	// (eg. when a session takeover happens)
+
+	m_remoteRevs.clear();
+	m_revertSet.clear();
+	m_iAlreadyRevertedRevs.clear(); // only used by non-session owners, but it can't hurt to clear it
+}
+
+void ABI_Collab_Import::slaveInit(const UT_UTF8String& collaborator, UT_sint32 iRev)
+{
+	// NOTE: it's important that this function resets all state, as it can be
+	// called in the middle of an already running collaboration session
+	// (eg. when a session takeover happens)
+
+	m_remoteRevs.clear();
+	m_remoteRevs[collaborator.utf8_str()] = iRev;
+	m_revertSet.clear(); // only used by the session owner, but it can't hurt to clear it
+	m_iAlreadyRevertedRevs.clear();
+}
+
