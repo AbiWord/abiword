@@ -227,8 +227,15 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+UT_uint32 GR_UnixPangoGraphics::getDefaultDeviceResolution()
+{
+	PangoFontMap * pFontMap = pango_cairo_font_map_get_default();
+	return (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(pFontMap));
+	// The default font map must not be freed.
+}
+
 // TODO maybe consolidate a common constructor again?
-GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
+GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
   :	m_pFontMap(NULL),
 	m_pContext(NULL),
 	m_pLayoutFontMap(NULL),
@@ -239,28 +246,23 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr)
 	m_pAdjustedLayoutPangoFont(NULL),
 	m_pAdjustedPangoFontSource(NULL),
 	m_iAdjustedPangoFontZoom (0),
-	m_iDeviceResolution(96),
+	m_iDeviceResolution(iDeviceResolution),
 	m_cr(cr),
 	m_pWin(NULL),
-	m_iXoff(0),
-	m_iYoff(0),
+	m_cursor(GR_CURSOR_INVALID),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false)
 {
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-	m_cursor = GR_CURSOR_INVALID;
-
 	m_pFontMap = pango_cairo_font_map_get_default();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
 	m_pLayoutFontMap = pango_cairo_font_map_new();
-	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
-										(double) getResolution());	
-	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
-	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
 
-printf("%s() %d\n", __FUNCTION__, m_iDeviceResolution);
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
 }
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
@@ -274,19 +276,14 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	m_pAdjustedLayoutPangoFont(NULL),
 	m_pAdjustedPangoFontSource(NULL),
 	m_iAdjustedPangoFontZoom (0),
-	m_iDeviceResolution(96),
+	m_iDeviceResolution(getDefaultDeviceResolution()),
 	m_cr(NULL),
 	m_pWin(win),
-	m_iXoff(0),
-	m_iYoff(0),
+	m_cursor(GR_CURSOR_INVALID),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bIsSymbol(false),
 	m_bIsDingbat(false)
 {
-	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
-
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-	m_cursor = GR_CURSOR_INVALID;
-
 	if (_getDrawable())
 	{
 		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
@@ -302,13 +299,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	}
 	
 	m_pFontMap = pango_cairo_font_map_get_default();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
 	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
-	m_iDeviceResolution = (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap));
 
 	m_pLayoutFontMap = pango_cairo_font_map_new();
-	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
-										(double) getResolution());	
-	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
+
 	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
 }
 

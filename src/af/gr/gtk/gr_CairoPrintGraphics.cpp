@@ -20,8 +20,8 @@
 
 #include "gr_CairoPrintGraphics.h"
 
-GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr)
-  : GR_UnixPangoGraphics(cr),
+GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
+  : GR_UnixPangoGraphics(cr, iDeviceResolution),
 	m_bDoShowPage(false)
 {}
 	

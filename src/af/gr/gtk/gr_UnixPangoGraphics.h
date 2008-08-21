@@ -309,9 +309,11 @@ public:
 	GdkWindow *  getWindow () {return m_pWin;}
 	cairo_t* getCairo () {return m_cr;}
 
+	static UT_uint32 getDefaultDeviceResolution();
+
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(cairo_t *cr);
+	GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
 	GR_UnixPangoGraphics(GdkWindow * win = NULL);
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	virtual GdkDrawable * _getDrawable(void)
@@ -338,7 +340,6 @@ public:
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
-  protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
@@ -364,8 +365,6 @@ public:
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	UT_RGBColor				m_curColor;
-	UT_sint32               m_iXoff;
-	UT_sint32               m_iYoff;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 

@@ -99,13 +99,14 @@ public:
     height = getDoc()->m_docPageSize.Height (DIM_IN);
     portrait = getDoc()->m_docPageSize.isPortrait();
 
+	UT_uint32 dpi = GR_UnixPangoGraphics::getDefaultDeviceResolution();
 	if (BACKEND_PDF == mFormat)
-		surface = cairo_pdf_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * 96, height * 96);
+		surface = cairo_pdf_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
 	else if (BACKEND_PS == mFormat)
-		surface = cairo_ps_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * 96, height * 96);
+		surface = cairo_ps_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
 	else if (BACKEND_SVG == mFormat)
 		{
-			// surface = cairo_svg_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * 96, height * 96);
+			// surface = cairo_svg_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
 			return UT_ERROR;
 		}
 	else
@@ -116,7 +117,7 @@ public:
 	cr = cairo_create(surface);
 	cairo_surface_destroy(surface), surface = NULL;
 
-	print_graphics = new GR_CairoPrintGraphics(cr);
+	print_graphics = new GR_CairoPrintGraphics(cr, dpi);
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
     printView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
     printView->getLayout()->fillLayouts();

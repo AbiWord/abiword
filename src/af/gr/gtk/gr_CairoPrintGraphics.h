@@ -32,7 +32,7 @@ class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixPangoGraphics
 	bool m_bDoShowPage;
 
 public:
-	GR_CairoPrintGraphics(cairo_t *cr);
+	GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
 	
 	virtual ~GR_CairoPrintGraphics();
 
