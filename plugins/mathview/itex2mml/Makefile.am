@@ -3,17 +3,21 @@ noinst_LTLIBRARIES = libitex2mml.la
 
 AM_CPPFLAGS =
 
+LEX_YY_C = $(builddir)/lex.yy.c
+Y_TAB_C = $(builddir)/y.tab.c
+Y_TAB_H = $(builddir)/y.tab.h
+
 libitex2mml_la_SOURCES = \
 	itex2MML.h \
-	lex.yy.c \
-	y.tab.c \
-	y.tab.h
+	$(LEX_YY_C) \
+	$(Y_TAB_C) \
+	$(Y_TAB_H)
 
 YYPREFIX=itex2MML_yy
 
 BUILT_SOURCES = \
-	lex.yy.c \
-	y.tab.c
+	$(LEX_YY_C) \
+	$(Y_TAB_C)
 
 EXTRA_DIST = \
 	itex2MML.l \
@@ -23,11 +27,11 @@ EXTRA_DIST = \
 
 DISTCLEANFILES = \
 	$(BUILT_SOURCES) \
-	y.tab.h
+	$(Y_TAB_H)
 
-y.tab.c:	$(srcdir)/itex2MML.y
+$(Y_TAB_C):	$(srcdir)/itex2MML.y
 		$(YACC) -p $(YYPREFIX) -d $<
 
-lex.yy.c:	$(srcdir)/itex2MML.l
+$(LEX_YY_C):	$(srcdir)/itex2MML.l
 		$(LEX) -P$(YYPREFIX) -o$@ $<
 
