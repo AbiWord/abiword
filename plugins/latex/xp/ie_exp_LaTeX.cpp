@@ -157,7 +157,7 @@ bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-#define DEFAULT_SIZE "12pt"
+//#define DEFAULT_SIZE "12pt"
 #define EPSILON 0.1
 
 enum JustificationTypes {
@@ -362,6 +362,12 @@ protected:
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
 	int 				ChapterNumber;
+	
+	/* default font size for the current document, in pt,
+	 * as defined by the Normal style
+	 */
+	int 				m_DefaultFontSize;
+	
 	int                 m_Indent;
 	int		    m_NumCloseBrackets; // accessed by _openSpan() and _closeSpan()
 	int		    m_TableWidth;
@@ -993,7 +999,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
  		if (pAP->getProperty("font-size", szValue) && !m_bInHeading)
 		{
-			if (strcmp (DEFAULT_SIZE, szValue) != 0)
+			if (int(0.5 + UT_convertToPoints(szValue)) != m_DefaultFontSize)
 			{
 				m_pie->write("{\\");
 				UT_String szSize;
@@ -1399,6 +1405,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
 	m_bOverline(false),
+	m_DefaultFontSize(12),
 	m_NumCloseBrackets(0),
 	list_type(BULLETED_LIST),
 	m_pqRect(NULL)
@@ -1447,24 +1454,27 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	pDocument->getStyle ("Normal", &pStyle);
 	if(pStyle)
 	{
-	    const gchar * szName  = 0;
 	    const gchar * szValue = 0;
-	    for (UT_uint32 i = 0; i < pStyle->getPropertyCount (); i++)
-	    {		
-		if(pStyle->getNthProperty (i, szName, szValue))
+		pStyle->getProperty("font-size", szValue);
+		if (szValue)
 		{
-		    if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
-		    if ((*szName == 0) || (*szValue == 0)) continue;
-		    
-		    if (strcmp (szName, "font-size") == 0)
-		    {
-			m_pie->write(",");
-			m_pie->write(szValue);
-			break;
-		    }
+			// rounding
+			m_DefaultFontSize = int(0.5 + UT_convertToPoints(szValue));
+			if (m_DefaultFontSize <= 10)
+			{
+				m_DefaultFontSize = 10;
+				m_pie->write(",10pt");
+			}
+			else if (m_DefaultFontSize <= 11)
+			{
+				m_DefaultFontSize = 11;
+				m_pie->write(",11pt");
+			}
 		}
-	    }
 	}
+	if (m_DefaultFontSize == 12)
+		m_pie->write(",12pt");
+
 	m_pie->write("]{article}\n");
 	// Better for ISO-8859-1 than previous: [T1] doesn't work very well
 	// TODO: Use inputenc from .abw.
