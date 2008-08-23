@@ -864,47 +864,87 @@ void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 			   strtol (&colors[2][0],NULL,16)/255.);
 }
 
+struct LaTeX_Font_Size
+{
+	guint8 tiny;
+	guint8 scriptsize;
+	guint8 footnotesize;
+	guint8 small;
+	/* int normalsize; */ 
+	guint8 large;
+	guint8 Large;
+	guint8 LARGE;
+	guint8 huge;
+	guint8 Huge;
+};
+
+/*
+ * These font sizes in the standard document classes are documented in 
+ * "The (Not So) Short Introduction to LaTeX2e" and the following url:
+ * http://en.wikibooks.org/wiki/LaTeX/Formatting
+ */
+static const LaTeX_Font_Size fontsizes[]=
+{
+	{5, 7, 8, 9, /*10,*/ 12, 14, 17, 20, 25}, // normalsize == 10pt
+	{6, 8, 9, 10, /*11,*/ 12, 17, 17, 20, 25}, // normalsize == 11pt
+	{6, 8, 10, 11, /*12,*/ 14, 17, 20, 25, 25} // normalsize == 12pt
+};
+
 void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
+	const LaTeX_Font_Size *fs = NULL;
 
 	if(m_bInScript) {
 		fSizeInPoints -= 4;
 	}
-
-	if (fSizeInPoints <= 6)
+	
+	if (m_DefaultFontSize == 10)
+	{
+		fs = &fontsizes[0];
+	}
+	else if (m_DefaultFontSize == 11)
+	{
+		fs = &fontsizes[1];
+	}
+	else // m_DefaultFontSize == 12
+	{
+		fs = &fontsizes[2];
+	}
+	
+	if (fSizeInPoints <= fs->tiny)
 	{
 		szDest = "tiny";
 	}
-	else if (fSizeInPoints <= 8)
+	else if (fSizeInPoints <= fs->scriptsize)
 	{
 		szDest = "scriptsize";
 	}
-	else if (fSizeInPoints <= 10)
+	else if (fSizeInPoints <= fs->footnotesize)
 	{
 		szDest = "footnotesize";
 	}
-	else if (fSizeInPoints <= 11)
+	else if (fSizeInPoints <= fs->small)
 	{
 		szDest = "small";
 	}
-	else if (fSizeInPoints <= 12)
+	else if (fSizeInPoints <= m_DefaultFontSize)
 	{
 		szDest = "normalsize";
 	}
-	else if (fSizeInPoints <= 14)
+	else if (fSizeInPoints <= fs->large)
 	{
 		szDest = "large";
 	}
-	else if (fSizeInPoints <= 17)
+	else if (fSizeInPoints <= fs->Large)
 	{
 		szDest = "Large";
 	}
-	else if (fSizeInPoints <= 20)
+	else if (fSizeInPoints <= fs->LARGE)
 	{
 		szDest = "LARGE";
 	}
-	else if (fSizeInPoints <= 25)
+	else if (fSizeInPoints <= fs->huge)
 	{
 		szDest = "huge";
 	}
