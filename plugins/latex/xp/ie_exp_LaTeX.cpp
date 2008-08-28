@@ -1157,6 +1157,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 	
 	if (m_pAP_Span)
 	{
+		m_bInScript = false;
 		if (m_bInSymbol)
 		    m_bInSymbol = false;
 		for(; m_NumCloseBrackets>0; m_NumCloseBrackets--)
@@ -1440,6 +1441,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_bInCell(false),
 	m_bInSection(false),
 	m_bInSpan(false),
+	m_bInScript(false),
 	m_bInFootnote(false),
 	m_bInSymbol(0),
 	m_bInEndnote(false),
@@ -1547,7 +1549,6 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	}
 	m_pie->write("\n");
 	ChapterNumber = 1;
-	m_bInScript = false;
 	m_pie->write("\\begin{document}\n\n");
 	
 	m_pTableHelper = new ie_Table(pDocument);
