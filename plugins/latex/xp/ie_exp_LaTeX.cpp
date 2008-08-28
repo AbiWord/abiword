@@ -604,7 +604,6 @@ void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
-	m_eJustification = JUSTIFIED;
 	m_bLineHeight = false;
 
 	if (!m_bInSection)
@@ -752,9 +751,14 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		}
 		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
-		// TODO: Split this function in several ones
-		if (m_iBlockType == BT_NORMAL)
+		
+		/* In LaTeX, a footnote is enclosed within a parapgraph, so we need to
+		 * preserve values of the previous block, in particular m_iBlockType and
+		 * m_eJustification, as they affect the behavior of _closeBlock()
+		 */
+		if (m_iBlockType == BT_NORMAL && !m_bInFootnote)
 		{
+			m_eJustification = JUSTIFIED;
 			if (pAP->getProperty("text-align", szValue))
 			{
 				if (0 == strcmp(szValue, "center"))
