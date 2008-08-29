@@ -995,14 +995,12 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			if (!strcmp("superscript", szValue))
 			{
 				m_bInScript = true;
-				//m_pie->write("$^{\\mathrm{");
 				m_pie->write("\\textsuperscript{");
 				m_NumCloseBrackets++;
 			}
 			else if (!strcmp("subscript", szValue))
 			{
 				m_bInScript = true;
-				//m_pie->write("$_{\\mathrm{");
 				m_pie->write("\\textsubscript{");
 				m_NumCloseBrackets++;
 			}
@@ -1527,6 +1525,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 	m_pie->write("\\usepackage[latin1]{inputenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{setspace}\n");
+	m_pie->write("\\usepackage{fixltx2e}\n");  // for \textsubscript
 	m_pie->write("\\usepackage{graphicx}\n");
 	m_pie->write("\\usepackage{multicol}\n");
 	m_pie->write("\\usepackage[normalem]{ulem}\n");
