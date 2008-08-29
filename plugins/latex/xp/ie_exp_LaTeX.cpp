@@ -445,6 +445,7 @@ void s_LaTeX_Listener::_closeLists()
 
 void s_LaTeX_Listener::_closeSection(void)
 {
+	_closeBlock();
 	if (!m_bInSection)
 	{
 		return;
@@ -467,6 +468,7 @@ void s_LaTeX_Listener::_closeSection(void)
 
 void s_LaTeX_Listener::_closeBlock(void)
 { 
+	_closeSpan();
 	if(m_bInFootnote || m_bInEndnote)
 		return;
 	if (!m_bInBlock)
@@ -1567,8 +1569,6 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 		cur = NULL;
 	}	
 #endif
-	_closeSpan();
-	_closeBlock();
 	_closeSection();
 	_handleDataItems();
 	DELETEP(m_pTableHelper);
@@ -1812,8 +1812,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	{
 	case PTX_Section:
 	{
-		_closeSpan();
-		_closeBlock();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -1845,8 +1843,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_SectionHdrFtr:
 	{
-		_closeSpan();
-		_closeBlock();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -1878,7 +1874,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_Block:
 	{
-		_closeSpan();
 		_closeBlock();
 		_closeParagraph();
 		_openParagraph(pcr->getIndexAP());
@@ -1932,7 +1927,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	
 	case PTX_SectionTOC:
 	{
-		_closeSpan();	
 		_closeBlock();
 		/*
 		_closeSection();
