@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2004 Marc Maurer (uwog@uwog.net)
+ * Copyright (C) 2008 Xun Sun (xun.sun.cn@gmail.com)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
