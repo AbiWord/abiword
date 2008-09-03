@@ -31,8 +31,8 @@ class DocHandle;
  class XMPPBuddy : public Buddy
 {
 public:
-	XMPPBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	XMPPBuddy(AccountHandler* handler, const UT_UTF8String& descriptor)
+		: Buddy(handler, descriptor)
 	{
 	}
 	

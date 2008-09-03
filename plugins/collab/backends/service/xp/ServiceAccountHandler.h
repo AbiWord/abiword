@@ -79,6 +79,8 @@ public:
 	virtual Buddy*							constructBuddy(const PropertyMap& props);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
+	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	
 	// packet management
 	virtual bool							send(const Packet* packet);
@@ -105,6 +107,8 @@ public:
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
+	ServiceBuddy*							_getBuddy(ServiceBuddy* pBuddy);
+
 	template <class T>
 	void _send(boost::shared_ptr<T> packet, boost::shared_ptr<const RealmBuddy> recipient)
 	{
@@ -134,9 +138,6 @@ private:
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(RealmConnection& connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
-	virtual	void							_handlePacket(Packet* packet, Buddy* buddy, bool /*autoAddBuddyOnJoin*/)
-		{ AccountHandler::_handlePacket(packet, buddy, false); }
-
 
 	bool									m_bOnline;  // only used to determine if we are allowed to 
 														// communicate with abicollab.net or not

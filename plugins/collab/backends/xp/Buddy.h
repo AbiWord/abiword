@@ -33,9 +33,8 @@ using std::vector;
  class Buddy 
 {
 public:
-	Buddy(AccountHandler* handler, const UT_UTF8String& name)
+	Buddy(AccountHandler* handler)
 		: m_handler(handler),
-		m_name(name),
 		m_volatile(false)
 	{
 	}
@@ -45,12 +44,17 @@ public:
 	 * Buddy management
 	 */
 	virtual Buddy* clone() const = 0;
+	
+	// globally unique, so it can be used to identify authors when they
+	// reconnect or to allow sessions to be taken over.
+	// However some transport backends do not allow that. When a buddy decriptor
+	// is not globally unique, then it should at least uniquely identify a buddy
+	// within a collaboration session.
+	//
+	// For the backends that support it, the descriptor should contain
+	// all the information required to construct a buddy object from it
+	virtual const UT_UTF8String&	getDescriptor() const = 0;
 
-	/*
-	 * User management
-	 */
-	virtual const UT_UTF8String&	getName() const
-		{ return m_name; }
 	virtual UT_UTF8String			getDescription() const = 0;
 	AccountHandler*					getHandler() const
 		{ return m_handler; }
@@ -96,7 +100,7 @@ public:
 	
 private:
 	AccountHandler*				m_handler;
-	UT_UTF8String				m_name;
+	UT_UTF8String				m_descriptor;
 	vector<DocHandle*>			m_docHandles;
 	bool						m_volatile;
 };

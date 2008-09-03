@@ -487,6 +487,11 @@ void AbiCollab::addChangeAdjust(ChangeAdjust* pAdjust)
 void AbiCollab::initiateSessionTakeover(Buddy* pNewMaster)
 {
 	UT_return_if_fail(pNewMaster);
+
+	// NOTE: we only allow slaves in the session takeover process
+	// that are on the same account as the proposed master is. The
+	// others are dropped from the session. At least for now.
+	// TODO: implement me
 	
 	// reset any old session takeover state
 	m_bProposedController = false;
@@ -503,7 +508,7 @@ void AbiCollab::initiateSessionTakeover(Buddy* pNewMaster)
 
 		AccountHandler* pHandler = pBuddy->getHandler();
 		UT_continue_if_fail(pHandler);
-		
+
 		pHandler->send(pNewMaster == pBuddy ? &promoteTakeoverPacket : &normalTakeoverPacket, *pBuddy);
 	}
 
@@ -689,7 +694,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, c
 
 				// handle the MasterChangeRequest packet
 				MasterChangeRequestPacket* mcrp = static_cast<MasterChangeRequestPacket*>(pPacket);
-				Buddy* pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier());
+				Buddy* pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier(), &collaborator);
 				UT_return_val_if_fail(pBuddy, false);
 				m_pProposedController = pBuddy;
 
@@ -830,7 +835,7 @@ bool AbiCollab::_hasAckedSessionTakeover(const Buddy& collaborator)
 	return (*it).second;
 }
 
-bool AbiCollab::_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers)
+bool AbiCollab::_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers)
 {	
 	// FIXME: what happens when someone leaves during the session takeover
 	// process? We should probably add a timeout, or some other signal to
@@ -843,7 +848,7 @@ bool AbiCollab::_al1SlavesAckedSessionTakover(std::vector<std::string>& buddyIde
 		{
 			Buddy* pBuddy = *it;
 			UT_continue_if_fail(pBuddy);
-			// TODO: add the buddy identifier
+			buddyIdentifiers.push_back(pBuddy->getDescriptor());
 		}
 	}
 	return res;

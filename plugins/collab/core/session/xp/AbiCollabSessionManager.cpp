@@ -1063,11 +1063,21 @@ void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericV
 	}
 }
 
-Buddy* AbiCollabSessionManager::constructBuddy(const std::string& identifier)
+Buddy* AbiCollabSessionManager::constructBuddy(const std::string& identifier, Buddy* pBuddy)
 {
-	UT_DEBUGMSG(("AbiCollabSessionManager::constructBuddy()\n"));
+	UT_DEBUGMSG(("AbiCollabSessionManager::constructBuddy() - identifier: %s\n", identifier.c_str()));
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	// find an account hander to handle this identifier
+	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+	{
+		AccountHandler* pHandler = m_vecAccounts.getNthItem(i);
+		UT_continue_if_fail(pHandler);
+
+		if (pHandler->recognizeBuddyIdentifier(identifier))
+			return pHandler->constructBuddy(identifier, pBuddy);
+	}
+
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
@@ -1207,36 +1217,8 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 			
 			case PCT_AccountAddBuddyRequestEvent:
 			{
-				if (buddy != handler.getBuddy(buddy->getName()))
-				{
-					PropertyMap vBuddyProps;
-					vBuddyProps.insert(PropertyMap::value_type("name", buddy->getName().utf8_str()));
-					Buddy* pBuddy = handler.constructBuddy(vBuddyProps);
-					if (pBuddy)
-					{
-						// TODO: we don't handle request authorization yet. For now, just
-						// add this buddy to our list
-						AccountHandler* pHandler = pBuddy->getHandler();
-						if (pHandler)
-						{
-							// TODO: check if we don't already have this user in our list
-							pHandler->addBuddy(pBuddy);
-							AccountAddBuddyEvent newEvent;
-							signal(newEvent, pBuddy);
-						}
-						else
-							UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-					}
-					else
-						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-
-					// This event should never be forwarded over a network;
-					// we've just handled it, so leave it at that
-				}
-				else
-				{
-					// we already know this buddy, do nothing for now
-				}
+				// look at this packet; I have a feeling we need to deprecate it - MARCM
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				return true;
 			}
 			

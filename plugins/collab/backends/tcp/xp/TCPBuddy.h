@@ -31,16 +31,33 @@ class DocHandle;
  class TCPBuddy : public Buddy
 {
 public:
-	TCPBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	TCPBuddy(AccountHandler* handler, const std::string& server, const std::string& port)
+		: Buddy(handler),
+		m_server(server),
+		m_port(port)
 	{
 		setVolatile(true);
 	}
 	
 	virtual Buddy* clone() const { return new TCPBuddy( *this ); }
 	
-	virtual UT_UTF8String		getDescription() const
-		{ return getName(); }
+	virtual const UT_UTF8String& getDescriptor() const
+	{
+		static UT_UTF8String descriptor = UT_UTF8String("tcp://") + m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
+		return descriptor;
+	}
+	
+	virtual UT_UTF8String getDescription() const
+	{
+		static UT_UTF8String description = m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
+		return description;
+	}
+
+	const std::string& getServer() const
+		{ return m_server; }
+
+	const std::string& getPort() const
+		{ return m_port; }
 		
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -63,6 +80,10 @@ public:
 		}
 		return first;
 	}
+
+private:
+	std::string m_server;
+	std::string m_port;
 };
 
 #endif /* TCPBUDDY_H */

@@ -30,8 +30,8 @@ class DocHandle;
  class FakeBuddy : public Buddy
 {
 public:
-	FakeBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	FakeBuddy(AccountHandler* handler, const UT_UTF8String& descriptor)
+		: Buddy(handler, descriptor)
 	{
 	}
 	

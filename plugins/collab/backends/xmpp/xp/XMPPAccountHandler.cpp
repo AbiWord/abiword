@@ -499,6 +499,18 @@ Buddy* XMPPAccountHandler::constructBuddy(const PropertyMap& vProps)
 	return 0;
 }
 
+Buddy* XMPPAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+bool XMPPAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
+}
+
 void XMPPAccountHandler::handleMessage(const gchar* pPacket, const std::string& buddy)
 {
 	UT_return_if_fail(pPacket);

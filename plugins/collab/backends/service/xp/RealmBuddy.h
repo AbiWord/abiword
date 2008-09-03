@@ -19,6 +19,7 @@
 #ifndef __REALM_BUDDY__
 #define __REALM_BUDDY__
 
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/lexical_cast.hpp>
@@ -31,8 +32,9 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, UT_uint8 realm_connection_id, bool master, RealmConnection& connection)
-		: Buddy(handler, boost::lexical_cast<std::string>(realm_connection_id).c_str()),
+	RealmBuddy(AccountHandler* handler, const std::string& email, UT_uint8 realm_connection_id, bool master, RealmConnection& connection)
+		: Buddy(handler),
+		m_email(email),
 		m_realm_connection_id(realm_connection_id),
 		m_master(master),
 		m_connection(connection)
@@ -42,9 +44,16 @@ public:
 	
 	virtual Buddy* clone() const { return new RealmBuddy( *this ); }
 	
-	virtual UT_UTF8String		getDescription() const
+	virtual const UT_UTF8String& getDescriptor() const
 	{
-		return getName();
+		// TODO: the URI property should really be the host property; that looks way better
+		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + getHandler()->getProperty("uri").c_str();
+		return descriptor;
+	}
+	
+	virtual UT_UTF8String getDescription() const
+	{
+		return ""; // shouldn't be used anywhere; instead, ServiceBuddy's are shown in the interface
 	}
 	
 	virtual const DocTreeItem* getDocTreeItems() const
@@ -73,9 +82,10 @@ public:
 	}
 	
 private:
-	UT_uint8 m_realm_connection_id;
-	bool m_master;
-	RealmConnection& m_connection;
+	std::string			m_email;
+	UT_uint8			m_realm_connection_id;
+	bool				m_master;
+	RealmConnection&	m_connection;
 };
 
 typedef boost::shared_ptr<RealmBuddy> RealmBuddyPtr;

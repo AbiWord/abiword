@@ -73,6 +73,8 @@ public:
 	virtual Buddy*			constructBuddy(const PropertyMap& vProps);
 	virtual bool			allowsManualBuddies()
 		{ return true; }
+	virtual Buddy*			constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool			recognizeBuddyIdentifier(const std::string& identifier);
 	
 	// session management
 	virtual bool							allowsSessionTakeover()

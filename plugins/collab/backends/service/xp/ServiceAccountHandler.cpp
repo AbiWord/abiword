@@ -201,6 +201,18 @@ Buddy* ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 	return NULL; // TODO: implement me
 }
 
+Buddy* ServiceAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
+}
+
 bool ServiceAccountHandler::send(const Packet* packet)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*)\n"));
@@ -388,7 +400,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	{
 		UT_DEBUGMSG(("Invalid realm login information\n"));
 		return acs::SOAP_ERROR_GENERIC;
-	}
+	}   
 	soa::StringPtr filename_ptr = rcp->get<soa::String>("filename");
 	if (!filename_ptr)
 	{
@@ -430,6 +442,20 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	UT_DEBUGMSG(("Document loaded successfully\n"));
 	m_connections.push_back(connection);
 	return acs::SOAP_ERROR_OK;
+}
+
+ServiceBuddy* ServiceAccountHandler::_getBuddy(ServiceBuddy* pBuddy)
+{
+	UT_return_val_if_fail(pBuddy, NULL);
+	const UT_GenericVector<Buddy*> buddies = getBuddies();
+	for (UT_sint32 i = 0; i < buddies.getItemCount(); i++)
+	{
+		ServiceBuddy* pB = static_cast<ServiceBuddy*>(buddies.getNthItem(i));
+		UT_continue_if_fail(pB);
+		if (pB->getEmail() == pBuddy->getEmail())
+			return pB;
+	}
+	return NULL;
 }
 
 acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
@@ -693,7 +719,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 				{
 					ServiceBuddy* pBuddy = (*it).second;
 					UT_continue_if_fail(pBuddy);
-					Buddy* pExistingBuddy = getBuddy(pBuddy->getName());
+					Buddy* pExistingBuddy = _getBuddy(pBuddy);
 					if (!pExistingBuddy)
 					{
 						pExistingBuddy = pBuddy;
@@ -701,7 +727,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 					}
 					else
 						DELETEP(pBuddy);
-					_handlePacket(&((*it).first), pExistingBuddy, false);
+					_handlePacket(&((*it).first), pExistingBuddy);
 				}
 			}
 			break;
@@ -872,7 +898,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 						UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
 						UT_return_if_fail(!ujp->isMaster());
 						connection.addBuddy(boost::shared_ptr<RealmBuddy>(
-								new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
+								new RealmBuddy(this, getProperty("email"), static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
 					}
 					else
 					{
@@ -880,7 +906,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 						{
 							UT_DEBUGMSG(("Received master buddy (id: %d); we're slave, adding it to our buddy list!\n", ujp->getConnectionId()));
 							boost::shared_ptr<RealmBuddy> master_buddy(
-										new RealmBuddy(this, static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
+										new RealmBuddy(this, getProperty("email"), static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
 							connection.addBuddy(master_buddy);
 
 							UT_DEBUGMSG(("Sending join session request to master!\n"));

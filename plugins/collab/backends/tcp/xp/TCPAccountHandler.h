@@ -54,6 +54,8 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(Buddy* buddy);
+	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 
 	// session management
 	virtual bool							allowsSessionTakeover()
@@ -66,19 +68,17 @@ public:
 	// event management
 	void									handleEvent(Session& session);
 
-protected:
-
-	// connection management
-	virtual UT_sint32						_getPort(const PropertyMap& props);
+private:
+	void									_teardownAndDestroyHandler();
+	void									_handleMessages(Session& session);
 
 	// user management
 	const TCPBuddy*							_getBuddy(Session* pSession);
-	
-private:
+	TCPBuddy*								_getBuddy(const TCPBuddy* pBuddy);
+
+	// connection management
+	virtual UT_sint32						_getPort(const PropertyMap& props);
 	void									_handleAccept(IOServerHandler* pHandler, boost::shared_ptr<Session> session);
-	void									_teardownAndDestroyHandler();
-	void									_handleMessages(Session& session);
-		
 		
 	asio::io_service						m_io_service;
 	asio::io_service::work					m_work;

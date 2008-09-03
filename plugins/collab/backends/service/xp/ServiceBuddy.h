@@ -20,6 +20,9 @@
 #ifndef __SERVICEBUDDY__
 #define __SERVICEBUDDY__
 
+#include <string>
+#include <stdint.h>
+#include <boost/lexical_cast.hpp>
 #include "ut_string_class.h"
 #include <backends/xp/Buddy.h>
 #include <backends/xp/AccountHandler.h>
@@ -27,19 +30,28 @@
 class ServiceBuddy : public Buddy
 {
 public:
-	ServiceBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	ServiceBuddy(AccountHandler* handler, const std::string& email)
+		: Buddy(handler),
+		m_email(email)
 	{
 		setVolatile(true);
 	}
 	
-	virtual Buddy* clone() const { return new ServiceBuddy( *this ); }
-	
-	virtual UT_UTF8String		getDescription() const
+	virtual Buddy* clone() const
+		{ return new ServiceBuddy( *this ); }
+
+	virtual const UT_UTF8String& getDescriptor() const
 	{
-		// TODO: append the group name or something like that
-		return getName();
+		// TODO: the URI property should really be the host property; that looks way better
+		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + getHandler()->getProperty("uri").c_str();
+		return descriptor;
 	}
+	
+	virtual UT_UTF8String getDescription() const
+		{ return m_email.c_str(); }
+	
+	const std::string& getEmail() const
+		{ return m_email; }
 	
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -62,6 +74,9 @@ public:
 		}
 		return first;
 	}
+	
+private:
+	std::string		m_email;
 };
 
 #endif /* __SERVICEBUDDY__ */

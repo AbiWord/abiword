@@ -78,9 +78,8 @@ void FakeAccountHandler::storeProperties()
 
 FakeBuddy* FakeAccountHandler::getBuddy(const UT_UTF8String& name)
 {
-	// find buggy through AccountHandler class
-	Buddy* buddy = AccountHandler::getBuddy( name );
-	return static_cast<FakeBuddy*>( buddy );
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
 }
 
 ConnectResult FakeAccountHandler::connect()
@@ -110,6 +109,18 @@ Buddy* FakeAccountHandler::constructBuddy(const PropertyMap& props)
 
 	UT_DEBUGMSG(("Constructing FakeBuddy (name: %s)\n", cit->second.c_str()));
 	return new FakeBuddy(this, cit->second.c_str());
+}
+
+Buddy* FakeAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+bool FakeAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
 }
 
 bool FakeAccountHandler::send(const Packet* pPacket)

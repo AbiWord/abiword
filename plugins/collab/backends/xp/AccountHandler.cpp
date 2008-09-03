@@ -82,29 +82,20 @@ void AccountHandler::addBuddy(Buddy* buddy)
 	AbiCollabSessionManager::getManager()->signal(event);
 }
 
-Buddy* AccountHandler::getBuddy(const UT_UTF8String& name)
+void AccountHandler::deleteBuddy(Buddy* pBuddy)
 {
+	UT_return_if_fail(pBuddy);
 	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
-		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		if (pBuddy->getName() == name)
-			return pBuddy;
-	}		
-	UT_DEBUGMSG(("Getting buddy (%s) failed\n", name.utf8_str()));
-	return 0;
-}
-
-void AccountHandler::deleteBuddy(const UT_UTF8String& name)
-{
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
-	{
-		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		if (pBuddy->getName() == name)
+		Buddy* pB = m_vecBuddies.getNthItem(i);
+		UT_continue_if_fail(pB);
+		if (pB == pBuddy)
 		{
 			m_vecBuddies.deleteNthItem(i);
 			return;
 		}
-	}		
+	}
+	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 }
 
 void AccountHandler::deleteBuddies()
@@ -115,10 +106,6 @@ void AccountHandler::deleteBuddies()
 		DELETEP(pBuddy);
 	}
 	m_vecBuddies.clear();
-}
-
-void AccountHandler::forceDisconnectBuddy(Buddy* /*buddy*/)
-{
 }
 		
 void AccountHandler::getSessionsAsync()
@@ -164,20 +151,17 @@ void AccountHandler::signal(const Event& event, const Buddy* pSource)
 	for (UT_uint32 i = 0; i < vRecipients.getItemCount(); i++)
 	{
 		Buddy* pRecipient = vRecipients.getNthItem(i);
-		if (pRecipient)
+		UT_continue_if_fail(pRecipient);
+
+		if (!pSource || (pSource != pRecipient))
 		{
-			if (!pSource || 
-				(pSource && pRecipient->getName() != pSource->getName())
-				)
-			{
-				send(&event, *pRecipient);
-			}
-			else
-			{
-				// the event came originated at this buddy, so make sure not to send it
-				// back to him, as it would result in a broadcast storm and
-				// kill the network really fast
-			}
+			send(&event, *pRecipient);
+		}
+		else
+		{
+			// the event originated from this buddy, so make sure not to send it
+			// back to him, as it would result in a broadcast storm and
+			// kill the network really fast
 		}
 	}
 }
@@ -304,7 +288,7 @@ bool AccountHandler::_handleProtocolError(Packet* packet, Buddy* buddy)
 	return true;
 }
 
-void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBuddyOnJoin )
+void AccountHandler::_handlePacket(Packet* packet, Buddy* buddy)
 {
 	// packet and buddy must always be set
 	UT_return_if_fail(packet);
@@ -333,42 +317,24 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 			const UT_GenericVector<ChangeAdjust *>* pExpAdjusts = pExport->getAdjusts();
 			UT_return_if_fail(pExpAdjusts);
 		
-			// TODO: ask the user to authorize this request
-			bool bAuthorized = true;
-			if (bAuthorized)
+			PD_Document* pDoc = pSession->getDocument();
+			
+			// serialize entire document into string
+			JoinSessionRequestResponseEvent jsre( jse->getSessionId() );
+			if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
 			{
-				PD_Document* pDoc = pSession->getDocument();
+				// set more document properties
+				jsre.m_iRev = pDoc->getCRNumber();
+				jsre.m_sDocumentId = pDoc->getDocUUIDString();
+				if (pDoc->getFilename())
+					jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
 				
-				// serialize entire document into string
-				JoinSessionRequestResponseEvent jsre( jse->getSessionId() );
-				if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
-				{
-					// set more document properties
-					jsre.m_iRev = pDoc->getCRNumber();
-					jsre.m_sDocumentId = pDoc->getDocUUIDString();
-					if (pDoc->getFilename())
-						jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
-					
-					// send to buddy!
-					send( &jsre, *buddy );
-					
-					if (autoAddBuddyOnJoin)
-					{
-						// check if we already know this buddy
-						Buddy* existing = getBuddy(buddy->getName());
-						if (!existing)
-						{
-							// we don't know this buddy yet; add this one as a volatile buddy
-							buddy->setVolatile(true);
-							addBuddy(buddy);
-						}
-					}
+				// send to buddy!
+				send( &jsre, *buddy );
 				
-					// add this buddy to the collaboration session
-					pSession->addCollaborator(buddy);
-				}
+				// add this buddy to the collaboration session
+				pSession->addCollaborator(buddy);
 			}
-			break;
 		}
 		
 		case PCT_JoinSessionRequestResponseEvent:
@@ -455,7 +421,9 @@ BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 errorEnum, const Buddy& buddy ) 
 {
-	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n",showProtocolErrorReports,remoteVersion,errorEnum));
+	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n", showProtocolErrorReports, remoteVersion, errorEnum));
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+/*
 	if (showProtocolErrorReports) {
 		static std::set<std::string> reportedBuddies;
 
@@ -464,10 +432,13 @@ void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 er
 			switch (errorEnum) {
 				case PE_Invalid_Version:
 					msg = UT_UTF8String_sprintf("Your buddy %s is using a different version of collaboration software (expected %d, got %d).\n"
-												"You will not be able to collaborate with him/her.", buddy.getName().utf8_str(), ABICOLLAB_PROTOCOL_VERSION, remoteVersion);
+												"You will not be able to collaborate with him/her.", 
+												buddy.getDescription().utf8_str(), // TODO: make the name more user-friendly
+												ABICOLLAB_PROTOCOL_VERSION, remoteVersion);
 					break;
 				default:
-					msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum, buddy.getName().utf8_str() );
+					msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum,
+													buddy.getDescription().utf8_str()); // TODO: make the name more user-friendly
 					break;
 			}
 			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
@@ -476,6 +447,7 @@ void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 er
 				XAP_Dialog_MessageBox::a_OK);
 		}
 	}
+*/
 }
 
 void AccountHandler::_sendProtocolError( const Buddy& buddy, UT_sint32 errorEnum ) 
