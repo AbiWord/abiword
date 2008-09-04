@@ -19,9 +19,11 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__	
 
+#include <vector>
+#include <backends/xp/Buddy.h>
 #include <xp/EventPacket.h>
 
- class Event	: public EventPacket
+class Event	: public EventPacket
 {
 public:	
 	DECLARE_ABSTRACT_PACKET(Event);
@@ -35,21 +37,19 @@ public:
 	{
 	}
 
-	const UT_GenericVector<Buddy*>&		getRecipients() const
+	const std::vector<BuddyPtr>&		getRecipients() const
 		{ return m_vRecipients; }
 		
-	void 								setRecipients(UT_GenericVector<Buddy*>& vRecipients)
-		{
+	void 								setRecipients(std::vector<BuddyPtr>& vRecipients)
+	{
 			m_vRecipients = vRecipients;
-		}
+	}
 	
-	void								addRecipient(Buddy* pBuddy)
-		{
-			if (pBuddy)
-			{
-				m_vRecipients.addItem(pBuddy);
-			}
-		}
+	void								addRecipient(BuddyPtr pBuddy)
+	{
+			UT_return_if_fail(pBuddy);
+			m_vRecipients.push_back(pBuddy);
+	}
 		
 	void								setBroadcast(bool bBroadcast)
 		{ m_bBroadcast = bBroadcast; }
@@ -58,7 +58,7 @@ public:
 		
 private:
 
-	UT_GenericVector<Buddy*>		m_vRecipients;
+	std::vector<BuddyPtr>		   m_vRecipients;
 	bool							m_bBroadcast;
 };	
 		

@@ -112,15 +112,12 @@ public:
 	virtual bool							send(const Packet* packet, const Buddy& buddy) = 0;
 	
 	// user management
-	void									addBuddy(Buddy* buddy);
-	const UT_GenericVector<Buddy*>&	 		getBuddies() const
-		{ return m_vecBuddies; }
-	void									deleteBuddy(Buddy* pBuddy);
+	void									addBuddy(BuddyPtr pBuddy);
+	std::vector<BuddyPtr>&					getBuddies()
+		{ return m_vBuddies; }
+	void									deleteBuddy(BuddyPtr pBuddy);
 	void									deleteBuddies();
-	virtual Buddy*							constructBuddy(const PropertyMap& vProps) = 0;
-	virtual bool							allowsManualBuddies() = 0;
-	virtual void							forceDisconnectBuddy(Buddy* /*buddy*/) { /* FIXME: this should be pure virtual */ }
-	
+	virtual BuddyPtr						constructBuddy(const PropertyMap& vProps) = 0;
 	// Constructs a buddy given a buddy descriptor
 	// NOTE: some backends require additional *backend specific* session information
 	// to construct a particular buddy. Information that is not available in the buddy 
@@ -128,8 +125,10 @@ public:
 	// This additional information can then be retrieved via the 'pBuddy' 
 	// argument. That means that the pBuddy should already be in a session and
 	// thus have access to all backend specific session information
-	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy) = 0;
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy) = 0;
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier) = 0;
+	virtual bool							allowsManualBuddies() = 0;
+	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
 
 	// session management
 	virtual void							getSessionsAsync();
@@ -146,8 +145,7 @@ public:
 
 
 	// generic session management packet implementation
-	virtual void 							handleMessage(const RawPacket& pRp);
-	virtual void							handleMessage(Packet* pPacket, Buddy* pBuddy);
+	virtual void							handleMessage(Packet* pPacket, BuddyPtr pBuddy);
 
 	// signal management
 	virtual void							signal(const Event& event, const Buddy* pSource);
@@ -161,23 +159,23 @@ public:
 
 protected:
 	// packet management
-	Packet*									_createPacket(const std::string& packet, Buddy* pBuddy);
+	Packet*									_createPacket(const std::string& packet, BuddyPtr pBuddy);
 	void 									_createPacketStream(std::string& sString, const Packet* pPacket);	// creates binary string!
-	virtual bool							_handleProtocolError(Packet* packet, Buddy* buddy);
-	virtual	void							_handlePacket(Packet* packet, Buddy* buddy);
+	virtual bool							_handleProtocolError(Packet* packet, BuddyPtr buddy);
+	virtual	void							_handlePacket(Packet* packet, BuddyPtr buddy);
 	
 	// protocol error management
-	void									_sendProtocolError(const Buddy& buddy, UT_sint32 errorEnum);
+	void									_sendProtocolError(BuddyPtr, UT_sint32 errorEnum);
 
 	// bad bad, protected variables are bad
 	PropertyMap								m_properties;
 
 private:
-	static void								_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, const Buddy& buddy);
+	static void								_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr buddy);
 	static bool								showProtocolErrorReports;
 
 	bool									m_bCanOffer;
-	UT_GenericVector<Buddy*>				m_vecBuddies;
+	std::vector<BuddyPtr>					m_vBuddies;
 };
 
 

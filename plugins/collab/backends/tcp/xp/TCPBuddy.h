@@ -21,6 +21,7 @@
 
 #include <map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include <backends/xp/Buddy.h>
 #include <backends/xp/DocTreeItem.h>
@@ -38,8 +39,6 @@ public:
 	{
 		setVolatile(true);
 	}
-	
-	virtual Buddy* clone() const { return new TCPBuddy( *this ); }
 	
 	virtual const UT_UTF8String& getDescriptor() const
 	{
@@ -85,5 +84,7 @@ private:
 	std::string m_server;
 	std::string m_port;
 };
+
+typedef boost::shared_ptr<TCPBuddy> TCPBuddyPtr;
 
 #endif /* TCPBUDDY_H */

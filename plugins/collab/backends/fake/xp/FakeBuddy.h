@@ -35,8 +35,6 @@ public:
 	{
 	}
 	
-	virtual Buddy* clone() const { return new FakeBuddy( *this ); }
-	
 	virtual UT_UTF8String		getDescription() const
 		{ return getName(); }
 		

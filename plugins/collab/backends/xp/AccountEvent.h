@@ -21,25 +21,25 @@
 
 #include "Event.h"
 
- class AccountNewEvent : public Event
+class AccountNewEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountNewEvent);
 };
 
- class AccountOnlineEvent : public Event
+class AccountOnlineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountOnlineEvent);
 };
 
- class AccountOfflineEvent : public Event
+class AccountOfflineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountOfflineEvent);
 };
 
- class AccountAddBuddyEvent : public Event
+class AccountAddBuddyEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountAddBuddyEvent);
@@ -51,25 +51,25 @@ public:
 	DECLARE_PACKET(AccountDeleteBuddyEvent);
 };
 
- class AccountBuddyOnlineEvent : public Event
+class AccountBuddyOnlineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyOnlineEvent);
 };
 
- class AccountBuddyOfflineEvent : public Event
+class AccountBuddyOfflineEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyOfflineEvent);
 };
 
- class AccountAddBuddyRequestEvent : public Event
+class AccountAddBuddyRequestEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountAddBuddyRequestEvent);
 };
 
- class AccountBuddyAddDocumentEvent : public Event
+class AccountBuddyAddDocumentEvent : public Event
 {
 public:
 	DECLARE_PACKET(AccountBuddyAddDocumentEvent);

@@ -705,7 +705,7 @@ void AbiCollabSessionManager::joinSessionInitiate(Buddy* pBuddy, DocHandle* pDoc
 }
 
 void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
-												const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator,
+												const UT_UTF8String& docUUID, UT_sint32 iRev, BuddyPtr pCollaborator,
 												XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));
@@ -743,7 +743,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	pDoc->sendAddAuthorCR(pA);
 }
 
-void AbiCollabSessionManager::joinSession(AbiCollab* pSession, Buddy* pCollaborator)
+void AbiCollabSessionManager::joinSession(AbiCollab* pSession, BuddyPtr pCollaborator)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));	
 
@@ -846,11 +846,11 @@ bool AbiCollabSessionManager::isActive(const UT_UTF8String& sSessionId)
 	return false;
 }
 
-void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy, bool graceful)
+void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 {
 	UT_return_if_fail(pBuddy);
 	
-	UT_DEBUGMSG(("Dropping buddy '%s' from all sessions\n", pBuddy->getName().utf8_str()));
+	UT_DEBUGMSG(("Dropping buddy '%s' from all sessions\n", pBuddy->getDescription().utf8_str()));
 	// TODO: should we send out events for every buddy we drop, or session
 	// we delete?
 	
@@ -1081,7 +1081,7 @@ Buddy* AbiCollabSessionManager::constructBuddy(const std::string& identifier, Bu
 	return NULL;
 }
 
-bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, Buddy* buddy) 
+bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, BuddyPtr buddy) 
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::processPacket()\n"));
 	UT_return_val_if_fail(packet, false);
@@ -1101,131 +1101,131 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 		}
 		
 		// handle packet!
-		pAbiCollab->import( dsp, *buddy );
+		pAbiCollab->import(dsp, buddy);
 		return true;
 	}
-	else
-	{
-		// handle packet
-		switch (pct) {
-			case PCT_StartSessionEvent:
-			{
-				// TODO: it is rather inefficient to request a buddy for every packet
-				StartSessionEvent event;
-				event.setBroadcast(true);
-				signal( event, buddy );
-				return true;
-			}
-			
-			case PCT_JoinSessionEvent:
-			{
-				JoinSessionEvent* jse = static_cast<JoinSessionEvent*>( packet );
-				const UT_UTF8String& joinedSessionId = jse->getSessionId();
-				
-				// someone who joined this session disconnected, remove him from the collaboration session
-				AbiCollab* pSession = getSessionFromSessionId(joinedSessionId);			
-				if (pSession)
-				{		
-					if (isLocallyControlled( pSession->getDocument() ))
-					{
-						// we should already know this buddy, as we sent should have already added this
-						// buddy when responding to his JoinSessionRequest
-						// TODO: check this
-					}
 
-					// signal all
-					JoinSessionEvent event(joinedSessionId);
-					signal( event, buddy );				
-				}
-				else
+
+	// handle packet
+	switch (pct) {
+		case PCT_StartSessionEvent:
+		{
+			// TODO: it is rather inefficient to request a buddy for every packet
+			StartSessionEvent event;
+			event.setBroadcast(true);
+			signal( event, buddy );
+			return true;
+		}
+		
+		case PCT_JoinSessionEvent:
+		{
+			JoinSessionEvent* jse = static_cast<JoinSessionEvent*>(packet);
+			const UT_UTF8String& joinedSessionId = jse->getSessionId();
+			
+			// someone who joined this session disconnected, remove him from the collaboration session
+			AbiCollab* pSession = getSessionFromSessionId(joinedSessionId);			
+			if (pSession)
+			{		
+				if (isLocallyControlled( pSession->getDocument() ))
 				{
-					// we don't know this session, don't forward the packet
-					UT_ASSERT_HARMLESS(UT_NOT_REACHED);			
+					// we should already know this buddy, as we sent should have already added this
+					// buddy when responding to his JoinSessionRequest
+					// TODO: check this
 				}
-				return true;
+
+				// signal all
+				JoinSessionEvent event(joinedSessionId);
+				signal( event, buddy );				
 			}
-			
-			case PCT_DisjoinSessionEvent:
+			else
 			{
-				DisjoinSessionEvent* dse = static_cast<DisjoinSessionEvent*>( packet );
-				const UT_UTF8String& disjoinedSessionId = dse->getSessionId();
+				// we don't know this session, don't forward the packet
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);			
+			}
+			return true;
+		}
+		
+		case PCT_DisjoinSessionEvent:
+		{
+			DisjoinSessionEvent* dse = static_cast<DisjoinSessionEvent*>(packet);
+			const UT_UTF8String& disjoinedSessionId = dse->getSessionId();
+		
+			// someone who joined this session disconnected, remove him from the collaboration session
+			AbiCollab* pSession = getSessionFromSessionId(disjoinedSessionId);			
+			if (pSession)
+			{
+				pSession->removeCollaborator(buddy);
+				
+				// signal all 
+				DisjoinSessionEvent event(disjoinedSessionId);
+				signal(event, buddy);
+			}
+			else
+			{
+				// we don't know this session, don't forward the packet
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+			}
+			return true;
+		}
+		
+		case PCT_CloseSessionEvent:
+		{
+			CloseSessionEvent* cse = static_cast<CloseSessionEvent*>(packet);
+			const UT_UTF8String& destroyedSessionId = cse->getSessionId();
+		
+			buddy->destroyDocHandle( destroyedSessionId );
 			
-				// someone who joined this session disconnected, remove him from the collaboration session
-				AbiCollab* pSession = getSessionFromSessionId(disjoinedSessionId);			
-				if (pSession)
+			// handle the event outselves
+			AbiCollab* pSession = getSessionFromSessionId(destroyedSessionId);
+			if (pSession)
+			{
+				if (!isLocallyControlled(pSession->getDocument()))
 				{
-					pSession->removeCollaborator( buddy );
+					UT_UTF8String docName = pSession->getDocument()->getFilename();
+					if (docName == "")
+						docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 					
+					// the server hosting this session is gone, so let's disconnect as well
+					if (!destroySession(pSession))
+						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
 					// signal all 
-					DisjoinSessionEvent event(disjoinedSessionId);
+					CloseSessionEvent event( destroyedSessionId );
 					signal( event, buddy );
+
+					// inform the user of the disconnect			
+					XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+					UT_return_val_if_fail(pFrame, true);
+					UT_UTF8String msg;
+					// TODO: make this localizable
+					UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.utf8_str(), buddy->getName().utf8_str()); 
+					pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 				}
 				else
 				{
-					// we don't know this session, don't forward the packet
+					// someone who is not controlling this session sends out messages he closed it!
+					// we will not forward this packet
 					UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 				}
-				return true;
 			}
-			
-			case PCT_CloseSessionEvent:
-			{
-				CloseSessionEvent* cse = static_cast<CloseSessionEvent*>( packet );
-				const UT_UTF8String& destroyedSessionId = cse->getSessionId();
-			
-				buddy->destroyDocHandle( destroyedSessionId );
-				
-				// handle the event outselves
-				AbiCollab* pSession = getSessionFromSessionId(destroyedSessionId);
-				if (pSession)
-				{
-					if (!isLocallyControlled(pSession->getDocument()))
-					{
-						UT_UTF8String docName = pSession->getDocument()->getFilename();
-						if (docName == "")
-							docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
-						
-						// the server hosting this session is gone, so let's disconnect as well
-						if (!destroySession(pSession))
-							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-
-						// signal all 
-						CloseSessionEvent event( destroyedSessionId );
-						signal( event, buddy );
-
-						// inform the user of the disconnect			
-						XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-						UT_return_val_if_fail(pFrame, true);
-						UT_UTF8String msg;
-						// TODO: make this localizable
-						UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.utf8_str(), buddy->getName().utf8_str()); 
-						pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-					}
-					else
-					{
-						// someone who is not controlling this session sends out messages he closed it!
-						// we will not forward this packet
-						UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-					}
-				}
-				else
-                {
-					UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.utf8_str()));
-                }
-				return true;
-			}
-			
-			case PCT_AccountAddBuddyRequestEvent:
-			{
-				// look at this packet; I have a feeling we need to deprecate it - MARCM
-				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-				return true;
-			}
-			
-			default:
-				break;
+			else
+            {
+				UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.utf8_str()));
+            }
+			return true;
 		}
+		
+		case PCT_AccountAddBuddyRequestEvent:
+		{
+			// look at this packet; I have a feeling we need to deprecate it - MARCM
+			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+			return true;
+		}
+		
+		default:
+			break;
 	}
+
 	return false;
 }	
 

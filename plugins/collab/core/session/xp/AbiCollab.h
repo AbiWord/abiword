@@ -37,6 +37,7 @@
 #include "ut_string_class.h"
 #include "ut_uuid.h"
 
+#include <backends/xp/Buddy.h>
 #include <xp/AbiCollab_Packet.h>
 #include <xp/AbiCollab_Import.h>
 #include <xp/AbiCollab_Export.h>
@@ -93,9 +94,9 @@ class SessionRecorderInterface
 public:
 	SessionRecorderInterface( AbiCollab* Session ) : m_pAbiCollab(Session) {}
 	virtual ~SessionRecorderInterface() {}
-	virtual void storeOutgoing( const Packet* pPacket ) = 0;
-	virtual void storeOutgoing( const Packet* pPacket, const Buddy& ToBuddy ) = 0;
-	virtual void storeIncoming( const Packet* pPacket, const Buddy& FromBuddy ) = 0;
+	virtual void storeOutgoing(const Packet* pPacket ) = 0;
+	virtual void storeOutgoing(const Packet* pPacket, const Buddy& ToBuddy) = 0;
+	virtual void storeIncoming(const Packet* pPacket, const Buddy& FromBuddy) = 0;
 protected:
 	AbiCollab*		m_pAbiCollab;
 };
@@ -110,17 +111,17 @@ public:
 					PD_Document* pDoc, 
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
-					Buddy* pControler,
+					BuddyPtr pControler,
 					XAP_Frame* pFrame);
 	virtual ~AbiCollab();
 
 	// collaborator management
-	void								addCollaborator(Buddy* pCollaborator);
+	void								addCollaborator(BuddyPtr pCollaborator);
 	void								removeCollaborator(const Buddy* pCollaborator);
 	void								removeCollaboratorsForAccount(AccountHandler* pHandler);
-	const std::vector<Buddy*>&			getCollaborators() const
-		{ return m_vecCollaborators; }
-	bool								isController(const Buddy* pCollaborator) const
+	const std::vector<BuddyPtr>&		getCollaborators() const
+		{ return m_vCollaborators; }
+	bool								isController(BuddyPtr pCollaborator) const
 		{ return m_pController == pCollaborator; }
 
 	// import/export management
@@ -128,13 +129,13 @@ public:
 		{ return &m_Import; }
 	ABI_Collab_Export*					getExport(void)
 		{ return &m_Export; }
-	void								push( Packet* pPacket );
-	bool								push( Packet* pPacket, const Buddy& collaborator );
+	void								push(Packet* pPacket);
+	bool								push(Packet* pPacket, const Buddy& collaborator);
 	void								maskExport();
 	virtual const std::vector<Packet*>&	unmaskExport();
 	bool								isExportMasked(void) const
 		{ return m_bExportMasked; }
-	void								import(SessionPacket* pPacket, const Buddy& collaborator);
+	void								import(SessionPacket* pPacket, BuddyPtr collaborator);
 	void								addChangeAdjust(ChangeAdjust* pAdjust);
 	const AbstractChangeRecordSessionPacket* getActivePacket() const
 		{ return m_pActivePacket; }
@@ -193,13 +194,13 @@ private:
 	ABI_Collab_Import					m_Import;
 	ABI_Collab_Export					m_Export;
 
-	std::vector<Buddy*>					m_vecCollaborators;
+	std::vector<BuddyPtr>				m_vCollaborators;
 	UT_uint32							m_iDocListenerId;
 	bool								m_bExportMasked;
 
 	UT_UTF8String						m_sId;
 
-	Buddy*								m_pController;
+	BuddyPtr							m_pController;
 
 	CommandLine *						m_pCommandLine;
 	bool								m_bCloseNow;
@@ -211,7 +212,8 @@ private:
 
 	UT_sint32							m_iMouseLID;
 	bool								m_bDoingMouseDrag;
-	std::vector<std::pair<SessionPacket*,Buddy*> >		m_vecIncomingQueue;
+	std::vector<std::pair<SessionPacket*,BuddyPtr> >
+										m_vIncomingQueue;
 
 
 	// session takeover functionality

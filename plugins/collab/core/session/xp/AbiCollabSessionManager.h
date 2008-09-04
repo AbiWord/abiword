@@ -38,8 +38,6 @@
 #endif
 
 class AbiCollab;
-class RawPacket;
-
 class Event;
 class EventListener;
 	
@@ -94,14 +92,14 @@ public:
 	void										closeSessions();
 	void										joinSessionInitiate(Buddy* pBuddy, DocHandle* pDocHandle);
 	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
-														const UT_UTF8String& docUUID, UT_sint32 iRev, Buddy* pCollaborator,
+														const UT_UTF8String& docUUID, UT_sint32 iRev, BuddyPtr pCollaborator,
 														XAP_Frame *pFrame);
-	void										joinSession(AbiCollab* pSession, Buddy* pCollaborator);
+	void										joinSession(AbiCollab* pSession, BuddyPtr pCollaborator);
 	void										disjoinSession(const UT_UTF8String& sSessionId);	
 	bool										isLocallyControlled(PD_Document* pDoc);
 	bool										isInSession(PD_Document* pDoc);
 	bool										isActive(const UT_UTF8String& sSessionId);
-	void										removeBuddy(const Buddy* pBuddy, bool graceful = true);
+	void										removeBuddy(BuddyPtr pBuddy, bool graceful = true);
 	  
 	// account code
 	bool										registerAccountHandlers(void);
@@ -118,7 +116,7 @@ public:
 	Buddy*										constructBuddy(const std::string& identifier, Buddy* pBuddy);
 
 	// packet handling
-	bool										processPacket(AccountHandler& handler, Packet* pPacket, Buddy* buddy);
+	bool										processPacket(AccountHandler& handler, Packet* pPacket, BuddyPtr buddy);
 	
 	// signalling code
 	void										registerEventListener(EventListener* pListener);

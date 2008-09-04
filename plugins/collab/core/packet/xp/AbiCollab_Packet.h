@@ -130,12 +130,6 @@ enum PClassType // send over the net to identify classes
 	_PCT_LastEvent = PCT_GetSessionsResponseEvent
 };
 
-struct RawPacket
-{
-	Buddy* buddy; // TODO: free the buddy somewhere, or make it not a pointer (please do the latter) - MARCM
-	std::string packet;
-};
-
 class PX_ChangeRecord;
 class SessionPacket;
 class AbiCollab;

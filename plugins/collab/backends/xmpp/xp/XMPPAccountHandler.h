@@ -37,8 +37,6 @@ using std::map;
 #include "ut_types.h"
 #include "XMPPBuddy.h"
 
-class RawPacket;
-
 #define XMPP_RESOURCE "AbiCollab"
 
 extern AccountHandlerConstructor XMPPAccountHandlerConstructor;

@@ -23,8 +23,7 @@
 #include <backends/xp/AccountHandler.h>
 
 #include "IOServerHandler.h"
-
-class TCPBuddy;
+#include "TCPBuddy.h"
 
 #define DEFAULT_TCP_PORT 25509  /* log2(e + pi) * 10^4 */
 
@@ -50,12 +49,12 @@ public:
 	virtual bool							isOnline();
 
 	// user management
-	virtual Buddy*							constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
-	virtual void							forceDisconnectBuddy(Buddy* buddy);
-	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
-	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
+	virtual void							forceDisconnectBuddy(BuddyPtr buddy);
 
 	// session management
 	virtual bool							allowsSessionTakeover()
@@ -73,8 +72,8 @@ private:
 	void									_handleMessages(Session& session);
 
 	// user management
-	const TCPBuddy*							_getBuddy(Session* pSession);
-	TCPBuddy*								_getBuddy(const TCPBuddy* pBuddy);
+	TCPBuddyPtr								_getBuddy(Session* pSession);
+	//TCPBuddy*								_getBuddy(const TCPBuddy* pBuddy);
 
 	// connection management
 	virtual UT_sint32						_getPort(const PropertyMap& props);
@@ -86,7 +85,7 @@ private:
 	bool									m_bConnected; // TODO: drop this, ask the IO handler
 	IOServerHandler*						m_pDelegator;
 
-	std::map<const TCPBuddy*, boost::shared_ptr<Session> >		m_clients; // mapping buddies and their accompanying session
+	std::map<TCPBuddyPtr, boost::shared_ptr<Session> >		m_clients; // mapping buddies and their accompanying session
 };
 
 #endif /* __TCPACCOUNTHANDLER__ */

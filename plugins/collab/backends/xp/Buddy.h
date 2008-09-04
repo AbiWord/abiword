@@ -20,6 +20,7 @@
 #define __BUDDY_H__
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -30,7 +31,7 @@ class AccountHandler;
 
 using std::vector;
 
- class Buddy 
+class Buddy 
 {
 public:
 	Buddy(AccountHandler* handler)
@@ -43,7 +44,6 @@ public:
 	/*
 	 * Buddy management
 	 */
-	virtual Buddy* clone() const = 0;
 	
 	// globally unique, so it can be used to identify authors when they
 	// reconnect or to allow sessions to be taken over.
@@ -104,5 +104,7 @@ private:
 	vector<DocHandle*>			m_docHandles;
 	bool						m_volatile;
 };
+
+typedef boost::shared_ptr<Buddy> BuddyPtr;
 
 #endif /* BUDDY_H */

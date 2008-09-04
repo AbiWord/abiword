@@ -110,7 +110,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 						PD_Document* pDoc, 
 						const UT_UTF8String& docUUID, 
 						UT_sint32 iRev, 
-						Buddy* pController, 
+						BuddyPtr pController, 
 						XAP_Frame* pFrame)
 	: EV_MouseListener(),
 	m_pDoc(pDoc),
@@ -383,7 +383,7 @@ const std::vector<Packet*>& AbiCollab::unmaskExport()
 	return m_vecMaskedPackets;
 }
 
-void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
+void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 {
 	UT_DEBUGMSG(("AbiCollab::import()\n"));
 	UT_return_if_fail(pPacket);
@@ -394,14 +394,14 @@ void AbiCollab::import(SessionPacket* pPacket, const Buddy& collaborator)
 		// scary race conditions from occuring, like importing a 'delete image' packet
 		// when you are just dragging said image around
 		UT_DEBUGMSG(("We are currently dragging something around; deferring packet import until after the release!\n"));
-		m_vecIncomingQueue.push_back(
-					std::make_pair(	static_cast<SessionPacket*>(pPacket->clone()), collaborator.clone() ));
+		m_vIncomingQueue.push_back(
+					std::make_pair(static_cast<SessionPacket*>(pPacket->clone()), collaborator));
 		return;
 	}
 
 	// record the incoming packet
 	if (m_pRecorder)
-		m_pRecorder->storeIncoming( pPacket, collaborator );
+		m_pRecorder->storeIncoming(pPacket, *collaborator);
 
 	// execute an alternative packet handling path when this session is being 
 	// taken over by another collaborator
@@ -591,20 +591,19 @@ void AbiCollab::signalMouse(EV_EditBits eb, UT_sint32 /*xPos*/, UT_sint32 /*yPos
 void AbiCollab::_releaseMouseDrag()
 {
 	m_bDoingMouseDrag = false;
-	for (std::vector<std::pair<SessionPacket*,Buddy*> >::iterator it = m_vecIncomingQueue.begin(); it !=  m_vecIncomingQueue.end(); it++)
+
+	for (std::vector<std::pair<SessionPacket*, BuddyPtr> >::iterator it = m_vIncomingQueue.begin(); it !=  m_vIncomingQueue.end(); it++)
 	{
-		std::pair<SessionPacket*,Buddy*>& pair = *it;
+		std::pair<SessionPacket*, BuddyPtr>& pair = *it;
 		UT_continue_if_fail(pair.first && pair.second);
 		
 		if (pair.first && pair.second)
-			import(pair.first, *pair.second);
+			import(pair.first, pair.second);
 		else
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 		DELETEP(pair.first);
-		DELETEP(pair.second);
 	}
-		 
 	m_vecIncomingQueue.clear();
 }
 

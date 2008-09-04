@@ -20,21 +20,24 @@
 #ifndef __SERVICEACCOUNTHANDLER__
 #define __SERVICEACCOUNTHANDLER__
 
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include "xap_Types.h"
 #include "ut_string_class.h"
+
 #include <backends/xp/AccountHandler.h>
-#include "soa.h"
 #include "AbiCollabSaveInterceptor.h"
+#include "AsioRealmProtocol.h"
+#include "pl_Listener.h"
 #include "RealmBuddy.h"
 #include "RealmConnection.h"
 #include "RealmProtocol.h"
-#include "AsioRealmProtocol.h"
+#include "ServiceBuddy.h"
 #include "ServiceErrorCodes.h"
-#include "pl_Listener.h"
+#include "soa.h"
 
 namespace acs = abicollab::service;
 namespace rpv1 = realm::protocolv1;
@@ -47,8 +50,8 @@ class AbiCollabService_Export;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
-typedef std::pair<GetSessionsResponseEvent, ServiceBuddy*> SessionBuddyPair;
-typedef boost::shared_ptr<std::vector<SessionBuddyPair> > SessionBuddyPtr;
+typedef std::pair<GetSessionsResponseEvent, ServiceBuddyPtr> SessionBuddyPair;
+typedef boost::shared_ptr<std::vector<SessionBuddyPair> > SessionBuddyPairPtr;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
 
@@ -76,12 +79,13 @@ public:
 	virtual bool							isOnline();
 
 	// user management
-	virtual Buddy*							constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
-	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
-	
+	virtual void							forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
+
 	// packet management
 	virtual bool							send(const Packet* packet);
 	virtual bool							send(const Packet* packet, const Buddy& buddy);
@@ -107,7 +111,7 @@ public:
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
-	ServiceBuddy*							_getBuddy(ServiceBuddy* pBuddy);
+	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
 
 	template <class T>
 	void _send(boost::shared_ptr<T> packet, boost::shared_ptr<const RealmBuddy> recipient)
@@ -122,8 +126,8 @@ private:
 													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet);
 
 	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
-													SessionBuddyPtr sessions_ptr);
-	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPtr sessions_ptr);
+													SessionBuddyPairPtr sessions_ptr);
+	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& session_id, const std::string& filename);
@@ -131,7 +135,7 @@ private:
 													const std::string& filename);
 	
 	void									_handleJoinSessionRequestResponse(
-													JoinSessionRequestResponseEvent* jsre, Buddy* pBuddy, 
+													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
 	void									_handleRealmPacket(RealmConnection& connection);
 	ConnectionPtr							_getConnection(const std::string& session_id);

@@ -23,6 +23,7 @@
 #include <string>
 #include <stdint.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include <backends/xp/Buddy.h>
 #include <backends/xp/AccountHandler.h>
@@ -37,9 +38,6 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual Buddy* clone() const
-		{ return new ServiceBuddy( *this ); }
-
 	virtual const UT_UTF8String& getDescriptor() const
 	{
 		// TODO: the URI property should really be the host property; that looks way better
@@ -78,5 +76,7 @@ public:
 private:
 	std::string		m_email;
 };
+
+typedef boost::shared_ptr<ServiceBuddy> ServiceBuddyPtr;
 
 #endif /* __SERVICEBUDDY__ */

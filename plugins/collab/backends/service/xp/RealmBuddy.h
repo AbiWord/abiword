@@ -42,8 +42,6 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual Buddy* clone() const { return new RealmBuddy( *this ); }
-	
 	virtual const UT_UTF8String& getDescriptor() const
 	{
 		// TODO: the URI property should really be the host property; that looks way better

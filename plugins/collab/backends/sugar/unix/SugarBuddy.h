@@ -36,8 +36,6 @@ public:
 	{
 	}
 	
-	virtual Buddy* clone() const { return new SugarBuddy( *this ); }
-	
 	virtual UT_UTF8String		getDescription() const
 		{ return getName(); }
 		

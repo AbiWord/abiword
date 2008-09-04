@@ -194,17 +194,17 @@ bool ServiceAccountHandler::isOnline()
 	return m_bOnline;
 }
 
-Buddy* ServiceAccountHandler::constructBuddy(const PropertyMap& props)
+BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
-	return NULL; // TODO: implement me
+	return BuddyPtr(); // TODO: implement me
 }
 
-Buddy* ServiceAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
+	return BuddyPtr();
 }
 
 bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
@@ -258,7 +258,7 @@ void ServiceAccountHandler::getSessionsAsync()
 	UT_return_if_fail(pManager);			
 	
 	pManager->beginAsyncOperation(this);
-	SessionBuddyPtr sessions_ptr(new std::vector<SessionBuddyPair>());
+	SessionBuddyPairPtr sessions_ptr(new std::vector<SessionBuddyPair>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -279,7 +279,7 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)
 	// TODO: we shouldn't ignore the buddy parameter, but for now, we do ;)
 	
 	pManager->beginAsyncOperation(this);
-	SessionBuddyPtr sessions_ptr(new std::vector<SessionBuddyPair>());
+	SessionBuddyPairPtr sessions_ptr(new std::vector<SessionBuddyPair>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -444,18 +444,17 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	return acs::SOAP_ERROR_OK;
 }
 
-ServiceBuddy* ServiceAccountHandler::_getBuddy(ServiceBuddy* pBuddy)
+ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 {
-	UT_return_val_if_fail(pBuddy, NULL);
-	const UT_GenericVector<Buddy*> buddies = getBuddies();
-	for (UT_sint32 i = 0; i < buddies.getItemCount(); i++)
+	UT_return_val_if_fail(pBuddy, ServiceBuddyPtr());
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 	{
-		ServiceBuddy* pB = static_cast<ServiceBuddy*>(buddies.getNthItem(i));
+		ServiceBuddyPtr pB = boost::static_pointer_cast<ServiceBuddy>(*it);
 		UT_continue_if_fail(pB);
 		if (pB->getEmail() == pBuddy->getEmail())
 			return pB;
 	}
-	return NULL;
+	return ServiceBuddyPtr();
 }
 
 acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
@@ -632,7 +631,7 @@ void ServiceAccountHandler::signal(const Event& event, const Buddy* pSource)
 // Don't let access or modify any data from the mainloop!
 acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 					const std::string uri, const std::string email, const std::string password,
-					SessionBuddyPtr sessions_ptr)
+					SessionBuddyPairPtr sessions_ptr)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_listDocuments()\n"));
 	UT_return_val_if_fail(sessions_ptr, acs::SOAP_ERROR_GENERIC);
@@ -700,7 +699,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 }
 
 
-void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPtr sessions_ptr)
+void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_listDocuments_cb()\n"));
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -717,16 +716,14 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 				std::vector<SessionBuddyPair>& sessions = *sessions_ptr;
 				for (std::vector<SessionBuddyPair>::iterator it = sessions.begin(); it != sessions.end(); it++)
 				{
-					ServiceBuddy* pBuddy = (*it).second;
+					ServiceBuddyPtr pBuddy = (*it).second;
 					UT_continue_if_fail(pBuddy);
-					Buddy* pExistingBuddy = _getBuddy(pBuddy);
+					ServiceBuddyPtr pExistingBuddy = _getBuddy(pBuddy);
 					if (!pExistingBuddy)
 					{
 						pExistingBuddy = pBuddy;
 						addBuddy(pBuddy);
 					}
-					else
-						DELETEP(pBuddy);
 					_handlePacket(&((*it).first), pExistingBuddy);
 				}
 			}
@@ -744,7 +741,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 
 					// re-attempt to fetch the documents list
 					pManager->beginAsyncOperation(this);
-					SessionBuddyPtr new_sessions_ptr(new std::vector<SessionBuddyPair>());
+					SessionBuddyPairPtr new_sessions_ptr(new std::vector<SessionBuddyPair>());
 					boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 								new AsyncWorker<acs::SOAP_ERROR>(
 									boost::bind(&ServiceAccountHandler::_listDocuments, this, 
@@ -765,7 +762,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 }
 
 void ServiceAccountHandler::_handleJoinSessionRequestResponse(
-									JoinSessionRequestResponseEvent* jsre, Buddy* pBuddy, 
+									JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 									XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename)
 {
 	UT_return_if_fail(jsre);
@@ -805,7 +802,7 @@ void ServiceAccountHandler::_handleRealmPacket(RealmConnection& connection)
 			RealmBuddyPtr realm_buddy_ptr = *it;
 			UT_continue_if_fail(realm_buddy_ptr);
 			UT_DEBUGMSG(("Lost connection to buddy with connection id: %d\n", realm_buddy_ptr->realm_connection_id()));
-			pManager->removeBuddy(realm_buddy_ptr.get(), false);
+			pManager->removeBuddy(realm_buddy_ptr, false);
 		}
 		
 		// remove the connection from our connection list
@@ -866,7 +863,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 							connection.getBuddy(dp->getConnectionId());
 					UT_return_if_fail(buddy_ptr);
 				
-					Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr.get());
+					Packet* pPacket = _createPacket(*dp->getMessage(), buddy_ptr);
 					UT_return_if_fail(pPacket);								
 
 					if (pPacket->getClassType() == PCT_JoinSessionRequestResponseEvent)
@@ -876,7 +873,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 						UT_return_if_fail(pdp);
 
 						UT_DEBUGMSG(("Joining received document..."));
-						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr.get(), pdp->pFrame, pdp->pDoc, pdp->filename);
+						_handleJoinSessionRequestResponse(static_cast<JoinSessionRequestResponseEvent*>(pPacket), buddy_ptr, pdp->pFrame, pdp->pDoc, pdp->filename);
 						DELETEP(pPacket);
 						UT_return_if_fail(pdp->pDlg);
 						pdp->pDlg->close();
@@ -885,7 +882,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 				
 					// let the default handler handle this packet
 					// NOTE: this will delete the packet as well (ugly design)
-					handleMessage(pPacket, buddy_ptr.get());				
+					handleMessage(pPacket, buddy_ptr);				
 				}
 				break;
 			case rpv1::PACKET_USERJOINED:
@@ -927,7 +924,7 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 					if (!realm_buddy_ptr)
 						return; // we don't store slave buddies at the moment, so this happens when a slave disconnects
 					UT_DEBUGMSG(("removing %s buddy with connection id %d from all sessions\n", realm_buddy_ptr->master() ? "master" : "slave", realm_buddy_ptr->realm_connection_id()));
-					pManager->removeBuddy(realm_buddy_ptr.get(), false);
+					pManager->removeBuddy(realm_buddy_ptr, false);
 					connection.removeBuddy(ulp->getConnectionId());
 					// if this was the master, then we can close the realm connection
 					if (realm_buddy_ptr->master())
