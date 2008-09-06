@@ -20,16 +20,13 @@
 #define __EVENTTLISTENER_H__
 
 class Event;
-class Buddy;
 
- class EventListener 
+class EventListener 
 {
 public:
-	virtual ~EventListener()
-	{
-	}
+	virtual ~EventListener() {}
 
-	virtual void signal(const Event& event, const Buddy* pSource = 0) = 0;
+	virtual void signal(const Event& event, BuddyPtr pSource = BuddyPtr()) = 0;
 };
 
 #endif /* __EVENTTLISTENER_H__ */

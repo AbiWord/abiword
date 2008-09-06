@@ -384,7 +384,8 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	
 	UT_DEBUGMSG(("Got a document we can connect to!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
-	m_pBuddy = reinterpret_cast<Buddy*>(buddy);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	m_pBuddy = BuddyPtr();
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 
@@ -424,7 +425,8 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 	
 	UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-	m_pBuddy = reinterpret_cast<Buddy*>(buddy);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	m_pBuddy = BuddyPtr();
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 

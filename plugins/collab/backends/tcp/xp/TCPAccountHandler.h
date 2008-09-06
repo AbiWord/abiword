@@ -50,7 +50,7 @@ public:
 
 	// user management
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
-	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 	virtual bool							allowsManualBuddies()
 		{ return false; }

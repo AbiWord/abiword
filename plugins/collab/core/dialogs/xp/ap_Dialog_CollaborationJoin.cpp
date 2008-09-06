@@ -35,7 +35,7 @@
 
 AP_Dialog_CollaborationJoin::AP_Dialog_CollaborationJoin(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory, id, "interface/dialogcollaborationjoin"),
-	m_pBuddy(NULL),
+	m_pBuddy(BuddyPtr()),
 	m_pDocHandle(NULL)
 {
 	AbiCollabSessionManager::getManager()->registerEventListener(this);
@@ -123,7 +123,7 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 	_enableBuddyAddition(bEnableAddition);
 }
 
-void AP_Dialog_CollaborationJoin::signal(const Event& event, const Buddy* /*pSource*/)
+void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr /*pSource*/)
 {
 	UT_DEBUGMSG(("AP_Dialog_CollaborationJoin::signal()\n"));
 	switch (event.getClassType())

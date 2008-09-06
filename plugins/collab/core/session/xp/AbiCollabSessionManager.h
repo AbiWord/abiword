@@ -90,7 +90,7 @@ public:
 	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, XAP_Frame* pFrame);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
-	void										joinSessionInitiate(Buddy* pBuddy, DocHandle* pDocHandle);
+	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);
 	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
 														const UT_UTF8String& docUUID, UT_sint32 iRev, BuddyPtr pCollaborator,
 														XAP_Frame *pFrame);
@@ -112,7 +112,7 @@ public:
 		{ return m_vecAccounts; }
 	void										destroyAccounts();
 	bool										destroyAccount(AccountHandler* pHandler);
-	void										setDocumentHandles(Buddy& buddy, const UT_GenericVector<DocHandle*>& vDocHandle);
+	void										setDocumentHandles(BuddyPtr buddy, const UT_GenericVector<DocHandle*>& vDocHandle);
 	BuddyPtr									constructBuddy(const std::string& identifier, BuddyPtr pBuddy);
 
 	// packet handling
@@ -121,7 +121,7 @@ public:
 	// signalling code
 	void										registerEventListener(EventListener* pListener);
 	void										unregisterEventListener(EventListener* pListener);
-	void										signal(const Event& event, const Buddy* pSource = 0);
+	void										signal(const Event& event, BuddyPtr pSource = BuddyPtr());
 
 	// asynchronous operation handling
 	void										beginAsyncOperation(AbiCollab* pSession);

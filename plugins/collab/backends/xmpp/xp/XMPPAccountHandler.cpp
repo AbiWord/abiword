@@ -498,7 +498,7 @@ BuddyPtr XMPPAccountHandler::constructBuddy(const PropertyMap& vProps)
 	return XMPPBuddyPtr();
 }
 
-BuddyPtr XMPPAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr XMPPAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return XMPPBuddyPtr();

@@ -125,7 +125,7 @@ public:
 	// This additional information can then be retrieved via the 'pBuddy' 
 	// argument. That means that the pBuddy should already be in a session and
 	// thus have access to all backend specific session information
-	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy) = 0;
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy) = 0;
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier) = 0;
 	virtual bool							allowsManualBuddies() = 0;
 	virtual void							forceDisconnectBuddy(BuddyPtr /*buddy*/) = 0;
@@ -148,7 +148,7 @@ public:
 	virtual void							handleMessage(Packet* pPacket, BuddyPtr pBuddy);
 
 	// signal management
-	virtual void							signal(const Event& event, const Buddy* pSource);
+	virtual void							signal(const Event& event, BuddyPtr pSource);
 	
 	// protocol error management
 	static void enableProtocolErrorReports(bool enable); // NOTE: enabled by default!

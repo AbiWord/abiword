@@ -80,7 +80,7 @@ public:
 
 	// user management
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
-	virtual BuddyPtr						constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
@@ -104,7 +104,7 @@ public:
 		{ return true; }
 
 	// signal management
-	virtual void							signal(const Event& event, const Buddy* pSource);
+	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;

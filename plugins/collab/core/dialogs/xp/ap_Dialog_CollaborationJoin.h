@@ -38,14 +38,14 @@ public:
 
 	virtual void		runModal(XAP_Frame * pFrame) = 0;
 	
-	void				signal(const Event& event, const Buddy* pSource);
+	void				signal(const Event& event, BuddyPtr pSource);
 
 	typedef enum { a_CLOSE, a_CONNECT, a_DISCONNECT } tAnswer;
 
 	AP_Dialog_CollaborationJoin::tAnswer	getAnswer(void) const
 		{ return m_answer; }
 		
-	const Buddy*			getBuddy()
+	BuddyPtr				getBuddy()
 		{ return m_pBuddy; };
 
 	DocHandle*				getDocHandle()
@@ -53,7 +53,7 @@ public:
 
 protected:
 	AP_Dialog_CollaborationJoin::tAnswer m_answer;
-	const Buddy*		m_pBuddy;
+	BuddyPtr			m_pBuddy;
 	DocHandle*			m_pDocHandle;
 
 	void				_eventAddBuddy();

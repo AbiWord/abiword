@@ -134,7 +134,7 @@ bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
 	return false;
 }
 
-void AccountHandler::signal(const Event& event, const Buddy* pSource)
+void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
 
@@ -147,7 +147,7 @@ void AccountHandler::signal(const Event& event, const Buddy* pSource)
 		BuddyPtr pRecipient = *it;
 		UT_continue_if_fail(pRecipient);
 
-		if (!pSource || (pSource != pRecipient.get()))
+		if (!pSource || (pSource != pRecipient))
 		{
 			send(&event, pRecipient);
 		}
@@ -381,7 +381,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 				DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
 				vDocHandles.addItem(pDocHandle);
 			}
-			pManager->setDocumentHandles( *buddy, vDocHandles );
+			pManager->setDocumentHandles(buddy, vDocHandles);
 			break;
 		}
 		

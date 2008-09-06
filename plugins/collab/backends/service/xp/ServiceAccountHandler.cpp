@@ -201,7 +201,7 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 	return BuddyPtr(); // TODO: implement me
 }
 
-BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return BuddyPtr();
@@ -580,7 +580,7 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8Str
 	return UT_ERROR;
 }
 
-void ServiceAccountHandler::signal(const Event& event, const Buddy* pSource)
+void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::signal()\n"));
 	
