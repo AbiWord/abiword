@@ -135,7 +135,7 @@ AbiCollab::AbiCollab(const UT_UTF8String& sSessionId,
 	// when there is no single collaborator yet
 	_setDocument(pDoc, pFrame);
 
-	m_Import.slaveInit(pController->getName(), iRev);
+	m_Import.slaveInit(pController, iRev);
 	m_Export.slaveInit(docUUID, iRev);
 
 	// we will manually have to coalesce changerecords, as we will need
@@ -190,18 +190,18 @@ void AbiCollab::removeCollaborator(BuddyPtr pCollaborator)
 void AbiCollab::_removeCollaborator(UT_sint32 index)
 {
 	UT_DEBUGMSG(("AbiCollab::_removeCollaborator() - index: %d\n", index));
-	UT_return_if_fail(index >= 0 && index < UT_sint32(m_vecCollaborators.size()));
+	UT_return_if_fail(index >= 0 && index < UT_sint32(m_vCollaborators.size()));
 
 	// TODO: signal the removal of the buddy!!!
 	// ...
 	
-	Buddy* pCollaborator = m_vecCollaborators[index];
+	BuddyPtr pCollaborator = m_vCollaborators[index];
 	UT_return_if_fail(pCollaborator);
 	
 	// remove this buddy from the import 'seen revision list'
-	m_Import.getRemoteRevisions()[pCollaborator->getName().utf8_str()] = 0;
+	m_Import.getRemoteRevisions()[pCollaborator] = 0;
 	
-	m_vecCollaborators.erase( m_vecCollaborators.begin() + size_t(index) );
+	m_vCollaborators.erase(m_vCollaborators.begin() + size_t(index) );
 }
 
 void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
@@ -216,7 +216,7 @@ void AbiCollab::addCollaborator(BuddyPtr pCollaborator)
 		UT_continue_if_fail(pBuddy);
 		if (pBuddy == pCollaborator)
 		{
-			UT_DEBUGMSG(("Attempting to add buddy '%s' twice to a collaboration session!", pCollaborator->getName().utf8_str()));
+			UT_DEBUGMSG(("Attempting to add buddy '%s' twice to a collaboration session!", pCollaborator->getDescription().utf8_str()));
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
@@ -230,9 +230,9 @@ void AbiCollab::removeCollaboratorsForAccount(AccountHandler* pHandler)
 	UT_DEBUGMSG(("AbiCollab::removeCollaboratorsForAccount()\n"));
 	UT_return_if_fail(pHandler);
 	
-	for (UT_sint32 i = UT_sint32(m_vecCollaborators.size())-1; i >= 0; i--)
+	for (UT_sint32 i = UT_sint32(m_vCollaborators.size())-1; i >= 0; i--)
 	{
-		Buddy* pBuddy = m_vecCollaborators[i];
+		BuddyPtr pBuddy = m_vCollaborators[i];
 		UT_continue_if_fail(pBuddy);
 		
 		if (pBuddy->getHandler() == pHandler)
@@ -274,25 +274,25 @@ void AbiCollab::_setDocument(PD_Document* pDoc, XAP_Frame* pFrame)
 	UT_DEBUGMSG(("Added document listener %d\n", lid));
 }
 
-void AbiCollab::_fillRemoteRev(Packet* pPacket, BuddyPtr puUddy)
+void AbiCollab::_fillRemoteRev(Packet* pPacket, BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pPacket);
 	UT_return_if_fail(pBuddy);
 	
 	if (pPacket->getClassType() >= _PCT_FirstChangeRecord && pPacket->getClassType() <= _PCT_LastChangeRecord)
 	{
-		ChangeRecordSessionPacket* pSessionPacket = static_cast<ChangeRecordSessionPacket*>( pPacket );
-		pSessionPacket->setRemoteRev( m_Import.getRemoteRevisions()[oBuddy.getName().utf8_str()] );
+		ChangeRecordSessionPacket* pSessionPacket = static_cast<ChangeRecordSessionPacket*>(pPacket);
+		pSessionPacket->setRemoteRev(m_Import.getRemoteRevisions()[pBuddy]);
 	}
 	else if (pPacket->getClassType() == PCT_GlobSessionPacket)
 	{
-		GlobSessionPacket* pSessionPacket = static_cast<GlobSessionPacket*>( pPacket );
+		GlobSessionPacket* pSessionPacket = static_cast<GlobSessionPacket*>(pPacket);
 		const std::vector<SessionPacket*>& globPackets = pSessionPacket->getPackets();
 		for (std::vector<SessionPacket*>::const_iterator cit = globPackets.begin(); cit != globPackets.end(); cit++)
 		{
 			SessionPacket* globPacket = *cit;
 			UT_continue_if_fail(globPacket);
-			_fillRemoteRev(globPacket, oBuddy);
+			_fillRemoteRev(globPacket, pBuddy);
 		}
 	}
 }
@@ -321,29 +321,23 @@ void AbiCollab::push(Packet* pPacket)
 			m_pRecorder->storeOutgoing( const_cast<const Packet*>( pPacket ) );
 		
 		// TODO: this could go in the session manager
-		UT_DEBUGMSG(("Pusing packet to %d collaborators\n", m_vecCollaborators.size()));
-		for (UT_uint32 i = 0; i < m_vecCollaborators.size(); i++)
+		UT_DEBUGMSG(("Pusing packet to %d collaborators\n", m_vCollaborators.size()));
+		for (UT_uint32 i = 0; i < m_vCollaborators.size(); i++)
 		{
-			Buddy* pCollaborator = m_vecCollaborators[i];
-			if (pCollaborator)
-			{
-				UT_DEBUGMSG(("Pushing packet to collaborator with name: %s\n", pCollaborator->getName().utf8_str()));
-				AccountHandler* pHandler = pCollaborator->getHandler();
-				if (pHandler)
-				{
-					// overwrite remote revision for this collaborator
-					_fillRemoteRev(pPacket, *pCollaborator);
-					
-					// send!
-					bool res = pHandler->send(pPacket, *pCollaborator);
-					if (!res)
-                    {
-						UT_DEBUGMSG(("Error sending a packet!\n"));
-                    }
-				}
-			}
-			else
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			BuddyPtr pCollaborator = m_vCollaborators[i];
+			UT_continue_if_fail(pCollaborator);
+
+			UT_DEBUGMSG(("Pushing packet to collaborator with name: %s\n", pCollaborator->getDescription().utf8_str()));
+			AccountHandler* pHandler = pCollaborator->getHandler();
+			UT_continue_if_fail(pHandler);
+
+			// overwrite remote revision for this collaborator
+			_fillRemoteRev(pPacket, pCollaborator);
+			
+			// send!
+			bool res = pHandler->send(pPacket, pCollaborator);
+			if (!res)
+				UT_DEBUGMSG(("Error sending a packet!\n"));
 		}
 	}
 }
@@ -400,7 +394,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 
 	// record the incoming packet
 	if (m_pRecorder)
-		m_pRecorder->storeIncoming(pPacket, *collaborator);
+		m_pRecorder->storeIncoming(pPacket, collaborator);
 
 	// execute an alternative packet handling path when this session is being 
 	// taken over by another collaborator
@@ -442,13 +436,13 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 	maskExport();
 	if (AbstractChangeRecordSessionPacket::isInstanceOf(*pPacket))
 		m_pActivePacket = static_cast<const AbstractChangeRecordSessionPacket*>(pPacket);
-	m_Import.import(*pPacket, *collaborator);
+	m_Import.import(*pPacket, collaborator);
 	m_pActivePacket = NULL;
 	const std::vector<Packet*>& maskedPackets = unmaskExport();
 	
 	if (isLocallyControlled() && maskedPackets.size() > 0)
 	{
-		UT_DEBUGMSG(("Forwarding message (%u packets) from %s\n", maskedPackets.size(), collaborator.getName().utf8_str()));
+		UT_DEBUGMSG(("Forwarding message (%u packets) from %s\n", maskedPackets.size(), collaborator->getDescription().utf8_str()));
 		
 		// It seems we are in the center of a collaboration session.
 		// It's our duty to reroute the packets to the other collaborators
@@ -456,7 +450,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 		{
 			// send all masked packets during import to everyone, except to the
 			// person who initialy sent us the packet
-			BuddyPtr pBuddy = m_vecCollaborators[i];
+			BuddyPtr pBuddy = m_vCollaborators[i];
 			UT_continue_if_fail(pBuddy);
 			if (pBuddy != collaborator)
 			{
@@ -501,7 +495,7 @@ void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 
 	SessionTakeoverRequestPacket promoteTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), true);
 	SessionTakeoverRequestPacket normalTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), false);
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vecCollaborators.end(); it++)
+	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
 		BuddyPtr pBuddy = *it;
 		UT_continue_if_fail(pBuddy);
@@ -693,7 +687,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 
 				// handle the MasterChangeRequest packet
 				MasterChangeRequestPacket* mcrp = static_cast<MasterChangeRequestPacket*>(pPacket);
-				BuddyPtr pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier(), collaborator.get());
+				BuddyPtr pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier(), collaborator);
 				UT_return_val_if_fail(pBuddy, false);
 				m_pProposedController = pBuddy;
 
@@ -795,7 +789,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				SessionRestartPacket* srp = static_cast<SessionRestartPacket*>(pPacket);
 				// Nuke the current collaboration state, and restart with the
 				// given revision from the proposed master
-				_restartSession(*m_pProposedController, srp->getDocUUID(), srp->getRev());
+				_restartSession(m_pProposedController, srp->getDocUUID(), srp->getRev());
 
 				m_eTakeoveState = STS_NONE;
 			}
@@ -870,9 +864,9 @@ bool AbiCollab::_allSlavesAckedMasterChange()
 		(m_mAckedMasterChangeBuddies.size() == m_vCollaborators.size() - 1 /* the proposed new master should not ack */);
 }
 
-void AbiCollab::_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+void AbiCollab::_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
 {
-	m_Import.slaveInit(controller.getName(), iRev);
+	m_Import.slaveInit(pController, iRev);
 	m_Export.slaveInit(sDocUUID, iRev);
 }
 

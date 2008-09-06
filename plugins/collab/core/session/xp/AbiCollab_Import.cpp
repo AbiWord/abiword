@@ -285,19 +285,20 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 }
 
 // returns true if the import can continue, false otherwise
-bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLocalRev, const Buddy& collaborator)
+bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLocalRev, BuddyPtr pCollaborator)
 {
 	UT_DEBUGMSG(("_handleCollision() - incoming rev %d collides against local rev %d!!!\n", iIncomingRev, iLocalRev));
+	UT_return_val_if_fail(pCollaborator, false);
 
 	if (m_pAbiCollab->isLocallyControlled())
 	{
-		UT_DEBUGMSG(("We're controlling this session, refusing this changerecord from %s!\n", collaborator.getName().utf8_str()));
+		UT_DEBUGMSG(("We're controlling this session, refusing this changerecord from %s!\n", pCollaborator->getDescription().utf8_str()));
 		// add this collaborator to our revert ack list, so we can ignore his packets
 		// until we get an acknoledgement that he has reverted his local, colliding changes
-		m_revertSet.push_back(std::make_pair(collaborator.getName(), iIncomingRev));
+		m_revertSet.push_back(std::make_pair(pCollaborator, iIncomingRev));
 		// send the revert command to the collaborator
 		RevertSessionPacket rsp(m_pAbiCollab->getSessionId(), m_pDoc->getOrigDocUUIDString(), iIncomingRev);
-		m_pAbiCollab->push(&rsp, collaborator);
+		m_pAbiCollab->push(&rsp, pCollaborator);
 		return false;
 	}
 	else
@@ -373,7 +374,7 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 		UT_DEBUGMSG(("Pre-Acknowledging revert of revision %d\n", iLocalRev));
 		// send the revert acknowledgement command to the session owner
 		RevertAckSessionPacket rasp(m_pAbiCollab->getSessionId(), m_pDoc->getOrigDocUUIDString(), iLocalRev);
-		m_pAbiCollab->push( &rasp, collaborator );
+		m_pAbiCollab->push(&rasp, pCollaborator);
 
 		m_iAlreadyRevertedRevs.push_back(iLocalRev);	
 		
@@ -381,23 +382,25 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 	}
 }
 
-bool ABI_Collab_Import::_shouldIgnore(const Buddy& collaborator)
+bool ABI_Collab_Import::_shouldIgnore(BuddyPtr pCollaborator)
 {
+	UT_return_val_if_fail(pCollaborator, false);
+
 	if (m_pAbiCollab->isLocallyControlled())
 	{
-		UT_DEBUGMSG(("This session is locally controlled, check if we are waiting for a revert ack from buddy: %s\n", collaborator.getName().utf8_str()));
+		UT_DEBUGMSG(("This session is locally controlled, check if we are waiting for a revert ack from buddy: %s\n", pCollaborator->getDescription().utf8_str()));
 		// see if we are waiting for a revert ack packet from this collaborator;
 		// if we do, then just drop all packets on the floor until we see it
-		for (vector<std::pair<UT_UTF8String, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
+		for (vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
 		{
-			if ((*it).first == collaborator.getName())
+			if ((*it).first == pCollaborator)
 			{
-				UT_DEBUGMSG(("Found collaborator %s on our revert ack list for rev %d; changerecords should be ignored!\n", (*it).first.utf8_str(), (*it).second));
+				UT_DEBUGMSG(("Found collaborator %s on our revert ack list for rev %d; changerecords should be ignored!\n", (*it).first->getDescription().utf8_str(), (*it).second));
 				return true;
 			}
 		}
 	}
-	UT_DEBUGMSG(("%s is not on our revert ack list, don't ignore this packet...\n", collaborator.getName().utf8_str()));
+	UT_DEBUGMSG(("%s is not on our revert ack list, don't ignore this packet...\n", pCollaborator->getDescription().utf8_str()));
 	return false;
 }
 
@@ -449,13 +452,15 @@ void ABI_Collab_Import::_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bo
 	}
 }
 
-bool ABI_Collab_Import::import(const SessionPacket& packet, const Buddy& collaborator)
+bool ABI_Collab_Import::import(const SessionPacket& packet, BuddyPtr collaborator)
 {
 	UT_DEBUGMSG(("ABI_Collab_Import::import()\n"));
 
 	UT_DEBUGMSG(("--------------------------\n"));
 	UT_DEBUGMSG(("%s", packet.toStr().c_str()));
 	UT_DEBUGMSG(("--------------------------\n"));
+
+	UT_return_val_if_fail(collaborator, false);
 	
 	// check for collisions to see if we can import this packet at all;
 	// NOTE: the position adjustment is calculated in the process, so we don't have to 
@@ -527,9 +532,10 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, const Buddy& collabo
  * Take a packet contained with a UT_UTF8string, interpret it's
  * contents and apply the implied operations on the document.
  */
-bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, const Buddy& collaborator, bool inGlob)
+bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, BuddyPtr pCollaborator, bool inGlob)
 {
 	UT_DEBUGMSG(("ABI_Collab_Import::_import() - packet class type: %d, iImportAdjustment: %d\n", packet.getClassType(), iImportAdjustment));
+	UT_return_val_if_fail(pCollaborator, false);
 
 	switch (packet.getClassType())
 	{
@@ -539,14 +545,14 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 				UT_return_val_if_fail(gp->getPackets().size() > 0, false);
 
 				// store the last seen revision from this collaborator (it is immediately used by the export)
-				m_remoteRevs[collaborator.getName().utf8_str()] = gp->getRev();
+				m_remoteRevs[pCollaborator] = gp->getRev();
 
 				for (UT_uint32 j = 0; j < gp->getPackets().size(); j++)
 				{
 					SessionPacket* pGlobPacket = gp->getPackets()[j];
 					if (pGlobPacket)
 					{
-						bool res = _import(*pGlobPacket, iImportAdjustment, collaborator, true); // yay for recursion :)
+						bool res = _import(*pGlobPacket, iImportAdjustment, pCollaborator, true); // yay for recursion :)
 						if (!res)
 							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					}
@@ -583,11 +589,11 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 				UT_DEBUGMSG(("RevertAck packet seen on import for rev: %d\n", static_cast<const RevertAckSessionPacket*>(&packet)->getRev()));
 
 				// remove this collaborator from our revert ack list; he can play again...
-				for (vector<std::pair<UT_UTF8String, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
+				for (vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
 				{
-					if ((*it).first == collaborator.getName())
+					if ((*it).first == pCollaborator)
 					{
-						UT_DEBUGMSG(("Found collaborator %s on our revert ack list with rev %d! Removing him from the list...\n", (*it).first.utf8_str(), (*it).second));
+						UT_DEBUGMSG(("Found collaborator %s on our revert ack list with rev %d! Removing him from the list...\n", (*it).first->getDescription().utf8_str(), (*it).second));
 						UT_ASSERT_HARMLESS((*it).second == static_cast<const RevertAckSessionPacket*>(&packet)->getRev());
 						m_revertSet.erase(it);
 						return true;
@@ -615,7 +621,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 					// store the last seen revision from this collaborator (it is immediately used by the export)
 					// NOTE: if this changerecord is part of a glob, then we don't do this; we'll have
 					// already set the revision of the glob itself as the last seen one
-					m_remoteRevs[collaborator.getName().utf8_str()] = crp->getRev();
+					m_remoteRevs[pCollaborator] = crp->getRev();
 				}
 
 				// todo: remove these temp vars
@@ -897,14 +903,16 @@ void ABI_Collab_Import::masterInit()
 	m_iAlreadyRevertedRevs.clear(); // only used by non-session owners, but it can't hurt to clear it
 }
 
-void ABI_Collab_Import::slaveInit(const UT_UTF8String& collaborator, UT_sint32 iRev)
+void ABI_Collab_Import::slaveInit(BuddyPtr pBuddy, UT_sint32 iRev)
 {
+	UT_return_if_fail(pBuddy);
+
 	// NOTE: it's important that this function resets all state, as it can be
 	// called in the middle of an already running collaboration session
 	// (eg. when a session takeover happens)
 
 	m_remoteRevs.clear();
-	m_remoteRevs[collaborator.utf8_str()] = iRev;
+	m_remoteRevs[pBuddy] = iRev;
 	m_revertSet.clear(); // only used by the session owner, but it can't hurt to clear it
 	m_iAlreadyRevertedRevs.clear();
 }

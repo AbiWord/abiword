@@ -36,6 +36,7 @@
 #include "pl_Listener.h"
 #include "ut_string_class.h"
 #include <xp/AbiCollab_Packet.h>
+#include <backends/xp/Buddy.h>
 
 class FL_DocLayout;
 class PD_Document;
@@ -51,12 +52,12 @@ public:
 	ABI_Collab_Import(AbiCollab* pAbiCollab, PD_Document* doc);
 	~ABI_Collab_Import();
 	
-	bool								import(const SessionPacket& sPacket, const Buddy& collaborator);
-	std::map<std::string, UT_sint32>&	getRemoteRevisions()
+	bool								import(const SessionPacket& sPacket, BuddyPtr collaborator);
+	std::map<BuddyPtr, UT_sint32>&		getRemoteRevisions()
 		{ return m_remoteRevs; }
 	PT_DocPosition						getEndOfDoc();
 	void								masterInit();
-	void								slaveInit(const UT_UTF8String& collaborator, UT_sint32 iRev);
+	void								slaveInit(BuddyPtr pBuddy, UT_sint32 iRev);
 
 private:
 	bool								_isOverlapping(UT_sint32 pos1, UT_sint32 length1, UT_sint32 pos2, UT_sint32 length2);
@@ -70,16 +71,16 @@ private:
 											std::deque<int>& impAdjs);
 	bool								_checkForCollision(const AbstractChangeRecordSessionPacket& acrsp, UT_sint32& iRev, 
 											UT_sint32& iImportAdjustment);
-	bool								_handleCollision(UT_sint32 iIncommingRev, UT_sint32 iLocalRev, const Buddy& collaborator);
-	bool								_shouldIgnore(const Buddy& collaborator);
+	bool								_handleCollision(UT_sint32 iIncommingRev, UT_sint32 iLocalRev, BuddyPtr pCollaborator);
+	bool								_shouldIgnore(BuddyPtr pCollaborator);
 	void								_disableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
 	void								_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
-	bool								_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, const Buddy& collaborator, bool inGlob = false);
+	bool								_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, BuddyPtr pCollaborator, bool inGlob = false);
 
 	PD_Document*						m_pDoc;
 	AbiCollab *							m_pAbiCollab;
-	std::map<std::string, UT_sint32>	m_remoteRevs; // maintained by the importer, used by the exporter
-	std::vector<std::pair<UT_UTF8String, UT_sint32> > m_revertSet; // only used by the session owner
+	std::map<BuddyPtr, UT_sint32>		m_remoteRevs; // maintained by the importer, used by the exporter
+	std::vector<std::pair<BuddyPtr, UT_sint32> > m_revertSet; // only used by the session owner
 	std::deque<UT_sint32>				m_iAlreadyRevertedRevs; // only used by non-session owners
 };
 

@@ -74,14 +74,14 @@ public:
 		
 	static bool	dumpSession(const std::string& filename);
 
-	void storeOutgoing( const Packet* pPacket )
-		{ store( false, pPacket, NULL ); }
+	void storeOutgoing(const Packet* pPacket)
+		{ store(false, pPacket, BuddyPtr()); }
 
-	void storeOutgoing( const Packet* pPacket, const Buddy& ToBuddy )
-		{ store( false, pPacket, &ToBuddy ); }
+	void storeOutgoing(const Packet* pPacket, BuddyPtr toBuddy)
+		{ store(false, pPacket, toBuddy); }
 
-	void storeIncoming( const Packet* pPacket, const Buddy& FromBuddy )
-		{ store( true, pPacket, &FromBuddy ); }
+	void storeIncoming(const Packet* pPacket, BuddyPtr fromBuddy)
+		{ store(true, pPacket, fromBuddy); }
 
 	static const char* getHeader()
 		{ return "DSR!"; }
@@ -92,8 +92,8 @@ protected:
 	const char*		m_URI;
 	
 	void destroy();
-	void store( bool incoming, const Packet* pPacket, const Buddy* pBuddy );
-	void write( const void* data, int count );
+	void store(bool incoming, const Packet* pPacket, BuddyPtr pBuddy);
+	void write(const void* data, int count);
 };
 
 #endif /* ABICOLLAB_DISK_RECORDER_H */

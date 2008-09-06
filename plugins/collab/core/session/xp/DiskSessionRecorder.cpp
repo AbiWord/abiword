@@ -163,7 +163,7 @@ bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocally
 	return false;
 }
 
-bool DiskSessionRecorder::dumpSession( const std::string& filename )
+bool DiskSessionRecorder::dumpSession(const std::string& filename)
 {
 	bool bLocallyControlled;
 	vector<RecordedPacket*> packets;
@@ -222,12 +222,11 @@ void DiskSessionRecorder::destroy()
 	}
 }
 
-void DiskSessionRecorder::store( bool incoming, const Packet* pPacket, const Buddy* pBuddy )
+void DiskSessionRecorder::store(bool incoming, const Packet* pPacket, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("DiskSessionRecorder::store: %d 0x%x %s\n", incoming, pPacket, pBuddy?pBuddy->getName().utf8_str():"none"));
+	UT_DEBUGMSG(("DiskSessionRecorder::store: %d 0x%x %s\n", incoming, pPacket, pBuddy ? pBuddy->getDescriptor().utf8_str() : "none"));
 	UT_return_if_fail(pPacket);
 	UT_return_if_fail(m_GsfStream);
-	
 	OStrArchive os;
 	
 	// store if we're incoming or outgoing
@@ -237,8 +236,9 @@ void DiskSessionRecorder::store( bool incoming, const Packet* pPacket, const Bud
 	// store if we had a buddy, and who it was
 	char haveBuddy = pBuddy ? 1 : 0;
 	os << haveBuddy;
-	if (haveBuddy) {
-		os << const_cast<UT_UTF8String&>( pBuddy->getName() );
+	if (haveBuddy)
+	{
+		os << const_cast<UT_UTF8String&>(pBuddy->getDescriptor()); // FIXME: this is not guaranteed to be unique; a single author can join a session multiple times
 	}
 	
 	// store timestamp, make it 64-bit value always
@@ -250,15 +250,15 @@ void DiskSessionRecorder::store( bool incoming, const Packet* pPacket, const Bud
 	os << packetClass;
 
 	// store packet
-	os << const_cast<Packet&>( *pPacket );
+	os << const_cast<Packet&>(*pPacket);
 
 	// write to file!
-	write( os.getData().c_str(), os.Size() );
+	write(os.getData().c_str(), os.Size());
 }
 
-void DiskSessionRecorder::write( const void* data, int count )
+void DiskSessionRecorder::write(const void* data, int count)
 {
 	UT_DEBUGMSG(("DiskSessionRecorder::write: 0x%x %d\n", data,count));
 	UT_return_if_fail(m_GsfStream);
-	gsf_output_write( m_GsfStream, size_t(count), reinterpret_cast<const guint8*>( data ) );
+	gsf_output_write(m_GsfStream, size_t(count), reinterpret_cast<const guint8*>(data));
 }

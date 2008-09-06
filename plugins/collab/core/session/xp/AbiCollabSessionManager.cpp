@@ -353,7 +353,7 @@ void AbiCollabSessionManager::loadProfile()
 																	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // a buddy with no properties at all should really not happen
 																
 																// construct the buddy	
-																Buddy* pBuddy = pHandler->constructBuddy(vBuddyProps);
+																BuddyPtr pBuddy = pHandler->constructBuddy(vBuddyProps);
 																if (pBuddy)
 																{
 																	// add the buddy to the account handler
@@ -1063,7 +1063,7 @@ void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericV
 	}
 }
 
-Buddy* AbiCollabSessionManager::constructBuddy(const std::string& identifier, Buddy* pBuddy)
+BuddyPtr AbiCollabSessionManager::constructBuddy(const std::string& identifier, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::constructBuddy() - identifier: %s\n", identifier.c_str()));
 

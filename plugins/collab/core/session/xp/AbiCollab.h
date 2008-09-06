@@ -95,8 +95,8 @@ public:
 	SessionRecorderInterface( AbiCollab* Session ) : m_pAbiCollab(Session) {}
 	virtual ~SessionRecorderInterface() {}
 	virtual void storeOutgoing(const Packet* pPacket ) = 0;
-	virtual void storeOutgoing(const Packet* pPacket, const Buddy& ToBuddy) = 0;
-	virtual void storeIncoming(const Packet* pPacket, const Buddy& FromBuddy) = 0;
+	virtual void storeOutgoing(const Packet* pPacket, BuddyPtr toBuddy) = 0;
+	virtual void storeIncoming(const Packet* pPacket, BuddyPtr fromBuddy) = 0;
 protected:
 	AbiCollab*		m_pAbiCollab;
 };
@@ -186,7 +186,7 @@ private:
 	bool								_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
 	bool								_hasAckedMasterChange(BuddyPtr collaborator);
 	bool								_allSlavesAckedMasterChange();
-	void								_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	void								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_promoteToMaster();
 
 	PD_Document *						m_pDoc;

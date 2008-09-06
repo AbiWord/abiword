@@ -113,7 +113,7 @@ public:
 	void										destroyAccounts();
 	bool										destroyAccount(AccountHandler* pHandler);
 	void										setDocumentHandles(Buddy& buddy, const UT_GenericVector<DocHandle*>& vDocHandle);
-	Buddy*										constructBuddy(const std::string& identifier, Buddy* pBuddy);
+	BuddyPtr									constructBuddy(const std::string& identifier, BuddyPtr pBuddy);
 
 	// packet handling
 	bool										processPacket(AccountHandler& handler, Packet* pPacket, BuddyPtr buddy);
