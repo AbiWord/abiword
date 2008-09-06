@@ -107,22 +107,19 @@ void AccountHandler::deleteBuddies()
 void AccountHandler::getSessionsAsync()
 {
 	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
-	{
-		BuddyPtr pBuddy = *it;
-		getSessionsAsync(*pBuddy);
-	}
+		getSessionsAsync(*it);
 }
 
-void AccountHandler::getSessionsAsync(const Buddy& buddy)
+void AccountHandler::getSessionsAsync(BuddyPtr pBuddy)
 {
 	GetSessionsEvent event;
-	send(&event, buddy);
+	send(&event, pBuddy);
 }
 
-void AccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
+void AccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle)
 {
 	JoinSessionRequestEvent event( docHandle.getSessionId() );
-	send(&event, buddy);
+	send(&event, pBuddy);
 }
 
 bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
@@ -152,7 +149,7 @@ void AccountHandler::signal(const Event& event, const Buddy* pSource)
 
 		if (!pSource || (pSource != pRecipient.get()))
 		{
-			send(&event, *pRecipient);
+			send(&event, pRecipient);
 		}
 		else
 		{
@@ -316,7 +313,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 					jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
 				
 				// send to buddy!
-				send( &jsre, *buddy );
+				send(&jsre, buddy);
 				
 				// add this buddy to the collaboration session
 				pSession->addCollaborator(buddy);
@@ -372,7 +369,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 			}
-			send(&gsre, *buddy);
+			send(&gsre, buddy);
 			break;
 		}
 		
@@ -440,7 +437,7 @@ void AccountHandler::_sendProtocolError(BuddyPtr pBuddy, UT_sint32 errorEnum)
 {
 	UT_return_if_fail(pBuddy);
 	ProtocolErrorPacket event(errorEnum);
-	send(&event, *pBuddy);
+	send(&event, pBuddy);
 }
 
 void AccountHandler::enableProtocolErrorReports(bool enable) 

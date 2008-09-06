@@ -395,13 +395,14 @@ bool TCPAccountHandler::send(const Packet* packet)
 	return true;
 }
 
-bool TCPAccountHandler::send(const Packet* packet, const Buddy& buddy)
+bool TCPAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::_send(const UT_UTF8String& packet, const Buddy& buddy)\n"));
-	const TCPBuddy* pBuddy = static_cast<const TCPBuddy*>(&buddy);
+	UT_return_val_if_fail(pBuddy, false);
+	TCPBuddyPtr pB = boost::static_pointer_cast<TCPBuddy>(pBuddy);
 	
 	// find the session
-	std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator pos = m_clients.find(pBuddy);
+	std::map<TCPBuddyPtr, boost::shared_ptr<Session> >::iterator pos = m_clients.find(pB);
 	if (pos != m_clients.end())
 	{
 		boost::shared_ptr<Session> session_ptr = pos->second;
@@ -415,7 +416,7 @@ bool TCPAccountHandler::send(const Packet* packet, const Buddy& buddy)
 	}
 	else
 	{
-		UT_DEBUGMSG(("TCPAccountHandler::send: buddy %s:%s doesn't exist, hope you were dragging something ;)\n", pBuddy->getServer().c_str(), pBuddy->getPort().c_str()));
+		UT_DEBUGMSG(("TCPAccountHandler::send: buddy %s:%s doesn't exist, hope you were dragging something ;)\n", pB->getServer().c_str(), pB->getPort().c_str()));
 	}
 	return false;
 }
@@ -431,18 +432,3 @@ TCPBuddyPtr TCPAccountHandler::_getBuddy(Session* pSession)
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return TCPBuddyPtr();
 }
-
-/*TCPBuddy* TCPAccountHandler::_getBuddy(const TCPBuddy* pBuddy)
-{
-	UT_return_val_if_fail(pBuddy, NULL);
-	const UT_GenericVector<Buddy*> buddies = getBuddies();
-	for (UT_uint32 i = 0; i < buddies.getItemCount(); i++)
-	{
-		TCPBuddy* pB = static_cast<TCPBuddy*>(buddies.getNthItem(i));
-		UT_continue_if_fail(pB);
-		if (pB->getServer() == pBuddy->getServer() &&
-			pB->getPort() == pBuddy->getPort())
-			return pB;
-	}
-	return NULL;
-}*/

@@ -222,18 +222,19 @@ bool ServiceAccountHandler::send(const Packet* packet)
 	return true;
 }
 
-bool ServiceAccountHandler::send(const Packet* packet, const Buddy& buddy)
+bool ServiceAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*, const Buddy& buddy)\n"));
+	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*, BuddyPtr pBuddy)\n"));
+	UT_return_val_if_fail(pBuddy, false);
 
-	const RealmBuddy& ourBuddy = static_cast<const RealmBuddy&>(buddy);
-	uint8_t arr[] = { ourBuddy.realm_connection_id() };
+	RealmBuddyPtr pB = boost::static_pointer_cast<RealmBuddy>(pBuddy);
+	uint8_t arr[] = { pB->realm_connection_id() };
 	std::vector<uint8_t> connection_ids(arr, arr+1);
 
 	boost::shared_ptr<std::string> data(new std::string());
-	_createPacketStream( *data, packet );
+	_createPacketStream(*data, packet);
 
-	_send(boost::shared_ptr<rpv1::RoutingPacket>(new rpv1::RoutingPacket(connection_ids, data)), ourBuddy.ptr());
+	_send(boost::shared_ptr<rpv1::RoutingPacket>(new rpv1::RoutingPacket(connection_ids, data)), pB);
 	return true;
 }
 
@@ -902,13 +903,13 @@ void ServiceAccountHandler::_handleMessages(RealmConnection& connection)
 						if (ujp->isMaster())
 						{
 							UT_DEBUGMSG(("Received master buddy (id: %d); we're slave, adding it to our buddy list!\n", ujp->getConnectionId()));
-							boost::shared_ptr<RealmBuddy> master_buddy(
+							RealmBuddyPtr master_buddy(
 										new RealmBuddy(this, getProperty("email"), static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
 							connection.addBuddy(master_buddy);
 
 							UT_DEBUGMSG(("Sending join session request to master!\n"));
 							JoinSessionRequestEvent event( connection.session_id().c_str() );
-							send(&event, *master_buddy);
+							send(&event, master_buddy);
 						}
 						else
 							UT_DEBUGMSG(("Received a slave buddy (id: %d); we're slave; dropping it on the floor for now\n", ujp->getConnectionId()));

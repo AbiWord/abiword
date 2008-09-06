@@ -109,7 +109,7 @@ public:
 
 	// packet management
 	virtual bool							send(const Packet* packet) = 0;
-	virtual bool							send(const Packet* packet, const Buddy& buddy) = 0;
+	virtual bool							send(const Packet* packet, BuddyPtr buddy) = 0;
 	
 	// user management
 	void									addBuddy(BuddyPtr pBuddy);
@@ -132,8 +132,8 @@ public:
 
 	// session management
 	virtual void							getSessionsAsync();
-	virtual void							getSessionsAsync(const Buddy& buddy);
-	virtual void							joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
+	virtual void							getSessionsAsync(BuddyPtr pBuddy);
+	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual bool							allowsSessionTakeover() = 0;
 	bool									getCanOffer()

@@ -88,7 +88,7 @@ public:
 
 	// packet management
 	virtual bool							send(const Packet* packet);
-	virtual bool							send(const Packet* packet, const Buddy& buddy);
+	virtual bool							send(const Packet* packet, BuddyPtr pBuddy);
 
 	// session management
 	virtual void							getSessionsAsync();

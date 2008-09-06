@@ -62,7 +62,7 @@ public:
 
 	// packet management
 	virtual bool							send(const Packet* packet);
-	virtual bool							send(const Packet*, const Buddy& buddy);
+	virtual bool							send(const Packet*, BuddyPtr pBuddy);
 
 	// event management
 	void									handleEvent(Session& session);
