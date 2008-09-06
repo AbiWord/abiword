@@ -69,7 +69,7 @@ void AP_Dialog_CollaborationJoin::_eventAddBuddy()
 	
 		// Add the buddy to the dialog
 		// FIXME: use pHandler->constructBuddy here, instead of the hard-coded XMPP buddy!!!
-		Buddy* pNewBuddy = new XMPPBuddy(pAccount, pDialog->getName());
+		XMPPBuddyPtr pNewBuddy(new XMPPBuddy(pAccount, pDialog->getName().utf8_str()));
 		_addBuddy(pAccount, pNewBuddy);
 		
 		// signal that we want to add a buddy to our list
@@ -80,14 +80,14 @@ void AP_Dialog_CollaborationJoin::_eventAddBuddy()
 	pFactory->releaseDialog(pDialog);
 }
 
-void AP_Dialog_CollaborationJoin::_addBuddy(AccountHandler* pHandler, Buddy* pBuddy)
+void AP_Dialog_CollaborationJoin::_addBuddy(AccountHandler* pHandler, BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pHandler);
 	UT_return_if_fail(pBuddy);
 
-	UT_DEBUGMSG(("Adding buddy (%s) to handler (%s)\n", pBuddy->getName().utf8_str(), pHandler->getDescription().utf8_str()));
+	UT_DEBUGMSG(("Adding buddy (%s) to handler (%s)\n", pBuddy->getDescription().utf8_str(), pHandler->getDescription().utf8_str()));
 	pHandler->addBuddy(pBuddy);
-	pHandler->getSessionsAsync(*pBuddy);
+	pHandler->getSessionsAsync(pBuddy);
 }
 
 void AP_Dialog_CollaborationJoin::_refreshAllDocHandlesAsync()

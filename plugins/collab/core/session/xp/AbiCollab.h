@@ -117,7 +117,7 @@ public:
 
 	// collaborator management
 	void								addCollaborator(BuddyPtr pCollaborator);
-	void								removeCollaborator(const Buddy* pCollaborator);
+	void								removeCollaborator(BuddyPtr pCollaborator);
 	void								removeCollaboratorsForAccount(AccountHandler* pHandler);
 	const std::vector<BuddyPtr>&		getCollaborators() const
 		{ return m_vCollaborators; }
@@ -130,7 +130,7 @@ public:
 	ABI_Collab_Export*					getExport(void)
 		{ return &m_Export; }
 	void								push(Packet* pPacket);
-	bool								push(Packet* pPacket, const Buddy& collaborator);
+	bool								push(Packet* pPacket, BuddyPtr collaborator);
 	void								maskExport();
 	virtual const std::vector<Packet*>&	unmaskExport();
 	bool								isExportMasked(void) const
@@ -155,12 +155,12 @@ public:
 		{ m_bIsReverting = bIsReverting; }
 	
 	// session takeover
-	void								initiateSessionTakeover(Buddy* pNewMaster);
+	void								initiateSessionTakeover(BuddyPtr pNewMaster);
 	
 	// session recording functionality
 	bool								isRecording()
 		{ return m_pRecorder != NULL; }
-	void								startRecording( SessionRecorderInterface* pRecorder );
+	void								startRecording(SessionRecorderInterface* pRecorder);
 	void								stopRecording();
 
 	// mouse listener functionality
@@ -175,17 +175,17 @@ private:
 	void								_setDocListenerId(UT_uint32 iDocListenerId)
 		{ m_iDocListenerId = iDocListenerId; }
 	
-	void								_fillRemoteRev( Packet* pPacket, const Buddy& ); 
+	void								_fillRemoteRev(Packet* pPacket, BuddyPtr pBuddy); 
 
 	// mouse listener functionality
 	void								_releaseMouseDrag();
 
 	// session takeover
-	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, const Buddy& collaborator);
-	bool								_hasAckedSessionTakeover(const Buddy& collaborator);
+	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, BuddyPtr collaborator);
+	bool								_hasAckedSessionTakeover(BuddyPtr collaborator);
 	bool								_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
-	bool								_hasAckedMasterChange(const Buddy& collaborator);
-	bool								_al1SlavesAckedMasterChange();
+	bool								_hasAckedMasterChange(BuddyPtr collaborator);
+	bool								_allSlavesAckedMasterChange();
 	void								_restartSession(const Buddy& controller, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_promoteToMaster();
 
@@ -219,9 +219,9 @@ private:
 	// session takeover functionality
 	SessionTakeoverState				m_eTakeoveState;
 	bool								m_bProposedController;
-	Buddy*								m_pProposedController;
-	std::map<UT_UTF8String, bool>		m_mAckedSessionTakeoverBuddies; // only used by the session controller
-	std::map<UT_UTF8String, bool>		m_mAckedMasterChangeBuddies; // only used by the session controller
+	BuddyPtr							m_pProposedController;
+	std::map<BuddyPtr, bool>			m_mAckedSessionTakeoverBuddies; // only used by the session controller
+	std::map<BuddyPtr, bool>			m_mAckedMasterChangeBuddies; // only used by the session controller
 	
 protected:
 	class PacketVector : public std::vector<Packet*>

@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2006,2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 #include <map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include <backends/xp/Buddy.h>
 #include <backends/xp/DocTreeItem.h>
@@ -31,13 +32,24 @@ class DocHandle;
  class XMPPBuddy : public Buddy
 {
 public:
-	XMPPBuddy(AccountHandler* handler, const UT_UTF8String& descriptor)
-		: Buddy(handler, descriptor)
+	XMPPBuddy(AccountHandler* handler, const std::string& address)
+		: Buddy(handler),
+		m_address(address)
 	{
 	}
 	
+	virtual const UT_UTF8String& getDescriptor() const
+	{
+		static UT_UTF8String descriptor = UT_UTF8String("xmpp://") + m_address.c_str();
+		return descriptor;
+	}
+	
 	virtual UT_UTF8String		getDescription() const
-		{ return getName(); }
+		{ return m_address.c_str(); }
+		
+	virtual const std::string& getAddress() const {
+		return m_address;
+	}
 		
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -60,6 +72,11 @@ public:
 		}
 		return first;
 	}
+	
+private:
+	std::string m_address;
 };
+
+typedef boost::shared_ptr<XMPPBuddy> XMPPBuddyPtr;
 
 #endif /* XMPPBUDDY_H */

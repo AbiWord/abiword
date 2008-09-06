@@ -421,15 +421,13 @@ bool XMPPAccountHandler::send(const Packet* pPacket)
 	guint8* base64data = gsf_base64_encode_simple(reinterpret_cast<guint8*>(&data[0]), data.size());
 	UT_return_val_if_fail(base64data, false);
 	
-	for (UT_sint32 i = 0; i < UT_sint32(getBuddies().getItemCount()); i++)
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
 	{
-		const XMPPBuddy* pBuddy = reinterpret_cast<const XMPPBuddy*>(getBuddies().getNthItem(i));
-		if (pBuddy)
+		XMPPBuddyPtr pBuddy = boost::static_pointer_cast<XMPPBuddy>(*it);
+		UT_continue_if_fail(pBuddy);
+		if (!_send(reinterpret_cast<char*>(base64data), pBuddy))
 		{
-			if (!_send(reinterpret_cast<char*>(base64data), *pBuddy))
-			{
-				UT_DEBUGMSG(("Error while sending message to '%s'\n", pBuddy->getName().utf8_str()));
-			}
+			UT_DEBUGMSG(("Error while sending message to '%s'\n", pBuddy->getAddress().c_str()));
 		}
 	}
 	g_free(base64data);
@@ -437,9 +435,10 @@ bool XMPPAccountHandler::send(const Packet* pPacket)
 	return true;
 }
 
-bool XMPPAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
+bool XMPPAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 {
 	UT_return_val_if_fail(pPacket, false);
+	UT_return_val_if_fail(pBuddy, false);
 
 	// make to-be-send-stream once
 	std::string data;
@@ -449,15 +448,16 @@ bool XMPPAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
 	guint8* base64data = gsf_base64_encode_simple(reinterpret_cast<guint8*>(&data[0]), data.size());
 	UT_return_val_if_fail(base64data, false);
 
-	/*bool res = */_send(reinterpret_cast<char*>(base64data), buddy);
+	/*bool res = */_send(reinterpret_cast<char*>(base64data), boost::static_pointer_cast<XMPPBuddy>(pBuddy));
 	g_free(base64data);
 	
 	return true;
 }
 
-bool XMPPAccountHandler::_send(const char* base64data, const Buddy& buddy)
+bool XMPPAccountHandler::_send(const char* base64data, XMPPBuddyPtr pBuddy)
 {
 	UT_return_val_if_fail(base64data, false);
+	UT_return_val_if_fail(pBuddy, false);
 	
 	if (!m_pConnection)
 		return false;
@@ -469,14 +469,13 @@ bool XMPPAccountHandler::_send(const char* base64data, const Buddy& buddy)
 	const std::string server = getProperty("server");
 
 	// fully qualified address
-	UT_UTF8String fqa = buddy.getName();
-	fqa += "/";
-	fqa += resource.c_str();
-	
-	UT_DEBUGMSG(("Sending packet |%s| to |%s|\n", base64data, fqa.utf8_str()));
-	LmMessage* m = lm_message_new (fqa.utf8_str(), LM_MESSAGE_TYPE_MESSAGE);
+	std::string fqa = pBuddy->getAddress() + "/" + resource;
+
+	UT_DEBUGMSG(("Sending packet |%s| to |%s|\n", base64data, fqa.c_str()));
+	LmMessage* m = lm_message_new (fqa.c_str(), LM_MESSAGE_TYPE_MESSAGE);
 	lm_message_node_add_child (m->node, "body", base64data);
-	if (!lm_connection_send (m_pConnection, m, &error)) {
+	if (!lm_connection_send (m_pConnection, m, &error))
+	{
 		UT_DEBUGMSG(("Error while sending message to '%s':\n%s\n",
 				base64data, (error ? error->message : "") ));
 		lm_message_unref(m);
@@ -486,23 +485,23 @@ bool XMPPAccountHandler::_send(const char* base64data, const Buddy& buddy)
 	return true;
 }
 
-Buddy* XMPPAccountHandler::constructBuddy(const PropertyMap& vProps)
+BuddyPtr XMPPAccountHandler::constructBuddy(const PropertyMap& vProps)
 {
 	PropertyMap::const_iterator pos = vProps.find("name");
 	if (pos != vProps.end())
 	{
-		UT_return_val_if_fail(pos->second.size() > 0, 0);
+		UT_return_val_if_fail(pos->second.size() > 0, XMPPBuddyPtr());
 		UT_DEBUGMSG(("Constructing buddy (%s)\n", pos->second.c_str()));
-		return new XMPPBuddy(this, pos->second.c_str());
+		return XMPPBuddyPtr(new XMPPBuddy(this, pos->second.c_str()));
 	}
 	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-	return 0;
+	return XMPPBuddyPtr();
 }
 
-Buddy* XMPPAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr XMPPAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
+	return XMPPBuddyPtr();
 }
 
 bool XMPPAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
@@ -511,26 +510,40 @@ bool XMPPAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
 	return false;
 }
 
-void XMPPAccountHandler::handleMessage(const gchar* pPacket, const std::string& buddy)
+void XMPPAccountHandler::handleMessage(const gchar* packet_data, const std::string& from_address)
 {
-	UT_return_if_fail(pPacket);
-	UT_return_if_fail(buddy.size() > 0);
+	UT_return_if_fail(packet_data);
+	UT_return_if_fail(from_address.size() > 0);
 	
-	Buddy* pBuddy = getBuddy(buddy.c_str());
+	XMPPBuddyPtr pBuddy = _getBuddy(from_address);
 	if (!pBuddy)
 	{
 		// yay, a message from a new buddy
-		pBuddy = new XMPPBuddy(this, buddy.c_str());
+		pBuddy = XMPPBuddyPtr(new XMPPBuddy(this, from_address.c_str()));
 		addBuddy(pBuddy);
 	}
-	
-	RawPacket* pRp = new RawPacket();
-	pRp->buddy = pBuddy;
-	// all packets are base64 encoded when sent over this backend; 
-	// decode the incoming packet;
-	std::string p = pPacket;
-	size_t len = gsf_base64_decode_simple((guint8*)(p.c_str()), p.size());
-	pRp->packet.resize(len);
-	memcpy(&pRp->packet[0], &p[0], len);
-	AccountHandler::handleMessage(*pRp);
+
+	// construct the packet
+	// NOTE: all packets are base64 encoded when sent over this backend, so we need to decode them
+	// FIXME: inefficient copying of data
+	std::string packet_str = packet_data;
+	size_t len = gsf_base64_decode_simple((guint8*)(&packet_str[0]), packet_str.size());
+	packet_str.resize(len);
+	Packet* pPacket = _createPacket(packet_str, pBuddy);
+	UT_return_if_fail(pPacket);
+
+	AccountHandler::handleMessage(pPacket, pBuddy);
 }
+
+XMPPBuddyPtr XMPPAccountHandler::_getBuddy(const std::string& from_address)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		XMPPBuddyPtr pBuddy = boost::static_pointer_cast<XMPPBuddy>(*it);
+		UT_continue_if_fail(pBuddy);
+		if (pBuddy->getAddress() == from_address)
+			return pBuddy;
+	}
+	return XMPPBuddyPtr();
+}
+

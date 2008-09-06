@@ -68,11 +68,12 @@ public:
 	virtual void			storeProperties() = 0;
 
 	// user management
-	virtual Buddy*			constructBuddy(const PropertyMap& vProps);
+	virtual BuddyPtr		constructBuddy(const PropertyMap& vProps);
+	virtual BuddyPtr		constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool			recognizeBuddyIdentifier(const std::string& identifier);
 	virtual bool			allowsManualBuddies()
 		{ return true; }
-	virtual Buddy*			constructBuddy(const std::string& descriptor, Buddy* pBuddy);
-	virtual bool			recognizeBuddyIdentifier(const std::string& identifier);
+	virtual void			forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
 	
 	// session management
 	virtual bool							allowsSessionTakeover()
@@ -80,13 +81,14 @@ public:
 	
 		// packet management
 	virtual bool			send(const Packet* pPacket);
-	virtual bool 			send(const Packet* pPacket, const Buddy& buddy);
+	virtual bool 			send(const Packet* pPacket, BuddyPtr pBuddy);
 	
-	virtual void 			handleMessage(const gchar* pPacket, const std::string& buddy);
+	virtual void 			handleMessage(const gchar* packet_data, const std::string& from_address);
 
 private:
 	UT_UTF8String			_getNameFromFqa(const UT_UTF8String& fqa);
-	bool					_send(const char* base64data, const Buddy& buddy);
+	bool					_send(const char* base64data, XMPPBuddyPtr pBuddy);
+	XMPPBuddyPtr			_getBuddy(const std::string& from_address);
 		
 	// connection management
 	LmConnection *			m_pConnection;

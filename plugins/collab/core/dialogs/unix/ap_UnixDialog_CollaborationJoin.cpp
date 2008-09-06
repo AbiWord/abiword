@@ -277,7 +277,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 		// add all buddies belonging to this account
 		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
-			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
+			BuddyPtr pBuddy = accounts.getNthItem(i)->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);
 
 			gtk_tree_store_append (model, &iter, NULL);
@@ -298,11 +298,12 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 				
 				// TODO: handle the DocTreeItem type
 				gtk_tree_store_append (model, &child_iter, &iter);
+				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				gtk_tree_store_set (model, &child_iter, 
 						DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
 						CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
 						DOCHANDLE_COLUMN, item->m_docHandle,
-						BUDDY_COLUMN, pBuddy,
+						BUDDY_COLUMN, NULL /*pBuddy*/,
 						VISIBLE_COLUMN, true,
 						-1);
 			}
@@ -448,11 +449,9 @@ void AP_UnixDialog_CollaborationJoin::eventSelectionChanged(GtkTreeView *treevie
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gpointer buddy;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
-	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy, -1);	
+	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);	
 
 	if (!doc_handle)
 	{

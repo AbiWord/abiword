@@ -57,7 +57,7 @@ protected:
 	DocHandle*			m_pDocHandle;
 
 	void				_eventAddBuddy();
-	void				_addBuddy(AccountHandler* pHandler, Buddy* pBuddy);
+	void				_addBuddy(AccountHandler* pHandler, BuddyPtr pBuddy);
 	void				_refreshAllDocHandlesAsync();
 	
 	void				_refreshAccounts();
