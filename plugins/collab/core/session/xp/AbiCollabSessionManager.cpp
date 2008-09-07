@@ -548,6 +548,17 @@ void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 
 	if (isLocallyControlled(pSession->getDocument()))
 	{
+		/* 
+		Before we close this session, try to see of we can hand over
+		session ownership to someone else.
+
+		NOTE: we don't do any fancy determination yet who to hand over the
+		session to; we just hand it over to the first buddy in the list.
+		*/
+		if (_canInitiateSessionTakeover(pSession))
+			if (pSession->getCollaborators().size() > 0)
+				pSession->initiateSessionTakeover(pSession->getCollaborators()[0]);
+
 		closeSession(pSession, false);
 	}
 	else
@@ -1393,4 +1404,35 @@ void AbiCollabSessionManager::_nullUpdate()
 			gtk_main_iteration ();
 		usleep(1000*10);
 #endif	
+}
+
+bool AbiCollabSessionManager::_canInitiateSessionTakeover(AbiCollab* pSession)
+{
+	UT_return_val_if_fail(pSession, false);
+	UT_return_val_if_fail(pSession->isLocallyControlled(), false);
+
+	const std::vector<BuddyPtr> collaborators = pSession->getCollaborators();
+
+	if (collaborators.size() == 0)
+		return false;
+
+	/*
+	NOTE: for now, we only allow session takeover, if:
+
+	1. All buddies use the same account handler type
+	2. The account handler actually supports session takeover
+	3. All buddies are actually owned by the same account handler instance
+	
+	Condition 1 and 2 are ok, but 3 needs fixing soon.
+	*/
+
+	AccountHandler* pHandler = collaborators[0]->getHandler();
+	if (!pHandler->allowsSessionTakeover())
+		return false;
+
+	for (std::vector<BuddyPtr>::const_iterator cit = ++collaborators.begin(); cit != collaborators.end(); cit++)
+		if ((*cit)->getHandler() != pHandler)
+			return false;
+
+	return true;
 }

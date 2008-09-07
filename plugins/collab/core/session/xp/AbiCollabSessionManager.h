@@ -139,6 +139,9 @@ private:
 	void										_deleteAccount(AccountHandler* pHandler);
 	void										_nullUpdate();
 	
+	// session code
+	bool										_canInitiateSessionTakeover(AbiCollab* pSession);
+	
 	static AbiCollabSessionManager* 			m_pManager;	
 	
 	// dialog code

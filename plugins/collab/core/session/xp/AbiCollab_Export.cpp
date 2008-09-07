@@ -586,7 +586,6 @@ void ABI_Collab_Export::removeDocument(void)
 	
 	// NOTE: don't do anything after this line anymore, as this will self-destruct us!
 	pManager->disconnectSession(m_pAbiCollab);
-	// pManager->destroySession(m_pAbiCollab); // disconnect destroys us automatically
 }
 
 void ABI_Collab_Export::masterInit()
