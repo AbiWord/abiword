@@ -305,10 +305,11 @@ bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
 
 // NOTE: we don't implement the opening of documents asynchronous; we block on it,
 // as it's annoying to opening them async. We need to change this API
-void ServiceAccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
+void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync(const Buddy& buddy, DocHandle& docHandle)\n"));
-	
+	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync(BuddyPtr pBuddy, DocHandle& docHandle)\n"));
+	UT_return_if_fail(pBuddy);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);		
 	
@@ -341,7 +342,7 @@ void ServiceAccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docH
 					// try again with the new password
 					addProperty("password", password);
 					pManager->storeProfile();
-					joinSessionAsync(buddy, docHandle);				
+					joinSessionAsync(pBuddy, docHandle);				
 				}
 			}
 			return;
