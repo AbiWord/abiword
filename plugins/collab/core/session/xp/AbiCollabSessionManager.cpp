@@ -514,8 +514,8 @@ bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
 		PD_Document* pSessionDoc = pSession->getDocument();
 		if (pSessionDoc == pDoc)
 		{
-			m_vecSessions.deleteNthItem(i);
 			_deleteSession(pSession);
+			m_vecSessions.deleteNthItem(i);
 			return true;
 		}
 	}
@@ -534,8 +534,8 @@ bool AbiCollabSessionManager::destroySession(AbiCollab* pSession)
 		
 		if (pActiveSession == pSession)
 		{
-			m_vecSessions.deleteNthItem(i);
 			_deleteSession(pSession);
+			m_vecSessions.deleteNthItem(i);
 			return true;
 		}
 	}

@@ -589,6 +589,8 @@ class SessionTakeoverAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverAckPacket);
 	SessionTakeoverAckPacket() {}
+	SessionTakeoverAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;	
 };
@@ -615,6 +617,8 @@ class SessionBuddyTransferAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionBuddyTransferAckPacket);
 	SessionBuddyTransferAckPacket() {}
+	SessionBuddyTransferAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
 };
@@ -641,6 +645,8 @@ class MasterChangeAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(MasterChangeAckPacket);
 	MasterChangeAckPacket() {}
+	MasterChangeAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
 };
@@ -650,6 +656,8 @@ class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectRequestPacket);
 	SessionReconnectRequestPacket() {}
+	SessionReconnectRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
 };
@@ -659,6 +667,8 @@ class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
+	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 	
 	virtual std::string toStr() const;
 };
@@ -668,6 +678,8 @@ class SessionTakeoverFinalizePacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverFinalizePacket);
 	SessionTakeoverFinalizePacket() {}
+	SessionTakeoverFinalizePacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;
 };
