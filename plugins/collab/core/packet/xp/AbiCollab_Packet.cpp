@@ -859,6 +859,11 @@ std::string SessionTakeoverRequestPacket::toStr() const
 /* *             SessionTakeoverAckPacket                */
 /* ***************************************************** */
 
+void SessionTakeoverAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
 std::string SessionTakeoverAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionTakeoverAckPacket\n";
@@ -894,6 +899,11 @@ std::string SessionBuddyTransferRequestPacket::toStr() const
 /* *             SessionBuddyTransferAckPacket           */
 /* ***************************************************** */
 
+void SessionBuddyTransferAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
 std::string SessionBuddyTransferAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionBuddyTransferAckPacket\n";
@@ -926,6 +936,11 @@ std::string MasterChangeRequestPacket::toStr() const
 /* *             MasterChangeAckPacket                   */
 /* ***************************************************** */
 
+void MasterChangeAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
 std::string MasterChangeAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "MasterChangeAckPacket\n";
@@ -934,6 +949,11 @@ std::string MasterChangeAckPacket::toStr() const
 /* ***************************************************** */
 /* *             SessionReconnectRequestPacket           */
 /* ***************************************************** */
+
+void SessionReconnectRequestPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
 
 std::string SessionReconnectRequestPacket::toStr() const
 {
@@ -944,6 +964,11 @@ std::string SessionReconnectRequestPacket::toStr() const
 /* *             SessionReconnectAckPacket               */
 /* ***************************************************** */
 
+void SessionReconnectAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
 std::string SessionReconnectAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionReconnectAckPacket\n";
@@ -953,6 +978,11 @@ std::string SessionReconnectAckPacket::toStr() const
 /* *             SessionTakeoverFinalizePacket           */
 /* ***************************************************** */
 
+void SessionTakeoverFinalizePacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
 std::string SessionTakeoverFinalizePacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionTakeoverFinalizePacket\n";
@@ -961,7 +991,6 @@ std::string SessionTakeoverFinalizePacket::toStr() const
 /* ***************************************************** */
 /* *             SessionRestartPacket                    */
 /* ***************************************************** */
-
 
 SessionRestartPacket::SessionRestartPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
