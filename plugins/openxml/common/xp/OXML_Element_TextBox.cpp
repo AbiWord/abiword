@@ -57,17 +57,46 @@ UT_Error OXML_Element_TextBox::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	err = exporter->startTextBoxContent(TARGET);
+	if(err != UT_OK)
+		return err;
+
 	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->finishTextBoxContent(TARGET);
 	if(err != UT_OK)
 		return err;
 
 	return exporter->finishTextBox(TARGET);
 }
 
-UT_Error OXML_Element_TextBox::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_TextBox::serializeProperties(IE_Exp_OpenXML* exporter)
 {
 	//TODO: Add all the property serializations here
-	return UT_OK;
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startTextBoxProperties(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	if(getProperty("frame-width", szValue) == UT_OK)
+	{
+		err = exporter->setTextBoxWidth(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("frame-height", szValue) == UT_OK)
+	{
+		err = exporter->setTextBoxHeight(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	return exporter->finishTextBoxProperties(TARGET);
 }
 
 UT_Error OXML_Element_TextBox::addToPT(PD_Document* /*pDocument*/)

@@ -102,6 +102,10 @@ public:
 	UT_Error finishAbstractNumbering(int target);
 	UT_Error startTextBox(int target, const gchar* id);
 	UT_Error finishTextBox(int target);
+	UT_Error startTextBoxProperties(int target);
+	UT_Error finishTextBoxProperties(int target);
+	UT_Error startTextBoxContent(int target);
+	UT_Error finishTextBoxContent(int target);
 	UT_Error startNumbering(int target, UT_uint32 id);
 	UT_Error finishNumbering(int target);
 	UT_Error startNumberingLevel(int target, UT_uint32 level);
@@ -180,6 +184,8 @@ public:
 	UT_Error setPageBreak(int target);
 	UT_Error setLanguage(int target, const gchar* lang);
 	UT_Error setNoProof(int target);
+	UT_Error setTextBoxWidth(int target, const gchar* width);
+	UT_Error setTextBoxHeight(int target, const gchar* height);
 
 protected:
     virtual UT_Error _writeDocument(void);
@@ -231,6 +237,7 @@ private:
 	UT_Error finishEndnotes();
 	UT_Error writeXmlHeader(GsfOutput* file);
 
+	const gchar* convertToPoints(const gchar* str);
 	const gchar* convertToTwips(const gchar* str);
 	const gchar* convertToPositiveTwips(const gchar* str);
 	const gchar* convertToPositiveEmus(const gchar* str);

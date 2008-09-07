@@ -607,9 +607,7 @@ UT_Error IE_Exp_OpenXML::startTextBox(int target, const gchar* id)
 	str += "<w:pict>";
 	str += "<v:shape w:id=\"";
 	str += id;
-	str += "\">";
-	str += "<v:textbox>";
-	str += "<w:txbxContent>";
+	str += "\" ";
 	return writeTargetStream(target, str.c_str());
 }
 
@@ -618,10 +616,71 @@ UT_Error IE_Exp_OpenXML::startTextBox(int target, const gchar* id)
  */
 UT_Error IE_Exp_OpenXML::finishTextBox(int target)
 {
-	std::string str("</w:txbxContent>");
-	str += "</v:textbox>";
+	std::string str("");
 	str += "</v:shape>";
 	str += "</w:pict>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Starts exporting the OXML_Element_TextBox object's properties
+ */
+UT_Error IE_Exp_OpenXML::startTextBoxProperties(int target)
+{
+	std::string str("");
+	str += "style=\"";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_Element_TextBox object's properties
+ */
+UT_Error IE_Exp_OpenXML::finishTextBoxProperties(int target)
+{
+	std::string str("");
+	str += "\">";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Starts exporting the OXML_Element_TextBox object's content
+ */
+UT_Error IE_Exp_OpenXML::startTextBoxContent(int target)
+{
+	std::string str("<v:textbox>");
+	str += "<w:txbxContent>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_Element_TextBox object's content
+ */
+UT_Error IE_Exp_OpenXML::finishTextBoxContent(int target)
+{
+	std::string str("</w:txbxContent>");
+	str += "</v:textbox>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets textbox width
+ */
+UT_Error IE_Exp_OpenXML::setTextBoxWidth(int target, const gchar* width)
+{
+	std::string str("width:");
+	str += convertToPoints(width);
+	str += "pt;";	
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
+ * Sets textbox height
+ */
+UT_Error IE_Exp_OpenXML::setTextBoxHeight(int target, const gchar* height)
+{
+	std::string str("height:");
+	str += convertToPoints(height);
+	str += "pt;";	
 	return writeTargetStream(target, str.c_str());
 }
 
@@ -1604,6 +1663,15 @@ const gchar * IE_Exp_OpenXML::convertToPositiveEmus(const gchar* str)
 	if(emu < 1.0) 
 		return "0";
 	return UT_convertToDimensionlessString(emu, ".0");
+}
+
+/**
+ * Converts the string str to points
+ */
+const gchar * IE_Exp_OpenXML::convertToPoints(const gchar* str)
+{
+	double pt = UT_convertToPoints(str);
+	return UT_convertToDimensionlessString(pt, ".0");
 }
 
 /**
