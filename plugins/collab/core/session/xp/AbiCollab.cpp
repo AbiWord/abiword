@@ -643,6 +643,8 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverAckPacket, false);
 				// we can only receive SessionTakeoverAck packets when we are the master
 				UT_return_val_if_fail(!m_pController, false);
+				// we should have a proposed master
+				UT_return_val_if_fail(m_pProposedController, false);
 				// a slave should only ack once
 				UT_return_val_if_fail(!_hasAckedSessionTakeover(collaborator), false);
 
@@ -658,7 +660,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 					// transfer the list of slaves that acknowledged the session
 					// takeover to the new proposed master
 					SessionBuddyTransferRequestPacket sbtrp(m_sId, m_pDoc->getDocUUIDString(), buddyIdentifiers);
-					// TODO: send the packet
+					m_pProposedController->getHandler()->send(&sbtrp, m_pProposedController);
 				
 					m_eTakeoveState = STS_SENT_BUDDY_TRANSFER_REQUEST;
 				}
