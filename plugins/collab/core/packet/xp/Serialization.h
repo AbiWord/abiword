@@ -25,6 +25,8 @@
 #include <vector>
 #include <string>
 #include <string.h>
+#include <ut_types.h>
+#include <ut_string_class.h>
 
 //
 // Quick n' compact serialization implementation

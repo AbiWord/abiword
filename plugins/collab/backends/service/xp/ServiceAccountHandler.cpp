@@ -225,6 +225,7 @@ bool ServiceAccountHandler::send(const Packet* packet)
 bool ServiceAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*, BuddyPtr pBuddy)\n"));
+	UT_return_val_if_fail(packet, false);
 	UT_return_val_if_fail(pBuddy, false);
 
 	RealmBuddyPtr pB = boost::static_pointer_cast<RealmBuddy>(pBuddy);
