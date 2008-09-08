@@ -187,7 +187,8 @@ private:
 	bool								_hasAckedMasterChange(BuddyPtr collaborator);
 	bool								_allSlavesAckedMasterChange();
 	void								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
-	void								_promoteToMaster();
+	void								_shutdownAsMaster();
+	void								_restartAsMaster();
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;
