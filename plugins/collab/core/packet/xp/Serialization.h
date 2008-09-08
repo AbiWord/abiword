@@ -23,6 +23,8 @@
 #define ABICOLLAB_SERIALIZATION_H
 
 #include <vector>
+#include <string>
+#include <string.h>
 
 //
 // Quick n' compact serialization implementation
