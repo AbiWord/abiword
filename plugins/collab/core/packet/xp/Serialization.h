@@ -22,6 +22,7 @@
 #ifndef ABICOLLAB_SERIALIZATION_H
 #define ABICOLLAB_SERIALIZATION_H
 
+#include <map>
 #include <vector>
 #include <string>
 #include <string.h>
@@ -163,7 +164,7 @@ public:
 			*this << count;
 		}
 		for (unsigned int i=0; i<count; ++i) {
-			*this << Val[count];
+			*this << Val[i];
 		}
 		return *this;
 	}
