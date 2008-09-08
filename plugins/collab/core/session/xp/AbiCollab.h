@@ -220,6 +220,7 @@ private:
 	SessionTakeoverState				m_eTakeoveState;
 	bool								m_bProposedController;
 	BuddyPtr							m_pProposedController;
+	std::vector<std::string>			m_vApprovedReconnectBuddies;
 	std::map<BuddyPtr, bool>			m_mAckedSessionTakeoverBuddies; // only used by the session controller
 	std::map<BuddyPtr, bool>			m_mAckedMasterChangeBuddies; // only used by the session controller
 	
