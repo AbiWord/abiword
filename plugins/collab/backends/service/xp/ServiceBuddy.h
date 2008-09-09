@@ -31,17 +31,17 @@
 class ServiceBuddy : public Buddy
 {
 public:
-	ServiceBuddy(AccountHandler* handler, const std::string& email)
+	ServiceBuddy(AccountHandler* handler, const std::string& email, const std::string& domain)
 		: Buddy(handler),
-		m_email(email)
+		m_email(email),
+		m_domain(domain)
 	{
 		setVolatile(true);
 	}
 	
 	virtual const UT_UTF8String& getDescriptor() const
 	{
-		// TODO: the URI property should really be the host property; that looks way better
-		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + getHandler()->getProperty("uri").c_str();
+		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
 		return descriptor;
 	}
 	
@@ -75,6 +75,7 @@ public:
 	
 private:
 	std::string		m_email;
+	std::string		m_domain;
 };
 
 typedef boost::shared_ptr<ServiceBuddy> ServiceBuddyPtr;

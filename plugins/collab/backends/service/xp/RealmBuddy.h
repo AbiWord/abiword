@@ -32,9 +32,11 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, const std::string& email, UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
+	RealmBuddy(AccountHandler* handler, const std::string& email, const std::string& domain,
+					UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
 		: Buddy(handler),
 		m_email(email),
+		m_domain(domain),
 		m_realm_connection_id(realm_connection_id),
 		m_master(master),
 		m_connection(connection)
@@ -44,14 +46,15 @@ public:
 	
 	virtual const UT_UTF8String& getDescriptor() const
 	{
-		// TODO: the URI property should really be the host property; that looks way better
-		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + getHandler()->getProperty("uri").c_str();
+		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
 		return descriptor;
 	}
 	
 	virtual UT_UTF8String getDescription() const
 	{
-		return ""; // shouldn't be used anywhere; instead, ServiceBuddy's are shown in the interface
+		// shouldn't be called from anywhere; instead, ServiceBuddy's are shown in the interface
+		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+		return "";
 	}
 	
 	virtual const DocTreeItem* getDocTreeItems() const
@@ -82,6 +85,7 @@ public:
 	
 private:
 	std::string			m_email;
+	std::string			m_domain;
 	UT_uint8			m_realm_connection_id;
 	bool				m_master;
 	boost::shared_ptr<RealmConnection>		m_connection;

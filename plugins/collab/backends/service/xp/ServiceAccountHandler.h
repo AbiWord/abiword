@@ -32,8 +32,8 @@
 #include "AbiCollabSaveInterceptor.h"
 #include "AsioRealmProtocol.h"
 #include "pl_Listener.h"
-#include "RealmBuddy.h"
 #include "RealmConnection.h"
+#include "RealmBuddy.h"
 #include "RealmProtocol.h"
 #include "ServiceBuddy.h"
 #include "ServiceErrorCodes.h"
@@ -47,6 +47,7 @@ class GetSessionsResponseEvent;
 class JoinSessionRequestResponseEvent;
 class ServiceBuddy;
 class AbiCollabService_Export;
+class RealmBuddy;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
@@ -145,7 +146,8 @@ private:
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
-	bool									_splitDescriptor(const std::string& descriptor, std::string& user, std::string& uri);
+	bool									_splitDescriptor(const std::string& descriptor, std::string& user, std::string& domain);
+	std::string								_getDomain();
 
 	bool									m_bOnline;  // only used to determine if we are allowed to 
 														// communicate with abicollab.net or not

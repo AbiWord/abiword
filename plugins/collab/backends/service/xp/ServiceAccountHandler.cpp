@@ -198,7 +198,7 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
-	return BuddyPtr(); // TODO: implement me
+	return BuddyPtr();
 }
 
 BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
@@ -206,17 +206,28 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Bu
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy()"));
 
 	std::string descr_user;
-	std::string descr_uri;
-	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user, descr_uri), BuddyPtr());
-	UT_DEBUGMSG(("Constructing realm buddy - user: %s, uri: %s\n", descr_user.c_str(), descr_uri.c_str()));
+	std::string descr_domain;
+	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user, descr_domain), BuddyPtr());
+	UT_DEBUGMSG(("Constructing realm buddy - user: %s, domain: %s\n", descr_user.c_str(), descr_domain.c_str()));
 
 	// verify that the uri matches ours
-	UT_return_val_if_fail(descr_uri == getProperty("uri"), BuddyPtr());
+	UT_return_val_if_fail(descr_domain == _getDomain(), BuddyPtr());
 
 	// search for, and return the requested buddy
-	// NOTE: we can only construct buddies that we already know on one
-	// of our connections; you can't just invent/guess/whatever a buddy descriptor
-	// and communicate with him (even if the buddy descriptor actually exists)
+	// NOTE: we can only 'construct' a buddy that we already know on the same connection as 
+	// the given buddy. This because you can't just invent/guess/whatever a buddy descriptor
+	// and communicate with him (even if the buddy descriptor actually exists)... 
+	// the security mechanism would not allow that
+	UT_return_val_if_fail(pBuddy, BuddyPtr());
+	RealmBuddyPtr pB = boost::static_pointer_cast<RealmBuddy>(pBuddy);
+
+	ConnectionPtr connection = pB->connection();
+	UT_return_val_if_fail(connection, BuddyPtr());
+	for (std::vector<RealmBuddyPtr>::iterator it = connection->getBuddies().begin(); it != connection->getBuddies().end(); it++)
+	{
+		// TODO: implement me
+	}
+
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
 	return BuddyPtr();
@@ -225,10 +236,10 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Bu
 bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
 {
 	std::string descr_user;
-	std::string descr_uri;
-	if (!_splitDescriptor(identifier, descr_user, descr_uri))
+	std::string descr_domain;
+	if (!_splitDescriptor(identifier, descr_user, descr_domain))
 		return false;
-	if (descr_uri != getProperty("uri"))
+	if (descr_domain != _getDomain())
 		return false;
 	return true;
 }
@@ -704,7 +715,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 	// load our own files
 	GetSessionsResponseEvent gsre;
 	_parseSessionFiles(rcp->get< soa::Array<soa::GenericPtr> >("files"), gsre);
-	sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, email.c_str()) ));
+	sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, email.c_str(), _getDomain()) ));
 
 	// load the files from our friends
 	if (soa::ArrayPtr friends_array = rcp->get< soa::Array<soa::GenericPtr> >("friends"))
@@ -719,7 +730,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 						// to populate all the required document structures
 						GetSessionsResponseEvent gsre;
 						_parseSessionFiles(friend_->files, gsre);
-						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, friend_->email.c_str()) ));
+						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, friend_->email.c_str(), _getDomain()) ));
 					}				
 				}
 	
@@ -736,7 +747,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 						// to populate all the required document structures
 						GetSessionsResponseEvent gsre;
 						_parseSessionFiles(group_->files, gsre);
-						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, group_->name.c_str()) ));
+						sessions_ptr->push_back( std::make_pair(gsre, new ServiceBuddy(this, group_->name.c_str(), _getDomain()) ));
 					}				
 				}
 	
@@ -966,16 +977,18 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 					{
 						UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
 						UT_return_if_fail(!ujp->isMaster());
+						// FIXME: this email field is just wrong!
 						connection->addBuddy(boost::shared_ptr<RealmBuddy>(
-								new RealmBuddy(this, getProperty("email"), static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
+								new RealmBuddy(this, getProperty("email"), _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
 					}
 					else
 					{
 						if (ujp->isMaster())
 						{
 							UT_DEBUGMSG(("Received master buddy (id: %d); we're slave, adding it to our buddy list!\n", ujp->getConnectionId()));
+							// FIXME: this email field is just wrong!
 							RealmBuddyPtr master_buddy(
-										new RealmBuddy(this, getProperty("email"), static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
+										new RealmBuddy(this, getProperty("email"), _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
 							connection->addBuddy(master_buddy);
 
 							UT_DEBUGMSG(("Sending join session request to master!\n"));
@@ -1039,7 +1052,7 @@ void ServiceAccountHandler::_parseSessionFiles(soa::ArrayPtr files_array, GetSes
 	}
 }
 
-bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std::string& user, std::string& uri)
+bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std::string& user, std::string& domain)
 {
 	std::string uri_id = "acn://";
 
@@ -1050,8 +1063,24 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std:
 	if (at_pos == std::string::npos)
 		return false;
 
-	uri = descriptor.substr(at_pos+1);
+	domain = descriptor.substr(at_pos+1);
 	user = descriptor.substr(uri_id.size(), at_pos - uri_id.size());
-	UT_return_val_if_fail(uri.size() > 0 && user.size() > 0, false);
+	UT_return_val_if_fail(domain.size() > 0 && user.size() > 0, false);
 	return true;
+}
+
+std::string ServiceAccountHandler::_getDomain()
+{
+	std::string uri = getProperty("uri");
+
+	// NOTE: we only allow https for the service backend, so we don't have to check for http uri's
+	std::string https = "https://";
+	UT_return_val_if_fail(uri.compare(0, https.size(), https) == 0, "")
+
+	int slash_pos = uri.find_first_of("/", https.size());
+	if (slash_pos == std::string::npos)
+		slash_pos = uri.size();
+	std::string domain = uri.substr(https.size(), slash_pos-https.size());
+	UT_return_val_if_fail(domain.size() > 0, "");
+	return domain;
 }
