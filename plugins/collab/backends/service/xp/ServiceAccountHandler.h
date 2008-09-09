@@ -145,6 +145,7 @@ private:
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
+	bool									_splitDescriptor(const std::string& descriptor, std::string& user, std::string& uri);
 
 	bool									m_bOnline;  // only used to determine if we are allowed to 
 														// communicate with abicollab.net or not

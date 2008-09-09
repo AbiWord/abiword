@@ -203,14 +203,34 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 
 BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
 {
+	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy()"));
+
+	std::string descr_user;
+	std::string descr_uri;
+	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user, descr_uri), BuddyPtr());
+	UT_DEBUGMSG(("Constructing realm buddy - user: %s, uri: %s\n", descr_user.c_str(), descr_uri.c_str()));
+
+	// verify that the uri matches ours
+	UT_return_val_if_fail(descr_uri == getProperty("uri"), BuddyPtr());
+
+	// search for, and return the requested buddy
+	// NOTE: we can only construct buddies that we already know on one
+	// of our connections; you can't just invent/guess/whatever a buddy descriptor
+	// and communicate with him (even if the buddy descriptor actually exists)
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+
 	return BuddyPtr();
 }
 
 bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return false;
+	std::string descr_user;
+	std::string descr_uri;
+	if (!_splitDescriptor(identifier, descr_user, descr_uri))
+		return false;
+	if (descr_uri != getProperty("uri"))
+		return false;
+	return true;
 }
 
 bool ServiceAccountHandler::send(const Packet* packet)
@@ -1019,3 +1039,19 @@ void ServiceAccountHandler::_parseSessionFiles(soa::ArrayPtr files_array, GetSes
 	}
 }
 
+bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std::string& user, std::string& uri)
+{
+	std::string uri_id = "acn://";
+
+	if (descriptor.compare(0, uri_id.size(), uri_id) != 0)
+		return false;
+
+	int at_pos = descriptor.find_last_of("@");
+	if (at_pos == std::string::npos)
+		return false;
+
+	uri = descriptor.substr(at_pos+1);
+	user = descriptor.substr(uri_id.size(), at_pos - uri_id.size());
+	UT_return_val_if_fail(uri.size() > 0 && user.size() > 0, false);
+	return true;
+}
