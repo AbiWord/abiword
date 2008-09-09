@@ -126,7 +126,7 @@ private:
 													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet);
 
 	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
-													SessionBuddyPairPtr sessions_ptr);
+													bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr);
 	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 

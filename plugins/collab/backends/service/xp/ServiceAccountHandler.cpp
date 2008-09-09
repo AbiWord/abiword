@@ -259,12 +259,14 @@ void ServiceAccountHandler::getSessionsAsync()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);			
 	
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
 	pManager->beginAsyncOperation(this);
 	SessionBuddyPairPtr sessions_ptr(new std::vector<SessionBuddyPair>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
-								getProperty("uri"), getProperty("email"), getProperty("password"), sessions_ptr),
+								getProperty("uri"), getProperty("email"), getProperty("password"), verify_webapp_host, sessions_ptr),
 					boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, sessions_ptr)
 				)
 			);
@@ -278,14 +280,16 @@ void ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);		
 	
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
 	// TODO: we shouldn't ignore the buddy parameter, but for now, we do ;)
-	
+
 	pManager->beginAsyncOperation(this);
 	SessionBuddyPairPtr sessions_ptr(new std::vector<SessionBuddyPair>());
 	boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 				new AsyncWorker<acs::SOAP_ERROR>(
 					boost::bind(&ServiceAccountHandler::_listDocuments, this, 
-								getProperty("uri"), getProperty("email"), getProperty("password"), sessions_ptr),
+								getProperty("uri"), getProperty("email"), getProperty("password"), verify_webapp_host, sessions_ptr),
 					boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, sessions_ptr)
 				)
 			);
@@ -366,13 +370,14 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
 	const std::string password = getProperty("password");
-		
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
 	// construct a SOAP method call to gets our documents
 	soa::function_call fc("openDocument", "openDocumentResponse");
 	fc("email", email)("password", password)("doc_id", doc_id)("revision", static_cast<int64_t>(revision));
 
 	// execute the call
-	boost::shared_ptr<ProgressiveSoapCall> call(new ProgressiveSoapCall(uri, fc, m_ssl_ca_file));
+	boost::shared_ptr<ProgressiveSoapCall> call(new ProgressiveSoapCall(uri, fc, verify_webapp_host?m_ssl_ca_file:""));
 	soa::GenericPtr soap_result;
 	try {
 		soap_result = call->run();
@@ -553,6 +558,8 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8Str
 			const std::string uri = getProperty("uri");
 			const std::string email = getProperty("email");
 			const std::string password = getProperty("password");
+			bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
 			boost::shared_ptr<std::string> document(new std::string(""));
 			if (AbiCollabSessionManager::serializeDocument(pDoc, *document, true) != UT_OK)
 				return UT_ERROR;
@@ -566,7 +573,7 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8Str
 
 			// execute the call and ignore the result (the revision number stored)
 			try {
-				soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
+				soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), verify_webapp_host?m_ssl_ca_file:"");
 				UT_return_val_if_fail(soap_result, UT_ERROR);
 			} catch (soa::SoapFault& fault) {
 				UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
@@ -633,8 +640,8 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 // NOTE: _listDocuments can be called from a thread other than our mainloop;
 // Don't let access or modify any data from the mainloop!
 acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
-					const std::string uri, const std::string email, const std::string password,
-					SessionBuddyPairPtr sessions_ptr)
+					const std::string uri, const std::string email, const std::string password, 
+					bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::_listDocuments()\n"));
 	UT_return_val_if_fail(sessions_ptr, acs::SOAP_ERROR_GENERIC);
@@ -645,7 +652,7 @@ acs::SOAP_ERROR ServiceAccountHandler::_listDocuments(
 
 	soa::GenericPtr soap_result;
 	try {
-		soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), m_ssl_ca_file);
+		soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), verify_webapp_host?m_ssl_ca_file:"");
 	} catch (soa::SoapFault& fault) {
 		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
 					 fault.detail() ? fault.detail()->value().c_str() : "(null)",
@@ -735,6 +742,8 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 			{
 				// FIXME: should we ask for a password in an async callback?
 				const std::string email = getProperty("email");
+				bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+
 				std::string password;
 				if (askPassword(email, password))
 				{
@@ -748,7 +757,7 @@ void ServiceAccountHandler::_listDocuments_cb(acs::SOAP_ERROR error, SessionBudd
 					boost::shared_ptr<AsyncWorker<acs::SOAP_ERROR> > async_list_docs_ptr(
 								new AsyncWorker<acs::SOAP_ERROR>(
 									boost::bind(&ServiceAccountHandler::_listDocuments, this, 
-												getProperty("uri"), getProperty("email"), getProperty("password"), new_sessions_ptr),
+												getProperty("uri"), getProperty("email"), getProperty("password"), verify_webapp_host, new_sessions_ptr),
 									boost::bind(&ServiceAccountHandler::_listDocuments_cb, this, _1, new_sessions_ptr)
 								)
 							);

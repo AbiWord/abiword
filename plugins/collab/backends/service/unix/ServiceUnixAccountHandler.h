@@ -41,7 +41,11 @@ private:
 	GtkWidget*								username_entry;
 	GtkWidget*								password_entry;
 	GtkWidget*								autoconnect_button;
-	
+#if DEBUG
+	GtkWidget*								uri_entry;
+	GtkWidget*								verify_webapp_host_button;
+	GtkWidget*								verify_realm_host_button;
+#endif
 };
 
 #endif /* __SERVICEUNIXACCOUNTHANDLER__ */
