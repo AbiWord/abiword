@@ -114,16 +114,19 @@ private:
 	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
 
 	template <class T>
-	void _send(boost::shared_ptr<T> packet, boost::shared_ptr<const RealmBuddy> recipient)
+	void _send(boost::shared_ptr<T> packet, RealmBuddyPtr recipient)
 	{
-		realm::protocolv1::send(*packet, recipient->connection().socket(),
+		realm::protocolv1::send(*packet, recipient->connection()->socket(),
 			boost::bind(&ServiceAccountHandler::_write_handler, this,
 							asio::placeholders::error, asio::placeholders::bytes_transferred, recipient,
-							boost::static_pointer_cast<realm::protocolv1::Packet>(packet)));
+							boost::static_pointer_cast<rpv1::Packet>(packet)));
 	}
 
 	void									_write_handler(const asio::error_code& e, std::size_t bytes_transferred,
-													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet);
+													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<rpv1::Packet> packet);
+
+	void									_write_result(const asio::error_code& e, std::size_t bytes_transferred,
+													ConnectionPtr connection, boost::shared_ptr<rpv1::Packet> packet);
 
 	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
 													bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr);
@@ -137,10 +140,10 @@ private:
 	void									_handleJoinSessionRequestResponse(
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
-	void									_handleRealmPacket(RealmConnection& connection);
+	void									_handleRealmPacket(ConnectionPtr connection);
 	ConnectionPtr							_getConnection(const std::string& session_id);
 	void									_removeConnection(const std::string& session_id);
-	void									_handleMessages(RealmConnection& connection);
+	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
 
 	bool									m_bOnline;  // only used to determine if we are allowed to 

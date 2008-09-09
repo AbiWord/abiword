@@ -32,7 +32,7 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, const std::string& email, UT_uint8 realm_connection_id, bool master, RealmConnection& connection)
+	RealmBuddy(AccountHandler* handler, const std::string& email, UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
 		: Buddy(handler),
 		m_email(email),
 		m_realm_connection_id(realm_connection_id),
@@ -63,11 +63,7 @@ public:
 		return shared_from_this();
 	}
 
-	boost::shared_ptr<const RealmBuddy> ptr() const {
-		return shared_from_this();
-	}
-
-	RealmConnection& connection() const {
+	boost::shared_ptr<RealmConnection> connection() {
 		return m_connection;
 	}
 
@@ -79,11 +75,16 @@ public:
 		return m_master;
 	}
 	
+	void demote() {
+		UT_ASSERT_HARMLESS(m_master);
+		m_master = false;
+	}
+	
 private:
 	std::string			m_email;
 	UT_uint8			m_realm_connection_id;
 	bool				m_master;
-	RealmConnection&	m_connection;
+	boost::shared_ptr<RealmConnection>		m_connection;
 };
 
 typedef boost::shared_ptr<RealmBuddy> RealmBuddyPtr;
