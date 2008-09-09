@@ -776,10 +776,21 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				// we only allow an incoming SessionReconnectRequest packet from a buddy 
 				// that is in the buddy list we received from the master, and we didn't receive
 				// such a packet from him before
-				// TODO: implement me
+				bool allow = false;
+				for (std::vector<std::string>::const_iterator cit = m_vApprovedReconnectBuddies.begin(); cit != m_vApprovedReconnectBuddies.end(); cit++)
+				{
+					if (*cit == collaborator->getDescriptor())
+					{
+						allow = true;
+						break;
+					}
+				}
+				UT_return_val_if_fail(allow, false);
 
-				// TODO: implement me
-				// ...
+				// handle the SessionReconnectRequest packet
+				SessionReconnectAckPacket srap(m_sId, m_pDoc->getDocUUIDString());
+				collaborator->getHandler()->send(&srap, collaborator);
+				addCollaborator(collaborator);
 
 				// NOTE: leave us in the STS_SENT_BUDDY_TRANSFER_ACK state, as
 				// more SessionReconnectRequest packets can come in
