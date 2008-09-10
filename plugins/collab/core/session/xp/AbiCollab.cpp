@@ -700,6 +700,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				SessionBuddyTransferAckPacket sptap(m_sId, m_pDoc->getDocUUIDString());
 				m_pController->getHandler()->send(&sptap, m_pController);
 
+				m_eTakeoveState = STS_SENT_BUDDY_TRANSFER_ACK;
 				return true;
 			}
 			else if (pPacket->getClassType() == PCT_MasterChangeRequestPacket)
@@ -779,7 +780,8 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				bool allow = false;
 				for (std::vector<std::string>::const_iterator cit = m_vApprovedReconnectBuddies.begin(); cit != m_vApprovedReconnectBuddies.end(); cit++)
 				{
-					if (*cit == collaborator->getDescriptor())
+					// TODO: is it a good idea to compare descriptors with full session information?
+					if (*cit == collaborator->getDescriptor(true))
 					{
 						allow = true;
 						break;
@@ -841,7 +843,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				SessionRestartPacket* srp = static_cast<SessionRestartPacket*>(pPacket);
 				// Nuke the current collaboration state, and restart with the
 				// given revision from the proposed master
-				_restartSession(m_pProposedController, srp->getDocUUID(), srp->getRev());
+				UT_return_val_if_fail(_restartSession(m_pProposedController, srp->getDocUUID(), srp->getRev()), false);
 
 				m_eTakeoveState = STS_NONE;
 			}
@@ -893,7 +895,6 @@ bool AbiCollab::_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIde
 		{
 			BuddyPtr pBuddy = *it;
 			UT_continue_if_fail(pBuddy);
-			printf(">>>>>>>. adding buddy identifier: %s\n", pBuddy->getDescriptor(true).utf8_str());
 			buddyIdentifiers.push_back(pBuddy->getDescriptor(true).utf8_str());
 		}
 	}
@@ -917,8 +918,13 @@ bool AbiCollab::_allSlavesAckedMasterChange()
 		(m_mAckedMasterChangeBuddies.size() == m_vCollaborators.size() - 1 /* the proposed new master should not ack */);
 }
 
-void AbiCollab::_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+bool AbiCollab::_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
 {
+	UT_DEBUGMSG(("AbiCollab::_restartSession() - iRev: %d\n", iRev));
+	UT_return_val_if_fail(pController, false);
+
+	m_pController = pController;
+
 	m_Import.slaveInit(pController, iRev);
 	m_Export.slaveInit(sDocUUID, iRev);
 }

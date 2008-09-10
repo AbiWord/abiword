@@ -186,7 +186,7 @@ private:
 	bool								_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
 	bool								_hasAckedMasterChange(BuddyPtr collaborator);
 	bool								_allSlavesAckedMasterChange();
-	void								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	bool								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_shutdownAsMaster();
 	void								_restartAsMaster();
 
