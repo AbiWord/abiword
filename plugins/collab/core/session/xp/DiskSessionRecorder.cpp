@@ -238,7 +238,9 @@ void DiskSessionRecorder::store(bool incoming, const Packet* pPacket, BuddyPtr p
 	os << haveBuddy;
 	if (haveBuddy)
 	{
-		os << const_cast<UT_UTF8String&>(pBuddy->getDescriptor()); // FIXME: this is not guaranteed to be unique; a single author can join a session multiple times
+		// FIXME: this is not guaranteed to be unique; a single author can join a session multiple times
+		UT_UTF8String descr = pBuddy->getDescriptor();
+		os << descr;
 	}
 	
 	// store timestamp, make it 64-bit value always

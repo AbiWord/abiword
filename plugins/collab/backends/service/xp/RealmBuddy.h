@@ -45,14 +45,13 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual const UT_UTF8String& getDescriptor(bool include_session_info = false) const
+	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		static UT_UTF8String descriptor = UT_UTF8String("acn://") + 
+		return UT_UTF8String("acn://") + 
 					boost::lexical_cast<std::string>(m_user_id).c_str() + 
-					(include_session_info ? UT_UTF8String(":") + boost::lexical_cast<std::string>(m_realm_connection_id).c_str() : UT_UTF8String("")) +
+					(include_session_info ? UT_UTF8String(":") + boost::lexical_cast<std::string>((uint32_t)m_realm_connection_id).c_str() : UT_UTF8String("")) +
 					UT_UTF8String("@") + 
 					m_domain.c_str();
-		return descriptor;
 	}
 	
 	virtual UT_UTF8String getDescription() const

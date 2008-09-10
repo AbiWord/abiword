@@ -205,7 +205,7 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 
 BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy()"));
+	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy()\n"));
 	UT_return_val_if_fail(pBuddy, BuddyPtr());
 
 	uint64_t descr_user_id;
@@ -1073,8 +1073,8 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, uint
 	UT_return_val_if_fail(user_id_s.size() > 0, false);
 	try
 	{
-		user_id = boost::lexical_cast<uint8_t>(user_id_s);
-		conn_id = (conn_id_s.size() == 0 ? 0 : boost::lexical_cast<uint8_t>(conn_id_s));
+		user_id = boost::lexical_cast<uint64_t>(user_id_s);
+		conn_id = (uint8_t)(conn_id_s.size() == 0 ? 0 : boost::lexical_cast<uint32_t>(conn_id_s));
 	}
 	catch (boost::bad_lexical_cast&)
 	{

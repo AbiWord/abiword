@@ -40,10 +40,9 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual const UT_UTF8String& getDescriptor(bool include_session_info = false) const
+	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		static UT_UTF8String descriptor = UT_UTF8String("tcp://") + m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
-		return descriptor;
+		return UT_UTF8String("tcp://") + m_server.c_str() + UT_UTF8String(":") + m_port.c_str();
 	}
 	
 	virtual UT_UTF8String getDescription() const

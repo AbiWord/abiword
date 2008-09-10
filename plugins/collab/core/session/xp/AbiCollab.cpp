@@ -749,7 +749,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 	
 				// the proposed new master is waiting now for collaborators to connect;
 				// inform all our slaves that they should reconnect to the proposed new master
-				MasterChangeRequestPacket mcrp(m_sId, m_pDoc->getDocUUIDString(), m_pProposedController->getDescriptor().utf8_str());
+				MasterChangeRequestPacket mcrp(m_sId, m_pDoc->getDocUUIDString(), m_pProposedController->getDescriptor(true).utf8_str());
 				for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 				{
 					BuddyPtr pB = *it;
@@ -893,6 +893,7 @@ bool AbiCollab::_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIde
 		{
 			BuddyPtr pBuddy = *it;
 			UT_continue_if_fail(pBuddy);
+			printf(">>>>>>>. adding buddy identifier: %s\n", pBuddy->getDescriptor(true).utf8_str());
 			buddyIdentifiers.push_back(pBuddy->getDescriptor(true).utf8_str());
 		}
 	}

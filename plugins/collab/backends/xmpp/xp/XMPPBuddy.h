@@ -38,10 +38,9 @@ public:
 	{
 	}
 	
-	virtual const UT_UTF8String& getDescriptor(bool include_session_info = false) const
+	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		static UT_UTF8String descriptor = UT_UTF8String("xmpp://") + m_address.c_str();
-		return descriptor;
+		return UT_UTF8String("xmpp://") + m_address.c_str();
 	}
 	
 	virtual UT_UTF8String		getDescription() const

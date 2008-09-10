@@ -57,7 +57,7 @@ public:
 	// backends that support session takeover
 	// When include_session_info is false, the descriptor only has to include the
 	// information needed to *recognize* a particular author
-	virtual const UT_UTF8String&	getDescriptor(bool include_session_info = false) const = 0;
+	virtual UT_UTF8String		   getDescriptor(bool include_session_info = false) const = 0;
 
 	virtual UT_UTF8String			getDescription() const = 0;
 	AccountHandler*					getHandler() const
