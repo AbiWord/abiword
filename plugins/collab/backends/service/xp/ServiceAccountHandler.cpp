@@ -968,8 +968,9 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 
 						// fall through to handle the packet
 					}
-					else if (pPacket->getClassType() == PCT_SessionRestartPacket)
+					else if (pPacket->getClassType() == PCT_SessionReconnectAckPacket)
 					{
+						UT_DEBUGMSG(("Trapped a SessionReconnectAckPacket!\n"));
 						UT_continue_if_fail(!connection->master());
 
 						// find the old master, and demote him
@@ -979,6 +980,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						{
 							if ((*it)->master())
 							{
+								UT_DEBUGMSG(("Demoting buddy %s\n", (*it)->getDescriptor(true).utf8_str()));
 								(*it)->demote();
 								found = true;
 								break;
@@ -987,7 +989,10 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						UT_continue_if_fail(found);
 
 						// we accept this buddy is our new overload!
+						UT_DEBUGMSG(("Promoting buddy %s\n", buddy_ptr->getDescriptor(true).utf8_str()));
 						buddy_ptr->promote();
+
+						// fall through to handle the packet
 					}
 
 					// let the default handler handle this packet

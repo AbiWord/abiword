@@ -327,7 +327,7 @@ void AbiCollab::push(Packet* pPacket)
 			BuddyPtr pCollaborator = m_vCollaborators[i];
 			UT_continue_if_fail(pCollaborator);
 
-			UT_DEBUGMSG(("Pushing packet to collaborator with name: %s\n", pCollaborator->getDescription().utf8_str()));
+			UT_DEBUGMSG(("Pushing packet to collaborator with descriptor: %s\n", pCollaborator->getDescriptor(true).utf8_str()));
 			AccountHandler* pHandler = pCollaborator->getHandler();
 			UT_continue_if_fail(pHandler);
 
@@ -835,13 +835,11 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 			{
 				// we only accept a SessionRestart packet
 				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionRestartPacket, false);
-				// we only accept said packet when we are a slave
-				UT_return_val_if_fail(m_pController, false);
+				// we only accept said packet from the *new* master (see the STS_SENT_SESSION_RECONNECT_REQUEST case)
+				UT_return_val_if_fail(m_pController == collaborator, false);
 				// we only accept said packet when we are not the proposed master
 				UT_return_val_if_fail(!m_bProposedController, false);
-				// we only accept said packet from the proposed master
-				UT_return_val_if_fail(m_pProposedController == collaborator, false);
-
+				
 				// handle the SessionRestart packet
 				SessionRestartPacket* srp = static_cast<SessionRestartPacket*>(pPacket);
 				// Nuke the current collaboration state, and restart with the
@@ -865,6 +863,12 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				// inform the master that the proposed slave has accepted us
 				MasterChangeAckPacket mcrp(m_sId, m_pDoc->getDocUUIDString());
 				m_pController->getHandler()->send(&mcrp, m_pController);
+
+				// IMPORTANT: from now on the old master is free to disconnect from
+				// our point of view; that means we should switch masters now
+				m_pController = m_pProposedController;
+				m_vCollaborators.clear();
+				addCollaborator(m_pController);
 
 				m_eTakeoveState = STS_SENT_MASTER_CHANGE_ACK;
 			}
@@ -926,10 +930,10 @@ bool AbiCollab::_restartSession(BuddyPtr pController, const UT_UTF8String& sDocU
 	UT_DEBUGMSG(("AbiCollab::_restartSession() - iRev: %d\n", iRev));
 	UT_return_val_if_fail(pController, false);
 
-	m_pController = pController;
-
 	m_Import.slaveInit(pController, iRev);
 	m_Export.slaveInit(sDocUUID, iRev);
+
+	return true;
 }
 
 void AbiCollab::_shutdownAsMaster()
