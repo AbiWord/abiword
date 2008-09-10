@@ -948,8 +948,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						pdp->pDlg->close();
 						continue;
 					}
-				
-					if (pPacket->getClassType() == PCT_SessionTakeoverRequestPacket)
+					else if (pPacket->getClassType() == PCT_SessionTakeoverRequestPacket)
 					{
 						UT_DEBUGMSG(("Trapped a SessionTakeoverRequestPacket!\n"));
 						SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
@@ -968,6 +967,27 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 						}
 
 						// fall through to handle the packet
+					}
+					else if (pPacket->getClassType() == PCT_SessionRestartPacket)
+					{
+						UT_continue_if_fail(!connection->master());
+
+						// find the old master, and demote him
+						bool found = false;
+						std::vector<RealmBuddyPtr> buddies = connection->getBuddies();
+						for (std::vector<RealmBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
+						{
+							if ((*it)->master())
+							{
+								(*it)->demote();
+								found = true;
+								break;
+							}
+						}
+						UT_continue_if_fail(found);
+
+						// we accept this buddy is our new overload!
+						buddy_ptr->promote();
 					}
 
 					// let the default handler handle this packet

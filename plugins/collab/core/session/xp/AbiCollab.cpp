@@ -804,6 +804,8 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 				UT_return_val_if_fail(m_pController == collaborator, false);
 				// handle the SessionTakeoverFinalize packet
 				_restartAsMaster();
+				// we're the master now!
+				m_eTakeoveState = STS_NONE;
 				return true;
 			}
 
@@ -824,6 +826,7 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 			if (_allSlavesAckedMasterChange())
 			{
 				_shutdownAsMaster();
+				// ... our tour of duty is done
 				m_eTakeoveState = STS_NONE;
 			}
 

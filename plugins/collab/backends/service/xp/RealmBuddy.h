@@ -85,8 +85,11 @@ public:
 	}
 	
 	void demote() {
-		UT_ASSERT_HARMLESS(m_master);
 		m_master = false;
+	}
+
+	void promote() {
+		m_master = true;
 	}
 	
 private:
