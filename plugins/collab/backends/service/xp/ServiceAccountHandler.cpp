@@ -22,6 +22,8 @@
 #endif
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_DialogFactory.h"
@@ -204,40 +206,45 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
 BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy()"));
+	UT_return_val_if_fail(pBuddy, BuddyPtr());
 
-	std::string descr_user;
+	uint64_t descr_user_id;
+	uint8_t descr_conn_id;
 	std::string descr_domain;
-	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user, descr_domain), BuddyPtr());
-	UT_DEBUGMSG(("Constructing realm buddy - user: %s, domain: %s\n", descr_user.c_str(), descr_domain.c_str()));
+	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user_id, descr_conn_id, descr_domain), BuddyPtr());
+	UT_DEBUGMSG(("Constructing realm buddy - user_id: %lld, conn_id: %d, domain: %s\n", 
+					descr_user_id, descr_conn_id, descr_domain.c_str()));
 
 	// verify that the uri matches ours
 	UT_return_val_if_fail(descr_domain == _getDomain(), BuddyPtr());
 
-	// search for, and return the requested buddy
+	// Search for, and return the requested buddy
 	// NOTE: we can only 'construct' a buddy that we already know on the same connection as 
 	// the given buddy. This because you can't just invent/guess/whatever a buddy descriptor
 	// and communicate with him (even if the buddy descriptor actually exists)... 
 	// the security mechanism would not allow that
-	UT_return_val_if_fail(pBuddy, BuddyPtr());
-	RealmBuddyPtr pB = boost::static_pointer_cast<RealmBuddy>(pBuddy);
+	RealmBuddyPtr pSessionBuddy = boost::static_pointer_cast<RealmBuddy>(pBuddy);
 
-	ConnectionPtr connection = pB->connection();
+	ConnectionPtr connection = pSessionBuddy->connection();
 	UT_return_val_if_fail(connection, BuddyPtr());
 	for (std::vector<RealmBuddyPtr>::iterator it = connection->getBuddies().begin(); it != connection->getBuddies().end(); it++)
 	{
-		// TODO: implement me
+		RealmBuddyPtr pB = *it;
+		UT_continue_if_fail(pB);
+		if (pB->user_id() == descr_user_id && pB->realm_connection_id() == descr_conn_id)
+			return pB;
 	}
 
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-
+	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 	return BuddyPtr();
 }
 
 bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
 {
-	std::string descr_user;
+	uint64_t descr_user_id;
+	uint8_t descr_conn_id;
 	std::string descr_domain;
-	if (!_splitDescriptor(identifier, descr_user, descr_domain))
+	if (!_splitDescriptor(identifier, descr_user_id, descr_conn_id, descr_domain))
 		return false;
 	if (descr_domain != _getDomain())
 		return false;
@@ -973,30 +980,20 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 					UT_DEBUGMSG(("Received a 'User Joined' packet!\n"));
 					boost::shared_ptr<rpv1::UserJoinedPacket> ujp =
 							boost::static_pointer_cast<rpv1::UserJoinedPacket>(packet);
-					if (connection->master())
-					{
-						UT_DEBUGMSG(("We're master, adding buddy to our buddy list\n"));
-						UT_return_if_fail(!ujp->isMaster());
-						// FIXME: this email field is just wrong!
-						connection->addBuddy(boost::shared_ptr<RealmBuddy>(
-								new RealmBuddy(this, getProperty("email"), _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), false, connection)));
-					}
-					else
-					{
-						if (ujp->isMaster())
-						{
-							UT_DEBUGMSG(("Received master buddy (id: %d); we're slave, adding it to our buddy list!\n", ujp->getConnectionId()));
-							// FIXME: this email field is just wrong!
-							RealmBuddyPtr master_buddy(
-										new RealmBuddy(this, getProperty("email"), _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), true, connection));
-							connection->addBuddy(master_buddy);
+					UT_DEBUGMSG(("User information:\n%s\n", ujp->getUserInfo()->c_str()));
 
-							UT_DEBUGMSG(("Sending join session request to master!\n"));
-							JoinSessionRequestEvent event(connection->session_id().c_str());
-							send(&event, master_buddy);
-						}
-						else
-							UT_DEBUGMSG(("Received a slave buddy (id: %d); we're slave; dropping it on the floor for now\n", ujp->getConnectionId()));
+					uint64_t user_id;
+					UT_return_if_fail(_parseUserInfo(*ujp->getUserInfo(), user_id));
+					UT_DEBUGMSG(("Adding buddy, uid: %lld, cid: %d\n", user_id, ujp->getConnectionId()));
+					RealmBuddyPtr buddy(
+								new RealmBuddy(this, user_id, _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), ujp->isMaster(), connection));
+					connection->addBuddy(buddy);
+
+					if (!connection->master() && ujp->isMaster())
+					{
+						UT_DEBUGMSG(("Sending join session request to master buddy!\n"));
+						JoinSessionRequestEvent event(connection->session_id().c_str());
+						send(&event, buddy);
 					}
 				}
 				break;			
@@ -1052,7 +1049,7 @@ void ServiceAccountHandler::_parseSessionFiles(soa::ArrayPtr files_array, GetSes
 	}
 }
 
-bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std::string& user, std::string& domain)
+bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, uint64_t& user_id, uint8_t& conn_id, std::string& domain)
 {
 	std::string uri_id = "acn://";
 
@@ -1064,8 +1061,27 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, std:
 		return false;
 
 	domain = descriptor.substr(at_pos+1);
-	user = descriptor.substr(uri_id.size(), at_pos - uri_id.size());
-	UT_return_val_if_fail(domain.size() > 0 && user.size() > 0, false);
+	std::string user_part = descriptor.substr(uri_id.size(), at_pos - uri_id.size());
+
+	int colon_pos = user_part.find_first_of(":");
+	if (colon_pos == std::string::npos)
+		return false;
+
+	std::string user_id_s = user_part.substr(0, colon_pos);
+	std::string conn_id_s = user_part.substr(colon_pos+1);
+
+	UT_return_val_if_fail(user_id_s.size() > 0, false);
+	try
+	{
+		user_id = boost::lexical_cast<uint8_t>(user_id_s);
+		conn_id = (conn_id_s.size() == 0 ? 0 : boost::lexical_cast<uint8_t>(conn_id_s));
+	}
+	catch (boost::bad_lexical_cast&)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
 	return true;
 }
 
@@ -1083,4 +1099,34 @@ std::string ServiceAccountHandler::_getDomain()
 	std::string domain = uri.substr(https.size(), slash_pos-https.size());
 	UT_return_val_if_fail(domain.size() > 0, "");
 	return domain;
+}
+
+bool ServiceAccountHandler::_parseUserInfo(const std::string& userinfo, uint64_t& user_id)
+{
+	xmlDocPtr doc = xmlReadMemory(&userinfo[0], userinfo.size(), "noname.xml", NULL, 0);
+	UT_return_val_if_fail(doc, false);
+		
+	xmlNode* rootNode = xmlDocGetRootElement(doc);
+	if (!rootNode || strcasecmp(reinterpret_cast<const char*>(rootNode->name), "user") != 0) {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	xmlChar* id = xmlGetProp(rootNode, reinterpret_cast<const xmlChar*>("id"));
+	std::string id_str = reinterpret_cast<char *>(id); 
+	FREEP(id);
+
+	try
+	{
+		user_id = boost::lexical_cast<uint64_t>(id_str);
+	}
+	catch (boost::bad_lexical_cast&)
+	{
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	xmlFreeDoc(doc);
+	return true;
 }

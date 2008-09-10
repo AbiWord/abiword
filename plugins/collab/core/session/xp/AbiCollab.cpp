@@ -893,7 +893,7 @@ bool AbiCollab::_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIde
 		{
 			BuddyPtr pBuddy = *it;
 			UT_continue_if_fail(pBuddy);
-			buddyIdentifiers.push_back(pBuddy->getDescriptor().utf8_str());
+			buddyIdentifiers.push_back(pBuddy->getDescriptor(true).utf8_str());
 		}
 	}
 	return res;

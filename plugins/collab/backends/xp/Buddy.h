@@ -45,15 +45,19 @@ public:
 	 * Buddy management
 	 */
 	
-	// globally unique, so it can be used to identify authors when they
-	// reconnect or to allow sessions to be taken over.
-	// However some transport backends do not allow that. When a buddy decriptor
-	// is not globally unique, then it should at least uniquely identify a buddy
-	// within a collaboration session.
+	// Should be globally unique if possible, so it can be used to identify 
+	// authors when they reconnect or to allow sessions to be taken over. 
+	// Session takeover can NOT be enabled in the account handler if the buddy 
+	// descriptor is not globally unique.
+	// When a buddy decriptor is not globally unique, then it must at least 
+	// uniquely identify a buddy within a collaboration session.
 	//
-	// For the backends that support it, the descriptor should contain
-	// all the information required to construct a buddy object from it
-	virtual const UT_UTF8String&	getDescriptor() const = 0;
+	// When include_session_info is true, the descriptor should contain
+	// all the information required to construct a buddy object from it for the 
+	// backends that support session takeover
+	// When include_session_info is false, the descriptor only has to include the
+	// information needed to *recognize* a particular author
+	virtual const UT_UTF8String&	getDescriptor(bool include_session_info = false) const = 0;
 
 	virtual UT_UTF8String			getDescription() const = 0;
 	AccountHandler*					getHandler() const

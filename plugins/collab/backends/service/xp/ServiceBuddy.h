@@ -39,8 +39,10 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual const UT_UTF8String& getDescriptor() const
+	virtual const UT_UTF8String& getDescriptor(bool include_session_info = false) const
 	{
+		if (include_session_info)
+			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
 		return descriptor;
 	}

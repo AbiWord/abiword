@@ -19,6 +19,7 @@
 #ifndef __REALM_BUDDY__
 #define __REALM_BUDDY__
 
+#include <stdint.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -32,10 +33,10 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, const std::string& email, const std::string& domain,
+	RealmBuddy(AccountHandler* handler, uint64_t user_id, const std::string& domain,
 					UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
 		: Buddy(handler),
-		m_email(email),
+		m_user_id(user_id),
 		m_domain(domain),
 		m_realm_connection_id(realm_connection_id),
 		m_master(master),
@@ -44,17 +45,19 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual const UT_UTF8String& getDescriptor() const
+	virtual const UT_UTF8String& getDescriptor(bool include_session_info = false) const
 	{
-		static UT_UTF8String descriptor = UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
+		static UT_UTF8String descriptor = UT_UTF8String("acn://") + 
+					boost::lexical_cast<std::string>(m_user_id).c_str() + 
+					(include_session_info ? UT_UTF8String(":") + boost::lexical_cast<std::string>(m_realm_connection_id).c_str() : UT_UTF8String("")) +
+					UT_UTF8String("@") + 
+					m_domain.c_str();
 		return descriptor;
 	}
 	
 	virtual UT_UTF8String getDescription() const
 	{
-		// shouldn't be called from anywhere; instead, ServiceBuddy's are shown in the interface
-		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-		return "";
+		return getDescriptor();
 	}
 	
 	virtual const DocTreeItem* getDocTreeItems() const
@@ -68,6 +71,10 @@ public:
 
 	boost::shared_ptr<RealmConnection> connection() {
 		return m_connection;
+	}
+
+	uint64_t user_id() const {
+		return m_user_id;
 	}
 
 	UT_uint8 realm_connection_id() const {
@@ -84,7 +91,7 @@ public:
 	}
 	
 private:
-	std::string			m_email;
+	uint64_t			m_user_id;
 	std::string			m_domain;
 	UT_uint8			m_realm_connection_id;
 	bool				m_master;
