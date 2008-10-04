@@ -1,5 +1,5 @@
 
-SUBDIRS = scripts strings templates
+SUBDIRS = strings templates
 
 EXTRA_DIST = \
 	$(wp_DATA)
