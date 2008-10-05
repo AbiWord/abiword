@@ -84,8 +84,6 @@ enum PClassType // send over the net to identify classes
 	/* session takeover packets */
 	PCT_SessionTakeoverRequestPacket = 0x40,	// update _PCT_FirstSessionTakeoverPacket if you move this
 	PCT_SessionTakeoverAckPacket,
-	PCT_SessionBuddyTransferRequestPacket,
-	PCT_SessionBuddyTransferAckPacket,
 	PCT_MasterChangeRequestPacket,
 	PCT_MasterChangeAckPacket,
 	PCT_SessionReconnectRequestPacket,
@@ -573,15 +571,22 @@ class SessionTakeoverRequestPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionTakeoverRequestPacket);
 	SessionTakeoverRequestPacket() {}
-	SessionTakeoverRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, bool bPromote);
+	SessionTakeoverRequestPacket(
+		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+	);
 
 	bool				promote() const
 		{ return m_bPromote; }
+
+	const std::vector<std::string>& getBuddyIdentifiers() const
+		{ return m_vBuddyIdentifiers; }
 		
 	virtual std::string toStr() const;
 
 private:
 	bool				m_bPromote;
+	std::vector<std::string>	m_vBuddyIdentifiers;
 };
 
 class SessionTakeoverAckPacket : public AbstractSessionTakeoverPacket
@@ -593,34 +598,6 @@ public:
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;	
-};
-
-class SessionBuddyTransferRequestPacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(SessionBuddyTransferRequestPacket);
-	SessionBuddyTransferRequestPacket() {}
-	SessionBuddyTransferRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-			const std::vector<std::string>& vBuddyIdentifiers);
-
-	const std::vector<std::string>& getBuddyIdentifiers() const
-		{ return m_vBuddyIdentifiers; }
-
-	virtual std::string toStr() const;
-
-private:
-	std::vector<std::string>	m_vBuddyIdentifiers;
-};
-
-class SessionBuddyTransferAckPacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(SessionBuddyTransferAckPacket);
-	SessionBuddyTransferAckPacket() {}
-	SessionBuddyTransferAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
-		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
-
-	virtual std::string toStr() const;
 };
 
 class MasterChangeRequestPacket : public AbstractSessionTakeoverPacket

@@ -38,8 +38,6 @@ REGISTER_PACKET(RevertAckSessionPacket)
 /* session takeover packets */
 REGISTER_PACKET(SessionTakeoverRequestPacket)
 REGISTER_PACKET(SessionTakeoverAckPacket)
-REGISTER_PACKET(SessionBuddyTransferRequestPacket)
-REGISTER_PACKET(SessionBuddyTransferAckPacket)
 REGISTER_PACKET(MasterChangeRequestPacket)
 REGISTER_PACKET(MasterChangeAckPacket);
 REGISTER_PACKET(SessionReconnectRequestPacket)

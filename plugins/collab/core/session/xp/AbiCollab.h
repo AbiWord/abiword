@@ -54,8 +54,6 @@ enum SessionTakeoverState
 	STS_NONE,
 	STS_SENT_TAKEOVER_REQUEST,
 	STS_SENT_TAKEOVER_ACK,
-	STS_SENT_BUDDY_TRANSFER_REQUEST,
-	STS_SENT_BUDDY_TRANSFER_ACK,
 	STS_SENT_MASTER_CHANGE_REQUEST,
 	STS_SENT_MASTER_CHANGE_ACK,
 	STS_SENT_SESSION_RECONNECT_REQUEST
@@ -183,7 +181,6 @@ private:
 	// session takeover
 	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, BuddyPtr collaborator);
 	bool								_hasAckedSessionTakeover(BuddyPtr collaborator);
-	bool								_allSlavesAckedSessionTakover(std::vector<std::string>& buddyIdentifiers);
 	bool								_hasAckedMasterChange(BuddyPtr collaborator);
 	bool								_allSlavesAckedMasterChange();
 	bool								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);

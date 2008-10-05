@@ -837,9 +837,11 @@ bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
 /* ***************************************************** */
 
 SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
-	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, bool bPromote)
-	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
-	m_bPromote(bPromote)
+		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+	) : AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
+	m_bPromote(bPromote),
+	m_vBuddyIdentifiers(vBuddyIdentifiers)
 {
 }
 
@@ -847,12 +849,16 @@ void SessionTakeoverRequestPacket::serialize( Archive& ar )
 {
 	SessionPacket::serialize( ar );
 	ar << m_bPromote;
+	ar << m_vBuddyIdentifiers;
 }
 
 std::string SessionTakeoverRequestPacket::toStr() const
 {
-	return SessionPacket::toStr() +
+	std::string s = SessionPacket::toStr() + 
 		str(boost::format("SessionTakeoverRequestPacket: m_bPromote: %1%\n") % m_bPromote);
+	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
+		s += std::string("  Buddy: ") + *it + "\n";
+	return s;
 }
 
 /* ***************************************************** */
@@ -867,46 +873,6 @@ void SessionTakeoverAckPacket::serialize(Archive& ar)
 std::string SessionTakeoverAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionTakeoverAckPacket\n";
-}
-
-/* ***************************************************** */
-/* *             SessionBuddyTransferRequestPacket       */
-/* ***************************************************** */
-
-SessionBuddyTransferRequestPacket::SessionBuddyTransferRequestPacket(
-	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::vector<std::string>& vBuddyIdentifiers)
-	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
-	m_vBuddyIdentifiers(vBuddyIdentifiers)
-{
-}
-
-void SessionBuddyTransferRequestPacket::serialize( Archive& ar )
-{
-	SessionPacket::serialize( ar );
-	ar << m_vBuddyIdentifiers;
-}
-
-std::string SessionBuddyTransferRequestPacket::toStr() const
-{
-	std::string str = SessionPacket::toStr() +
-		"SessionBuddyTransferRequestPacket:\n";
-	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
-		str += std::string("  Buddy: ") + *it + "\n";
-	return str;
-}
-
-/* ***************************************************** */
-/* *             SessionBuddyTransferAckPacket           */
-/* ***************************************************** */
-
-void SessionBuddyTransferAckPacket::serialize(Archive& ar)
-{
-	SessionPacket::serialize(ar);
-}
-
-std::string SessionBuddyTransferAckPacket::toStr() const
-{
-	return SessionPacket::toStr() + "SessionBuddyTransferAckPacket\n";
 }
 
 /* ***************************************************** */
