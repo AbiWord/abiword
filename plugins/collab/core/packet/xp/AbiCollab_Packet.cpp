@@ -838,9 +838,8 @@ bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
 
 SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
-		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+		const std::vector<std::string>& vBuddyIdentifiers
 	) : AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
-	m_bPromote(bPromote),
 	m_vBuddyIdentifiers(vBuddyIdentifiers)
 {
 }
@@ -848,14 +847,13 @@ SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 void SessionTakeoverRequestPacket::serialize( Archive& ar )
 {
 	SessionPacket::serialize( ar );
-	ar << m_bPromote;
 	ar << m_vBuddyIdentifiers;
 }
 
 std::string SessionTakeoverRequestPacket::toStr() const
 {
 	std::string s = SessionPacket::toStr() + 
-		str(boost::format("SessionTakeoverRequestPacket: m_bPromote: %1%\n") % m_bPromote);
+		"SessionTakeoverRequestPacket\n";
 	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
 		s += std::string("  Buddy: ") + *it + "\n";
 	return s;

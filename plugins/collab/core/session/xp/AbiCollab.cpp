@@ -503,19 +503,8 @@ void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 			buddyIdentifiers.push_back(pBuddy->getDescriptor(true).utf8_str());
 	}
 
-	SessionTakeoverRequestPacket promoteTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), true, buddyIdentifiers);
-	SessionTakeoverRequestPacket normalTakeoverPacket(m_sId, m_pDoc->getDocUUIDString(), false, std::vector<std::string>());
-	for (std::vector<BuddyPtr>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
-	{
-		BuddyPtr pBuddy = *it;
-		UT_continue_if_fail(pBuddy);
-
-		AccountHandler* pHandler = pBuddy->getHandler();
-		UT_continue_if_fail(pHandler);
-
-		pHandler->send(pNewMaster == pBuddy ? &promoteTakeoverPacket : &normalTakeoverPacket, pBuddy);
-	}
-
+	SessionTakeoverRequestPacket strp(m_sId, m_pDoc->getDocUUIDString(), buddyIdentifiers);
+	pNewMaster->getHandler()->send(&strp, pNewMaster);
 	m_eTakeoveState = STS_SENT_TAKEOVER_REQUEST;
 }
 
@@ -624,27 +613,48 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 	{
 		case STS_NONE:
 			{
-				// only the SessionTakeoverRequest packet initiates the whole
-				// session takeover process
-				UT_return_val_if_fail(pPacket->getClassType() == PCT_SessionTakeoverRequestPacket, false);
-				// we can only allow a SessionTakeoverRequest packet from the controller
+				// we only accept a SessionTakeoverRequest or MasterChangeRequest packet
+				UT_return_val_if_fail(
+						pPacket->getClassType() == PCT_SessionTakeoverRequestPacket ||
+						pPacket->getClassType() == PCT_MasterChangeRequestPacket,
+						false);
+				// we can only allow such a packet from the controller
 				UT_return_val_if_fail(m_pController == collaborator, false);
 
-				// handle the SessionTakeoverRequestPacket packet
-				SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
-				m_bProposedController = strp->promote();
-				m_pProposedController = BuddyPtr(); // will be filled in later when we are not the one being promoted
-
-				if (m_bProposedController)
+				if (pPacket->getClassType() == PCT_SessionTakeoverRequestPacket)
+				{
+					// handle the SessionTakeoverRequestPacket packet
+					SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
+					m_bProposedController = true;
 					m_vApprovedReconnectBuddies = strp->getBuddyIdentifiers();
 
-				// inform the master that we receive the takeover initiation request
-				SessionTakeoverAckPacket stap(m_sId, m_pDoc->getDocUUIDString());
-				collaborator->getHandler()->send(&stap, collaborator);
+					// inform the master that we receive the takeover initiation request
+					SessionTakeoverAckPacket stap(m_sId, m_pDoc->getDocUUIDString());
+					collaborator->getHandler()->send(&stap, collaborator);
 
-				m_eTakeoveState = STS_SENT_TAKEOVER_ACK;
+					m_eTakeoveState = STS_SENT_TAKEOVER_ACK;
+					return true;
+				}
+				else if (pPacket->getClassType() == PCT_MasterChangeRequestPacket)
+				{
+					// we only accept a MasterChangeRequest packet when we are not the proposed master
+					UT_return_val_if_fail(!m_bProposedController, false);
+
+					// handle the MasterChangeRequest packet
+					MasterChangeRequestPacket* mcrp = static_cast<MasterChangeRequestPacket*>(pPacket);
+					BuddyPtr pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier(), collaborator);
+					UT_return_val_if_fail(pBuddy, false);
+					m_pProposedController = pBuddy;
+
+					// inform the new master that we want to rejoin the session
+					SessionReconnectRequestPacket srrp(m_sId, m_pDoc->getDocUUIDString());
+					pBuddy->getHandler()->send(&srrp, pBuddy);
+				
+					m_eTakeoveState = STS_SENT_SESSION_RECONNECT_REQUEST;
+					return true;
+				}
 			}
-			return true;
+			return false;
 		case STS_SENT_TAKEOVER_REQUEST:
 			{
 				// we only accept SessionTakeoverAck packets
@@ -693,35 +703,16 @@ bool AbiCollab::_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, B
 
 			return true;
 		case STS_SENT_TAKEOVER_ACK:
-			// we only accept a SessionTakeoverFinalize, SessionReconnectRequest or MasterChangeRequest packet
+			// we only accept a SessionTakeoverFinalize or SessionReconnectRequest packet
 			UT_return_val_if_fail(
 						pPacket->getClassType() == PCT_SessionTakeoverFinalizePacket ||
-						pPacket->getClassType() == PCT_SessionReconnectRequestPacket ||
-						pPacket->getClassType() == PCT_MasterChangeRequestPacket,
+						pPacket->getClassType() == PCT_SessionReconnectRequestPacket,
 						false
 					);
 			// we only accept said packets when we are a slave
 			UT_return_val_if_fail(m_pController, false);
 
-			if (pPacket->getClassType() == PCT_MasterChangeRequestPacket)
-			{
-				// we only accept a MasterChangeRequest packet when we are not the proposed master
-				UT_return_val_if_fail(!m_bProposedController, false);
-
-				// handle the MasterChangeRequest packet
-				MasterChangeRequestPacket* mcrp = static_cast<MasterChangeRequestPacket*>(pPacket);
-				BuddyPtr pBuddy = pManager->constructBuddy(mcrp->getBuddyIdentifier(), collaborator);
-				UT_return_val_if_fail(pBuddy, false);
-				m_pProposedController = pBuddy;
-
-				// inform the new master that we want to rejoin the session
-				SessionReconnectRequestPacket srrp(m_sId, m_pDoc->getDocUUIDString());
-				pBuddy->getHandler()->send(&srrp, pBuddy);
-				
-				m_eTakeoveState = STS_SENT_SESSION_RECONNECT_REQUEST;
-				return true;
-			}
-			else if (pPacket->getClassType() == PCT_SessionReconnectRequestPacket)
+			if (pPacket->getClassType() == PCT_SessionReconnectRequestPacket)
 			{
 				// we only accept a SessionReconnectRequest when we are the proposed master
 				UT_return_val_if_fail(m_bProposedController, false);

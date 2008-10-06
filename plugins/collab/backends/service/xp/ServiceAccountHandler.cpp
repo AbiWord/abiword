@@ -950,21 +950,17 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 					}
 					else if (pPacket->getClassType() == PCT_SessionTakeoverRequestPacket)
 					{
-						UT_DEBUGMSG(("Trapped a SessionTakeoverRequestPacket!\n"));
+						UT_DEBUGMSG(("Trapped a SessionTakeoverRequestPacket; we're the new master, informing the realm!\n"));
 						SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
-						if (strp->promote())
-						{
-							UT_DEBUGMSG(("We're the designated new master, informing the realm!\n"));
-							boost::shared_ptr<rpv1::SessionTakeOverPacket> stop(new rpv1::SessionTakeOverPacket());
-							rpv1::send(*stop, connection->socket(), 
-									boost::bind(&ServiceAccountHandler::_write_result, this,
-										asio::placeholders::error, asio::placeholders::bytes_transferred, connection,
-											boost::static_pointer_cast<rpv1::Packet>(stop))	
-								);
+						boost::shared_ptr<rpv1::SessionTakeOverPacket> stop(new rpv1::SessionTakeOverPacket());
+						rpv1::send(*stop, connection->socket(), 
+								boost::bind(&ServiceAccountHandler::_write_result, this,
+									asio::placeholders::error, asio::placeholders::bytes_transferred, connection,
+										boost::static_pointer_cast<rpv1::Packet>(stop))	
+							);
 
-							// promote this connection to master
-							connection->promote();
-						}
+						// promote this connection to master
+						connection->promote();
 
 						// fall through to handle the packet
 					}

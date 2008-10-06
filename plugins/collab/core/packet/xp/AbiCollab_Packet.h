@@ -573,11 +573,8 @@ public:
 	SessionTakeoverRequestPacket() {}
 	SessionTakeoverRequestPacket(
 		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+		const std::vector<std::string>& vBuddyIdentifiers
 	);
-
-	bool				promote() const
-		{ return m_bPromote; }
 
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
