@@ -183,7 +183,7 @@ private:
 	bool								_hasAckedSessionTakeover(BuddyPtr collaborator);
 	bool								_hasAckedMasterChange(BuddyPtr collaborator);
 	bool								_allSlavesAckedMasterChange();
-	bool								_restartSession(BuddyPtr pController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	bool								_restartSession(BuddyPtr pNewController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_shutdownAsMaster();
 	void								_restartAsMaster();
 

@@ -86,10 +86,9 @@ enum PClassType // send over the net to identify classes
 	PCT_SessionTakeoverAckPacket,
 	PCT_MasterChangeRequestPacket,
 	PCT_MasterChangeAckPacket,
+	PCT_SessionFlushedPacket,
 	PCT_SessionReconnectRequestPacket,
-	PCT_SessionReconnectAckPacket,
-	PCT_SessionTakeoverFinalizePacket,
-	PCT_SessionRestartPacket,					// update _PCT_LastSessionTakeoverPacket and _PCT_LastSessionPacket if you move this
+	PCT_SessionReconnectAckPacket,				// update _PCT_LastSessionTakeoverPacket and _PCT_LastSessionPacket if you move this
 
 	//
 	// events
@@ -116,13 +115,13 @@ enum PClassType // send over the net to identify classes
 	// meta values (KEEP THESE UPDATED WHEN ADDING NEW PACKET TYPES!!)
 	//
 	_PCT_FirstSessionPacket = PCT_SignalSessionPacket,
-	_PCT_LastSessionPacket = PCT_SessionRestartPacket,
+	_PCT_LastSessionPacket = PCT_SessionReconnectAckPacket,
 	
 	_PCT_FirstChangeRecord = PCT_ChangeRecordSessionPacket,
 	_PCT_LastChangeRecord = PCT_Glob_ChangeRecordSessionPacket,
 	
 	_PCT_FirstSessionTakeoverPacket = PCT_SessionTakeoverRequestPacket,
-	_PCT_LastSessionTakeoverPacket = PCT_SessionRestartPacket,
+	_PCT_LastSessionTakeoverPacket = PCT_SessionReconnectAckPacket,
 	
 	_PCT_FirstEvent = PCT_AccountNewEvent,
 	_PCT_LastEvent = PCT_GetSessionsResponseEvent
@@ -625,6 +624,17 @@ public:
 	virtual std::string toStr() const;
 };
 
+class SessionFlushedPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionFlushedPacket);
+	SessionFlushedPacket() {}
+	SessionFlushedPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
+
+	virtual std::string toStr() const;
+};
+
 class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
 {
 public:
@@ -641,35 +651,14 @@ class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
 public:
 	DECLARE_PACKET(SessionReconnectAckPacket);
 	SessionReconnectAckPacket() {}
-	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
-		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
-	
-	virtual std::string toStr() const;
-};
-
-class SessionTakeoverFinalizePacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(SessionTakeoverFinalizePacket);
-	SessionTakeoverFinalizePacket() {}
-	SessionTakeoverFinalizePacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
-		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
-
-	virtual std::string toStr() const;
-};
-
-class SessionRestartPacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(SessionRestartPacket);
-	SessionRestartPacket() {}
-	SessionRestartPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-			UT_sint32 iRev);
+	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		UT_sint32 iRev);
 
 	UT_sint32					getRev() const
 		{ return m_iRev; }
-
+	
 	virtual std::string toStr() const;
+
 private:
 	UT_sint32					m_iRev;	
 };

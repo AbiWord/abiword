@@ -911,6 +911,20 @@ std::string MasterChangeAckPacket::toStr() const
 }
 
 /* ***************************************************** */
+/* *             SessionFlushedPacket                    */
+/* ***************************************************** */
+
+void SessionFlushedPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
+std::string SessionFlushedPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionFlushedPacket\n";
+}
+
+/* ***************************************************** */
 /* *             SessionReconnectRequestPacket           */
 /* ***************************************************** */
 
@@ -928,49 +942,21 @@ std::string SessionReconnectRequestPacket::toStr() const
 /* *             SessionReconnectAckPacket               */
 /* ***************************************************** */
 
-void SessionReconnectAckPacket::serialize(Archive& ar)
-{
-	SessionPacket::serialize(ar);
-}
-
-std::string SessionReconnectAckPacket::toStr() const
-{
-	return SessionPacket::toStr() + "SessionReconnectAckPacket\n";
-}
-
-/* ***************************************************** */
-/* *             SessionTakeoverFinalizePacket           */
-/* ***************************************************** */
-
-void SessionTakeoverFinalizePacket::serialize(Archive& ar)
-{
-	SessionPacket::serialize(ar);
-}
-
-std::string SessionTakeoverFinalizePacket::toStr() const
-{
-	return SessionPacket::toStr() + "SessionTakeoverFinalizePacket\n";
-}
-
-/* ***************************************************** */
-/* *             SessionRestartPacket                    */
-/* ***************************************************** */
-
-SessionRestartPacket::SessionRestartPacket(
+SessionReconnectAckPacket::SessionReconnectAckPacket(
 	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
 	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
 	m_iRev(iRev)
 {
 }
 
-void SessionRestartPacket::serialize( Archive& ar )
+void SessionReconnectAckPacket::serialize(Archive& ar)
 {
-	SessionPacket::serialize( ar );
+	SessionPacket::serialize(ar);
 	ar << m_iRev;
 }
 
-std::string SessionRestartPacket::toStr() const
+std::string SessionReconnectAckPacket::toStr() const
 {
 	return SessionPacket::toStr() +
-		str(boost::format("SessionRestartPacket: m_iRev: %1%\n") % m_iRev);
+		str(boost::format("SessionReconnectAckPacket: m_iRev: %1%\n") % m_iRev);
 }

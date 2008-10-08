@@ -40,7 +40,6 @@ REGISTER_PACKET(SessionTakeoverRequestPacket)
 REGISTER_PACKET(SessionTakeoverAckPacket)
 REGISTER_PACKET(MasterChangeRequestPacket)
 REGISTER_PACKET(MasterChangeAckPacket);
+REGISTER_PACKET(SessionFlushedPacket)
 REGISTER_PACKET(SessionReconnectRequestPacket)
 REGISTER_PACKET(SessionReconnectAckPacket)
-REGISTER_PACKET(SessionTakeoverFinalizePacket)
-REGISTER_PACKET(SessionRestartPacket)
