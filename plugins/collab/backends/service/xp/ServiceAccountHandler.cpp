@@ -950,43 +950,52 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 					}
 					else if (pPacket->getClassType() == PCT_SessionTakeoverRequestPacket)
 					{
-						UT_DEBUGMSG(("Trapped a SessionTakeoverRequestPacket; we're the new master, informing the realm!\n"));
+						UT_DEBUGMSG(("Trapped a SessionTakeoverRequestPacket\n"));
 						SessionTakeoverRequestPacket* strp = static_cast<SessionTakeoverRequestPacket*>(pPacket);
-						boost::shared_ptr<rpv1::SessionTakeOverPacket> stop(new rpv1::SessionTakeOverPacket());
-						rpv1::send(*stop, connection->socket(), 
-								boost::bind(&ServiceAccountHandler::_write_result, this,
-									asio::placeholders::error, asio::placeholders::bytes_transferred, connection,
-										boost::static_pointer_cast<rpv1::Packet>(stop))	
-							);
 
-						// promote this connection to master
-						connection->promote();
-
-						// fall through to handle the packet
-					}
-					else if (pPacket->getClassType() == PCT_SessionReconnectAckPacket)
-					{
-						UT_DEBUGMSG(("Trapped a SessionReconnectAckPacket!\n"));
-						UT_continue_if_fail(!connection->master());
-
-						// find the old master, and demote him
-						bool found = false;
-						std::vector<RealmBuddyPtr> buddies = connection->getBuddies();
-						for (std::vector<RealmBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
+						if (strp->promote())
 						{
-							if ((*it)->master())
-							{
-								UT_DEBUGMSG(("Demoting buddy %s\n", (*it)->getDescriptor(true).utf8_str()));
-								(*it)->demote();
-								found = true;
-								break;
-							}
-						}
-						UT_continue_if_fail(found);
+							UT_DEBUGMSG(("We're the new master, informing the realm!\n"));
+							boost::shared_ptr<rpv1::SessionTakeOverPacket> stop(new rpv1::SessionTakeOverPacket());
+							rpv1::send(*stop, connection->socket(), 
+									boost::bind(&ServiceAccountHandler::_write_result, this,
+										asio::placeholders::error, asio::placeholders::bytes_transferred, connection,
+											boost::static_pointer_cast<rpv1::Packet>(stop))	
+								);
 
-						// we accept this buddy is our new overload!
-						UT_DEBUGMSG(("Promoting buddy %s\n", buddy_ptr->getDescriptor(true).utf8_str()));
-						buddy_ptr->promote();
+							// promote this connection to master
+							connection->promote();
+						}
+						else
+						{
+							UT_DEBUGMSG(("We're getting a new master!\n"));
+
+							// find the old master, and demote him
+							bool found = false;
+							std::vector<RealmBuddyPtr> buddies = connection->getBuddies();
+							for (std::vector<RealmBuddyPtr>::iterator it = buddies.begin(); it != buddies.end(); it++)
+							{
+								if ((*it)->master())
+								{
+									UT_DEBUGMSG(("Demoting buddy %s\n", (*it)->getDescriptor(true).utf8_str()));
+									(*it)->demote();
+									found = true;
+									break;
+								}
+							}
+							UT_continue_if_fail(found);
+							UT_continue_if_fail(strp->getBuddyIdentifiers().size() == 1);
+
+							// we accept the new buddy as our new overload!
+							// NOTE: constructBuddy won't really construct a new buddy object in this
+							// account handler, but will simply return the already existing buddy object
+							// with the given buddy identifier
+							BuddyPtr pNewMaster = constructBuddy(strp->getBuddyIdentifiers()[0], buddy_ptr);
+							UT_continue_if_fail(pNewMaster);
+							UT_DEBUGMSG(("Promoting buddy %s\n", pNewMaster->getDescriptor(true).utf8_str()));
+							RealmBuddyPtr pB = boost::static_pointer_cast<RealmBuddy>(pNewMaster);
+							pB->promote();
+						}
 
 						// fall through to handle the packet
 					}

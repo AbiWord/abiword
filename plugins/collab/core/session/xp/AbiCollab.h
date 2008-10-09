@@ -54,8 +54,6 @@ enum SessionTakeoverState
 	STS_NONE,
 	STS_SENT_TAKEOVER_REQUEST,
 	STS_SENT_TAKEOVER_ACK,
-	STS_SENT_MASTER_CHANGE_REQUEST,
-	STS_SENT_MASTER_CHANGE_ACK,
 	STS_SENT_SESSION_RECONNECT_REQUEST
 };	
 
@@ -181,10 +179,13 @@ private:
 	// session takeover
 	bool								_handleSessionTakeover(AbstractSessionTakeoverPacket* pPacket, BuddyPtr collaborator);
 	bool								_hasAckedSessionTakeover(BuddyPtr collaborator);
-	bool								_hasAckedMasterChange(BuddyPtr collaborator);
-	bool								_allSlavesAckedMasterChange();
-	bool								_restartSession(BuddyPtr pNewController, const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	bool								_allSlavesAckedSessionTakeover();
+	void								_switchMaster();
+	void								_becomeMaster();
+	bool								_restartSession(const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_shutdownAsMaster();
+	bool								_allSlavesReconnected();
+	void								_checkRestartAsMaster();
 	void								_restartAsMaster();
 
 	PD_Document *						m_pDoc;
@@ -218,9 +219,9 @@ private:
 	SessionTakeoverState				m_eTakeoveState;
 	bool								m_bProposedController;
 	BuddyPtr							m_pProposedController;
-	std::vector<std::string>			m_vApprovedReconnectBuddies;
+	std::map<std::string, bool>			m_vApprovedReconnectBuddies;
 	std::map<BuddyPtr, bool>			m_mAckedSessionTakeoverBuddies; // only used by the session controller
-	std::map<BuddyPtr, bool>			m_mAckedMasterChangeBuddies; // only used by the session controller
+	bool								m_bSessionFlushed;
 	
 protected:
 	class PacketVector : public std::vector<Packet*>

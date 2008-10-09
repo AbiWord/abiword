@@ -84,8 +84,6 @@ enum PClassType // send over the net to identify classes
 	/* session takeover packets */
 	PCT_SessionTakeoverRequestPacket = 0x40,	// update _PCT_FirstSessionTakeoverPacket if you move this
 	PCT_SessionTakeoverAckPacket,
-	PCT_MasterChangeRequestPacket,
-	PCT_MasterChangeAckPacket,
 	PCT_SessionFlushedPacket,
 	PCT_SessionReconnectRequestPacket,
 	PCT_SessionReconnectAckPacket,				// update _PCT_LastSessionTakeoverPacket and _PCT_LastSessionPacket if you move this
@@ -572,8 +570,11 @@ public:
 	SessionTakeoverRequestPacket() {}
 	SessionTakeoverRequestPacket(
 		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-		const std::vector<std::string>& vBuddyIdentifiers
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
 	);
+
+	bool promote() const
+		{ return m_bPromote; }
 
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
@@ -581,7 +582,7 @@ public:
 	virtual std::string toStr() const;
 
 private:
-	bool				m_bPromote;
+	bool						m_bPromote;
 	std::vector<std::string>	m_vBuddyIdentifiers;
 };
 
@@ -594,34 +595,6 @@ public:
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
 	virtual std::string toStr() const;	
-};
-
-class MasterChangeRequestPacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(MasterChangeRequestPacket);
-	MasterChangeRequestPacket() {}
-	MasterChangeRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
-			const std::string& sBuddyIdentifier);
-
-	const std::string&			getBuddyIdentifier()
-		{ return m_sBuddyIdentifier; }
-
-	virtual std::string toStr() const;
-
-private:
-	std::string					m_sBuddyIdentifier;
-};
-
-class MasterChangeAckPacket : public AbstractSessionTakeoverPacket
-{
-public:
-	DECLARE_PACKET(MasterChangeAckPacket);
-	MasterChangeAckPacket() {}
-	MasterChangeAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
-		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
-
-	virtual std::string toStr() const;
 };
 
 class SessionFlushedPacket : public AbstractSessionTakeoverPacket

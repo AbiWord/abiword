@@ -838,8 +838,9 @@ bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
 
 SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
-		const std::vector<std::string>& vBuddyIdentifiers
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
 	) : AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
+	m_bPromote(bPromote),
 	m_vBuddyIdentifiers(vBuddyIdentifiers)
 {
 }
@@ -847,13 +848,16 @@ SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
 void SessionTakeoverRequestPacket::serialize( Archive& ar )
 {
 	SessionPacket::serialize( ar );
+	ar << m_bPromote;
 	ar << m_vBuddyIdentifiers;
 }
 
 std::string SessionTakeoverRequestPacket::toStr() const
 {
 	std::string s = SessionPacket::toStr() + 
-		"SessionTakeoverRequestPacket\n";
+		"SessionTakeoverRequestPacket:\n  promote: ";
+	s += m_bPromote ? "true" : "false";
+	s += "\n";
 	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
 		s += std::string("  Buddy: ") + *it + "\n";
 	return s;
@@ -871,43 +875,6 @@ void SessionTakeoverAckPacket::serialize(Archive& ar)
 std::string SessionTakeoverAckPacket::toStr() const
 {
 	return SessionPacket::toStr() + "SessionTakeoverAckPacket\n";
-}
-
-/* ***************************************************** */
-/* *             MasterChangeRequestPacket               */
-/* ***************************************************** */
-
-MasterChangeRequestPacket::MasterChangeRequestPacket(
-	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, const std::string& sBuddyIdentifier)
-	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
-	m_sBuddyIdentifier(sBuddyIdentifier)
-{
-}
-
-void MasterChangeRequestPacket::serialize( Archive& ar )
-{
-	SessionPacket::serialize( ar );
-	ar << m_sBuddyIdentifier;
-}
-
-std::string MasterChangeRequestPacket::toStr() const
-{
-	return SessionPacket::toStr() +
-		std::string("MasterChangeRequestPacket: m_sBuddyIdentifier: ") + m_sBuddyIdentifier + "\n";
-}
-
-/* ***************************************************** */
-/* *             MasterChangeAckPacket                   */
-/* ***************************************************** */
-
-void MasterChangeAckPacket::serialize(Archive& ar)
-{
-	SessionPacket::serialize(ar);
-}
-
-std::string MasterChangeAckPacket::toStr() const
-{
-	return SessionPacket::toStr() + "MasterChangeAckPacket\n";
 }
 
 /* ***************************************************** */
