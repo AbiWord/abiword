@@ -125,10 +125,10 @@ public:
 		{ return &m_Import; }
 	ABI_Collab_Export*					getExport(void)
 		{ return &m_Export; }
-	void								push(Packet* pPacket);
-	bool								push(Packet* pPacket, BuddyPtr collaborator);
+	void								push(SessionPacket* pPacket);
+	bool								push(SessionPacket* pPacket, BuddyPtr collaborator);
 	void								maskExport();
-	virtual const std::vector<Packet*>&	unmaskExport();
+	virtual const std::vector<SessionPacket*>&	unmaskExport();
 	bool								isExportMasked(void) const
 		{ return m_bExportMasked; }
 	void								import(SessionPacket* pPacket, BuddyPtr collaborator);
@@ -224,17 +224,17 @@ private:
 	bool								m_bSessionFlushed;
 	
 protected:
-	class PacketVector : public std::vector<Packet*>
+	class SessionPacketVector : public std::vector<SessionPacket*>
 	{
 	public:
-		~PacketVector() { clear(); }	// so it's autocleaned on destroy!
+		~SessionPacketVector() { clear(); }	// so it's autocleaned on destroy!
 		void clear()
 		{
 			for (size_t i=0; i<size(); ++i)
 			{
 				DELETEP((*this)[i]);
 			}
-			std::vector<Packet*>::clear();
+			std::vector<SessionPacket*>::clear();
 		};
 	} m_vecMaskedPackets; // packets that are generated during the import of a packet
 };

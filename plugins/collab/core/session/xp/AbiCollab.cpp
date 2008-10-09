@@ -303,7 +303,7 @@ void AbiCollab::_fillRemoteRev(Packet* pPacket, BuddyPtr pBuddy)
  *	Send this packet. Note, the specified packet does still belong to the calling class.
  *	So if we want to store it (for masking), we HAVE to clone it first
  */
-void AbiCollab::push(Packet* pPacket)
+void AbiCollab::push(SessionPacket* pPacket)
 {
 	UT_DEBUGMSG(("AbiCollab::push()\n"));
 	UT_return_if_fail(pPacket);
@@ -314,13 +314,13 @@ void AbiCollab::push(Packet* pPacket)
 	}
 	else if (m_bExportMasked)
 	{
-		m_vecMaskedPackets.push_back( pPacket->clone() );
+		m_vecMaskedPackets.push_back( static_cast<SessionPacket*>(pPacket->clone()) );
 	}
 	else
 	{
 		// record
 		if (m_pRecorder)
-			m_pRecorder->storeOutgoing( const_cast<const Packet*>( pPacket ) );
+			m_pRecorder->storeOutgoing( const_cast<const SessionPacket*>( pPacket ) );
 		
 		// TODO: this could go in the session manager
 		UT_DEBUGMSG(("Pusing packet to %d collaborators\n", m_vCollaborators.size()));
@@ -344,7 +344,7 @@ void AbiCollab::push(Packet* pPacket)
 	}
 }
 
-bool AbiCollab::push(Packet* pPacket, BuddyPtr collaborator)
+bool AbiCollab::push(SessionPacket* pPacket, BuddyPtr collaborator)
 {
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(collaborator, false);
@@ -353,7 +353,7 @@ bool AbiCollab::push(Packet* pPacket, BuddyPtr collaborator)
 	
 	// record
 	if (m_pRecorder)
-		m_pRecorder->storeOutgoing(const_cast<const Packet*>( pPacket ), collaborator);
+		m_pRecorder->storeOutgoing(const_cast<const SessionPacket*>( pPacket ), collaborator);
 
 	// overwrite remote revision for this collaborator
 	_fillRemoteRev(pPacket, collaborator);
@@ -372,7 +372,7 @@ void AbiCollab::maskExport()
 	m_vecMaskedPackets.clear();
 }
 
-const std::vector<Packet*>& AbiCollab::unmaskExport()
+const std::vector<SessionPacket*>& AbiCollab::unmaskExport()
 {
 	m_bExportMasked = false;
 	return m_vecMaskedPackets;
@@ -434,7 +434,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 		m_pActivePacket = static_cast<const AbstractChangeRecordSessionPacket*>(pPacket);
 	m_Import.import(*pPacket, collaborator);
 	m_pActivePacket = NULL;
-	const std::vector<Packet*>& maskedPackets = unmaskExport();
+	const std::vector<SessionPacket*>& maskedPackets = unmaskExport();
 	
 	if (isLocallyControlled() && maskedPackets.size() > 0)
 	{
@@ -451,9 +451,9 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 			if (pBuddy != collaborator)
 			{
 				UT_DEBUGMSG(("Forwarding message from %s to %s\n", collaborator->getDescription().utf8_str(), pBuddy->getDescription().utf8_str()));
-				for (std::vector<Packet*>::const_iterator cit = maskedPackets.begin(); cit != maskedPackets.end(); cit++)
+				for (std::vector<SessionPacket*>::const_iterator cit = maskedPackets.begin(); cit != maskedPackets.end(); cit++)
 				{
-					Packet* maskedPacket = (*cit);
+					SessionPacket* maskedPacket = (*cit);
 					push(maskedPacket, pBuddy);
 				}
 			}
