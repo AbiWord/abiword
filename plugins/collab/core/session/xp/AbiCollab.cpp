@@ -607,8 +607,6 @@ void AbiCollab::_releaseMouseDrag()
 		
 		if (pair.first && pair.second)
 			import(pair.first, pair.second);
-		else
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 
 		DELETEP(pair.first);
 	}
