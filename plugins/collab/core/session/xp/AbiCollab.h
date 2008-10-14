@@ -162,6 +162,22 @@ public:
 	// mouse listener functionality
 	virtual void						signalMouse(EV_EditBits eb, UT_sint32 xPos, UT_sint32 yPos);
 
+protected:
+	// TODO: make all Packets shared pointers, so this isn't needed anymore
+	class SessionPacketVector : public std::vector<SessionPacket*>
+	{
+	public:
+		~SessionPacketVector() { clear(); }	// so it's autocleaned on destroy!
+		void clear()
+		{
+			for (size_t i=0; i<size(); ++i)
+			{
+				DELETEP((*this)[i]);
+			}
+			std::vector<SessionPacket*>::clear();
+		};
+	} m_vecMaskedPackets; // packets that are generated during the import of a packet
+
 private:
 	// collaborator management
 	void								_removeCollaborator(UT_sint32 index);
@@ -182,11 +198,12 @@ private:
 	bool								_allSlavesAckedSessionTakeover();
 	void								_switchMaster();
 	void								_becomeMaster();
-	bool								_restartSession(const UT_UTF8String& sDocUUID, UT_sint32 iRev);
+	bool								_restartAsSlave(const UT_UTF8String& sDocUUID, UT_sint32 iRev);
 	void								_shutdownAsMaster();
 	bool								_allSlavesReconnected();
 	void								_checkRestartAsMaster();
 	void								_restartAsMaster();
+	void								_pushOutgoingQueue();
 
 	PD_Document *						m_pDoc;
 	XAP_Frame*							m_pFrame;
@@ -222,21 +239,7 @@ private:
 	std::map<std::string, bool>			m_vApprovedReconnectBuddies;
 	std::map<BuddyPtr, bool>			m_mAckedSessionTakeoverBuddies; // only used by the session controller
 	bool								m_bSessionFlushed;
-	
-protected:
-	class SessionPacketVector : public std::vector<SessionPacket*>
-	{
-	public:
-		~SessionPacketVector() { clear(); }	// so it's autocleaned on destroy!
-		void clear()
-		{
-			for (size_t i=0; i<size(); ++i)
-			{
-				DELETEP((*this)[i]);
-			}
-			std::vector<SessionPacket*>::clear();
-		};
-	} m_vecMaskedPackets; // packets that are generated during the import of a packet
+	SessionPacketVector					m_vOutgoingQueue;
 };
 
 #endif /* ABI_COLLAB_H */
