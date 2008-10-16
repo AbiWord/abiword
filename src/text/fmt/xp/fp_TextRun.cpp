@@ -1027,7 +1027,7 @@ bool fp_TextRun::canMergeWithNext(void)
 //
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
-	text.setPosition(getLength()-1);
+	text.setPosition(getLength()); 
 	if(UT_UCS4_isspace(text.getChar()))
 	{
 		return false;
