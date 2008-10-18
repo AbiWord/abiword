@@ -79,7 +79,6 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     const gchar* pValue;
     bool ok;
     const gchar* pVar;
-    UT_uint32 i;
     ODe_Style_Style* pStyle;
     std::string buffer;
     UT_UTF8String styleName;
@@ -349,30 +348,34 @@ void ODe_Table_Listener::_buildTable() {
  * 
  */
 void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
-    const gchar* pValue;
-    bool ok;
+    const gchar* pValue = NULL;
+    bool ok = false;
     
     ok = pAP->getProperty("left-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing left-attach property\n"));
+        return;
     }
     m_leftAttach = atoi(pValue);
     
     ok = pAP->getProperty("right-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing right-attach property\n"));
+        return;
     }
     m_rightAttach = atoi(pValue);
 
     ok = pAP->getProperty("top-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing top-attach property\n"));
+        return;
     }
     m_topAttach = atoi(pValue);
 
     ok = pAP->getProperty("bot-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing bot-attach property\n"));
+        return;
     }
     m_bottomAttach = atoi(pValue);
 
