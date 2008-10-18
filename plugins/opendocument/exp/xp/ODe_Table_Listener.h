@@ -149,6 +149,8 @@ private:
     // <table> element), but OpenDocument don't.
     // So I have to propagate this properties into every cell of this table.
     ODe_Style_Style* m_pTableWideCellStyle;
+    UT_GenericVector<UT_UTF8String*> columnStyleNames;
+    UT_GenericVector<UT_UTF8String*> rowStyleNames;
 };
 
 #endif /*ODE_TABLE_LISTENER_H_*/
