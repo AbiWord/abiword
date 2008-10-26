@@ -665,7 +665,7 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		// select first
 		GtkTreePath *path = gtk_tree_path_new_from_string("0");
 		gtk_tree_selection_select_path(selection, path);
-		g_free(path);
+		gtk_tree_path_free(path);
 	}
 	
 	// selection "changed" doesn't fire here, so hack manually
