@@ -3638,7 +3638,7 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 
 static double fontPoints2float(UT_uint32 iSize, UT_uint32 iFontPoints)
 {
-	return iSize * ((double)iFontPoints / PANGO_SCALE) * 1.44;
+	return iSize * ((double)iFontPoints / PANGO_SCALE) * 1.44/20.; // Last 20 is points to inches
 }
 
 static PangoGlyph getGlyphForChar(UT_UCS4Char g,
@@ -3717,7 +3717,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	
 	rec.height = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.height));
 
-	xxx_UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
+	UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
 				 (char)g, rec.left,rec.width,rec.top,rec.height));
 
 	return true;
