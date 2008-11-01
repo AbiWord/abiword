@@ -3508,6 +3508,10 @@ void fl_BlockLayout::format()
 		m_bListLabelCreated =true;
 	}
 	_assertRunListIntegrity();
+	//
+	// Now coalesceRuns
+	//
+	coalesceRuns();
 	if(!bJustifyStuff && m_pAlignment && (m_pAlignment->getType() != FB_ALIGNMENT_LEFT))
 	{
 		//

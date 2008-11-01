@@ -352,20 +352,27 @@ void fp_TextRun::printText(void)
 	// do not assert, the pointer might be legitimately null
 	//UT_ASSERT(m_pRenderInfo);
 	
-	if(!m_pRenderInfo || m_pRenderInfo->getType() != GRRI_XP)
+	//	if(!m_pRenderInfo || m_pRenderInfo->getType() != GRRI_XP)
+	if(!m_pRenderInfo)
 		return;
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
+
+	UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+	UT_UTF8String sTmp;
+	while(text.getStatus() == UTIter_OK)
+	{
+		UT_UCS4Char c = text.getChar();
+		if(static_cast<char>(c)>=' ' && static_cast<char>(c) <128)
+			sTmp +=  static_cast<char>(c);
+		++text;
+	}
 
 	UT_uint32 offset = getBlockOffset();
 	UT_uint32 len = getLength();
-	UT_uint32 i =0;
-	UT_String sTmp;
-	GR_XPRenderInfo * pRI =  (GR_XPRenderInfo*) m_pRenderInfo;
-	
-	for(i=0; i< len;i++)
-	{
-		sTmp += static_cast<char>(pRI->m_pChars[i]);
-	}
-	UT_DEBUGMSG(("Run offset %d len %d Text |%s| \n",offset,len,sTmp.c_str()));
+	UT_DEBUGMSG(("Run offset %d len %d Text |%s| \n",offset,len,sTmp.utf8_str()));
 }
 #endif
 bool fp_TextRun::canBreakAfter(void) const
@@ -966,17 +973,43 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 bool fp_TextRun::canMergeWithNext(void)
 {
+	bool bNextIsFmt = false;
 	if (!getNextRun() ||
 		!getLine() ||
 		getNextRun()->getType() != FPRUN_TEXT ||
 		!getNextRun()->getLine() ||
 		getLength()+ getNextRun()->getLength() > 32000) // sanity check, see bug 8542
 	{
-		return false;
+		if(getNextRun()->getType() == FPRUN_FMTMARK)
+		{
+			bNextIsFmt = true;
+		}
+		else
+		{
+			return false;
+		}
 	}
-
-
-	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNextRun());
+	fp_TextRun* pNext = NULL;
+	//
+	// This code looks to see if we have a redundant fmtmark. If so 
+	// we remove it later.
+	//
+	if(bNextIsFmt)
+	{
+		fp_Run * pNextNext = getNextRun()->getNextRun();
+		if(pNextNext && pNextNext->getType() == FPRUN_TEXT)
+		{
+			xxx_UT_DEBUGMSG(("Looking if we can merge through fmtMArk \n"));
+#ifdef DEBUG
+			//			printText();
+#endif
+			pNext = static_cast<fp_TextRun *>(pNextNext);
+		}
+		else
+			return false;
+	}
+	else
+		pNext = static_cast<fp_TextRun*>(getNextRun());
 
 	if (
 		(pNext->getBlockOffset() != (getBlockOffset() + getLength()))
@@ -1018,6 +1051,10 @@ bool fp_TextRun::canMergeWithNext(void)
 #endif
 		)
 	{
+		xxx_UT_DEBUGMSG(("Falied to merge full test! \n"));
+#ifdef DEBUG
+		//		printText();
+#endif
 		return false;
 	}
 	
@@ -1025,14 +1062,19 @@ bool fp_TextRun::canMergeWithNext(void)
 // Don't coalese past word boundaries
 // This improves lots of flicker issues
 //
+#if 0
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
-	text.setPosition(getLength()); 
+	text.setPosition(getLength()-1); 
 	if(UT_UCS4_isspace(text.getChar()))
 	{
+		UT_DEBUGMSG(("Failed to merge space! length %d char |%d| \n",getLength(),text.getChar()));
+#ifdef DEBUG
+		//		printText();
+#endif
 		return false;
 	}
-
+#endif
 	return true;
 }
 
@@ -1588,6 +1630,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	m_bKeepWidths = true;
 	UT_sint32 iWidth = getWidth();
 	xxx_UT_DEBUGMSG(("textRun Xoff %d width %d \n",pDA->xoff,iWidth));
+#if DEBUG
+	//	printText();
+#endif
 //
 // This code makes sure we don't fill past the right edge of text.
 // Full Justified text often as a space at the right edge of the text.
