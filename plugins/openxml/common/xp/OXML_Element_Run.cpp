@@ -42,10 +42,142 @@ OXML_Element_Run::~OXML_Element_Run()
 
 }
 
-UT_Error OXML_Element_Run::serialize(std::string path)
+UT_Error OXML_Element_Run::serialize(IE_Exp_OpenXML* exporter)
 {
-	//Empty for now
-	return this->serializeChildren(path);
+	UT_Error err = UT_OK;
+
+	err = exporter->startRun(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	err = serializeProperties(exporter);
+	if(err != UT_OK)
+		return err;
+
+	err = this->serializeChildren(exporter);
+	if(err != UT_OK)
+		return err;
+
+	return exporter->finishRun(TARGET);
+}
+
+UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
+{
+	//TODO: Add all the property serializations here
+	UT_Error err = UT_OK;
+	const gchar* szValue = NULL;
+
+	err = exporter->startRunProperties(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	if(getProperty("lang", szValue) == UT_OK)
+	{
+		if(!strcmp(szValue, "-none-"))
+			err = exporter->setNoProof(TARGET);
+		else
+			err = exporter->setLanguage(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("font-family", szValue) == UT_OK)
+	{
+		err = exporter->setFontFamily(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("font-weight", szValue) == UT_OK)
+	{
+		if(!strcmp(szValue, "bold"))
+		{
+			err = exporter->setBold(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	if(getProperty("font-style", szValue) == UT_OK)
+	{
+		if(!strcmp(szValue, "italic"))
+		{
+			err = exporter->setItalic(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	if(getProperty("font-size", szValue) == UT_OK)
+	{
+		err = exporter->setFontSize(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+	
+	if(getProperty("text-decoration", szValue) == UT_OK)
+	{
+		if(strstr(szValue, "underline"))
+		{
+			err = exporter->setUnderline(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+
+		if(strstr(szValue, "overline"))
+		{
+			err = exporter->setOverline(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+
+		if(strstr(szValue, "line-through"))
+		{
+			err = exporter->setLineThrough(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	if(getProperty("text-position", szValue) == UT_OK)
+	{
+		if(!strcmp(szValue, "superscript"))
+		{
+			err = exporter->setSuperscript(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+
+		else if(!strcmp(szValue, "subscript"))
+		{
+			err = exporter->setSubscript(TARGET);
+			if(err != UT_OK)
+				return err;
+		}
+	}
+
+	if(getProperty("color", szValue) == UT_OK)
+	{
+		err = exporter->setTextColor(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("bgcolor", szValue) == UT_OK)
+	{
+		err = exporter->setBackgroundColor(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	if(getProperty("dir-override", szValue) == UT_OK)
+	{
+		err = exporter->setTextDirection(TARGET, szValue);
+		if(err != UT_OK)
+			return err;
+	}
+
+	return exporter->finishRunProperties(TARGET);
 }
 
 UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)

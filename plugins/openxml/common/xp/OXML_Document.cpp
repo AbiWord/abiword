@@ -73,6 +73,8 @@ OXML_Document::OXML_Document() :
 	clearHeaders();
 	clearFooters();
 	clearSections();
+	clearFootnotes();
+	clearEndnotes();
 }
 
 OXML_Document::~OXML_Document()
@@ -81,6 +83,8 @@ OXML_Document::~OXML_Document()
 	clearHeaders();
 	clearFooters();
 	clearSections();
+	clearFootnotes();
+	clearEndnotes();
 }
 
 OXML_SharedStyle OXML_Document::getStyleById(const std::string & id)
@@ -120,6 +124,24 @@ UT_Error OXML_Document::addStyle(const OXML_SharedStyle & obj)
 	return UT_OK;
 }
 
+UT_Error OXML_Document::addList(const OXML_SharedList & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_lists_by_id[obj->getId()] = obj;
+	return UT_OK;
+}
+
+UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	std::string str("");
+	str += obj->getId();
+	m_images_by_id[str] = obj;
+	return UT_OK;
+}
+
 UT_Error OXML_Document::clearStyles()
 {
 	m_styles_by_id.clear();
@@ -146,6 +168,34 @@ UT_Error OXML_Document::clearHeaders()
 {
 	m_headers.clear();
 	return m_headers.size() == 0 ? UT_OK : UT_ERROR;
+}
+
+UT_Error OXML_Document::addFootnote(const OXML_SharedSection & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_footnotes[obj->getId()] = obj;
+	return UT_OK;
+}
+
+UT_Error OXML_Document::clearFootnotes()
+{
+	m_footnotes.clear();
+	return m_footnotes.size() == 0 ? UT_OK : UT_ERROR;
+}
+
+UT_Error OXML_Document::addEndnote(const OXML_SharedSection & obj)
+{
+	UT_return_val_if_fail(obj, UT_ERROR);
+
+	m_endnotes[obj->getId()] = obj;
+	return UT_OK;
+}
+
+UT_Error OXML_Document::clearEndnotes()
+{
+	m_endnotes.clear();
+	return m_endnotes.size() == 0 ? UT_OK : UT_ERROR;
 }
 
 OXML_SharedSection OXML_Document::getFooter(const std::string & id)
@@ -227,18 +277,126 @@ OXML_SharedFontManager OXML_Document::getFontManager()
 	return m_fontManager;
 }
 
-UT_Error OXML_Document::serialize(const std::string & path)
+UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
-	//Do something here when implementing export filter
+	
+	ret = exporter->startDocument();
+	if(ret != UT_OK)
+		return ret;
+
+	OXML_StyleMap::iterator it1;
+	for (it1 = m_styles_by_id.begin(); it1 != m_styles_by_id.end(); it1++) {
+		ret = it1->second->serialize(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize abstract numbering definitions
+	OXML_ListMap::iterator it2;
+	for (it2 = m_lists_by_id.begin(); it2 != m_lists_by_id.end(); it2++) {
+		ret = it2->second->serialize(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize actual numbering definitions
+	OXML_ListMap::iterator it3;
+	for (it3 = m_lists_by_id.begin(); it3 != m_lists_by_id.end(); it3++) {
+		ret = it3->second->serializeNumbering(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	OXML_ImageMap::iterator it4;
+	for (it4 = m_images_by_id.begin(); it4 != m_images_by_id.end(); it4++) {
+		ret = it4->second->serialize(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	ret = exporter->writeDefaultStyle();
+	if(ret != UT_OK)
+		return ret;
 
 	OXML_SectionVector::size_type i;
 	for (i = 0; i < m_sections.size(); i++)
 	{
-		if (m_sections[i]->serialize(path) != UT_OK)
-			ret = UT_ERROR;
+		ret = m_sections[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
 	}
-	return ret;
+
+	ret = exporter->startSectionProperties();
+	if(ret != UT_OK)
+		return ret;
+
+	bool firstPageHdrFtr = false;
+	bool evenPageHdrFtr = false;
+
+	//serialize headers
+	OXML_SectionMap::iterator it5;
+	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++) {
+
+		if(it5->second->hasFirstPageHdrFtr())
+			firstPageHdrFtr = true;	
+		if(it5->second->hasEvenPageHdrFtr())
+			evenPageHdrFtr = true;	
+
+		ret = it5->second->serializeHeader(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize footers
+	OXML_SectionMap::iterator it6;
+	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++) {
+
+		if(it6->second->hasFirstPageHdrFtr())
+			firstPageHdrFtr = true;	
+		if(it6->second->hasEvenPageHdrFtr())
+			evenPageHdrFtr = true;	
+
+		ret = it6->second->serializeFooter(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	if(firstPageHdrFtr)
+	{
+		ret = exporter->setTitlePage();
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	if(evenPageHdrFtr)
+	{
+		ret = exporter->setEvenAndOddHeaders();
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	ret = exporter->finishSectionProperties();
+	if(ret != UT_OK)
+		return ret;
+
+	//serialize footnotes
+	OXML_SectionMap::iterator it7;
+	for (it7 = m_footnotes.begin(); it7 != m_footnotes.end(); it7++) {
+		ret = it7->second->serializeFootnote(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+
+	//serialize endnotes
+	OXML_SectionMap::iterator it8;
+	for (it8 = m_endnotes.begin(); it8 != m_endnotes.end(); it8++) {
+		ret = it8->second->serializeEndnote(exporter);
+		if (ret != UT_OK)
+			return ret;
+	}
+	
+	return exporter->finishDocument();
 }
 
 UT_Error OXML_Document::addToPT(PD_Document * pDocument)
@@ -288,4 +446,3 @@ void OXML_Document::_assignHdrFtrIds()
 		index++;
 	}
 }
-

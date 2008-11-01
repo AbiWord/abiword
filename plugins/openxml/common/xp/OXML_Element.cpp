@@ -36,7 +36,8 @@
 #include <string>
 
 OXML_Element::OXML_Element(std::string id, OXML_ElementTag tag, OXML_ElementType type) : 
-	OXML_ObjectWithAttrProp(), 
+	OXML_ObjectWithAttrProp(),
+	TARGET(0), 
 	m_id(id), 
 	m_tag(tag), 
 	m_type(type)
@@ -71,6 +72,9 @@ UT_Error OXML_Element::appendElement(OXML_SharedElement obj)
 		UT_DEBUGMSG(("Bad alloc!\n"));
 		return UT_OUTOFMEM;
 	} UT_END_CATCH
+
+	obj->setTarget(TARGET); //propagate the target
+
 	return UT_OK;
 }
 
@@ -80,21 +84,22 @@ UT_Error OXML_Element::clearChildren()
 	return m_children.size() == 0 ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_Element::serializeChildren(std::string path)
+UT_Error OXML_Element::serializeChildren(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
 	{
-		if (m_children[i]->serialize(path) != UT_OK)
-			ret = UT_ERROR;
+		ret = m_children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
 	}
 
 	return ret;
 }
 
-UT_Error OXML_Element::serialize(std::string path)
+UT_Error OXML_Element::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
 	//Do something here when export filter is implemented
@@ -102,8 +107,7 @@ UT_Error OXML_Element::serialize(std::string path)
 	if (ret != UT_OK)
 		return ret;	
 
-	ret = serializeChildren(path);
-	return ret;
+	return serializeChildren(exporter);
 }
 
 UT_Error OXML_Element::addChildrenToPT(PD_Document * pDocument)
@@ -174,3 +178,7 @@ UT_Error OXML_Element::addToPT(PD_Document * pDocument)
 	return ret;
 }
 
+void OXML_Element::setTarget(int target)
+{
+	TARGET = target;
+}

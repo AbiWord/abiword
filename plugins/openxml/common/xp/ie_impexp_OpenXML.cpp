@@ -26,7 +26,7 @@
 
 // Internal includes
 #include <ie_imp_OpenXML_Sniffer.h>
-//#include "../../exp/xp/ie_exp_OpenXML_Sniffer.h"
+#include <ie_exp_OpenXML_Sniffer.h>
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_openxml_register
@@ -45,7 +45,7 @@ ABI_PLUGIN_DECLARE("OpenXML")
 // completely generic C-interface code to allow this to be a plugin
 
 static IE_Imp_OpenXML_Sniffer* pImp_sniffer = 0;
-//static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
+static IE_Exp_OpenXML_Sniffer* pExp_sniffer = 0;
 
 
 /**
@@ -58,14 +58,15 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
     }
     
     IE_Imp::registerImporter (pImp_sniffer);
+
+    if (!pExp_sniffer){
+        pExp_sniffer = new IE_Exp_OpenXML_Sniffer ();
+	}
     
-//    if (!pExp_sniffer)
-//        pExp_sniffer = new IE_Exp_OpenXML_Sniffer ();
-        
-//    IE_Exp::registerExporter (pExp_sniffer);
+	IE_Exp::registerExporter (pExp_sniffer);
 
     mi->name    = "OpenXML Filter";
-    mi->desc    = "Import OpenXML (.docx) files";
+    mi->desc    = "Import/Export OpenXML (.docx) files";
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Philippe Milot";
     mi->usage   = "No Usage";
@@ -89,8 +90,8 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_unregister (XAP_ModuleInfo * mi)
   IE_Imp::unregisterImporter (pImp_sniffer);
   DELETEP(pImp_sniffer);
 
-//  IE_Exp::unregisterExporter (pExp_sniffer);
-//  DELETEP(pExp_sniffer);
+  IE_Exp::unregisterExporter (pExp_sniffer);
+  DELETEP(pExp_sniffer);
 
   return 1;
 }

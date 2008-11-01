@@ -64,12 +64,30 @@ enum OXML_ElementTag {
 	T_TAG, 
 	PG_BREAK, 
 	CL_BREAK, 
-	LN_BREAK
+	LN_BREAK, 
+	TBL_TAG,
+	TR_TAG,
+	TC_TAG,
+	LST_TAG,
+	IMG_TAG,
+	HYPR_TAG,
+	BOOK_TAG,
+	FLD_TAG,
+	TXTBX_TAG
 };
 
 enum OXML_ElementType {
 	BLOCK, 
-	SPAN
+	SPAN, 
+	TABLE,
+	LIST, 
+	ROW,
+	IMAGE,
+	CELL, 
+	HYPRLNK,
+	BOOKMRK,
+	FIELD,
+	TEXTBOX
 };
 
 enum OXML_HeaderFooterType {

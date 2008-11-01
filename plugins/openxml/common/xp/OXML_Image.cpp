@@ -2,7 +2,7 @@
 
 /* AbiSource
  * 
- * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
+ * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,38 +20,64 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_TEXT_H_
-#define _OXML_ELEMENT_TEXT_H_
+// Class definition include
+#include <OXML_Image.h>
 
 // Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+#include <OXML_Types.h>
+#include <OXML_Document.h>
 
 // AbiWord includes
 #include <ut_types.h>
-#include <ut_string.h>
+#include <ut_misc.h>
 #include <pd_Document.h>
 
-class OXML_Element_Text : public OXML_Element
+// External includes
+#include <string>
+
+OXML_Image::OXML_Image() : 
+	OXML_ObjectWithAttrProp(),
+	id(NULL),
+	mimeType(NULL),
+	data(NULL)
 {
-public:
-	OXML_Element_Text();
-	OXML_Element_Text(const gchar * text, int length);
-	virtual ~OXML_Element_Text();
 
-	inline void setCharRange(OXML_CharRange range) { m_range = range; }
-	inline OXML_CharRange getCharRange() { return m_range; }
+}
 
-	void setText(const gchar * text, int length);
-	const UT_UCS4Char * getText_UCS4String();
-	const char* getText();
+OXML_Image::~OXML_Image()
+{
+}
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
-private:
-	UT_UCS4String * m_pString;
-	OXML_CharRange m_range;
-};
+void OXML_Image::setId(const char* imageId)
+{
+	id = imageId;
+}
 
-#endif //_OXML_ELEMENT_TEXT_H_
+void OXML_Image::setMimeType(const char* imageMimeType)
+{
+	mimeType = imageMimeType;
+}
+
+void OXML_Image::setData(const UT_ByteBuf* imageData)
+{
+	data = imageData;
+}
+
+const char* OXML_Image::getId()
+{
+	return id;	
+}
+
+UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
+{
+	std::string filename(id);
+	filename += ".png";
+	return exporter->writeImage(filename.c_str(), data);
+}
+
+UT_Error OXML_Image::addToPT(PD_Document * /*pDocument*/)
+{
+	//TODO
+	return UT_OK;
+}
 

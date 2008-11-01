@@ -88,20 +88,17 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 	//These calls build the data model
 	if (UT_OK != (ret = mgr->parseDocumentTheme()))
 	{
-		_cleanup();
-		return ret;
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document theme\n"));
 	}
 
 	if (UT_OK != (ret = mgr->parseDocumentSettings()))
 	{
-		_cleanup();
-		return ret;
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document settings\n"));
 	}
 
 	if (UT_OK != (ret = mgr->parseDocumentStyles()))
 	{
-		_cleanup();
-		return ret;
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document styles\n"));
 	}
 
 	if (UT_OK != (ret = mgr->parseDocumentStream()))

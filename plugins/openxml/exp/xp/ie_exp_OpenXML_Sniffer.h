@@ -2,7 +2,7 @@
 
 /* AbiSource
  * 
- * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
+ * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,32 +20,28 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_RUN_H_
-#define _OXML_ELEMENT_RUN_H_
+#ifndef _IE_EXP_OPENXMLSNIFFER_H_
+#define _IE_EXP_OPENXMLSNIFFER_H_
 
-// Internal includes
-#include <OXML_Element.h>
-#include <ie_exp_OpenXML.h>
+#include <ie_exp.h>
 
-// AbiWord includes
-#include <ut_types.h>
-#include <pd_Document.h>
-
-// External includes
-#include <string>
-
-class OXML_Element_Run : public OXML_Element
+class IE_Exp_OpenXML_Sniffer : public IE_ExpSniffer
 {
 public:
-	OXML_Element_Run(std::string id);
-	virtual ~OXML_Element_Run();
+  IE_Exp_OpenXML_Sniffer () ;
 
-	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
-	virtual UT_Error addToPT(PD_Document * pDocument);
+  virtual ~IE_Exp_OpenXML_Sniffer ();
 
-private: 
-	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+  virtual const IE_SuffixConfidence * getSuffixConfidence ();
+  virtual const IE_MimeConfidence * getMimeConfidence ();
+  virtual bool recognizeSuffix (const char* szSuffix);
+
+  virtual UT_Error constructExporter (PD_Document * pDocument,
+				      IE_Exp ** ppie) ;
+
+  virtual bool getDlgLabels (const char ** szDesc,
+			     const char ** szSuffixList,
+			     IEFileType * ft) ;
 };
 
-#endif //_OXML_ELEMENT_RUN_H_
-
+#endif //_IE_EXP_OPENXMLSNIFFER_H_

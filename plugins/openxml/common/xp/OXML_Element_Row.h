@@ -2,7 +2,7 @@
 
 /* AbiSource
  * 
- * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
+ * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,11 +20,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef _OXML_ELEMENT_TEXT_H_
-#define _OXML_ELEMENT_TEXT_H_
+#ifndef _OXML_ELEMENT_ROW_H_
+#define _OXML_ELEMENT_ROW_H_
 
 // Internal includes
 #include <OXML_Element.h>
+#include <OXML_Element_Table.h>
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
@@ -32,26 +33,26 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-class OXML_Element_Text : public OXML_Element
+class OXML_Element_Table;
+
+class OXML_Element_Row : public OXML_Element
 {
 public:
-	OXML_Element_Text();
-	OXML_Element_Text(const gchar * text, int length);
-	virtual ~OXML_Element_Text();
-
-	inline void setCharRange(OXML_CharRange range) { m_range = range; }
-	inline OXML_CharRange getCharRange() { return m_range; }
-
-	void setText(const gchar * text, int length);
-	const UT_UCS4Char * getText_UCS4String();
-	const char* getText();
+	OXML_Element_Row(std::string id, OXML_Element_Table* table);
+	virtual ~OXML_Element_Row();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	virtual void setNumCols(UT_sint32 numCols);
+
+protected:
+	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
+
 private:
-	UT_UCS4String * m_pString;
-	OXML_CharRange m_range;
+	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	UT_sint32 numCols;
+	OXML_Element_Table* table;
 };
 
-#endif //_OXML_ELEMENT_TEXT_H_
+#endif //_OXML_ELEMENT_ROW_H_
 
