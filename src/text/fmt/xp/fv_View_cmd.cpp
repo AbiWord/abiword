@@ -4853,20 +4853,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		_restorePieceTableState();
 		return false;
 	}
-	PT_DocPosition posNext = 0;
-	if(pBL1->getNext())
-	{
-		posNext = pBL1->getNext()->getPosition(true);
-	}
-	else
-	{
-		posNext = pBL1->getPosition(true) + pBL1->getLength();
-	}
-	if((posStart <= pBL1->getPosition(true)) || (posEnd > posNext))
-	{
-		_restorePieceTableState();
-		return false;
-	}
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const gchar*>(szName)))
 	{
