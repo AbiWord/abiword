@@ -352,6 +352,18 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_object_unref(G_OBJECT(ldr));
 		return false;
 	}
+
+	if ( !gdk_pixbuf_loader_close (ldr, &err) )
+	{
+		if(err != NULL)
+		{
+			UT_DEBUGMSG(("DOM: couldn't close loader:%s \n", err->message));
+			g_error_free(err);
+		}
+		g_object_unref(G_OBJECT(ldr));
+		return false;
+	}
+
 //
 // This is just pointer to the buffer in the loader. This can be deleted
 // when we close the loader.
