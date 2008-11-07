@@ -94,6 +94,7 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 }
 
+
 bool fp_FmtMarkRun::isSuperscript(void) const
 {
 	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
