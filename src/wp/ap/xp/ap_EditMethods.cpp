@@ -8683,6 +8683,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pPrintView = NULL;
 	bool bHideFmtMarks = false;
+	bool bDidQuickPrint = false;
 	if(!pGraphics->canQuickPrint() || (pView->getViewMode() != VIEW_PRINT))
 	{
 			pDocLayout = new FL_DocLayout(doc,pGraphics);
@@ -8697,7 +8698,7 @@ static bool s_doPrintPreview(FV_View * pView)
 			pDocLayout = pLayout;
 			pPrintView = pView;
 			pDocLayout->setQuickPrint(pGraphics);
-
+			bDidQuickPrint = true;
 			if(pFrameData->m_bShowPara)
 			{
 				pPrintView->setShowPara(false);
@@ -8718,7 +8719,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
 
-	if(!pGraphics->canQuickPrint())
+	if(!bDidQuickPrint)
 	{
 			delete pDocLayout;
 			delete pPrintView;
