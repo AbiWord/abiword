@@ -24,8 +24,8 @@ else
 CDUMP_DIR = cdump
 endif
 
-SUBDIRS = $(CDUMP_DIR) po2str scripts
-DIST_SUBDIRS = cdump po2str scripts
+SUBDIRS = $(CDUMP_DIR) po2str
+DIST_SUBDIRS = cdump po2str
 
 EXTRA_DIST = \
 	Makefile
