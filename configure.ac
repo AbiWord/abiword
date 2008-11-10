@@ -534,12 +534,8 @@ AC_CONFIG_FILES([
  src/tools/cdump/xp/GNUmakefile
  src/tools/po2str/GNUmakefile
  src/tools/po2str/xp/GNUmakefile
- src/tools/scripts/GNUmakefile
- src/tools/scripts/unix/GNUmakefile
  user/GNUmakefile
  user/wp/GNUmakefile
- user/wp/scripts/GNUmakefile
- user/wp/strings/GNUmakefile
  user/wp/templates/GNUmakefile
 ])
 AC_OUTPUT
