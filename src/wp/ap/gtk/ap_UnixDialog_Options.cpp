@@ -502,11 +502,8 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 
 GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
-    //////////////////////////////////////////////////////////////////////
-
-    // for the internationalization
-
     GtkWidget *mainWindow;
+    const XAP_StringSet * pSS = m_pApp->getStringSet();
 
     // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -529,7 +526,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
 
-    //////////////////////////////////////////////////////////////////////
+    // set the dialog title
+    UT_UTF8String s;
+    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
+    abiDialogSetTitle(mainWindow, s.utf8_str());
+
     // the control buttons
     g_signal_connect ( G_OBJECT ( m_buttonDefaults ),
                        "clicked",
