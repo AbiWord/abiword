@@ -599,6 +599,36 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 
 }
 
+/*! This function takes in a color string of any form (e.g. "red", "CMYK()",
+	 "#000000", "000000", etc.) and returns an RGB hexadecimal string.
+	 \param szColor The incoming string to parse
+	 \param bPrefix The return string will be prefixed with a '#'
+	 if bPrefix is true.  Defaults to false.
+	 \return An RGB hexadecimal string or an empty string if szColor is empty
+
+    WARNING: Will return 000000 or #000000 if an invalid color is passed in
+*/
+
+std::string UT_colorToHex(const char * szColor, bool bPrefix)
+{
+	std::string sColor;
+	UT_return_val_if_fail(szColor && *szColor, sColor);
+
+	// This initialization will cause black to be returned if an invalid
+	// color is passed in. TODO: make UT_parseColor() return a bool to
+	// make this unnecessary?
+	UT_RGBColor color(0,0,0);
+	UT_HashColor hashColor;
+
+	UT_parseColor(szColor, color);
+	sColor = hashColor.setColor(color.m_red, color.m_grn, color.m_blu);
+
+	if(!bPrefix)
+		sColor.erase(0, 1);
+
+	return sColor;
+}
+
 #ifdef WIN32
 #define ut_PATHSEP	'\\'
 #else

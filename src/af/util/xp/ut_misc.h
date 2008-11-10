@@ -34,6 +34,8 @@
 #include "ut_vector.h"
 #endif
 
+#include <string>
+
 class UT_RGBColor;
 class UT_Rect;
 class UT_String;
@@ -109,6 +111,7 @@ public:
 
 void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b, bool bTransparent = false);
 ABI_EXPORT void UT_parseColor(const char*, UT_RGBColor&);
+ABI_EXPORT std::string UT_colorToHex(const char*, bool bPrefix = false);
 
 class ABI_EXPORT UT_HashColor
 {
