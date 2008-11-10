@@ -468,11 +468,8 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 
 GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
-        //////////////////////////////////////////////////////////////////////
-
-	// for the internationalization
-
 	GtkWidget *mainWindow;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
@@ -498,7 +495,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 	mainWindow = glade_xml_get_widget(xml,"ap_UnixDialog_Options");
 
-	//////////////////////////////////////////////////////////////////////
+	// set the dialog title
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
+	abiDialogSetTitle(mainWindow, s.utf8_str());
+
 	// the control buttons
 	g_signal_connect(G_OBJECT(m_buttonDefaults),
 			   "clicked",
