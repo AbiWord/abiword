@@ -83,7 +83,7 @@ GsfInput *
 gsf_input_memory_new_from_file (FILE * input)
 {
 	GsfOutput *memory_output;
-	GsfInput  *memory_input;
+	GsfInput  *memory_input = NULL;
 
 	g_return_val_if_fail (input != NULL, NULL);
 
@@ -91,17 +91,23 @@ gsf_input_memory_new_from_file (FILE * input)
 	while (TRUE) {
 		guint8 buf[1024];
 		size_t nread;
+		gboolean res;
 
 		nread = fread (buf, 1, sizeof(buf), input);
-		gsf_output_write (memory_output, nread, buf);
-		if ((nread < sizeof(buf)) && (ferror (input) || feof (input)))
-		    break;
+		res = gsf_output_write (memory_output, nread, buf);
+
+		if (ferror (input) || !res) {
+			/* trouble reading from @input or trouble writing to @memory_output */
+			g_object_unref (G_OBJECT (memory_output));
+			return NULL;
+		}
+		else if ((nread < sizeof(buf)) && feof (input)) /* hit eof */
+			break;
 	}
 
-	gsf_output_close (memory_output);
-
-	memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
-						   gsf_output_size (memory_output));
+	if (gsf_output_close (memory_output))
+		memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
+							   gsf_output_size (memory_output));
 
 	g_object_unref (G_OBJECT (memory_output));
 
