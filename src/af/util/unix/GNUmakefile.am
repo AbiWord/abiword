@@ -39,7 +39,6 @@ noinst_HEADERS = \
 	ut_files.h \
 	ut_mutexImpl.h \
 	ut_sleep.h \
-	ut_threadImpl.h \
 	ut_unixAssert.h \
 	ut_unixDirent.h \
 	ut_unixIdle.h \

@@ -44,7 +44,6 @@ EXTRA_DIST = \
 noinst_HEADERS = \
 	ut_mutexImpl.h \
 	ut_sleep.h \
-	ut_threadImpl.h \
 	ut_Win32Idle.h \
 	ut_Win32Locale.h \
 	ut_Win32OS.h \

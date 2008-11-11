@@ -177,14 +177,9 @@ elif test "$PLATFORM" = "win" ; then
 	with_win32=true
 	ABI_FE="Win32"
 	ABI_BE="$ABI_FE"
-	ABI_THREAD
 elif test "$PLATFORM" = "qnx" ; then
 	ABI_FE="QNX"
 	with_qnx=true
-	ABI_THREAD
-
-else
-	ABI_THREAD
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
@@ -536,6 +531,7 @@ AC_CONFIG_FILES([
  src/tools/po2str/xp/GNUmakefile
  user/GNUmakefile
  user/wp/GNUmakefile
+ user/wp/strings/GNUmakefile
  user/wp/templates/GNUmakefile
 ])
 AC_OUTPUT

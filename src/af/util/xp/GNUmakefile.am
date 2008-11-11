@@ -29,12 +29,6 @@ noinst_LIBRARIES = libUtil_xp.a
 
 SCRIPT_OBJ=
 
-if HAVE_THREADS
-THREAD_OBJ=ut_thread.cpp
-else
-THREAD_OBJ=
-endif
-
 CFLAGS+=-frepo
 
 SUBDIRS = t
@@ -129,7 +123,6 @@ noinst_HEADERS = \
 	ut_svg.h \
 	ut_test.h \
 	ut_TextIterator.h \
-	ut_thread.h \
 	ut_timer.h \
 	ut_types.h \
 	ut_unicode.h \
