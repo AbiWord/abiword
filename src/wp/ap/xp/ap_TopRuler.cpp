@@ -120,7 +120,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	if(!m_bIsHidden)
 	{
 
-	//UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+	  UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
 		DELETEP(m_pScrollObj);
 		DELETEP(m_pAutoScrollTimer);
@@ -173,6 +173,7 @@ void AP_TopRuler::setViewHidden(AV_View *pView)
 
 void AP_TopRuler::setView(AV_View * pView)
 {
+        bool bNewView = false;
 	if (m_pView && (m_pView != pView))
 	{
 		// view is changing.  since this TopRuler class is bound to
@@ -181,7 +182,10 @@ void AP_TopRuler::setView(AV_View * pView)
 		// view (as we do with some of the other objects).
 
 		DELETEP(m_pScrollObj);
+		bNewView = true;
 	}
+	if(m_pView == NULL)
+	  bNewView = true;
 	UT_DEBUGMSG(("setView is set to %x \n",pView));
 
 	m_pView = pView;
@@ -193,9 +197,10 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 	UT_return_if_fail (m_pScrollObj);
 
-	if (m_pView) {
-	  static_cast<FV_View *>(pView)->setTopRuler(this);
-	  m_pView->addScrollListener(m_pScrollObj);
+	if (m_pView && bNewView) 
+	{
+	     static_cast<FV_View *>(pView)->setTopRuler(this);
+	     m_pView->addScrollListener(m_pScrollObj);
 
 	  // Register the TopRuler as a ViewListeners on the View.
 	  // This lets us receive notify events as the user interacts
@@ -203,8 +208,8 @@ void AP_TopRuler::setView(AV_View * pView)
 	  // us update the display as we move from block to block and
 	  // from column to column.
 	  
-	  if (m_lidTopRuler == 0)
-	    m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
+	     m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
+	     UT_DEBUGMSG(("Ruler attached as view listener %d \n",&m_lidTopRuler));
 	}
 }
 
@@ -281,16 +286,17 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		return true;
 	}
 	UT_ASSERT_HARMLESS(pView==m_pView);
-	UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
+	xxx_UT_DEBUGMSG(("!! AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
 
 	// if the column containing the caret has changed or any
 	// properties on the section (like the number of columns
 	// or the margins) or on the block (like the paragraph
 	// indents),or the page then we redraw the ruler.
-//#bidi
-	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR | AV_CHG_MOUSEPOS ))
+
+	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR))
 	{
-		UT_Rect pClipRect;
+	        xxx_UT_DEBUGMSG(("TopRuler redraw from notify \n"));
+	        UT_Rect pClipRect;
 		pClipRect.top = 0;
 		pClipRect.left = m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
