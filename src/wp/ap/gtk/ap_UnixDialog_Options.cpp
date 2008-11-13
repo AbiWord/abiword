@@ -55,7 +55,7 @@
 #define WIDGET_MENU_OPTION_PTR  "menuoptionptr"
 #define WIDGET_MENU_VALUE_TAG  "value"
 
-#define WID(widget)   glade_xml_get_widget(xml,widget)
+#define WID(widget)   GTK_WIDGET(gtk_builder_get_object(builder, widget))
 
 /*****************************************************************/
 
@@ -167,14 +167,12 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    // get the path where our glade file is located
-    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*> ( m_pApp );
-    UT_String glade_path ( pApp->getAbiSuiteAppGladeDir() );
-    glade_path += "/ap_UnixDialog_Options_ColorSel.glade";
+    // get the path where our UI file is located
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options_ColorSel.xml";
 
-    GladeXML *xml = abiDialogNewFromXML ( glade_path.c_str() );
-    if ( !xml )
-        return;
+    // load the dialog from the UI file
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -182,7 +180,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     colorsel = WID ( "csColorSel" );
 
-    // quiet hacky. Fetch defaults button from colsel glade file and store it inside
+    // quiet hacky. Fetch defaults button from colsel GtkBuilder UI file and store it inside
     // the main dialog, because we'll need this for sensitivity toggling
     m_buttonColSel_Defaults = WID ( "btnDefaults" );
 
@@ -218,6 +216,8 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 // Finish up here after a close or window delete signal.
 //
     abiDestroyWidget ( dlg );
+
+	g_object_unref(G_OBJECT(builder));
 }
 
 void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
@@ -278,7 +278,7 @@ void AP_UnixDialog_Options::_setupUnitMenu ( GtkWidget *optionmenu, const XAP_St
     gtk_option_menu_set_menu ( GTK_OPTION_MENU ( optionmenu ), menu );
 }
 
-void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
+void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
 {
     const XAP_StringSet *pSS = m_pApp->getStringSet();
     //const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
@@ -316,10 +316,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
     tmp = WID ( "lblUserInterface" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI );
 
-    m_checkbuttonViewCursorBlink = WID ( "chkCursorBlink" );
-    localizeButtonUnderline ( m_checkbuttonViewCursorBlink, pSS,
-                              AP_STRING_ID_DLG_Options_Label_ViewCursorBlink );
-
     m_checkbuttonAllowCustomToolbars = WID ( "chkCustomToolbars" );
     localizeButtonUnderline ( m_checkbuttonAllowCustomToolbars, pSS,
                               AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars );
@@ -349,7 +345,7 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
     // Documents
 
     tmp = WID ( "lblDocuments" );
-    localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents );
+    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_Documents );
 
     // Auto Save
 
@@ -433,6 +429,9 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
 
     // Smart Quotes
 
+    tmp = WID ( "lblSmartQuotes" );
+    localizeLabel ( tmp, pSS, AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes );
+
     m_checkbuttonSmartQuotes = WID ( "chkSmartQuotes" );
     localizeButtonUnderline ( m_checkbuttonSmartQuotes, pSS,
                               AP_STRING_ID_DLG_Options_Label_SmartQuotes );
@@ -503,37 +502,35 @@ void AP_UnixDialog_Options::_constructWindowContents ( GladeXML *xml )
 
 GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
-    //////////////////////////////////////////////////////////////////////
-
-    // for the internationalization
-
     GtkWidget *mainWindow;
+    const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    // get the path where our glade file is located
-    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*> ( m_pApp );
-    UT_String glade_path ( pApp->getAbiSuiteAppGladeDir() );
+    // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    glade_path += "/ap_UnixHildonDialog_Options.glade";
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixHildonDialog_Options.xml";
 #else
-    glade_path += "/ap_UnixDialog_Options.glade";
+    std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Options.xml";
 #endif
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
-    // load the dialog from the glade file
-    GladeXML *xml = abiDialogNewFromXML ( glade_path.c_str() );
-    if ( !xml )
-        return NULL;
+    // load the dialog from the UI file
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-    _constructWindowContents ( xml );
+    _constructWindowContents ( builder );
 
     // create the accelerators from &'s
     // createLabelAccelerators(mainWindow);
 
-    mainWindow = glade_xml_get_widget ( xml,"ap_UnixDialog_Options" );
+    mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
 
-    //////////////////////////////////////////////////////////////////////
+    // set the dialog title
+    UT_UTF8String s;
+    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
+    abiDialogSetTitle(mainWindow, s.utf8_str());
+
     // the control buttons
     g_signal_connect ( G_OBJECT ( m_buttonDefaults ),
                        "clicked",
@@ -569,6 +566,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                                G_CALLBACK ( s_control_changed ),
                                static_cast<gpointer> ( this ) );
     }
+
+	g_object_unref(G_OBJECT(builder));
 
     return mainWindow;
 }
@@ -633,9 +632,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
             // view
         case id_LIST_VIEW_RULER_UNITS:
             return m_menuUnits;
-
-        case id_CHECK_VIEW_CURSOR_BLINK:
-            return m_checkbuttonViewCursorBlink;
 
         case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
             return m_checkbuttonAllowCustomToolbars;
@@ -798,7 +794,7 @@ gint AP_UnixDialog_Options::_gatherInnerQuoteStyle ( void )
 typedef struct {
     int index;
     int found;
-    gchar *key;
+    const gchar *key;
     gpointer data;
 } search_data;
 
@@ -820,7 +816,7 @@ static void search_for_value ( GtkWidget *widget, gpointer _value )
 }
 
 // returns -1 if not found
-static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key )
+static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, const gchar *key )
 {
     UT_ASSERT ( option_menu && key && GTK_IS_OPTION_MENU ( option_menu ) );
 
@@ -842,8 +838,10 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gcha
         gtk_option_menu_set_history ( GTK_OPTION_MENU ( option_menu ), data.found );
         //UT_DEBUGMSG(("search found %d\n", data.found ));
     }
-    else
+    else 
+    {
         UT_DEBUGMSG ( ( "%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ) );
+    }
 
     return data.found;
 }
@@ -858,8 +856,9 @@ void    AP_UnixDialog_Options::_setViewRulerUnits ( UT_Dimension dim )
 
     int r = option_menu_set_by_key ( m_menuUnits, reinterpret_cast<gpointer> ( dim ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
 void AP_UnixDialog_Options::_setOuterQuoteStyle ( gint nIndex )
 {
@@ -867,8 +866,9 @@ void AP_UnixDialog_Options::_setOuterQuoteStyle ( gint nIndex )
 
     int r = option_menu_set_by_key ( m_omOuterQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
 
 void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
@@ -877,11 +877,10 @@ void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
 
     int r = option_menu_set_by_key ( m_omInnerQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
 
-    if ( r < 0 )
+    if ( r < 0 ) {
         UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
+    }
 }
-
-DEFINE_GET_SET_BOOL ( ViewCursorBlink )
 
 DEFINE_GET_SET_BOOL ( AllowCustomToolbars )
 DEFINE_GET_SET_BOOL ( AutoLoadPlugins )
@@ -926,6 +925,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 /*static*/ void AP_UnixDialog_Options::s_defaults_clicked ( GtkWidget *widget, gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+    UT_UNUSED ( widget );
     UT_ASSERT ( widget && dlg );
     dlg->_event_SetDefaults();
 
@@ -954,6 +954,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 /*static*/ void AP_UnixDialog_Options::s_chooseTransparentColor ( GtkWidget *widget, gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+    UT_UNUSED ( widget );
     UT_ASSERT ( widget && dlg );
     dlg->event_ChooseTransparentColor();
 }
@@ -986,6 +987,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
 
+    UT_UNUSED ( dlg );
     UT_ASSERT ( widget && dlg );
 
     GtkWidget *option_menu = static_cast<GtkWidget *> ( g_object_get_data ( G_OBJECT ( widget ),

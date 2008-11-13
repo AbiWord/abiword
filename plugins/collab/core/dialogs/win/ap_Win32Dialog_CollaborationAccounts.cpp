@@ -83,8 +83,6 @@ void AP_Win32Dialog_CollaborationAccounts::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
-	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
-	
 	// create the dialog
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_COLLABORATIONACCOUNTS);
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
@@ -223,9 +221,8 @@ BOOL AP_Win32Dialog_CollaborationAccounts::_onCommand(HWND hWnd, WPARAM wParam, 
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	int selItem;
 	AccountHandler* pHandler;
+
 	switch (wId)
 	{
 	case AP_RID_DIALOG_COLLABORATIONACCOUNTS_CLOSE_BUTTON:

@@ -43,7 +43,7 @@ enum _FROM_MEMORY { FROM_MEMORY };
 typedef std::map<std::string,UT_uint8> UnbindMap;
 typedef std::map<UT_uint32,std::string> BindingMap;
 
-class  LoadBindings
+class LoadBindings
 {
 	public:
 		LoadBindings(EV_EditMethodCallData * d, _FROM_URI);
@@ -90,7 +90,7 @@ class  LoadBindings
 		void ReportWarning( const char* format, ... ) const;
 };
 
-class  EV_NamedVirtualKey
+class EV_NamedVirtualKey
 {
 public:
 	static const char *	getName(EV_EditBits eb);

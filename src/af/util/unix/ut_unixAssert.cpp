@@ -25,7 +25,7 @@
 #include "ut_assert.h"
 #include "ut_unixAssert.h"
 
-void UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
+int UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 {
 	static int count = 0;
 	
@@ -34,7 +34,7 @@ void UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	printf("**** (%d) %s at %s:%d ****\n", count,szMsg,szFile,iLine);
 	while (1)
 	{
-		printf("**** (%d) Continue ? (y/n) [y] : ", count);
+		printf("**** (%d) Continue ? (y/n/i(gnore)) [y] : ", count);
 		fflush(stdout);
 
 		char buf[10];
@@ -48,12 +48,17 @@ void UT_UnixAssertMsg(const char * szMsg, const char * szFile, int iLine)
 		case '\n':
 		case 'y':
 		case 'Y':
-			return;						// continue the application
+			return 1;					// continue the application
 
 		case 'n':
 		case 'N':
 			abort();					// kill the application
-			return;
+			return 0;
+
+		case 'i':
+		case 'I':
+			return -1;
+
 		default:
 			break;						// ?? ask them again
 		}

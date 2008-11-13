@@ -202,7 +202,7 @@ private:
 /* Exporter class */
 /*********************************/
 
-class  IE_Exp_Nroff : public IE_Exp
+class IE_Exp_Nroff : public IE_Exp
 {
 public:
 
@@ -232,7 +232,7 @@ protected:
 /* Export sniffer */
 /*********************************/
 
-class  IE_Exp_Nroff_Sniffer 
+class IE_Exp_Nroff_Sniffer 
   : public IE_ExpSniffer
 {
   friend class IE_Exp;

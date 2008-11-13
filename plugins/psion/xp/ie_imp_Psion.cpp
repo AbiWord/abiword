@@ -59,7 +59,8 @@ static gchar *prepare_style_name(const psiconv_string_t input)
 {
 	psiconv_string_t input_copy;
 	gchar *result;
-	UT_uint32 i,read,written;
+	int i;
+	UT_uint32 read,written;
 	
 	if (!(input_copy = psiconv_unicode_strdup(input)))
 		return NULL;
@@ -94,7 +95,7 @@ static void write_png_data(png_structp png_ptr, png_bytep data,
  * writing of the PNG file is finished.
  * Nothing needs to be done.
  */
-static void write_png_flush(png_structp png_ptr)
+static void write_png_flush(png_structp /*png_ptr*/)
 {
 }
 
@@ -405,7 +406,6 @@ UT_Error IE_Imp_Psion::applyPageAttributes(const psiconv_page_layout_section lay
 
 	UT_UTF8String props,buffer;
 	const gchar* propsArray[11];
-	UT_Error res;
 	int i;
 
 	// Determine whether we have a header and a footer. We can't append them
@@ -1063,7 +1063,8 @@ UT_Error IE_Imp_Psion::readParagraphs(const psiconv_text_and_layout psiontext,
                                       const psiconv_word_styles_section style_sec)
 //                                      psiconv_list embobjlst)
 {
-	unsigned int i,inline_nr,loc;
+	unsigned int i,inline_nr;
+	int loc;
 	psiconv_paragraph paragraph;
 	psiconv_in_line_layout in_line;
 	UT_UCS4String text;

@@ -1220,6 +1220,22 @@ abi_widget_get_show_margin(AbiWidget * abi)
 
 
 extern "C" gboolean
+abi_widget_set_show_authors(AbiWidget * abi, gboolean bShowAuthors)
+{
+	bool bChanged = (bShowAuthors == abi->priv->m_pDoc->isShowAuthors());
+	abi->priv->m_pDoc->setShowAuthors(bShowAuthors);
+	return static_cast<gboolean>(bChanged);
+}
+
+
+extern "C" gboolean
+abi_widget_get_show_authors(AbiWidget * abi)
+{
+	return static_cast<gboolean>(abi->priv->m_pDoc->isShowAuthors());
+}
+
+
+extern "C" gboolean
 abi_widget_set_word_selections(AbiWidget * abi, gboolean gb)
 {
 	bool b = static_cast<bool>(gb);

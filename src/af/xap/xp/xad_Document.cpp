@@ -22,7 +22,6 @@
 
 #include <stdlib.h>
 #include <cstring>
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -99,6 +98,8 @@ AD_Document::AD_Document() :
 	m_pMyUUID->setUUID(s);
 	UT_UTF8String OrigS;
 	m_pOrigUUID->toString(OrigS);
+	m_pOrigUUID->toString(m_sOrigUUIDString);
+	m_pMyUUID->toString(m_sMyUUIDString);
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.utf8_str()));
 }
@@ -565,6 +566,7 @@ void AD_Document::setOrigUUID(const char * s)
 		if(!m_pOrigUUID->isValid())
 			m_pOrigUUID->makeUUID();
 	}
+	m_pOrigUUID->toString(m_sOrigUUIDString);
 }
 
 
@@ -586,6 +588,7 @@ void AD_Document::setMyUUID(const char * s)
 		if(!m_pMyUUID->isValid())
 			m_pMyUUID->makeUUID();
 	}
+	m_pMyUUID->toString(m_sMyUUIDString);
 }
 
 /*!
@@ -608,9 +611,7 @@ const char * AD_Document::getDocUUIDString() const
 const char * AD_Document::getOrigDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pOrigUUID, NULL);
-	static UT_UTF8String s;
-	m_pOrigUUID->toString(s);
-	return s.utf8_str();
+	return m_sOrigUUIDString.utf8_str();
 }
 
 
@@ -624,9 +625,7 @@ const char * AD_Document::getOrigDocUUIDString() const
 UT_UTF8String AD_Document::getMyUUIDString() const
 {
 	UT_return_val_if_fail(m_pMyUUID, "");
-	UT_UTF8String s;
-	m_pMyUUID->toString(s);
-	return s;
+	return m_sMyUUIDString;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -681,7 +680,7 @@ const AD_Revision * AD_Document::getHighestRevision() const
 	return r;
 }
 
-bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart, UT_uint32 iVer)
+bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart, UT_uint32 iVer, bool bGenCR)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -691,16 +690,14 @@ bool AD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t tStart,
 	}
 
 	AD_Revision * pRev = new AD_Revision(iId, pDesc, tStart, iVer);
-
-	m_vRevisions.addItem(pRev);
-	forceDirty();
+	addRevision(pRev, bGenCR);
 	m_iRevisionID = iId;
 	return true;
 }
 
 bool AD_Document::addRevision(UT_uint32 iId,
 							  const UT_UCS4Char * pDesc, UT_uint32 iLen,
-							  time_t tStart, UT_uint32 iVer)
+							  time_t tStart, UT_uint32 iVer,bool bGenCR)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
@@ -719,10 +716,33 @@ bool AD_Document::addRevision(UT_uint32 iId,
 	}
 	
 	AD_Revision * pRev = new AD_Revision(iId, pD, tStart, iVer);
-
-	m_vRevisions.addItem(pRev);
-	forceDirty();
+	addRevision(pRev,bGenCR);
 	m_iRevisionID = iId;
+	return true;
+}
+
+bool AD_Document::addRevision(AD_Revision * pRev, bool bGenCR)
+{
+	m_vRevisions.addItem(pRev);
+	if(bGenCR)
+	{
+		const gchar * szAtts[11]={"docprop","revision",
+							 "revision",NULL,
+							 "revision-desc",NULL,
+							 "revision-time",NULL,
+							 "revision-ver",NULL,NULL};
+		UT_UTF8String sID,sTime,sVer;
+		UT_UTF8String_sprintf(sID,"%d",pRev->getId());
+		UT_UTF8String_sprintf(sTime,"%d",pRev->getStartTime());
+		UT_UTF8String_sprintf(sVer,"%d",pRev->getVersion());
+		UT_UTF8String sDesc(pRev->getDescription());
+		szAtts[3]= sID.utf8_str();
+		szAtts[5] = sDesc.utf8_str();
+		szAtts[7] = sTime.utf8_str();
+		szAtts[9] = sVer.utf8_str();
+		createAndSendDocPropCR(szAtts,NULL);
+	}
+	forceDirty();
 	return true;
 }
 

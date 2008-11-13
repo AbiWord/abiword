@@ -39,22 +39,22 @@ enum
 	NUM_COLUMNS
 };
 
-static void s_add_buddy_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_add_buddy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventAddBuddy();
 }
 
-static void s_refresh_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_refresh_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventRefresh();
 }
 
-static void s_connect_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_connect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventConnect();
 }
 
-static void s_disconnect_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationJoin * dlg)
+static void s_disconnect_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationJoin * dlg)
 {
 	dlg->eventDisconnect();
 }
@@ -158,24 +158,21 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 	GtkWidget* window;
 	//const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_CollaborationJoin.glade";
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_CollaborationJoin.xml";
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationJoin");
-	m_wAddBuddy = glade_xml_get_widget(xml, "btAddBuddy");
-	m_wDeleteBuddy = glade_xml_get_widget(xml, "btDeleteBuddy");
-	m_wRefresh = glade_xml_get_widget(xml, "btRefresh");	
-	m_wBuddyTree = glade_xml_get_widget(xml, "tvBuddies");
-	m_wConnect = glade_xml_get_widget(xml, "btConnect");
-	m_wDisconnect = glade_xml_get_widget(xml, "btDisconnect");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationJoin"));
+	m_wAddBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btAddBuddy"));
+	m_wDeleteBuddy = GTK_WIDGET(gtk_builder_get_object(builder, "btDeleteBuddy"));
+	m_wRefresh = GTK_WIDGET(gtk_builder_get_object(builder, "btRefresh"));
+	m_wBuddyTree = GTK_WIDGET(gtk_builder_get_object(builder, "tvBuddies"));
+	m_wConnect = GTK_WIDGET(gtk_builder_get_object(builder, "btConnect"));
+	m_wDisconnect = GTK_WIDGET(gtk_builder_get_object(builder, "btDisconnect"));
 	
 	_refreshAccounts();
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -217,6 +214,7 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 							G_CALLBACK(s_selection_changed),
 							static_cast<gpointer>(this));
 
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 
@@ -280,7 +278,8 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
 			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
-		
+			UT_continue_if_fail(pBuddy);
+
 			gtk_tree_store_append (model, &iter, NULL);
 			gtk_tree_store_set (model, &iter, 
 					DESCRIPTION_COLUMN, pBuddy->getDescription().utf8_str(), 
@@ -294,22 +293,18 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			GtkTreeIter child_iter;
 			for (const DocTreeItem* item = pBuddy->getDocTreeItems(); item; item = item->m_next)
 			{
-				if (item->m_docHandle)
-				{
-					UT_DEBUGMSG(("DocHandle document name: %s\n", item->m_docHandle->getName().utf8_str()));
+				UT_continue_if_fail(item->m_docHandle);
+				UT_DEBUGMSG(("DocHandle document name: %s\n", item->m_docHandle->getName().utf8_str()));
 				
-					// TODO: handle the DocTreeItem type
-					gtk_tree_store_append (model, &child_iter, &iter);
-					gtk_tree_store_set (model, &child_iter, 
-							DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
-							CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
-							DOCHANDLE_COLUMN, item->m_docHandle,
-							BUDDY_COLUMN, pBuddy,
-							VISIBLE_COLUMN, true,
-							-1);
-				}
-				else
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				// TODO: handle the DocTreeItem type
+				gtk_tree_store_append (model, &child_iter, &iter);
+				gtk_tree_store_set (model, &child_iter, 
+						DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
+						CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
+						DOCHANDLE_COLUMN, item->m_docHandle,
+						BUDDY_COLUMN, pBuddy,
+						VISIBLE_COLUMN, true,
+						-1);
 			}
 		}
 	}

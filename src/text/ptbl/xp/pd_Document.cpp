@@ -62,12 +62,14 @@
 #include "ut_sleep.h"
 #include "ut_path.h"
 #include "ut_locale.h"
+#include "pp_Author.h"
 
 // these are needed because of the exportGetVisDirectionAtPosition() mechanism
 #include "fp_Run.h"
 #include "fl_BlockLayout.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
+#include "fv_View.h"
 
 #include "ut_go_file.h"
 
@@ -115,7 +117,11 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iCRCounter(0),
 	  m_iUpdateCount(0),
 	  m_bIgnoreSignals(false),
-	  m_bCoalescingMask(false)
+	  m_bCoalescingMask(false),
+	  m_bShowAuthors(true),
+	  m_bExportAuthorAtts(false), //should be false by default. Set true to test
+	  m_iMyAuthorInt(-1),
+	  m_iLastAuthorInt(-1)
 {
 	m_pApp = pApp;
 	
@@ -124,6 +130,9 @@ PD_Document::PD_Document(XAP_App *pApp)
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
+	UT_UTF8String sDoc;
+	getOrigDocUUID()->toString(sDoc);
+	getNumFromAuthorUUID(sDoc.utf8_str());
 }
 
 PD_Document::~PD_Document()
@@ -146,6 +155,7 @@ PD_Document::~PD_Document()
 	m_mailMergeMap.purgeData();
 	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
+	UT_VECTOR_PURGEALL(pp_Author *, m_vecAuthors);
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -164,6 +174,11 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
 	m_metaDataMap.set (key, ptrvalue);
+	const gchar * atts[3] = { PT_DOCPROP_ATTRIBUTE_NAME,"metadata",NULL};
+	const gchar * props[3] = {NULL,NULL,NULL};
+	props[0] = key.c_str();
+	props[1] = value.utf8_str();
+	createAndSendDocPropCR(atts,props);
 }
 
 UT_sint32  PD_Document::getNextCRNumber(void)
@@ -239,6 +254,305 @@ bool PD_Document::isMarginChangeOnly(void) const
 	return m_bMarginChangeOnly;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+/*!
+ * Author methods, get an integer that locates a given UUID. If this UUID
+ * is not found return -1
+ */
+UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
+{
+	if(!szUUID)
+		return NULL;
+	UT_uint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< m_vecAuthors.getItemCount(); i++)
+	{
+		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+		return m_vecAuthors.getNthItem(i)->getAuthorInt();
+	return -1;
+}
+
+UT_sint32 PD_Document::getNumAuthors()
+{
+	return static_cast<UT_sint32>(m_vecAuthors.getItemCount());
+}
+
+pp_Author *  PD_Document::getNthAuthor(UT_sint32 i)
+{
+	return m_vecAuthors.getNthItem(i);
+}
+
+pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID)
+{
+	if(!szUUID)
+		return NULL;
+	UT_uint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< m_vecAuthors.getItemCount(); i++)
+	{
+		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+		return m_vecAuthors.getNthItem(i);
+	return NULL;
+}
+
+pp_Author *  PD_Document::addAuthor(const gchar * szUUID, UT_sint32 iAuthor)
+{
+	UT_DEBUGMSG(("creating author with int %d \n",iAuthor));
+	m_vecAuthors.addItem(new pp_Author(this,szUUID,iAuthor));
+	return 	m_vecAuthors.getNthItem(m_vecAuthors.getItemCount()-1);
+}
+
+bool PD_Document::sendAddAuthorCR(pp_Author * pAuthor)
+{
+	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"addauthor",NULL};
+	const gchar ** szProps = NULL;
+	_buildAuthorProps(pAuthor, szProps);
+	bool b= createAndSendDocPropCR(szAtts,szProps);
+	delete [] szProps;
+	return b;
+}
+
+
+bool PD_Document::sendChangeAuthorCR(pp_Author * pAuthor)
+{
+	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"changeauthor",NULL};
+	const gchar ** szProps = NULL;
+	_buildAuthorProps(pAuthor, szProps);
+	bool b= createAndSendDocPropCR(szAtts,szProps);
+	delete [] szProps;
+	return b;
+}
+
+bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps)
+{
+	PP_AttrProp * pAP = pAuthor->getAttrProp();
+	UT_uint32 iCnt= pAP->getPropertyCount();
+	szProps = new const gchar * [2*iCnt +5];
+	szProps[0] = "uuid";
+	szProps[1] = pAuthor->getUUID();
+	static UT_String sVal;
+	UT_DEBUGMSG(("_buildAuthorProps getAuthorInt %d \n",pAuthor->getAuthorInt()));
+	UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
+	szProps[2] = "id";
+	szProps[3] = sVal.c_str();
+	UT_uint32 i = 0;
+	const gchar * szName = NULL;
+	const gchar * szValue = NULL;
+	UT_uint32 j = 4;
+	for(i=0;i<iCnt;i++)
+	{
+		pAP->getNthProperty(i,szName,szValue);
+		if(*szValue)
+		{
+			szProps[j++] = szName;
+			szProps[j++] = szValue;
+		}
+	}
+	szProps[j] = NULL;
+	return true;
+}
+
+UT_sint32 PD_Document::findFirstFreeAuthorInt(void)
+{
+	UT_sint32 i= 0;
+	for(i=0;i<1000;i++)
+	{
+		if(getAuthorByInt(i) == NULL)
+			break;
+	}
+	return i;
+}
+pp_Author * PD_Document::getAuthorByInt(UT_sint32 i)
+{
+	UT_uint32 j = 0;
+	for(j=0; j< m_vecAuthors.getItemCount(); j++)
+	{
+		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
+			return m_vecAuthors.getNthItem(j);
+	}
+	return NULL;
+}
+/*!
+ * True if the Author attributes should be exported.
+ */
+bool  PD_Document::isExportAuthorAtts(void) const
+{
+	return m_bExportAuthorAtts;
+}
+
+void  PD_Document::setExportAuthorAtts(bool bAuthor)
+{
+	m_bExportAuthorAtts = bAuthor;
+}
+/*!
+ * Returns the integer mapping for this session
+ */
+UT_sint32 PD_Document::getMyAuthorInt(void) const
+{
+	return m_iMyAuthorInt;
+}
+
+void PD_Document::setMyAuthorInt(UT_sint32 i)
+{
+	m_iMyAuthorInt = i;	
+}
+/*!
+ * Returns the most recently received author int
+ */
+UT_sint32 PD_Document::getLastAuthorInt(void) const
+{
+	return m_iLastAuthorInt;
+}
+
+
+
+/*!
+ * get a UUID from it's location. If it's not present return NULL
+ */
+const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i)
+{
+	UT_uint32 j = 0;
+	for(j=0; j< m_vecAuthors.getItemCount(); j++)
+	{
+		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
+			return m_vecAuthors.getNthItem(j)->getUUID();
+	}
+	return NULL;
+}
+
+/*!
+ * Add the current documents UUID as the author to the attribute list if 
+ * the author attribute is not present.
+ * The caller must delete [] the szAttsOut after use.
+  * Returns true if author attribute is present. 
+*/
+bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut)
+{
+	// Set Author attribute
+	UT_sint32 icnt =  0;
+	bool bFound = false;
+	const gchar * sz = NULL;
+	if(szAttsIn)
+	{
+		sz = szAttsIn[0];
+		while(sz != NULL)
+		{
+			sz = szAttsIn[icnt];
+			if(sz && (strcmp(sz,PT_AUTHOR_NAME) == 0))
+			{
+				bFound = true;
+				const gchar * sz1 = szAttsIn[icnt+1];
+				if(sz1 && *sz1)
+					m_iLastAuthorInt = atoi(sz1);
+			}
+			icnt++;
+		}
+	}
+	if(bFound)
+		szAttsOut = new const gchar * [icnt+1];
+	else
+		szAttsOut = new const gchar * [icnt+3];
+	UT_sint32 i = 0;
+	for(i = 0; i< icnt; i++)
+		szAttsOut[i] =  const_cast<const gchar*>(szAttsIn[i]);
+	if(bFound)
+	{
+		szAttsOut[icnt] = NULL;
+		return bFound;
+	}
+	szAttsOut[icnt] = PT_AUTHOR_NAME;
+	UT_String sNum;
+	if(getMyAuthorInt() == -1)
+	{
+		UT_sint32 k = findFirstFreeAuthorInt();
+		setMyAuthorInt(k);
+		m_iLastAuthorInt = k;
+		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		sendAddAuthorCR(pA);
+	}
+	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	m_iLastAuthorInt = getMyAuthorInt();
+	szAttsOut[icnt+1] = sNum.c_str();
+	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
+	szAttsOut[icnt+2] = NULL;
+	return false;
+}
+
+void PD_Document::setShowAuthors(bool bAuthors)
+{ 
+	bool bChanged = (bAuthors != m_bShowAuthors);
+	m_bShowAuthors = bAuthors;
+	//
+	// Could do this with a listner but that might screw up other stuff
+	//
+	if(bChanged)
+	{
+		UT_GenericVector<AV_View *> vecViews;
+		getAllViews(&vecViews);
+		UT_uint32 i = 0;
+		for(i = 0; i<vecViews.getItemCount(); i++)
+		{
+			FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
+			FL_DocLayout * pL = pView->getLayout();
+			pL->refreshRunProperties();
+			pView->updateScreen(false ); // redraw the whole thing
+		}
+	}
+
+}
+
+/*!
+ * Add the current documents UUID as the author to the ppAttrProps 
+ * if the attribute is not set.
+ * returns true if author is set
+ */
+bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
+{
+	xxx_UT_DEBUGMSG(("Doing addAuthorAttributeIfBlank PAP \n"));
+	UT_String sNum;
+	if(getMyAuthorInt() == -1)
+	{
+		UT_sint32 k = findFirstFreeAuthorInt();
+		setMyAuthorInt(k);
+		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		sendAddAuthorCR(pA);
+	}
+	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	m_iLastAuthorInt = getMyAuthorInt();
+	if(!p_AttrProp)
+	{
+		static PP_AttrProp p;
+		p.setAttribute(PT_AUTHOR_NAME,sNum.c_str());
+		p_AttrProp = &p;
+		return false;
+	}
+	const gchar * sz = NULL;
+	if(p_AttrProp->getAttribute(PT_AUTHOR_NAME,sz))
+	{
+		xxx_UT_DEBUGMSG(("Found athor att %s \n",sz));
+		if(sz)
+		{
+			m_iLastAuthorInt = atoi(sz);
+			return true;
+		}
+	}
+	p_AttrProp->setAttribute(PT_AUTHOR_NAME,sNum.c_str());
+	return false;
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -685,7 +999,6 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
-	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -745,7 +1058,6 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
-	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -778,7 +1090,6 @@ UT_Error PD_Document::_save(void)
 	
 	errorCode = pie->writeFile(getFilename());
 	delete pie;
-	signalListeners(PD_SIGNAL_DOCSAVED);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
@@ -816,7 +1127,11 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	{
 		return false;
 	}
-	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties);
+	delete [] szAttsAuthor;
+	return b;
 }
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
@@ -829,9 +1144,12 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 		return false;
 	}
 	pf_Frag_Object * pfo = NULL;
-	bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties, &pfo);
+	delete [] szAttsAuthor;
 	*pField = pfo->getField();
-	return bres;
+	return b;
 }
 
 bool PD_Document::insertSpan(PT_DocPosition dpos,
@@ -843,6 +1161,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	{
 		return false;
 	}
+	addAuthorAttributeIfBlank(p_AttrProp);
 	if(p_AttrProp)
 	{
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
@@ -963,7 +1282,10 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	}
 	bool f;
 	deferNotifications();
-	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,szAttsAuthor,properties);
+	delete [] szAttsAuthor;
 	processDeferredNotifications();
 	return f;
 }
@@ -990,7 +1312,11 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 	{
 		return false;
 	}
-	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties,ppfs_ret);
+	const gchar ** szAttsAuthor = NULL;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	bool b =  m_pPieceTable->insertStrux(dpos,pts,szAttsAuthor,properties,ppfs_ret);
+	delete [] szAttsAuthor;
+	return b;
 }
 
 
@@ -1507,6 +1833,143 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
 	return m_pPieceTable->createAndSendCR(dpos,iType,bSave,iGlob);
+}
+
+/*!
+ * method used to import document property changes
+ */
+bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
+{
+	PP_AttrProp  AP;
+	if(pAtts)
+		AP.setAttributes(pAtts);
+	if(pProps)
+		AP.setProperties(pProps);
+	const gchar * szValue=NULL;
+	bool b= AP.getAttribute( PT_DOCPROP_ATTRIBUTE_NAME,szValue);
+	if(!b || (szValue == NULL))
+		return false;
+	gchar * szLCValue = g_utf8_strdown (szValue, -1);
+	if(strcmp(szLCValue,"revision") == 0)
+    {
+		const gchar * szID=NULL;
+		const gchar * szDesc=NULL;
+		const gchar * szTime=NULL;
+		const gchar * szVersion=NULL;
+		AP.getAttribute(PT_REVISION_ATTRIBUTE_NAME,szID);
+		AP.getAttribute(PT_REVISION_DESC_ATTRIBUTE_NAME,szDesc);
+		AP.getAttribute(PT_REVISION_TIME_ATTRIBUTE_NAME,szTime);
+		AP.getAttribute(PT_REVISION_VERSION_ATTRIBUTE_NAME,szVersion);
+		UT_DEBUGMSG(("Received revision ID %s szDesc %s time %s ver %s \n",szID,szDesc,szTime,szVersion));
+		UT_uint32 id = atoi(szID);
+		UT_UTF8String sDesc = szDesc; 
+		time_t iTime = atoi(szTime);
+		UT_uint32 iVer = atoi(szVersion);
+		UT_UCS4Char * pD = NULL;
+		UT_uint32 iLen = sDesc.ucs4_str().size();
+		pD = new UT_UCS4Char [iLen+1];
+		UT_UCS4_strncpy(pD,sDesc.ucs4_str().ucs4_str(),iLen);
+		pD[iLen] = 0;
+		AD_Document::addRevision(id,pD,iTime,iVer, false);
+	}
+	else if(strcmp(szLCValue,"pagesize") == 0)
+    {
+		UT_sint32 i = 0;
+		UT_DEBUGMSG(("pagesize docprop received \n"));
+		const gchar * szP = pProps[i];
+		while(szP != NULL)
+		{
+			UT_DEBUGMSG(("property %s value %s \n",pProps[i],pProps[i+1]));
+			i += 2;
+			szP = pProps[i];
+		}
+		setPageSizeFromFile(pProps);
+	}
+	else if(strcmp(szLCValue,"metadata") == 0)
+    {
+		UT_sint32 i = 0;
+		UT_DEBUGMSG(("metadata docprop received \n"));
+		const gchar * szName = pProps[i];
+		while(szName != NULL)
+		{
+			szValue = pProps[i+1];
+			UT_DEBUGMSG(("property %s value %s \n",szName,szValue));
+			const UT_String sName = szName;
+			const UT_UTF8String sValue = szValue;
+			setMetaDataProp(sName,sValue);
+			i += 2;
+			szName = pProps[i];
+		}
+
+	}
+	else if(strcmp(szLCValue,"addauthor") == 0)
+	{
+		const gchar * szUUID=NULL;
+		const gchar * szInt=NULL;
+		AP.getProperty("uuid",szUUID);
+		AP.getProperty("id",szInt);
+		UT_DEBUGMSG(("addauthor docprop CR received uuid %s int %d \n",szUUID,szInt));
+		if(szUUID && szInt)
+		{
+			UT_sint32 iAuthor = atoi(szInt);
+			pp_Author * pA = addAuthor(szUUID,iAuthor);
+			UT_uint32 j = 0;
+			const gchar * szName = NULL;
+			szValue = NULL;
+			PP_AttrProp * pAP = pA->getAttrProp();
+			while(AP.getNthProperty(j++,szName,szValue))
+			{
+				if(strcmp(szName,"uuid") == 0)
+					continue;
+				if(strcmp(szName,"id") == 0)
+					continue;
+				if(*szValue)
+					pAP->setProperty(szName,szValue);
+			}
+			sendAddAuthorCR(pA);
+		}
+	}
+	else if(strcmp(szLCValue,"changeauthor") == 0)
+	{
+		const gchar * szUUID=NULL;
+		const gchar * szInt=NULL;
+		pp_Author * pA = NULL;
+		if(AP.getProperty("id",szInt) && szInt && *szInt)
+	    {
+			UT_sint32 iAuthor = atoi(szInt);
+			pA = getAuthorByInt(iAuthor);
+		}
+		else if( AP.getProperty("uuid",szUUID) && szUUID && *szUUID)
+		{
+			pA = getAuthorByUUID(szUUID);
+		}
+		if(pA)
+		{
+			PP_AttrProp * pAP = pA->getAttrProp();
+			UT_uint32 j = 0;
+			const gchar * szName = NULL;
+			while(AP.getNthProperty(j++,szName,szValue))
+			{
+				if(strcmp(szName,"uuid") == 0)
+					continue;
+				if(strcmp(szName,"id") == 0)
+					continue;
+				if(*szValue)
+					pAP->setProperty(szName,szValue);
+			}
+			sendChangeAuthorCR(pA);
+		}
+	}
+	g_free (szLCValue);
+	return true;
+}
+
+/*!
+ * This method creates DocProp Change Record and broadcasts it to the listeners
+ */
+bool PD_Document::createAndSendDocPropCR( const gchar ** pAtts,const gchar ** pProps )
+{
+	return m_pPieceTable->createAndSendDocPropCR(pAtts,pProps);
 }
 
 /*!
@@ -2193,7 +2656,8 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
 										  UT_sint32 * numRows, UT_sint32 * numCols)
 {
-	UT_sint32 iRight, iBot;
+	UT_sint32 iRight = 0;
+    UT_sint32 iBot = 0;
 	const char * szRight = NULL;
 	const char * szBot = NULL;
 	PL_StruxDocHandle cellSDH;
@@ -3239,9 +3703,9 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 }
 
 /*!
- * Return true if the document has a C.A.C. connection
+ * Return true if the document has an abicollab connection
  */
-bool PD_Document::isCACConnected(void)
+bool PD_Document::isConnected(void)
 {
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -3250,7 +3714,7 @@ bool PD_Document::isCACConnected(void)
 		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
-			if(pListener->getType() == PTL_CollabServiceExport)
+			if(pListener->getType() >= PTL_CollabExport)
 			{
 				return true;
 			}
@@ -4975,73 +5439,17 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 
 bool PD_Document:: setPageSizeFromFile(const gchar ** attributes)
 {
-	const gchar * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
-	double width=0.0;
-	double height=0.0;
-	double scale =1.0;
-	UT_Dimension u = DIM_IN;
 
-	for (const gchar ** a = attributes; (*a); a++)
+	bool b =  m_docPageSize.Set(attributes);
+	UT_DEBUGMSG(("SetPageSize m_bLoading %d \n",m_bLoading));
+	if(!m_bLoading)
 	{
-		if (strcmp(a[0],"pagetype") == 0)
-		        szPageSize = a[1];
-		else if (strcmp(a[0], "orientation") == 0)
-			szOrientation = a[1];
-		else if (strcmp(a[0], "width") == 0)
-			szWidth = a[1];
-		else if (strcmp(a[0], "height") == 0)
-			szHeight = a[1];
-		else if (strcmp(a[0], "units") == 0)
-			szUnits = a[1];
-		else if (strcmp(a[0], "page-scale") == 0)
-			szPageScale = a[1];
+		const gchar * szAtts[] = {PT_DOCPROP_ATTRIBUTE_NAME,"pagesize",
+								  NULL,NULL};
+		UT_DEBUGMSG(("Sending page size CR \n"));
+		createAndSendDocPropCR(szAtts,attributes);
 	}
-
-	if(!szPageSize)
-		return false;
-	if(!szOrientation)
-		return false;
-	m_docPageSize.Set(static_cast<const char *>(szPageSize));
-
-	if( szWidth && szHeight && szUnits && szPageScale)
-	  {
-		if(g_ascii_strcasecmp(szPageSize,"Custom") == 0)
-		  {
-		    width = UT_convertDimensionless(szWidth);
-		    height = UT_convertDimensionless(szHeight);
-		    if(strcmp(szUnits,"cm") == 0)
-		      u = DIM_CM;
-		    else if(strcmp(szUnits,"mm") == 0)
-		      u = DIM_MM;
-		    else if(strcmp(szUnits,"inch") == 0)
-		      u = DIM_IN;
-		    m_docPageSize.Set(width,height,u);
-		  }
-
-		scale =  UT_convertDimensionless(szPageScale);
-		m_docPageSize.setScale(scale);
-	  }
-
-	// set portrait by default
-	m_docPageSize.setPortrait();
-	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
-	{
-		width = UT_convertDimensionless(szWidth);
-		height = UT_convertDimensionless(szHeight);
-		if(strcmp(szUnits,"cm") == 0)
-			u = DIM_CM;
-		else if(strcmp(szUnits,"mm") == 0)
-			u = DIM_MM;
-		else if(strcmp(szUnits,"inch") == 0)
-			u = DIM_IN;
-		m_docPageSize.setLandscape();
-		//
-		// Setting landscape causes the width and height to be swapped
-		// so
-		m_docPageSize.Set(height,width,u); // swap them so they out right
-	}
-
-	return true;
+	return b;
 }
 
 void PD_Document::addBookmark(const gchar * pName)

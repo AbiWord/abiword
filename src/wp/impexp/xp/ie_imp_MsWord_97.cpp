@@ -2213,15 +2213,15 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_beginComment(wvParseStruct *ps, UT_uint32 tag,
-					void *props, int dirty)
+int IE_Imp_MsWord_97::_beginComment(wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
+					void * /*props*/, int /*dirty*/)
 {
   UT_DEBUGMSG(("DOM: begin comment\n"));
   return 0;
 }
 
-int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag,
-				  void *props, int dirty)
+int IE_Imp_MsWord_97::_endComment(wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
+				  void * /*props*/, int /*dirty*/)
 {
   UT_DEBUGMSG(("DOM: begin comment\n"));
   return 0;

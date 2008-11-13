@@ -29,7 +29,6 @@
 #include <goffice/goffice-config.h>
 #include <glib/gi18n-lib.h>
 #endif
-
 #include "ut_go_file.h"
 #include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-input.h>
@@ -45,14 +44,18 @@
 #ifdef WITH_GSF_INPUT_HTTP
 #include <gsf/gsf-input-http.h>
 #endif
+#include <stdio.h>
 
-#ifdef WITH_GNOMEVFS
-#define GOFFICE_WITH_GNOME
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
-#include <libgnomevfs/gnome-vfs-mime-handlers.h>
-#include <gsf-gnome/gsf-input-gnomevfs.h>
-#include <gsf-gnome/gsf-output-gnomevfs.h>
+#if HAVE_GSF_GIO
+#  include <gsf/gsf-input-gio.h>
+#  include <gsf/gsf-output-gio.h>
+#elif defined(WITH_GNOMEVFS)
+#  define GOFFICE_WITH_GNOME
+#  include <libgnomevfs/gnome-vfs-utils.h>
+#  include <libgnomevfs/gnome-vfs-mime-utils.h>
+#  include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#  include <gsf-gnome/gsf-input-gnomevfs.h>
+#  include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
 #ifdef WITH_GNOMEUI
@@ -85,7 +88,7 @@ GsfInput *
 gsf_input_memory_new_from_file (FILE * input)
 {
 	GsfOutput *memory_output;
-	GsfInput  *memory_input;
+	GsfInput  *memory_input = NULL;
 
 	g_return_val_if_fail (input != NULL, NULL);
 
@@ -93,17 +96,23 @@ gsf_input_memory_new_from_file (FILE * input)
 	while (TRUE) {
 		guint8 buf[1024];
 		size_t nread;
+		gboolean res;
 
 		nread = fread (buf, 1, sizeof(buf), input);
-		gsf_output_write (memory_output, nread, buf);
-		if ((nread < sizeof(buf)) && (ferror (input) || feof (input)))
-		    break;
+		res = gsf_output_write (memory_output, nread, buf);
+
+		if (ferror (input) || !res) {
+			/* trouble reading from @input or trouble writing to @memory_output */
+			g_object_unref (G_OBJECT (memory_output));
+			return NULL;
+		}
+		else if ((nread < sizeof(buf)) && feof (input)) /* hit eof */
+			break;
 	}
 
-	gsf_output_close (memory_output);
-
-	memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
-						   gsf_output_size (memory_output));
+	if (gsf_output_close (memory_output))
+		memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
+							   gsf_output_size (memory_output));
 
 	g_object_unref (G_OBJECT (memory_output));
 
@@ -331,7 +340,7 @@ UT_go_path_is_uri (const char * path)
 char *
 UT_go_filename_from_uri (const char *uri)
 {
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	return gnome_vfs_get_local_path_from_uri (uri);
 #else
 	return g_filename_from_uri (uri, NULL, NULL);
@@ -350,7 +359,7 @@ UT_go_filename_to_uri (const char *filename)
 
 	simp = UT_go_filename_simplify (filename, UT_GO_DOTDOT_TEST, TRUE);
 
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	uri = gnome_vfs_get_uri_from_local_path (simp);
 #else
 	uri = g_filename_to_uri (simp, NULL, NULL);
@@ -788,7 +797,7 @@ UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri)
 {
 	char *simp, *uri;
 
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	uri = gnome_vfs_uri_make_full_from_relative (ref_uri, rel_uri);
 #else
 	g_return_val_if_fail (ref_uri != NULL, NULL);
@@ -912,7 +921,18 @@ UT_go_shell_arg_to_uri (const char *arg)
 		return res;
 	}
 
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	{
+		GFile *f = g_file_new_for_commandline_arg (arg);
+		char *uri = g_file_get_uri (f);
+		g_object_unref (G_OBJECT (f));
+		if (uri) {
+			char *uri2 = UT_go_url_simplify(uri);
+			g_free (uri);
+			return uri2;
+		}
+	}
+#elif defined(GOFFICE_WITH_GNOME)
 	{
 		/*
 		 * oink://     --> NULL
@@ -948,7 +968,11 @@ UT_go_basename_from_uri (const char *uri)
 {
 	char *res;
 
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	GFile *f = g_file_new_for_uri (uri);
+	char *basename = g_file_get_basename (f);
+	g_object_unref (G_OBJECT (f));
+#elif defined(GOFFICE_WITH_GNOME)
 	char *raw_uri = gnome_vfs_unescape_string (uri, G_DIR_SEPARATOR_S);
 	char *basename = raw_uri ? g_path_get_basename (raw_uri) : NULL;
 	g_free (raw_uri);
@@ -981,7 +1005,7 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 {
 	char *dirname_utf8, *dirname;
 
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	char *raw_uri = gnome_vfs_unescape_string (uri, G_DIR_SEPARATOR_S);
 	dirname = raw_uri ? g_path_get_dirname (raw_uri) : NULL;
 	g_free (raw_uri);
@@ -1008,7 +1032,13 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 gboolean 
 UT_go_directory_create (char const *uri, int mode, GError **error)
 {
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	GFile *f = g_file_new_for_uri (uri);
+	gboolean res = g_file_make_directory (f, NULL, error);
+	g_object_unref (G_OBJECT (f));
+	UT_UNUSED(mode);
+	return res;
+#elif defined(GOFFICE_WITH_GNOME)
 	GnomeVFSResult vfs_result;
 
 	vfs_result = gnome_vfs_make_directory (uri, mode);
@@ -1114,7 +1144,9 @@ UT_go_file_open_impl (char const *uri, GError **err)
 		return result;
 	}
 
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	return gsf_input_gio_new_for_uri (uri, err);
+#elif defined(GOFFICE_WITH_GNOME)
 	return gsf_input_gnomevfs_new (uri, err);
 #elif defined(WITH_GSF_INPUT_HTTP)
 	{
@@ -1162,6 +1194,19 @@ UT_go_file_open (char const *uri, GError **err)
 }
 
 static GsfOutput *
+gsf_output_proxy_create (GsfOutput *wrapped, char const *uri, GError **err)
+{
+	if (!wrapped) {
+		g_set_error (err, gsf_output_error_id (), 0,
+			     "Unable to write to %s", uri);
+		return NULL;
+	}
+	
+	/* guarantee that file descriptors will be seekable */
+	return gsf_output_proxy_new (wrapped);
+}
+
+static GsfOutput *
 UT_go_file_create_impl (char const *uri, GError **err)
 {
 	char *filename;
@@ -1184,17 +1229,13 @@ UT_go_file_create_impl (char const *uri, GError **err)
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "wb") : NULL;
 		GsfOutput *result = fil ? gsf_output_stdio_new_FILE (uri, fil, FALSE) : NULL;
 
-		if (!result) {
-			g_set_error (err, gsf_output_error_id (), 0,
-				     "Unable to write to %s", uri);
-			return NULL;
-		}
-
 		/* guarantee that file descriptors will be seekable */
-		return gsf_output_proxy_new (result);
+		return gsf_output_proxy_create(result, uri, err);
 	}
 
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	return gsf_output_proxy_create(gsf_output_gio_new_for_uri (uri, err), uri, err);
+#elif defined(GOFFICE_WITH_GNOME)
 	return gsf_output_gnomevfs_new (uri, err);
 #else
 	g_set_error (err, gsf_output_error_id (), 0,
@@ -1232,7 +1273,17 @@ UT_go_file_remove (char const *uri, GError ** err)
 	}
 
 
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+
+	{
+		GFile *f = g_file_new_for_uri (uri);
+		gboolean res = g_file_delete (f, NULL, err);
+		g_object_unref (G_OBJECT (f));
+
+		return res;
+	}
+
+#elif defined(GOFFICE_WITH_GNOME)
 	UT_UNUSED(err);
 	return (gnome_vfs_unlink (uri) == GNOME_VFS_OK);
 #else
@@ -1295,7 +1346,12 @@ UT_go_file_split_urls (const char *data)
 gboolean
 UT_go_file_exists (char const *uri)
 {
-#if defined (GOFFICE_WITH_GNOME)
+#if HAVE_GSF_GIO
+	GFile *f = g_file_new_for_uri (uri);
+	gboolean res = g_file_query_exists (f, NULL);
+	g_object_unref (G_OBJECT (f));
+	return res;
+#elif defined (GOFFICE_WITH_GNOME)
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	if (vfs_uri) {
 		gboolean exists = gnome_vfs_uri_exists (vfs_uri);
@@ -1487,7 +1543,7 @@ UT_go_file_get_date (char const *uri, UT_GOFileDateType type)
 {
 	time_t tm = -1;
 
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	GnomeVFSFileInfo *file_info;
 
 	GnomeVFSResult result;
@@ -1764,7 +1820,20 @@ UT_go_url_check_extension (gchar const *uri,
 gchar *
 UT_go_get_mime_type (gchar const *uri)
 {
-#ifdef GOFFICE_WITH_GNOME
+#if HAVE_GSF_GIO
+	gboolean content_type_uncertain = FALSE;
+	char *content_type = g_content_type_guess (uri, NULL, 0, &content_type_uncertain);
+	if (content_type) {
+		char *mime_type = g_content_type_get_mime_type (content_type);
+		g_free (content_type);
+
+		if (mime_type)
+			return mime_type;
+	}
+
+	return g_strdup ("application/octet-stream");
+
+#elif defined(GOFFICE_WITH_GNOME)
 	return gnome_vfs_get_mime_type (uri);
 #elif 0 /* defined(G_OS_WIN32) */
 	LPWSTR wuri, mime_type;
@@ -1793,7 +1862,7 @@ UT_go_get_mime_type (gchar const *uri)
 gchar
 *UT_go_get_mime_type_for_data	(gconstpointer data, int data_size)
 {
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	return g_strdup (gnome_vfs_get_mime_type_for_data (data, data_size));
 #elif 0 /* defined G_OS_WIN32 */
 	LPWSTR mime_type;
@@ -1810,6 +1879,8 @@ gchar
 	 */
 	return g_strdup ("text/plain");
 #else
+	UT_UNUSED(data);
+	UT_UNUSED(data_size);
 	return g_strdup ("application/octet-stream");
 #endif
 }
@@ -1817,7 +1888,7 @@ gchar
 gchar const
 *UT_go_mime_type_get_description	(gchar const *mime_type)
 {
-#ifdef GOFFICE_WITH_GNOME
+#if defined(GOFFICE_WITH_GNOME)
 	return gnome_vfs_mime_get_description (mime_type);
 #else
 	return mime_type;

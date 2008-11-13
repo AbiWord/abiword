@@ -49,7 +49,7 @@ void UT_PropVector::addOrReplaceProp(const gchar * pszProp, const gchar * pszVal
 		}
 	}
 	if((iCount > 0) && (i < iCount)) {
-	    gchar* pVal;
+	    gchar* pVal = NULL;
 		gchar * val = g_strdup(pszVal);
 		setNthItem(i+1, val, &pVal);
 		FREEP(pVal);

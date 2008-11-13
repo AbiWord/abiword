@@ -22,7 +22,7 @@
 
 #include "ie_imp_XHTML.h"
 
-class  IE_Imp_Tidy_Sniffer : public IE_ImpSniffer
+class IE_Imp_Tidy_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -42,7 +42,7 @@ public:
 	virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);
 };
 
-class  IE_Imp_HTML : public IE_Imp_XHTML
+class IE_Imp_HTML : public IE_Imp_XHTML
 {
 public:
 	IE_Imp_HTML (PD_Document * pDocument);

@@ -28,12 +28,12 @@
 
 #include "ap_UnixDialog_CollaborationAddAccount.h"
 
-static void s_ok_clicked(GtkWidget * wid, AP_UnixDialog_CollaborationAddAccount * dlg)
+static void s_ok_clicked(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAddAccount * dlg)
 {
 	dlg->eventOk();
 }
 
-static void s_account_type_changed(GtkWidget * wid, AP_UnixDialog_CollaborationAddAccount * dlg)
+static void s_account_type_changed(GtkWidget * /*wid*/, AP_UnixDialog_CollaborationAddAccount * dlg)
 {
 	dlg->eventAccountTypeChanged();
 }
@@ -84,21 +84,18 @@ GtkWidget * AP_UnixDialog_CollaborationAddAccount::_constructWindow(void)
 	GtkWidget* window;
 	//const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_CollaborationAddAccount.glade";
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_CollaborationAddAccount.xml";
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_CollaborationAddAccount");
-	m_wAccountType = glade_xml_get_widget(xml, "cbAccountType");
-	m_wEmbeddingParent = GTK_VBOX(glade_xml_get_widget(xml, "vbWidgetEmbedding"));
-	m_wOk = glade_xml_get_widget(xml, "btOK");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_CollaborationAddAccount"));
+	m_wAccountType = GTK_WIDGET(gtk_builder_get_object(builder, "cbAccountType"));
+	m_wEmbeddingParent = GTK_VBOX(GTK_WIDGET(gtk_builder_get_object(builder, "vbWidgetEmbedding")));
+	m_wOk = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 
 	// set the dialog title
 	// TODO
@@ -116,6 +113,7 @@ GtkWidget * AP_UnixDialog_CollaborationAddAccount::_constructWindow(void)
 							"changed",
 							G_CALLBACK(s_account_type_changed),
 							static_cast<gpointer>(this));
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 
@@ -196,6 +194,8 @@ void AP_UnixDialog_CollaborationAddAccount::eventAccountTypeChanged()
 		UT_DEBUGMSG(("Changed account handler to type: %s\n", pHandler->getDisplayType().utf8_str()));
 		_setAccountHandler(pHandler);
 	}
-	else
+	else 
+	{
 		UT_DEBUGMSG(("No account handler types to select; this makes abicollab kinda pointless...\n"));
+	}
 }

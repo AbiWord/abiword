@@ -54,18 +54,30 @@ UT_Error OXML_ObjectWithAttrProp::setProperty(const gchar * szName, const gchar 
 
 UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar *& szValue)
 {
+	UT_return_val_if_fail(szName && *szName, UT_ERROR);
+	if(!m_pAttributes)
+		return UT_ERROR;
+
 	UT_Error ret;
-	if (m_pAttributes == NULL) return UT_ERROR;
 	ret = m_pAttributes->getAttribute(szName, szValue) ? UT_OK : UT_ERROR;
-	return ret;
+	if(ret != UT_OK)
+		return ret;
+
+	return (szValue && *szValue) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar *& szValue)
 {
+	UT_return_val_if_fail(szName && *szName, UT_ERROR);
+	if(!m_pAttributes)
+		return UT_ERROR;
+
 	UT_Error ret;
-	if (m_pAttributes == NULL) return UT_ERROR;
 	ret = m_pAttributes->getProperty(szName, szValue) ? UT_OK : UT_ERROR;
-	return ret;
+	if(ret != UT_OK)
+		return ret;
+
+	return (szValue && *szValue) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_ObjectWithAttrProp::setAttributes(const gchar ** attributes)

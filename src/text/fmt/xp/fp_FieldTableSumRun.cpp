@@ -103,17 +103,17 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 		{
 			double a = d*100.0;
 			double aa = a;
-			UT_sint32 iVal = static_cast<UT_sint32>(a);
-			if(iVal >= 0)
+			UT_sint32 iValH = static_cast<UT_sint32>(a);
+			if(iValH >= 0)
 			{
-				aa = static_cast<double>(iVal);
+				aa = static_cast<double>(iValH);
 				if((a - aa) < res)
 				{
 					bUseFix2 = true;
 				}
 				if(!bUseFix2)
 				{
-					aa = static_cast<double>(iVal+1);
+					aa = static_cast<double>(iValH+1);
 					if((aa-a) < res)
 					{
 						bUseFix2 = true;
@@ -123,14 +123,14 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 			}
 			else
 			{
-				aa = static_cast<double>(iVal);
+				aa = static_cast<double>(iValH);
 				if((aa -a) < res)
 				{
 					bUseFix2 = true;
 				}
 				if(!bUseFix2)
 				{
-					aa = static_cast<double>(iVal-1);
+					aa = static_cast<double>(iValH-1);
 					if((a - aa) < res)
 					{
 						bUseFix2 = true;
@@ -142,8 +142,8 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 			{
 				if(fabs(a) < 1e9)
 				{
-					iVal = static_cast<UT_sint32>(a);
-					d = static_cast<double>(iVal)/100.0;
+					iValH = static_cast<UT_sint32>(a);
+					d = static_cast<double>(iValH)/100.0;
 				}
 			}
 		}

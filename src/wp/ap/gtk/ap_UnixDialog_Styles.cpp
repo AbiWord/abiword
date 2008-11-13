@@ -164,12 +164,14 @@ s_closebtn_clicked (GtkWidget * /*w*/, gpointer d)
 
 static void s_remove_property(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_RemoveProperty();
 }
 
 static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->new_styleName();
 }
@@ -177,6 +179,7 @@ static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -186,6 +189,7 @@ static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -195,6 +199,7 @@ static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	if(me->isModifySignalBlocked())
 		return;
@@ -203,6 +208,7 @@ static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 
 static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_paraPreviewExposed();
 	return FALSE;
@@ -211,6 +217,7 @@ static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 
 static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_charPreviewExposed();
 	return FALSE;
@@ -219,6 +226,7 @@ static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 
 static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
+	UT_UNUSED(widget);
 	UT_ASSERT(widget && me);
 	me->event_ModifyPreviewExposed();
 	return FALSE;
@@ -285,9 +293,6 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
-	
 	UT_ASSERT(m_wParaPreviewArea && m_wParaPreviewArea->window);
 
 	// make a new Unix GC
@@ -485,66 +490,65 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Styles.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Styles.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-	GtkWidget *window = glade_xml_get_widget(xml, "ap_UnixDialog_Styles");
+	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle, s);
 	gtk_window_set_title (GTK_WINDOW (window), s.utf8_str());
 
 	// list of styles goes in the top left
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbStyles"), pSS, AP_STRING_ID_DLG_Styles_Available);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbStyles")), pSS, AP_STRING_ID_DLG_Styles_Available);
 	
 	// treeview
-	m_tvStyles = glade_xml_get_widget(xml, "tvStyles");
+	m_tvStyles = GTK_WIDGET(gtk_builder_get_object(builder, "tvStyles"));
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);	
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbList"), pSS, AP_STRING_ID_DLG_Styles_List);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbList")), pSS, AP_STRING_ID_DLG_Styles_List);
 
-	m_rbList1 = glade_xml_get_widget(xml, "rbList1");
+	m_rbList1 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList1"));
 	localizeButton(m_rbList1, pSS, AP_STRING_ID_DLG_Styles_LBL_InUse);
-	m_rbList2 = glade_xml_get_widget(xml, "rbList2");
+	m_rbList2 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList2"));
 	localizeButton(m_rbList2, pSS, AP_STRING_ID_DLG_Styles_LBL_All);
-	m_rbList3 = glade_xml_get_widget(xml, "rbList3");
+	m_rbList3 = GTK_WIDGET(gtk_builder_get_object(builder, "rbList3"));
 	localizeButton(m_rbList3, pSS, AP_STRING_ID_DLG_Styles_LBL_UserDefined);
 	
 	// previewing and description goes in the top right
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbParagraph"), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
-	GtkWidget *frameParaPrev = glade_xml_get_widget(xml, "frameParagraph");
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraph")), pSS, AP_STRING_ID_DLG_Styles_ParaPrev);
+	GtkWidget *frameParaPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameParagraph"));
 	m_wParaPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), m_wParaPreviewArea);
 	gtk_widget_show(m_wParaPreviewArea);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbCharacter"), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
-	GtkWidget *frameCharPrev = glade_xml_get_widget(xml, "frameCharacter");
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbCharacter")), pSS, AP_STRING_ID_DLG_Styles_CharPrev);
+	GtkWidget *frameCharPrev = GTK_WIDGET(gtk_builder_get_object(builder, "frameCharacter"));
 	m_wCharPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(m_wCharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), m_wCharPreviewArea);
 	gtk_widget_show(m_wCharPreviewArea);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Styles_Description);
-	m_lbAttributes = glade_xml_get_widget(xml, "lbAttributes");
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Styles_Description);
+	m_lbAttributes = GTK_WIDGET(gtk_builder_get_object(builder, "lbAttributes"));
 
 	// Pack buttons at the bottom of the dialog
-	m_btNew = glade_xml_get_widget(xml, "btNew");
-	m_btDelete = glade_xml_get_widget(xml, "btDelete");
-	m_btModify = glade_xml_get_widget(xml, "btModify");
+	m_btNew = GTK_WIDGET(gtk_builder_get_object(builder, "btNew"));
+	m_btDelete = GTK_WIDGET(gtk_builder_get_object(builder, "btDelete"));
+	m_btModify = GTK_WIDGET(gtk_builder_get_object(builder, "btModify"));
 	localizeButton(m_btModify, pSS, AP_STRING_ID_DLG_Styles_Modify);
 
-	m_btApply = glade_xml_get_widget(xml, "btApply");
-	m_btClose = glade_xml_get_widget(xml, "btClose");
+	m_btApply = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
+	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 	_connectSignals();
+
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 
@@ -661,7 +665,7 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		// select first
 		GtkTreePath *path = gtk_tree_path_new_from_string("0");
 		gtk_tree_selection_select_path(selection, path);
-		g_free(path);
+		gtk_tree_path_free(path);
 	}
 	
 	// selection "changed" doesn't fire here, so hack manually
@@ -1260,8 +1264,6 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
         abiSetupModalDialog(GTK_DIALOG(m_wModifyDialog), getFrame(), this, BUTTON_MODIFY_CANCEL);
 
 	// make a new Unix GC
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
 
 	DELETEP (m_pAbiPreviewWidget);
 	GR_UnixAllocInfo ai(m_wModifyDrawingArea->window);

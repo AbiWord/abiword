@@ -7,7 +7,7 @@ The initial version used by AbiWord 2.4 was a rewrite of the then latest source
 it). Our changes were accepted 'upstream', followed by a new release dubbed 
 itex2MLL 1.0 [3].
 
-Currently, we include itex2MML 1.2, without any modifications.
+Currently, we include itex2MML 1.3.5, without any modifications.
 Some documentation can be found here [4].
 
 

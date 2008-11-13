@@ -362,7 +362,7 @@ UT_sint32 fp_FrameContainer::getHeight(void) const
 }
 
 	
-void fp_FrameContainer::setContainer(fp_Container * pContainer)
+void fp_FrameContainer::setContainer(fp_Container * /*pContainer*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

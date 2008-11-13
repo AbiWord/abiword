@@ -58,6 +58,7 @@
 #include "xap_Frame.h"
 #include "ut_misc.h"
 
+
 #ifdef ENABLE_SPELL
 #include "spell_manager.h"
 #endif
@@ -165,7 +166,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 FL_DocLayout::~FL_DocLayout()
 {
-        xxx_UT_DEBUGMSG(("Deleting DocLayout %x DocListener %x lid %d\n",this,m_pDocListener,m_lid));
+        UT_DEBUGMSG(("Deleting DocLayout %x DocListener %x lid %d\n",this,m_pDocListener,m_lid));
 
 	m_bDeletingLayout = true;
 	if (m_pPrefs)
@@ -726,6 +727,21 @@ void FL_DocLayout::fillLayouts(void)
 	// Finally set all page numbers in frames
 	//
 	setFramePageNumbers(0);
+}
+
+/*!
+ *  This method is used to reset the colorization such as what occurs
+ * when showAuthors state is changed.
+ */ 
+void FL_DocLayout::refreshRunProperties(void)
+{
+    fl_DocSectionLayout * pDSL = getFirstSection();
+    fl_BlockLayout * pBL = pDSL->getFirstBlock();
+    while(pBL)
+    {
+        pBL->refreshRunProperties();
+	pBL = pBL->getNextBlockInDocument();
+    }
 }
 
 /*!
@@ -1836,9 +1852,11 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
-	if (pszField != NULL && isField && strcmp(pszField, "NULL"))
+	xxx_UT_DEBUGMSG(("findFont::field-font is %s isField %d \n",pszField,isField));
+	if ((pszField != NULL) && isField && (strcmp(pszField, "NULL") != 0))
 		pszFamily = pszField;
 
+	xxx_UT_DEBUGMSG(("findFont::pszFamily is %s \n",pszFamily));
 	// for superscripts and subscripts, we'll automatically shrink the font size
 	if ((0 == strcmp(pszPosition, "superscript")) ||
 		(0 == strcmp(pszPosition, "subscript")))
@@ -1863,6 +1881,48 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	}
 }
 
+/*!
+ * Set the Document View page Size to properties provided. Rebuild 
+ * the document afterwards.
+ */
+bool FL_DocLayout::setDocViewPageSize(const PP_AttrProp * pAP)
+{
+       const gchar ** pProps = pAP->getProperties();
+       FV_View * pView = getView();
+       XAP_Frame * pFrame = NULL;
+       UT_sint32 iZoom = 100;
+       if(pView)
+	    pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+       if(pFrame)
+       {
+	    iZoom = pFrame->getZoomPercentage();
+	    XAP_Frame::tZoomType zt = pFrame->getZoomType();
+	    if((zt == XAP_Frame::z_PAGEWIDTH) || (zt == XAP_Frame::z_WHOLEPAGE))
+	    {
+	         if(pView->isHdrFtrEdit())
+		 {
+		       pView->clearHdrFtrEdit();
+		       pView->warpInsPtToXY(0,0,false);
+		 } 
+		 if(zt == XAP_Frame::z_PAGEWIDTH)
+		 {
+		       iZoom = pView->calculateZoomPercentForPageWidth();
+		 }
+		 if(zt == XAP_Frame::z_WHOLEPAGE)
+		 {
+		       iZoom = pView->calculateZoomPercentForWholePage();
+		 }
+	    }
+       }
+       bool b = m_docViewPageSize.Set(pProps);
+       if(pView && (pView->getViewMode() != VIEW_WEB))
+       {
+	    rebuildFromHere(m_pFirstSection);
+       }
+       if(pFrame)
+	    pFrame->quickZoom(iZoom);
+       return b;
+}
 
 const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pBlockAP,
@@ -2395,6 +2455,7 @@ void FL_DocLayout::formatAll()
 
 void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 {
+  UT_DEBUGMSG(("Rebuilding DocLAyout %x doc %d \n",this,m_pDoc));
 	UT_ASSERT(m_pDoc);
 	if(isLayoutFilling())
 	{

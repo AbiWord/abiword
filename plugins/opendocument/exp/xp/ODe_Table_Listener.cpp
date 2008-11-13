@@ -65,6 +65,8 @@ ODe_Table_Listener::~ODe_Table_Listener() {
     DELETEPV(m_pColumns);
     DELETEPV(m_pRows);
     UT_VECTOR_PURGEALL(ODe_Table_Cell*, m_cells);
+    UT_VECTOR_PURGEALL(UT_UTF8String*, columnStyleNames);
+    UT_VECTOR_PURGEALL(UT_UTF8String*, rowStyleNames);
     DELETEP(m_pTableWideCellStyle);
 }
 
@@ -77,12 +79,9 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     const gchar* pValue;
     bool ok;
     const gchar* pVar;
-    UT_uint32 i;
     ODe_Style_Style* pStyle;
     std::string buffer;
     UT_UTF8String styleName;
-    UT_GenericVector<UT_UTF8String*> columnStyleNames;
-    UT_GenericVector<UT_UTF8String*> rowStyleNames;
 
     m_rAuxiliaryData.m_tableCount++;
     UT_UTF8String_sprintf(m_tableName, "Table%u", m_rAuxiliaryData.m_tableCount);
@@ -171,26 +170,9 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
         }
     }
     
-    
-    if (m_numColumns > 0) {
-        m_pColumns = new ODe_Table_Column[m_numColumns];
-        
-        for (i=0; i<m_numColumns; i++) {
-            m_pColumns[i].m_styleName = *(columnStyleNames[i]);
-        }
-    }
-    
-    if (m_numRows > 0) {
-        m_pRows = new ODe_Table_Row[m_numRows];
-        
-        for (i=0; i<m_numRows; i++) {
-            m_pRows[i].m_styleName = *(rowStyleNames[i]);
-        }
-    }
-    
-    
-    UT_VECTOR_PURGEALL(UT_UTF8String*, columnStyleNames);
-    UT_VECTOR_PURGEALL(UT_UTF8String*, rowStyleNames);
+    // Don't create m_pColumns here, because we can't expect table-column-props to
+    // always have the correct amount of columns (due to corrupt files, bugs, etc.).
+    // m_pRows and table-row-heights have the same problem.
 }
 
 
@@ -315,18 +297,29 @@ void ODe_Table_Listener::_buildTable() {
     UT_uint32 i, j;
     ODe_Table_Cell* pCell;
     
-    UT_ASSERT(m_numRows > 0);
-    UT_ASSERT(m_numColumns > 0);
+    UT_return_if_fail(m_numRows > 0);
+    UT_return_if_fail(m_numColumns > 0);
     
-    // Create the columns, if not done already
-    if (m_pColumns == NULL) {
-        m_pColumns = new ODe_Table_Column[m_numColumns];
+    // Create the columns
+    m_pColumns = new ODe_Table_Column[m_numColumns];
+
+    for (i=0; (i<m_numColumns) && (i<columnStyleNames.getItemCount()); i++) {
+        if (columnStyleNames[i]) {
+            m_pColumns[i].m_styleName = *(columnStyleNames[i]);
+        }
     }
-    
-    // Create the rows, if not done already
-    if (m_pRows == NULL) {
-        m_pRows = new ODe_Table_Row[m_numRows];
+
+
+    // Create the rows
+    m_pRows = new ODe_Table_Row[m_numRows];
+
+
+    for (i=0; (i<m_numRows) && (i<rowStyleNames.getItemCount()); i++) {
+        if (rowStyleNames[i]) {
+            m_pRows[i].m_styleName = *(rowStyleNames[i]);
+        }
     }
+
     
     // Create the vectors that will hold the cells into its corresponding rows.
     for (i=0; i<m_numRows; i++) {
@@ -342,8 +335,9 @@ void ODe_Table_Listener::_buildTable() {
     for (i=0; i<m_cells.getItemCount(); i++) {
         pCell = m_cells.getNthItem(i);
 
-        UT_ASSERT(pCell->m_topAttach < m_numRows);
-        UT_ASSERT(pCell->m_leftAttach < m_numColumns);
+        UT_continue_if_fail(pCell)
+        UT_continue_if_fail(pCell->m_topAttach < m_numRows);
+        UT_continue_if_fail(pCell->m_leftAttach < m_numColumns);
         
         m_pRows[pCell->m_topAttach].m_ppCells[pCell->m_leftAttach] = pCell;
     }
@@ -354,30 +348,34 @@ void ODe_Table_Listener::_buildTable() {
  * 
  */
 void ODe_Table_Cell::loadAbiProps(const PP_AttrProp* pAP) {
-    const gchar* pValue;
-    bool ok;
+    const gchar* pValue = NULL;
+    bool ok = false;
     
     ok = pAP->getProperty("left-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing left-attach property\n"));
+        return;
     }
     m_leftAttach = atoi(pValue);
     
     ok = pAP->getProperty("right-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing right-attach property\n"));
+        return;
     }
     m_rightAttach = atoi(pValue);
 
     ok = pAP->getProperty("top-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing top-attach property\n"));
+        return;
     }
     m_topAttach = atoi(pValue);
 
     ok = pAP->getProperty("bot-attach", pValue);
     if (!ok || pValue == NULL) {
-        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        UT_DEBUGMSG(("ODe_Table_Cell::loadAbiProps(): missing bot-attach property\n"));
+        return;
     }
     m_bottomAttach = atoi(pValue);
 

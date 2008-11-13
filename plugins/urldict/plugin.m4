@@ -2,7 +2,9 @@
 URLDICT_CFLAGS=
 URLDICT_LIBS=
 
-if test "$enable_urldict" == "yes"; then
+if test "$enable_urldict" != ""; then
+
+test "$enable_urldict" == "auto" && PLUGINS="$PLUGINS urldict"
 
 URLDICT_CFLAGS="$URLDICT_CFLAGS "'${PLUGIN_CFLAGS}'
 URLDICT_LIBS="$URLDICT_LIBS "'${PLUGIN_LIBS}'

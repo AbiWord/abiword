@@ -102,6 +102,9 @@ go_gtk_dialog_add_button (GtkDialog *dialog, const gchar* text, const gchar* sto
 	return button;
 }
 
+#if 0 /* dropped, since abiword doesn't depend on libglade */
+
+
 /**
  * go_libglade_new :
  * @gcc : #GOCmdContext
@@ -133,6 +136,8 @@ go_libglade_new (char const *gladefile, char const *root,
 
 	return gui;
 }
+
+#endif
 
 /**
  * go_gtk_editable_enters:
@@ -536,6 +541,8 @@ cb_format_combo_changed (GtkComboBox *combo, GtkWidget *expander)
 				  format_info->is_dpi_useful);
 }
 
+#if 0 /* dropped, since abiword doesn't depend on libglade */
+
 char *
 gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 			 GOImageFormat *ret_format, double *resolution)
@@ -667,6 +674,8 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 
 	return uri;
 }
+
+#endif
 
 static void
 add_atk_relation (GtkWidget *w0, GtkWidget *w1, AtkRelationType type)

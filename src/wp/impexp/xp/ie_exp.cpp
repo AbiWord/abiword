@@ -350,6 +350,11 @@ UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
   	// write trailing zero to byte buffer (not required for file)
   	write("",1);
 
+#if (DEBUG && 0)
+	printf("Text from copy is... \n");
+	printf("%s",reinterpret_cast<const char *>(m_pByteBuf->getPointer(0)));
+	printf("\n");
+#endif
 	return err;
 }
 

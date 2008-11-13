@@ -300,7 +300,7 @@ s_topmost_changed_cb (HildonProgram *program,
 		gpointer data)
 {
 	XAP_UnixHildonApp *pApp;
-	g_return_if_fail (data != NULL);
+	UT_return_if_fail(data != NULL);
 	pApp = static_cast<XAP_UnixHildonApp *>(data);
 
 	if (hildon_program_get_is_topmost (program))
@@ -318,7 +318,7 @@ osso_hw_event_cb (osso_hw_state_t *state,
 	UT_DEBUGMSG(("osso_hw_event_cb() called\n"));
 	XAP_UnixHildonApp *pApp;
 
-	g_return_if_fail (data != NULL);
+	UT_return_if_fail (data != NULL);
 
 	pApp = static_cast<XAP_UnixHildonApp *>(data);
 
@@ -381,7 +381,7 @@ static gint osso_rpc_event_cb (const gchar     *interface,
 				 interface, method));
 	
 	XAP_UnixHildonApp *pApp;
-	g_return_val_if_fail (data != NULL, OSSO_ERROR);
+	UT_return_val_if_fail (data != NULL, OSSO_ERROR);
 
 	pApp = static_cast<XAP_UnixHildonApp *>(data);
 

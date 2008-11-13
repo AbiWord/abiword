@@ -66,17 +66,13 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 #include "ap_FrameData.h"
+#include "ap_UnixFrame.h"
 #include "ev_Mouse.h"
 
 #include "ie_types.h"
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
-
-#ifdef WITH_GNOMEVFS
-  #include <libgnomevfs/gnome-vfs.h>
-  #include <libgnomevfs/gnome-vfs-mime-utils.h>
-#endif
 
 #ifdef HAVE_GCONF
 #include "ev_GnomeToolbar.h"
@@ -97,8 +93,15 @@ enum {
 
 static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{(gchar *)"text/uri-list", 	0, TARGET_URI_LIST},
-	{(gchar *)"_NETSCAPE_URL", 	0, TARGET_URL}
-};
+	{(gchar *)"_NETSCAPE_URL", 	0, TARGET_URL},
+	{(gchar *)"image/gif", 	0, TARGET_IMAGE},
+	{(gchar *)"image/jpeg", 	0, TARGET_IMAGE},
+	{(gchar *)"image/png", 	0, TARGET_IMAGE},
+	{(gchar *)"image/tiff", 	0, TARGET_IMAGE},
+	{(gchar *)"image/vnd", 	0, TARGET_IMAGE},
+	{(gchar *)"image/bmp", 	0, TARGET_IMAGE},
+	{(gchar *)"image/x-xpixmap", 	0, TARGET_IMAGE}}
+;
 
 struct DragInfo {
 	GtkTargetEntry * entries;
@@ -184,29 +187,32 @@ static int s_mapMimeToUriType (const char * uri)
 	int target = TARGET_UNKNOWN;
 
 	gchar *mimeType;
-#ifdef WITH_GNOMEVFS
-	mimeType = gnome_vfs_get_mime_type (uri);
-#else
-	const gchar * suffix = UT_pathSuffix(uri);
-	if (suffix) {
-		if(suffix[0] == '.')
-			suffix++;
-		const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
-		if (!mt) {
-			mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
-		}
-		if (mt) {
-			/* we to g_free that later */
-			mimeType = g_strdup(mt);
+
+	mimeType = UT_go_get_mime_type (uri);
+
+	if (g_ascii_strcasecmp (mimeType, "application/octet-stream") == 0) {
+		FREEP (mimeType);
+		const gchar * suffix = UT_pathSuffix(uri);
+		if (suffix) {
+			if(suffix[0] == '.')
+				suffix++;
+			const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
+			if (!mt) {
+				mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
+			}
+			if (mt) {
+				/* we to g_free that later */
+				mimeType = g_strdup(mt);
+			}
+			else {
+				return target;
+			}
 		}
 		else {
 			return target;
 		}
 	}
-	else {
-		return target;
-	}
-#endif
+
 	UT_DEBUGMSG(("DOM: mimeType %s dropped into AbiWord(%s)\n", mimeType, uri));
 
 	DragInfo * dragInfo = s_getDragInfo();
@@ -221,7 +227,7 @@ static int s_mapMimeToUriType (const char * uri)
 }
 
 static void
-s_loadImage (const UT_UTF8String & file, FV_View * pView,gint x, gint y)
+s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic (file.utf8_str(), 0, &pFG);
@@ -230,19 +236,27 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView,gint x, gint y)
 			UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.utf8_str()));
 			return;
 		}
-	UT_sint32 mouseX = x;
-	UT_sint32 mouseY = y;
+	UT_sint32 xoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaXoff();
+	UT_sint32 yoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaYoff();
+	UT_sint32 mouseX = x - xoff;
+	UT_sint32 mouseY = y - yoff;
+	UT_DEBUGMSG(("x %d xoff %d y %d yoff %d ",y,xoff,y,yoff));
 	if(pView && pView->getGraphics())
-		mouseX = pView->getGraphics()->tlu(x);
+		mouseX = pView->getGraphics()->tlu(mouseX);
 	if(pView && pView->getGraphics())
-		mouseY = pView->getGraphics()->tlu(y);
+		mouseY = pView->getGraphics()->tlu(mouseY);
+	double xInch = (double) mouseX/1440.;
+	double yInch = (double) mouseY/1440.;
 
+	UT_DEBUGMSG(("Insert Image at logical (x,y) %d %d \n",mouseX,mouseY));
+
+	UT_DEBUGMSG(("Insert Image at x %f in y %f in \n",xInch,yInch));
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
 	DELETEP(pFG);
 }
 
 static void
-s_loadImage (UT_ByteBuf * bytes, FV_View * pView, gint x, gint y)
+s_loadImage (UT_ByteBuf * bytes, FV_View * pView, XAP_Frame * pF, gint x, gint y)
 {
 	FG_Graphic    * pFG  = 0;
 	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
@@ -251,12 +265,15 @@ s_loadImage (UT_ByteBuf * bytes, FV_View * pView, gint x, gint y)
 			UT_DEBUGMSG(("JK: could not import graphic from data buffer\n"));
 			return;
 		}
-	UT_sint32 mouseX = x;
-	UT_sint32 mouseY = y;
+	UT_sint32 xoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaXoff();
+	UT_sint32 yoff = static_cast<AP_UnixFrame*>(pF)->getDocumentAreaYoff();
+	UT_sint32 mouseX = x - xoff;
+	UT_sint32 mouseY = y - yoff;
+	UT_DEBUGMSG(("x %d newX %d y %d newY %d ",y,xoff,y,yoff));
 	if(pView && pView->getGraphics())
-		mouseX = pView->getGraphics()->tlu(x);
+		mouseX = pView->getGraphics()->tlu(mouseX);
 	if(pView && pView->getGraphics())
-		mouseY = pView->getGraphics()->tlu(y);
+		mouseY = pView->getGraphics()->tlu(mouseY);
 
 	pView->cmdInsertPositionedGraphic(pFG,mouseX,mouseY);
 	DELETEP(pFG);
@@ -331,7 +348,7 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 
 	if (type == TARGET_IMAGE)
 		{
-			s_loadImage (uri, pView,x,y);
+			s_loadImage (uri, pView,pFrame,x,y);
 			return;
 		}
 	else
@@ -356,13 +373,13 @@ s_loadUri (XAP_Frame * pFrame, const char * uri,gint x, gint y)
 }
 
 static void
-s_loadUriList (XAP_Frame * pFrame, const char * uriList,gint x, gint y)
+s_loadUriList (XAP_Frame * pFrame,  const char * uriList,gint x, gint y)
 {
 	gchar ** uris = g_uri_list_extract_uris(uriList);
 	gchar ** uriIter = uris;
 
 	while (uriIter && *uriIter) {
-		s_loadUri(pFrame, *uriIter,x,y);
+		s_loadUri(pFrame,*uriIter,x,y);
 		uriIter++;
 	}
 	g_strfreev(uris);
@@ -499,7 +516,7 @@ s_dndDropEvent(GtkWidget        *widget,
 {
 	UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
 
-	g_return_if_fail(widget != NULL);
+	UT_return_if_fail(widget != NULL);
 
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
 	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
@@ -511,7 +528,7 @@ s_dndDropEvent(GtkWidget        *widget,
 	{
 		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
 		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
-		s_loadUriList (pFrame, rawChar,x,y);
+		s_loadUriList (pFrame,rawChar,x,y);
 	}
 	else if (info == TARGET_DOCUMENT)
 	{
@@ -524,12 +541,46 @@ s_dndDropEvent(GtkWidget        *widget,
 
 		UT_DEBUGMSG(("JK: Image target\n"));
 		bytes->append (selection_data->data, selection_data->length);
-		s_loadImage (bytes, pView,x,y);
+		s_loadImage (bytes, pView,pFrame,x,y);
 	}
 	else if (info == TARGET_URL)
 	{
 		const char * uri = reinterpret_cast<const char *>(selection_data->data);
 		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+		//
+		// Look to see if this is actually an image.
+		//
+		const gchar * suffix = UT_pathSuffix(uri);
+		if (suffix) 
+		{
+			if(suffix[0] == '.')
+				suffix++;
+			UT_UTF8String sSuff = suffix;
+			UT_DEBUGMSG(("SUffix of uri is %s \n",sSuff.utf8_str()));
+			if(sSuff.length() > 0 && ((sSuff.substr(0,3) == "jpg") ||
+									  (sSuff.substr(0,4) == "jpeg") ||
+									  (sSuff.substr(0,3) == "png") ||
+									  (sSuff.substr(0,3) == "svg") ||
+									  (sSuff.substr(0,3) == "gif")))
+			{
+
+				UT_UTF8String sUri = uri;
+				UT_sint32 i = 0;
+				for(i=0;i<sUri.length()-1;i++)
+				{
+					if((sUri.substr(i,1) == "\n") || 
+					   (sUri.substr(i,1) == " ")  )
+					{
+						sUri = sUri.substr(0,i);
+						break;
+					}
+				}
+				UT_DEBUGMSG(("trimmed Uri is (%s) \n",sUri.utf8_str()));
+				s_loadImage(sUri,pView,pFrame,x,y);
+				g_free (targetName);
+				return;
+			}
+		}
 		pView->cmdInsertHyperlink(uri);
 	}
 

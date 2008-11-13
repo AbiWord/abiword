@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -166,34 +165,29 @@ bool AP_UnixDialog_Latex::getLatexFromGUI(void)
 
 void AP_UnixDialog_Latex::constructDialog(void)
 {	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Latex.glade";
-	const XAP_StringSet * pSS = pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	UT_ASSERT(xml);
-	if (!xml)
-	{
-		return;
-	}
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Latex.xml";
+
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
         // Update our member variables with the important widgets that
         // might need to be queried or altered later
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Latex");
-	m_wClose = glade_xml_get_widget(xml, "wClose");
-	m_wInsert =  glade_xml_get_widget(xml, "wInsert");
-	m_wText = glade_xml_get_widget(xml, "wTextView");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Latex"));
+	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "wClose"));
+	m_wInsert =  GTK_WIDGET(gtk_builder_get_object(builder, "wInsert"));
+	m_wText = GTK_WIDGET(gtk_builder_get_object(builder, "wTextView"));
 
 	// localize the strings in our dialog, and set tags for some widgets
 
 	localizeButtonUnderline(m_wInsert, pSS, AP_STRING_ID_DLG_InsertButton);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLatexEquation"), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbLatexEquation")), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
 	
-	localizeLabel(glade_xml_get_widget(xml, "lbExample"), pSS, AP_STRING_ID_DLG_Latex_Example);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbExample")), pSS, AP_STRING_ID_DLG_Latex_Example);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());
@@ -213,5 +207,7 @@ void AP_UnixDialog_Latex::constructDialog(void)
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);
+
+	g_object_unref(G_OBJECT(builder));
 }
 

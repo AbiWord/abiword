@@ -2604,7 +2604,9 @@ void fp_Line::layout(void)
 		clearScreenFromRunToEnd((UT_uint32)iIndxToEraseFrom);
 	}
 	else
+	{
 		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): nothing to clear\n", this));
+	}
 
 }
 
@@ -3185,22 +3187,36 @@ bool fp_Line::containsForcedPageBreak(void) const
 */
 void fp_Line::coalesceRuns(void)
 {
-	//UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
+	xxx_UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
 	UT_uint32 count = m_vecRuns.getItemCount();
 	for (UT_sint32 i=0; i < static_cast<UT_sint32>(count-1); i++)
 	{
 		fp_Run* pRun = m_vecRuns.getNthItem(static_cast<UT_uint32>(i));
-
 		if (pRun->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			if (pTR->canMergeWithNext())
 			{
+			        fp_Run * pNext = pRun->getNextRun();
+				//
+				// Look if we have a redundant fmtMark.
+				// If so remove it
+				//
+				if(pNext->getType() == FPRUN_FMTMARK)
+				{
+				    pRun->setNextRun(pNext->getNextRun(), false);
+				    pNext->getNextRun()->setPrevRun(pRun, false);
+				    removeRun(pNext, false);
+				    delete pNext;
+				    count--;
+				    continue;
+				}
 				pTR->mergeWithNext();
 				count--;
 				i--; //test the newly merged run with the next
 			}
 		}
+		
 	}
 }
 

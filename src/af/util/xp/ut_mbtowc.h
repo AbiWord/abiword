@@ -30,7 +30,7 @@ class ABI_EXPORT UT_UCS2_mbtowc
 
       void initialize ();
 
-      inline const UT_iconv_t cd () const { return m_cd; }
+      inline UT_iconv_t cd () const { return m_cd; }
 
     private:
       UT_iconv_t m_cd;
@@ -71,7 +71,7 @@ class ABI_EXPORT UT_UCS4_mbtowc
 
       void initialize ();
 
-      inline const UT_iconv_t cd () const { return m_cd; }
+      inline UT_iconv_t cd () const { return m_cd; }
 
     private:
       UT_iconv_t m_cd;

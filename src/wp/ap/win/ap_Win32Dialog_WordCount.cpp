@@ -277,7 +277,7 @@ void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
-BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	m_hWnd = hWnd;
@@ -324,7 +324,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str());
 }
 
-BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_WordCount::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 

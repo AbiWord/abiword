@@ -47,7 +47,7 @@ static const UT_Byte hwpSignature[] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A,
 
 // -------------------------------------------------------------------------------------
 // The importer
-class  IE_Imp_Hancom : public IE_Imp {
+class IE_Imp_Hancom : public IE_Imp {
 public:
   IE_Imp_Hancom(PD_Document *pDoc);
   virtual ~IE_Imp_Hancom();
@@ -127,7 +127,7 @@ static IE_SuffixConfidence IE_Imp_Hancom_Sniffer__SuffixConfidence[] = {
 	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
-class  IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
+class IE_Imp_Hancom_Sniffer : public IE_ImpSniffer {
 	public:
 		IE_Imp_Hancom_Sniffer() :
 		  IE_ImpSniffer("AbiHancom:HWP:")

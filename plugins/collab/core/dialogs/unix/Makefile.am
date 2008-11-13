@@ -18,13 +18,13 @@ libunix_la_SOURCES = \
 	ap_UnixDialog_CollaborationJoin.cpp \
 	ap_UnixDialog_CollaborationJoin.h
 
-gladedir=$(ABIWORD_GLADEDIR)
-glade_DATA = \
-	ap_UnixDialog_CollaborationAccounts.glade \
-	ap_UnixDialog_CollaborationAddAccount.glade \
-	ap_UnixDialog_CollaborationAddBuddy.glade \
-	ap_UnixDialog_CollaborationJoin.glade
+uidir=$(ABIWORD_UIDIR)
+ui_DATA = \
+	ap_UnixDialog_CollaborationAccounts.xml \
+	ap_UnixDialog_CollaborationAddAccount.xml \
+	ap_UnixDialog_CollaborationAddBuddy.xml \
+	ap_UnixDialog_CollaborationJoin.xml
 
 EXTRA_DIST = \
-        $(glade_DATA)
+        $(ui_DATA)
 

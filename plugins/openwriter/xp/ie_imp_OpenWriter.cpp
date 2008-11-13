@@ -267,27 +267,29 @@ public:
     const gchar * val2 = NULL;
 
     val = UT_getAttribute ("fo:text-align", props);
-    if (val)
-      if (!strcmp(val, "end"))
-	m_align = "text-align: right;";
-      else if (!strcmp(val, "center"))
-	m_align = "text-align: center;";
-      else if (!strcmp(val, "justify"))
-	m_align = "text-align: justify;";
-      else
-	m_align = "text-align: left;";
-    
+    if (val) {
+        if (!strcmp(val, "end"))
+            m_align = "text-align: right;";
+        else if (!strcmp(val, "center"))
+            m_align = "text-align: center;";
+        else if (!strcmp(val, "justify"))
+            m_align = "text-align: justify;";
+        else
+            m_align = "text-align: left;";
+    }
+
     val = UT_getAttribute ("fo:font-weight", props);
-    if(val)
-      if (!strcmp(val, "bold"))
-	m_fontWeight = "font-weight: bold;";
-      else
-	m_fontWeight = "font-weight: normal;";
-    
+    if(val) {
+        if (!strcmp(val, "bold"))
+            m_fontWeight = "font-weight: bold;";
+        else
+            m_fontWeight = "font-weight: normal;";
+    }
+
     val = UT_getAttribute("fo:font-style", props);
     if (val)
-      if (!strcmp(val, "italic"))
-	m_fontStyle = "font-style: italic;";
+        if (!strcmp(val, "italic"))
+            m_fontStyle = "font-style: italic;";
       
     val = UT_getAttribute("fo:color", props);
     if (val)
@@ -395,17 +397,17 @@ public:
       m_lineHeight = UT_String_sprintf ("line-height: %s+;", val);
     
     val = UT_getAttribute ("fo:line-height", props);
-    if (val)
-      if (strstr(val, "%") != NULL) {
-	int spacing;
-	
-	sscanf (val, "%d%%", &spacing);	
-	UT_LocaleTransactor lt(LC_NUMERIC, "C");
-	m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
-      }
-      else
-	m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
-    
+    if (val) {
+        if (strstr(val, "%") != NULL) {
+            int spacing;
+            
+            sscanf (val, "%d%%", &spacing);	
+            UT_LocaleTransactor lt(LC_NUMERIC, "C");
+            m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
+        }
+        else
+            m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
+    }
     val = UT_getAttribute("fo:keep-with-next", props);
     if (val)
       m_keepWithNext = UT_String_sprintf ("keep-with-next: %s;", !strcmp(val, "true") ? "yes" : "no");
@@ -514,7 +516,7 @@ private:
 /*!
  * Class used to import OpenWriter documents
  */
-class  IE_Imp_OpenWriter : public IE_Imp
+class IE_Imp_OpenWriter : public IE_Imp
 {
 public:
   IE_Imp_OpenWriter (PD_Document * pDocument);
@@ -600,6 +602,31 @@ UT_Confidence_t IE_Imp_OpenWriter_Sniffer::recognizeContents (GsfInput * input)
 						confidence = UT_CONFIDENCE_PERFECT;
 
 					g_object_unref (G_OBJECT (pInput));
+				}
+			// there's no mimetype stream, so let's check for a content.xml file instead
+			else
+				{
+					pInput = gsf_infile_child_by_name(zip, "content.xml");
+
+					gsf_off_t size = 0;
+					if (pInput)
+						size = gsf_input_size(pInput);
+
+					if (size > 0)
+						{
+							int min = UT_MIN(size, 150);
+
+							UT_UTF8String content;
+							content.append((const char *)gsf_input_read(pInput, min, NULL));
+
+							if (strstr(content.utf8_str(), "<!DOCTYPE office:document-content PUBLIC"))
+								confidence = UT_CONFIDENCE_GOOD;
+
+						}
+
+					if (pInput)
+						g_object_unref (G_OBJECT (pInput));
+
 				}
 			g_object_unref (G_OBJECT (zip));
 		}
@@ -716,7 +743,7 @@ PD_Document * IE_Imp_OpenWriter::getDocument () const
  * Baseclass for all OpenWriter listeners, basically a shim class
  * to expose a GetDocument() and a GetImporter() method
  */
-class  OpenWriter_Stream_Listener : public virtual UT_XML::Listener
+class OpenWriter_Stream_Listener : public virtual UT_XML::Listener
 {
 private:
   IE_Imp_OpenWriter * m_pImporter;
@@ -824,7 +851,7 @@ static UT_Error handleStream ( GsfInfile * oo,
 /*!
  * Class to handle meta-streams
  */
-class  OpenWriter_MetaStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_MetaStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_MetaStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -894,9 +921,8 @@ UT_Error IE_Imp_OpenWriter::_handleMimetype ()
   GsfInput * input = gsf_infile_child_by_name(m_oo, "mimetype");
 
   if (!input) {
-    UT_DEBUGMSG(("Error: didn't get a mimetype. Bailing out.\n"));
-    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-    return UT_ERROR;
+    // not all sxw and stw files have a mimetype stream (see Bug 11686)
+    return UT_OK;
   }
 
   UT_UTF8String mimetype;
@@ -929,7 +955,7 @@ UT_Error IE_Imp_OpenWriter::_handleMetaStream ()
 /*!
  * Class to handle the settings stream
  */
-class  OpenWriter_SettingsStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_SettingsStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_SettingsStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -973,7 +999,7 @@ UT_Error IE_Imp_OpenWriter::_handleSettingsStream ()
 /*!
  * Class to handle the styles stream
  */
-class  OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_StylesStream_Listener : public OpenWriter_Stream_Listener
 {
 public:
   OpenWriter_StylesStream_Listener ( IE_Imp_OpenWriter * importer, bool bOpenDocument )
@@ -1172,7 +1198,7 @@ UT_Error IE_Imp_OpenWriter::_handleStylesStream ()
 /*!
  * Class to handle the content stream
  */
-class  OpenWriter_ContentStream_Listener : public OpenWriter_Stream_Listener
+class OpenWriter_ContentStream_Listener : public OpenWriter_Stream_Listener
 {
 private:
   UT_UCS4String m_charData;

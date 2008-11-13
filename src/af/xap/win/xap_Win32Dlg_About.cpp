@@ -245,7 +245,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		
 	}
 	
-	LOGFONT lf = { 0 };
+	LOGFONT lf;
+	memset(&lf, 0, sizeof(lf));
+
 	strcpy(lf.lfFaceName, "MS Sans Serif");
 	
 	lf.lfHeight = 12;
@@ -266,7 +268,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	HWND rgFontReceivers[] =
 		{ hwndOK, hwndURL, hwndStatic_Version, hwndStatic_Copyright };
 
-	for (int iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
+	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
 	{
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	}
@@ -379,7 +381,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	return UT_DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_About::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 

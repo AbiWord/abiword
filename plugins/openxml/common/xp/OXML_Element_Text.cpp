@@ -62,10 +62,25 @@ const UT_UCS4Char * OXML_Element_Text::getText_UCS4String()
 	return m_pString->ucs4_str();
 }
 
-UT_Error OXML_Element_Text::serialize(std::string path)
+const char * OXML_Element_Text::getText()
 {
-	//TODO whenever we're ready to write the export filter
-	return OXML_Element::serialize(path);
+	UT_return_val_if_fail(m_pString != NULL, NULL);
+	return m_pString->utf8_str();
+}
+
+UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
+{
+	UT_Error err = UT_OK;
+
+	err = exporter->startText(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	err = exporter->writeText(TARGET, getText());
+	if(err != UT_OK)
+		return err;
+	
+	return exporter->finishText(TARGET);
 }
 
 UT_Error OXML_Element_Text::addToPT(PD_Document * pDocument)

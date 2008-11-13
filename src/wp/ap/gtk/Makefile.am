@@ -133,44 +133,44 @@ libgtk_la_SOURCES = \
 	ap_UnixViewListener.cpp \
 	ap_UnixViewListener.h
 
-gladedir=$(ABIWORD_GLADEDIR)
-glade_DATA = \
-	ap_UnixDialog_Annotation.glade \
-	ap_UnixDialog_Break.glade \
-	ap_UnixDialog_Field.glade \
-	ap_UnixDialog_FormatTOC.glade \
-	ap_UnixDialog_FormatFootnotes.glade \
-	ap_UnixDialog_FormatTable.glade \
-	ap_UnixDialog_FormatFrame.glade \
-	ap_UnixDialog_Goto.glade \
-	ap_UnixDialog_InsertTable.glade \
-	ap_UnixDialog_Insert_DateTime.glade \
-	ap_UnixDialog_MailMerge.glade \
-	ap_UnixDialog_MetaData.glade \
-	ap_UnixDialog_Options.glade \
-	ap_UnixDialog_HdrFtr.glade \
-	ap_UnixDialog_Options_ColorSel.glade \
-	ap_UnixDialog_PageNumbers.glade	\
-	ap_UnixDialog_PageSetup.glade \
-	ap_UnixDialog_Replace.glade \
-	ap_UnixDialog_New.glade \
-	ap_UnixDialog_Styles.glade \
-	ap_UnixDialog_Stylist.glade \
-	ap_UnixDialog_Stylist_modal.glade \
-	ap_UnixDialog_Tab.glade	\
-	ap_UnixDialog_WordCount.glade \
-	ap_UnixDialog_Latex.glade \
-	ap_UnixDialog_Options.glade \
-	ap_UnixDialog_HdrFtr.glade
+uidir=$(ABIWORD_UIDIR)
+ui_DATA = \
+	ap_UnixDialog_Annotation.xml \
+	ap_UnixDialog_Break.xml \
+	ap_UnixDialog_Field.xml \
+	ap_UnixDialog_FormatTOC.xml \
+	ap_UnixDialog_FormatFootnotes.xml \
+	ap_UnixDialog_FormatTable.xml \
+	ap_UnixDialog_FormatFrame.xml \
+	ap_UnixDialog_Goto.xml \
+	ap_UnixDialog_InsertTable.xml \
+	ap_UnixDialog_Insert_DateTime.xml \
+	ap_UnixDialog_MailMerge.xml \
+	ap_UnixDialog_MetaData.xml \
+	ap_UnixDialog_Options.xml \
+	ap_UnixDialog_HdrFtr.xml \
+	ap_UnixDialog_Options_ColorSel.xml \
+	ap_UnixDialog_PageNumbers.xml	\
+	ap_UnixDialog_PageSetup.xml \
+	ap_UnixDialog_Replace.xml \
+	ap_UnixDialog_New.xml \
+	ap_UnixDialog_Styles.xml \
+	ap_UnixDialog_Stylist.xml \
+	ap_UnixDialog_Stylist_modal.xml \
+	ap_UnixDialog_Tab.xml	\
+	ap_UnixDialog_WordCount.xml \
+	ap_UnixDialog_Latex.xml \
+	ap_UnixDialog_Options.xml \
+	ap_UnixDialog_HdrFtr.xml
 
 if ENABLE_SPELL
-optgladedir=$(gladedir)
-optglade_DATA = ap_UnixDialog_Spell.glade
+optuidir=$(uidir)
+optui_DATA = ap_UnixDialog_Spell.xml
 endif
 
 EXTRA_DIST = \
 	$(conditional_src) \
-	$(glade_DATA) \
-	ap_UnixDialog_Spell.glade \
+	$(ui_DATA) \
+	ap_UnixDialog_Spell.xml \
 	abiword_48.xpm
 

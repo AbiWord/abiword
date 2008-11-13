@@ -1034,7 +1034,7 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
     }
 }
 
-void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
+void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 {
 //
 // Fill the Page with the page color

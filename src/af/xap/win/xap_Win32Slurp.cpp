@@ -88,9 +88,9 @@ static HDDEDATA CALLBACK s_DdeServerCallback(UINT uType, UINT uFmt, HCONV hConv,
 	return s_Slurp->doCallback(uType,uFmt,hConv,hsz1,hsz2,hData,dwData1,dwData2);
 }
 
-HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT uFmt, HCONV hConv,
+HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT /*uFmt*/, HCONV /*hConv*/,
 											 HSZ hsz1, HSZ hsz2, HDDEDATA hData,
-											 DWORD dwData1, DWORD dwData2)
+											 DWORD /*dwData1*/, DWORD /*dwData2*/)
 {
 #ifdef DEBUG
 	UINT xtypf	= (uType & 0x000f);

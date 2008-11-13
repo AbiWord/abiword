@@ -87,7 +87,7 @@ static psiconv_ucs2 *utf8_to_ucs2(const gchar *input)
 {
                                                                                 
     UT_uint32 read=0,written=0;
-	int i;
+	UT_uint32 i;
     char *intermediate;
     psiconv_ucs2 *result;
 
@@ -264,7 +264,6 @@ static bool updateCharacterLayout(const PP_AttrProp *pAP,
                                   psiconv_character_layout layout)
 {
 	const gchar* szValue;
-	char *tempstr;
 
 	// Font name
 	if (pAP->getProperty("font-family",szValue)) 
@@ -335,7 +334,6 @@ static bool updateParagraphLayout(const PP_AttrProp *pAP,
                                   psiconv_paragraph_layout layout)
 {
 	const gchar* szValue;
-	char *tempstr;
 	bool widowsorphans;
 
 	// Indentation left, right and first line.
@@ -366,6 +364,7 @@ static bool updateParagraphLayout(const PP_AttrProp *pAP,
 	}
 	
 #if 0
+	char *tempstr;
 	// Muchos trouble. Forget about it for now.
 	if (pAP->getProperty("line-height",szValue)) {
 		layout->linespacing_exact =
@@ -551,8 +550,8 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
 	psiconv_file psionfile;
 	psiconv_buffer psiondump;
 	psiconv_config config;
-	psiconv_text_and_layout paragraphs;
-	psiconv_word_style_list styles;
+//	psiconv_text_and_layout paragraphs;
+//	psiconv_word_style_list styles;
 
 	
 	// A whole cascade of commands, with only one purpose:
@@ -621,11 +620,16 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
  * At all places, we use NULL to indicate an unallocated structure.
  */
 PL_Psion_Listener::PL_Psion_Listener(PD_Document * pDocument):
-  m_pDocument(pDocument), m_inParagraph(0), m_currentParagraphPLayout(NULL),
-  m_currentParagraphCLayout(NULL), m_currentParagraphInLines(NULL),
-  m_currentParagraphText(NULL),m_paragraphs(NULL),m_styles(NULL),
-  m_currentParagraphStyle(0),m_header(NULL),m_footer(NULL),
-  m_sectionType(section_none)
+  m_pDocument(pDocument), 
+  m_paragraphs(NULL),m_styles(NULL),
+  m_header(NULL),m_footer(NULL),
+  m_inParagraph(false),
+  m_sectionType(section_none),
+  m_currentParagraphText(NULL),
+  m_currentParagraphPLayout(NULL),
+  m_currentParagraphCLayout(NULL), 
+  m_currentParagraphInLines(NULL),
+  m_currentParagraphStyle(0)
 {
 }
 
@@ -800,7 +804,7 @@ bool PL_Psion_Listener::populate(PL_StruxFmtHandle,
  */
 bool PL_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
                                       const PX_ChangeRecord * pcr,
-                                      PL_StruxFmtHandle * psfh)
+                                      PL_StruxFmtHandle * /*psfh*/)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = 
@@ -892,7 +896,7 @@ bool PL_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 bool PL_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
                                   UT_uint32 &outLength)
 {
-	int i;
+	UT_uint32 i;
 	psiconv_ucs2 character;
 
 #ifdef DEBUG
@@ -1019,7 +1023,6 @@ ERROR1:
 bool PL_Psion_Listener::_closeParagraph(void)
 {
 	struct psiconv_paragraph_s para;
-	psiconv_ucs2 *character;
 	
 	// It is safe to call us when we are not actually in a paragraph;
 	// we will just nop.
@@ -1103,7 +1106,6 @@ ERROR1:
 bool PL_Psion_Listener::_addInLine(const PT_AttrPropIndex api,UT_uint32 textlen)
 {
 	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue;
 	psiconv_in_line_layout curInLine;
 
 	UT_DEBUGMSG(("PSION: set inline formatting (%d)\n",textlen));
@@ -1170,7 +1172,8 @@ bool PL_Psion_Listener::_setStyleLayout(PD_Style *style,
 
 	// If we are based on another style, we need to get its layout first,
 	// so that we can overrule it.
-	if (parent_style = style->getBasedOn())
+	parent_style = style->getBasedOn();
+	if (parent_style)
 		_setStyleLayout(parent_style,para_layout,char_layout);
 	// Set the paragraph-level and character-level layouts.
 	if ((api = style->getIndexAP()) &&
@@ -1191,7 +1194,7 @@ bool PL_Psion_Listener::_setStyleLayout(PD_Style *style,
 bool PL_Psion_Listener::_processStyles(void)
 {
 	UT_GenericVector<PD_Style *> vecStyles;
-	int i = 0;
+	UT_uint32 i = 0;
 	PD_Style * pStyle=NULL;
 	psiconv_word_style style;
 
@@ -1294,7 +1297,7 @@ bool PL_Psion_Listener::_insertImage(const PT_AttrPropIndex api)
 	const psiconv_ucs2 object_marker = 0x0e;
 	png_structp png_ptr;
 	png_infop info_ptr;
-	int width,height,row,column,offx,offy,resx,resy;
+	int width,height,row,column,resx,resy;
 	psiconv_paint_data_section paint_data;
 	psiconv_sketch_section sketch_sec;
 	psiconv_embedded_object_section object;

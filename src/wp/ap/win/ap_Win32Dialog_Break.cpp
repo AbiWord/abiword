@@ -65,7 +65,7 @@ void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_BREAK));
 }
 
-BOOL AP_Win32Dialog_Break::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Break::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	localizeDialogTitle(AP_STRING_ID_DLG_Break_BreakTitle);
 
@@ -88,7 +88,7 @@ BOOL AP_Win32Dialog_Break::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -119,7 +119,7 @@ BOOL AP_Win32Dialog_Break::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-BOOL AP_Win32Dialog_Break::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL AP_Win32Dialog_Break::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return FALSE;
 }

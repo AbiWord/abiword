@@ -366,7 +366,6 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindowContents(void)
 	m_wSplitVertMid = wSplitVertMid;
 	m_wSplitBelow = wSplitBelow;
 	m_lwSplitLeft = wlSplitLeft;
-	m_lwSplitLeft = wlSplitLeft;
 	m_lwSplitRight = wlSplitRight;
 	m_lwSplitAbove = wlSplitAbove;
 	m_lwSplitVertMid = wlSplitVertMid;

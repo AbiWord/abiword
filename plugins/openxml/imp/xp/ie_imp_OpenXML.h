@@ -33,7 +33,7 @@
 /**
  * Class used to import OpenXML files
  */
-class  IE_Imp_OpenXML : public IE_Imp
+class IE_Imp_OpenXML : public IE_Imp
 {
 public:
 	IE_Imp_OpenXML (PD_Document * pDocument);

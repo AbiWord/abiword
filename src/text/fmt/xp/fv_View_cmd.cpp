@@ -4988,20 +4988,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		_restorePieceTableState();
 		return false;
 	}
-	PT_DocPosition posNext = 0;
-	if(pBL1->getNext())
-	{
-		posNext = pBL1->getNext()->getPosition(true);
-	}
-	else
-	{
-		posNext = pBL1->getPosition(true) + pBL1->getLength();
-	}
-	if((posStart <= pBL1->getPosition(true)) || (posEnd > posNext))
-	{
-		_restorePieceTableState();
-		return false;
-	}
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const gchar*>(szName)))
 	{
@@ -5391,7 +5377,12 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 // Now calculate the Y offset to the Column
 //
 	fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
-	ypos = static_cast<double>(mouseY)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	UT_sint32 ixoff,iyoff;
+	fp_Page * pPage = pCol->getPage();
+	pPage->getScreenOffsets(static_cast<fp_Container *>(pCol),ixoff,iyoff);
+	iHeight = static_cast<UT_sint32>(dh*UT_LAYOUT_RESOLUTION);
+	UT_sint32 iposy = mouseY - iyoff - iHeight/2;
+	ypos = static_cast<double>(iposy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-col-ypos";
 	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
 	UT_String_setProperty(sFrameProps,sProp,sVal);
@@ -5399,7 +5390,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
 	sVal = "wrapped-both";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
         UT_sint32 iWidth = static_cast<UT_sint32>(dw*UT_LAYOUT_RESOLUTION);
-	UT_sint32 iposx = mouseX - pCol->getX() - iWidth/2;
+	UT_sint32 iposx = mouseX - ixoff - iWidth/2;
 	UT_sint32 iColW = static_cast<UT_sint32>(maxW*2.*UT_LAYOUT_RESOLUTION);
 	if((iposx + iWidth) > (pCol->getX() + iColW))
 	{

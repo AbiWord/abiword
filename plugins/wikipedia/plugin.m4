@@ -2,7 +2,9 @@
 WIKIPEDIA_CFLAGS=
 WIKIPEDIA_LIBS=
 
-if test "$enable_wikipedia" == "yes"; then
+if test "$enable_wikipedia" != ""; then
+
+test "$enable_wikipedia" == "auto" && PLUGINS="$PLUGINS wikipedia"
 
 WIKIPEDIA_CFLAGS="$WIKIPEDIA_CFLAGS "'${PLUGIN_CFLAGS}'
 WIKIPEDIA_LIBS="$WIKIPEDIA_LIBS "'${PLUGIN_LIBS}'

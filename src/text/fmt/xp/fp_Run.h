@@ -155,7 +155,6 @@ public:
 	UT_uint32		        getDescent() const;
 	virtual UT_sint32       getDrawingWidth() const;
 	
-	
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
 	bool                    isInSelectedTOC(void);
@@ -293,6 +292,10 @@ public:
 	UT_uint32           getOffsetLog(UT_uint32 iVisOff);
 	fp_Run *			getNextVisual();
 	fp_Run *			getPrevVisual();
+	UT_sint32           getAuthorNum(void) const
+	{ return m_iAuthorColor;};
+	void                setAuthorNum(UT_sint32 i)
+	{ m_iAuthorColor=i;};
 
 	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool /*bForward*/)
 	                           { return iDocumentPosition;}
@@ -338,7 +341,6 @@ public:
 	bool        deleteFollowingIfAtInsPoint() const;
 
 	bool        displayAnnotations(void);
-
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);
@@ -495,6 +497,7 @@ private:
     PT_DocPosition          m_iSelLow;
     PT_DocPosition          m_iSelHigh;
 	bool                    m_bMustClearScreen;
+	UT_sint32               m_iAuthorColor;
 #ifdef DEBUG
 	UT_uint32               m_iFontAllocNo;
 #endif

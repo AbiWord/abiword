@@ -904,7 +904,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 {
 	UT_return_val_if_fail( sfh, false );
 	
-	//UT_DEBUGMSG(("fl_DocListener::change\n"));
+	UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 	AV_ChangeMask chgMask = AV_CHG_NONE;
 	
@@ -1643,6 +1643,44 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	case PX_ChangeRecord::PXT_CreateDataItem:
 	{
 	        bResult = true;
+		goto finish_up;
+	}	
+	case PX_ChangeRecord::PXT_ChangeDocProp:
+	{
+	        PT_AttrPropIndex iAP = pcr->getIndexAP();
+		const PP_AttrProp * pAP = NULL;
+		m_pLayout->getDocument()->getAttrProp(iAP, &pAP);
+		const gchar * szValue=NULL;
+		bool b= pAP->getAttribute( PT_DOCPROP_ATTRIBUTE_NAME,szValue);
+		UT_DEBUGMSG(("Doing DocProp change value %s \n",szValue));
+		if(!b)
+		{
+		    bResult = false;
+		    goto finish_up;
+		}
+		if(strcmp(szValue,"pagesize") == 0)
+		{
+		    bResult = m_pLayout->setDocViewPageSize(pAP);
+		}
+		else if(strcmp(szValue,"changeauthor") == 0)
+		{
+		  	m_pLayout->refreshRunProperties();
+			FV_View * pView = m_pLayout->getView();
+			pView->updateScreen(false ); 
+		}
+		else if(strcmp(szValue,"addauthor") == 0)
+		{
+		  	m_pLayout->refreshRunProperties();
+			FV_View * pView = m_pLayout->getView();
+			const gchar * szAuthorId = NULL;
+			pAP->getProperty("id",szAuthorId);
+			if(szAuthorId && *szAuthorId)
+			{
+			    UT_sint32 id = atoi(szAuthorId);
+			    pView->addCaret(0,id);
+			}
+			pView->updateScreen(false ); 
+		}
 		goto finish_up;
 	}	
 	default:
@@ -2454,7 +2492,7 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	case PD_SIGNAL_DOCDIRTY_CHANGED:
 		m_pLayout->notifyListeners(AV_CHG_DIRTY);
 		break;
-	case PD_SIGNAL_DOCSAVED:
+	case PD_SIGNAL_SAVEDOC:
 		break;
 	case PD_SIGNAL_DOCCLOSED:
 		break;

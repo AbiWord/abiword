@@ -131,7 +131,7 @@ const uint8_t * AbiWordperfectInputStream::read(size_t numBytes, size_t &numByte
 
 int AbiWordperfectInputStream::seek(long offset, WPX_SEEK_TYPE seekType) 
 {
-	GSeekType gsfSeekType;
+	GSeekType gsfSeekType = G_SEEK_SET;
 	switch(seekType)
 	{
 	case WPX_SEEK_CUR:
@@ -1166,8 +1166,9 @@ UT_Error IE_Imp_WordPerfect::_updateDocumentOrderedListDefinition(ABI_ListDefini
 {
 	UT_DEBUGMSG(("AbiWordPerfect: Updating document list definition (iLevel: %i)\n", iLevel));
 
-	if (iLevel > 1)
-	UT_DEBUGMSG(("WLACH: Parent's list id is.. %i\n", pListDefinition->getListID((iLevel-1))));
+	if (iLevel > 1) {
+        UT_DEBUGMSG(("WLACH: Parent's list id is.. %i\n", pListDefinition->getListID((iLevel-1))));
+    }
 
 	// finally, set the document's list identification info..
 	fl_AutoNum * pAuto = getDoc()->getListByID(pListDefinition->getListID(iLevel));

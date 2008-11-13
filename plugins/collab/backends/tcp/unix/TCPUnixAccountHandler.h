@@ -21,7 +21,7 @@
 
 #include <backends/tcp/xp/TCPAccountHandler.h>
 
-class  TCPUnixAccountHandler : public TCPAccountHandler
+class TCPUnixAccountHandler : public TCPAccountHandler
 {
 public:
 	TCPUnixAccountHandler();

@@ -50,7 +50,7 @@ static void s_types_clicked(GtkTreeView *treeview,
 	}
 
 	// Get the row and col number
-	GValue value = {0,};
+	GValue value = {0,{{NULL}}};
 	gtk_tree_model_get_value (model, &iter,1,&value);
 	row = g_value_get_int(&value);
 	g_value_unset (&value);
@@ -240,40 +240,41 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	// get the path where our UI file is located
+	std::string ui_path;
 	if(m_bIsModal)
 	{
-		glade_path += "/ap_UnixDialog_Stylist_modal.glade";
+		ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist_modal.xml";
 	}
 	else
 	{
-		glade_path += "/ap_UnixDialog_Stylist.glade";
+		ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist.xml";
 	}
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Stylist");
-	m_wStyleListContainer  = glade_xml_get_widget(xml,"TreeViewContainer");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Stylist"));
+	m_wStyleListContainer  = GTK_WIDGET(gtk_builder_get_object(builder, "TreeViewContainer"));
 	if(m_bIsModal)
 	{
-		m_wApply = glade_xml_get_widget(xml,"btApply");
+		m_wApply = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	}
 	else
 	{
-		m_wOK = glade_xml_get_widget(xml,"btOK");
+		m_wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	}
-	m_wClose = glade_xml_get_widget(xml,"btClose");
+	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
 	abiDialogSetTitle(m_windowMain, s.utf8_str());
+
+	g_object_unref(G_OBJECT(builder));
 	
 	return m_windowMain;
 }

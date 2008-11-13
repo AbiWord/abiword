@@ -571,7 +571,7 @@ class ABI_EXPORT GR_Graphics
 	// Methods to deal with background repainting as used in the Unix FE. These
 	// make redraws really fast and fix bug 119
 	//
-	const bool        isSpawnedRedraw(void) const;
+	bool              isSpawnedRedraw(void) const;
 	void              setSpawnedRedraw(bool exposeState);
 
 	void              setPendingRect(UT_sint32 x,
@@ -582,9 +582,9 @@ class ABI_EXPORT GR_Graphics
 	void              unionPendingRect( UT_Rect * pRect);
 	void              setRecentRect( UT_Rect * pRect);
 	const UT_Rect *   getPendingRect(void) const;
-	const bool        isExposePending(void) const;
+	bool              isExposePending(void) const;
 	void              setExposePending(bool bExposePending);
-	const bool        isExposedAreaAccessed(void) const;
+	bool              isExposedAreaAccessed(void) const;
 	void              setExposedAreaAccessed(bool bAccessedState);
 	void              setDontRedraw( bool bDontRedraw);
 	bool              isDontRedraw(void);
@@ -611,8 +611,8 @@ class ABI_EXPORT GR_Graphics
 		}
 
 	GR_Caret *        getCaret() { return m_pCaret; }
-	GR_Caret *        createCaret(UT_UTF8String & sDocUUID);
-	GR_Caret *        getCaret(UT_UTF8String & sDocUUID);
+	GR_Caret *        createCaret(UT_sint32 iID);
+	GR_Caret *        getCaret(UT_sint32 iID);
 	GR_Caret *        getNthCaret(UT_sint32 i);
 	
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;

@@ -59,7 +59,7 @@
 
 // The exporter for WordPerfect 6/7/8/9 documents.
 
-class  IE_Exp_WordPerfect_Sniffer : public IE_ExpSniffer
+class IE_Exp_WordPerfect_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 	friend class IE_Exp_WordPerfect;
@@ -76,7 +76,7 @@ public:
 											   IE_Exp ** ppie);
 };
 
-class  IE_Exp_WordPerfect : public IE_Exp
+class IE_Exp_WordPerfect : public IE_Exp
 {
 	friend class WordPerfect_Listener;
 	
@@ -103,7 +103,7 @@ private:
 	int						m_ptrDesiredFontUseCount;
 };
 
-class  WordPerfect_Listener : public PL_Listener
+class WordPerfect_Listener : public PL_Listener
 {
 public:
 	WordPerfect_Listener(PD_Document * pDocument,

@@ -32,7 +32,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-class  IE_Exp_PalmDoc_Sniffer : public IE_ExpSniffer
+class IE_Exp_PalmDoc_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -48,7 +48,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class  IE_Exp_PalmDoc : public IE_Exp_Text
+class IE_Exp_PalmDoc : public IE_Exp_Text
 {
 public:
 	IE_Exp_PalmDoc(PD_Document * pDocument);

@@ -62,6 +62,10 @@ const gchar * szAbiCollab_Packet_PTName[] =
     PT_FOOTERFIRST_ATTRIBUTE_NAME,
     PT_FOOTERLAST_ATTRIBUTE_NAME,
     PT_REVISION_ATTRIBUTE_NAME,
+    PT_REVISION_DESC_ATTRIBUTE_NAME,
+    PT_REVISION_TIME_ATTRIBUTE_NAME,
+    PT_REVISION_VERSION_ATTRIBUTE_NAME,
+    PT_DOCPROP_ATTRIBUTE_NAME,
     PT_ID_ATTRIBUTE_NAME,
     PT_STRUX_IMAGE_DATAID,
     PT_XID_ATTRIBUTE_NAME,
@@ -71,7 +75,8 @@ const gchar * szAbiCollab_Packet_PTName[] =
     PT_IMAGE_DESCRIPTION,
     PT_DATA_PREVIEW,
     PT_HYPERLINK_TARGET_NAME,
-    PT_ANNOTATION_NUMBER
+    PT_ANNOTATION_NUMBER,
+    PT_AUTHOR_NAME
 };
 
 UT_sint16 getPacket_PTName_Index( const gchar* name )
@@ -228,40 +233,33 @@ void ChangeRecordSessionPacket::serialize( Archive& ar )
 
 static const std::string& getPXTypeStr( PX_ChangeRecord::PXType t )
 {
-	bool safeGuard;
-	UT_ASSERT( safeGuard = (t>=PX_ChangeRecord::PXT_GlobMarker && t<=PX_ChangeRecord::PXT_ChangeDocProp) );
-	if (safeGuard) {
-		static std::string pxTypeStrs[] = {
-			"PXT_GlobMarker",
-			"PXT_InsertSpan", 
-			"PXT_DeleteSpan",
-			"PXT_ChangeSpan", 
-			"PXT_InsertStrux",
-			"PXT_DeleteStrux", 
-			"PXT_ChangeStrux",
-			"PXT_InsertObject", 
-			"PXT_DeleteObject",
-			"PXT_ChangeObject", 
-			"PXT_InsertFmtMark",
-			"PXT_DeleteFmtMark", 
-			"PXT_ChangeFmtMark",
-			"PXT_ChangePoint", 
-			"PXT_ListUpdate", 
-			"PXT_StopList", 
-			"PXT_UpdateField",
-			"PXT_RemoveList",
-			"PXT_UpdateLayout",
-			"PXT_AddStyle",
-			"PXT_RemoveStyle",
-			"PXT_CreateDataItem",
-			"PXT_ChangeDocProp",
-		};
-		return pxTypeStrs[ int(t)+1 ];
-	} else {
-		static std::string invalidValue;
-		invalidValue = str(boost::format( "<invalid value %d>" ) % int(t) );
-		return invalidValue;
-	}
+	UT_return_val_if_fail(t >= PX_ChangeRecord::PXT_GlobMarker && t <= PX_ChangeRecord::PXT_ChangeDocProp, str(boost::format( "<invalid value %d>" ) % int(t) ));
+	static std::string pxTypeStrs[] = {
+		"PXT_GlobMarker",
+		"PXT_InsertSpan", 
+		"PXT_DeleteSpan",
+		"PXT_ChangeSpan", 
+		"PXT_InsertStrux",
+		"PXT_DeleteStrux", 
+		"PXT_ChangeStrux",
+		"PXT_InsertObject", 
+		"PXT_DeleteObject",
+		"PXT_ChangeObject", 
+		"PXT_InsertFmtMark",
+		"PXT_DeleteFmtMark", 
+		"PXT_ChangeFmtMark",
+		"PXT_ChangePoint", 
+		"PXT_ListUpdate", 
+		"PXT_StopList", 
+		"PXT_UpdateField",
+		"PXT_RemoveList",
+		"PXT_UpdateLayout",
+		"PXT_AddStyle",
+		"PXT_RemoveStyle",
+		"PXT_CreateDataItem",
+		"PXT_ChangeDocProp",
+	};
+	return pxTypeStrs[ int(t)+1 ];
 }
 
 std::string ChangeRecordSessionPacket::toStr() const
@@ -412,37 +410,30 @@ std::string Props_ChangeRecordSessionPacket::toStr() const
 
 static const std::string& getPTStruxTypeStr( PTStruxType p )
 {
-	bool safeGuard;
-	UT_ASSERT( safeGuard = (p>=PTX_Section && p<=PTX_StruxDummy) );
-	if (safeGuard) {
-		static std::string PacketSessionTypeStrs[] = {
-			"PTX_Section",
-			"PTX_Block",
-			"PTX_SectionHdrFtr",
-			"PTX_SectionEndnote",
-			"PTX_SectionTable",
-			"PTX_SectionCell",
-			"PTX_SectionFootnote",
-			"PTX_SectionMarginnote",
-			"PTX_SectionAnnotation",
-			"PTX_SectionFrame",
-			"PTX_SectionTOC",
-			"PTX_EndCell",
-			"PTX_EndTable",
-			"PTX_EndFootnote",
-			"PTX_EndMarginnote",
-			"PTX_EndEndnote",
-			"PTX_EndAnnotation",
-			"PTX_EndFrame",
-			"PTX_EndTOC",
-			"PTX_StruxDummy",
-		};
-		return PacketSessionTypeStrs[ int(p) ];
-	} else {
-		static std::string invalidValue;
-		invalidValue = str(boost::format( "<invalid value %d>" ) % int(p) );
-		return invalidValue;
-	}
+	UT_return_val_if_fail(p >= PTX_Section && p <= PTX_StruxDummy, str(boost::format( "<invalid value %d>" ) % int(p) ));
+	static std::string PacketSessionTypeStrs[] = {
+		"PTX_Section",
+		"PTX_Block",
+		"PTX_SectionHdrFtr",
+		"PTX_SectionEndnote",
+		"PTX_SectionTable",
+		"PTX_SectionCell",
+		"PTX_SectionFootnote",
+		"PTX_SectionMarginnote",
+		"PTX_SectionAnnotation",
+		"PTX_SectionFrame",
+		"PTX_SectionTOC",
+		"PTX_EndCell",
+		"PTX_EndTable",
+		"PTX_EndFootnote",
+		"PTX_EndMarginnote",
+		"PTX_EndEndnote",
+		"PTX_EndAnnotation",
+		"PTX_EndFrame",
+		"PTX_EndTOC",
+		"PTX_StruxDummy",
+	};
+	return PacketSessionTypeStrs[ int(p) ];
 }
 
 void InsertSpan_ChangeRecordSessionPacket::serialize( Archive& ar )
@@ -492,24 +483,17 @@ void Object_ChangeRecordSessionPacket::serialize( Archive& ar )
 
 static const std::string& getPTObjectTypeStr( PTObjectType p )
 {
-	bool safeGuard;
-	UT_ASSERT( safeGuard = (p>=PTO_Image && p<=PTO_Embed) );
-	if (safeGuard) {
-		static std::string PTObjectTypeStrs[] = {
-			"PTO_Image", 
-			"PTO_Field", 
-			"PTO_Bookmark", 
-			"PTO_Hyperlink", 
-			"PTO_Annotation", 
-			"PTO_Math", 
-			"PTO_Embed"
-		};
-		return PTObjectTypeStrs[ int(p) ];
-	} else {
-		static std::string invalidValue;
-		invalidValue = str(boost::format( "<invalid value %d>" ) % int(p) );
-		return invalidValue;
-	}
+	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Embed, str(boost::format( "<invalid value %d>" ) % int(p) ));
+	static std::string PTObjectTypeStrs[] = {
+		"PTO_Image", 
+		"PTO_Field", 
+		"PTO_Bookmark", 
+		"PTO_Hyperlink", 
+		"PTO_Math", 
+		"PTO_Embed",
+		"PTO_Annotation"
+	};
+	return PTObjectTypeStrs[ int(p) ];
 } 
 
 std::string Object_ChangeRecordSessionPacket::toStr() const

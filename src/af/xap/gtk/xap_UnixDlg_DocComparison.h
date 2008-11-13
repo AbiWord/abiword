@@ -42,9 +42,8 @@ public:
 	
 private:
 
-	void _populateWindowData();
+	void _populateWindowData(GtkBuilder* builder);
 	GtkWidget *             constructWindow();
-	GladeXML *              m_pXML;
 	GtkWidget *             m_windowMain;
 };
 

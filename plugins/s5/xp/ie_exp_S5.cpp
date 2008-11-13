@@ -75,7 +75,7 @@ ABI_PLUGIN_DECLARE("S5")
 /*****************************************************************/
 /*****************************************************************/
 
-class  IE_Exp_S5 : public IE_Exp
+class IE_Exp_S5 : public IE_Exp
 {
 public:
 	IE_Exp_S5(PD_Document * pDocument);
@@ -90,7 +90,7 @@ protected:
 	void _write(const char *fmt, ...);
 };
 
-class  IE_Exp_S5_Sniffer : public IE_ExpSniffer
+class IE_Exp_S5_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 

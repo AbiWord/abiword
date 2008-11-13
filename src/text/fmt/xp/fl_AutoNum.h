@@ -102,9 +102,9 @@ public:
 	PL_StruxDocHandle			getNthBlock(UT_uint32 i);
 	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
 
-	const bool				isItem(PL_StruxDocHandle pItem) const;
+	bool					isItem(PL_StruxDocHandle pItem) const;
 	bool						doesItemHaveLabel(fl_BlockLayout * pItem);
-	const bool				isEmpty(void);
+	bool					isEmpty(void);
 	PL_StruxDocHandle			getFirstItem(void) const;
 	PL_StruxDocHandle			getLastItem(void);
 	bool						isLastOnLevel(PL_StruxDocHandle pItem);

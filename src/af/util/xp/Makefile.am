@@ -78,8 +78,6 @@ libxp_la_SOURCES = \
 	ut_test.cpp \
 	ut_test.h \
 	ut_TextIterator.h \
-	ut_thread.cpp \
-	ut_thread.h \
 	ut_timer.cpp \
 	ut_timer.h \
 	ut_types.cpp \

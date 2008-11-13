@@ -70,9 +70,9 @@ pt2Constructor ap_Dialog_CollaborationAddAccount_Constructor = &AP_Win32Dialog_C
 AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_CollaborationAddAccount(pDlgFactory, id),
 	m_pWin32Dialog(NULL),
+	m_hInstance(NULL),
 	m_hOk(NULL),
-	m_hDetails(NULL),
-	m_hInstance(NULL)
+	m_hDetails(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -87,8 +87,6 @@ void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 	UT_return_if_fail(m_hInstance);
 
-	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
-	
 	// create the dialog
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_COLLABORATIONADDACCOUNT);
 	int result = DialogBoxParam( m_hInstance, lpTemplate,
@@ -147,7 +145,6 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	
 	AccountHandler* pHandler;
 	switch (wId)
@@ -208,7 +205,7 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 	
 	UT_return_if_fail(m_pWin32Dialog);
 	
-	for (UT_sint32 i = 0; i < pSessionManager->getRegisteredAccountHandlers().size(); i++)
+	for (UT_uint32 i = 0; i < pSessionManager->getRegisteredAccountHandlers().size(); i++)
 	{
 		AccountHandlerConstructor pConstructor = pSessionManager->getRegisteredAccountHandlers().getNthItem(i);
 		UT_continue_if_fail(pConstructor);
@@ -248,7 +245,7 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 	{
 		// nope, we don't have any account handler :'-( 
 		// Add a sample item to show that we can.  Then, disable the box and the ok button
-		UT_sint32 index = m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) "No Handlers!");
+		m_pWin32Dialog->addItemToCombo(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, (LPCSTR) "No Handlers!");
 		m_pWin32Dialog->selectComboItem(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, 0);
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO, false);
 		m_pWin32Dialog->enableControl(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON, false);
@@ -261,7 +258,7 @@ AccountHandler* AP_Win32Dialog_CollaborationAddAccount::_getActiveAccountHandler
 	UT_return_val_if_fail(m_pWin32Dialog, NULL);
 	
 	int index = m_pWin32Dialog->getComboSelectedIndex(AP_RID_DIALOG_COLLABORATIONADDACCOUNT_TYPECOMBO);
-	UT_return_val_if_fail(index >= 0 && index < m_vAccountTypeCombo.size(), NULL);
+	UT_return_val_if_fail(index >= 0 && index < static_cast<UT_sint32>(m_vAccountTypeCombo.size()), NULL);
 	
 	// check the return value of this function!
 	return m_vAccountTypeCombo[index];

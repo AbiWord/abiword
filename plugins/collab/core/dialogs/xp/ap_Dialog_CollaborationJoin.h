@@ -45,7 +45,7 @@ public:
 	AP_Dialog_CollaborationJoin::tAnswer	getAnswer(void) const
 		{ return m_answer; }
 		
-	Buddy*				getBuddy()
+	const Buddy*			getBuddy()
 		{ return m_pBuddy; };
 
 	DocHandle*				getDocHandle()
@@ -53,7 +53,7 @@ public:
 
 protected:
 	AP_Dialog_CollaborationJoin::tAnswer m_answer;
-	Buddy*				m_pBuddy;
+	const Buddy*		m_pBuddy;
 	DocHandle*			m_pDocHandle;
 
 	void				_eventAddBuddy();

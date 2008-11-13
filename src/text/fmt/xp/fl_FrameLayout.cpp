@@ -268,7 +268,7 @@ UT_uint32 fl_FrameLayout::getLength(void)
  * This code actually inserts a block AFTER the frame in the docsectionlayout
  * Code copied from tablelayout
  */
-bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* pLBlock,
+bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -351,7 +351,7 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 /*!
  * This signals an incomplete frame section.
  */
-bool fl_FrameLayout::doclistener_deleteEndFrame( const PX_ChangeRecord_Strux * pcrx)
+bool fl_FrameLayout::doclistener_deleteEndFrame( const PX_ChangeRecord_Strux * /*pcrx*/)
 {
 	m_bHasEndFrame = false;
 	return true;
@@ -436,7 +436,7 @@ void fl_FrameLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_FrameLayout::updateLayout(bool bDoAll)
+void fl_FrameLayout::updateLayout(bool /*bDoAll*/)
 {
 	// ingnore frames in normal view mode
 	FV_View * pView = getDocLayout()->getView();
@@ -632,7 +632,7 @@ fp_Container* fl_FrameLayout::getNewContainer(fp_Container *)
 	return static_cast<fp_Container *>(getLastContainer());
 }
 
-void fl_FrameLayout::_insertFrameContainer(fp_Container * pNewFC)
+void fl_FrameLayout::_insertFrameContainer(fp_Container * /*pNewFC*/)
 {
 
 // This is all done fl_BlockLayout::setFramesOnPage
@@ -778,7 +778,7 @@ void fl_FrameLayout::format(void)
 	}
 }
 
-void fl_FrameLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
+void fl_FrameLayout::setNeedsReformat(fl_ContainerLayout * /*pCL*/,UT_uint32 /*offset*/)
 {
         m_bNeedsReformat = true;
         myContainingLayout()->setNeedsReformat(this);

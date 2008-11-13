@@ -18,7 +18,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -203,27 +202,24 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_Zoom.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Zoom.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "xap_UnixDlg_Zoom");
-	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
-	m_radio200 = glade_xml_get_widget(xml, "rbPercent200");
-	m_radio100 = glade_xml_get_widget(xml, "rbPercent100");
-	m_radio75 = glade_xml_get_widget(xml, "rbPercent75");
-	m_radioPageWidth = glade_xml_get_widget(xml, "rbPageWidth");
-	m_radioWholePage = glade_xml_get_widget(xml, "rbWholePage");
-	m_radioPercent = glade_xml_get_widget(xml, "rbPercent");
-	m_spinPercent = glade_xml_get_widget(xml, "sbPercent");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Zoom"));
+	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent200")) ));
+	m_radio200 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent200"));
+	m_radio100 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent100"));
+	m_radio75 = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent75"));
+	m_radioPageWidth = GTK_WIDGET(gtk_builder_get_object(builder, "rbPageWidth"));
+	m_radioWholePage = GTK_WIDGET(gtk_builder_get_object(builder, "rbWholePage"));
+	m_radioPercent = GTK_WIDGET(gtk_builder_get_object(builder, "rbPercent"));
+	m_spinPercent = GTK_WIDGET(gtk_builder_get_object(builder, "sbPercent"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
 
 	// set the dialog title
@@ -233,7 +229,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbZoom"), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbZoom")), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
 
 	localizeButton(m_radio200, pSS, XAP_STRING_ID_DLG_Zoom_200);
 	g_object_set_data (G_OBJECT (m_radio200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));
@@ -263,6 +259,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
 	// the zoom spin button
 	g_signal_connect(G_OBJECT(m_spinAdj), "value_changed", G_CALLBACK(s_spin_Percent_changed), static_cast<gpointer>(this));
+
+	g_object_unref(G_OBJECT(builder));
 
 	return window;
 }

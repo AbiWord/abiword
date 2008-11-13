@@ -175,7 +175,7 @@ bool fl_EmbedLayout::bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 /*!
  * This signals an incomplete footnote section.
  */
-bool fl_EmbedLayout::doclistener_deleteEndEmbed( const PX_ChangeRecord_Strux * pcrx)
+bool fl_EmbedLayout::doclistener_deleteEndEmbed( const PX_ChangeRecord_Strux * /*pcrx*/)
 {
 	m_bHasEndFootnote = false;
 	return true;
@@ -265,14 +265,14 @@ void fl_EmbedLayout::redrawUpdate(void)
 	}
 }
 
-void fl_EmbedLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset)
+void fl_EmbedLayout::setNeedsReformat(fl_ContainerLayout * /*pCL*/, UT_uint32 /*offset*/)
 {
   m_bNeedsReformat = true;
   if(getSectionLayout())
     getSectionLayout()->setNeedsReformat(this);
 }
 
-void fl_EmbedLayout::updateLayout(bool bDoAll)
+void fl_EmbedLayout::updateLayout(bool /*bDoAll*/)
 {
   fl_ContainerLayout * pBL = getFirstLayout();
   while(pBL)

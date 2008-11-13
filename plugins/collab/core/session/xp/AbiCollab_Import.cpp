@@ -116,7 +116,9 @@ void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
 			break;
 		}
 		else
+        {
 			UT_DEBUGMSG(("Killing off matching change: %d\n", iStart));
+        }
 	}
 }
 
@@ -236,9 +238,10 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 					break;
 				}
 				else
+                {
 					UT_DEBUGMSG(("No (fatal) overlap detected for incoming pos: %d, incoming length: %d, pChange->getLocalPos(): %d, pChange->getLocalLength(): %d\n", 
 							acrsp.getPos(), acrsp.getLength(), pChange->getLocalPos(), pChange->getLocalLength()));
-
+                }
 				
 				if (static_cast<UT_sint32>(pChange->getLocalPos()) < acrsp.getPos()+iIncomingStateAdjust)
 				{
@@ -337,10 +340,14 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 									pC->setLocalPos(pC->getLocalPos() - pChange->getLocalAdjust());
 								}
 								else
+                                {
 									UT_DEBUGMSG(("No need to adjust change pos %d\n", j));
+                                }
 							}
 							else
+                            {
 								UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+                            }
 						}
 						
 						// kill off the item
@@ -348,13 +355,17 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 						delete pChange;
 					}
 					else
+                    {
 						UT_DEBUGMSG(("Skipping undo of remote change\n"));
+                    }
 				}
 				else
 					break;
 			}
 			else
+            {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+            }
 		}
 
 		m_pAbiCollab->setIsReverting(false); // unmask all changes in the exporter
@@ -489,10 +500,12 @@ bool ABI_Collab_Import::import(const SessionPacket& packet, const Buddy& collabo
 
 	// set the temporary document UUID, so all generated changerecords during
 	// import will inherit this UUID
+
+
 	UT_UTF8String sRealDocname = m_pDoc->getOrigDocUUIDString();
 	UT_DEBUGMSG(("Temp. setting document UUID to %s\n", packet.getDocUUID().utf8_str()));
 	m_pDoc->setMyUUID(packet.getDocUUID().utf8_str());
-	
+
 	// disable layout/view updates
 	UT_GenericVector<AV_View *> vecViews;
 	_disableUpdates(vecViews, packet.getClassType() == PCT_GlobSessionPacket);
@@ -661,13 +674,13 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 								UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 								return false;
 							}
-							const char * szName =  pStyle->getName();
-							const char * atts[3] = {PT_STYLE_ATTRIBUTE_NAME,szName,NULL};
+							const gchar * szName =  pStyle->getName();
+							const gchar * atts[3] = {PT_STYLE_ATTRIBUTE_NAME,szName,NULL};
 							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, atts, const_cast<const gchar**>( szProps ) );
 						}
 						else
 						{
-							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ) );
+							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, const_cast<const gchar**>(szAtts), const_cast<const gchar**>( szProps ) );
 						}
 						break;
 					}
@@ -830,6 +843,20 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,pToken,&pHandle);
 						delete pBuf;
 						return res;
+					}
+					case PX_ChangeRecord::PXT_ChangeDocProp:
+					{
+						UT_DEBUGMSG(("ChangeDocProp CR \n"));
+						const Props_ChangeRecordSessionPacket* pcrsp = static_cast<const Props_ChangeRecordSessionPacket*>( crp );
+						//
+						// Assemble the Attributes for different properties
+						//
+						const gchar** szAtts = const_cast<const gchar **>(pcrsp->getAtts());
+						const gchar** szProps = const_cast<const gchar **>(pcrsp->getProps());
+						//
+						// Now direct the document to make the changes
+						//
+						return m_pDoc->changeDocPropeties(szAtts,szProps);
 					}
 					default:
 					{

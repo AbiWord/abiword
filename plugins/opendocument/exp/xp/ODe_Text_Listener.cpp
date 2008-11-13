@@ -388,6 +388,7 @@ void ODe_Text_Listener::closeFootnote(ODe_ListenerAction& rAction) {
     } else {
         // We were inside a footnote.
         _closeODParagraph();
+        _closeODList();
         rAction.popListenerImpl();
     }
 }
@@ -420,9 +421,53 @@ void ODe_Text_Listener::closeEndnote(ODe_ListenerAction& rAction) {
     } else {
         // We were inside an endnote.
         _closeODParagraph();
+        _closeODList();
         rAction.popListenerImpl();
     }
 }
+
+
+/**
+ * 
+ */
+void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP) {
+
+    UT_UTF8String output = "<office:annotation>", escape;
+
+    const gchar* pValue = NULL;
+
+    if(pAP && pAP->getProperty("annotation-author",pValue) && pValue && *pValue) {
+        escape = pValue;
+        escape.escapeXML();
+
+        output += "<dc:creator>";
+        output += escape;
+        output += "</dc:creator>";
+    }
+
+    if(pAP && pAP->getProperty("annotation-date",pValue) && pValue && *pValue) {
+        escape = pValue;
+        escape.escapeXML();
+
+        // TODO: is our property a valid date value?
+        output += "<dc:date>";
+        output += escape;
+        output += "</dc:date>";
+    }
+
+    // TODO: export annotation-title somehow?
+
+    ODe_writeToFile(m_pParagraphContent, output);
+}
+
+/**
+ * 
+ */
+void ODe_Text_Listener::closeAnnotation() {
+    UT_UTF8String output = "</office:annotation>";
+    ODe_writeToFile(m_pParagraphContent, output);
+}
+
 
 
 /**

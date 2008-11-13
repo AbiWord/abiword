@@ -160,9 +160,9 @@ IE_Imp_T602::IE_Imp_T602(PD_Document * pDocument)
     m_lheight(1), m_footer(0), m_header(0), m_fhc(1), m_writeheader(true)
 {
 	XAP_App *pApp=getDoc()->getApp();
+    UT_UNUSED(pApp);
 	UT_ASSERT(pApp);
-	XAP_Prefs *pPrefs=pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_ASSERT(pApp->getPrefs());
 }
 
 IE_Imp_T602::~IE_Imp_T602() 

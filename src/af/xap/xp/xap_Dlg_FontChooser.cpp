@@ -92,7 +92,6 @@ void XAP_Dialog_FontChooser::setDrawString(const UT_UCSChar * str)
 	UT_sint32 len = UT_UCS4_strlen(str);
 	if(len <= 0)
 	{
-		FREEP(str);
 		UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 	}
 	else
@@ -100,6 +99,7 @@ void XAP_Dialog_FontChooser::setDrawString(const UT_UCSChar * str)
 	    UT_UCS4_cloneString(&m_drawString, str);
 	}
 }
+
 void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 {
 	m_pGraphics = pGraphics;
@@ -151,12 +151,14 @@ void XAP_Dialog_FontChooser::addOrReplaceVecProp(const gchar * pszProp,
  */
 void XAP_Dialog_FontChooser::event_previewExposed(const UT_UCSChar * pszChars)
 {
-	UT_sint32 len = UT_UCS4_strlen(pszChars);
-	if(len <= 0)
+	UT_UCSChar * pszNew = NULL;
+	if(!pszChars || UT_UCS4_strlen(pszChars) <= 0)
 	{
-		FREEP(pszChars);
-		UT_UCSChar * pszNew = NULL;
+		//FREEP(pszChars); // we should not g_free it here
 		UT_UCS4_cloneString_char (&pszNew, PREVIEW_ENTRY_DEFAULT_STRING);
+		if (!pszNew)
+			return;
+
 		m_pFontPreview->setDrawString(pszNew);
 	}
 	else
@@ -164,6 +166,8 @@ void XAP_Dialog_FontChooser::event_previewExposed(const UT_UCSChar * pszChars)
 		m_pFontPreview->setDrawString(pszChars);
 	}
 	m_pFontPreview->draw();
+	
+	FREEP(pszNew);
 }
 
 

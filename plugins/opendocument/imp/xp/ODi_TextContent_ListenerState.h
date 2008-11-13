@@ -103,6 +103,7 @@ private:
                          const UT_UTF8String* pMasterPageName = NULL);
     void _defineAbiTOCHeadingStyles();
     void _flushPendingParagraphBreak();
+    void _insertAnnotation(void);
 
     PD_Document* m_pAbiDocument;
     ODi_Office_Styles* m_pStyles;
@@ -172,6 +173,14 @@ private:
     // Stuff for footnotes and endnotes.
     bool m_pendingNoteAnchorInsertion;
     UT_UTF8String m_currentNoteId;
+
+    // Annotations
+    bool m_bPendingAnnotation;
+    bool m_bPendingAnnotationAuthor;
+    bool m_bPendingAnnotationDate;
+    UT_uint32 m_iAnnotation;
+    std::string m_sAnnotationAuthor;
+    std::string m_sAnnotationDate;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

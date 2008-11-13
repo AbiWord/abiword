@@ -23,7 +23,7 @@
 #include <libwpg/libwpg.h>
 #include "ie_impGraphic_SVG.h"
 
-class  IE_Imp_WordPerfectGraphics_Sniffer : public IE_ImpGraphicSniffer
+class IE_Imp_WordPerfectGraphics_Sniffer : public IE_ImpGraphicSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_WordPerfectGraphics;
@@ -41,7 +41,7 @@ public:
 	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg);
 };
 
-class  IE_Imp_WordPerfectGraphics : public IE_ImpGraphic
+class IE_Imp_WordPerfectGraphics : public IE_ImpGraphic
 {
 public:
 	virtual UT_Error	importGraphic(GsfInput *input, FG_Graphic **ppfg);

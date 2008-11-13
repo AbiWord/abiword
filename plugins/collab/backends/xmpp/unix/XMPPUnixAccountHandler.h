@@ -23,7 +23,7 @@
 #include "gtk/gtk.h"
 #include <backends/xmpp/xp/XMPPAccountHandler.h>
 
-class  XMPPUnixAccountHandler : public XMPPAccountHandler
+class XMPPUnixAccountHandler : public XMPPAccountHandler
 {
 public:
 	XMPPUnixAccountHandler();

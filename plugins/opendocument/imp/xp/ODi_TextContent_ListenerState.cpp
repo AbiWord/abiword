@@ -63,7 +63,11 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
                   m_pCurrentListStyle(NULL),
                   m_listLevel(0),
                   m_alreadyDefinedAbiParagraphForList(false),
-                  m_pendingNoteAnchorInsertion(false)
+                  m_pendingNoteAnchorInsertion(false),
+                  m_bPendingAnnotation(false),
+                  m_bPendingAnnotationAuthor(false),
+                  m_bPendingAnnotationDate(false),
+                  m_iAnnotation(0)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -130,6 +134,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
     } else if (!strcmp(pName, "text:p" )) {
         
+        if (m_bPendingAnnotation) {
+            _insertAnnotation();
+        }
+
         // It's so big that it deserves its own function.
         _startParagraphElement(pName, ppAtts, rAction);
         
@@ -178,13 +186,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         const gchar* pSpaceCount;
         UT_uint32 spaceCount, i;
+        UT_sint32 tmpSpaceCount = 0;
         UT_UCS4String string;
         
         pSpaceCount = UT_getAttribute("text:c", ppAtts);
         
-        if (pSpaceCount) {
-            i = sscanf(pSpaceCount, "%d", &spaceCount);
-            UT_ASSERT(i==1);
+        if (pSpaceCount && *pSpaceCount) {
+            i = sscanf(pSpaceCount, "%d", &tmpSpaceCount);
+            if ((i != 1) || (tmpSpaceCount <= 1)) {
+                spaceCount = 1;
+            } else {
+                spaceCount = tmpSpaceCount;
+            }
         } else {
             // From the OpenDocument specification:
             // "A missing text:c attribute is interpreted as meaning a
@@ -388,6 +401,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_bOnContentStream = true;
         
     } else if (!strcmp(pName, "text:list")) {
+
+        if (m_bPendingAnnotation) {
+            _insertAnnotation();
+        }
         
         if (m_pCurrentListStyle != NULL) {
             m_listLevel++;
@@ -448,9 +465,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             const gchar* pVal;
             
             pVal = UT_getAttribute("text:anchor-type", ppAtts);
-            UT_ASSERT(pVal);
             
-            if (pVal && (!strcmp(pVal, "as-char") || !strcmp(pVal, "char"))) {
+            if (!pVal || !strcmp(pVal, "as-char") || !strcmp(pVal, "char")) {
                 _flush();
                 rAction.pushState("Frame");
             } else {
@@ -569,6 +585,42 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         UT_ASSERT(ok);
         
         m_pendingNoteAnchorInsertion = true;
+
+    } else if (!strcmp(pName, "office:annotation")) {
+
+        _flush();
+
+        if (!m_bPendingAnnotation) {
+
+            UT_UTF8String id;
+            m_sAnnotationAuthor.clear();
+            m_sAnnotationDate.clear();
+
+            m_iAnnotation = m_pAbiDocument->getUID(UT_UniqueId::Annotation);
+            id = UT_UTF8String_sprintf("%d", m_iAnnotation);
+
+            const gchar* ppAtts2[3] = { NULL, NULL, NULL };
+            ppAtts2[0] = PT_ANNOTATION_NUMBER;
+            ppAtts2[1] = id.utf8_str();
+            
+            m_pAbiDocument->appendObject(PTO_Annotation, ppAtts2);
+            m_bPendingAnnotation = true;
+        }
+
+    } else if (!strcmp(pName, "dc:creator")) {
+
+        if (m_bPendingAnnotation) {
+            m_bPendingAnnotationAuthor = true;
+            m_bAcceptingText = false;
+        }
+
+    } else if (!strcmp(pName, "dc:date")) {
+
+        if (m_bPendingAnnotation) {
+            m_bPendingAnnotationDate = true;
+            m_bAcceptingText = false;
+        }
+
     }
     
     m_elementParsingLevel++;
@@ -704,6 +756,32 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
 
         // Back to paragraph text.
         m_bAcceptingText = true;        
+    } else if (!strcmp(pName, "office:annotation")) {
+
+        if (m_bPendingAnnotation) {
+            // Don't crash on empty annotations
+            _insertAnnotation();
+            m_bPendingAnnotation = false;
+        }
+
+        m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
+        m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+        m_bAcceptingText = true;
+
+    } else if (!strcmp(pName, "dc:creator")) {
+
+        if (m_bPendingAnnotationAuthor) {
+            m_bPendingAnnotationAuthor = false;
+            m_bAcceptingText = true;
+        }
+
+    } else if (!strcmp(pName, "dc:date")) {
+
+        if (m_bPendingAnnotationDate) {
+            m_bPendingAnnotationDate = false;
+            m_bAcceptingText = true;
+        }
+
     }
     
     m_elementParsingLevel--;
@@ -716,8 +794,16 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
 void ODi_TextContent_ListenerState::charData (
                             const gchar* pBuffer, int length)
 {
-    if (pBuffer && length && m_bAcceptingText) {
-        m_charData += UT_UCS4String (pBuffer, length, true);
+    if (pBuffer && length) {
+        if (m_bAcceptingText) {
+            m_charData += UT_UCS4String (pBuffer, length, true);
+
+        } else if (m_bPendingAnnotationAuthor) {
+            m_sAnnotationAuthor = pBuffer;
+
+        } else if (m_bPendingAnnotationDate) {
+            m_sAnnotationDate = pBuffer;
+        }
     }
 }
 
@@ -1027,7 +1113,10 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 
         if (pStyleName) {
             pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
-            UT_ASSERT(pStyle);
+
+            if (!pStyle) {
+                pStyle = m_pStyles->getTextStyle(pStyleName, m_bOnContentStream);
+            }
             
             // Damn, use the default style
             if (!pStyle) {
@@ -1258,7 +1347,10 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
                     
     if (pStyleName) {
         pStyle = m_pStyles->getParagraphStyle(pStyleName, m_bOnContentStream);
-        UT_ASSERT(pStyle);
+
+        if (!pStyle) {
+            pStyle = m_pStyles->getTextStyle(pStyleName, m_bOnContentStream);
+        }
         
         // Damn, use the default style
         if (!pStyle) {
@@ -1347,4 +1439,44 @@ void ODi_TextContent_ListenerState::_flushPendingParagraphBreak() {
         
         m_pendingParagraphBreak.clear();
     }
+}
+
+
+/**
+ * Inserts an <annotate> element into the document before inserting
+ * a paragraph or list item.
+ */
+void ODi_TextContent_ListenerState::_insertAnnotation() {
+
+    UT_return_if_fail(m_bPendingAnnotation);
+
+    const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
+    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
+    UT_UTF8String props;
+
+    pPropsArray[0] = "annotation-id";
+    pPropsArray[1] = id.utf8_str();
+    pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
+
+    if (!m_sAnnotationAuthor.empty()) {
+        props = "annotation-author: ";
+        props += m_sAnnotationAuthor.c_str();
+        m_sAnnotationAuthor.clear();
+    }
+
+    if (!m_sAnnotationDate.empty()) {
+        if (!props.empty()) {
+            props += "; ";
+        }
+        props += "annotation-date: ";
+        props += m_sAnnotationDate.c_str();
+        m_sAnnotationDate.clear();
+    }
+
+    // TODO: annotation-title property?
+
+    pPropsArray[3] = props.utf8_str();
+
+    m_pAbiDocument->appendStrux(PTX_SectionAnnotation, pPropsArray);
+    m_bPendingAnnotation = false;
 }

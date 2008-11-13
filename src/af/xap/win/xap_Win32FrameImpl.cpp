@@ -556,7 +556,7 @@ void XAP_Win32FrameImpl::_nullUpdate (void) const
 	}
 }
 
-void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor cursor)
+void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor /*cursor*/)
 {
 	FV_View* pView = (FV_View *) getFrame()->getCurrentView();
 
@@ -991,7 +991,9 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		{
 			SendMessage(fimpl->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
 
-			REBARBANDINFO rbbi = { 0 };
+			REBARBANDINFO rbbi;
+			memset(&rbbi, 0, sizeof(rbbi));
+
 			rbbi.cbSize = sizeof(REBARBANDINFO);
 			rbbi.fMask = RBBIM_COLORS;
 			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
@@ -1024,7 +1026,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					DragQueryFile(hDrop, i, szFileName, PATH_MAX);
 					XAP_App * pApp = XAP_App::getApp();
 					UT_return_val_if_fail(pApp, 0);
-					FV_View* pView = (FV_View *) f->getCurrentView();
+					FV_View* pCurrentView = (FV_View *) f->getCurrentView();
 					XAP_Frame * pNewFrame = 0;
 					IEGraphicFileType iegft = IEGFT_Unknown;					
 					IE_ImpGraphic *pIEG;
@@ -1048,7 +1050,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 						DELETEP(pIEG);
 						if(errorCode == UT_OK && pFG)
 						{
-						  errorCode = pView->cmdInsertGraphic(pFG);
+						  errorCode = pCurrentView->cmdInsertGraphic(pFG);
 						  DELETEP(pFG);
 						}
 					  }

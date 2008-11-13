@@ -157,9 +157,8 @@ bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
 	m_iMaxId = private_max(m_iMaxId, id);
-	EV_Menu_LayoutItem *old;
-	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &old);
-	EV_Menu_LayoutItem * pOld = static_cast<EV_Menu_LayoutItem *> (old);
+	EV_Menu_LayoutItem *pOld = NULL;
+	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &pOld);
 	DELETEP(pOld);
 	return (m_layoutTable[indexLayoutItem] != NULL);
 }

@@ -19,7 +19,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -216,35 +215,30 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 
 void AP_UnixDialog_WordCount::constructDialog(void)
 {	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_WordCount.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_WordCount.xml";
 
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	UT_ASSERT(xml);
-	if (!xml) {
-		return;
-	}
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_WordCount");
-	m_labelWCount  = glade_xml_get_widget(xml, "lbWordsVal");
-	m_labelWNoFootnotesCount = glade_xml_get_widget(xml, "lbWordsNoFootnotesVal");
-	m_labelPCount  = glade_xml_get_widget(xml, "lbParagraphsVal");
-	m_labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpacesVal");
-	m_labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpacesVal");
-	m_labelLCount  = glade_xml_get_widget(xml, "lbLinesVal");	
-	m_labelPgCount = glade_xml_get_widget(xml, "lbPagesVal");	
-	m_labelTitle   = glade_xml_get_widget(xml, "lbTitle");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_WordCount"));
+	m_labelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsVal"));
+	m_labelWNoFootnotesCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsNoFootnotesVal"));
+	m_labelPCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraphsVal"));
+	m_labelCCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersSpacesVal"));
+	m_labelCNCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersNoSpacesVal"));
+	m_labelLCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbLinesVal"));
+	m_labelPgCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbPagesVal"));
+	m_labelTitle   = GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle"));
 
-	m_labelLabelWCount  = glade_xml_get_widget(xml, "lbWords");
- 	m_labelWNFCount     = glade_xml_get_widget(xml ,"lbWordsNoFootnotes");
-	m_labelLabelPCount  = glade_xml_get_widget(xml, "lbParagraphs");
-	m_labelLabelCCount  = glade_xml_get_widget(xml, "lbCharactersSpaces");
-	m_labelLabelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
-	m_labelLabelLCount  = glade_xml_get_widget(xml, "lbLines");	
-	m_labelLabelPgCount = glade_xml_get_widget(xml, "lbPages");	
+	m_labelLabelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWords"));
+ 	m_labelWNFCount     = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsNoFootnotes"));
+	m_labelLabelPCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbParagraphs"));
+	m_labelLabelCCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersSpaces"));
+	m_labelLabelCNCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbCharactersNoSpaces"));
+	m_labelLabelLCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbLines"));
+	m_labelLabelPgCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbPages"));
 
 	localizeDialog();
 
@@ -261,5 +255,6 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);
+	g_object_unref(G_OBJECT(builder));
 }
 

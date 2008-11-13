@@ -34,6 +34,7 @@
 // AbiWord includes
 #include <ut_types.h>
 #include <pd_Document.h>
+#include <ie_exp_OpenXML.h>
 
 // External includes
 #include <string>
@@ -63,6 +64,15 @@ public:
 	UT_Error addStyle(const OXML_SharedStyle & obj);
 	UT_Error clearStyles();
 
+	UT_Error addList(const OXML_SharedList& obj);
+	UT_Error addImage(const OXML_SharedImage& obj);
+
+	UT_Error addFootnote(const OXML_SharedSection & obj);
+	UT_Error clearFootnotes();
+
+	UT_Error addEndnote(const OXML_SharedSection & obj);
+	UT_Error clearEndnotes();
+
 	//! Returns a reference to the FIRST header with corresponding ID OR empty SharedSection if none found.
 	OXML_SharedSection getHeader(const std::string & id);
 	UT_Error addHeader(const OXML_SharedSection & obj);
@@ -86,9 +96,9 @@ public:
 
 	//! Writes the OpenXML document and all its content to a file on disk.
 	/*! This method is used during the export process.
-		\param path String indicating the FULL path of the file.  If the file exists, it will be overridden.
+		\param exporter the actual exporter which handles writing the files.
 	*/
-	UT_Error serialize(const std::string & path);
+	UT_Error serialize(IE_Exp_OpenXML* exporter);
 	//! Builds the Abiword Piecetable representation of the OpenXML document and all its content.
 	/*! This method is used during the import process.
 		\param pDocument A valid reference to the PD_Document object.
@@ -104,12 +114,17 @@ private:
 
 	OXML_SectionMap m_headers;
 	OXML_SectionMap m_footers;
+	OXML_SectionMap m_footnotes;
+	OXML_SectionMap m_endnotes;
 
 	OXML_StyleMap m_styles_by_id;
 	OXML_StyleMap m_styles_by_name;
 
 	OXML_SharedTheme m_theme;
 	OXML_SharedFontManager m_fontManager;
+
+	OXML_ListMap m_lists_by_id;
+	OXML_ImageMap m_images_by_id;
 
 	void _assignHdrFtrIds();
 };

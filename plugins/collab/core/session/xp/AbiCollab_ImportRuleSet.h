@@ -26,7 +26,7 @@
 class ChangeAdjust;
 class AbstractChangeRecordSessionPacket;
 
-class  AbiCollab_ImportRuleSet
+class AbiCollab_ImportRuleSet
 {
 public:
 	static bool		isOverlapAllowed(const ChangeAdjust& ca, const AbstractChangeRecordSessionPacket& acrsp, UT_sint32 iRemotePosAdjust);

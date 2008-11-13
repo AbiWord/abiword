@@ -27,6 +27,8 @@
 #include <OXML_Types.h>
 #include <OXML_ObjectWithAttrProp.h>
 #include "OXML_Style.h"
+#include "OXML_List.h"
+#include "OXML_Image.h"
 
 // AbiWord includes
 #include <ut_types.h>
@@ -40,6 +42,7 @@
 #include <boost/shared_ptr.hpp>
 
 class OXML_Element;
+class IE_Exp_OpenXML;
 
 typedef boost::shared_ptr<OXML_Element> OXML_SharedElement;
 typedef std::vector<OXML_SharedElement> OXML_ElementVector;
@@ -78,9 +81,9 @@ public:
 	/*! This method is used during the export process. 
 	 *  WARNING: If you derive OXML_Element, you should probably override this method.
 	 *  If you do, make sure to call the method serializeChildren (if applicable).
-		\param path String indicating the FULL path of the file.  If the file exists, it will be overridden.
+		\param exporter the actual exporter which handles writing the files.
 	*/
-	virtual UT_Error serialize(std::string path);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	//! Appends this section and all its content to the Abiword Piecetable.
 	/*! This method is used during the import process.
 	 *  WARNING: If you derive OXML_Element, you should probably override this method.
@@ -89,24 +92,31 @@ public:
 	*/
 	virtual UT_Error addToPT(PD_Document * pDocument);
 
+	void setTarget(int target);
+
 protected:
 	//! Calls the method serialize() on all children.
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */
-	UT_Error serializeChildren(std::string path);
+	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	//! Calls the method addToPT() on all children.
 	/*! WARNING: if you derive OXML_Element, you probably shouldn't redefine this method.
 	 */
 	UT_Error addChildrenToPT(PD_Document * pDocument);
+
+	int TARGET;
 
 private:
 	std::string m_id;
 	OXML_ElementTag m_tag;
 	OXML_ElementType m_type;
 	OXML_ElementVector m_children;
+
 };
 
 typedef std::map<std::string, OXML_SharedStyle > OXML_StyleMap;
+typedef std::map<UT_uint32, OXML_SharedList > OXML_ListMap;
+typedef std::map<std::string, OXML_SharedImage > OXML_ImageMap;
 
 #endif //_OXML_ELEMENT_H_
 

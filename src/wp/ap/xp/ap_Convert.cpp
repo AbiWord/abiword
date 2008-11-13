@@ -29,6 +29,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#include "ut_misc.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -324,6 +325,8 @@ bool AP_Convert::convertTo(const char * szFilename,
   UT_String ext;
   IEFileType ieft = IEFT_Unknown;
 
+  UT_String file;
+
   // maybe it is a mime type. try that first
   ieft = IE_Exp::fileTypeForMimetype(szTargetSuffixOrMime);
   if(ieft != IEFT_Unknown) {
@@ -331,25 +334,42 @@ bool AP_Convert::convertTo(const char * szFilename,
   } 
   else
     {
-      ext = ".";
-      ext += szTargetSuffixOrMime;
-      ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
+      const char *suffix = UT_pathSuffix(szTargetSuffixOrMime);
+      if (suffix)
+	{
+	  // suffix is ".txt" or ".html"
+	  ieft = IE_Exp::fileTypeForSuffix(suffix);
+
+	  // szTargetSuffixOrMime is something like "file://home/dom/foo.html", so use it as our target filename
+	  if (strlen (suffix) != strlen(szTargetSuffixOrMime))
+	    file = szTargetSuffixOrMime;
+	}
+      else
+	{
+	  // assume that szSourceSuffixOrMime is "txt" or "html"
+	  ext = ".";
+	  ext += szTargetSuffixOrMime;
+	  ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
+	}
 
       // unknown suffix and mime type
       if(ieft == IEFT_Unknown)
 	return false;
     }
 
-  char * fileDup = g_strdup ( szFilename );
+  if (file.empty())
+    {
+      char * fileDup = g_strdup ( szFilename );
       
-  char *tmp = strrchr(fileDup, '.');
-  if (tmp != NULL)
-    *tmp = '\0';
+      char *tmp = strrchr(fileDup, '.');
+      if (tmp != NULL)
+	*tmp = '\0';
+      
+      file = fileDup;
+      file += ext;
   
-  UT_String file = fileDup;
-  file += ext;
-  
-  FREEP(fileDup);
+      FREEP(fileDup);
+    }
 
   return convertTo(szFilename, getImportFileType(szSourceSuffixOrMime), file.c_str(), ieft);
 }

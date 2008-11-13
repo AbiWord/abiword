@@ -780,7 +780,7 @@ private:
 
 
 bool IE_Imp_ShpPropParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-										UT_sint32 param, bool paramUsed)
+										UT_sint32 /*param*/, bool /*paramUsed*/)
 {
 	switch(kwID) {
 	case RTF_KW_sn:
@@ -832,7 +832,7 @@ bool IE_Imp_ShpPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
 	return IE_Imp_RTFGroupParser::tokenCloseBrace(ie);
 }
 
-bool IE_Imp_ShpPropParser::tokenData(IE_Imp_RTF * ie, UT_UTF8String & data)
+bool IE_Imp_ShpPropParser::tokenData(IE_Imp_RTF * /*ie*/, UT_UTF8String & data)
 {
 	DELETEP(m_lastData);
 	m_lastData = new UT_UTF8String(data);
@@ -976,7 +976,7 @@ IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 
 bool
 IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
-									UT_sint32 param, bool paramUsed)
+									UT_sint32 param, bool /*paramUsed*/)
 {
 	UT_DEBUGMSG(("IE_Imp_ShpGroupParser::tokenKeyword %d\n", kwID));
 	switch(kwID) {

@@ -37,7 +37,8 @@
 #include "ap_Strings.h"
 #include "xap_Prefs.h"
 #include "ap_Frame.h"
-
+#include "pp_Author.h"
+#include "pp_AttrProp.h"
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -71,6 +72,7 @@
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
 #include <backends/service/xp/ServiceAccountHandler.h>
+#include <backends/service/xp/tls_tunnel.h>
 #endif
 
 // event includes
@@ -109,7 +111,10 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 	// maskExport();
 	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
 	GsfOutput* gzSink = gsf_output_gzip_new(GSF_OUTPUT(sink), NULL);
+	bool bAuthor = pDoc->isExportAuthorAtts();
+	const_cast<PD_Document *>(pDoc)->setExportAuthorAtts(true);
 	UT_Error result = const_cast<PD_Document*>(pDoc)->saveAs(GSF_OUTPUT(gzSink), IE_Exp::fileTypeForSuffix(".abw"), true);
+	const_cast<PD_Document *>(pDoc)->setExportAuthorAtts(bAuthor);
 	gsf_output_close(GSF_OUTPUT(gzSink));
 	// unmaskExport();
 	
@@ -133,7 +138,9 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 		}
 	} 
 	else
+    {
 		UT_DEBUGMSG(("Failed to export! Handle this gracefully!\n"));
+    }
 
 	g_object_unref(G_OBJECT(gzSink));
 	g_object_unref(G_OBJECT(sink));
@@ -239,7 +246,8 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	addAccount(pSugarHandler);
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
-	m_regAccountHandlers.push_back(ServiceAccountHandlerConstructor);
+	if (tls_tunnel::Proxy::tls_tunnel_init())
+		m_regAccountHandlers.push_back(ServiceAccountHandlerConstructor);
 #endif
 	return true;
 }
@@ -247,7 +255,10 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 bool AbiCollabSessionManager::unregisterAccountHandlers(void)
 {
 	// no need to "free/delete" items, as they are just function pointers (ie. basic types)
-	m_regAccountHandlers.clear(); 
+	m_regAccountHandlers.clear();
+#ifdef ABICOLLAB_HANDLER_SERVICE
+	tls_tunnel::Proxy::tls_tunnel_deinit();
+#endif
 	return true;
 }
 
@@ -381,7 +392,9 @@ void AbiCollabSessionManager::loadProfile()
 		g_object_unref(G_OBJECT(in));
 	}
 	else
+    {
 		UT_DEBUGMSG(("Failed to open an existing AbiCollab profile\n"));
+    }
 	FREEP(uri);
 }
 
@@ -467,15 +480,21 @@ void AbiCollabSessionManager::storeProfile()
 				g_object_unref(G_OBJECT(out));
 			}
 			else
+            {
 				UT_DEBUGMSG(("Error creating AbiCollab Profile %s: %s!\n", profile.utf8_str(), error ? error->message : "unknown error"));
+            }
 			FREEP(uri);
 		}
 		else
+        {
 			UT_DEBUGMSG(("Error creating XML output writer\n"));
+        }
 		xmlBufferFree(doc);
 	}
 	else
+    {
 		UT_DEBUGMSG(("Error creating XML output buffer\n"));
+    }
 }
 
 bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
@@ -701,6 +720,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
 #endif	
 	
+
 	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
 	m_vecSessions.push_back(pSession);
 
@@ -708,6 +728,18 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	JoinSessionEvent event(sSessionId);
 	event.addRecipient(pCollaborator);
 	signal(event);
+	//
+	// uwog!!! Look Here!!! This is where you can set the 
+	// author name, email, session-id etc!
+	//
+	UT_sint32 iNextFree = pDoc->findFirstFreeAuthorInt();
+	if(pDoc->getNumAuthors() == 0)
+		iNextFree++;
+	pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(),iNextFree);
+	PP_AttrProp * pPA = pA->getAttrProp();
+	pPA->setProperty("sessionid",sSessionId.utf8_str());
+	pDoc->setMyAuthorInt(iNextFree);
+	pDoc->sendAddAuthorCR(pA);
 }
 
 void AbiCollabSessionManager::joinSession(AbiCollab* pSession, Buddy* pCollaborator)
@@ -817,7 +849,7 @@ void AbiCollabSessionManager::removeBuddy(const Buddy* pBuddy, bool graceful)
 {
 	UT_return_if_fail(pBuddy);
 	
-	UT_DEBUGMSG(("Dropping buddy %s from all sessions\n", pBuddy->getName().utf8_str()));
+	UT_DEBUGMSG(("Dropping buddy '%s' from all sessions\n", pBuddy->getName().utf8_str()));
 	// TODO: should we send out events for every buddy we drop, or session
 	// we delete?
 	
@@ -1158,7 +1190,9 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* pac
 					}
 				}
 				else
+                {
 					UT_DEBUGMSG(("Ignoring a CloseSession event for unknown session (%s)\n", destroyedSessionId.utf8_str()));
+                }
 				return true;
 			}
 			
@@ -1284,6 +1318,7 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 	XAP_Frame* pCurFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pCurFrame, false);
 
+	bool isNewFrame = false;
 	PD_Document * pFrameDoc = static_cast<PD_Document *>(pCurFrame->getCurrentDoc());
 	if (pFrameDoc != pDoc)
 	{
@@ -1297,11 +1332,14 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 			// the current frame has already a document loaded, let's create
 			// a new frame
 			pCurFrame = XAP_App::getApp()->newFrame();
+			isNewFrame = true;
 		}
 
 	}
 	else
+    {
 		UT_DEBUGMSG(("This document is already in the current frame; using this frame\n"));
+    }
 	
 	UT_return_val_if_fail(pCurFrame, false);
 	*pFrame = pCurFrame;
@@ -1313,7 +1351,12 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 		(*pFrame)->loadDocument(pDoc);
 	}
 	else
+    {
 		UT_DEBUGMSG(("Not loading the document in the frame, as the frame already has it\n"));
+    }
+	
+	if (isNewFrame)
+		(*pFrame)->show();
 	
 	return true;
 }

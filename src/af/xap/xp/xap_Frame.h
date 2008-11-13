@@ -213,8 +213,8 @@ public:
 	UT_Error	    backup(const char* stExt = 0, UT_sint32 iEFT = -1);
 	UT_String       makeBackupName (const char * szExt = 0);
 
-	const bool                  isStatusBarShown(void) const { return m_bShowStatusbar;}
-	const bool                  isMenuBarShown(void) const { return m_bShowMenubar;}
+	bool                        isStatusBarShown(void) const { return m_bShowStatusbar;}
+	bool                        isMenuBarShown(void) const { return m_bShowMenubar;}
 	virtual void                setStatusBarShown(bool /*bShowStatusbar*/) {}
 	virtual void                setMenuBarShown(bool /*bShowMenubar*/) {}
 	UT_uint32                   getTimeSinceSave() const;
@@ -228,7 +228,10 @@ public:
 	UT_RGBColor getColorSelForeground () const;
 
 	void dragText();
-
+	virtual UT_sint32 getDocumentAreaXoff(void)
+	{ return 0;}
+	virtual UT_sint32 getDocumentAreaYoff(void)
+	{ return 0;}
 protected:
 	friend class XAP_FrameImpl;
 

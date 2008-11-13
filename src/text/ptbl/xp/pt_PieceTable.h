@@ -60,7 +60,7 @@ public:
 	~pt_PieceTable();
 
 	void					setPieceTableState(PTState pts);
-	const PTState           getPieceTableState() const {return m_pts;}
+	PTState					getPieceTableState() const {return m_pts;}
 	void					beginMultiStepGlob(void);
 	void					endMultiStepGlob(void);
 	void					beginUserAtomicGlob(void);
@@ -180,6 +180,8 @@ public:
 									   bool bDontGlob);
 	bool                    createAndSendCR(PT_DocPosition  dpos, 
 											UT_sint32 iType,bool bSave, UT_Byte iGlob);
+
+	bool                    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,

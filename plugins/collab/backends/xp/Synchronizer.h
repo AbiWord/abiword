@@ -68,6 +68,9 @@ private:
 //////////////////
 // PRIVATE DATA
 //////////////////
+// XP members
+	boost::function<void ()> m_signalhandler;
+
 #ifdef WIN32
 	HWND m_hWnd;
 #else
@@ -76,9 +79,6 @@ private:
 	GIOChannel* io_channel;
 	guint io_channel_watch_id;
 #endif
-
-// XP members
-	boost::function<void ()> m_signalhandler;
 };
 
 #endif /* __SYNCHRONIZER__ */

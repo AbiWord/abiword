@@ -1512,7 +1512,7 @@ UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
  Before the postition of the container is changed, its content is
  first cleared from the screen.
  */
-void fp_VerticalContainer::setX(UT_sint32 iX, bool bDontClearIfNeeded)
+void fp_VerticalContainer::setX(UT_sint32 iX, bool /*bDontClearIfNeeded*/)
 {
 	if (iX == m_iX)
 	{
@@ -2424,7 +2424,7 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
  \retval xoff Container's X offset relative the screen actually -10000
  \retval yoff Container's Y offset relative the screen actually -10000
  */
-void fp_HdrFtrContainer::getScreenOffsets(fp_ContainerObject* pContainer,
+void fp_HdrFtrContainer::getScreenOffsets(fp_ContainerObject* /*pContainer*/,
 									UT_sint32& xoff, UT_sint32& yoff)
 {
 	xoff = -100000;
@@ -2444,7 +2444,7 @@ void fp_HdrFtrContainer::clearScreen(void)
  NOP for Draw's
  \param pDA Draw arguments
  */
-void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
+void fp_HdrFtrContainer::draw(dg_DrawArgs* /*pDA*/)
 {
 
 }

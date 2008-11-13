@@ -3,7 +3,8 @@ noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
 	$(OPENXML_CFLAGS) \
-	-I$(srcdir)/../../common/xp
+	-I$(srcdir)/../../common/xp \
+	-I$(srcdir)/../../exp/xp
 
 libxp_la_SOURCES = \
 	ie_imp_OpenXML.cpp \

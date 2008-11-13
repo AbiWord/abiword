@@ -73,7 +73,7 @@ protected:
 };
 
 /** Base archive */
-class  Archive 
+class Archive 
 {
 public:
 	virtual ~Archive() {}
@@ -194,7 +194,7 @@ public:
 };
 
 /** String based archive */
-class  StrArchive : public Archive
+class StrArchive : public Archive
 {
 public:
 	unsigned int Size() const { return m_sSource.size(); }
@@ -211,7 +211,7 @@ protected:
 };
 
 /** Input (loading) archive */
-class  IStrArchive : public StrArchive 
+class IStrArchive : public StrArchive 
 {
 public:
 	IStrArchive( const std::string& sSource )
@@ -242,7 +242,7 @@ protected:
 };
 
 /** Output (saving) archive */
-class  OStrArchive : public StrArchive
+class OStrArchive : public StrArchive
 {
 public:
 	OStrArchive()
@@ -254,7 +254,7 @@ public:
 		m_sSource.resize( pos + Count );
 		memcpy( &m_sSource[pos], Buffer, Count );
 	}
-	virtual void Skip( unsigned int Count )
+	virtual void Skip( unsigned int /*Count*/ )
 	{
 #if !defined(SERIALIZATION_TEST)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

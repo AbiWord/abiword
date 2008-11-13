@@ -35,7 +35,6 @@
 #include "xap_EncodingManager.h"
 
 #include "ap_Menu_Id.h"
-#include "ap_Menu_Id.h"
 #include "ap_Strings.h"
 
 	struct _lt

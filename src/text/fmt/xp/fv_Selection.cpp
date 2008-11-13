@@ -375,7 +375,7 @@ void FV_Selection::setTableLayout(fl_TableLayout * pFL)
  * Add a range to the list of selected regions as defined by posLow, posHigh.
  * If bAddData is true also make a copy of the selected text in RTF format.
  */
-void FV_Selection::addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData)
+void FV_Selection::addSelectedRange(PT_DocPosition /*posLow*/, PT_DocPosition /*posHigh*/, bool /*bAddData*/)
 {
 
 }

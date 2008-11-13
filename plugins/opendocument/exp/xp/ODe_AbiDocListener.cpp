@@ -56,6 +56,7 @@ ODe_AbiDocListener::ODe_AbiDocListener (PD_Document* pDocument,
       m_bInBookmark(false),
       m_bInHyperlink(false),
       m_bInSection(false),
+      m_bInAnnotation(false),
       m_iInTable(0),
       m_iInCell(0),
       m_pDocument(pDocument),
@@ -183,6 +184,12 @@ bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
                     return true;
                 }
 
+            case PTO_Annotation:
+                {
+                    _closeSpan();
+                    _closeField();
+                    return true;
+                }
 
             default:
                 UT_ASSERT_HARMLESS(UT_TODO);
@@ -282,6 +289,16 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
         }
         break;
 
+    case PTX_SectionAnnotation:
+        {
+            _closeSpan();
+            _closeField();
+            _closeBookmark(m_bookmarkName);
+            _closeHyperlink();
+            _openAnnotation(api);
+        }
+        break;
+
     case PTX_SectionTOC:
         {
             _closeSpan();
@@ -356,6 +373,17 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
             _closeBlock();
             _closeEndnote();
+        }
+        break;
+
+    case PTX_EndAnnotation:
+        {
+            _closeSpan();
+            _closeField();
+            _closeBookmark(m_bookmarkName);
+            _closeHyperlink();
+            _closeBlock();
+            _closeAnnotation();
         }
         break;
 
@@ -755,6 +783,44 @@ void ODe_AbiDocListener::_closeEndnote() {
             this->_closeEndnote();
         }
     }
+}
+
+
+/**
+ * 
+ */
+void ODe_AbiDocListener::_openAnnotation(PT_AttrPropIndex api) {
+
+    if (m_bInAnnotation) {
+        return;
+    }
+
+    const PP_AttrProp* pAP = NULL;
+    bool ok = false;
+
+    ok = m_pDocument->getAttrProp (api, &pAP);
+    if (!ok) {
+        pAP = NULL;
+    }
+
+    m_pCurrentImpl->openAnnotation(pAP);
+    m_bInAnnotation = true;
+    m_bInBlock = false;
+}
+
+
+/**
+ * 
+ */
+void ODe_AbiDocListener::_closeAnnotation() {
+
+    if (!m_bInAnnotation) {
+        return;
+    }
+
+    m_pCurrentImpl->closeAnnotation();
+    m_bInAnnotation = false;
+    m_bInBlock = true;
 }
 
 
@@ -1265,7 +1331,7 @@ void ODe_AbiDocListener::_outputData(const UT_UCSChar* pData, UT_uint32 length) 
                 _appendSpaces(&sBuf, nSpaces);
             nSpaces = 0;
 
-            m_pCurrentImpl->insertTabChar();
+            sBuf += "<text:tab/>";
             p++;
             break;
 

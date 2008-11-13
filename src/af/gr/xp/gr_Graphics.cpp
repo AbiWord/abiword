@@ -210,12 +210,12 @@ GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i)
 	return m_vecCarets.getNthItem(i);
 }
 
-GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sDocUUID)
+GR_Caret * GR_Graphics::getCaret(UT_sint32 iID)
 {
 	UT_uint32 i= 0;
 	for(i=0; i<m_vecCarets.getItemCount();i++)
 	{
-		if(m_vecCarets.getNthItem(i)->getUUID() == sDocUUID)
+		if(m_vecCarets.getNthItem(i)->getID() == iID)
 		{
 			return m_vecCarets.getNthItem(i);
 		}
@@ -223,9 +223,9 @@ GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sDocUUID)
 	return NULL;
 }
 
-GR_Caret * GR_Graphics::createCaret(UT_UTF8String & sDocUUID)
+GR_Caret * GR_Graphics::createCaret(UT_sint32 id)
 {
-	GR_Caret * pCaret = new GR_Caret(this,sDocUUID);
+	GR_Caret * pCaret = new GR_Caret(this,id);
 	m_vecCarets.addItem(pCaret);
 	return pCaret;
 }
@@ -550,7 +550,7 @@ void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
  * handled.
  * Returns true if the exposed redraw method is running.
  */
-const bool  GR_Graphics::isSpawnedRedraw(void) const
+bool GR_Graphics::isSpawnedRedraw(void) const
 {
 	return m_bSpawnedRedraw;
 }
@@ -558,7 +558,7 @@ const bool  GR_Graphics::isSpawnedRedraw(void) const
 /*!
  * sets/clears the redraw running variable
  */
-void  GR_Graphics::setSpawnedRedraw( bool exposeState)
+void GR_Graphics::setSpawnedRedraw( bool exposeState)
 {
 	m_bSpawnedRedraw = exposeState;
 }
@@ -567,7 +567,7 @@ void  GR_Graphics::setSpawnedRedraw( bool exposeState)
  * Informs if there are unprocessed expose information present
  * Returns true is so.
  */
-const bool GR_Graphics::isExposePending(void) const
+bool GR_Graphics::isExposePending(void) const
 {
 	return m_bExposePending;
 }
@@ -598,7 +598,7 @@ void GR_Graphics::setRecentRect(UT_Rect * pRect)
  * Informs if a process is accessing the global merged expose area.
  * Returns true is so.
  */
-const bool GR_Graphics::isExposedAreaAccessed(void) const
+bool GR_Graphics::isExposedAreaAccessed(void) const
 {
 	return m_bIsExposedAreaAccessed;
 }

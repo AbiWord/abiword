@@ -1,0 +1,40 @@
+// AbiWord
+// Copyright (C) 2008 AbiSource Corporation B.V.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+
+
+#define AP_RID_DIALOG_GENERICPROGRESS 						"APRIDDIALOGGENERICPROGRESS"
+#define AP_RID_DIALOG_GENERICINPUT_INFORMATION				1000
+#define AP_RID_DIALOG_GENERICPROGRESS_PROGRESS				1001
+#define AP_RID_DIALOG_GENERICPROGRESS_CANCEL_BUTTON			IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+APRIDDIALOGGENERICPROGRESS DIALOG DISCARDABLE  0, 0, 200, 60
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Please wait..."
+FONT 8, "MS Sans Serif"
+BEGIN
+	LTEXT			"(null)", AP_RID_DIALOG_GENERICINPUT_INFORMATION, 8, 3, 184, 8 	
+	DEFPUSHBUTTON	"Cancel",AP_RID_DIALOG_GENERICINPUT_CANCEL_BUTTON, 142, 38, 50, 14
+END
+
+#endif /* RC_INVOKED */

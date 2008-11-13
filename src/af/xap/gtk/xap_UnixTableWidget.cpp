@@ -53,7 +53,7 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
   register GCClosure *cc = (GCClosure*) closure;
   register gpointer data1, data2;
 
-  g_return_if_fail (n_param_values == 3);
+  UT_return_if_fail (n_param_values == 3);
   UT_DEBUGMSG(("IN AbiTable g_cclose_.. \n"));
   if (G_CCLOSURE_SWAP_DATA (closure))
     {
@@ -95,8 +95,8 @@ static const guint init_cols = 0;
 static inline void
 cells_to_pixels(guint cols, guint rows, guint* w, guint* h)
 {
-	g_return_if_fail(w);
-	g_return_if_fail(h);
+	UT_return_if_fail(w);
+	UT_return_if_fail(h);
 	
 	*w = cell_width * cols + cell_spacing * (cols + 1);
 	*h = cell_height * rows + cell_spacing * (rows + 1);
@@ -105,8 +105,8 @@ cells_to_pixels(guint cols, guint rows, guint* w, guint* h)
 static inline void
 pixels_to_cells(guint w, guint h, guint* cols, guint* rows)
 {
-	g_return_if_fail(cols);
-	g_return_if_fail(rows);
+	UT_return_if_fail(cols);
+	UT_return_if_fail(rows);
 	
 	*cols = w / (cell_width + cell_spacing) + 1;
 	*rows = h / (cell_height + cell_spacing) + 1;
@@ -120,7 +120,7 @@ abi_table_resize(AbiTable* table)
 	char* text;	
 	GtkRequisition size;
 	
-	g_return_if_fail(table);
+	UT_return_if_fail(table);
 
 	if (table->selected_rows == 0 && table->selected_cols == 0)
 		text = g_strdup(table->szCancel);
@@ -143,7 +143,7 @@ abi_table_resize(AbiTable* table)
 extern "C" void
 abi_table_set_selected (AbiTable* abi_table, guint rows, guint cols)
 {
-	g_return_if_fail (abi_table);
+	UT_return_if_fail (abi_table);
 
 	abi_table->selected_rows = rows;
 	abi_table->selected_cols = cols;
@@ -154,7 +154,7 @@ abi_table_set_selected (AbiTable* abi_table, guint rows, guint cols)
 extern "C" void
 abi_table_get_selected (const AbiTable* abi_table, guint* rows, guint* cols)
 {
-	g_return_if_fail (abi_table);
+	UT_return_if_fail (abi_table);
 
 	if (rows)
 		*rows = abi_table->selected_rows;
@@ -166,7 +166,7 @@ abi_table_get_selected (const AbiTable* abi_table, guint* rows, guint* cols)
 extern "C" void
 abi_table_set_max_size (AbiTable* abi_table, guint rows, guint cols)
 {
-	g_return_if_fail (abi_table);
+	UT_return_if_fail (abi_table);
 
 	abi_table->total_rows = rows;
 	abi_table->total_cols = cols;
@@ -189,7 +189,7 @@ abi_table_set_labels(AbiTable* abi_table, const gchar * szTable, const gchar * s
 extern "C" void
 abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 {
-	g_return_if_fail (abi_table);
+	UT_return_if_fail (abi_table);
 
 	if (rows)
 		*rows = abi_table->total_rows;

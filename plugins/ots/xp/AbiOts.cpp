@@ -49,7 +49,7 @@
 
 #ifdef TOOLKIT_GTK
 #include <gtk/gtk.h>
-#include <glade/glade.h>
+#include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
 #endif
 
@@ -59,16 +59,14 @@ static const char* Ots_MenuTooltip = "Summarize your document or selected text";
 
 static int getSummaryPercent(void)
 {
-  UT_String glade_path(OTS_GLADE_DIR);
-  glade_path += "/ots.glade";
+  std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ots.xml";
   
-  // load the dialog from the glade file
-  GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-  if (!xml)
-    return 20;
+  // load the dialog from the UI file
+  GtkBuilder* builder = gtk_builder_new();
+  gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
   
-  GtkWidget * window = glade_xml_get_widget(xml, "otsDlg");
-  GtkWidget * spin = glade_xml_get_widget(xml, "summarySpin");
+  GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));
+  GtkWidget * spin = GTK_WIDGET(gtk_builder_get_object(builder, "summarySpin"));
 
   abiRunModalDialog (GTK_DIALOG(window), XAP_App::getApp()->getLastFocussedFrame () , 
 		     NULL, GTK_RESPONSE_CLOSE, false);
@@ -76,6 +74,7 @@ static int getSummaryPercent(void)
   int value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON(spin));
   fprintf (stderr, "DOM: percentage is %d\n", value);
   abiDestroyWidget (window);
+  g_object_unref(G_OBJECT(builder));
 
   return value;
 }

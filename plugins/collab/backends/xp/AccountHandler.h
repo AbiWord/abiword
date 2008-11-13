@@ -153,7 +153,7 @@ protected:
 	void 									_createPacketStream(std::string& sString, const Packet* pPacket);	// creates binary string!
 	void									_sendProtocolError(const Buddy& buddy, UT_sint32 errorEnum);
 	virtual bool							_handleProtocolError(Packet* packet, Buddy* buddy);
-	virtual	void							_handlePacket(Packet* packet, Buddy* buddy);
+	virtual	void							_handlePacket(Packet* packet, Buddy* buddy, bool autoAddBuddyOnJoin = false);
 
 	// bad bad, protected variables are bad
 	PropertyMap								m_properties;

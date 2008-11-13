@@ -46,7 +46,7 @@ class CommandLine;
 class Buddy;
 class AccountHandler;
 
-class  ChangeAdjust
+class ChangeAdjust
 {
 friend class AbiCollab_ImportRuleSet;
 	
@@ -74,7 +74,7 @@ private:
 };
 
 class AbiCollab;
-class  SessionRecorderInterface
+class SessionRecorderInterface
 {
 public:
 	SessionRecorderInterface( AbiCollab* Session ) : m_pAbiCollab(Session) {}
@@ -86,7 +86,7 @@ protected:
 	AbiCollab*		m_pAbiCollab;
 };
 
-class  AbiCollab : public EV_MouseListener
+class AbiCollab : public EV_MouseListener
 {
 	friend class ABI_Collab_Export;
 
@@ -131,7 +131,7 @@ public:
 	XAP_Frame*							getFrame(void) const
 		{ return m_pFrame; }
 
-	const UT_UTF8String&				getSessionId() const
+	const UT_UTF8String					getSessionId() const
 		{ return m_sId; }
 	bool								isLocallyControlled() const
 		{ return m_pController == NULL; }

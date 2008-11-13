@@ -23,7 +23,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <glade/glade.h>
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -178,32 +177,29 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	// get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	glade_path += "/ap_UnixHildonDialog_HdrFtr.glade";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixHildonDialog_HdrFtr.xml";
 #else
-	glade_path += "/ap_UnixDialog_HdrFtr.glade";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_HdrFtr.xml";
 #endif
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_HdrFtr");
-	m_wHdrFtrCheck[HdrEven] = glade_xml_get_widget(xml, "cbHeaderFacingPages");
-	m_wHdrFtrCheck[HdrFirst] = glade_xml_get_widget(xml, "cbHeaderFirstPage");
-	m_wHdrFtrCheck[HdrLast] = glade_xml_get_widget(xml, "cbHeaderLastPage");
-	m_wHdrFtrCheck[FtrEven] = glade_xml_get_widget(xml, "cbFooterFacingPages");
-	m_wHdrFtrCheck[FtrFirst] = glade_xml_get_widget(xml, "cbFooterFirstPage");
-	m_wHdrFtrCheck[FtrLast] = glade_xml_get_widget(xml, "cbFooterLastPage");
-	m_wRestartLabel = glade_xml_get_widget(xml, "lbRestartNumbering");
-	m_wRestartButton = glade_xml_get_widget(xml, "lbRestartPageNumbers");
-	m_wSpin = glade_xml_get_widget(xml, "sbRestartNumberingAt");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_HdrFtr"));
+	m_wHdrFtrCheck[HdrEven] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderFacingPages"));
+	m_wHdrFtrCheck[HdrFirst] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderFirstPage"));
+	m_wHdrFtrCheck[HdrLast] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderLastPage"));
+	m_wHdrFtrCheck[FtrEven] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterFacingPages"));
+	m_wHdrFtrCheck[FtrFirst] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterFirstPage"));
+	m_wHdrFtrCheck[FtrLast] = GTK_WIDGET(gtk_builder_get_object(builder, "cbFooterLastPage"));
+	m_wRestartLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartNumbering"));
+	m_wRestartButton = GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartPageNumbers"));
+	m_wSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbRestartNumberingAt"));
 	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_wSpin) );
 	
 	// set the dialog title
@@ -213,19 +209,19 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbHeaderProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeaderProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
 	localizeButton(m_wHdrFtrCheck[HdrEven], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
 	localizeButton(m_wHdrFtrCheck[HdrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
 	localizeButton(m_wHdrFtrCheck[HdrLast], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderLast);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFooterProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFooterProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
 	localizeButton(m_wHdrFtrCheck[FtrEven], pSS, AP_STRING_ID_DLG_HdrFtr_FooterEven);
 	localizeButton(m_wHdrFtrCheck[FtrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_FooterFirst);
 	localizeButton(m_wHdrFtrCheck[FtrLast], pSS, AP_STRING_ID_DLG_HdrFtr_FooterLast);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPageNumberProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPageNumberProperties")), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
 	localizeButton(m_wRestartButton, pSS, AP_STRING_ID_DLG_HdrFtr_RestartCheck);
-	localizeLabel(glade_xml_get_widget(xml, "lbRestartNumbering"), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRestartNumbering")), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
 
 	// Now set initial state of the dialog
 	
@@ -257,6 +253,8 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	_connectSignals();
   	
+	g_object_unref(G_OBJECT(builder));
+
 	return window;
 }
 

@@ -2,7 +2,9 @@
 PASSEPARTOUT_CFLAGS=
 PASSEPARTOUT_LIBS=
 
-if test "$enable_passepartout" == "yes"; then
+if test "$enable_passepartout" != ""; then
+
+test "$enable_passepartout" == "auto" && PLUGINS="$PLUGINS passepartout"
 
 PASSEPARTOUT_CFLAGS="$PASSEPARTOUT_CFLAGS "'${PLUGIN_CFLAGS}'
 PASSEPARTOUT_LIBS="$PASSEPARTOUT_LIBS "'${PLUGIN_LIBS}'

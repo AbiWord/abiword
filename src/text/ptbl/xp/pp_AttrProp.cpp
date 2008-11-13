@@ -793,7 +793,9 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 #endif
 
 	UT_return_val_if_fail (pMatch, false);
-	UT_return_val_if_fail (m_bIsReadOnly && pMatch->m_bIsReadOnly, false);
+	//
+	// Why is this here? Nothing is being changed?
+	//	UT_return_val_if_fail (m_bIsReadOnly && pMatch->m_bIsReadOnly, false);
 	if (m_checkSum != pMatch->m_checkSum)
 		return false;
 
@@ -1301,7 +1303,9 @@ void PP_AttrProp::_computeCheckSum(void)
 */
 UT_uint32 PP_AttrProp::getCheckSum(void) const
 {
-	UT_ASSERT_HARMLESS(m_bIsReadOnly);
+  //
+  // Why is this assert present? This is harmless.
+  //	UT_ASSERT_HARMLESS(m_bIsReadOnly);
 	return m_checkSum;
 }
 

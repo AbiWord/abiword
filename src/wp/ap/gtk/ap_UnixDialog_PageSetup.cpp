@@ -45,19 +45,19 @@
 static GtkWidget *
 create_pixmap (GtkWidget *w, const char **data)
 {
-  GtkWidget *pixmap;
-  GdkColormap *colormap;
-  GdkPixmap *gdkpixmap;
-  GdkBitmap *mask;
+	GtkWidget *pixmap;
+	GdkColormap *colormap;
+	GdkPixmap *gdkpixmap;
+	GdkBitmap *mask;
 
-  colormap = gtk_widget_get_colormap (w);
-  gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
-						     NULL, const_cast<gchar **>(data));
+	colormap = gtk_widget_get_colormap (w);
+	gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
+							 NULL, const_cast<gchar **>(data));
 
-  pixmap = gtk_pixmap_new (gdkpixmap, mask);
-  gdk_pixmap_unref (gdkpixmap);
-  gdk_bitmap_unref (mask);
-  return pixmap;
+	pixmap = gtk_pixmap_new (gdkpixmap, mask);
+	gdk_pixmap_unref (gdkpixmap);
+	gdk_bitmap_unref (mask);
+	return pixmap;
 }
 
 static char *
@@ -150,44 +150,40 @@ static void s_menu_item_activate (GtkWidget * widget)
 
 static void s_Landscape_changed(GtkWidget * w,  AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(w);
-	UT_ASSERT(dlg);
+	UT_return_if_fail(w && dlg);
 	dlg->event_LandscapeChanged();
 }
 
-static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
-				 AP_UnixDialog_PageSetup *dlg)
+static void s_page_size_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-  UT_ASSERT(w && dlg);
-
-  fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_list_child_position (GTK_LIST(w), child);
-  dlg->event_PageSizeChanged (pos);
+	UT_return_if_fail(w && dlg);
+	fp_PageSize::Predefined pos = (fp_PageSize::Predefined)gtk_combo_box_get_active(GTK_COMBO_BOX(w));
+	dlg->event_PageSizeChanged (pos);
 }
 
 static void s_page_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-  UT_ASSERT(w && dlg);
-  s_menu_item_activate (w);
-  dlg->event_PageUnitsChanged ();
+	UT_return_if_fail(w && dlg);
+	s_menu_item_activate (w);
+	dlg->event_PageUnitsChanged ();
 }
 
 static void s_margin_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-  UT_ASSERT(w && dlg);
-
-  s_menu_item_activate (w);
-  dlg->event_MarginUnitsChanged ();
+	UT_return_if_fail(w && dlg);
+	s_menu_item_activate (w);
+	dlg->event_MarginUnitsChanged ();
 }
 
-static void s_entryPageWidth_changed(GtkWidget * widget, AP_UnixDialog_PageSetup *dlg)
+static void s_entryPageWidth_changed(GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(w && dlg);
  	dlg->doWidthEntry();
 }
 
-static void s_entryPageHeight_changed(GtkWidget * widget, AP_UnixDialog_PageSetup *dlg)
+static void s_entryPageHeight_changed(GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(w && dlg);
 	dlg->doHeightEntry();
 }
 
@@ -259,13 +255,16 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 
   	/* switch layout XPM image */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape))) {
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape)))
+	{
 		gtk_widget_destroy(customPreview);
 		customPreview = create_pixmap (m_PageHbox, orient_horizontal_xpm);
 		gtk_widget_show (customPreview);
 		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
-	} else {
+	}
+	else
+	{
 		gtk_widget_destroy(customPreview);
 		customPreview = create_pixmap (m_PageHbox, orient_vertical_xpm);
 		gtk_widget_show (customPreview);
@@ -288,7 +287,6 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_updatePageSizeList();
-
 }
 
 void AP_UnixDialog_PageSetup::doHeightEntry(void)
@@ -309,14 +307,13 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 /* The paper size may have changed, update the Paper Size listbox */
 void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 {
-	xxx_UT_DEBUGMSG(("_updatePageSize set to %s \n",m_PageSize.getPredefinedName()));
-  gint last_page_size = static_cast<gint>(fp_PageSize::NameToPredefined 
-	  (m_PageSize.getPredefinedName ()));
+	UT_DEBUGMSG(("AP_UnixDialog_PageSetup::_updatePageSize set to %s \n", m_PageSize.getPredefinedName()));
+	gint page_index = static_cast<gint>(fp_PageSize::NameToPredefined 
+						(m_PageSize.getPredefinedName ()));
 
-  GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
-  g_signal_handler_block(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
-  gtk_list_select_item (optionPageSizeList, last_page_size);
-  g_signal_handler_unblock(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
+	g_signal_handler_block(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_comboPageSize), page_index);
+	g_signal_handler_unblock(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
 }
 
 void AP_UnixDialog_PageSetup::event_OK (void)
@@ -353,7 +350,8 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 	if ( validatePageSettings() ) {
 		setAnswer (a_OK);		
 	}
-	else {
+	else
+	{
 		// "The margins selected are too large to fit on the page."
 		m_pFrame->showMessageBox(AP_STRING_ID_DLG_PageSetup_ErrBigMargins, 
 								 XAP_Dialog_MessageBox::b_O,
@@ -369,51 +367,51 @@ void AP_UnixDialog_PageSetup::event_Cancel (void)
 #define FMT_STRING "%0.2f"
 void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 {
-  UT_Dimension pu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
+	UT_Dimension pu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
 										   WIDGET_MENU_VALUE_TAG)));
 
-  double width, height;
+	double width, height;
 
-  fp_PageSize ps = m_PageSize;
-  
-  // convert values  
-  width  = static_cast<double>(ps.Width (pu));
-  height = static_cast<double>(ps.Height (pu));
+	fp_PageSize ps = m_PageSize;
 
-  m_PageSize.Set(width, height, pu);
-  setPageUnits(pu);
+	// convert values  
+	width  = static_cast<double>(ps.Width (pu));
+	height = static_cast<double>(ps.Height (pu));
 
-  // set values
-  gchar * val;
+	m_PageSize.Set(width, height, pu);
+	setPageUnits(pu);
 
-  val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
-  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
-  g_free (val);
+	// set values
+	gchar * val;
 
-  val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
-  gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
-  g_free (val);
+	val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
+	gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
+	g_free (val);
+
+	val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
+	gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
+	g_free (val);
 }
 
 void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 {
-  fp_PageSize ps(pd);
-  if( TRUE != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait)))
-  {
-	  ps.setLandscape();
-  }
-  // hmm, we should g_free the old pagesize.
-  m_PageSize = ps;
-  setPageUnits(ps.getDims());
+	fp_PageSize ps(pd);
+	if( TRUE != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait)))
+	{
+		ps.setLandscape();
+	}
+	// hmm, we should g_free the old pagesize.
+	m_PageSize = ps;
+	setPageUnits(ps.getDims());
 
-  // change the units in the dialog, too.
-  UT_Dimension new_units = ps.getDims();
-  gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (new_units));
+	// change the units in the dialog, too.
+	UT_Dimension new_units = ps.getDims();
+	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (new_units));
 
-  float w, h;
+	float w, h;
 
-  w = ps.Width (new_units);
-  h = ps.Height (new_units);
+	w = ps.Width (new_units);
+	h = ps.Height (new_units);
 //  if( !ps.isPortrait())
 //  {
 //	  h = ps.Width (new_units);
@@ -447,33 +445,33 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 
 void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-  UT_Dimension mu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
-										   WIDGET_MENU_VALUE_TAG)));
+	UT_Dimension mu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
+										WIDGET_MENU_VALUE_TAG)));
 
-  float top, bottom, left, right, header, footer;
+	float top, bottom, left, right, header, footer;
 
-  top    = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginTop));
-  bottom = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginBottom));
-  left   = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginLeft));
-  right  = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginRight));
-  header = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginHeader));
-  footer = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginFooter));
+	top    = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginTop));
+	bottom = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginBottom));
+	left   = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginLeft));
+	right  = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginRight));
+	header = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginHeader));
+	footer = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginFooter));
 
-  top = UT_convertDimensions (top,    last_margin_unit, mu);
-  bottom = UT_convertDimensions (bottom, last_margin_unit, mu);
-  left = UT_convertDimensions (left,   last_margin_unit, mu);
-  right = UT_convertDimensions (right,  last_margin_unit, mu);
-  header = UT_convertDimensions (header, last_margin_unit, mu);
-  footer = UT_convertDimensions (footer, last_margin_unit, mu);
+	top = UT_convertDimensions (top,    last_margin_unit, mu);
+	bottom = UT_convertDimensions (bottom, last_margin_unit, mu);
+	left = UT_convertDimensions (left,   last_margin_unit, mu);
+	right = UT_convertDimensions (right,  last_margin_unit, mu);
+	header = UT_convertDimensions (header, last_margin_unit, mu);
+	footer = UT_convertDimensions (footer, last_margin_unit, mu);
 
-  last_margin_unit = mu;
+	last_margin_unit = mu;
 
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginTop), top);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginBottom), bottom);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginLeft), left);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginRight), right);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginHeader), header);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginFooter), footer);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginTop), top);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginBottom), bottom);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginLeft), left);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginRight), right);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginHeader), header);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginFooter), footer);
 }
 
 /*********************************************************************************/
@@ -488,14 +486,16 @@ AP_UnixDialog_PageSetup::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_PageSetup::AP_UnixDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id) 
 	: AP_Dialog_PageSetup (pDlgFactory, id),
+    m_pBuilder(NULL),
     m_PageSize(fp_PageSize::psLetter)
 {
-  // nada
+	// nada
 }
 
 AP_UnixDialog_PageSetup::~AP_UnixDialog_PageSetup (void)
 {
-  // nada
+  if (m_pBuilder)
+    g_object_unref(G_OBJECT(m_pBuilder));
 }
 
 void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
@@ -544,17 +544,15 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
 
 GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint32 iLevel)
 {
-	if(m_pXML == NULL)
-	{
-		return NULL;
-	}
+	UT_return_val_if_fail(m_pBuilder, NULL);
+
 	UT_String sLocal = szNameBase;
 	if(iLevel > 0)
 	{
 		UT_String sVal = UT_String_sprintf("%d",iLevel);
 		sLocal += sVal;
 	}
-	return glade_xml_get_widget(m_pXML, sLocal.c_str());
+	return GTK_WIDGET(gtk_builder_get_object(m_pBuilder, sLocal.c_str()));
 }
 
 void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
@@ -568,168 +566,177 @@ void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
 
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {  
-  // get the path where our glade file is located
-  XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-  UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-  glade_path += "/ap_UnixDialog_PageSetup.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_PageSetup.xml";
 
-  // load the dialog from the glade file
-  m_pXML = abiDialogNewFromXML( glade_path.c_str() );
-  if (!m_pXML)
-  	return NULL;
+	// load the dialog from the UI file
+	m_pBuilder = gtk_builder_new();
+	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
 
-  const XAP_StringSet * pSS = m_pApp->getStringSet ();
-  GList *glist;
-  GtkLabel *orientation;
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	GList *glist;
+	GtkLabel *orientation;
 
-  m_window = _getWidget("ap_UnixDialog_PageSetup");
-  m_wHelp = _getWidget("wHelp");
+	m_window = _getWidget("ap_UnixDialog_PageSetup");
+	m_wHelp = _getWidget("wHelp");
 
-  m_optionPageSize = _getWidget("comboPageSize");
-  m_entryPageWidth = _getWidget("wWidthSpin");
-  m_entryPageHeight = _getWidget("wHeightSpin");
-  m_optionPageUnits = _getWidget("optionPageUnits");
-  m_radioPagePortrait = _getWidget("rbPortrait");
-  m_radioPageLandscape = _getWidget("rbLandscape");
-  m_spinPageScale = _getWidget("wPageScale");
+	m_comboPageSize = _getWidget("comboPageSize");
+	m_entryPageWidth = _getWidget("wWidthSpin");
+	m_entryPageHeight = _getWidget("wHeightSpin");
+	m_optionPageUnits = _getWidget("optionPageUnits");
+	m_radioPagePortrait = _getWidget("rbPortrait");
+	m_radioPageLandscape = _getWidget("rbLandscape");
+	m_spinPageScale = _getWidget("wPageScale");
 
-  m_optionMarginUnits = _getWidget("optionMarginUnits");
-  m_spinMarginTop = _getWidget("wTopSpin");
-  m_spinMarginBottom = _getWidget("wBottomSpin");
-  m_spinMarginLeft = _getWidget("wLeftSpin");
-  m_spinMarginRight = _getWidget("wRightSpin");
-  m_spinMarginHeader = _getWidget("wHeaderSpin");
-  m_spinMarginFooter = _getWidget("wFooterSpin");
+	m_optionMarginUnits = _getWidget("optionMarginUnits");
+	m_spinMarginTop = _getWidget("wTopSpin");
+	m_spinMarginBottom = _getWidget("wBottomSpin");
+	m_spinMarginLeft = _getWidget("wLeftSpin");
+	m_spinMarginRight = _getWidget("wRightSpin");
+	m_spinMarginHeader = _getWidget("wHeaderSpin");
+	m_spinMarginFooter = _getWidget("wFooterSpin");
 
-  m_MarginHbox = _getWidget("hbox15");
-  m_PageHbox = _getWidget("hbox16");
+	m_MarginHbox = _getWidget("hbox15");
+	m_PageHbox = _getWidget("hbox16");
 
-  /* required for translations */
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), _(AP, DLG_PageSetup_Page));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), _(AP, DLG_PageSetup_Margin));
-  Markup (_getWidget("lbPaper"), pSS, _(AP, DLG_PageSetup_Paper));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbPaperSize")), _(AP, DLG_PageSetup_Paper_Size));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbPageUnits")), _(AP, DLG_PageSetup_Units));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbWidth")), _(AP, DLG_PageSetup_Width));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbHeight")), _(AP, DLG_PageSetup_Height));
-  Markup (_getWidget("lbOrientation"), pSS, _(AP, DLG_PageSetup_Orient));
-  
-  /* radio button labels */
-  glist = gtk_container_get_children (GTK_CONTAINER (m_radioPagePortrait));
-  orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-  gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Portrait));
-  
-  glist = gtk_container_get_children (GTK_CONTAINER (m_radioPageLandscape));
-  orientation = GTK_LABEL (g_list_nth_data (glist, 0));
-  gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Landscape));
- 
-  Markup (_getWidget("lbScale"), pSS, _(AP, DLG_PageSetup_Scale));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbAdjust")), _(AP, DLG_PageSetup_Adjust));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbPercentNormalSize")), _(AP, DLG_PageSetup_Percent));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbMarginUnits")), _(AP, DLG_PageSetup_Units));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbTop")), _(AP, DLG_PageSetup_Top));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbRight")), _(AP, DLG_PageSetup_Right));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbLeft")), _(AP, DLG_PageSetup_Left));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbBottom")), _(AP, DLG_PageSetup_Bottom));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbHeader")), _(AP, DLG_PageSetup_Header));
-  gtk_label_set_text (GTK_LABEL (_getWidget("lbFooter")), _(AP, DLG_PageSetup_Footer));
-  /* end translation req */
+	/* required for translations */
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), _(AP, DLG_PageSetup_Page));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), _(AP, DLG_PageSetup_Margin));
+	Markup (_getWidget("lbPaper"), pSS, _(AP, DLG_PageSetup_Paper));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPaperSize")), _(AP, DLG_PageSetup_Paper_Size));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPageUnits")), _(AP, DLG_PageSetup_Units));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbWidth")), _(AP, DLG_PageSetup_Width));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeight")), _(AP, DLG_PageSetup_Height));
+	Markup (_getWidget("lbOrientation"), pSS, _(AP, DLG_PageSetup_Orient));
 
-  /* setup page width and height */
-  if (!getPageOrientation () == PORTRAIT)
-  {
-	  m_PageSize.setLandscape();
-  }
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageWidth), m_PageSize.Width (getPageUnits ()));
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageHeight), m_PageSize.Height (getPageUnits ()));
-  
-  /* setup margin numbers */
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginTop), getMarginTop ());
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginBottom), getMarginBottom ());
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginLeft), getMarginLeft ());
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginRight), getMarginRight ());
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginHeader), getMarginHeader ());
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginFooter), getMarginFooter ());
-  
-  /* setup scale number */
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinPageScale), static_cast<float>(getPageScale ()));
+	/* radio button labels */
+	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPagePortrait));
+	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
+	gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Portrait));
 
-  // create the drop-down menu with all of our supported page sizes
-  GList *popdown_items = NULL;
-  for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_); i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
-      popdown_items = g_list_append (popdown_items, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)) );
-  gtk_combo_set_popdown_strings (GTK_COMBO (m_optionPageSize), popdown_items);
-  GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
-  m_iOptionPageSizeListID = g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",  G_CALLBACK(s_page_size_changed), static_cast<gpointer>(this));
+	glist = gtk_container_get_children (GTK_CONTAINER (m_radioPageLandscape));
+	orientation = GTK_LABEL (g_list_nth_data (glist, 0));
+	gtk_label_set_text (GTK_LABEL (orientation), _(AP, DLG_PageSetup_Landscape));
 
-  /* setup page units menu */
-  optionPageUnits_menu = gtk_menu_new ();
+	Markup (_getWidget("lbScale"), pSS, _(AP, DLG_PageSetup_Scale));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbAdjust")), _(AP, DLG_PageSetup_Adjust));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbPercentNormalSize")), _(AP, DLG_PageSetup_Percent));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbMarginUnits")), _(AP, DLG_PageSetup_Units));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbTop")), _(AP, DLG_PageSetup_Top));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbRight")), _(AP, DLG_PageSetup_Right));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbLeft")), _(AP, DLG_PageSetup_Left));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbBottom")), _(AP, DLG_PageSetup_Bottom));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbHeader")), _(AP, DLG_PageSetup_Header));
+	gtk_label_set_text (GTK_LABEL (_getWidget("lbFooter")), _(AP, DLG_PageSetup_Footer));
+	/* end translation req */
 
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_IN, s_page_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
+	/* setup page width and height */
+	if (!getPageOrientation () == PORTRAIT)
+	{
+		m_PageSize.setLandscape();
+	}
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageWidth), m_PageSize.Width (getPageUnits ()));
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_entryPageHeight), m_PageSize.Height (getPageUnits ()));
 
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_CM, s_page_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
+	/* setup margin numbers */
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginTop), getMarginTop ());
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginBottom), getMarginBottom ());
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginLeft), getMarginLeft ());
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginRight), getMarginRight ());
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginHeader), getMarginHeader ());
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinMarginFooter), getMarginFooter ());
 
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_MM, s_page_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
+	/* setup scale number */
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_spinPageScale), static_cast<float>(getPageScale ()));
 
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionPageUnits), optionPageUnits_menu);
-  gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (getPageUnits()));
+	// fill the combobox all of our supported page sizes
+	GtkListStore* pagesize_store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_POINTER);
+	GtkTreeIter pagesize_iter;
+	for (UT_uint32 i = fp_PageSize::_first_predefined_pagesize_; i < fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
+	{
+		gtk_list_store_append(pagesize_store, &pagesize_iter);
+		gtk_list_store_set(pagesize_store, &pagesize_iter,
+					0, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)),
+					1, this,
+					-1);
+	}
+	gtk_combo_box_set_model(GTK_COMBO_BOX(m_comboPageSize), GTK_TREE_MODEL(pagesize_store));
+	m_iComboPageSizeListID = g_signal_connect(G_OBJECT(m_comboPageSize),
+							"changed",
+							G_CALLBACK(s_page_size_changed),
+							static_cast<gpointer>(this));
 
-  /* setup margin units menu */
-  optionMarginUnits_menu = gtk_menu_new ();
-  
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_IN, s_margin_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
+	/* setup page units menu */
+	optionPageUnits_menu = gtk_menu_new ();
 
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_CM, s_margin_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_IN, s_page_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
-  glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_MM, s_margin_units_changed);
-  gtk_widget_show (glade_menuitem);
-  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_CM, s_page_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionMarginUnits), optionMarginUnits_menu);
-  last_margin_unit = getMarginUnits ();
-  gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionMarginUnits), fp_2_pos(last_margin_unit));
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_MM, s_page_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
-  /* add margin XPM image to the margin window */
-  customPreview = create_pixmap (m_MarginHbox, margin_xpm);
-  gtk_widget_show (customPreview);
-  gtk_box_pack_start (GTK_BOX (m_MarginHbox), customPreview, FALSE, FALSE, 0);
-  
-  /* add correct page XPM image to the page window */
-  if (getPageOrientation () == PORTRAIT) {
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait), TRUE);
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionPageUnits), optionPageUnits_menu);
+	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (getPageUnits()));
 
-    customPreview = create_pixmap (m_PageHbox, orient_vertical_xpm);
-    gtk_widget_show (customPreview);
-    gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-    gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
-  } else {
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape), TRUE);
+	/* setup margin units menu */
+	optionMarginUnits_menu = gtk_menu_new ();
 
-    customPreview = create_pixmap (m_PageHbox, orient_horizontal_xpm);
-    gtk_widget_show (customPreview);
-    gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
-    gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
-  }
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_IN, s_margin_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
 
-  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
-  _connectSignals ();
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_CM, s_margin_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
 
-  return m_window;
+	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_MM, s_margin_units_changed);
+	gtk_widget_show (glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
+
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionMarginUnits), optionMarginUnits_menu);
+	last_margin_unit = getMarginUnits ();
+	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionMarginUnits), fp_2_pos(last_margin_unit));
+
+	/* add margin XPM image to the margin window */
+	customPreview = create_pixmap (m_MarginHbox, margin_xpm);
+	gtk_widget_show (customPreview);
+	gtk_box_pack_start (GTK_BOX (m_MarginHbox), customPreview, FALSE, FALSE, 0);
+
+	/* add correct page XPM image to the page window */
+	if (getPageOrientation () == PORTRAIT)
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait), TRUE);
+
+		customPreview = create_pixmap (m_PageHbox, orient_vertical_xpm);
+		gtk_widget_show (customPreview);
+		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
+		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
+	}
+	else
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape), TRUE);
+
+		customPreview = create_pixmap (m_PageHbox, orient_horizontal_xpm);
+		gtk_widget_show (customPreview);
+		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
+		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
+	}
+
+	abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+	abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
+	_connectSignals ();
+
+	return m_window;
 }

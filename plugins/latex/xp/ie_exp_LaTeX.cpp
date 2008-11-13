@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2004 Marc Maurer (uwog@uwog.net)
+ * Copyright (C) 2008 Xun Sun (xun.sun.cn@gmail.com)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,28 +23,42 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <deque>
+#include <stack>
 
-#include "ut_stack.h"
+#ifdef HAVE_LIBXSLT
+#include <libxslt/xslt.h>
+#include <libxslt/xsltInternals.h>
+#include <libxslt/transform.h>
+#include <libxslt/xsltutils.h>
+#endif
+
+#include "fp_types.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
+#include "ut_Language.h"
 #include "ut_units.h"
+#include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 #include "pt_Types.h"
 #include "ie_exp_LaTeX.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "xap_App.h"
 #include "xap_EncodingManager.h"
 #include "fd_Field.h"
 #include "ie_Table.h"
 #include "ut_locale.h"
 #include "ut_string_class.h"
 #include "xap_Module.h"
+#include "ut_misc.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register
@@ -103,7 +118,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 ABI_BUILTIN_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
-								 UT_uint32 /*release*/)
+				    UT_uint32 /*release*/)
 {
   return 1;
 }
@@ -123,7 +138,7 @@ bool IE_Exp_LaTeX_Sniffer::recognizeSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Exp_LaTeX_Sniffer::constructExporter(PD_Document * pDocument,
-													 IE_Exp ** ppie)
+						 IE_Exp ** ppie)
 {
 	IE_Exp_LaTeX * p = new IE_Exp_LaTeX(pDocument);
 	*ppie = p;
@@ -131,8 +146,8 @@ UT_Error IE_Exp_LaTeX_Sniffer::constructExporter(PD_Document * pDocument,
 }
 
 bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
-										const char ** pszSuffixList,
-										IEFileType * ft)
+					const char ** pszSuffixList,
+					IEFileType * ft)
 {
 	*pszDesc = "LaTeX (.latex)";
 	*pszSuffixList = "*.tex; *.latex";
@@ -143,7 +158,7 @@ bool IE_Exp_LaTeX_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-#define DEFAULT_SIZE "12pt"
+//#define DEFAULT_SIZE "12pt"
 #define EPSILON 0.1
 
 enum JustificationTypes {
@@ -177,66 +192,89 @@ static bool _convertLettersToSymbols(char c, const char *& subst);
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
 
-#define BULLET_LIST	1
-#define NUMBERED_LIST	2
-typedef int LIST_TYPE;
-
 class LaTeX_Analysis_Listener : public PL_Listener
 {
+private:
+	ie_Table *  m_pTableHelper;
 public:
 	bool m_hasEndnotes;
+	bool m_hasTable;
+	bool m_hasMultiRow;
 
-	LaTeX_Analysis_Listener(PD_Document * /*pDocument*/,
+	LaTeX_Analysis_Listener(PD_Document * pDocument,
 							IE_Exp_LaTeX * /*pie*/)
-		: m_hasEndnotes(false)
+		: m_hasEndnotes(false),
+		  m_hasTable(false),
+		  m_hasMultiRow(false)
 	{
+	    m_pTableHelper = new ie_Table(pDocument);
 	}
 
 	virtual ~LaTeX_Analysis_Listener()
 	{
+	    DELETEP(m_pTableHelper);
 	}
 
 	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
-								 const PX_ChangeRecord * /*pcr*/)
+					    const PX_ChangeRecord * /*pcr*/)
 	{
 		return true;	
 	}
 
-	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh)
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
+						const PX_ChangeRecord * pcr,
+						PL_StruxFmtHandle * psfh)
 	{
 		UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 		const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 		*psfh = 0;							// we don't need it.
 
 		switch (pcrx->getStruxType())
-			{
-			case PTX_SectionEndnote:
-			case PTX_EndEndnote:
-				m_hasEndnotes = true;
-				break;
-			default:
-				break;
-			}
+		{
+		    case PTX_SectionEndnote:
+		    case PTX_EndEndnote:
+			m_hasEndnotes = true;
+			break;
+		    case PTX_SectionTable:
+		    {
+			m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+			m_hasTable = true;
+			break;
+		    }
+		    case PTX_EndTable:
+		    {
+			m_pTableHelper->CloseTable();
+			break;
+		    }
+		    case PTX_SectionCell:
+			m_pTableHelper->OpenCell(pcr->getIndexAP());
+			if(m_pTableHelper->getBot() - m_pTableHelper->getTop() >1)
+			    this->m_hasMultiRow = true;
+			break;
+		    case PTX_EndCell:
+			m_pTableHelper->CloseCell();
+			break;
+		    default:
+			break;
+		}
 
 		return true;
 	}
 
 	virtual bool		change(PL_StruxFmtHandle /*sfh*/,
-							   const PX_ChangeRecord * /*pcr*/)
+					const PX_ChangeRecord * /*pcr*/)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
 	virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
-									const PX_ChangeRecord * /*pcr*/,
-									PL_StruxDocHandle /*sdh*/,
-									PL_ListenerId /*lid*/,
-									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+					    const PX_ChangeRecord * /*pcr*/,
+					    PL_StruxDocHandle /*sdh*/,
+					    PL_ListenerId /*lid*/,
+					    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+									PL_ListenerId lid,
+									PL_StruxFmtHandle sfhNew))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -253,30 +291,33 @@ class s_LaTeX_Listener : public PL_Listener
 {
 public:
 	s_LaTeX_Listener(PD_Document * pDocument,
-					 IE_Exp_LaTeX * pie,
-					 LaTeX_Analysis_Listener& analysis);
+			    IE_Exp_LaTeX * pie,
+			    const LaTeX_Analysis_Listener& analysis);
 	virtual ~s_LaTeX_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr);
+					const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
+						const PX_ChangeRecord * pcr,
+						PL_StruxFmtHandle * psfh);
 
 	virtual bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr);
+					const PX_ChangeRecord * pcr);
 
 	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+						const PX_ChangeRecord * pcr,
+						PL_StruxDocHandle sdh,
+						PL_ListenerId lid,
+						void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+							PL_ListenerId lid,
+							PL_StruxFmtHandle sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-
+#ifdef HAVE_LIBXSLT	
+	static	bool		convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
+							UT_UTF8String & sLaTeX);
+#endif
 protected:
 	void				_closeBlock(void);
 	void				_closeCell(void);
@@ -291,10 +332,15 @@ protected:
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_openTable(PT_AttrPropIndex api);
+	void				_outputBabelPackage(void);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleDataItems(void);
 	void				_convertFontSize(UT_String& szDest, const char* pszFontSize);
 	void				_convertColor(UT_String& szDest, const char* pszColor);
+	void				_writeImage (const UT_ByteBuf * pByteBuf,
+								   const UT_UTF8String & imagedir,
+								   const UT_UTF8String & filename);
+	void				_handleImage(const PP_AttrProp * pAP);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_LaTeX *		m_pie;
@@ -309,21 +355,31 @@ protected:
 	bool				m_bBetweenQuotes;
 	const PP_AttrProp*	m_pAP_Span;
 	bool                m_bMultiCols;
-	bool           m_bInSymbol;
- 	bool	m_bInCourier;
- 	bool	m_bInSansSerif;
+	bool				m_bInSymbol;
 	bool				m_bInEndnote;
 	bool				m_bHaveEndnote;
+	bool				m_bOverline;
   
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
-	bool				m_bFirstSection;
 	int 				ChapterNumber;
+	
+	/* default font size for the current document, in pt,
+	 * as defined by the Normal style
+	 */
+	int 				m_DefaultFontSize;
+	
 	int                 m_Indent;
+	int		    m_NumCloseBrackets; // accessed by _openSpan() and _closeSpan()
+	int		    m_TableWidth;
+	int		    m_CellLeft;
+	int		    m_CellRight;
+	int		    m_CellTop;
+	int		    m_CellBot;
 	
 // Type for the last-processed list  
-	LIST_TYPE			list_type;
-
+	FL_ListType			list_type;
+	std::stack<FL_ListType>	list_stack;
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
@@ -333,9 +389,26 @@ protected:
 	
 	ie_Table *			m_pTableHelper;
 
-//	std::stack<LIST_TYPE>   list_stack;
-	UT_NumberStack          list_stack;
+	int		    m_RowNuminTable; // the current row being handled, starting from 1
+	int		    m_ExpectedLeft; // expected left-attach value for the next cell,
+					    // to deal with cells spanning multiple columns;
+					    // starting from 0
+
+	std::deque<UT_Rect*>	*m_pqRect; // pointer to a UT_Rect (de)queque. each UT_Rect
+					   // instance in this queue has a 1:1 correspondence
+					   // to a cell spanning multiple rows. The queue is
+					   // examined when a table row ends, to output a \hline
+					   // or several \cline as appropriate
+	unsigned int	    m_index; // (dynamic, increase only) index into m_pqRect; it is safe
+				     // to skip anything before m_index
+#ifdef HAVE_LIBXSLT
+	static xsltStylesheet *cur;
+#endif
 };
+
+#ifdef HAVE_LIBXSLT
+	xsltStylesheet * s_LaTeX_Listener::cur = NULL;
+#endif
 
 void s_LaTeX_Listener::_closeParagraph(void)
 {
@@ -350,25 +423,30 @@ void s_LaTeX_Listener::_closeList(void)
 		case NUMBERED_LIST:
 			m_pie->write("\\end{enumerate}\n");
 			break;
-		case BULLET_LIST:
+		case BULLETED_LIST:
 			m_pie->write("\\end{itemize}\n");
 			break;
 		default:
 			;
 	}
 	list_stack.pop();
+	if (!list_stack.empty())
+	{
+		list_type = list_stack.top();
+	}
 }
 
 void s_LaTeX_Listener::_closeLists()
 {
 	do{
 		_closeList();
-	} while(list_stack.getDepth());
+	} while(!list_stack.empty());
 	m_bInList = false;
 }
 
 void s_LaTeX_Listener::_closeSection(void)
 {
+	_closeBlock();
 	if (!m_bInSection)
 	{
 		return;
@@ -391,6 +469,7 @@ void s_LaTeX_Listener::_closeSection(void)
 
 void s_LaTeX_Listener::_closeBlock(void)
 { 
+	_closeSpan();
 	if(m_bInFootnote || m_bInEndnote)
 		return;
 	if (!m_bInBlock)
@@ -441,30 +520,93 @@ void s_LaTeX_Listener::_closeBlock(void)
 
 void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 {
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	const gchar * szValue;
-	
+	this->m_pTableHelper->OpenCell(api);
+	m_CellLeft = this->m_pTableHelper->getLeft();
+	m_CellTop = this->m_pTableHelper->getTop();
+	m_CellRight = this->m_pTableHelper->getRight();
+	m_CellBot = this->m_pTableHelper->getBot();
 	m_bInCell = true;
-	if (bHaveProp && pAP)
+	
+	if (this->m_pTableHelper->isNewRow())
 	{
-		pAP->getProperty("left-attach", szValue);
-		if (!strcmp("0",szValue))
-		{
-			pAP->getProperty("top-attach", szValue);
-			if (!strcmp("0",szValue))
-				m_pie->write("\n\\hline\n");
-			else
-				m_pie->write("\\\\\n\\hline\n");
-		}
-		else
+	    m_ExpectedLeft = 0;
+	    if(m_CellTop != 0)
+			m_pie->write("\\\\");
+	    m_pie->write("\n");
+	    if(!m_pqRect || m_pqRect->empty())
+			m_pie->write("\\hline");
+	    else
+	    {
+			UT_Rect* p;
+			int left=1;
+			while(m_index < m_pqRect->size())
+			{
+				p = m_pqRect->at(m_index);
+				if(p->top + p->height -1 > m_RowNuminTable)
+					break;
+				m_index++;
+			}
+			for(unsigned int i=m_index; i< m_pqRect->size(); i++)
+			{
+				p = m_pqRect->at(i);
+				if(m_RowNuminTable < p->top)
+					break;
+				if(left < p->left)
+				{
+					UT_String str;
+					UT_String_sprintf(str, "\\cline{%d-%d}", left, p->left-1);
+					m_pie->write(str);
+				}
+		    
+				left = p->left + p->width;
+				if(left > this->m_TableWidth)
+					break;
+			}
+			xxx_UT_DEBUGMSG(("left = %d \n", left));
+			if(left <= m_TableWidth)
+			{
+				if(1 == left)
+					m_pie->write("\\hline");
+				else
+				{
+					UT_String str;
+					UT_String_sprintf(str, "\\cline{%d-%d}", left, m_TableWidth);
+					m_pie->write(str);
+				}
+			}
+	    }
+	    m_pie->write("\n");
+	    m_RowNuminTable = m_CellTop + 1;
+	}
+	if (m_CellLeft != 0)
+	{
+	    int i = m_CellLeft - m_ExpectedLeft;
+	    for(; i>0; i--)
 			m_pie->write("&");
+	}
+	if(m_CellRight - m_CellLeft >1)
+	{
+	    UT_String str;
+	    UT_String_sprintf(str, "\\multicolumn{%d}{|l|}{", m_CellRight - m_CellLeft);
+	    m_pie->write(str);
+	}
+	if(m_CellBot - m_CellTop >1)
+	{
+	    UT_String str;
+	    UT_String_sprintf(str, "\\multirow{%d}{*}{", m_CellBot - m_CellTop);
+	    m_pie->write(str);
+	    if(m_pqRect)
+	    {
+		UT_Rect * p = new UT_Rect(m_CellLeft+1, m_CellTop+1, 
+			m_CellRight - m_CellLeft, m_CellBot - m_CellTop);
+		if(p)
+		    m_pqRect->push_back(p);
+	    }
 	}
 }
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
-	m_eJustification = JUSTIFIED;
 	m_bLineHeight = false;
 
 	if (!m_bInSection)
@@ -474,6 +616,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	m_iBlockType = BT_NORMAL;
 	
 	if (bHaveProp && pAP)
 	{
@@ -485,16 +628,29 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		{
 			int indent = 0;
 			bool bNewList = false;
-			const gchar * szIndent, * szLeft, * szListStyle;
-			
+			const gchar * szIndent, * szLeft, * szListStyle = NULL;
+			FL_ListType this_list_type = NOT_A_LIST;
 			pAP->getProperty("list-style", szListStyle);
+			
+			if(szListStyle)
+			{
+			    if (0 == strcmp(szListStyle, "Numbered List") )
+				this_list_type = NUMBERED_LIST;
+			    else if (0 == strcmp(szListStyle, "Bullet List") )
+				this_list_type = BULLETED_LIST;
+			}
+			
+			if (this_list_type == NOT_A_LIST)
+			{
+			    this_list_type = list_type;
+			}
 			
 			if (pAP->getProperty("text-indent", szIndent) && pAP->getProperty("margin-left", szLeft))
 			{
 				indent = UT_convertToDimension(szIndent, DIM_MM) + UT_convertToDimension(szLeft, DIM_MM);
 				if (m_bInList)
 				{
-					UT_DEBUGMSG(("      indent = %d, m_Indent = %d\n", indent, m_Indent));
+					xxx_UT_DEBUGMSG(("      indent = %d, m_Indent = %d\n", indent, m_Indent));
 					if(indent > this->m_Indent) //nested list
 						bNewList = true;
 					else if (indent < this->m_Indent)
@@ -502,22 +658,16 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 						this->_closeList();
 					}
 					else
-						/*
-						 * now we have indent == this->m_Indent,
-						 * but it is possible that the current list item is
-						 * of different style with the last one.
-						 */                                    
+					/*
+					 * now we have indent == this->m_Indent,
+					 * but it is possible that the current list item is
+					 * of different style with the last one.
+					 */                                    
 					{
-						if(szListStyle)
+						if (this_list_type != list_type)
 						{
-							LIST_TYPE temp = BULLET_LIST;
-							if (0 == strcmp(szListStyle, "Numbered List") )
-								temp = NUMBERED_LIST;
-							if (temp != list_type)
-							{
-								this->_closeList();
-								bNewList = true;
-							}
+							this->_closeList();
+							bNewList = true;
 						}
 					}
 				}
@@ -526,23 +676,18 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			if (bNewList || !m_bInList) 
 				//necessary to build a new (possibly nested) list
 			{
-				if (pAP->getProperty("list-style", szValue))
-				{
-					//if(NULL == list_stack)
-					//  this->list_stack = new std::stack<LIST_TYPE>();
-					if (0 == strcmp(szValue, "Numbered List"))
-					{
-						list_type = NUMBERED_LIST;
-						m_pie->write("\\begin{enumerate}\n");
-					}
-					else if (0 == strcmp(szValue, "Bullet List"))
-					{
-						list_type = BULLET_LIST;
-						m_pie->write("\\begin{itemize}\n");
-					}
-					list_stack.push(list_type);
-				}
-				m_bInList = true;
+			    list_type = this_list_type;
+			    if (list_type == NUMBERED_LIST)
+			    {
+					m_pie->write("\\begin{enumerate}\n");
+			    }
+			    else if (list_type == BULLETED_LIST)
+			    {
+					m_pie->write("\\begin{itemize}\n");
+			    }
+			    
+			    list_stack.push(list_type);
+			    m_bInList = true;
 			}
 			
 			if (szIndent && szLeft)
@@ -552,6 +697,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		} else if (m_bInList) {
 			this->_closeLists();
 		}
+
 		if (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			if (strstr(szValue, "Heading"))
@@ -594,16 +740,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
 				m_pie->write(szChapterNumber);
 				m_pie->write(" ");	  // \\newline");
-        		}
-			else if (0 == strcmp(szValue, "Chapter Heading")) {
-				// TODO: Clean this...
-				char			szChapterNumber[6];
-				m_iBlockType = BT_HEADING1;
-				sprintf(szChapterNumber, "%d", ChapterNumber++);
-				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
-				m_pie->write(szChapterNumber);
-				m_pie->write(" ");	  // \\newline");
-        		}
+        	}
 			else if(0 == strcmp(szValue, "Block Text"))
 			{
 				m_iBlockType = BT_BLOCKTEXT;
@@ -614,20 +751,17 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_iBlockType = BT_PLAINTEXT;
 				m_pie->write("\\texttt{");
 			}
-			else 
-			{
-				m_iBlockType = BT_NORMAL;
-			}	
-		}
-		else 
-		{
-			m_iBlockType = BT_NORMAL;
 		}
 		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
-		// TODO: Split this function in several ones
-		if (m_iBlockType == BT_NORMAL)
+		
+		/* In LaTeX, a footnote is enclosed within a parapgraph, so we need to
+		 * preserve values of the previous block, in particular m_iBlockType and
+		 * m_eJustification, as they affect the behavior of _closeBlock()
+		 */
+		if (m_iBlockType == BT_NORMAL && !m_bInFootnote)
 		{
+			m_eJustification = JUSTIFIED;
 			if (pAP->getProperty("text-align", szValue))
 			{
 				if (0 == strcmp(szValue, "center"))
@@ -653,22 +787,21 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				if (height < 0.9 || height > 1.1)
 				{
+				    	char strH[8];
+					
+					/* Assume $baselineskip/fontsize \approx 1.2$, reasonable in most cases */
+					snprintf(strH, 8, "%.2f", height / 1.2);
+					strH[7] = '\0';
+					
 					m_pie->write("\\begin{spacing}{");
-					UT_DEBUGMSG(("m_bLineHeight = true\n"));
+					xxx_UT_DEBUGMSG(("m_bLineHeight = true\n"));
 					m_bLineHeight = true;
+					
+					m_pie->write(strH);
+					m_pie->write("}\n");
 				}
-				if (height > 1.4 && height < 1.6)
-					m_pie->write("1.24}\n");
-				else if (height > 1.9 && height < 2.1)
-					m_pie->write("1.66}\n");
-				else if (m_bLineHeight) // glup.  TODO: calculate the spacing :)
-				    m_pie->write("1.0} % Sorry.  I know that you don't expect the 1.0... feel free to fix it! :)\n");
 			}
 		}
-	}
-	else 
-	{
-		m_iBlockType = BT_NORMAL;
 	}
 	
 	m_bInBlock = true;
@@ -677,7 +810,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
-	bool bMustEmitMulticol = false;
 	const gchar* pszNbCols = NULL;
 
 	m_bBetweenQuotes = false;
@@ -695,9 +827,8 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		pAP->getProperty("page-margin-left", pszPageMarginRight);
 
 		if (pszNbCols != NULL && ((0 == strcmp(pszNbCols, "2"))
-								  || (0 == strcmp(pszNbCols, "3"))))
+						|| (0 == strcmp(pszNbCols, "3"))))
 		{
-			bMustEmitMulticol = true;
 			m_bMultiCols = true;
 		}
 		if (pszPageMarginLeft != NULL)
@@ -717,14 +848,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		}
 	}
 
-	if (m_bFirstSection)
-	{
-		// Document begins
-		m_pie->write ("\n\n\\begin{document}\n");
-		m_bFirstSection = false;
-	}
-
-	if (bMustEmitMulticol)
+	if (m_bMultiCols)
 	{
 		m_pie->write("\\begin{multicols}{");
 		m_pie->write(static_cast<const char *> (pszNbCols));
@@ -747,47 +871,87 @@ void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 			   strtol (&colors[2][0],NULL,16)/255.);
 }
 
+struct LaTeX_Font_Size
+{
+	guint8 tiny;
+	guint8 scriptsize;
+	guint8 footnotesize;
+	guint8 small;
+	/* int normalsize; */ 
+	guint8 large;
+	guint8 Large;
+	guint8 LARGE;
+	guint8 huge;
+	guint8 Huge;
+};
+
+/*
+ * These font sizes in the standard document classes are documented in 
+ * "The (Not So) Short Introduction to LaTeX2e" and the following url:
+ * http://en.wikibooks.org/wiki/LaTeX/Formatting
+ */
+static const LaTeX_Font_Size fontsizes[]=
+{
+	{5, 7, 8, 9, /*10,*/ 12, 14, 17, 20, 25}, // normalsize == 10pt
+	{6, 8, 9, 10, /*11,*/ 12, 17, 17, 20, 25}, // normalsize == 11pt
+	{6, 8, 10, 11, /*12,*/ 14, 17, 20, 25, 25} // normalsize == 12pt
+};
+
 void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
+	const LaTeX_Font_Size *fs = NULL;
 
 	if(m_bInScript) {
 		fSizeInPoints -= 4;
 	}
-
-	if (fSizeInPoints <= 6)
+	
+	if (m_DefaultFontSize == 10)
+	{
+		fs = &fontsizes[0];
+	}
+	else if (m_DefaultFontSize == 11)
+	{
+		fs = &fontsizes[1];
+	}
+	else // m_DefaultFontSize == 12
+	{
+		fs = &fontsizes[2];
+	}
+	
+	if (fSizeInPoints <= fs->tiny)
 	{
 		szDest = "tiny";
 	}
-	else if (fSizeInPoints <= 8)
+	else if (fSizeInPoints <= fs->scriptsize)
 	{
 		szDest = "scriptsize";
 	}
-	else if (fSizeInPoints <= 10)
+	else if (fSizeInPoints <= fs->footnotesize)
 	{
 		szDest = "footnotesize";
 	}
-	else if (fSizeInPoints <= 11)
+	else if (fSizeInPoints <= fs->small)
 	{
 		szDest = "small";
 	}
-	else if (fSizeInPoints <= 12)
+	else if (fSizeInPoints <= m_DefaultFontSize)
 	{
 		szDest = "normalsize";
 	}
-	else if (fSizeInPoints <= 14)
+	else if (fSizeInPoints <= fs->large)
 	{
 		szDest = "large";
 	}
-	else if (fSizeInPoints <= 17)
+	else if (fSizeInPoints <= fs->Large)
 	{
 		szDest = "Large";
 	}
-	else if (fSizeInPoints <= 20)
+	else if (fSizeInPoints <= fs->LARGE)
 	{
 		szDest = "LARGE";
 	}
-	else if (fSizeInPoints <= 25)
+	else if (fSizeInPoints <= fs->huge)
 	{
 		szDest = "huge";
 	}
@@ -806,98 +970,60 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	m_bOverline = false;
+	m_NumCloseBrackets = 0;
 	
 	if (bHaveProp && pAP)
 	{
 		const gchar * szValue;
 
-		if (
-			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-weight", szValue)
 			&& !strcmp(szValue, "bold")
 			)
 		{
 			m_pie->write("\\textbf{");
+			m_NumCloseBrackets++;
 		}
 		
-		if (
-			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-style", szValue)
 			&& !strcmp(szValue, "italic")
 			)
 		{
 			m_pie->write("\\emph{");
+			m_NumCloseBrackets++;
 		}
 		
-		if (pAP->getProperty("text-decoration", szValue))
-		{
-			const gchar* pszDecor = szValue;
-
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			// See the ulem.sty documentation (available at www.ctan.org)
-			// if you wish to include other kinds of underlines, such as
-			// double underlines or wavy underlines
-			while (q)
-			{
-			  if (0 == strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
-				{
-					m_pie->write("\\uline{");
-				}
-
-				if (0 == strcmp(q, "overline"))
-				{
-					m_pie->write("$\\overline{\\textrm{");
-				}
-
-				if (0 == strcmp(q, "line-through"))
-				{
-					m_pie->write("\\sout{");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
 		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!strcmp("superscript", szValue))
 			{
 				m_bInScript = true;
-				//m_pie->write("$^{\\mathrm{");
 				m_pie->write("\\textsuperscript{");
+				m_NumCloseBrackets++;
 			}
 			else if (!strcmp("subscript", szValue))
 			{
 				m_bInScript = true;
-				//m_pie->write("$_{\\mathrm{");
 				m_pie->write("\\textsubscript{");
+				m_NumCloseBrackets++;
 			}
 		}
 		
 		const gchar* pszColor = NULL;
 		pAP->getProperty("color", pszColor);
 		if (pszColor)
-		  {
+		{
 		    if ((0 != strcmp("000000", pszColor)) &&
 			(0 != strcmp("transparent", pszColor)))
-		      {
- 		 	UT_String szColor;
-			_convertColor(szColor,(const char*)pszColor);
-			m_pie->write("\\textcolor[rgb]{");
-			m_pie->write(szColor);
-			m_pie->write("}{");
-		      }
-		    else 
-		      m_pie->write("{");
-		  }
+		    {
+				UT_String szColor;
+				_convertColor(szColor,(const char*)pszColor);
+				m_pie->write("\\textcolor[rgb]{");
+				m_pie->write(szColor);
+				m_pie->write("}{");
+				m_NumCloseBrackets++;
+		    }
+		}
 		
 		const gchar* pszBgColor = NULL;
 		pAP->getProperty("bgcolor", pszBgColor);
@@ -912,42 +1038,77 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		      m_pie->write("\\colorbox[rgb]{");
 		      m_pie->write(szColor);
 		      m_pie->write("}{");
+		      m_NumCloseBrackets++;
 		    }
-		  else 
-		    m_pie->write("{");
 		}
 
  		if (pAP->getProperty("font-size", szValue) && !m_bInHeading)
 		{
-			if (strcmp (DEFAULT_SIZE, szValue) != 0)
+			if (int(0.5 + UT_convertToPoints(szValue)) != m_DefaultFontSize)
 			{
 				m_pie->write("{\\");
 				UT_String szSize;
 				_convertFontSize(szSize, static_cast<const char*>(szValue));
 				m_pie->write(szSize);
 				m_pie->write(" ");
+				m_NumCloseBrackets++;
 			}
 		}
 		
-		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
+		if (pAP->getProperty("font-family", szValue))
 		{
 			// TODO: Use a dynamic substitution table
-			if (!strcmp("Symbol", szValue) ||
-				!strcmp("Standard Symbols", szValue))
+			if (strstr(szValue, "Symbol") && !m_bInHeading)
 				m_bInSymbol = true;
-			if (!strcmp("Courier", szValue) ||
-				!strcmp("Courier New", szValue) ||
+			if (strstr(szValue, "Courier") ||
 				!strcmp("Luxi Mono",szValue)) {
-				m_bInCourier = true;
 				m_pie->write("\\texttt{");
+				m_NumCloseBrackets++;
 			}
 			if (!strcmp("Arial", szValue) ||
 				!strcmp("Helvetic", szValue) ||
 				!strcmp("Luxi Sans",szValue)) {
-				m_bInSansSerif = true;
 				m_pie->write("\\textsf{");
+				m_NumCloseBrackets++;
 			}
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
+		}
+
+		if (pAP->getProperty("text-decoration", szValue) && szValue && !m_bInHeading)
+		{
+			gchar* p = g_strdup(szValue);
+
+			UT_return_if_fail(p);
+			gchar*	q = strtok(p, " ");
+
+			// See the ulem.sty documentation (available at www.ctan.org)
+			// if you wish to include other kinds of underlines, such as
+			// double underlines or wavy underlines
+			while (q)
+			{
+			    if (0 == strcmp(q, "underline"))
+			    {
+					m_pie->write("\\uline{");
+					m_NumCloseBrackets++;
+			    }
+			    else if(0 == strcmp(q, "overline"))
+			    {
+					m_bOverline = true;
+			    }
+			    else if(0 == strcmp(q, "line-through"))
+			    {
+					m_pie->write("\\sout{");
+					m_NumCloseBrackets++;
+			    }
+			    q = strtok(NULL, " ");
+			}
+			
+			/* This should be at the very last, in order to match
+			 * the close brackets in _closeSpan().
+			 */
+			if (m_bOverline)
+			    m_pie->write("$\\overline{\\textrm{");
+			g_free(p);
 		}
 
 		m_bInSpan = true;
@@ -965,11 +1126,30 @@ void s_LaTeX_Listener::_openTable(PT_AttrPropIndex /*api*/)
 	m_pie->write("\n\\begin{table}[h]\\begin{tabular}{|");
 	for(i = 0; i < m_pTableHelper->getNumCols(); i++) m_pie->write("l|");
 	m_pie->write("}");
+//	m_pie->write("\n\\hline\n");
+	
+	m_RowNuminTable = 1;
+	m_ExpectedLeft = 0;
+	m_index = 0;
 }
 
 void s_LaTeX_Listener::_closeCell(void)
 {
+	if (m_CellBot - m_CellTop >1)
+	    m_pie->write("}");
+	if (m_CellRight - m_CellLeft >1)
+	    m_pie->write("}");
 	m_bInCell = false;
+	this->m_pTableHelper->CloseCell();
+	if(m_CellRight == m_TableWidth)
+	{
+	    m_ExpectedLeft = 0;
+	}
+	else
+	{
+	    m_ExpectedLeft = m_CellRight;
+	    m_pie->write("&");	    	    
+	}
 }
 
 void s_LaTeX_Listener::_closeSpan(void)
@@ -977,142 +1157,16 @@ void s_LaTeX_Listener::_closeSpan(void)
 	if (!m_bInSpan)
 		return;
 
-	const PP_AttrProp * pAP = m_pAP_Span;
+	if (m_bOverline)
+	    m_pie->write("}}$");
 	
-	if (pAP)
+	if (m_pAP_Span)
 	{
-		const gchar * szValue;
-		
-		if (pAP->getProperty("color", szValue))
-		{
+		m_bInScript = false;
+		if (m_bInSymbol)
+		    m_bInSymbol = false;
+		for(; m_NumCloseBrackets>0; m_NumCloseBrackets--)
 			m_pie->write("}");
-		}
-
-		if (pAP->getProperty("bgcolor", szValue))
-		{
-			m_pie->write("}");
-		}
-
-		if ((pAP->getProperty("font-size", szValue) && !m_bInHeading)
-//		    || (pAP->getProperty("font-family", szValue))  // TODO
-			)
-		{
-			if (strcmp (szValue, DEFAULT_SIZE) != 0)
-				m_pie->write("}");
-		}
-
-		if (pAP->getProperty("text-position", szValue))
-		{
-			if (!strcmp("superscript", szValue))
-			{
-				m_bInScript = false;
-				//m_pie->write("}}$");
-				m_pie->write("}\n");
-			}
-			else if (!strcmp("subscript", szValue))
-			{
-				m_bInScript = false;
-				//m_pie->write("}}$");
-				m_pie->write("}\n");
-			}
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const gchar* pszDecor = szValue;
-			
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == strcmp(q, "line-through"))
-				{
-					m_pie->write("}");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const gchar* pszDecor = szValue;
-			
-			gchar* p;
-			if (!(p = g_strdup(pszDecor)))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			gchar*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == strcmp(q, "underline"))
-				{
-					m_pie->write("}");
-				}
-
-				if (0 == strcmp(q, "overline"))
-				{
-					m_pie->write("}}$");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
-		if (
-			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
-			&& !strcmp(szValue, "italic")
-			)
-		{
-			m_pie->write("}");
-		}
-		
-		if (
-			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
-			&& !strcmp(szValue, "bold")
-			)
-		{
-			m_pie->write("}");
-		}
-
-		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
-		{
-			if (!strcmp ("Symbol", szValue) ||
-				!strcmp("Standard Symbols", szValue))
-				m_bInSymbol = false;
-			if (!strcmp("Courier", szValue) ||
-				!strcmp("Courier New", szValue))
-			{
-				m_pie->write("}");
-				m_bInCourier = false;
-			}
-			if (!strcmp("Helvetic", szValue) ||
-				!strcmp("Arial", szValue) ||
-				!strcmp("Luxi Sans", szValue))
-			{
-				m_pie->write("}");
-				m_bInSansSerif = false;
-			}
-		}
 
 		m_pAP_Span = NULL;
 	}
@@ -1123,7 +1177,17 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 void s_LaTeX_Listener::_closeTable(void)
 {
-		m_pie->write("\\\\\n\\hline\n\\end{tabular}\n\\end{table}\n");
+    if(m_pqRect)
+    {
+		for(unsigned int i=0; i<m_pqRect->size(); i++)
+		{
+			delete m_pqRect->at(i);
+			m_pqRect->at(i) = NULL;
+		}
+		m_pqRect->clear();
+    }
+    m_pie->write("\\\\\n\\hline\n");
+    m_pie->write("\\end{tabular}\n\\end{table}\n");
 }
 
 void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -1291,7 +1355,6 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	{
 		// only-if-amssymb
 // 		SUB('\\', "therefore");
-		// todo: $ and ^ don't actually work right.
 
 		SUB('\"', "forall");    SUB('$', "exists");
 		SUB('\'', "ni");        SUB('@', "cong");
@@ -1327,20 +1390,72 @@ static bool _convertLettersToSymbols(char c, const char *& subst)
 	}
 }
 
-s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, LaTeX_Analysis_Listener& analysis)
+// _outputBabelPackage should be called only by the constructer, and only once
+void s_LaTeX_Listener::_outputBabelPackage(void)
+{
+	// Language appears in <abiword> as property "lang",
+	// es-ES, en-US, and so forth...
+	
+	const gchar * szLangCode = NULL;
+	m_pDocument->getAttrProp()->getProperty("lang", szLangCode); // language code
+	if(szLangCode && *szLangCode)
+	{
+	    UT_Language lang;
+	    UT_uint32 indx = lang.getIndxFromCode(szLangCode);
+	    if (indx > 0)
+	    {
+		char *strLangName = g_strdup(lang.getNthLangName(indx)); // language name
+		if (strLangName)
+		{
+		    m_pie->write("%% Please revise the following command, if your babel\n");
+		    m_pie->write("%% package does not support ");
+		    m_pie->write(strLangName);
+		    m_pie->write("\n");
+		    
+		    *strLangName = tolower(*strLangName);
+		    
+		    const char *q = strtok(strLangName, " ("); // retrieve the "significant" part
+		    if (strcmp(q, "french") == 0)
+			q="frenchb"; // frenchb.ldf
+		    else if (strcmp(q, "german") == 0)
+			q="germanb"; // germanb.ldf
+		    else if (strcmp(q, "portuguese") == 0)
+			q="portuges"; // portuges.ldf
+		    else if (strcmp(q, "russian") == 0)
+			q="russianb"; // russianb.ldf
+		    else if (strcmp(q, "slovenian") == 0)
+			q="slovene"; // slovene.ldf
+		    else if (strcmp(q, "ukrainian") == 0)
+			q="ukraineb"; // ukraineb.ldf
+		    
+		    m_pie->write("\\usepackage[");
+		    m_pie->write(q);
+		    m_pie->write("]{babel}\n");
+		    
+		    g_free(strLangName);
+		}
+	    }
+	    
+	}
+}
+s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
+				    const LaTeX_Analysis_Listener& analysis)
   : m_pDocument(pDocument),
 	m_pie(pie),
 	m_bInBlock(false),
 	m_bInCell(false),
 	m_bInSection(false),
 	m_bInSpan(false),
+	m_bInScript(false),
 	m_bInFootnote(false),
 	m_bInSymbol(0),
-	m_bInCourier(0),
-	m_bInSansSerif(0),
 	m_bInEndnote(false),
 	m_bHaveEndnote(analysis.m_hasEndnotes),
-	m_bFirstSection(true)
+	m_bOverline(false),
+	m_DefaultFontSize(12),
+	m_NumCloseBrackets(0),
+	list_type(BULLETED_LIST),
+	m_pqRect(NULL)
 {
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -1352,27 +1467,84 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	// If (documentclass == book), numbered headings begin with x.y.
 	// If (documentclass == article), there are no chapter headings.
 	// We redefine a "chapter" as a section*.
-	// TODO: Use correct paper settings from .abw.
-	// Page size appears in <pagesize/> before first <section>
-	m_pie->write("\\documentclass[12pt,a4paper]{article}\n");
+
+	m_pie->write("\\documentclass[");
+	
+	fp_PageSize::Predefined ps = pDocument->m_docPageSize.NameToPredefined(pDocument->m_docPageSize.getPredefinedName());
+	switch(ps)
+	{
+	    case fp_PageSize::psA4:
+		    m_pie->write("a4paper");
+		    break;
+	    case fp_PageSize::psA5:
+		    m_pie->write("a5paper");
+		    break;
+	    case fp_PageSize::psB5:
+		    m_pie->write("b5paper");
+		    break;
+	    case fp_PageSize::psLegal:
+		    m_pie->write("legalpaper");
+		    break;
+	    case fp_PageSize::psLetter:
+	    default:
+		    m_pie->write("letterpaper");
+		    break;
+	}
+	
+	if(pDocument->m_docPageSize.isPortrait())
+	    m_pie->write(",portrait");
+	else
+	    m_pie->write(",landscape");
+	
+	//retrieve the actual font size
+	PD_Style * pStyle = NULL;
+	pDocument->getStyle ("Normal", &pStyle);
+	if(pStyle)
+	{
+	    const gchar * szValue = 0;
+		pStyle->getProperty("font-size", szValue);
+		if (szValue)
+		{
+			// rounding
+			m_DefaultFontSize = int(0.5 + UT_convertToPoints(szValue));
+			if (m_DefaultFontSize <= 10)
+			{
+				m_DefaultFontSize = 10;
+				m_pie->write(",10pt");
+			}
+			else if (m_DefaultFontSize <= 11)
+			{
+				m_DefaultFontSize = 11;
+				m_pie->write(",11pt");
+			}
+		}
+	}
+	if (m_DefaultFontSize == 12)
+		m_pie->write(",12pt");
+
+	m_pie->write("]{article}\n");
 	// Better for ISO-8859-1 than previous: [T1] doesn't work very well
 	// TODO: Use inputenc from .abw.
 	m_pie->write("\\usepackage[latin1]{inputenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{setspace}\n");
+	m_pie->write("\\usepackage{fixltx2e}\n");  // for \textsubscript
 	m_pie->write("\\usepackage{graphicx}\n");
 	m_pie->write("\\usepackage{multicol}\n");
 	m_pie->write("\\usepackage[normalem]{ulem}\n");
-	// TODO: Use correct language from .abw.
-	// Language appears in <abiword> as property "lang",
-	// es-ES, en-US, and so forth...
-	m_pie->write("%% Please set your language here\n");
-	m_pie->write("\\usepackage[english]{babel}\n");
+
+	_outputBabelPackage();
+	
 	m_pie->write("\\usepackage{color}\n");
 
 	if (m_bHaveEndnote)
 		m_pie->write("\\usepackage{endnotes}\n");
 
+	if (analysis.m_hasTable && analysis.m_hasMultiRow)
+	{
+	    m_pie->write("\\usepackage{multirow}\n");
+	    m_pqRect = new std::deque<UT_Rect*>;
+	}
 	// Must be as late as possible.
 	m_pie->write("\\usepackage{hyperref}\n");
 
@@ -1383,9 +1555,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 	}
 	m_pie->write("\n");
 	ChapterNumber = 1;
-	m_bInScript = false;
-	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
-	//	m_pie->write("\n");                   // future problems when we will support several sections in the same doc...
+	m_pie->write("\\begin{document}\n\n");
 	
 	m_pTableHelper = new ie_Table(pDocument);
 }
@@ -1393,15 +1563,83 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie, 
 s_LaTeX_Listener::~s_LaTeX_Listener()
 {
 	//if (!m_bInFootnote) return;
-	_closeSpan();
-	_closeBlock();
+#ifdef HAVE_LIBXSLT
+	if(cur)
+	{
+		xsltFreeStylesheet(cur);
+		cur = NULL;
+	}	
+#endif
 	_closeSection();
 	_handleDataItems();
 	DELETEP(m_pTableHelper);
+	if(m_pqRect)
+	{
+	    for(unsigned int i=0; i<m_pqRect->size(); i++)
+	    {
+		delete m_pqRect->at(i);
+		m_pqRect->at(i) = NULL;
+	    }
+	    delete m_pqRect;
+	}
 	if (m_bHaveEndnote)
 		m_pie->write("\n\\theendnotes");
 	m_pie->write("\n\\end{document}\n");
 }
+
+#ifdef HAVE_LIBXSLT
+bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
+											UT_UTF8String & sLaTeX)
+{
+	//static xsltStylesheet *cur = NULL;
+	xmlDocPtr doc, res;
+	xmlChar * pLatex = NULL;
+	int len;
+	
+	if (sMathML.empty())
+		// Nothing has failed, but we have nothing to do anyway
+		return false;
+	if (!cur)
+	{
+		UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+		path += "/xsltml/mmltex.xsl";
+
+		cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
+		if (!cur)
+		{
+			UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing stylesheet failed\n"));
+			return false;
+		}
+	}
+	doc = xmlParseDoc((const xmlChar*)(sMathML.utf8_str()));
+	if (!doc)
+	{
+		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing MathML document failed\n"));
+		return false;
+	}	
+	
+	res = xsltApplyStylesheet(cur, doc, NULL);
+	if (!res)
+	{
+		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Applying stylesheet failed\n"));
+		xmlFreeDoc(doc);
+		return false;
+	}
+	
+	if (xsltSaveResultToString(&pLatex, &len, res, cur) != 0)
+	{
+		xmlFreeDoc(res);
+		xmlFreeDoc(doc);
+		return false;
+	}
+	sLaTeX.assign((const char*)pLatex, len);
+	
+	g_free(pLatex);
+	xmlFreeDoc(res);
+	xmlFreeDoc(doc);
+	return true;
+}
+#endif
 
 bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								   const PX_ChangeRecord * pcr)
@@ -1443,27 +1681,19 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				// TODO we *will* create separate image files.
-				// (we will borrow the code from HTML export)
 				// LaTeX assumes images are EPS.
 				// PDFLaTeX assumes images are PNG.
-				m_pie->write("\\includegraphics[height=");
-				pAP->getProperty("height", szValue);
-				m_pie->write(szValue);
-				pAP->getProperty("width", szValue);
-				m_pie->write(",width=");
-				m_pie->write(szValue);
-				m_pie->write("]{");
-				pAP->getAttribute("dataid", szValue);
-				m_pie->write(szValue);
-				m_pie->write("}");
-
+				// Currently we can create PNG images only
+				// TODO: is it possible to create EPS images after the cairo integration? 
+				if(bHaveProp)
+					_handleImage(pAP);
 				return true;
 
 			case PTO_Field:
 
 			  field = pcro->getField();
-			  m_pie->write(field->getValue());
+			  if(field->getValue())
+			      m_pie->write(field->getValue());
 
 				// we do nothing with computed fields.
 				return true;
@@ -1503,6 +1733,58 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write("}");
 				}
 				return true;
+				
+			  case PTO_Math:
+				_closeSpan () ;
+				if(bHaveProp && pAP)
+				{
+					UT_UTF8String sLatex;
+					const UT_ByteBuf * pByteBuf = NULL;
+					UT_UCS4_mbtowc myWC;
+					
+					if(pAP->getAttribute("latexid", szValue) &&	szValue 
+							&& *szValue)
+					{					
+						bool bFoundLatex = m_pDocument->getDataItemDataByName(szValue, 
+						    &pByteBuf,
+						    NULL, NULL);
+						if(!bFoundLatex)
+						{
+							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
+							return true;
+						}
+						sLatex.appendBuf(*pByteBuf, myWC);
+						
+						m_pie->write("$");
+						m_pie->write(sLatex.utf8_str());
+						m_pie->write("$");
+					}
+#ifdef HAVE_LIBXSLT
+					else if(pAP->getAttribute("dataid", szValue) &&	szValue 
+							&& *szValue)
+					{
+						UT_UTF8String sMathML;
+						bool bFoundMathML = m_pDocument->getDataItemDataByName(szValue, 
+						    &pByteBuf,
+						    NULL, NULL);
+						if(!bFoundMathML)
+						{
+							UT_DEBUGMSG(("Equation %s not found in document \n", szValue));
+							return true;
+						}
+						
+						sMathML.appendBuf(*pByteBuf, myWC);
+						
+						if(!convertMathMLtoLaTeX(sMathML, sLatex))
+							return true;
+						/*The converted sLatex already contains $s*/
+						m_pie->write(sLatex.utf8_str());
+					}
+#endif
+					else
+						return true;
+				}
+				return true;
 
 			default:
 				UT_ASSERT_HARMLESS(0);
@@ -1531,8 +1813,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	{
 	case PTX_Section:
 	{
-		_closeSpan();
-		_closeBlock();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -1564,8 +1844,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_SectionHdrFtr:
 	{
-		_closeSpan();
-		_closeBlock();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -1597,7 +1875,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_Block:
 	{
-		_closeSpan();
 		_closeBlock();
 		_closeParagraph();
 		_openParagraph(pcr->getIndexAP());
@@ -1607,6 +1884,7 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionTable:
 	{
 		m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+		m_TableWidth = m_pTableHelper->getNumCols();
 		_openTable(pcr->getIndexAP());
 		return true;
 	}
@@ -1650,7 +1928,6 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 	
 	case PTX_SectionTOC:
 	{
-		_closeSpan();	
 		_closeBlock();
 		/*
 		_closeSection();
@@ -1733,6 +2010,77 @@ void s_LaTeX_Listener::_handleDataItems(void)
 }
 
 
+/* Code taken from the HTML exporter
+ *
+ * imagedir is the name of the directory in which we'll write the image
+ * filename is the name of the file to which we'll write the image
+ */
+void s_LaTeX_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
+									const UT_UTF8String & imagedir,
+									const UT_UTF8String & filename)
+{
+	UT_go_directory_create(imagedir.utf8_str(), 0750, NULL);
+
+	UT_UTF8String path(imagedir);
+	path += "/";
+	path += filename;
+
+	GsfOutput * out = UT_go_file_create (path.utf8_str (), NULL);
+	if (out)
+	{
+		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
+		gsf_output_close (out);
+		g_object_unref (G_OBJECT (out));
+	}
+}
+
+void s_LaTeX_Listener::_handleImage(const PP_AttrProp * pAP)
+{	
+	/* Part of code taken from the HTML exporter */
+	const UT_ByteBuf * pByteBuf;
+	UT_ByteBuf decodedByteBuf;				
+	const gchar *szHeight = NULL, *szWidth = NULL, *szDataID = NULL, *szMimeType = NULL;
+	
+	if (! pAP)
+		return;
+	if (! pAP->getAttribute("dataid", szDataID))
+		return;
+
+	if (! m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(&szMimeType), NULL))
+		return;
+	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+
+	if (strcmp (szMimeType, "image/png") != 0)
+	{
+		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+		return;
+	}
+
+	gchar *imagedir = UT_go_dirname_from_uri(m_pie->getFileName(), true);
+	
+	UT_UTF8String filename(szDataID);
+	filename += ".png";
+	
+	/* save the image as imagedir/filename */
+	_writeImage (pByteBuf, imagedir, filename);
+	FREEP(imagedir);
+	
+	m_pie->write("\\includegraphics");
+	if (pAP->getProperty("height", szHeight) && pAP->getProperty("width", szWidth))
+	{
+		m_pie->write("[height=");
+		m_pie->write(szHeight);
+		m_pie->write(",width=");
+		m_pie->write(szWidth);
+		m_pie->write("]");
+	}
+
+	m_pie->write("{");
+	m_pie->write(szDataID);
+	m_pie->write("}\n");
+
+	return;	
+}
 /*
   This is a copy from wv. Returns 1 if was translated, 0 if wasn't.
   It can convert to empty string.

@@ -25,7 +25,7 @@
 #include "ut_string_class.h"
 
 /** Decryptor for .sdw files */
-class  SDWCryptor {
+class SDWCryptor {
 	public:
 		/** Maximum length of the password */
 		enum { maxPWLen = 16 };

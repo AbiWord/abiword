@@ -2,7 +2,9 @@
 PAINT_CFLAGS=
 PAINT_LIBS=
 
-if test "$enable_paint" == "yes"; then
+if test "$enable_paint" != ""; then
+
+test "$enable_paint" == "auto" && PLUGINS="$PLUGINS paint"
 
 # TODO check for libpng
 if test "$TOOLKIT" == "win"; then

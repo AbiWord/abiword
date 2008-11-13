@@ -187,15 +187,9 @@ void ODe_Style_PageLayout::fetchAttributesFromAbiSection(const PP_AttrProp* pAP)
     }
 
     ok = pAP->getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        int len = strlen(pValue);
-        if(len == 6) {
-            m_backgroundColor = UT_UTF8String_sprintf("%s", pValue);
-        } else if(len == 7) {
-            m_backgroundColor = pValue;
-        } else {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+    if (ok && pValue && *pValue) {
+        // TODO: handle transparent?
+        m_backgroundColor = UT_colorToHex(pValue, true);
     }
 
     ok = pAP->getAttribute("strux-image-dataid", pValue);

@@ -30,7 +30,7 @@ class PD_Document;
 
 // The importer/reader for WML files.
 
-class  IE_Imp_WML_Sniffer : public IE_ImpSniffer
+class IE_Imp_WML_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -50,7 +50,7 @@ public:
 
 };
 
-class  IE_Imp_WML : public IE_Imp_XML
+class IE_Imp_WML : public IE_Imp_XML
 {
 public:
 	IE_Imp_WML(PD_Document * pDocument);
@@ -70,6 +70,8 @@ public:
 	void closeCell(void);
 	void createImage(const char *name, const gchar **atts);
 
+	bool						m_bOpenedBlock;
+	bool						m_bOpenedSection;
 	UT_sint32					m_iColumns;
 	UT_uint32					m_iImages;
 	UT_sint32					m_iOpenedColumns;

@@ -2,7 +2,9 @@
 GOOGLE_CFLAGS=
 GOOGLE_LIBS=
 
-if test "$enable_google" == "yes"; then
+if test "$enable_google" != ""; then
+
+test "$enable_google" == "auto" && PLUGINS="$PLUGINS google"
 
 GOOGLE_CFLAGS="$GOOGLE_CFLAGS "'${PLUGIN_CFLAGS}'
 GOOGLE_LIBS="$GOOGLE_LIBS "'${PLUGIN_LIBS}'

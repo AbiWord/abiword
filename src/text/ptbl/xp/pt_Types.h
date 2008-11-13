@@ -145,6 +145,10 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_FOOTERFIRST_ATTRIBUTE_NAME	(static_cast<const gchar *>("footer-first"))
 #define PT_FOOTERLAST_ATTRIBUTE_NAME	(static_cast<const gchar *>("footer-last"))
 #define PT_REVISION_ATTRIBUTE_NAME      (static_cast<const gchar *>("revision"))
+#define PT_REVISION_DESC_ATTRIBUTE_NAME      (static_cast<const gchar *>("revision-desc"))
+#define PT_REVISION_TIME_ATTRIBUTE_NAME      (static_cast<const gchar *>("revision-time"))
+#define PT_REVISION_VERSION_ATTRIBUTE_NAME      (static_cast<const gchar *>("revision-ver"))
+#define PT_DOCPROP_ATTRIBUTE_NAME      (static_cast<const gchar *>("docprop"))
 #define PT_STRUX_IMAGE_DATAID           (static_cast<const gchar *>("strux-image-dataid"))
 #define PT_XID_ATTRIBUTE_NAME           (static_cast<const gchar *>("xid"))
 #define PT_DATAITEM_ATTRIBUTE_NAME           (static_cast<const gchar *>("dataitem"))
@@ -153,6 +157,6 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_IMAGE_DESCRIPTION           (static_cast<const gchar *>("alt"))
 #define PT_DATA_PREVIEW           (static_cast<const gchar *>("preview"))
 #define PT_HYPERLINK_TARGET_NAME  (static_cast<const gchar *>("xlink:href"))
+#define PT_AUTHOR_NAME          (static_cast<const gchar *>("author"))
 #define PT_ANNOTATION_NUMBER     (static_cast<const gchar *>("annotation"))
-
 #endif /* PT_TYPES_H */

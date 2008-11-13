@@ -117,7 +117,7 @@ void AccountHandler::deleteBuddies()
 	m_vecBuddies.clear();
 }
 
-void AccountHandler::forceDisconnectBuddy(Buddy* buddy)
+void AccountHandler::forceDisconnectBuddy(Buddy* /*buddy*/)
 {
 }
 		
@@ -304,7 +304,7 @@ bool AccountHandler::_handleProtocolError(Packet* packet, Buddy* buddy)
 	return true;
 }
 
-void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy )
+void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBuddyOnJoin )
 {
 	// packet and buddy must always be set
 	UT_return_if_fail(packet);
@@ -352,13 +352,16 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy )
 					// send to buddy!
 					send( &jsre, *buddy );
 					
-					// check if we already know this buddy
-					Buddy* existing = getBuddy(buddy->getName());
-					if (!existing)
+					if (autoAddBuddyOnJoin)
 					{
-						// we don't know this buddy yet; add this one as a volatile buddy
-						buddy->setVolatile(true);
-						addBuddy(buddy);
+						// check if we already know this buddy
+						Buddy* existing = getBuddy(buddy->getName());
+						if (!existing)
+						{
+							// we don't know this buddy yet; add this one as a volatile buddy
+							buddy->setVolatile(true);
+							addBuddy(buddy);
+						}
 					}
 				
 					// add this buddy to the collaboration session
@@ -386,8 +389,10 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy )
 					}
 					pManager->joinSession( jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL );
 				}
-				else
+				else 
+				{
 					UT_DEBUGMSG(("AccountHandler::_handlePacket() - deserializing document failed!\n"));
+				}
 			}
 			break;
 		}

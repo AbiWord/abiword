@@ -188,6 +188,7 @@ public:
 	void	getListAttributesVector(UT_GenericVector<const gchar*> * va);
 	void  getListPropertyVector(UT_GenericVector<const gchar*> * vp);
 
+	void  refreshRunProperties(void);
 	char *	getFormatFromListType(FL_ListType iListType);
 	void remItemFromList(void);
 	virtual void listUpdate(void);

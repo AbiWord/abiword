@@ -11,7 +11,6 @@ libunix_la_SOURCES = \
 	ut_mutexImpl.h \
 	ut_path.cpp \
 	ut_sleep.h \
-	ut_threadImpl.h \
 	ut_unixAssert.cpp \
 	ut_unixAssert.h \
 	ut_unixIdle.cpp \

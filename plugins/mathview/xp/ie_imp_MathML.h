@@ -30,15 +30,15 @@
 #include "ut_vector.h"
 #include "pd_Document.h"
 
-class   UT_ByteBuf;
-class   ImportStream;
+class  UT_ByteBuf;
+class  ImportStream;
 
 typedef struct {
 	const char * szEntity;
 	const char * szVal;
 } AbiMathViewEntityMapItem;
 
-class  IE_Imp_MathML_EntityTable
+class IE_Imp_MathML_EntityTable
 {
 public:
 	IE_Imp_MathML_EntityTable ();
@@ -53,7 +53,7 @@ private:
 
 // The importer/reader for MathML Files.
 
-class  IE_Imp_MathML_Sniffer : public IE_ImpSniffer
+class IE_Imp_MathML_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_MathML;
@@ -88,7 +88,7 @@ protected:
 
 // The importer/reader for MathML Files.
 
-class  IE_Imp_MathML : public IE_Imp
+class IE_Imp_MathML : public IE_Imp
 {
 public:
 	IE_Imp_MathML(PD_Document * pDocument, const IE_Imp_MathML_EntityTable & EntityTable);

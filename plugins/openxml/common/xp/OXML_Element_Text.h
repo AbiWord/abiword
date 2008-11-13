@@ -25,6 +25,7 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <ie_exp_OpenXML.h>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -43,8 +44,9 @@ public:
 
 	void setText(const gchar * text, int length);
 	const UT_UCS4Char * getText_UCS4String();
+	const char* getText();
 
-	virtual UT_Error serialize(std::string path);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 private:
 	UT_UCS4String * m_pString;

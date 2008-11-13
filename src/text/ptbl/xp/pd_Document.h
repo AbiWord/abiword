@@ -61,6 +61,7 @@ class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
+class pp_Author;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -75,7 +76,7 @@ enum
 	PD_SIGNAL_REVISION_MODE_CHANGED,
 	PD_SIGNAL_DOCNAME_CHANGED,
 	PD_SIGNAL_DOCDIRTY_CHANGED,
-	PD_SIGNAL_DOCSAVED, // TODO: remove this
+	PD_SIGNAL_SAVEDOC, 
 	PD_SIGNAL_DOCCLOSED // TODO: remove this
 };
 
@@ -185,13 +186,39 @@ public:
 
 	virtual bool			isDirty(void) const;
 	virtual void            forceDirty();
-	bool                    isCACConnected(void);
+	bool                    isConnected(void);
 	virtual bool			canDo(bool bUndo) const;
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 	bool                    isDoingTheDo(void) const;
 
+	// Author methods
+
+	const char *            getAuthorUUIDFromNum(UT_sint32 id);
+	UT_sint32               getNumFromAuthorUUID(const char * szUUID);
+	void                    setShowAuthors(bool bAuthors);
+	bool                    isShowAuthors(void) const
+	{ return m_bShowAuthors;}
+	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut);
+	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
+	bool                    isExportAuthorAtts(void) const;
+	void                    setExportAuthorAtts(bool bExport);
+	UT_sint32               getMyAuthorInt(void) const;
+	void                    setMyAuthorInt(UT_sint32 iAuthor);
+	UT_sint32               getLastAuthorInt(void) const;
+	UT_sint32               getNumAuthors(void);
+	pp_Author *             getNthAuthor(UT_sint32 i);
+	pp_Author *             getAuthorByInt(UT_sint32 i);
+	pp_Author *             getAuthorByUUID(const gchar * szUUID);
+	pp_Author *             addAuthor(const gchar * szUUID, UT_sint32 iAuthor);
+	bool                    sendAddAuthorCR(pp_Author * pAuthor);
+	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
+	UT_sint32               findFirstFreeAuthorInt(void);
+ private:
+	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps);
+ public:
+	//
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
@@ -233,6 +260,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										bool bRecordChange);
 
 	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave,UT_Byte iGlob);
+	virtual bool            createAndSendDocPropCR( const gchar ** pAtts,const gchar ** pProps );
+	bool                    changeDocPropeties(const gchar ** szAtts, const gchar ** pProps);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -485,9 +514,10 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
-	fp_PageSize				m_docPageSize;
 	bool					setPageSizeFromFile(const gchar ** attributes);
-
+	const	fp_PageSize	*	getPageSize(void) const	
+	{ return & m_docPageSize;}
+	fp_PageSize             m_docPageSize; // Move this to private later
 	bool					isBookmarkUnique(const gchar * pName) const;
 	bool					isBookmarkRelativeLink(const gchar * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
@@ -742,6 +772,11 @@ private:
 	bool                    m_bIgnoreSignals;
 
 	bool					m_bCoalescingMask;
+	bool                    m_bShowAuthors;
+	UT_GenericVector<pp_Author *>  m_vecAuthors;
+	bool                    m_bExportAuthorAtts;
+	UT_sint32               m_iMyAuthorInt;
+	UT_sint32               m_iLastAuthorInt;
 };
 
 #endif /* PD_DOCUMENT_H */

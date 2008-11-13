@@ -48,6 +48,7 @@ ABI_Collab_Export::ABI_Collab_Export(AbiCollab * pAbiCollab, PD_Document* pDoc)
 	m_pAbiCollab(pAbiCollab),
 	m_pGlobPacket( NULL )
 {
+	UT_DEBUGMSG(("Constructing Generic Exporter \n"));
 }
 
 ABI_Collab_Export::~ABI_Collab_Export()
@@ -82,6 +83,11 @@ struct PacketFactory
 				);
 	};
 };
+
+PLListenerType ABI_Collab_Export::getType() const
+{
+	return PTL_CollabExport;
+}
 
 /*!
  * This method converts a change record into a AbiCollab session packet
@@ -340,7 +346,19 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			packet->setAdjust( 0 );
 			return packet;
 		}
-		
+		case PX_ChangeRecord::PXT_ChangeDocProp:
+		{
+			// build change record
+			Props_ChangeRecordSessionPacket* packet = PacketFactory<Props_ChangeRecordSessionPacket>::create( pcr, m_pAbiCollab, m_pDoc );
+			// set properties
+			_mapPropsAtts( index, packet->getPropMap(), packet->getAttMap() );
+			// set length and adjust
+			// Document Properties have not size
+			packet->setLength( 0 );
+			packet->setAdjust( 0 );			
+			return packet;
+
+		}		
 		default:
 			UT_DEBUGMSG(("Unimplemented pcr->getType(): %d\n", pcr->getType()));
 			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
@@ -528,8 +546,12 @@ bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle sfh,
  */
 bool ABI_Collab_Export::signal(UT_uint32 iSignal)
 {
-	UT_DEBUGMSG(("ABI_Collab_Export::signal()!\n"));
+	UT_DEBUGMSG(("ABI_Collab_Export::signal()! %d \n",iSignal));
 	
+	if(iSignal == PD_SIGNAL_SAVEDOC)
+	{
+			return true;
+	}
 	SignalSessionPacket* ssp = new SignalSessionPacket(m_pAbiCollab->getSessionId(), m_pDoc->getOrigDocUUIDString(), iSignal);
 	if(m_pGlobPacket)
 	{

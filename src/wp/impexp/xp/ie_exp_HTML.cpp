@@ -1789,26 +1789,16 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			{
 				if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
-				if (*szValue != '#')
-					m_utf8_1  = "#";
-				else
-					m_utf8_1.clear();
-
-				m_utf8_1 += static_cast<const char *>(szValue);
+				m_utf8_1 = UT_colorToHex(szValue, true);
 			}
 			else m_utf8_1 = static_cast<const char *>(szValue);
 
 			styleNameValue (szName, m_utf8_1);
 		}
 		szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
-		if(szValue && !IS_TRANSPARENT_COLOR (szValue))
+		if(szValue && *szValue && !IS_TRANSPARENT_COLOR (szValue))
 		{
-			if (*szValue != '#')
-				m_utf8_1  = "#";
-			else
-				m_utf8_1.clear();
-
-			m_utf8_1 += static_cast<const char *>(szValue);
+			m_utf8_1 = UT_colorToHex(szValue, true);
 
 			styleNameValue ("background-color", m_utf8_1);
 		}
@@ -2920,15 +2910,10 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				}
 			}
 		}
-		if (szP_Color)
+		if (szP_Color && *szP_Color)
 			if (!IS_TRANSPARENT_COLOR (szP_Color))
 			{
-				if (*szP_Color != '#')
-					m_utf8_0  = "#";
-				else
-					m_utf8_0.clear();
-
-				m_utf8_0 += szP_Color;
+				m_utf8_0 = UT_colorToHex(szP_Color, true);
 
 				if (!compareStyle ("color", m_utf8_0.utf8_str ()))
 				{
@@ -2938,15 +2923,10 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					first = false;
 				}
 			}
-		if (szP_BgColor)
+		if (szP_BgColor && *szP_BgColor)
 			if (!IS_TRANSPARENT_COLOR (szP_BgColor))
 			{
-				if (*szP_BgColor != '#')
-					m_utf8_0  = "#";
-				else
-					m_utf8_0.clear();
-
-				m_utf8_0 += szP_BgColor;
+				m_utf8_0 = UT_colorToHex(szP_BgColor, true);
 
 				if (!compareStyle ("background", m_utf8_0.utf8_str ()))
 				{
@@ -4174,7 +4154,11 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	
 	// This might need to be updated for textbox (and wrapped-image?) changes that
 	// occured in 2.3. 
-	pAP->getProperty("wrap-mode", tempProp); // Get the wrap mode
+
+	// Get the wrap mode
+	if(!pAP->getProperty("wrap-mode", tempProp) || !tempProp || !*tempProp)
+		tempProp = "wrapped-both"; // this seems like a sane default
+
 	if(!strcmp(tempProp, "wrapped-both"))
 		m_utf8_1 += " clear: none;";
 	else if(!strcmp(tempProp, "wrapped-left"))
@@ -4465,23 +4449,13 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szName = 0;
 	const char * szMimeType = 0;
 	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
-		
-	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-		{
-			k++;
-			if (szName == 0) continue;
-			if (strcmp (szDataID, szName) == 0) break;
-				
-			szName = 0;
-			szMimeType = 0;
-			pByteBuf = 0;
-		}
+
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+		return;
 	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
 		
 
@@ -4651,23 +4625,13 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 {
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	const char * szName = 0;
 	const char * szMimeType = 0;
 	const char ** pszMimeType = &szMimeType;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
-	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-	{
-		k++;
-		if (szName == 0) continue;
-		if (strcmp (szDataID, szName) == 0) break;
-
-		szName = 0;
-		szMimeType = 0;
-		pByteBuf = 0;
-	}
+	if (!m_pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+		return;
 	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
 
 	if (strcmp (szMimeType, "image/png") != 0)
@@ -4882,23 +4846,13 @@ void s_HTML_Listener::_handlePendingImages ()
 		const UT_UTF8String * saved_url = val;
 		UT_UTF8String * url = const_cast<UT_UTF8String *>(saved_url);
 
-		const char * szName = 0;
 		const char * szMimeType = 0;
 		const char ** pszMimeType = &szMimeType;
 
 		const UT_ByteBuf * pByteBuf = 0;
 
-		UT_uint32 k = 0;
-		while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(pszMimeType)))
-		{
-			k++;
-			if (szName == 0) continue;
-			if (strcmp (dataid, szName) == 0) break;
-
-			szName = 0;
-			szMimeType = 0;
-			pByteBuf = 0;
-		}
+		if (!m_pDocument->getDataItemDataByName(dataid, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+			return;
 		if (pByteBuf) // this should always be found, but just in case...
 		{
 			multiBoundary ();
@@ -5994,19 +5948,9 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * _style_name, PD_Sty
 		}
 		else if ((name == "color") || (name == "background-color"))
 		{
-			if (value != "transparent")
+			if (!value.empty() && (value != "transparent"))
 			{
-				if(value.substr(0, 1) != "#")
-				{
-					value  = "#";
-				}
-				else
-				{
-					xxx_UT_DEBUGMSG(("HTML exporter: encountered RGB color with '#' prefixed\n"));
-					value.clear();
-				}
-
-				value += szValue;
+				value = UT_colorToHex(szValue, true);
 			}
 		}
 		else if (strstr(name.utf8_str(), "width"))

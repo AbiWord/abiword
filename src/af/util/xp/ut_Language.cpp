@@ -267,7 +267,7 @@ const gchar * UT_Language::getNthLangName(UT_uint32 n)
 	return (s_Table[n].m_szLangName);
 }
 
-const UT_uint32 UT_Language::getNthId(UT_uint32 n)
+UT_uint32 UT_Language::getNthId(UT_uint32 n)
 {
 	return (s_Table[n].m_nID);
 }

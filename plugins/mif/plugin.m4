@@ -2,7 +2,9 @@
 MIF_CFLAGS=
 MIF_LIBS=
 
-if test "$enable_mif" == "yes"; then
+if test "$enable_mif" != ""; then
+
+test "$enable_mif" == "auto" && PLUGINS="$PLUGINS mif"
 
 MIF_CFLAGS="$MIF_CFLAGS "'${PLUGIN_CFLAGS}'
 MIF_LIBS="$MIF_LIBS "'${PLUGIN_LIBS}'

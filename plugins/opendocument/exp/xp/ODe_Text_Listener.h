@@ -87,6 +87,9 @@ public:
     virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
     virtual void closeEndnote(ODe_ListenerAction& rAction);
 
+    virtual void openAnnotation(const PP_AttrProp* pAP);
+    virtual void closeAnnotation();
+
     virtual void openTOC(const PP_AttrProp* pAP);
     virtual void closeTOC();
 

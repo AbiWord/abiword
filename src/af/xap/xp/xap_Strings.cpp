@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <string.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -397,10 +396,6 @@ void XAP_DiskStringSet::startElement(const gchar *name, const gchar **atts)
 		const gchar ** a;
 		for (a = atts; (*a); a += 2)
 		{
-#ifdef DEBUG
-			// require a value for each attribute keyword
-			g_warning("untranslated string '%s'\n", a[0]);
-#endif
 			if (strcmp(a[0], "class") == 0)
 				continue;
 
@@ -454,25 +449,6 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		UT_DEBUGMSG(("Problem reading document\n"));
 		goto Cleanup;
 	}
-
-	// we succeeded in parsing the file,
-	// now check for higher-level consistency.
-
-#ifdef DEBUG
-	{
-		// TODO should we promote this test to be production code
-		// TODO and maybe raise a message box ??
-		UT_uint32 kLimit = G_N_ELEMENTS(s_map);
-		UT_uint32 k;
-
-		for (k=0; k<kLimit; k++)
-		{
-			const gchar * szValue = XAP_DiskStringSet::getValue(s_map[k].id);
-			if (!szValue || !*szValue)
-				UT_DEBUGMSG(("WARNING: Translation for id [%s] not found.\n",s_map[k].szName));
-		}
-	}
-#endif
 
 	bResult = true;
 

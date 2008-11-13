@@ -43,7 +43,7 @@ class ODi_StreamListener;
 /**
  * Class used to import OpenDocument files
  */
-class  IE_Imp_OpenDocument : public IE_Imp
+class IE_Imp_OpenDocument : public IE_Imp
 {
 public:
 

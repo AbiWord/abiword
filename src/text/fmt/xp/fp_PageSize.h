@@ -57,6 +57,7 @@ public:
 	void Set(const char *name, UT_Dimension u = DIM_none);
 	void Set(double w, double h, UT_Dimension u = DIM_none);
 	void Set(UT_Dimension u) { m_unit = u; }
+	bool Set(const gchar ** attributes);
 	inline void setScale( double scale) { m_scale = scale; }
 	void setPortrait(void);
 	void setLandscape(void);
@@ -72,8 +73,8 @@ public:
 	double MarginTop(UT_Dimension u) const;
 	double MarginBottom(UT_Dimension u) const;
 
-	double getScale(void) { return m_scale; }
-	UT_Dimension getDims(void) { return m_unit; }
+	double getScale(void) const { return m_scale; } 
+	UT_Dimension getDims(void) const { return m_unit; }
 	inline char * getPredefinedName (void) const { return m_predefined; }
 
 	static bool	IsPredefinedName(const char* szPageSizeName);

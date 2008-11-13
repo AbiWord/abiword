@@ -55,8 +55,8 @@ public:
 	virtual	void				_onKillActive(){}; 	
 	virtual	void				_onOK(){}; 		
 	virtual	void				_onApply(){}; 
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
-	virtual void				_onNotify(LPNMHDR hdr, int iCtrlID){};
+	virtual void				_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){};
+	virtual void				_onNotify(LPNMHDR /*hdr*/, int /*iCtrlID*/){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	void						setChanged (bool bChanged); // Unables or disables apply button
 	
@@ -85,7 +85,7 @@ public:
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
-	virtual	void				_onInitDialog(HWND hwnd){};	
+	virtual	void				_onInitDialog(HWND /*hwnd*/){};	
 	virtual void 				destroy(void);
 	virtual void 				cleanup(void);
 	HWND						getHandle(){return m_hWnd;}
@@ -97,7 +97,7 @@ public:
 	void						setCancelButton(bool b){m_bCancelButton=b;};
 	
 
-	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
+	virtual int					_onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/){return 1;};
 	virtual	void				_onOK(){}; 
 	virtual	void				_onApply(){}; 
 	virtual	void				_onCancel(){}; 

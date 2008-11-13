@@ -43,7 +43,7 @@ class RawPacket;
 class Event;
 class EventListener;
 	
-class  AbiCollabSessionManager
+class AbiCollabSessionManager
 {
 public:
 	static AbiCollabSessionManager*				getManager();

@@ -428,6 +428,19 @@ void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vec
 }
 
 /*!
+ * This method is used to reset the colorization such as what occurs
+ * when showAuthors state is changed.
+ */ 
+void fl_BlockLayout::refreshRunProperties(void)
+{
+	fp_Run * pRun = getFirstRun();
+	while(pRun)
+	{
+		pRun->lookupProperties();
+		pRun = pRun->getNextRun();
+	}
+}
+/*!
     this function is only to be called by fl_ContainerLayout::lookupMarginProperties()
     all other code must call lookupMarginProperties() instead
 
@@ -3203,7 +3216,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine2->setBlock(this);
 				if(pContainer)
 				{
-			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine2), static_cast<fp_Container *>(pOldLastLine));
 					m_iLinePosInContainer = pContainer->findCon(pLine2)+1;
 					pLine2->setContainer(pContainer);
 				}
@@ -3495,6 +3508,10 @@ void fl_BlockLayout::format()
 		m_bListLabelCreated =true;
 	}
 	_assertRunListIntegrity();
+	//
+	// Now coalesceRuns
+	//
+	coalesceRuns();
 	if(!bJustifyStuff && m_pAlignment && (m_pAlignment->getType() != FB_ALIGNMENT_LEFT))
 	{
 		//
@@ -9375,6 +9392,8 @@ gchar* fl_BlockLayout::getListStyleString( FL_ListType iListType)
 FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style)
 {
 	FL_ListType lType = NOT_A_LIST;
+	if(style == NULL)
+		return lType;
 	UT_uint32 j;
 	fl_AutoLists al;
 	UT_uint32 size_xml_lists = al.getXmlListsSize();
@@ -9594,11 +9613,6 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 			fIndent = static_cast<float>(UT_convertToInches(szIndent));
 		else
 			fIndent =  static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
-		if(!szFont)
-		{
-			szFont = "Times New Roman";
-			UT_ASSERT(0);
-		}
 		double dLeft;
 		if(m_iDomDirection == UT_BIDI_LTR)
 			dLeft = UT_convertToInches(getProperty("margin-left",true));
@@ -9606,6 +9620,21 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 			dLeft = UT_convertToInches(getProperty("margin-right",true));
 
 		fAlign += static_cast<float>(dLeft);
+		if(!szListStyle)
+			szListStyle = style;
+		if(szDelim==NULL)
+			szDelim="%L";
+		if(szDec==NULL)
+			szDec=".";
+		if(!szFont)
+		{
+			FL_ListType lType = getListTypeFromStyle(szListStyle);
+			if(IS_NUMBERED_LIST_TYPE(lType))
+				szFont = "Times New Roman";
+			else
+				szFont = "symbol";
+			UT_ASSERT(0);
+		}
 	}
 	else
 	{
@@ -9615,6 +9644,7 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 		szDec = ".";
 		fAlign = static_cast<float>(LIST_DEFAULT_INDENT);
 		fIndent = static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
+		szListStyle = "Numbered List";
 	}
 
 	UT_uint32 count = m_pDoc->getListsCount();
@@ -9837,6 +9867,8 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	va.addItem("listid"); 		va.addItem(lid);
 	va.addItem("parentid");		va.addItem(pid);
 	va.addItem("level");		va.addItem(buf);
+	va.addItem("style");        va.addItem(style);
+
 	vp.addItem("start-value");	vp.addItem(pszStart);
 
 	if(m_iDomDirection == UT_BIDI_RTL)

@@ -23,10 +23,14 @@
 #include "ut_bytebuf.h"
 #include "ServiceAccountHandler.h"
 #include "AbiCollabService_Export.h"
+#include "AbiCollabSaveInterceptor.h"
+#include "xap_Frame.h"
+#include "xap_App.h"
+#include "xav_View.h"
 
-AbiCollabService_Export::AbiCollabService_Export(PD_Document* pDoc, UT_sint64 iID) : 
+AbiCollabService_Export::AbiCollabService_Export(PD_Document* pDoc, ServiceAccountHandler* pService) : 
 	m_pDoc(pDoc),
-	m_iID(iID)
+	m_pService(pService)
 {
 }
 
@@ -34,7 +38,7 @@ AbiCollabService_Export::~AbiCollabService_Export()
 {
 }
 
-bool AbiCollabService_Export::populate(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr)
+bool AbiCollabService_Export::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -45,9 +49,9 @@ bool AbiCollabService_Export::populate(PL_StruxFmtHandle sfh, const PX_ChangeRec
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle sdh,
-				      const PX_ChangeRecord * pcr,
-				      PL_StruxFmtHandle * psfh)
+bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle /*sdh*/,
+                                            const PX_ChangeRecord * /*pcr*/,
+                                            PL_StruxFmtHandle * /*psfh*/)
 {
 	return true;
 }
@@ -58,8 +62,8 @@ bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle sdh,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::change(PL_StruxFmtHandle sfh,
-				const PX_ChangeRecord * pcr)
+bool AbiCollabService_Export::change(PL_StruxFmtHandle /*sfh*/,
+                                     const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -71,11 +75,11 @@ bool AbiCollabService_Export::change(PL_StruxFmtHandle sfh,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
+                                          const PX_ChangeRecord * /*pcr*/,
+                                          PL_StruxDocHandle /*sdh*/,
+                                          PL_ListenerId /*lid*/,
+                                          void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
@@ -101,23 +105,29 @@ void AbiCollabService_Export::processDeferredNotifications(void)
  */
 bool AbiCollabService_Export::signal(UT_uint32 iSignal)
 {
-/*	ServiceAccountHandler* pService = ServiceAccountHandler::getService();
-	UT_return_if_fail(pService);
-
-	if (iSignal == PD_SIGNAL_DOCSAVED)
+	if((iSignal == PD_SIGNAL_SAVEDOC) && m_pDoc->isDirty())
 	{
-		m_pDoc->ignoreSignals();
-		pService->saveDocumentAsync(m_iID,m_pDoc);
-		m_pDoc->dontIgnoreSignals();
+		bool bSavedRemotely = ServiceAccountHandler::m_saveInterceptor.saveRemotely(m_pDoc);
+		if(bSavedRemotely)
+		{
+			UT_GenericVector<AV_View *> vecViews;
+			m_pDoc->getAllViews(&vecViews);
+			AV_View * pView = vecViews.getNthItem(0);
+			XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+			if (pFrame->getViewNumber() > 0)
+				XAP_App::getApp()->updateClones(pFrame);
+
+		}
+		return bSavedRemotely;
 	}
-	return true;*/
+	return true;
 }
 
 /*!
  * This virtual method is called from the AbiWord main tree upon doing a replace document with an attached
  * AbiCollab_Export connected to the document.
  */
-void AbiCollabService_Export::setNewDocument(PD_Document * pDoc)
+void AbiCollabService_Export::setNewDocument(PD_Document * /*pDoc*/)
 {
 	UT_DEBUGMSG(("AbiCollabService_Export::setNewDocument()\n"));
 /*	ServiceAccountHandler* pService = ServiceAccountHandler::getService();
@@ -134,12 +144,5 @@ void AbiCollabService_Export::setNewDocument(PD_Document * pDoc)
 void AbiCollabService_Export::removeDocument(void)
 {
 	UT_DEBUGMSG(("AbiCollabService_Export::removeDocument()\n"));
-/*	ServiceAccountHandler* pService = ServiceAccountHandler::getService();
-	UT_return_if_fail(pService);
-
-	pService->closeDocument(m_iID,m_pDoc);
-
-	// Now delete this class
-	// TODO: FIXME FIXME: THIS IS UGLE, NEVER DELETE 'THIS'
-	delete this;*/
+	m_pService->removeExporter();
 }

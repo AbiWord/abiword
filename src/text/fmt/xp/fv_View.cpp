@@ -173,11 +173,11 @@ fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
 	m_bPointEOL(false),
 	m_iPointHeight(0),
 	m_caretColor(0,0,0),
-    m_sDocUUID(""),
 	m_PropCaretListner(NULL),
 	m_pCaret(NULL),
 	m_ListenerID(0),
-	m_pView(pView)
+	m_pView(pView),
+	m_iAuthorId(-1)
 {
 }
 
@@ -673,21 +673,16 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
-	bool bFoundUUID = false;
+	UT_sint32 iLastAuthor = m_pDoc->getLastAuthorInt();
+	bool bFoundID = false;
 	for(i=0; i<iCount;i++)
 	{
 			pCaretProps = m_vecCarets.getNthItem(i);
 			pCaretProps->m_pCaret->resetBlinkTimeout();
-			if(pCaretProps->m_sDocUUID == sUUID)
+			if((pCaretProps->m_iAuthorId == iLastAuthor) && (iLen > 0))
 			{
-				if(iLen >= 0)
-				{
-						_setPoint(pCaretProps,docPos,iLen);
-				}
-				else
-				{
-						_setPoint(pCaretProps,docPos,0);
-				}
+				_setPoint(pCaretProps,docPos,iLen);
+				bFoundID = true;
 			}
 			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
 			{
@@ -697,27 +692,32 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 			{
 				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
 			}
-			if(sUUID == pCaretProps->m_sDocUUID)
-				bFoundUUID = true;
 	}
-	if(!bLocal && !bFoundUUID)
+	if(iLen > 0 && !bFoundID && !bLocal)
 	{
-			addCaret(docPos,sUUID);
+			addCaret(docPos, iLastAuthor);
 	}
 }
 
-void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
+void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 {
+	//
+	// Don't add an extra caret for the local user
+	//
+	if(m_pDoc->getMyUUIDString() == m_sDocUUID)
+		return;
 	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
 	m_vecCarets.addItem(pCaretProps);
-	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	UT_DEBUGMSG((" add caret num %d id %d position %d \n",m_vecCarets.getItemCount(),iAuthorId,docPos));
+	pCaretProps->m_pCaret = m_pG->createCaret( iAuthorId);
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
 	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
 	pCaretProps->m_pCaret->setBlink(true);
 	pCaretProps->m_pCaret->enable();
-	pCaretProps->m_sDocUUID = sDocUUID;
-	UT_sint32 icnt = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	pCaretProps->m_iAuthorId = iAuthorId;
+	UT_sint32 icnt = iAuthorId;
+	icnt = icnt % 12;
 	pCaretProps->m_caretColor = m_colorRevisions[icnt];
 	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
 	_setPoint(pCaretProps,docPos,0);
@@ -782,7 +782,7 @@ void FV_View::replaceGraphics(GR_Graphics * pG)
 //-------------------------
 // Visual Drag stuff
 //
-void FV_View::cutVisualText(UT_sint32 x, UT_sint32 y)
+void FV_View::cutVisualText(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 //
 // Do nothing for now. Only cut on first drag event.
@@ -890,7 +890,7 @@ void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 //Creates a new document, inserts a string into it, selects all, and then copies it
 //onto the system clipboard
 
-void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard)
+void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool /*useClipboard*/)
 {
 	/* create a new hidden document */
   	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
@@ -2198,7 +2198,7 @@ UT_UCSChar FV_View::getChar(PT_DocPosition pos, UT_sint32 *x, UT_sint32 *y, UT_u
   pt_PieceTable *piece = getDocument()->getPieceTable();
   pf_Frag *p;
   PT_BlockOffset offset;
-  UT_UCSChar ret;
+  UT_UCSChar ret = 0;
   if (piece->getFragFromPosition(pos, &p, &offset))
   {
     if (p->getType() == 0) // PFT_Text)
@@ -4445,7 +4445,7 @@ bool FV_View::getStyle(const gchar ** style)
 
 bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
 {
-	bool bRet;
+	bool bRet = false;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -12371,7 +12371,6 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, UT_UTF8String & sText,UT_
 	//
 	// Set the annotation properties
 	//
-	posStart;
 	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	pszAnn[0] = "annotation-author";
 	pszAnn[1] = sAuthor.utf8_str();
@@ -12482,6 +12481,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 		}
 		setPoint(getPoint()-1);
 	}
+	UT_GenericVector<fl_BlockLayout*>  vBlocks;
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
@@ -12498,6 +12498,47 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	// Hack for bug 2940
 	if (posStart <= 1) posStart=2;
 
+	//
+	// Look to see if the selection spans multiple blocks. If so, pick the
+	// Block containing the largest amount of selected text.
+	//
+	PT_DocPosition posAnnStart;
+	PT_DocPosition posAnnEnd;
+	getBlocksInSelection(&vBlocks);
+	if(vBlocks.getItemCount() > 1)
+	{
+		fl_BlockLayout * pBMax = NULL;
+		UT_sint32 iMaxSize = 0;
+		UT_uint32 j = 0;
+		for(j=0; j<vBlocks.getItemCount(); j++)
+		{
+			UT_sint32 iBSize = 0;
+			fl_BlockLayout * pB = vBlocks.getNthItem(j);
+			iBSize = pB->getLength();
+			if(j == 0)
+			{
+				iBSize = iBSize - (posStart - pB->getPosition(true));
+			}
+			else if(j == (vBlocks.getItemCount() - 1))
+			{
+				iBSize = posEnd - pB->getPosition(true);
+			}
+			if(iBSize > iMaxSize)
+			{
+				iMaxSize = iBSize;
+				pBMax = pB;
+			}
+		}
+		posAnnStart = pBMax->getPosition();
+		posAnnEnd = pBMax->getPosition(true) + pBMax->getLength();
+		if(posAnnStart < posStart)
+			posAnnStart = posStart;
+		if(posAnnEnd > posEnd)
+			posAnnEnd = posEnd;
+		posStart = posAnnStart;
+		posEnd = posAnnEnd;
+	}
+
 	// the selection has to be within a single block
 	// we could implement hyperlinks spaning arbitrary part of the document
 	// but then we could not use <a href=> </a> in the output and
@@ -12511,6 +12552,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		return false;
 	}
+	_clearSelection();
 	// Silently fail (TODO: pop up message) if we try to nest annotations or hyperlinks.
 	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
 		return false;
@@ -13507,7 +13549,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			UT_uint32 iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
 			UT_uint32 iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
 			UT_uint32 iWindowWidth   = getWindowWidth() - iLeftGrayWidth > 0 ? getWindowWidth() - iLeftGrayWidth : 0;
-			UT_uint32 iPortHeight;
+			UT_uint32 iPortHeight = 0;
 			if( adjustedBottom <= getWindowHeight() && adjustedTop >=0)
 			{
 				iPortHeight = adjustedBottom - adjustedTop;
@@ -13524,9 +13566,10 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &
 			{
 				iPortHeight = getWindowHeight();
 			}
-			else
+			else 
+			{
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			
+			}
 			
 			
 			UT_uint32 iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);

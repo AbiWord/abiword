@@ -250,55 +250,52 @@ AP_UnixDialog_Spell::runModal (XAP_Frame * pFrame)
 GtkWidget * 
 AP_UnixDialog_Spell::_constructWindow (void)
 {
-    // get the path where our glade file is located
-    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-    UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-    glade_path += "/ap_UnixDialog_Spell.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Spell.xml";
 
-    // load the dialog from the glade file
-    GladeXML * pXML = abiDialogNewFromXML (glade_path.c_str() );
-    if (!pXML)
-    	return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 
-    m_wDialog = glade_xml_get_widget (pXML, "ap_UnixDialog_Spell");
+	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Spell"));
 
-    const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle,s);
-    gtk_window_set_title (GTK_WINDOW( m_wDialog), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW( m_wDialog), s.utf8_str());
 
-	localizeLabelUnderline(glade_xml_get_widget (pXML, "lbNotInDict"), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
-	localizeLabelUnderline(glade_xml_get_widget (pXML, "lbChangeTo"), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
+	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbNotInDict")), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
+	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbChangeTo")), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
 
-    m_txWrong = glade_xml_get_widget (pXML, "txWrong");
-    m_eChange = glade_xml_get_widget (pXML, "eChange");
-    m_lvSuggestions = glade_xml_get_widget (pXML, "tvSuggestions");
+	m_txWrong = GTK_WIDGET(gtk_builder_get_object(builder, "txWrong"));
+	m_eChange = GTK_WIDGET(gtk_builder_get_object(builder, "eChange"));
+	m_lvSuggestions = GTK_WIDGET(gtk_builder_get_object(builder, "tvSuggestions"));
 
 	// localise
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btIgnore"), pSS, AP_STRING_ID_DLG_Spell_Ignore);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btIgnoreAll"), pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btChange"), pSS, AP_STRING_ID_DLG_Spell_Change);
-	localizeButtonUnderline (glade_xml_get_widget (pXML, "btChangeAll"), pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnore")), pSS, AP_STRING_ID_DLG_Spell_Ignore);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnoreAll")), pSS, AP_STRING_ID_DLG_Spell_IgnoreAll);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChange")), pSS, AP_STRING_ID_DLG_Spell_Change);
+	localizeButtonUnderline (GTK_WIDGET(gtk_builder_get_object(builder, "btChangeAll")), pSS, AP_STRING_ID_DLG_Spell_ChangeAll);
 
-    // attach signals
-    g_signal_connect (glade_xml_get_widget (pXML, "btAdd"), 
+	// attach signals
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btAdd")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onAddClicked), 
 					  (gpointer)this);
-    g_signal_connect (glade_xml_get_widget (pXML, "btIgnore"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnore")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onIgnoreClicked), 
 					  (gpointer)this);
-    g_signal_connect (glade_xml_get_widget (pXML, "btIgnoreAll"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btIgnoreAll")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onIgnoreAllClicked), 
 					  (gpointer)this);
-    g_signal_connect (glade_xml_get_widget (pXML, "btChange"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btChange")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onChangeClicked), 
 					  (gpointer)this);
-    g_signal_connect (glade_xml_get_widget (pXML, "btChangeAll"), 
+	g_signal_connect (GTK_WIDGET(gtk_builder_get_object(builder, "btChangeAll")), 
 					  "clicked", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onChangeAllClicked), 
 					  (gpointer)this);
@@ -306,18 +303,18 @@ AP_UnixDialog_Spell::_constructWindow (void)
 					  "row-activated", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionDblClicked), 
 					  (gpointer)this);
-    m_replaceHandlerID = g_signal_connect (G_OBJECT(m_eChange), 
+	m_replaceHandlerID = g_signal_connect (G_OBJECT(m_eChange), 
 					   "changed",
 					   G_CALLBACK (AP_UnixDialog_Spell__onSuggestionChanged),
 					   (gpointer)this);
 
 
-    // highlight our misspelled word in red
-    GdkColormap * cm = gdk_colormap_get_system();
-    m_highlight.red = 0xffff;
-    m_highlight.green = 0x0000;
-    m_highlight.blue = 0x0000;
-    gdk_colormap_alloc_color(cm, &m_highlight, FALSE, TRUE);
+	// highlight our misspelled word in red
+	GdkColormap * cm = gdk_colormap_get_system();
+	m_highlight.red = 0xffff;
+	m_highlight.green = 0x0000;
+	m_highlight.blue = 0x0000;
+	gdk_colormap_alloc_color(cm, &m_highlight, FALSE, TRUE);
 
 
 	// Liststore and -view
@@ -340,23 +337,26 @@ AP_UnixDialog_Spell::_constructWindow (void)
 				  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionSelected), 
 				  (gpointer)this);
 
-    gtk_widget_show_all (m_wDialog);
-    return m_wDialog;
+	gtk_widget_show_all (m_wDialog);
+
+	g_object_unref(G_OBJECT(builder));
+
+	return m_wDialog;
 }
 
 void 
 AP_UnixDialog_Spell::_updateWindow (void)
 {             
-    GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_txWrong));
-    GtkTextIter iter;
+	GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_txWrong));
+	GtkTextIter iter;
 
 	// Empty buffer
 	gtk_text_buffer_set_text(buffer, "", -1);
 
-    const UT_UCSChar *p;
+	const UT_UCSChar *p;
 	UT_sint32 iLength;
-    // insert start of sentence
-    p = m_pWordIterator->getPreWord(iLength);
+	// insert start of sentence
+	p = m_pWordIterator->getPreWord(iLength);
 	if (0 < iLength)
 	{
 		gchar * preword = (gchar*) _convertToMB(p, iLength);
@@ -364,16 +364,16 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		FREEP(preword);
 	}
 
-    // insert misspelled word (in highlight color)
-    p = m_pWordIterator->getCurrentWord(iLength);
-    gchar * word = (gchar*) _convertToMB(p, iLength);
-    GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
-    gtk_text_buffer_get_end_iter(buffer, &iter);
-    gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
+	// insert misspelled word (in highlight color)
+	p = m_pWordIterator->getCurrentWord(iLength);
+	gchar * word = (gchar*) _convertToMB(p, iLength);
+	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
+	gtk_text_buffer_get_end_iter(buffer, &iter);
+	gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
 	// word is freed at the end of the method...
 	
-    // insert end of sentence
-    p = m_pWordIterator->getPostWord(iLength);
+	// insert end of sentence
+	p = m_pWordIterator->getPostWord(iLength);
 	if (0 < iLength)
 	{
 		gchar * postword = (gchar*) _convertToMB(p, iLength);
@@ -381,15 +381,15 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		gtk_text_buffer_insert(buffer, &iter, postword, -1);
 		FREEP(postword);
 	}
-    else
-    {
-        // Insert space to make gtk_text_buffer understand that it
-        // really should highlight the selected word. This is a
-        // workaround for bug 5459. It really should be fixed in GTK.
-        gtk_text_buffer_get_end_iter(buffer, &iter);
+	else
+	{
+		// Insert space to make gtk_text_buffer understand that it
+		// really should highlight the selected word. This is a
+		// workaround for bug 5459. It really should be fixed in GTK.
+		gtk_text_buffer_get_end_iter(buffer, &iter);
 		gtk_text_buffer_insert(buffer, &iter, " ", -1);
-    }
-    // TODO: set scroll position so misspelled word is centered
+	}
+	// TODO: set scroll position so misspelled word is centered
 
 
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvSuggestions));
@@ -402,12 +402,12 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
 
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::_updateWindow() itemcount=%d\n", m_Suggestions->getItemCount ()));
-    if (m_Suggestions->getItemCount () == 0) {
+	if (m_Suggestions->getItemCount () == 0) {
 
 		GtkTreeIter iter;
 		gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
 
-        const XAP_StringSet * pSS = m_pApp->getStringSet();
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		UT_UTF8String s;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
 
@@ -417,31 +417,32 @@ AP_UnixDialog_Spell::_updateWindow (void)
 							COLUMN_NUMBER, -1,
 							-1);
 
-        g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
-        gtk_entry_set_text(GTK_ENTRY(m_eChange), word);
-        g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
-    } 
-	else {
+		g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
+		gtk_entry_set_text(GTK_ENTRY(m_eChange), word);
+		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
+	} 
+	else
+	{
 
 		GtkTreeIter iter;
 		gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 
 		gchar * suggest = NULL;   
-	    for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
-
-	        suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
+		for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
+		{
+			suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
 			gtk_list_store_append (GTK_LIST_STORE (model), &iter);
 			gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
 								COLUMN_SUGGESTION, suggest,  
 								COLUMN_NUMBER, i,
 								-1);
-	    }
+		}
 		// put the first suggestion in the entry
 		suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(0));
-        g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
-        gtk_entry_set_text(GTK_ENTRY(m_eChange), suggest);
-        g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
-    }
+		g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
+		gtk_entry_set_text(GTK_ENTRY(m_eChange), suggest);
+		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
+	}
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvSuggestions), model);
 	g_object_unref (G_OBJECT (model));	
@@ -453,13 +454,13 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		gtk_tree_path_free (path);
 	}
 
-    FREEP (word);
+	FREEP (word);
 }
 
 void 
 AP_UnixDialog_Spell::_populateWindowData (void)
 {
-    // TODO: initialize list of user dictionaries
+	// TODO: initialize list of user dictionaries
 }
 
 
@@ -471,15 +472,16 @@ void
 AP_UnixDialog_Spell::onChangeClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onChangeClicked()\n"));
-    UT_UCSChar * replace = NULL;
-    replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_eChange)));
-    if (!replace || !UT_UCS4_strlen(replace)) {
-        UT_DEBUGMSG(("replace is 0 length\n"));
-        FREEP(replace);
-        return;
-    }
-    changeWordWith(replace);
-    FREEP(replace);
+	UT_UCSChar * replace = NULL;
+	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_eChange)));
+	if (!replace || !UT_UCS4_strlen(replace))
+	{
+		UT_DEBUGMSG(("replace is 0 length\n"));
+		FREEP(replace);
+		return;
+	}
+	changeWordWith(replace);
+	FREEP(replace);
 }
 
 /*!
@@ -489,15 +491,16 @@ void
 AP_UnixDialog_Spell::onChangeAllClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onChangeAllClicked()\n"));
-    UT_UCSChar * replace = NULL;
-    replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_eChange)));
-    if (!replace || !UT_UCS4_strlen(replace)) {
-        FREEP(replace);
-        return;
-    }
-    addChangeAll(replace);
-    changeWordWith(replace);
-    FREEP(replace);
+	UT_UCSChar * replace = NULL;
+	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_eChange)));
+	if (!replace || !UT_UCS4_strlen(replace))
+	{
+		FREEP(replace);
+		return;
+	}
+	addChangeAll(replace);
+	changeWordWith(replace);
+	FREEP(replace);
 }
 
 /*!
@@ -507,7 +510,7 @@ void
 AP_UnixDialog_Spell::onIgnoreClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onIgnoreClicked()\n"));
-    ignoreWord();
+	ignoreWord();
 }
 
 /*!
@@ -517,8 +520,8 @@ void
 AP_UnixDialog_Spell::onIgnoreAllClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onIgnoreAllClicked()\n"));
-    addIgnoreAll();
-    ignoreWord();
+	addIgnoreAll();
+	ignoreWord();
 }
 
 /*!
@@ -528,8 +531,8 @@ void
 AP_UnixDialog_Spell::onAddClicked ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onAddClicked()\n"));
-    addToDict();   
-    ignoreWord();
+	addToDict();   
+	ignoreWord();
 }
 
 /*!
@@ -539,19 +542,20 @@ void
 AP_UnixDialog_Spell::onSuggestionSelected ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onSuggestionSelected()\n"));
-    if (!m_Suggestions->getItemCount()) return;
+	if (!m_Suggestions->getItemCount())
+		return;
    
 	GtkTreeIter iter;
-    gchar * newreplacement = NULL;
+	gchar * newreplacement = NULL;
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvSuggestions));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
 	gtk_tree_selection_get_selected (selection, &model, &iter);
 	gtk_tree_model_get (model, &iter, COLUMN_SUGGESTION, &newreplacement, -1);
-    UT_ASSERT(newreplacement);
+	UT_ASSERT(newreplacement);
 
-    g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
-    gtk_entry_set_text(GTK_ENTRY(m_eChange), newreplacement);
-    g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);
+	g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
+	gtk_entry_set_text(GTK_ENTRY(m_eChange), newreplacement);
+	g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);
 }
 
 /*!
@@ -561,19 +565,22 @@ void
 AP_UnixDialog_Spell::onSuggestionChanged ()
 {
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Spell::onSuggestionChanged()\n"));
-    const gchar * modtext = gtk_entry_get_text(GTK_ENTRY(m_eChange));
-    UT_ASSERT(modtext);
+	const gchar * modtext = gtk_entry_get_text(GTK_ENTRY(m_eChange));
+	UT_ASSERT(modtext);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvSuggestions));
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
 	GtkTreePath *first = gtk_tree_path_new_first ();
-	if (gtk_tree_model_get_iter (model, &iter, first)) {
+	if (gtk_tree_model_get_iter (model, &iter, first))
+	{
 		gtk_tree_path_free (first);
-		do {
+		do
+		{
 			gchar *label = NULL;
 			gtk_tree_model_get (model, &iter, COLUMN_SUGGESTION, &label, -1);
-			if (g_ascii_strncasecmp (modtext, label, strlen (modtext)) == 0) {
+			if (g_ascii_strncasecmp (modtext, label, strlen (modtext)) == 0)
+			{
 				GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
 				g_signal_handler_block(G_OBJECT(selection), m_listHandlerID);
 				gtk_tree_selection_select_path (selection, path);
@@ -584,7 +591,8 @@ AP_UnixDialog_Spell::onSuggestionChanged ()
 		}
 	   	while (gtk_tree_model_iter_next (model, &iter));
 	}
-	else {
+	else
+	{
 		gtk_tree_path_free (first);
 		gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions)));
 	}
@@ -598,8 +606,8 @@ AP_UnixDialog_Spell::onSuggestionChanged ()
 char * 
 AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword)
 {
-    UT_UCS4String ucs4(wword);
-    return g_strdup(ucs4.utf8_str());
+	UT_UCS4String ucs4(wword);
+	return g_strdup(ucs4.utf8_str());
 }
 
 /*!
@@ -609,8 +617,8 @@ char *
 AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword, 
 								   UT_sint32 iLength)
 {
-    UT_UCS4String ucs4(wword, iLength);
-    return g_strdup(ucs4.utf8_str());
+	UT_UCS4String ucs4(wword, iLength);
+	return g_strdup(ucs4.utf8_str());
 }
 
 /*!
@@ -619,8 +627,8 @@ AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword,
 UT_UCSChar * 
 AP_UnixDialog_Spell::_convertFromMB (const char *word)
 {
-    UT_UCS4Char * str = 0;
-    UT_UCS4String ucs4(word);
-    UT_UCS4_cloneString(&str, ucs4.ucs4_str());
-    return str;
+	UT_UCS4Char * str = 0;
+	UT_UCS4String ucs4(word);
+	UT_UCS4_cloneString(&str, ucs4.ucs4_str());
+	return str;
 }

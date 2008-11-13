@@ -18,7 +18,8 @@ AM_INIT_AUTOMAKE
 # cross platform deps
 fribidi_req='fribidi >= 0.10.4'
 glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
-gsf_req='libgsf-1 >= 1.12.0'
+gsf_req='libgsf-1 >= 1.12'
+gsf_gio_req='libgsf-1 >= 1.14.9'
 wv_req='wv-1.0 >= 1.2.0'
 xp_pkgs="
   ${fribidi_req}
@@ -31,6 +32,7 @@ xp_pkgs="
 enchant_req='enchant >= 1.2.0'
 gnomeui_req='libgnomeui-2.0 >= 2.14'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
+gio_req='gio-2.0'
 goffice_req='libgoffice-0.4'
 gucharmap_req='gucharmap >= 1.4'
 libgnomeprintui_req='libgnomeprintui-2.2 >= 2.2.0'
@@ -43,12 +45,10 @@ cocoa_pkgs="$enchant_req"
 
 # gtk deps
 pangoxft_req='pangoxft >= 1.2.0'
-gtk_req='gtk+-2.0 >= 2.6.0'
-libglade_req='libglade-2.0 >= 2.0.0'
+gtk_req='gtk+-2.0 >= 2.12.0'
 gtk_pkgs="
   ${pangoxft_req}
   ${gtk_req}
-  ${libglade_req}
 "
 
 # win32 deps
@@ -135,8 +135,8 @@ AC_ARG_ENABLE([plugins],
 		abi_cv_disable_default_plugins="yes"
 		abi_cv_plugins=""
 	elif test "$enableval" == "yes"; then
-		# just build default plugins
-		abi_cv_plugins=""
+		# auto-detect which plugins can be built
+		abi_cv_plugins="auto"
 	else
 		# custom plugins list
 		abi_cv_plugins="$enableval"
@@ -332,6 +332,24 @@ if test "$abi_cv_gnomevfs" == "yes"; then
 	opt_pkgs="$opt_pkgs $gnomevfs_req"
 fi
 
+AC_ARG_WITH([gio], 
+	[AS_HELP_STRING([--with-gio], [use GIO library])], 
+[
+	abi_cv_gio="$withval"
+],[
+	# use gio if detected
+	PKG_CHECK_EXISTS([ $gio_req ],
+	[
+		abi_cv_gio="yes"
+	], [
+		abi_cv_gio="no"
+	])
+])
+
+if test "$abi_cv_gio" == "yes"; then
+	opt_pkgs="$opt_pkgs $gio_req"
+fi
+
 AC_ARG_WITH([goffice], 
 	[AS_HELP_STRING([--with-goffice], [(gtk only) use goffice library])], 
 [
@@ -442,6 +460,16 @@ fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 AC_SUBST([DEPS_CFLAGS])
+if test "$abi_cv_gio" == "yes"; then
+	PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
+                 [abi_cv_gsf_gio=no])
+	if test "$abi_cv_gsf_gio" == "yes" ; then
+		AC_DEFINE([HAVE_GSF_GIO], [1], [GSF has GIO support])
+	fi
+else
+	abi_cv_gsf_gio=no
+fi
+
 DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
 AC_SUBST([DEPS_LIBS])
 
@@ -522,7 +550,7 @@ ABIWORD_SERIES="abi_series"
 AC_DEFINE_UNQUOTED([ABIWORD_SERIES], [ "$ABIWORD_SERIES" ], [major.minor])
 AC_SUBST(ABIWORD_SERIES)
 AC_SUBST(ABIWORD_DATADIR,    "${datadir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
-AC_SUBST(ABIWORD_GLADEDIR,   "${ABIWORD_DATADIR}/glade")
+AC_SUBST(ABIWORD_UIDIR,   "${ABIWORD_DATADIR}/ui")
 AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_LIBDIR,     "${libdir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_LIBDIR}/plugins")
@@ -640,6 +668,10 @@ if test "$abi_cv_gnomevfs" == "yes"; then
 	AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs])
 fi
 
+if test "$abi_cv_gio" == "yes"; then
+	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
+fi
+
 if test "$abi_cv_goffice" == "yes"; then
 	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
 fi
@@ -658,26 +690,32 @@ ALL_PLUGINS=
 for p in $(echo $ALL_PLUGINS_); do ALL_PLUGINS="$ALL_PLUGINS $p"; done
 AC_SUBST([ALL_PLUGINS])
 
-default_plugins="opendocument"
-
 PLUGINS=
-if test "$abi_cv_disable_default_plugins" != "yes"; then
-	PLUGINS="$default_plugins"
+if test "$abi_cv_plugins" == "auto"; then
+
+	# which plugins to auto-enable
+	# this creates variables like "enable_wordperfect=auto"
+	for plugin in `echo $ALL_PLUGINS`; do
+		eval $(echo "enable_$plugin")="auto"
+	done
+else
+	default_plugins="opendocument"
+
+	if test "$abi_cv_disable_default_plugins" != "yes"; then
+		PLUGINS="$default_plugins"
+	fi
+	PLUGINS="$PLUGINS $abi_cv_plugins"
+
+	# which plugins to enable
+	# this creates variables like "enable_wordperfect=yes"
+	for plugin in `echo $PLUGINS`; do
+		eval $(echo "enable_$plugin")="yes"
+	done
 fi
-PLUGINS="$PLUGINS $abi_cv_plugins"
-AC_SUBST([PLUGINS])
-
-BUILTIN_PLUGINS="$abi_cv_builtin_plugins"
-AC_SUBST([BUILTIN_PLUGINS])
-
-# which plugins to enable
-# this creates variables like "enable_wordperfect=yes"
-for plugin in `echo $PLUGINS`; do
-	eval $(echo "enable_$plugin")="yes"
-done
 
 # enable the plugins we want to link statically
 # this creates variables like "enable_wordperfect=yes"
+BUILTIN_PLUGINS="$abi_cv_builtin_plugins"
 for plugin in `echo $BUILTIN_PLUGINS`; do
 	eval $(echo "enable_$plugin")="yes"
 done
@@ -695,11 +733,14 @@ BUILTIN_PLUGINS_LA=
 for plugin in `echo $BUILTIN_PLUGINS`; do
 	BUILTIN_PLUGINS_LA="$BUILTIN_PLUGINS_LA ../../plugins/$plugin/$plugin.la"
 done
-AC_SUBST([BUILTIN_PLUGINS_LA])
 
 m4_include([plugin-builtin.m4])
 
 m4_include([plugin-configure.m4])
+
+AC_SUBST([PLUGINS])
+AC_SUBST([BUILTIN_PLUGINS])
+AC_SUBST([BUILTIN_PLUGINS_LA])
 
 # put all deps on a single line for the .pc file
 ABIWORD_REQUIRED_PKGS=
@@ -789,6 +830,8 @@ Optional features:
 Optional dependencies:
   libgnomeui            ${abi_cv_gnomeui}
   gnome-vfs             ${abi_cv_gnomevfs}
+  gio			${abi_cv_gio}
+  gsf-gio               ${abi_cv_gsf_gio}
   goffice               ${abi_cv_goffice}
   gucharmap             ${abi_cv_gucharmap}
 

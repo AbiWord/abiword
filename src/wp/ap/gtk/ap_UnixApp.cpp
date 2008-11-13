@@ -479,21 +479,13 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 }
 
 /*!
-  This returns the directory that holds the application .glade files.
+  This returns the directory that holds the application UI files.
   \return A const string containting the directory path
 */
-const char * AP_UnixApp::getAbiSuiteAppGladeDir(void) const
+const std::string& AP_UnixApp::getAbiSuiteAppUIDir(void) const
 {
-	static const gchar *dir = NULL;
-
-	if (!dir) {
-		UT_UTF8String s ("");
-		s += getAbiSuiteLibDir();
-		s += "/glade";
-		dir = g_strdup (s.utf8_str ());
-	}
-	
-    return dir;
+	static const std::string dir = std::string(getAbiSuiteLibDir()) + "/ui";
+	return dir;
 }
 
 
@@ -1527,7 +1519,7 @@ static gint s_signal_count = 0;
 /*!
   This function actually handles signals.  The most commonly recieved
   one is SIGSEGV, the segfault signal.  We want to clean up, save the
-  user's files to backup locations (currently <filename>.SEGFAULTED) and then
+  user's files to backup locations (currently <filename>.SAVED) and then
   call abort, so we still get a core dump that we can debug.
   \param sig_num the integer representing which signal we recieved
 */
@@ -1566,7 +1558,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
-		UT_ASSERT(curFrame);
+		UT_continue_if_fail(curFrame);
 		if (NULL == curFrame->getFilename())
 		  curFrame->backup(".abw.SAVED",abiType);
 		else

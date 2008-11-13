@@ -20,7 +20,6 @@
  */
 
 #include <stdlib.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -107,27 +106,24 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_InsertTable.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_InsertTable.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_InsertTable");
-	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbAutoColSize") ));
-	m_pColSpin = glade_xml_get_widget(xml, "sbNumCols");
-	m_pRowSpin = glade_xml_get_widget(xml, "sbNumRows");
-	m_pColWidthSpin = glade_xml_get_widget(xml, "sbColSize");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_InsertTable"));
+	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize")) ));
+	m_pColSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbNumCols"));
+	m_pRowSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbNumRows"));
+	m_pColWidthSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbColSize"));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColSpin), getNumCols());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pRowSpin), getNumRows());
 
-	GtkWidget *rbAutoColSize = glade_xml_get_widget (xml, "rbAutoColSize");
+	GtkWidget *rbAutoColSize = GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize"));
 	s_auto_colsize_toggled (GTK_TOGGLE_BUTTON (rbAutoColSize), m_pColWidthSpin);
 	g_signal_connect (G_OBJECT (rbAutoColSize), "toggled", G_CALLBACK (s_auto_colsize_toggled), m_pColWidthSpin);
 	
@@ -136,7 +132,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle,s);
 	abiDialogSetTitle(window, s.utf8_str());
 	// Units
-	gtk_label_set_text (GTK_LABEL (glade_xml_get_widget(xml, "lbInch")), UT_dimensionName(m_dim));
+	gtk_label_set_text (GTK_LABEL (GTK_WIDGET(gtk_builder_get_object(builder, "lbInch"))), UT_dimensionName(m_dim));
 	double spinstep = getSpinIncr ();
 	gtk_spin_button_set_increments (GTK_SPIN_BUTTON(m_pColWidthSpin), spinstep, spinstep * 5);
 	double spinmin = getSpinMin ();
@@ -145,18 +141,20 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), m_columnWidth);
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTableSize"), pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
-	localizeLabel(glade_xml_get_widget(xml, "lbNumCols"), pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
-	localizeLabel(glade_xml_get_widget(xml, "lbNumRows"), pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableSize")), pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNumCols")), pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNumRows")), pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAutoFit"), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAutoFit")), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
 	
-	localizeButton(glade_xml_get_widget(xml, "rbAutoColSize"), pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbAutoColSize")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_AUTOSIZE));	
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize")), pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
+	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_AUTOSIZE));	
 	
-	localizeButton(glade_xml_get_widget(xml, "rbFixedColSize"), pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
-	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbFixedColSize")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_FIXEDSIZE));
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbFixedColSize")), pSS, AP_STRING_ID_DLG_InsertTable_FixedColSize);
+	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbFixedColSize"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_FIXEDSIZE));
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
+
+	g_object_unref(G_OBJECT(builder));
 
 	return window;
 }

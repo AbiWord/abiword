@@ -45,7 +45,7 @@ private:
 	// implemented for XAP_Win32Dialog
 	virtual BOOL		_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual BOOL		_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	virtual BOOL		_onDeltaPos(NM_UPDOWN * pnmud) { return FALSE; };
+	virtual BOOL		_onDeltaPos(NM_UPDOWN * /*pnmud*/) { return FALSE; };
 
 	void				_createPreviewWidget();
 

@@ -141,7 +141,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bDrawSelection(false),
 	m_iSelLow(0),
 	m_iSelHigh(0),
-	m_bMustClearScreen(false)
+	m_bMustClearScreen(false),
+	m_iAuthorColor(0)
 #ifdef DEBUG
 	,m_iFontAllocNo(0)
 #endif
@@ -444,7 +445,6 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 	}
-
 	// here we handle background colour -- we parse the property into
 	// m_pColorHL and then call updateHighlightColor() to overlay any
 	// colour from higher layout elements
@@ -477,7 +477,19 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			_lookupProperties(NULL, pBlockAP, pSectionAP,pG);
 	}
-
+	const char * szAuthorInt = NULL;	
+	if(pSpanAP && pDoc->isShowAuthors())
+	{
+		if(pSpanAP->getAttribute(PT_AUTHOR_NAME,szAuthorInt))
+		{
+			if(szAuthorInt)
+				m_iAuthorColor = atoi(szAuthorInt);
+		}
+	}
+	else
+	{
+		m_iAuthorColor = 0;
+	}
 	// here we used to set revision-based visibility, but that has to
 	// be done inside getSpanAP() because we need to know whether the
 	// revision is to be visible or not before we can properly apply
@@ -726,7 +738,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 	}
 }
 
-void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
+void fp_Run::setX(UT_sint32 iX, bool /*bDontClearIfNeeded*/)
 {
 	Run_setX(iX, FP_CLEARSCREEN_AUTO);
 }
@@ -1095,7 +1107,6 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	FV_View * pView = _getView();
 	UT_return_val_if_fail(pView, s_fgColor);
 	bool bShow = pView->isShowRevisions();
-	
 	if(getBlock()->getDocLayout()->displayAnnotations())
 	{
 		if(getLine() && getLine()->getContainer() && getLine()->getContainer()->getContainerType() == FP_CONTAINER_ANNOTATION)
@@ -1109,7 +1120,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	if(m_pRevisions && bShow)
 	{
 		bool bMark = pView->isMarkRevisions();
-		const PP_Revision * r = m_pRevisions->getLastRevision();
+		const gchar * szID=NULL;
+		UT_uint32 iId = 0;
+		const PP_Revision * r = NULL;
+		r = m_pRevisions->getLastRevision();
 
 		UT_return_val_if_fail(r != NULL, _getColorFG());
 
@@ -1121,9 +1135,10 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 			bRevColor = true;
 		}
 
-		UT_uint32 iId = r->getId();
+
 		UT_uint32 iShowId = pView->getRevisionLevel();
-		
+
+		xxx_UT_DEBUGMSG(("fp_Run Revision ID %d ShowRevision ID %d \n",iId,iShowId));
 		if(bMark && iShowId == 0)
 		{
 			// this is the case where we are in marking mode and are
@@ -1150,12 +1165,21 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	}
 	else if(m_pHyperlink && (m_pHyperlink->getHyperlinkType() == HYPERLINK_ANNOTATION))
 	{
-			if(getBlock()->getDocLayout()->displayAnnotations())
-			{
-				s_fgColor =	_getView()->getColorAnnotation(this);
-			}
-			else
-				return _getColorFG();
+		if(getBlock()->getDocLayout()->displayAnnotations())
+		{
+			s_fgColor =	_getView()->getColorAnnotation(this);
+		}
+		else
+			return _getColorFG();
+	}
+	else if(m_iAuthorColor > 0)
+	{
+		UT_sint32 iRange = m_iAuthorColor % 12;
+		//
+		// FIXME We can also set this from the color property of the author ID 
+		//
+		s_fgColor = _getView()->getColorRevisions(iRange);
+		return s_fgColor;
 	}
 	else
 		return _getColorFG();
@@ -1206,7 +1230,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		// this run is marked as hidden, nothing to do
 		return;
 	}
-	
 	m_bIsCleared = false;
 	fp_Line * pLine = getLine();
 	if (pLine)
@@ -2025,7 +2048,7 @@ bool fp_TabRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: Find everything that calls this and modify them to allow y-axis.
 	
@@ -2164,7 +2187,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
-void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
+void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 /*iHeight*/)
 {
     if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
@@ -2341,10 +2364,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		}
 		while (cumWidth < getWidth() && i < 151)
 		{
-			if(pG && pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
-			{
-				wid[i] = static_cast<UT_sint32>(wid[i]*pG->getResolutionRatio());
-			}
 			cumWidth += wid[i++];
 		}
 		i = (i>=3) ? i - 2 : 1;
@@ -2444,7 +2463,7 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: Find everything that calls this and modify them to allow x-axis and y-axis.
 	
@@ -2645,7 +2664,7 @@ bool fp_FieldStartRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2655,7 +2674,7 @@ void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_Do
 }
 
 
-void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldStartRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& /*x*/, UT_sint32& /*y*/, UT_sint32& /*x2*/, UT_sint32& /*y2*/, UT_sint32& /*height*/, bool& /*bDirection*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2666,7 +2685,7 @@ void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
-void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
+void fp_FieldStartRun::_draw(dg_DrawArgs* /*pDA*/)
 {
 
 }
@@ -2705,7 +2724,7 @@ bool fp_FieldEndRun::_letPointPass(void) const
 	return true;
 }
 
-void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -2714,7 +2733,7 @@ void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocP
 	bEOL = false;
 }
 
-void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+void fp_FieldEndRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& /*x*/, UT_sint32& /*y*/, UT_sint32& /*x2*/, UT_sint32& /*y2*/, UT_sint32& /*height*/, bool& /*bDirection*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -2725,7 +2744,7 @@ void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
-void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
+void fp_FieldEndRun::_draw(dg_DrawArgs* /*pDA*/)
 {
 
 }
@@ -3193,7 +3212,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: Find everything that calls this and modify them to allow y-axis. (I think?)
 	pos = getBlock()->getPosition() + getBlockOffset();
@@ -3584,7 +3603,7 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: This one needs fixing for multipage. Get text working first.
 	//TODO: Find everything that calls this and modify them to allow y-axis.
@@ -3622,7 +3641,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
 }
 
-void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
+void fp_ImageRun::_clearScreen(bool /*bFullLineHeightRect*/ )
 {
 	//	UT_ASSERT(!isDirty());
 
@@ -4057,7 +4076,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		_setFont(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, pG));
 	}
-
+	xxx_UT_DEBUGMSG(("Field font is set to %s \n",_getFont()->getFamily()));
 	_setAscent(pG->getFontAscent(_getFont()));
 	_setDescent(pG->getFontDescent(_getFont()));
 	_setHeight(pG->getFontHeight(_getFont()));
@@ -4154,7 +4173,7 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 	return true;
 }
 
-void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: Find everything that calls this and modify them to allow y-axis.
 	
@@ -4365,7 +4384,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	}
 
 	pG->setFont(_getFont());
-	
+	xxx_UT_DEBUGMSG(("Field draw with font %s \n",_getFont()->getFamily()));
 
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
 	UT_return_if_fail(len);
@@ -4376,7 +4395,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 //
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
 	                                                 //character dirt
-	UT_DEBUGMSG(("xoff infield before drawdecors %d \n",pDA->xoff));
+	xxx_UT_DEBUGMSG(("xoff infield before drawdecors %d \n",pDA->xoff));
 	drawDecors( pDA->xoff, yTopOfRun,pG);
 
 }
@@ -5511,7 +5530,7 @@ bool fp_ForcedColumnBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -5622,7 +5641,7 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 	return false;
 }
 
-void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
+void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
 	//TODO: Find everything that calls this and modify them to allow y-axis.
 	pos = getBlock()->getPosition() + getBlockOffset();

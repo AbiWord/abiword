@@ -236,11 +236,13 @@ public:
 	UT_uint64       getNewUUID64() const;
 	
 	bool            addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
-								time_t tStart, UT_uint32 iVersion);
+								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
 	
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
-								time_t tStart, UT_uint32 iVersion);
-	
+								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
+	bool            addRevision(AD_Revision * pRev, bool bGenCR=true);
+	virtual bool    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps) = 0;
+
 	const UT_GenericVector<AD_Revision*> &         getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
 	const AD_Revision*  getHighestRevision() const;
@@ -336,6 +338,8 @@ private:
 	UT_UUID *       m_pMyUUID;
 	bool            m_bDoNotAdjustHistory;
 	bool            m_bAfterFirstSave;
+ 	UT_UTF8String   m_sMyUUIDString;
+ 	UT_UTF8String   m_sOrigUUIDString;
 };
 
 

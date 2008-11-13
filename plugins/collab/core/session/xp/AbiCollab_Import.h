@@ -43,7 +43,7 @@ class UT_Stack;
 class ABI_xmpp;
 class ChangeAdjust;
 
-class  ABI_Collab_Import
+class ABI_Collab_Import
 {
 	friend class FakeAccountHandler;
 	
@@ -74,13 +74,6 @@ private:
 	void								_disableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
 	void								_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bool bIsGlob);
 	bool								_import(const SessionPacket& packet, UT_sint32 iImportAdjustment, const Buddy& collaborator, bool inGlob = false);
-
-	bool								getStruxType(UT_UTF8String& sInPacket, PTStruxType& struxType,
-													UT_UTF8String& sAttributes, UT_UTF8String& sOutpacket)
-		{ return true; }
-	bool								getObjectType(UT_UTF8String& sInPacket,PTObjectType& objectType,
-													UT_UTF8String& sAttributes, UT_UTF8String& sOutpacket)
-		{ return true; }
 
 	PD_Document*						m_pDoc;
 	AbiCollab *							m_pAbiCollab;

@@ -86,6 +86,9 @@ private:
     // on the AbiWord document.
     bool m_inlinedImage;
     UT_sint32 m_iFrameDepth;
+
+    UT_ByteBuf* m_pMathBB;
+    bool m_bInMath;
 };
 
 #endif //_ODI_FRAME_LISTENERSTATE_H_

@@ -52,7 +52,7 @@ public:
 	UT_uint32	getCount();
 	const gchar * 	getNthLangCode(UT_uint32 n);
 	const gchar * 	getNthLangName(UT_uint32 n);
-	const UT_uint32  	getNthId(UT_uint32 n);
+	UT_uint32  	getNthId(UT_uint32 n);
 	const gchar * 	getCodeFromName(const gchar * szName);
 	const gchar * 	getCodeFromCode(const gchar * szCode); //
 																  //see the cpp file for explanation

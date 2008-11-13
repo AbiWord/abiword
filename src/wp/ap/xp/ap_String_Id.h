@@ -57,7 +57,7 @@ dcl(MSG_NoBreakInsideFrame, "Can not insert a Break inside a text box")
 dcl(MSG_AutoRevisionOffWarning, "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document.")
 
 // Abi has just crashed
-dcl(MSG_Exception, "A fatal error has just occurred. Abiword is going to shutdown.\nThe current document has been saved to disc with a \".saved\" extension.")
+dcl(MSG_Exception, "A fatal error has just occurred. AbiWord is going to shutdown.\nThe current document has been saved to disc with a \".saved\" extension.")
 
 // Status Bar Messages
 dcl(PageInfoField,				"Page: %d/%d")
@@ -357,6 +357,7 @@ dcl(DLG_Options_TabLabel_Other, 		"Other")
 dcl(DLG_Options_TabLabel_Preferences,	"Preference Schemes")
 dcl(DLG_Options_TabLabel_View,			"View")
 dcl(DLG_Options_TabLabel_Misc,	   "Misc.")
+dcl(DLG_Options_TabLabel_SmartQuotes,   "Smart Quotes")
 
 dcl(DLG_Options_Btn_Save,				"Sa&ve")
 dcl(DLG_Options_Btn_Apply,				"Apply")

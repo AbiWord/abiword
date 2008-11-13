@@ -94,7 +94,7 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 
 }
 
-BOOL XAP_Win32Dialog_Zoom::_onDlgMessage(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+BOOL XAP_Win32Dialog_Zoom::_onDlgMessage(HWND /*hWnd*/,UINT msg,WPARAM wParam,LPARAM /*lParam*/)
 {
 	switch (msg)
 	{
@@ -108,7 +108,7 @@ BOOL XAP_Win32Dialog_Zoom::_onDlgMessage(HWND hWnd,UINT msg,WPARAM wParam,LPARAM
 	}
 }
 
-BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 		
 	// localize controls
@@ -139,7 +139,7 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	UT_sint32 newValue;

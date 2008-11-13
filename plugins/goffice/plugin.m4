@@ -1,23 +1,39 @@
 
 goffice_pkgs="$goffice_req"
+goffice_deps="no"
 
-GOFFICE_CFLAGS=
-GOFFICE_LIBS=
+if test "$enable_goffice" != ""; then
 
-if test "$enable_goffice" == "yes"; then
+PKG_CHECK_EXISTS([ $goffice_pkgs ], 
+[
+	AC_MSG_CHECKING([for gtk toolkit])
+	if test "$TOOLKIT" == "gtk"; then
+	  AC_MSG_RESULT([yes])
+	  goffice_deps="yes"
+	else
+	  AC_MSG_RESULT([no])
+	  if test "$enable_goffice" == "auto"; then
+	    AC_MSG_WARN([goffice plugin: only supported with gtk])
+	  else
+	    AC_MSG_ERROR([goffice plugin: only supported with gtk])
+	  fi
+	fi
+], [
+	test "$enable_goffice" == "auto" && AC_MSG_WARN([goffice plugin: dependencies not satisfied - $goffice_pkgs])
+])
 
-if test "$enable_goffice_builtin" == "yes"; then
-AC_MSG_ERROR([static linking is not supported for the `goffice' plugin])
 fi
 
-AC_MSG_CHECKING([for gtk toolkit])
-if test "$TOOLKIT" == "gtk"; then
-  AC_MSG_RESULT([ok])
-else
-  AC_MSG_ERROR([goffice plugin: only supported with gtk])
+if test "$enable_goffice" == "yes" || \
+   test "$goffice_deps" == "yes"; then
+
+if test "$enable_goffice_builtin" == "yes"; then
+AC_MSG_ERROR([goffice plugin: static linking not supported])
 fi
 
 PKG_CHECK_MODULES(GOFFICE,[ $goffice_pkgs ])
+
+test "$enable_goffice" == "auto" && PLUGINS="$PLUGINS goffice"
 
 GOFFICE_CFLAGS="$GOFFICE_CFLAGS "'${PLUGIN_CFLAGS}'
 GOFFICE_LIBS="$GOFFICE_LIBS "'${PLUGIN_LIBS}'

@@ -1094,8 +1094,14 @@ bool UT_SVGMatrix::applyTransform (UT_SVGMatrix * currentMatrix,const char * tra
 	  *currentMatrix = currentMatrix->skewY (skew);
 	}
 
-      if (!BNF_comma_wsp (&ptr)) break;
-      while (BNF_comma_wsp (&ptr));
+      if (!BNF_comma_wsp (&ptr)) 
+	  {
+		  break;
+	  }
+      while (BNF_comma_wsp (&ptr))
+	  {
+		  ;
+	  }
     }
 
   if (!bParseError && *ptr) // invalid element of transform, perhaps?

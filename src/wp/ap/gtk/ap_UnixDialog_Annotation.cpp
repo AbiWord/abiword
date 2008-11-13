@@ -147,22 +147,19 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Annotation.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Annotation.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Annotation");
-	m_entryTitle = glade_xml_get_widget(xml, "enTitle");
-	m_entryAuthor = glade_xml_get_widget(xml, "enAuthor");
-	m_textDescription = glade_xml_get_widget(xml, "tvDescription");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Annotation"));
+	m_entryTitle = GTK_WIDGET(gtk_builder_get_object(builder, "enTitle"));
+	m_entryAuthor = GTK_WIDGET(gtk_builder_get_object(builder, "enAuthor"));
+	m_textDescription = GTK_WIDGET(gtk_builder_get_object(builder, "tvDescription"));
 	
 	// set the dialog title
 	UT_UTF8String s;
@@ -170,9 +167,9 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	abiDialogSetTitle(window, s.utf8_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabel(glade_xml_get_widget(xml, "lbTitle"), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbAuthor"), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
-	localizeLabel(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
 	
 	// now set the text in all the fields
 	UT_UTF8String prop ( "" ) ;
@@ -183,8 +180,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
 	}
 	
-	GtkWidget * wOK = glade_xml_get_widget(xml, "btOK");
-	GtkWidget * wReplace = glade_xml_get_widget(xml, "btReplace");
+	GtkWidget * wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
+	GtkWidget * wReplace = GTK_WIDGET(gtk_builder_get_object(builder, "btReplace"));
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Replace_LBL,s);
 	gtk_button_set_label(GTK_BUTTON(wReplace),s.utf8_str()); 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_OK_tooltip,s);
@@ -204,6 +201,8 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 		GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_textDescription) ) ;
 		gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
 	}	
+
+	g_object_unref(G_OBJECT(builder));
 	
 	return window;
 }

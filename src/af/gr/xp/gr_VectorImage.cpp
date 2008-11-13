@@ -83,7 +83,7 @@ struct drawPath : public drawBase {
    
 
 GR_VectorImage::GR_VectorImage(const char* szName)
-  : m_status(false), m_context(0), m_pSVG(0), m_pBB_Image(0)
+	: m_status(false), m_pSVG(0), m_pBB_Image(0)
 {
    if (szName)
      {

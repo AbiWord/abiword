@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -127,25 +126,22 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 	GtkTreeViewColumn *column;
 	GtkWidget *w;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_ListDocuments.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_ListDocuments.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_ListDocuments");
-	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_ListDocuments"));
+	m_listWindows = GTK_WIDGET(gtk_builder_get_object(builder, "tvAvailableDocuments"));
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), _getTitle());
-	w = glade_xml_get_widget(xml, "lbAvailableDocuments");
+	w = GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments"));
 	gtk_label_set_text(GTK_LABEL(w), _getHeading());
-	w = glade_xml_get_widget(xml, "btView");
+	w = GTK_WIDGET(gtk_builder_get_object(builder, "btView"));
 
 	// add a column to our TreeViews
 
@@ -164,6 +160,8 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 						   G_CALLBACK(s_list_dblclicked),
 						   static_cast<gpointer>(this));
   
+	g_object_unref(G_OBJECT(builder));
+
 	return m_windowMain;
 }
 

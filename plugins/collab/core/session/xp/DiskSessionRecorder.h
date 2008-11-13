@@ -32,7 +32,7 @@
 
 #include <xp/AbiCollab.h>
 
-class  RecordedPacket
+class RecordedPacket
 {
 public:
 	RecordedPacket(bool bIncoming,bool bHasBuddy, const UT_UTF8String& buddyName, UT_uint64 timestamp, Packet* pPacket)
@@ -58,7 +58,7 @@ public:
 	bool			m_bDeleteAtDestroy;
 };
 
-class  DiskSessionRecorder : public SessionRecorderInterface
+class DiskSessionRecorder : public SessionRecorderInterface
 {
 public:
 	DiskSessionRecorder(AbiCollab* pSession);

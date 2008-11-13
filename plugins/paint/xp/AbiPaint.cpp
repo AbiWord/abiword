@@ -167,6 +167,8 @@ void doUnregistration(void)
 //
 static DECLARE_ABI_PLUGIN_METHOD(specify)
 {
+	UT_UNUSED(v);
+	UT_UNUSED(d);
 	// get current value
 	UT_String szProgramName = "";
 	prefsScheme->getValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName);
@@ -328,6 +330,9 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 // const char * getEditImageMenuName(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 {
+	UT_UNUSED(pLabel);
+	UT_UNUSED(id);
+
 	UT_String szProgramName;
 	static UT_String MenuName;
 	MenuName = "&Edit Image";
@@ -362,7 +367,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 //
 static DECLARE_ABI_PLUGIN_METHOD(editImage)
 {
-
+	UT_UNUSED(v);
     // Get the current view that the user is in.
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
     FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());

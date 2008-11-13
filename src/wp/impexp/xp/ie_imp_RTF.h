@@ -467,6 +467,7 @@ struct ABI_EXPORT RTFStateStore
 	UT_uint32				m_unicodeAlternateSkipCount;	// value of N in "\ucN"
 	UT_uint32				m_unicodeInAlternate;			// chars left in alternate "\u<u><A>"
 	UT_UTF8String           m_revAttr;              // the revision attribute stored in abirevision
+	bool                    m_bInKeywordStar;        // true if in star keyword
 };
 
 

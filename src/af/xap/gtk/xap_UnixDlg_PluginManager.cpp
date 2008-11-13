@@ -345,33 +345,30 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/xap_UnixDlg_PluginManager.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_PluginManager.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
-	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_PluginManager");
-	m_list = glade_xml_get_widget(xml, "tvPlugins");
-	m_name = glade_xml_get_widget(xml, "lbPluginName");
-	m_author = glade_xml_get_widget(xml, "lbPluginAuthor");
-	m_version = glade_xml_get_widget(xml, "lbPluginVersion");
-	m_desc = glade_xml_get_widget(xml, "lbPluginDescription");
+	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_PluginManager"));
+	m_list = GTK_WIDGET(gtk_builder_get_object(builder, "tvPlugins"));
+	m_name = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginName"));
+	m_author = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginAuthor"));
+	m_version = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginVersion"));
+	m_desc = GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginDescription"));
 
 	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbActivePlugins"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPluginDetails"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
-	localizeLabel(glade_xml_get_widget(xml, "lbNameLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
-	localizeLabel(glade_xml_get_widget(xml, "lbDescriptionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
-	localizeLabel(glade_xml_get_widget(xml, "lbAuthorLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
-	localizeLabel(glade_xml_get_widget(xml, "lbVersionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbActivePlugins")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPluginDetails")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNameLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescriptionLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthorLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionLabel")), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
-	GtkWidget * btInstall = glade_xml_get_widget(xml, "btInstall");
+	GtkWidget * btInstall = GTK_WIDGET(gtk_builder_get_object(builder, "btInstall"));
 
 	localizeButton(btInstall, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
 
@@ -394,6 +391,8 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 						   "changed",
 						   G_CALLBACK(s_list_clicked),
 						   static_cast<gpointer>(this));
+
+	g_object_unref(G_OBJECT(builder));
 
 	return m_windowMain;
 }

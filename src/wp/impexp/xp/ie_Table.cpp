@@ -330,10 +330,10 @@ ie_Table::ie_Table(void) :
  */
 ie_Table::~ie_Table(void)
 {
-	while(m_sLastTable.getDepth() > 1)
+	while(m_sLastTable.size() > 1)
 	{
-		ie_PartTable * pPT = NULL;
-		m_sLastTable.pop(reinterpret_cast<void **>(&pPT));
+		ie_PartTable * pPT = m_sLastTable.top();
+		m_sLastTable.pop();
 		delete pPT;
 	}
 }
@@ -345,10 +345,10 @@ void ie_Table::setDoc(PD_Document * pDoc)
 {
 	m_pDoc = pDoc;
 	m_sdhLastCell = NULL;
-	while(m_sLastTable.getDepth() > 1)
+	while(m_sLastTable.size() > 1)
 	{
-		ie_PartTable * pPT = NULL;
-		m_sLastTable.pop(reinterpret_cast<void **>(&pPT));
+		ie_PartTable * pPT = m_sLastTable.top();
+		m_sLastTable.pop();
 		delete pPT;
 	}
 }
@@ -360,7 +360,7 @@ void ie_Table::OpenTable(PL_StruxDocHandle tableSDH, PT_AttrPropIndex iApi)
 {
 	ie_PartTable * pPT = new ie_PartTable(m_pDoc);
 	m_sdhLastCell = NULL;
-	m_sLastTable.push(reinterpret_cast<void *>(pPT));
+	m_sLastTable.push(pPT);
 	pPT->setTableApi(tableSDH,iApi);
 }
 
@@ -369,9 +369,7 @@ void ie_Table::OpenTable(PL_StruxDocHandle tableSDH, PT_AttrPropIndex iApi)
  */ 
 void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
-
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_if_fail(pPT != NULL);
 
 	UT_sint32 iOldTop = pPT->getTop();
@@ -394,15 +392,13 @@ bool ie_Table::isNewRow(void)
 
 bool ie_Table::isCellJustOpenned(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	return pPT->isCellJustOpenned();
 }
 
 void ie_Table::setCellJustOpenned(bool b)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->setCellJustOpenned(b);
 }
 
@@ -411,8 +407,7 @@ void ie_Table::setCellJustOpenned(bool b)
  */
 PL_StruxDocHandle ie_Table::getTableSDH(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	if(pPT)
 	{
 		return pPT->getTableSDH();
@@ -425,8 +420,7 @@ PL_StruxDocHandle ie_Table::getTableSDH(void)
  */
 void ie_Table::CloseCell(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->setCellApi(0);
 }
 
@@ -436,8 +430,8 @@ void ie_Table::CloseCell(void)
  */
 void ie_Table::CloseTable(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.pop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
+	m_sLastTable.pop();
 	delete pPT;
 	m_sdhLastCell = NULL;
 }
@@ -448,8 +442,7 @@ void ie_Table::CloseTable(void)
  */
 UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	xxx_UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
 	UT_sint32 num = pPT->getNumCols() - pPT->getPrevRight();
 	return num;
@@ -461,9 +454,7 @@ UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
  */
 UT_sint32 ie_Table::getCurRow(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
-
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT != NULL, 0);
 
 	return pPT->getCurRow();
@@ -474,8 +465,7 @@ UT_sint32 ie_Table::getCurRow(void)
  */
 void ie_Table::incCurRow(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->incCurRow();
 }
 
@@ -485,8 +475,7 @@ void ie_Table::incCurRow(void)
  */
 UT_sint32 ie_Table::getLeft(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getLeft();
 }
@@ -497,8 +486,7 @@ UT_sint32 ie_Table::getLeft(void)
  */
 UT_sint32 ie_Table::getRight(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getRight();
 }
@@ -509,8 +497,7 @@ UT_sint32 ie_Table::getRight(void)
  */
 UT_sint32 ie_Table::getTop(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getTop();
 }
@@ -520,8 +507,7 @@ UT_sint32 ie_Table::getTop(void)
  */
 UT_sint32 ie_Table::getBot(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getBot();
 }
@@ -531,8 +517,7 @@ UT_sint32 ie_Table::getBot(void)
  */
 UT_sint32 ie_Table::getNumRows(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getNumRows();
 }
@@ -544,8 +529,7 @@ UT_sint32 ie_Table::getNumRows(void)
  */
 UT_sint32 ie_Table::getNumCols(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getNumCols();
 }
@@ -557,7 +541,7 @@ UT_sint32 ie_Table::getNumCols(void)
  */
 UT_sint32 ie_Table::getNestDepth(void)
 {
-	return m_sLastTable.getDepth() -1;
+	return m_sLastTable.size() - 1;
 }
 
 
@@ -566,8 +550,7 @@ UT_sint32 ie_Table::getNestDepth(void)
  */
  PT_AttrPropIndex ie_Table::getTableAPI(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getTableAPI();
 }
@@ -577,8 +560,7 @@ UT_sint32 ie_Table::getNestDepth(void)
  */
  PT_AttrPropIndex ie_Table::getCellAPI(void)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getCellAPI();
 }
@@ -589,8 +571,7 @@ UT_sint32 ie_Table::getNestDepth(void)
  */
 const char * ie_Table::getTableProp(const char * pProp)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getTableProp(pProp);
 }
@@ -601,8 +582,7 @@ const char * ie_Table::getTableProp(const char * pProp)
  */
 const char * ie_Table::getCellProp(const char * pProp)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getCellProp(pProp);
 }
@@ -612,8 +592,7 @@ const char * ie_Table::getCellProp(const char * pProp)
 */
 void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 {
-	ie_PartTable * pPT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_if_fail(pPT);
 	PL_StruxDocHandle sdhStart = m_sdhLastCell;
 	if(sdhStart == NULL)
@@ -1846,10 +1825,10 @@ ie_imp_table_control::ie_imp_table_control(PD_Document * pDoc):
 
 ie_imp_table_control::~ie_imp_table_control(void)
 {
-	while(m_sLastTable.getDepth() > 1)
+	while(m_sLastTable.size() > 1)
 	{
-		ie_imp_table * pT = NULL;
-		m_sLastTable.pop(reinterpret_cast<void **>(&pT));
+		ie_imp_table * pT = m_sLastTable.top();
+		m_sLastTable.pop();
 		if(pT->wasTableUsed())
 		{
 //			pT->removeExtraneousCells();
@@ -1864,27 +1843,25 @@ ie_imp_table_control::~ie_imp_table_control(void)
 
 UT_sint32 ie_imp_table_control::getNestDepth(void)
 {
-	return m_sLastTable.getDepth() -1;
+	return m_sLastTable.size() - 1;
 }
 
 void ie_imp_table_control::OpenTable(void)
 {
-	ie_imp_table * pT = new ie_imp_table(m_pDoc);
-	m_sLastTable.push(static_cast<void *>(pT));
+	m_sLastTable.push(new ie_imp_table(m_pDoc));
 }
 
 
 UT_sint32 ie_imp_table_control::OpenCell(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	return pT->OpenCell();
 }
 
 void ie_imp_table_control::CloseTable(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.pop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
+	m_sLastTable.pop();
 	if(pT->wasTableUsed())
 	{
 //		pT->removeExtraneousCells();
@@ -1898,15 +1875,13 @@ void ie_imp_table_control::CloseTable(void)
 
 void ie_imp_table_control::CloseCell(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	pT->CloseCell();
 }
 
 ie_imp_table *  ie_imp_table_control::getTable(void)
 {
-	ie_imp_table * pT = NULL;
-	m_sLastTable.viewTop(reinterpret_cast<void **>(&pT));
+	ie_imp_table * pT = m_sLastTable.top();
 	return pT;
 }
 

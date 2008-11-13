@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -282,22 +281,19 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Field.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Field.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Field");
-	m_listTypes = glade_xml_get_widget(xml, "tvTypes");
-	m_listFields = glade_xml_get_widget(xml, "tvFields");
-	m_entryParam = glade_xml_get_widget(xml, "edExtraParameters");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Field"));
+	m_listTypes = GTK_WIDGET(gtk_builder_get_object(builder, "tvTypes"));
+	m_listFields = GTK_WIDGET(gtk_builder_get_object(builder, "tvFields"));
+	m_entryParam = GTK_WIDGET(gtk_builder_get_object(builder, "edExtraParameters"));
 	
 	// set the single selection mode for the TreeViews
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listTypes)), GTK_SELECTION_SINGLE);	
@@ -310,10 +306,10 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTypes")), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFields")), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbExtraParameters")), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	// add a column to our TreeViews
 
@@ -344,6 +340,8 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 						   "row-activated",
 						   G_CALLBACK(s_field_dblclicked),
 						   static_cast<gpointer>(this));
+
+	g_object_unref(G_OBJECT(builder));
 
 	return window;
 }

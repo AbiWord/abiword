@@ -38,7 +38,7 @@ class PX_ChangeRecord;
 class ChangeAdjust;
 class AbiCollab;
 
-class  ABI_Collab_Export : public PL_DocChangeListener
+class ABI_Collab_Export : public PL_DocChangeListener
 {
 
 friend class AbiCollab;
@@ -47,12 +47,12 @@ public:
 	ABI_Collab_Export(AbiCollab* pAbiCollab, PD_Document* pDoc);
 	virtual ~ABI_Collab_Export();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord* pcr) { return true; }
+	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
+								 const PX_ChangeRecord* /*pcr*/) { return true; }
 
-	virtual bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord* pcr,
-									  PL_StruxFmtHandle* psfh) { return true; }
+	virtual bool		populateStrux(PL_StruxDocHandle /*sdh*/,
+									  const PX_ChangeRecord* /*pcr*/,
+									  PL_StruxFmtHandle* /*psfh*/) { return true; }
 
 	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord* pcr);
@@ -70,7 +70,7 @@ public:
 
 	virtual bool		signal(UT_uint32 iSignal);
 
-	virtual	PLListenerType getType() const { return PTL_CollabExport; }
+	virtual	PLListenerType getType() const;
 
 	virtual void		setNewDocument(PD_Document * pDoc);
 	virtual void		removeDocument(void);

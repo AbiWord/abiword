@@ -28,12 +28,12 @@
 #include "ie_imp.h"
 #include "ut_mbtowc.h"
 #include "pd_Document.h"
-class   UT_ByteBuf;
-class   ImportStream;
+class  UT_ByteBuf;
+class  ImportStream;
 
 // The importer/reader for Embedable Objects.
 
-class  IE_Imp_Object_Sniffer : public IE_ImpSniffer
+class IE_Imp_Object_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Object;
@@ -68,7 +68,7 @@ protected:
 
 // The importer/reader for GNOME-Office charts.
 
-class  IE_Imp_Object : public IE_Imp
+class IE_Imp_Object : public IE_Imp
 {
 public:
 	IE_Imp_Object(PD_Document * pDocument);

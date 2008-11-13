@@ -1,5 +1,5 @@
 
-SUBDIRS = common imp
+SUBDIRS = common imp exp
 
 if OPENXML_BUILTIN
 noinst_LTLIBRARIES = openxml.la
@@ -28,7 +28,8 @@ endif
 
 openxml_la_LIBADD = \
 	common/libcommon.la \
-	imp/libimp.la
+	imp/libimp.la \
+	exp/libexp.la
 
 openxml_la_LDFLAGS = \
 	$(OPENXML_LIBS) \

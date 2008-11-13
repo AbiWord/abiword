@@ -1,15 +1,29 @@
 
 WIN32GFX_CFLAGS=
 WIN32GFX_LIBS=
+win32gfx_deps="no"
 
-if test "$enable_win32gfx" == "yes"; then
+if test "$enable_win32gfx" != ""; then
 
 AC_MSG_CHECKING([for win32 toolkit])
 if test "$TOOLKIT" == "win"; then
-  AC_MSG_RESULT([ok])
+  AC_MSG_RESULT([yes])
+  win32gfx_deps="yes"
 else
-  AC_MSG_ERROR([win32gfx plugin: only supported on win32])
+  AC_MSG_RESULT([no])
+  if test "$enable_win32gfx" == "auto"; then
+    AC_MSG_WARN([win32gfx plugin: only supported on win32])
+  else
+    AC_MSG_ERROR([win32gfx plugin: only supported on win32])
+  fi
 fi
+
+fi
+
+if test "$enable_win32gfx" == "yes" || \
+   test "$win32gfx_deps" == "yes"; then
+
+test "$enable_win32gfx" == "auto" && PLUGINS="$PLUGINS win32gfx"
 
 # TODO check for libpng
 SYSTEM_LIBS="-lkernel32 -luser32 -lgdi32 -lcomdlg32 -ladvapi32 -lshell32 -luuid -lcomctl32 -lole32 -loleaut32 -lpng13"

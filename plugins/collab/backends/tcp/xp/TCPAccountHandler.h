@@ -30,7 +30,7 @@ class TCPBuddy;
 
 extern AccountHandlerConstructor TCPAccountHandlerConstructor;
 
-class  TCPAccountHandler : public AccountHandler
+class TCPAccountHandler : public AccountHandler
 {
 public:
 	TCPAccountHandler();

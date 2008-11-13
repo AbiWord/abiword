@@ -52,13 +52,13 @@
 // we want to have C linkage for both 
 // this and for all of our required functions
 extern "C" {
-	typedef ABI_EXPORT struct XAP_ModuleInfo {
+	typedef ABI_EXPORT struct {
 		const char * name;
 		const char * desc;
 		const char * version;
 		const char * author;
 		const char * usage;
-	};
+	} XAP_ModuleInfo;
 }
 
 class XAP_ModuleManager;

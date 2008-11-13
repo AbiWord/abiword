@@ -117,8 +117,7 @@ ConnectResult TCPAccountHandler::connect()
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));
 		try
 		{
-			asio::ip::tcp::socket socket(m_io_service);
-			socket.connect(*iterator);
+			session_ptr->getSocket().connect(*iterator);
 			session_ptr->asyncReadHeader();
 			m_bConnected = true; // todo: ask it to the socket
 			// Add a buddy

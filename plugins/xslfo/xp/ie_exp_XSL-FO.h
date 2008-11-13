@@ -30,7 +30,7 @@ class s_XSL_FO_Listener;
 
 // The exporter/writer for the XML/XSL FO spec
 
-class  IE_Exp_XSL_FO_Sniffer : public IE_ExpSniffer
+class IE_Exp_XSL_FO_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -46,7 +46,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class  IE_Exp_XSL_FO : public IE_Exp
+class IE_Exp_XSL_FO : public IE_Exp
 {
 public:
 	IE_Exp_XSL_FO(PD_Document * pDocument);

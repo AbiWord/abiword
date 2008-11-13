@@ -356,21 +356,5 @@ bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	if (!XAP_DiskStringSet::loadStringsFromDisk(szFilename))
 		return false;
 
-#ifdef DEBUG	
-	{
-		// TODO should we promote this test to be production code
-		// TODO and maybe raise a message box ??
-		UT_uint32 kLimit = G_N_ELEMENTS(s_map);
-		UT_uint32 k;
-
-		for (k=0; k<kLimit; k++)
-		{
-			const gchar * szValue = AP_DiskStringSet::getValue(s_map[k].id);
-			if (!szValue || !*szValue)
-				UT_DEBUGMSG(("WARNING: Translation for id [%s] not found.\n",s_map[k].szName));
-		}
-	}
-#endif
-
 	return true;
 }

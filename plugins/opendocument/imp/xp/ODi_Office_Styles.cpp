@@ -230,16 +230,15 @@ ODi_Style_MasterPage* ODi_Office_Styles::addMasterPage(const gchar** ppAtts,
 ODi_Style_Style* ODi_Office_Styles::addDefaultStyle(const gchar** ppAtts,
                                                   ODi_ElementStack& rElementStack) {
     
-    const gchar* pAttr;
+    const gchar* pAttr = NULL;
     
     pAttr = UT_getAttribute("style:family", ppAtts);
-    UT_ASSERT(pAttr);
 
-    if (!strcmp("paragraph", pAttr)) {
+    if (pAttr && !strcmp("paragraph", pAttr)) {
         
         return m_paragraphStyleStyles.addDefaultStyle(rElementStack);
         
-    } else if (!strcmp("table", pAttr)) {
+    } else if (pAttr && !strcmp("table", pAttr)) {
         
         return m_tableStyleStyles.addDefaultStyle(rElementStack);        
 
@@ -280,7 +279,7 @@ void ODi_Office_Styles::_linkMasterStyles() {
     ODi_Style_PageLayout* pLayout;
     
     pMasterStylesVec = m_masterPageStyles.enumerate();
-    UT_ASSERT(pMasterStylesVec);
+    UT_return_if_fail(pMasterStylesVec);
     
     count = pMasterStylesVec->getItemCount();
     for (i=0; i<count; i++) {
@@ -307,13 +306,13 @@ void ODi_Office_Styles::_linkListStyles() {
     const ODi_Style_Style* pStyle;
     
     pStylesVec = m_listStyles.enumerate();
-    UT_ASSERT(pStylesVec);
+    UT_return_if_fail(pStylesVec);
     
     count = pStylesVec->getItemCount();
     for (i=0; i<count; i++) {
 
         pListStyle = (*pStylesVec)[i];
-        UT_ASSERT(pListStyle);
+        UT_continue_if_fail(pListStyle);
         
         count2 = pListStyle->getLevelCount();
 
@@ -349,7 +348,7 @@ void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const {
 
 
     pListVec = m_listStyles.enumerate();
-    UT_ASSERT(pListVec);
+    UT_return_if_fail(pListVec);
     
     count = pListVec->getItemCount();
     for (i=0; i<count; i++) {
@@ -396,7 +395,7 @@ void ODi_Office_Styles::_buildAbiPropsAttrString(
     
 
     pListVec = m_listStyles.enumerate();
-    UT_ASSERT(pListVec);
+    UT_return_if_fail(pListVec);
     
     count = pListVec->getItemCount();
     for (i=0; i<count; i++) {

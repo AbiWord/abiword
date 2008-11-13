@@ -190,7 +190,7 @@ void fp_AnnotationRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 
 
-void fp_AnnotationRun::_clearScreen(bool bFullLineHeightRect)
+void fp_AnnotationRun::_clearScreen(bool /*bFullLineHeightRect*/)
 {
         if(getWidth() == 0)
 	  return;

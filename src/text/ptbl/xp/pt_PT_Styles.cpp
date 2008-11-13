@@ -31,7 +31,6 @@
 #include "ut_hash.h"
 #include "xap_Strings.h"
 #include "xap_App.h"
-#include "xap_App.h"
 #include "xap_EncodingManager.h"
 
 ///////////////////////////////////////////////////////////////////

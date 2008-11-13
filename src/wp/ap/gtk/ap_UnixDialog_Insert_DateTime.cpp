@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -133,20 +132,17 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;	
 	
-	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
-	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
-	glade_path += "/ap_UnixDialog_Insert_DateTime.glade";
+	// get the path where our UI file is located
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Insert_DateTime.xml";
 	
-	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
+	// load the dialog from the UI file
+	GtkBuilder* builder = gtk_builder_new();
+	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_Insert_DateTime");
-	m_tvFormats = glade_xml_get_widget(xml, "tvFormats");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Insert_DateTime"));
+	m_tvFormats = GTK_WIDGET(gtk_builder_get_object(builder, "tvFormats"));
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		
@@ -158,8 +154,8 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
-	localizeButtonUnderline(glade_xml_get_widget(xml, "btInsert"), pSS, AP_STRING_ID_DLG_InsertButton);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFormats")), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 	
 	// add a column to our TreeView
 	renderer = gtk_cell_renderer_text_new ();
@@ -175,6 +171,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 						   G_CALLBACK(s_date_dblclicked),
 						   static_cast<gpointer>(this));
 	
+	g_object_unref(G_OBJECT(builder));
 	return window;
 }
 

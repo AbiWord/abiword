@@ -134,7 +134,7 @@ public:
 	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
-
+	void            refreshRunProperties(void);
 	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
@@ -345,7 +345,8 @@ public:
 	{ return m_bIsQuickPrint;}
 	GR_EmbedManager * getQuickPrintEmbedManager(const char * szEmbedType);
 	fp_PageSize	m_docViewPageSize;
-	
+	bool            setDocViewPageSize(const PP_AttrProp * pAP);
+
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;

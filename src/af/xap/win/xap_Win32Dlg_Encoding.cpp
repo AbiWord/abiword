@@ -61,7 +61,7 @@ void XAP_Win32Dialog_Encoding::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_ENCODING));
 }
 
-BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	localizeDialogTitle(XAP_STRING_ID_DLG_UENC_EncTitle);
 
@@ -91,7 +91,7 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 0;							// 1 == we did not call SetFocus()
 }
 
-BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	int nItem;
@@ -142,7 +142,7 @@ BOOL XAP_Win32Dialog_Encoding::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	}
 }
 
-BOOL XAP_Win32Dialog_Encoding::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL XAP_Win32Dialog_Encoding::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	// respond to WM_NOTIFY/UDN_DELTAPOS message
 	// return TRUE to prevent the change from happening

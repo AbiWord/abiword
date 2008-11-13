@@ -52,17 +52,17 @@ class ABI_ListDefinition
 public:
     ABI_ListDefinition(int iOutlineHash);
     void setListID(const int iLevel, const UT_uint32 iID) { m_iListIDs[iLevel-1] = iID; }
-    const UT_uint32 getListID(const int iLevel) const { return m_iListIDs[iLevel-1]; }
-    const FL_ListType getListType(const int iLevel) const { return m_listTypes[iLevel-1]; }
+    UT_uint32 getListID(const int iLevel) const { return m_iListIDs[iLevel-1]; }
+    FL_ListType getListType(const int iLevel) const { return m_listTypes[iLevel-1]; }
     void setListType(const int iLevel, const char type);
     void incrementLevelNumber(const int iLevel) { m_iListNumbers[iLevel - 1]++; }
     void setLevelNumber(const int iLevel, const int iNumber) { m_iListNumbers[iLevel - 1] = iNumber; }
     void setListLeftOffset(const int iLevel, const float listLeftOffset) { m_listLeftOffset[iLevel - 1] = listLeftOffset; }
     void setListMinLabelWidth(const int iLevel, const float listMinLabelWidth) { m_listMinLabelWidth[iLevel - 1] = listMinLabelWidth; }
-    const int getLevelNumber(const int iLevel) const { return m_iListNumbers[iLevel - 1]; }
-    const float getListLeftOffset(const int iLevel) const { return m_listLeftOffset[iLevel - 1]; } 
-    const float getListMinLabelWidth(const int iLevel) const { return m_listMinLabelWidth[iLevel - 1]; }
-    const int getOutlineHash() const { return m_iOutlineHash; }
+    int getLevelNumber(const int iLevel) const { return m_iListNumbers[iLevel - 1]; }
+    float getListLeftOffset(const int iLevel) const { return m_listLeftOffset[iLevel - 1]; } 
+    float getListMinLabelWidth(const int iLevel) const { return m_listMinLabelWidth[iLevel - 1]; }
+    int getOutlineHash() const { return m_iOutlineHash; }
 
 private:
     //int m_iWPOutlineHash; // we don't use this information in AbiWord, only for id purposes during filtering
@@ -74,7 +74,7 @@ private:
     int m_iOutlineHash;
 };
 
-class  IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
+class IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_WordPerfect;
@@ -93,11 +93,11 @@ public:
 					IE_Imp ** ppie);
 };
 
-class  IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
+class IE_Imp_WordPerfect : public IE_Imp, public WPXHLListenerImpl
 {
 public:
     IE_Imp_WordPerfect(PD_Document * pDocument);
-    ~IE_Imp_WordPerfect();
+    virtual ~IE_Imp_WordPerfect();
     
     virtual void pasteFromBuffer(PD_DocumentRange * pDocRange,
 				 UT_uint8 * pData, UT_uint32 lenData, const char * szEncoding = 0);
@@ -200,7 +200,7 @@ private:
 
 #ifdef HAVE_LIBWPS
 
-class  IE_Imp_MSWorks_Sniffer : public IE_ImpSniffer
+class IE_Imp_MSWorks_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_MSWorks;

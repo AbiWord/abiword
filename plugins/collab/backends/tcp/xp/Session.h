@@ -1,5 +1,4 @@
-/* Copyright (C) 2007 by Marc Maurer <uwog@uwog.net>
- * Copyright (C) 2008 by Marc Maurer <uwog@uwog.net>
+/* Copyright (C) 2007,2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,6 +71,7 @@ public:
 
 	void asyncReadHeader()
 	{
+		UT_DEBUGMSG(("Session::asyncReadHeader()\n"));
 		packet_data = 0; // just to be sure we'll never touch a datablock we might have read before
 		asio::async_read(socket, 
 			asio::buffer(&packet_size, 4),
@@ -115,13 +115,14 @@ public:
 		{
 			asio::error_code ecs;
 			socket.shutdown(asio::ip::tcp::socket::shutdown_both, ecs);
-			if (ecs)
+			if (ecs) {
 				UT_DEBUGMSG(("Error shutting down socket: %s\n", ecs.message().c_str()));
-
+			}
 			asio::error_code ecc;
 			socket.close(ecc);
-			if (ecc)
+			if (ecc) {
 				UT_DEBUGMSG(("Error closing socket: %s\n", ecc.message().c_str()));
+			}
 		}
 		UT_DEBUGMSG(("Socket closed, signalling mainloop\n"));
 		signal();
@@ -139,7 +140,7 @@ private:
 	{
 		if (error)
 		{
-			UT_DEBUGMSG(("asyncReadHeaderHandler generic error\n"));
+			UT_DEBUGMSG(("asyncReadHeaderHandler error: %s\n", error.message().c_str()));
 			disconnect();
 			return;
 		}

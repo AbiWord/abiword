@@ -110,15 +110,15 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-				 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+								 UT_uint32 /*release*/)
 {
   return 1;
 }
 
 
 // The error-handler we will use when calling the psiconv library
-void psion_error_handler (int kind, psiconv_u32 off, const char *message)
+void psion_error_handler (int kind, psiconv_u32 /*off*/, const char *message)
 {
 	switch(kind) {
 		case PSICONV_VERB_FATAL:

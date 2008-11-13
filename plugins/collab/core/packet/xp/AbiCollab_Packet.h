@@ -155,7 +155,7 @@ UT_sint16 getPacket_PTName_Index( const gchar* name );	// returns -1, or 0 <= x 
 	};																	\
 	static PacketRegister##Class _PacketRegister##Class;
 
-class  Packet
+class Packet
 {
 public:
 	DECLARE_ABSTRACT_PACKET(Packet);
@@ -199,7 +199,7 @@ private:
  * SessionPackets                                            *
  *************************************************************/
 
-class  SessionPacket : public Packet
+class SessionPacket : public Packet
 {
 public:
 	DECLARE_SERIALIZABLE_PACKET
@@ -230,7 +230,7 @@ private:
 	UT_UTF8String			m_sDocUUID;	
 };
 
-class  AbstractChangeRecordSessionPacket : public SessionPacket
+class AbstractChangeRecordSessionPacket : public SessionPacket
 {
 public:
 	AbstractChangeRecordSessionPacket()
@@ -250,7 +250,7 @@ public:
 	virtual UT_sint32 getRemoteRev(void) const = 0;
 };
 
-class  ChangeRecordSessionPacket : public AbstractChangeRecordSessionPacket
+class ChangeRecordSessionPacket : public AbstractChangeRecordSessionPacket
 {
 public:
 	DECLARE_PACKET(ChangeRecordSessionPacket);
@@ -296,7 +296,7 @@ private:
 	UT_sint32					m_iRemoteRev;
 };
 
-class  Props_ChangeRecordSessionPacket : public ChangeRecordSessionPacket {
+class Props_ChangeRecordSessionPacket : public ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(Props_ChangeRecordSessionPacket);
 	Props_ChangeRecordSessionPacket() : m_szAtts(NULL), m_szProps(NULL) {}
@@ -341,7 +341,7 @@ protected:
 	void _fillAtts();		// uses m_sAtts to make m_szAtts
 };
 
-class  InsertSpan_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
+class InsertSpan_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(InsertSpan_ChangeRecordSessionPacket);
 	InsertSpan_ChangeRecordSessionPacket() : m_sText("") {}
@@ -362,7 +362,7 @@ public:
 	UT_UTF8String				m_sText;
 };
 
-class  ChangeStrux_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
+class ChangeStrux_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(ChangeStrux_ChangeRecordSessionPacket);
 	ChangeStrux_ChangeRecordSessionPacket() : m_eStruxType(PTStruxType(0)) {}
@@ -382,7 +382,7 @@ public:
 	PTStruxType					m_eStruxType;
 };
 
-class  DeleteStrux_ChangeRecordSessionPacket : public ChangeRecordSessionPacket {
+class DeleteStrux_ChangeRecordSessionPacket : public ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(DeleteStrux_ChangeRecordSessionPacket);
 	DeleteStrux_ChangeRecordSessionPacket() {}
@@ -402,7 +402,7 @@ public:
 	PTStruxType					m_eStruxType;
 };
 
-class  Object_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
+class Object_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(Object_ChangeRecordSessionPacket);
 	Object_ChangeRecordSessionPacket() {}
@@ -422,7 +422,7 @@ public:
 	PTObjectType				m_eObjectType;
 };
 
-class  Data_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
+class Data_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(Data_ChangeRecordSessionPacket);
 	Data_ChangeRecordSessionPacket()
@@ -447,7 +447,7 @@ public:
 	std::string					m_sToken;
 };
 
-class  Glob_ChangeRecordSessionPacket : public ChangeRecordSessionPacket
+class Glob_ChangeRecordSessionPacket : public ChangeRecordSessionPacket
 {
 public:
 	DECLARE_PACKET(Glob_ChangeRecordSessionPacket);
@@ -468,7 +468,7 @@ public:
 	UT_Byte							m_iGLOBType;
 };
 
-class  GlobSessionPacket : public AbstractChangeRecordSessionPacket
+class GlobSessionPacket : public AbstractChangeRecordSessionPacket
 {
 public:
 	DECLARE_PACKET(GlobSessionPacket);
@@ -495,7 +495,7 @@ private:
 	std::vector<SessionPacket*>		m_pPackets;
 };
 
-class  SignalSessionPacket : public SessionPacket
+class SignalSessionPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(SignalSessionPacket);
@@ -511,7 +511,7 @@ private:
 	UT_uint32	m_iSignal;
 };
 
-class  RevertSessionPacket : public SessionPacket
+class RevertSessionPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(RevertSessionPacket);
@@ -527,7 +527,7 @@ private:
 	UT_sint32			m_iRev;
 };
 
-class  RevertAckSessionPacket : public SessionPacket
+class RevertAckSessionPacket : public SessionPacket
 {
 public:
 	DECLARE_PACKET(RevertAckSessionPacket);

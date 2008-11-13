@@ -333,7 +333,7 @@ public:									// we create...
 		// map the user_data into an object and dispatch the event.
 	
 		_wd * wd = static_cast<_wd *>(user_data);
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
 		if (!wd->m_blockSignal)
@@ -348,7 +348,7 @@ public:									// we create...
 		// map the user_data into an object and dispatch the event.
 	
 		_wd * wd = reinterpret_cast<_wd *>(user_data);
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
 		if (!wd->m_blockSignal && (rows > 0) && (cols > 0))
@@ -514,7 +514,7 @@ public:									// we create...
 
 	static void s_combo_changed(GtkComboBox * combo, _wd * wd)
 	{
-		UT_ASSERT(wd);
+		UT_return_if_fail(wd);
 
 		// only act if the widget has been shown and embedded in the toolbar
 		if (!wd->m_widget || wd->m_blockSignal) {
@@ -595,7 +595,7 @@ s_fore_color_changed (GOComboColor 	* /*cc*/,
 {
 	UT_UTF8String str;
 
-	g_return_if_fail (wd);
+	UT_return_if_fail (wd);
 
 	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
 								 UINT_RGBA_R (color),
@@ -614,7 +614,7 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 {
 	UT_UTF8String str;
 
-	g_return_if_fail (wd);
+	UT_return_if_fail (wd);
 
 	if (is_default) {
 		str = "transparent";
@@ -633,7 +633,7 @@ static void s_proxy_activated(GtkAction * action, _wd * wd)
 		const gchar * editMethod = gtk_action_get_name(action);
 		XAP_UnixApp * pUnixApp = wd->m_pUnixToolbar->getApp();
 		const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
-		UT_ASSERT(pEMC);
+		UT_return_if_fail(pEMC);
 		EV_EditMethod * pEM = NULL;
 
 		AV_View * pView = wd->m_pUnixToolbar->getFrame()->getCurrentView();
@@ -683,7 +683,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
 	XAP_Toolbar_Id id = wd->m_id;
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
-	UT_ASSERT(pToolbarActionSet);
+	UT_return_val_if_fail(pToolbarActionSet, false);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	UT_ASSERT(pAction);
@@ -720,7 +720,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
 		return false;
 
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
+	UT_return_val_if_fail(pEMC, false);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
@@ -880,7 +880,7 @@ bool EV_UnixToolbar::synthesize(void)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		UT_continue_if_fail(pLayoutItem);
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
@@ -1285,11 +1285,11 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		UT_continue_if_fail(pLayoutItem);
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-		UT_ASSERT(pAction);
+		UT_continue_if_fail(pAction);
 
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
@@ -1517,7 +1517,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 	UT_ASSERT(wd->m_id == AP_TOOLBAR_ID_FMT_STYLE);
 	XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
-	UT_ASSERT(pFactory);
+	UT_return_val_if_fail(pFactory, false);
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_UnixToolbar_StyleCombo * pStyleC = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();

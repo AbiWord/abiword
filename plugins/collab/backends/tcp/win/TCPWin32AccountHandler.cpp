@@ -39,9 +39,7 @@ AccountHandler * TCPWin32AccountHandler::static_constructor()
 // return true if we process the command, false otherwise
 BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
 	
 	bool serve = _isCheckedHwnd(m_hServerRadio);
 	AP_Win32Dialog_CollaborationAddAccount * pThis;
@@ -70,7 +68,7 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case ABI_RID_DIALOG_COLLABTCP_PORTENTRY:
 		// These have the ability to enable or disable the "OK" button
 		
-		pThis=(AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(m_hParentDlg,DWL_USER);
+		pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(m_hParentDlg,DWL_USER);
 		
 		// note: GetWindowTextLength may have a Unicode caveat, according to MSDN
 		// It may return a value higher than the actual length.  This is probably OK for
@@ -115,6 +113,8 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 TCPWin32AccountHandler::TCPWin32AccountHandler()
 	: TCPAccountHandler(),
+	m_pWin32Dialog(NULL),
+	m_hInstance(NULL),
 	m_hServerEntry(NULL),
 	m_hPortEntry(NULL),
 	m_hServerRadio(NULL),
@@ -123,11 +123,9 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 	m_hPortLabel(NULL),
 	m_hAutoconnectCheck(NULL),
 	m_hUseSecureCheck(NULL),
-	m_hInstance(NULL),
-	m_hParentDlg(NULL),
-	p_win32Dialog(NULL)
+	m_hParentDlg(NULL)
 {
-	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
+	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
 	{
 		m_hInstance = pSessionManager->getInstance();
@@ -140,7 +138,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(pEmbeddingParent);
 
 	// our enclosing window must be a HWND
-	HWND hBox = pEmbeddingParent;
+	HWND hBox = reinterpret_cast<HWND>(pEmbeddingParent);
 	
 	/* Non-Tabbable Labels */
 	
@@ -196,11 +194,11 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	HFONT hfontPrimary = CreateFontIndirect(&lf);
 	HWND rgFontReceivers[] =
 		{ m_hServerRadio, m_hJoinRadio, m_hServerLabel, m_hPortLabel, m_hServerEntry, m_hPortEntry, m_hAutoconnectCheck, m_hUseSecureCheck};
-	for (int iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); ++iWnd)
+	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 	
-	// default to join
-	_checkButtonHwnd(m_hJoinRadio, true);
+	// default to serve
+	_checkButtonHwnd(m_hServerRadio, true);
 	
 	// default to autoconnect
 	_checkButtonHwnd(m_hAutoconnectCheck, true);
@@ -214,7 +212,7 @@ void TCPWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(pEmbeddingParent);
 
 	// our enclosing window must be a HWND
-	HWND hBox = pEmbeddingParent;	
+	HWND hBox = reinterpret_cast<HWND>(pEmbeddingParent);
 	
 	DESTROY_WINDOW(m_hServerEntry);
 	DESTROY_WINDOW(m_hPortEntry);

@@ -35,11 +35,12 @@ class PD_Document;
 class UT_Stack;
 class PX_ChangeRecord;
 class ChangeAdjust;
+class ServiceAccountHandler;
 
-class  AbiCollabService_Export :  public PL_DocChangeListener
+class AbiCollabService_Export :  public PL_DocChangeListener
 {
 public:
-	AbiCollabService_Export(PD_Document* pDoc, UT_sint64 iID);
+  AbiCollabService_Export(PD_Document* pDoc, ServiceAccountHandler* pService );
 	virtual ~AbiCollabService_Export(void);
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
@@ -69,10 +70,11 @@ public:
 	virtual				PLListenerType getType() const { return PTL_CollabServiceExport; }
 	virtual void		setNewDocument(PD_Document * pDoc);
 	virtual void		removeDocument(void);
-
+	PD_Document *           getDocument(void)
+	{ return m_pDoc;}
 private:
 	PD_Document*		m_pDoc;
-	UT_sint64			m_iID;
+	ServiceAccountHandler * m_pService;
 };
 
 #endif /* ABICOLLABSERVICE_EXPORT_H */

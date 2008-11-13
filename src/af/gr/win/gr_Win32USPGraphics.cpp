@@ -1308,7 +1308,9 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 		if(!iAscentScreen)
 		{
-			TEXTMETRIC tm = { 0 };
+			TEXTMETRIC tm;
+			memset(&tm, 0, sizeof(tm));
+
 			GetTextMetrics(m_hdc, &tm);
 			iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
 										((double)getDeviceResolution()*(double)getZoomPercentage()));
@@ -1455,7 +1457,9 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
 			
-			TEXTMETRIC tm = { 0 };
+			TEXTMETRIC tm;
+			memset(&tm, 0, sizeof(tm));
+
 			GetTextMetrics(getPrintDC(), &tm);
 
 #if 0 //def DEBUG
@@ -1565,12 +1569,19 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		
 		
 		SCRIPT_CACHE sc = NULL;
-		HRESULT hRes = fScriptPlace(m_hdc, &sc, RI.m_pIndices, RI.m_iIndicesCount, RI.m_pVisAttr,
+		HRESULT hResFSP = fScriptPlace(m_hdc, &sc, RI.m_pIndices, RI.m_iIndicesCount, RI.m_pVisAttr,
 									& pItem->m_si.a, pAdvances, pGoffsets, & stABC);
 
-		UT_ASSERT_HARMLESS( !hRes );
-		if(!hRes)
+		UT_ASSERT_HARMLESS( !hResFSP );
+		if(!hResFSP)
+		{
 			bAdjustAdvances = true;
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			LOG_USP_EXCPT_X("fScriptPlace failed", hResFSP)
+		}
 
 		if(sc)
 			fScriptFreeCache(&sc);			

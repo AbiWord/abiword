@@ -147,7 +147,7 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 	return pThis->_onDlgMessage(hWnd, msg, wParam, lParam);
 }
 
-BOOL XAP_Win32DialogBase::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL XAP_Win32DialogBase::_onDlgMessage(HWND /*hWnd*/, UINT /*msg*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	return FALSE;
 }

@@ -2,7 +2,9 @@
 PRESENTATION_CFLAGS=
 PRESENTATION_LIBS=
 
-if test "$enable_presentation" == "yes"; then
+if test "$enable_presentation" != ""; then
+
+test "$enable_presentation" == "auto" && PLUGINS="$PLUGINS presentation"
 
 PRESENTATION_CFLAGS="$PRESENTATION_CFLAGS "'${PLUGIN_CFLAGS}'
 PRESENTATION_LIBS="$PRESENTATION_LIBS "'${PLUGIN_LIBS}'

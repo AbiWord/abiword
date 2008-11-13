@@ -40,7 +40,7 @@ extern "C" {
 //class UT_StringPtrMap;
 //class UT_Vector;
 
-class  UT_Multipart
+class UT_Multipart
 {
 	enum ContentTransferEncoding
 	{
@@ -102,7 +102,7 @@ private:
 	char				m_b64buffer[80];
 };
 
-class  IE_Imp_MHT_Sniffer : public IE_ImpSniffer
+class IE_Imp_MHT_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -121,7 +121,7 @@ public:
 	UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);
 };
 
-class  IE_Imp_MHT : public IE_Imp_XHTML
+class IE_Imp_MHT : public IE_Imp_XHTML
 {
 public:
 	IE_Imp_MHT (PD_Document * pDocument);

@@ -25,6 +25,7 @@
 
 // Internal includes
 #include <OXML_Element.h>
+#include <ie_exp_OpenXML.h>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -39,8 +40,11 @@ public:
 	OXML_Element_Run(std::string id);
 	virtual ~OXML_Element_Run();
 
-	virtual UT_Error serialize(std::string path);
+	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+
+private: 
+	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 };
 
 #endif //_OXML_ELEMENT_RUN_H_

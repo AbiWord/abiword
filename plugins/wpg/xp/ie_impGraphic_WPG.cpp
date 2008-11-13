@@ -89,7 +89,7 @@ const uint8_t * AbiWordPerfectGraphicsInputStream::read(size_t numBytes, size_t 
 
 int AbiWordPerfectGraphicsInputStream::seek(long offset, WPX_SEEK_TYPE seekType) 
 {
-	GSeekType gsfSeekType;
+	GSeekType gsfSeekType = G_SEEK_SET;
 	switch(seekType)
 	{
 	case WPX_SEEK_CUR:
@@ -190,8 +190,8 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
-								 UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, 
+								 UT_uint32 /*release*/)
 {
   return 1;
 }

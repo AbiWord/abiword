@@ -120,14 +120,14 @@ PL_Listener * IE_Exp_WordPerfect::_constructListener(void)
 void IE_Exp_WordPerfect::_UT_String_add(UT_String &s, int i)
 {
 	// long integers are stored in reverse byte order!  
-	for (int j=0; j<sizeof(i); j++)
+	for (size_t j=0; j<sizeof(i); j++)
 		s += (char)(i>>8*j);
 }
 
 void IE_Exp_WordPerfect::_UT_String_add(UT_String &s, short i)
 {
 	// short integers are stored in reverse byte order!  
-	for (int j=0; j<sizeof(i); j++)
+	for (size_t j=0; j<sizeof(i); j++)
 		s += (char)(i>>8*j);
 }
 
@@ -136,7 +136,7 @@ void IE_Exp_WordPerfect::_UT_String_overwrite(UT_String &s, int pos, int i)
 	char *p = const_cast<char *>(s.c_str());
 	p += pos;
 
-	for (int j=0; j<sizeof(i); j++)
+	for (size_t j=0; j<sizeof(i); j++)
 		*p++ = (char)(i>>8*j);
 }
 
@@ -721,7 +721,7 @@ void WordPerfect_Listener::_closeSpan()
 	}
 }
 
-void WordPerfect_Listener::_handleVariableGroup(char group, char subgroup, char flags, short sizeNonDelData, char * nonDelData)
+void WordPerfect_Listener::_handleVariableGroup(char group, char subgroup, char flags, short sizeNonDelData, char * /*nonDelData*/)
 {
 	UT_DEBUGMSG(("WordPerfect Listener: _handleVariableGroup\n"));
 
