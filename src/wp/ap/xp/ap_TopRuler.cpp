@@ -1843,6 +1843,7 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
 	UT_sint32 top = prDrag->top + m_pG->tlu(2);
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
+	UT_DEBUGMSG(("Drawing Cell Mark left %d \n",left));
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine(left,top,left,bot);
 	painter.drawLine(left,bot,right,bot);
@@ -4086,10 +4087,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			m_draggingCenter = xStartPixel + xrel;
 			
 			// disalow that a cell marker is dragged over other cell markers
-			if (m_draggingCenter < m_iMinCellPos)
-					m_draggingCenter = m_iMinCellPos;
-			if (m_draggingCenter > m_iMaxCellPos)
-					m_draggingCenter = m_iMaxCellPos;
+			if (m_draggingCenter < (m_iMinCellPos + widthPrevPagesInRow))
+			    m_draggingCenter = m_iMinCellPos + widthPrevPagesInRow;
+			if (m_draggingCenter > (m_iMaxCellPos + widthPrevPagesInRow))
+			    m_draggingCenter = m_iMaxCellPos +widthPrevPagesInRow ;
+
 //
 // set the dragging cell marker rectangle here
 //
