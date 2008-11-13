@@ -1260,10 +1260,14 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			UT_sint32 xRight = xLeft + getWidth();
 			UT_sint32 x1,y1,x2,y2,height;
 			bool bDir;
-			
+			FL_DocLayout * pLayout = getBlock()->getDocLayout();
+			UT_uint32 iPageNumber = pLayout->findPage(pLine->getPage());
+			UT_uint32 widthPrevPageInRow = _getView()->getWidthPrevPagesInRow(iPageNumber);
 			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 			{
 				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+				x1 += widthPrevPageInRow;
+				x2 += widthPrevPageInRow;
 				if(bRTL)
 				{
 					xRight = x1 + _getView()->getPageViewLeftMargin();
@@ -1278,6 +1282,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 			{
 				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+				x1 += widthPrevPageInRow;
+				x2 += widthPrevPageInRow;
 				if(bRTL)
 				{
 					xLeft = x1 + _getView()->getPageViewLeftMargin();
@@ -1292,6 +1298,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			UT_sint32 width = xRight-xLeft;
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
 			pDA->pG->setClipRect(&clip);
+			xxx_UT_DEBUGMSG(("draw cliprect left %d width %d \n",clip.left,clip.width));
 		}
 	}
 	UT_RGBColor OldCol = *m_FillType.getColor();

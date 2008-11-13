@@ -3759,9 +3759,10 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			da.pG = m_pG;
 			da.xoff = xoff;
 			da.yoff = yoff + pLine->getAscent();
+			xxx_UT_DEBUGMSG(("Draw Position CurRun %x CurLine %x Yoffset %d \n",pCurRun,pLine,yoff));
 			if(!bClear)
 			{
-				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
+				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff));
 //				UT_sint32 iLow = getSelectionAnchor();
 //				UT_sint32 iHigh = getPoint();
 //				if(iHigh < iLow
@@ -3771,7 +3772,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			}
 			else
 			{
-				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
+				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff));
 				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);

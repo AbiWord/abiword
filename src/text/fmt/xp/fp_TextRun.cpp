@@ -2038,7 +2038,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		//UT_Rect r;
-
+		xxx_UT_DEBUGMSG(("Doing _fillRect red %d blue %d green %d\n",clr.m_red,clr.m_blu,clr.m_grn));
 		_getPartRect(&r, xoff, yoff, iPos1, iLen);
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
@@ -2117,6 +2117,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 	UT_ASSERT(pRect->left < 10000000);
 	UT_ASSERT(pRect->width >= 0);
+	xxx_UT_DEBUGMSG(("part Rect left %d width %d \n",pRect->left,pRect->width));
 }
 
 /*!
