@@ -1623,9 +1623,14 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	{
 		return false;
 	}
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView == NULL)
+	{
+		return false;
+	}
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
-	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
+	pView->getTopRulerInfo(&m_infoCache);
 	//UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 	//UT_sint32 xStartPixel = xFixed + static_cast<UT_sint32>(m_infoCache.m_xPageViewMargin);
 
@@ -1652,8 +1657,11 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	ap_RulerTicks tick(m_pG,m_dim);
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, m_pG->tlu(s_iFixedHeight)/2 + m_pG->tlu(s_iFixedHeight)/4 - 3, anchor, iType, iLeader);
 
-	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-    UT_sint32 xrel;
+	
+	UT_sint32 widthPrevPagesInRow = pView->getWidthPrevPagesInRow(pView->getCurrentPageNumber()-1);
+
+	UT_sint32 xAbsLeft =  widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xrel;
 
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 	bool bRTLglobal;
@@ -2979,9 +2987,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 	case DW_TABSTOP:
 		{
 		 	UT_sint32 anchor;
-       		eTabType iType;
+			eTabType iType;
 			eTabLeader iLeader;
-    		UT_sint32 xrel;
+			UT_sint32 xrel;
 
 			fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
@@ -3250,8 +3258,15 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 
 void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iLeader, bool bDelete)
 {
-	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-    UT_sint32 xrel;
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView == NULL)
+	{
+		return;
+	}
+	UT_sint32 widthPrevPagesInRow = pView->getWidthPrevPagesInRow(pView->getCurrentPageNumber()-1);
+
+	UT_sint32 xAbsLeft =  widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xrel;
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
 	bool bRTL = false;
