@@ -103,7 +103,7 @@ XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 
 static void s_dialog_response(GtkWidget * /* widget */,
 						gint answer,
-						XAP_Dialog_FileOpenSaveAs::tAnswer * ptr)
+						XAP_Dialog_FileOpenSaveAs::tAnswer * ptr, bool bQuit = true)
 {
 	switch (answer)
 	{
@@ -114,7 +114,8 @@ static void s_dialog_response(GtkWidget * /* widget */,
 				*ptr = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 			else
 				*ptr = XAP_Dialog_FileOpenSaveAs::a_OK;
-			gtk_main_quit();
+			if (bQuit)
+				gtk_main_quit();
 			break;
 		default:
 			// do nothing
@@ -163,7 +164,12 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 
 static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
+	// whenever the "file-activated" signal is called, it will also be followed
+	// (or preceded?) by a "response" signal. That "response" signal will manage
+	// the closing of the dialog for us. Now we don't want to close the dialog 
+	// twice, hence the last 'false' parameter.
+	// Hardly elegant, but none of this code is :/ It fixes bug #11647 too - MARCM.
+	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer, false);
 }
 
 static void file_selection_changed  (GtkTreeSelection  *selection,
