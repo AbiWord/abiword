@@ -290,7 +290,25 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 	gint	  	  off;
 
 	tmp1 = g_ascii_strdown (toolbar_id, -1);
-	off = strlen (tmp1) - 6;
+
+	static size_t underscorelen = 0;
+	size_t tmp1len = strlen(tmp1);
+
+	if (underscorelen == 0) {
+
+		gchar *lastunderscore = g_strrstr_len(tmp1, tmp1len, "_");
+
+		if (lastunderscore && *lastunderscore) {
+			underscorelen = strlen(lastunderscore);
+		} else {
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// We'll use six as the fail-safe, but some language codes like ast-ES
+			// and be@latin need more of the string chopped off (Bug 11810)
+			underscorelen = 6;
+		}
+	}
+
+	off = tmp1len - underscorelen;
 	tmp1[off] = '\0';
 	tokens = g_strsplit (tmp1, "_", 0);
 	g_free (tmp1);
@@ -308,6 +326,8 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 	if (tmp2) {
 		g_free (stock_id);
 		stock_id = g_strdup (tmp2);
+	} else {
+		xxx_UT_DEBUGMSG(("abi_stock_get_gtk_stock_id returned NULL for stock_id: %s\n", stock_id));
 	}
 
 	return stock_id;
