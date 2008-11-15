@@ -223,7 +223,7 @@ public:
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
-
+	
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
 private: 
@@ -816,11 +816,19 @@ public:
         bool                isMathLoaded(void);
 	bool                isGrammarLoaded(void);
 	// --
+	
+	UT_uint32			getNumHorizPages(void) const; //////////////////////////////////
+	void				calculateNumHorizPages(void);
+	UT_uint32			getMaxHeight(UT_uint32 iRow) const;
+	UT_uint32			getWidthPrevPagesInRow(UT_uint32 iPageNumber) const;
+	UT_uint32			getWidthPagesInRow(fp_Page *page) const;
+	UT_uint32			getHorizPageSpacing(void) const;
+	bool				rtlPages(void) const;
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
 	
-
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -909,6 +917,12 @@ protected:
 	void                _adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount);
 	
 private:
+
+	UT_uint32			m_iNumHorizPages; /////////////////////////////////////////////////
+	UT_uint32			m_getNumHorizPagesCachedWindowWidth;
+	bool				m_autoNumHorizPages;
+	UT_uint32			m_horizPageSpacing;
+
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;

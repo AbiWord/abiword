@@ -1239,7 +1239,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x line %x \n",this, getLine()));
 	GR_Graphics * pG = pDA->pG;
 	// shortcircuit drawing if we're way off base.
-	long imax = (1 << 15) - 1;
+	long imax = (1 << 30) - 1; // This draws four rows of pages. Increase the 30 to view more rows.
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
@@ -1260,10 +1260,14 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			UT_sint32 xRight = xLeft + getWidth();
 			UT_sint32 x1,y1,x2,y2,height;
 			bool bDir;
-			
+			FL_DocLayout * pLayout = getBlock()->getDocLayout();
+			UT_uint32 iPageNumber = pLayout->findPage(pLine->getPage());
+			UT_uint32 widthPrevPageInRow = _getView()->getWidthPrevPagesInRow(iPageNumber);
 			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 			{
 				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+				x1 += widthPrevPageInRow;
+				x2 += widthPrevPageInRow;
 				if(bRTL)
 				{
 					xRight = x1 + _getView()->getPageViewLeftMargin();
@@ -1278,6 +1282,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 			{
 				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+				x1 += widthPrevPageInRow;
+				x2 += widthPrevPageInRow;
 				if(bRTL)
 				{
 					xLeft = x1 + _getView()->getPageViewLeftMargin();
@@ -1292,6 +1298,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			UT_sint32 width = xRight-xLeft;
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
 			pDA->pG->setClipRect(&clip);
+			xxx_UT_DEBUGMSG(("draw cliprect left %d width %d \n",clip.left,clip.width));
 		}
 	}
 	UT_RGBColor OldCol = *m_FillType.getColor();
@@ -2050,6 +2057,9 @@ bool fp_TabRun::hasLayoutProperties(void) const
 
 void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
+	
+	
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
@@ -2462,6 +2472,8 @@ bool fp_ForcedLineBreakRun::_letPointPass(void) const
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: Find everything that calls this and modify them to allow x-axis and y-axis.
+	
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
@@ -3209,6 +3221,7 @@ bool fp_EndOfParagraphRun::_letPointPass(void) const
 
 void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis. (I think?)
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = true;
@@ -3599,6 +3612,8 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: This one needs fixing for multipage. Get text working first.
+	//TODO: Find everything that calls this and modify them to allow y-axis.
 	if (x > getWidth())
 		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 	else
@@ -4167,6 +4182,8 @@ bool fp_FieldRun::hasLayoutProperties(void) const
 
 void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
+	
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
@@ -5633,6 +5650,7 @@ bool fp_ForcedPageBreakRun::_letPointPass(void) const
 
 void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool& /*isTOC*/)
 {
+	//TODO: Find everything that calls this and modify them to allow y-axis.
 	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;

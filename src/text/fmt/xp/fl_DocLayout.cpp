@@ -1767,30 +1767,31 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 }
 
 
-//------------------------------------------------------------------
 UT_sint32 FL_DocLayout::getHeight()
 {
 	UT_sint32 iHeight = 0;
-	int count = m_vecPages.getItemCount();
+	FV_View * pView = getView(); // add page view dimensions
+	UT_uint32 count = m_vecPages.getItemCount();
+	UT_uint32 numRows = count / pView->getNumHorizPages();
+	if (count > (pView->getNumHorizPages() * numRows))
+	{
+		numRows++;
+	}
 
-//
-// restore when we support different page heights per document.
-//
-	for (int i=0; i<count; i++)
+	for (unsigned int i = 0; i<numRows; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
-
-		iHeight += p->getHeight();
+		UT_uint32 iRow = i / pView->getNumHorizPages();			
+		iHeight += pView->getMaxHeight(iRow);
+		
 		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
 		{
 			iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
 		}
 	}
-
+	
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		// add page view dimensions
-		FV_View * pView = getView();
 		if(pView)
 		{
 			iHeight += pView->getPageViewSep() * count; // Not count - 1, since we want a nice gray border at the very bottom of the document as well
@@ -1806,7 +1807,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
-	xxx_UT_DEBUGMSG(("returned height %d \n",iHeight));
+	xxx_UT_DEBUGMSG(("FL_DocLayout::getHeight() - returned height %d \n",iHeight));
 	return iHeight;
 }
 

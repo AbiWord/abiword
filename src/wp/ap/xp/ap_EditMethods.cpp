@@ -1392,7 +1392,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 //
 	
 	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
-	UT_DEBUGMSG((" _sFrequentRepeat: pWorker %x pFeq %x \n",pWorker,pFreq));
+	xxx_UT_DEBUGMSG((" _sFrequentRepeat: pWorker %x pFeq %x \n",pWorker,pFreq));
 	s_pFrequentRepeat->stop();
 	UT_Worker * pTmp =  s_pFrequentRepeat;
 	//

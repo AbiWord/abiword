@@ -1114,6 +1114,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		iCurrHeight = pContainer->getY() + pContainer->getHeight();
+		xxx_UT_DEBUGMSG(("iCurrHeight %d | m_iRedrawHeight %d\n", iCurrHeight, m_iRedrawHeight));
 		if((m_iRedrawHeight > 0) && (iCurrHeight >  m_iRedrawHeight))
 		{
 		    da.bDirtyRunsOnly = false;
