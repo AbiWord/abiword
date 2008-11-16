@@ -1783,11 +1783,6 @@ UT_sint32 FL_DocLayout::getHeight()
 		fp_Page* p = m_vecPages.getNthItem(i);
 		UT_uint32 iRow = i / pView->getNumHorizPages();			
 		iHeight += pView->getMaxHeight(iRow);
-		
-		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
-		{
-			iHeight = iHeight - p->getOwningSection()->getTopMargin() - p->getOwningSection()->getBottomMargin();
-		}
 	}
 	
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))

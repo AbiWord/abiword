@@ -8000,15 +8000,11 @@ void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
 	const fp_Page* pPage = m_pLayout->getFirstPage();
-	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 	UT_uint32 iPageNumber = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
 	UT_uint32 iRow = iPageNumber/getNumHorizPages();
 	UT_uint32 y = getPageViewTopMargin();
-	
-	if(getViewMode() != VIEW_PRINT)
-	{
-		y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
-	}
+	UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
+		
 	if(iPageNumber >= getNumHorizPages())
 	{
 		for (unsigned int i = 0; i < iRow; i++)
@@ -13890,11 +13886,15 @@ UT_uint32 FV_View::getMaxHeight(UT_uint32 iRow) const
 {
 	fp_Page * pPage = m_pLayout->getNthPage(iRow * getNumHorizPages());
 	UT_sint32 iMaxPageHeight = 0;
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 	
 	for(unsigned int i = 0; i < getNumHorizPages(); i++)
 	{
 		UT_sint32 iPageHeight = pPage->getHeight();
-		
+		if(getViewMode() != VIEW_PRINT)
+		{
+			iPageHeight = iPageHeight - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
 		if (iPageHeight > iMaxPageHeight)
 		{
 			iMaxPageHeight = iPageHeight;
