@@ -2796,7 +2796,14 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	bool bInRange = false;
 	UT_uint32 iRangeStart = 0;
 	
-	for(UT_uint32 i = 0; i < iMaxChar; ++i)
+	// Skip the coverage for character 0 as pango doesn't seem to be able to
+	// handle it properly.
+	// Note that for almost all fonts pango reports that it has no coverage for
+	// character 0, so this is a non-issue there. However, for some (broken?) fonts 
+	// like 'Fixedsys Excelsior 2.00' pango reports it *has* coverage for character 0. 
+	// This will lead to crashes when attempting to shape and/or draw it, like 
+	// the crash in bug 11731 - MARCM
+	for(UT_uint32 i = 1; i < iMaxChar; ++i)
 	{
 		PangoCoverageLevel pl = pango_coverage_get(pc, i);
 		
