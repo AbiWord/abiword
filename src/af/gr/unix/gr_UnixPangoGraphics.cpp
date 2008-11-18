@@ -2775,14 +2775,12 @@ struct _MyPangoCoverage
 
 typedef _MyPangoCoverage MyPangoCoverage;
 
-
 void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 {
+	coverage.clear();
+
 	UT_return_if_fail(m_pPFont);
-#if 0
-	/* the PangoCoverage info seems broken -- it is telling me that
-	 * Times New Roman does not have a glyph for the " character :/
-	 */
+
 	PangoCoverage * pc = m_pPFont->getPangoCoverage();
 	
 	if(!pc)
@@ -2827,61 +2825,6 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 			}
 		}
 	}
-#else
-	FcChar32 coverage_map[FC_CHARSET_MAP_SIZE];
-	FcChar32 next;
-	const FcChar32 invalid = (FcChar32) - 1;
-	FcChar32 base_range = invalid;
-	coverage.clear();
-
-	XftFont*  xft_fnt =  pango_xft_font_get_font (m_pPFont->getPangoFont());
-	int i;
-
-	for (FcChar32 ucs4 =
-	     FcCharSetFirstPage(xft_fnt->charset, coverage_map, &next);
-	     ucs4 != FC_CHARSET_DONE;
-	     ucs4 =
-	     FcCharSetNextPage(xft_fnt->charset, coverage_map, &next))
-	  {
-		  for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
-		    {
-			    FcChar32 bits = coverage_map[i];
-			    FcChar32 base = ucs4 + (i << 5);
-			    int b = 0;
-
-			    if (base_range != invalid && bits == 0xFFFFFFFF)
-				    continue;
-
-			    while (bits)
-			      {
-				      if (bits & 1)
-					{
-						if (base_range == invalid)
-							base_range = base + b;
-					}
-				      else
-					{
-						if (base_range != invalid)
-						  {
-							  coverage.push_back(base_range);
-							  coverage.push_back(base + b - base_range);
-							  base_range = invalid;
-						  }
-					}
-
-				      bits >>= 1;
-				      b++;
-			      }
-
-			    if (b < 32 && base_range != invalid)
-			      {
-				      coverage.push_back(base_range);
-				      coverage.push_back(base + b - base_range);
-				      base_range = invalid;
-			      }
-		    }
-	  }
-#endif
 }
 
 const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
