@@ -257,9 +257,15 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 
 	// map the scrolling type generated from mouse buttons 4 to 7 onto mousebuttons
 	if (e->direction == GDK_SCROLL_UP)
-			emb = EV_EMB_BUTTON4;
+	{
+	  emb = EV_EMB_BUTTON4;
+	  xxx_UT_DEBUGMSG(("Scroll up detected \n"));
+	}
 	else if (e->direction == GDK_SCROLL_DOWN)
-	        emb = EV_EMB_BUTTON5;
+	{
+	  emb = EV_EMB_BUTTON5;
+	  xxx_UT_DEBUGMSG(("Scroll down detected \n"));
+	}
 	/*else if (e->direction == GDK_SCROLL_LEFT) // we don't handle buttons 6 and 7
 	        emb = EV_EMB_BUTTON6;
 	else if (e->direction == GDK_SCROLL_RIGHT)
@@ -270,7 +276,7 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 		UT_DEBUGMSG(("EV_UnixMouse::mouseScroll: unhandled scroll action\n"));
 		return;
 	}
-	
+
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)

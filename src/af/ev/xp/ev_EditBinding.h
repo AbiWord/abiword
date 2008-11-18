@@ -98,6 +98,7 @@ protected:
 	ev_EB_Char_Table *			m_pebChar;
 	
 	bool				bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method );
+	UT_uint32 m_iLastMouseNo;
 };
 
 /*****************************************************************/

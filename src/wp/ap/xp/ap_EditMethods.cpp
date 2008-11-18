@@ -1491,6 +1491,7 @@ Defun1(scrollWheelMouseDown)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
+	xxx_UT_DEBUGMSG(("Wheel Mouse Down \n"));
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, pAV_View->getGraphics()->tlu(60));
 
 	return true;
@@ -1500,6 +1501,7 @@ Defun1(scrollWheelMouseUp)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
+	xxx_UT_DEBUGMSG(("Wheel Mouse Up \n"));
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, pAV_View->getGraphics()->tlu (60));
 
 	return true;
