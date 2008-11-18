@@ -251,6 +251,16 @@ ap_bs_Mouse MouseTable[] =
 	{_CTO _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CVD _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CVD _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CTC _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CTC _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CTO _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CTO _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CPO _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CPO _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CMA _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CMA _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CEM _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CEM _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 
 
 //  Button-5, Mouse wheel (3 lines down)
@@ -282,6 +292,16 @@ ap_bs_Mouse MouseTable[] =
 	{_CVD _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CTO _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 	{_CTO _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
+	{_CTC _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CTC _B5 _C,{ "zoomOut",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CTO _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CTO _B5 _C,{ "zoomOut",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CPO _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CPO _B5 _C,{ "zoomOut",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CMA _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CMA _B5 _C,{ "zoomOut",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CEM _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CEM _B5 _C,{ "zoomOut",		            "zoomIn",           			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},

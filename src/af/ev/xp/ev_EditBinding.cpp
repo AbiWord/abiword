@@ -140,7 +140,8 @@ public:
 /*****************************************************************/
 /*****************************************************************/
 
-EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc)
+EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc):
+	m_iLastMouseNo(0)
 {
 	UT_ASSERT(pemc);
 	m_pemc = pemc;
@@ -334,6 +335,16 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 	if (EV_IsMouse(eb))					// mouse
 	{
 		UT_uint32 n_emb = EV_EMB_ToNumber(eb)-1;
+		xxx_UT_DEBUGMSG(("is mouse %d binding number %d \n",eb,n_emb));
+		//
+		// Handle the case of accidently middle clicking during a 
+		// mouse wheel scroll.
+		//
+		if((n_emb == 2) && ((m_iLastMouseNo == 4) || (m_iLastMouseNo == 5)))
+		{
+				n_emb = m_iLastMouseNo;
+		} 
+		m_iLastMouseNo = n_emb;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
 		if (!p)
 			return 0;					// no bindings of anykind for this mouse button
