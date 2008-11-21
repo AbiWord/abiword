@@ -224,11 +224,9 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
 #else
-		UT_ASSERT(m_pListener);
-		const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
-		m_Inserted_Symbol = gucharmap_table_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
-        m_pListener->setView(getActiveFrame()->getCurrentView());
-		m_pListener->insertSymbol(m_Inserted_Symbol, symfont);
+	const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
+	m_Inserted_Symbol = gucharmap_table_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
+	_insert(m_Inserted_Symbol, symfont);
 #endif
 }
 
