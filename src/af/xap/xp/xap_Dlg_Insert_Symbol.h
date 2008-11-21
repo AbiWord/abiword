@@ -86,6 +86,7 @@ class ABI_EXPORT XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	void   _createSymbolareaFromGC(GR_Graphics * gc, UT_uint32 width,
 								   UT_uint32 height);
 	void   _onInsertButton();
+	void   _insert(UT_UCSChar c, const char* symfont);
 
 	// This function returns the current Symbol Map class
 	XAP_Draw_Symbol *  _getCurrentSymbolMap();

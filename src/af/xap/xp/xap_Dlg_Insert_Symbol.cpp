@@ -123,23 +123,33 @@ void XAP_Dialog_Insert_Symbol::_createSymbolareaFromGC(GR_Graphics * gc,
 
 void XAP_Dialog_Insert_Symbol::_onInsertButton()
 {
-	UT_ASSERT(m_pListener);
-
-	// Now connect to the current active frame using the robust
-        // getActiveFrame 
-
-        m_pListener->setView(getActiveFrame()->getCurrentView());
-
-	/* Now get the character to be inserted */
-
+	// get the character to be inserted
 	UT_UCSChar c = getInsertedSymbol();
-
-	/* Now get the font of the symbol to be inserted */
-
+	// get the font of the symbol to be inserted
 	gchar * symfont = (gchar *) getInsertedFont();
+	// do the actual insert
+	_insert(c, const_cast<const gchar*>(symfont));
+}
 
-	m_pListener->insertSymbol(c, (char*)symfont);
+void XAP_Dialog_Insert_Symbol::_insert(UT_UCSChar c, const char* symfont)
+{
+	UT_return_if_fail(m_pListener);
+
+	if (c == 0x00) 
+	{
+		 // Pango certainly doesn't like shaping 0x00 characters (it crashes when trying), 
+		 // and I'm not sure if other font renderers do. Since it doesn't really make 
+		 // any sense to allow such characters in the first place, let's just drop 
+		 // it on the floor. - MARCM
+		 UT_DEBUGMSG(("Dropping 0x00 character on the floor\n"));
+		 return;
+	}
+
+	// connect to the current active frame using the robust getActiveFrame 
+	m_pListener->setView(getActiveFrame()->getCurrentView());
+
 	UT_DEBUGMSG(("Insert Char %x \n",c));
+	m_pListener->insertSymbol(c, (char*)symfont);
 }
 
 void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
