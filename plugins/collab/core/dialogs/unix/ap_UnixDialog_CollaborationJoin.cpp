@@ -267,7 +267,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
 
-	for (UT_uint32 i = 0; i < accounts.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < accounts.getItemCount(); i++)
 	{
 		UT_DEBUGMSG(("Getting buddies for account: %s of type %s\n", 
 				accounts.getNthItem(i)->getDescription().utf8_str(), 
@@ -275,7 +275,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			));
 			
 		// add all buddies belonging to this account
-		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
+		for (UT_sint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
 			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);

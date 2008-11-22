@@ -2642,7 +2642,7 @@ abi_widget_set_current_page(AbiWidget * w, guint32 curpage)
 	FL_DocLayout* pLayout = pView->getLayout();
 	UT_return_if_fail( pLayout );
 	
-	UT_return_if_fail( curpage <= pLayout->countPages() );	// page are not zero-based, so <= in stead of <
+	UT_return_if_fail( curpage <= (guint32)pLayout->countPages() );	// page are not zero-based, so <= in stead of <
 
 	UT_DEBUGMSG(("Telling the view to jump to page %u!\n", curpage));
 	

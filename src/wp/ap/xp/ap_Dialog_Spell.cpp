@@ -114,7 +114,7 @@ void AP_Dialog_Spell::_purgeSuggestions(void)
 {
 	if (!m_Suggestions) return;
 
-	for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 	{
 		UT_UCS4Char * sug = m_Suggestions->getNthItem(i);
 		if (sug)
@@ -257,7 +257,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 					{
 						cpvEngineSuggestions = checker->suggestWord(m_pWord, m_iWordLength);
 
-				   		for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+				   		for (UT_sint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 						{
 							UT_UCS4Char *sug = cpvEngineSuggestions->getNthItem(i);
 							UT_return_val_if_fail (sug, false);

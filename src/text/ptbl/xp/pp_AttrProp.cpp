@@ -1513,7 +1513,7 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 			UT_Vector vAttrs;
 			UT_Vector vProps;
 
-			UT_uint32 i;
+			UT_sint32 i;
 
 			pStyle->getAllAttributes(&vAttrs, 100);
 			pStyle->getAllProperties(&vProps, 100);

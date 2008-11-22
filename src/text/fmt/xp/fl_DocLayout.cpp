@@ -246,7 +246,7 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-  UT_uint32 i = 0;
+  UT_sint32 i = 0;
   GR_EmbedManager * pDefault = NULL;
   GR_EmbedManager * pEmbed = NULL;
   for(i=0; i< m_vecQuickPrintEmbedManager.getItemCount(); i++)
@@ -280,7 +280,7 @@ GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedTy
 GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-  UT_uint32 i = 0;
+  UT_sint32 i = 0;
   GR_EmbedManager * pDefault = NULL;
   GR_EmbedManager * pEmbed = NULL;
   for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
@@ -752,7 +752,7 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
 {
       UT_sint32 iPage = 0;
       fp_Page * pPage = NULL;
-      for(iPage=iStartPage; iPage<static_cast<UT_sint32>(countPages());iPage++)
+      for(iPage=iStartPage; iPage<countPages();iPage++)
       {
 	  pPage = getNthPage(iPage);
 	  pPage->setPageNumberInFrames();
@@ -1780,7 +1780,6 @@ UT_sint32 FL_DocLayout::getHeight()
 
 	for (unsigned int i = 0; i<numRows; i++)
 	{
-		fp_Page* p = m_vecPages.getNthItem(i);
 		UT_uint32 iRow = i / pView->getNumHorizPages();			
 		iHeight += pView->getMaxHeight(iRow);
 	}
@@ -1979,7 +1978,7 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 }
 
 
-UT_uint32 FL_DocLayout::countPages()
+UT_sint32 FL_DocLayout::countPages()
 {
 	return m_vecPages.getItemCount();
 }
@@ -2472,7 +2471,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	// add page view dimensions
 #if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
-	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
+	for(UT_sint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = m_vecPages.getNthItem(k);
 		if(pPage->getOwningSection() == pFirstDSL)
@@ -2582,7 +2581,7 @@ void FL_DocLayout::updateColor()
 		pDSL = pDSL->getNextDocSection();
 	}
 	fp_Page * pPage = NULL;
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	for(i=0; i<m_vecPages.getItemCount(); i++)
 	{
 		pPage = m_vecPages.getNthItem(i);
@@ -4186,9 +4185,9 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		UT_DEBUGMSG(("before %d, after %d, replace %x\n", before, after, replacement));
 		if (replacement != UCS_UNKPUNK)
 		{
-            UT_sint32 s1,s2,s3,s4,s5;
-            bool b1;
-            fp_Run * pThisRun = block->findPointCoords(block->getPosition() + offset,false,s1,s2,s3,s4,s5,b1);
+            //UT_sint32 s1,s2,s3,s4,s5;
+            //bool b1;
+            //fp_Run * pThisRun = block->findPointCoords(block->getPosition() + offset,false,s1,s2,s3,s4,s5,b1);
 
             xxx_UT_DEBUGMSG(("pThisRun [0x%x], vis dir. %d\n", pThisRun, pThisRun->getVisDirection()));
 

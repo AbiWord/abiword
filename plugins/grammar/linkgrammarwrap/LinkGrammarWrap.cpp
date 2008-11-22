@@ -227,10 +227,11 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
 	    //	  char * szViolation = linkage_get_violation_name(linkage);
 	  //if(szViolation != NULL)
 	  {
-	    UT_sint32 iLword = linkage_get_link_lword(linkage,j);
-	    const char * szLword =  linkage_get_word(linkage,iLword);
-	    UT_sint32 iRword = linkage_get_link_rword(linkage,j);
-	    const char * szRword =  linkage_get_word(linkage,iRword);
+            // debug disabled
+	    //UT_sint32 iLword = linkage_get_link_lword(linkage,j);
+	    //const char * szLword =  linkage_get_word(linkage,iLword);
+	    //UT_sint32 iRword = linkage_get_link_rword(linkage,j);
+	    //const char * szRword =  linkage_get_word(linkage,iRword);
 	    //UT_DEBUGMSG(("Link %d |%s| and |%s|\n",i,szLword,szRword));
 	    //UT_DEBUGMSG(("Left Word num %d Right Word num %d\n",iLword,iRword));
 	  }

@@ -328,7 +328,7 @@ bool ABI_Collab_Import::_handleCollision(UT_sint32 iIncomingRev, UT_sint32 iLoca
 						m_pDoc->undoCmd(1);
 
 						// fix up the positions on the change stack
-						for (UT_uint32 j = i+1; j < pAdjusts->getItemCount(); j++)
+						for (UT_sint32 j = i+1; j < pAdjusts->getItemCount(); j++)
 						{
 							ChangeAdjust* pC = pAdjusts->getNthItem(j);
 							if (pC)
@@ -405,7 +405,7 @@ void ABI_Collab_Import::_disableUpdates(UT_GenericVector<AV_View *>& vecViews, b
 {
 	m_pDoc->getAllViews(&vecViews);
 
-	for (UT_uint32 i=0; i < vecViews.getItemCount(); i++)
+	for (UT_sint32 i=0; i < vecViews.getItemCount(); i++)
 	{
 		vecViews.getNthItem(i)->setActivityMask(false);
 	}
@@ -433,7 +433,7 @@ void ABI_Collab_Import::_enableUpdates(UT_GenericVector<AV_View *>& vecViews, bo
 	m_pDoc->notifyPieceTableChangeEnd();
 	
 	bool bDone = false;
-	for (UT_uint32 i = 0; i<vecViews.getItemCount(); i++)
+	for (UT_sint32 i = 0; i<vecViews.getItemCount(); i++)
 	{
 		FV_View * pView = static_cast<FV_View *>( vecViews.getNthItem(i));
 		if(pView && !bDone && pView->shouldScreenUpdateOnGeneralUpdate())

@@ -99,7 +99,7 @@ int RoutingPacket::parse(const char* buf, size_t size) {
 		return -1;
 	// get the recipients
 	m_address_count = buf[parsed];
-	if (m_address_count + 1 > getPayloadSize())
+	if ((uint32_t)m_address_count + 1 > getPayloadSize())
 		return -1;
 	m_connection_ids.resize(m_address_count);
 	std::copy(buf+parsed+1, buf+parsed+1+m_address_count, m_connection_ids.begin());

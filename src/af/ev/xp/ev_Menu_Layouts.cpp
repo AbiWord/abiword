@@ -136,14 +136,14 @@ int EV_Menu_Layout::searchPos(const UT_Vector *names, const EV_Menu_LabelSet &la
 }
 #endif
 
-void EV_Menu_Layout::addFakeLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags)
+void EV_Menu_Layout::addFakeLayoutItem(UT_sint32 indexLayoutItem, EV_Menu_LayoutFlags flags)
 {
 	UT_uint32 err = m_layoutTable.insertItemAt(new EV_Menu_LayoutItem(0, flags), indexLayoutItem);
 	UT_ASSERT(!err);
 	UT_UNUSED(err);
 }
 
-XAP_Menu_Id EV_Menu_Layout::addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags)
+XAP_Menu_Id EV_Menu_Layout::addLayoutItem(UT_sint32 indexLayoutItem, EV_Menu_LayoutFlags flags)
 {
 	UT_uint32 err = m_layoutTable.insertItemAt(new EV_Menu_LayoutItem(++m_iMaxId, flags), indexLayoutItem);
 
@@ -153,7 +153,7 @@ XAP_Menu_Id EV_Menu_Layout::addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_Lay
 		return m_iMaxId;
 }
 
-bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
+bool EV_Menu_Layout::setLayoutItem(UT_sint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
 	m_iMaxId = private_max(m_iMaxId, id);
@@ -163,10 +163,10 @@ bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV
 	return (m_layoutTable[indexLayoutItem] != NULL);
 }
 
-UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
+UT_sint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
 {
-	UT_uint32 size_table = m_layoutTable.size();
-	UT_uint32 index;
+	UT_sint32 size_table = m_layoutTable.size();
+	UT_sint32 index;
 
 	for (index = 0; index < size_table; ++index)
 	{
@@ -178,7 +178,7 @@ UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
 	return ((index < size_table) ? index : 0);
 }
 
-EV_Menu_LayoutItem * EV_Menu_Layout::getLayoutItem(UT_uint32 indexLayoutItem) const
+EV_Menu_LayoutItem * EV_Menu_Layout::getLayoutItem(UT_sint32 indexLayoutItem) const
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
 	return m_layoutTable.getNthItem(indexLayoutItem);
@@ -189,7 +189,7 @@ const char * EV_Menu_Layout::getName() const
 	return m_stName.c_str();
 }
 
-UT_uint32 EV_Menu_Layout::getLayoutItemCount() const
+UT_sint32 EV_Menu_Layout::getLayoutItemCount() const
 {
 	return m_layoutTable.getItemCount();
 }

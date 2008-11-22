@@ -330,7 +330,7 @@ void PP_RevisionAttr::setRevision(const gchar * r)
 /*! destroys all internal data */
 void PP_RevisionAttr::_clear()
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		delete (PP_Revision *) m_vRev.getNthItem(i);
 	}
@@ -473,7 +473,7 @@ void PP_RevisionAttr::_init(const gchar *r)
  */
 bool PP_RevisionAttr::changeRevisionType(UT_uint32 iId, PP_RevisionType eType)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -492,7 +492,7 @@ bool PP_RevisionAttr::changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId)
 {
 	UT_return_val_if_fail(iNewId >= iOldId, false);
 	
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -618,7 +618,7 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	const PP_Revision *m = NULL; // this will be the lowest revision present
 	UT_uint32 m_id = 0xFFFF;
 
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		const PP_Revision * t = (const PP_Revision *) m_vRev.getNthItem(i);
 		UT_uint32 t_id = t->getId();
@@ -677,7 +677,7 @@ const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 i
 	const PP_Revision *r = NULL; // this will be the revision we are looking for
 	UT_uint32 r_id = PD_MAX_REVISION;
 
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		const PP_Revision * t = (const PP_Revision *) m_vRev.getNthItem(i);
 		UT_uint32 t_id = t->getId();
@@ -709,7 +709,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 	//const PP_Revision * r = NULL;
 	UT_uint32 r_id = 0;
 
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		const PP_Revision * t = (const PP_Revision *)m_vRev.getNthItem(i);
 		UT_uint32 t_id = t->getId();
@@ -736,7 +736,7 @@ const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 
 {
 	minId = PD_MAX_REVISION;
 
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		const PP_Revision * t = (const PP_Revision *)m_vRev.getNthItem(i);
 		UT_uint32 t_id = t->getId();
@@ -798,7 +798,7 @@ bool PP_RevisionAttr::isVisible(UT_uint32 id)
 void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 								  const gchar ** pAttrs, const gchar ** pProps)
 {
-	UT_uint32 i;
+	UT_sint32 i;
 
 	for(i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -931,7 +931,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
  */
 void PP_RevisionAttr::removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -951,7 +951,7 @@ void PP_RevisionAttr::removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eT
 */
 void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -970,7 +970,7 @@ void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 */
 void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -1112,11 +1112,11 @@ bool PP_RevisionAttr::isFragmentSuperfluous() const
 
 bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		const PP_Revision * r1 = (const PP_Revision *) m_vRev.getNthItem(i);
 
-		for(UT_uint32 j = 0; j < op2.m_vRev.getItemCount(); j++)
+		for(UT_sint32 j = 0; j < op2.m_vRev.getItemCount(); j++)
 		{
 			const PP_Revision * r2 = (const PP_Revision *) op2.m_vRev.getNthItem(j);
 

@@ -380,7 +380,7 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	UT_GenericVector<fl_ContainerLayout *> AllLayouts;
 	AllLayouts.clear();
 	fp_Page * pPage = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	if(pFrameC)
 	{
 	    pPage = pFrameC->getPage();
@@ -489,7 +489,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	pFrameC->getBlocksAroundFrame(vecBlocks);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i=0; i< vecBlocks.getItemCount();i++)
 	{
 	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
@@ -520,7 +520,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	}
 	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
 	bool bFound = false;
-	for(i=0; i<static_cast<UT_uint32>(pBL->getNumFrames()) && !bFound;i++)
+	for(i=0; i<pBL->getNumFrames() && !bFound;i++)
 	{
 	  fl_FrameLayout * pF = pBL->getNthFrameLayout(i);
 	  if(pF == this)
@@ -818,7 +818,6 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszTightWrapped = NULL;
 	const gchar * pszPrefPage = NULL;
 
-	const gchar * pszRelocate = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))

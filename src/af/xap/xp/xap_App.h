@@ -137,8 +137,8 @@ public:
 	bool						updateClones(XAP_Frame * pFrame);
 
 	virtual void					notifyFrameCountChange (); // default is empty method
-	UT_uint32					getFrameCount() const;
-	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
+	UT_sint32					getFrameCount() const;
+	XAP_Frame * 					getFrame(UT_sint32 ndx) const;
 	UT_sint32					findFrame(XAP_Frame * pFrame);
 	UT_sint32					findFrame(const char * szFilename);
 
@@ -258,8 +258,8 @@ public:
 	bool						removeListener(AV_ListenerId listenerId);
 	virtual bool					notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
 
-	UT_uint32					registerEmbeddable(GR_EmbedManager * pEmbed);
-	bool						unRegisterEmbeddable(UT_uint32 uid);
+	UT_sint32					registerEmbeddable(GR_EmbedManager * pEmbed);
+	bool						unRegisterEmbeddable(UT_sint32 uid);
 	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 	XAP_Module *				getPlugin(const char * szPluginName);
 	

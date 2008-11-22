@@ -515,7 +515,7 @@ s_HRText_Listener::~s_HRText_Listener()
 	UT_GenericVector<const UT_String*>* pKeyList = m_pList->keys();
 	if (pKeyList)
 	{
-		for(UT_uint32 i = 0; i < pKeyList->getItemCount(); i++)
+		for(UT_sint32 i = 0; i < pKeyList->getItemCount(); i++)
 		  delete const_cast<UT_uint16 *>(static_cast<const UT_uint16 *>(m_pList->pick(pKeyList->getLastItem()->c_str())));
 	}
 	DELETEP(pKeyList);

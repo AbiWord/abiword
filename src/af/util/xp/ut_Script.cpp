@@ -102,7 +102,7 @@ UT_uint32 UT_ScriptLibrary::getNumScripts () const
 
 void UT_ScriptLibrary::registerScript ( UT_ScriptSniffer * s )
 {
-	UT_uint32 ndx = 0;
+	UT_sint32 ndx = 0;
 	UT_Error err = mSniffers->addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
@@ -119,8 +119,8 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
   
 	// Refactor the indexes
 	UT_ScriptSniffer * pSniffer = 0;
-	UT_uint32 size  = mSniffers->size();
-	UT_uint32 i     = 0;
+	UT_sint32 size  = mSniffers->size();
+	UT_sint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
     {
 		pSniffer = mSniffers->getNthItem(i);
@@ -132,9 +132,9 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
 void UT_ScriptLibrary::unregisterAllScripts ()
 {
 	UT_ScriptSniffer * pSniffer = 0;
-	UT_uint32 size = mSniffers->size();
+	UT_sint32 size = mSniffers->size();
   
-	for (UT_uint32 i = 0; i < size; i++)
+	for (UT_sint32 i = 0; i < size; i++)
 	{
 		pSniffer = mSniffers->getNthItem(i);
 		if (pSniffer)

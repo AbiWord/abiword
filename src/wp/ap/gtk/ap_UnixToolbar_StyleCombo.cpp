@@ -233,7 +233,7 @@ void
 AP_UnixToolbar_StyleCombo::freeStyles() {
 
 	UT_GenericVector<PangoFontDescription*> *pVec = m_mapStyles.enumerate();
-	for (UT_uint32 i = 0; i < pVec->size(); i++) {
+	for (UT_sint32 i = 0; i < pVec->size(); i++) {
 		pango_font_description_free(pVec->getNthItem(i));
 	}
 	delete pVec;

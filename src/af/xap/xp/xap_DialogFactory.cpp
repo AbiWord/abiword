@@ -71,12 +71,12 @@ XAP_DialogFactory::~XAP_DialogFactory(void)
 	UT_VECTOR_PURGEALL( _dlg_table *, m_vecDynamicTable);
 }
 
-bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
+bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_sint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
 	UT_return_val_if_fail(pIndex, false);
 
-	for (UT_uint32 k=0; k < m_vec_dlg_table.getItemCount(); k++)
+	for (UT_sint32 k=0; k < m_vec_dlg_table.getItemCount(); k++)
 	{
 		if (m_vec_dlg_table.getNthItem(k)->m_id == id)
 		{
@@ -91,7 +91,7 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 XAP_Dialog_Id XAP_DialogFactory::getNextId(void)
 {
-       UT_uint32 i = m_vec_dlg_table.getItemCount()-1;
+       UT_sint32 i = m_vec_dlg_table.getItemCount()-1;
 	UT_sint32 id = static_cast<UT_sint32>(m_vec_dlg_table.getNthItem(i)->m_id);
 	return static_cast<XAP_Dialog_Id>(id+1);
 }
@@ -110,7 +110,7 @@ XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructo
 
 void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
 {
-	for (UT_uint32 i = 0; i < m_vecDialogs.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecDialogs.getItemCount(); i++)
 	{
 		const XAP_Dialog * pDialog = reinterpret_cast<const XAP_Dialog *>(m_vecDialogs.getNthItem(i));
 		if(pDialog && pDialog->getDialogId() == id)
@@ -134,7 +134,7 @@ void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
  */
 XAP_Dialog * XAP_DialogFactory::justMakeTheDialog(XAP_Dialog_Id id)
 {
-	UT_uint32 index;
+	UT_sint32 index;
 	XAP_Dialog * pDialog = NULL;
 	
 	if(_findDialogInTable(id,&index))
@@ -149,7 +149,7 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 {
 	const _dlg_table * dlg = NULL;
 	XAP_Dialog * pDialog = NULL;
-	UT_uint32 index;
+	UT_sint32 index;
 	
 	if(_findDialogInTable(id, &index))
 	{
@@ -243,7 +243,7 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 	UT_return_if_fail(pDialog);
 	XAP_Dialog_Id id = pDialog->getDialogId();
 	
-	UT_uint32 index;
+	UT_sint32 index;
 	_findDialogInTable(id,&index);
 
 	switch (m_vec_dlg_table.getNthItem(index)->m_type)

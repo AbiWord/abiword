@@ -1032,7 +1032,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 		}
 		vecBlocks.addItem(pB);
 	}
-	UT_uint32 iBlk = 0;
+	UT_sint32 iBlk = 0;
 	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
 	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 	bool bLoop = true;
@@ -3901,7 +3901,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 // Adjust region of style for the deletion of the Field/Tab required for each list
 // element.
 //
-		UT_uint32 i;
+		UT_sint32 i;
 
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
@@ -3937,7 +3937,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 	}
 	else if(!bCharStyle)
 	{
-		UT_uint32 i;
+		UT_sint32 i;
 
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
@@ -4000,7 +4000,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 
 	if(bisListStyle && !bHasNumberedHeading)
 	{
-		UT_uint32 i;
+		UT_sint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
 			pBL = vBlock.getNthItem(i);
@@ -4054,8 +4054,8 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 // case we just add this iem to the already existing list. The list class will get
 // the order correct.
 //
-					UT_uint32 count = m_pDoc->getListsCount();
-					UT_uint32 i =0;
+					UT_sint32 count = m_pDoc->getListsCount();
+					UT_sint32 i =0;
 					const fl_AutoNum * pAuto = NULL;
 					bool bFoundPrevList = false;
 					for(i=0; (i< count) && !bFoundPrevList; i++)
@@ -4127,7 +4127,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 //
 			if(sdh == NULL || (sdh == curSdh))
 			{
-				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+				for(UT_sint32 i=0; i< vBlock.getItemCount(); i++)
 				{
 					pBL = vBlock.getNthItem(i);
 					if(i == 0)
@@ -4152,7 +4152,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 				if(pBlock == NULL)
 					goto finish_up;
 
-				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
+				for(UT_sint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
 					pBL = vBlock.getNthItem(j);
 					if(j == 0)
@@ -4172,7 +4172,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 				UT_ASSERT(pBlock);
 				if(pBlock == NULL)
 					goto finish_up;
-				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
+				for(UT_sint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
 					pBL = vBlock.getNthItem(j);
 					if (j == 0)
@@ -5428,7 +5428,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	UT_Dimension dim;
 	double fAlign;
 	fl_BlockLayout * pBlock;
-	UT_uint32 i;
+	UT_sint32 i;
 	//
 	// Signal PieceTable Change
 	//
@@ -5823,7 +5823,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 								float Indent)
 {
 	bool bRet;
-	UT_uint32 i=0;
+	UT_sint32 i=0;
 	gchar pszStart[80],pszAlign[20],pszIndent[20];
 	UT_GenericVector<const gchar*> va,vp;
 	UT_GenericVector<PL_StruxDocHandle> vb;
@@ -8720,7 +8720,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		getBlocksInSelection(&vBlock);
 		fl_ContainerLayout * pCL = NULL;
 		fl_CellLayout * pCell = NULL;
-		UT_uint32 i =0;
+		UT_sint32 i =0;
 		for(i=0; i<vBlock.getItemCount();i++)
 		{
 			fl_BlockLayout * pBL = vBlock.getNthItem(i);
@@ -9096,7 +9096,7 @@ void FV_View::setViewMode (ViewMode vm)
 	}
 	else
 	{
-		for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+		for(UT_sint32 i = 0; i < m_pLayout->countPages(); i++)
 		{
 				fp_Page * pPage = m_pLayout->getNthPage(i);
 				UT_return_if_fail( pPage );
@@ -12505,7 +12505,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		fl_BlockLayout * pBMax = NULL;
 		UT_sint32 iMaxSize = 0;
-		UT_uint32 j = 0;
+		UT_sint32 j = 0;
 		for(j=0; j<vBlocks.getItemCount(); j++)
 		{
 			UT_sint32 iBSize = 0;

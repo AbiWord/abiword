@@ -428,7 +428,7 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
 
 		gchar * suggest = NULL;   
-		for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 		{
 			suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(i));
 			gtk_list_store_append (GTK_LIST_STORE (model), &iter);

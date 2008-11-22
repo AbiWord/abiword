@@ -179,14 +179,14 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
   }
   double maxDist = -10000000.0;
   double d = 0.0;
-  UT_uint32 i = 0;
+  UT_sint32 i = 0;
   double ddPad = static_cast<double>(pG->tdu(pad));
   UT_sint32 diTop = pG->tdu(yTop);
   UT_sint32 diHeight = pG->tdu(height);
   double ddTop = static_cast<double>(diTop);
   double ddHeight = static_cast<double>(diHeight);
   GR_Image_Point * pPoint = NULL;
-  UT_uint32 nPts = m_vecOutLine.getItemCount()/2;
+  UT_sint32 nPts = m_vecOutLine.getItemCount()/2;
   for(i=nPts; i < m_vecOutLine.getItemCount();i++)
   {
     pPoint = m_vecOutLine.getNthItem(i);

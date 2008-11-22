@@ -59,7 +59,7 @@ private:
 
 	bool			m_bOpenedBlock;
 	UT_uint32		m_iCurListID;
-	UT_uint32		m_iOutlineDepth;
+	UT_sint32		m_iOutlineDepth;
 	UT_UTF8String	m_sMetaTag;
 	UT_GenericVector<fl_AutoNum *> m_utvLists;
 };

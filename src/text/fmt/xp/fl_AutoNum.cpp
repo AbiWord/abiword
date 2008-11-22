@@ -421,7 +421,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	leftDelim[i] = '\0';
 	i += 2;
 	rTmp = i;
-	while (i < G_N_ELEMENTS(p) && p[i] || p[i] != '\0')
+	while ((i < G_N_ELEMENTS(p)) && p[i])
 	{
 		// FIXME check the bounds to not overflow rightDelim
 		// Update: the arrays are now the same length to prevent overflows
@@ -1095,7 +1095,7 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 
 		sprintf(szParent,"%d",m_iParentID);
 		m_bDirty = true;
-		UT_uint32 i = 0;
+		UT_sint32 i = 0;
 		for(i=0; i < m_pItems.getItemCount() ; i++)
 		{
 			PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
@@ -1126,7 +1126,7 @@ void fl_AutoNum::update(UT_uint32 start)
 	}
 }
 
-void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
+void fl_AutoNum::_updateItems(UT_sint32 start, PL_StruxDocHandle notMe)
 {
 	//	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
@@ -1139,7 +1139,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 		//	}
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		m_bUpdatingItems = true;
-		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
+		for (UT_sint32 i = start; i < m_pItems.getItemCount(); i++)
 		{
 			//       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
 			PL_StruxDocHandle pTmp = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
@@ -1192,7 +1192,7 @@ bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 }
 
 
-PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_uint32 list_num)
+PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_sint32 list_num)
 {
 	if(list_num >= m_pItems.getItemCount())
 		return static_cast<PL_StruxDocHandle>(NULL);

@@ -84,7 +84,7 @@ void AccountHandler::addBuddy(Buddy* buddy)
 
 Buddy* AccountHandler::getBuddy(const UT_UTF8String& name)
 {
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
 		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
 		if (pBuddy->getName() == name)
@@ -96,7 +96,7 @@ Buddy* AccountHandler::getBuddy(const UT_UTF8String& name)
 
 void AccountHandler::deleteBuddy(const UT_UTF8String& name)
 {
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
 		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
 		if (pBuddy->getName() == name)
@@ -109,7 +109,7 @@ void AccountHandler::deleteBuddy(const UT_UTF8String& name)
 
 void AccountHandler::deleteBuddies()
 {
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
 		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
 		DELETEP(pBuddy);
@@ -123,7 +123,7 @@ void AccountHandler::forceDisconnectBuddy(Buddy* /*buddy*/)
 		
 void AccountHandler::getSessionsAsync()
 {
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
 		const Buddy* pBuddy = m_vecBuddies.getNthItem(i);
 		getSessionsAsync(*pBuddy);
@@ -144,7 +144,7 @@ void AccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
 
 bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
 {
-	for (UT_uint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
 	{
 		const Buddy* pBuddy = m_vecBuddies.getNthItem(i);
 		if (pBuddy->getDocHandle(sSessionId))
@@ -161,7 +161,7 @@ void AccountHandler::signal(const Event& event, const Buddy* pSource)
 	UT_GenericVector<Buddy*> vRecipients = 
 		(event.isBroadcast() ? getBuddies() : event.getRecipients());
 	
-	for (UT_uint32 i = 0; i < vRecipients.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < vRecipients.getItemCount(); i++)
 	{
 		Buddy* pRecipient = vRecipients.getNthItem(i);
 		if (pRecipient)
@@ -401,7 +401,7 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 		{
 			GetSessionsResponseEvent gsre;
 			const UT_GenericVector<AbiCollab *> sessions = pManager->getSessions();
-			for (UT_uint32 i = 0; i < sessions.getItemCount(); i++)
+			for (UT_sint32 i = 0; i < sessions.getItemCount(); i++)
 			{
 				AbiCollab* pSession = sessions.getNthItem(i);
 				if (pSession && pSession->isLocallyControlled())

@@ -46,7 +46,7 @@ ODe_HeadingStyles::~ODe_HeadingStyles() {
  */
 UT_uint8 ODe_HeadingStyles::getHeadingOutlineLevel(
                                         const UT_UTF8String& rStyleName) const {
-    UT_uint32 i;
+    UT_sint32 i;
     UT_uint8 outlineLevel = 0;
     
     UT_ASSERT(m_styleNames.getItemCount() == m_outlineLevels.getItemCount());

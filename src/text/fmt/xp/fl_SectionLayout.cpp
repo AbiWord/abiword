@@ -965,7 +965,7 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 
 	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
@@ -1824,8 +1824,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
-		UT_uint32 j = 0;
-		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
+		UT_sint32 j = 0;
+		UT_sint32 count = m_vecFormatLayout.getItemCount();
 		for(i=0; i<count; i++)
 		{  
 		        if(j >= m_vecFormatLayout.getItemCount())
@@ -2093,7 +2093,7 @@ void fl_DocSectionLayout::_lookupMarginProperties(const PP_AttrProp* /*pSectionA
 	// header/footers
 	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
@@ -2608,7 +2608,7 @@ void fl_DocSectionLayout::collapse(void)
 	//
 	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
@@ -2843,7 +2843,7 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 //
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -2887,7 +2887,7 @@ void fl_DocSectionLayout::prependOwnedHeaderPage(fp_Page* pPage)
 //
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -2915,7 +2915,7 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 //
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -2975,7 +2975,7 @@ void fl_DocSectionLayout::formatAllHdrFtr(void)
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing formatAllHdrFtr \n"));
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -2992,7 +2992,7 @@ void fl_DocSectionLayout::checkAndRemovePages(void)
 {
 	UT_GenericVector <fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -3009,7 +3009,7 @@ void fl_DocSectionLayout::addValidPages(void)
 {
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = vecHdrFtr.getNthItem(i);
@@ -3025,7 +3025,7 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 {
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	xxx_UT_DEBUGMSG(("Delete Owned Page %x \n",pPage));
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
@@ -3117,7 +3117,7 @@ bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage
 		  (m_pFooterLastSL && hfType >= FL_HDRFTR_FOOTER)))
 		return false;
 
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i=0; i < getDocLayout()->countPages(); i++)
 	{
 		if (getDocLayout()->getNthPage(i) == pThisPage)

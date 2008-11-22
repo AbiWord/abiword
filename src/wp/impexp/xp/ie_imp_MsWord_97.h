@@ -283,7 +283,7 @@ private:
 	footnote * m_pEndnotes;
 	UT_uint32  m_iEndnotesCount;
 	textbox *  m_pTextboxes;
-	UT_uint32  m_iTextboxCount;
+	UT_sint32  m_iTextboxCount;
 	UT_Vector  m_vLists;
 	UT_uint32  m_iListIdIncrement[9];
 	UT_uint32  m_iMSWordListId;
@@ -338,7 +338,7 @@ private:
 	UT_sint32    m_iRight;
 	UT_uint32    m_iTextboxesStart;
 	UT_uint32    m_iTextboxesEnd;
-	UT_uint32    m_iNextTextbox;
+	UT_sint32    m_iNextTextbox;
 	UT_uint32    m_iPrevHeaderPosition;
 	bool         m_bEvenOddHeaders;
 

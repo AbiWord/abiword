@@ -40,7 +40,7 @@ BarbarismChecker::~BarbarismChecker()
 	{ 
 		if (pVec)									
 		{
-			for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
+			for (UT_sint32 i=0; i < pVec->getItemCount(); i++)
 				delete pVec->getNthItem(i);
 				
 			delete pVec;			

@@ -795,7 +795,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 								UT_uint32 lastInsPos = 0;
 								for (UT_uint32 i = 1; i < len; i++) {
 									bool doInsert = false; // whether there was an attribute change
-									for (UT_uint32 j = 0; j < charAttributes.getItemCount(); j++) {
+									for (UT_sint32 j = 0; j < charAttributes.getItemCount(); j++) {
 										const TextAttr* a = reinterpret_cast<const TextAttr*>(charAttributes[j]);
 										// clear the last attribute, if set
 										if (a->endSet && a->end == (i - 1)) {

@@ -130,12 +130,12 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			UT_uint32 MaxHeight = 0;
 
                         // this can take very long with large fonts
-		 	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+		 	for (UT_sint32 i = m_start_base; i < m_vCharSet.size(); i += 2)
 			{
 				UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
-				size_t nb_chars = static_cast<size_t>(m_vCharSet[i + 1]);
+				UT_sint32 nb_chars = m_vCharSet[i + 1];
 
-				for (size_t j = m_start_base == i? m_start_nb_char: 0; j < nb_chars; j++)
+				for (UT_sint32 j = m_start_base == i? m_start_nb_char: 0; j < nb_chars; j++)
 				{
 					UT_UCSChar c = base + j;
 				        UT_uint32 width, height;
@@ -217,9 +217,9 @@ void XAP_Draw_Symbol::setRow (UT_uint32 row)
 {
         UT_uint32 chars_needed = row * 32;
 	UT_uint32 chars = 0;
-	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
+	for (UT_sint32 i = 0; i < m_vCharSet.size(); i += 2)
 	{
-		size_t numb = static_cast<size_t>(m_vCharSet[i + 1]);
+		UT_sint32 numb = m_vCharSet[i + 1];
 		if (chars + numb > chars_needed)
 		{
 			m_start_base = i;
@@ -234,9 +234,9 @@ void XAP_Draw_Symbol::setRow (UT_uint32 row)
 UT_uint32 XAP_Draw_Symbol::getSymbolRows (void)
 {
 	UT_uint32 chars = 0;
-	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+	for (UT_sint32 i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
-		chars += static_cast<size_t>(m_vCharSet[i + 1]);
+		chars += m_vCharSet[i + 1];
 	}
 
 	UT_uint32 rows = chars / 32 + (chars % 32? 1: 0);
@@ -247,7 +247,7 @@ void XAP_Draw_Symbol::draw(void)
 {
 	UT_ASSERT(m_gc);
 	UT_uint32 wwidth, wheight, yoff, xoff, x, y;
-	size_t i;
+	UT_sint32 i;
 
 	GR_Painter painter(m_gc);
 	
@@ -263,7 +263,7 @@ void XAP_Draw_Symbol::draw(void)
 	for (i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
 		UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
-		size_t nb_chars = static_cast<size_t>(m_vCharSet[i + 1]);
+		UT_sint32 nb_chars = m_vCharSet[i + 1];
 
 		for (UT_UCSChar j = base + (m_start_base == i? m_start_nb_char: 0); j < base + nb_chars; ++j)
 		{
@@ -304,12 +304,12 @@ void XAP_Draw_Symbol::draw(void)
 
 UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 {
-	UT_uint32 index,count;
+	UT_sint32 index,count;
 	index = iy * 32 + ix;
 	count = 0;
 	UT_DEBUGMSG(("calcSymbolFromCoords(x = [%u], y = [%u]) =", ix, iy));
 
-	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+	for (UT_sint32 i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
 		count = m_vCharSet[i + 1];
 		if (i == m_start_base &&  count > m_start_nb_char)
@@ -344,7 +344,7 @@ void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y
 {
 	UT_uint32 index = 0;
 
-	for (size_t i = m_start_base; i < m_vCharSet.size(); i += 2)
+	for (UT_sint32 i = m_start_base; i < m_vCharSet.size(); i += 2)
 	{
 		UT_uint32 base = static_cast<UT_uint32>(m_vCharSet[i]);
 		UT_uint32 size =  static_cast<UT_uint32>(m_vCharSet[i + 1]);

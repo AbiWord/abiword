@@ -1373,7 +1373,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	const PD_Style * pStyle=NULL;
 	UT_GenericVector<PD_Style *> vecStyles;
 	m_pDocument->getAllUsedStyles(&vecStyles);
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	for (k=0; k < vecStyles.getItemCount(); k++)
 	{
 		pStyle = vecStyles.getNthItem(k);
@@ -1390,7 +1390,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	UT_GenericVector<PD_Style*> * pStyles = NULL;
 	m_pDocument->enumStyles(pStyles);
 	UT_return_if_fail( pStyles );
-	UT_uint32 iStyleCount = m_pDocument->getStyleCount();
+	UT_sint32 iStyleCount = m_pDocument->getStyleCount();
 	
 	for (k=0; k < iStyleCount; k++)
 	{
@@ -1678,7 +1678,7 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 
 	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
 
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = vRevisions.getNthItem(k);

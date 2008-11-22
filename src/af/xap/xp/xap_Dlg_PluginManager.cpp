@@ -61,7 +61,7 @@ bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 	UT_ASSERT (pVec);
 	if (pVec == 0) return false;
 
-	while (UT_uint32 size = pVec->size ())
+	while (UT_sint32 size = pVec->size ())
 	{
 		if (XAP_Module * pMod = pVec->getNthItem (0))
 		{

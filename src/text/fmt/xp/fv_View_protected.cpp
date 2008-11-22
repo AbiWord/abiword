@@ -1522,7 +1522,7 @@ void FV_View::_insertSectionBreak(void)
 	//
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecPrevHdrFtr;
 	pPrevDSL->getVecOfHdrFtrs( &vecPrevHdrFtr);
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	const gchar* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
@@ -2270,7 +2270,7 @@ fp_Page *FV_View::_getCurrentPage(void)
 	return pOldPage;
 }
 
-void FV_View::_moveInsPtNthPage(UT_uint32 n)
+void FV_View::_moveInsPtNthPage(UT_sint32 n)
 {
 	fp_Page *page = m_pLayout->getFirstPage();
 
@@ -5654,7 +5654,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 #ifdef ENABLE_SPELL
 // NB: returns a UCS string that the caller needs to FREEP
 UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
-										fl_PartOfBlock* pPOB, UT_uint32 ndx)
+										fl_PartOfBlock* pPOB, UT_sint32 ndx)
 {
 	// mega caching - are these assumptions valid?
 	UT_UCSChar * szSuggest = NULL;
@@ -5672,7 +5672,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		if (s_pvCachedSuggestions)
 		{
 			// clean up
-			for (UT_uint32 i = 0; i < s_pvCachedSuggestions->getItemCount(); i++)
+			for (UT_sint32 i = 0; i < s_pvCachedSuggestions->getItemCount(); i++)
 			{
 				const UT_UCSChar * sug = s_pvCachedSuggestions->getNthItem(i);
 				FREEP(sug);
@@ -5751,7 +5751,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), iLength);
 
-			for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+			for (UT_sint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 			{
 				UT_UCSChar *sug = cpvEngineSuggestions->getNthItem(i);
 				UT_ASSERT(sug);

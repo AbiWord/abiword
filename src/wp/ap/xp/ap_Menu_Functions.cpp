@@ -75,7 +75,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_VIEW_TB_1);
 	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_VIEW_TB_4);
 
-	UT_uint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
+	UT_sint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
 	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
 
 
@@ -105,7 +105,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_FILE_RECENT_1);
 
-	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
+	UT_sint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail (pPrefs, NULL);
@@ -259,7 +259,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_WINDOW_1);
 	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_WINDOW_9);
 
-	UT_uint32 ndx = (id - AP_MENU_ID_WINDOW_1);
+	UT_sint32 ndx = (id - AP_MENU_ID_WINDOW_1);
 
 	// use the applications window list and compute a menu label
 	// for the window with the computed index.  use the static

@@ -178,7 +178,7 @@ bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
 {
 	UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::addAction\n"));
 	UT_ASSERT(pAction);
-	size_t size_table = m_actionTable.size();
+	UT_sint32 size_table = m_actionTable.size();
 	UT_DEBUGMSG(("pAction->getMenuId() = [%d], size_table = [%d], m_first = [%d]\n",
 				 pAction->getMenuId(), size_table, m_first));
 

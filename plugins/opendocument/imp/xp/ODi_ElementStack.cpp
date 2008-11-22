@@ -99,7 +99,7 @@ void ODi_ElementStack::endElement (const gchar* /*pName*/) {
  * On the startElement method, level 0 is the parent start tag.
  * On the endElement method, level 0 is the corresponding start tag.
  */
-const ODi_StartTag* ODi_ElementStack::getStartTag(UT_uint32 level) {
+const ODi_StartTag* ODi_ElementStack::getStartTag(UT_sint32 level) {
     
     if (m_pStartTags) {
         if (m_stackSize > level) {
@@ -121,7 +121,7 @@ const ODi_StartTag* ODi_ElementStack::getStartTag(UT_uint32 level) {
  * @return True if at least one of the stack elements has the specified name.
  */
 bool ODi_ElementStack::hasElement(const gchar* pName) const {
-    UT_uint32 i;
+    UT_sint32 i;
     ODi_StartTag* pStartTag;
     
     for (i=0; i<m_stackSize; i++) {
@@ -145,10 +145,10 @@ bool ODi_ElementStack::hasElement(const gchar* pName) const {
  */
 const ODi_StartTag* ODi_ElementStack::getClosestElement(
                                                   const gchar* pName,
-                                                  UT_uint32 fromLevel) const {
+                                                  UT_sint32 fromLevel) const {
                                                     
     if (m_pStartTags && fromLevel < m_stackSize) {
-        UT_uint32 level;
+        UT_sint32 level;
         ODi_StartTag* pStartTag;
         
         for (level=fromLevel; level<m_stackSize; level++) {
@@ -171,9 +171,9 @@ const ODi_StartTag* ODi_ElementStack::getClosestElement(
 /**
  * Returns the level of the closest element with the given name.
  */
-UT_uint32 ODi_ElementStack::getElementLevel(const gchar* pName) const {
+UT_sint32 ODi_ElementStack::getElementLevel(const gchar* pName) const {
     if (m_pStartTags) {
-        UT_uint32 level;
+        UT_sint32 level;
         ODi_StartTag* pStartTag;
         
         for (level=0; level<m_stackSize; level++) {

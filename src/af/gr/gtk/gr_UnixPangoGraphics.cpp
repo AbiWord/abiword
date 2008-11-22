@@ -319,7 +319,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
 	// purge saved pixbufs
-	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	for (UT_sint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
 		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
 		g_object_unref (G_OBJECT (pix));
@@ -1176,7 +1176,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	// Actually want the layout font here
 	//
 	PangoFont * pf = _adjustedLayoutPangoFont(pFont, pItem->m_pi->analysis.font);
-	PangoFont * pfa = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
+	//PangoFont * pfa = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
 	
 	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf,pfa));
 	UT_return_val_if_fail( pf, 0 );
@@ -1265,8 +1265,8 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 
 	UT_ASSERT_HARMLESS( iOffsetStart >= 0 );
 
-	PangoFontDescription * pfd = pango_font_describe (pf);
-	int isize = pango_font_description_get_size(pfd);
+	//PangoFontDescription * pfd = pango_font_describe (pf);
+	//int isize = pango_font_description_get_size(pfd);
 	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n",isize));
 
 	if(iOffsetEnd < 0 && iDir == UT_BIDI_LTR)

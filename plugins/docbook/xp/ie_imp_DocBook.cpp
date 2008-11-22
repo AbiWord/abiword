@@ -2664,7 +2664,7 @@ void IE_Imp_DocBook :: createTitle (void)
 	const gchar *buf[11];
 	memset(buf, 0, sizeof(buf));
 
-	if(static_cast<UT_uint32>(m_iTitleDepth) > m_utvTitles.getItemCount())
+	if(m_iTitleDepth > m_utvTitles.getItemCount())
 	{
 		m_utvTitles.addItem((fl_AutoNum *)NULL);
 	}
@@ -2776,7 +2776,7 @@ void IE_Imp_DocBook :: createTitle (void)
 		 * it into a list
 		 */
 		/* deletes previous lists of same level and above */
-		for (UT_uint32 i = (m_iTitleDepth - 1); i < m_utvTitles.getItemCount(); i++)
+		for (UT_sint32 i = (m_iTitleDepth - 1); i < m_utvTitles.getItemCount(); i++)
 		{
 			if (i == 0) //always keep the first chapter title
 				continue;

@@ -1441,7 +1441,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
  	}
 	else
 	{
-		UT_uint32 i = 0;
+		UT_sint32 i = 0;
 		for(i=0; i< m_vecRowProps.getItemCount(); i++)
 		{
 			fl_RowProps * pRowP = m_vecRowProps.getNthItem(i);

@@ -3506,7 +3506,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	m_utf8_1 += "\"";
 
 
-	unsigned int nCols = m_TableHelper.getNumCols ();
+	UT_sint32 nCols = m_TableHelper.getNumCols ();
 	double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
 
 	double colWidth = 100.0 / static_cast<double>(nCols);
@@ -3518,9 +3518,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		m_utf8_1 = "colgroup";
 		tagOpen(TT_COLGROUP, m_utf8_1);
 
-		for(i = 0; (i< nCols) && (i<m_vecDWidths.getItemCount());i++)
+		for(UT_sint32 j = 0; (j< nCols) && (j<m_vecDWidths.getItemCount());j++)
 		{
-			double * pDWidth = m_vecDWidths.getNthItem(i);
+			double * pDWidth = m_vecDWidths.getNthItem(j);
 			double percent = 100.0*(*pDWidth/totWidth);
 
 			{

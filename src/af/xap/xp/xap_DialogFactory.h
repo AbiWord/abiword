@@ -84,7 +84,7 @@ public:
 	bool				unregisterNotebookPage(XAP_Dialog_Id dialog, const XAP_NotebookDialog::Page * page);
 
 protected:
-	bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
+	bool				_findDialogInTable(XAP_Dialog_Id id, UT_sint32 * pIndex) const;
 	
 	XAP_App *			m_pApp;
 	XAP_Frame *			m_pFrame;

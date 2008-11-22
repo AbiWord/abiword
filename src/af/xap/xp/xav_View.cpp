@@ -56,8 +56,8 @@ void* AV_View::getParentData() const
 bool AV_View::addListener(AV_Listener * pListener, 
 							 AV_ListenerId * pListenerId)
 {
-	UT_uint32 kLimit = m_vecListeners.getItemCount();
-	UT_uint32 k;
+	UT_sint32 kLimit = m_vecListeners.getItemCount();
+	UT_sint32 k;
 
 	// see if we can recycle a cell in the vector.
 	

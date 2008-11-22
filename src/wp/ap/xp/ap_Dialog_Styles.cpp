@@ -63,7 +63,7 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 
 AP_Dialog_Styles::~AP_Dialog_Styles(void)
 {
-	UT_uint32 i;
+	UT_sint32 i;
 	DELETEP(m_pParaPreview);
 	DELETEP(m_pCharPreview);
 	DELETEP(m_pAbiPreview);
@@ -916,10 +916,10 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	if(m_pAbiPreview == NULL)
 		return;
 	const gchar ** props = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
 		return;
-	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
+	UT_sint32 countp = m_vecAllProps.getItemCount() + 1;
 	props = (const gchar **) UT_calloc(countp, sizeof(gchar *));
 	countp--;
 	for(i=0; i<countp; i++)

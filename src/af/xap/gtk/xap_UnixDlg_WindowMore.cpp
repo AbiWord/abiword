@@ -179,7 +179,7 @@ void XAP_UnixDialog_WindowMore::_populateWindowData(void)
 							    G_TYPE_STRING,
 								G_TYPE_INT);
 	
-	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
+	for (UT_sint32 i = 0; i < m_pApp->getFrameCount(); i++)
     {		
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_return_if_fail(f);

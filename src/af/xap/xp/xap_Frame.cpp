@@ -612,7 +612,7 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 	return m_iZoomPercentage;
 }
 
-EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
+EV_Toolbar *  XAP_Frame::getToolbar(UT_sint32 ibar)
 {
 	if(ibar >= m_pFrameImpl->m_vecToolbars.getItemCount())
 		return NULL;
@@ -639,8 +639,8 @@ bool XAP_Frame::repopulateCombos(void)
 void XAP_FrameImpl::_createToolbars(void)
 {
 	bool bResult;
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
+	UT_sint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_sint32 k=0; k < nrToolbars; k++)
 	{
 		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame,
 							      reinterpret_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
@@ -655,7 +655,7 @@ void XAP_FrameImpl::_createToolbars(void)
 
 UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
 {
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	bool bFound =  false;
 	for(i =0; !bFound && (i < m_pFrameImpl->m_vecToolbars.getItemCount()); i++)
 	{

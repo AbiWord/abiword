@@ -76,8 +76,8 @@ class ABI_EXPORT XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 
   protected:
 	void                       _setAnswer(XAP_Dialog_ListDocuments::tAnswer a){m_answer=a;}
-	UT_uint32                  _getDocumentCount() {return m_vDocs.getItemCount();}
-	const char *               _getNthDocumentName(UT_uint32 n) const;
+	UT_sint32                  _getDocumentCount() {return m_vDocs.getItemCount();}
+	const char *               _getNthDocumentName(UT_sint32 n) const;
 	
 	void                       _setSelDocumentIndx(UT_sint32 i);
 

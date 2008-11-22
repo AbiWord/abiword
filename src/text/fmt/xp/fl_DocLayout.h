@@ -153,7 +153,7 @@ public:
 	fp_Page*	getFirstPage();
 	fp_Page*	getLastPage();
 	fp_Page*	getNthPage(int n);
-	UT_uint32	countPages();
+	UT_sint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
 	void            setFramePageNumbers(UT_sint32 iStartPage);
 	void            relocateFrame(fl_FrameLayout * pFrame);

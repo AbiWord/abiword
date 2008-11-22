@@ -99,7 +99,7 @@ public:
 	PL_StruxDocHandle			getParentItem() const;
 	void						setParentItem(PL_StruxDocHandle pItem);
 	bool                                 isContainedByList(PL_StruxDocHandle pItem);
-	PL_StruxDocHandle			getNthBlock(UT_uint32 i);
+	PL_StruxDocHandle			getNthBlock(UT_sint32 i);
 	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
 
 	bool					isItem(PL_StruxDocHandle pItem) const;
@@ -138,7 +138,7 @@ protected:
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
 												PL_StruxDocHandle pLayout) const;
-	void						_updateItems(UT_uint32 start, PL_StruxDocHandle notMe );
+	void						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
 
 	fl_AutoNum *				m_pParent;

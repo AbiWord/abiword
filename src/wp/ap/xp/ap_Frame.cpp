@@ -364,7 +364,7 @@ UT_Error AP_Frame::loadDocument(AD_Document* pDoc) {
 	bool bUpdateClones;
 	UT_GenericVector<XAP_Frame*> vClones;
 	XAP_App * pApp = XAP_App::getApp();
-	UT_uint32 j = 0;
+	UT_sint32 j = 0;
 	if(pApp->findFrame(this) < 0)
 	{
 			pApp->rememberFrame(this);
@@ -391,7 +391,7 @@ UT_Error AP_Frame::loadDocument(GsfInput * input, int ieft)
 	bool bUpdateClones;
 	UT_GenericVector<XAP_Frame*> vClones;
 	XAP_App * pApp = XAP_App::getApp();
-	UT_uint32 j = 0;
+	UT_sint32 j = 0;
 	if(pApp->findFrame(this) < 0)
 	{
 			pApp->rememberFrame(this);
@@ -428,7 +428,7 @@ UT_Error AP_Frame::loadDocument(GsfInput * input, int ieft)
 	}
 	if (bUpdateClones)
 	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < vClones.getItemCount(); i++)
 		{
 			AP_Frame * pFrame = static_cast<AP_Frame*>(vClones.getNthItem(i));
 			if(pFrame != this)
@@ -446,7 +446,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	bool bUpdateClones;
 	UT_GenericVector<XAP_Frame*> vClones;
 	XAP_App * pApp = XAP_App::getApp();
-	UT_uint32 j = 0;
+	UT_sint32 j = 0;
 	if(pApp->findFrame(this) < 0)
 	{
 			pApp->rememberFrame(this);
@@ -483,7 +483,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	}
 	if (bUpdateClones)
 	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < vClones.getItemCount(); i++)
 		{
 			AP_Frame * pFrame = static_cast<AP_Frame*>(vClones.getNthItem(i));
 			if(pFrame != this)
@@ -521,7 +521,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 
 	if (bUpdateClones)
 	{
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < vClones.getItemCount(); i++)
 		{
 			AP_Frame * pFrame = static_cast<AP_Frame *>(vClones.getNthItem(i));
 			if(pFrame != this)
@@ -577,7 +577,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 			return iZoom;
 		}
 		XAP_App::getApp()->getClones(&vecClones,this);
-		UT_uint32 i =0;
+		UT_sint32 i =0;
 		bool bMatch = false;
 		for (i=0; !bMatch && (i< vecClones.getItemCount()); i++)
 		{

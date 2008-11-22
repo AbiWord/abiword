@@ -839,7 +839,7 @@ protected:
 	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
 	fp_Page *			_getCurrentPage(void);
-	void				_moveInsPtNthPage(UT_uint32 n);
+	void				_moveInsPtNthPage(UT_sint32 n);
 	void				_moveInsPtToPage(fp_Page *page);
 	void				_insertSectionBreak(void);
 
@@ -887,7 +887,7 @@ protected:
 	UT_Error			_insertGraphic(FG_Graphic*, const char*);
 	UT_Error			_insertGraphic(FG_Graphic*, const char*,PT_DocPosition pos);
 
-	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
+	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_sint32 ndx);
 
 	static void 		_autoScroll(UT_Worker * pTimer);
 	static void 		_actuallyScroll(UT_Worker * pTimer);

@@ -702,7 +702,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 //
 // Fill the heights string Now
 //
-			UT_uint32 i =0;
+			UT_sint32 i =0;
 			xxx_UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
 			AP_LeftRulerTableInfo * pTInfo =  NULL;
 			pTInfo = const_cast<AP_LeftRulerTableInfo *>(reinterpret_cast<const AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(0)));

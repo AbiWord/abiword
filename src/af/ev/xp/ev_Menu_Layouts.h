@@ -75,14 +75,14 @@ public:
 	EV_Menu_Layout(const UT_String &szName, UT_uint32 nrLayoutItems);
 	~EV_Menu_Layout();
 
-	bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
-	XAP_Menu_Id				addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
-	void					addFakeLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
-	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
-	UT_uint32				getLayoutIndex(XAP_Menu_Id id) const;
+	bool					setLayoutItem(UT_sint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
+	XAP_Menu_Id				addLayoutItem(UT_sint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
+	void					addFakeLayoutItem(UT_sint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
+	EV_Menu_LayoutItem *	getLayoutItem(UT_sint32 indexLayoutItem) const;
+	UT_sint32				getLayoutIndex(XAP_Menu_Id id) const;
 	const char *			getName() const;
-	UT_uint32				getLayoutItemCount() const;
-	inline UT_uint32		size() const { return getLayoutItemCount(); }
+	UT_sint32				getLayoutItemCount() const;
+	inline UT_sint32		size() const { return getLayoutItemCount(); }
 
 private:
 	UT_String			    m_stName;			/* the name of our layout (like "MainMenu") */

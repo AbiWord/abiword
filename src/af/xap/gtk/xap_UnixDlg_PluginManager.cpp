@@ -103,7 +103,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 		guint rowNumber = gtk_tree_path_get_indices (path)[0];
 		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 
-		if (rowNumber < XAP_ModuleManager::instance().enumModules()->size() - 1)
+		if ((UT_sint32)rowNumber < XAP_ModuleManager::instance().enumModules()->size() - 1)
 		{
 			// select the next item in the TreeView
 			gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_list),
@@ -236,7 +236,7 @@ void XAP_UnixDialog_PluginManager::_updatePluginList ()
 	
  	// build a list of all items
 	GtkTreeIter iter;
-    for (UT_uint32 i = 0; i < pVec->size(); i++) {
+    for (UT_sint32 i = 0; i < pVec->size(); i++) {
 
 		XAP_Module * pModule = pVec->getNthItem (i);
 		gtk_list_store_append (model, &iter);

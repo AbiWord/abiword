@@ -89,7 +89,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		
 		int foundAt = -1;
 
-		for (UT_uint32 j = 0; j < m_vecContents.size(); j++)
+		for (UT_sint32 j = 0; j < m_vecContents.size(); j++)
 		{
 			// sort out dups
 			const char * str = m_vecContents.getNthItem(j);

@@ -95,7 +95,7 @@ void AP_Dialog_CollaborationJoin::_refreshAllDocHandlesAsync()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
 	const UT_GenericVector<AccountHandler *> accounts = pManager->getAccounts();
-	for (UT_uint32 i = 0; i < accounts.size(); i++)
+	for (UT_sint32 i = 0; i < accounts.size(); i++)
 	{
 		// update all document handles
 		AccountHandler* pHandler = accounts.getNthItem(i);
@@ -115,7 +115,7 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 	bool bEnableAddition = false;
 
 	// Loop through accounts
-	for (UT_uint32 i = 0; i < accounts.getItemCount() && ! bEnableAddition; i++)
+	for (UT_sint32 i = 0; i < accounts.getItemCount() && ! bEnableAddition; i++)
 	{
 		UT_continue_if_fail(accounts[i]);
 		bEnableAddition = accounts[i]->allowsManualBuddies();

@@ -113,7 +113,7 @@ GR_EmbedManager::GR_EmbedManager(GR_Graphics* pG)
 
 GR_EmbedManager::~GR_EmbedManager()
 { 
-  UT_uint32 i = 0;
+  UT_sint32 i = 0;
   for(i=0; i<m_vecSnapshots.getItemCount(); i++)
     {
       GR_EmbedView * pEView = m_vecSnapshots.getNthItem(i);
@@ -137,7 +137,7 @@ void GR_EmbedManager::setGraphics(GR_Graphics * pG)
   m_pG = pG;
   if(isDefault())
   {
-    UT_uint32 i =0;
+    UT_sint32 i =0;
     for(i=0; i< m_vecSnapshots.getItemCount(); i++)
       {
 	GR_EmbedView * pEView = m_vecSnapshots.getNthItem(i);

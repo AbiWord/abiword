@@ -110,7 +110,7 @@ private:
     } m_currentAction;
 
     // The stack size of the element being either recorded or ignored.
-    UT_uint32 m_elemenStackSize;
+    UT_sint32 m_elemenStackSize;
 
     ODi_XMLRecorder m_xmlRecorder;
 

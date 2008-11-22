@@ -128,7 +128,7 @@ UT_UTF8String IE_ExpSniffer::getPreferredSuffix()
 
 void IE_Exp::registerExporter (IE_ExpSniffer * s)
 {
-	UT_uint32 ndx = 0;
+	UT_sint32 ndx = 0;
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);

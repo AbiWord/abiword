@@ -718,7 +718,7 @@ void s_XSL_FO_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_Att
 				_tagOpen(TT_BLOCK, "block", false);
 
 				UT_UTF8String label = "";
-				for(UT_uint32 i = 0; i < m_Lists.getItemCount(); i++)
+				for(UT_sint32 i = 0; i < m_Lists.getItemCount(); i++)
 				{
 					ListHelper * lh = m_Lists[i];
 					if(lh && ((*lh).retrieveID() == m_iListID))
@@ -1367,7 +1367,7 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(&szMimeType))); k++)
 	{	  	  
 		UT_sint32 loc = -1;
-		for (UT_uint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
 		{
 			if(strcmp(const_cast<char*>(reinterpret_cast<const char*>(m_utvDataIDs[i])), szName) == 0)
 			{

@@ -85,7 +85,7 @@ public:
 	// and virtually all contains less than 32 elements; I have adjusted the initial
 	// values accordingly. Where vectors are known to be larger, bigger values should be
 	// passed to the constructor, and, if approprite, pre-allocation forced
-	UT_GenericVector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false);
+	UT_GenericVector(UT_sint32 sizehint = 32, UT_sint32 baseincr = 4, bool bPrealloc = false);
 	UT_GenericVector(const UT_GenericVector<T>&);
 	UT_GenericVector<T>& operator=(const UT_GenericVector<T>&);
 	virtual ~UT_GenericVector();
@@ -95,12 +95,12 @@ public:
 	bool				pop_back();
 	inline const T	back() const			{ return getLastItem(); }
 
-	UT_sint32	addItem(const T p, UT_uint32 * pIndex);
+	UT_sint32	addItem(const T p, UT_sint32 * pIndex);
 
 	/* FIXME -- this function assumes that it is possible to do
 	 *          static_cast<T>(0)
 	 */
-	inline T getNthItem(UT_uint32 n) const
+	inline T getNthItem(UT_sint32 n) const
 	{
 	    UT_ASSERT_HARMLESS(m_pEntries);
 	    UT_ASSERT_HARMLESS(m_iCount > 0);
@@ -112,39 +112,39 @@ public:
 	    return m_pEntries[n];
 	}
 
-	const T		operator[](UT_uint32 i) const;
-	UT_sint32	setNthItem(UT_uint32 ndx, T pNew, T * ppOld);
+	const T		operator[](UT_sint32 i) const;
+	UT_sint32	setNthItem(UT_sint32 ndx, T pNew, T * ppOld);
 	const T		getFirstItem() const;
 	const T		getLastItem() const;
-	inline UT_uint32 getItemCount() const {	return m_iCount; }
+	inline UT_sint32 getItemCount() const {	return m_iCount; }
 	UT_sint32	findItem(T) const;
 
-	UT_sint32	insertItemAt(T, UT_uint32 ndx);
+	UT_sint32	insertItemAt(T, UT_sint32 ndx);
 	UT_sint32   addItemSorted(const T p, int (*compar)(const void *, const void *));
-	void		deleteNthItem(UT_uint32 n);
+	void		deleteNthItem(UT_sint32 n);
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
-	UT_uint32	binarysearch(const void* key, int (*compar)(const void *, const void *)) const;
+	UT_sint32	binarysearch(const void* key, int (*compar)(const void *, const void *)) const;
 
 	bool		copy(const UT_GenericVector<T> *pVec);
-	inline UT_uint32 size() const { return getItemCount(); }
+	inline UT_sint32 size() const { return getItemCount(); }
 
 private:
-	UT_sint32		grow(UT_uint32);
-	UT_uint32		binarysearchForSlot(const void* key, compar_fn_t compar) const;
+	UT_sint32		grow(UT_sint32);
+	UT_sint32		binarysearchForSlot(const void* key, compar_fn_t compar) const;
 
 	T*			m_pEntries;
-	UT_uint32		m_iCount;
-	UT_uint32		m_iSpace;
-	UT_uint32		m_iCutoffDouble;
-	UT_uint32		m_iPostCutoffIncrement;
+	UT_sint32		m_iCount;
+	UT_sint32		m_iSpace;
+	UT_sint32		m_iCutoffDouble;
+	UT_sint32		m_iPostCutoffIncrement;
 };
 
 // TODO Rob: try to export like this once plugin loading is fixed:
 // template class ABI_EXPORT UT_GenericVector<void const *>;
 class ABI_EXPORT UT_Vector : public UT_GenericVector<void const *> {
 public:
-	UT_Vector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false)
+	UT_Vector(UT_sint32 sizehint = 32, UT_sint32 baseincr = 4, bool bPrealloc = false)
 	: UT_GenericVector<void const *>(sizehint, baseincr, bPrealloc)
 	{}
 };
@@ -153,7 +153,7 @@ public:
 // template class ABI_EXPORT UT_GenericVector<UT_sint32>;
 class ABI_EXPORT UT_NumberVector : public UT_GenericVector<UT_sint32> {
 public:
-	UT_NumberVector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false)
+	UT_NumberVector(UT_sint32 sizehint = 32, UT_sint32 baseincr = 4, bool bPrealloc = false)
 	: UT_GenericVector<UT_sint32>(sizehint, baseincr, bPrealloc)
 	{}
 };
@@ -171,7 +171,7 @@ public:
               space will be allocated when first item is inserted to baseincr)
  */
 template <class T>
-UT_GenericVector<T>::UT_GenericVector(UT_uint32 sizehint, UT_uint32 baseincr, bool bPrealoc)
+UT_GenericVector<T>::UT_GenericVector(UT_sint32 sizehint, UT_sint32 baseincr, bool bPrealoc)
   : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
     m_iCutoffDouble(sizehint), m_iPostCutoffIncrement(baseincr)
 {
@@ -229,9 +229,9 @@ UT_GenericVector<T>::~UT_GenericVector()
  enough space.  In this case we grow the array to be _at least_ ndx size.
 */
 template <class T>
-UT_sint32 UT_GenericVector<T>::grow(UT_uint32 ndx)
+UT_sint32 UT_GenericVector<T>::grow(UT_sint32 ndx)
 {
-	UT_uint32 new_iSpace;
+	UT_sint32 new_iSpace;
 	if(!m_iSpace) {
 		new_iSpace = m_iPostCutoffIncrement;
 	}
@@ -263,7 +263,7 @@ UT_sint32 UT_GenericVector<T>::grow(UT_uint32 ndx)
 }
 
 template <class T>
-UT_sint32 UT_GenericVector<T>::insertItemAt(const T p, UT_uint32 ndx)
+UT_sint32 UT_GenericVector<T>::insertItemAt(const T p, UT_sint32 ndx)
 {
 	if (ndx > m_iCount + 1)
 		return -1;
@@ -287,7 +287,7 @@ UT_sint32 UT_GenericVector<T>::insertItemAt(const T p, UT_uint32 ndx)
 }
 
 template <class T>
-UT_sint32 UT_GenericVector<T>::addItem(const T p, UT_uint32 * pIndex)
+UT_sint32 UT_GenericVector<T>::addItem(const T p, UT_sint32 * pIndex)
 {
 	UT_sint32 err = addItem(p);
 	if (!err && pIndex)
@@ -336,9 +336,9 @@ bool UT_GenericVector<T>::pop_back()
 }
 
 template <class T>
-UT_sint32 UT_GenericVector<T>::setNthItem(UT_uint32 ndx, T pNew, T* ppOld)
+UT_sint32 UT_GenericVector<T>::setNthItem(UT_sint32 ndx, T pNew, T* ppOld)
 {
-	const UT_uint32 old_iSpace = m_iSpace;
+	const UT_sint32 old_iSpace = m_iSpace;
 
 	if (ndx >= m_iSpace)
 	{
@@ -381,7 +381,7 @@ const T UT_GenericVector<T>::getFirstItem() const
 }
 
 template <class T>
-void UT_GenericVector<T>::deleteNthItem(UT_uint32 n)
+void UT_GenericVector<T>::deleteNthItem(UT_sint32 n)
 {
 	UT_ASSERT_HARMLESS(n < m_iCount);
 	UT_ASSERT_HARMLESS(m_iCount > 0);
@@ -397,11 +397,11 @@ void UT_GenericVector<T>::deleteNthItem(UT_uint32 n)
 template <class T>
 UT_sint32 UT_GenericVector<T>::findItem(T p) const
 {
-	for (UT_uint32 i=0; i<m_iCount; i++)
+	for (UT_sint32 i=0; i<m_iCount; i++)
 	{
 		if (m_pEntries[i] == p)
 		{
-			return static_cast<UT_sint32>(i);
+			return i;
 		}
 	}
 
@@ -420,18 +420,18 @@ void UT_GenericVector<T>::qsort(int (*compar)(const void *, const void *))
 // http://tbray.org/ongoing/When/200x/2003/03/22/Binary
 
 template <class T>
-UT_uint32 UT_GenericVector<T>::binarysearch(const void* key, compar_fn_t compar) const
+UT_sint32 UT_GenericVector<T>::binarysearch(const void* key, compar_fn_t compar) const
 {
 	UT_sint32 slot = binarysearchForSlot(key, compar);
 
-	if ((slot == (UT_sint32)m_iCount) || (0 != (*compar)(key, &m_pEntries[slot])))
+	if ((slot == m_iCount) || (0 != (*compar)(key, &m_pEntries[slot])))
 		return -1;
 	else
 		return slot;
 }
 
 template <class T>
-UT_uint32 UT_GenericVector<T>::binarysearchForSlot(const void* key, compar_fn_t compar) const
+UT_sint32 UT_GenericVector<T>::binarysearchForSlot(const void* key, compar_fn_t compar) const
 {
 	UT_sint32 high = m_iCount;
 	UT_sint32 low = -1;
@@ -456,7 +456,7 @@ bool UT_GenericVector<T>::copy(const UT_GenericVector<T> *pVec)
 {
 	clear();
 
-	for (UT_uint32 i=0; i < pVec->m_iCount; i++)
+	for (UT_sint32 i=0; i < pVec->m_iCount; i++)
 	{
 		UT_sint32 err;
 
@@ -469,7 +469,7 @@ bool UT_GenericVector<T>::copy(const UT_GenericVector<T> *pVec)
 }
 
 template <class T>
-const T UT_GenericVector<T>::operator[](UT_uint32 i) const
+const T UT_GenericVector<T>::operator[](UT_sint32 i) const
 {
 	return this->getNthItem(i);
 }

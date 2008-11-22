@@ -57,7 +57,7 @@ Abi_GrammarCheck::Abi_GrammarCheck(void) :
 Abi_GrammarCheck::~Abi_GrammarCheck(void)
 {
   delete m_GrammarWrap;
-  UT_uint32 i =0;
+  UT_sint32 i =0;
   for(i= 0; i< m_vecSentences.getItemCount();i++)
   {
     PieceOfText * pPT = m_vecSentences.getNthItem(i);
@@ -81,7 +81,7 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
   {
     return true;
   }
-  UT_uint32 i =0;
+  UT_sint32 i =0;
   pB->getGrammarSquiggles()->deleteAll();
   if(m_vecSentences.getItemCount() == 1)
   {
@@ -121,7 +121,7 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
       //
       // Insert the Part Of Block Into the GrammarSquiggles
       //
-      UT_uint32 i = 0;
+      UT_sint32 i = 0;
       for(i=0; i< pTxt->m_vecGrammarErrors.getItemCount();i++)
       {
 	//	printf("i=  %d no errors %d \n",i,pTxt->m_vecGrammarErrors.getItemCount());
@@ -142,7 +142,7 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
 bool Abi_GrammarCheck::GetEnglishText(fl_BlockLayout * pB)
 {
   fp_Run * pRun = pB->getFirstRun();
-  UT_uint32 i =0;
+  UT_sint32 i =0;
   for(i= 0; i< m_vecSentences.getItemCount();i++)
   {
     PieceOfText * pPT = m_vecSentences.getNthItem(i);

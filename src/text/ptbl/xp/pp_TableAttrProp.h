@@ -39,20 +39,20 @@ public:
 	~pp_TableAttrProp();
 
 	bool					addAP(PP_AttrProp * pAP,
-								  UT_uint32 * pSubscript);
-	bool					createAP(UT_uint32 * pSubscript);
+								  UT_sint32 * pSubscript);
+	bool					createAP(UT_sint32 * pSubscript);
 
 	bool					createAP(const gchar ** attributes,
 									 const gchar ** properties,
-									 UT_uint32 * pSubscript);
+									 UT_sint32 * pSubscript);
 
 	bool					createAP(const UT_GenericVector<const gchar*>* pVector,
-									 UT_uint32 * pSubscript);
+									 UT_sint32 * pSubscript);
 
 	bool					findMatch(const PP_AttrProp * pMatch,
-									  UT_uint32 * pSubscript) const;
+									  UT_sint32 * pSubscript) const;
 	
-	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
+	const PP_AttrProp *		getAP(UT_sint32 subscript) const;
 
 protected:
 	UT_GenericVector<PP_AttrProp *> m_vecTable;

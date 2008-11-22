@@ -3039,7 +3039,7 @@ Defun1(newWindow)
 	return (pClone ? true : false);
 }
 
-static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
+static bool _openRecent(AV_View* pAV_View, UT_sint32 ndx)
 {
 	XAP_Frame * pFrame = NULL;
 	if (pAV_View) {
@@ -3115,7 +3115,7 @@ Defun1(openRecent_9)
 	return _openRecent(pAV_View, 9);
 }
 
-static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
+static bool _activateWindow(AV_View* pAV_View, UT_sint32 ndx)
 {
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -3397,7 +3397,7 @@ Defun(dlgMetaData)
       pDocument->setMetaDataProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
       pDocument->setMetaDataProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
 
-	  for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+	  for(UT_sint32 i = 0;i < pApp->getFrameCount();++i)
 	  {
 		  pApp->getFrame(i)->updateTitle ();
 	  }	  
@@ -9438,7 +9438,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		return false;
 	}
 
-	UT_uint32 i;
+	UT_sint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
 		props[i] = v.getNthItem(i);
@@ -11732,7 +11732,7 @@ UT_return_val_if_fail(pDialog, false);	if(pView->isHdrFtrEdit())
 	if(pFrame->getViewNumber() > 0)
 	{
 		pApp->getClones(&vClones,pFrame);
-		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < vClones.getItemCount(); i++)
 		{
 			XAP_Frame * f = vClones.getNthItem(i);
 			f->repopulateCombos();

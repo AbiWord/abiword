@@ -155,7 +155,7 @@ public:
 	UT_GenericVector<AP_TopRulerTableInfo *> * m_vecFullTable;
 	UT_sint32               m_iTablePadding;
 	UT_sint32               m_iCells;
-	UT_uint32               m_iCurCell;
+	UT_sint32               m_iCurCell;
 	union _u {
 
 		struct _c {

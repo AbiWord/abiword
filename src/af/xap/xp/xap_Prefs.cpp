@@ -225,7 +225,7 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const gchar ** pszKey, const gcha
 	if (!m_bValidSortedKeys) {
 		UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
 		UT_GenericVector<const char*> vecKeys(vecD->getItemCount(), 4, true);
-		UT_uint32 i=0;
+		UT_sint32 i=0;
 		m_sortedKeys.clear();
 		for(i=0; i< vecD->getItemCount(); i++)
 		{
@@ -284,12 +284,12 @@ void XAP_Prefs::setUseEnvLocale(bool bUse)
 
 /*****************************************************************/
 
-UT_uint32 XAP_Prefs::getMaxRecent(void) const
+UT_sint32 XAP_Prefs::getMaxRecent(void) const
 {
 	return m_iMaxRecent;
 }
 
-void XAP_Prefs::setMaxRecent(UT_uint32 k)
+void XAP_Prefs::setMaxRecent(UT_sint32 k)
 {
 	UT_ASSERT_HARMLESS(k<=XAP_PREF_LIMIT_MaxRecent);
 
@@ -299,12 +299,12 @@ void XAP_Prefs::setMaxRecent(UT_uint32 k)
 	m_iMaxRecent = k;
 }
 
-UT_uint32 XAP_Prefs::getRecentCount(void) const
+UT_sint32 XAP_Prefs::getRecentCount(void) const
 {
 	return m_vecRecent.getItemCount();
 }
 
-const char * XAP_Prefs::getRecent(UT_uint32 k) const
+const char * XAP_Prefs::getRecent(UT_sint32 k) const
 {
 	// NB: k is one-based
 	UT_return_val_if_fail(k <= m_iMaxRecent, NULL);
@@ -333,7 +333,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 		return;
 	}
 	// was it already here? 
-	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
+	for (UT_sint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
 		sz = m_vecRecent.getNthItem(i);
 		if ((sz==szRecent) || !strcmp(sz, szRecent))
@@ -355,7 +355,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	_pruneRecent();
 }
 
-void XAP_Prefs::removeRecent(UT_uint32 k)
+void XAP_Prefs::removeRecent(UT_sint32 k)
 {
 	UT_return_if_fail(k>0);
 	UT_return_if_fail(k<=getRecentCount());
@@ -369,12 +369,12 @@ void XAP_Prefs::removeRecent(UT_uint32 k)
 void XAP_Prefs::_pruneRecent(void)
 {
 	UT_sint32 i;
-	UT_uint32 count = getRecentCount();
+	UT_sint32 count = getRecentCount();
 
 	if (m_iMaxRecent == 0)
 	{
 		// nuke the whole thing
-		for (i = static_cast<signed>(count); i > 0 ; i--)
+		for (i = count; i > 0 ; i--)
 		{
 			char * sz = m_vecRecent.getNthItem(i-1);
 			FREEP(sz);
@@ -385,7 +385,7 @@ void XAP_Prefs::_pruneRecent(void)
 	else if (count > m_iMaxRecent)
 	{
 		// prune entries past m_iMaxRecent
-		for (i = static_cast<signed>(count); i > static_cast<signed>(m_iMaxRecent); i--)
+		for (i = count; i > m_iMaxRecent; i--)
 			removeRecent(i);
 	}
 }
@@ -1662,7 +1662,7 @@ void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
 // otherwise, will delete all calls to pFunc
 void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 {
-	UT_uint32 index;
+	UT_sint32 index;
 	tPrefsListenersPair *pPair;
 
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
@@ -1716,7 +1716,7 @@ void XAP_Prefs::endBlockChange()
 
 void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 {
-	UT_uint32	index;
+	UT_sint32	index;
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
 	{
 		tPrefsListenersPair *p = m_vecPrefsListeners.getNthItem( index );

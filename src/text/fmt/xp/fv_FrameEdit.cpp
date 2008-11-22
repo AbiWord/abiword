@@ -1491,7 +1491,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		//
 		UT_GenericVector<fl_ContainerLayout *> AllLayouts;
 		AllLayouts.clear();
-		UT_uint32 i = 0;
+		UT_sint32 i = 0;
 		m_pFrameContainer->getPage()->getAllLayouts(AllLayouts);
 
 		fl_DocSectionLayout * pDSL = getFrameLayout()->getDocSectionLayout();

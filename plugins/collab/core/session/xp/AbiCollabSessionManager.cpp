@@ -306,7 +306,7 @@ void AbiCollabSessionManager::loadProfile()
 
 							// find the account handler belonging to this type
 							UT_UTF8String handlerType = reinterpret_cast<char *>(xmlGetProp(accountNode, reinterpret_cast<const xmlChar*>("type"))); 
-							for (UT_uint32 i = 0; i < m_regAccountHandlers.getItemCount(); i++)
+							for (UT_sint32 i = 0; i < m_regAccountHandlers.getItemCount(); i++)
 							{
 								AccountHandlerConstructor constructor = m_regAccountHandlers.getNthItem(i);
 								AccountHandler* pHandler = constructor();
@@ -414,7 +414,7 @@ void AbiCollabSessionManager::storeProfile()
 				// TODO: one could check every return value here, but I'm lazy right now
 				xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("AbiCollabProfile"));
 				
-				for (UT_uint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+				for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
 				{
 					AccountHandler* pHandler = m_vecAccounts.getNthItem(i);
 					if (pHandler)
@@ -433,7 +433,7 @@ void AbiCollabSessionManager::storeProfile()
 						// write out the account handler buddies
 						xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("buddies"));
 						
-						for (UT_uint32 j = 0; j < pHandler->getBuddies().getItemCount(); j++)
+						for (UT_sint32 j = 0; j < pHandler->getBuddies().getItemCount(); j++)
 						{
 							Buddy* pBuddy = pHandler->getBuddies().getNthItem(j);
 							if (pBuddy && !pBuddy->isVolatile())
@@ -501,7 +501,7 @@ bool AbiCollabSessionManager::destroySession(PD_Document * pDoc)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::destroySession(PD_Document * pDoc)\n"));
 	
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
@@ -522,7 +522,7 @@ bool AbiCollabSessionManager::destroySession(AbiCollab* pSession)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::destroySession(AbiCollab* pSession)\n"));
 
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for (i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pActiveSession = m_vecSessions.getNthItem(i);
@@ -555,7 +555,7 @@ void AbiCollabSessionManager::disconnectSession(AbiCollab* pSession)
 
 void AbiCollabSessionManager::disconnectSessions()
 {
-	for(UT_uint32 i = 0; i < m_vecSessions.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
 		UT_continue_if_fail(pSession);
@@ -568,7 +568,7 @@ AbiCollab* AbiCollabSessionManager::getSession(PD_Document* pDoc)
 	UT_return_val_if_fail(pDoc, NULL);
 	
 	AbiCollab * pCollab = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		pCollab = m_vecSessions.getNthItem(i);
@@ -587,7 +587,7 @@ AbiCollab* AbiCollabSessionManager::getSession(PD_Document* pDoc)
 AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const UT_UTF8String& sDocumentId)
 {
 	AbiCollab * pCollab = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		pCollab = m_vecSessions.getNthItem(i);
@@ -606,7 +606,7 @@ AbiCollab* AbiCollabSessionManager::getSessionFromDocumentId(const UT_UTF8String
 AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String& sSessionId)
 {
 	AbiCollab * pCollab = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		pCollab = m_vecSessions.getNthItem(i);
@@ -791,7 +791,7 @@ bool AbiCollabSessionManager::isLocallyControlled(PD_Document* pDoc)
 	UT_return_val_if_fail(pDoc, false);
 	
 	// find the session belonging to this document, if any
-	for (UT_uint32 i = 0; i < m_vecSessions.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
 		if (pSession)
@@ -812,7 +812,7 @@ bool AbiCollabSessionManager::isInSession(PD_Document* pDoc)
 	UT_return_val_if_fail(pDoc, false);
 	
 	// find the session belonging to this document, if any
-	for (UT_uint32 i = 0; i < m_vecSessions.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecSessions.getItemCount(); i++)
 	{
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
 		if (pSession)
@@ -831,7 +831,7 @@ bool AbiCollabSessionManager::isInSession(PD_Document* pDoc)
 bool AbiCollabSessionManager::isActive(const UT_UTF8String& sSessionId)
 {
 	// find a session with this session id
-	for (UT_uint32 i = 0; i < m_vecSessions.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecSessions.getItemCount(); i++)
 	{	
 		AbiCollab* pSession = m_vecSessions.getNthItem(i);
 		if (pSession)
@@ -920,7 +920,7 @@ bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 
 void AbiCollabSessionManager::destroyAccounts(void)
 {
-	for (UT_uint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
 	{
 		AccountHandler * pHandler = m_vecAccounts.getNthItem(i);
 		_deleteAccount(pHandler);
@@ -932,7 +932,7 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);
 
-	for (UT_uint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
 	{
 		UT_continue_if_fail(m_vecAccounts.getNthItem(i));
 		
@@ -944,7 +944,7 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 			
 			// drop all buddies that belong to the account that is being deleted
 			// from all active sessions
-			for (UT_uint32 j = 0; j < m_vecSessions.getItemCount(); j++)
+			for (UT_sint32 j = 0; j < m_vecSessions.getItemCount(); j++)
 			{
 				AbiCollab* pSession = m_vecSessions.getNthItem(j); 
 				UT_continue_if_fail(pSession);
@@ -975,7 +975,7 @@ void AbiCollabSessionManager::setDocumentHandles(Buddy& buddy, const UT_GenericV
 	// we'll use to determine which document handles do not exist anymore
 	std::vector<DocHandle*> oldDocHandles(buddy.getDocHandles());
 
-	for (UT_uint32 i = 0; i < vDocHandles.size(); i++)
+	for (UT_sint32 i = 0; i < vDocHandles.size(); i++)
 	{
 		DocHandle* pDocHandle = vDocHandles.getNthItem(i);
 		// sanity checking
@@ -1247,7 +1247,7 @@ void AbiCollabSessionManager::registerEventListener(EventListener* pListener)
 void AbiCollabSessionManager::unregisterEventListener(EventListener* pListener)
 {
 	UT_return_if_fail(pListener);
-	for (UT_uint32 i = 0; i < m_vecEventListeners.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecEventListeners.getItemCount(); i++)
 	{
 		EventListener* pRegListener = m_vecEventListeners.getNthItem(i);
 		if (pRegListener == pListener)
@@ -1263,7 +1263,7 @@ void AbiCollabSessionManager::signal(const Event& event, const Buddy* pSource)
 	UT_DEBUGMSG(("AbiCollabSessionManager::signal()\n"));
 
 	// forward the event to all listeners
-	for (UT_uint32 i = 0; i < m_vecEventListeners.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecEventListeners.getItemCount(); i++)
 	{
 		EventListener* pListener = m_vecEventListeners.getNthItem(i);
 		if (pListener)

@@ -89,7 +89,7 @@ class ABI_EXPORT AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	bool buildTab( UT_String & buffer );
 
 	UT_Dimension _getDimension () { return m_dim; }
-	char *_getTabDimensionString(UT_uint32 tabIndex);
+	char *_getTabDimensionString(UT_sint32 tabIndex);
 	char *_getTabString(fl_TabStop *pTabInfo);
 	void _deleteTabFromTabString(fl_TabStop *pTabInfo);
 	void _doSpin( tControl id, UT_sint32 amount);

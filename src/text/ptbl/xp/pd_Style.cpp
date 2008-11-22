@@ -429,8 +429,8 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 //
 // This method will be recursively called to basedon style
 //
-	UT_uint32 count = getAttributeCount();
-	UT_uint32 i,j;
+	UT_sint32 count = getAttributeCount();
+	UT_sint32 i,j;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
 	for(i=0; i < count; i++)
@@ -468,8 +468,8 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 //
 // This method will be recursively called to basedon style
 //
-	UT_uint32 count = getPropertyCount();
-	UT_uint32 i,j;
+	UT_sint32 count = getPropertyCount();
+	UT_sint32 i,j;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
 	for(i=0; i < count; i++)

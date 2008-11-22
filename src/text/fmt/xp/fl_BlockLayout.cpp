@@ -487,7 +487,8 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if(((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB)) 
+		&& !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -545,7 +546,8 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if(((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB)) 
+		&& !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
@@ -789,7 +791,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if(((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB)) 
+		&& !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -914,7 +917,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if(((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB))
+		 && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
@@ -1142,7 +1146,7 @@ void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
 bool fl_BlockLayout::isEmbeddedType(void)
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION ) )
+	if(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION )) )
 	{
 		return true;
 	}
@@ -1363,7 +1367,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		while(pRun)
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iSuggestDiff;
-			UT_ASSERT(iNew >= 0);
+			//useless UT_ASSERT(iNew >= 0);
 			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
@@ -1555,7 +1559,7 @@ fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
 		vecFoots.clear();
 		if(pLine->getFootnoteContainers(&vecFoots))
 		{
-			UT_uint32 i = 0;
+			UT_sint32 i = 0;
 			for(i=0; i< vecFoots.getItemCount(); i++)
 			{
 				fp_FootnoteContainer * pFC = vecFoots.getNthItem(i);
@@ -3519,7 +3523,7 @@ void fl_BlockLayout::format()
 		// we need to clear the whole line.
 		//
 		fp_Line * pLine =  static_cast<fp_Line *>(getFirstContainer());
-		UT_uint32 iCurLine = 0;
+		UT_sint32 iCurLine = 0;
 		while(pLine && (pLine->getContainerType() == FP_CONTAINER_LINE) && (vecOldLineWidths.getItemCount() > 0))
 		{
 			UT_sint32 iOldWidth = vecOldLineWidths.getNthItem(iCurLine);
@@ -4153,8 +4157,8 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 				// until finding a Run that is valid for point
 				// coordinate calculations.
 				while (pPrevRun &&
-					   !pPrevRun->letPointPass()
-					   || !pPrevRun->canContainPoint())
+					   (!pPrevRun->letPointPass()
+					   || !pPrevRun->canContainPoint()))
 				{
 					pPrevRun = pPrevRun->getPrevRun();
 				}
@@ -6271,9 +6275,9 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		UT_GenericVector<fl_BlockLayout *> vecBlocksInTOCs;
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
-			for(i=0; i<vecBlocksInTOCs.getItemCount();i++)
+			for(UT_sint32 j=0; j<vecBlocksInTOCs.getItemCount();j++)
 			{
-				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
+				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(j);
 				pBL->doclistener_insertSpan(pcrs);
 			}
 		}
@@ -6339,10 +6343,10 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 		//			|| (pRun->getNextRun()->getType() != FPRUN_FMTMARK)) );
 
 		// Verify that the Run has a non-zero length (or is a FmtMark)
-		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType()) || 
-					((FPRUN_TAB == pRun->getType()) 
-					  || (FPRUN_FIELD == pRun->getType())
-					  && isContainedByTOC())
+		UT_ASSERT( ((((FPRUN_FMTMARK == pRun->getType()) || 
+					(FPRUN_TAB == pRun->getType()) 
+					  || (FPRUN_FIELD == pRun->getType()))
+					  && isContainedByTOC()))
 				   || (pRun->getLength() > 0) );
 
 		// Verify that if there is no next Run, this Run is the EOP Run.
@@ -6807,7 +6811,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	//
 	// maybe able to remove this once the rest of bug 5240 is fixed.
 	//
-	UT_uint32 i =0;
+	UT_sint32 i =0;
    	for(i=0; i< vecLines.getItemCount(); i++)
 	{
 		fp_Line * pLine = vecLines.getNthItem(i);
@@ -9490,8 +9494,8 @@ void fl_BlockLayout::remItemFromList(void)
 		if(pNext != NULL)
 		{
 			pNext->getListPropertyVector( &vp);
-			UT_uint32 countp = vp.getItemCount() + 1;
-			UT_uint32 i;
+			UT_sint32 countp = vp.getItemCount() + 1;
+			UT_sint32 i;
 			props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 			for(i=0; i<vp.getItemCount();i++)
 			{
@@ -9512,8 +9516,8 @@ void fl_BlockLayout::remItemFromList(void)
 		else
 		{
 			getListPropertyVector( &vp);
-			UT_uint32 countp = vp.getItemCount() + 1;
-			UT_uint32 i;
+			UT_sint32 countp = vp.getItemCount() + 1;
+			UT_sint32 i;
 			props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 			for(i=0; i<vp.getItemCount();i++)
 			{
@@ -9893,9 +9897,9 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	m_pDoc->addList(pAutoNum);
 	pAutoNum->fixHierarchy();
 
-	UT_uint32 counta = va.getItemCount() + 1;
-	UT_uint32 countp = vp.getItemCount() + 1;
-	UT_uint32 i;
+	UT_sint32 counta = va.getItemCount() + 1;
+	UT_sint32 countp = vp.getItemCount() + 1;
+	UT_sint32 i;
 	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
@@ -10077,8 +10081,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 		vp.addItem("text-indent");
 		vp.addItem(szIndent);
 	}
-	UT_uint32 countp = vp.getItemCount() + 1;
-	UT_uint32 i;
+	UT_sint32 countp = vp.getItemCount() + 1;
+	UT_sint32 i;
 	props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
 	for (i = 0; i < vp.getItemCount(); i++)
 	{
@@ -10346,9 +10350,9 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 
 	nextList->getListPropertyVector( &vp);
 	nextList->getListAttributesVector( &va);
-	UT_uint32 counta = va.getItemCount() + 1;
-	UT_uint32 countp = vp.getItemCount() + 1;
-	UT_uint32 i;
+	UT_sint32 counta = va.getItemCount() + 1;
+	UT_sint32 countp = vp.getItemCount() + 1;
+	UT_sint32 i;
 	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
@@ -10390,9 +10394,9 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 		return;
 	prevList->getListPropertyVector( &vp);
 	prevList->getListAttributesVector( &va);
-	UT_uint32 counta = va.getItemCount() + 1;
-	UT_uint32 countp = vp.getItemCount() + 1;
-	UT_uint32 i;
+	UT_sint32 counta = va.getItemCount() + 1;
+	UT_sint32 countp = vp.getItemCount() + 1;
+	UT_sint32 i;
 	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
@@ -11446,7 +11450,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 
 				UT_UCS4Char * p = m_pMutatedString;
 		
-				for(UT_uint32 i = 0; i < vWordLimits.getItemCount(); ++i)
+				for(UT_sint32 i = 0; i < vWordLimits.getItemCount(); ++i)
 				{
 					_spell_type * st = vWordLimits.getNthItem(i);
 					UT_return_val_if_fail( st, false );

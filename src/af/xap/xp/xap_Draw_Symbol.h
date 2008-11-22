@@ -77,8 +77,8 @@ protected:
 	UT_uint32                   m_drawHeight;
 	UT_uint32                   m_drawareaWidth;
 	UT_uint32                   m_drawareaHeight;
-	size_t                      m_start_base;
-	size_t			    m_start_nb_char;
+	UT_sint32                   m_start_base;
+	UT_sint32		    m_start_nb_char;
 
 	UT_UCSChar					m_CurrentSymbol;
 	UT_UCSChar					m_PreviousSymbol;

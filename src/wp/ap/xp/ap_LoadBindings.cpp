@@ -177,7 +177,7 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 	// NOTE: the returned map should be treated as 'const' since
 	// NOTE: it is shared by all windows.
 	
-  for (UT_uint32 k=0; k< m_vecBindings.getItemCount(); k++)
+  for (UT_sint32 k=0; k< m_vecBindings.getItemCount(); k++)
     if (g_ascii_strcasecmp(szName,m_vecBindings.getNthItem(k)->m_name)==0)
 		{
 			// we now share maps.  any given map is loaded exactly once.

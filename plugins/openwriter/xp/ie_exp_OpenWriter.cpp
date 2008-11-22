@@ -202,7 +202,7 @@ OO_WriterImpl::OO_WriterImpl(GsfOutfile *pOutfile, OO_StylesContainer *pStylesCo
 	UT_GenericVector<int*> *tempStylesValuesList = m_pStylesContainer->enumerateSpanStyles();
 	UT_GenericVector<const UT_String*> *tempStylesKeysList = m_pStylesContainer->getSpanStylesKeys();
 	
-	for (UT_uint32 i=0; i<tempStylesValuesList->size(); i++) 
+	for (UT_sint32 i=0; i<tempStylesValuesList->size(); i++) 
 	{
 	   styleNum = tempStylesValuesList->getNthItem(i);
 	   const UT_String *styleProps = tempStylesKeysList->getNthItem(i);
@@ -217,7 +217,7 @@ OO_WriterImpl::OO_WriterImpl(GsfOutfile *pOutfile, OO_StylesContainer *pStylesCo
 	// block styles
 	UT_GenericVector<const UT_String*> *tempBlockStylesKeysList = m_pStylesContainer->getBlockStylesKeys();
 
-	for (UT_uint32 i=0; i < tempBlockStylesKeysList->size(); i++) 
+	for (UT_sint32 i=0; i < tempBlockStylesKeysList->size(); i++) 
 	{
 		const UT_String * key = tempBlockStylesKeysList->getNthItem(i);
 		const UT_String * val = m_pStylesContainer->pickBlockAtts(key);
@@ -401,7 +401,7 @@ int OO_StylesContainer::getBlockStyleNum(UT_String & /*styleAtts*/, UT_String & 
 {
 	UT_GenericVector<const UT_String*> *keys = m_blockAttsHash.keys();
 
-	for (UT_uint32 i = 0; i < keys->size(); i++) 
+	for (UT_sint32 i = 0; i < keys->size(); i++) 
 	{
 		const UT_String * key = keys->getNthItem(i);
 		if (key && (*key == styleProps))
@@ -900,7 +900,7 @@ bool OO_StylesWriter::writeStyles(PD_Document * pDoc, GsfOutfile * oo, OO_Styles
   const PD_Style * pStyle = NULL;
   UT_GenericVector<PD_Style *> vecStyles;
   pDoc->getAllUsedStyles(&vecStyles);
-  UT_uint32 k = 0;
+  UT_sint32 k = 0;
   UT_UTF8String styleAtts, propAtts, font;
   for (k=0; k < vecStyles.getItemCount(); k++)
     {
@@ -978,7 +978,7 @@ bool OO_StylesWriter::writeStyles(PD_Document * pDoc, GsfOutfile * oo, OO_Styles
 void OO_StylesWriter::addFontDecls(UT_UTF8String & buffer, OO_StylesContainer & stylesContainer)
 {
 	UT_GenericVector<const UT_String*> *vecFonts = stylesContainer.getFontsKeys();
-	for (UT_uint32 i = 0; i < vecFonts->size(); i++) {
+	for (UT_sint32 i = 0; i < vecFonts->size(); i++) {
 		// FIXME ATM only variable width fonts
 		// check here by using pango?
 		const gchar * pitch = "variable";

@@ -84,7 +84,7 @@ void XAP_Dialog_ListDocuments::_setSelDocumentIndx(UT_sint32 i)
 	m_ndxSelDoc = i;
 }
 
-const char * XAP_Dialog_ListDocuments::_getNthDocumentName(UT_uint32 n) const
+const char * XAP_Dialog_ListDocuments::_getNthDocumentName(UT_sint32 n) const
 {
 	if(n >= m_vDocs.getItemCount())
 		return NULL;

@@ -30,7 +30,7 @@ class AbiGrammarError
   virtual ~AbiGrammarError(void);
   UT_sint32 m_iErrLow;
   UT_sint32 m_iErrHigh;
-  UT_uint32 m_iWordNum;
+  UT_sint32 m_iWordNum;
   UT_UTF8String m_sErrorDesc;
 };
 

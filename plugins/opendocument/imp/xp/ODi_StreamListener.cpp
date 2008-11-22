@@ -323,7 +323,7 @@ void ODi_StreamListener::_handleStateAction ()
         case ODi_ListenerStateAction::ACTION_BRINGUPALL:
             
             {
-                UT_uint32 i;
+                UT_sint32 i;
                 bool comeBackAfter = m_stateAction.getComeBackAfter();
                             
                 for (i=0; i<m_postponedParsing.getItemCount(); i++) {
@@ -407,7 +407,7 @@ void ODi_StreamListener::_clear ()
         m_pCurrentState = NULL;
     }
     
-    UT_uint32 i;
+    UT_sint32 i;
     ODi_StreamListener::StackCell cell;
     for (i=0; i < m_stateStack.getItemCount(); i++) {
         cell = m_stateStack.getNthItem(i);

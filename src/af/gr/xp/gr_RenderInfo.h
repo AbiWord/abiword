@@ -132,23 +132,23 @@ class ABI_EXPORT GR_Itemization
 										 // items, they get passed on
 										 // to the runs
 
-	UT_uint32       getItemCount() const {return m_vOffsets.getItemCount();}
-	UT_uint32       getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
-	GR_ScriptType   getNthType(UT_uint32 i) const
+	UT_sint32       getItemCount() const {return m_vOffsets.getItemCount();}
+	UT_sint32       getNthOffset(UT_sint32 i) const {return m_vOffsets.getNthItem(i);}
+	GR_ScriptType   getNthType(UT_sint32 i) const
 	                   {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
 	
-	UT_uint32       getNthLength(UT_uint32 i)
+	UT_uint32       getNthLength(UT_sint32 i)
 	                   {
 						  UT_return_val_if_fail(i < m_vOffsets.getItemCount()-1, 0);
 						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
 					   }
 	
-	GR_Item *       getNthItem(UT_uint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
+	GR_Item *       getNthItem(UT_sint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
 	
-	void            addItem(UT_uint32 offset, const GR_Item *item)
+	void            addItem(UT_sint32 offset, const GR_Item *item)
 	                    { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
 
-	void            insertItem(UT_uint32 indx, UT_uint32 offset, const GR_Item *item)
+	void            insertItem(UT_sint32 indx, UT_sint32 offset, const GR_Item *item)
 	                    { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
 	
 	void            clear();

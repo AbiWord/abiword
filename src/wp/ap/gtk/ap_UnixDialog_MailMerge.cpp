@@ -217,7 +217,7 @@ void AP_UnixDialog_MailMerge::setFieldList()
 	if(!m_vecFields.size())
 		return;
 
-	UT_uint32 i;
+	UT_sint32 i;
 	
 	GtkTreeIter iter;
 	

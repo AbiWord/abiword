@@ -67,7 +67,7 @@ public:
     GsfOutput* m_pTextContent;
     
     // From AbiWord <cell> element
-    UT_uint32 m_leftAttach, m_rightAttach, m_topAttach, m_bottomAttach;
+    UT_sint32 m_leftAttach, m_rightAttach, m_topAttach, m_bottomAttach;
 };
 
 
@@ -130,10 +130,10 @@ private:
     void _buildTable();
     
     ODe_Table_Column* m_pColumns;
-    UT_uint32 m_numColumns;
+    UT_sint32 m_numColumns;
     
     ODe_Table_Row* m_pRows;
-    UT_uint32 m_numRows;
+    UT_sint32 m_numRows;
     
     UT_GenericVector<ODe_Table_Cell*> m_cells;
     

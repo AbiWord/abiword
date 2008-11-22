@@ -76,9 +76,9 @@ pp_TableAttrProp::~pp_TableAttrProp()
 }
 
 bool pp_TableAttrProp::addAP(PP_AttrProp * pAP,
-								UT_uint32 * pSubscript)
+								UT_sint32 * pSubscript)
 {
- 	UT_uint32 u;
+ 	UT_sint32 u;
  	bool result = (m_vecTable.addItem(pAP,&u) == 0);
  
  	if (result)
@@ -94,12 +94,12 @@ bool pp_TableAttrProp::addAP(PP_AttrProp * pAP,
  	return result;
 }
 
-bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
+bool pp_TableAttrProp::createAP(UT_sint32 * pSubscript)
 {
 	PP_AttrProp * pNew = new PP_AttrProp();
 	if (!pNew)
 		return false;
- 	UT_uint32 u;
+ 	UT_sint32 u;
  	if (m_vecTable.addItem(pNew,&u) != 0)
 	{
 		delete pNew;
@@ -124,9 +124,9 @@ bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
 
 bool pp_TableAttrProp::createAP(const gchar ** attributes,
 								   const gchar ** properties,
-								   UT_uint32 * pSubscript)
+								   UT_sint32 * pSubscript)
 {
-	UT_uint32 subscript;
+	UT_sint32 subscript;
 	if (!createAP(&subscript))
 		return false;
 
@@ -144,9 +144,9 @@ bool pp_TableAttrProp::createAP(const gchar ** attributes,
 }
 
 bool pp_TableAttrProp::createAP(const UT_GenericVector<const gchar*> * pVector,
-								   UT_uint32 * pSubscript)
+								   UT_sint32 * pSubscript)
 {
-	UT_uint32 subscript;
+	UT_sint32 subscript;
 	if (!createAP(&subscript))
 		return false;
 
@@ -164,13 +164,13 @@ bool pp_TableAttrProp::createAP(const UT_GenericVector<const gchar*> * pVector,
 }
 
 bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
-									UT_uint32 * pSubscript) const
+									UT_sint32 * pSubscript) const
 {
 	// return true if we find an AP in our table which is
 	// an exact match for the attributes/properties in pMatch.
 	// set *pSubscript to the subscript of the matching item.
 
-	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecTable.getItemCount());
+	UT_sint32 kLimit = m_vecTable.getItemCount();
 	UT_sint32 k;
   
 	UT_uint32 checksum = pMatch->getCheckSum();
@@ -201,11 +201,12 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
 }
 
 	
-const PP_AttrProp * pp_TableAttrProp::getAP(UT_uint32 subscript) const
+const PP_AttrProp * pp_TableAttrProp::getAP(UT_sint32 subscript) const
 {
-	UT_uint32 count = m_vecTable.getItemCount();
+	UT_sint32 count = m_vecTable.getItemCount();
 	if (subscript < count)
 		return (const PP_AttrProp *)m_vecTable.getNthItem(subscript);
 	else
 		return NULL;
 }
+

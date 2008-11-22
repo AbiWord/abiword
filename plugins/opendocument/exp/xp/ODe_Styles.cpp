@@ -62,11 +62,10 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
     const PD_Style* pStyle = NULL;
     UT_GenericVector<PD_Style*> vecStyles;
     pAbiDoc->getAllUsedStyles(&vecStyles);
-    UT_uint32 k = 0;
     const PP_AttrProp* pAP;
     PT_AttrPropIndex api;
     
-    for (k=0; k < vecStyles.getItemCount(); k++)
+    for (UT_sint32 k=0; k < vecStyles.getItemCount(); k++)
     {
         pStyle = vecStyles.getNthItem(k);
 
@@ -89,9 +88,9 @@ bool ODe_Styles::fetchRegularStyleStyles(PD_Document* pAbiDoc) {
         return false;
     }
     UT_uint32 iStyleCount = pAbiDoc->getStyleCount();
-    bool ok;
+    bool ok = true;
     
-    for (k=0, ok=true; k < iStyleCount && ok; k++)
+    for (UT_uint32 k=0; k < iStyleCount && ok; k++)
     {
         pStyle = pStyles->getNthItem(k);
         if (pStyle == NULL) {

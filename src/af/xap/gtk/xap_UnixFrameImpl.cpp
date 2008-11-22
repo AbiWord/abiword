@@ -565,14 +565,17 @@ s_dndDropEvent(GtkWidget        *widget,
 			{
 
 				UT_UTF8String sUri = uri;
-				UT_sint32 i = 0;
-				for(i=0;i<sUri.length()-1;i++)
+				UT_uint32 i = 0;
+				if(sUri.length())
 				{
-					if((sUri.substr(i,1) == "\n") || 
-					   (sUri.substr(i,1) == " ")  )
+					for(i=0;i<sUri.length()-1;i++)
 					{
-						sUri = sUri.substr(0,i);
-						break;
+						if((sUri.substr(i,1) == "\n") || 
+						   (sUri.substr(i,1) == " ")  )
+						{
+							sUri = sUri.substr(0,i);
+							break;
+						}
 					}
 				}
 				UT_DEBUGMSG(("trimmed Uri is (%s) \n",sUri.utf8_str()));
@@ -978,7 +981,8 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 		pFrame->quickZoom(); // was update zoom
 		iLoop++;
 	}
-	while((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight) && (iLoop < 10));
+	while(((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight)) 
+		&& (iLoop < 10));
 
 	pUnixFrameImpl->m_iZoomUpdateID = 0;
 	pUnixFrameImpl->m_bDoZoomUpdate = false;

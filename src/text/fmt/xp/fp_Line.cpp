@@ -1167,7 +1167,7 @@ void fp_Line::clearScreen(void)
 			setScreenCleared(true);
 			m_pBlock->setNeedsRedraw();
 			setNeedsRedraw();
-			UT_uint32 i;
+			UT_sint32 i;
 			for(i=0; i < m_vecRuns.getItemCount();i++)
 			{
 				pRun = m_vecRuns.getNthItem(i);
@@ -3702,10 +3702,10 @@ UT_sint32 fp_Line::_createMapOfRuns()
 /* the following two functions convert the position of a run from logical to visual
    and vice versa */
 
-UT_uint32 fp_Line::_getRunLogIndx(UT_uint32 indx)
+UT_uint32 fp_Line::_getRunLogIndx(UT_sint32 indx)
 {
 #ifdef DEBUG
-	UT_uint32 iCount = m_vecRuns.getItemCount();
+	UT_sint32 iCount = m_vecRuns.getItemCount();
 	if(iCount <= indx)
 		UT_DEBUGMSG(("fp_Line::_getRunLogIndx: indx %d, iCount %d\n", indx,iCount));
 #endif
@@ -3719,7 +3719,7 @@ UT_uint32 fp_Line::_getRunLogIndx(UT_uint32 indx)
 }
 
 
-UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
+UT_uint32 fp_Line::_getRunVisIndx(UT_sint32 indx)
 {
 	UT_ASSERT(m_vecRuns.getItemCount() > indx);
 
@@ -3737,7 +3737,7 @@ UT_uint32	fp_Line::getVisIndx(fp_Run* pRun)
 	return _getRunVisIndx(static_cast<UT_uint32>(i));
 }
 
-fp_Run *	fp_Line::getRunAtVisPos(UT_uint32 i)
+fp_Run *	fp_Line::getRunAtVisPos(UT_sint32 i)
 {
 	if(i >= m_vecRuns.getItemCount())
 		return NULL;

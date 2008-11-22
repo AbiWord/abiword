@@ -485,7 +485,7 @@ void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_GenericVector<UT_UC
 	GtkListStore* model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combo)));
 	gtk_list_store_clear(model);
 
-	for (UT_uint32 i = 0; i<list->getItemCount(); i++)
+	for (UT_sint32 i = 0; i<list->getItemCount(); i++)
 	{
 		UT_UCS4String ucs4s(list->getNthItem(i), 0); 
 		append_string_to_model(list->getNthItem(i), combo, this);

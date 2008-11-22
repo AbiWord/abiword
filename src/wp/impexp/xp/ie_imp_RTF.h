@@ -663,9 +663,9 @@ private:
 	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);
 
-	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
-	UT_uint32 GetNthTableColour(UT_uint32 colNum);
-	UT_sint32 GetNthTableBgColour(UT_uint32 colNum);
+	RTFFontTableItem* GetNthTableFont(UT_sint32 fontNum);
+	UT_uint32 GetNthTableColour(UT_sint32 colNum);
+	UT_sint32 GetNthTableBgColour(UT_sint32 colNum);
 
 // ListTable handlers.
 	bool ReadListTable(void);

@@ -4706,7 +4706,7 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	{
 		UT_DEBUGMSG(("cmdEditAnnotationWithDialog: Annotation id(\"%d\") edited \n",aID));
 		
-		for(UT_uint32 i = 0;i < pApp->getFrameCount();++i)
+		for(UT_sint32 i = 0;i < pApp->getFrameCount();++i)
 		{
 			pApp->getFrame(i)->updateTitle ();
 		}	  

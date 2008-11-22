@@ -596,7 +596,7 @@ bool  Presentation::showPrevPage(void)
 {
   if(m_iPage > 0)
   {
-    if(m_iPage > 1 && m_bDrewNext && (static_cast<UT_uint32>(m_iPage) +1 < m_pView->getLayout()->countPages()))
+    if(m_iPage > 1 && m_bDrewNext && (m_iPage +1 < m_pView->getLayout()->countPages()))
 	  m_iPage--;
       m_iPage--;
   }

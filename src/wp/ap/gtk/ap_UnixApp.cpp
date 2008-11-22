@@ -746,7 +746,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 
 static bool is_so (const char *file) {
 
-	int len = strlen (file);
+	size_t len = strlen (file);
 	if (len < (strlen(G_MODULE_SUFFIX) + 2)) // this is ".so" and at least one char for the filename
 		return false;
 	const char *suffix = file+(len-3);
@@ -1451,7 +1451,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			const char * szRequest = Args->m_sPluginArgs[0];
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 			UT_DEBUGMSG((" %d plugins loaded \n",pVec->getItemCount()));
-			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+			for (UT_sint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
@@ -1553,7 +1553,7 @@ void AP_UnixApp::catchSignals(int sig_num)
 		UT_usleep(10000);
 	}
 #endif
-    UT_uint32 i = 0;
+    UT_sint32 i = 0;
 	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {

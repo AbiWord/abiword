@@ -1477,7 +1477,7 @@ void s_DocBook_Listener::_handleRevisions(void)
 	const AD_Revision * pRev = NULL;
 	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
 
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = vRevisions.getNthItem(k);
@@ -2372,7 +2372,7 @@ void s_DocBook_Listener::_handleDataItems(void)
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void **>(&szMimeType))); k++)
 	{
 		UT_sint32 loc = -1;
-		for (UT_uint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
 		{
 			if(strcmp(const_cast<char*>(reinterpret_cast<const char*>(m_utvDataIDs[i])), szName) == 0)
 			{

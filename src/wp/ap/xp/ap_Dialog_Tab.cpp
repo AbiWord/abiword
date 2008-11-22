@@ -236,7 +236,7 @@ void AP_Dialog_Tab::_event_Set(void)
 
 		Dimension_size++;
 	}
-	UT_uint32 i;
+	UT_sint32 i;
 	// do we have the tab already.
 
 	for (  i = 0; i < m_tabInfo.getItemCount(); i++ )
@@ -339,7 +339,7 @@ void AP_Dialog_Tab::_event_Update(void)
 	}
 
 	// do we have the tab already.
-	UT_uint32 i;
+	UT_sint32 i;
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
@@ -558,7 +558,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	}
 #endif
 
-	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	for ( UT_sint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
 		UT_return_if_fail (pTabInfo);
@@ -586,7 +586,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 }
 
-char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
+char *AP_Dialog_Tab::_getTabDimensionString(UT_sint32 tabIndex)
 {
 
 	UT_return_val_if_fail (tabIndex < m_tabInfo.getItemCount(), NULL);

@@ -196,7 +196,7 @@ public:
 	fp_Run *	getLastVisRun();
 	fp_Run *	getFirstVisRun();
 	UT_uint32	getVisIndx(fp_Run* pRun);
-	fp_Run *	getRunAtVisPos(UT_uint32 i);
+	fp_Run *	getRunAtVisPos(UT_sint32 i);
 	void		setMapOfRunsDirty(){m_bMapDirty = true;};
 	void		addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
 	void		removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
@@ -263,8 +263,8 @@ private:
 	static UT_uint32   s_iOldXsSize;
 	static UT_uint32   s_iClassInstanceCounter;
 
-	UT_uint32       _getRunVisIndx(UT_uint32 indx);
-	UT_uint32       _getRunLogIndx(UT_uint32 indx);
+	UT_uint32       _getRunVisIndx(UT_sint32 indx);
+	UT_uint32       _getRunLogIndx(UT_sint32 indx);
 	UT_sint32       _createMapOfRuns();
 #ifdef USE_STATIC_MAP
 	static UT_Byte     * s_pEmbeddingLevels;

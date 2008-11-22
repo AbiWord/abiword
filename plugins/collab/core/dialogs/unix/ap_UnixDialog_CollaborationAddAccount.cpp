@@ -124,7 +124,7 @@ void AP_UnixDialog_CollaborationAddAccount::_populateWindowData()
 	GtkTreeIter iter;
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
-	for (UT_uint32 i = 0; i < pManager->getRegisteredAccountHandlers().size(); i++)
+	for (UT_sint32 i = 0; i < pManager->getRegisteredAccountHandlers().size(); i++)
 	{
 		AccountHandlerConstructor pConstructor = pManager->getRegisteredAccountHandlers().getNthItem(i);
 		if (pConstructor)

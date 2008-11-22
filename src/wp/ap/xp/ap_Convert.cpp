@@ -150,7 +150,7 @@ public:
 				memset(&da, 0, sizeof(da));
 				da.pG = m_pGraphics;
 				
-				for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
+				for (UT_sint32 k = 1; (k <= pDocLayout->countPages()); k++)
 				{
 					UT_uint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
 					m_pGraphics->m_iRasterPosition = (k-1)*iHeight;
@@ -474,7 +474,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 
 		if (pages.empty())
 		  {
-		    for (UT_uint32 i = 1; i <= pDocLayout->countPages(); i++)
+		    for (UT_sint32 i = 1; i <= pDocLayout->countPages(); i++)
 		      {
 			pages.insert(i);
 		      }

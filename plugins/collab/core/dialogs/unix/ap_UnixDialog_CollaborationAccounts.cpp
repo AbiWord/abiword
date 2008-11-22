@@ -225,7 +225,7 @@ GtkListStore* AP_UnixDialog_CollaborationAccounts::_constructModel()
 	GtkListStore* model = gtk_list_store_new (4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	for (UT_uint32 i = 0; i < pManager->getAccounts().getItemCount(); i++)
+	for (UT_sint32 i = 0; i < pManager->getAccounts().getItemCount(); i++)
 	{
 		AccountHandler* pHandler = pManager->getAccounts().getNthItem(i);
 		if (pHandler)

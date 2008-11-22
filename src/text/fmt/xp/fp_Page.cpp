@@ -158,7 +158,7 @@ void fp_Page::setPageNumberInFrames(void)
  */
 void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts){
 	fp_Column * pCol = NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fl_ContainerLayout * pPrevCL = NULL;
 	fl_ContainerLayout * pCurCL = NULL;
 	for(i= 0; i< m_vecColumnLeaders.getItemCount(); i++)
@@ -867,7 +867,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 	UT_sint32 totalHeight = 0;
     UT_sint32 maxHeight = 0;
 	fp_Column * pColumn = NULL;
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	fp_Column * prevColumn = NULL;
 	bool bstop = false;
 	if(prevContainer)
@@ -2896,7 +2896,7 @@ fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const
 
 bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 {
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	UT_sint32 j = findFootnoteContainer(pFC);
 	if(j >= 0)
 	{
@@ -2990,7 +2990,7 @@ UT_uint32 fp_Page::getAnnotationPos(UT_uint32 pid)
 
 bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
 {
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	UT_sint32 j = findAnnotationContainer(pAC);
 	if(j >= 0)
 	{

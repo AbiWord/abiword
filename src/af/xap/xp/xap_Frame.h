@@ -165,7 +165,7 @@ public:
    	EV_Mouse *					getMouse() { return m_pFrameImpl->m_pMouse; }
 	EV_Keyboard *				getKeyboard() { return m_pFrameImpl->m_pKeyboard; }
 
-	EV_Toolbar *                getToolbar(UT_uint32 ibar);
+	EV_Toolbar *                getToolbar(UT_sint32 ibar);
 	UT_sint32                   findToolbarNr(EV_Toolbar * pTB);
 	virtual void                rebuildMenus(void) { m_pFrameImpl->_rebuildMenus();}
 	bool                        repopulateCombos();

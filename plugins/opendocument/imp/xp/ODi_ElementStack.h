@@ -69,14 +69,14 @@ public:
      * On the startElement method, level 0 is the parent start tag.
      * On the endElement method, level 0 is the corresponding start tag.
      */
-    const ODi_StartTag* getStartTag(UT_uint32 level);
+    const ODi_StartTag* getStartTag(UT_sint32 level);
     
     bool hasElement(const gchar* pName) const;
     
     /**
      * Returns the level of the closest element with the given name.
      */
-    UT_uint32 getElementLevel(const gchar* pName) const;
+    UT_sint32 getElementLevel(const gchar* pName) const;
     
     /**
      * Returns the closest parent with the given name. It returns NULL if there
@@ -86,7 +86,7 @@ public:
      * @param fromLevel The level from which the search begins.
      */
     const ODi_StartTag* getClosestElement(const gchar* pName,
-                                          UT_uint32 fromLevel = 0) const;
+                                          UT_sint32 fromLevel = 0) const;
         
     
     void startElement (const gchar* pName, const gchar** ppAtts);
@@ -94,13 +94,13 @@ public:
     bool isEmpty() const {return m_stackSize==0;}
     void clear() {m_stackSize = 0;}
     
-    UT_uint32 getStackSize() const {return m_stackSize;}
+    UT_sint32 getStackSize() const {return m_stackSize;}
 
     
 private:
     
     UT_GenericVector <ODi_StartTag*>* m_pStartTags;
-    UT_uint32 m_stackSize;
+    UT_sint32 m_stackSize;
 };
 
 #endif //_ODI_ELEMENTSTACK_H_

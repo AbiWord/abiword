@@ -265,7 +265,7 @@ UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
 {
 	if(!szUUID)
 		return NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	bool bFound = false;
 	for(i=0; i< m_vecAuthors.getItemCount(); i++)
 	{
@@ -294,7 +294,7 @@ pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID)
 {
 	if(!szUUID)
 		return NULL;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	bool bFound = false;
 	for(i=0; i< m_vecAuthors.getItemCount(); i++)
 	{
@@ -378,7 +378,7 @@ UT_sint32 PD_Document::findFirstFreeAuthorInt(void)
 }
 pp_Author * PD_Document::getAuthorByInt(UT_sint32 i)
 {
-	UT_uint32 j = 0;
+	UT_sint32 j = 0;
 	for(j=0; j< m_vecAuthors.getItemCount(); j++)
 	{
 		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
@@ -425,7 +425,7 @@ UT_sint32 PD_Document::getLastAuthorInt(void) const
  */
 const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i)
 {
-	UT_uint32 j = 0;
+	UT_sint32 j = 0;
 	for(j=0; j< m_vecAuthors.getItemCount(); j++)
 	{
 		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
@@ -503,7 +503,7 @@ void PD_Document::setShowAuthors(bool bAuthors)
 	{
 		UT_GenericVector<AV_View *> vecViews;
 		getAllViews(&vecViews);
-		UT_uint32 i = 0;
+		UT_sint32 i = 0;
 		for(i = 0; i<vecViews.getItemCount(); i++)
 		{
 			FV_View * pView = static_cast<FV_View *>(vecViews.getNthItem(i));
@@ -883,7 +883,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 	
 	UT_GenericVector<PD_Style*> vStyles;
 	getAllUsedStyles(&vStyles);
-	for(UT_uint32 i = 0; i < vStyles.getItemCount();i++)
+	for(UT_sint32 i = 0; i < vStyles.getItemCount();i++)
 	{
 		PD_Style * pStyle = vStyles.getNthItem(i);
 
@@ -1475,7 +1475,7 @@ bool PD_Document::repairDoc(void)
 		return true;
 	}
 	bool bRepaired = false;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
 	{
 		pf_Frag * pf = m_vecSuspectFrags.getNthItem(i);
@@ -3309,8 +3309,8 @@ bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * 
 bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {
-	UT_uint32 kLimit = m_vecListeners.getItemCount();
-	UT_uint32 k=0;
+	UT_sint32 kLimit = m_vecListeners.getItemCount();
+	UT_sint32 k=0;
 
 	// see if we can recycle a cell in the vector.
 
@@ -5459,7 +5459,7 @@ void PD_Document::addBookmark(const gchar * pName)
 
 void PD_Document::removeBookmark(const gchar * pName)
 {
-	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
 		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
 		if(!strcmp(pName, pBM))
@@ -5474,7 +5474,7 @@ void PD_Document::removeBookmark(const gchar * pName)
  *  currently existing bookmark. */
 bool PD_Document::isBookmarkUnique(const gchar * pName) const
 {
-	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
 		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
 		if(!strcmp(pName, pBM))

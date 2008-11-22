@@ -226,7 +226,7 @@ XAP_Module * XAP_App::getPlugin(const char * szPluginName)
      XAP_Module * pModule = NULL;
      const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
      bool bFound = false;
-     for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+     for (UT_sint32 i = 0; (i < pVec->size()) && !bFound; i++)
      {
           pModule = pVec->getNthItem (i);
 	  const char * szName = pModule->getModuleInfo()->name;
@@ -245,14 +245,14 @@ XAP_Module * XAP_App::getPlugin(const char * szPluginName)
 /*!
  * Register an embeddable plugin with XAP_App
  */
-UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
+UT_sint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
 {
-	 UT_return_val_if_fail( pEmbed, 0xFFFFFFF );
+	 UT_return_val_if_fail( pEmbed, -1 );
 	 
      UT_sint32 i=0;
      bool bFound = false;
      GR_EmbedManager * pCur = NULL;
-     for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
+     for(i=0; !bFound && (i< m_vecEmbedManagers.getItemCount()); i++)
      {
 		 pCur =  m_vecEmbedManagers.getNthItem(i);
 		 if(pCur && (strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0))
@@ -265,7 +265,7 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
 		 m_vecEmbedManagers.addItem(pEmbed);
 		 return  m_vecEmbedManagers.getItemCount() - 1;
      }
-     return 0xFFFFFFF;
+     return -1;
 }
 
 
@@ -273,7 +273,7 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
  * UnRegister an embeddable plugin with XAP_App. The plugin itself is 
  * responsible for actually deleting the object.
  */
-bool XAP_App::unRegisterEmbeddable(UT_uint32 uid)
+bool XAP_App::unRegisterEmbeddable(UT_sint32 uid)
 {
   if(uid < m_vecEmbedManagers.getItemCount())
     {
@@ -427,8 +427,8 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 bool XAP_App::addListener(AV_Listener * pListener, 
 							 AV_ListenerId * pListenerId)
 {
-	UT_uint32 kLimit = m_vecPluginListeners.getItemCount();
-	UT_uint32 k;
+	UT_sint32 kLimit = m_vecPluginListeners.getItemCount();
+	UT_sint32 k;
 
 	// see if we can recycle a cell in the vector.
 	UT_DEBUGMSG(("Asked to register pListener %x \n",pListener));
@@ -546,7 +546,7 @@ void XAP_App::resetToolbarsToDefault(void)
 		if(pFrame->getViewNumber() > 0)
 		{
 			getClones(&vClones,pFrame);
-			UT_uint32 j=0;
+			UT_sint32 j=0;
 			for(j=0; j < vClones.getItemCount(); j++)
 			{
 				XAP_Frame * f = vClones.getNthItem(j);
@@ -680,7 +680,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		pvClones->addItem(pFrame);
 
 		// notify all clones of their new view numbers
-		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
+		for (UT_sint32 j=0; j<pvClones->getItemCount(); j++)
 		{
 			XAP_Frame * f = pvClones->getNthItem(j);
 			UT_continue_if_fail(f);
@@ -792,7 +792,7 @@ bool XAP_App::forgetClones(XAP_Frame * pFrame)
 	UT_GenericVector<XAP_Frame*> vClones;
 	getClones(&vClones, pFrame);
 	
-	for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < vClones.getItemCount(); i++)
 	{
 		XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
 		forgetFrame(f);
@@ -850,12 +850,12 @@ void XAP_App::notifyFrameCountChange() // default is empty method
 	UT_DEBUGMSG(("XAP_App::notifyFrameCountChange(): count=%lu\n", static_cast<unsigned long>(getFrameCount())));
 }
 
-UT_uint32 XAP_App::getFrameCount() const
+UT_sint32 XAP_App::getFrameCount() const
 {
 	return m_vecFrames.getItemCount();
 }
 
-XAP_Frame * XAP_App::getFrame(UT_uint32 ndx) const
+XAP_Frame * XAP_App::getFrame(UT_sint32 ndx) const
 {
 	XAP_Frame * pFrame = NULL;
 	
@@ -877,7 +877,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 	if (!szFilename || !*szFilename)
 		return -1;
 
-	for (UT_uint32 i=0; i<getFrameCount(); i++)
+	for (UT_sint32 i=0; i<getFrameCount(); i++)
 	{
 		XAP_Frame * f = getFrame(i);
 		UT_continue_if_fail(f);
@@ -885,7 +885,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 
 		if (s && *s && (0 == g_ascii_strcasecmp(szFilename, s)))
 		{
-			return static_cast<UT_sint32>(i);
+			return i;
 		}
 	}
 
@@ -1082,7 +1082,9 @@ void XAP_App::rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog)
 	// find a free slot in the m_IdTable
  
 	UT_sint32 i;
-	for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
+	for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++) {
+
+	}
 	UT_ASSERT( i <= NUM_MODELESSID );
 	UT_ASSERT( m_IdTable[i].id == -1 );
 	UT_ASSERT( pDialog);
@@ -1095,7 +1097,9 @@ void XAP_App::forgetModelessId( UT_sint32 id )
 	// remove the id, pDialog pair from the m_IdTable
 
 	UT_sint32 i;
-	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) {
+
+	} 
 	if(i >  NUM_MODELESSID)
 	{
 //
@@ -1112,7 +1116,9 @@ bool XAP_App::isModelessRunning(UT_sint32 id)
 	// returns true if the modeless dialog given by id is running
 	
 	UT_sint32 i;
-	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) {
+
+	}
 	if( i> NUM_MODELESSID)
 	{
 		return false;
@@ -1274,7 +1280,7 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 
 void XAP_App::enumerateFrames(UT_Vector & v)
 {
-	for(UT_uint32 i = 0; i < getFrameCount(); ++i)
+	for(UT_sint32 i = 0; i < getFrameCount(); ++i)
 	{
 		XAP_Frame * pF = getFrame(i);
 		if(pF)
@@ -1302,7 +1308,7 @@ void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
 {
 	UT_sint32 iIndx;
 
-	for(UT_uint32 i = 0; i < getFrameCount(); ++i)
+	for(UT_sint32 i = 0; i < getFrameCount(); ++i)
 	{
 		XAP_Frame * pF = getFrame(i);
 
@@ -1331,7 +1337,7 @@ EV_EditEventMapper * XAP_App::getEditEventMapper(void) const
 
 UT_sint32 XAP_App::setInputMode(const char * szName, bool bForce)
 {
-	UT_uint32 i;
+	UT_sint32 i;
 	
 	UT_DEBUGMSG(("XAP_App::setInputMode: %s %d\n", szName, bForce));
 	
@@ -1467,7 +1473,7 @@ bool XAP_App::saveState(bool bQuit)
 
 	XAP_Frame * pLastFrame = getLastFocussedFrame();
 
-	UT_uint32 i;
+	UT_sint32 i;
 	UT_sint32 j;
 	
 	for(i = 0, j = 0; i < m_vecFrames.getItemCount(); ++i, ++j)

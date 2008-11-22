@@ -167,12 +167,12 @@ public:
 	bool					getUseEnvLocale(void) const;
 	void					setUseEnvLocale(bool bUse);
 
-	UT_uint32				getMaxRecent(void) const;
-	void					setMaxRecent(UT_uint32 k);
-	UT_uint32				getRecentCount(void) const;
-	const char *			getRecent(UT_uint32 k) const;		// one-based
+	UT_sint32				getMaxRecent(void) const;
+	void					setMaxRecent(UT_sint32 k);
+	UT_sint32				getRecentCount(void) const;
+	const char *			getRecent(UT_sint32 k) const;		// one-based
 	void					addRecent(const char * szRecent);
-	void					removeRecent(UT_uint32 k);			// one-based
+	void					removeRecent(UT_sint32 k);			// one-based
 	void                    setIgnoreNextRecent(void)
 		{ m_bIgnoreThisOne = true;}
 	bool                    isIgnoreRecent(void)
@@ -211,7 +211,7 @@ protected:
 	XAP_PrefsScheme *		m_currentScheme;
 	XAP_PrefsScheme *		m_builtinScheme;
 
-	UT_uint32				m_iMaxRecent;
+	UT_sint32				m_iMaxRecent;
 	UT_GenericVector<char*>	m_vecRecent;		/* vector of (char *) */
 	UT_GenericVector<UT_UTF8String *> m_vecLog; /* vector of UT_UTF8String */
 

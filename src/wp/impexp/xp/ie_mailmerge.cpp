@@ -391,7 +391,7 @@ UT_uint32 IE_MailMerge::getMergerCount(void)
 
 void IE_MailMerge::registerMerger (IE_MergeSniffer * s)
 {
-	UT_uint32 ndx = 0;
+	UT_sint32 ndx = 0;
 	UT_Error err = m_sniffers.addItem (s, &ndx);
 	
 	UT_return_if_fail(err == UT_OK);
@@ -681,7 +681,7 @@ public:
 	  UT_Error err = mergeFile(szFilename, true);
 
 	  if (err == UT_OK) {
-		for (UT_uint32 i = 0; i < m_headers.size(); i++) {
+		for (UT_sint32 i = 0; i < m_headers.size(); i++) {
 			UT_UTF8String * clone = new UT_UTF8String (*(UT_UTF8String *)m_headers[i]);
 			out_vec.addItem (clone);
 		}
@@ -708,7 +708,7 @@ private:
 				return false;
 			}
 
-			for (UT_uint32 i = 0; i < m_headers.size (); i++) {
+			for (UT_sint32 i = 0; i < m_headers.size (); i++) {
 				UT_UTF8String * key, * val;
 
 				key = m_headers.getNthItem(i);

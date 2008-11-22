@@ -60,7 +60,7 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 {
 	
 	// clean up memory
-	UT_uint32 i;
+	UT_sint32 i;
 	for (i=0; i<m_findList.getItemCount(); i++) 
 	{
 		UT_UCS4Char* string = static_cast<UT_UCS4Char*>(m_findList.getNthItem(i));
@@ -396,7 +396,7 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 bool AP_Dialog_Replace::_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCSChar* string)
 {
 	UT_UCS4String us(string);
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	bool found = false;
 	
 	UT_DEBUGMSG(("FODDEX: AP_Dialog_Replace::_manageList: called\n"));

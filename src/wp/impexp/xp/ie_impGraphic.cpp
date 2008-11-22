@@ -45,7 +45,7 @@ static std::vector<std::string> 		IE_IMP_GraphicSuffixes;
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {
-	UT_uint32 ndx = 0;
+	UT_sint32 ndx = 0;
 	UT_Error err = IE_IMP_GraphicSniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
@@ -100,7 +100,7 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedMimeTypes ()
 	}
 
 	const IE_MimeConfidence *mc;
-	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+	for (UT_sint32 i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_FULL) {
@@ -124,7 +124,7 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedMimeClasses ()
 	}
 
 	const IE_MimeConfidence *mc;
-	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+	for (UT_sint32 i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_CLASS) {
@@ -148,7 +148,7 @@ std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
 	}
 
 	const IE_SuffixConfidence *sc;
-	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+	for (UT_sint32 i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		sc = IE_IMP_GraphicSniffers.getNthItem(i)->getSuffixConfidence();
 		while (sc && !sc->suffix.empty()) {
 			IE_IMP_GraphicSuffixes.push_back(sc->suffix);
@@ -170,7 +170,7 @@ const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 	}
 
 	const IE_SuffixConfidence *sc;
-	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+	for (UT_sint32 i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		IE_ImpGraphicSniffer *sniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		sc = sniffer->getSuffixConfidence();
 		while (sc && !sc->suffix.empty()) {
@@ -402,7 +402,7 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	}
 
 	// use the importer for the specified file type
-	for (UT_uint32 k=0; (k < IE_IMP_GraphicSniffers.size()); k++)
+	for (UT_sint32 k=0; (k < IE_IMP_GraphicSniffers.size()); k++)
 	{
 		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
 		if (s->supportsType(ft))

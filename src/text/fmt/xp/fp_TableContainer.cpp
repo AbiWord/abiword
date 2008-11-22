@@ -1601,7 +1601,7 @@ bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContain
 				bFound = true;
 				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pLine->getFootnoteContainers(&vecFC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
 				{
 					pVecFoots->addItem(vecFC.getNthItem(i));
@@ -1616,7 +1616,7 @@ bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContain
 				bFound = true;
 				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pTab->getFootnoteContainers(&vecFC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
 				{
 					pVecFoots->addItem(vecFC.getNthItem(i));
@@ -1676,7 +1676,7 @@ bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCon
 				bFound = true;
 				UT_GenericVector<fp_AnnotationContainer*> vecAC;
 				pLine->getAnnotationContainers(&vecAC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecAC.getItemCount();i++)
 				{
 					pVecAnns->addItem(vecAC.getNthItem(i));
@@ -1691,7 +1691,7 @@ bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCon
 				bFound = true;
 				UT_GenericVector<fp_AnnotationContainer*> vecAC;
 				pTab->getAnnotationContainers(&vecAC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecAC.getItemCount();i++)
 				{
 					pVecAnns->addItem(vecAC.getNthItem(i));
@@ -2407,7 +2407,7 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				if(pLine->getFootnoteContainers(&vecFC))
 				{
-					UT_uint32 k  = 0;
+					UT_sint32 k  = 0;
 					for(k=0; k < vecFC.getItemCount(); k++)
 					{
 						fp_FootnoteContainer * pFC = vecFC.getNthItem(k);
@@ -2424,7 +2424,7 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 				UT_GenericVector<fp_AnnotationContainer*> vecAC;
 				if(pLine->getAnnotationContainers(&vecAC))
 				{
-					UT_uint32 k  = 0;
+					UT_sint32 k  = 0;
 					for(k=0; k < vecAC.getItemCount(); k++)
 					{
 						fp_AnnotationContainer * pAC = vecAC.getNthItem(k);
@@ -4960,7 +4960,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 									bFound = true;
 									UT_GenericVector<fp_FootnoteContainer*> vecFC;
 									pLine->getFootnoteContainers(&vecFC);
-									UT_uint32 i =0;
+									UT_sint32 i =0;
 									for(i=0; i< vecFC.getItemCount();i++)
 									{
 										pVecFoots->addItem(vecFC.getNthItem(i));
@@ -4975,7 +4975,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 									bFound = true;
 									UT_GenericVector<fp_FootnoteContainer*> vecFC;
 									pTab->getFootnoteContainers(&vecFC);
-									UT_uint32 i =0;
+									UT_sint32 i =0;
 									for(i=0; i< vecFC.getItemCount();i++)
 									{
 										pVecFoots->addItem(vecFC.getNthItem(i));
@@ -4990,7 +4990,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 				{
 					UT_GenericVector<fp_FootnoteContainer*> vecFC;
 					pCell->getFootnoteContainers(&vecFC);
-					UT_uint32 i =0;
+					UT_sint32 i =0;
 					for(i=0; i< vecFC.getItemCount();i++)
 					{
 						pVecFoots->addItem(vecFC.getNthItem(i));
@@ -5007,7 +5007,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 			{
 				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pTab->getFootnoteContainers(&vecFC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecFC.getItemCount();i++)
 				{
 					pVecFoots->addItem(vecFC.getNthItem(i));
@@ -5123,7 +5123,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
 									bFound = true;
 									UT_GenericVector<fp_AnnotationContainer*> vecAC;
 									pLine->getAnnotationContainers(&vecAC);
-									UT_uint32 i =0;
+									UT_sint32 i =0;
 									for(i=0; i< vecAC.getItemCount();i++)
 									{
 										pVecAnns->addItem(vecAC.getNthItem(i));
@@ -5138,7 +5138,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
 									bFound = true;
 									UT_GenericVector<fp_AnnotationContainer*> vecAC;
 									pTab->getAnnotationContainers(&vecAC);
-									UT_uint32 i =0;
+									UT_sint32 i =0;
 									for(i=0; i< vecAC.getItemCount();i++)
 									{
 										pVecAnns->addItem(vecAC.getNthItem(i));
@@ -5153,7 +5153,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
 				{
 					UT_GenericVector<fp_AnnotationContainer*> vecAC;
 					pCell->getAnnotationContainers(&vecAC);
-					UT_uint32 i =0;
+					UT_sint32 i =0;
 					for(i=0; i< vecAC.getItemCount();i++)
 					{
 						pVecAnns->addItem(vecAC.getNthItem(i));
@@ -5170,7 +5170,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
 			{
 				UT_GenericVector<fp_AnnotationContainer*> vecAC;
 				pTab->getAnnotationContainers(&vecAC);
-				UT_uint32 i =0;
+				UT_sint32 i =0;
 				for(i=0; i< vecAC.getItemCount();i++)
 				{
 					pVecAnns->addItem(vecAC.getNthItem(i));

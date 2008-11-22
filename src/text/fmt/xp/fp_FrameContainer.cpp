@@ -87,7 +87,7 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 		UT_GenericVector<fl_ContainerLayout *> AllLayouts;
 		AllLayouts.clear();
 		m_pPage->getAllLayouts(AllLayouts);
-		UT_uint32 i = 0;
+		UT_sint32 i = 0;
 		for(i=0; i<AllLayouts.getItemCount(); i++)
 		{
 		      fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);

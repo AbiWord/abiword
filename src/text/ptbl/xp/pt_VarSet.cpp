@@ -473,7 +473,7 @@ bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	// return false if we have any errors.
 
 	UT_return_val_if_fail (pAP && papi, false);
-	UT_uint32 subscript = 0;
+	UT_sint32 subscript = 0;
 	UT_uint32 table = 0;
 
 	for (table=0; table<2; table++)

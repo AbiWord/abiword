@@ -771,7 +771,7 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * tit
  */
 GtkWidget * abiGtkMenuFromCStrVector(const UT_GenericVector<const char*> & vec, GCallback cb, gpointer data)
 {
-	UT_uint32 i;
+	UT_sint32 i;
 	GtkWidget * menu = gtk_menu_new();
 	
 	for (i = 0; i < vec.getItemCount(); i++) {

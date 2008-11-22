@@ -1238,21 +1238,21 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 
 		if (other.m_tabStops.getItemCount() > 0)
 		{
-			for (UT_uint32 i = 0; i < other.m_tabStops.getItemCount(); i++)
+			for (UT_sint32 i = 0; i < other.m_tabStops.getItemCount(); i++)
 			{
 				m_tabStops.addItem(other.m_tabStops.getNthItem(i));
 			}
 		}
 		if (other.m_tabTypes.getItemCount() > 0)
 		{
-			for (UT_uint32 i = 0; i < other.m_tabTypes.getItemCount(); i++)
+			for (UT_sint32 i = 0; i < other.m_tabTypes.getItemCount(); i++)
 			{
 				m_tabTypes.addItem(other.m_tabTypes.getNthItem(i));
 			}
 		}
 		if (other.m_tabLeader.getItemCount() > 0)
 		{
-			for (UT_uint32 i = 0; i < other.m_tabLeader.getItemCount(); i++)
+			for (UT_sint32 i = 0; i < other.m_tabLeader.getItemCount(); i++)
 			{
 				m_tabLeader.addItem(other.m_tabLeader.getNthItem(i));
 			}
@@ -1917,7 +1917,7 @@ void IE_Imp_RTF::HandleCell(void)
 		UT_GenericVector<ie_imp_cell *> vecCopyCells;
 		UT_sint32 row = getTable()->getRow();
 		getTable()->getVecOfCellsOnRow(row-1, &vecOldCells);
-		UT_uint32 i =0;
+		UT_sint32 i =0;
 		for(i=0; i< vecOldCells.getItemCount();i++)
 		{
 			ie_imp_cell * pCell = vecOldCells.getNthItem(i);
@@ -2710,7 +2710,7 @@ bool IE_Imp_RTF::HandleParKeyword()
 		const gchar * pStyle = NULL;
 		
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 		{
 			pStyle = static_cast<const char *>
 				(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
@@ -2955,7 +2955,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 
 
 // Get a font out of the font table, making sure we dont attempt to access off the end
-RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_uint32 fontNum)
+RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_sint32 fontNum)
 {
 	if (fontNum < m_fontTable.getItemCount())
 	{
@@ -2969,7 +2969,7 @@ RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_uint32 fontNum)
 
 
 // Get a colour out of the colour table, making sure we dont attempt to access off the end
-UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_uint32 colNum)
+UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_sint32 colNum)
 {
 	if (colNum < m_colourTable.getItemCount())
 	{
@@ -2981,7 +2981,7 @@ UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_uint32 colNum)
 	}
 }
 
-UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_uint32 colNum)
+UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_sint32 colNum)
 {
 	if (colNum < m_colourTable.getItemCount())
 	{
@@ -6000,7 +6000,7 @@ bool IE_Imp_RTF::_appendSpan()
 	propsArray[1] = prop_basic.c_str();
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 	{
 		propsArray[2] = pStyle;
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
@@ -6237,7 +6237,7 @@ bool IE_Imp_RTF::_insertSpan()
 	UT_uint32 iLen = m_gbBlock.getLength();
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 	{
 		propsArray[2] = pStyle;
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
@@ -6467,7 +6467,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		UT_uint32 iPos = 2;
 
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 		{
 			propsArray[iPos++] = pStyle;
 			propsArray[iPos++] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
@@ -6762,7 +6762,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		UT_ASSERT_HARMLESS(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
 					m_currentRTFState.m_paraProps.m_tabLeader.getItemCount() );
 		propBuffer += "tabstops:";
-		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
 		{
 			if (i > 0)
 				propBuffer += ",";
@@ -7130,7 +7130,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		propBuffer += tempBuffer;
 	}
 	// Style name
-	if( static_cast<UT_uint32>(m_currentRTFState.m_paraProps.m_styleNumber) < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
+	if( m_currentRTFState.m_paraProps.m_styleNumber < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
 	{
 		UT_uint32 styleNumber = m_currentRTFState.m_paraProps.m_styleNumber;
 		const char * styleName = static_cast<const char *>(m_styleTable[styleNumber]);
@@ -8364,7 +8364,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 RTF_msword97_listOverride*
 IE_Imp_RTF::_getTableListOverride(UT_uint32 id)
 {
-	UT_uint32 i;
+	UT_sint32 i;
 	RTF_msword97_listOverride* pLOver;
 
 	for (i = 0; i < m_vecWord97ListOverride.size(); i++)
@@ -10739,7 +10739,7 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 	const gchar * pStyle = NULL;
     const gchar * pStyleName = NULL;
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 	{
 		pStyle = PT_STYLE_ATTRIBUTE_NAME;
 		pStyleName = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];

@@ -107,7 +107,7 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	XAP_Module* pModuleLoop = 0;
 	const UT_GenericVector<class XAP_Module *> *pVec = enumModules();
 	
-	for (UT_uint32 i = 0; i < pVec->size(); i++)
+	for (UT_sint32 i = 0; i < pVec->size(); i++)
 	{
 		pModuleLoop = (XAP_Module *)pVec->getNthItem (i);
 
@@ -324,7 +324,7 @@ void XAP_ModuleManager::unloadAllPlugins ()
 	 * Note: can no longer assume that XAP_ModuleManager::unloadModule()
 	 *       will unload only one module.
 	 */
-	while (UT_uint32 count = m_modules->getItemCount ())
+	while (UT_sint32 count = m_modules->getItemCount ())
 	{
 		unloadModule (count - 1);
 

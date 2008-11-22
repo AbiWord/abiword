@@ -3010,11 +3010,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 		myListId += m_iListIdIncrement[apap->ilvl];
 
 		// see if this id is already in our map
-		for(j = 0; j < m_vListIdMap.getItemCount(); j+=2)
+		UT_sint32 k;
+		for(k = 0; k < m_vListIdMap.getItemCount(); k+=2)
 		{
-			if((UT_uint32)m_vListIdMap.getNthItem(j) == myListId)
+			if((UT_uint32)m_vListIdMap.getNthItem(k) == myListId)
 			{
-				iAWListId = m_vListIdMap.getNthItem(j+1);
+				iAWListId = m_vListIdMap.getNthItem(k+1);
 				break;
 			}
 		}
@@ -4575,11 +4576,11 @@ bool IE_Imp_MsWord_97::_build_ColumnWidths(UT_NumberVector & colWidths)
 //
 // Look to see if we're finished now.
 //
-	if((colWidths.size() == static_cast<UT_uint32>(iMaxRight)) && _isVectorFull(colWidths))
+	if((colWidths.size() == iMaxRight) && _isVectorFull(colWidths))
 	{
 		return true;
 	}
-	if(colWidths.size() < static_cast<UT_uint32>(iMaxRight))
+	if(colWidths.size() < iMaxRight)
 	{
 		setNumberVector(colWidths,iMaxRight -1,0);
 	}
@@ -4710,7 +4711,7 @@ bool IE_Imp_MsWord_97::findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight)
  */
 bool IE_Imp_MsWord_97::_isVectorFull(UT_NumberVector & vec)
 {
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i=0;i< vec.size() ; i++)
 	{
 		xxx_UT_DEBUGMSG(("isVectorFull i %d val %d \n",i,vec[i]));
@@ -4741,7 +4742,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct * /*ps*/, const PAP *ap
 	  if(_build_ColumnWidths(colWidths))
 	  {
 
-		  for (UT_uint32 i = 0; i < colWidths.size(); i++) 
+		  for (UT_sint32 i = 0; i < colWidths.size(); i++) 
 		  {
 			  UT_String_sprintf(propBuffer,"%s/",
 							UT_convertInchesToDimensionString(m_dim,
@@ -5826,7 +5827,7 @@ void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 
 	bool bTextboxError = false;
 	m_iTextboxCount = 0;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	if(ps->fib.ccpTxbx > 0)
 	{
 		m_iTextboxCount = ps->nooffspa;
@@ -6564,7 +6565,7 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const gchar ** attrib
 	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr %d\n",pts,m_iCurrentHeader));
 	UT_ASSERT(m_bInSect);
 	bool bRet = true;
-	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
@@ -6593,7 +6594,7 @@ bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const gchar ** attr
 
 	bool bRet = true;
 	
-	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
@@ -6619,7 +6620,7 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 
 	bool bRet = true;
 	
-	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
@@ -6923,7 +6924,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 					
 		// now we insert the same for any derivative headers
 		// ...
-		for (UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
 		{
 			header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
 			UT_return_val_if_fail(pH, true);

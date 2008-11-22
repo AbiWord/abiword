@@ -82,7 +82,7 @@
 			};
 		void insertItemAt(void * p, XAP_Menu_Id id)
 			{
-				UT_uint32 i = 0;
+				UT_sint32 i = 0;
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
@@ -104,7 +104,7 @@
 			};
 		void insertItemBefore(void * p, XAP_Menu_Id id)
 			{
-				UT_uint32 i = 0;
+				UT_sint32 i = 0;
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
@@ -126,7 +126,7 @@
 			};
 		void removeItem(XAP_Menu_Id id)
 			{
-				UT_uint32 i = 0;
+				UT_sint32 i = 0;
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount(); i++)
 				{
@@ -262,7 +262,8 @@ XAP_Menu_Id XAP_Menu_Factory::getNewID(void)
 		m_maxID++;
 		return m_maxID;
 	}
-	UT_uint32 i,j =0;
+	UT_sint32 i =0;
+	UT_uint32 j =0;
 	for(i=0; i < m_vecTT.getItemCount(); i++)
 	{
 		_vectt * pTT = (_vectt *) m_vecTT.getNthItem(i);
@@ -286,7 +287,7 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 {
 	UT_return_val_if_fail (szName && *szName, NULL);		// no defaults
 
-	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
+	for (UT_sint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
 		_vectt * pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
@@ -314,7 +315,7 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 {
 
-	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
+	for (UT_sint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
 		_vectt * pVectt = (_vectt *) m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
@@ -335,7 +336,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
@@ -375,7 +376,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 											  XAP_Menu_Id newID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
@@ -433,7 +434,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
@@ -479,7 +480,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
@@ -553,7 +554,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 							  XAP_Menu_Id nukeID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
@@ -581,7 +582,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 											 const char * szNuke)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
-	UT_uint32 k = 0;
+	UT_sint32 k = 0;
 	bool bFoundMenu = false;
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)

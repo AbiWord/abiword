@@ -121,7 +121,7 @@ void AP_UnixDialog_CollaborationAddBuddy::_populateWindowData()
 	GtkTreeIter iter;
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
-	for (UT_uint32 i = 0; i < pManager->getAccounts().size(); i++)
+	for (UT_sint32 i = 0; i < pManager->getAccounts().size(); i++)
 	{
 		AccountHandler* pHandler = pManager->getAccounts().getNthItem(i);
 		if (pHandler && pHandler->allowsManualBuddies())

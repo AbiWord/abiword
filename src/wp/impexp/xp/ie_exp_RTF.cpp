@@ -1040,7 +1040,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_semi();
 		_rtf_close_brace();
 		
-		for(UT_uint32 i = 0; i < Revs.getItemCount(); ++i)
+		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
 		{
 			AD_Revision* pRev = Revs.getNthItem(i);
 			UT_continue_if_fail(pRev);
@@ -2320,7 +2320,7 @@ void IE_Exp_RTF::_write_stylesheets(void)
  */
 void IE_Exp_RTF::_write_listtable(void)
 {
-	UT_uint32 iCount = getDoc()->getListsCount();
+	UT_sint32 iCount = getDoc()->getListsCount();
     if (iCount == 0) return;
 //
 // Openning RTF comments for the listtable
@@ -2333,7 +2333,7 @@ void IE_Exp_RTF::_write_listtable(void)
 // OK scan the lists in the document to build up the list info.
 // The first loop just builds a vector of parentless lists.
 //
-	UT_uint32 i,j,k =0;
+	UT_sint32 i,j =0;
 	bool bFoundChild = false;
 	fl_AutoNum * pAuto = NULL;
 	fl_AutoNum * pInner = NULL;
@@ -2369,6 +2369,7 @@ void IE_Exp_RTF::_write_listtable(void)
 // OK now fill the MultiLevel list structure.
 //
 
+	UT_sint32 k;
 	for(k=0; k < m_vecMultiLevel.getItemCount(); k++)
 	{
 		pList97 = (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(k);
@@ -2436,18 +2437,18 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 // MultiLevel lists
 //
-	for(i=0; i< m_vecMultiLevel.getItemCount(); i++)
+	for(k=0; k< m_vecMultiLevel.getItemCount(); k++)
 	{
 		_rtf_nl();
-		_output_MultiLevelRTF(getNthMultiLevel(i));
+		_output_MultiLevelRTF(getNthMultiLevel(k));
 	}
 //
 // Simple Lists
 //
-	for(i=0; i< m_vecSimpleList.getItemCount(); i++)
+	for(k=0; k< m_vecSimpleList.getItemCount(); k++)
 	{
 		_rtf_nl();
-		_output_SimpleListRTF(getNthSimple(i));
+		_output_SimpleListRTF(getNthSimple(k));
 	}
 //
 // \*\listtable is done now!
@@ -3352,7 +3353,8 @@ ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32
  */
 UT_uint32 ie_exp_RTF_MsWord97ListMulti::getMatchingID(UT_uint32 listID)
 {
-	UT_uint32 i,j;
+	UT_uint32 i;
+	UT_sint32 j;
 	ie_exp_RTF_MsWord97List * pList97 = NULL;
 	bool bFound = false;
 	UT_uint32 foundID = 0;

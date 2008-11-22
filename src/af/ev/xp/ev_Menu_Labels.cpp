@@ -82,7 +82,7 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet):
 	m_stLanguage = pLabelSet->getLanguage();
 	m_first = pLabelSet->getFirst();
 	const UT_GenericVector<EV_Menu_Label *> * vecLabels = pLabelSet->getAllLabels();
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i=0; i< vecLabels->getItemCount(); i++)
 	{
 	    const EV_Menu_Label * pEvl = vecLabels->getNthItem(i);

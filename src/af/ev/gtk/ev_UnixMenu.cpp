@@ -677,7 +677,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	UT_sint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
@@ -689,7 +689,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	
 	gint nPositionInThisMenu = -1;
 	
-	for (UT_uint32 k = 0; k < nrLabelItemsInLayout; ++k)
+	for (UT_sint32 k = 0; k < nrLabelItemsInLayout; ++k)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();

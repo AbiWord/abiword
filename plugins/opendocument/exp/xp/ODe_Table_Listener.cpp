@@ -180,7 +180,7 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
  * 
  */
 void ODe_Table_Listener::closeTable(ODe_ListenerAction& rAction) {
-    UT_uint32 i;
+    UT_sint32 i;
     UT_UTF8String output;
     
     _buildTable();
@@ -294,7 +294,7 @@ void ODe_Table_Listener::openCell(const PP_AttrProp* pAP,
  */
 void ODe_Table_Listener::_buildTable() {
     
-    UT_uint32 i, j;
+    UT_sint32 i, j;
     ODe_Table_Cell* pCell;
     
     UT_return_if_fail(m_numRows > 0);

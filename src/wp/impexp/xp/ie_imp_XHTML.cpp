@@ -2238,7 +2238,7 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<const gchar*>* pVecAttribute
 		{
 			const gchar * attributes[3] = {"props",NULL,NULL};
 			UT_String sPropString("");
-			UT_uint32 i = 0;
+			UT_sint32 i = 0;
 			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
 				{
 					UT_String sProp = pVecAttributes->getNthItem(i);
