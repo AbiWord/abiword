@@ -60,7 +60,6 @@
 #define AP_RID_DIALOG_OPTIONS_LBL_UNITS 				1302
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1303
 #define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1305
-#define AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars	1306
 #define AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins		1308
 #define AP_RID_DIALOG_OPTIONS_STATIC_UI					1309
 #define AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP			1310
@@ -146,9 +145,6 @@ BEGIN
                     15,70,90,14
     LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_UI,7,15,
                     127,8    
-    CONTROL         "Allow Custom Toolbars",
-                    AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,31,175,10
     LTEXT           "Application Startup",
                     AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,98,127,8
     CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,

@@ -218,11 +218,6 @@ public:
 	typedef enum {BIDI_SUPPORT_NONE, BIDI_SUPPORT_GUI, BIDI_SUPPORT_FULL} BidiSupportType;
 	
 	virtual BidiSupportType				theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
-	bool						areToolbarsCustomizable(void) const { return m_bAllowCustomizing; }
-	bool						areToolbarsCustomized(void) const { return m_bAreCustomized; }
-	void						resetToolbarsToDefault(void);
-	void						setToolbarsCustomizable(bool b);
-	void						setToolbarsCustomized(bool b);
 	void						setEnableSmoothScrolling(bool b);
 	bool						isSmoothScrollingEnabled(void) { return m_bEnableSmoothScrolling; }
 

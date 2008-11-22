@@ -333,23 +333,6 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	m_pDict->load();
 	clearIdTable();
 //
-// Reload toolbar configuration from prefs
-//
-	bool bAllowCustom = true;
-	getPrefsValueBool(XAP_PREF_KEY_AllowCustomToolbars, &bAllowCustom);
-	if(bAllowCustom)
-		setToolbarsCustomizable(true);
-	else
-	{
-		setToolbarsCustomizable(false);
-		setToolbarsCustomized(false);
-	}
-	m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
-	if(!bAllowCustom)
-	{
-		m_pToolbarFactory->resetAllToolbarsToDefault();
-	}
-//
 // Set Smooth Scrolling
 //
 	bool bEnableSmooth = true;
@@ -531,51 +514,9 @@ bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint, void * 
 }
 
 
-void XAP_App::resetToolbarsToDefault(void)
-{
-	//
-	// Set all the frames to default toolbars
-	//
-	m_pToolbarFactory->resetAllToolbarsToDefault();
-	UT_uint32 count = m_vecFrames.getItemCount();
-	UT_GenericVector<XAP_Frame*> vClones;
-	UT_uint32 i = 0;
-	for(i=0; i< count; i++)
-	{
-		XAP_Frame * pFrame = m_vecFrames.getNthItem(i);
-		if(pFrame->getViewNumber() > 0)
-		{
-			getClones(&vClones,pFrame);
-			UT_sint32 j=0;
-			for(j=0; j < vClones.getItemCount(); j++)
-			{
-				XAP_Frame * f = vClones.getNthItem(j);
-				f->rebuildAllToolbars();
-			}
-		}
-		else
-		{
-			pFrame->rebuildAllToolbars();
-		}
-	}
-	setToolbarsCustomized (true);
-}
-
 void XAP_App::setEnableSmoothScrolling(bool b)
 {
 	m_bEnableSmoothScrolling = b;
-}
-
-void XAP_App::setToolbarsCustomizable(bool b)
-{
-	if(m_bAllowCustomizing != b)
-		m_bAllowCustomizing = b;
-}
-
-void XAP_App::setToolbarsCustomized(bool b)
-{
-	if(m_bAreCustomized != b)
-		m_bAreCustomized = b;
 }
 
 const char * XAP_App::getApplicationTitleForTitleBar() const

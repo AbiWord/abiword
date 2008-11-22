@@ -9852,13 +9852,6 @@ Defun(lockToolbarLayout)
 
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	bool b;
-
-	b = pApp->areToolbarsCustomizable();
-
-	pApp->setToolbarsCustomizable (!b);
-
-	pScheme->setValueBool(static_cast<const gchar *>(XAP_PREF_KEY_AllowCustomToolbars), !b);
 
 	return true;
 }
@@ -9878,9 +9871,6 @@ UT_return_val_if_fail(pFrameData, false);
 	// don't do anything if fullscreen
 	if (pFrameData->m_bIsFullScreen)
 	  return false;
-
-	pApp->resetToolbarsToDefault();
-	pApp->setToolbarsCustomized(false);
 
 	// we don't want to change their visibility, just the layout
 	pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);

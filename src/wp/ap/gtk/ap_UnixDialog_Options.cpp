@@ -316,10 +316,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     tmp = WID ( "lblUserInterface" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI );
 
-    m_checkbuttonAllowCustomToolbars = WID ( "chkCustomToolbars" );
-    localizeButtonUnderline ( m_checkbuttonAllowCustomToolbars, pSS,
-                              AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars );
-
     tmp = WID ( "lblUnits" );
     localizeLabelUnderline ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_ViewUnits );
 
@@ -453,15 +449,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     _setupSmartQuotesCombos(m_omInnerQuoteStyle);
 
     //////////////////////////////////////////////////////////////////
-
-//
-// Have to reset the toolbar is the result of a toggle is to turn off
-// custom toolbars
-//
-    g_signal_connect ( G_OBJECT ( m_checkbuttonAllowCustomToolbars ),
-                       "toggled",
-                       G_CALLBACK ( s_toolbars_toggled ),
-                       static_cast<gpointer> ( this ) );
 
     // to enable/disable other controls (hide errors)
     g_signal_connect ( G_OBJECT ( m_checkbuttonSpellCheckAsType ),
@@ -632,9 +619,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
             // view
         case id_LIST_VIEW_RULER_UNITS:
             return m_menuUnits;
-
-        case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
-            return m_checkbuttonAllowCustomToolbars;
 
         case id_CHECK_AUTO_LOAD_PLUGINS:
             return m_checkbuttonAutoLoadPlugins;
@@ -850,7 +834,7 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, cons
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-void    AP_UnixDialog_Options::_setViewRulerUnits ( UT_Dimension dim )
+void AP_UnixDialog_Options::_setViewRulerUnits ( UT_Dimension dim )
 {
     UT_ASSERT ( m_menuUnits && GTK_IS_OPTION_MENU ( m_menuUnits ) );
 
@@ -882,7 +866,6 @@ void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
     }
 }
 
-DEFINE_GET_SET_BOOL ( AllowCustomToolbars )
 DEFINE_GET_SET_BOOL ( AutoLoadPlugins )
 
 #undef DEFINE_GET_SET_BOOL
@@ -893,33 +876,10 @@ int AP_UnixDialog_Options::_gatherNotebookPageNum ( void )
     return gtk_notebook_get_current_page ( GTK_NOTEBOOK ( m_notebook ) );
 }
 
-void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
+void AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 {
     UT_ASSERT ( m_notebook && GTK_IS_NOTEBOOK ( m_notebook ) );
     gtk_notebook_set_current_page ( GTK_NOTEBOOK ( m_notebook ), pn );
-}
-
-/*****************************************************************/
-//
-// Reset custom toolbars
-//
-/* static */ void AP_UnixDialog_Options::s_toolbars_toggled ( GtkWidget * widget, gpointer data )
-{
-    AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
-    UT_ASSERT ( widget && dlg );
-    if ( dlg->isInitialPopulationHappenning() )
-    {
-        return;
-    }
-
-//
-// If the toolbar preference is now off, reset to default.
-//
-    if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON ( widget ) ) == FALSE )
-    {
-        XAP_App * pApp = XAP_App::getApp();
-        pApp->resetToolbarsToDefault();
-    }
 }
 
 /*static*/ void AP_UnixDialog_Options::s_defaults_clicked ( GtkWidget *widget, gpointer data )
@@ -960,8 +920,8 @@ void    AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
 }
 
 
-// these function will allow multiple widget to tie into the same logic
-// function (at the AP level) to enable/disable stuff
+// These functions will allow multiple widgets to tie into the
+// same logic functions (at the AP level) to enable/disable stuff.
 /*static*/ void AP_UnixDialog_Options::s_checkbutton_toggle ( GtkWidget *w, gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );

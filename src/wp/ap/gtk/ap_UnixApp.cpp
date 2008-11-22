@@ -414,14 +414,6 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 */
 bool AP_UnixApp::shutdown(void)
 {
-// Save our toolbars if we're customizable
-// feature is off, the GtkToolItem based toolbars don't support that
-#if 0
-	if(areToolbarsCustomizable())
-	{
-		m_pToolbarFactory->saveToolbarsInCurrentScheme();
-	}
-#endif
 	if(!isBonoboRunning())
 	{
 		if (m_prefs->getAutoSavePrefs())

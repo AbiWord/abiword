@@ -108,8 +108,6 @@ void AP_Win32Dialog_Options::_initEnableControlsPlatformSpecific()
 {
 	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD, true); 
 	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
-	//TODO: remove the following line when Windows has support for custom toolbars (Bug 1717)
-	EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars),false);
 }
 
 
@@ -218,15 +216,9 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
 			return;
 
-		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
-			//TODO: enable this when Windows has support for custom toolbars (Bug 1717)
-			//EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars),value);
-			return;			
-		
 		case id_CHECK_AUTO_LOAD_PLUGINS:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins),value);
 			return;
-
 
 		case id_CHECK_AUTO_SAVE_FILE:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_DOCUMENT),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile),value);
@@ -235,8 +227,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_DOCUMENT),AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl),value);
 			return;			
-			
-
 				
 		case id_CHECK_SPELL_CHECK_AS_TYPE:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_SPELL),AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType),value);
@@ -307,7 +297,6 @@ void	AP_Win32Dialog_Options::_set##Bool(bool b) { 		\
 }
 
 DEFINE_GET_SET_BOOL(PG_GENERAL,LanguageWithKeyboard)
-DEFINE_GET_SET_BOOL(PG_GENERAL,AllowCustomToolbars)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AutoLoadPlugins)
 
 DEFINE_GET_SET_BOOL(PG_DOCUMENT,OtherDirectionRtl)
@@ -720,7 +709,6 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	// localize controls	
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
-	_DS2(OPTIONS_CHK_AllowCustomToolbars,	DLG_Options_Label_CheckAllowCustomToolbars);
 	_DS2(OPTIONS_CHK_AutoLoadPlugins,		DLG_Options_Label_CheckAutoLoadPlugins);
 	_DS2(OPTIONS_STATIC_UI,					DLG_Options_Label_UI);
 	_DS2(OPTIONS_STATIC_APPSTARTUP,			DLG_Options_Label_AppStartup);

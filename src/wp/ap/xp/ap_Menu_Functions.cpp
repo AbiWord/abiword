@@ -1172,14 +1172,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_LOCK_TB_LAYOUT:
-		if ( !pApp->areToolbarsCustomizable() )
-			s = EV_MIS_Toggled;
-		else
-			s = EV_MIS_ZERO;
+		s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT:
-		if ( !pApp->areToolbarsCustomizable() || !pApp->areToolbarsCustomized() )
-			s = EV_MIS_Gray;
+		s = EV_MIS_Gray;
 		break;
 	case AP_MENU_ID_VIEW_STATUSBAR:
               if ( pFrameData->m_bShowStatusBar &&

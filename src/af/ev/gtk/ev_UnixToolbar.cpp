@@ -396,15 +396,6 @@ public:									// we create...
 		pFrame->dragDropToTB(wdSrc->m_id,pTBsrc,pTBdest);
 	};
 
-	static void s_drag_end(GtkWidget  *widget,
-						   GdkDragContext     */*context*/)
-	{
-		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
-
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		pFrame->dragEnd(wd->m_id);
-	};
-
 	/*!
 	 * Only accept numeric input in the toolbar's font size combo.
 	 */
@@ -866,17 +857,6 @@ bool EV_UnixToolbar::synthesize(void)
 	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
-//
-// Make the toolbar a destination for drops
-//
-	gtk_drag_dest_set(m_wToolbar,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
-					  s_AbiTBTargets,1,
-					  GDK_ACTION_COPY);
-	g_signal_connect(G_OBJECT(m_wToolbar),"drag_drop",G_CALLBACK(_wd::s_drag_drop_toolbar),this);
-#endif 
-
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
@@ -954,7 +934,6 @@ bool EV_UnixToolbar::synthesize(void)
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
-				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
 #endif				
 			}
 			break;
@@ -998,7 +977,6 @@ bool EV_UnixToolbar::synthesize(void)
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
-				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
 				}
 				break;
 

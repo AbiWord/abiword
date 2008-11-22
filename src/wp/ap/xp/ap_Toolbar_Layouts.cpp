@@ -504,69 +504,6 @@ bool  XAP_Toolbar_Factory::removeIcon(const char * szName,
 	return true;
 }
 
-bool XAP_Toolbar_Factory::resetAllToolbarsToDefault(void)
-{
-	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
-	UT_uint32 i = 0;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
-	for (i=0; i < count; i++)
-	{
-		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
-		const char * szCurName =  pVec->getToolbarName();
-		resetToolbarToDefault(szCurName);
-	}
-	return true;
-}
-			
-bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
-{
-	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
-	UT_uint32 i = 0;
-	bool bFound = false;
-	const char * szCurName = NULL;
-	XAP_Toolbar_Factory_vec * pVec = NULL;
-	for (i=0; !bFound && (i < count); i++)
-	{
-		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
-		szCurName =  g_strdup(pVec->getToolbarName());
-		if (g_ascii_strcasecmp(szName,szCurName)==0)
-		{
-			bFound = true;
-			break;
-		}
-		else
-		{
-			FREEP( szCurName );
-		}
-	}
-	UT_ASSERT_HARMLESS(bFound);
-	if(!bFound)
-	{
-		return false;
-	}
-	DELETEP(pVec);
-	UT_uint32 j = 0;
-	count = G_N_ELEMENTS(s_ttTable);
-	bFound = false;
-	for(j=0; !bFound &&( j < count); j++)
-	{
-		if(g_ascii_strcasecmp(szCurName,s_ttTable[j].m_name)== 0)
-		{
-			bFound = true;
-			break;
-		}
-	}
-	FREEP(szCurName);
-	UT_ASSERT_HARMLESS(bFound);
-	if(!bFound)
-	{
-		return false;
-	}
-	pVec = new XAP_Toolbar_Factory_vec(&s_ttTable[j]);
-	m_vecTT.setNthItem(i, (void *) pVec, NULL);
-	return true;
-}
-
 /*!
  * This method saves the current toolbar layouts in the current preference
  * scheme. There are 3 generic keys.

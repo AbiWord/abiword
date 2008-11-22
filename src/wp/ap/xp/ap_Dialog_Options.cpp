@@ -134,7 +134,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 #endif
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
 #if defined(TOOLKIT_GTK)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling, _gatherEnableSmoothScrolling() );
 #endif
@@ -213,11 +212,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pView->setShowPara(pFrameData->m_bShowPara);
 	}
 
-
-	if ( _gatherAllowCustomToolbars() != XAP_App::getApp()->areToolbarsCustomizable() )
-	{
-		XAP_App::getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
-	}
 #if defined(TOOLKIT_GTK)
 	if ( _gatherEnableSmoothScrolling() != XAP_App::getApp()->isSmoothScrollingEnabled() )
 	{
@@ -388,11 +382,6 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherViewUnprintable());
 			break;
 
-		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
-			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
-					_gatherAllowCustomToolbars());
-			break;
-
 		case id_CHECK_ENABLE_SMOOTH_SCROLLING:
 #if defined(TOOLKIT_GTK)
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling,
@@ -541,9 +530,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((gchar*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
-
-	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_AllowCustomToolbars,&b))
-		_setAllowCustomToolbars(b);
 
 #if defined(TOOLKIT_GTK)
 	if (pPrefs->getPrefsValueBool((gchar*)XAP_PREF_KEY_EnableSmoothScrolling,&b))

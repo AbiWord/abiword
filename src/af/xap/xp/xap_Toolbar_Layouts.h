@@ -91,8 +91,6 @@ public:
 								  XAP_Toolbar_Id newId);
     bool             removeIcon(const char * szName,
 									XAP_Toolbar_Id nukeId);
-	bool             resetToolbarToDefault(const char * szName);
-	bool             resetAllToolbarsToDefault(void);
     bool             saveToolbarsInCurrentScheme(void);
     bool             restoreToolbarsFromCurrentScheme(void);
 	const UT_Vector & 	getToolbarNames(void);

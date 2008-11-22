@@ -200,7 +200,6 @@ public:
 	SET_GATHER			(SpellNumbers,		bool );
 	SET_GATHER			(GrammarCheck,		bool); 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
-	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
 	SET_GATHER			(OtherDirectionRtl, bool );
 	SET_GATHER			(AutoSaveFile, bool);

@@ -457,13 +457,6 @@ XAP_Frame * AP_CocoaApp::newFrame(void)
 */
 bool AP_CocoaApp::shutdown(void)
 {
-//
-// Save our toolbars if we're customizable
-//
-	if(areToolbarsCustomizable())
-	{
-		m_pToolbarFactory->saveToolbarsInCurrentScheme();
-	}
     if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 

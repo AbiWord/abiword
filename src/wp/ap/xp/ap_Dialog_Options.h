@@ -80,7 +80,6 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 
-				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
 				   id_CHECK_ENABLE_SMOOTH_SCROLLING,
 				   id_CHECK_AUTO_LOAD_PLUGINS,
 				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
@@ -158,7 +157,6 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(ViewAll,			bool);
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
-	SET_GATHER			(AllowCustomToolbars, bool);
 #if defined(TOOLKIT_GTK)
 	SET_GATHER			(EnableSmoothScrolling, bool);
 #endif

@@ -66,7 +66,6 @@ public:
 
 		// User Interface
 
-		SET_GATHER (AllowCustomToolbars, bool);
 		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
 
 	// not implemented
@@ -74,6 +73,7 @@ public:
 	virtual void _setViewCursorBlink(const bool) {}
 
 		// Application Startup
+
 		SET_GATHER (AutoLoadPlugins,	 bool);
 
 	// Documents
@@ -153,7 +153,6 @@ public:
 
 		// User Interface
 
-		GtkWidget *m_checkbuttonAllowCustomToolbars;
 		GtkWidget *m_pushbuttonNewTransparentColor;
 		GtkWidget *m_menuUnits;
 
@@ -217,7 +216,6 @@ public:
 private:
 	// Unix call back handlers
 	static void s_control_changed	     (GtkWidget *,	   gpointer);
-	static void s_toolbars_toggled	     (GtkWidget *,	   gpointer);
 	static void s_apply_clicked	     (GtkWidget *,         gpointer);
 	static void s_defaults_clicked	     (GtkWidget *,         gpointer);
 	static void s_chooseTransparentColor (GtkWidget *,         gpointer);
