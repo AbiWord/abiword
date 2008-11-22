@@ -109,7 +109,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_decompress.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_crc32.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_uuid.$(OBJ_SUFFIX)			\
