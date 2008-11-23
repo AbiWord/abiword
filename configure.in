@@ -403,12 +403,12 @@ fi
 #
 # Compiler settings (from gnumeric's configure.in)
 #
-
+# TODO enable -Wshadow
 AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-		      -Wunused -Wpointer-arith -Wshadow ; do
+		      -Wunused -Wpointer-arith ; do
 		SAVE_CXXFLAGS="$CXXFLAGS"
 		CXXFLAGS="$CXXFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
