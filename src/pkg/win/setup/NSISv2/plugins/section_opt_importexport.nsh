@@ -59,6 +59,22 @@ SectionEnd
 !macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  office open xml
+Section "$(TITLE_section_impexpplugins_openxml)" section_impexpplugins_officeopenxml
+	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
+	SetOutPath $INSTDIR\${PRODUCT}\plugins
+	File "..\plugins\abiopenxml.dll"
+SectionEnd
+
+!macro Remove_${section_impexpplugins_officeopenxml}
+	;Removes this component
+	DetailPrint "*** Removing or skipping install of import/export plugin: office open xml ..."
+
+	; remove plugin and related files
+	Delete "$INSTDIR\${PRODUCT}\plugins\abiopenxml.dll"
+!macroend
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  opendocument
 Section "$(TITLE_section_impexpplugins_opendocument)" section_impexpplugins_opendocument
 	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
@@ -176,22 +192,6 @@ SubSectionEnd ; both import/export
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Import Only
 SubSection /e "$(TITLE_ssection_loadplugins)" ssection_loadplugins
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;  openxml
-Section "$(TITLE_section_impexpplugins_openxml)" section_impexpplugins_openxml
-	SectionIn ${TYPICALSECT} ${FULLASSOCSECT} ${FULLSECT} ${DLSECT} ; Typical, Full w/ assoc, Full, Full w/ downloads
-	SetOutPath $INSTDIR\${PRODUCT}\plugins
-	File "..\plugins\abiopenxml.dll"
-SectionEnd
-
-!macro Remove_${section_impexpplugins_openxml}
-	;Removes this component
-	DetailPrint "*** Removing or skipping install of import/export plugin: openxml ..."
-
-	; remove plugin and related files
-	Delete "$INSTDIR\${PRODUCT}\plugins\abiopenxml.dll"
-!macroend
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  mswrite

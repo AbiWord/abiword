@@ -470,6 +470,7 @@ SubSectionEnd ; helper files
   !insertmacro "${MacroName}" "section_impexpplugins_applix"
   !insertmacro "${MacroName}" "section_impexpplugins_clarisworks"
   !insertmacro "${MacroName}" "section_impexpplugins_docbook"
+  !insertmacro "${MacroName}" "section_impexpplugins_officeopenxml"
   !insertmacro "${MacroName}" "section_impexpplugins_opendocument"
   !insertmacro "${MacroName}" "section_impexpplugins_openwriter"
   !insertmacro "${MacroName}" "section_impexpplugins_iscii_text"
@@ -478,7 +479,6 @@ SubSectionEnd ; helper files
   !insertmacro "${MacroName}" "section_impexpplugins_wml"
   !insertmacro "${MacroName}" "section_impexpplugins_xslfo"
 
-  !insertmacro "${MacroName}" "section_impexpplugins_openxml"
   !insertmacro "${MacroName}" "section_impexpplugins_mswrite"
   !insertmacro "${MacroName}" "section_impexpplugins_opml"
   !insertmacro "${MacroName}" "section_impexpplugins_sdw"

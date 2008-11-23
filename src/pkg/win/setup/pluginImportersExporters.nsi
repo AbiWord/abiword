@@ -148,6 +148,23 @@ Section "DocBook"
 	End:
 SectionEnd
 
+Section "Microsoft Office Open XML"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenXML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing Microsoft Office Open XML Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping Microsoft Office Open XML Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenXML.dll"
+
+	End:
+SectionEnd
+
 Section "OpenDocument (.odt)"
 	SectionIn 1 2
 
@@ -276,23 +293,6 @@ SubSectionEnd
 ;;;;;;; Import Only
 
 SubSection /e "Import-Only Support"
-Section "Microsoft Office OpenXML"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenXML.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing Microsoft Office OpenXML Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping Microsoft Office OpenXML Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiOpenXML.dll"
-
-	End:
-SectionEnd
-
 Section "MS Write"
 	SectionIn 1 2
 
