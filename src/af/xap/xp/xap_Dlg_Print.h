@@ -50,7 +50,7 @@ public:
 
 
 	XAP_Dialog_Print::tAnswer		getAnswer(void) const;
-	bool							getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const;
+	bool							getDoPrintRange(UT_sint32 * pnFirst, UT_sint32 * pnLast) const;
 	bool							getDoPrintSelection(void) const;
 	bool							getDoPrintToFile(const char *) const;
 	UT_uint32						getNrCopies(void) const;
@@ -81,8 +81,8 @@ protected:
 	bool							m_bDoPrintToFile;		/* output */
 	bool							m_bCollate;				/* output */
 	GR_Graphics::ColorSpace			m_cColorSpace;			/* output */
-	UT_uint32						m_nFirstPage;			/* input/output */
-	UT_uint32						m_nLastPage;			/* input/output */
+	UT_sint32						m_nFirstPage;			/* input/output */
+	UT_sint32						m_nLastPage;			/* input/output */
 	UT_uint32						m_nCopies;				/* output */
 	XAP_Dialog_Print::tAnswer		m_answer;				/* output */
 	char *							m_szPrintToFilePathname;/* output */

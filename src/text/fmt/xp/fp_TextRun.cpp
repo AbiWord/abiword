@@ -365,7 +365,7 @@ void fp_TextRun::printText(void)
 	while(text.getStatus() == UTIter_OK)
 	{
 		UT_UCS4Char c = text.getChar();
-		if(static_cast<char>(c)>=' ' && static_cast<char>(c) <128)
+		if(c >= ' ' && c <128)
 			sTmp +=  static_cast<char>(c);
 		++text;
 	}
@@ -470,8 +470,9 @@ bool fp_TextRun::alwaysFits(void) const
 	return true;
 }
 
-bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
+bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/ )
 {
+        UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return false;
 #if 0 // if turning this back on, replace the while loop with PD_StruxIterator
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();

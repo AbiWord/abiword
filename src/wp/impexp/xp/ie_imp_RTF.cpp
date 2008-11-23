@@ -2411,7 +2411,7 @@ UT_Error IE_Imp_RTF::_parseText()
 	// remember the depth of stack on entry, and if the depth of stack
 	// drops bellow this level return (this is so that we can call
 	// this method recursively)
-	UT_uint32 iRTFStackDepth = m_stateStack.getDepth();
+	UT_sint32 iRTFStackDepth = m_stateStack.getDepth();
 	UT_DEBUGMSG(("IE_Imp_RTF::_parseText: stack depth %d\n", iRTFStackDepth));
 	
 	
@@ -6426,7 +6426,7 @@ bool IE_Imp_RTF::_insertSpan()
 
 bool IE_Imp_RTF::ApplyCharacterAttributes()
 {
-	bool ok;
+	bool ok = false;
 	if(isBlockNeededForPasteTable())
 	{
 		ApplyParagraphAttributes();
@@ -11221,7 +11221,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				}
 			}
 			char * buffer  = g_strdup(styleName.utf8_str());
-			char * oldbuffer;
+			char * oldbuffer = NULL;
 			if(styleNumber >= 0)
 			{
 				m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
@@ -11719,7 +11719,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	bool paramUsed = false;	
 	int nested = 0;
 	bool result;
-	const char * metaDataKey;
+	const char * metaDataKey = NULL;
 	UT_UTF8String metaDataProp;
 	enum {
 		ACT_NONE,

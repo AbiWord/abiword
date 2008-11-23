@@ -1120,7 +1120,6 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	if(m_pRevisions && bShow)
 	{
 		bool bMark = pView->isMarkRevisions();
-		const gchar * szID=NULL;
 		UT_uint32 iId = 0;
 		const PP_Revision * r = NULL;
 		r = m_pRevisions->getLastRevision();
@@ -2255,15 +2254,17 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
     // we get the rect running pass the end of the line and off the screen
-    if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
-	    if(getVisDirection() == UT_BIDI_LTR)
-		{
-		    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-		}
-		else
-		{
-	    	painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-		}
+    if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0) 
+    {
+        if(getVisDirection() == UT_BIDI_LTR)
+	{
+	    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	}
+	else
+	{
+	    painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	}
+    }
 #undef NPOINTS
 }
 

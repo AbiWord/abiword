@@ -69,7 +69,7 @@ public:
     char *filename = NULL;
     int fd;
 
-    std::set<UT_uint32> pages;
+    std::set<UT_sint32> pages;
     const std::string & pages_prop = getProperty ("pages");
 
     double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
@@ -171,7 +171,7 @@ public:
     
     if (pages.empty())
       {
-	for (UT_uint32 i = 1; i <= pDocLayout->countPages(); i++)
+	for (UT_sint32 i = 1; i <= pDocLayout->countPages(); i++)
 	  {
 	    pages.insert(i);
 	  }

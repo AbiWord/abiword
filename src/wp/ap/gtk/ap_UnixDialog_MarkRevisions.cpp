@@ -109,7 +109,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
 {
    GtkWidget *vbox1;
    GSList *vbox1_group = NULL;
-   GtkWidget *radiobutton1;
+   GtkWidget *radiobutton1 = NULL;
    GtkWidget *lbl1;
    GtkWidget *radiobutton2;
    GtkWidget *lbl2;

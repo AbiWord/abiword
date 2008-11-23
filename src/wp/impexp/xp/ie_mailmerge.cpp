@@ -309,7 +309,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		GsfInput *f = NULL;
 		
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = UT_go_file_open( szFilename, NULL ) ) != static_cast<GsfInput *>(0) )
+		if ( ( f = UT_go_file_open( szFilename, NULL ) ) != NULL )
 		{
 		  iNumbytes = UT_MIN(sizeof(szBuf) - 1, gsf_input_size(f));
 		  gsf_input_read(f, iNumbytes, (guint8*)szBuf);

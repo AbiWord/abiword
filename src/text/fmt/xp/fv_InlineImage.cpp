@@ -170,7 +170,6 @@ void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 	if(bScrollRunning)
 	{
 	    UT_DEBUGMSG(("Dropping InlineImage autoscroll !!!!!!! \n"));
-	    FV_View * pView = pVis->m_pView;
 	    if(iExtra < pVis->getGraphics()->tlu(600))
 	      iExtra += pVis->getGraphics()->tlu(20);
 	    return;

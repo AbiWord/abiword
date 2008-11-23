@@ -163,7 +163,7 @@ void XAP_Dialog_Print::setTryToBypassActualDialog(bool bEnable)
 	m_bBypassActualDialog = (bEnable && m_bPersistValid);
 }
 
-bool XAP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const
+bool XAP_Dialog_Print::getDoPrintRange(UT_sint32 * pnFirst, UT_sint32 * pnLast) const
 {
 	UT_ASSERT(m_answer == a_OK);
 

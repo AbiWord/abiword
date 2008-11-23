@@ -418,7 +418,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		
 		bool bCollate = true;
 		UT_sint32 nCopies = 1;
-		std::set<UT_uint32> pages;
+		std::set<UT_sint32> pages;
 
 		std::map<std::string, std::string> props_map;
 		UT_parse_properties(m_expProps.utf8_str(), props_map);

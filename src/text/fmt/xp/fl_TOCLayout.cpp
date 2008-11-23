@@ -1309,11 +1309,11 @@ TOCEntry * fl_TOCLayout::createNewEntry(fl_BlockLayout * pNewBL)
 {
 	UT_UTF8String sDispStyle("");
 	bool bHaveLabel = true;
-	FootnoteType iFType; 
+	FootnoteType iFType = FOOTNOTE_TYPE_NUMERIC; 
 	UT_UTF8String sBefore;
 	UT_UTF8String sAfter; 
-	bool bInherit; 	
-	UT_sint32 iStartAt;
+	bool bInherit = false; 	
+	UT_sint32 iStartAt = 0;
 	if(m_iCurrentLevel == 1)
 	{
 		sDispStyle = m_sDestStyle1;

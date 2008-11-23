@@ -34,7 +34,7 @@
 
 fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 				   UT_uint32 iOffsetFirst, 
-				   UT_uint32 iLen ) : 
+				   UT_uint32 /*iLen*/ ) : 
   fp_HyperlinkRun(pBL,iOffsetFirst,1),m_iPID(0),m_sValue(""),m_iRealWidth(0)
 {
     UT_ASSERT(pBL);
@@ -267,7 +267,7 @@ bool fp_AnnotationRun::_recalcWidth(void)
 
 UT_sint32 fp_AnnotationRun::calcWidth(void)
 {
-    UT_sint32 iNewWidth;
+    UT_sint32 iNewWidth = 0;
     _setValue();
     getGraphics()->setFont(_getFont());
     if(m_sValue.size() > 0)

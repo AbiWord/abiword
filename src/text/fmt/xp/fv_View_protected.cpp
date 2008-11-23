@@ -2277,7 +2277,7 @@ void FV_View::_moveInsPtNthPage(UT_sint32 n)
 	if (n > m_pLayout->countPages ())
 		n = m_pLayout->countPages ();
 
-	for (UT_uint32 i = 1; i < n; i++)
+	for (UT_sint32 i = 1; i < n; i++)
 	{
 		page = page->getNext ();
 	}
@@ -3142,7 +3142,7 @@ bool FV_View::_insertField(const char* szName,
 						   const gchar ** extra_attrs, 
 						   const gchar ** extra_props)
 {
-	bool bResult;
+	bool bResult = false;
 	int attrCount = 0;
 	if(szName && ((strcmp(szName,"sum_rows") == 0) || (strcmp(szName,"sum_cols") == 0)))
 	{
@@ -4166,8 +4166,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		getPageYOffset(pPointPage, iPageOffset); // <- look at this later
 		
 		UT_uint32 iPageNumber = m_pLayout->findPage(pPointPage);
-		UT_uint32 iRow = iPageNumber / getNumHorizPages();
-		UT_uint32 iCol = iPageNumber - (iRow * getNumHorizPages());
+		//UT_uint32 iRow = iPageNumber / getNumHorizPages();
+		//UT_uint32 iCol = iPageNumber - (iRow * getNumHorizPages());
 		
 		yPoint += iPageOffset; //beware wierdness discribed in getPageYOffset(...)
 		xPoint += getPageViewLeftMargin() + getWidthPrevPagesInRow(iPageNumber);

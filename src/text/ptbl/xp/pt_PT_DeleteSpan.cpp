@@ -1109,7 +1109,7 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 	{
 		PT_DocPosition old_dpos1 = dpos1;
 		PT_DocPosition old_dpos2 = dpos2;
-		UT_uint32 old_iStackSize = pstDelayStruxDelete->getDepth();
+		UT_sint32 old_iStackSize = pstDelayStruxDelete->getDepth();
 
 		if(!_tweakDeleteSpanOnce(dpos1, dpos2, pstDelayStruxDelete))
 			return false;
@@ -2160,7 +2160,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		//  first, and then the actual spans.
 		_changePointWithNotify(old_dpos2);
 
-		UT_uint32 oldDepth = stDelayStruxDelete.getDepth();
+		UT_sint32 oldDepth = stDelayStruxDelete.getDepth();
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
 		{

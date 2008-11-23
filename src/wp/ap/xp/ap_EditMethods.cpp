@@ -1755,7 +1755,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 }
 
 
-static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
+static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error /*errorCode*/)
 {
   XAP_String_Id String_id = AP_STRING_ID_MSG_OpenFailed;
 
@@ -4969,21 +4969,24 @@ Defun(contextHyperlink)
 	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
 	
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_NORMAL) // normal hyperlinks
+	{
 #ifdef ENABLE_SPELL
 		if(pView->isTextMisspelled())
 			return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 		else
 #endif
 			return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-	
+	}
+
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_ANNOTATION) // annotations
+	{
 #ifdef ENABLE_SPELL
 		if(pView->isTextMisspelled())
 			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 		else
 #endif
 			return s_doContextMenu_no_move(EV_EMC_ANNOTATIONTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-	
+	}
 	return false; // to avoid compilation warnings (should never be reached)
 }
 
@@ -7888,9 +7891,9 @@ UT_return_val_if_fail(pDialog, false);
 }
 
 static void
-s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
+s_TabSaveCallBack (AP_Dialog_Tab * /*pDlg*/, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
-				   void * closure)
+				   void * /*closure*/)
 {
   UT_return_if_fail(szTabStops && szDflTabStop);
 
@@ -8423,10 +8426,10 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
-		     UT_uint32 nToPage, UT_uint32 nFromPage)
+		     UT_sint32 nToPage, UT_sint32 nFromPage)
 {
-	std::set<UT_uint32> pages;
-	for (UT_uint32 i = nFromPage; i <= nToPage; i++)
+	std::set<UT_sint32> pages;
+	for (UT_sint32 i = nFromPage; i <= nToPage; i++)
 		{
 			pages.insert(i);
 		}
@@ -8439,7 +8442,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_uint32 nCopies, bool bCollate,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
-		     const std::set<UT_uint32>& pages)
+		     const std::set<UT_sint32>& pages)
 {
 	UT_uint32 i,j,k;
 
@@ -8470,7 +8473,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 			for (j=1; (j <= nCopies); j++)
 				{
 					i = 0;
-					for (std::set<UT_uint32>::const_iterator page = pages.begin();
+					for (std::set<UT_sint32>::const_iterator page = pages.begin();
 						 page != pages.end();
 						 page++)
 						{
@@ -8495,7 +8498,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		else
 		{
 			i = 0;
-			for (std::set<UT_uint32>::const_iterator page = pages.begin();
+			for (std::set<UT_sint32>::const_iterator page = pages.begin();
 				 page != pages.end();
 				 page++)
 				{
@@ -8639,7 +8642,7 @@ UT_return_val_if_fail(pDialog, false);
 				bDoingQuickPrint = true;
 		}
 
-		UT_uint32 nFromPage, nToPage;
+		UT_sint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
 		// must use the layout of the print view here !!!

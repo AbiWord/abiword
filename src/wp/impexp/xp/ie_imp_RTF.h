@@ -901,7 +901,7 @@ private:
 	bool                  m_bCellBlank;
 	bool                  m_bEndTableOpen;
 	bool                  m_bInFootnote;
-	UT_uint32             m_iDepthAtFootnote;
+	UT_sint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
 	UT_uint32             m_iLastEndnoteId;
 	UT_String             m_hyperlinkBase;

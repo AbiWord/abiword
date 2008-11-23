@@ -260,7 +260,9 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 	UT_sint32 splitLeft,splitRight,splitTop,splitBot;
-	UT_sint32 newLeft,newRight,newTop,newBot;	
+	splitLeft = splitRight = 0;
+	UT_sint32 newLeft,newRight,newTop,newBot;
+	newTop = newBot = 0;
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
 	bool bDoSplitSolidHori = false;
@@ -3059,7 +3061,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 /*!
  * Delete the cell at the specified position
  */
-bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
+bool FV_View::cmdDeleteCell(PT_DocPosition /*cellPos*/ )
 {
 #if 1
   UT_ASSERT(UT_NOT_IMPLEMENTED);

@@ -1160,7 +1160,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			fprintf(logfile,"About to start gnome_program_init \n");
 #endif
 			// GNOME handles 'parseOptions'.  Isn't it grand?
-			GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
+			/*GnomeProgram * program =*/ gnome_program_init (PACKAGE, VERSION, 
 														 LIBGNOMEUI_MODULE, argc, argv,
 														 GNOME_PARAM_APP_PREFIX, PREFIX,
 														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
@@ -1515,7 +1515,7 @@ static gint s_signal_count = 0;
   call abort, so we still get a core dump that we can debug.
   \param sig_num the integer representing which signal we recieved
 */
-void AP_UnixApp::catchSignals(int sig_num)
+void AP_UnixApp::catchSignals(int /*sig_num*/)
 {
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)

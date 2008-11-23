@@ -38,8 +38,9 @@
 #include <gsf/gsf-utils.h>
 
 static const GtkTargetEntry targets[] = {
-  {"text/rtf", 0, 0},
-  { "text/uri-list",0,0}};
+  { (gchar*)"text/rtf", 0, 0},
+  { (gchar*)"text/uri-list",0,0}
+};
 
 FV_UnixVisualDrag::FV_UnixVisualDrag (FV_View * pView)
   :  FV_VisualDragText (pView),m_bDragOut(false)

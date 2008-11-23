@@ -192,7 +192,6 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 	if(bScrollRunning)
 	{
 	    UT_DEBUGMSG(("Dropping VisualDragText autoscroll !!!!!!! \n"));
-	    FV_View * pView = pVis->m_pView;
 	    if(iExtra < pVis->getGraphics()->tlu(600))
 	      iExtra += pVis->getGraphics()->tlu(20);
 	    return;

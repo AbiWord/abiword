@@ -55,7 +55,7 @@ bool UT_Stack::viewTop(void ** ppVoid) const
 	return true;
 }
 
-UT_uint32 UT_Stack::getDepth(void) const
+UT_sint32 UT_Stack::getDepth(void) const
 {
 	return m_vecStack.getItemCount();
 }
@@ -89,7 +89,7 @@ bool UT_NumberStack::viewTop (UT_sint32 & number) const
 	return true;
 }
 
-UT_uint32 UT_NumberStack::getDepth () const
+UT_sint32 UT_NumberStack::getDepth () const
 {
 	return m_vecStack.getItemCount ();
 }

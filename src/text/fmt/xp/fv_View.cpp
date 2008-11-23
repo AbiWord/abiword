@@ -7999,11 +7999,11 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
-	const fp_Page* pPage = m_pLayout->getFirstPage();
+	//const fp_Page* pPage = m_pLayout->getFirstPage();
 	UT_uint32 iPageNumber = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
 	UT_uint32 iRow = iPageNumber/getNumHorizPages();
 	UT_uint32 y = getPageViewTopMargin();
-	UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
+	//UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
 		
 	if(iPageNumber >= getNumHorizPages())
 	{

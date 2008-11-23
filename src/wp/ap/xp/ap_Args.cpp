@@ -73,12 +73,12 @@ static GOptionEntry _entries[] = {
 #ifdef DEBUG
         {"dumpstrings", 'd', 0, G_OPTION_ARG_NONE, &AP_Args::m_iDumpstrings, "Dump strings to file", NULL},
 #endif
-        {NULL }
+        {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
 };
 
 
 
-AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
+AP_Args::AP_Args(XAP_Args * pArgs, const char * /*szAppName*/, AP_App * pApp)
 	: XArgs (pArgs), 
 	m_pApp(pApp)
 {

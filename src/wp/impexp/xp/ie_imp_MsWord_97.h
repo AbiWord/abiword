@@ -42,7 +42,7 @@ class PD_Document;
 class pf_Frag;
 class UT_Stack;
 
-typedef struct field;
+struct field;
 
 struct bookmark
 {

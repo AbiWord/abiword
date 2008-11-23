@@ -1519,7 +1519,7 @@ abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 }
 
 extern "C" const gchar**
-abi_widget_get_font_names (AbiWidget * w)
+abi_widget_get_font_names (AbiWidget * /*w*/)
 {
 	// this is annoying asc getAllFontNames() returns a lot of dupes
 	const std::vector<const char *>& vFonts = GR_UnixPangoGraphics::getAllFontNames();
@@ -1664,7 +1664,7 @@ abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimet
     return res;
 }
 
-static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
+static gboolean s_abi_widget_map_cb(GObject * /*w*/, gpointer p)
 {
 	UT_DEBUGMSG(("s_abi_widget_map_cb()\n"));
 	
@@ -1745,7 +1745,7 @@ static gboolean s_abi_widget_map_cb(GObject * w, gpointer p)
 static void abi_widget_get_prop (GObject  *object,
 								 guint arg_id,
 								 GValue     *arg,
-								 GParamSpec *pspec)
+								 GParamSpec * /*pspec*/)
 {
     AbiWidget * abi = ABI_WIDGET(object);
 	switch(arg_id)
@@ -1805,7 +1805,7 @@ abi_widget_get_property(GObject  *object,
 static void abi_widget_set_prop (GObject  *object,
 								 guint	arg_id,
 								 const GValue *arg,
-								 GParamSpec *pspec)
+								 GParamSpec * /*pspec*/)
 {
 	UT_return_if_fail (object != 0);
 
@@ -2317,7 +2317,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 }
 
 static void
-abi_widget_construct (AbiWidget * abi, const char * file)
+abi_widget_construct (AbiWidget * /*abi*/, const char * /*file*/)
 {
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
@@ -2362,6 +2362,7 @@ abi_widget_get_type (void)
 			sizeof(AbiWidget),
 			0,
 			(GInstanceInitFunc)abi_widget_init,
+                        NULL
 		};
 
 		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiWidget",
