@@ -104,7 +104,7 @@ bool IE_Exp_OpenXML_Sniffer::getDlgLabels (const char ** szDesc,
 										const char ** szSuffixList,
 										IEFileType * ft)
 {
-	*szDesc = "OpenXML (.docx)";
+	*szDesc = "Office Open XML (.docx)";
 	*szSuffixList = "*.docx";
 	*ft = getFileType();
   
