@@ -65,8 +65,8 @@ ABI_BUILTIN_FAR_CALL int abi_plugin_register (XAP_ModuleInfo * mi)
     
 	IE_Exp::registerExporter (pExp_sniffer);
 
-    mi->name    = "OpenXML Filter";
-    mi->desc    = "Import/Export OpenXML (.docx) files";
+    mi->name    = "Office Open XML Filter";
+    mi->desc    = "Import/Export Office Open XML (.docx) files";
     mi->version = ABI_VERSION_STRING;
     mi->author  = "Philippe Milot";
     mi->usage   = "No Usage";
