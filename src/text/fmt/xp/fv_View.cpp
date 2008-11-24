@@ -9917,7 +9917,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	if (   (yClick < 0)
 		   || (xClick < 0)
-		   || (xClick > getWidthPagesInRow(pPage)) )
+		   || (xClick > static_cast<UT_sint32>(getWidthPagesInRow(pPage))) )
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (2)\n"));
 		m_prevMouseContext = EV_EMC_UNKNOWN;
@@ -13833,7 +13833,8 @@ void FV_View::calculateNumHorizPages()
 {
 	UT_uint32 scrollbarWidth = 1000; //Because my scrollbar is about this wide.
 	UT_uint32 windowWidth = getWindowWidth() - scrollbarWidth;
-	
+	UT_uint32 iOldNo = m_iNumHorizPages;
+	xxx_UT_DEBUGMSG(("Initial Number horizontal pages %d \n",iOldNo));
 	if (!m_autoNumHorizPages || getViewMode() != VIEW_PRINT || m_iNumHorizPages < 1)
 	{
 		m_iNumHorizPages = 1; //TODO: get this from the default or prefrences.
@@ -13867,7 +13868,7 @@ void FV_View::calculateNumHorizPages()
 				widthPagesInRow = getWidthPagesInRow(pPage);
 			} while ((windowWidth > widthPagesInRow) && (widthPagesInRow + pPage->getWidth() + getHorizPageSpacing() < windowWidth));
 		}
-		UT_DEBUGMSG(("m_iNumHorizPages %d | windowWidth %d | widthPagesInRow %d | pPage->getWidth() %d\n", m_iNumHorizPages,windowWidth,widthPagesInRow,pPage->getWidth()));
+		xxx_UT_DEBUGMSG(("m_iNumHorizPages %d | windowWidth %d | widthPagesInRow %d | pPage->getWidth() %d\n", m_iNumHorizPages,windowWidth,widthPagesInRow,pPage->getWidth()));
 	}
 	
 	if (m_iNumHorizPages > 1)
@@ -13878,7 +13879,30 @@ void FV_View::calculateNumHorizPages()
 	{
 		XAP_App::getApp()->setEnableSmoothScrolling(true);
 	}
-	
+	if(iOldNo != m_iNumHorizPages)
+	{
+		UT_uint32 iPrevYOffset = m_yScrollOffset;
+		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+		pFrame->setYScrollRange();
+		pFrame->nullUpdate();
+		pFrame->nullUpdate();
+		double totOffset = static_cast<double>(iPrevYOffset)*static_cast<double>(iOldNo);
+		xxx_UT_DEBUGMSG(("Number horizontal pages changed totoffset %f \n",totOffset));
+		UT_uint32 newOffset = totOffset/static_cast<double>(m_iNumHorizPages);
+		UT_sint32 idiff = newOffset -  m_yScrollOffset;
+
+		if(idiff > 0)
+		{
+			cmdScroll(AV_SCROLLCMD_LINEDOWN,idiff);
+		}
+		else
+		{
+			cmdScroll(AV_SCROLLCMD_LINEUP,-idiff);
+		}
+		pFrame->nullUpdate();
+		pFrame->nullUpdate();
+		_ensureInsertionPointOnScreen();
+	}
 	return;
 }
 

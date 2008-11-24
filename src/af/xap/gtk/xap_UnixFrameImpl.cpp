@@ -869,7 +869,9 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				}
 		}
 		if(pView)
+		{
 			pView->setWindowSize(iNewWidth, iNewHeight);
+		}
 		//
 		// Come back later when we have a view
 		//
@@ -1039,6 +1041,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		{
 			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(reinterpret_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
 		}
+			
 	}
 	return 1;
 }

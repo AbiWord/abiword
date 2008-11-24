@@ -472,7 +472,10 @@ bool fp_TextRun::alwaysFits(void) const
 
 bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/ )
 {
-        UT_ASSERT(UT_NOT_IMPLEMENTED);
+	//
+	// What is this code trying to achieve? 
+	// Why do we want to keep around for future reference?
+	//
 	return false;
 #if 0 // if turning this back on, replace the while loop with PD_StruxIterator
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();

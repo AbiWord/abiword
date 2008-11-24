@@ -2005,7 +2005,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
  */
 bool FV_View::_ensureInsertionPointOnScreen()
 {
-	xxx_UT_DEBUGMSG(("FV_View::_ensureInsertionPointOnScreen called\n"));
+	xxx_UT_DEBUGMSG(("FV_View::_ensureInsertionPointOnScreen called windowHeight %d Point %d \n",getWindowHeight(),getPoint()));
 
 	// Some short circuit tests to avoid doing bad things.
 	if (getWindowHeight() <= 0)
@@ -4399,6 +4399,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// figure out where pages go, based on current window dimensions
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
+	calculateNumHorizPages();
 	UT_sint32 iDocHeight = m_pLayout->getHeight();
 
 	// TODO: handle positioning within oversized viewport
@@ -4465,7 +4466,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 #endif
 	bool bNotEnd = false;
 	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
-	calculateNumHorizPages();
 	
 	while (pPage)
 	{

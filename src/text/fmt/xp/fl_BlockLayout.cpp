@@ -6339,10 +6339,10 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 		//			|| (pRun->getNextRun()->getType() != FPRUN_FMTMARK)) );
 
 		// Verify that the Run has a non-zero length (or is a FmtMark)
-		UT_ASSERT( ((((FPRUN_FMTMARK == pRun->getType()) || 
-					(FPRUN_TAB == pRun->getType()) 
-					  || (FPRUN_FIELD == pRun->getType()))
-					  && isContainedByTOC()))
+		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType()) || 
+				   ((FPRUN_TAB == pRun->getType()) 
+					  || (FPRUN_FIELD == pRun->getType())
+					  && isContainedByTOC())
 				   || (pRun->getLength() > 0) );
 
 		// Verify that if there is no next Run, this Run is the EOP Run.

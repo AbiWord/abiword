@@ -106,6 +106,7 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 		{
 			pLeft->setZoom(iZoom);
 		}
+		pView->calculateNumHorizPages();
 		setYScrollRange();
 		setXScrollRange();
 		if(pTop && !pTop->isHidden())
@@ -119,9 +120,9 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 //
 // Redraw the entire screen
 //
-		pView->updateScreen(false);
 		pView->setPoint(pView->getPoint()); // place the cursor correctly
-		                                    // on the screen.
+		pView->ensureInsertionPointOnScreen(); // on the screen
+		pView->updateScreen(false);
 	}
 	else
 	{
