@@ -409,6 +409,8 @@ UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)
 
 double UT_convertDimensionless(const char * sz)
 {
+	UT_return_val_if_fail(sz, 0);
+
 	// convert given string into a number -- without using any dimension
 	// info that may be in the string.
 	//
