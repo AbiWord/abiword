@@ -252,19 +252,24 @@ bool fp_PageSize::Set(const gchar ** attributes)
 	setPortrait();
 	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
 	{
-		width = UT_convertDimensionless(szWidth);
-		height = UT_convertDimensionless(szHeight);
-		if(strcmp(szUnits,"cm") == 0)
-			u = DIM_CM;
-		else if(strcmp(szUnits,"mm") == 0)
-			u = DIM_MM;
-		else if(strcmp(szUnits,"inch") == 0)
-			u = DIM_IN;
-		setLandscape();
-		//
-		// Setting landscape causes the width and height to be swapped
-		// so
-		Set(height,width,u); // swap them so they out right
+		// Note: setting landscape causes the width and height to be swapped
+		if (width && height && szUnits) // just setting a custom width or height should be allowed imo, but I'm lazy - MARCM
+		{
+			width = UT_convertDimensionless(szWidth);
+			height = UT_convertDimensionless(szHeight);
+			if(strcmp(szUnits,"cm") == 0)
+				u = DIM_CM;
+			else if(strcmp(szUnits,"mm") == 0)
+				u = DIM_MM;
+			else if(strcmp(szUnits,"inch") == 0)
+				u = DIM_IN;
+			setLandscape();
+			Set(height,width,u);
+		}
+		else  
+		{
+			Set(m_iHeight, m_iWidth, FUND);
+		}
 	}
 	UT_DEBUGMSG(("PageSize - Height %d Width %d \n",m_iHeight,m_iWidth));
 	return true;
