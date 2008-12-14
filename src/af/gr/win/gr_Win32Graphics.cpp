@@ -235,7 +235,7 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	for (int n = 0; n<m_nArPenPos; n++, pArPens++)
 		DeleteObject(pArPens->hPen);	
 
-	delete m_pArPens;
+	DELETEPV(m_pArPens);
 
 	DELETEP(m_pFontGUI);
 	
