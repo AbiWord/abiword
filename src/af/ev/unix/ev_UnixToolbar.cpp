@@ -887,16 +887,6 @@ bool EV_UnixToolbar::synthesize(void)
 					UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 
 					gboolean show = TRUE;
-					if (0 == strncmp("ALIGN_RIGHT", pLabel->getIconName(), strlen("ALIGN_RIGHT")) && 
-						GTK_TEXT_DIR_RTL != gtk_widget_get_direction(m_wToolbar)) {
-						/* only show in rtl mode */
-						show = FALSE;
-					}
-					else if (0 == strncmp("ALIGN_LEFT", pLabel->getIconName(), strlen("ALIGN_LEFT")) && 
-						GTK_TEXT_DIR_RTL == gtk_widget_get_direction(m_wToolbar)) {
-						/* only show in ltr mode */
-						show = FALSE;
-					}
 					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
 												    	  pLabel->getToolbarLabel(), NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
