@@ -36,8 +36,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
-#include <X11/Xft/Xft.h>
-
 #ifdef ENABLE_PRINT
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-job.h>
@@ -309,12 +307,14 @@ public:
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
 	GdkWindow *  getWindow () {return m_pWin;}
+	cairo_t* getCairo () {return m_cr;}
 
-	
+	static UT_uint32 getDefaultDeviceResolution();
+
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(GdkWindow * win);
-	GR_UnixPangoGraphics();
+	GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
+	GR_UnixPangoGraphics(GdkWindow * win = NULL);
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
@@ -337,17 +337,13 @@ public:
 	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
-	void         _setColor(GdkColor & c);
-
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	
-  protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
 	PangoContext *    m_pLayoutContext;
-	bool              m_bOwnsFontMap;
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
@@ -358,34 +354,19 @@ public:
 	
 	UT_uint32         m_iDeviceResolution;
 
+	cairo_t	*         m_cr;
 	GdkWindow *       m_pWin;
-	GdkGC*            m_pGC;
-	GdkGC*            m_pXORGC;
-
-	GdkColormap* 	  m_pColormap;
-	int               m_iWindowHeight;
-	int	              m_iWindowWidth;
-	UT_sint32		  m_iLineWidth;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
-	Drawable				m_Drawable;
-	Visual*					m_pVisual;
-	Colormap				m_Colormap;
 
 	UT_GenericVector<UT_Rect*>     m_vSaveRect;
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
-	XftDraw*				m_pXftDraw;
-	XftColor				m_XftColor;
 	UT_RGBColor				m_curColor;
-	UT_sint32               m_iXoff;
-	UT_sint32               m_iYoff;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
-	
-	void init();
 
 private:
 	static UT_uint32 s_iInstanceCount;

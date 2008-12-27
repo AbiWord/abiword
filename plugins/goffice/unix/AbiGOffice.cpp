@@ -57,13 +57,13 @@ typedef	GObject AbiCmdContext;
 typedef GObjectClass AbiCmdContextClass;
 
 static void
-abi_error_error (GOCmdContext *cc, GError *error)
+abi_error_error (G_GNUC_UNUSED GOCmdContext *cc, GError *error)
 {
 	fprintf (stderr, "Error: %s\n", error->message);
 }
 
 static void
-abi_error_info (GOCmdContext *cc, ErrorInfo *error)
+abi_error_info (G_GNUC_UNUSED GOCmdContext *cc, ErrorInfo *error)
 {
 	error_info_print (error);
 }
@@ -82,12 +82,12 @@ abi_set_sensitive (G_GNUC_UNUSED GOCmdContext *cc,
 }
 
 static void
-abi_progress_set (GOCmdContext *cc, gfloat val)
+abi_progress_set (G_GNUC_UNUSED GOCmdContext *cc, G_GNUC_UNUSED gfloat val)
 {
 }
 
 static void
-abi_progress_message_set (GOCmdContext *cc, gchar const *msg)
+abi_progress_message_set (G_GNUC_UNUSED GOCmdContext *cc, G_GNUC_UNUSED gchar const *msg)
 {
 }
 
@@ -503,7 +503,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 }
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (G_GNUC_UNUSED UT_uint32 major, G_GNUC_UNUSED UT_uint32 minor, G_GNUC_UNUSED UT_uint32 release)
 {
     return 1; 
 }

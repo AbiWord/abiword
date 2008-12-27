@@ -1,6 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998-2005 AbiSource, Inc.
  * Copyright (C) 2005 Dom Lachowicz <cinamod@hotmail.com>
+ * Copyright (C) 2008 Robert Staudinger
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,11 +25,18 @@
 #include "ut_string.h"
 #include "ie_exp_PDF.h"
 #include "pd_Document.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoPrintGraphics.h"
 #include "fv_View.h"
 #include "ap_EditMethods.h"
 #include "xap_App.h"
 #include "ut_misc.h"
+
+#include <cairo-pdf.h>
+#include <cairo-ps.h>
+
+#if 0
+#include <cairo-svg.h>
+#endif
 
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-input-stdio.h>
@@ -39,199 +48,139 @@
 /*****************************************************************/
 /*****************************************************************/
 
-class ABI_EXPORT IE_Exp_PDF : public IE_Exp
+static cairo_status_t
+ie_exp_cairo_write_func (void *closure, const unsigned char *data, unsigned int length)
+{
+	if (!gsf_output_write((GsfOutput*)closure, length, data))
+		return CAIRO_STATUS_WRITE_ERROR;
+    return CAIRO_STATUS_SUCCESS;
+}
+
+class ABI_EXPORT IE_Exp_Cairo : public IE_Exp
 {
 public:
   typedef enum
     {
       BACKEND_PS,
-      BACKEND_PDF
+      BACKEND_PDF,
+	  BACKEND_SVG
     } Format;
   
-  IE_Exp_PDF::Format mFormat;
+  IE_Exp_Cairo::Format mFormat;
   
-  IE_Exp_PDF(PD_Document * pDocument, IE_Exp_PDF::Format format)
+  IE_Exp_Cairo(PD_Document * pDocument, IE_Exp_Cairo::Format format)
     : IE_Exp(pDocument), mFormat(format)
   {
   }
   
-  virtual ~IE_Exp_PDF()
+  virtual ~IE_Exp_Cairo()
   {
   }
 
   virtual UT_Error _writeDocument(void)
   {
-    UT_Error exit_status = UT_ERROR;
-
-    GR_UnixPangoPrintGraphics *print_graphics = NULL;
+    cairo_t *cr = NULL;
+    cairo_surface_t *surface = NULL;
+    GR_CairoPrintGraphics *print_graphics = NULL;
     FL_DocLayout *pDocLayout = NULL;
     FV_View *printView = NULL;
-    char *filename = NULL;
-    int fd;
 
     std::set<UT_sint32> pages;
     const std::string & pages_prop = getProperty ("pages");
 
     double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
     bool portrait;
-    bool pdfWorkAround = (mFormat == BACKEND_PDF ? true : false);
 
-    mrgnTop = getDoc()->m_docPageSize.MarginTop(DIM_MM);
-    mrgnBottom = getDoc()->m_docPageSize.MarginBottom(DIM_MM);
-    mrgnLeft = getDoc()->m_docPageSize.MarginLeft(DIM_MM);
-    mrgnRight = getDoc()->m_docPageSize.MarginRight(DIM_MM);
-    width = getDoc()->m_docPageSize.Width (DIM_MM);
-    height = getDoc()->m_docPageSize.Height (DIM_MM);
+    mrgnTop = getDoc()->m_docPageSize.MarginTop(DIM_IN);
+    mrgnBottom = getDoc()->m_docPageSize.MarginBottom(DIM_IN);
+    mrgnLeft = getDoc()->m_docPageSize.MarginLeft(DIM_IN);
+    mrgnRight = getDoc()->m_docPageSize.MarginRight(DIM_IN);
+    width = getDoc()->m_docPageSize.Width (DIM_IN);
+    height = getDoc()->m_docPageSize.Height (DIM_IN);
     portrait = getDoc()->m_docPageSize.isPortrait();
-  
-    GnomePrintJob * job = gnome_print_job_new (NULL);
 
-    // this has to happen before s_setup_config, because it will overwrite the page size and margins and etc...
-    GnomePrintConfig *config = gnome_print_job_get_config (job);
-    if(!config)
-      goto exit_writeDocument;
+	UT_uint32 dpi = GR_UnixPangoGraphics::getDefaultDeviceResolution();
+	if (BACKEND_PDF == mFormat)
+		surface = cairo_pdf_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
+	else if (BACKEND_PS == mFormat)
+		surface = cairo_ps_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
+	else if (BACKEND_SVG == mFormat)
+		{
+			// surface = cairo_svg_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
+			return UT_ERROR;
+		}
+	else
+		{
+			return UT_ERROR;
+		}
 
-    if(mFormat == BACKEND_PS) {
-      if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"GENERIC"))
-	goto exit_writeDocument;
-    } else if(mFormat == BACKEND_PDF) {
-      if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"PDF"))
-	goto exit_writeDocument;
-    }
+	cr = cairo_create(surface);
+	cairo_surface_destroy(surface), surface = NULL;
 
-    if (pdfWorkAround && !portrait)
-      {
-	double tmp = width;
-	width = height;
-	height = tmp;
-      }
-
-    GR_UnixPangoPrintGraphics::s_setup_config (config, mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
-					       width, height, 1, portrait);    
-
-    // acts kinda like tempnam()
-    fd = g_file_open_tmp(NULL, &filename, NULL);
-    if(!filename || fd == -1) { // shouldn't ever fail, but be pedantic
-      UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-      goto exit_writeDocument;
-    }
-    
-    close(fd);
-    if (gnome_print_job_print_to_file (job, filename) != GNOME_PRINT_OK)
-      goto exit_writeDocument;
-    
-    print_graphics = new GR_UnixPangoPrintGraphics(job);
-
-    if (pdfWorkAround && !portrait)
-      {
-	print_graphics->setPdfWorkaround();
-      }
-    
-    // create a new layout and view object for the doc
+	print_graphics = new GR_CairoPrintGraphics(cr, dpi);
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
-    printView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+    printView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
     printView->getLayout()->fillLayouts();
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();
 
+	// TODO lifecycle of "surface" and "cr"?
+
     if (!pages_prop.empty())
       {
-	char **page_descriptions = g_strsplit(pages_prop.c_str(), ",", -1);
+		  char **page_descriptions = g_strsplit(pages_prop.c_str(), ",", -1);
 	
-	int i = 0;
-	while (page_descriptions[i] != NULL)
-	  {
-	    char *description = page_descriptions[i];
-	    i++;
+		  int i = 0;
+		  while (page_descriptions[i] != NULL)
+			  {
+				  char *description = page_descriptions[i];
+				  i++;
 	    
-	    int start_page, end_page;
+				  int start_page, end_page;
 	    
-	    if (2 == sscanf(description, "%d-%d", &start_page, &end_page))
-	      {
-	      }
-	    else if (1 == sscanf(description, "%d", &start_page))
-	      {
-		end_page = start_page;
-	      }
-	    else
-	      {
-		// invalid page specification
-		continue;
-	      }
+				  if (2 == sscanf(description, "%d-%d", &start_page, &end_page))
+					  {
+					  }
+				  else if (1 == sscanf(description, "%d", &start_page))
+					  {
+						  end_page = start_page;
+					  }
+				  else
+					  {
+						  // invalid page specification
+						  continue;
+					  }
 	    
-	    for (int pageno = start_page; pageno <= end_page; pageno++)
-	      {
-		if ((pageno > 0) && (pageno <= (int)pDocLayout->countPages()))
-		  pages.insert(pageno);
-	      }
-	  }
+				  for (int pageno = start_page; pageno <= end_page; pageno++)
+					  {
+						  if ((pageno > 0) && (pageno <= (int)pDocLayout->countPages()))
+							  pages.insert(pageno);
+					  }
+			  }
 	
-	g_strfreev(page_descriptions);
+		  g_strfreev(page_descriptions);
       }
     
     if (pages.empty())
       {
-	for (UT_sint32 i = 1; i <= pDocLayout->countPages(); i++)
-	  {
-	    pages.insert(i);
-	  }
+		  for (UT_sint32 i = 1; i <= pDocLayout->countPages(); i++)
+			  {
+				  pages.insert(i);
+			  }
       }    
-
+	
     s_actuallyPrint (getDoc(), print_graphics,
-		     printView, getFileName(), 
-		     1, true, 
-		     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-		     pages);
-    
-    // copy filename back into getFp()
-    if(_copyFile(filename))
-      exit_status = UT_OK;
-    
-    /* g_free()'d for us by GnomePrint */
-    config = NULL;
-    job = NULL;
-    
-  exit_writeDocument:
-    if(filename)
-      {
-	// clean up temporary file
-	g_remove(filename);
-	g_free (filename);
-      }
-    
-    if(config)
-      g_object_unref (G_OBJECT (config));
-    if(job)
-      g_object_unref (G_OBJECT (job));
-    
+					 printView, getFileName(), 
+					 1, true, 
+					 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+					 pages);
+	
+    DELETEP(print_graphics);
+
     DELETEP(pDocLayout);
     DELETEP(printView);
     DELETEP(print_graphics);
-    return exit_status;
-  }
-  
-private:
-  bool _copyFile(const char * filename)
-  {
-    GsfInput * printed_file = gsf_input_stdio_new(filename, NULL);
-    if(printed_file)
-      {
-	size_t remaining = gsf_input_size(printed_file);
-	guint8 buf[1024];
-	
-	while(remaining > 0)
-	  {
-	    size_t nread = MIN(remaining, sizeof(buf));
-	    gsf_output_write(getFp(), nread, gsf_input_read(printed_file, nread, buf));
-	    remaining -= nread;
-	  }
-	
-	g_object_unref(G_OBJECT(printed_file));
-
-	return true;
-      }
-
-    return false;
+    return UT_OK;
   }
 };
 
@@ -272,7 +221,52 @@ bool IE_Exp_PS_Sniffer::getDlgLabels (const char ** szDesc,
 UT_Error IE_Exp_PS_Sniffer::constructExporter (PD_Document * pDocument,
 					       IE_Exp ** ppie)
 {
-  *ppie = new IE_Exp_PDF(pDocument, IE_Exp_PDF::BACKEND_PS);
+  *ppie = new IE_Exp_Cairo(pDocument, IE_Exp_Cairo::BACKEND_PS);
+  return UT_OK;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+IE_Exp_SVG_Sniffer::IE_Exp_SVG_Sniffer()
+: IE_ExpSniffer("image/svg+xml", false)
+{
+}
+
+IE_Exp_SVG_Sniffer::~IE_Exp_SVG_Sniffer ()
+{
+}
+  
+UT_Confidence_t IE_Exp_SVG_Sniffer::supportsMIME (const char * szMIME)
+{
+  if(!g_ascii_strcasecmp(szMIME, "image/svg+xml") ||
+	 !g_ascii_strcasecmp(szMIME, "image/svg") ||
+	 !g_ascii_strcasecmp(szMIME, "image/svg-xml") ||
+	 !g_ascii_strcasecmp(szMIME, "image/vnd.adobe.svg+xml") ||
+	 !g_ascii_strcasecmp(szMIME, "text/xml-svg"))
+    return UT_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_ZILCH;
+}
+  
+bool IE_Exp_SVG_Sniffer::recognizeSuffix (const char * szSuffix)
+{
+  return !g_ascii_strcasecmp(szSuffix,".svg");
+}
+
+bool IE_Exp_SVG_Sniffer::getDlgLabels (const char ** szDesc,
+				      const char ** szSuffixList,
+				      IEFileType * ft)
+{
+  *szDesc = "Scalable Vector Graphics (.svg)";
+  *szSuffixList = "*.svg";
+  *ft = getFileType();
+  return true;
+}
+
+UT_Error IE_Exp_SVG_Sniffer::constructExporter (PD_Document * pDocument,
+					       IE_Exp ** ppie)
+{
+  *ppie = new IE_Exp_Cairo(pDocument, IE_Exp_Cairo::BACKEND_SVG);
   return UT_OK;
 }
 
@@ -313,7 +307,7 @@ bool IE_Exp_PDF_Sniffer::getDlgLabels (const char ** szDesc,
 UT_Error IE_Exp_PDF_Sniffer::constructExporter (PD_Document * pDocument,
 					       IE_Exp ** ppie)
 {
-  *ppie = new IE_Exp_PDF(pDocument, IE_Exp_PDF::BACKEND_PDF);
+  *ppie = new IE_Exp_Cairo(pDocument, IE_Exp_Cairo::BACKEND_PDF);
   return UT_OK;
 }
 

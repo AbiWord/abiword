@@ -47,16 +47,10 @@
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
-#include <pango/pangoxft.h>
-
-#ifdef HAVE_PANGOFT2
-  #include <pango/pangoft2.h>
-#endif
 
 #include <math.h>
 
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 
 #ifdef ENABLE_PRINT
   #include <libgnomeprint/gnome-print-pango.h>
@@ -233,65 +227,94 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+UT_uint32 GR_UnixPangoGraphics::getDefaultDeviceResolution()
+{
+	PangoFontMap * pFontMap = pango_cairo_font_map_get_default();
+	return (UT_uint32) pango_cairo_font_map_get_resolution(PANGO_CAIRO_FONT_MAP(pFontMap));
+	// The default font map must not be freed.
+}
+
+// TODO maybe consolidate a common constructor again?
+GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
+  :	m_pFontMap(NULL),
+	m_pContext(NULL),
+	m_pLayoutFontMap(NULL),
+	m_pLayoutContext(NULL),
+	m_pPFont(NULL),
+	m_pPFontGUI(NULL),
+	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedLayoutPangoFont(NULL),
+	m_pAdjustedPangoFontSource(NULL),
+	m_iAdjustedPangoFontZoom (0),
+	m_iDeviceResolution(iDeviceResolution),
+	m_cr(cr),
+	m_pWin(NULL),
+	m_cursor(GR_CURSOR_INVALID),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
+	m_bIsSymbol(false),
+	m_bIsDingbat(false)
+{
+	m_pFontMap = pango_cairo_font_map_get_default();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+
+	m_pLayoutFontMap = pango_cairo_font_map_new();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
+
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
+}
+
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
-	:
-	 m_pFontMap(NULL),
-	 m_pContext(NULL),
-	 m_pLayoutFontMap(NULL),
-	 m_pLayoutContext(NULL),
-	 m_bOwnsFontMap(false),
-	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL),
-	 m_pAdjustedPangoFont(NULL),
-	 m_pAdjustedLayoutPangoFont(NULL),
-	 m_pAdjustedPangoFontSource(NULL),
-	 m_iAdjustedPangoFontZoom (0),
-	 m_iDeviceResolution(96),
-	 m_pWin (win),
- 	 m_pGC (NULL),
-	 m_pXORGC (NULL),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
-	 m_iXoff (0),
-	 m_iYoff (0),
-	 m_bIsSymbol (false),
-	 m_bIsDingbat (false)
+  :	m_pFontMap(NULL),
+	m_pContext(NULL),
+	m_pLayoutFontMap(NULL),
+	m_pLayoutContext(NULL),
+	m_pPFont(NULL),
+	m_pPFontGUI(NULL),
+	m_pAdjustedPangoFont(NULL),
+	m_pAdjustedLayoutPangoFont(NULL),
+	m_pAdjustedPangoFontSource(NULL),
+	m_iAdjustedPangoFontZoom (0),
+	m_iDeviceResolution(getDefaultDeviceResolution()),
+	m_cr(NULL),
+	m_pWin(win),
+	m_cursor(GR_CURSOR_INVALID),
+	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
+	m_bIsSymbol(false),
+	m_bIsDingbat(false)
 {
-	init ();
+	if (_getDrawable())
+	{
+		m_cr = gdk_cairo_create (GDK_DRAWABLE (m_pWin));
+		cairo_translate(m_cr, 0.5, 0.5);
+		cairo_set_line_width (m_cr, 1);
+
+		// Set GraphicsExposes so that XCopyArea() causes an expose on
+		// obscured regions rather than just tiling in the default background.
+		// TODO: is this still needed with cairo, and if yes can it be emulated
+		// without having m_pGC any more?
+		// gdk_gc_set_exposures(m_pGC, 1);
+		setCursor(GR_CURSOR_DEFAULT);	
+	}
+	
+	m_pFontMap = pango_cairo_font_map_get_default();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
+	m_pContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pFontMap));
+
+	m_pLayoutFontMap = pango_cairo_font_map_new();
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap), getResolution());	
+	m_pLayoutContext = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(m_pLayoutFontMap));
+
+	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n", m_pLayoutFontMap,	m_pLayoutContext));
 }
-
-
-GR_UnixPangoGraphics::GR_UnixPangoGraphics()
-	:
-	 m_pFontMap(NULL),
-	 m_pContext(NULL),
-	 m_pLayoutFontMap(NULL),
-	 m_pLayoutContext(NULL),
-	 m_bOwnsFontMap(false),
-	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL),
-	 m_pAdjustedPangoFont(NULL),
-	 m_pAdjustedLayoutPangoFont(NULL),
-	 m_pAdjustedPangoFontSource(NULL),
-	 m_iAdjustedPangoFontZoom (0),
-	 m_iDeviceResolution(96),
-	 m_pWin (NULL),
- 	 m_pGC (NULL),
-	 m_pXORGC (NULL),
-	 m_pVisual (NULL),
-	 m_pXftDraw (NULL),
-	 m_iXoff (0),
-	 m_iYoff (0),
-	 m_bIsSymbol (false),
-	 m_bIsDingbat (false)
-{
-	init ();
-}
-
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
+
+	cairo_destroy(m_cr), m_cr = NULL;
+
 	if(m_pAdjustedPangoFont!= NULL)
 	{
 		g_object_unref(m_pAdjustedPangoFont);
@@ -304,17 +327,11 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	{
 		g_object_unref(m_pContext);
 	}
-	// NB: m_pFontMap is oft owned by Pango
-	if (m_bOwnsFontMap)
-		g_object_unref(m_pFontMap);
 
 	_destroyFonts();
 	delete m_pPFontGUI;
 	g_object_unref(m_pLayoutFontMap);
 	g_object_unref(m_pLayoutContext);
-
-	if (m_pXftDraw)
-		g_free(m_pXftDraw);
 
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
@@ -324,162 +341,6 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
 		g_object_unref (G_OBJECT (pix));
 	}
-
-	if (G_IS_OBJECT(m_pGC))
-		g_object_unref (G_OBJECT(m_pGC));
-	if (G_IS_OBJECT(m_pXORGC))
-		g_object_unref (G_OBJECT(m_pXORGC));
-	
-}
-
-void GR_UnixPangoGraphics::init()
-{
-	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
-
-	if (_getDrawable())
-	{
-		m_pColormap = gdk_rgb_get_colormap();
-		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
-
-		gDisplay = gdk_drawable_get_display(_getDrawable());
-		gScreen = gdk_drawable_get_screen(_getDrawable());
-
-		GdkDrawable * realDraw;
-		if(GDK_IS_WINDOW((_getDrawable())))
-		{
-				gdk_window_get_internal_paint_info (_getDrawable(), &realDraw,
-											&m_iXoff, &m_iYoff);
-		}
-		else
-		{
-			    realDraw = _getDrawable();
-				m_iXoff = 0;
-				m_iYoff = 0;
-		}
-
-		//
-		// Martin's attempt to make double buffering work.with xft
-		//
-		m_pGC = gdk_gc_new(realDraw);
-		m_pXORGC = gdk_gc_new(realDraw);
-		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
-		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
-
-		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
-								   m_pVisual, m_Colormap);
-			
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
-
-		GdkColor clrWhite;
-		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
-		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
-		gdk_gc_set_foreground(m_pXORGC, &clrWhite);
-
-		GdkColor clrBlack;
-		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
-		gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
-		gdk_gc_set_foreground(m_pGC, &clrBlack);
-
-		m_XftColor.color.red = clrBlack.red;
-		m_XftColor.color.green = clrBlack.green;
-		m_XftColor.color.blue = clrBlack.blue;
-		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = clrBlack.pixel;
-
-		// I only want to set CAP_NOT_LAST, but the call takes all
-		// arguments (and doesn't have a default value).  Set the
-		// line attributes to not draw the last pixel.
-
-		// We force the line width to be zero because the CAP_NOT_LAST
-		// stuff does not seem to work correctly when the width is set
-		// to one.
-
-		gdk_gc_set_line_attributes(m_pGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
-			
-		gdk_gc_set_line_attributes(m_pXORGC, 0,
-								   GDK_LINE_SOLID,
-								   GDK_CAP_NOT_LAST,
-								   GDK_JOIN_MITER);
-
-		// Set GraphicsExposes so that XCopyArea() causes an expose on
-		// obscured regions rather than just tiling in the default background.
-		gdk_gc_set_exposures(m_pGC, 1);
-		gdk_gc_set_exposures(m_pXORGC, 1);
-
-		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-		m_cursor = GR_CURSOR_INVALID;
-		setCursor(GR_CURSOR_DEFAULT);
-		
-	}
-	else
-	{
-		gDisplay = gdk_display_get_default();
-		gScreen = gdk_screen_get_default();
-	}
-
-	
-	m_bIsSymbol = false;
-	m_bIsDingbat = false;
-
-	bool bGotResolution = false;
-	
-	if (gScreen && gDisplay)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-
-			FcPattern *pattern = FcPatternCreate();
-			if (pattern)
-			{
-				double dpi;
-				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
-									  iScreen,
-									  pattern);
-
-				if(FcResultMatch == FcPatternGetDouble (pattern,
-														FC_DPI, 0, &dpi))
-				{
-					m_iDeviceResolution = (UT_uint32)round(dpi);
-					bGotResolution = true;
-				}
-
-				FcPatternDestroy (pattern);
-			}
-			
-			if (!bGotResolution)
-			{
-				// that didn't work. try getting it from the screen
-				m_iDeviceResolution =
-					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
-									 gdk_screen_get_width_mm (gScreen));
-			}
-
-			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
-						 m_iDeviceResolution));
-			
-		}
-	else
-	{
-		//
-		m_iDeviceResolution = 72.;
-		m_pFontMap = pango_cairo_font_map_new ();
-		pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap), 
-											(double) m_iDeviceResolution);	
-		m_pContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pFontMap));
-		m_bOwnsFontMap = true;
-	}
-	m_pLayoutFontMap = pango_cairo_font_map_new ();
-	pango_cairo_font_map_set_resolution(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap), 
-										(double) getResolution());	
-	m_pLayoutContext = pango_cairo_font_map_create_context(reinterpret_cast<PangoCairoFontMap*>(m_pLayoutFontMap));
-	UT_DEBUGMSG(("Created LayoutFontMap %x Layout Context %x \n",	m_pLayoutFontMap,	m_pLayoutContext));
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -729,7 +590,8 @@ GR_Graphics::Cursor GR_UnixPangoGraphics::getCursor(void) const
 void GR_UnixPangoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	_setColor(m_3dColors[c]);
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
 }
 
 bool GR_UnixPangoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
@@ -758,15 +620,19 @@ void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
+	GdkGC *gc;
+
 	GR_Painter caretDisablerPainter(this); // not an elegant way to disable all carets, but it works beautifully - MARCM
-   	gdk_draw_drawable(_getDrawable(), m_pGC, _getDrawable(), tdu(x_src), tdu(y_src),
-   				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+
+	gc = gdk_gc_new(_getDrawable());
+   	gdk_draw_drawable(_getDrawable(), gc, _getDrawable(), tdu(x_src), tdu(y_src),
+					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+	g_object_unref(G_OBJECT(gc)), gc = NULL;
 }
 
 
 UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 {
-	// TODO -- we should get this somewhere from the xft lib
 	return m_iDeviceResolution;
 }
 
@@ -1176,9 +1042,8 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	// Actually want the layout font here
 	//
 	PangoFont * pf = _adjustedLayoutPangoFont(pFont, pItem->m_pi->analysis.font);
-	//PangoFont * pfa = _adjustedPangoFont(pFont, pItem->m_pi->analysis.font);
-	
-	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf,pfa));
+
+	xxx_UT_DEBUGMSG(("Adjusted Layout font %x Adjusted font %x \n",pf));
 	UT_return_val_if_fail( pf, 0 );
 
 	UT_sint32 iStart = RI.m_iOffset;
@@ -1265,9 +1130,8 @@ UT_uint32 GR_UnixPangoGraphics::_measureExtent (PangoGlyphString * pg,
 
 	UT_ASSERT_HARMLESS( iOffsetStart >= 0 );
 
-	//PangoFontDescription * pfd = pango_font_describe (pf);
-	//int isize = pango_font_description_get_size(pfd);
-	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n",isize));
+	xxx_UT_DEBUGMSG(("Font size in _measureExtents %d \n", 
+						pango_font_description_get_size(pango_font_describe (pf))));
 
 	if(iOffsetEnd < 0 && iDir == UT_BIDI_LTR)
 	{
@@ -1456,15 +1320,17 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	UT_return_if_fail(m_pXftDraw && RI.m_pScaledGlyphs);
+	UT_return_if_fail(RI.m_pScaledGlyphs);
 
 	// TODO -- test here for the endpoint as well
 	if(RI.m_iOffset == 0 &&
 	   (RI.m_iLength == (UT_sint32)RI.m_iCharCount || !RI.m_iCharCount))
 	{
-		xxx_UT_DEBUGMSG(("Doing XFT Render now.\n")); 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 RI.m_pScaledGlyphs, xoff, yoff);
+		xxx_UT_DEBUGMSG(("Doing Cairo Render now.\n")); 
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, RI.m_pScaledGlyphs);
+		cairo_restore(m_cr);
 	}
 	else
 	{
@@ -1542,9 +1408,10 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		gs.glyphs = RI.m_pScaledGlyphs->glyphs + iGlyphsStart;
 		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf,
-						 &gs, xoff, yoff);
-
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoff, yoff);
+		pango_cairo_show_glyph_string(m_cr, pf, &gs);
+		cairo_restore(m_cr);
 	}
 }
 
@@ -2171,8 +2038,6 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									 int * pCharWidth)
 {
-	UT_return_if_fail(m_pXftDraw);
-
 	UT_UTF8String utf8;
 	xxx_UT_DEBUGMSG(("isDingBat %d \n",isDingbat()));
 	if(isSymbol())
@@ -2236,7 +2101,11 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 				pGstring->glyphs[j].geometry.width = _tduX(pCharWidth[j]*PANGO_SCALE);
 			}
 		}
-		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
+
+		cairo_save(m_cr);
+		cairo_translate(m_cr, xoffD, yoffD);
+		pango_cairo_show_glyph_string(m_cr, pf, pGstring);
+		cairo_restore(m_cr);
 
 		// now advance xoff
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
@@ -2507,20 +2376,15 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
 	UT_sint32 idx = _tduX(xDest);
 	UT_sint32 idy = _tduY(yDest);
 
-	xDest = idx; yDest = idy;
+	cairo_save(m_cr);
 
-	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_draw_pixbuf (_getDrawable(), NULL, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
-	else
-		gdk_draw_pixbuf (_getDrawable(), m_pGC, image,
-						 0, 0, xDest, yDest,
-						 iImageWidth, iImageHeight,
-						 GDK_RGB_DITHER_NORMAL,
-						 0, 0);
+	gdk_cairo_set_source_pixbuf(m_cr, image, idx, idy);
+	cairo_pattern_t *pattern = cairo_get_source(m_cr);
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
+	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);
+	cairo_fill(m_cr);
+
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::setFont(const GR_Font * pFont)
@@ -2674,36 +2538,6 @@ static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *ele
 	return NULL;
 }
 
-static void getDefaultFontmapAndContext(PangoFontMap **fontmap, PangoContext **context, bool *fontmapNeedsFreeing)
-{
-	// todo : use default cairo fontmap and context
-	GdkDisplay * gDisplay = NULL;
-	GdkScreen *  gScreen = NULL;
-
-	*fontmap = 0;
-	*context = 0;
-	*fontmapNeedsFreeing = false;
-
-	gDisplay = gdk_display_get_default();
-	gScreen = gdk_screen_get_default();
-
-	if (gScreen && gDisplay)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			*context = pango_xft_get_context(disp, iScreen);
-			*fontmap = pango_xft_get_font_map(disp, iScreen);
-		}
-#ifdef HAVE_PANGOFT2
-	else
-		{
-			*fontmap = pango_ft2_font_map_new ();
-			*context = pango_ft2_font_map_create_context(reinterpret_cast<PangoFT2FontMap*>(*fontmap));
-			fontmapNeedsFreeing = true;
-		}
-#endif
-}
-
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2744,12 +2578,8 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 				pango_font_description_set_stretch(d, (PangoStretch)fm->value);				
 			}
 
-		PangoFontMap *fontmap;
-		PangoContext *context;
-		bool ownsFontMap;
-		
-		getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
-		
+		PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+		PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));		
 		if (fontmap && context)
 			{
 				PangoFont *font = pango_font_map_load_font(fontmap, context, d);
@@ -2760,11 +2590,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 						pango_font_description_free(new_desc);
 						g_object_unref(font);
 					}
-		
-				g_object_unref(context);
-
-				if (ownsFontMap)
-					g_object_unref(fontmap);
+				g_object_unref(G_OBJECT (context)), context = NULL;
 			}
 
 		pango_font_description_free(d);
@@ -2938,12 +2764,8 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 
 
 	UT_DEBUGMSG(("@@@@ ===== Loading system fonts =====\n"));
-	PangoFontMap *fontmap;
-	PangoContext *context;
-	bool ownsFontMap;
-		
-	getDefaultFontmapAndContext(&fontmap, &context, &ownsFontMap);
-		
+	PangoFontMap *fontmap = pango_cairo_font_map_get_default();
+	PangoContext *context = pango_cairo_font_map_create_context(PANGO_CAIRO_FONT_MAP(fontmap));	
 	if (fontmap && context)
 		{
 			PangoFontFamily **font_families;
@@ -2967,11 +2789,7 @@ const std::vector<const char *> & GR_UnixPangoGraphics::getAllFontNames(void)
 					
 					Vec.push_back(family);
 				}
-						
-			g_object_unref(context);
-			
-			if (ownsFontMap)
-				g_object_unref(fontmap);
+			g_object_unref (G_OBJECT (context)), context = NULL;
 		}
 
 	return Vec;
@@ -3042,153 +2860,99 @@ void GR_UnixPangoGraphics::getColor(UT_RGBColor& clr)
 
 void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
 {
-	UT_ASSERT(m_pGC);
-	GdkColor c;
-
-	if (m_curColor == clr)
-		return;
-
 	m_curColor = clr;
-	c.red = clr.m_red << 8;
-	c.blue = clr.m_blu << 8;
-	c.green = clr.m_grn << 8;
-
-	_setColor(c);
-}
-
-void GR_UnixPangoGraphics::_setColor(GdkColor & c)
-{
-	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
-
-	UT_ASSERT(ret == TRUE);
-	if(ret)
-	{
-		gdk_gc_set_foreground(m_pGC, &c);
-		
-		m_XftColor.color.red = c.red;
-		m_XftColor.color.green = c.green;
-		m_XftColor.color.blue = c.blue;
-		m_XftColor.color.alpha = 0xffff;
-		m_XftColor.pixel = c.pixel;
-		
-		/* Set up the XOR gc */
-		gdk_gc_set_foreground(m_pXORGC, &c);
-		gdk_gc_set_function(m_pXORGC, GDK_XOR);
-	}
-	else 
-	{
-		g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, "gdk_colormap_alloc_color() "
-			  "failed in %s", __PRETTY_FUNCTION__);
-	}
+	cairo_set_source_rgb(m_cr, clr.m_red/255., clr.m_grn/255., clr.m_blu/255.);
 }
 
 void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	GdkGCValues gcV;
-	gdk_gc_get_values(m_pGC, &gcV);
-	
 	UT_sint32 idx1 = _tduX(x1);
 	UT_sint32 idx2 = _tduX(x2);
 
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 	
-	gdk_draw_line(_getDrawable(), m_pGC, idx1, idy1, idx2, idy2);
+	cairo_move_to (m_cr, idx1, idy1);
+	cairo_line_to (m_cr, idx2, idy2);
+	cairo_stroke (m_cr);
 }
 
 void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	m_iLineWidth = tdu(iLineWidth);
+	double width = tduD(iLineWidth);
 
-	// Get the current values of the line attributes
-
-	GdkGCValues cur_line_att;
-	gdk_gc_get_values(m_pGC, &cur_line_att);
-	GdkLineStyle cur_line_style = cur_line_att.line_style;
-	GdkCapStyle   cur_cap_style = cur_line_att.cap_style;
-	GdkJoinStyle  cur_join_style = cur_line_att.join_style;
-
-	// Set the new line width
-	gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
-
+	cairo_set_line_width (m_cr, width);
 }
 
-static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
+static cairo_line_cap_t mapCapStyle(GR_Graphics::CapStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::CAP_ROUND :
-			return GDK_CAP_ROUND ;
-		case GR_Graphics::CAP_PROJECTING :
-			return GDK_CAP_PROJECTING ;
-		case GR_Graphics::CAP_BUTT :
-		default:
-			return GDK_CAP_BUTT ;
+	switch (in) {
+	case GR_Graphics::CAP_ROUND:
+		return CAIRO_LINE_CAP_ROUND;
+	case GR_Graphics::CAP_PROJECTING:
+		return CAIRO_LINE_CAP_SQUARE;
+	case GR_Graphics::CAP_BUTT:
+	default:
+		return CAIRO_LINE_CAP_BUTT;
     }
 }
 
-static GdkLineStyle mapLineStyle ( GdkGC				  * pGC, 
-								   GR_Graphics::LineStyle 	in, 
-								   gint 					iWidth )
+/*
+ * \param width line width
+ * \param dashes Array for dash pattern
+ * \param n_dashes IN: length of dashes, OUT: number of needed dash pattern fields
+ */
+static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes, int *n_dashes)
 {
-	iWidth = iWidth == 0 ? 1 : iWidth;
-	switch ( in )
-    {
-		case GR_Graphics::LINE_ON_OFF_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH ;
-		case GR_Graphics::LINE_DOUBLE_DASH :
-			{
-				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_DOUBLE_DASH ;
-		case GR_Graphics::LINE_DOTTED:
-			{
-				/* strange but 1/3 ratio looks dotted */
-				gint8 dash_list[2] = { iWidth, 3*iWidth };
-				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
-			}
-			return GDK_LINE_ON_OFF_DASH;
-		case GR_Graphics::LINE_SOLID :
-		default:
-			return GDK_LINE_SOLID ;
-    }
+	switch (in) {
+	case GR_Graphics::LINE_ON_OFF_DASH:
+	case GR_Graphics::LINE_DOUBLE_DASH:				// see GDK_LINE_DOUBLE_DASH, but it was never used
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = 4 * width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_DOTTED:
+		UT_ASSERT(*n_dashes > 0);
+		dashes[0] = width;
+		*n_dashes = 1;
+		break;
+	case GR_Graphics::LINE_SOLID:
+	default:
+		*n_dashes = 0;
+	}
 }
 
-static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
+static cairo_line_join_t mapJoinStyle(GR_Graphics::JoinStyle in)
 {
-	switch ( in )
-    {
-		case GR_Graphics::JOIN_ROUND :
-			return GDK_JOIN_ROUND ;
-		case GR_Graphics::JOIN_BEVEL :
-			return GDK_JOIN_BEVEL ;
-		case GR_Graphics::JOIN_MITER :
-		default:
-			return GDK_JOIN_MITER ;
+	switch ( in ) {
+	case GR_Graphics::JOIN_ROUND:
+		return CAIRO_LINE_JOIN_ROUND;
+	case GR_Graphics::JOIN_BEVEL:
+		return CAIRO_LINE_JOIN_BEVEL;
+	case GR_Graphics::JOIN_MITER:
+	default:
+		return CAIRO_LINE_JOIN_MITER;
     }
 }
-
 
 void GR_UnixPangoGraphics::setLineProperties ( double inWidth, 
 										  GR_Graphics::JoinStyle inJoinStyle,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	gint iWidth = static_cast<gint>(tduD(inWidth));
-	gdk_gc_set_line_attributes ( m_pGC, iWidth,
-								 mapLineStyle ( m_pGC, inLineStyle, iWidth ),
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
-	gdk_gc_set_line_attributes ( m_pXORGC, iWidth,
-								 mapLineStyle ( m_pXORGC, inLineStyle, iWidth ), /* this was m_pGC before */
-								 mapCapStyle ( inCapStyle ),
-								 mapJoinStyle ( inJoinStyle ) ) ;
+	double dashes[2];
+	double width;
+	int n_dashes;
+
+	cairo_set_line_width (m_cr, tduD(inWidth));
+	cairo_set_line_join (m_cr, mapJoinStyle(inJoinStyle));
+	cairo_set_line_cap (m_cr, mapCapStyle(inCapStyle));
+
+	width = cairo_get_line_width(m_cr);
+	n_dashes = G_N_ELEMENTS(dashes);
+	mapDashStyle(inLineStyle, width, dashes, &n_dashes);
+	cairo_set_dash(m_cr, dashes, n_dashes, 0);
 }
 
 void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
@@ -3200,47 +2964,43 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 
-	gdk_draw_line(_getDrawable(), m_pXORGC, idx1, idy1, idx2, idy2);
+	cairo_save(m_cr);
+	cairo_set_operator(m_cr, CAIRO_OPERATOR_XOR);
+
+	cairo_move_to(m_cr, idx1, idy1);
+	cairo_line_to(m_cr, idx2, idy2);
+	cairo_stroke(m_cr);
+
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// see bug #303 for what this is about
+	UT_uint32 i;
 
-	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
-	UT_ASSERT(points);
+	UT_return_if_fail(nPoints > 1);
 
-	for (UT_uint32 i = 0; i < nPoints; i++)
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++)
 	{
-		UT_sint32 idx = _tduX(pts[i].x);
-		points[i].x = idx;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		UT_sint32 idy1 = _tduY(pts[i].y);
-
-		points[i].y = idy1 - 1;
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
 	}
-
-	gdk_draw_lines(_getDrawable(), m_pGC, points, nPoints);
-
-	FREEP(points);
+	cairo_stroke(m_cr);
 }
 
-void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
+void GR_UnixPangoGraphics::invertRect(const UT_Rect* /* pRect */)
 {
+/* TODO Rob
 	UT_ASSERT(pRect);
 
 	UT_sint32 idy = _tduY(pRect->top);
 	UT_sint32 idx = _tduX(pRect->left);
 	UT_sint32 idw = _tduR(pRect->width);
 	UT_sint32 idh = _tduR(pRect->height);
-
-	gdk_draw_rectangle(_getDrawable(), m_pXORGC, 1, idx, idy,
-			   idw, idh);
+*/
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
@@ -3248,64 +3008,31 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 	m_pRect = pRect;
 	if (pRect)
 	{
-		GdkRectangle r;
-		UT_sint32 idy = _tduY(pRect->top);
-		UT_sint32 idx = _tduX(pRect->left);
-		r.x = idx;
-		r.y = idy;
-		r.width = _tduR(pRect->width);
-		r.height = _tduR(pRect->height);
-		gdk_gc_set_clip_rectangle(m_pGC, &r);
-		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
-		XRectangle xRect;
-		xRect.x = r.x;
-		xRect.y = r.y;
-		xRect.width = r.width;
-		xRect.height = r.height;
-		XftDrawSetClipRectangles (m_pXftDraw,0,0,&xRect,1);
+		double x, y, width, height;
+		x = _tduX(pRect->left);
+		y = _tduY(pRect->top);
+		width = _tduR(pRect->width);
+		height = _tduR(pRect->height);
+		cairo_rectangle(m_cr, x, y, width, height);
+		cairo_clip(m_cr);
 	}
-	else
+	else 
 	{
-		gdk_gc_set_clip_rectangle(m_pGC, NULL);
-		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
-
-		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
-		XftDrawSetClip(m_pXftDraw, 0);
+		cairo_reset_clip(m_cr);
 	}
 }
 
 void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							   UT_sint32 w, UT_sint32 h)
 {
-	// save away the current color, and restore it after we fill the rect
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	cairo_save(m_cr);
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
+	cairo_fill(m_cr);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
-
-	oColor.pixel = gcValues.foreground.pixel;
-
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-	UT_sint32 idx = _tduX(x);
-	UT_sint32 idy = _tduY(y);
-	UT_sint32 idw = _tduR(w);
-	UT_sint32 idh = _tduR(h);
- 	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, idx, idy, idw, idh);
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
-
 
 GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 {
@@ -3414,54 +3141,50 @@ inline int GR_UnixPangoGraphics::pftlu(int pf) const
 
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-	UT_ASSERT(c < COUNT_3D_COLORS);
+	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
+/*!
+ * Rob sez: the original (before cairo) implementation did not restore colours after drawing.
+ * We're trying to do the right thing here instead.
+ */
 void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	UT_ASSERT(c < COUNT_3D_COLORS);
-	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(_getDrawable(), m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+	UT_ASSERT(m_bHave3DColors && c < COUNT_3D_COLORS);
+
+	cairo_save (m_cr);
+
+	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
+	cairo_fill(m_cr);
+
+	cairo_restore (m_cr);
 }
 
+/*!
+ * \todo Rob find out how to have this function used, and test.
+ */
 void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 								   UT_uint32 nPoints)
 {
-	// save away the current color, and restore it after we draw the polygon
-	GdkGCValues gcValues;
-	GdkColor oColor;
+	UT_uint32 i;
 
-	memset(&oColor, 0, sizeof(GdkColor));
+	UT_return_if_fail(nPoints > 1);
 
-	gdk_gc_get_values(m_pGC, &gcValues);
+	cairo_save(m_cr);
 
-	oColor.pixel = gcValues.foreground.pixel;
+	i = 0;
+	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	i++;
+	for (; i < nPoints; i++) {
+		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	}
+	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
+	cairo_fill(m_cr);	
 
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-
-	GdkPoint* points = new GdkPoint[nPoints];
-    UT_ASSERT(points);
-
-    for (UT_uint32 i = 0;i < nPoints;i++){
-		UT_sint32 idx = _tduX(pts[i].x);
-        points[i].x = idx;
-		UT_sint32 idy = _tduY(pts[i].y);
-        points[i].y = idy;
-    }
-	gdk_draw_polygon(_getDrawable(), m_pGC, 1, points, nPoints);
-	delete[] points;
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
+	cairo_restore(m_cr);
 }
 
 void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -3893,7 +3616,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	 * for our
 	 * gnome-print font map
 	 */
-	GdkScreen *  gScreen  = gdk_screen_get_default();
 
 	// the parent class' device resolution is the screen's resolution
 	m_iScreenResolution = m_iDeviceResolution;
@@ -3903,20 +3625,6 @@ void GR_UnixPangoPrintGraphics::_constructorCommon()
 	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
 				 m_iScreenResolution, m_iDeviceResolution));
 
-	if (gScreen)
-		{
-			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_SCREEN_XDISPLAY (gScreen);
-
-			m_pContext = pango_xft_get_context(disp, iScreen);
-			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-		}
-	else
-		{
-
-			m_bOwnsFontMap = true;
-		}
- 	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
 }
@@ -4122,8 +3830,8 @@ bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	UT_return_val_if_fail( ri, false );
 
-	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
 #if 0
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
 	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
 	{
 		RI.m_pGlyphs->glyphs[i].geometry.x_offset =

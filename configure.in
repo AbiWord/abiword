@@ -33,7 +33,17 @@ enchant_req='enchant >= 1.2.0'
 gnomeui_req='libgnomeui-2.0 >= 2.14'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
 gio_req='gio-2.0'
-goffice_req='libgoffice-0.4'
+goffice_req=
+for ver in 0.8 0.6 ; do
+  if test "x$goffice_req" = x; then
+    if pkg-config --exists libgoffice-$ver; then
+      goffice_req=libgoffice-$ver
+    fi
+  fi
+done
+if test "x$goffice_req" = x; then
+  goffice_req=libgoffice-0.6
+fi
 gucharmap_req='gucharmap >= 1.4'
 libgnomeprintui_req='libgnomeprintui-2.2 >= 2.2.0'
 hildon_pkgs='hildon-libs hildon-fm dbus-1 libosso libosso-gsf-1'
@@ -44,10 +54,10 @@ opt_pkgs=''
 cocoa_pkgs="$enchant_req"
 
 # gtk deps
-pangoxft_req='pangoxft >= 1.2.0'
-gtk_req='gtk+-2.0 >= 2.12.0'
+cairo_req='cairo-pdf cairo-ps'
+gtk_req='gtk+-2.0 >= 2.12.0 gtk+-unix-print-2.0'
 gtk_pkgs="
-  ${pangoxft_req}
+  ${cairo_req}
   ${gtk_req}
 "
 
@@ -615,7 +625,7 @@ fi
 if test "$abi_cv_menubutton" == "yes"; then
 	AC_DEFINE([ENABLE_MENUBUTTON], [1], [Define if building printing support])
 fi
-AM_CONDITIONAL([ENABLE_PRINT], test "$abi_cv_menubutton" == "yes")
+AM_CONDITIONAL([ENABLE_MENUBUTTON], test "$abi_cv_menubutton" == "yes")
 
 if test "$abi_cv_print" == "yes"; then
 	AC_DEFINE([ENABLE_PRINT], [1], [Define if building printing support])

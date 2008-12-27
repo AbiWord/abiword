@@ -43,16 +43,10 @@
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
-#include <pango/pangoxft.h>
-
-#ifdef HAVE_PANGOFT2
-#include <pango/pangoft2.h>
-#endif
 
 #include <math.h>
 
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
 
 /*!
  * The GR_UnixPangoPixmapGraphics is used to draw onto an offscreen 
@@ -62,9 +56,7 @@
 GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
 	GR_UnixPangoGraphics(),
 	m_pPixmap(pix)
-{
-	init();
-}			
+{}			
 
 GR_UnixPangoPixmapGraphics::~GR_UnixPangoPixmapGraphics(void)
 {

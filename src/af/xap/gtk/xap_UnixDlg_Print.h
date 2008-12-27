@@ -37,22 +37,16 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void			useStart(void);
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			useEnd(void);
 
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
-	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
+	virtual void		releasePrinterGraphicsContext(GR_Graphics *);
 
 protected:
-	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
-	virtual void            _getGraphics(void);
-
 	GR_Graphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;
 	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;
-	bool                          m_bPdfWorkAround;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */

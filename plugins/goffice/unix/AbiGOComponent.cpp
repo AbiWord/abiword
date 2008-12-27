@@ -187,11 +187,10 @@ static bool s_AskForGOComponentPathname(XAP_Frame * pFrame,
 //	data from a file.
 //
 bool 
-AbiGOComponent_FileInsert(AV_View* v, EV_EditMethodCallData *d)
+AbiGOComponent_FileInsert(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData *d)
 {
     // Get the current view that the user is in.
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-    FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
     PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
     char* pNewFile = NULL;
 
@@ -230,7 +229,7 @@ AbiGOComponent_FileInsert(AV_View* v, EV_EditMethodCallData *d)
 // -------------------
 //   This is the function that we actually call to insert a new intially empty component.
 bool 
-AbiGOComponent_Create (AV_View* v, EV_EditMethodCallData *d)
+AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData *d)
 {
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
@@ -270,7 +269,8 @@ AbiGOComponent_Create (AV_View* v, EV_EditMethodCallData *d)
 		GOComponent *component = go_component_new_by_mime_type (mime_type);
 		g_signal_connect (G_OBJECT (component), "changed",
 								G_CALLBACK (changed_cb), NULL);
-		go_component_edit (component);
+		GtkWindow *win = go_component_edit(component);
+		gtk_window_set_transient_for(win, GTK_WINDOW(pFrameImpl->getTopLevelWindow()));
 	}
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 	return result == GTK_RESPONSE_OK;
@@ -350,7 +350,7 @@ void GR_GOComponentManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
   pGOComponentView->setDefaultFontSize(iSize);
 }
 
-UT_sint32 GR_GOComponentManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, const char * szDataID)
+UT_sint32 GR_GOComponentManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
   if(m_pDoc == NULL)
   {
@@ -378,7 +378,7 @@ void GR_GOComponentManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 	PT_AttrPropIndex api = pItem->m_iAPI;
 	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
 	const char * pszDataID = NULL;
-	bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+	pSpanAP->getAttribute("dataid", pszDataID);
 	UT_ByteBuf *pBuf = NULL;
 	if ((pBuf = pGOComponentView->exportToSVG ())) {
 		UT_UTF8String sID = "snapshot-svg-";
@@ -426,8 +426,8 @@ bool GR_GOComponentManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
   {
     return false;
   }
-  GR_Painter painter(getGraphics());
-  GR_Image * pImage = painter.genImageFromRectangle(rec);
+  // TODO: use the goffice framework to get a high resolution png.
+  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -455,8 +455,8 @@ bool GR_GOComponentManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
   {
     return false;
   }
-  GR_Painter painter(getGraphics());
-  GR_Image * pImage = painter.genImageFromRectangle(rec);
+  // TODO: use the goffice framework to get a high resolution png.
+  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -478,12 +478,12 @@ bool GR_GOComponentManager::modify(UT_sint32 uid)
   return false;
 }
 
-void GR_GOComponentManager::initializeEmbedView(UT_sint32 uid)
+void GR_GOComponentManager::initializeEmbedView(G_GNUC_UNUSED UT_sint32 uid)
 {
   // FIXME write code for this.
 }
 
-void GR_GOComponentManager::loadEmbedData(UT_sint32 uid)
+void GR_GOComponentManager::loadEmbedData(G_GNUC_UNUSED UT_sint32 uid)
 {
 	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
 	UT_return_if_fail(pGOComponentView);
@@ -534,7 +534,7 @@ UT_sint32 GR_GOComponentManager::getDescent(UT_sint32 uid)
 	return pGOComponentView->descent = (UT_sint32) rint (dim * UT_LAYOUT_RESOLUTION);
 }
 
-void GR_GOComponentManager::setColor(UT_sint32 uid, UT_RGBColor c)
+void GR_GOComponentManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_RGBColor c)
 {
   // FIXME write code
 }
@@ -560,7 +560,7 @@ void GR_GOComponentManager::releaseEmbedView(UT_sint32 uid)
   m_vecGOComponentView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
 }
 
-bool GR_GOComponentManager::convert(UT_uint32 iConType, UT_ByteBuf & From, UT_ByteBuf & To)
+bool GR_GOComponentManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
 {
   return false;
 }
@@ -614,78 +614,34 @@ void GOComponentView::render(UT_Rect & rec)
 	UT_return_if_fail (component);
 	if (rec.width == 0 || rec.height == 0) // Nothing to render
 		return;
-	GR_Graphics *pUGG = m_pGOMan->getGraphics();
-	if (pUGG->queryProperties(GR_Graphics::DGP_PAPER))
+	GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+	cairo_t *cr = pUGG->getCairo ();
+	UT_sint32 myWidth = pUGG->tdu(rec.width);
+	UT_sint32 myHeight = pUGG->tdu(rec.height);
+	UT_sint32 x = pUGG->tdu(rec.left);
+	UT_sint32 y = pUGG->tdu(rec.top - ascent);
+	if ((width != rec.width || ascent + descent != rec.height) && go_component_is_resizable (component))
 	{
-		GnomePrintContext *ctx = NULL;
-		UT_sint32 myWidth = pUGG->tdu(rec.width);
-		UT_sint32 myHeight = pUGG->tdu(rec.height);
-		UT_sint32 x = pUGG->tdu(rec.left);
-		UT_sint32 y = pUGG->tdu(rec.top);
-		//
-		// gnome_print places y = 0 at the bottom of the page
-		// and as y increases, it gets placed further from the bottom.
-		//
-		// This is the opposite of AbiWord where y = 0 is the top
-		// and y > 0 is further from the top.
-		//
-		// scale_ydir fixes this (and gets the landscape/portrait right 
-		// too).
-		//
-#ifdef ENABLE_PRINT
-		GR_UnixPangoPrintGraphics *pUPPG = static_cast< GR_UnixPangoPrintGraphics *>(pUGG);
-		ctx = pUPPG->getGnomePrintContext();
-		y = pUPPG->scale_ydir(y);
-#endif
-		if (!ctx)
-			return;
-		
-		gnome_print_gsave (ctx);
-
-		// at that point, ascent and descent might be not valid, so get it from the component
-		double d;
-		g_object_get (G_OBJECT (component), "descent", &d, NULL);
-		descent = pUGG->tdu(static_cast<UT_sint32>(d * UT_LAYOUT_RESOLUTION));
-		gnome_print_translate (ctx, x, y - descent);
-		go_component_print (component, ctx, myWidth, myHeight);
-		gnome_print_grestore (ctx);
+		double _ascent, _descent;
+		go_component_set_size (component, (double) rec.width / UT_LAYOUT_RESOLUTION, (double) rec.height / UT_LAYOUT_RESOLUTION);
+		g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, NULL);
+		ascent =  (UT_sint32) rint (_ascent * UT_LAYOUT_RESOLUTION);
+		descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
 	}
-	else 
+	if (window != NULL)
 	{
-		UT_sint32 myWidth = pUGG->tdu(rec.width);
-		UT_sint32 myHeight = pUGG->tdu(rec.height);
-		UT_sint32 x = pUGG->tdu(rec.left);
-		UT_sint32 y = pUGG->tdu(rec.top);
-		if ((width != rec.width || ascent + descent != rec.height) && go_component_is_resizable (component)) {
-			double _ascent, _descent;
-			go_component_set_size (component, (double) rec.width / UT_LAYOUT_RESOLUTION, (double) rec.height / UT_LAYOUT_RESOLUTION);
-			g_object_get (G_OBJECT (component), "ascent", &_ascent, "descent", &_descent, NULL);
-			ascent =  (UT_sint32) rint (_ascent * UT_LAYOUT_RESOLUTION);
-			descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
-		}
-  		if (window == NULL && (myWidth != pix_width || myHeight != pix_height)) {
-			// we have a windowless plugin
-			pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, true,
-							8, pix_width = myWidth, pix_height = myHeight);
-			go_component_set_pixbuf (component, pixbuf);
-			delete m_Image;
-			m_Image = NULL;
-		}
-		if (window != NULL) {
-			y -= myHeight;
-			if (x != attributes.x || y != attributes.y)
-				gdk_window_move (window, x, y);
-			if (myWidth != attributes.width || myHeight != attributes.height)
-				gdk_window_resize (window, myWidth, myHeight);
-		} else {
-			if (!m_Image) {
-				go_component_draw (component, myWidth, myHeight);
-				m_Image = new GR_UnixImage(NULL, pixbuf);
-			}
-			m_Image->scaleImageTo(m_pGOMan->getGraphics(),rec);
-			GR_Painter painter(m_pGOMan->getGraphics());
-			painter.drawImage (m_Image, rec.left, rec.top -ascent);
-		}
+		y -= myHeight;
+		if (x != attributes.x || y != attributes.y)
+			gdk_window_move (window, x, y);
+		if (myWidth != attributes.width || myHeight != attributes.height)
+			gdk_window_resize (window, myWidth, myHeight);
+	}
+	else
+	{
+		cairo_save (cr);
+		cairo_translate (cr, x, y);
+		go_component_render (component, cr, myWidth, myHeight);
+		cairo_restore (cr);
 	}
 }
 
@@ -700,7 +656,6 @@ changed_cb (GOComponent *component, gpointer data)
 	else
 	{
 		XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
 		FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 		UT_Byte *buf;
 		int length;
@@ -713,7 +668,7 @@ changed_cb (GOComponent *component, gpointer data)
 				UT_String Props=UT_String ("embed-type: GOComponent//") + component->mime_type;
 				guint i, nbprops;
 				GType    prop_type;
-				GValue	 value = { 0 };
+				GValue	 value;
 				char *prop = NULL;
 				GParamSpec **specs = g_object_class_list_properties (
 							G_OBJECT_GET_CLASS (component), &nbprops);
@@ -733,7 +688,7 @@ changed_cb (GOComponent *component, gpointer data)
 							case G_TYPE_ULONG:
 							case G_TYPE_FLOAT:
 							case G_TYPE_DOUBLE: {
-								GValue str = { 0 };
+								GValue str;
 								g_value_init (&str, G_TYPE_STRING);
 								g_value_transform (&value, &str);
 								prop = g_strdup (g_value_get_string (&str));
@@ -784,8 +739,8 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime
 	}
 	go_component_set_default_size (component, 2.5, 2.5, 0.);
 	if (go_component_needs_window (component)) {
-		GR_Graphics *pUGG = m_pGOMan->getGraphics();
-		GdkWindow *parent = ((GR_UnixPangoGraphics*) pUGG)->getWindow ();
+		GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+		GdkWindow *parent = pUGG->getWindow ();
 		attributes.x = 0; // we do not know where the window should be at the moment
 		attributes.y = 0;
 		attributes.width = pUGG->tdu ((UT_sint32)(2.5 * UT_LAYOUT_RESOLUTION));
@@ -803,7 +758,7 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime
 			PP_AttrProp const *Props = m_pRun->getSpanAP ();
 			GParamSpec *prop_spec;
 			int i = 0;
-			GValue res = { 0 };
+			GValue res;
 			gchar const *szName, *szValue;
 			while (Props->getNthProperty (i++, szName, szValue)) {
 				prop_spec = g_object_class_find_property (
@@ -831,7 +786,7 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime
 }
 
 
-void GOComponentView::setDefaultFontSize( UT_sint32 iSize)
+void GOComponentView::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 iSize)
 {
 }
 
@@ -856,7 +811,7 @@ void GOComponentView::update ()
 		UT_String Props=UT_String ("embed-type: GOComponent//") + mime_type;
 		guint i, nbprops;
 		GType    prop_type;
-		GValue	 value = { 0 };
+		GValue	 value;
 		char *prop = NULL;
 		GParamSpec **specs = g_object_class_list_properties (
 					G_OBJECT_GET_CLASS (component), &nbprops);
@@ -876,7 +831,7 @@ void GOComponentView::update ()
 					case G_TYPE_ULONG:
 					case G_TYPE_FLOAT:
 					case G_TYPE_DOUBLE: {
-						GValue str = { 0 };
+						GValue str;
 						g_value_init (&str, G_TYPE_STRING);
 						g_value_transform (&value, &str);
 						prop = g_strdup (g_value_get_string (&str));
@@ -912,12 +867,12 @@ void GOComponentView::update ()
 UT_ByteBuf *GOComponentView::exportToSVG ()
 {
 	UT_return_val_if_fail (component, NULL);
-	char *svg = go_component_export_to_svg (component);
+//	char *svg = go_component_export_to_svg (component);
 	UT_ByteBuf *pBuf = NULL;
-	if (svg) {
+/*	if (svg) {
 		pBuf = new UT_ByteBuf ();
 		pBuf->append (reinterpret_cast<UT_Byte*> (svg), strlen (svg));
 		g_free (svg);
-	}
+	}*/
 	return pBuf;
 }
