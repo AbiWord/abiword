@@ -1318,7 +1318,7 @@ UT_UCS4String::UT_UCS4String(const std::string & str /* zero-terminated utf-8 en
 /* construct from a string in UTF-8 format
  * if (strip_whitespace == true) replace all white space sequences with a single UCS_SPACE
  * if (strip_whitespace != true) replace CR-LF & CR by LF
- * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS4_isspace()
+ * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space
  */
 UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace)
 	:	pimpl(new UT_StringImpl<UT_UCS4Char>)
@@ -1332,7 +1332,7 @@ UT_UCS4String::UT_UCS4String(const char * _utf8_str, size_t bytelength /* 0 == z
 		if (ucs4a == 0) 
 			break; // end-of-string
 		UT_UCS4Char ucs4b = UT_Unicode::UTF8_to_UCS4 (_utf8_str, bytelength);
-		if (UT_UCS4_isspace (ucs4a)) {
+		if ((UCS_NBSP != ucs4a) && UT_UCS4_isspace (ucs4a)) {
 			if (strip_whitespace) {
 				if (!UT_UCS4_isspace (ucs4b)) {
 					ucs4a = UCS_SPACE;
