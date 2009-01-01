@@ -23,6 +23,8 @@
 #include "xap_Dlg_Print.h"
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-job.h>
+#include <gtk/gtk.h>
+#include <gtk/gtkprintunixdialog.h>
 
 class XAP_UnixGnomePrintGraphics;
 
@@ -41,12 +43,16 @@ public:
 
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
 	virtual void		releasePrinterGraphicsContext(GR_Graphics *);
+	void                    setupPrint(XAP_Frame * pFrame);
 
 protected:
 	GR_Graphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;
 	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;
+	GtkPageSetup *                m_pPageSetup;
+	GtkPaperSize *                m_pGtkPageSize;
+	GtkPrintOperation *           m_pPO;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */

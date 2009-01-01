@@ -46,7 +46,10 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id),
 	  m_pPrintGraphics (NULL),
-	  m_bIsPreview(false)
+	  m_bIsPreview(false),
+	  m_pPageSetup(NULL),
+	  m_pGtkPageSize(NULL),
+	  m_pPO(NULL)
 {
 }
 
@@ -65,6 +68,12 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	UT_UNUSED(pGraphics);
 	UT_ASSERT(pGraphics == m_pPrintGraphics);	
 	DELETEP(m_pPrintGraphics);
+	g_object_unref(m_pPageSetup);
+	m_pPageSetup = NULL;
+	gtk_paper_size_free (m_pGtkPageSize);
+	m_pGtkPageSize=  NULL;
+	g_object_unref(m_pPO);
+	m_pPO=  NULL;
 }
 
 /*****************************************************************/
@@ -73,7 +82,6 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 #if 0
 void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
-	GtkWidget *gpd;
 	int copies = 1, collate = FALSE;
 	int first = 1, end = 0, range;
 
@@ -166,13 +174,185 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	abiDestroyWidget (gpd);
 }
 #endif
+void XAP_UnixDialog_Print::setupPrint(XAP_Frame * pFrame)
+{
+	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+	bool portrait;
+
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+
+	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
+	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
+	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
+	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
+
+	portrait = pView->getPageSize().isPortrait();
+		
+	width = pView->getPageSize().Width (DIM_MM);
+	height = pView->getPageSize().Height (DIM_MM);
+	
+	m_pPageSetup = gtk_page_setup_new();
+
+	char * pszName = pView->getPageSize().getPredefinedName();
+	bool isPredefined = false;
+	const char * pszGtkName = NULL;
+	if(pszName == NULL)
+		{
+	}
+	else if(g_ascii_strcasecmp(pszName,"Custom") == 0)
+	{
+	}
+	else if(g_ascii_strcasecmp(pszName,"A0") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a0";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A1") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a1";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A2") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a2";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A3") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a3";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A4") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a4";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A5") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a5";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A6") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a6";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A7") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a7";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A8") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a8";
+	}
+	else if(g_ascii_strcasecmp(pszName,"A9") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_a9";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B0") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b0";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B1") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b1";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B2") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b2";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B3") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b3";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B4") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b4";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B4") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b4";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B5") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b5";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B6") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b6";
+	}
+	else if(g_ascii_strcasecmp(pszName,"B7") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "iso_b7";
+	}
+	else if(g_ascii_strcasecmp(pszName,"Legal") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "na_legal";
+	}
+	else if(g_ascii_strcasecmp(pszName,"Letter") == 0)
+	{
+		isPredefined = true;
+		pszGtkName = "na_letter";
+	}
+	if(isPredefined)
+	{
+		m_pGtkPageSize = gtk_paper_size_new(static_cast<const gchar *>(pszGtkName));
+	}
+	else
+	{
+		m_pGtkPageSize = gtk_paper_size_new_custom ("custom",
+												"custom",
+												width,height,GTK_UNIT_MM);
+	}
+	//
+	// Set the Page Size
+	//
+	gtk_page_setup_set_paper_size(m_pPageSetup,m_pGtkPageSize);
+	//
+	// Set the margins
+	//
+	gtk_page_setup_set_top_margin(m_pPageSetup,mrgnTop,GTK_UNIT_MM);
+	gtk_page_setup_set_bottom_margin(m_pPageSetup,mrgnBottom,GTK_UNIT_MM);
+	gtk_page_setup_set_left_margin(m_pPageSetup,mrgnLeft,GTK_UNIT_MM);
+	gtk_page_setup_set_right_margin(m_pPageSetup,mrgnRight,GTK_UNIT_MM);
+	if(	portrait)
+		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_PORTRAIT);
+	else
+		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_LANDSCAPE);
+
+}
 
 void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame) 
 {
 	GtkWidget	*dialog;
 	gint		 response;
+#if 0
+	int copies = 1, collate = FALSE;
+	int first = 1, end = 0, range;
+#endif
+	setupPrint(pFrame);
+	m_pPO = gtk_print_operation_new();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	dialog = gtk_print_unix_dialog_new (reinterpret_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)), NULL);
+	
+	gtk_print_unix_dialog_set_page_setup((GtkPrintUnixDialog *) dialog,m_pPageSetup);
 
-	dialog = gtk_print_unix_dialog_new (NULL, NULL);
+	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_PAGE_SET);
+	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_COPIES);
+	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_PREVIEW );
 
 	response = abiRunModalDialog (GTK_DIALOG (dialog), pFrame, this, GTK_RESPONSE_CANCEL, false);
 	switch (response) {
@@ -190,6 +370,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 		printf ("cancel\n");
 		m_answer = a_CANCEL; 
 	}
+
 
 	gtk_widget_destroy (dialog), dialog = NULL;
 }

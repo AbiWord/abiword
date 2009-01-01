@@ -2273,7 +2273,8 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {
 	UT_Rect* oldR = NULL;	
-
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
 	m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
 	if(oldR) {
 		delete oldR;
@@ -2294,10 +2295,13 @@ void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 
 	if(oldC)
 		g_object_unref (G_OBJECT (oldC));
-}
+	cairo_restore(m_cr);
+}	
 
 void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 {
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
 	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
@@ -2308,6 +2312,7 @@ void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
 						 idx, idy,
 						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+	cairo_restore(m_cr);
 }
 
 /*!
