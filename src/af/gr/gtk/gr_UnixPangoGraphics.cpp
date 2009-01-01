@@ -3006,6 +3006,7 @@ void GR_UnixPangoGraphics::invertRect(const UT_Rect* /* pRect */)
 void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 {
 	m_pRect = pRect;
+	cairo_reset_clip(m_cr);
 	if (pRect)
 	{
 		double x, y, width, height;
@@ -3015,10 +3016,6 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 		height = _tduR(pRect->height);
 		cairo_rectangle(m_cr, x, y, width, height);
 		cairo_clip(m_cr);
-	}
-	else 
-	{
-		cairo_reset_clip(m_cr);
 	}
 }
 
