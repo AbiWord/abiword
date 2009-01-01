@@ -411,6 +411,10 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
     }
     
     pVal = UT_getAttribute("style:font-name", ppProps);
+    if(!pVal) {
+      pVal = UT_getAttribute("fo:font-family", ppProps);
+    }
+
     if(pVal) {
         m_fontName.assign(pVal);
     }
