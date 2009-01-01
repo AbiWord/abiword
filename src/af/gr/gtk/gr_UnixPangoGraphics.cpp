@@ -3002,6 +3002,21 @@ void GR_UnixPangoGraphics::invertRect(const UT_Rect* /* pRect */)
 */
 	UT_ASSERT_NOT_REACHED ();
 }
+/**
+ * This appears to fix off-by-1 bugs in setting rectangles at least
+ */
+double GR_UnixPangoGraphics::_tdudX(UT_sint32 layoutUnits) const
+{
+	return _tduX(layoutUnits) -0.5;
+}
+
+/**
+ * This appears to fix off-by-1 bugs in setting rectangles at least
+ */
+double GR_UnixPangoGraphics::_tdudY(UT_sint32 layoutUnits) const
+{
+	return _tduY(layoutUnits) -0.5;
+}
 
 void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 {
@@ -3010,8 +3025,8 @@ void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		double x, y, width, height;
-		x = _tduX(pRect->left);
-		y = _tduY(pRect->top);
+		x = _tdudX(pRect->left);
+		y = _tdudY(pRect->top);
 		width = _tduR(pRect->width);
 		height = _tduR(pRect->height);
 		cairo_rectangle(m_cr, x, y, width, height);
@@ -3025,7 +3040,7 @@ void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32
 	cairo_save(m_cr);
 
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
-	cairo_rectangle(m_cr, _tduX(x), _tduY(y), _tduR(w), _tduR(h));
+	cairo_rectangle(m_cr, _tdudX(x), _tdudY(y), _tduR(w), _tduR(h));
 	cairo_fill(m_cr);
 
 	cairo_restore(m_cr);

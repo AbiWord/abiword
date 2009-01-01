@@ -92,7 +92,6 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	PangoCoverage *   getPangoCoverage() const;
 	PangoLanguage *   getPangoLanguage() const {return m_pPLang;}
 	void              setLanguage(const char * pLang);
-	
   private:
 	UT_String              m_sDesc;
 	UT_String              m_sLayoutDesc;
@@ -339,7 +338,10 @@ public:
 
 	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
-	
+ 
+	double            _tdudX(UT_sint32 layoutUnits) const;
+	double            _tdudY(UT_sint32 layoutUnits) const;
+ 	
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
