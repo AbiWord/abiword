@@ -989,13 +989,11 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         // multiple page formats anyway.
         
         pMasterPageStyle = m_pStyles->getMasterPageStyle("Standard");
-        UT_return_if_fail(pMasterPageStyle);
-        
-        UT_ASSERT(pMasterPageStyle->getPageLayout());
-        
-        allProps = pMasterPageStyle->getSectionProps();
-        dataID = pMasterPageStyle->getSectionDataID();
-        UT_ASSERT(!allProps.empty());
+
+        if (pMasterPageStyle) {
+            allProps = pMasterPageStyle->getSectionProps();
+            dataID = pMasterPageStyle->getSectionDataID();
+        }
 
         m_openedFirstAbiSection = true;
     }

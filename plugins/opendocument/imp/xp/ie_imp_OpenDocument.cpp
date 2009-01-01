@@ -201,14 +201,18 @@ UT_Error IE_Imp_OpenDocument::_handleMetaStream ()
  */
 UT_Error IE_Imp_OpenDocument::_handleSettingsStream ()
 {
-    UT_Error error;
+    if (gsf_infile_child_exists (m_pGsfInfile, "settings.xml")) {
+        UT_Error error;
     
-    error = m_pStreamListener->setState("SettingsStream");
-    if (error != UT_OK) {
-        return error;
+	error = m_pStreamListener->setState("SettingsStream");
+	if (error != UT_OK) {
+	    return error;
+	}
+    
+	return _handleStream (m_pGsfInfile, "settings.xml", *m_pStreamListener);
     }
-    
-    return _handleStream (m_pGsfInfile, "settings.xml", *m_pStreamListener);
+
+    return UT_OK;
 }
 
 
@@ -217,14 +221,18 @@ UT_Error IE_Imp_OpenDocument::_handleSettingsStream ()
  */
 UT_Error IE_Imp_OpenDocument::_handleStylesStream ()
 {
-    UT_Error error;
+    if (gsf_infile_child_exists (m_pGsfInfile, "styles.xml")) {
+        UT_Error error;
     
-    error = m_pStreamListener->setState("StylesStream");
-    if (error != UT_OK) {
-        return error;
+	error = m_pStreamListener->setState("StylesStream");
+	if (error != UT_OK) {
+	    return error;
+	}
+    
+	return _handleStream (m_pGsfInfile, "styles.xml", *m_pStreamListener);
     }
-    
-    return _handleStream (m_pGsfInfile, "styles.xml", *m_pStreamListener);
+
+    return UT_OK;
 }
 
 
