@@ -252,7 +252,13 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolut
 	m_cursor(GR_CURSOR_INVALID),
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bIsSymbol(false),
-	m_bIsDingbat(false)
+	m_bIsDingbat(false),
+	m_iPrevX1(0),
+	m_iPrevX2(0),
+	m_iPrevY1(0),
+	m_iPrevY2(0),
+	m_iPrevRect(1000), // arbitary number that leave room for plenty of carets
+	m_iXORCount(0)
 {
 	m_pFontMap = pango_cairo_font_map_get_default();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
@@ -282,7 +288,14 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	m_cursor(GR_CURSOR_INVALID),
 	m_cs(GR_Graphics::GR_COLORSPACE_COLOR),
 	m_bIsSymbol(false),
-	m_bIsDingbat(false)
+	m_bIsDingbat(false),
+	m_iPrevX1(0),
+	m_iPrevX2(0),
+	m_iPrevY1(0),
+	m_iPrevY2(0),
+	m_iPrevRect(1000),
+	m_iXORCount(0)
+
 {
 	if (_getDrawable())
 	{
@@ -2286,6 +2299,7 @@ void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idw = _tduR(r.width);
 	UT_sint32 idh = _tduR(r.height);
 
+
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   _getDrawable(),
 												   NULL,
@@ -2306,7 +2320,6 @@ void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
 	UT_sint32 idy = _tduY(r->top);
-
 
 	if (p && r)
 		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
@@ -2960,6 +2973,12 @@ void GR_UnixPangoGraphics::setLineProperties ( double inWidth,
 	cairo_set_dash(m_cr, dashes, n_dashes, 0);
 }
 
+/*
+ * This method looks the way it does because the Cairo XOR does not behave like
+ * the bitwise xor used in the other graphics classes. We use this method
+ * to draw temperary lines  across the page when dragging ruler controls.
+ * The hack below preserves this behaviour.
+ */
 void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							  UT_sint32 y2)
 {
@@ -2968,15 +2987,53 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
+	if((idx1 == m_iPrevX1) && (idx2 == m_iPrevX2) && (idy1 == m_iPrevY1) && (idy2 == m_iPrevY2) && (m_iXORCount == 1))
+	{
+		//
+		// We've XOR'd a previously written line, restore the content from 
+		// m_iPrevRect
+		//
+		m_iXORCount = 0;
+		restoreRectangle(m_iPrevRect);
+		
+	}
+	else
+	{
+		//
+		// Save the contents of the screen before drawing a line across it.
+		//
+		m_iPrevX1 = idx1;
+		m_iPrevX2 = idx2;
+		m_iPrevY1 = idy1;
+		m_iPrevY2 = idy2;
+		m_iXORCount = 1;
+		UT_Rect r;
+		UT_sint32 swap = 0;
+		if(idx1 > idx2)
+		{
+			swap = idx1;
+			idx1 = idx2;
+			idx2 = swap;
+		}
+		if(idy1 > idy2)
+		{
+			swap = idy1;
+			idy1 = idy2;
+			idy2 = swap;
+		}
+		r.left = tlu(idx1);
+		r.top = tlu(idy1);
+		r.width = tlu(idx2 - idx1 +1);
+		r.height = tlu(idy2 - idy1+1);
+		saveRectangle(r,m_iPrevRect);
+		cairo_save(m_cr);
+		cairo_set_source_rgb(m_cr, 0.0 , 0.0 , 0.0);
 
-	cairo_save(m_cr);
-	cairo_set_operator(m_cr, CAIRO_OPERATOR_XOR);
-
-	cairo_move_to(m_cr, idx1, idy1);
-	cairo_line_to(m_cr, idx2, idy2);
-	cairo_stroke(m_cr);
-
-	cairo_restore(m_cr);
+		cairo_move_to(m_cr, idx1, idy1);
+		cairo_line_to(m_cr, idx2, idy2);
+		cairo_stroke(m_cr);
+		cairo_restore(m_cr);
+	}
 }
 
 void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)

@@ -369,7 +369,13 @@ public:
 	UT_RGBColor				m_curColor;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
-
+	UT_sint32               m_iPrevX1;
+	UT_sint32               m_iPrevX2;
+	UT_sint32               m_iPrevY1;
+	UT_sint32               m_iPrevY2;
+	UT_uint32               m_iPrevRect;
+	UT_sint32               m_iXORCount;
+		
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
