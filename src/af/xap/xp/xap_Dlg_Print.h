@@ -23,7 +23,8 @@
 #include "gr_Graphics.h"
 
 #include "xap_Dialog.h"
-
+class FV_View;
+class FL_DocLayout;
 /*****************************************************************/
 
 class ABI_EXPORT XAP_Dialog_Print : public XAP_Dialog_AppPersistent
@@ -59,7 +60,8 @@ public:
 	
 	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
-	
+
+	virtual void                            setPreview(bool ) {}
 protected:
 	bool							_getPrintToFilePathname(XAP_Frame * pFrame,
 															const char * szSuggestedName);

@@ -31,10 +31,32 @@
 #include "xap_Strings.h"
 #include "xap_Frame.h"
 #include "ut_misc.h"
+#include "xad_Document.h"
 
 #include "gr_CairoPrintGraphics.h"
-
+#include "fl_DocLayout.h"
 #include "fv_View.h"
+#include "xap_UnixFrameImpl.h"
+#include "ap_FrameData.h"
+#include "gr_DrawArgs.h"
+#include "ap_Strings.h"
+
+static void s_Begin_Print(GtkPrintOperation * ,
+						  GtkPrintContext   *context,
+						  gpointer           p)
+{
+	XAP_UnixDialog_Print * pDlg = (XAP_UnixDialog_Print *) p;
+	//
+	// Use context to extract the cairo_t surface for the print.
+	//
+	pDlg->BeginPrint(context);
+} 
+
+static void s_Print_Page(GtkPrintOperation * , GtkPrintContext *, gint page_nr,gpointer p)
+{
+	XAP_UnixDialog_Print * pDlg = (XAP_UnixDialog_Print *) p;
+	pDlg->PrintPage(page_nr);
+}
 
 XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 														   XAP_Dialog_Id id)
@@ -49,7 +71,18 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 	  m_bIsPreview(false),
 	  m_pPageSetup(NULL),
 	  m_pGtkPageSize(NULL),
-	  m_pPO(NULL)
+	  m_pPO(NULL),
+	  m_pJob(NULL),
+	  m_pPC(NULL),
+	  m_pView(NULL),
+	  m_iNumberPages(0),
+	  m_iCurrentPage(0),
+	  m_pDL(NULL),
+	  m_pPrintView(NULL),
+	  m_pPrintLayout(NULL),
+	  m_bDidQuickPrint(false),
+	  m_bShowParagraphs(false),
+	  m_pFrame(NULL)
 {
 }
 
@@ -59,7 +92,6 @@ XAP_UnixDialog_Print::~XAP_UnixDialog_Print(void)
 
 GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
-	UT_ASSERT(m_answer == a_OK);
 	return m_pPrintGraphics;
 }
 
@@ -68,136 +100,114 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	UT_UNUSED(pGraphics);
 	UT_ASSERT(pGraphics == m_pPrintGraphics);	
 	DELETEP(m_pPrintGraphics);
-	g_object_unref(m_pPageSetup);
+	if(m_pPageSetup)
+	   g_object_unref(m_pPageSetup);
 	m_pPageSetup = NULL;
-	gtk_paper_size_free (m_pGtkPageSize);
+	if(m_pGtkPageSize)
+		gtk_paper_size_free (m_pGtkPageSize);
 	m_pGtkPageSize=  NULL;
-	g_object_unref(m_pPO);
+	if(m_pPO)
+		g_object_unref(m_pPO);
 	m_pPO=  NULL;
+	if(m_pJob)
+		g_object_unref(m_pJob);
+	m_pJob = NULL;
+	if(m_pPC)
+		g_object_unref(m_pPC);
+	m_pPC = NULL;
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-#if 0
-void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
+void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 {
-	int copies = 1, collate = FALSE;
-	int first = 1, end = 0, range;
+	m_pPC= context;
+	cairo_t* cr = gtk_print_context_get_cairo_context (m_pPC);
+	//
+	// The cairo context is automatically unref'd at the end of the print
+	// so we need to reference it to allow it to be deleted by the PrintGraphics
+	// class
+	cairo_reference(cr);
+	//
+	// Set this from the dialog range
+	//
+	gtk_print_operation_set_n_pages (m_pPO,m_iNumberPages);
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 
-	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
-	bool portrait;
-
-	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-
-	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
-	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
-	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
-	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
-
-	portrait = pView->getPageSize().isPortrait();
-	m_bPdfWorkAround = false;		
-		
-	width = pView->getPageSize().Width (DIM_MM);
-	height = pView->getPageSize().Height (DIM_MM);
-
-	GnomePrintJob * job =
-	    gnome_print_job_new(GR_UnixPangoPrintGraphics::s_setup_config (
-				    mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
-				    width, height, copies, portrait));
-
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
-	// 1.  Create the dialog widget
-	gpd = gnome_print_dialog_new (job,
-				      reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)),
-				      GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
-	GnomePrintConfig * cfg = gnome_print_job_get_config (job);
-
-	/* sorry about the ugly C-style cast -- ignore the "_Active Page" too */
-	gnome_print_dialog_construct_range_page(GNOME_PRINT_DIALOG(gpd),
-											GNOME_PRINT_RANGE_ALL| GNOME_PRINT_RANGE_RANGE | GNOME_PRINT_RANGE_SELECTION,
-											m_nFirstPage, m_nLastPage,
-											reinterpret_cast<const guchar *>("_Active Page"), reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges)));
-
-
-	switch (abiRunModalDialog (GTK_DIALOG(gpd), pFrame, this, GNOME_PRINT_DIALOG_RESPONSE_PRINT, false))
+	UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
+	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr,72.0);
+	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
-	case GNOME_PRINT_DIALOG_RESPONSE_PREVIEW: 
-		m_bIsPreview = true;
-		break;
-	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: 
-		m_bIsPreview = false;
-		break;
-	default:
-		abiDestroyWidget (gpd); 
-		m_answer = a_CANCEL; 
-		return;
+			m_pPrintLayout = m_pDL;
+			m_pPrintView = m_pView;
+			m_pPrintLayout->setQuickPrint(m_pPrintGraphics);
+			m_bDidQuickPrint = true;
+			if(pFrameData->m_bShowPara)
+			{
+				m_pPrintView->setShowPara(false);
+				m_bShowParagraphs = true;
+			}
+			else
+				m_bShowParagraphs = false;
 	}
-	const char * szBackend = reinterpret_cast<const char *>(gnome_print_config_get(cfg,reinterpret_cast<const guchar*>("Printer")));
-	UT_DEBUGMSG(("Backend is %s \n",szBackend));
-	if(!portrait && !m_bIsPreview)
-	  {
-	    if(strcmp(szBackend,"PDF")== 0)
-	      {
-		UT_DEBUGMSG(("Doing pdf workaround \n"));
-		const GnomePrintUnit *unit =
-		gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
-		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
-		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
-		m_bPdfWorkAround = true;		
-	      }
-	  }
-
-	gnome_print_dialog_get_copies(GNOME_PRINT_DIALOG(gpd), &copies, &collate);
-	range = gnome_print_dialog_get_range_page(GNOME_PRINT_DIALOG(gpd), &first, &end);
-	
-
-	m_gpm = GNOME_PRINT_JOB(g_object_ref(G_OBJECT(job))); //gnome_print_job_new (gnome_print_dialog_get_config (GNOME_PRINT_DIALOG(gpd)));
-
-	// Record outputs
-	m_bDoPrintRange				= (range == GNOME_PRINT_RANGE_RANGE);
-	m_bDoPrintSelection			= (range == GNOME_PRINT_RANGE_SELECTION);
-	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_COLOR;
-	
-	if(m_bDoPrintRange)
-	  {
-	    m_nFirstPage		    = MIN(first, end);
-	    m_nLastPage				= MAX(first, end);
-	  }
-
-	// (smartly?) let gnome-print handle these
-	m_bCollate = false;
-	m_nCopies  = 1;
-
-	m_answer = a_OK;
-	abiDestroyWidget (gpd);
+	else
+	{
+			m_pPrintLayout = new FL_DocLayout(m_pView->getDocument(),m_pPrintGraphics);
+			m_pPrintView = new FV_View(XAP_App::getApp(),0,m_pPrintLayout);
+			m_pPrintView->getLayout()->fillLayouts();
+			m_pPrintView->getLayout()->formatAll();
+			m_pPrintView->getLayout()->recalculateTOCFields();
+			m_bDidQuickPrint = false;
+	}
+	m_pPrintGraphics->startPrint();
 }
-#endif
-void XAP_UnixDialog_Print::setupPrint(XAP_Frame * pFrame)
+void XAP_UnixDialog_Print::PrintPage(gint page_nr)
+{
+	UT_DEBUGMSG(("Print Page %d \n",page_nr));
+	dg_DrawArgs da;
+	da.pG = m_pPrintGraphics;
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
+	const gchar * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
+	gchar msgBuf [1024];
+	sprintf (msgBuf, msgTmpl, page_nr+1, m_iNumberPages);
+	if(m_pFrame) 
+	{
+		m_pFrame->setStatusMessage ( msgBuf );
+		m_pFrame->nullUpdate();
+	}
+	m_pPrintView->draw(page_nr, &da);						
+}
+
+void XAP_UnixDialog_Print::setPreview(bool b)
+{
+	m_bIsPreview = b;
+}
+
+void XAP_UnixDialog_Print::setupPrint()
 {
 	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
 	bool portrait;
 
-	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	m_pView = static_cast<FV_View*>(m_pFrame->getCurrentView());
 
-	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
-	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
-	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
-	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
+	mrgnTop = m_pView->getPageSize().MarginTop(DIM_MM);
+	mrgnBottom = m_pView->getPageSize().MarginBottom(DIM_MM);
+	mrgnLeft = m_pView->getPageSize().MarginLeft(DIM_MM);
+	mrgnRight = m_pView->getPageSize().MarginRight(DIM_MM);
 
-	portrait = pView->getPageSize().isPortrait();
+	portrait = m_pView->getPageSize().isPortrait();
 		
-	width = pView->getPageSize().Width (DIM_MM);
-	height = pView->getPageSize().Height (DIM_MM);
+	width = m_pView->getPageSize().Width (DIM_MM);
+	height = m_pView->getPageSize().Height (DIM_MM);
 	
 	m_pPageSetup = gtk_page_setup_new();
 
-	char * pszName = pView->getPageSize().getPredefinedName();
+	char * pszName = m_pView->getPageSize().getPredefinedName();
 	bool isPredefined = false;
 	const char * pszGtkName = NULL;
 	if(pszName == NULL)
-		{
+    {
 	}
 	else if(g_ascii_strcasecmp(pszName,"Custom") == 0)
 	{
@@ -328,6 +338,9 @@ void XAP_UnixDialog_Print::setupPrint(XAP_Frame * pFrame)
 	gtk_page_setup_set_bottom_margin(m_pPageSetup,mrgnBottom,GTK_UNIT_MM);
 	gtk_page_setup_set_left_margin(m_pPageSetup,mrgnLeft,GTK_UNIT_MM);
 	gtk_page_setup_set_right_margin(m_pPageSetup,mrgnRight,GTK_UNIT_MM);
+	//
+	// Set orientation
+	//
 	if(	portrait)
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_PORTRAIT);
 	else
@@ -337,40 +350,60 @@ void XAP_UnixDialog_Print::setupPrint(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame) 
 {
-	GtkWidget	*dialog;
-	gint		 response;
 #if 0
 	int copies = 1, collate = FALSE;
 	int first = 1, end = 0, range;
+	GtkWidget	*dialog;
+	gint		 response;
 #endif
-	setupPrint(pFrame);
+	m_pFrame = pFrame;
+	setupPrint();
 	m_pPO = gtk_print_operation_new();
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	dialog = gtk_print_unix_dialog_new (reinterpret_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)), NULL);
+	gtk_print_operation_set_default_page_setup(m_pPO,m_pPageSetup);
+	gtk_print_operation_set_use_full_page (m_pPO, true);
+
+	m_pDL = m_pView->getLayout();
+	m_iCurrentPage = m_pDL->findPage(m_pView->getCurrentPage());
+	m_iNumberPages = (gint) m_pDL->countPages();
+	gtk_print_operation_set_current_page(m_pPO,m_iCurrentPage);
+    gtk_print_operation_set_show_progress(m_pPO, TRUE);
+	//
+	// Implement this later to give the user a sane default *.pdf name
+	//
+	// gtk_print_operation_set_export_filename(m_pPO, const gchar *filename);
+
+
+
+	g_signal_connect (m_pPO, "begin_print", G_CALLBACK (s_Begin_Print), this);
+	g_signal_connect (m_pPO, "draw_page", G_CALLBACK (s_Print_Page), this);
+
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl());
 	
-	gtk_print_unix_dialog_set_page_setup((GtkPrintUnixDialog *) dialog,m_pPageSetup);
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
+	GtkWindow * pPWindow = GTK_WINDOW(parent);
+	//	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	//	const gchar * szDialogName = einterpret_cast<const gchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle);
 
-	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_PAGE_SET);
-	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_COPIES);
-	gtk_print_unix_dialog_set_manual_capabilities((GtkPrintUnixDialog *) dialog, GTK_PRINT_CAPABILITY_PREVIEW );
+	gtk_print_operation_run (m_pPO,
+							 (m_bIsPreview)? GTK_PRINT_OPERATION_ACTION_PREVIEW:
+							 GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
+							 pPWindow, NULL);
 
-	response = abiRunModalDialog (GTK_DIALOG (dialog), pFrame, this, GTK_RESPONSE_CANCEL, false);
-	switch (response) {
-	case GTK_RESPONSE_APPLY:
-		// TODO preview
-		printf ("preview\n");
-		m_answer = a_OK;
-		break;
-	case GTK_RESPONSE_OK:
-		// TODO print
-		printf ("print\n");
-		m_answer = a_OK;
-		break;
-	default:
-		printf ("cancel\n");
-		m_answer = a_CANCEL; 
+
+	if(!m_bDidQuickPrint)
+	{
+		DELETEP(m_pPrintLayout);
+		DELETEP(m_pPrintView);
 	}
+	else
+	{
+		if(m_bShowParagraphs)
+			m_pPrintView->setShowPara(true);
 
-
-	gtk_widget_destroy (dialog), dialog = NULL;
+		m_pPrintLayout->setQuickPrint(NULL);
+		m_pPrintLayout = NULL;
+		m_pPrintView = NULL;
+	}
+	DELETEP(m_pPrintGraphics);
 }

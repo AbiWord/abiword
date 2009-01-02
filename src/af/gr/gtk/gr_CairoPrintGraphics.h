@@ -24,7 +24,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
+#include <gtk/gtk.h>
+#include <gtk/gtkprintunixdialog.h>
 #include "gr_UnixPangoGraphics.h"
 
 class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixPangoGraphics
@@ -59,6 +60,9 @@ public:
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
 
 	virtual bool      canQuickPrint(void) { return true;}
+	void              setJob(GtkPrintJob * pJob);
+ private:
+	GtkPrintJob *	  m_pJob; // Owned by xap_UnixDlg_Print;
 };
 
 #endif

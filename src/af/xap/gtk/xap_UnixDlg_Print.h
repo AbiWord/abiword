@@ -26,7 +26,9 @@
 #include <gtk/gtk.h>
 #include <gtk/gtkprintunixdialog.h>
 
-class XAP_UnixGnomePrintGraphics;
+class FV_View;
+class FL_DocLayout;
+class XAP_Frane;
 
 /*****************************************************************/
 
@@ -43,16 +45,28 @@ public:
 
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
 	virtual void		releasePrinterGraphicsContext(GR_Graphics *);
-	void                    setupPrint(XAP_Frame * pFrame);
-
+	void                    setupPrint(void);
+	void                    BeginPrint(GtkPrintContext * context);
+	void                    PrintPage(gint iPage);
+	virtual	void            setPreview(bool b);
 protected:
 	GR_Graphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;
-	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;
 	GtkPageSetup *                m_pPageSetup;
 	GtkPaperSize *                m_pGtkPageSize;
 	GtkPrintOperation *           m_pPO;
+	GtkPrintJob *                 m_pJob;
+	GtkPrintContext *             m_pPC;
+	FV_View *                     m_pView;
+	gint                          m_iNumberPages;
+	gint                          m_iCurrentPage;
+	FL_DocLayout *                m_pDL;
+	FV_View *                     m_pPrintView;
+	FL_DocLayout *                m_pPrintLayout;
+	bool                          m_bDidQuickPrint;
+	bool                          m_bShowParagraphs;
+	XAP_Frame *                   m_pFrame;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */

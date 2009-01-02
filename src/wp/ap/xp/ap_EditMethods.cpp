@@ -217,6 +217,10 @@ public:
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
+	static EV_EditMethod_Fn cairoPrint;
+	static EV_EditMethod_Fn cairoPrintDirectly;
+	static EV_EditMethod_Fn cairoPrintPreview;
+
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
 	static EV_EditMethod_Fn cursorRightArrow;
@@ -765,6 +769,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(btn1InlineImage), 0, ""),
 
 	// c
+	EV_EditMethod(NF(cairoPrint), 0, ""),
+	EV_EditMethod(NF(cairoPrintDirectly), 0, ""),
+	EV_EditMethod(NF(cairoPrintPreview), 0, ""),
 	EV_EditMethod(NF(clearSetCols), 0, ""),
 	EV_EditMethod(NF(clearSetRows), 0, ""),
 	EV_EditMethod(NF(closeWindow),			0,	""),
@@ -8244,6 +8251,72 @@ Defun1(fontSizeDecrease)
 	ABIWORD_VIEW;
 	
 	return _fontSizeChange(pView, false);
+}
+
+Defun(cairoPrint)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Cairo Print \n"));
+	UT_return_val_if_fail (pView, false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_Print * pDialog
+		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	pView->setCursorWait();
+	pDialog->setPreview(false);
+	pDialog->runModal(pFrame);
+	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+	pDialog->releasePrinterGraphicsContext(pGraphics);
+	pView->clearCursorWait();
+	s_pLoadingFrame = NULL;
+	pView->updateScreen(false);
+	pDialogFactory->releaseDialog(pDialog);
+	return true;
+}
+
+
+Defun(cairoPrintPreview)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Cairo Print Preview\n"));
+	UT_return_val_if_fail (pView, false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_Print * pDialog
+		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	pView->setCursorWait();
+	pDialog->setPreview(true);
+	pDialog->runModal(pFrame);
+	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+	pDialog->releasePrinterGraphicsContext(pGraphics);
+	pView->clearCursorWait();
+	s_pLoadingFrame = NULL;
+	pView->updateScreen(false);
+	pDialogFactory->releaseDialog(pDialog);
+	return true;
+}
+
+
+Defun(cairoPrintDirectly)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Cairo Print Directly\n"));
+	return true;
 }
 
 Defun(formatPainter)
