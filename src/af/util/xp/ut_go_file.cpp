@@ -580,7 +580,8 @@ is_uri_relative (const char *uri)
 			      || ('-' == *current)
 			      || ('+' == *current)
 			      || ('.' == *current)) ;
-             current++);
+             current++) {
+	}
 
         return  !(':' == *current);
 }
@@ -631,7 +632,8 @@ remove_internal_relative_components (char *uri_current)
 						} else if (segment_prev - uri_current >= 2) {
 							segment_prev -= 2;
 							for ( ; segment_prev > uri_current && segment_prev[0] != '/' 
-							      ; segment_prev-- );
+							      ; segment_prev-- ) {
+							}
 							if (segment_prev[0] == '/') {
 								segment_prev++;
 							}
