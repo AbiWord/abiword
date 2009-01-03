@@ -38,6 +38,7 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 #include "ap_Prefs.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "ap_FrameData.h"
@@ -4650,7 +4651,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	painter.drawLine(l+ m_pG->tlu(5),   t+ m_pG->tlu(5),  l+w- m_pG->tlu(5),   t+ m_pG->tlu(5));
 }
 
-/*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
+void AP_TopRuler::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	AP_TopRuler *pTopRuler = static_cast<AP_TopRuler *>(data);
 	UT_return_if_fail ( data && pPrefs );

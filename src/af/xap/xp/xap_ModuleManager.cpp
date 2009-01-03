@@ -30,6 +30,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_ModuleManager.h"
+#include "xap_App.h"
 #include "xap_Prefs.h"
 #include "ut_string_class.h"
 #include "ut_path.h"

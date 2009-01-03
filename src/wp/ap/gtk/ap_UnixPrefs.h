@@ -25,7 +25,7 @@
 class AP_UnixPrefs : public AP_Prefs
 {
 public:
-	AP_UnixPrefs(XAP_App * pApp);
+	AP_UnixPrefs();
 	
 	virtual void			overlayEnvironmentPrefs(void);
 

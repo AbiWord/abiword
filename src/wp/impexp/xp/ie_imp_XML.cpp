@@ -206,11 +206,6 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL),
 	  m_currentRevisionId(0), m_currentRevisionTime(0), m_currentRevisionVersion(0), m_tokens()
 {
-	XAP_App *pApp = getDoc()->getApp();
-	UT_return_if_fail(pApp);
-	XAP_Prefs *pPrefs = pApp->getPrefs();
-	UT_return_if_fail(pPrefs);
-
 	_data_NewBlock ();
 }
 

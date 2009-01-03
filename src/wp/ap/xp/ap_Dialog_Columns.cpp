@@ -29,6 +29,7 @@
 #include "fp_PageSize.h"
 #include "gr_Painter.h"
 
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"

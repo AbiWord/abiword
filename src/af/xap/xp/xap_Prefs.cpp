@@ -33,6 +33,7 @@
 #include "ut_string_class.h"
 #include "ut_go_file.h"
 #include "xap_Prefs.h"
+#include "xap_App.h"
 
 struct xmlToIdMapping {
 	const char *m_name;
@@ -486,10 +487,9 @@ void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level lev
 
 /*****************************************************************/
 
-XAP_Prefs::XAP_Prefs(XAP_App * pApp) 
+XAP_Prefs::XAP_Prefs() 
 	: m_ahashChanges( 20 )
 {
-	m_pApp = pApp;
 	m_bAutoSavePrefs = (atoi(XAP_PREF_DEFAULT_AutoSavePrefs) ? true : false);
 	m_bUseEnvLocale = (atoi(XAP_PREF_DEFAULT_UseEnvLocale) ? true : false);
 	m_currentScheme = NULL;
@@ -857,7 +857,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 				// TODO you'll lose your MRU list if you alternate between
 				// TODO the two types of executables.
 				
-				const char * szThisApp = m_pApp->getApplicationName();
+				const char * szThisApp = XAP_App::getApp()->getApplicationName();
 				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
 				if (strcmp(static_cast<const char*>(a[1]),szThisApp) != 0)
@@ -1152,15 +1152,11 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 	}
 	// successful parse of tag...
 
-
-IgnoreThisScheme:
-	DELETEP(pNewScheme);
-	return;								// success
-
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
 InvalidFileError:
 	m_parserState.m_parserStatus = false;			// cause parser driver to bail
+IgnoreThisScheme: // success
 	DELETEP(pNewScheme);
 	return;
 }
@@ -1325,7 +1321,7 @@ bool XAP_Prefs::savePrefsFile(void)
 	UT_ASSERT(m_builtinScheme);
 	
 	fprintf(fp,"\n<AbiPreferences app=\"%s\" ver=\"%s\">\n",
-			m_pApp->getApplicationName(),
+			XAP_App::getApp()->getApplicationName(),
 			"1.0");
 	{
 		fprintf(fp,("\n"
@@ -1725,7 +1721,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 		if(!p || !p->m_pFunc)
 			continue;
 	
-		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
+		(p->m_pFunc)(this, hash, p->m_pData);
 	}
 }
 

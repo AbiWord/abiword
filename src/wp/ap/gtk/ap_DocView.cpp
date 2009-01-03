@@ -86,6 +86,7 @@ ap_DocView_get_type (void)
 			NULL,
 			sizeof(ApDocView),
 			0,
+			NULL,
 			NULL
 		};
 		

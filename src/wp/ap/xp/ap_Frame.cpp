@@ -21,6 +21,7 @@
 
 #include "ut_types.h"
 #include "ap_Frame.h"
+#include "xap_App.h"
 
 #include "ap_Features.h"
 

@@ -362,7 +362,7 @@ protected:
 #endif
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
-	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
+	static void			_prefsListener(class XAP_Prefs *, 
 									   UT_StringPtrMap *, void *);
 
 

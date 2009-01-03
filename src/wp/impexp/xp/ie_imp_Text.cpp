@@ -31,6 +31,7 @@
 #include "ie_imp_Text.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
+#include "xap_App.h"
 #include "xap_EncodingManager.h"
 
 

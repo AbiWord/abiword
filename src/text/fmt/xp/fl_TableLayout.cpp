@@ -59,6 +59,7 @@
 #include "ut_png.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
+#include "xap_App.h"
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);

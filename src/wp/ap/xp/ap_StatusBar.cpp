@@ -29,6 +29,7 @@
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 #include "gr_Graphics.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
 #include "ap_Strings.h"

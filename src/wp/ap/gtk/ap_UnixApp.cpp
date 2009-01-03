@@ -285,7 +285,7 @@ bool AP_UnixApp::initialize(bool has_display)
 
     // load the preferences.
     
-    m_prefs = new AP_UnixPrefs(this);
+    m_prefs = new AP_UnixPrefs();
     m_prefs->fullInit();
 
     //////////////////////////////////////////////////////////////////

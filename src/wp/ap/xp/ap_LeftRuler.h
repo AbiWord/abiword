@@ -163,7 +163,7 @@ protected:
 //									 UT_sint32 x, UT_sint32 h);
 
 	// must be static so that I can pass as a functional arg - shack
-	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_StringPtrMap *phChanges, void *data );
+	static void _prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap *phChanges, void *data );
 	
 	XAP_Frame *			m_pFrame;
 	GR_Graphics *		m_pG;

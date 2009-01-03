@@ -981,7 +981,7 @@ private:
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 
 	// prefs listener - to change cursor blink on/off (and possibly others)
-	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_StringPtrMap *, void *);
+	static void _prefsListener( XAP_Prefs *, UT_StringPtrMap *, void *);
 
 	bool				 m_bShowPara;
 	ViewMode			 m_viewMode;

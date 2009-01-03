@@ -23,13 +23,14 @@
 #include "ut_locale.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "xap_App.h"
 #include "ap_UnixPrefs.h"
 #include "ut_string_class.h"
 
 /*****************************************************************/
 
-AP_UnixPrefs::AP_UnixPrefs(XAP_App * pApp)
-	: AP_Prefs(pApp)
+AP_UnixPrefs::AP_UnixPrefs()
+	: AP_Prefs()
 {
 }
 
@@ -41,7 +42,7 @@ const char * AP_UnixPrefs::_getPrefsPathname(void) const
 	if(!buf.empty())
 	  return buf.c_str();
 
-	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	const char * szDirectory = XAP_App::getApp()->getUserPrivateDirectory();
 	const char * szFile = "AbiWord.Profile";
 
 	buf = szDirectory;

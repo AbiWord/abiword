@@ -792,9 +792,7 @@ void FL_DocLayout::setView(FV_View* pView)
 
 	if (m_pView && !m_pPrefs )
 	{
-		XAP_App * pApp = m_pView->getApp();
-		UT_return_if_fail(pApp);
-		XAP_Prefs *pPrefs= pApp->getPrefs();
+		XAP_Prefs *pPrefs= XAP_App::getApp()->getPrefs();
 		UT_ASSERT_HARMLESS(pPrefs);
 
 		if (pPrefs)
@@ -803,7 +801,7 @@ void FL_DocLayout::setView(FV_View* pView)
 			m_pPrefs = pPrefs;
 
 			// initialize the vars here
-			_prefsListener( pApp, pPrefs, NULL, this );
+			_prefsListener( pPrefs, NULL, this );
 
 			// keep updating itself
 			pPrefs->addListener ( _prefsListener, this );
@@ -3487,7 +3485,6 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 }
 
 /*static*/ void FL_DocLayout::_prefsListener (
-	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
 	UT_StringPtrMap	* /*phChanges*/,  // not used
 	void				*data
@@ -3497,7 +3494,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	FL_DocLayout *pDocLayout = static_cast<FL_DocLayout *>(data);
 
 	xxx_UT_DEBUGMSG(("spell_prefsListener %p\n", pDocLayout));
-	UT_ASSERT( pApp && pPrefs && data );
+	UT_ASSERT( pPrefs && data );
 
 	// caps/number/internet
 

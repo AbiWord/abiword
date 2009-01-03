@@ -29,7 +29,7 @@
 class ABI_EXPORT AP_Prefs : public XAP_Prefs
 {
 public:
-	AP_Prefs(XAP_App * pApp);
+	AP_Prefs();
 	virtual ~AP_Prefs(void);
 
 	virtual bool				loadBuiltinPrefs(void);

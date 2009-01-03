@@ -32,6 +32,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ap_LeftRuler.h"
+#include "xap_App.h"
 #include "xav_View.h"
 #include "gr_Graphics.h"
 #include "ap_FrameData.h"
@@ -1946,7 +1947,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	}
 }
 
-/*static*/ void AP_LeftRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
+void AP_LeftRuler::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
 	UT_ASSERT( data && pPrefs );

@@ -30,8 +30,8 @@
 #include "xap_EncodingManager.h"
 /*****************************************************************/
 
-AP_Prefs::AP_Prefs(XAP_App * pApp)
-	: XAP_Prefs(pApp)
+AP_Prefs::AP_Prefs()
+	: XAP_Prefs()
 {
 }
 
@@ -163,7 +163,7 @@ void AP_Prefs::overlaySystemPrefs(void)
 	UT_String path;
 	while(*items) {
 	    const char * item = *items++;
-	    if (m_pApp->findAbiSuiteAppFile(path,item))
+	    if (XAP_App::getApp()->findAbiSuiteAppFile(path,item))
 		loadSystemDefaultPrefsFile(path.c_str());
 	};
 }

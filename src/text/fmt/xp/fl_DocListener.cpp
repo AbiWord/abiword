@@ -53,6 +53,7 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
 #include "fv_View.h"

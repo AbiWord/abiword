@@ -34,7 +34,6 @@
 #include "ut_string_class.h"
 #include "ut_xml.h"
 
-#include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 
 #include <vector>
@@ -47,8 +46,9 @@ enum {
 	PREF_FLAG_GEOMETRY_MAXIMIZED = 0x8 // Maximize at start
 };
 
+class XAP_Prefs;
+
 typedef void (*PrefsListener) (
-	XAP_App				*pApp,
 	XAP_Prefs			*pPrefs,
 	UT_StringPtrMap	    *phChanges,
 	void				*data
@@ -140,7 +140,7 @@ protected:
 class ABI_EXPORT XAP_Prefs : public UT_XML::Listener
 {
 public:
-	XAP_Prefs(XAP_App * pApp);
+	XAP_Prefs();
 	virtual ~XAP_Prefs(void);
 
 	bool					loadPrefsFile(void);
@@ -202,7 +202,6 @@ protected:
 	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, 
 										  const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const;
 
-	XAP_App *				m_pApp;
 	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
 	bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 

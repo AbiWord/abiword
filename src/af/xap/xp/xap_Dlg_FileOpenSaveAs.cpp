@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "xap_App.h"
 #include "xap_Prefs.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 

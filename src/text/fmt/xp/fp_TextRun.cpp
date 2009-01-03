@@ -41,6 +41,7 @@
 #include "fv_View.h"
 #include "fb_Alignment.h"
 #include "fl_TableLayout.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

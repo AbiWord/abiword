@@ -31,6 +31,7 @@
 #include "ut_units.h"
 #include "ut_debugmsg.h"
 
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xad_Document.h"
 #include "xap_DialogFactory.h"

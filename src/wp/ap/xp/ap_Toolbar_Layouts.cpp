@@ -31,6 +31,7 @@
 #include "ut_debugmsg.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Actions.h"
+#include "xap_App.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xap_Prefs.h"
 #include "xap_Prefs_SchemeIds.h"

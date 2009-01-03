@@ -38,6 +38,7 @@
 #include "ut_string_class.h"
 #include "ut_units.h"
 
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xad_Document.h"
 #include "xap_DialogFactory.h"

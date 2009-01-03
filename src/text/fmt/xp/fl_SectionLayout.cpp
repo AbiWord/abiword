@@ -63,6 +63,7 @@
 #include "ut_units.h"
 #include "fg_Graphic.h"
 #include "pt_Types.h"
+#include "xap_App.h"
 /*
   TODO this file is now really too long.  divide it up
   into smaller ones.
