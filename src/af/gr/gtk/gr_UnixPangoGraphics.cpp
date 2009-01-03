@@ -3048,11 +3048,11 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	UT_return_if_fail(nPoints > 1);
 
 	i = 0;
-	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	cairo_move_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	i++;
 	for (; i < nPoints; i++)
 	{
-		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+		cairo_line_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	}
 	cairo_stroke(m_cr);
 }
