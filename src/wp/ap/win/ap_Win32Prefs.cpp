@@ -33,8 +33,8 @@
 
 /*****************************************************************/
 
-AP_Win32Prefs::AP_Win32Prefs(XAP_App * pApp)
-	: AP_Prefs(pApp)
+AP_Win32Prefs::AP_Win32Prefs()
+	: AP_Prefs()
 {
 }
 

@@ -25,7 +25,7 @@
 class ABI_EXPORT AP_Win32Prefs : public AP_Prefs
 {
 public:
-	AP_Win32Prefs(XAP_App * pApp);
+	AP_Win32Prefs();
 	
 	virtual bool			loadBuiltinPrefs(void);
 	virtual void			overlayEnvironmentPrefs(void);

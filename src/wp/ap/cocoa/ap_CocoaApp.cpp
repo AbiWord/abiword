@@ -261,7 +261,7 @@ bool AP_CocoaApp::initialize(void)
 	
     // load the preferences.
     
-    m_prefs = new AP_CocoaPrefs(this);
+    m_prefs = new AP_CocoaPrefs();
     m_prefs->fullInit();
 
     // now that preferences are established, let the xap init

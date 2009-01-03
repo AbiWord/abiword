@@ -26,7 +26,7 @@
 class AP_CocoaPrefs : public AP_Prefs
 {
 public:
-	AP_CocoaPrefs(XAP_App * pApp);
+	AP_CocoaPrefs();
 	
 	virtual void			overlayEnvironmentPrefs(void);
 	

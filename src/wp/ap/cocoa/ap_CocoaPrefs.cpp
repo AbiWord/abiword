@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,13 +24,14 @@
 #include "ctype.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "xap_App.h"
 #include "ap_CocoaPrefs.h"
 #include "ut_string_class.h"
 
 /*****************************************************************/
 
-AP_CocoaPrefs::AP_CocoaPrefs(XAP_App * pApp)
-	: AP_Prefs(pApp)
+AP_CocoaPrefs::AP_CocoaPrefs()
+	: AP_Prefs()
 {
 }
 
@@ -42,7 +43,7 @@ const char * AP_CocoaPrefs::_getPrefsPathname(void) const
 	if(!buf.empty())
 	  return buf.c_str();
 
-	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	const char * szDirectory = xap_App::getApp()->getUserPrivateDirectory();
 	char * szFile = "AbiWord.Profile";
 
 	buf = szDirectory;

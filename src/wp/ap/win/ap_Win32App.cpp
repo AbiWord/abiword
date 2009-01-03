@@ -155,7 +155,7 @@ bool AP_Win32App::initialize(void)
 
 	// load the preferences.
 	
-	m_prefs = new AP_Win32Prefs(this);
+	m_prefs = new AP_Win32Prefs();
 	UT_return_val_if_fail (m_prefs, false);
 	
 	m_prefs->fullInit();
