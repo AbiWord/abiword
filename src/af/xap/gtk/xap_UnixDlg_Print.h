@@ -49,6 +49,8 @@ public:
 	void                    BeginPrint(GtkPrintContext * context);
 	void                    PrintPage(gint iPage);
 	virtual	void            setPreview(bool b);
+	virtual void            PrintDirectly(XAP_Frame * pFrame, const char * szFilename, const char * szPrinter);
+	void                    cleanup(void);
 protected:
 	GR_Graphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;

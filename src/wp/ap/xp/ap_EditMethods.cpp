@@ -8316,6 +8316,30 @@ Defun(cairoPrintDirectly)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Cairo Print Directly\n"));
+	UT_return_val_if_fail (pView, false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_Print * pDialog
+		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	pView->setCursorWait();
+	pDialog->setPreview(false);
+	//
+	// DOM you can use this for your command line printing
+	//
+	pDialog->PrintDirectly(pFrame,/*filename*/ NULL, /*printer name */NULL);
+	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+	pDialog->releasePrinterGraphicsContext(pGraphics);
+	pView->clearCursorWait();
+	s_pLoadingFrame = NULL;
+	pView->updateScreen(false);
+	pDialogFactory->releaseDialog(pDialog);
+	return true;
 	return true;
 }
 

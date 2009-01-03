@@ -380,7 +380,11 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 							 GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
 							 pPWindow, NULL);
 
+	cleanup();
+}
 
+void XAP_UnixDialog_Print::cleanup(void)
+{
 	if(!m_bDidQuickPrint)
 	{
 		DELETEP(m_pPrintLayout);
@@ -398,4 +402,33 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	}
 	static_cast<GR_UnixPangoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
 	DELETEP(m_pPrintGraphics);
+}
+
+void XAP_UnixDialog_Print::PrintDirectly(XAP_Frame * pFrame, const char * szFilename, const char * szPrinter)
+{
+	m_pFrame = pFrame;
+	setupPrint();
+	if(szFilename)
+    {
+		 gtk_print_operation_set_export_filename(m_pPO, szFilename);
+		 gtk_print_operation_run (m_pPO,GTK_PRINT_OPERATION_ACTION_EXPORT,
+								  NULL,NULL);
+	}
+	else
+	{
+		GtkPrintSettings *  pSettings = gtk_print_operation_get_print_settings(m_pPO);
+		if(szPrinter)
+		{
+			gtk_print_settings_set_printer(pSettings, szPrinter);
+		}
+		else
+		{
+			gtk_print_settings_set_printer(pSettings, GTK_PRINT_SETTINGS_PRINTER);
+		}
+		gtk_print_operation_set_print_settings(m_pPO,pSettings);
+		gtk_print_operation_run (m_pPO,GTK_PRINT_OPERATION_ACTION_PRINT,
+								 NULL,NULL);
+		g_object_unref(pSettings);
+	}
+	cleanup();
 }

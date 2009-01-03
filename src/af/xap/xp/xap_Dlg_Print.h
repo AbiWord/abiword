@@ -57,7 +57,8 @@ public:
 	UT_uint32						getNrCopies(void) const;
 	bool							getCollate(void) const;
 	GR_Graphics::ColorSpace			getColorSpace(void) const;
-	
+	virtual void            PrintDirectly(XAP_Frame * /* pFrame */, const char * /*fileName */, const char * /* szPrinter */){}
+
 	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 
