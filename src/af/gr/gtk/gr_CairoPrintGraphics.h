@@ -31,7 +31,6 @@
 class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixPangoGraphics
 {
 	bool m_bDoShowPage;
-
 public:
 	GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
 	
@@ -63,6 +62,7 @@ public:
 	void              setJob(GtkPrintJob * pJob);
  private:
 	GtkPrintJob *	  m_pJob; // Owned by xap_UnixDlg_Print;
+	UT_uint32         m_iDeviceResolution;
 };
 
 #endif

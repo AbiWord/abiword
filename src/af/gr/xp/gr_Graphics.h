@@ -206,7 +206,6 @@ enum GR_GraphicsId
 	GRID_UNIX_PANGO_PRINT = 0x203,
 	GRID_UNIX_PANGO_PIXMAP = 0x204,
 
-
 	GRID_LAST_EXTENSION = 0x0000ffff,
 
 	/* id's for plugins will be auto-generatoed from between here */

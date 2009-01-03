@@ -150,7 +150,7 @@ public:
 	virtual UT_uint32      getClassId() {return s_getClassId();}
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
-	static const char *    graphicsDescriptor(){return "Unix Pango";}
+	static const char *    graphicsDescriptor(){return "Unix Cairo Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
@@ -239,6 +239,8 @@ public:
 	bool isDingbat(void) const {return m_bIsDingbat;}
 	bool isSymbol(void) const {return m_bIsSymbol;};
 	
+	void resetFontMapResolution(void);
+
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
 							   const char* pszFontVariant,

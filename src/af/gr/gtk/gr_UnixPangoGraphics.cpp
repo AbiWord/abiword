@@ -257,7 +257,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolut
 	m_iPrevX2(0),
 	m_iPrevY1(0),
 	m_iPrevY2(0),
-	m_iPrevRect(1000), // arbitary number that leave room for plenty of carets
+	m_iPrevRect(1000), // arbitary number that leaves room for plenty of carets
 	m_iXORCount(0)
 {
 	m_pFontMap = pango_cairo_font_map_get_default();
@@ -354,6 +354,11 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
 		g_object_unref (G_OBJECT (pix));
 	}
+}
+
+void GR_UnixPangoGraphics::resetFontMapResolution(void)
+{
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(m_pFontMap), m_iDeviceResolution);	
 }
 
 bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -3024,7 +3029,7 @@ void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		r.left = tlu(idx1);
 		r.top = tlu(idy1);
 		r.width = tlu(idx2 - idx1 +1);
-		r.height = tlu(idy2 - idy1+1);
+		r.height = tlu(idy2 - idy1+2);
 		saveRectangle(r,m_iPrevRect);
 		cairo_save(m_cr);
 		cairo_set_source_rgb(m_cr, 0.0 , 0.0 , 0.0);

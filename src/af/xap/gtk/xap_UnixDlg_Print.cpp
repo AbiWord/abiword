@@ -136,6 +136,7 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 
 	UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
+	UT_DEBUGMSG(("Original Device resolution %d \n",m_pView->getGraphics()->getDeviceResolution()));
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr,72.0);
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
@@ -398,12 +399,15 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	}
 	else
 	{
-		if(m_bShowParagraphs)
-			m_pPrintView->setShowPara(true);
-
 		m_pPrintLayout->setQuickPrint(NULL);
 		m_pPrintLayout = NULL;
 		m_pPrintView = NULL;
+		UT_DEBUGMSG(("Final Device resolution %d \n",m_pView->getGraphics()->getDeviceResolution()));
+
+		if(m_bShowParagraphs)
+			m_pView->setShowPara(true);
+		m_pDL->incrementGraphicTick();
 	}
+	static_cast<GR_UnixPangoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
 	DELETEP(m_pPrintGraphics);
 }
