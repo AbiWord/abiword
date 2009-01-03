@@ -44,41 +44,50 @@ IE_Exp_OpenXML_Sniffer::~IE_Exp_OpenXML_Sniffer ()
 {
 }
 
-// supported suffixes
-static IE_SuffixConfidence IE_Exp_OpenXML_Sniffer__SuffixConfidence[] = {
-	{ "docx", 	UT_CONFIDENCE_PERFECT 	},
-	{ "dotx", 	UT_CONFIDENCE_PERFECT 	},
-	{ "docm", 	UT_CONFIDENCE_PERFECT 	},
-	{ "dotm", 	UT_CONFIDENCE_PERFECT 	},
-	{ "", 	UT_CONFIDENCE_ZILCH 	}
-};
-
-const IE_SuffixConfidence * IE_Exp_OpenXML_Sniffer::getSuffixConfidence ()
-{
-	return IE_Exp_OpenXML_Sniffer__SuffixConfidence;
-}
-
-// supported mimetypes
-static IE_MimeConfidence IE_Exp_OpenXML_Sniffer__MimeConfidence[] = {
-	{ IE_MIME_MATCH_FULL, 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document", 	UT_CONFIDENCE_GOOD 	},
-	{ IE_MIME_MATCH_FULL, 	"application/vnd.openxmlformats-officedocument.wordprocessingml.template", 	UT_CONFIDENCE_GOOD 	},
-	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word.document", 	UT_CONFIDENCE_SOSO 	},
-	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word.template", 	UT_CONFIDENCE_SOSO 	},
-	{ IE_MIME_MATCH_BOGUS, 	"", 										UT_CONFIDENCE_ZILCH }
-};
-
-const IE_MimeConfidence * IE_Exp_OpenXML_Sniffer::getMimeConfidence ()
-{
-	return IE_Exp_OpenXML_Sniffer__MimeConfidence;
-}
-
 /**
  * Recognize the contents as best we can
  * 
  */
-bool IE_Exp_OpenXML_Sniffer::recognizeSuffix (const char * /*szSuffix*/)
+bool IE_Exp_OpenXML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return true;
+	if (g_ascii_strcasecmp(szSuffix,".docx") == 0)
+	{
+		return true;
+	}
+	if (g_ascii_strcasecmp(szSuffix,".dotx") == 0)
+	{
+		return true;
+	}
+	if (g_ascii_strcasecmp(szSuffix,".docm") == 0)
+	{
+		return true;
+	}
+	if (g_ascii_strcasecmp(szSuffix,".dotm") == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+UT_Confidence_t IE_Exp_OpenXML_Sniffer::supportsMIME(const char * szMIME)
+{
+	if (g_ascii_strcasecmp(szMIME, "application/vnd.openxmlformats-officedocument.wordprocessingml.document") == 0)
+	{
+		return UT_CONFIDENCE_PERFECT;
+	}
+	if (g_ascii_strcasecmp(szMIME, "application/vnd.openxmlformats-officedocument.wordprocessingml.template") == 0)
+	{
+		return UT_CONFIDENCE_PERFECT;
+	}
+	if (g_ascii_strcasecmp(szMIME, "application/vnd.ms-word.document") == 0)
+	{
+		return UT_CONFIDENCE_SOSO;
+	}
+	if (g_ascii_strcasecmp(szMIME, "application/vnd.ms-word.template") == 0)
+	{
+		return UT_CONFIDENCE_SOSO;
+	}
+	return UT_CONFIDENCE_ZILCH;
 }
 
 /**

@@ -32,10 +32,9 @@ public:
 
   virtual ~IE_Exp_OpenXML_Sniffer ();
 
-  virtual const IE_SuffixConfidence * getSuffixConfidence ();
-  virtual const IE_MimeConfidence * getMimeConfidence ();
   virtual bool recognizeSuffix (const char* szSuffix);
 
+  virtual UT_Confidence_t supportsMIME(const char * szMIME);
   virtual UT_Error constructExporter (PD_Document * pDocument,
 				      IE_Exp ** ppie) ;
 
