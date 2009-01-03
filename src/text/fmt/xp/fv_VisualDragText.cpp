@@ -259,7 +259,6 @@ void FV_VisualDragText::_mouseDrag(UT_sint32 x, UT_sint32 y)
 	  else
 	  {
 	    m_iVisualDragMode = FV_VisualDrag_START_DRAGGING;
-
 	    XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
 	    if (pFrame)
 	      pFrame->dragText();
@@ -561,8 +560,10 @@ void FV_VisualDragText::clearCursor(void)
 	{
 		if(m_pDocUnderCursor)
 		{
+		        getGraphics()->getCaret()->disable(true);
+		        m_pView->m_countDisable++;
 			GR_Painter painter(getGraphics());
-			painter.drawImage(m_pDocUnderCursor,m_recCursor.left,m_recCursor.top);
+			painter.drawImage(m_pDocUnderCursor,m_recDoc.left,m_recCursor.top);
 			m_bCursorDrawn = false;
 			DELETEP(m_pDocUnderCursor);
 		}
@@ -575,7 +576,10 @@ void FV_VisualDragText::clearCursor(void)
 
 void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 {
-
+        if(m_bCursorDrawn)
+	    return;
+	getGraphics()->getCaret()->disable(true);
+	m_pView->m_countDisable++;
 	fp_Run * pRunLow = NULL;
 	fl_BlockLayout * pBlock = NULL;
 	UT_sint32 xLow, yLow;
@@ -589,9 +593,13 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 	m_recCursor.width =  getGraphics()->tlu(2); // the cursor is 2 device units wide, not
 												// logical units
 	m_recCursor.height = heightCaret;
+	m_recDoc.left = xLow - getGraphics()->tlu(1);
+	m_recDoc.top = yLow - getGraphics()->tlu(1);
+	m_recDoc.width =  getGraphics()->tlu(3);
+	m_recDoc.height = heightCaret + getGraphics()->tlu(1);
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
-	m_pDocUnderCursor = painter.genImageFromRectangle(m_recCursor);
+	m_pDocUnderCursor = painter.genImageFromRectangle(m_recDoc);
 	UT_RGBColor black(0,0,0);
 	painter.fillRect( black, m_recCursor);
 	m_bCursorDrawn = true;

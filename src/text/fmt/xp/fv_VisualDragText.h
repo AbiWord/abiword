@@ -85,6 +85,7 @@ private:
 	GR_Image *            m_pDocUnderCursor;
 	bool                  m_bCursorDrawn;
 	UT_Rect               m_recCursor;
+	UT_Rect               m_recDoc;
 
 	// autoscroll stuff
 	UT_Timer *			  m_pAutoScrollTimer;

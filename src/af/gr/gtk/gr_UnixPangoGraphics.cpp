@@ -2303,7 +2303,7 @@ void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idy = _tduY(r.top);
 	UT_sint32 idw = _tduR(r.width);
 	UT_sint32 idh = _tduR(r.height);
-
+	cairo_surface_flush ( cairo_get_target(m_cr));
 
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   _getDrawable(),
@@ -2325,6 +2325,7 @@ void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
 	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
 	UT_sint32 idx = _tduX(r->left);
 	UT_sint32 idy = _tduY(r->top);
+	cairo_surface_flush ( cairo_get_target(m_cr));
 
 	if (p && r)
 		gdk_draw_pixbuf (_getDrawable(), NULL, p, 0, 0,
@@ -2343,6 +2344,7 @@ GR_Image * GR_UnixPangoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idw = _tduR(rec.width);
 	UT_sint32 idh = _tduR(rec.height);
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
+	cairo_surface_flush ( cairo_get_target(m_cr));
 	GdkColormap* cmp = gdk_colormap_get_system();
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   _getDrawable(),
@@ -2396,10 +2398,11 @@ void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
 	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
-	UT_sint32 idx = _tduX(xDest);
-	UT_sint32 idy = _tduY(yDest);
+	double idx = _tdudX(xDest);
+	double idy = _tdudY(yDest);
 
 	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
 
 	gdk_cairo_set_source_pixbuf(m_cr, image, idx, idy);
 	cairo_pattern_t *pattern = cairo_get_source(m_cr);
