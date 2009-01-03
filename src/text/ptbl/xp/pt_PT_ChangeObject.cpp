@@ -43,6 +43,7 @@ bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object *
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
 	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	UT_UNUSED(bMerged);
 	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -75,6 +76,7 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
 	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	UT_UNUSED(bMerged);
 	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.

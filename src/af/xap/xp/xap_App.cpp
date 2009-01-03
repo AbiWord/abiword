@@ -1027,7 +1027,8 @@ void XAP_App::rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog)
 
 	}
 	UT_ASSERT( i <= NUM_MODELESSID );
-	UT_ASSERT( m_IdTable[i].id == -1 );
+// This assert cause a warning because array subscript is out of bounds.
+//	UT_ASSERT( m_IdTable[i].id == -1 );
 	UT_ASSERT( pDialog);
 	m_IdTable[i].id =  id;
 	m_IdTable[i].pDialog =  pDialog;

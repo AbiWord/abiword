@@ -667,7 +667,8 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	fp_Container * pCon = static_cast<fp_Container *>(this);
 	bool bCell = false;
 	bool bTable = false;
-	UT_sint32 xcell,ycell = 0;
+	UT_sint32 xcell = 0;
+	UT_sint32 ycell = 0;
 	if((getContainerType() == FP_CONTAINER_TABLE) && (pContainer->getContainerType() == FP_CONTAINER_CELL))
 	{
 	        pCon =  static_cast<fp_Container *>(pContainer);

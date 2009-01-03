@@ -465,6 +465,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		const PP_AttrProp* pHFAP = NULL;
 		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pHFAP) && pHFAP);
+		UT_UNUSED(bres);
 		UT_ASSERT(bres);
 		const gchar* pszNewID = NULL;
 		pHFAP->getAttribute("id", pszNewID);
@@ -639,6 +640,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 																			PL_ListenerId lid,
 																			PL_StruxFmtHandle sfhNew))
 {
+	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_TABLE);
 	UT_return_val_if_fail(pcrx, NULL);
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
@@ -2667,11 +2669,9 @@ void fl_DocSectionLayout::collapse(void)
 	{
 		if(pCol->countCons() > 0)
 		{
-			UT_uint32 i = 0;
 			for(i=0; i<pCol->countCons();i++)
 			{
-				fp_ContainerObject * pCon = pCol->getNthCon(i);
-				UT_DEBUGMSG(("Still have a pointer to a container %x -removing pointer \n",pCon));
+				UT_DEBUGMSG(("Still have a pointer to a container %lx -removing pointer \n",pCol->getNthCon(i)));
 				pCol->justRemoveNthCon(i);
 			}
 		}
@@ -3054,8 +3054,7 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 	fl_DocSectionLayout * pDSL = this;
 	if(!getDocLayout()->isLayoutDeleting() && bReallyDeleteIt)
 	{
-		UT_sint32 i = m_pLayout->findPage(pPage);
-		if(i>0)
+		if(m_pLayout->findPage(pPage) > 0)
 		{
 			UT_DEBUGMSG(("fl_DocSec: deleting page %x ReallyDeleteIt %d \n",pPage,bReallyDeleteIt));
 			m_pLayout->deletePage(pPage,true);
@@ -3393,8 +3392,7 @@ UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
 */
 void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 {
-	fl_DocSectionLayout* pPrevSL = pSL->getPrevDocSection();
-	UT_ASSERT(pPrevSL);
+	UT_ASSERT(pSL->getPrevDocSection());
 	// clear all the columns
 	fp_Column* pCol =NULL;
 
@@ -3473,14 +3471,14 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord * pcr
 			  pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 	
 
+	PX_ChangeRecord_StruxChange * pcrx  = (PX_ChangeRecord_StruxChange *) pcr;
+	UT_UNUSED(pcrx);
 	if(pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux)
 	{
-		PX_ChangeRecord_StruxChange * pcrx  = (PX_ChangeRecord_StruxChange *) pcr;
 		UT_ASSERT_HARMLESS( pcrx->isRevisionDelete() );
 	}
 	else
 	{
-		PX_ChangeRecord_Strux * pcrx  = (PX_ChangeRecord_Strux *) pcr;
 		UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
 	}
 	
@@ -5368,6 +5366,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 
 		{
 			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
+			UT_UNUSED(pL);
 			UT_ASSERT(pL->getType() == PTX_Block);
 			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
 		}
@@ -5385,6 +5384,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 
 		{
 			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
+			UT_UNUSED(pL);
 			UT_ASSERT(pL->getType() == PTX_Block);
 			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
 		}
@@ -5403,6 +5403,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 
 		{
 			const fl_Layout * pL = static_cast<const fl_Layout *>(sfh);
+			UT_UNUSED(pL);
 			UT_ASSERT(pL->getType() == PTX_Block);
 			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(pL)));
 		}

@@ -565,6 +565,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	{
 		PT_AttrPropIndex pAPIold = indexAP;
 		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,properties,&indexAP,getDocument());
+        UT_UNUSED(bMerged);
 		UT_ASSERT_HARMLESS(bMerged);
 	}
 

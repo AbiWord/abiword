@@ -1281,6 +1281,7 @@ void fl_TOCLayout::redrawUpdate(void)
 
 bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
+	UT_UNUSED(pcrx);
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 //
 // Remove all remaining structures
@@ -1353,6 +1354,9 @@ TOCEntry * fl_TOCLayout::createNewEntry(fl_BlockLayout * pNewBL)
 		sAfter = m_sLabAfter4;
 		bInherit = m_bInherit4;
 		iStartAt = m_iStartAt4;
+	}
+	else {
+		UT_ASSERT_NOT_REACHED();
 	}
 	TOCEntry * pNew = new TOCEntry(pNewBL,m_iCurrentLevel,
 								   sDispStyle,
@@ -2300,6 +2304,7 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		{
+			UT_UNUSED(sfh);
 			UT_ASSERT(static_cast<const fl_Layout *>(sfh)->getType() == PTX_Block);
 			UT_ASSERT(m_pCurrentBL == (static_cast<const fl_ContainerLayout *>(sfh)));
 		}

@@ -245,8 +245,10 @@ s_loadImage (const UT_UTF8String & file, FV_View * pView, XAP_Frame * pF, gint x
 		mouseX = pView->getGraphics()->tlu(mouseX);
 	if(pView && pView->getGraphics())
 		mouseY = pView->getGraphics()->tlu(mouseY);
+#ifdef DEBUG
 	double xInch = (double) mouseX/1440.;
 	double yInch = (double) mouseY/1440.;
+#endif
 
 	UT_DEBUGMSG(("Insert Image at logical (x,y) %d %d \n",mouseX,mouseY));
 

@@ -922,6 +922,7 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
+	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_TABLE);
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_SectionTable);
@@ -2113,6 +2114,7 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 //
 // One cell container per cell layout
 //
+	UT_UNUSED(pPrev);
 	UT_ASSERT(pPrev == NULL);
 	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
 	createCellContainer();

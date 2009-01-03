@@ -516,6 +516,7 @@ bool px_ChangeHistory::didRedo(void)
 	return true;
 }
 
+#if DEBUG
 void px_ChangeHistory::_printHistory(UT_sint32 iPrev) const
 {
 	UT_sint32 i = 0;
@@ -546,7 +547,7 @@ void px_ChangeHistory::_printHistory(UT_sint32 iPrev) const
 			}
 	}
 }
-
+#endif
 
 void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 {

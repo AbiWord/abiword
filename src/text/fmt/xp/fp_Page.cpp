@@ -2130,6 +2130,7 @@ void fp_Page::annotationHeightChanged(void)
 void fp_Page::columnHeightChanged(fp_Column* pCol)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Column height changed \n"));
+	UT_UNUSED(pCol);
 	UT_ASSERT(m_vecColumnLeaders.findItem(pCol->getLeader()) >= 0);
 	if(breakPage())
 	{
@@ -2403,9 +2404,9 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 		if(m_pView && m_pView->getViewMode() == VIEW_PRINT)
 		{
 			fp_ShadowContainer * hf[2] = { m_pHeader, m_pFooter };
-			for (UT_uint32 i = 0; i < G_N_ELEMENTS(hf); i++)
+			for (UT_uint32 j = 0; j < G_N_ELEMENTS(hf); j++)
 			{
-				fp_ShadowContainer * p = hf[i];
+				fp_ShadowContainer * p = hf[j];
 
 				if(p == NULL || !p->getFirstContainer())
 					continue;
