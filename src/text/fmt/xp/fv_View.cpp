@@ -13834,6 +13834,11 @@ void FV_View::calculateNumHorizPages()
 	UT_uint32 scrollbarWidth = 1000; //Because my scrollbar is about this wide.
 	UT_uint32 windowWidth = getWindowWidth() - scrollbarWidth;
 	UT_uint32 iOldNo = m_iNumHorizPages;
+	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_iNumHorizPages = 1;
+		return;
+	}
 	xxx_UT_DEBUGMSG(("Initial Number horizontal pages %d \n",iOldNo));
 	if (!m_autoNumHorizPages || getViewMode() != VIEW_PRINT || m_iNumHorizPages < 1)
 	{

@@ -112,8 +112,6 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	if(m_pJob)
 		g_object_unref(m_pJob);
 	m_pJob = NULL;
-	if(m_pPC)
-		g_object_unref(m_pPC);
 	m_pPC = NULL;
 }
 
@@ -135,8 +133,7 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	gtk_print_operation_set_n_pages (m_pPO,m_iNumberPages);
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 
-	UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
-	UT_DEBUGMSG(("Original Device resolution %d \n",m_pView->getGraphics()->getDeviceResolution()));
+	xxx_UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr,72.0);
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
@@ -165,7 +162,7 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 }
 void XAP_UnixDialog_Print::PrintPage(gint page_nr)
 {
-	UT_DEBUGMSG(("Print Page %d \n",page_nr));
+	xxx_UT_DEBUGMSG(("Print Page %d \n",page_nr));
 	dg_DrawArgs da;
 	da.pG = m_pPrintGraphics;
 	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
@@ -346,19 +343,6 @@ void XAP_UnixDialog_Print::setupPrint()
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_PORTRAIT);
 	else
 		gtk_page_setup_set_orientation(m_pPageSetup,GTK_PAGE_ORIENTATION_LANDSCAPE);
-
-}
-
-void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame) 
-{
-#if 0
-	int copies = 1, collate = FALSE;
-	int first = 1, end = 0, range;
-	GtkWidget	*dialog;
-	gint		 response;
-#endif
-	m_pFrame = pFrame;
-	setupPrint();
 	m_pPO = gtk_print_operation_new();
 	gtk_print_operation_set_default_page_setup(m_pPO,m_pPageSetup);
 	gtk_print_operation_set_use_full_page (m_pPO, true);
@@ -367,16 +351,21 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	m_iCurrentPage = m_pDL->findPage(m_pView->getCurrentPage());
 	m_iNumberPages = (gint) m_pDL->countPages();
 	gtk_print_operation_set_current_page(m_pPO,m_iCurrentPage);
+
+	g_signal_connect (m_pPO, "begin_print", G_CALLBACK (s_Begin_Print), this);
+	g_signal_connect (m_pPO, "draw_page", G_CALLBACK (s_Print_Page), this);
+}
+
+void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame) 
+{
+	m_pFrame = pFrame;
+	setupPrint();
     gtk_print_operation_set_show_progress(m_pPO, TRUE);
 	//
 	// Implement this later to give the user a sane default *.pdf name
 	//
 	// gtk_print_operation_set_export_filename(m_pPO, const gchar *filename);
 
-
-
-	g_signal_connect (m_pPO, "begin_print", G_CALLBACK (s_Begin_Print), this);
-	g_signal_connect (m_pPO, "draw_page", G_CALLBACK (s_Print_Page), this);
 
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl());
 	
@@ -402,7 +391,6 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 		m_pPrintLayout->setQuickPrint(NULL);
 		m_pPrintLayout = NULL;
 		m_pPrintView = NULL;
-		UT_DEBUGMSG(("Final Device resolution %d \n",m_pView->getGraphics()->getDeviceResolution()));
 
 		if(m_bShowParagraphs)
 			m_pView->setShowPara(true);
