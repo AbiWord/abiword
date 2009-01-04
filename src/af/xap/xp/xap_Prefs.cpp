@@ -1151,12 +1151,14 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		}
 	}
 	// successful parse of tag...
+IgnoreThisScheme:
+	DELETEP(pNewScheme);
+	return;								// success
 
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
 InvalidFileError:
 	m_parserState.m_parserStatus = false;			// cause parser driver to bail
-IgnoreThisScheme: // success
 	DELETEP(pNewScheme);
 	return;
 }
