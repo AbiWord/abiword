@@ -109,7 +109,7 @@ class ABI_EXPORT fd_Field
     virtual							~fd_Field(void);
     bool							update(void);
     void							setBlock(fl_BlockLayout * pBlock);
-    fl_BlockLayout *				getBlock( void);
+    fl_BlockLayout *				getBlock( void) const;
 	FieldType						getFieldType(void) const;
 	gchar *						getValue(void) const;
 	void							setValue(const gchar * szValue);

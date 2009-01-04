@@ -47,7 +47,7 @@ class ABI_EXPORT po_Bookmark
     po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt, BookmarkType type, const gchar* name);
     virtual							~po_Bookmark(void);
     void							setBlock(fl_BlockLayout * pBlock);
-    fl_BlockLayout *				getBlock( void);
+    fl_BlockLayout *				getBlock( void) const;
 	BookmarkType					getBookmarkType(void) const;
 	const gchar *				getName(void) const;
 	void							setName(const gchar * szValue);
@@ -56,10 +56,10 @@ class ABI_EXPORT po_Bookmark
     // eg positionChangeUpdate
     //    referenceChangeUpdate
 
+ private:
     fl_BlockLayout * m_pBlock;
     // will need some more helper functions in here eg. to test 
     // whether text has changed to avoid unnecessary updates
- private:
     pf_Frag_Object& m_fragObject;
     pt_PieceTable *	m_pPieceTable;
     BookmarkType m_iBookmarkType;

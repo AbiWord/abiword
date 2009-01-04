@@ -45,7 +45,7 @@ void po_Bookmark::setBlock( fl_BlockLayout *pBlock)
 	m_pBlock = pBlock;
 }
 
-fl_BlockLayout* po_Bookmark::getBlock( void)
+fl_BlockLayout* po_Bookmark::getBlock( void) const
 {
 	return m_pBlock;
 }

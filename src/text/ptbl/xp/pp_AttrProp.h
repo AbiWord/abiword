@@ -37,7 +37,12 @@ class PD_Document;
 class ABI_EXPORT PP_RevisionState
 {
   public:
-	PP_RevisionState(){m_iId = 0; m_bShow = false; m_bMark = false;};
+	PP_RevisionState()
+		:m_iId(0),
+		m_bShow(false),
+		m_bMark(false)
+	{
+	}
 
 	bool operator == (const PP_RevisionState & rs) const
 	     {
@@ -123,7 +128,7 @@ public:
 	UT_uint32 getCheckSum(void) const;
 
 	void operator = (const PP_AttrProp &Other);
-	UT_uint32 getIndex(void);	//$HACK
+	UT_uint32 getIndex(void) const;	//$HACK
 	void setIndex(UT_uint32 i);	//$HACK
 
 	/* m_iRevisionIndex points to a AP that has our revision attribute

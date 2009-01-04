@@ -55,7 +55,7 @@ void fd_Field::setBlock( fl_BlockLayout *pBlock)
 	m_pBlock = pBlock;
 }
 
-fl_BlockLayout* fd_Field::getBlock( void)
+fl_BlockLayout* fd_Field::getBlock( void) const
 {
 	return m_pBlock;
 }

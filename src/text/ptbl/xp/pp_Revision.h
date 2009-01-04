@@ -61,8 +61,8 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 	PP_RevisionType  getType()  const {return m_eType;}
 	void             setType(PP_RevisionType t) {m_eType = t; m_bDirty = true;}
 	
-	const gchar * getPropsString();
-	const gchar * getAttrsString();
+	const gchar * getPropsString() const;
+	const gchar * getAttrsString() const;
 
 	// this is intentionally not virtual (no need for that)
 	bool	setAttributes(const gchar ** attributes);
@@ -70,14 +70,15 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 	bool operator == (const PP_Revision &op2) const;
 
   private:
-	void             _refreshString();
+	void             _refreshString() const;
 	bool             _handleNestedRevAttr();
 
 	UT_uint32        m_iID;
 	PP_RevisionType  m_eType;
-	UT_String        m_sXMLProps;
-	UT_String        m_sXMLAttrs;
-	bool             m_bDirty;
+	// these next three are a cache, therefor mutable
+	mutable UT_String        m_sXMLProps;
+	mutable UT_String        m_sXMLAttrs;
+	mutable bool             m_bDirty;
 };
 
 
@@ -144,11 +145,11 @@ class ABI_EXPORT PP_RevisionAttr
 	void                  removeRevision(const PP_Revision * pRev);
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,
-														   const PP_Revision ** ppR);
-	const PP_Revision *   getLowestGreaterOrEqualRevision(UT_uint32 id);
+														   const PP_Revision ** ppR) const;
+	const PP_Revision *   getLowestGreaterOrEqualRevision(UT_uint32 id) const;
 	
-	const PP_Revision *   getLastRevision();
-	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
+	const PP_Revision *   getLastRevision() const;
+	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId) const;
 
 	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
 	const PP_Revision *   getNthRevision(UT_uint32 n) const {return (const PP_Revision*)m_vRev.getNthItem(n);}
@@ -160,16 +161,16 @@ class ABI_EXPORT PP_RevisionAttr
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
 	    querie the returned PP_Revision object.
     */
-	bool                  isVisible(UT_uint32 id);
-	bool                  hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue);
-	bool                  hasProperty(const gchar * pName, const gchar * &pValue);
-	PP_RevisionType       getType(UT_uint32 iId);
-	PP_RevisionType       getType();
+	bool                  isVisible(UT_uint32 id) const;
+	bool                  hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue) const;
+	bool                  hasProperty(const gchar * pName, const gchar * &pValue) const;
+	PP_RevisionType       getType(UT_uint32 iId) const;
+	PP_RevisionType       getType() const;
 #if 0
 	const UT_Vector *     getProps(UT_uint32 iId);
 	const UT_Vector *     getProps();
 #endif
-	const gchar *      getXMLstring();
+	const gchar *      getXMLstring() const;
 	void                  forceDirty() {m_bDirty = true;}
 	bool                  isFragmentSuperfluous() const;
 
@@ -178,14 +179,16 @@ class ABI_EXPORT PP_RevisionAttr
   private:
 	void _init(const gchar *r);
 	void _clear();
-	void _refreshString();
+	void _refreshString() const;
 
 	UT_Vector           m_vRev;
-	UT_String           m_sXMLstring;
-	bool                m_bDirty; // indicates whether m_sXMLstring corresponds
+	// these next 2 are a cache, hence mutable
+	mutable UT_String           m_sXMLstring;
+	mutable bool                m_bDirty; // indicates whether m_sXMLstring corresponds
 						          // to current state of the instance
 	UT_uint32           m_iSuperfluous;
-	const PP_Revision * m_pLastRevision;
+	// also a cache
+	mutable const PP_Revision * m_pLastRevision;
 };
 
 #endif // #ifndef PT_REVISION_H

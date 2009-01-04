@@ -1338,7 +1338,7 @@ void PP_AttrProp::operator = (const PP_AttrProp &Other)
 
 }
 
-UT_uint32 PP_AttrProp::getIndex(void)
+UT_uint32 PP_AttrProp::getIndex(void) const
 {
 	return m_index;
 }

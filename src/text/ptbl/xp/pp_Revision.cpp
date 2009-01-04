@@ -181,7 +181,7 @@ bool PP_Revision::_handleNestedRevAttr()
 
 
 /*! converts the internal vector of properties into XML string */
-const gchar * PP_Revision::getPropsString()
+const gchar * PP_Revision::getPropsString() const
 {
 	if(m_bDirty)
 		_refreshString();
@@ -190,7 +190,7 @@ const gchar * PP_Revision::getPropsString()
 }
 
 /*! converts the internal vector of attributes into XML string */
-const gchar * PP_Revision::getAttrsString()
+const gchar * PP_Revision::getAttrsString() const
 {
 	if(m_bDirty)
 		_refreshString();
@@ -198,7 +198,7 @@ const gchar * PP_Revision::getAttrsString()
 	return (const gchar*) m_sXMLAttrs.c_str();
 }
 
-void PP_Revision::_refreshString()
+void PP_Revision::_refreshString() const
 {
 	m_sXMLProps.clear();
 	m_sXMLAttrs.clear();
@@ -604,7 +604,7 @@ static const PP_Revision s_del(0, PP_REVISION_DELETION, (gchar*)0, (gchar*)0);
 static const PP_Revision s_add(0, PP_REVISION_ADDITION, (gchar*)0, (gchar*)0);
 
 const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id,
-																	   const PP_Revision ** ppR)
+																	   const PP_Revision ** ppR) const
 {
 	if(ppR)
 		*ppR = NULL;
@@ -669,7 +669,7 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	return r;
 }
 
-const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 id)
+const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 id) const
 {
 	if(id == 0)
 		return NULL;
@@ -699,7 +699,7 @@ const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 i
 
 /*! finds the highest revision number in this attribute
  */
-const PP_Revision * PP_RevisionAttr::getLastRevision()
+const PP_Revision * PP_RevisionAttr::getLastRevision() const
 {
 	// since this is rather involved, we will chache the result and
 	// use the cache if it is uptodate
@@ -732,7 +732,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
    contains the smallest id in this set greater than iId; if return value is and minId
    is PD_MAX_REVISION then there are revisions preset
 */
-const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 &minId)
+const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 &minId) const
 {
 	minId = PD_MAX_REVISION;
 
@@ -757,7 +757,7 @@ const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 
 /*! given revision level id, this function returns true if given
     segment of text is to be visible, false if it is to be hidden
 */
-bool PP_RevisionAttr::isVisible(UT_uint32 id)
+bool PP_RevisionAttr::isVisible(UT_uint32 id) const
 {
 	if(id == 0)
 	{
@@ -1031,7 +1031,7 @@ void PP_RevisionAttr::removeAllHigherOrEqualIds(UT_uint32 iId)
 
 /*! create XML string from our vector
  */
-void PP_RevisionAttr::_refreshString()
+void PP_RevisionAttr::_refreshString() const
 {
 	char buf[30];
 	m_sXMLstring.clear();
@@ -1084,7 +1084,7 @@ void PP_RevisionAttr::_refreshString()
 
 /*! get an gchar string representation of this revision
  */
-const gchar * PP_RevisionAttr::getXMLstring()
+const gchar * PP_RevisionAttr::getXMLstring() const
 {
 	if(m_bDirty)
 		_refreshString();
@@ -1131,7 +1131,7 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue)
+bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const gchar * pName, const gchar * &pValue) const
 {
 	const PP_Revision * s;
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId, &s);
@@ -1146,7 +1146,7 @@ bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const gchar * pName, const gcha
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(const gchar * pName, const gchar * &pValue)
+bool PP_RevisionAttr::hasProperty(const gchar * pName, const gchar * &pValue) const
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getProperty(pName, pValue);
@@ -1154,7 +1154,7 @@ bool PP_RevisionAttr::hasProperty(const gchar * pName, const gchar * &pValue)
 
 /*! returns the type of cumulative revision up to iId represented by this attribute
  */
-PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId)
+PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId) const
 {
 	const PP_Revision * s;
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId,&s);
@@ -1170,7 +1170,7 @@ PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId)
 
 /*! returns the type of overall cumulative revision represented by this attribute
  */
-PP_RevisionType PP_RevisionAttr::getType()
+PP_RevisionType PP_RevisionAttr::getType() const
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getType();

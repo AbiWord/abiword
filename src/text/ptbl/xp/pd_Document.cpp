@@ -337,7 +337,7 @@ bool PD_Document::sendChangeAuthorCR(pp_Author * pAuthor)
 
 bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps)
 {
-	PP_AttrProp * pAP = pAuthor->getAttrProp();
+	const PP_AttrProp * pAP = pAuthor->getAttrProp();
 	UT_uint32 iCnt= pAP->getPropertyCount();
 	szProps = new const gchar * [2*iCnt +5];
 	szProps[0] = "uuid";
