@@ -99,7 +99,7 @@ void fp_FootnoteContainer::clearScreen(void)
 	if(pos == 0)
 	{
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_RGBColor * pBGColor = getFillType()->getColor();
+		const UT_RGBColor * pBGColor = getFillType()->getColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
 //		UT_sint32 diff = getPage()->getWidth()/10;

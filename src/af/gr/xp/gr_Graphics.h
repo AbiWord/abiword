@@ -611,8 +611,8 @@ class ABI_EXPORT GR_Graphics
 
 	GR_Caret *        getCaret() { return m_pCaret; }
 	GR_Caret *        createCaret(UT_sint32 iID);
-	GR_Caret *        getCaret(UT_sint32 iID);
-	GR_Caret *        getNthCaret(UT_sint32 i);
+	GR_Caret *        getCaret(UT_sint32 iID) const;
+	GR_Caret *        getNthCaret(UT_sint32 i) const;
 	
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;

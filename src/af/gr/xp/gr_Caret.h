@@ -55,14 +55,14 @@ public:
 	// and the timer restarts from 0 for the next 500ms cycle.
 	void							setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 										   UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
-				 						  bool bPointDirection = false, UT_RGBColor * pClr = NULL);
+				 						  bool bPointDirection = false, const UT_RGBColor * pClr = NULL);
 
 	// The caret needs to know about this to clip the save/restore rects.
 	void setWindowSize(UT_uint32 width, UT_uint32 height);
 
 	bool							getInsertMode () { return m_insertMode; }
 	void							setInsertMode (bool mode) { m_insertMode = mode; }
-	UT_sint32                       getID(void);
+	UT_sint32                       getID(void) const { return m_iID; } 
 	void                            setRemoteColor(UT_RGBColor clrRemote);
 	
 	void							resetBlinkTimeout(void);
@@ -91,7 +91,7 @@ private:
 	UT_sint32						m_yPoint2;
 	UT_uint32						m_iPointHeight2;
 	bool							m_bPointDirection;
-	UT_RGBColor *					m_pClr;
+	const UT_RGBColor *					m_pClr;
 	GR_Graphics *					m_pG;
 
 	UT_uint32						m_iWindowWidth;

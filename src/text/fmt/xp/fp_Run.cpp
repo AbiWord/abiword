@@ -65,11 +65,6 @@
 // before committing
 //#define FPRUN_PROPS_MINI_DUMP
 
-#ifdef _MSC_VER
-// MSVC++ warns about using 'this' in initializer list.
-#pragma warning(disable: 4355)
-#endif
-
 // TODO can we use the indexAP provided in the change records
 // TODO to remember the attr/prop for each run rather than
 // TODO looking it up each time we call lookupProperties() -- jeff 4/19/99
@@ -132,7 +127,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pRevisions(NULL),
 	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
-	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
+	m_FillType(NULL,this,FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
 	m_pG(NULL),
 	m_iTmpX(0),

@@ -40,11 +40,6 @@
 #include "fv_View.h"
 #include "gr_Painter.h"
 
-#ifdef _MSC_VER
-// MSVC++ warns about using 'this' in initializer list.
-#pragma warning(disable: 4355)
-#endif
-
 /*!
   Create container
   \param iType Container type
@@ -730,7 +725,7 @@ void fg_FillType::_regenerateImage(GR_Graphics * pG)
 /*!
  * Return the most appropriate color.
  */
-UT_RGBColor * fg_FillType::getColor(void)
+const UT_RGBColor * fg_FillType::getColor(void) const
 {
 	if(m_bColorSet)
 	{
@@ -843,7 +838,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_CELL))
 	{
-		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(m_pContainer);
+		const fp_CellContainer * pCell = static_cast<const fp_CellContainer *>(m_pContainer);
 		UT_sint32 xoff,yoff;
 		pCell->getLeftTopOffsets(xoff,yoff);
 		if(m_FillType == FG_FILL_IMAGE)
@@ -854,7 +849,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	}
 	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_FRAME))
 	{
-		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(m_pContainer);
+		const fp_FrameContainer * pFrame = static_cast<const fp_FrameContainer *>(m_pContainer);
 		UT_sint32 xoff = pFrame->getXPad();
 		UT_sint32 yoff = pFrame->getYPad();
 		if(m_FillType == FG_FILL_IMAGE)

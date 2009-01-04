@@ -221,11 +221,6 @@ void GR_Caret::setRemoteColor(UT_RGBColor clrRemote)
 	m_clrRemote = clrRemote;
 }
 
-UT_sint32 GR_Caret::getID(void)
-{
-	return m_iID;
-}
-
 
 void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
 {
@@ -244,7 +239,7 @@ void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
 
 void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
-						 bool bPointDirection, UT_RGBColor * pClr)
+						 bool bPointDirection, const UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
 	_erase();

@@ -498,7 +498,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 // Set the background color for the preview
 //
 	static gchar  background[8];
-	UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
+	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,
 			bgCol->m_grn,bgCol->m_blu);
 	pDialog->setBackGroundColor( (const gchar *) background);
@@ -1216,7 +1216,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 // Set the Background color for the preview.
 //
 	static gchar  background[8];
-	UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
+	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,bgCol->m_grn,bgCol->m_blu);
 
 	m_pCharPreview = new XAP_Preview_FontPreview(gc,background);
@@ -1335,7 +1335,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	static gchar szFGColor[8];
 	UT_RGBColor FGColor(0,0,0);
 	UT_RGBColor BGColor(255,255,255);
-	UT_RGBColor * pageCol = NULL;
+	const UT_RGBColor * pageCol = NULL;
 	getLView()->setStyle("Normal");
 
 	const gchar ** props_in = NULL;

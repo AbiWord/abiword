@@ -142,8 +142,8 @@ public:
 	void           Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
 	fg_FillType *  getParent(void) const;
 	FG_Fill_Type   getFillType(void) const;
-	FL_DocLayout * getDocLayout(void);
-	UT_RGBColor *  getColor(void);
+	const FL_DocLayout * getDocLayout(void) const;
+	const UT_RGBColor *  getColor(void) const;
 	void           setImagePointer(FG_Graphic ** pDocGraphic, GR_Image ** pDocImage);
 	
 private:

@@ -4227,7 +4227,7 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
 							pCP->m_iPointHeight, pCP->m_bPointDirection, 
 							&pBlock, &pRun);
 		fp_Page * pPage = getCurrentPage();
-		UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getFillType()->getColor();
 		UT_sint32 yoff = 0;
@@ -4300,7 +4300,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		m_yPoint = iTop;
 		m_yPoint2 = iTop;
 		pPage = getCurrentPage();
-		UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getFillType()->getColor();
 		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
@@ -4311,7 +4311,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
-		UT_RGBColor * pClr = NULL;
+		const UT_RGBColor * pClr = NULL;
 		if (pPage)
 			pClr = pPage->getFillType()->getColor();
 		UT_sint32 yoff = 0;
@@ -4584,7 +4584,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			
 			if (!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 			{
-			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
+			  const UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter

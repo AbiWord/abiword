@@ -2323,7 +2323,7 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 {
 	if(!m_bHdrFtrBoxDrawn)
 		return;
-	UT_RGBColor * pClr = getPage()->getFillType()->getColor();
+	const UT_RGBColor * pClr = getPage()->getFillType()->getColor();
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(*pClr);
 //

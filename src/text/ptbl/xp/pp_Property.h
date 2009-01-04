@@ -169,7 +169,7 @@ ABI_EXPORT const gchar * PP_evalProperty(const gchar * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
-								 PD_Document * pDoc,
+								 const PD_Document * pDoc,
 								 bool bExpandStyles=false);
 
 
@@ -178,7 +178,7 @@ ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const gchar * pszName,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
 								 tProperty_type Type,
-								 PD_Document * pDoc=NULL,
+								 const PD_Document * pDoc=NULL,
 								 bool bExpandStyles=false);
 
 ABI_EXPORT UT_uint32        PP_getPropertyCount();

@@ -74,8 +74,8 @@ public:
 		{m_iXpad = xPad;}
 	void                setYpad(UT_sint32 yPad)
 		{m_iYpad = yPad;}
-	UT_sint32           getXPad(void) { return m_iXpad;}
-	UT_sint32           getYPad(void) { return m_iYpad;}
+	UT_sint32           getXPad(void) const { return m_iXpad;}
+	UT_sint32           getYPad(void) const { return m_iYpad;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
 	void                getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks);

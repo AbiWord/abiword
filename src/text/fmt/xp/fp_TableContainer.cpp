@@ -2702,7 +2702,7 @@ void fp_CellContainer::setToAllocation(void)
 }
 
 
-void fp_CellContainer::getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff)
+void fp_CellContainer::getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const
 {
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	UT_return_if_fail(pTab);

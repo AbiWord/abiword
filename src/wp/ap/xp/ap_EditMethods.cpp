@@ -7680,7 +7680,7 @@ UT_return_val_if_fail(pDialog, false);
 // Set the background color for the preview
 //
 		gchar  background[8];
-		UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType()->getColor();
+		const UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType()->getColor();
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
 		pDialog->setBackGroundColor( static_cast<const gchar *>(background));

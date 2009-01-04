@@ -203,14 +203,14 @@ void GR_Graphics::_destroyFonts ()
 	m_hashFontCache.clear ();
 }
 
-GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i)
+GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i) const
 {
 	if (i>= static_cast<UT_sint32>(m_vecCarets.getItemCount()))
 		return NULL;
 	return m_vecCarets.getNthItem(i);
 }
 
-GR_Caret * GR_Graphics::getCaret(UT_sint32 iID)
+GR_Caret * GR_Graphics::getCaret(UT_sint32 iID) const
 {
 	UT_sint32 i= 0;
 	for(i=0; i<m_vecCarets.getItemCount();i++)

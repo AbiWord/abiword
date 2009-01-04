@@ -308,7 +308,7 @@ void PP_setDefaultFontFamily(const char* pszFamily)
 	prop->m_pszInitial = const_cast<gchar*>(reinterpret_cast<const gchar*>(family.c_str()));
 }
 
-static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
+static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, const PD_Document * pDoc)
 {
 	PD_Style * pStyle = NULL;
 
@@ -341,7 +341,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 static const gchar * s_evalProperty (const PP_Property * pProp,
 										const PP_AttrProp * pAttrProp,
-										PD_Document * pDoc,
+										const PD_Document * pDoc,
 										bool bExpandStyles)
 {
 	const gchar * szValue = NULL;
@@ -371,7 +371,7 @@ const gchar * PP_evalProperty (const gchar *  pszName,
 								  const PP_AttrProp * pSpanAttrProp,
 								  const PP_AttrProp * pBlockAttrProp,
 								  const PP_AttrProp * pSectionAttrProp,
-								  PD_Document * pDoc,
+								  const PD_Document * pDoc,
 								  bool bExpandStyles)
 {
 	// find the value for the given property
@@ -562,7 +562,7 @@ const PP_PropertyType * PP_evalPropertyType(const gchar *  pszName,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
 								 tProperty_type Type,
-								 PD_Document * pDoc,
+								 const PD_Document * pDoc,
 								 bool bExpandStyles)
 {
 	// find the value for the given property

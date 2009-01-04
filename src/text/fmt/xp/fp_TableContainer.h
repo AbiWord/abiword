@@ -149,7 +149,7 @@ public:
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
 	bool                containsAnnotations(void);
 	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns);
-	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
+	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const;
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const
