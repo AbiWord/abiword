@@ -194,7 +194,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 	{
 		XAP_App::getApp()->rememberFrame(this);
 	}
-	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	AD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 	
 	if (!szFilename || !*szFilename)
@@ -268,7 +268,7 @@ UT_Error AP_Frame::_loadDocument(GsfInput * input, IEFileType ieft)
 	{
 		XAP_App::getApp()->rememberFrame(this);
 	}
-	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	AD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 	
 	UT_Error errorCode;
@@ -303,7 +303,7 @@ UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	AD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 
 	if (!szFilename || !*szFilename)

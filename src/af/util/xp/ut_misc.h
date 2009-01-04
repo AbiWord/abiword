@@ -214,7 +214,7 @@ class ABI_EXPORT UT_UniqueId
 	
 	UT_uint32 getUID(idType t);
 	bool      setMinId(idType t, UT_uint32 iMin);
-	bool      isIdUnique(idType t, UT_uint32 iId);
+	bool      isIdUnique(idType t, UT_uint32 iId) const;
 
   private:
 	UT_uint32 m_iID[(UT_uint32)_Last];

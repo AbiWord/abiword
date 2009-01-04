@@ -309,7 +309,7 @@ static void s_pasteFile(const UT_UTF8String & file, XAP_Frame * pFrame)
 	    if(!pFrame)
 			return;
 	    XAP_App * pApp = XAP_App::getApp();
-	    PD_Document * newDoc = new PD_Document(pApp);
+	    PD_Document * newDoc = new PD_Document();
 	    UT_Error err = newDoc->readFromFile(file.utf8_str(), IEFT_Unknown);
 	    if ( err != UT_OK )
 		{

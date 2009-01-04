@@ -688,7 +688,6 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	//
 	// Jeeze gotta generate a fake void * pointer!! Try this hack.
 	//
-	XAP_App * fakeApp = getApp();
 	for(i=0; i<4; i++)
 	{
 		DELETEP(m_pFakeLayout[i]);
@@ -701,7 +700,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	//
 	DELETEP(m_pFakeAuto);
 	UNREFP(m_pFakeDoc);
-	m_pFakeDoc = new PD_Document(fakeApp);
+	m_pFakeDoc = new PD_Document();
 	m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_NewListType, m_newStartValue, m_pszDelim, m_pszDecimal,
 								 (PD_Document *) m_pFakeDoc,NULL);
 	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1,false);

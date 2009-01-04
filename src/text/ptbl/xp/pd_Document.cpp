@@ -91,7 +91,7 @@ struct _dataItemPair
 // perhaps this should be a magic "unknown" or "NULL" value,
 // but now we just depend on save() never being called without
 // a previous saveAs() (which specifies a type)
-PD_Document::PD_Document(XAP_App *pApp)
+PD_Document::PD_Document()
 	: AD_Document(),
 	  m_docPageSize("A4"),
 	  m_ballowListUpdates(false),
@@ -123,8 +123,6 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iMyAuthorInt(-1),
 	  m_iLastAuthorInt(-1)
 {
-	m_pApp = pApp;
-	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
 	UT_ASSERT(isOrigUUID());
 #ifdef PT_TEST
@@ -261,7 +259,7 @@ bool PD_Document::isMarginChangeOnly(void) const
  * Author methods, get an integer that locates a given UUID. If this UUID
  * is not found return -1
  */
-UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
+UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID) const
 {
 	if(!szUUID)
 		return NULL;
@@ -280,17 +278,17 @@ UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID)
 	return -1;
 }
 
-UT_sint32 PD_Document::getNumAuthors()
+UT_sint32 PD_Document::getNumAuthors() const
 {
 	return static_cast<UT_sint32>(m_vecAuthors.getItemCount());
 }
 
-pp_Author *  PD_Document::getNthAuthor(UT_sint32 i)
+pp_Author *  PD_Document::getNthAuthor(UT_sint32 i) const
 {
 	return m_vecAuthors.getNthItem(i);
 }
 
-pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID)
+pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID) const
 {
 	if(!szUUID)
 		return NULL;
@@ -366,7 +364,7 @@ bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps
 	return true;
 }
 
-UT_sint32 PD_Document::findFirstFreeAuthorInt(void)
+UT_sint32 PD_Document::findFirstFreeAuthorInt(void) const
 {
 	UT_sint32 i= 0;
 	for(i=0;i<1000;i++)
@@ -376,7 +374,7 @@ UT_sint32 PD_Document::findFirstFreeAuthorInt(void)
 	}
 	return i;
 }
-pp_Author * PD_Document::getAuthorByInt(UT_sint32 i)
+pp_Author * PD_Document::getAuthorByInt(UT_sint32 i) const
 {
 	UT_sint32 j = 0;
 	for(j=0; j< m_vecAuthors.getItemCount(); j++)
@@ -423,7 +421,7 @@ UT_sint32 PD_Document::getLastAuthorInt(void) const
 /*!
  * get a UUID from it's location. If it's not present return NULL
  */
-const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i)
+const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i) const
 {
 	UT_sint32 j = 0;
 	for(j=0; j< m_vecAuthors.getItemCount(); j++)
@@ -1405,7 +1403,7 @@ bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Fra
 //
 // Update frames during load.
 //
-	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame)
 		pFrame->nullUpdate();
 	if(pts == PTX_EndCell)
@@ -3429,7 +3427,7 @@ void PD_Document::changeConnectedDocument(PD_Document * pDoc)
 /*!
  * return a vector of all the views attached to this document.
  */
-void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews)
+void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews) const
 {
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -5924,7 +5922,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	//
 	// Update frames during load.
 	//
-	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame)
 	{
 		pFrame->nullUpdate();

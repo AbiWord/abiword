@@ -8360,7 +8360,7 @@ Defun(formatPainter)
   pView->getDocumentRangeOfCurrentSelection (&range);
 
   // now create a new (invisible) view to paste our clipboard contents into
-  PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+  PD_Document * pNewDoc = new PD_Document();
   pNewDoc->newDocument();
 
   FL_DocLayout *pDocLayout = new FL_DocLayout(pNewDoc, pView->getGraphics());
@@ -10550,7 +10550,7 @@ Defun1(insFile)
 	{
 	    UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
 	    
-	    PD_Document * newDoc = new PD_Document(pApp);
+	    PD_Document * newDoc = new PD_Document();
 	    UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
 	    
 	    if ( err != UT_OK )

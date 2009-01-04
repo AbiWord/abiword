@@ -932,9 +932,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 
 #define ErrCleanupAndExit(code)  do {wvOLEFree (&ps); return(code);} while(0)
 
-#define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
+#define GetPassword() _getPassword ( XAP_App::getApp()->getLastFocussedFrame() )
 
-#define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); if ( _pFrame ) _errorMessage (_pFrame, (x)); } while (0)
+#define ErrorMessage(x) do { XAP_Frame *_pFrame = XAP_App::getApp()->getLastFocussedFrame(); if ( _pFrame ) _errorMessage (_pFrame, (x)); } while (0)
 
 static UT_UTF8String _getPassword (XAP_Frame * pFrame)
 {

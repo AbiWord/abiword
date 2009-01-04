@@ -54,7 +54,6 @@ class pf_Frag_Strux;
 class PX_ChangeRecord;
 class PD_Style;
 class PD_DocIterator;
-class XAP_App;
 class fd_Field;
 class po_Bookmark;
 class fl_AutoNum;
@@ -164,7 +163,7 @@ enum
 class ABI_EXPORT PD_Document : public AD_Document
 {
 public:
-	PD_Document(XAP_App *pApp);
+	PD_Document();
 
 	virtual AD_DOCUMENT_TYPE getType() const {return ADDOCUMENT_ABIWORD;}
 	
@@ -195,8 +194,8 @@ public:
 
 	// Author methods
 
-	const char *            getAuthorUUIDFromNum(UT_sint32 id);
-	UT_sint32               getNumFromAuthorUUID(const char * szUUID);
+	const char *            getAuthorUUIDFromNum(UT_sint32 id) const;
+	UT_sint32               getNumFromAuthorUUID(const char * szUUID) const;
 	void                    setShowAuthors(bool bAuthors);
 	bool                    isShowAuthors(void) const
 	{ return m_bShowAuthors;}
@@ -207,14 +206,14 @@ public:
 	UT_sint32               getMyAuthorInt(void) const;
 	void                    setMyAuthorInt(UT_sint32 iAuthor);
 	UT_sint32               getLastAuthorInt(void) const;
-	UT_sint32               getNumAuthors(void);
-	pp_Author *             getNthAuthor(UT_sint32 i);
-	pp_Author *             getAuthorByInt(UT_sint32 i);
-	pp_Author *             getAuthorByUUID(const gchar * szUUID);
+	UT_sint32               getNumAuthors(void) const;
+	pp_Author *             getNthAuthor(UT_sint32 i) const;
+	pp_Author *             getAuthorByInt(UT_sint32 i) const;
+	pp_Author *             getAuthorByUUID(const gchar * szUUID) const;
 	pp_Author *             addAuthor(const gchar * szUUID, UT_sint32 iAuthor);
 	bool                    sendAddAuthorCR(pp_Author * pAuthor);
 	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
-	UT_sint32               findFirstFreeAuthorInt(void);
+	UT_sint32               findFirstFreeAuthorInt(void) const;
  private:
 	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps);
  public:
@@ -443,8 +442,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
 	virtual UT_uint32		getLastSavedAsType() const { return m_lastSavedAsType; }
-	UT_uint32				getLastOpenedType() { return m_lastOpenedType; }
-	XAP_App *				getApp() { return m_pApp; }
+	UT_uint32				getLastOpenedType() const { return m_lastOpenedType; }
 	bool					updateFields(void);
 	bool					getField(PL_StruxDocHandle sdh,
 									 UT_uint32 offset,
@@ -580,7 +578,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    setProperties(const gchar ** ppProps);
 	void                     setDontImmediatelyLayout(bool b)
 		{ m_bDontImmediatelyLayout = b;}
-	bool                     isDontImmediateLayout(void)
+	bool                     isDontImmediateLayout(void) const
 		{ return m_bDontImmediatelyLayout;}
 
 	/* Okay, as far as I can tell this is a non-persistent document property since it is not
@@ -636,7 +634,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	UT_uint32 getUID(UT_UniqueId::idType t) {return m_UID.getUID(t);}
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
-	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
+	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) const {return m_UID.isIdUnique(t,i);}
 
 	virtual bool  areDocumentContentsEqual(const AD_Document &d, UT_uint32 &pos) const;
 	virtual bool  areDocumentFormatsEqual(const AD_Document &d, UT_uint32 &pos) const;
@@ -676,7 +674,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	UT_sint32               getCRNumber() const { return m_iCRCounter; }
 	void					setCRNumber(UT_sint32 iCRCounter) { m_iCRCounter = iCRCounter; }
 	UT_sint32               getNextCRNumber(void);
-    void                    getAllViews(UT_GenericVector<AV_View *> * vecViews);
+    void                    getAllViews(UT_GenericVector<AV_View *> * vecViews) const;
 	void                    ignoreSignals(void)
 	{ m_bIgnoreSignals = true;}
 	void                    dontIgnoreSignals(void)
@@ -686,7 +684,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	void					setCoalescingMask(bool mask)
 	{ m_bCoalescingMask = mask; }
-	bool					isCoalescingMasked()
+	bool					isCoalescingMasked() const
 	{ return m_bCoalescingMask; }
 protected:
 	virtual ~PD_Document();
@@ -738,7 +736,6 @@ public:
 private:
 	IEFileType				m_lastOpenedType;
 	IEFileType				m_lastSavedAsType;
-	XAP_App *				m_pApp;
 	bool					m_bDoingPaste;
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;

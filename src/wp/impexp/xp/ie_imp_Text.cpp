@@ -672,7 +672,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 {
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;
-	getDoc()->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+	XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
 
 	m_bIsEncoded = bAlwaysPrompt | bEncoded;
 
@@ -908,7 +908,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	XAP_Dialog_Encoding * pDialog
 		= static_cast<XAP_Dialog_Encoding *>(pDialogFactory->requestDialog(id));
@@ -917,7 +917,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	pDialog->setEncoding(szEncoding);
 
 	// run the dialog
-	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, false);
 
 	pDialog->runModal(pFrame);

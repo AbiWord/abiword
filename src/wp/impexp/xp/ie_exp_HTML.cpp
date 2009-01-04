@@ -6824,7 +6824,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	m_error = UT_OK;
 
 #ifdef HTML_DIALOG_OPTIONS
-	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, pDocument->getApp ());
+	XAP_Dialog_HTMLOptions::getHTMLDefaults (&m_exp_opt, XAP_App::getApp ());
 #endif
 }
 
@@ -6874,7 +6874,7 @@ void IE_Exp_HTML::_buildStyleTree ()
 UT_Error IE_Exp_HTML::_doOptions ()
 {
 #ifdef HTML_DIALOG_OPTIONS
-	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 	if (m_bSuppressDialog || !pFrame || isCopying ()) return UT_OK;
 	if(pFrame)
@@ -6895,14 +6895,14 @@ UT_Error IE_Exp_HTML::_doOptions ()
 	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
 
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory ());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory ());
 
 	XAP_Dialog_HTMLOptions * pDialog
 		= static_cast<XAP_Dialog_HTMLOptions *>(pDialogFactory->requestDialog (id));
 
 	UT_return_val_if_fail (pDialog, false);
 
-	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
+	pDialog->setHTMLOptions (&m_exp_opt, XAP_App::getApp ());
 
 	pDialog->runModal (pFrame);
 

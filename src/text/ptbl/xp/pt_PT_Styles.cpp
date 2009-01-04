@@ -407,7 +407,7 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 	return true;
 }
 
-size_t pt_PieceTable::getStyleCount (void)
+size_t pt_PieceTable::getStyleCount (void) const
 {
   return (size_t) m_hashStyles.size();
 }

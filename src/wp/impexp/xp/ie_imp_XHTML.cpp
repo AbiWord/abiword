@@ -684,7 +684,7 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
 	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 	
-	PD_Document * newDoc = new PD_Document(getDoc()->getApp());
+	PD_Document * newDoc = new PD_Document();
 	newDoc->createRawDocument();
 	UT_XML * newXML;
 

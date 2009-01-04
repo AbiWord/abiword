@@ -893,7 +893,7 @@ void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool /*useClipboard*/)
 {
 	/* create a new hidden document */
-  	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
+  	PD_Document * pDoc = new PD_Document();
   	pDoc->newDocument();
 	FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, m_pG);
 	FV_View * pCopyLinkView = new FV_View(XAP_App::getApp(), 0, pDocLayout);

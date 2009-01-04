@@ -950,7 +950,7 @@ bool UT_UniqueId::setMinId(idType t, UT_uint32 iMin)
     returns true of iId can be used as a unique identifier of a type
     t; before using iId, THE CALLER MUST CALL setMinId(t, iId+1) !!!
 */
-bool UT_UniqueId::isIdUnique(idType t, UT_uint32 iId)
+bool UT_UniqueId::isIdUnique(idType t, UT_uint32 iId) const
 {
 	UT_return_val_if_fail(t < _Last, false);
 

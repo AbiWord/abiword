@@ -1582,7 +1582,7 @@ abi_widget_load_file(AbiWidget * w, const gchar * pszFile, const gchar * extensi
 		UT_DEBUGMSG(("Attempting to load %s \n", pszFile));
 		// FIXME: DELETEP(abi->priv->m_pDoc);
 
-		w->priv->m_pDoc = new PD_Document(XAP_App::getApp());
+		w->priv->m_pDoc = new PD_Document();
 		w->priv->m_pDoc->readFromFile(pszFile, ieft);		
 	}
 
@@ -1657,7 +1657,7 @@ abi_widget_load_file_from_memory(AbiWidget * w, const gchar * extension_or_mimet
 		UT_DEBUGMSG(("Attempting to load from stream in unmapped state\n"));
 		// FIXME: DELETEP(abi->priv->m_pDoc);
 
-		w->priv->m_pDoc = new PD_Document(XAP_App::getApp());
+		w->priv->m_pDoc = new PD_Document();
 		w->priv->m_pDoc->readFromFile(GSF_INPUT(source), ieft);		
 	}
 

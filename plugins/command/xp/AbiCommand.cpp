@@ -362,7 +362,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 	if (strcmp (pCom0->utf8_str (), "new") == 0)
 	{
 		printf ("Attempting to create a new document \n");
-		PD_Document *pDoc = new PD_Document (m_pApp);
+		PD_Document *pDoc = new PD_Document ();
 
 		UT_Error error = pDoc->newDocument ();
 
@@ -389,7 +389,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		{
 			UT_UTF8String *pCom1 =
 				const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-			PD_Document *pDoc = new PD_Document (m_pApp);
+			PD_Document *pDoc = new PD_Document ();
 
 			UT_Error error = pDoc->readFromFile (pCom1->utf8_str (), IEFT_Unknown);
 
@@ -782,7 +782,7 @@ bool AbiCommand::loadDocument(UT_UTF8String & sPathToDoc)
   // Load in a document
   //
 
-      PD_Document *pDoc = new PD_Document (m_pApp);
+      PD_Document *pDoc = new PD_Document ();
   
       UT_Error error = pDoc->readFromFile (sPathToDoc.utf8_str (), IEFT_Unknown);
 
@@ -806,7 +806,7 @@ bool AbiCommand::newDocument(void)
 	// New document
 	//
 
-  PD_Document *pDoc = new PD_Document (m_pApp);
+  PD_Document *pDoc = new PD_Document ();
 
   UT_Error error = pDoc->newDocument ();
   

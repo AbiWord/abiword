@@ -76,7 +76,7 @@ void FV_UnixVisualDrag::mouseDrag(UT_sint32 x, UT_sint32 y)
 	 //
 	 // Create filename from contents
 	 //
-	 PD_Document * newDoc = new PD_Document(XAP_App::getApp());
+	 PD_Document * newDoc = new PD_Document();
 	 newDoc->createRawDocument();
 	 //
 	 // This code is to generate a file name from the contents of the

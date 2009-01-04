@@ -1074,7 +1074,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*) GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
 
 	UT_Error error = UT_OK;
-	PD_Document * pNewDoc = new PD_Document(this);
+	PD_Document * pNewDoc = new PD_Document();
 	error = pNewDoc->readFromFile(pszInFile,IEFT_Unknown, NULL);
 
 	if (error != UT_OK) 
@@ -1398,7 +1398,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 
 			GnomePrintContext * pc = gnome_print_rbuf_new (buf, iX, iY, bpp * iX, p2b, FALSE);
 
-			PD_Document *pDoc = new PD_Document(this);
+			PD_Document *pDoc = new PD_Document();
 			pDoc->readFromFile(Args->m_sFile, IEFT_Unknown, Args->m_impProps);
 			double inWidth = pDoc->m_docPageSize.Width(DIM_IN);
 			double inHeight = pDoc->m_docPageSize.Height(DIM_IN);

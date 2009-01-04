@@ -278,7 +278,7 @@ public:
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
 	
 	bool					removeStyle(const gchar * name);
-	size_t					getStyleCount(void);
+	size_t					getStyleCount(void) const;
 
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
@@ -360,7 +360,7 @@ public:
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
-	px_ChangeHistory*		getChangeHistory(void)
+	px_ChangeHistory*		getChangeHistory(void) const
 		{ return &m_history; }
 #endif /* PT_TEST */
 

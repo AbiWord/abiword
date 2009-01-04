@@ -388,7 +388,7 @@ static void hexdump(void* aPtr, UT_uint32 aLen) {
 }
 #endif
 
-#define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
+#define GetPassword() _getPassword ( XAP_App::getApp()->getLastFocussedFrame() )
 
 static UT_String _getPassword (XAP_Frame * pFrame)
 {

@@ -240,7 +240,7 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	UT_return_val_if_fail(szSourceFilename != NULL, false);
 	UT_return_val_if_fail(szTargetFilename != NULL, false);
 
-	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	PD_Document * pNewDoc = new PD_Document();
 	UT_return_val_if_fail(pNewDoc, false);
 
 	char * uri = UT_go_shell_arg_to_uri (szSourceFilename);
@@ -383,7 +383,7 @@ void AP_Convert::setVerbose(int level)
 bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtensionOrMime)
 {
 	// get the current document
-	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
+	PD_Document *pDoc = new PD_Document();
 	UT_Error err;
 	char * uri = UT_go_shell_arg_to_uri (szFile);
 

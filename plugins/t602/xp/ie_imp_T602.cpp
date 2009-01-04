@@ -32,6 +32,7 @@
 #include "ut_string_class.h"
 #include "xap_Prefs.h"
 #include "ie_imp_T602.h"
+#include "xap_App.h"
 #include "xap_Module.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
@@ -159,10 +160,6 @@ IE_Imp_T602::IE_Imp_T602(PD_Document * pDocument)
     m_tpos(0), m_big(0), m_color("000000"), m_sfont(0), m_eol(true),
     m_lheight(1), m_footer(0), m_header(0), m_fhc(1), m_writeheader(true)
 {
-	XAP_App *pApp=getDoc()->getApp();
-    UT_UNUSED(pApp);
-	UT_ASSERT(pApp);
-	UT_ASSERT(pApp->getPrefs());
 }
 
 IE_Imp_T602::~IE_Imp_T602() 

@@ -509,7 +509,7 @@ bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
 	}
 
 	// now create a subdocument ...
-	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
+	PD_Document * pDoc = new PD_Document();
 
 	if(!pDoc)
 		return false;

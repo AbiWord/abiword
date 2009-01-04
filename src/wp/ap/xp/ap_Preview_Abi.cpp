@@ -86,13 +86,12 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 		curHeight = 11.0;
 	}
 
-	m_pApp = XAP_App::getApp();
 //
 // Make a new document
 //
 	if(pDoc == NULL)
 	{
-		m_pDocument = new PD_Document(m_pApp);
+		m_pDocument = new PD_Document();
 		m_pDocument->newDocument();
 	}
 	else
@@ -167,7 +166,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // The "true" tells the view that this is a preview so don't need to update
 // View listeners for this things like rulers or scroll bars.
 //
-	m_pView = new FV_View(getApp(),m_pFrame,m_pDocLayout);
+	m_pView = new FV_View(XAP_App::getApp(),m_pFrame,m_pDocLayout);
 	m_pDocLayout->fillLayouts();
 	m_pView->setWindowSize(iWidth,iHeight);
 	m_pView->setViewMode(VIEW_PREVIEW);

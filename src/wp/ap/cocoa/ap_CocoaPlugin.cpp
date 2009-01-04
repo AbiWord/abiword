@@ -449,7 +449,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 	NSString * impProps = [AP_CocoaPlugin_FramelessDocument optionsPropertyString:options];
 
-	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	PD_Document * pNewDoc = new PD_Document();
 	if (!pNewDoc)
 		return nil;
 

@@ -43,7 +43,6 @@ public:
 
 	FV_View * getView(void) const;
 	PD_Document * getDoc(void) const;
-	XAP_App * getApp(void) const {return m_pApp;}
 	virtual void draw(void);
 	
 protected:
@@ -53,7 +52,6 @@ private:
 	FV_View * m_pView;
 	FL_DocLayout * m_pDocLayout;
     PD_Document * m_pDocument;
-	XAP_App * m_pApp;
 };
 
 #endif /* AP_PREVIEW_ABI_H */

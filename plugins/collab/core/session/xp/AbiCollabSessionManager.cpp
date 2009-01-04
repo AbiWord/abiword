@@ -178,7 +178,7 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 			if (create)
 			{
 				UT_DEBUGMSG(("Creating a new document in AbiCollabSessionManager::deserializeDocument()\n"));
-				(*pDoc) = new PD_Document(XAP_App::getApp());
+				(*pDoc) = new PD_Document();
 				(*pDoc)->createRawDocument();
 			}
 			IE_Imp* imp = (IE_Imp*)new IE_Imp_AbiWord_1(*pDoc);
