@@ -81,13 +81,13 @@ public:
 	PT_DocPosition        getSelectionRightAnchor(void) const;
 	void                  setSelectionRightAnchor(PT_DocPosition pos);
 	UT_sint32             getNumSelections(void) const;
-	PD_DocumentRange *    getNthSelection(UT_sint32 i);
+	PD_DocumentRange *    getNthSelection(UT_sint32 i) const;
 	void                  addSelectedRange(PT_DocPosition posLow, PT_DocPosition posHigh, bool bAddData);
 	bool                  isPosSelected(PT_DocPosition pos) const;
 	bool                  isSelected(void) const;
 	void                  clearSelection(void);
 	void                  setTableLayout(fl_TableLayout * pFL);
-	fl_TableLayout *      getTableLayout(void);
+	fl_TableLayout *      getTableLayout(void) const;
 	void                  addCellToSelection(fl_CellLayout * pCell);
 	void                  pasteRowOrCol(void);
 	void                  checkSelectAll(void);

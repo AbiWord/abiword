@@ -207,8 +207,8 @@ public:
 
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
-	PT_DocPosition	getSelectionLeftAnchor(void);
-	PT_DocPosition	getSelectionRightAnchor(void) ;
+	PT_DocPosition	getSelectionLeftAnchor(void) const;
+	PT_DocPosition	getSelectionRightAnchor(void) const;
 	UT_uint32       getSelectionLength(void) const;
 
 	UT_sint32       getFrameMargin(void) const;
@@ -230,7 +230,7 @@ private:
 	inline void 	_drawResizeHandle(UT_Rect & box);
 	
 public:
-	const PP_AttrProp * getAttrPropForPoint();
+	const PP_AttrProp * getAttrPropForPoint() const;
 
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
@@ -298,10 +298,10 @@ public:
 	virtual void        remeasureCharsWithoutRebuild();
 	virtual void        fontMetricsChange();
 	virtual bool		isSelectionEmpty(void) const;
-	bool                isSelectAll(void)
+	bool                isSelectAll(void) const
 	{ return m_Selection.isSelectAll();}
 	virtual void		cmdUnselectSelection(void);
-	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
+	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr) const;
 	PT_DocPosition		mapDocPos( FV_DocPos dp );
 	PT_DocPosition		mapDocPosSimple( FV_DocPos dp );
 	PT_DocPosition saveSelectedImage (const char * toFile );
@@ -309,9 +309,9 @@ public:
 	PT_DocPosition getSelectedImage(const char **dataId);
 	fp_Run *getSelectedObject(void);
 
-	void            getTextInCurrentBlock(UT_GrowBuf & buf);
-	void            getTextInCurrentSection(UT_GrowBuf & buf);
-	void            getTextInDocument(UT_GrowBuf & buf);
+	void            getTextInCurrentBlock(UT_GrowBuf & buf) const;
+	void            getTextInCurrentSection(UT_GrowBuf & buf) const;
+	void            getTextInDocument(UT_GrowBuf & buf) const;
 	bool            getLineBounds(PT_DocPosition pos, PT_DocPosition *start, PT_DocPosition *end);
 	UT_UCSChar getChar(PT_DocPosition pos, UT_sint32 *x = NULL, UT_sint32 *y = NULL, UT_uint32 *width = NULL, UT_uint32 *height = NULL);
 
@@ -319,7 +319,7 @@ public:
 	FL_DocLayout*	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
 	fp_Page*		getCurrentPage(void) const;
-	fl_BlockLayout* getCurrentBlock(void);
+	fl_BlockLayout* getCurrentBlock(void) const;
 
 	void draw(int page, dg_DrawArgs* da);
 
@@ -349,12 +349,12 @@ public:
 	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(FL_ListType listType);
-	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock);
-	UT_sint32 getNumColumnsInSelection(void);
-	UT_sint32 getNumRowsInSelection(void);
-	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock);
-	bool	isPointBeforeListLabel(void);
-	bool	isCurrentListBlockEmpty(void);
+	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock) const;
+	UT_sint32 getNumColumnsInSelection(void) const;
+	UT_sint32 getNumRowsInSelection(void) const;
+	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock) const;
+	bool	isPointBeforeListLabel(void) const;
+	bool	isCurrentListBlockEmpty(void) const;
 	bool	cmdStartList(const gchar * style);
 	bool	cmdStopList(void);
 	void	changeListStyle(fl_AutoNum* pAuto,
@@ -369,7 +369,7 @@ public:
 	void	setDontChangeInsPoint(void);
 	void	allowChangeInsPoint(void);
 
-	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
+	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0) const;
 
 	/* Experimental, for the moment; use with caution. - fjf, 24th Oct. '04
 	 */
@@ -386,11 +386,11 @@ public:
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
 	bool	setStyle(const gchar * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
-	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock);
-	bool	getStyle(const gchar ** style);
+	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock) const;
+	bool	getStyle(const gchar ** style) const;
 	bool appendStyle(const gchar ** style);
 
-	UT_uint32		getCurrentPageNumber(void);
+	UT_uint32		getCurrentPageNumber(void) const;
 
 	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false)const;
 
@@ -406,7 +406,7 @@ public:
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
-	bool            isTOCSelected(void);
+	bool            isTOCSelected(void) const;
 	bool            setTOCProps(PT_DocPosition pos, const char * szProps);
 
 	void			cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
@@ -444,7 +444,7 @@ public:
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
-	bool            isInDocSection(PT_DocPosition pos = 0);
+	bool            isInDocSection(PT_DocPosition pos = 0) const;
 
 //---------
 //Visual Drag stuff
@@ -454,9 +454,11 @@ public:
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
+	const FV_VisualDragText * getVisualText(void) const
+	  { return &m_VisualDragText;}
 	FV_VisualDragText * getVisualText(void)
 	  { return &m_VisualDragText;}
-	const UT_ByteBuf * getLocalBuf(void);
+	const UT_ByteBuf * getLocalBuf(void) const;
 
 //---------
 //Visual Inline Image Drag stuff
@@ -497,7 +499,7 @@ public:
 	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
 	FV_SelectionMode getSelectionMode(void) const;
 	FV_SelectionMode getPrevSelectionMode(void) const;
-	PD_DocumentRange * getNthSelection(UT_sint32 i);
+	PD_DocumentRange * getNthSelection(UT_sint32 i) const;
 	UT_sint32          getNumSelections(void) const;
 	void            setSelectionMode(FV_SelectionMode selMode);
 #ifdef ENABLE_SPELL
@@ -737,9 +739,9 @@ public:
 
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
-									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
+									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot) const;
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
-										 UT_sint32 * pTop, UT_sint32 * pBot);
+										 UT_sint32 * pTop, UT_sint32 * pBot) const;
 	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
 	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue);
 	bool	            setTableFormat(const gchar * properties[]);
@@ -766,7 +768,7 @@ public:
 	UT_RGBColor			getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const;
 	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
 	UT_RGBColor			getColorSelBackground(void);
-	UT_RGBColor			getColorSelForeground(void);
+	UT_RGBColor			getColorSelForeground(void) const;
 	UT_RGBColor			getColorFieldOffset(void) const { return m_colorFieldOffset; }
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
@@ -807,14 +809,14 @@ public:
 		                { return m_pLeftRuler;}
 	
 
-	const gchar **   getViewPersistentProps();
+	const gchar **   getViewPersistentProps() const;
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
-	bool                isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition & pos);
+	bool                isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition & pos) const;
 	// -- plugins
-        bool                isMathLoaded(void);
-	bool                isGrammarLoaded(void);
+        bool                isMathLoaded(void) const;
+	bool                isGrammarLoaded(void) const;
 	// --
 	
 	UT_uint32			getNumHorizPages(void) const; //////////////////////////////////
@@ -838,13 +840,13 @@ protected:
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
-	fp_Page *			_getCurrentPage(void);
+	fp_Page *			_getCurrentPage(void) const;
 	void				_moveInsPtNthPage(UT_sint32 n);
 	void				_moveInsPtToPage(fp_Page *page);
 	void				_insertSectionBreak(void);
 
-	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking=true);
-	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true);
+	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking=true) const;
+	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true) const;
 	void				_findPositionCoords(PT_DocPosition pos,
 											bool b,
 											UT_sint32& x,
@@ -877,8 +879,8 @@ protected:
 	bool				_insertFormatPair(const gchar * szName, const gchar * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords(bool bIgnoreAll = false);
-	void				_fixInsertionPointCoords(fv_CaretProps * pCP);
-	void				_fixAllInsertionPointCoords(void);
+	void				_fixInsertionPointCoords(fv_CaretProps * pCP) const;
+	void				_fixAllInsertionPointCoords(void) const;
 
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
@@ -894,8 +896,8 @@ protected:
 
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
-	void				_setPoint(fv_CaretProps * pCP, PT_DocPosition pt, UT_sint32 iLen);
-	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
+	void				_setPoint(fv_CaretProps * pCP, PT_DocPosition pt, UT_sint32 iLen) const;
+	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2) const;
 	bool				_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint = true);
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
@@ -904,7 +906,7 @@ protected:
 	void				_checkPendingWordForSpell(void);
 #endif
 	
-	bool				_isSpaceBefore(PT_DocPosition pos);
+	bool				_isSpaceBefore(PT_DocPosition pos) const;
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 	void 				_cmdEditHdrFtr(HdrFtrType hfType);
 
@@ -965,10 +967,10 @@ private:
 	fl_HdrFtrShadow *	m_pEditShadow;
 	PT_DocPosition		m_iSavedPosition;
 	bool				m_bNeedSavedPosition;
-	PT_DocPosition		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
+	PT_DocPosition		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset) const;
 
-	fl_BlockLayout *	_findGetCurrentBlock(void);
-	PT_DocPosition		_findGetCurrentOffset(void);
+	fl_BlockLayout *	_findGetCurrentBlock(void) const;
+	PT_DocPosition		_findGetCurrentOffset(void) const;
 	UT_UCSChar *		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 	UT_UCSChar *		_findGetPrevBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset, UT_sint32& endIndex);
 

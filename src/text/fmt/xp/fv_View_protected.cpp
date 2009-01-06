@@ -92,7 +92,7 @@
 // Special cases:
 // -returns true if pos is at the beginning of the document
 // -returns false if pos is not within the document
-bool FV_View::_isSpaceBefore(PT_DocPosition pos)
+bool FV_View::_isSpaceBefore(PT_DocPosition pos) const
 {
 	UT_GrowBuf buffer;
 
@@ -971,12 +971,12 @@ bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sin
 }
 
 
-PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, bool bKeepLooking)
+PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, bool bKeepLooking) const
 {
 	return _getDocPosFromPoint(getPoint(),dp,bKeepLooking);
 }
 
-PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking)
+PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking) const
 {
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
 	UT_uint32 iPointHeight;
@@ -2248,7 +2248,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 }
 
 
-fp_Page *FV_View::_getCurrentPage(void)
+fp_Page *FV_View::_getCurrentPage(void) const
 {
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
 	UT_uint32 iPointHeight;
@@ -2822,7 +2822,7 @@ FV_View::_findPrev(UT_uint32* /*pPrefix*/,
 	return false;
 }
 PT_DocPosition
-FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset)
+FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset) const
 {
 	UT_return_val_if_fail(block, 0);
 	return block->getPosition(false) + offset;
@@ -3346,13 +3346,13 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpd
 }
 
 fl_BlockLayout*
-FV_View::_findGetCurrentBlock(void)
+FV_View::_findGetCurrentBlock(void) const
 {
 	return _findBlockAtPosition(m_iInsPoint);
 }
 
 PT_DocPosition
-FV_View::_findGetCurrentOffset()
+FV_View::_findGetCurrentOffset() const
 {
 	return (m_iInsPoint - _findGetCurrentBlock()->getPosition(false));
 }
@@ -4204,7 +4204,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
-void FV_View::_fixAllInsertionPointCoords()
+void FV_View::_fixAllInsertionPointCoords() const
 {
 	fv_CaretProps * pCaretProps = NULL;
 	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
@@ -4216,7 +4216,7 @@ void FV_View::_fixAllInsertionPointCoords()
 	}
 }
 
-void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
+void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP) const
 {
 	if ((pCP->m_iInsPoint > 0) && !isLayoutFilling())
 	{
@@ -4772,7 +4772,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 }
 
 
-void FV_View::_setPoint(fv_CaretProps * pCP,PT_DocPosition pt, UT_sint32 iLen)
+void FV_View::_setPoint(fv_CaretProps * pCP,PT_DocPosition pt, UT_sint32 iLen) const
 {
 
 	pCP->m_iInsPoint = pt + iLen;
@@ -4899,7 +4899,7 @@ FV_View::_checkPendingWordForSpell(void)
 }
 #endif
 
-UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
+UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2) const
 {
 	UT_ASSERT(pt2>=pt1);
 	return pt2 - pt1;

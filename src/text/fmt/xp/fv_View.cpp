@@ -869,7 +869,7 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 }
 
-const UT_ByteBuf * FV_View::getLocalBuf(void)
+const UT_ByteBuf * FV_View::getLocalBuf(void) const
 {
 	return m_pLocalBuf;
 }
@@ -1533,7 +1533,7 @@ bool FV_View::isInFrame(PT_DocPosition pos)
  * getPoint()
  */
 
-bool FV_View::isInDocSection(PT_DocPosition pos)
+bool FV_View::isInDocSection(PT_DocPosition pos) const
 {
 	if(pos == 0)
 	{
@@ -1568,7 +1568,7 @@ UT_RGBColor FV_View::getColorSelBackground ()
   return bgcolor;
 }
 
-UT_RGBColor FV_View::getColorSelForeground ()
+UT_RGBColor FV_View::getColorSelForeground () const
 {
   static UT_RGBColor fgcolor (255, 255, 255);
 
@@ -2121,7 +2121,7 @@ void FV_View::toggleCase (ToggleCase c)
  * This method appends all the text in the current Block to the supplied
  * Growbuf.
  */
-void FV_View::getTextInCurrentBlock(UT_GrowBuf & buf)
+void FV_View::getTextInCurrentBlock(UT_GrowBuf & buf) const
 {
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	pBlock->appendTextToBuf(buf);
@@ -2132,7 +2132,7 @@ void FV_View::getTextInCurrentBlock(UT_GrowBuf & buf)
  * This method appends all the text in the current DocSection to the supplied
  * Growbuf.
  */
-void FV_View:: getTextInCurrentSection(UT_GrowBuf & buf)
+void FV_View:: getTextInCurrentSection(UT_GrowBuf & buf) const
 {
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
@@ -2144,7 +2144,7 @@ void FV_View:: getTextInCurrentSection(UT_GrowBuf & buf)
  * This method appends all the text in the Document to the supplied
  * Growbuf.
  */
-void FV_View:: getTextInDocument(UT_GrowBuf & buf)
+void FV_View:: getTextInDocument(UT_GrowBuf & buf) const
 {
 	fl_ContainerLayout * pDSL = static_cast<fl_ContainerLayout *>(m_pLayout->getFirstSection());
 	while(pDSL)
@@ -2794,12 +2794,12 @@ PT_DocPosition FV_View::getSelectionAnchor(void) const
 	return m_iInsPoint;
 }
 
-PT_DocPosition	FV_View::getSelectionLeftAnchor(void)
+PT_DocPosition	FV_View::getSelectionLeftAnchor(void) const
 {
 	return m_Selection.getSelectionLeftAnchor();
 }
 
-PT_DocPosition	FV_View::getSelectionRightAnchor(void)
+PT_DocPosition	FV_View::getSelectionRightAnchor(void) const
 {
 	return m_Selection.getSelectionRightAnchor();
 }
@@ -2807,7 +2807,7 @@ PT_DocPosition	FV_View::getSelectionRightAnchor(void)
 /*!
  * Returns true if a TOC is selected.
  */
-bool FV_View::isTOCSelected(void)
+bool FV_View::isTOCSelected(void) const
 {
 	return (m_Selection.getSelectionMode() == 	FV_SelectionMode_TOC);
 }
@@ -2934,7 +2934,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 }
 
 
-UT_uint32 FV_View::getCurrentPageNumber(void)
+UT_uint32 FV_View::getCurrentPageNumber(void) const
 {
 	UT_sint32 iPageNum = 0;
 	PT_DocPosition pos = getPoint();
@@ -3054,7 +3054,7 @@ void FV_View::insertSectionBreak(void)
 
 
 
-bool FV_View::isCurrentListBlockEmpty(void)
+bool FV_View::isCurrentListBlockEmpty(void) const
 {
 	//
 	// If the current block is a list and is otherwise empty return true
@@ -3109,7 +3109,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	return bEmpty;
 }
 
-bool FV_View::isPointBeforeListLabel(void)
+bool FV_View::isPointBeforeListLabel(void) const
 {
 	//
 	// If the current point is in a list block and the point is before the list label
@@ -3154,7 +3154,7 @@ bool FV_View::isPointBeforeListLabel(void)
  * This method returns true if the block presented has a numbered heading
  * defined or in it's ancestray.
  */
-bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
+bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock) const
 {
 	bool bHasNumberedHeading = false;
 	if(pBlock == NULL)
@@ -3388,7 +3388,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
  * This returns the number of distinct columns in a selection. If part of the 
  * the selection is outside a table, it returns 0.
  */
-UT_sint32 FV_View::getNumColumnsInSelection(void)
+UT_sint32 FV_View::getNumColumnsInSelection(void) const
 {
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
@@ -3424,7 +3424,7 @@ UT_sint32 FV_View::getNumColumnsInSelection(void)
  * This returns the number of distinct rows in a selection. If part of the 
  * the selection is outside a table, it returns 0.
  */
-UT_sint32 FV_View::getNumRowsInSelection(void)
+UT_sint32 FV_View::getNumRowsInSelection(void) const
 {
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	getBlocksInSelection(&vecBlocks);
@@ -3491,7 +3491,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	return iNumRows;
 }
 
-void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock)
+void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock) const
 {
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
@@ -4257,7 +4257,7 @@ static const gchar * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 	return sz;
 }
 
-bool FV_View::getStyle(const gchar ** style)
+bool FV_View::getStyle(const gchar ** style) const
 {
 	bool bCharStyle = false;
 	const gchar * szChar = NULL;
@@ -4745,7 +4745,7 @@ bool FV_View::resetCharFormat(bool bAll)
 	return bRet;
 }
 
-const PP_AttrProp * FV_View::getAttrPropForPoint()
+const PP_AttrProp * FV_View::getAttrPropForPoint() const
 {
 	const fl_BlockLayout * pBL = getCurrentBlock();
 	UT_return_val_if_fail( pBL, NULL);
@@ -4777,7 +4777,7 @@ const PP_AttrProp * FV_View::getAttrPropForPoint()
 }
 
 
-bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart)
+bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart) const
 {
 	if(getLayout()->getFirstSection() == NULL)
 		return false;
@@ -5001,7 +5001,7 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 /*!
  * Returns true if the abigrammar plugin is loaded
  */
-bool FV_View::isGrammarLoaded(void)
+bool FV_View::isGrammarLoaded(void) const
 {
 	XAP_Module * pGrammar = m_pApp->getPlugin("abigrammar");
 	if(pGrammar == NULL)
@@ -5014,7 +5014,7 @@ bool FV_View::isGrammarLoaded(void)
 /*!
  * Returns true if the abimathview plugin is loaded
  */
-bool FV_View::isMathLoaded(void)
+bool FV_View::isMathLoaded(void) const
 {
 	XAP_Module * pMath = m_pApp->getPlugin("abimathview");
 	if(pMath == NULL)
@@ -5364,7 +5364,7 @@ bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPo
    \param	v Pointer to Vector of all the blocks found
 */
 
-void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v)
+void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v) const
 {
 	//
 	// get all the blocks in the list
@@ -7856,7 +7856,7 @@ FV_View::findReplaceAll()
 
 
 fl_BlockLayout*
-FV_View::getCurrentBlock(void)
+FV_View::getCurrentBlock(void) const
 {
 	return _findGetCurrentBlock();
 }
@@ -8462,7 +8462,7 @@ FV_SelectionMode FV_View::getPrevSelectionMode(void) const
 	return m_Selection.getPrevSelectionMode();
 }
 
-PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i)
+PD_DocumentRange * FV_View::getNthSelection(UT_sint32 i) const
 {
 	return m_Selection.getNthSelection(i);
 }
@@ -8477,7 +8477,7 @@ void FV_View::setSelectionMode(FV_SelectionMode selMode)
 	m_Selection.setMode(selMode);
 }
 
-void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
+void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr) const
 {
 	PT_DocPosition iPos1, iPos2;
 	if (m_Selection.getSelectionAnchor() < getPoint())
@@ -8501,7 +8501,7 @@ void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
  * the position cellPos
  */
 bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
-							 UT_sint32 * pTop, UT_sint32 * pBot)
+							 UT_sint32 * pTop, UT_sint32 * pBot) const
 {
 	PL_StruxDocHandle cellSDH;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
@@ -8557,7 +8557,7 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
  * the position cellPos. Values will be -1 if the style is not set.
  */
 bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
-							 UT_sint32 * pTop, UT_sint32 * pBot)
+							 UT_sint32 * pTop, UT_sint32 * pBot) const
 {
 	PL_StruxDocHandle cellSDH;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
@@ -10341,7 +10341,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
  * Returns true if the (x,y) location on the screen is over a selected
  * fp_MathRun.
  */
-bool FV_View::isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition  & pos)
+bool FV_View::isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition  & pos) const
 {
 	if(isSelectionEmpty())
 	{
@@ -13656,7 +13656,7 @@ SpellChecker * FV_View::getDictForSelection ()
 
    the returned pointer is to a static variable, so use it or loose it
 */
-const gchar ** FV_View::getViewPersistentProps()
+const gchar ** FV_View::getViewPersistentProps() const
 {
 	const UT_uint32 iMax = 3;
 	static const gchar * pProps[iMax];

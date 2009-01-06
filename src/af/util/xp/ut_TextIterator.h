@@ -151,7 +151,7 @@ class ABI_EXPORT UT_TextIterator
 	///////////////////////////////////////////////////////////////////
 	// makes a copy of the iterator in its present state
 	//
-	virtual UT_TextIterator * makeCopy() = 0;
+	virtual UT_TextIterator * makeCopy() const = 0;
 
 	///////////////////////////////////////////////////////////////////
 	// increment operators

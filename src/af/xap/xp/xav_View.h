@@ -99,7 +99,7 @@ public:
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
-	UT_uint32               getTick(void);
+	UT_uint32               getTick(void) const;
 	void                    incTick(void);
 	inline XAP_App *	getApp(void) const { return m_pApp; };
 	virtual void    setCursorToContext(void) =0;

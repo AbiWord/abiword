@@ -49,7 +49,7 @@ PD_DocIterator::PD_DocIterator(const PD_Document &doc, PT_DocPosition dpos)
 	_findFrag();
 }
 
-UT_TextIterator * PD_DocIterator::makeCopy()
+UT_TextIterator * PD_DocIterator::makeCopy() const
 {
 	PD_DocIterator * t = new PD_DocIterator(m_pt);
 	UT_return_val_if_fail(t, NULL);
@@ -438,7 +438,7 @@ PD_StruxIterator::PD_StruxIterator(PL_StruxDocHandle sdh,UT_uint32 offset,
 	xxx_UT_DEBUGMSG(("sizeof PD_StruxIterator: %d\n", sizeof(PD_StruxIterator)));
 }
 
-UT_TextIterator * PD_StruxIterator::makeCopy()
+UT_TextIterator * PD_StruxIterator::makeCopy() const
 {
 	PD_StruxIterator * t = new PD_StruxIterator();
 	UT_return_val_if_fail(t, NULL);

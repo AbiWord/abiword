@@ -77,7 +77,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 		}
 		else
 		{
-			PD_Style * pStyle = getBasedOn();
+			const PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL)
 			{
 				return pStyle->_getPropertyExpand(szName,szValue, 0);
@@ -92,7 +92,7 @@ bool PD_Style::getPropertyExpand(const gchar * szName, const gchar *& szValue) c
 }
 
 
-bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -109,7 +109,7 @@ bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, 
 		}
 		else
 		{
-			PD_Style * pStyle = getBasedOn();
+			const PD_Style * pStyle = getBasedOn();
 			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
 			{
 				return pStyle->_getPropertyExpand(szName,szValue, iDepth+1);
@@ -124,7 +124,7 @@ bool PD_Style::_getPropertyExpand(const gchar * szName, const gchar *& szValue, 
 }
 
 
-bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
+bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -141,7 +141,7 @@ bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
 		}
 		else
 		{
-			PD_Style * pStyle = getBasedOn();
+			const PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL )
 			{
 				return pStyle->_getAttributeExpand(szName,szValue, 0);
@@ -156,7 +156,7 @@ bool PD_Style::getAttributeExpand(const gchar * szName, const gchar *& szValue)
 }
 
 
-bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -173,7 +173,7 @@ bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue,
 		}
 		else
 		{
-			PD_Style * pStyle = getBasedOn();
+			const PD_Style * pStyle = getBasedOn();
 			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
 			{
 				return pStyle->_getAttributeExpand(szName,szValue, iDepth+1);
@@ -266,7 +266,7 @@ PD_Style * PD_Style::getBasedOn(void) const
 
 	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, szStyle))
 		if (szStyle && szStyle[0])
-			m_pPT->getStyle((char*)szStyle, &m_pBasedOn);
+			m_pPT->getStyle(szStyle, &m_pBasedOn);
 
 	// NOTE: we silently fail if style is referenced, but not defined
 
@@ -294,10 +294,10 @@ PD_Style * PD_Style::getFollowedBy(void) const
  */
 bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 {
-	PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = NULL;
 	bool bres= true;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **) &pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
 	{
@@ -319,9 +319,9 @@ bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 */
 bool PD_Style::addProperties(const gchar ** pProperties)
 {
-	PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = NULL;
 	bool bres= true;
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
 	{
@@ -350,9 +350,9 @@ bool PD_Style::setAllAttributes(const gchar ** pAtts)
 
 bool PD_Style::addAttributes(const gchar ** pAtts)
 {
-	PP_AttrProp * pAP = NULL;
+	const PP_AttrProp * pAP = NULL;
 	bool bres = false;
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
 	{
@@ -373,9 +373,9 @@ bool PD_Style::addAttributes(const gchar ** pAtts)
 
 size_t PD_Style::getAttributeCount(void) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
 	        return pAP->getAttributeCount();
@@ -384,9 +384,9 @@ size_t PD_Style::getAttributeCount(void) const
 
 size_t PD_Style::getPropertyCount(void) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
 	        return pAP->getPropertyCount();
@@ -395,9 +395,9 @@ size_t PD_Style::getPropertyCount(void) const
 bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
 			     const gchar *&szValue) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
 	  {
@@ -408,9 +408,9 @@ bool PD_Style::getNthAttribute (int ndx, const gchar *&szName,
 bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 			       const gchar *&szValue) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
 	  {
@@ -424,7 +424,7 @@ bool PD_Style::getNthProperty (int ndx, const gchar *&szName,
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
+bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth) const
 {
 //
 // This method will be recursively called to basedon style
@@ -463,7 +463,7 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 \param vProps the vector containing const gchar * (name,value) pairs
 */
 
-bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
+bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth) const
 {
 //
 // This method will be recursively called to basedon style

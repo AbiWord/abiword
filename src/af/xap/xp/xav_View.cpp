@@ -158,7 +158,7 @@ void AV_View:: setActivityMask(bool bActive)
         m_bCouldBeActive = bActive;
 }
 
-UT_uint32 AV_View::getTick(void)
+UT_uint32 AV_View::getTick(void) const
 {
         return m_iTick;
 }

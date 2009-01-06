@@ -67,7 +67,7 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
 	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
 	
-	virtual UT_TextIterator * makeCopy();
+	virtual UT_TextIterator * makeCopy() const;
 	
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();
@@ -76,7 +76,7 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	
 	virtual UT_UCS4Char   operator [](UT_uint32 dpos);
 
-	const pf_Frag * getFrag() {return m_frag;}
+	const pf_Frag * getFrag() const {return m_frag;}
 
 	void            reset() {m_pos = 0; m_frag = NULL; m_status = UTIter_OK;}
 	void            reset(PT_DocPosition pos, const pf_Frag * pf) // use with great care
@@ -126,7 +126,7 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
 	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
 
-	virtual UT_TextIterator * makeCopy();
+	virtual UT_TextIterator * makeCopy() const;
 
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();

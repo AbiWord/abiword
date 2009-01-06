@@ -46,7 +46,7 @@ public:
 	const PP_PropertyType *	getPropertyType(const gchar * szName, tProperty_type Type) const;
 	bool					getAttribute(const gchar * szName, const gchar *& szValue) const;
 	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue) const;
-	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue);
+	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue) const;
 	
 	PD_Style *				getBasedOn(void) const;
 	PD_Style *				getFollowedBy(void) const;
@@ -62,8 +62,8 @@ public:
 	bool					addProperties(const gchar ** pProperties);
 	bool					setAllAttributes(const gchar ** pAtts);
 	bool					addAttributes(const gchar ** pAtts);
-	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth);
-	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth);
+	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth) const;
+	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth) const;
 	size_t getPropertyCount(void) const;
 	size_t getAttributeCount(void) const;
 	bool getNthProperty (int ndx, const gchar *&szName,
@@ -74,8 +74,8 @@ public:
 	inline const char * getName (void) const {return m_szName;}
 
 protected:
-	bool					_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
-	bool					_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth);
+	bool					_getPropertyExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const;
+	bool					_getAttributeExpand(const gchar * szName, const gchar *& szValue, UT_sint32 iDepth) const;
 
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;

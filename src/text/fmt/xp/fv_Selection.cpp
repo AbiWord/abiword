@@ -223,7 +223,7 @@ void FV_Selection::pasteRowOrCol(void)
 	}
 }
 
-fl_TableLayout * FV_Selection::getTableLayout(void)
+fl_TableLayout * FV_Selection::getTableLayout(void) const
 {
 	return m_pTableOfSelectedColumn;
 }
@@ -431,7 +431,7 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 /*!
  * Return the ith selection.
  */
-PD_DocumentRange * FV_Selection::getNthSelection(UT_sint32 i)
+PD_DocumentRange * FV_Selection::getNthSelection(UT_sint32 i) const
 {
 	if(i >= getNumSelections())
 	{

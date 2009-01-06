@@ -120,7 +120,7 @@ bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 	return true;
 }
 
-fd_Field * pf_Frag::getField(void)
+fd_Field * pf_Frag::getField(void) const
 {
     return m_pField;
 }
