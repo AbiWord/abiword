@@ -3882,6 +3882,16 @@ void fl_BlockLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
 	setNeedsRedraw();
 }
 
+void fl_BlockLayout::clearPrint(void)
+{
+	fp_Run * pRun = getFirstRun();
+	while(pRun)
+	{
+		pRun->clearPrint();
+		pRun = pRun->getNextRun();
+	}
+}
+
 void fl_BlockLayout::setNeedsRedraw(void)
 {
 	m_bNeedsRedraw = true;

@@ -236,6 +236,15 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 	{
 	    m_bIsQuickPrint = false;
 	    m_pQuickPrintGraphics = NULL;
+	    fl_BlockLayout * pBL = getFirstSection()->getFirstBlock();
+	    //
+	    // Clear out any hanging pointers
+	    //
+	    while(pBL)
+	    {
+		pBL->clearPrint();
+		pBL = pBL->getNextBlockInDocument();
+	    }
 	}
 }
 

@@ -250,7 +250,7 @@ public:
 	virtual bool		alwaysFits(void) const { return false; }
 	virtual bool		findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si,
 												 bool bForce=false);
-	
+	void                clearPrint(void);
 	virtual UT_sint32	findTrailingSpaceDistance(void) const { return 0; }
 	virtual bool		findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos,

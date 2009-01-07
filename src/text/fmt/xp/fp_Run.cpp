@@ -987,6 +987,12 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	}
 }
 
+void fp_Run::clearPrint(void)
+{
+	m_bPrinting =false;
+	m_pG = NULL;
+}
+
 void fp_Run::setBlockOffset(UT_uint32 offset)
 {
 	m_iOffsetFirst = offset;
@@ -999,6 +1005,10 @@ void fp_Run::clearScreen(void)
 
 void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 {
+	if(m_bPrinting)
+	{
+		return;
+	}
 	if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		return;
