@@ -8126,7 +8126,11 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	{
 			return 0;
 	}
-	else
+	else if(m_pLayout->isQuickPrint())
+	{
+		return 0;
+	}
+
 #ifdef EMBEDDED_TARGET
 		return (int) (0.2 * fl_PAGEVIEW_MARGIN_X);
 #else	
@@ -8143,6 +8147,10 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
 	else if (pFrame && pFrame->isMenuScrollHidden())
+	{
+		return 0;
+	}
+	else if(m_pLayout->isQuickPrint())
 	{
 		return 0;
 	}

@@ -672,7 +672,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	if(pPrevRect == NULL)
 	{
 		pDA->pG->setClipRect(pRect);
-		xxx_UT_DEBUGMSG(("Clip bottom is %d \n",pRect->top + pRect->height));
+		UT_DEBUGMSG(("Clip bottom is %d \n",pRect->top + pRect->height));
 		bRemoveRectAfter = true;
 	}
 	else if(!pRect->intersectsRect(pPrevRect))

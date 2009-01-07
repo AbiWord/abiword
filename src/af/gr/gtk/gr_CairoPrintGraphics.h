@@ -61,10 +61,7 @@ public:
 	virtual bool      canQuickPrint(void) { return true;}
 
   protected:
-	double  _getResolutionRatio(void)
-	{
-		return m_dResRatio;
-	}
+
 
  private:
 	UT_uint32         m_iDeviceResolution;
