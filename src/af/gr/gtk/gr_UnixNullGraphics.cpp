@@ -227,6 +227,12 @@ void UnixNull_Graphics::setPageSize(char*, UT_uint32, UT_uint32)
 {
 }
 
+void UnixNull_Graphics::setLineProperties(double /*inWidth*/, 
+					 GR_Graphics::JoinStyle /*inJoinStyle*/,
+					 GR_Graphics::CapStyle /*inCapStyle*/,
+					 GR_Graphics::LineStyle /*inLineStyle*/)
+{
+}
 
 GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo&)
 {

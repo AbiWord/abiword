@@ -107,6 +107,11 @@ public:
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
+	virtual void setLineProperties(double inWidth, 
+					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
+					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
+					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
+
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	UnixNull_Graphics();
