@@ -59,10 +59,16 @@ public:
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
 
 	virtual bool      canQuickPrint(void) { return true;}
-	void              setJob(GtkPrintJob * pJob);
+
+  protected:
+	double  _getResolutionRatio(void)
+	{
+		return m_dResRatio;
+	}
+
  private:
-	GtkPrintJob *	  m_pJob; // Owned by xap_UnixDlg_Print;
 	UT_uint32         m_iDeviceResolution;
+	double            m_dResRatio;
 };
 
 #endif

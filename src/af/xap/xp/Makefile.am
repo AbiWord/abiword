@@ -13,15 +13,8 @@ conditional_src = \
 	ispell_def.h \
 	spell_manager.cpp \
 	spell_manager.h
-	xap_Dlg_Print.cpp \
-	xap_Dlg_PrintPreview.cpp \
-	xap_StatusBar.cpp
+	xap_StatusBar.cpp 
 
-if ENABLE_PRINT
-print_src = \
-	xap_Dlg_Print.cpp \
-	xap_Dlg_PrintPreview.cpp
-endif
 
 if ENABLE_SPELL
 spell_src = \
@@ -39,7 +32,6 @@ statusbar_src = xap_StatusBar.cpp
 endif
 
 libxp_la_SOURCES = \
-	$(print_src) \
 	$(spell_src) \
 	$(statusbar_src) \
 	xad_Document.cpp \
@@ -89,7 +81,9 @@ libxp_la_SOURCES = \
 	xap_Dlg_Password.h \
 	xap_Dlg_PluginManager.cpp \
 	xap_Dlg_PluginManager.h \
+	xap_Dlg_Print.cpp \
 	xap_Dlg_Print.h \
+	xap_Dlg_PrintPreview.cpp \
 	xap_Dlg_PrintPreview.h \
 	xap_Dlg_Stub.h \
 	xap_Dlg_WindowMore.cpp \

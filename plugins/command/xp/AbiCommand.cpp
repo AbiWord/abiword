@@ -38,7 +38,6 @@
 #include <errno.h>
 
 #include <glib.h>
-#include <libgnomeprint/gnome-print-job.h>
 
 #include "xap_Module.h"
 #include "xap_App.h"
@@ -55,6 +54,9 @@
 #include "ap_UnixFrame.h"
 #include "gr_DrawArgs.h"
 #include "ap_EditMethods.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_Print.h"
+#include "ap_Dialog_Id.h"
 
 #include "AbiCommand.h"
 
@@ -1064,52 +1066,32 @@ bool
 AbiCommand::printFiles (UT_Vector * pToks)
 {
 	UT_return_val_if_fail(m_pCurDoc, false);
-	bool portrait = true;
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(m_pCurFrame->getDialogFactory());
+
+	XAP_Dialog_Print * pDialog
+		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
+	pDialog->setPreview(false);
 	for (UT_uint32 i = 1; i < pToks->getItemCount (); i++)
 	{
 		UT_UTF8String *pPrinter =
 		  const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
-
-		GnomePrintJob *job = gnome_print_job_new (NULL);
-		UT_return_val_if_fail(job, false);
-		
-		GnomePrintConfig *config = gnome_print_job_get_config (job);
-		UT_return_val_if_fail(config, false);
 		
 		// pPrinter is a printer name, and "-" is our special name for the default printer.
-		if(strcmp(pPrinter->utf8_str(), "-") != 0) {
-		  // should we set 'Settings.Transport.Backend.Printer''? It looks deprecated, but maybe GnomePrint's lpr backend uses it...
-		  gnome_print_config_set(config, reinterpret_cast<const guchar*>("Settings.Transport.Backend.Printer"), 
-					 reinterpret_cast<const guchar*>(pPrinter->utf8_str()));
-		  gnome_print_config_set(config, reinterpret_cast<const guchar*>("Printer"), reinterpret_cast<const guchar*>(pPrinter->utf8_str()));
-		}
-		GR_Graphics *print_graphics;
-		print_graphics = new GR_UnixPangoPrintGraphics(job);
-		
-		// create a new layout and view object for the doc
-		FL_DocLayout *pDocLayout = new FL_DocLayout (m_pCurDoc, print_graphics);
-		FV_View *printView = new FV_View (m_pApp, 0, pDocLayout);
 
-		printView->getLayout()->fillLayouts();
-		printView->getLayout()->formatAll();
-		printView->getLayout()->recalculateTOCFields();
-		portrait = printView->getPageSize().isPortrait();
-		if(!portrait)
+		if(strcmp(pPrinter->utf8_str(), "-") != 0) 
 		{
-		    gnome_print_config_set (config, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+		     pDialog->PrintDirectly(m_pCurFrame, NULL, NULL);
 
 		}
-        
-		s_actuallyPrint (m_pCurDoc, print_graphics,
-				 printView, pPrinter->utf8_str(), 
-				 1, true, 
-				 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-				 pDocLayout->countPages(), 1);
-
-		DELETEP (pDocLayout);
-		DELETEP (printView);
-		DELETEP (print_graphics);
+		else
+		{
+		     pDialog->PrintDirectly(m_pCurFrame, pPrinter->utf8_str(), NULL);
+		}
+		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+		pDialog->releasePrinterGraphicsContext(pGraphics);
 	}
+	pDialogFactory->releaseDialog(pDialog);
 	return true;
 }
 

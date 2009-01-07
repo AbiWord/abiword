@@ -11,18 +11,11 @@ AM_CPPFLAGS = \
 	-DDATADIR="\"$(datadir)\""
 
 # list all conditional source files here so they end up in the dist tarball
-conditional_src = \
-	xap_UnixDlg_PrintPreview.cpp \
-	xap_UnixDlg_Print.cpp			
+conditional_src = 
 
-if ENABLE_PRINT
-print_src = \
-	xap_UnixDlg_PrintPreview.cpp \
-	xap_UnixDlg_Print.cpp			
-endif
+
 
 libgtk_la_SOURCES = \
-	$(print_src) \
 	xap_EmbeddedFeatures.h \
 	xap_UnixApp.cpp \
 	xap_UnixApp.h \
@@ -63,7 +56,9 @@ libgtk_la_SOURCES = \
 	xap_UnixDlg_Password.h \
 	xap_UnixDlg_PluginManager.cpp \
 	xap_UnixDlg_PluginManager.h \
+	xap_UnixDlg_Print.cpp \
 	xap_UnixDlg_Print.h \
+	xap_UnixDlg_PrintPreview.cpp \
 	xap_UnixDlg_PrintPreview.h \
 	xap_UnixDlg_WindowMore.cpp \
 	xap_UnixDlg_WindowMore.h \

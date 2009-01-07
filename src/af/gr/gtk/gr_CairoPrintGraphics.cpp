@@ -20,22 +20,19 @@
 
 #include "gr_CairoPrintGraphics.h"
 
-static void _JobOver(GtkPrintJob *,void *,GError *)
-{
-	printf("Print Job is Finished \n");
-}
-
 GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
   : GR_UnixPangoGraphics(cr, iDeviceResolution),
 	m_bDoShowPage(false),
-	m_pJob(NULL)
-{}
+	m_dResRatio(1.0)
+{
+	
+}
 	
 GR_CairoPrintGraphics::~GR_CairoPrintGraphics()
 {
 	UT_DEBUGMSG(("Deleting CairoPrint graphics %x \n",this));
 }
-	
+
 bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
@@ -49,12 +46,6 @@ bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 			UT_ASSERT_NOT_REACHED ();
 			return false;
 	}
-}
-
-void GR_CairoPrintGraphics::setJob(GtkPrintJob * pJob)
-{
-	m_pJob = pJob;
-	g_object_ref(m_pJob);
 }
 
 bool GR_CairoPrintGraphics::GR_CairoPrintGraphics::startPrint(void)
@@ -80,7 +71,6 @@ bool GR_CairoPrintGraphics::endPrint(void)
 	if (m_bDoShowPage) {
 		cairo_show_page(m_cr);
 	}
-	gtk_print_job_send (m_pJob,_JobOver,NULL,NULL);
 	return true;
 }
 

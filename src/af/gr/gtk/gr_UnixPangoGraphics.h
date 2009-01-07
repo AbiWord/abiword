@@ -36,11 +36,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 
-#ifdef ENABLE_PRINT
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-print-job.h>
-#endif
-
 // we do not want this to be a plugin for now
 #define GR_UNIXPANGO_BUILTIN
 
@@ -116,22 +111,15 @@ class ABI_EXPORT GR_UnixAllocInfo : public GR_AllocInfo
 public:
  	GR_UnixAllocInfo(GdkWindow * win)
 		: m_win(win),
-#ifdef ENABLE_PRINT
-		  m_gpm (NULL),
-#endif
 		  m_bPreview (false), m_bPrinter (false){};
 	
-#ifdef ENABLE_PRINT
-	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
-		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true){};
-#endif
+	GR_UnixAllocInfo(bool bPreview)
+		: m_win(NULL), m_bPreview (bPreview), m_bPrinter (true){};
+
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
 	virtual bool isPrinterGraphics() const {return m_bPrinter;}
 
 	GdkWindow     * m_win;
-#ifdef ENABLE_PRINT
-	GnomePrintJob * m_gpm;
-#endif
 	bool            m_bPreview;
 	bool            m_bPrinter;
 };
@@ -384,157 +372,5 @@ private:
 	static int s_iMaxScript;
 };
 
-#ifdef ENABLE_PRINT
-
-/*!
-    When printing, we need to combine pango with GnomePrint;
-    we could do that in a single graphics class, but that would mean
-    if(print) test inside each function. In order to avoid slowing the screen
-    operations, we will use a derrived class.
-*/
-class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
-{
-	friend class GR_UnixPangoFont;
-  public:
-	
-	GR_UnixPangoPrintGraphics(GnomePrintJob *gpm, bool isPreview = false);
-	GR_UnixPangoPrintGraphics(GnomePrintContext *ctx, double inWidthDevice,
-							  double inHeightDevice);
-	
-	virtual ~GR_UnixPangoPrintGraphics();
-
-	static UT_uint32 s_getClassId() {return GRID_UNIX_PANGO_PRINT;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
-	virtual GR_Capability  getCapability() {return GRCAP_PRINTER_ONLY;}
-	static const char *    graphicsDescriptor(){return "Unix Pango Print";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
-
-	GnomePrintContext *    getGnomePrintContext() const;
-	UT_sint32              scale_ydir (UT_sint32 in) const;
-	UT_sint32              scale_xdir (UT_sint32 in) const;
-	virtual void           setColor(const UT_RGBColor& clr);
-	virtual void           getColor(UT_RGBColor& clr);
-	
-	virtual void drawChars(const UT_UCSChar* pChars, 
-						   int iCharOffset, int iLength,
-						   UT_sint32 xoff, UT_sint32 yoff,
-						   int * pCharWidths = NULL);
-	
-	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
-	virtual void renderChars(GR_RenderInfo & ri);
-
-	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
-	virtual void setLineWidth(UT_sint32);
-	virtual void setLineProperties ( double inWidthPixels,
-									 JoinStyle inJoinStyle,
-									 CapStyle inCapStyle,
-									 LineStyle inLineStyle);
-
-	virtual GR_Font* getGUIFont();
-	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void invertRect(const UT_Rect*);
-	virtual void setClipRect(const UT_Rect*);
-	virtual void scroll(UT_sint32, UT_sint32);
-	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						UT_sint32 x_src, UT_sint32 y_src,
-						UT_sint32 width, UT_sint32 height);
-	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-   	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
-	
-	virtual bool queryProperties(GR_Graphics::Properties gp) const;
-	
-	virtual bool startPrint(void);
-	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
-							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual bool endPrint(void);
-
-	virtual void setColorSpace(GR_Graphics::ColorSpace c);
-	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
-	
-	virtual void setCursor(GR_Graphics::Cursor c);
-	virtual GR_Graphics::Cursor getCursor(void) const;
-
-	virtual void					setColor3D(GR_Color3D c);
-	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
-	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(GR_Color3D c, UT_Rect &r);
-	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
-
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
-	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
-	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
-
-	virtual UT_uint32 getDeviceResolution(void) const;
-	virtual bool      canQuickPrint(void)
-	{ return true;}
-	virtual UT_uint32 getFontAscent();
-	virtual UT_uint32 getFontDescent();
-	virtual UT_uint32 getFontHeight();
-	
-	virtual UT_uint32 getFontAscent(const GR_Font *);
-	virtual UT_uint32 getFontDescent(const GR_Font *);
-	virtual UT_uint32 getFontHeight(const GR_Font *);
-	virtual double    getResolutionRatio(void)
-	{ return _getResolutionRatio();}
-	GnomePrintContext * getGnomePrintContext(void) { return m_gpc;}
-
-	static GnomePrintConfig * s_setup_config (double mrgnTop,
-											  double mrgnBottom,
-											  double mrgnLeft,
-											  double mrgnRight,
-											  double width, double height,
-											  int copies, bool portrait);
-
-	static void s_setup_config (GnomePrintConfig *cfg,
-								double mrgnTop,
-								double mrgnBottom,
-								double mrgnLeft,
-								double mrgnRight,
-								double width, double height,
-								int copies, bool portrait);
-	
-	void   setPdfWorkaround(void)
-	{ m_bPdfLandscapeWorkaround = true;}
-
-  protected:
-	double  _getResolutionRatio(void)
-	{
-		return m_dResRatio;
-	}
-
-	UT_uint32 _getResolution(void) const;
-	void      _drawAnyImage (GR_Image* pImg, UT_sint32 xDest,
-							 UT_sint32 yDest, bool rgb);
-	bool      _startDocument(void);
-	bool      _startPage(const char * szPageLabel);
-	bool      _endPage(void);
-	bool      _endDocument(void);
-
-
-  private:
-	void      _constructorCommon ();
-	
-	PangoFontMap *    m_pGPFontMap;
-	PangoContext *    m_pGPContext;
-	UT_uint32         m_iScreenResolution;
-	double            m_dResRatio;
-
-	bool              m_bIsPreview;
-	bool			  m_bStartPrint;
-	bool			  m_bStartPage;
-	bool	     	  m_bNeedStroked;
-	double		      m_dLineWidth;
-	
-	GnomePrintJob     *m_gpm;
-	GnomePrintContext *m_gpc;
-	double             m_width, m_height;
-	bool              m_bPdfLandscapeWorkaround;
-};
-#endif // ifdef ENABLE_PRINT
 
 #endif

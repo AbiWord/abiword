@@ -18,9 +18,6 @@
  * 02111-1307, USA.
  */
 
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-print-config.h>
-
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -60,31 +57,7 @@ GR_Graphics * XAP_UnixDialog_PrintPreview::getPrinterGraphicsContext(void)
 	return m_pPrintGraphics;
 }
 
-void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
+void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * /*  pFrame */) 
 {
-	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
-	bool portrait;
-
-	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-
-	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
-	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
-	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
-	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
-
-	portrait = pView->getPageSize().isPortrait();
-	
-	width = pView->getPageSize().Width (DIM_MM);
-	height = pView->getPageSize().Height (DIM_MM);
-
-	GnomePrintJob * job =
-	    gnome_print_job_new(GR_UnixPangoPrintGraphics::s_setup_config (
-				    mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
-				    width, height, 1, portrait));
-	
-	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(job, true);
-
-	UT_return_if_fail( m_pPrintGraphics );
-	
-	m_pPrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

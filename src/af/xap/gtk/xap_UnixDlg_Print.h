@@ -58,7 +58,6 @@ protected:
 	GtkPageSetup *                m_pPageSetup;
 	GtkPaperSize *                m_pGtkPageSize;
 	GtkPrintOperation *           m_pPO;
-	GtkPrintJob *                 m_pJob;
 	GtkPrintContext *             m_pPC;
 	FV_View *                     m_pView;
 	gint                          m_iNumberPages;

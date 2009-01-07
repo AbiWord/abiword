@@ -123,11 +123,6 @@
 #include "ut_math.h"
 #include "abi-builtin-plugins.h"
 
-#ifdef ENABLE_PRINT
-  #include <libart_lgpl/art_affine.h>
-  #include <libgnomeprint/gnome-print.h>
-#endif
-
 #ifdef WITH_GNOMEUI
   #include <libgnome/libgnome.h>
   #include <libgnomeui/libgnomeui.h>
@@ -1310,124 +1305,32 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
  	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 
 	{
-#ifdef ENABLE_PRINT
-		if (Args->m_sFiles[0])
-	    {
-			AP_Convert conv ;
+		//
+		// Dom please FIXME
+		//
+		fprintf(stderr,"DOM will decide what to do here \n");
 
-			if (Args->m_sMerge)
-				conv.setMergeSource (Args->m_sMerge);
-
-			if (Args->m_impProps)
-				conv.setImpProps (Args->m_impProps);
-			if (Args->m_expProps)
-				conv.setExpProps (Args->m_expProps);
-
-			conv.setVerbose(Args->m_iVerbose);
-
-			GR_GraphicsFactory * pGF;
-
-			pGF = XAP_App::getApp()->getGraphicsFactory();
-			UT_return_val_if_fail(pGF, false);
-
-			//UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);		   
-			
-			GnomePrintJob *job = gnome_print_job_new (NULL);
-			UT_return_val_if_fail(job, false);
-
-			GnomePrintConfig *config = gnome_print_job_get_config (job);
-			UT_return_val_if_fail(config, false);
-
-			// Args->m_sPrintTo is a printer name, and "-" is our special name for the default printer.
-			if(strcmp(Args->m_sPrintTo, "-") != 0) {
-				// should we set 'Settings.Transport.Backend.Printer''? It looks deprecated, but maybe GnomePrint's lpr backend uses it...
-				gnome_print_config_set(config, reinterpret_cast<const guchar*>("Settings.Transport.Backend.Printer"), 
-									   reinterpret_cast<const guchar*>(Args->m_sPrintTo));
-				gnome_print_config_set(config, reinterpret_cast<const guchar*>("Printer"), reinterpret_cast<const guchar*>(Args->m_sPrintTo));
-			}
-			GR_UnixPangoPrintGraphics * print_graphics;
-
-			print_graphics = new GR_UnixPangoPrintGraphics(job);
-			bSuccess = conv.print (Args->m_sFiles[0], print_graphics,
-								   Args->m_sFileExtension);
-
-			delete print_graphics;
-	    }
-		else
-	    {
-			// couldn't load document
-			fprintf(stderr, "Error: no file to print!\n");
-			bSuccess = false;
-	    }
-#else
-		fprintf(stderr,"Only works in GNOME build \n");
 		bSuccess = false;
-#endif
-
 		return false;
 	}
 	if (Args->m_iToThumb > 0) 
 	{
 
-#ifdef ENABLE_PRINT
-
 		if (Args->m_sFiles[0])
 	    {
-#if 0 // work out how to do this later
-			AP_Convert conv ;
-			if (Args->m_impProps)
-				conv.setImpProps (Args->m_impProps);
-			if (Args->m_expProps)
-				conv.setExpProps (Args->m_expProps);
-			UT_String sdimXY = Args->m_sThumbXY;
-			UT_uint32 loc = UT_String_findCh(sdimXY,'x');
-			if(loc>(size_t)-10)
-			{
-				return false;
-			}
-			UT_String sX = sdimXY.substr(0,loc);
-			UT_String sY = sdimXY.substr(loc+1,sdimXY.size());
-			UT_sint32 iX = atoi(sX.c_str());
-			UT_sint32 iY = atoi(sY.c_str());
-			guchar * buf;
-			gdouble p2b[6];
-			gint bpp = 3;
-			art_affine_scale (p2b, 1.0, -1.0);
-			p2b[5] = iY; // number of pixels in height
-			buf = g_new (guchar, iX * iY * bpp); 
+#if 0 // work out how to do this witg pixbuf graphics class later
 
-			GnomePrintContext * pc = gnome_print_rbuf_new (buf, iX, iY, bpp * iX, p2b, FALSE);
-
-			PD_Document *pDoc = new PD_Document();
-			pDoc->readFromFile(Args->m_sFile, IEFT_Unknown, Args->m_impProps);
-			double inWidth = pDoc->m_docPageSize.Width(DIM_IN);
-			double inHeight = pDoc->m_docPageSize.Height(DIM_IN);
-			XAP_UnixGnomePrintGraphics * pGraphics = new XAP_UnixGnomePrintGraphics(pc, inWidth,inHeight);
-			conv.setVerbose(Args->m_iVerbose);
-			conv.printFirstPage (pGraphics,pDoc);
-			UNREFP(pDoc);
-			gnome_print_context_close (pc);
-			GdkPixbuf* pb = gdk_pixbuf_new_from_data (buf, GDK_COLORSPACE_RGB, 
-													  false,
-													  8, iX, iY, bpp * iX, 
-													  NULL, NULL);
-			GError * err;
-			gdk_pixbuf_save(pb,Args->m_sName,"png",&err);
 #endif
 			return true;
 	    }
 		else
 	    {
 			// couldn't load document
-			fprintf(stderr, "Error: no file to print!\n");
+			fprintf(stderr, "Error: no file to convert!\n");
 			bSuccess = false;
 	    }
 		
 		return false;
-#else
-		fprintf(stderr,"Only works in GNOME build \n");
-		bSuccess = false;
-#endif
 	}
 
 	if(Args->m_sPluginArgs)

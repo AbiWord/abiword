@@ -72,7 +72,6 @@ XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 	  m_pPageSetup(NULL),
 	  m_pGtkPageSize(NULL),
 	  m_pPO(NULL),
-	  m_pJob(NULL),
 	  m_pPC(NULL),
 	  m_pView(NULL),
 	  m_iNumberPages(0),
@@ -109,9 +108,6 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 	if(m_pPO)
 		g_object_unref(m_pPO);
 	m_pPO=  NULL;
-	if(m_pJob)
-		g_object_unref(m_pJob);
-	m_pJob = NULL;
 	m_pPC = NULL;
 }
 
@@ -127,9 +123,6 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	// so we need to reference it to allow it to be deleted by the PrintGraphics
 	// class
 	cairo_reference(cr);
-	//
-	// Set this from the dialog range
-	//
 	gtk_print_operation_set_n_pages (m_pPO,m_iNumberPages);
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 
