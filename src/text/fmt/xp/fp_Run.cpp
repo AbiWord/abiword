@@ -556,10 +556,6 @@ bool fp_Run::displayAnnotations(void)
 void
 fp_Run::_inheritProperties(void)
 {
-	if(m_pG == NULL)
-	{
-		m_pG = getGraphics();
-	}
 	fp_Run* pRun = _findPrevPropertyRun();
 	if (pRun)
 	{
@@ -583,7 +579,7 @@ fp_Run::_inheritProperties(void)
 		getBlockAP(pBlockAP);
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
-		const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,m_pG);
+		const GR_Font * pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics());
 
 		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
