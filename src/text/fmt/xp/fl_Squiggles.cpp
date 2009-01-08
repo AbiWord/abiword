@@ -693,7 +693,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell()&& (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		fl_PartOfBlock *pPending, *pPOB;
-		fl_BlockLayout *pBL;
+		const fl_BlockLayout *pBL;
 		pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
 		pBL = m_pOwner->getDocLayout()->getPendingBlockForSpell();
 		// Copy details from pending POB - but don't actually use

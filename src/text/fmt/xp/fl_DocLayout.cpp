@@ -3163,7 +3163,7 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
   when set.
 */
 void
-FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
+FL_DocLayout::setPendingWordForSpell(const fl_BlockLayout *pBlock,
 									 fl_PartOfBlock* pWord)
 {
 	// Return if matching the existing marked region

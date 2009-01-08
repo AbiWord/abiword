@@ -136,7 +136,7 @@ public:
 	UT_sint32                getCurrentLevel(void) const { return m_iCurrentLevel;}
 	FootnoteType             getNumType(UT_sint32 iLevel);
 	eTabLeader               getTabLeader(UT_sint32 iLevel);
-	UT_sint32                getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock);
+	UT_sint32                getTabPosition(UT_sint32 iLevel, const fl_BlockLayout * pBlock);
 	void                     setSelected(bool bSetSelected);
 	bool                     isSelected(void) { return m_bIsSelected;}
 

@@ -59,7 +59,7 @@ public:
 #if DEBUG
 	virtual void            printText(void);
 #endif
-	void                    appendTextToBuf(UT_GrowBuf & buf);
+	void                    appendTextToBuf(UT_GrowBuf & buf) const;
 	virtual bool			hasLayoutProperties(void) const;
 	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	bool					canMergeWithNext(void);

@@ -348,7 +348,7 @@ eTabLeader fl_TOCLayout::getTabLeader(UT_sint32 iLevel)
 	return static_cast<eTabLeader>(0);
 }
 
-UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock)
+UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, const fl_BlockLayout * pBlock)
 {
 	fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
 	if(pTOCC == NULL)

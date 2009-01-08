@@ -383,15 +383,15 @@ void fl_ContainerLayout::lookupFoldedLevel(void)
  * This method appends all the text in the current layout to the supplied 
  * GrowBuf.
  */
-void fl_ContainerLayout::appendTextToBuf(UT_GrowBuf & buf)
+void fl_ContainerLayout::appendTextToBuf(UT_GrowBuf & buf) const
 {
 	if(getContainerType() == FL_CONTAINER_BLOCK)
 	{
-		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(this);
+		const fl_BlockLayout * pBL = static_cast<const fl_BlockLayout *>(this);
 		pBL->appendTextToBuf(buf);
 		return;
 	}
-	fl_ContainerLayout * pCL = getFirstLayout();
+	const fl_ContainerLayout * pCL = getFirstLayout();
 	while(pCL)
 	{
 		pCL->appendTextToBuf(buf);

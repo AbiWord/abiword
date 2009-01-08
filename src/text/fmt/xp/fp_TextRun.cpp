@@ -338,7 +338,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 * This method append the text in this run to the growbuf supplied in the
 * parameter.
 */
-void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
+void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf) const
 {
 	UT_GrowBuf myBuf;
 	getBlock()->getBlockBuf(&myBuf);

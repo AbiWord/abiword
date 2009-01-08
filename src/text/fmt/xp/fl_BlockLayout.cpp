@@ -99,7 +99,7 @@
 
 #ifdef ENABLE_SPELL
 SpellChecker *
-fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
+fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos) const
 {
 	// the idea behind the static's here is to cache the dictionary, so
 	// we do not have to do dictionary lookup all the time; rather, we
@@ -147,7 +147,7 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 
 bool
 fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
-								UT_uint32 len, UT_uint32 blockPos)
+								UT_uint32 len, UT_uint32 blockPos) const
 {
 	SpellChecker * checker = _getSpellChecker (blockPos);
 
@@ -431,7 +431,7 @@ void buildTabStops(const char* pszTabStops, UT_GenericVector<fl_TabStop*> &m_vec
  * This method is used to reset the colorization such as what occurs
  * when showAuthors state is changed.
  */ 
-void fl_BlockLayout::refreshRunProperties(void)
+void fl_BlockLayout::refreshRunProperties(void) const
 {
 	fp_Run * pRun = getFirstRun();
 	while(pRun)
@@ -1130,7 +1130,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
 }
 
-void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
+void fl_BlockLayout::getStyle(UT_UTF8String & sStyle) const
 {
 	sStyle = m_szStyle;
 }
@@ -1139,7 +1139,7 @@ void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
  * This method returns true if the block is contained with a section embedded
  * in a block, like a footnote or a table or frame with text wrapping.
  */
-bool fl_BlockLayout::isEmbeddedType(void)
+bool fl_BlockLayout::isEmbeddedType(void) const
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION ) )
@@ -1155,7 +1155,7 @@ bool fl_BlockLayout::isEmbeddedType(void)
  * that should not be included in TOC like, footnote,endnotes,HdrFtr's 
  * and other TOC's.
  */
-bool fl_BlockLayout::isNotTOCable(void)
+bool fl_BlockLayout::isNotTOCable(void) const
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE 
@@ -1196,7 +1196,7 @@ bool fl_BlockLayout::isNotTOCable(void)
  * It returns -1 if none is found.
  * Also returns the id of the embedded strux.
  */ 
-UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout *& pEmbedCL)
+UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout *& pEmbedCL) const
 {
 	UT_sint32 iEmbed = -1;
 	PT_DocPosition posOff = static_cast<PT_DocPosition>(offset);
@@ -1449,7 +1449,7 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
  * Get the enclosing block of this if this block is in a footnote-type strux
  * Return NULL is not an embedded type 
 */
-fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void)
+fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void) const
 {
 	UT_return_val_if_fail (m_pLayout,NULL);
 	
@@ -1545,7 +1545,7 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 }
 
 
-fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
+fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid) const
 {
 	fp_Line * pLine = static_cast<fp_Line *>(getFirstContainer());
 	UT_GenericVector<fp_FootnoteContainer *> vecFoots;
@@ -1576,7 +1576,7 @@ fp_Line * fl_BlockLayout::findLineWithFootnotePID(UT_uint32 pid)
 	return NULL;
 }
 
-FootnoteType fl_BlockLayout::getTOCNumType(void)
+FootnoteType fl_BlockLayout::getTOCNumType(void) const
 {
 	UT_ASSERT(m_bIsTOC);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
@@ -1584,7 +1584,7 @@ FootnoteType fl_BlockLayout::getTOCNumType(void)
 	return pTOCL->getNumType(m_iTOCLevel);
 }
 
-eTabLeader fl_BlockLayout::getTOCTabLeader(UT_sint32 iOff)
+eTabLeader fl_BlockLayout::getTOCTabLeader(UT_sint32 iOff) const
 {
 	UT_ASSERT(m_bIsTOC);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
@@ -1596,7 +1596,7 @@ eTabLeader fl_BlockLayout::getTOCTabLeader(UT_sint32 iOff)
 	return FL_LEADER_NONE;
 }
 
-UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
+UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff) const
 {
 	UT_ASSERT(m_bIsTOC);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getSectionLayout());
@@ -1608,7 +1608,7 @@ UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
 	return 0;
 }
 
-UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
+UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void) const
 {
 	fp_Run * pRun = getFirstRun();
 	UT_sint32 iMax = 6; // this is the pixel width of a typical 12 point char
@@ -1636,7 +1636,7 @@ UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
 	return iMax;
 }
 
-bool fl_BlockLayout::isHdrFtr(void)
+bool fl_BlockLayout::isHdrFtr(void) const
 {
 	if(getSectionLayout()!= NULL)
 	{
@@ -1646,7 +1646,7 @@ bool fl_BlockLayout::isHdrFtr(void)
 		return m_bIsHdrFtr;
 }
 
-void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
+void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */) const
 {
 	fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 	if(isHdrFtr())
@@ -1665,7 +1665,7 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	}
 }
 
-void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge)
+void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge) const
 {
 	UT_ASSERT(pFirstRunToMerge != pLastRunToMerge);
 	UT_ASSERT(pFirstRunToMerge->getType() == FPRUN_TEXT);
@@ -1689,7 +1689,7 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 	_assertRunListIntegrity();
 }
 
-void fl_BlockLayout::coalesceRuns(void)
+void fl_BlockLayout::coalesceRuns(void) const
 {
 	_assertRunListIntegrity();
 
@@ -1820,7 +1820,7 @@ void fl_BlockLayout::purgeLayout(void)
 	}
 }
 
-void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool bReCalc)
+void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool bReCalc) 
 {
 
 	if (getFirstContainer() == static_cast<fp_Container *>(pLine))
@@ -2503,7 +2503,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
  * This returns the distance from the first line in the block to the
  * line presented here.
  */
-bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine)
+bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine) const
 {
 	if(pLine == NULL)
 	{
@@ -2564,7 +2564,7 @@ void fl_BlockLayout::forceSectionBreak(void)
 /*!
  * Minimum width of a line we'll try to fit a wrapped line within
  */
-UT_sint32 fl_BlockLayout::getMinWrapWidth(void)
+UT_sint32 fl_BlockLayout::getMinWrapWidth(void) const
 {
 	return 4*20*4;
 }
@@ -3614,7 +3614,7 @@ void fl_BlockLayout::format()
 	return;	// TODO return code
 }
 
-UT_sint32 fl_BlockLayout::findLineInBlock(fp_Line * pLine)
+UT_sint32 fl_BlockLayout::findLineInBlock(fp_Line * pLine) const
 {
 	fp_Line * pTmpLine = static_cast<fp_Line *>(getFirstContainer());
 	UT_sint32 i = 0;
@@ -3882,7 +3882,7 @@ void fl_BlockLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
 	setNeedsRedraw();
 }
 
-void fl_BlockLayout::clearPrint(void)
+void fl_BlockLayout::clearPrint(void) const
 {
 	fp_Run * pRun = getFirstRun();
 	while(pRun)
@@ -3920,7 +3920,7 @@ const char* fl_BlockLayout::getProperty(const gchar * pszName, bool bExpandStyle
  * position of the strux (whatever it might be), following this block.
  * The length includes any embedded struxes (like footnotes and endnotes).
  */
-UT_sint32 fl_BlockLayout::getLength()
+UT_sint32 fl_BlockLayout::getLength() const
 {
 	PT_DocPosition posThis = getPosition(true);
 	PL_StruxDocHandle nextSDH =NULL;
@@ -4301,7 +4301,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	return pPrevRun;
 }
 
-fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
+fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine) const
 {
 	if (pLine->getPrev())
 	{
@@ -4336,7 +4336,7 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 	return NULL;
 }
 
-fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
+fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine) const
 {
 	if (pLine->getNext())
 	{
@@ -4351,7 +4351,7 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	else
 	{
 		// there is no next line in this section, try the next
-		fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(m_pSectionLayout->getNext());
+		const fl_SectionLayout* pSL = static_cast<const fl_SectionLayout*>(m_pSectionLayout->getNext());
 
 		if (!pSL)
 		{
@@ -4363,7 +4363,7 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 		// if this assert fails, then this code needs to be fixed up. Tomas
 		UT_ASSERT_HARMLESS( pSL->getLastLayout() && pSL->getLastLayout()->getContainerType() == FL_CONTAINER_BLOCK );
 			
-		fl_BlockLayout* pBlock = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+		const fl_BlockLayout* pBlock = static_cast<const fl_BlockLayout*>(pSL->getFirstLayout());
 		UT_return_val_if_fail(pBlock, NULL);
 		return static_cast<fp_Line *>(pBlock->getFirstContainer());
 	}
@@ -4397,7 +4397,7 @@ void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
 	m_sGrammarMessage = sMsg;
 }
 
-void fl_PartOfBlock::getGrammarMessage(UT_UTF8String & sMsg)
+void fl_PartOfBlock::getGrammarMessage(UT_UTF8String & sMsg) const
 {
 	sMsg = m_sGrammarMessage;
 }
@@ -4457,7 +4457,7 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
  On exit, there's either a single unchecked pending word, or nothing.
 */
 void
-fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
+fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::_recalcPendingWord(%d, %d)\n",
 					 iOffset, chg));
@@ -4660,7 +4660,7 @@ bool fl_BlockLayout::checkSpelling(void)
 bool
 fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 								UT_sint32 eor,
-								bool bToggleIP)
+								bool bToggleIP) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
@@ -4737,7 +4737,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pWord,
 							 UT_sint32 iLength,
 							 bool bAddSquiggle /* = true */,
-							 bool bClearScreen /* = true */)
+							 bool bClearScreen /* = true */) const
 {
 	UT_sint32 iBlockPos = pPOB->getOffset();
 
@@ -4783,7 +4783,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
  check validity? Should just be provided the starting offset...
 */
 bool
-fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
+fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkWord\n"));
 
@@ -5303,7 +5303,7 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 /*!
  * Returns true if this run is at the last position of the block.
  */
-bool fl_BlockLayout::isLastRunInBlock(fp_Run * pRun)
+bool fl_BlockLayout::isLastRunInBlock(fp_Run * pRun) const
 {
 	if(((UT_sint32)pRun->getBlockOffset()+2) == getLength())
 	{
@@ -6026,7 +6026,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 /*!
  * This method will append the text in the block to the UTF8 string supplied
  */
-void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText)
+void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText) const
 {
 	UT_GrowBuf buf;
 	appendTextToBuf(buf);
@@ -6041,7 +6041,7 @@ void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText)
  * This method extracts all the text from the current block and appends it
  * to the supplied growbuf.
  */
-void fl_BlockLayout::appendTextToBuf(UT_GrowBuf & buf)
+void fl_BlockLayout::appendTextToBuf(UT_GrowBuf & buf) const
 {
 	fp_Run * pRun = m_pFirstRun;
 	while(pRun)
@@ -6305,7 +6305,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
    - List ends in an EOP Run
 */
 void
-fl_BlockLayout::_assertRunListIntegrityImpl(void)
+fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 {
 	UT_return_if_fail( m_pLayout );
 	
@@ -6376,7 +6376,7 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 #endif /* !NDEBUG */
 
 inline void
-fl_BlockLayout::_assertRunListIntegrity(void)
+fl_BlockLayout::_assertRunListIntegrity(void) const
 {
 #ifndef NDEBUG
 	_assertRunListIntegrityImpl();
@@ -8199,7 +8199,7 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
  method.
 */
 void
-fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
+fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
 
@@ -8261,7 +8261,7 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 /*!
  * Draw all the grammar squiggles in the Block.
  */
-void fl_BlockLayout::drawGrammarSquiggles(void)
+void fl_BlockLayout::drawGrammarSquiggles(void) const
 {
 	fp_Run * pRun = getFirstRun();
 	while(pRun)
@@ -8282,7 +8282,7 @@ void fl_BlockLayout::drawGrammarSquiggles(void)
  method.
 */
 void
-fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
+fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun) const
 {
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
 
@@ -8905,7 +8905,7 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 
 
 bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
-										 eTabType & iType, eTabLeader &iLeader )
+										 eTabType & iType, eTabLeader &iLeader ) const
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
@@ -9013,7 +9013,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 }
 
 bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
-										 eTabType & iType, eTabLeader &iLeader )
+										 eTabType & iType, eTabLeader &iLeader ) const
 {
 #ifdef DEBUG
 	UT_sint32 iMinLeft = m_iLeftMargin;
@@ -9136,7 +9136,7 @@ bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, fl_TabStop *pTa
 {
 	// a static function
 
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(myThis);
+	const fl_BlockLayout * pBL = static_cast<const fl_BlockLayout*>(myThis);
 
 	UT_uint32 iCountTabs = pBL->m_vecTabs.getItemCount();
 	if (k >= iCountTabs)
@@ -9381,7 +9381,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 //List Item Stuff
 ///////////////////////////////////////////////////////////////////////////
 
-gchar* fl_BlockLayout::getListStyleString( FL_ListType iListType)
+gchar* fl_BlockLayout::getListStyleString( FL_ListType iListType) const
 {
 
 	gchar* style;
@@ -9399,7 +9399,7 @@ gchar* fl_BlockLayout::getListStyleString( FL_ListType iListType)
 	return style;
 }
 
-FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style)
+FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style) const
 {
 	FL_ListType lType = NOT_A_LIST;
 	if(style == NULL)
@@ -9418,7 +9418,7 @@ FL_ListType fl_BlockLayout::getListTypeFromStyle( const gchar* style)
 }
 
 
-char *	fl_BlockLayout::getFormatFromListType( FL_ListType iListType)
+char *	fl_BlockLayout::getFormatFromListType( FL_ListType iListType) const
 {
 	UT_sint32 nlisttype = static_cast<UT_sint32>(iListType);
 	char * pFormat = NULL;
@@ -9429,7 +9429,7 @@ char *	fl_BlockLayout::getFormatFromListType( FL_ListType iListType)
 	return pFormat;
 }
 
-FL_ListType fl_BlockLayout::decodeListType(char * listformat)
+FL_ListType fl_BlockLayout::decodeListType(char * listformat) const
 {
 	FL_ListType iType = NOT_A_LIST;
 	UT_uint32 j;
@@ -9445,7 +9445,7 @@ FL_ListType fl_BlockLayout::decodeListType(char * listformat)
 	return iType;
 }
 
-FL_ListType fl_BlockLayout::getListType(void)
+FL_ListType fl_BlockLayout::getListType(void) const
 {
 	if(isListItem()==false)
 	{
@@ -9698,7 +9698,7 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
-void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const gchar*> * va)
+void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const gchar*> * va) const
 {
 	//
 	// This function fills the vector va with list attributes
@@ -9747,7 +9747,7 @@ void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const gchar*> * va
 }
 
 
-void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const gchar*>* vp)
+void	fl_BlockLayout::getListPropertyVector(UT_GenericVector<const gchar*>* vp) const
 {
 	//
 	// This function fills the vector vp with list properties. All vector
@@ -10189,7 +10189,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 \param UT_uint32 id the identifier of the list
 \returns fl_BlockLayout *
 */
-fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
+fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id) const
 {
 	//
 	// Find the most recent list item that matches the id given
@@ -10238,7 +10238,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 }
 
 
-fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
+fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id) const
 {
 	//
 	// Find the next list  item that matches the id given
@@ -10264,7 +10264,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
  * Find the most recent block with a list item.
 \returns fl_BlockLayout *
 */
-fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
+fl_BlockLayout * fl_BlockLayout::getPreviousList( void) const
 {
 	//
 	// Find the most recent block with a list
@@ -10282,7 +10282,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
  * of left-margin to this one.
  \returns fl_BlockLayout *
 */
-fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
+fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void) const
 {
 
     const char * szAlign;
@@ -10333,7 +10333,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 	return pClosest;
 }
 
-inline fl_BlockLayout * fl_BlockLayout::getParentItem(void)
+fl_BlockLayout * fl_BlockLayout::getParentItem(void) const
 {
 	// TODO Again, more firendly.
 	UT_return_val_if_fail(m_pAutoNum, NULL);
@@ -10496,7 +10496,7 @@ void fl_BlockLayout::transferListFlags(void)
 	}
 }
 
-bool  fl_BlockLayout::isListLabelInBlock( void)
+bool  fl_BlockLayout::isListLabelInBlock( void) const
 {
 	fp_Run * pRun = m_pFirstRun;
 	bool bListLabel = false;
@@ -10513,7 +10513,7 @@ bool  fl_BlockLayout::isListLabelInBlock( void)
 	return bListLabel;
 }
 
-bool fl_BlockLayout::isFirstInList(void)
+bool fl_BlockLayout::isFirstInList(void) const
 {
 	PL_StruxDocHandle sdh = fl_Layout::getStruxDocHandle();
 	if (!m_pAutoNum)
@@ -10666,7 +10666,7 @@ void fl_BlockLayout::_deleteListLabel(void)
 	}
 }
 
-UT_UCSChar * fl_BlockLayout::getListLabel(void)
+UT_UCSChar * fl_BlockLayout::getListLabel(void) const
 {
 	//	UT_ASSERT(m_pAutoNum);
 	//
@@ -10718,7 +10718,7 @@ inline void fl_BlockLayout::_prependBlockToPrevList( fl_BlockLayout * nextBlockI
 	m_pAutoNum->prependItem(getStruxDocHandle(), nextBlockInList->getStruxDocHandle());
 }
 
-UT_uint32 fl_BlockLayout::getLevel(void)
+UT_uint32 fl_BlockLayout::getLevel(void) const
 {
 	if (!m_pAutoNum)
 		return 0;
@@ -10751,7 +10751,7 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 										 PT_DocPosition & begPos,
 										 PT_DocPosition & endPos,
 										 UT_UTF8String & sWord,
-										 bool bIgnoreSpace)
+										 bool bIgnoreSpace) const
 {
 	UT_uint32 offset = startPos - getPosition(false);
 	UT_uint32 i = 0;
@@ -10954,7 +10954,7 @@ bool fl_BlockLayout::_canContainPoint() const
     markup
  */
 
-bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos)
+bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos) const
 {
 	if(c == 0)
 		return true;
@@ -10987,7 +10987,7 @@ bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Cha
 	return true;
 }
 
-bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos)
+bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos) const
 {
 	if(!UT_UCS4_isSentenceSeparator(c))
 		return false;
@@ -11058,7 +11058,7 @@ void fl_BlockLayout::dequeueFromSpellCheck(void)
   \param pBL BlockLayout this iterator should work on
   \param iPos Position the iterator should start from
 */
-fl_BlockSpellIterator::fl_BlockSpellIterator(fl_BlockLayout* pBL, UT_sint32 iPos)
+fl_BlockSpellIterator::fl_BlockSpellIterator(const fl_BlockLayout* pBL, UT_sint32 iPos)
 	: m_pBL(pBL), m_iWordOffset(iPos), m_iStartIndex(iPos), m_iPrevStartIndex(iPos),
 	  m_pMutatedString(NULL),
 	  m_iSentenceStart(0), m_iSentenceEnd(0)
@@ -11085,7 +11085,7 @@ fl_BlockSpellIterator::~fl_BlockSpellIterator()
   \return Length of the block
 */
 UT_sint32
-fl_BlockSpellIterator::getBlockLength(void)
+fl_BlockSpellIterator::getBlockLength(void) const
 {
 	return m_iLength;
 }
@@ -11603,7 +11603,7 @@ fl_BlockSpellIterator::updateSentenceBoundaries(void)
   \return Pointer to word.
 */
 const UT_UCSChar*
-fl_BlockSpellIterator::getCurrentWord(UT_sint32& iLength)
+fl_BlockSpellIterator::getCurrentWord(UT_sint32& iLength) const
 {
 	iLength = m_iWordLength;
 
@@ -11623,7 +11623,7 @@ fl_BlockSpellIterator::getCurrentWord(UT_sint32& iLength)
   \return Pointer to sentence prior to current word, or NULL
 */
 const UT_UCSChar*
-fl_BlockSpellIterator::getPreWord(UT_sint32& iLength)
+fl_BlockSpellIterator::getPreWord(UT_sint32& iLength) const
 {
 	iLength = m_iWordOffset - m_iSentenceStart;
 
@@ -11643,7 +11643,7 @@ fl_BlockSpellIterator::getPreWord(UT_sint32& iLength)
   \return Pointer to sentence following current word, or NULL
 */
 const UT_UCSChar*
-fl_BlockSpellIterator::getPostWord(UT_sint32& iLength)
+fl_BlockSpellIterator::getPostWord(UT_sint32& iLength) const
 {
 	iLength = m_iSentenceEnd - m_iStartIndex;
 

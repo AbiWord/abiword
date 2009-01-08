@@ -110,7 +110,7 @@ public:
 	void                incrementGraphicTick(void) { m_iGraphicTick++;}
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
 #ifdef ENABLE_SPELL
-	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
+	inline const fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 #endif
     
@@ -179,7 +179,7 @@ public:
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 										   UT_sint32 iOffset, 
 										   UT_sint32 chg) const;
-	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
+	void		setPendingWordForSpell(const fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
 	void        dequeueAll(void);
 	void        queueAll(UT_uint32 iReason);
@@ -384,7 +384,7 @@ private:
 	// UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
 	fl_BlockLayout      *m_toSpellCheckHead;
 	fl_BlockLayout      *m_toSpellCheckTail;
-	fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
+	const fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
 	fl_PartOfBlock*		m_pPendingWordForSpell;
 	bool				m_bSpellCheckCaps;
 	bool				m_bSpellCheckNumbers;

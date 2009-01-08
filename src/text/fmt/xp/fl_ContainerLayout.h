@@ -96,7 +96,7 @@ public:
 	virtual FL_DocLayout *      getDocLayout(void) const;
 	UT_sint32           getLevelInList(void);
 	virtual void		format(void) = 0;
-	virtual void        appendTextToBuf(UT_GrowBuf & buf);
+	virtual void        appendTextToBuf(UT_GrowBuf & buf) const;
 	virtual void		updateLayout(bool bDoAll) = 0;
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;
