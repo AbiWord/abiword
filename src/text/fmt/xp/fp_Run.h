@@ -486,7 +486,6 @@ private:
 	bool                    m_bIsCleared;
 	fg_FillType             m_FillType;
 	bool                    m_bPrinting;
-	GR_Graphics *           m_pG;
 	UT_sint32               m_iTmpX;
 	UT_sint32               m_iTmpY;
 	UT_sint32               m_iTmpWidth;

@@ -129,7 +129,6 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bIsCleared(true),
 	m_FillType(NULL,this,FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
-	m_pG(NULL),
 	m_iTmpX(0),
 	m_iTmpY(0),
 	m_iTmpWidth(0),
@@ -457,7 +456,6 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	else if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = true;
-		m_pG = pG;
 	}
 	if(!m_pBL->isContainedByTOC())
 	{
@@ -596,12 +594,12 @@ GR_Graphics * fp_Run::getGraphics(void) const
 {
 	if(m_bPrinting)
 	{
-		return m_pG;
+		if(getBlock()->getDocLayout()->isQuickPrint())
+		{
+			return getBlock()->getDocLayout()->getQuickPrintGraphics();
+		}
 	}
-	else
-	{
-		return getBlock()->getDocLayout()->getGraphics();
-	}
+	return getBlock()->getDocLayout()->getGraphics();
 }
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
@@ -986,7 +984,6 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 void fp_Run::clearPrint(void)
 {
 	m_bPrinting =false;
-	m_pG = NULL;
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
@@ -1247,7 +1244,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = true;
-		m_pG = pG;
 		lookupProperties(pG);
 	}
 	pG->setColor(getFGColor());
@@ -1421,7 +1417,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = false;
-		m_pG = NULL;
 		lookupProperties(NULL);
 	}
 }

@@ -341,6 +341,7 @@ public:
 		{ return m_lid;}
 	void            notifyListeners(AV_ChangeMask mask);
 	void            setQuickPrint(GR_Graphics * pGraphics);
+	GR_Graphics *   getQuickPrintGraphics(void);
 	bool            isQuickPrint(void)
 	{ return m_bIsQuickPrint;}
 	GR_EmbedManager * getQuickPrintEmbedManager(const char * szEmbedType);

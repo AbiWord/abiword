@@ -248,6 +248,10 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 	}
 }
 
+GR_Graphics * FL_DocLayout::getQuickPrintGraphics(void)
+{
+  return  m_pQuickPrintGraphics;
+}
 
 /*!
  * Get an embedManager of the requested Type.for a quickPrint
