@@ -81,7 +81,7 @@ public:
 	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
-    virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
+	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
@@ -103,7 +103,7 @@ public:
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 /*iCount*/) {}
 
-    virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
+	virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { return NULL;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
