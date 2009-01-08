@@ -767,14 +767,12 @@ UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
 
 void FV_View::replaceGraphics(GR_Graphics * pG)
 {
-	if(m_pG)
-	{
-		delete m_pG;
-		m_pG = NULL;
-	}
-
+	DELETEP(m_pG);
 	setGraphics(pG);
-
+	m_pLayout->setGraphics(pG);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if (pFrame && pFrame->getFrameData())
+		reinterpret_cast<AP_FrameData*>(pFrame->getFrameData())->m_pG = pG;
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 }
 
