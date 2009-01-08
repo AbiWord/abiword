@@ -2073,9 +2073,8 @@ abi_widget_destroy_gtk (GtkObject *object)
 			fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
 #endif
 		}
-		delete abi->priv->m_sSearchText;
-		g_free (abi->priv);
-		abi->priv = NULL;
+		DELETEP(abi->priv->m_sSearchText);
+		DELETEP(abi->priv);
 	}
 
 #ifdef LOGFILE
