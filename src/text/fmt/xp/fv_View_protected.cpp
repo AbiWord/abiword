@@ -2210,9 +2210,9 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	fp_Line * pNewLine = static_cast<fp_Line *>(pRun->getLine());
 
 	if(pNewLine == NULL ||
-	   (pNewLine->getContainer() == pLine->getContainer()) && 
+	   ((pNewLine->getContainer() == pLine->getContainer()) && 
 	   (bMovingDown ? (pNewLine->getY() < pLine->getY())
-             		: (pNewLine->getY() > pLine->getY())))
+		: (pNewLine->getY() > pLine->getY()))))
 	{
 		_moveInsPtNextPrevLine(bMovingDown);
 		return;
@@ -2484,7 +2484,7 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 			{
 				xClick -= iPageWidth + getHorizPageSpacing();
 			}
-			else if (xClick < getWidthPrevPagesInRow(m_pLayout->findPage(pPage)) && rtlPages()) // Right to left
+			else if (xClick < static_cast<UT_sint32>(getWidthPrevPagesInRow(m_pLayout->findPage(pPage))) && rtlPages()) // Right to left
 			{
 				//Don't need to do anything.
 			}
@@ -5276,7 +5276,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || (m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD)))
+			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || ((m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD))))
 			{ 
 				xxx_UT_DEBUGMSG(("_charMotion: Sweep backward -2 %d \n",m_iInsPoint));
 				bSweep = true;
@@ -5882,8 +5882,8 @@ void FV_View::_prefsListener( XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/
 
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 	if (!pView->m_bWarnedThatRestartNeeded &&
-		( pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
-		 || (pPrefs->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
+		(( (pPrefs->getPrefsValueBool(static_cast<const gchar*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl))
+		 || ((pPrefs->getPrefsValueBool(static_cast<const gchar*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)))
 		)
 	{
 		/*	It is possible to change this at runtime, but it may impact the
