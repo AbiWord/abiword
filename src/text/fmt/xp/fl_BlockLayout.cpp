@@ -487,7 +487,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || ((pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -545,7 +545,7 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || ((pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
@@ -672,7 +672,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	// direction is different, we have to split all runs in this
 	// block at their direciton boundaries, because the base
 	// direction influences the visual direciton of weak characters
-	if(iOldDirection != UT_BIDI_UNSET && iOldDirection != m_iDomDirection)
+	if(iOldDirection != static_cast<UT_BidiCharType>(UT_BIDI_UNSET) && iOldDirection != m_iDomDirection)
 	{
 		fp_Run * pRun = getFirstRun();
 
@@ -789,7 +789,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || ((pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
 	{
 		if(m_iLeftMargin < 0)
 		{
@@ -914,7 +914,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			UT_convertDimensionless(pszSpacing);
 	}
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	if((pView->getViewMode() == VIEW_NORMAL) || ((pView->getViewMode() == VIEW_WEB) && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
 	{
 		// flatten the text; we will indicate more than single spacing by using 1.2, which
 		// is enough for the text to be noticeably spaced, but not enough for it to take
@@ -1142,7 +1142,7 @@ void fl_BlockLayout::getStyle(UT_UTF8String & sStyle) const
 bool fl_BlockLayout::isEmbeddedType(void) const
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION ) )
+	if(pCL && (((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) ) || (pCL->getContainerType() == FL_CONTAINER_ANNOTATION )) )
 	{
 		return true;
 	}
@@ -6350,8 +6350,8 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 
 		// Verify that the Run has a non-zero length (or is a FmtMark)
 		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType()) || 
-				   ((FPRUN_TAB == pRun->getType()) 
-					  || (FPRUN_FIELD == pRun->getType())
+				   (((FPRUN_TAB == pRun->getType()) 
+					 || (FPRUN_FIELD == pRun->getType()))
 					  && isContainedByTOC())
 				   || (pRun->getLength() > 0) );
 
@@ -7184,7 +7184,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 //
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
 //	const gchar * szOldStyle = m_szStyle;
-	UT_sint32 iOldDomDirection = m_iDomDirection;
+	UT_BidiCharType iOldDomDirection = m_iDomDirection;
 
 	lookupProperties();
 	xxx_UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
