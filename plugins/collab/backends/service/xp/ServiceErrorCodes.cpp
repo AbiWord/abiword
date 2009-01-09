@@ -16,19 +16,24 @@
  * 02111-1307, USA.
  */
 
-#ifndef __SOA_RESULT__
-#define __SOA_RESULT__
+#include <boost/lexical_cast.hpp>
 
-#include <string>
-#include "soa_types.h"
-#include <libxml/tree.h>
+#include "ServiceErrorCodes.h"
 
-namespace soa {
+namespace abicollab {
+namespace service {
 
-	std::string soap_type(Type type);
-	GenericPtr parse_elements(xmlNode* element, GenericPtr parent);
-	GenericPtr parse_response(const std::string& response, const std::string& method_name);
-
+SOAP_ERROR error(const soa::SoapFault& fault)
+{
+	if (!fault.string())
+		return SOAP_ERROR_GENERIC;
+	try {
+		return static_cast<SOAP_ERROR>(boost::lexical_cast<int>(fault.string()->value()));
+	} catch (boost::bad_lexical_cast&) {
+		return SOAP_ERROR_GENERIC;
+	}
 }
 
-#endif /* __SOA_RESULT__ */
+}
+}
+

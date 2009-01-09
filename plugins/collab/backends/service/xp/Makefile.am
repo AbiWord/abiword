@@ -34,8 +34,10 @@ libxp_la_SOURCES = \
 	ServiceAccountHandler.h \
 	ServiceBuddy.h \
 	ServiceErrorCodes.h \
+        ServiceErrorCodes.cpp \
 	soa.h \
 	soa_result.h \
+	soa_result.cpp \
 	soa_soup.h \
 	soa_types.h \
 	tls_tunnel.cpp \
