@@ -2308,9 +2308,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 	if ( isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
-		(iSel1 <= iRunBase)
-		&& (iSel2 > iRunBase)
-		)
+		 ((iSel1 <= iRunBase)	&& (iSel2 > iRunBase))		)
 	{
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
@@ -2559,7 +2557,8 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ isInSelectedTOC() ||	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ isInSelectedTOC() ||	
+		((iSel1 <= iRunBase) && (iSel2 > iRunBase)))
 		bIsSelected = true;
 
 	UT_RGBColor clrShowPara(pView->getColorShowPara());
@@ -2947,7 +2946,8 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() ||	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() ||	
+		((iSel1 <= iRunBase) && (iSel2 > iRunBase)))
 		bIsSelected = true;
 
 	pG->setColor(_getView()->getColorShowPara());
@@ -3329,7 +3329,8 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() || (iSel1 <= iRunBase) && (iSel2 > iRunBase))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() || 
+		((iSel1 <= iRunBase) && (iSel2 > iRunBase)))
 		bIsSelected = true;
 
 	GR_Painter painter(getGraphics());
@@ -5802,7 +5803,7 @@ fp_Run * fp_Run::getPrevVisual()
 void fp_Run::setDirection(UT_BidiCharType iDir)
 {
     xxx_UT_DEBUGMSG(("fp_Run::SetDirection, getDirection() %d, iDir %d, run type %d\n", getDirection(), iDir, getType()));
-	UT_BidiCharType iDirection = iDir != UT_BIDI_UNSET ? iDir : UT_BIDI_WS;
+	UT_BidiCharType iDirection = iDir != static_cast<UT_BidiCharType>(UT_BIDI_UNSET) ? iDir : UT_BIDI_WS;
 	if(getDirection() != iDirection)
 	{
 		UT_BidiCharType origDirection = getDirection();
@@ -5834,12 +5835,12 @@ UT_BidiCharType fp_Run::getVisDirection()
 		else
 			return UT_BIDI_RTL;
 	}
-	else if(m_iVisDirection == UT_BIDI_UNSET)
+	else if(m_iVisDirection == static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 	{
 		if(m_pLine)
 		{
 			m_pLine->_createMapOfRuns();
-			UT_ASSERT(m_iVisDirection != UT_BIDI_UNSET);
+			UT_ASSERT(m_iVisDirection !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET));
 			return m_iVisDirection;
 		}
 		else if(getBlock())
@@ -5864,7 +5865,7 @@ UT_BidiCharType fp_Run::getVisDirection()
 void fp_Run::setVisDirection(UT_BidiCharType iDir)
 {
     if(   iDir != m_iVisDirection
-	   && m_iVisDirection != UT_BIDI_UNSET
+		  && m_iVisDirection !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET)
 		  /*&& m_eRefreshDrawBuffer == GRSR_BufferClean*/)
 	{
 		// the text in the buffer is in the wrong order, schedule it

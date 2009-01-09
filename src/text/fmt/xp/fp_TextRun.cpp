@@ -312,14 +312,16 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		if the previous direction override was not strong, and the current one is, we have
 		to break this run's neighbours
 	*/
-	if(iNewOverride == UT_BIDI_UNSET && iOldOverride != UT_BIDI_UNSET)
+	if(iNewOverride ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) && 
+	   iOldOverride !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 	{
 		// we have to do this without applying the new override otherwise the
 		// LTR and RTL run counters of the present line will be messed up;
 		// breakMeAtDirBoundaries will take care of applying the new override
 		breakMeAtDirBoundaries(iNewOverride);
 	}
-	else if(iNewOverride != UT_BIDI_UNSET && iOldOverride == UT_BIDI_UNSET)
+	else if(iNewOverride !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) && 
+			iOldOverride ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 	{
 		// first we have to apply the new override
 		setDirection(UT_BIDI_UNSET, iNewOverride);
@@ -1354,6 +1356,10 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	return true;
 }
+
+
+UT_BidiCharType  fp_TextRun:: getDirection() const 
+{ return m_iDirOverride == static_cast<UT_BidiCharType>(UT_BIDI_UNSET) ? _getDirection() : m_iDirOverride;}
 
 
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
@@ -2846,18 +2852,18 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 {
 	if( !getLength()
-	|| (   dir == UT_BIDI_UNSET
-		&& _getDirection() != UT_BIDI_UNSET
+		|| (   dir ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET)
+			   && _getDirection() !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET)
 		&& dirOverride == m_iDirOverride
 		)
 	  )
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 
-	UT_BidiCharType prevDir = m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;
-	if(dir == UT_BIDI_UNSET)
+	UT_BidiCharType prevDir = m_iDirOverride ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) ? _getDirection() : m_iDirOverride;
+	if(dir ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 	{
 		// only do this once
-		if(_getDirection() == UT_BIDI_UNSET)
+		if(_getDirection() ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 		{
 			// here we used to check the first character; we can no longer do that,
 			// because the latest versions of USP create items that are not homogenous and
@@ -2893,7 +2899,7 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 		_setDirection(dir);
 	}
 
-	if(dirOverride != UT_BIDI_IGNORE)
+	if(dirOverride !=  static_cast<UT_BidiCharType>(UT_BIDI_IGNORE))
 	{
 
 		m_iDirOverride = dirOverride;
@@ -2903,7 +2909,7 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 		// it to that direction, if it is weak, we have to make the line
 		// to calculate it
 
-		if(dirOverride != UT_BIDI_UNSET)
+		if(dirOverride !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET))
 			setVisDirection(dirOverride);
 	}
 
@@ -2917,9 +2923,9 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 		functions when the run is loaded from a document on the disk.)
 	*/
 
-	UT_BidiCharType curDir = m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;
+	UT_BidiCharType curDir = m_iDirOverride ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) ? _getDirection() : m_iDirOverride;
 
-	UT_ASSERT(curDir != UT_BIDI_UNSET);
+	UT_ASSERT(curDir !=  static_cast<UT_BidiCharType>(UT_BIDI_UNSET));
 
 	if(curDir != prevDir)
 	{
@@ -2959,7 +2965,7 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 */
 void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 {
-	if(dir == UT_BIDI_UNSET || dir == m_iDirOverride)
+	if(dir ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) || dir ==  static_cast<UT_BidiCharType>(m_iDirOverride))
 		return;
 
 	const gchar * prop[] = {NULL, NULL, 0};

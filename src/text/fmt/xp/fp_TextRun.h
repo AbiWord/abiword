@@ -94,7 +94,8 @@ public:
 
 	// the usability of the following function is *very* limited, see the note in cpp file
 	void					setDirOverride(UT_BidiCharType dir);
-	virtual UT_BidiCharType getDirection() const { return m_iDirOverride == UT_BIDI_UNSET ? _getDirection() : m_iDirOverride;}
+	virtual UT_BidiCharType getDirection() const;
+
 	UT_BidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
 	void				breakNeighborsAtDirBoundaries();
