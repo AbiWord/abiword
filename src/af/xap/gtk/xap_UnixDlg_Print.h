@@ -21,8 +21,6 @@
 #define XAP_UNIXDIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-print-job.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkprintunixdialog.h>
 

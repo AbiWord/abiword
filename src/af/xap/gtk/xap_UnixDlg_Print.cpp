@@ -21,8 +21,6 @@
 #include "xap_UnixDlg_Print.h"
 
 #include <gtk/gtk.h>
-#include <gtk/gtkprintunixdialog.h>
-#include <libgnomeprintui/gnome-print-dialog.h>
 
 #include "ut_assert.h"
 #include "xap_UnixDialogHelper.h"
