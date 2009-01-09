@@ -2,6 +2,8 @@
 /*
  * go-file.c :
  *
+ * Copyright (C) 2009 Hubert Figuiere <hub@figuiere.net>. 
+ *     Whose contributions are under GPLv2+
  * Copyright (C) 2004 Morten Welinder (terra@gnome.org)
  * Copyright (C) 2004 Yukihiro Nakai  <nakai@gnome.gr.jp>
  * Copyright (C) 2003, Red Hat, Inc.
@@ -51,15 +53,19 @@
 #  include <gsf/gsf-output-gio.h>
 #elif defined(WITH_GNOMEVFS)
 #  define GOFFICE_WITH_GNOME
-#  include <libgnomevfs/gnome-vfs-utils.h>
 #  include <libgnomevfs/gnome-vfs-mime-utils.h>
 #  include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #  include <gsf-gnome/gsf-input-gnomevfs.h>
 #  include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
-#ifdef WITH_GNOMEUI
-#include <libgnome/gnome-url.h>
+#ifdef HAVE_GTK214
+// needed for gtk_show_uri()
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+#else
+// needed for gnome_vfs_url_show()
+#include <libgnomevfs/gnome-vfs-utils.h>
 #endif
 
 #if defined G_OS_WIN32
@@ -1682,7 +1688,7 @@ UT_go_url_encode (gchar const *text, int type)
 	return g_string_free (result, FALSE);
 }
 
-#ifndef WITH_GNOMEUI
+#ifndef WITH_GNOMEVFS
 static char *
 check_program (char const *prog)
 {
@@ -1706,8 +1712,11 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#ifdef WITH_GNOMEUI
-	gnome_url_show (url, &err);
+#ifdef HAVE_GTK214
+	gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err);
+	return err;
+#elif defined(WITH_GNOMEVFS)
+	gnome_vfs_url_show (url);
 	return err;
 #else
 	gchar *browser = NULL;

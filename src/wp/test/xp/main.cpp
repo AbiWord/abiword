@@ -39,12 +39,10 @@
 #endif /* ABI_BUILD_TARGET */
 
 
-#ifndef WITH_GNOMEUI
 // work around a linker bug. see bugzilla 8286
 extern unsigned char g_pngSidebar[];
 
 unsigned char *foo1 = g_pngSidebar;
-#endif
 
 
 

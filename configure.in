@@ -30,7 +30,6 @@ xp_pkgs="
 
 # optional deps
 enchant_req='enchant >= 1.2.0'
-gnomeui_req='libgnomeui-2.0 >= 2.14'
 gnomevfs_req='gnome-vfs-2.0 >= 2.2.0 libgsf-gnome-1 >= 1.12.0'
 gio_req='gio-2.0'
 goffice_req=
@@ -287,28 +286,6 @@ AC_ARG_ENABLE([debug],
 # Optional packages
 #
 
-AC_ARG_WITH([gnomeui], 
-	[AS_HELP_STRING([--with-gnomeui], [(gtk only) use libgnomeui library])], 
-[
-	abi_cv_gnomeui="$withval"
-],[
-	# use gnomeui if detected
-	if test "$TOOLKIT" == "gtk"; then
-	PKG_CHECK_EXISTS([ $gnomeui_req ],
-	[
-		abi_cv_gnomeui="yes"
-	], [
-		abi_cv_gnomeui="no"
-	])
-	else
-		abi_cv_gnomeui="no"
-	fi
-])
-
-if test "$abi_cv_gnomeui" == "yes"; then
-	opt_pkgs="$opt_pkgs $gnomeui_req"
-fi
-
 AC_ARG_WITH([gnomevfs], 
 	[AS_HELP_STRING([--with-gnomevfs], [(gtk only) use gnome-vfs library])], 
 [
@@ -458,6 +435,15 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+dnl specific gtk214 test.
+if test "$TOOLKIT" == "gtk"; then
+	PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 
+                 [abi_cv_gtk214=no])
+	if test "$abi_cv_gtk214" == "yes" ; then
+		AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14])
+	fi
+fi
+
 AC_SUBST([DEPS_CFLAGS])
 if test "$abi_cv_gio" == "yes"; then
 	PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
@@ -659,10 +645,6 @@ AM_CONDITIONAL(DEBUG, test "$abi_cv_debug" == "yes")
 # Optional dependencies handling
 #
 
-if test "$abi_cv_gnomeui" == "yes"; then
-	AC_DEFINE([WITH_GNOMEUI], [1], [Define if using libgnomeui])
-fi
-
 if test "$abi_cv_gnomevfs" == "yes"; then
 	AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs])
 fi
@@ -827,7 +809,7 @@ Optional features:
   vi keybinding         ${abi_cv_vi_keybinding}
 
 Optional dependencies:
-  libgnomeui            ${abi_cv_gnomeui}
+  gtk2 > 2.14           ${abi_cv_gtk214}
   gnome-vfs             ${abi_cv_gnomevfs}
   gio			${abi_cv_gio}
   gsf-gio               ${abi_cv_gsf_gio}

@@ -54,6 +54,9 @@
 /* GSF has GIO support */
 #undef HAVE_GSF_GIO
 
+/* GTK is at least 2.14 */
+#undef HAVE_GTK214
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -131,9 +134,6 @@
 
 /* Define if using GIO */
 #undef WITH_GIO
-
-/* Define if using libgnomeui */
-#undef WITH_GNOMEUI
 
 /* Define if using gnome-vfs */
 #undef WITH_GNOMEVFS

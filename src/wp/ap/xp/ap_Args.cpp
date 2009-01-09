@@ -89,9 +89,7 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * /*szAppName*/, AP_App * pApp)
 AP_Args::~AP_Args()
 {
 	// Only free ctxt if not using gnome, otherwise libgnome owns it
-#ifndef WITH_GNOMEUI
 	g_option_context_free (m_context);
-#endif	
 }
 
 void AP_Args::addOptions(GOptionGroup *options)

@@ -123,11 +123,6 @@
 #include "ut_math.h"
 #include "abi-builtin-plugins.h"
 
-#ifdef WITH_GNOMEUI
-  #include <libgnome/libgnome.h>
-  #include <libgnomeui/libgnomeui.h>
-#endif
-
 #ifdef LOGFILE
 static FILE * logfile;
 extern FILE * getlogfile(void)
@@ -1147,27 +1142,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		fprintf(logfile,"Really display %d \n",have_display);
 #endif
 		if (have_display > 0) {
-#ifndef WITH_GNOMEUI
 			gtk_init (&argc, &argv);
 			Args.addOptions(gtk_get_option_group(TRUE));
 			Args.parseOptions();
-#else
-#ifdef LOGFILE
-			fprintf(logfile,"About to start gnome_program_init \n");
-#endif
-			// GNOME handles 'parseOptions'.  Isn't it grand?
-			/*GnomeProgram * program =*/ gnome_program_init (PACKAGE, VERSION, 
-														 LIBGNOMEUI_MODULE, argc, argv,
-														 GNOME_PARAM_APP_PREFIX, PREFIX,
-														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
-														 GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
-														 GNOME_PARAM_APP_LIBDIR, PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
-														 GNOME_PARAM_GOPTION_CONTEXT, Args.getContext(), 
-														 GNOME_PARAM_NONE);
-#ifdef LOGFILE
-			fprintf(logfile,"gnome_program_init completed \n");
-#endif
-#endif
 		}
 		else {
 			// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
