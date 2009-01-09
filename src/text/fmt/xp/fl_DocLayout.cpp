@@ -4257,23 +4257,31 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 				nOuterQuoteStyleIndex = 0;
 				nInnerQuoteStyleIndex = 1;
 			}
-
+			bool bNoChange = false;
 			switch (replacement)
 			{
 			case UCS_LQUOTE:
 				replacement = XAP_EncodingManager::smartQuoteStyles[nInnerQuoteStyleIndex].leftQuote;
+				bNoChange = (replacement == c);
 				break;
 			case UCS_RQUOTE:
 				replacement = XAP_EncodingManager::smartQuoteStyles[nInnerQuoteStyleIndex].rightQuote;
+				bNoChange = (replacement == c);
 				break;
 			case UCS_LDBLQUOTE:
 				replacement = XAP_EncodingManager::smartQuoteStyles[nOuterQuoteStyleIndex].leftQuote;
+				bNoChange = (replacement == c);
 				break;
 			case UCS_RDBLQUOTE:
 				replacement = XAP_EncodingManager::smartQuoteStyles[nOuterQuoteStyleIndex].rightQuote;
+				bNoChange = (replacement == c);
 				break;
 			}
-			
+			if(bNoChange)
+			{
+			      UT_DEBUGMSG(("No change detected \n"));
+			      return ;
+			}
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();

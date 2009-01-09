@@ -814,6 +814,7 @@ const XAP_SmartQuoteStyle XAP_EncodingManager::smartQuoteStyles[] =
 	{ UCS_RDBLQUOTE, UCS_LDBLQUOTE }, // 17 - Same as English, but RTL for Hebrew
 	{ '\"', '\"' }, // 18 - ASCII double quote
 	{ '\'', '\'' }, // 19 - ASCII single quote
+	{ UCS_LQUOTE, ((UT_UCSChar) 0x0027) }, // 20 Fench single quotes
 	{ 0, 0 } // End of the list
 };
 
@@ -865,7 +866,7 @@ const XAP_LangInfo XAP_EncodingManager::langinfo[] =
     {{   "Fiji",              "fj",     "",     "",       "",                                  "",     },   0,   1   },
     {{   "Finnish",           "fi",     "",     "0x000b", "langFinnish",                       "13",   },  10,   6   },
     {{   "Flemish",           "",       "",     "",       "langFlemish",                       "34",   },   0,   1   },
-    {{   "French",            "fr",     "",     "0x000c", "langFrench",                        "1",    },   2,   2   },
+    {{   "French",            "fr",     "",     "0x000c", "langFrench",                        "1",    },   2,   20   },
     {{   "French",            "fr",     "CH",   "0x000c", "langFrench",                        "1",    },   2,  13   },
     {{   "Frisian",           "fy",     "",     "",       "",                                  "",     },   0,   1   },
     {{   "Galician",          "gl",     "",     "",       "",                                  "",     },   0,   1   },
