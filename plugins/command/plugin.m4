@@ -1,11 +1,7 @@
-
-command_pkgs=""
 command_deps="no"
 
 if test "$enable_command" != ""; then
 
-PKG_CHECK_EXISTS([ $command_pkgs ], 
-[
 	# stolen from the original plugin.m4 in abiword-plugins
 	AC_CHECK_HEADER(readline/readline.h,[
 	        AC_CHECK_HEADER(readline/history.h,[
@@ -19,11 +15,6 @@ PKG_CHECK_EXISTS([ $command_pkgs ],
 	                ],-ltermcap)
 	        ])
 	])
-
-], [
-	test "$enable_command" == "auto" && AC_MSG_WARN([command plugin: dependencies not satisfied - $command_pkgs])
-])
-
 fi
 
 if test "$enable_command" == "yes" || \
@@ -32,8 +23,6 @@ if test "$enable_command" == "yes" || \
 if test "$enable_command_builtin" == "yes"; then
 AC_MSG_ERROR([command plugin: static linking not supported])
 fi
-
-PKG_CHECK_MODULES(COMMAND,[ $command_pkgs ])
 
 AC_MSG_CHECKING([command plugin: for readline and friends])
 if test "$command_deps" != "yes"; then
