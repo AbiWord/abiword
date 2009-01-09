@@ -19,6 +19,7 @@
 #ifndef __SERVICE_ERRORCODES__
 #define __SERVICE_ERRORCODES__
 
+#include <boost/lexical_cast.hpp>
 #include "soa.h"
 
 namespace abicollab {
@@ -46,7 +47,16 @@ enum SOAP_ERROR
 	// TODO: add more errors
 };
 
-SOAP_ERROR error(const soa::SoapFault& fault);
+static SOAP_ERROR error(const soa::SoapFault& fault)
+{
+	if (!fault.string())
+		return SOAP_ERROR_GENERIC;
+	try {
+		return static_cast<SOAP_ERROR>(boost::lexical_cast<int>(fault.string()->value()));
+	} catch (boost::bad_lexical_cast&) {
+		return SOAP_ERROR_GENERIC;
+	}
+}
 
 }
 }

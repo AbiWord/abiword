@@ -1,5 +1,7 @@
 
-command_pkgs=""
+# actually just libgnomeprint, -ui depends on it we can 
+# just as well depend on what abiword proper needs anyways
+command_pkgs="$libgnomeprintui_req"
 command_deps="no"
 
 if test "$enable_command" != ""; then
