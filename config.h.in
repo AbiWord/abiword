@@ -24,7 +24,7 @@
 /* Define to enable include emacs-compatible keyboard commands */
 #undef ENABLE_EMACS_KEYBINDING
 
-/* Define if building printing support */
+/* Define if building menu button support */
 #undef ENABLE_MENUBUTTON
 
 /* Define if building printing support */
@@ -86,6 +86,10 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
 
 /* Define to disable debugging functionality */
 #undef NDEBUG
