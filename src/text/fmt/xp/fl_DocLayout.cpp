@@ -248,7 +248,7 @@ void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 	}
 }
 
-GR_Graphics * FL_DocLayout::getQuickPrintGraphics(void)
+GR_Graphics * FL_DocLayout::getQuickPrintGraphics(void) const
 {
   return  m_pQuickPrintGraphics;
 }
