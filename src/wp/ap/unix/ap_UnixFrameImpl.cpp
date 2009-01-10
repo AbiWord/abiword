@@ -50,7 +50,9 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
 	m_leftRuler(NULL),
 	m_table(NULL),
 	m_innertable(NULL),
-	m_wSunkenBox(NULL)
+	m_wSunkenBox(NULL),
+	m_iHScrollSignal(0),
+	m_iVScrollSignal(0)
 {
 	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
 }
@@ -183,14 +185,14 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	g_object_set_data(G_OBJECT(m_pHadj), "user_data", this);
 	g_object_set_data(G_OBJECT(m_hScroll), "user_data", this);
 
-	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::hScrollChanged), NULL);
+	m_iHScrollSignal = g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::hScrollChanged), NULL);
 
 	m_pVadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
 	g_object_set_data(G_OBJECT(m_pVadj), "user_data", this);
 	g_object_set_data(G_OBJECT(m_vScroll), "user_data", this);
 
-	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::vScrollChanged), NULL);
+	m_iVScrollSignal = g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::vScrollChanged), NULL);
 
 	// we don't want either scrollbar grabbing events from us
 	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
@@ -381,7 +383,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 {
 	GtkAdjustment *pScrollAdjustment = (scrollType == apufi_scrollX) ? m_pHadj : m_pVadj;
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
-
+	UT_DEBUGMSG(("Scroll Adjustment set to %d \n",iValue));
 	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	if(pScrollAdjustment) //this isn't guaranteed in AbiCommand

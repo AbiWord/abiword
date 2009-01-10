@@ -76,5 +76,7 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	GtkWidget * m_table;
 	GtkWidget * m_innertable;
 	GtkWidget * m_wSunkenBox;
+	gulong      m_iHScrollSignal;
+	gulong      m_iVScrollSignal;
 };
 #endif
