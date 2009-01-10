@@ -288,7 +288,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	gfloat yoffDisc = static_cast<UT_sint32>(pView->getYScrollOffset()) - dy;
 
 	// We need to block the signal this will send. The setYScrollOffset method
-	// Will do the scroll for us. Otherwise we'll scroll back here later!!
+	// will do the scroll for us. Otherwise we'll scroll back here later!!
 	
 	g_signal_handler_block((gpointer)pFrameImpl->m_pVadj, pFrameImpl->m_iVScrollSignal);
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pVadj),yoffNew);
@@ -334,7 +334,13 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 			   (static_cast<UT_sint32>(pView->getXScrollOffset()-xoffNew)))));
 	gfloat xoffDisc = static_cast<UT_sint32>(pView->getXScrollOffset()) - dx;
 
+
+	// We need to block the signal this will send. The setHScrollOffset method
+	// will do the scroll for us. Otherwise we'll scroll back here later!!
+	
+	g_signal_handler_block((gpointer)pFrameImpl->m_pHadj, pFrameImpl->m_iHScrollSignal);
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pHadj),xoffDisc);
+	g_signal_handler_unblock((gpointer)pFrameImpl->m_pHadj, pFrameImpl->m_iHScrollSignal);
 
 	// (this is the calculation for dx again, post rounding)
 	// This may not actually be helpful, because we could still lose if the
