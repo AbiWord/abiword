@@ -287,7 +287,13 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 			   (static_cast<UT_sint32>(pView->getYScrollOffset()-yoffNew)))));
 	gfloat yoffDisc = static_cast<UT_sint32>(pView->getYScrollOffset()) - dy;
 
+	// We need to block the signal this will send. The setYScrollOffset method
+	// Will do the scroll for us. Otherwise we'll scroll back here later!!
+	
+	g_signal_handler_block((gpointer)pFrameImpl->m_pVadj, pFrameImpl->m_iVScrollSignal);
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pFrameImpl->m_pVadj),yoffNew);
+	g_signal_handler_unblock((gpointer)pFrameImpl->m_pVadj, pFrameImpl->m_iVScrollSignal);
+
 
 	if (pG->tdu(static_cast<UT_sint32>(yoffDisc) - 
 				pView->getYScrollOffset()) != 0)
