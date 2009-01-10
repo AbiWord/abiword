@@ -146,7 +146,7 @@ private:
     UT_UTF8String m_tableStyleName;
     
     // Abiword has table-wide cell properties (i.e.: cell properties inside
-    // <table> element), but OpenDocument don't.
+    // <table> element), but OpenDocument doesn't.
     // So I have to propagate this properties into every cell of this table.
     ODe_Style_Style* m_pTableWideCellStyle;
     UT_GenericVector<UT_UTF8String*> columnStyleNames;
