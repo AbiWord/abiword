@@ -2781,29 +2781,28 @@ static void s_background_properties (const char * pszBgStyle, const char * pszBg
 									 PP_PropertyMap::Background & background)
 {
 	if (pszBgStyle)
+	{
+		if (strcmp (pszBgStyle, "0") == 0)
 		{
-			if (strcmp (pszBgStyle, "0") == 0)
-				{
-					background.m_t_background = PP_PropertyMap::background_none;
-				}
-			else if (strcmp (pszBgStyle, "1") == 0)
-				{
-					if (pszBgColor)
-						{
-							background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
-							if (background.m_t_background == PP_PropertyMap::background_solid)
-								UT_parseColor (pszBgColor, background.m_color);
-						}
-
-				}
+			background.m_t_background = PP_PropertyMap::background_none;
 		}
+		else if (strcmp (pszBgStyle, "1") == 0)
+		{
+			if (pszBgColor)
+			{
+				background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
+				if (background.m_t_background == PP_PropertyMap::background_solid)
+					UT_parseColor (pszBgColor, background.m_color);
+			}
+		}
+	}
 
 	if (pszBackgroundColor)
-		{
-			background.m_t_background = PP_PropertyMap::background_type (pszBackgroundColor);
-			if (background.m_t_background == PP_PropertyMap::background_solid)
-				UT_parseColor (pszBackgroundColor, background.m_color);
-		}
+	{
+		background.m_t_background = PP_PropertyMap::background_type (pszBackgroundColor);
+		if (background.m_t_background == PP_PropertyMap::background_solid)
+			UT_parseColor (pszBackgroundColor, background.m_color);
+	}
 }
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
@@ -2819,19 +2818,19 @@ static void s_border_properties (const char * border_color, const char * border_
 
 	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
 	if (t_border_color)
-		{
-			line.m_t_color = t_border_color;
-			if (t_border_color == PP_PropertyMap::color_color)
-				UT_parseColor (border_color, line.m_color);
-		}
+	{
+		line.m_t_color = t_border_color;
+		if (t_border_color == PP_PropertyMap::color_color)
+			UT_parseColor (border_color, line.m_color);
+	}
 	else if (color)
-		{
-			PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+	{
+		PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
 
-			line.m_t_color = t_color;
-			if (t_color == PP_PropertyMap::color_color)
-				UT_parseColor (color, line.m_color);
-		}
+		line.m_t_color = t_color;
+		if (t_color == PP_PropertyMap::color_color)
+			UT_parseColor (color, line.m_color);
+	}
 
 	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
 	if (!line.m_t_linestyle)
@@ -2839,26 +2838,26 @@ static void s_border_properties (const char * border_color, const char * border_
 
 	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
 	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+	{
+		if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
 		{
-			if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
-				{
-					double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
-					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
-				}
-			else
-				line.m_thickness = UT_convertToLogicalUnits (border_width);
-
-			if (!line.m_thickness)
-				{
-					double thickness = UT_LAYOUT_RESOLUTION;
-					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
-				}
+			double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
-	else // ??
+		else
+			line.m_thickness = UT_convertToLogicalUnits (border_width);
+
+		if (!line.m_thickness)
 		{
 			double thickness = UT_LAYOUT_RESOLUTION;
 			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
+	}
+	else // ??
+	{
+		double thickness = UT_LAYOUT_RESOLUTION;
+		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+	}
 }
 
 /*!
