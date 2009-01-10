@@ -50,6 +50,7 @@
 #include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_UnixFrame.h"
+#include "ap_UnixFrameImpl.h"
 #include "ap_UnixApp.h"
 
 #ifdef ENABLE_SPELL

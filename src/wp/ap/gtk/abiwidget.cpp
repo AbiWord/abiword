@@ -50,6 +50,7 @@
 #include "ie_exp.h"
 #include "ie_impGraphic.h"
 #include "xap_UnixDialogHelper.h"
+#include "ap_UnixFrameImpl.h"
 #include "ap_UnixApp.h"
 #include "ut_sleep.h"
 #include "fv_View.h"

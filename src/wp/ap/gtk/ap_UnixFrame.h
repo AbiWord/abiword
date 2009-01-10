@@ -24,7 +24,6 @@ class GR_Graphics;
 
 #include "xap_Frame.h"
 #include "ap_Frame.h"
-#include "ap_UnixFrameImpl.h"
 #include "ie_types.h"
 
 class XAP_UnixApp;
