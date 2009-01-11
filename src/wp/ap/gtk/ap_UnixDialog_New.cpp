@@ -257,7 +257,7 @@ static GSList * awt_only (const char *path) {
 	err = NULL;
 	dir = g_dir_open (path, 0, &err);
 	if (err) {
-		g_warning (err->message);
+		g_warning ("%s", err->message);
 		g_error_free (err), err = NULL;
 		return NULL;
 	}

@@ -47,7 +47,7 @@ bool XAP_UnixAppImpl::openURL(const char * url)
 	GError * err = NULL;
 	err = UT_go_url_show (url);
 	if (err) {
-		g_warning (err->message);
+		g_warning ("%s", err->message);
 		g_error_free (err);
 		return FALSE;
 	}

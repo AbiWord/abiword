@@ -85,6 +85,10 @@ static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
 {
+  UT_UNUSED(pAV_View);
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
+
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
   UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
@@ -100,6 +104,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BookmarkOK)
 {
 	ABIWORD_VIEW;
 	CHECK_INC_LOAD;
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
+
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	if(pView->isTOCSelected())
@@ -129,6 +136,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 {
 	ABIWORD_VIEW ;
 	CHECK_INC_LOAD;
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
 	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
@@ -187,6 +196,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
 	//ABIWORD_VIEW;
   CHECK_INC_LOAD;
+  UT_UNUSED(pAV_View);
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
 
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -380,6 +392,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 {
 	ABIWORD_VIEW;
 	CHECK_INC_LOAD;
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -402,6 +416,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 {
 	ABIWORD_VIEW;
 	CHECK_INC_LOAD;
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	if(pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
@@ -421,6 +437,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 {
 	ABIWORD_VIEW;
+	UT_UNUSED(pszState);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -799,6 +816,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 {
 	ABIWORD_VIEW;
+	UT_UNUSED(id);
 	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -832,6 +850,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
 {
 	ABIWORD_VIEW;
+	UT_UNUSED(pszState);
 	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
@@ -860,6 +879,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
 {
         ABIWORD_VIEW;
+        UT_UNUSED(id);
+        UT_UNUSED(pszState);
         UT_return_val_if_fail (pView, EV_TIS_Gray);
 
         if(pView->getDocument()->areStylesLocked()) {
@@ -872,6 +893,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
 {
   ABIWORD_VIEW;
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable() )
@@ -885,6 +908,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
 {
   ABIWORD_VIEW;
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable() && (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint())))
@@ -914,6 +939,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
 {
   ABIWORD_VIEW;
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable())
@@ -926,5 +953,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
 // HACK TO ALWAYS DISABLE A TOOLBAR ITEM... DELETE ME
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)
 {
+  UT_UNUSED(pAV_View);
+  UT_UNUSED(id);
+  UT_UNUSED(pszState);
   return EV_TIS_Gray;
 }
