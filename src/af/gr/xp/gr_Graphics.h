@@ -354,8 +354,8 @@ class ABI_EXPORT GR_Graphics
 	// the static method allows us to retrive the the class id for
 	// purposes of registration; we also need the virtual to identify
 	// the class from a generic GR_Graphics pointer
-	static UT_uint32 s_getClassId() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
-	virtual UT_uint32 getClassId() {return s_getClassId();}
+//	static UT_uint32 s_getClassId() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	virtual UT_uint32 getClassId() = 0;
 	
 	virtual GR_Capability getCapability() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 #if 0

@@ -32,7 +32,7 @@
 #include "ut_locale.h"
 #include "AbiGOChart.h"
 #include "gr_UnixImage.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_Menu_Layouts.h"
 #include "ap_Menu_Id.h"
 
@@ -506,7 +506,7 @@ bool GR_GOChartManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
     return false;
   }
   // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
+  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -536,7 +536,7 @@ bool GR_GOChartManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
     return false;
   }
   // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
+  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -726,7 +726,7 @@ void GOChartView::render(UT_Rect & rec)
 	{
 		return;
 	}
-	GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pGOMan->getGraphics());
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 _width = pUGG->tdu(rec.width);
 	UT_sint32 _height = pUGG->tdu(rec.height);

@@ -48,7 +48,7 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_UnixDialog_Paragraph.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 /*****************************************************************/
 
@@ -168,9 +168,9 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
 
 		// make a new Unix GC
-		GR_UnixAllocInfo ai(m_drawingareaPreview->window);
+		GR_UnixCairoAllocInfo ai(m_drawingareaPreview->window);
 		m_unixGraphics =
-		    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 		// let the widget materialize
 		_createPreviewFromGC(m_unixGraphics,

@@ -39,7 +39,7 @@
 #include "xap_UnixFrameImpl.h"
 #include "xap_EncodingManager.h"
 #include "xav_View.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
@@ -894,7 +894,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	const std::vector<const char *> & names =
-	    GR_UnixPangoGraphics::getAllFontNames();
+	    GR_CairoGraphics::getAllFontNames();
 	
 	for (std::vector<const char *>::const_iterator  i = names.begin();
 		 i != names.end(); i++)
@@ -1021,8 +1021,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// attach a new graphics context
 	gtk_widget_show ( cf ) ;
 	
-	GR_UnixAllocInfo ai(m_preview->window);
-	m_gc = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixCairoAllocInfo ai(m_preview->window);
+	m_gc = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //

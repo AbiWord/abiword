@@ -28,7 +28,7 @@
 
 
 class XAP_UnixFrame;
-class GR_UnixPangoGraphics;
+class GR_CairoGraphics;
 
 /*****************************************************************/
 
@@ -108,8 +108,8 @@ protected:
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 
-	GR_UnixPangoGraphics	* m_pParaPreviewWidget;
-	GR_UnixPangoGraphics	* m_pCharPreviewWidget;
+	GR_CairoGraphics	* m_pParaPreviewWidget;
+	GR_CairoGraphics	* m_pCharPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
@@ -145,7 +145,7 @@ protected:
 	virtual void setModifyDescription( const char * desc);
 	bool        _populateModify(void);
 
-	GR_UnixPangoGraphics	* m_pAbiPreviewWidget;
+	GR_CairoGraphics	* m_pAbiPreviewWidget;
 
 	GtkWidget *	m_wModifyDialog;
 	GtkWidget *	m_wStyleNameEntry;

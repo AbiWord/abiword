@@ -26,7 +26,7 @@
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -120,9 +120,9 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	DELETEP (m_unixGraphics);
 	
 	// make a new Unix GC
-	GR_UnixAllocInfo ai(m_previewArea->window);
+	GR_UnixCairoAllocInfo ai(m_previewArea->window);
 	m_unixGraphics =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	
 	// let the widget materialize

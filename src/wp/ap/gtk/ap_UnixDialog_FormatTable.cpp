@@ -30,6 +30,8 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
+#include "gr_UnixCairoGraphics.h"
+
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
@@ -278,9 +280,9 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	GR_UnixAllocInfo ai(m_wPreviewArea->window);
+	GR_UnixCairoAllocInfo ai(m_wPreviewArea->window);
 	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)

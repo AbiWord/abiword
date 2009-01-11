@@ -39,7 +39,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixFrameImpl.h"
@@ -514,11 +514,11 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_ASSERT(pImpl);
 	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
-	GR_UnixAllocInfo ai(pImpl->m_dArea->window);
-	pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixCairoAllocInfo ai(pImpl->m_dArea->window);
+	pG = (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
-	GR_UnixPangoGraphics *pUnixGraphics = static_cast<GR_UnixPangoGraphics *>(pG);
+	GR_CairoGraphics *pUnixGraphics = static_cast<GR_CairoGraphics *>(pG);
 	pUnixGraphics->init3dColors(widget->style);
 
 	ENSUREP_RF(pG);

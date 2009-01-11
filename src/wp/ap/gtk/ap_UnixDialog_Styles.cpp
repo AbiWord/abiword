@@ -40,7 +40,7 @@
 #include "pd_Style.h"
 #include "ut_string_class.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 // define to 0 to popup dialogs on top of each other, 1 to hide them
 #define HIDE_MAIN_DIALOG 0
@@ -298,9 +298,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_pParaPreviewWidget);
 	{
-		GR_UnixAllocInfo ai(m_wParaPreviewArea->window);
+		GR_UnixCairoAllocInfo ai(m_wParaPreviewArea->window);
 		m_pParaPreviewWidget =
-		    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 
 	// let the widget materialize
@@ -315,9 +315,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_pCharPreviewWidget);
 	{
-		GR_UnixAllocInfo ai(m_wCharPreviewArea->window);
+		GR_UnixCairoAllocInfo ai(m_wCharPreviewArea->window);
 		m_pCharPreviewWidget =
-		    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+		    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 
 	// let the widget materialize
@@ -1266,9 +1266,9 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	// make a new Unix GC
 
 	DELETEP (m_pAbiPreviewWidget);
-	GR_UnixAllocInfo ai(m_wModifyDrawingArea->window);
+	GR_UnixCairoAllocInfo ai(m_wModifyDrawingArea->window);
 	m_pAbiPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	// let the widget materialize
 

@@ -29,7 +29,7 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "ap_UnixTopRuler.h"
 #include "fv_View.h"
 
@@ -120,13 +120,13 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_UnixAllocInfo ai(m_wTopRuler->window);
+	GR_UnixCairoAllocInfo ai(m_wTopRuler->window);
 	m_pG = XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 	GtkWidget * ruler = gtk_hruler_new ();
-	((GR_UnixPangoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
+	((GR_CairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
 	//abiDestroyWidget (ruler);
 }
 

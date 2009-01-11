@@ -1523,7 +1523,7 @@ extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * /*w*/)
 {
 	// this is annoying asc getAllFontNames() returns a lot of dupes
-	const std::vector<const char *>& vFonts = GR_UnixPangoGraphics::getAllFontNames();
+	const std::vector<const char *>& vFonts = GR_CairoGraphics::getAllFontNames();
 
 	const gchar** fonts_ar = 
 		reinterpret_cast<const gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care

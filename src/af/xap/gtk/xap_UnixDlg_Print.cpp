@@ -391,7 +391,7 @@ void XAP_UnixDialog_Print::cleanup(void)
 			m_pView->setShowPara(true);
 		m_pDL->incrementGraphicTick();
 	}
-	static_cast<GR_UnixPangoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
+	static_cast<GR_CairoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
 	DELETEP(m_pPrintGraphics);
 }
 

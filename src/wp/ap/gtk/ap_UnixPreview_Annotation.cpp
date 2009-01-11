@@ -21,7 +21,7 @@
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "ap_UnixPreview_Annotation.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 
 AP_UnixPreview_Annotation::AP_UnixPreview_Annotation(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id) : AP_Preview_Annotation(pDlgFactory,id),
@@ -59,8 +59,8 @@ void AP_UnixPreview_Annotation::runModeless(XAP_Frame * pFrame)
 	DELETEP(m_gc);
 	
 	XAP_App *pApp = XAP_App::getApp();
-	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
+	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
+	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
 	
 	_createAnnotationPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	

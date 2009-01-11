@@ -38,7 +38,7 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -143,9 +143,9 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixGraphics);
 	
 	{
-		GR_UnixAllocInfo ai(m_SymbolMap->window);
+		GR_UnixCairoAllocInfo ai(m_SymbolMap->window);
 		m_unixGraphics =
-			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -158,9 +158,9 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_unixarea);
     {
-		GR_UnixAllocInfo ai(m_areaCurrentSym->window);
+		GR_UnixCairoAllocInfo ai(m_areaCurrentSym->window);
 		m_unixarea =
-			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+			(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
@@ -701,7 +701,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	}
 
 	const std::vector<const char *> & names =
-		GR_UnixPangoGraphics::getAllFontNames();
+		GR_CairoGraphics::getAllFontNames();
 	
 	GList *glFonts = NULL;
 

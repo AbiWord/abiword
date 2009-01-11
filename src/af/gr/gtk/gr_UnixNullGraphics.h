@@ -41,7 +41,7 @@ public:
 
 
 
-class ABI_EXPORT UnixNull_Graphics : public GR_UnixPangoGraphics
+class ABI_EXPORT UnixNull_Graphics : public GR_CairoGraphics
 {
 	// all constructors are protected; instances must be created via
 	// GR_GraphicsFactory

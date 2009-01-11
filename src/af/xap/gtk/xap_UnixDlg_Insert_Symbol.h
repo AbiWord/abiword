@@ -26,7 +26,7 @@
 #define DEFAULT_UNIX_SYMBOL_FONT "Symbol"
 
 class XAP_Frame;
-class GR_UnixPangoGraphics;
+class GR_CairoGraphics;
 
 /*****************************************************************/
 
@@ -90,8 +90,8 @@ private:
 	GtkWidget * _previewNew(int w, int h);
 
 	GtkWidget * m_areaCurrentSym;
-	GR_UnixPangoGraphics * m_unixGraphics;
-	GR_UnixPangoGraphics * m_unixarea;
+	GR_CairoGraphics * m_unixGraphics;
+	GR_CairoGraphics * m_unixarea;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
 #endif /* WITH_GUCHARMAP */

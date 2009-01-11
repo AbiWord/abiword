@@ -26,7 +26,7 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 #include "ap_UnixLeftRuler.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "fv_View.h"
 #include "ut_sleep.h"
@@ -122,14 +122,14 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	
 	DELETEP(m_pG);
 
-	GR_UnixAllocInfo ai(m_wLeftRuler->window);
+	GR_UnixCairoAllocInfo ai(m_wLeftRuler->window);
 	m_pG = XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
-	((GR_UnixPangoGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
+	((GR_CairoGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)

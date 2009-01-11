@@ -54,7 +54,7 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	UT_ASSERT(id == AP_TOOLBAR_ID_FMT_FONT);
 	m_nPixels = 150;
 
-	m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
+	m_nLimit = GR_CairoGraphics::getAllFontCount();
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
@@ -75,7 +75,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 	}
 
 	const std::vector<const char *>& names =
-		GR_UnixPangoGraphics::getAllFontNames();
+		GR_CairoGraphics::getAllFontNames();
 
 	m_vecContents.clear();
 

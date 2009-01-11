@@ -29,7 +29,7 @@
 #include "gr_Painter.h"
 #include "gr_UnixImage.h"
 #include "ut_units.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_MessageBox.h"
@@ -427,7 +427,7 @@ bool GR_GOComponentManager::createPNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
     return false;
   }
   // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
+  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -456,7 +456,7 @@ bool GR_GOComponentManager::updatePNGSnapshot(AD_Document * pDoc, UT_Rect & rec,
     return false;
   }
   // TODO: use the goffice framework to get a high resolution png.
-  GR_Image * pImage = static_cast<GR_UnixPangoGraphics*>(getGraphics())->genImageFromRectangle(rec);
+  GR_Image * pImage = static_cast<GR_UnixCairoGraphics*>(getGraphics())->genImageFromRectangle(rec);
   if(pImage == NULL)
   {
     return false;
@@ -614,7 +614,7 @@ void GOComponentView::render(UT_Rect & rec)
 	UT_return_if_fail (component);
 	if (rec.width == 0 || rec.height == 0) // Nothing to render
 		return;
-	GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pGOMan->getGraphics());
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 myWidth = pUGG->tdu(rec.width);
 	UT_sint32 myHeight = pUGG->tdu(rec.height);
@@ -739,7 +739,7 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, char *_mime
 	}
 	go_component_set_default_size (component, 2.5, 2.5, 0.);
 	if (go_component_needs_window (component)) {
-		GR_UnixPangoGraphics *pUGG = static_cast<GR_UnixPangoGraphics*>(m_pGOMan->getGraphics());
+		GR_UnixCairoGraphics *pUGG = static_cast<GR_UnixCairoGraphics*>(m_pGOMan->getGraphics());
 		GdkWindow *parent = pUGG->getWindow ();
 		attributes.x = 0; // we do not know where the window should be at the moment
 		attributes.y = 0;

@@ -40,6 +40,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Columns.h"
 #include "ap_UnixDialog_Columns.h"
+#include "gr_UnixCairoGraphics.h"
 
 /*****************************************************************/
 
@@ -201,9 +202,9 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
-	GR_UnixAllocInfo ai(m_wpreviewArea->window);
+	GR_UnixCairoAllocInfo ai(m_wpreviewArea->window);
 	m_pPreviewWidget =
-	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	
 	// Todo: we need a good widget to query with a probable

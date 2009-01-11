@@ -50,7 +50,7 @@
 *****************************************************************/
 
 UnixNull_Graphics::UnixNull_Graphics()
-  : GR_UnixPangoGraphics()
+  : GR_CairoGraphics()
 {
 }
 

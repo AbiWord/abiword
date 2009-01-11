@@ -20,7 +20,7 @@
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixFontPreview.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
@@ -42,8 +42,8 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	UT_DEBUGMSG(("gtk_window_move left %d top %d \n",m_left,m_top));
 
 	XAP_App *pApp = XAP_App::getApp();
-	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
-	m_gc = (GR_UnixPangoGraphics*) pApp->newGraphics(ai);
+	GR_UnixCairoAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window);
+	m_gc = (GR_CairoGraphics*) pApp->newGraphics(ai);
 
 	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }

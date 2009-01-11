@@ -99,7 +99,7 @@ public:
     height = getDoc()->m_docPageSize.Height (DIM_IN);
     portrait = getDoc()->m_docPageSize.isPortrait();
 
-	UT_uint32 dpi = GR_UnixPangoGraphics::getDefaultDeviceResolution();
+	UT_uint32 dpi = GR_CairoGraphics::getDefaultDeviceResolution();
 	if (BACKEND_PDF == mFormat)
 		surface = cairo_pdf_surface_create_for_stream(ie_exp_cairo_write_func, getFp(), width * dpi, height * dpi);
 	else if (BACKEND_PS == mFormat)

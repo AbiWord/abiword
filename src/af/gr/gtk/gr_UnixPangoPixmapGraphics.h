@@ -22,7 +22,7 @@
 #ifndef GR_UNIX_PANGOPIXMAPGRAPHICS_H
 #define GR_UNIX_PANGOPIXMAPGRAPHICS_H
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 class ABI_EXPORT GR_UnixPixmapAllocInfo : public GR_AllocInfo
 {
@@ -38,7 +38,7 @@ public:
 //
 // Class to draw into offscreen Pixbuf
 //
-class ABI_EXPORT GR_UnixPangoPixmapGraphics : public GR_UnixPangoGraphics
+class ABI_EXPORT GR_UnixPangoPixmapGraphics : public GR_UnixCairoGraphics
 {
 	friend class GR_UnixImage;
 public:

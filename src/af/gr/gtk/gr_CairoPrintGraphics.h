@@ -24,11 +24,12 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <gtk/gtk.h>
-#include <gtk/gtkprintunixdialog.h>
+#include <cairo.h>
+
 #include "gr_UnixPangoGraphics.h"
 
-class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixPangoGraphics
+
+class ABI_EXPORT GR_CairoPrintGraphics : public GR_CairoGraphics
 {
 	bool m_bDoShowPage;
 public:
@@ -53,6 +54,10 @@ public:
 	virtual GR_Graphics::Cursor getCursor(void) const { UT_ASSERT_NOT_REACHED(); return GR_CURSOR_INVALID; }
 
 	virtual void setPageSize(char * /*pageSizeName*/, UT_uint32 /*iwidth*/ = 0, UT_uint32 /*iheight*/=0) { UT_ASSERT_NOT_REACHED(); }
+
+	virtual void scroll(UT_sint32, UT_sint32) { UT_ASSERT_NOT_REACHED(); }
+	virtual void scroll(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_sint32)
+			{ UT_ASSERT_NOT_REACHED(); }
 
     virtual GR_Image * genImageFromRectangle(const UT_Rect & /*r*/) { UT_ASSERT_NOT_REACHED(); return NULL;}
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }

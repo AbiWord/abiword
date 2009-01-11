@@ -111,7 +111,7 @@
 #include "gr_Painter.h"
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "gr_UnixPangoPixmapGraphics.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
@@ -1106,7 +1106,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixAllocInfo ai(da->window);
+	GR_UnixCairoAllocInfo ai(da->window);
 	return XAP_App::getApp()->newGraphics(ai);
 }
 

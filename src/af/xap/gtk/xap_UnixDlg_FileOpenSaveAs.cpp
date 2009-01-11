@@ -59,7 +59,7 @@
 
 #include "gr_UnixImage.h"
 #include "gr_Painter.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "ut_bytebuf.h"
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
@@ -887,9 +887,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_return_val_if_fail( pSS, 0 );
 	
 	// attach and clear the area immediately
-	GR_UnixAllocInfo ai(m_preview->window);
-	GR_UnixPangoGraphics* pGr =
-		(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixCairoAllocInfo ai(m_preview->window);
+	GR_CairoGraphics* pGr =
+		(GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	const gchar * file_name = gtk_file_chooser_get_uri (m_FC);
 	

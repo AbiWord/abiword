@@ -55,7 +55,7 @@
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
@@ -90,15 +90,15 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	if(pGF)
 	{
 		bool bSuccess;
-		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
-									  GR_UnixPangoGraphics::graphicsDescriptor,
-									  GR_UnixPangoGraphics::s_getClassId());
+		bSuccess = pGF->registerClass(GR_UnixCairoGraphics::graphicsAllocator,
+									  GR_UnixCairoGraphics::graphicsDescriptor,
+									  GR_UnixCairoGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 
 		if(bSuccess)
 		{
-			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
+			pGF->registerAsDefault(GR_UnixCairoGraphics::s_getClassId(), true);
 		}
 
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,

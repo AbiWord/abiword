@@ -46,20 +46,20 @@
 /************************************************************************/
 /************************************************************************/
 
-class GR_UnixPangoRenderInfo;
-class GR_UnixPangoGraphics;
+class GR_PangoRenderInfo;
+class GR_CairoGraphics;
 class XAP_Frame;
 
-class ABI_EXPORT GR_UnixPangoFont : public GR_Font
+class ABI_EXPORT GR_PangoFont : public GR_Font
 {
 
   public:
-	GR_UnixPangoFont(const char * pDesc, double dSize,
-					 GR_UnixPangoGraphics * pG,
+	GR_PangoFont(const char * pDesc, double dSize,
+					 GR_CairoGraphics * pG,
 					 const char * pLang,
 					 bool bGuiFont = false);
 	
-	virtual ~GR_UnixPangoFont();
+	virtual ~GR_PangoFont();
 
 	/*!
 		Measure the unremapped char to be put into the cache.
@@ -71,7 +71,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	PangoFont *       getPangoFont() const {return m_pf;}
 	PangoFont *       getPangoLayoutFont() const {return m_pLayoutF;}
 
-	void              reloadFont(GR_UnixPangoGraphics * pG);
+	void              reloadFont(GR_CairoGraphics * pG);
 	double            getPointSize() const {return m_dPointSize;}
 	UT_uint32         getZoom() const {return m_iZoom;}
 	bool              isGuiFont () const {return m_bGuiFont;}
@@ -104,42 +104,37 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	PangoFont *            m_pLayoutF;
 };
 
-class GR_UnixPangoRenderInfo;
+class GR_PangoRenderInfo;
 
-class ABI_EXPORT GR_UnixAllocInfo : public GR_AllocInfo
+
+class ABI_EXPORT GR_CairoAllocInfo 
+	: public GR_AllocInfo
 {
 public:
- 	GR_UnixAllocInfo(GdkWindow * win)
-		: m_win(win),
-		  m_bPreview (false), m_bPrinter (false){};
-	
-	GR_UnixAllocInfo(bool bPreview)
-		: m_win(NULL), m_bPreview (bPreview), m_bPrinter (true){};
-
+	GR_CairoAllocInfo(bool bPreview , bool bPrinter)
+		: m_bPreview(bPreview),
+		  m_bPrinter(bPrinter)
+	{
+	}
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
 	virtual bool isPrinterGraphics() const {return m_bPrinter;}
+	virtual cairo_t *createCairo() = 0;
 
-	GdkWindow     * m_win;
 	bool            m_bPreview;
 	bool            m_bPrinter;
 };
 
 
-class ABI_EXPORT GR_UnixPangoGraphics : public GR_Graphics
+class ABI_EXPORT GR_CairoGraphics : public GR_Graphics
 {
 	friend class GR_UnixImage;
 
 	// all constructors are protected; instances must be created via
 	// GR_GraphicsFactory
 public:
-	virtual ~GR_UnixPangoGraphics();
+	virtual ~GR_CairoGraphics();
 
-	static UT_uint32       s_getClassId() {return GRID_UNIX_PANGO;}
-	virtual UT_uint32      getClassId() {return s_getClassId();}
-	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
-	static const char *    graphicsDescriptor(){return "Unix Cairo Pango";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
 	
@@ -272,44 +267,38 @@ public:
 	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
 	
-	virtual void		setCursor(GR_Graphics::Cursor c);
+	// virtual void		setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
 	virtual void		setColor3D(GR_Color3D c);
 	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
 	void				init3dColors(GtkStyle * pStyle);
 
-	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
-											GdkBitmap * mask);
-	
-	virtual void		scroll(UT_sint32, UT_sint32);
-	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-							   UT_sint32 x_src, UT_sint32 y_src,
-							   UT_sint32 width, UT_sint32 height);
+	// virtual void		scroll(UT_sint32, UT_sint32);
+	// virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+	//						   UT_sint32 x_src, UT_sint32 y_src,
+	//						   UT_sint32 width, UT_sint32 height);
 
-	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void	    restoreRectangle(UT_uint32 iIndx);
-    virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
+	// virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	// virtual void	    restoreRectangle(UT_uint32 iIndx);
+	// virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void setLineProperties(double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
-	GdkWindow *  getWindow () {return m_pWin;}
 	cairo_t* getCairo () {return m_cr;}
 
 	static UT_uint32 getDefaultDeviceResolution();
 
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
-	GR_UnixPangoGraphics(GdkWindow * win = NULL);
-	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
-	virtual GdkDrawable * _getDrawable(void)
-	{  return static_cast<GdkDrawable *>(m_pWin);}
+	GR_CairoGraphics(cairo_t *cr, UT_uint32 iDeviceResolution);
+	GR_CairoGraphics();
+	inline bool _scriptBreak(GR_PangoRenderInfo &ri);
 
-	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
-	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
+	void _scaleCharacterMetrics(GR_PangoRenderInfo & RI);
+	void _scaleJustification(GR_PangoRenderInfo & RI);
 
 	inline UT_uint32 _measureExtent (PangoGlyphString * pg,
 									 PangoFont * pf,
@@ -326,8 +315,8 @@ public:
 	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
-	PangoFont *  _adjustedPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
-	PangoFont *  _adjustedLayoutPangoFont (GR_UnixPangoFont * pFont, PangoFont * pf);
+	PangoFont *  _adjustedPangoFont (GR_PangoFont * pFont, PangoFont * pf);
+	PangoFont *  _adjustedLayoutPangoFont (GR_PangoFont * pFont, PangoFont * pf);
  
 	double            _tdudX(UT_sint32 layoutUnits) const;
 	double            _tdudY(UT_sint32 layoutUnits) const;
@@ -336,18 +325,17 @@ public:
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
 	PangoContext *    m_pLayoutContext;
-	GR_UnixPangoFont* m_pPFont;
-	GR_UnixPangoFont* m_pPFontGUI;
+	GR_PangoFont* m_pPFont;
+	GR_PangoFont* m_pPFontGUI;
 
 	PangoFont *       m_pAdjustedPangoFont;
 	PangoFont *       m_pAdjustedLayoutPangoFont;
-	GR_UnixPangoFont* m_pAdjustedPangoFontSource;
+	GR_PangoFont* m_pAdjustedPangoFontSource;
 	UT_uint32         m_iAdjustedPangoFontZoom;
 	
 	UT_uint32         m_iDeviceResolution;
 
 	cairo_t	*         m_cr;
-	GdkWindow *       m_pWin;
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
@@ -365,11 +353,14 @@ public:
 	UT_sint32               m_iPrevY2;
 	UT_uint32               m_iPrevRect;
 	UT_sint32               m_iXORCount;
-		
+	/** init the cairo context once created */
+	void _initCairo();
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
+	/** common private init for pango called from the constructor */
+	void _initPango();
 };
 
 
