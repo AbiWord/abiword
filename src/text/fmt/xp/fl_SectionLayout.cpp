@@ -3463,7 +3463,7 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
  * I do this because I expect that this will be called as part
  * on an undo "Insert Header" command. The rest of the undo needs blocks to
  * delete so I'm putting them there to keep the rest of the undo code happy
-\param pcrx the changerecord identifying this action as necesary.
+\param pcr the changerecord identifying this action as necesary.
 \returns true
 */
 bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord * pcr)
@@ -3472,14 +3472,16 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord * pcr
 			  pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 	
 
-	PX_ChangeRecord_StruxChange * pcrx  = (PX_ChangeRecord_StruxChange *) pcr;
-	UT_UNUSED(pcrx);
 	if(pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux)
 	{
-		UT_ASSERT_HARMLESS( pcrx->isRevisionDelete() );
+		PX_ChangeRecord_StruxChange * pcrxc = (PX_ChangeRecord_StruxChange *) pcr;
+		UT_UNUSED(pcrxc);
+		UT_ASSERT_HARMLESS( pcrxc->isRevisionDelete() );
 	}
 	else
 	{
+		PX_ChangeRecord_Strux * pcrx = (PX_ChangeRecord_Strux *) pcr;
+		UT_UNUSED(pcrx);
 		UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
 	}
 	
