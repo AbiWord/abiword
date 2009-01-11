@@ -2849,12 +2849,14 @@ static void s_border_properties (const char * border_color, const char * border_
 
 		if (!line.m_thickness)
 		{
+			// default to 0.72pt
 			double thickness = UT_LAYOUT_RESOLUTION;
 			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 		}
 	}
 	else // ??
 	{
+		// default to 0.72pt
 		double thickness = UT_LAYOUT_RESOLUTION;
 		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 	}
@@ -2936,6 +2938,7 @@ static void s_border_properties_cell (const char * border_color,
 	}
 	else //
 	{
+		// default to 0.72pt
 		line.m_t_thickness = PP_PropertyMap::thickness_length;
 		double thickness = UT_LAYOUT_RESOLUTION;
 		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
