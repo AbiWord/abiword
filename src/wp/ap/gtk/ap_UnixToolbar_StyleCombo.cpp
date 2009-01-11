@@ -32,7 +32,7 @@
 #include "xap_App.h"
 #include "ev_UnixToolbar.h"
 #include "ut_debugmsg.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 
 /*****************************************************************/
 

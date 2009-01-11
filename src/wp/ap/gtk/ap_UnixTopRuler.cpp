@@ -126,7 +126,7 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 	GtkWidget * ruler = gtk_hruler_new ();
-	((GR_CairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
+	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
 	//abiDestroyWidget (ruler);
 }
 

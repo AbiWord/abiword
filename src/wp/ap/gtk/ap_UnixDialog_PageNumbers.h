@@ -24,7 +24,7 @@
 #include "ap_Dialog_PageNumbers.h"
 
 class XAP_UnixFrame;
-class GR_CairoGraphics;
+class GR_UnixCairoGraphics;
 
 class AP_UnixDialog_PageNumbers : public AP_Dialog_PageNumbers
 {
@@ -52,7 +52,7 @@ class AP_UnixDialog_PageNumbers : public AP_Dialog_PageNumbers
 
   GtkWidget * m_previewArea;
 
-  GR_CairoGraphics * m_unixGraphics;
+  GR_UnixCairoGraphics * m_unixGraphics;
 };
 
 #endif /* AP_UNIXDIALOG_PAGENUBMERS_H */

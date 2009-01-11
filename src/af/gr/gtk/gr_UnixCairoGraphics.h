@@ -24,7 +24,7 @@
 #define __GR_UNIXCAIROGRAPHICS_H__
 
 #include <gdk/gdk.h>
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
 {
@@ -47,6 +47,7 @@ class ABI_EXPORT GR_UnixCairoGraphics
 	: public GR_CairoGraphics
 {
 public:
+	~GR_UnixCairoGraphics();
 	static UT_uint32       s_getClassId() {return GRID_UNIX_PANGO;}
 	virtual UT_uint32      getClassId() {return s_getClassId();}
 
@@ -65,11 +66,15 @@ public:
 	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
+	void				init3dColors(GtkStyle * pStyle);
 
 protected:
 	GR_UnixCairoGraphics(GdkWindow * win = NULL);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
+
+	UT_GenericVector<UT_Rect*>     m_vSaveRect;
+	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 private:
 	GdkWindow *       m_pWin;
 

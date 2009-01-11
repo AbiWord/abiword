@@ -33,9 +33,6 @@
 
 #include <pango/pango-font.h>
 
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-
 // we do not want this to be a plugin for now
 #define GR_UNIXPANGO_BUILTIN
 
@@ -272,7 +269,6 @@ public:
 
 	virtual void		setColor3D(GR_Color3D c);
 	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
-	void				init3dColors(GtkStyle * pStyle);
 
 	// virtual void		scroll(UT_sint32, UT_sint32);
 	// virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -339,12 +335,10 @@ public:
 	
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
-	GdkColor				m_3dColors[COUNT_3D_COLORS];
 
-	UT_GenericVector<UT_Rect*>     m_vSaveRect;
-	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
+	UT_RGBColor		m_3dColors[COUNT_3D_COLORS];
 
-	UT_RGBColor				m_curColor;
+	UT_RGBColor		m_curColor;
 	bool                    m_bIsSymbol;       
 	bool                    m_bIsDingbat;
 	UT_sint32               m_iPrevX1;

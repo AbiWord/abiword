@@ -282,7 +282,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_pPreviewWidget);
 	GR_UnixCairoAllocInfo ai(m_wPreviewArea->window);
 	m_pPreviewWidget =
-	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
+	    (GR_UnixCairoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)

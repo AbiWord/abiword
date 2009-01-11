@@ -38,7 +38,7 @@
 #include "ev_UnixToolbar.h"
 #include "ev_Toolbar.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
 														  XAP_Toolbar_Id id)

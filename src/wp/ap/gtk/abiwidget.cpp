@@ -36,7 +36,7 @@
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-utils.h>
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 #include "gr_Painter.h"
 
 #include "ev_EditMethod.h"

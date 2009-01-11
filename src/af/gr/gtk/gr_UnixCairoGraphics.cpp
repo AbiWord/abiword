@@ -19,8 +19,6 @@
  * 02111-1307, USA.
  */
 
-#include <gdk/gdk.h>
-
 #include "gr_UnixCairoGraphics.h"
 #include "gr_Painter.h"
 #include "gr_UnixImage.h"
@@ -44,6 +42,19 @@ GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win)
 	}
 }
 
+GR_UnixCairoGraphics::~GR_UnixCairoGraphics()
+{
+	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
+
+	// purge saved pixbufs
+	for (UT_sint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	{
+		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
+		g_object_unref (G_OBJECT (pix));
+	}
+}
+
+
 GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
@@ -53,6 +64,26 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	GR_UnixCairoAllocInfo &AI = (GR_UnixCairoAllocInfo&)info;
 
 	return new GR_UnixCairoGraphics(AI.m_win);
+}
+
+inline UT_RGBColor _convertGdkColor(const GdkColor &c)
+{
+	UT_RGBColor color;
+	color.m_red = c.red >> 8;
+	color.m_grn = c.green >> 8;
+	color.m_blu = c.blue >> 8;
+	return color;
+}
+
+void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
+{
+	m_3dColors[CLR3D_Foreground] = _convertGdkColor(pStyle->text[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_Background] = _convertGdkColor(pStyle->bg[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_BevelUp]    = _convertGdkColor(pStyle->light[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_BevelDown]  = _convertGdkColor(pStyle->dark[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_Highlight]  = _convertGdkColor(pStyle->bg[GTK_STATE_PRELIGHT]);
+
+	m_bHave3DColors = true;
 }
 
 

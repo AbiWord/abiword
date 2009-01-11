@@ -26,7 +26,7 @@ class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class GR_CairoGraphics;
+class GR_UnixCairoGraphics;
 
 class AP_UnixDialog_FormatFrame: public AP_Dialog_FormatFrame
 {
@@ -61,7 +61,7 @@ protected:
 	void					_storeWindowData(void);
 	void                     _connectSignals(void);
 	
-	GR_CairoGraphics	* 		m_pPreviewWidget;	
+	GR_UnixCairoGraphics	* 		m_pPreviewWidget;	
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

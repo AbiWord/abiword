@@ -22,7 +22,7 @@
 #include "config.h"
 #endif
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 #include "gr_Painter.h"
 
 #include "xap_App.h"
@@ -328,15 +328,6 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	delete m_pPFontGUI;
 	g_object_unref(m_pLayoutFontMap);
 	g_object_unref(m_pLayoutContext);
-
-	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
-
-	// purge saved pixbufs
-	for (UT_sint32 i = 0; i < m_vSaveRectBuf.size (); i++)
-	{
-		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
-		g_object_unref (G_OBJECT (pix));
-	}
 }
 
 void GR_CairoGraphics::resetFontMapResolution(void)
@@ -406,29 +397,16 @@ void GR_CairoGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 
-	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+	cairo_set_source_rgb(m_cr, m_3dColors[c].m_red/255., m_3dColors[c].m_grn/255., m_3dColors[c].m_blu/255.);
 }
 
 bool GR_CairoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
 {
 	if (m_bHave3DColors) {
-		color.m_red = m_3dColors[name].red >> 8;
-		color.m_grn = m_3dColors[name].green >> 8;
-		color.m_blu =m_3dColors[name].blue >> 8;
+		color = m_3dColors[name];
 		return true;
 	}
 	return false;
-}
-
-void GR_CairoGraphics::init3dColors(GtkStyle * pStyle)
-{
-	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
-	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
-
-	m_bHave3DColors = true;
 }
 
 
@@ -2950,7 +2928,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 
 	cairo_save (m_cr);
 
-	cairo_set_source_rgb(m_cr, m_3dColors[c].red/65535., m_3dColors[c].green/65535., m_3dColors[c].blue/65535.);
+	cairo_set_source_rgb(m_cr, m_3dColors[c].m_red/255., m_3dColors[c].m_grn/255., m_3dColors[c].m_blu/255.);
 	cairo_rectangle(m_cr, tdu(x), tdu(y), tdu(w), tdu(h));
 	cairo_fill(m_cr);
 

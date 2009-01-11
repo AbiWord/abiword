@@ -26,7 +26,7 @@
 #endif
 #include <cairo.h>
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 
 
 class ABI_EXPORT GR_CairoPrintGraphics : public GR_CairoGraphics

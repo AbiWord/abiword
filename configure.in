@@ -442,6 +442,8 @@ if test "$TOOLKIT" == "gtk"; then
 	if test "$abi_cv_gtk214" == "yes" ; then
 		AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14])
 	fi
+	dnl move away
+	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 fi
 
 AC_SUBST([DEPS_CFLAGS])

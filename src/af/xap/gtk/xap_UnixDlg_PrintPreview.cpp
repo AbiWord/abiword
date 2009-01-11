@@ -26,7 +26,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixDlg_PrintPreview.h"
 
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 
 #include "fv_View.h"
 

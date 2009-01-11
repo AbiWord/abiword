@@ -21,7 +21,7 @@
 #define XAP_UNIXNULLGRAPHICS_H
 
 #include "ut_vector.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_CairoGraphics.h"
 #include "gr_Image.h"
 #include "ut_misc.h"
 

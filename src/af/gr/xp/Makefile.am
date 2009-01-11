@@ -4,6 +4,13 @@ noinst_LTLIBRARIES = libxp.la
 AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)
 
+if TOOLKIT_GTK
+CAIRO_SOURCES=gr_CairoGraphics.h \
+	gr_CairoGraphics.cpp
+else
+CAIRO_SOURCES=
+endif
+
 libxp_la_SOURCES = \
 	gr_Caret.cpp \
 	gr_Caret.h \
@@ -27,5 +34,7 @@ libxp_la_SOURCES = \
 	gr_Transform.cpp \
 	gr_Transform.h \
 	gr_VectorImage.cpp \
-	gr_VectorImage.h
+	gr_VectorImage.h \
+	$(CAIRO_SOURCES) \
+	$(null)
 

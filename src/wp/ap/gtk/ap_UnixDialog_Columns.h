@@ -38,7 +38,7 @@
 
 #include "ap_Toolbar_Icons_All.h"
 
-class GR_CairoGraphics;
+class GR_UnixCairoGraphics;
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to construct a table of
@@ -174,7 +174,7 @@ protected:
 	void 		_storeWindowData(void);
 	void            _connectsignals(void);
 
-	GR_CairoGraphics	* 		m_pPreviewWidget;
+	GR_UnixCairoGraphics	* 		m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
