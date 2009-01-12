@@ -49,27 +49,11 @@ GR_Abi_RenderingContext::getColor(RGBColor& c) const
 
  UT_sint32 GR_Abi_RenderingContext::toAbiLayoutUnits(const scaled& s) const
 {
-  if(!m_pGraphics)
-     return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt();
-  if( fabs(1.0 - m_pGraphics->getResolutionRatio()) > 0.01)
-  {
-      return round((s * (UT_LAYOUT_RESOLUTION * m_pGraphics->getResolutionRatio())) / 72.0).toInt();
-  }
-   return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt();
+    return round((s * UT_LAYOUT_RESOLUTION) / 72.0).toInt();
 }
 
 scaled GR_Abi_RenderingContext::fromAbiLayoutUnits(UT_sint32 s)  const
 {
-
-  if(!m_pGraphics)
-  { 
-    return scaled((s * 72.0) / UT_LAYOUT_RESOLUTION); 
-  }
- 
-  if( fabs(1.0 - m_pGraphics->getResolutionRatio()) > 0.01)
-  {
-      return scaled((s * 72.0) / (UT_LAYOUT_RESOLUTION * m_pGraphics->getResolutionRatio()));
-  }
   return scaled((s * 72.0) / UT_LAYOUT_RESOLUTION); 
 }
 
