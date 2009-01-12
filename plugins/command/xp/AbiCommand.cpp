@@ -49,7 +49,7 @@
 #include "ie_types.h"
 #include "ap_Convert.h"
 #include "ap_UnixApp.h"
-#include "gr_UnixPangoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 #include "gr_UnixNullGraphics.h"
 #include "ap_UnixFrame.h"
 #include "gr_DrawArgs.h"
@@ -331,7 +331,7 @@ AbiCommand::tokenizeString (UT_Vector & tok, char *pStr)
 void
 AbiCommand::clearTokenVector (UT_Vector & vecToks)
 {
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 
 	for (i = 0; i < vecToks.getItemCount (); i++)
 	{
@@ -1072,7 +1072,7 @@ AbiCommand::printFiles (UT_Vector * pToks)
 	XAP_Dialog_Print * pDialog
 		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
 	pDialog->setPreview(false);
-	for (UT_uint32 i = 1; i < pToks->getItemCount (); i++)
+	for (UT_sint32 i = 1; i < pToks->getItemCount (); i++)
 	{
 		UT_UTF8String *pPrinter =
 		  const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
