@@ -63,6 +63,9 @@ public:
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) { UT_ASSERT_NOT_REACHED(); }
 
+	virtual double    getResolutionRatio(void);
+	void              setResolutionRatio(double dres);
+
 	virtual bool      canQuickPrint(void) { return true;}
 
   protected:

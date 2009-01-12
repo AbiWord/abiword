@@ -126,6 +126,9 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 
 	xxx_UT_DEBUGMSG(("Initial Cairo Context %x \n",cr));
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr,72.0);
+	double ScreenRes = m_pView->getGraphics()->getDeviceResolution();
+	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(72.0/ScreenRes);
+
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
 			m_pPrintLayout = m_pDL;

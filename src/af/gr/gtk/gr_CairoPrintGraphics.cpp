@@ -47,6 +47,22 @@ bool GR_CairoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 			return false;
 	}
 }
+/*!
+ * This number is the ratio of the screen resolution to the printer resolution.
+ * It is vital that the method that creates CairoPrintGraphics set this value.
+ * Otherwise printing of Maths will look weird.
+ *
+ * See XAP_UnixDlg_Print::beginPrint(...)
+ */
+void GR_CairoPrintGraphics::setResolutionRatio(double dres)
+{
+	m_dResRatio = dres;
+}
+
+double GR_CairoPrintGraphics::getResolutionRatio(void)
+{
+	return 	m_dResRatio;
+}
 
 bool GR_CairoPrintGraphics::GR_CairoPrintGraphics::startPrint(void)
 {

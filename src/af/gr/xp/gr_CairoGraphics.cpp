@@ -3189,7 +3189,7 @@ bool GR_PangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
 	UT_return_val_if_fail( m_pf, false );
 	
-	double resRatio = 1.0;
+	double resRatio = pG->getResolutionRatio();
 
 	guint iGlyphIndx = getGlyphForChar(g, m_pLayoutF, (static_cast<GR_CairoGraphics *>(pG))->getContext());
 
