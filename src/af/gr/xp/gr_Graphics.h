@@ -382,7 +382,7 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontDescent() = 0;
 	virtual UT_uint32 getFontHeight() = 0;
 	void              invalidateCache(void);
-	virtual bool      canQuickPrint(void) { return false;}
+	virtual bool      canQuickPrint(void) const { return false;}
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,
 									int num,

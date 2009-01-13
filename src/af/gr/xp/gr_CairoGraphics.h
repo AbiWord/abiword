@@ -233,7 +233,7 @@ public:
 	virtual void setLineWidth(UT_sint32);
 	virtual void setClipRect(const UT_Rect* pRect);
 	virtual UT_uint32 getDeviceResolution(void) const;
-	virtual double  getResolutionRatio(void) { return 1.0;}
+	virtual double  getResolutionRatio(void) const { return 1.0;}
 
 	static  const std::vector<const char *> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();

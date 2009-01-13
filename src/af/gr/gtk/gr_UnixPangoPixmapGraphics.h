@@ -48,7 +48,7 @@ public:
 	virtual UT_uint32      getClassId() {return s_getClassId();}
 	static const char *    graphicsDescriptor(){return "Unix Pango Pixmap";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
-	virtual bool      canQuickPrint(void)
+	virtual bool      canQuickPrint(void) const
 	{ return true;}
 	virtual void		scroll(UT_sint32, UT_sint32) {}
 	virtual void		scroll(UT_sint32 /*x_dest*/, UT_sint32 /*y_dest*/,

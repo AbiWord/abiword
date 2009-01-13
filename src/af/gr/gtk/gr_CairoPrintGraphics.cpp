@@ -59,7 +59,7 @@ void GR_CairoPrintGraphics::setResolutionRatio(double dres)
 	m_dResRatio = dres;
 }
 
-double GR_CairoPrintGraphics::getResolutionRatio(void)
+double GR_CairoPrintGraphics::getResolutionRatio(void) const
 {
 	return 	m_dResRatio;
 }
