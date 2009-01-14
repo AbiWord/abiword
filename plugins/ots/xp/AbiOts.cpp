@@ -90,7 +90,7 @@ static int getSummaryPercent(void)
 #endif
 
 bool 
-AbiOts_invoke(AV_View* v, EV_EditMethodCallData *d)
+AbiOts_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 {
   XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
   FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
@@ -257,7 +257,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
     return 1; 
 }

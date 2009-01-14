@@ -61,7 +61,7 @@ static UT_Error temp_name (UT_String& out_filename)
 	
 	if (err) 
 		{
-			g_warning (err->message);
+			g_warning ("%s", err->message);
 			g_error_free (err); err = NULL;
 			return UT_ERROR;
 		}
