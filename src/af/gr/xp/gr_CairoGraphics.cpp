@@ -1095,9 +1095,9 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 
 	xxx_UT_DEBUGMSG(("Pango renderChars: xoff %d yoff %d\n",
 					 RI.m_xoff, RI.m_yoff));
-	
-	UT_sint32 xoff = _tduX(RI.m_xoff);
-	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
+
+	double xoff = _tdudX(RI.m_xoff);
+	double yoff = _tdudY(RI.m_yoff + getFontAscent(pFont));
 
 	UT_return_if_fail(RI.m_pScaledGlyphs);
 
@@ -1847,8 +1847,8 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 	int iItemCount = g_list_length(pItems);
 	PangoGlyphString * pGstring = pango_glyph_string_new();
 
-	UT_sint32 xoffD = _tduX(xoff);
-	UT_sint32 yoffD = _tduY(yoff+getFontAscent());
+	double xoffD = _tdudX(xoff);
+	double yoffD = _tdudY(yoff+getFontAscent());
 
 	PangoFont * pf = m_pPFont->getPangoFont();
 	PangoRectangle LR;
