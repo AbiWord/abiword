@@ -51,7 +51,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
 	m_iHeight(0),
 	m_iMaxHeight(0),
 	m_iX(0),
-	m_iY(INITIAL_Y_POS),
+	m_iY(INITIAL_OFFSET),
 	m_bIntentionallyEmpty(0),
 	m_imaxContainerHeight(0)
 {
@@ -1109,7 +1109,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
-		if(pContainer->getY() == -99999999)
+		if(pContainer->getY() == INITIAL_OFFSET)
 		  continue ; // container is not yet placed 
 		bool bInTable = false;
 		bool bInTOC = false;

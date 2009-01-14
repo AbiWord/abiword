@@ -65,6 +65,7 @@ typedef enum {
 	FG_FILL_IMAGE
 } FG_Fill_Type;
 		
+#define INITIAL_OFFSET -99999999
 
 typedef struct _fp_Requisition	  fp_Requisition;
 typedef struct _fp_Allocation    fp_Allocation;

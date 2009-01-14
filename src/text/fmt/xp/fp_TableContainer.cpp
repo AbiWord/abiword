@@ -582,7 +582,7 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 	{
 		return;
 	}
-	if(pUpCon->getY() == INITIAL_Y_POS)
+	if(pUpCon->getY() == INITIAL_OFFSET)
 	{
 		return;
 	}

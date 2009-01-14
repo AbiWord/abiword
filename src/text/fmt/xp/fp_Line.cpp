@@ -61,7 +61,7 @@ fp_Line     * fp_Line::s_pMapOwner = 0;
 #endif
 
 #define STATIC_BUFFER_INITIAL 150
-#define INITIAL_LINE_OFFSET -99999999
+
 UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
 UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
@@ -78,7 +78,7 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_iAscent(0),
 	m_iDescent(0),
 	m_iX(0),
-	m_iY(INITIAL_LINE_OFFSET), // So setY(0) triggers a clearscreen and redraw!
+	m_iY(INITIAL_OFFSET), // So setY(0) triggers a clearscreen and redraw!
 		            // I do not like this at all; we have no business
 		            // of clearing at fictional coordinances
 	//m_bRedoLayout(true),
