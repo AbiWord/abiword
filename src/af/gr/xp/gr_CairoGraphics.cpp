@@ -2763,7 +2763,7 @@ void GR_CairoGraphics::invertRect(const UT_Rect* /* pRect */)
 	UT_ASSERT_NOT_REACHED ();
 }
 /**
- * This appears to fix off-by-1 bugs in setting rectangles at least
+ * This appears to fix off-by-1 bugs in setting rectangles and drawing text
  */
 double GR_CairoGraphics::_tdudX(UT_sint32 layoutUnits) const
 {
@@ -2771,7 +2771,7 @@ double GR_CairoGraphics::_tdudX(UT_sint32 layoutUnits) const
 }
 
 /**
- * This appears to fix off-by-1 bugs in setting rectangles at least
+ * This appears to fix off-by-1 bugs in setting rectangles and drawing text
  */
 double GR_CairoGraphics::_tdudY(UT_sint32 layoutUnits) const
 {
