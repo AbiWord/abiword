@@ -3696,7 +3696,6 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	yoff += getLine()->getAscent() - getAscent() + 1;
-
 	// clip drawing to the page
 	UT_Rect pClipRect;
 	pClipRect.top = yoff;
@@ -3770,7 +3769,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	if (m_pImage)
 	{
 		// draw the image (always)
-		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
+
 		painter.drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw some pretty selection markers

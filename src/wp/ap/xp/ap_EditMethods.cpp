@@ -1637,7 +1637,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		        pLayout->updateLayout();
 			iPageCount = pLayout->countPages();
 
-			if(!s_bFirstDrawDone)
+			if(!s_bFirstDrawDone && (iPageCount > 1))
 			{
 				pView->draw();
 				s_bFirstDrawDone = true;

@@ -567,10 +567,6 @@ void FV_VisualDragText::clearCursor(void)
 			m_bCursorDrawn = false;
 			DELETEP(m_pDocUnderCursor);
 		}
-		else
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		}
 	}
 }
 

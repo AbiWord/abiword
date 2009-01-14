@@ -1612,7 +1612,10 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		_handleHeaders(ps);
 		_handleTextBoxes(ps);
 		
-
+		if(m_iAnnotationsEnd != m_iAnnotationsStart)
+			{
+				UT_DEBUGMSG(("Annotations of length %d in this doc \n",m_iAnnotationsEnd - m_iAnnotationsStart));
+			}
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
 					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
 

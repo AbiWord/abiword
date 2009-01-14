@@ -1109,6 +1109,8 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+		if(pContainer->getY() == -99999999)
+		  continue ; // container is not yet placed 
 		bool bInTable = false;
 		bool bInTOC = false;
 
