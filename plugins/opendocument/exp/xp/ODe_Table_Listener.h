@@ -25,6 +25,7 @@
 // Internal includes
 #include "ODe_AbiDocListenerImpl.h"
 #include "ODe_Common.h"
+#include "ODe_Style_Style.h"
 
 // AbiWord includes
 #include <ut_string_class.h>
@@ -37,7 +38,6 @@
 class ODe_AutomaticStyles;
 class ODe_AuxiliaryData;
 class ODe_Styles;
-class ODe_Style_Style;
 
 
 /**
@@ -148,7 +148,7 @@ private:
     // Abiword has table-wide cell properties (i.e.: cell properties inside
     // <table> element), but OpenDocument doesn't.
     // So I have to propagate this properties into every cell of this table.
-    ODe_Style_Style* m_pTableWideCellStyle;
+    ODe_Style_Style m_tableWideCellStyle;
     UT_GenericVector<UT_UTF8String*> columnStyleNames;
     UT_GenericVector<UT_UTF8String*> rowStyleNames;
 };

@@ -52,8 +52,7 @@ ODe_Table_Listener::ODe_Table_Listener(ODe_AutomaticStyles& rAutomatiStyles,
                                        m_pTextOutput(pTextOutput),
                                        m_rAutomatiStyles(rAutomatiStyles),
                                        m_rAuxiliaryData(rAuxiliaryData),
-                                       m_zIndex(zIndex),
-                                       m_pTableWideCellStyle(NULL)
+                                       m_zIndex(zIndex)
 {
 }
 
@@ -67,7 +66,6 @@ ODe_Table_Listener::~ODe_Table_Listener() {
     UT_VECTOR_PURGEALL(ODe_Table_Cell*, m_cells);
     UT_VECTOR_PURGEALL(UT_UTF8String*, columnStyleNames);
     UT_VECTOR_PURGEALL(UT_UTF8String*, rowStyleNames);
-    DELETEP(m_pTableWideCellStyle);
 }
 
 
@@ -95,21 +93,15 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                        // OBS: There's no need to delete it as it will be done
                        //      later by ODe_AutomaticStyles destructor.
     }
+  
     
-    if (ODe_Style_Style::hasTableCellStyleProps(pAP)) {
-        m_pTableWideCellStyle = new ODe_Style_Style();
-        m_pTableWideCellStyle->fetchAttributesFromAbiCell(pAP);
-        
-        // An OpenDocument table can have a background color.
-        // So, there is no need to propagate it to its cells.
-        m_pTableWideCellStyle->setTableCellBackgroundColor("");
-        
-        if (m_pTableWideCellStyle->isEmpty()) {
-            // It only had this background color attribute. Now that it's empty
-            // There's no reason to use it.
-            DELETEP(m_pTableWideCellStyle);
-        }
-    }
+    // We don't have to check if there are any properties to export at all,
+    // because AbiWord has different default cell style properties than OpenDocument,
+    // which means we'll always have to export the styles. This will only result in
+    // writing out redundant properties when the user-selected style properties 
+    // exactly match the default OpenDocument default properties; we will just ignore
+    // this case.
+    m_tableWideCellStyle.fetchAttributesFromAbiCell(pAP);
 
     m_numColumns = 0;
     ok = pAP->getProperty("table-column-props", pValue);
@@ -228,12 +220,11 @@ void ODe_Table_Listener::openCell(const PP_AttrProp* pAP,
     ODe_Table_Cell* pCell;
     ODe_Text_Listener* pTextListener;
     ODe_Style_Style* pCellStyle;
-
-
+             
     // Create the table cell.
     pCell = new ODe_Table_Cell();
     m_cells.addItem(pCell);
-    
+                                      
     pCell->loadAbiProps(pAP);
 
     ////    
@@ -255,22 +246,24 @@ void ODe_Table_Listener::openCell(const PP_AttrProp* pAP,
     ////
     // Define its style
     
-    if (ODe_Style_Style::hasTableCellStyleProps(pAP) ||
-        m_pTableWideCellStyle != NULL) {
-    
-        UT_UTF8String_sprintf(pCell->m_styleName, "%s_col%u_row%u",
-                              m_tableName.utf8_str(),
-                              (pCell->m_leftAttach)+1,
-                              (pCell->m_topAttach)+1);
+    UT_UTF8String_sprintf(pCell->m_styleName, "%s_col%u_row%u",
+                          m_tableName.utf8_str(),
+                          (pCell->m_leftAttach)+1,
+                          (pCell->m_topAttach)+1);
                               
-        pCellStyle = m_rAutomatiStyles.addTableCellStyle(pCell->m_styleName);
-        
-        if (m_pTableWideCellStyle != NULL) {
-            *pCellStyle = *m_pTableWideCellStyle;
-        }
-        
-        pCellStyle->fetchAttributesFromAbiCell(pAP);
-    }
+    pCellStyle = m_rAutomatiStyles.addTableCellStyle(pCell->m_styleName);
+
+    // First inherit various the cell style properties from the table style.
+    pCellStyle->inheritTableCellProperties(m_tableWideCellStyle);
+
+    // Then load the style properties that are specific for this cell.
+    // We don't have to check if there are any properties to export at all,
+    // because AbiWord has different default cell style properties than OpenDocument,
+    // which means we'll always have to export the styles. This will only result in
+    // writing out redundant properties when the user-selected style properties 
+    // exactly match the default OpenDocument default properties; we will just ignore
+    // this case.
+    pCellStyle->fetchAttributesFromAbiCell(pAP);
     
 
     ////

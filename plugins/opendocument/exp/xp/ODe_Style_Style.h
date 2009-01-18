@@ -47,9 +47,8 @@ public:
     static bool hasTextStyleProps(const PP_AttrProp* pAP);
     static bool hasParagraphStyleProps(const PP_AttrProp* pAP);
     static bool hasSectionInfo(const PP_AttrProp* pAP);
-    static bool hasTableCellStyleProps(const PP_AttrProp* pAP);
-    static bool hasTableStyleProps(const PP_AttrProp* pAP);
-    
+    static bool hasTableStyleProps(const PP_AttrProp* pAP);    
+
     // It does not take style names into consideration.
     // Read it like: "is style "T1" equivalent to style "T2"
     // It is *NOT* like: "is style A equal to style B"
@@ -101,7 +100,7 @@ public:
     void setBreakBefore(const gchar* pBreakBefore);    
     void setColumnWidth(const gchar* pColumnWidth);
     void setRowHeight(const gchar* pRowHeight);
-    void setTableCellBackgroundColor(const UT_UTF8String& rBackgroundColor);
+    void inheritTableCellProperties(const ODe_Style_Style& tableStyle);
     void setWrap(const UT_UTF8String& rWrap);
     void setRunThrough(const UT_UTF8String& rRunThrough);
     void setPadding(const UT_UTF8String& rPadding);
@@ -249,11 +248,17 @@ private:
         CellProps& operator=(const CellProps& rCellProps);
         bool operator==(const CellProps& rCellProps) const;
 
-        UT_UTF8String m_backgroundColor; // fo:background-color        
-        UT_UTF8String m_borderLeft;      // fo:border-left
-        UT_UTF8String m_borderRight;     // fo:border-right
-        UT_UTF8String m_borderTop;       // fo:border-top
-        UT_UTF8String m_borderBottom;    // fo:border-bottom
+        UT_UTF8String m_leftThickness;   // part of fo:border-left
+        UT_UTF8String m_leftColor;       // part of fo:border-left
+        UT_UTF8String m_rightThickness;  // part of fo:border-right
+        UT_UTF8String m_rightColor;      // part of fo:border-right
+        UT_UTF8String m_topThickness;    // part of fo:border-top
+        UT_UTF8String m_topColor;        // part of fo:border-top
+        UT_UTF8String m_bottomThickness; // part of fo:border-bottom
+        UT_UTF8String m_bottomColor;     // part of fo:border-bottom
+        UT_UTF8String m_backgroundColor; // fo:background-color
+
+        // TODO: support line styles
     } *m_pCellProps;
     
     

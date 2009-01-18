@@ -331,101 +331,6 @@ bool ODe_Style_Style::hasSectionInfo(const PP_AttrProp* pAP) {
 
 
 /**
- * 
- */
-bool ODe_Style_Style::hasTableCellStyleProps(const PP_AttrProp* pAP) {
-    const gchar* pValue;
-    bool ok;
-    
-    // Left border
-
-    ok = pAP->getProperty("left-thickness", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    ok = pAP->getProperty("left-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    
-    // Right border
-    
-    ok = pAP->getProperty("right-thickness", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    ok = pAP->getProperty("right-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-   
-    
-    // Top border
-    
-    ok = pAP->getProperty("top-thickness", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    ok = pAP->getProperty("top-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    
-    // Bottom border
-    
-    ok = pAP->getProperty("bot-thickness", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    ok = pAP->getProperty("bot-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    
-    // Background color
-    
-    ok = pAP->getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    // If we reached this point it's because there are no table cell props at all
-    // on this AbiWord element attributes and properties.
-    return false;
-}
-
-
-/**
- * 
- */
-bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
-    const gchar* pValue;
-    bool ok;
-    
-    ok = pAP->getProperty("background-color", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    ok = pAP->getProperty("table-column-props", pValue);
-    if (ok && pValue != NULL) {
-        return true;
-    }
-    
-    // If we reached this point it's because there are no table props at all
-    // on this AbiWord element attributes and properties.
-    return false;
-}
-
-
-/**
  * It does not take style names into consideration.
  * Read it like: "is style "T1" equivalent to style "T2"
  * It is *NOT* like: "is style A equal to style B"
@@ -714,12 +619,48 @@ void ODe_Style_Style::setRowHeight(const gchar* pRowHeight) {
 /**
  * 
  */
-void ODe_Style_Style::setTableCellBackgroundColor(
-                                        const UT_UTF8String& rBackgroundColor) {
+bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
+    const gchar* pValue;
+    bool ok;
+    
+    ok = pAP->getProperty("background-color", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    ok = pAP->getProperty("table-column-props", pValue);
+    if (ok && pValue != NULL) {
+        return true;
+    }
+    
+    // If we reached this point it's because there are no table props at all
+    // on this AbiWord element attributes and properties.
+    return false;
+}
+
+
+/**
+ * 
+ */
+void ODe_Style_Style::inheritTableCellProperties(const ODe_Style_Style& tableStyle) {
+    UT_return_if_fail(tableStyle.m_pCellProps);
     if (m_pCellProps == NULL) {
         m_pCellProps = new CellProps();
     }
-    m_pCellProps->m_backgroundColor = rBackgroundColor;
+
+    // the following properties are always inherited by AbiWord cells
+    m_pCellProps->m_leftThickness = tableStyle.m_pCellProps->m_leftThickness;
+    m_pCellProps->m_leftColor = tableStyle.m_pCellProps->m_leftColor;
+    m_pCellProps->m_rightThickness = tableStyle.m_pCellProps->m_rightThickness;
+    m_pCellProps->m_rightColor = tableStyle.m_pCellProps->m_rightColor;
+    m_pCellProps->m_topThickness = tableStyle.m_pCellProps->m_topThickness;
+    m_pCellProps->m_topColor = tableStyle.m_pCellProps->m_topColor;
+    m_pCellProps->m_bottomThickness = tableStyle.m_pCellProps->m_bottomThickness;
+    m_pCellProps->m_bottomColor = tableStyle.m_pCellProps->m_bottomColor;
+
+    // Table background colors are not inherited in AbiWord and an OpenDocument
+    // table can have its own background color as well, so we don't inherit
+    // this property
 }
 
 
@@ -1537,10 +1478,14 @@ bool ODe_Style_Style::RowProps::operator==(
  * 
  */
 bool ODe_Style_Style::CellProps::isEmpty() const {
-    return m_borderLeft.empty() &&
-           m_borderRight.empty() &&
-           m_borderTop.empty() &&
-           m_borderBottom.empty() &&
+    return m_leftThickness.empty() &&
+           m_leftColor.empty() &&
+           m_rightThickness.empty() &&
+           m_rightColor.empty() &&
+           m_topThickness.empty() &&
+           m_topColor.empty() &&
+           m_bottomThickness.empty() &&
+           m_bottomColor.empty() &&
            m_backgroundColor.empty();
 }
 
@@ -1553,74 +1498,82 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     const gchar* pValue;
     bool ok;
     
+    // NOTE: Contrary to OpenDocument, AbiWord allows setting line properties on the
+    // table itself. Table line colors default to #000000 in AbiWord if unset, and cells 
+    // inherit the table line color if they have no line color defined themselves.
+    // Table line thickness defaults to 0.72pt, and again cells inherit the
+    // table line thickness if they have no line thickness defined themselves.
+    // 
+    // The default table background color is transparent, and cells cells inherit
+    // this property if they have no background color set
+    //
+    // See fp_TableContainer for details.
+
+    // Be aware that some cell properties can have a value set already by inheritance 
+    
     // Left border
 
     ok = rAP.getProperty("left-thickness", pValue);
     if (ok && pValue != NULL) {
-        m_borderLeft = pValue;
+        m_leftThickness = pValue;
+    } else if (m_leftThickness.empty()) {
+        m_leftThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("left-color", pValue);
     if (ok && pValue != NULL) {
-        if (!m_borderLeft.empty()) {
-            m_borderLeft += " ";
-        }
-        m_borderLeft += "solid #";
-        m_borderLeft += pValue;
+	    m_leftColor == pValue;
+    } else if (m_leftColor.empty()) {
+        m_leftColor = "000000";
     }
-    
-    
+
     // Right border
-    
+
     ok = rAP.getProperty("right-thickness", pValue);
     if (ok && pValue != NULL) {
-        m_borderRight = pValue;
+        m_rightThickness = pValue;
+    } else if (m_rightThickness.empty()) {
+        m_rightThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("right-color", pValue);
     if (ok && pValue != NULL) {
-        if (!m_borderRight.empty()) {
-            m_borderRight += " ";
-        }
-        m_borderRight += "solid #";
-        m_borderRight += pValue;
+	    m_rightColor == pValue;
+    } else if (m_rightColor.empty()) {
+        m_rightColor = "000000";
     }
-   
-    
+
     // Top border
-    
+
     ok = rAP.getProperty("top-thickness", pValue);
     if (ok && pValue != NULL) {
-        m_borderTop = pValue;
+        m_topThickness = pValue;
+    } else if (m_topThickness.empty()) {
+        m_topThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("top-color", pValue);
     if (ok && pValue != NULL) {
-        if (!m_borderTop.empty()) {
-            m_borderTop += " ";
-        }
-        m_borderTop += "solid #";
-        m_borderTop += pValue;
+	    m_topColor == pValue;
+    } else if (m_topColor.empty()) {
+        m_topColor = "000000";
     }
     
-    
     // Bottom border
-    
+
     ok = rAP.getProperty("bot-thickness", pValue);
     if (ok && pValue != NULL) {
-        m_borderBottom = pValue;
+        m_bottomThickness = pValue;
+    } else if (m_bottomThickness.empty()) {
+        m_bottomThickness = "0.72pt";
     }
     
     ok = rAP.getProperty("bot-color", pValue);
     if (ok && pValue != NULL) {
-        if (!m_borderBottom.empty()) {
-            m_borderBottom += " ";
-        }
-        
-        m_borderBottom += "solid #";
-        m_borderBottom += pValue;
+	    m_bottomColor == pValue;
+    } else if (m_bottomColor.empty()) {
+        m_bottomColor = "000000";
     }
-    
     
     // Background color
     
@@ -1645,10 +1598,10 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     rOutput += rSpacesOffset;
     rOutput += "<style:table-cell-properties";
     
-    ODe_writeAttribute(rOutput, "fo:border-left", m_borderLeft);
-    ODe_writeAttribute(rOutput, "fo:border-right", m_borderRight);
-    ODe_writeAttribute(rOutput, "fo:border-top", m_borderTop);
-    ODe_writeAttribute(rOutput, "fo:border-bottom", m_borderBottom);
+    ODe_writeAttribute(rOutput, "fo:border-left", m_leftThickness + " solid #" + m_leftColor);
+    ODe_writeAttribute(rOutput, "fo:border-right",m_rightThickness + " solid #" + m_rightColor);
+    ODe_writeAttribute(rOutput, "fo:border-top", m_topThickness + " solid #" + m_topColor);
+    ODe_writeAttribute(rOutput, "fo:border-bottom", m_bottomThickness + " solid #" + m_bottomColor);
     ODe_writeAttribute(rOutput, "fo:background-color", m_backgroundColor);
     
     rOutput += "/>\n";
@@ -1661,10 +1614,14 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
 ODe_Style_Style::CellProps& ODe_Style_Style::CellProps::operator=(
                                                 const CellProps& rCellProps) {
     
-    m_borderLeft = rCellProps.m_borderLeft;
-    m_borderRight = rCellProps.m_borderRight;
-    m_borderTop = rCellProps.m_borderTop;
-    m_borderBottom = rCellProps.m_borderBottom;
+    m_leftThickness = rCellProps.m_leftThickness;
+    m_leftColor = rCellProps.m_leftColor;
+    m_rightThickness = rCellProps.m_rightThickness;
+    m_rightColor = rCellProps.m_rightColor;
+    m_topThickness = rCellProps.m_topThickness;
+    m_topColor = rCellProps.m_topColor;
+    m_bottomThickness = rCellProps.m_bottomThickness;
+    m_bottomColor = rCellProps.m_bottomColor;
     m_backgroundColor = rCellProps.m_backgroundColor;
     
     return *this;
@@ -1677,11 +1634,15 @@ ODe_Style_Style::CellProps& ODe_Style_Style::CellProps::operator=(
 bool ODe_Style_Style::CellProps::operator==(
                            const ODe_Style_Style::CellProps& rCellProps) const {
     return
-        m_borderLeft      == rCellProps.m_borderLeft &&
-        m_borderRight     == rCellProps.m_borderRight &&
-        m_borderTop       == rCellProps.m_borderTop &&
-        m_borderBottom    == rCellProps.m_borderBottom &&
-        m_backgroundColor == rCellProps.m_backgroundColor;
+        m_leftThickness      == rCellProps.m_leftThickness &&
+        m_leftColor          == rCellProps.m_leftColor &&
+        m_rightThickness     == rCellProps.m_rightThickness &&
+        m_rightColor         == rCellProps.m_rightColor &&
+        m_topThickness       == rCellProps.m_topThickness &&
+        m_topColor           == rCellProps.m_topColor &&
+        m_bottomThickness    == rCellProps.m_bottomThickness &&
+        m_bottomColor        == rCellProps.m_bottomColor &&
+        m_backgroundColor    == rCellProps.m_backgroundColor;
 }
 
 
