@@ -1506,6 +1506,17 @@ abi_widget_set_style(AbiWidget * w, gchar * szName)
 }
 
 extern "C" gboolean
+abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
+{
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+		return FALSE;
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	pView->cmdInsertTable(rows,cols,NULL);
+	return TRUE;
+}
+
+extern "C" gboolean
 abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned)
 {
 	UT_return_val_if_fail ( w != NULL, FALSE );
