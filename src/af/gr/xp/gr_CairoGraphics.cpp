@@ -2948,10 +2948,10 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	cairo_save(m_cr);
 
 	i = 0;
-	cairo_move_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+	cairo_move_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	i++;
 	for (; i < nPoints; i++) {
-		cairo_line_to(m_cr, _tduX(pts[i].x), _tduY(pts[i].y));
+		cairo_line_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	}
 	cairo_set_source_rgb(m_cr, c.m_red/255., c.m_grn/255., c.m_blu/255.);
 	cairo_fill(m_cr);	

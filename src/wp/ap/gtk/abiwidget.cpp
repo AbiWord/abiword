@@ -60,6 +60,10 @@
 #include "ev_Toolbar_Actions.h"
 #include "ap_Toolbar_Id.h"
 #include "px_CR_Span.h"
+#include "gr_UnixCairoGraphics.h"
+#include "gr_UnixImage.h"
+#include "gr_UnixPangoPixmapGraphics.h"
+#include "gr_DrawArgs.h"
 
 /**************************************************************************/
 /**************************************************************************/
@@ -1406,15 +1410,53 @@ abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 	return true;
 }
 
-extern "C" gboolean
-abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
+/*!
+ * Caller owns the returned GdkPixmap and must free it after use.
+ */
+extern "C" GdkPixbuf *
+abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 {
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return FALSE;
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	pView->cmdInsertTable(rows,cols,NULL);
-	return TRUE;
+
+	GR_UnixCairoGraphics  * pVG = static_cast<GR_UnixCairoGraphics *>(pView->getGraphics());
+	UT_sint32 iWidth = pVG->tdu(pView->getWindowWidth());
+	UT_sint32 iHeight = pVG->tdu(pView->getWindowHeight());
+	UT_sint32 iZoom = pVG->getZoomPercentage();
+	//
+	// Create an offscreen Graphics to draw into
+	//
+	xxx_UT_DEBUGMSG(("rederpagetoimage Width %d Height %d zoom %d \n",iWidth,iHeight,iZoom));
+	GdkPixmap*  pPixmap = gdk_pixmap_new(pVG->getWindow(),iWidth,iHeight,-1);
+
+	GR_UnixPixmapAllocInfo ai(pPixmap);
+
+	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*)GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
+	pG->setZoomPercentage(iZoom);
+	GR_Painter * pPaint = new GR_Painter(pG);
+	pPaint->clearArea(0,0,pView->getWindowWidth(),pView->getWindowHeight());
+	dg_DrawArgs da;
+	da.pG = pG;
+	da.xoff = 0;
+	da.yoff = 0;
+	pView->getLayout()->setQuickPrint(pG);
+	pView->draw(iPage, &da);
+	UT_Rect r;
+	r.left = 0;
+	r.top = 0;
+	r.width = pG->tlu(iWidth);
+	r.height = pG->tlu(iHeight);
+	GR_Image * pImage = pPaint->genImageFromRectangle(r);
+	pView->getLayout()->setQuickPrint(NULL);
+	pView->getLayout()->incrementGraphicTick();
+	DELETEP(pPaint);
+	DELETEP(pG);
+	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImage);
+	GdkPixbuf* pData =  gdk_pixbuf_copy(pUnixImage->getData());
+	DELETEP(pUnixImage);
+	return pData;
 }
 
 
