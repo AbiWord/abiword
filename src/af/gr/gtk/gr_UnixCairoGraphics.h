@@ -69,7 +69,7 @@ public:
 	void				init3dColors(GtkStyle * pStyle);
 
 protected:
-	GR_UnixCairoGraphics(GdkWindow * win = NULL);
+	GR_UnixCairoGraphics(GdkDrawable * win = NULL);
 	virtual GdkDrawable * _getDrawable(void)
 	{  return static_cast<GdkDrawable *>(m_pWin);}
 

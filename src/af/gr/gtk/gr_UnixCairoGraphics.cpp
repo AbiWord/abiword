@@ -25,7 +25,7 @@
 #include "xap_App.h"
 
 
-GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win)
+GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win)
 	: GR_CairoGraphics()
 	, m_pWin(win)
 {

@@ -54,7 +54,7 @@
  */
 
 GR_UnixPangoPixmapGraphics::GR_UnixPangoPixmapGraphics(GdkPixmap * pix): 
-	GR_UnixCairoGraphics(),
+	GR_UnixCairoGraphics(GDK_DRAWABLE (pix)),
 	m_pPixmap(pix)
 {}			
 
