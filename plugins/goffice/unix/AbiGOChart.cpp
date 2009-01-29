@@ -157,7 +157,6 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 			data = go_data_scalar_val_new (val);
 		else
 			data = go_data_scalar_str_new (g_strdup (str), TRUE);
-		g_object_unref (data);
 		break;
 	case GOG_DATA_VECTOR:
 	{
