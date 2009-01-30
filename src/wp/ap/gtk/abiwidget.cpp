@@ -64,6 +64,7 @@
 #include "gr_UnixImage.h"
 #include "gr_UnixPangoPixmapGraphics.h"
 #include "gr_DrawArgs.h"
+#include "fp_Page.h"
 
 /**************************************************************************/
 /**************************************************************************/
@@ -1441,6 +1442,16 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	da.pG = pG;
 	da.xoff = 0;
 	da.yoff = 0;
+	if(pView->getViewMode() != VIEW_PRINT)
+	{
+		FL_DocLayout * pLayout = pView->getLayout();
+		fp_Page * pPage = pLayout->getNthPage(iPage);
+		if(pPage)
+		{
+			fl_DocSectionLayout *pDSL = pPage->getOwningSection();
+			da.yoff -= pDSL->getTopMargin();
+		}
+	}
 	pView->getLayout()->setQuickPrint(pG);
 	pView->draw(iPage, &da);
 	UT_Rect r;
