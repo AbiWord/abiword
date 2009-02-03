@@ -1,7 +1,7 @@
 #ifndef UT_MBTOWC_H
 #define UT_MBTOWC_H
 
-#include <ut_misc.h>
+#include "ut_misc.h"
 #include <limits.h>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
