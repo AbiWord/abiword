@@ -63,7 +63,7 @@
 // needed for gtk_show_uri()
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#else
+#elif defined(WITH_GNOMEVFS)
 // needed for gnome_vfs_url_show()
 #include <libgnomevfs/gnome-vfs-utils.h>
 #endif
@@ -77,8 +77,15 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <time.h>
+
+#ifdef WIN32
+  #ifndef S_ISDIR
+  #define S_ISDIR(m) (((m) & _S_IFMT ) == _S_IFDIR)
+  #endif
+#else
+#include <unistd.h>
+#endif
 
 #include "ut_types.h"
 
