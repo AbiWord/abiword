@@ -23,6 +23,10 @@
 #include "ut_types.h"
 #include "ut_units.h"
 
+#if _MSC_VER 
+#pragma warning(disable: 4522) // multiple assignment operators specified
+#endif
+
 class ABI_EXPORT fp_PageSize
 {
 public:
