@@ -53,7 +53,9 @@
 #	include "ap_Win32Dialog_Break.h"
 #	include "ap_Win32Dialog_Options.h"
 #	include "ap_Win32Dialog_Paragraph.h"
+#ifdef ENABLE_SPELL
 #	include "ap_Win32Dialog_Spell.h"
+#endif
 #	include "ap_Win32Dialog_Styles.h"
 #	include "ap_Win32Dialog_Insert_DateTime.h"
 #	include "ap_Win32Dialog_WordCount.h"
@@ -125,7 +127,9 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_Win32Dialog_Break)
+#ifdef ENABLE_SPELL
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_Win32Dialog_Spell)
+#endif
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_Win32Dialog_Styles)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_Win32Dialog_Options)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	   	AP_Win32Dialog_Paragraph)
