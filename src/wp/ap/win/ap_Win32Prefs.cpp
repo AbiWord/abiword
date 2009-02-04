@@ -98,7 +98,7 @@ const char * AP_Win32Prefs::_getPrefsPathname(void) const
 	memset(buf,0,sizeof(buf));
 
 	/* return a pointer to a static buffer */
-	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	const char * szDirectory = XAP_App::getApp()->getUserPrivateDirectory();
 	char * szFile = "AbiWord.Profile";
 	
 	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
