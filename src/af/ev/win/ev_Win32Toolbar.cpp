@@ -1110,7 +1110,9 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					case AP_TOOLBAR_ID_FMT_FONT:
 						idx = SendMessage(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)pLocalised);
 						if (idx == CB_ERR)
+						{
 							UT_DEBUGMSG(("refreshToolbar: Failed to set text for font combo.\n"));
+						}
 						break;
 					/* 
 					 * If this is the zoom combo, select the "Other..." string.
