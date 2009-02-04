@@ -74,8 +74,9 @@ void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
 	if(result == -1)
+	{
 		UT_DEBUGMSG(( "AP_Win32Dialog_MarkRevisions::runModal error %d\n", GetLastError() ));
-
+	}
 }
 
 BOOL CALLBACK AP_Win32Dialog_MarkRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
