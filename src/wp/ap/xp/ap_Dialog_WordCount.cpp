@@ -121,14 +121,13 @@ void AP_Dialog_WordCount::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * tmp = NULL;
-        UT_uint32 title_width = 40;
+	UT_uint32 title_width = 40;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
-        BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
-        FREEP(tmp);
-
+	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
+	FREEP(tmp);
 }
 
-void    AP_Dialog_WordCount::setActiveFrame(XAP_Frame */*pFrame*/)
+void AP_Dialog_WordCount::setActiveFrame(XAP_Frame* /*pFrame*/)
 {
 	notifyActiveFrame(getActiveFrame());
 }
