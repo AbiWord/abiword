@@ -20,7 +20,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #include "ap_Features.h"
 #include "xap_Strings.h"
 #include "ap_Strings.h"
