@@ -300,22 +300,4 @@ public:
 protected:
 };
 
-class ABI_EXPORT fp_EndnoteSectionContainer : public fp_VerticalContainer
-{
-public:
-	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);
-	~fp_EndnoteSectionContainer();
-
-	fl_EndnoteSectionLayout*	getEndnoteSectionLayout(void) const;
-
- 	virtual void		draw(dg_DrawArgs*);
-  	virtual void		layout(void);
- 	virtual void		clearScreen(void);
-	virtual inline fp_Page*		getPage(void) const
-		{ return m_pPage; }
-protected:
-private:
-	fp_Page*				m_pPage;
-};
-
 #endif /* COLUMN_H */
