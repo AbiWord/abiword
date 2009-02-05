@@ -253,7 +253,9 @@ bool AP_Win32App::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	
 	{
+#if ENABLE_SPELL
 		SpellManager::instance();
+#endif
 	}
 	
 	
