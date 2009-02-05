@@ -34,6 +34,7 @@
 #include "gr_Win32Graphics.h"
 #include "ut_Win32OS.h"
 
+#include "fp_PageSize.h"
 #include "fv_View.h"
 
 #define INITGUID
