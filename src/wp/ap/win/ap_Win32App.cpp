@@ -1083,7 +1083,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 {	
 	// Load the command line into an XAP_Args class
 #ifdef _MSC_VER	// when using MSVC use already split arguments
-	XAP_Args XArgs = XAP_Args(__argc, (const char**)__argv);
+	XAP_Args XArgs = XAP_Args(__argc, __argv);
 #else			// but for other compiles may not be available so use szCmdLine
 	UT_String szNewCmdLine = UT_String_sprintf ( "%s %s", "AbiWord.exe", szCmdLine ) ;
 	XAP_Args XArgs = XAP_Args(szNewCmdLine.c_str());
