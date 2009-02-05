@@ -38,6 +38,7 @@
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 
+#include "fl_DocLayout.h"
 #include "pd_Document.h"
 
 #include <gsf/gsf-output-impl.h>
