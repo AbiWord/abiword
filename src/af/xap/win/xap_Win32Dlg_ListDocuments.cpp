@@ -79,8 +79,9 @@ void XAP_Win32Dialog_ListDocuments::runModal(XAP_Frame * pFrame)
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
 	if(result == -1)
+	{
 		UT_DEBUGMSG(( "XAP_Win32Dialog_ListDocuments::runModal error %d\n", GetLastError() ));
-
+	}
 }
 
 BOOL CALLBACK XAP_Win32Dialog_ListDocuments::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
