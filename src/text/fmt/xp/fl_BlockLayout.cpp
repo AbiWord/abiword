@@ -32,7 +32,9 @@
 
 #include "fl_BlockLayout.h"
 #include "pf_Frag_Strux.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"

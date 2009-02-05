@@ -44,7 +44,9 @@
 #include "xav_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_SectionLayout.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_AutoNum.h"
@@ -724,6 +726,7 @@ void FV_View::addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId)
 
 }
 
+#if ENABLE_SPELL
 UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
 {
 	if(iSquiggleType == FL_SQUIGGLE_SPELL)
@@ -732,7 +735,7 @@ UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
 	}
 	return m_colorGrammarSquiggle;
 }
-
+#endif
 
 UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 {

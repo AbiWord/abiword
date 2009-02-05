@@ -42,7 +42,9 @@
 #include "xav_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_SectionLayout.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"

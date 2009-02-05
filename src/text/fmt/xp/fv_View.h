@@ -30,7 +30,9 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 #include "fp_types.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "ev_EditBits.h"
 
 // have to include these as they are instantiated in the FV_View
@@ -765,7 +767,9 @@ public:
 	void				_generalUpdate(void);
 	
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
+#ifdef ENABLE_SPELL
 	UT_RGBColor			getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const;
+#endif
 	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
 	UT_RGBColor			getColorSelBackground(void);
 	UT_RGBColor			getColorSelForeground(void) const;

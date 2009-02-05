@@ -33,7 +33,9 @@
 #include "fp_Run.h"
 #include "fp_Line.h"
 #include "fl_BlockLayout.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_TableLayout.h"

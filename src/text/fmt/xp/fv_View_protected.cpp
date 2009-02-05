@@ -41,7 +41,9 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_TOCLayout.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_SectionLayout.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"

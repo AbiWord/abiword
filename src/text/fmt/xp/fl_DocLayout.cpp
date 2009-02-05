@@ -36,7 +36,9 @@
 #include "fl_BlockLayout.h"
 #include "fl_TOCLayout.h"
 #include "fl_ContainerLayout.h"
+#ifdef ENABLE_SPELL
 #include "fl_Squiggles.h"
+#endif
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
