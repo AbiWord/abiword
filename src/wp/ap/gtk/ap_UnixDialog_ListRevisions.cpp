@@ -189,7 +189,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 
     UT_DEBUGMSG(("DOM: appending revision %s : %s\n", txt[1], txt[0]));
 
-    FREEP(txt[1]);
+    FREEP(txt[2]);
   }
   gtk_clist_thaw ( GTK_CLIST ( clExistingRevisions ) ) ;
   gtk_clist_select_row (GTK_CLIST (clExistingRevisions), 0, 0);
