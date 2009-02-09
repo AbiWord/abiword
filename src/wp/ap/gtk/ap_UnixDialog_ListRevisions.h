@@ -47,44 +47,11 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	
 	virtual GtkWidget * constructWindow () ;
 
-	static void ok_callback ( GtkWidget *, AP_UnixDialog_ListRevisions * me )
-	  {
-	    UT_return_if_fail ( me ) ;
-	    me->event_OK () ;
-	  }
-
-	static void cancel_callback ( GtkWidget *, AP_UnixDialog_ListRevisions * me )
-	  {
-	    UT_return_if_fail ( me ) ;
-	    me->event_Cancel () ;
-	  }
-
-	static void destroy_callback ( GtkWidget *, gpointer, AP_UnixDialog_ListRevisions * me )
-	  {
-	    UT_return_if_fail ( me ) ;
-	    me->event_Cancel () ;
-	  }
-
-	static void select_row_callback ( GtkWidget *, gint row, gint /*col*/, GdkEventButton * /*event*/, AP_UnixDialog_ListRevisions * me )
-	  {
-	    me->select_Row ( row ) ;
-	  }
-
-	static void unselect_row_callback ( GtkWidget *, gint /*row*/, gint /*col*/, GdkEventButton * /*event*/, AP_UnixDialog_ListRevisions * me )
-	  {
-	    me->unselect_Row ();
-	  }
-
-	static void dblclick_callback(GtkWidget * /*widget*/,
-				      GdkEventButton * event,
-				      AP_UnixDialog_ListRevisions * me)
-	  {
-	    // Only respond to double clicks
-	    if (event->type == GDK_2BUTTON_PRESS)
-	      {
-		me->event_OK();
-	      }
-	  }
+	static void select_row_cb(GtkTreeSelection * select, 
+							   AP_UnixDialog_ListRevisions * me);
+	static void row_activated_cb(GtkTreeView *, GtkTreePath *, 
+								 GtkTreeViewColumn*, 
+								 AP_UnixDialog_ListRevisions * me);
 
 	void event_OK () ;
 	void event_Cancel () ;
@@ -96,7 +63,7 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	void select_Row (gint which) ;
 	void unselect_Row () ;
 
-	GtkWidget * mClist ;
+	GtkWidget * m_mainWindow;
 } ;
 
 #endif /* AP_UNIXDIALOG_LISTREVISIONS_H */

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
+ * Copyright (c) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
-#undef GTK_DISABLE_DEPRECATED
 
 #include <stdlib.h>
 #include <time.h>
@@ -39,6 +38,35 @@
 #include "ap_Dialog_ListRevisions.h"
 #include "ap_UnixDialog_ListRevisions.h"
 
+
+void 
+AP_UnixDialog_ListRevisions::select_row_cb(GtkTreeSelection * select, 
+										   AP_UnixDialog_ListRevisions * me )
+{
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
+		GtkTreePath * path = gtk_tree_model_get_path(model, &iter);
+		gint* rows = gtk_tree_path_get_indices(path);
+		if(rows) {
+			me->select_Row (*rows);
+		}
+		gtk_tree_path_free(path);
+	}
+}
+
+
+void 
+AP_UnixDialog_ListRevisions::row_activated_cb(GtkTreeView *, 
+											  GtkTreePath *, 
+											  GtkTreeViewColumn*, 
+											  AP_UnixDialog_ListRevisions * me) 
+{
+	UT_DEBUGMSG(("row_activated\n"));
+	gtk_dialog_response(GTK_DIALOG(me->m_mainWindow), BUTTON_OK);
+}
+
+
 /*****************************************************************/
 
 XAP_Dialog * AP_UnixDialog_ListRevisions::static_constructor(XAP_DialogFactory * pFactory,
@@ -50,7 +78,8 @@ XAP_Dialog * AP_UnixDialog_ListRevisions::static_constructor(XAP_DialogFactory *
 
 AP_UnixDialog_ListRevisions::AP_UnixDialog_ListRevisions(XAP_DialogFactory * pDlgFactory,
 							 XAP_Dialog_Id id)
-  : AP_Dialog_ListRevisions(pDlgFactory,id), mClist ( 0 )
+  : AP_Dialog_ListRevisions(pDlgFactory,id)
+  , m_mainWindow(NULL)
 {
 }
 
@@ -60,10 +89,10 @@ AP_UnixDialog_ListRevisions::~AP_UnixDialog_ListRevisions(void)
 
 void AP_UnixDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 {
-	GtkWidget * mainWindow = constructWindow();
-	UT_return_if_fail(mainWindow);
+	m_mainWindow = constructWindow();
+	UT_return_if_fail(m_mainWindow);
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_mainWindow),
 								 pFrame, this, BUTTON_OK, false ) )
 	{
 		case BUTTON_OK:
@@ -72,7 +101,7 @@ void AP_UnixDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 			event_Cancel () ; break ;
 	}
 
-	abiDestroyWidget ( mainWindow ) ;
+	abiDestroyWidget ( m_mainWindow ) ;
 }
 
 void AP_UnixDialog_ListRevisions::event_Cancel ()
@@ -130,9 +159,6 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   GtkWidget *lbExistingRevisions;
   GtkWidget *swExistingRevisions;
   GtkWidget *clExistingRevisions;
-  GtkWidget *lbColumnRevisionID;
-  GtkWidget *lbColumnDate;
-  GtkWidget *lbColumnComment;
 
   vbContent = gtk_vbox_new (FALSE, 6);
   gtk_widget_show (vbContent);
@@ -149,61 +175,66 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  clExistingRevisions = gtk_clist_new (3);
+  GtkListStore * list_store = gtk_list_store_new(3, G_TYPE_STRING, 
+												 G_TYPE_STRING, G_TYPE_STRING);
+
+  clExistingRevisions = gtk_tree_view_new_with_model (GTK_TREE_MODEL(list_store));
   gtk_widget_show (clExistingRevisions);
   gtk_container_add (GTK_CONTAINER (swExistingRevisions), clExistingRevisions);
-  gtk_clist_set_column_width (GTK_CLIST (clExistingRevisions), 0, 80);
-  gtk_clist_set_column_width (GTK_CLIST (clExistingRevisions), 1, 80);
-  gtk_clist_column_titles_show (GTK_CLIST (clExistingRevisions));
+  
+  GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+  GtkTreeViewColumn *col;
+  col = gtk_tree_view_column_new_with_attributes(getColumn1Label(),
+												 renderer, "text", 0, NULL);
+  gtk_tree_view_column_set_fixed_width(col, 80);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
+  col = gtk_tree_view_column_new_with_attributes(getColumn2Label(),
+												 renderer, "text", 1, NULL);
+  gtk_tree_view_column_set_fixed_width(col, 80);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
+  col = gtk_tree_view_column_new_with_attributes(getColumn3Label(),
+												 renderer, "text", 2, NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(clExistingRevisions), col);
 
-  lbColumnRevisionID = gtk_label_new (getColumn1Label());
-  gtk_widget_show (lbColumnRevisionID);
-  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 0, lbColumnRevisionID);
+  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(clExistingRevisions), TRUE);
 
-  lbColumnDate = gtk_label_new (getColumn2Label());
-  gtk_widget_show (lbColumnDate);
-  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 1, lbColumnDate);
-
-  lbColumnComment = gtk_label_new (getColumn3Label());
-  gtk_widget_show (lbColumnComment);
-  gtk_clist_set_column_widget (GTK_CLIST (clExistingRevisions), 2, lbColumnComment);
-
-  gtk_clist_freeze ( GTK_CLIST ( clExistingRevisions ) ) ;
+//  g_object_freeze_notify(G_OBJECT(list_store));
 
   UT_uint32 itemCnt = getItemCount () ;
 
   UT_DEBUGMSG(("DOM: %d items\n", itemCnt));
 
+  GtkTreeIter iter;
   for ( UT_uint32 i = 0; i < itemCnt; i++ )
   {
-    gchar * txt[4];
     gchar buf [ 35 ] ;
+	
+    sprintf (buf, "%d", getNthItemId(i));
+	gtk_list_store_append(list_store, &iter);
 
-    sprintf ( buf, "%d", getNthItemId( i ) ) ;
-    txt[0] = static_cast<gchar*>(buf);
-    txt[1] = const_cast<gchar*>(getNthItemTime ( i ));
-    txt[2] = static_cast<gchar*>(getNthItemText ( i ));
-    txt[3] = NULL;
+	gchar * txt = getNthItemText(i);
+	const gchar * itemtime = getNthItemTime(i);
+	gtk_list_store_set(list_store, &iter, 
+					   0, buf, 
+					   1, itemtime?itemtime:"",
+					   2, txt, 
+					   -1);
 
-    gtk_clist_append ( GTK_CLIST(clExistingRevisions), txt ) ;
+    UT_DEBUGMSG(("appending revision %s : %s, %s\n", itemtime, buf, txt));
 
-    UT_DEBUGMSG(("DOM: appending revision %s : %s\n", txt[1], txt[0]));
-
-    FREEP(txt[2]);
+    FREEP(txt);
   }
-  gtk_clist_thaw ( GTK_CLIST ( clExistingRevisions ) ) ;
-  gtk_clist_select_row (GTK_CLIST (clExistingRevisions), 0, 0);
+//  g_object_thaw_notify(G_OBJECT(list_store));
 
-  g_signal_connect (G_OBJECT(clExistingRevisions), "select-row",
-		    G_CALLBACK(select_row_callback), this);
+//  gtk_clist_select_row (GTK_CLIST (clExistingRevisions), 0, 0);
 
-  g_signal_connect (G_OBJECT(clExistingRevisions), "unselect-row",
-		    G_CALLBACK(select_row_callback), this);
+  GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(clExistingRevisions));
+  gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT(select), "changed",
+					G_CALLBACK(select_row_cb), this);
 
   g_signal_connect(G_OBJECT(clExistingRevisions),
-		   "button_press_event",
-		   G_CALLBACK(dblclick_callback),
+		   "row-activated",
+		   G_CALLBACK(row_activated_cb),
 		   static_cast<gpointer>(this));
-
-  mClist = clExistingRevisions ;
 }
