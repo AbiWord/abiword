@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
-// for gtkclist and gtklist
-#undef GTK_DISABLE_DEPRECATED
 
 #include <stdlib.h>
 
@@ -91,16 +89,7 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wFormatMenu = NULL;
 	m_wModifyShortCutKey = NULL;
 
-	m_wFormat = NULL;
-	m_wModifyParagraph = NULL;
-	m_wModifyFont = NULL;
-	m_wModifyNumbering = NULL;
-	m_wModifyLanguage = NULL;
-	m_gbasedOnStyles = NULL;
-	m_gfollowedByStyles = NULL;
-	m_gStyleType = NULL;
 	m_bBlockModifySignal = false;
-
 }
 
 AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
@@ -232,40 +221,34 @@ static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */,
 	return FALSE;
 }
 
-static void s_modify_paragraph(GtkWidget * /* widget */, 
+static void s_modify_format_cb(GtkWidget * widget, 
 			     AP_UnixDialog_Styles * me)
 {
-	UT_ASSERT(me);
-	me->event_ModifyParagraph();
+	gint active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+	if(active) {
+		gtk_combo_box_set_active(GTK_COMBO_BOX(widget), 0);
+	}
+	switch(active) {
+	case 1:
+		me->event_ModifyParagraph();
+		break;
+	case 2:
+		me->event_ModifyFont();
+		break;
+	case 3:
+		me->event_ModifyTabs();
+		break;
+	case 4:
+		me->event_ModifyNumbering();
+		break;
+	case 5:
+		me->event_ModifyLanguage();
+		break;
+	default:
+		break;
+	}
 }
 
-static void s_modify_font(GtkWidget * /* widget */, 
-			     AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_ModifyFont();
-}
-
-static void s_modify_numbering(GtkWidget * /* widget */,
-			     AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_ModifyNumbering();
-}
-
-static void s_modify_language (GtkWidget * /* w */,
-							   AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_ModifyLanguage();
-}
-
-static void s_modify_tabs(GtkWidget * /* widget */,
-			     AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_ModifyTabs();
-}
 
 /*****************************************************************/
 
@@ -833,23 +816,23 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_widget_set_size_request (styleNameEntry, 158, -1);
 
-	basedOnCombo = gtk_combo_new ();
+	basedOnCombo = gtk_combo_box_entry_new_text ();
 	gtk_widget_show (basedOnCombo);
 	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 		
-	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
+	basedOnEntry = gtk_bin_get_child(GTK_BIN(basedOnCombo));
 	gtk_widget_show (basedOnEntry);
 	gtk_widget_set_size_request (basedOnEntry, 158, -1);
 
-	followingCombo = gtk_combo_new ();
+	followingCombo = gtk_combo_box_entry_new_text ();
 	gtk_widget_show (followingCombo);
 	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 
-	followingEntry = GTK_COMBO (followingCombo)->entry;
+	followingEntry = gtk_bin_get_child(GTK_BIN(followingCombo));
 	gtk_widget_show (followingEntry);
 	gtk_widget_set_size_request (followingEntry, 158, -1);
 //
@@ -857,13 +840,13 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 //	
 	if(isNew())
 	{
-		styleTypeCombo = gtk_combo_new ();
+		styleTypeCombo = gtk_combo_box_entry_new_text();
 		gtk_widget_show (styleTypeCombo);
 		gtk_table_attach (GTK_TABLE (comboTable), styleTypeCombo, 1, 2, 1, 2,
 						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						  (GtkAttachOptions) (0), 0, 0);
 
-		styleTypeEntry = GTK_COMBO (styleTypeCombo)->entry;
+		styleTypeEntry = gtk_bin_get_child(GTK_BIN(styleTypeCombo));
 		gtk_widget_show (styleTypeEntry);
 		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
@@ -915,11 +898,12 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (deleteLabel);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deleteLabel, TRUE, TRUE, 0);
 
-	deletePropCombo = gtk_combo_new ();
+	GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
+	deletePropCombo = gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(store), 0);
 	gtk_widget_show (deletePropCombo);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
 
-    deletePropEntry = GTK_COMBO (deletePropCombo)->entry;
+    deletePropEntry = gtk_bin_get_child(GTK_BIN(deletePropCombo));
 	gtk_widget_show (deletePropEntry);
 	gtk_widget_set_size_request (deletePropEntry, 158, -1);
 
@@ -970,7 +954,7 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);	
 	buttonOK = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_OK, BUTTON_MODIFY_OK);
 
-	FormatMenu = gtk_option_menu_new ();
+	FormatMenu = gtk_combo_box_new_text();
 	gtk_widget_show (FormatMenu);
 	gtk_container_add (GTK_CONTAINER (dialog_action_area), FormatMenu); //, FALSE, FALSE, 0);
 
@@ -990,80 +974,39 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	
 }
 
-void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
+
+void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatCombo)
 {
-	GtkWidget *FormatMenu_menu;
+	GtkComboBox *combo = GTK_COMBO_BOX(FormatCombo);
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	
-	FormatMenu_menu = gtk_menu_new ();
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat,s);
-	GtkWidget * wFormat = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wFormat);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFormat);
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
-	GtkWidget * wParagraph = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wParagraph);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wParagraph);
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont,s);
-	GtkWidget * wFont = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wFont);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFont);
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs,s);
-	GtkWidget * wTabs = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wTabs);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wTabs);
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering,s);
-	GtkWidget * wNumbering = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wNumbering);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wNumbering);
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage,s);
-	GtkWidget * wLanguage = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (wLanguage);
-	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wLanguage);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (FormatMenu), FormatMenu_menu);
-
-	m_wFormat = wFormat;
-	m_wModifyParagraph = wParagraph;
-	m_wModifyFont = wFont;
-	m_wModifyNumbering = wNumbering;
-	m_wModifyTabs = wTabs;
-	m_wModifyLanguage = wLanguage;
+	gtk_combo_box_append_text(combo, s.utf8_str());
+	gtk_combo_box_set_active(combo, 0);
 }
+
 
 void AP_UnixDialog_Styles::_connectModifySignals(void)
 {
-	g_signal_connect(G_OBJECT(m_wModifyParagraph),
-					   "activate",
-					   G_CALLBACK(s_modify_paragraph),
-					   reinterpret_cast<gpointer>(this));
-
-
-	g_signal_connect(G_OBJECT(m_wModifyFont),
-					   "activate",
-					   G_CALLBACK(s_modify_font),
-					   reinterpret_cast<gpointer>(this));
-
-
-	g_signal_connect(G_OBJECT(m_wModifyNumbering),
-					   "activate",
-					   G_CALLBACK(s_modify_numbering),
-					   reinterpret_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_wModifyTabs),
-					   "activate",
-					   G_CALLBACK(s_modify_tabs),
-					   reinterpret_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_wModifyLanguage),
-					   "activate",
-					   G_CALLBACK(s_modify_language),
+	g_signal_connect(G_OBJECT(m_wFormatMenu),
+					   "changed",
+					   G_CALLBACK(s_modify_format_cb),
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
@@ -1173,20 +1116,19 @@ void AP_UnixDialog_Styles::event_RemoveProperty(void)
 
 void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 {
-	GtkCombo* delCombo = GTK_COMBO(m_wDeletePropCombo);
-	GtkList * oldList = GTK_LIST(delCombo->list);
-	if(oldList != NULL)
-	{
-		gtk_list_clear_items(oldList,0,-1);
-	}
+	GtkComboBox* delCombo = GTK_COMBO_BOX(m_wDeletePropCombo);
+	GtkListStore *model = GTK_LIST_STORE(gtk_combo_box_get_model(delCombo));
+
+	gtk_list_store_clear(model);
+
 	UT_sint32 count = m_vecAllProps.getItemCount();
 	UT_sint32 i= 0;
 	for(i=0; i< count; i+=2)
 	{
-		gchar * sz = static_cast<gchar *>(const_cast<gchar*>(m_vecAllProps.getNthItem(i)));
-		GtkWidget * li = gtk_list_item_new_with_label(sz);
-		gtk_widget_show(li);
-		gtk_container_add(GTK_CONTAINER(delCombo->list),li);
+		GtkTreeIter iter;
+		const gchar * sz = m_vecAllProps.getNthItem(i);
+		gtk_list_store_append(model, &iter);
+		gtk_list_store_set(model, &iter, 0, sz, -1);
 	}
 }
 
@@ -1298,23 +1240,9 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 //
 // Free the old glists
 //
-		if(m_gbasedOnStyles != NULL)
-		{	
-			g_list_free (m_gbasedOnStyles);
-			m_gbasedOnStyles = NULL;
-		}
-
-		if(m_gfollowedByStyles != NULL)
-		{
-			g_list_free (m_gfollowedByStyles);
-			m_gfollowedByStyles = NULL;
-		}
-
-		if(m_gStyleType != NULL)
-		{
-			g_list_free (m_gStyleType);
-			m_gStyleType = NULL;
-		}
+		m_gbasedOnStyles.clear();
+		m_gfollowedByStyles.clear();
+		m_gStyleType.clear();
 	    gtk_widget_destroy(m_wModifyDialog);
 	}
 //
@@ -1404,6 +1332,19 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
 }
 
+
+
+static void
+setComboContent(GtkComboBox * combo, const std::list<std::string> & content)
+{
+	gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(combo)));
+	std::list<std::string>::const_iterator iter(content.begin());
+	for(; iter != content.end(); iter++) {
+		gtk_combo_box_append_text(combo, iter->c_str());
+	}
+}
+
+
 bool  AP_UnixDialog_Styles::_populateModify(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -1480,25 +1421,28 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
+			m_gbasedOnStyles.push_back(name);
 		else if(szCurrentStyle == NULL)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
+			m_gbasedOnStyles.push_back(name);
 
-		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
+		m_gfollowedByStyles.push_back(name);
 	}
-	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent))));
-	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))));
-	m_gStyleType = g_list_append(m_gStyleType, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph))));
-	m_gStyleType = g_list_append(m_gStyleType, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter))));
+
+	m_gfollowedByStyles.sort();
+	m_gfollowedByStyles.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+	m_gbasedOnStyles.sort();
+	m_gbasedOnStyles.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+	m_gStyleType.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+	m_gStyleType.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
  
 //
 // Set the popdown list
 //
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
+	setComboContent(GTK_COMBO_BOX(m_wBasedOnCombo),m_gbasedOnStyles);
+	setComboContent(GTK_COMBO_BOX(m_wFollowingCombo),m_gfollowedByStyles);
 	if(isNew())
 	{
-		gtk_combo_set_popdown_strings( GTK_COMBO(m_wStyleTypeCombo),m_gStyleType);
+		setComboContent(GTK_COMBO_BOX(m_wStyleTypeCombo),m_gStyleType);
 	}
 //
 // OK here we set intial values for the basedOn and followedBy

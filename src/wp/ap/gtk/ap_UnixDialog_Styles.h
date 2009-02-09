@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +20,9 @@
 
 #ifndef AP_UnixDialog_Styles_H
 #define AP_UnixDialog_Styles_H
+
+#include <string>
+#include <list>
 
 #include "ap_Dialog_Columns.h"
 
@@ -165,16 +169,9 @@ protected:
 	GtkWidget *	m_wFormatMenu;
 	GtkWidget *	m_wModifyShortCutKey;
 
-	GtkWidget *	m_wFormat;
-	GtkWidget *	m_wModifyParagraph;
-	GtkWidget *	m_wModifyFont;
-	GtkWidget *	m_wModifyNumbering;
-	GtkWidget *	m_wModifyTabs;
-	GtkWidget * m_wModifyLanguage;
-
-	GList *     m_gbasedOnStyles;
-	GList *     m_gfollowedByStyles;
-	GList *     m_gStyleType;
+	std::list<std::string>  m_gbasedOnStyles;
+	std::list<std::string>  m_gfollowedByStyles;
+	std::list<std::string>  m_gStyleType;
 	gchar    m_newStyleName[40];
 	gchar    m_basedonName[40];
 	gchar    m_followedbyName[40];
