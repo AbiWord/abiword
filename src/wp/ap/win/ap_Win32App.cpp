@@ -342,7 +342,9 @@ bool AP_Win32App::initialize(void)
 	// load the all Plugins from the correct directory
 	//////////////////////////////////////////////////////////////////
 
+#ifndef DISABLE_BUILTIN_PLUGINS
 	abi_register_builtin_plugins();
+#endif
 
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
