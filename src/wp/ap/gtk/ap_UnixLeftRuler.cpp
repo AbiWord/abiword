@@ -159,7 +159,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+	if (!pView || pView->getPoint() == 0 || !pUnixLeftRuler->m_pG)
 		return 1;
 
 	// grab the mouse for the duration of the drag.
@@ -197,7 +197,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 	EV_EditMouseButton emb = 0;
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+	if (!pView || pView->getPoint() == 0 || !pUnixLeftRuler->m_pG)
 		return 1;
 
 	if (e->state & GDK_SHIFT_MASK)
@@ -242,7 +242,7 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
-	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
+	if (!pView || pView->getPoint() == 0 || !pUnixLeftRuler->m_pG)
 		return 1;
 
 	EV_EditModifierState ems = 0;
