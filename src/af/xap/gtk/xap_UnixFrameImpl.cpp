@@ -59,6 +59,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "fv_FrameEdit.h"
+#include "fl_DocLayout.h"
 #include "xad_Document.h"
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
