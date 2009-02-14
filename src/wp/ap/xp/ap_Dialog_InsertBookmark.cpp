@@ -42,7 +42,7 @@ AP_Dialog_InsertBookmark::tAnswer AP_Dialog_InsertBookmark::getAnswer(void) cons
   return m_answer;
 }
 
-UT_uint32 AP_Dialog_InsertBookmark::getExistingBookmarksCount() const
+UT_sint32 AP_Dialog_InsertBookmark::getExistingBookmarksCount() const
 {
 	UT_return_val_if_fail (m_pDoc, 0);
 	return m_pDoc->getBookmarkCount();

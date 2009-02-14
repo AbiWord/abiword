@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,10 +18,11 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #include <stdlib.h>
 #include <time.h>
+
+#include <list>
+#include <string>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -55,9 +57,9 @@ XAP_Dialog * AP_UnixDialog_InsertBookmark::static_constructor(XAP_DialogFactory 
 AP_UnixDialog_InsertBookmark::AP_UnixDialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_InsertBookmark(pDlgFactory,id)
+	, m_windowMain(NULL)
+	, m_buttonInsert(NULL)
 {
-	m_windowMain = 0;
-	m_comboEntry = 0;
 }
 
 AP_UnixDialog_InsertBookmark::~AP_UnixDialog_InsertBookmark(void)
@@ -94,8 +96,10 @@ void AP_UnixDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_InsertBookmark::event_OK(void)
 {
 	UT_ASSERT(m_windowMain);
-	// get the bookmark name, if any (return cancel if no name given)	
-	const gchar *mark = gtk_entry_get_text(GTK_ENTRY(m_comboEntry));
+	// get the bookmark name, if any (return cancel if no name given)
+	GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_comboBookmark)));
+	UT_ASSERT(entry);
+	const gchar *mark = gtk_entry_get_text(entry);
 	if(mark && *mark)
 	{
 		xxx_UT_DEBUGMSG(("InsertBookmark: OK pressed, first char 0x%x\n", (UT_uint32)*mark));
@@ -115,7 +119,9 @@ void AP_UnixDialog_InsertBookmark::event_Cancel(void)
 
 void AP_UnixDialog_InsertBookmark::event_Delete(void)
 {
-	const gchar *mark = gtk_entry_get_text(GTK_ENTRY(m_comboEntry));
+	GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_comboBookmark)));
+	UT_ASSERT(entry);
+	const gchar *mark = gtk_entry_get_text(entry);
 	if (mark && *mark)
 		setBookmark(mark);
 	setAnswer(AP_Dialog_InsertBookmark::a_DELETE);
@@ -123,33 +129,37 @@ void AP_UnixDialog_InsertBookmark::event_Delete(void)
 
 void AP_UnixDialog_InsertBookmark::_setList(void)
 {
-	gint i;
-	GList *glist=NULL;
+	std::list<std::string> bookmarks;
 
-	gint (*my_cmp)(const void *, const void *)
-		= (gint (*)(const void *, const void *)) strcmp;
-	for(i = 0; i < static_cast<gint>(getExistingBookmarksCount()); i++)
-		glist = g_list_insert_sorted(glist, const_cast<gchar *>(reinterpret_cast<const gchar *>(getNthExistingBookmark(i))),my_cmp);
+	for(UT_sint32 i = 0; i < getExistingBookmarksCount(); i++) {
+		bookmarks.push_back(getNthExistingBookmark(i));
+	}
 	
-	if (glist != NULL)
-	  {
-	    gtk_combo_set_popdown_strings(GTK_COMBO(m_comboBookmark), glist);
-	    g_list_free (glist);
-	  }
+	GtkComboBox * combo = GTK_COMBO_BOX(m_comboBookmark);
+
+	if (bookmarks.size())
+	{
+		bookmarks.sort();
+		std::list<std::string>::iterator iter(bookmarks.begin());
+		for( ; iter != bookmarks.end(); ++iter) {
+			gtk_combo_box_append_text(combo, iter->c_str());
+		}
+	}
 	
+	GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_comboBookmark)));
 	if (getBookmark() && strlen(getBookmark()) > 0)
-	  {
-	    gtk_entry_set_text(GTK_ENTRY(m_comboEntry), getBookmark());
-	  }
+	{
+	    gtk_entry_set_text(entry, getBookmark());
+	}
 	else
-	  {
+	{
 	    const UT_UCS4String suggestion = getSuggestedBM ();
 	    if (suggestion.size()>0)
-	      {
-		UT_UTF8String utf8 (suggestion);
-		gtk_entry_set_text (GTK_ENTRY(m_comboEntry), utf8.utf8_str());
-	      }
-	  }
+		{
+			UT_UTF8String utf8 (suggestion);
+			gtk_entry_set_text (entry, utf8.utf8_str());
+		}
+	}
 }
 
 void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * container )
@@ -162,13 +172,9 @@ void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * contain
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
-  m_comboBookmark = gtk_combo_new ();
+  m_comboBookmark = gtk_combo_box_entry_new_text();
   gtk_widget_show (m_comboBookmark);
   gtk_box_pack_start (GTK_BOX (container), m_comboBookmark, FALSE, FALSE, 0);
-
-  m_comboEntry = GTK_COMBO (m_comboBookmark)->entry;
-  gtk_widget_show (m_comboEntry);
-  GTK_WIDGET_SET_FLAGS (m_comboEntry, GTK_CAN_DEFAULT);
 }
 
 GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
@@ -194,8 +200,7 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   m_buttonInsert = abiAddButton(GTK_DIALOG(m_windowMain), "", BUTTON_INSERT);
   localizeButtonUnderline (m_buttonInsert, pSS, AP_STRING_ID_DLG_InsertButton);
 
-  gtk_widget_grab_focus (m_comboEntry);
-  gtk_widget_grab_default (m_comboEntry);
+  gtk_widget_grab_focus (m_comboBookmark);
 
   return m_windowMain;
 }

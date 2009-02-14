@@ -54,7 +54,6 @@ protected:
 
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_comboEntry;
 	GtkWidget * m_comboBookmark;
 
 	GtkWidget * m_buttonInsert;
