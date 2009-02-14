@@ -27,6 +27,7 @@
 #include "pd_Document.h"
 #include "gr_CairoPrintGraphics.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "ap_EditMethods.h"
 #include "xap_App.h"
 #include "ut_misc.h"
