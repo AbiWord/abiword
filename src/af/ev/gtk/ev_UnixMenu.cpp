@@ -1063,12 +1063,23 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 												 const char *szMnemonicName)
 {
 	// create the item with the underscored label
-	GtkWidget * w;
+	GtkWidget * w = NULL;
 	char buf[1024];
 	// convert label into underscored version
 	_ev_convert(buf, szLabelName);
 
-	if ( !isCheckable && !isRadio )
+	// an item can't be both a checkable and a radio option
+	UT_return_val_if_fail(!(isCheckable && isRadio), NULL);
+
+	if ( isCheckable )
+	  {
+		  w = gtk_check_menu_item_new_with_mnemonic(buf);
+	  }	
+	else if ( isRadio )
+	  {
+		  w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
+	  }
+	else
 	  {
 		  const char * stock_id = abi_stock_from_menu_id(id);
 		  if (stock_id != NULL)
@@ -1086,14 +1097,6 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 			    w = gtk_menu_item_new_with_mnemonic(buf);
 		    }
 	  }
-	else if ( isCheckable )
-	  {
-		  w = gtk_check_menu_item_new_with_mnemonic(buf);
-	  }	
-	else if ( isRadio )
-		{
-			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
-		}
 	
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
@@ -1110,6 +1113,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	  }
 #endif	  
 	
+	UT_return_val_if_fail(w, NULL);
 	gtk_widget_show(w);
 	
 	// set menu data to relate to class
