@@ -2670,7 +2670,7 @@ void fl_DocSectionLayout::collapse(void)
 	{
 		if(pCol->countCons() > 0)
 		{
-			for(i=0; i<pCol->countCons();i++)
+			for(i = 0; i < static_cast<UT_sint32>(pCol->countCons()); i++)
 			{
 				UT_DEBUGMSG(("Still have a pointer to a container %lx -removing pointer \n",pCol->getNthCon(i)));
 				pCol->justRemoveNthCon(i);
