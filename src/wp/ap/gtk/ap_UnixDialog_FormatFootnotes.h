@@ -40,7 +40,8 @@ public:
 	void event_Cancel(void);
 	void event_Delete(void);
 	void refreshVals(void);
-	void event_MenuChange(GtkWidget * widget);
+	void event_MenuFootnoteChange(GtkWidget * widget);
+	void event_MenuEndnoteChange(GtkWidget * widget);
 	void event_MenuStyleFootnoteChange(GtkWidget * widget);
 	void event_MenuStyleEndnoteChange(GtkWidget * widget);
 	void event_FootInitialValueChange(void);
@@ -60,31 +61,24 @@ private:
 
 	GtkWidget *   m_windowMain;
 	GtkWidget *   m_wButtonApply;
-	GtkWidget *   m_wFootnotesStyleMenu;
-	GtkWidget *   m_wFootnoteNumberingMenu;
-	GtkWidget *   m_wFootnotesDontRestart;
-	GtkWidget *   m_wFootnotesRestartOnSection;
-	GtkWidget *   m_wFootnotesRestartOnPage;
+	GtkComboBox *   m_wFootnotesStyleMenu;
+	GtkComboBox *   m_wFootnoteNumberingMenu;
 	GtkWidget *   m_wFootnotesInitialValText;
 	GtkWidget *   m_wFootnoteSpin;
 	GtkObject *   m_oFootnoteSpinAdj;
 
-	GtkWidget *   m_wEndnotesStyleMenu;
-	GtkWidget *   m_wEndnotesPlaceMenu;
+	GtkComboBox *   m_wEndnotesStyleMenu;
+	GtkComboBox *   m_wEndnotesPlaceMenu;
 	GtkWidget *   m_wEndnotesRestartOnSection;
-	GtkWidget *   m_wEndnotesPlaceEndOfDoc;
-	GtkWidget *   m_wEndnotesPlaceEndOfSec;
 	GtkWidget *   m_wEndnotesInitialValText;
 	GtkWidget *   m_wEndnoteSpin;
 	GtkObject *   m_oEndnoteSpinAdj;
 
 	guint         m_FootnoteSpinHanderID;
 	guint         m_EndnoteSpinHanderID;
-	guint         m_FootRestartPageID;
-	guint         m_FootRestartSectionID;
-	guint    	  m_EndPlaceEndofSectionID;
-	guint         m_EndPlaceEndofDocID;
 	guint    	  m_EndRestartSectionID;
+	guint         m_FootNumberingID;
+	guint    	  m_EndPlaceID;
 	guint         m_FootStyleID;
 	guint         m_EndStyleID;
 

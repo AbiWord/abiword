@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +23,7 @@
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
+#include "xap_GtkObjectHolder.h"
 
 class XAP_UnixFrame;
 class GR_CairoGraphics;
@@ -67,12 +69,12 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkWidget *				_constructWindowContents(void);
 	void					_setRadioButtonLabels(void);
 	void					_connectSignals(void);
-	void					_fillNumberedStyleMenu( GtkWidget *listmenu);
-	void					_fillBulletedStyleMenu( GtkWidget *listmenu);
-	void					_fillNoneStyleMenu( GtkWidget *listmenu);
+	void					_fillNumberedStyleMenu( GtkListStore *listmenu);
+	void					_fillBulletedStyleMenu( GtkListStore *listmenu);
+	void					_fillNoneStyleMenu( GtkListStore *listmenu);
 	void					_gatherData(void);
 	GList *					_getGlistFonts (void);
-	void					_fillFontMenu(GtkWidget* menu);
+	void					_fillFontMenu(GtkListStore* store);
 
 	inline GtkWidget *		_getCloseButton(void) { return m_wClose; }
 	inline GtkWidget *		_getApplyButton(void) { return m_wApply; }
@@ -119,23 +121,20 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkObject * m_oIndentAlign_adj;
 	GtkWidget * m_wIndentAlignSpin;
 	GtkObject * m_oLevelSpin_adj;
-	GtkWidget * m_wFontOptions;
-	GtkWidget * m_wFontOptions_menu;
+	GtkComboBox * m_wFontOptions;
+	GtkListStore * m_wFontOptions_menu;
 	GtkWidget * m_wCustomFrame;
 	GtkWidget * m_wCustomTable;
 	GtkWidget * m_wCustomLabel;
-	GtkWidget * m_wListStyleBox;
-	GtkWidget * m_wListStyleNumbered_menu;
-	GtkWidget * m_wListStyleBulleted_menu;
-	GtkWidget * m_wListStyleNone_menu;
-	GtkWidget * m_wListStyle_menu;
-	GtkWidget * m_wListTypeBox;
-	GtkWidget * m_wListType_menu;
+	GtkComboBox * m_wListStyleBox;
+	XAP_GtkObjectHolder<GtkListStore> m_wListStyleNumbered_menu;
+	XAP_GtkObjectHolder<GtkListStore> m_wListStyleBulleted_menu;
+	XAP_GtkObjectHolder<GtkListStore> m_wListStyleNone_menu;
+	XAP_GtkObjectHolder<GtkListStore> m_wListStyle_menu;
+	GtkComboBox * m_wListTypeBox;
+	XAP_GtkObjectHolder<GtkListStore> m_wListType_menu;
 	GtkObject * m_oStartSpin_adj;
 	GtkWidget * m_wStartSpin;
-	GtkWidget * m_wMenu_None;
-	GtkWidget * m_wMenu_Bull;
-	GtkWidget * m_wMenu_Num;
 	GtkWidget * m_wStartSub_label;
 	GtkWidget * m_wStartNew_label;
 	gint m_iDelimEntryID;

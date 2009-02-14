@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +18,6 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkSignalBlocker.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
@@ -87,27 +87,31 @@ static void s_FoldCheck_changed(GtkWidget * widget, AP_UnixDialog_Lists * me)
 	me->setFoldLevel(iLevel,bSet);
 }
 
-static void s_styleChangedNone (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
+static void s_styleChanged(GtkWidget * w, AP_UnixDialog_Lists * me)
 {
-  	me->setDirty();
-	me->styleChanged ( 0 );
+	GtkComboBox * combo = GTK_COMBO_BOX(w);
+	gint idx = gtk_combo_box_get_active(combo);
+	switch(idx) {
+	case 0:
+		me->setDirty();
+		me->styleChanged ( 0 );
+		break;
+	case 1:
+		me->setDirty();
+		me->fillUncustomizedValues(); // Use defaults to start.
+		me->styleChanged ( 1 );
+		break;
+	case 2:
+		me->setDirty();
+		me->fillUncustomizedValues(); // Use defaults to start.
+		me->styleChanged ( 2 );
+		break;
+	default:
+		break;
+	}
 }
 
 
-static void s_styleChangedBullet (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
-{
-  	me->setDirty();
-	me->fillUncustomizedValues(); // Use defaults to start.
-	me->styleChanged ( 1 );
-}
-
-
-static void s_styleChangedNumbered (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
-{
-  	me->setDirty();
-	me->fillUncustomizedValues(); // Use defaults to start.
-	me->styleChanged ( 2 );
-}
 
 /*!
  * User has changed their list type selection.
@@ -351,15 +355,13 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 		{
 			wF = m_vecFoldCheck.getNthItem(i);
 			ID = m_vecFoldID.getNthItem(i);
-			g_signal_handler_block(G_OBJECT(wF),ID);
+			XAP_GtkSignalBlocker b1(G_OBJECT(wF),ID);
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
-			g_signal_handler_unblock(G_OBJECT(wF),ID);
 		}
 		wF = m_vecFoldCheck.getNthItem(0);
 		ID = m_vecFoldID.getNthItem(0);
-		g_signal_handler_block(G_OBJECT(wF),ID);
+		XAP_GtkSignalBlocker b2(G_OBJECT(wF),ID);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
-		g_signal_handler_unblock(G_OBJECT(wF),ID);
 		setCurrentFold(0);
 	}
 	else
@@ -368,15 +370,15 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 		{
 			wF = m_vecFoldCheck.getNthItem(i);
 			ID = m_vecFoldID.getNthItem(i);
-			g_signal_handler_block(G_OBJECT(wF),ID);
+			XAP_GtkSignalBlocker b2(G_OBJECT(wF),ID);
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
-			g_signal_handler_unblock(G_OBJECT(wF),ID);
 		}
 		wF = m_vecFoldCheck.getNthItem(iLevel);
 		ID = m_vecFoldID.getNthItem(iLevel);
-		g_signal_handler_block(G_OBJECT(wF),ID);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
-		g_signal_handler_unblock(G_OBJECT(wF),ID);
+		{
+			XAP_GtkSignalBlocker b1(G_OBJECT(wF),ID);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
+		}
 		setCurrentFold(iLevel);
 	}
 }
@@ -417,49 +419,29 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 	//
 	// code to change list list
 	//
-	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
 	if(type == 0)
 	{
-		//     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
-	  	m_wListStyleNone_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNone_menu;
-		_fillNoneStyleMenu(m_wListStyleNone_menu);
 
+		gtk_combo_box_set_model(m_wListStyleBox,
+								GTK_TREE_MODEL(m_wListStyleNone_menu.obj()));
 
-		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-		g_signal_handler_block(G_OBJECT(m_wListStyleBox), m_iStyleBoxID);
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
-								  m_wListStyleNone_menu);
-		g_signal_handler_unblock(G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-
-
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
-								  0);
+		gtk_combo_box_set_active(m_wListTypeBox, 0);
 		setNewListType(NOT_A_LIST);
-		gtk_widget_set_sensitive(m_wFontOptions, false);
+		gtk_widget_set_sensitive(GTK_WIDGET(m_wFontOptions), false);
 		gtk_widget_set_sensitive(m_wStartSpin, false);
 		gtk_widget_set_sensitive(m_wDelimEntry, false);
 		gtk_widget_set_sensitive(m_wDecimalEntry, false);		
 	}
 	else if(type == 1)
 	{
-		//    gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
-		m_wListStyleBulleted_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleBulleted_menu;
-		_fillBulletedStyleMenu(m_wListStyleBulleted_menu);
 
-
-		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
-								  m_wListStyleBulleted_menu);
-		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-
-
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
-								  1);
+		gtk_combo_box_set_model(m_wListStyleBox,
+								GTK_TREE_MODEL(m_wListStyleBulleted_menu.obj()));
+		gtk_combo_box_set_active(m_wListTypeBox, 1);
 		setNewListType(BULLETED_LIST);
-		gtk_widget_set_sensitive(m_wFontOptions, false);
+		gtk_widget_set_sensitive(GTK_WIDGET(m_wFontOptions), false);
 		gtk_widget_set_sensitive(m_wStartSpin, false);
 		gtk_widget_set_sensitive(m_wDelimEntry, false);
 		gtk_widget_set_sensitive(m_wDecimalEntry, false);		
@@ -467,20 +449,17 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 	else if(type == 2)
 	{
 		//  gtk_widget_destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
-	  	m_wListStyleNumbered_menu = gtk_menu_new();
+//	  	m_wListStyleNumbered_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNumbered_menu;
-		_fillNumberedStyleMenu(m_wListStyleNumbered_menu);
+//		_fillNumberedStyleMenu(m_wListStyleNumbered_menu);
 
 		// Block events during this manual change
 
-		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
-								  m_wListStyleNumbered_menu);
-		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox), m_iStyleBoxID );
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
-								  2);
+		gtk_combo_box_set_model (m_wListStyleBox,
+								 GTK_TREE_MODEL(m_wListStyleNumbered_menu.obj()));
+		gtk_combo_box_set_active(m_wListTypeBox, 2);
 		setNewListType(NUMBERED_LIST);
-		gtk_widget_set_sensitive(m_wFontOptions, true);
+		gtk_widget_set_sensitive(GTK_WIDGET(m_wFontOptions), true);
 		gtk_widget_set_sensitive(m_wStartSpin, true);
 		gtk_widget_set_sensitive(m_wDelimEntry, true);
 		gtk_widget_set_sensitive(m_wDecimalEntry, true);		
@@ -505,8 +484,13 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
  */
 void  AP_UnixDialog_Lists::setListTypeFromWidget(void)
 {
-	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-	setNewListType(static_cast<FL_ListType>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wlisttype), "user_data"))));
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	gtk_combo_box_get_active_iter(m_wListStyleBox, &iter);
+	model = gtk_combo_box_get_model(m_wListStyleBox);
+	gint type;
+	gtk_tree_model_get(model, &iter, 1, &type, -1);
+	setNewListType((FL_ListType)type);
 }
 
 /*!
@@ -623,41 +607,39 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 	return (m_wMainWindow);
 }
 
-void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
+static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
+					   int stringID, int itemID)
 {
-	GtkWidget* glade_menuitem;
+	GtkTreeIter iter;
+	UT_UTF8String s;
+	pSS->getValueUTF8(stringID,s);
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, s.utf8_str(),
+					   1, itemID, -1);
+
+}
+
+void AP_UnixDialog_Lists::_fillFontMenu(GtkListStore* store)
+{
 	GList* m_glFonts;
 	gint i;
 	gint nfonts;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	m_glFonts = _getGlistFonts();
 	nfonts = g_list_length(m_glFonts);
 
-	// somebody can explain me (jca) the reason of these 6 lines?
-	// it seems to me like if we were inserting two times the current font in the menu
-	// Sevior: This is not a valid font name. However if you select
-        // this you get whatever font is in the document at the point the
-        // list is inserted.
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Current_Font,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data (G_OBJECT (glade_menuitem), "user_data", GINT_TO_POINTER (0));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_valueChanged), this);
+	addToStore(store, pSS, AP_STRING_ID_DLG_Lists_Current_Font,
+			   0);
+
 	for(i = 0; i < nfonts; i++)
 	{
-		glade_menuitem = gtk_menu_item_new_with_label (static_cast<gchar *>(g_list_nth_data (m_glFonts, i)));
-		gtk_widget_show (glade_menuitem);
-		g_object_set_data (G_OBJECT (glade_menuitem), "user_data", GINT_TO_POINTER (i + 1));
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), glade_menuitem);
-		g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-				  G_CALLBACK (s_valueChanged), this);
+		GtkTreeIter iter;
+		gtk_list_store_append(store, &iter);
+		gtk_list_store_set(store, &iter, 
+						   0, static_cast<const gchar *>(g_list_nth_data (m_glFonts, i)), 
+						   1, i+1, -1);
 	}
-
-	  //gtk_option_menu_set_history (GTK_OPTION_MENU (menu), 0);
 }
 
 GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
@@ -668,14 +650,13 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *table1;
 	GtkWidget *style_om;
 	GtkWidget *type_om;
-	GtkWidget *type_om_menu;
 	GtkWidget *type_lb;
 	GtkWidget *style_lb;
 	GtkWidget *customized_cb;
 	GtkWidget *frame1;
 	GtkWidget *table2;
-	GtkWidget *font_om;
-	GtkWidget *font_om_menu;
+	GtkComboBox *font_om;
+	GtkListStore *font_om_menu;
 	GtkWidget *format_en;
 	GtkWidget *decimal_en;
 	GtkObject *start_sb_adj;
@@ -838,56 +819,43 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (vbox4), table1, FALSE, TRUE, 0);
 	gtk_table_set_row_spacings (GTK_TABLE (table1), 4);
 
-	style_om = gtk_option_menu_new ();
+	style_om = gtk_combo_box_new_text();
 	gtk_widget_show (style_om);
 	gtk_table_attach (GTK_TABLE (table1), style_om, 1, 2, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 
-	m_wListStyleNone_menu = gtk_menu_new();
-	_fillNoneStyleMenu(m_wListStyleNone_menu);
-	m_wListStyleNumbered_menu = gtk_menu_new ();
-	_fillNumberedStyleMenu(m_wListStyleNumbered_menu);
-	m_wListStyleBulleted_menu = gtk_menu_new();
-	_fillBulletedStyleMenu(m_wListStyleBulleted_menu);
+	m_wListStyleNone_menu = gtk_list_store_new(2, G_TYPE_STRING, 
+											   G_TYPE_INT);
+	_fillNoneStyleMenu(m_wListStyleNone_menu.obj());
+	m_wListStyleNumbered_menu = gtk_list_store_new (2, G_TYPE_STRING, 
+													G_TYPE_INT);
+	_fillNumberedStyleMenu(m_wListStyleNumbered_menu.obj());
+	m_wListStyleBulleted_menu = gtk_list_store_new(2, G_TYPE_STRING,
+												   G_TYPE_INT);
+	_fillBulletedStyleMenu(m_wListStyleBulleted_menu.obj());
 
 	// This is the default list. Change if the list style changes
 	//
 	m_wListStyle_menu = m_wListStyleNumbered_menu;
 
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (style_om), m_wListStyleNumbered_menu);
+	gtk_combo_box_set_model(GTK_COMBO_BOX (style_om), 
+							GTK_TREE_MODEL(m_wListStyleNumbered_menu.obj()));
 
-	type_om = gtk_option_menu_new ();
+	type_om = gtk_combo_box_new_text();
 	gtk_widget_show (type_om);
 	gtk_table_attach (GTK_TABLE (table1), type_om, 1, 2, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-
-	type_om_menu = gtk_menu_new ();
+	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none,s);
-	GtkWidget * menu_none = gtk_menu_item_new_with_label (s.utf8_str());
-	m_wMenu_None = menu_none;
-	g_object_set_data(G_OBJECT(menu_none),"user_data",GINT_TO_POINTER(0));
-	gtk_widget_show (menu_none);
-	gtk_menu_shell_append (GTK_MENU_SHELL (type_om_menu), menu_none);
+	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet,s);
-	GtkWidget * menu_bull  = gtk_menu_item_new_with_label (s.utf8_str());
-	g_object_set_data(G_OBJECT(menu_bull),"user_data",GINT_TO_POINTER(1));
-	gtk_widget_show (menu_bull);
-	m_wMenu_Bull = menu_bull;
-	gtk_menu_shell_append (GTK_MENU_SHELL (type_om_menu), menu_bull);
+	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered,s);
-	GtkWidget * menu_num  = gtk_menu_item_new_with_label (s.utf8_str());
-	g_object_set_data(G_OBJECT(menu_num),"user_data",GINT_TO_POINTER(2));
-	gtk_widget_show (menu_num);
-	m_wMenu_Num = menu_num;
-	gtk_menu_shell_append (GTK_MENU_SHELL (type_om_menu), menu_num);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (type_om), type_om_menu);
+	gtk_combo_box_append_text(GTK_COMBO_BOX(type_om), s.utf8_str());
+	gtk_combo_box_set_active(GTK_COMBO_BOX(type_om), 0);
 
-	// This is how we set the active element of an option menu!!
-	//
-	gtk_option_menu_set_history (GTK_OPTION_MENU (type_om), 2);
-	gtk_widget_set_events(type_om, GDK_ALL_EVENTS_MASK);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type,s);
 	type_lb = gtk_label_new (s.utf8_str());
 	gtk_widget_show (type_lb);
@@ -926,16 +894,15 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_table_set_row_spacings (GTK_TABLE (table2), 4);
 	gtk_table_set_col_spacings (GTK_TABLE (table2), 4);
 
-	font_om = gtk_option_menu_new ();
-	gtk_widget_show (font_om);
-	gtk_table_attach (GTK_TABLE (table2), font_om, 1, 2, 1, 2,
+	font_om_menu = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+	_fillFontMenu(font_om_menu);
+
+	font_om = GTK_COMBO_BOX(gtk_combo_box_new_text());
+	gtk_combo_box_set_model(font_om, GTK_TREE_MODEL(font_om_menu));
+	gtk_widget_show (GTK_WIDGET(font_om));
+	gtk_table_attach (GTK_TABLE (table2), GTK_WIDGET(font_om), 1, 2, 1, 2,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-
-	font_om_menu = gtk_menu_new ();
-	gtk_widget_show(font_om_menu);
-	_fillFontMenu(font_om_menu);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (font_om), font_om_menu);
 
 	format_en = gtk_entry_new ();
 	gtk_entry_set_max_length(GTK_ENTRY(format_en), 20);
@@ -952,16 +919,18 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
-	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
+	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 0);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
 	gtk_widget_show (start_sb);
+	gtk_adjustment_set_page_size(GTK_ADJUSTMENT (start_sb_adj), 10);
 	gtk_table_attach (GTK_TABLE (table2), start_sb, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 
-	text_align_sb_adj = gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 1);
+	text_align_sb_adj = gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 0);
 	text_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (text_align_sb_adj), 0.05, 2);
 	gtk_widget_show (text_align_sb);
+	gtk_adjustment_set_page_size(GTK_ADJUSTMENT (text_align_sb_adj), 1);
 	gtk_table_attach (GTK_TABLE (table2), text_align_sb, 1, 2, 4, 5,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
@@ -1094,8 +1063,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	m_wCustomFrame = frame1;
 	m_wCustomLabel = customized_cb;
 	m_wCustomTable = table2;
-	m_wListStyleBox = style_om;
-	m_wListTypeBox = type_om;
+	m_wListStyleBox = GTK_COMBO_BOX(style_om);
+	m_wListTypeBox = GTK_COMBO_BOX(type_om);
 	m_wListType_menu = m_wListStyleNumbered_menu;
 
 	// Start by hiding the Custom frame
@@ -1147,195 +1116,59 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 
 
 
-void AP_UnixDialog_Lists::_fillNoneStyleMenu( GtkWidget *listmenu)
+void AP_UnixDialog_Lists::_fillNoneStyleMenu( GtkListStore *listmenu)
 {
-	GtkWidget *glade_menuitem;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data", GINT_TO_POINTER(
-		static_cast<gint>(NOT_A_LIST) ));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	addToStore(listmenu, pSS, AP_STRING_ID_DLG_Lists_Type_none,
+			   NOT_A_LIST);
 }
 
-void AP_UnixDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
+void AP_UnixDialog_Lists::_fillNumberedStyleMenu( GtkListStore *listmenu)
 {
-	GtkWidget *glade_menuitem;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Numbered_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(NUMBERED_LIST) ));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Case_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(LOWERCASE_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Case_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(UPPERCASE_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Roman_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(LOWERROMAN_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Roman_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(UPPERROMAN_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Arabic_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(ARABICNUMBERED_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hebrew_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(HEBREW_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	addToStore(listmenu, pSS, AP_STRING_ID_DLG_Lists_Numbered_List,
+			   NUMBERED_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Lower_Case_List,
+			   LOWERCASE_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Upper_Case_List,
+			   UPPERCASE_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Lower_Roman_List,
+			   LOWERROMAN_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Upper_Roman_List,
+			   UPPERROMAN_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Arabic_List,
+			   ARABICNUMBERED_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Hebrew_List,
+			   HEBREW_LIST);
 }
 
 
-void AP_UnixDialog_Lists::_fillBulletedStyleMenu( GtkWidget *listmenu)
+void AP_UnixDialog_Lists::_fillBulletedStyleMenu( GtkListStore *listmenu)
 {
-	GtkWidget *glade_menuitem;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Bullet_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(BULLETED_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Dashed_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(DASHED_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Square_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(SQUARE_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Triangle_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(TRIANGLE_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Diamond_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(DIAMOND_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Star_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(STAR_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Implies_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(IMPLIES_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Tick_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(TICK_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Box_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(BOX_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hand_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(HAND_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Heart_List,s);
-	glade_menuitem = gtk_menu_item_new_with_label (s.utf8_str());
-	gtk_widget_show (glade_menuitem);
-	g_object_set_data(G_OBJECT(glade_menuitem),"user_data",GINT_TO_POINTER(
-		static_cast<gint>(HEART_LIST)));
-	gtk_menu_shell_append (GTK_MENU_SHELL (listmenu), glade_menuitem);
-	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-						G_CALLBACK (s_typeChanged), this);
-
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Bullet_List,
+			   BULLETED_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Dashed_List,
+			   DASHED_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Square_List,
+			   SQUARE_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Triangle_List,
+			   TRIANGLE_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Diamond_List,
+			   DIAMOND_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Star_List,
+			   STAR_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Implies_List,
+			   IMPLIES_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Tick_List,
+			   TICK_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Box_List,
+			   BOX_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Hand_List,
+			   HAND_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Heart_List,
+			   HEART_LIST);
 }
 
 void AP_UnixDialog_Lists::_setRadioButtonLabels(void)
@@ -1374,12 +1207,22 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 						G_CALLBACK (s_closeClicked), this);
 	g_signal_connect (G_OBJECT (m_wCustomLabel), "clicked",
 						G_CALLBACK (s_customChanged), this);
+
+	g_signal_connect (G_OBJECT (m_wListTypeBox), "changed",
+					  G_CALLBACK (s_styleChanged), this);
+	g_signal_connect(G_OBJECT(m_wListStyleBox), "changed",
+					 G_CALLBACK(s_typeChanged), this);
+/*
 	g_signal_connect (G_OBJECT (m_wMenu_None), "activate",
 						G_CALLBACK (s_styleChangedNone), this);
 	g_signal_connect (G_OBJECT (m_wMenu_Bull), "activate",
 						G_CALLBACK (s_styleChangedBullet), this);
 	g_signal_connect (G_OBJECT (m_wMenu_Num), "activate",
 						G_CALLBACK (s_styleChangedNumbered), this);
+*/
+	g_signal_connect (G_OBJECT (m_wFontOptions), "changed",
+					  G_CALLBACK (s_valueChanged), this);
+
         g_signal_connect (G_OBJECT (m_oStartSpin_adj), "value_changed",
 						G_CALLBACK (s_valueChanged), this);
 	m_iDecimalEntryID = g_signal_connect (G_OBJECT (m_wDecimalEntry), "changed",
@@ -1420,11 +1263,11 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
   //
   // Block all signals while setting these things
   //
-	g_signal_handler_block(  G_OBJECT(m_oAlignList_adj), m_iAlignListSpinID);
-	g_signal_handler_block(  G_OBJECT(m_oIndentAlign_adj), m_iIndentAlignSpinID);
+	XAP_GtkSignalBlocker b1(  G_OBJECT(m_oAlignList_adj), m_iAlignListSpinID);
+	XAP_GtkSignalBlocker b2(  G_OBJECT(m_oIndentAlign_adj), m_iIndentAlignSpinID);
 
-	g_signal_handler_block(  G_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
-	g_signal_handler_block(  G_OBJECT(m_wDelimEntry), m_iDelimEntryID );
+	XAP_GtkSignalBlocker b3(  G_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
+	XAP_GtkSignalBlocker b4(  G_OBJECT(m_wDelimEntry), m_iDelimEntryID );
 	gint i;
 	//
 	// HACK to effectively block an update during this method
@@ -1446,7 +1289,7 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 	//
 	if(strcmp(static_cast<const char *>(getFont()),"NULL") == 0 )
 	{
-		gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
+		gtk_combo_box_set_active(m_wFontOptions, 0 );
 	}
 	else
 	{
@@ -1457,11 +1300,11 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 		}
 		if(i < static_cast<gint>(g_list_length(m_glFonts)))
 		{
-			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), i+ 1 );
+			gtk_combo_box_set_active(m_wFontOptions, i + 1 );
 		}
 		else
 		{
-			gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
+			gtk_combo_box_set_active(m_wFontOptions, 0 );
 		}
 	}
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),static_cast<float>(getiStartValue()));
@@ -1476,37 +1319,32 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 	{
 		styleChanged(0);
 		setNewListType(save);
-		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(NOT_A_LIST));
+		gtk_combo_box_set_active(m_wListTypeBox, 0);
+		gtk_combo_box_set_active(m_wListStyleBox, 0);
 	}
 	else if(IS_BULLETED_LIST_TYPE(getNewListType()) )
 	{
 		styleChanged(1);
 		setNewListType(save);
-		gtk_option_menu_set_history(  GTK_OPTION_MENU (m_wListTypeBox),1);
-		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint) (getNewListType() - BULLETED_LIST));
+		gtk_combo_box_set_active(m_wListTypeBox, 1);
+		gtk_combo_box_set_active(m_wListStyleBox, (gint) (getNewListType() - BULLETED_LIST));
 	}
 	else
 	{
 		styleChanged(2);
 	    setNewListType(save);
-		gtk_option_menu_set_history(  GTK_OPTION_MENU (m_wListTypeBox),2);
+		gtk_combo_box_set_active(m_wListTypeBox, 2);
 		if(getNewListType() < OTHER_NUMBERED_LISTS)
 		{
-		    gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(getNewListType()));
+			gtk_combo_box_set_active(m_wListStyleBox, getNewListType());
 		}
 		else
 		{
 		    gint iMenu = static_cast<gint>(getNewListType()) - OTHER_NUMBERED_LISTS + BULLETED_LIST -1 ;
-		    gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),static_cast<gint>(iMenu));
+			gtk_combo_box_set_active(m_wListStyleBox,iMenu);
 		}
 	}
 
-	//
-	// turn signals back on
-	g_signal_handler_unblock(  G_OBJECT(m_oAlignList_adj), m_iAlignListSpinID);
-	g_signal_handler_unblock(  G_OBJECT(m_oIndentAlign_adj), m_iIndentAlignSpinID);
-	g_signal_handler_unblock(  G_OBJECT(m_wDelimEntry), m_iDelimEntryID );
-	g_signal_handler_unblock(  G_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
 	//
 	// HACK to allow an update during this method
 	//
@@ -1558,8 +1396,7 @@ void AP_UnixDialog_Lists::_gatherData(void)
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
 
 	}
-	GtkWidget * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
-	gint ifont =  GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wfont), "user_data"));
+	gint ifont = gtk_combo_box_get_active(m_wFontOptions);
 	if(ifont == 0)
 	{
 		copyCharToFont("NULL");

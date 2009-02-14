@@ -63,10 +63,6 @@ void messageBoxOK(const char * message);
 // Centers a GTK window inside a parent window 
 void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for = true);
 
-// Converts all a given window's &'ed labels into accelerators for the
-//		checkbutton/button.  It will also set the accel-groups 
-void createLabelAccelerators( GtkWidget * widget );
-
 GtkStyle * get_ensured_style (GtkWidget * w);
 
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap

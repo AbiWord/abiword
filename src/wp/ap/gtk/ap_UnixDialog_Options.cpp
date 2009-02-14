@@ -508,9 +508,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     _constructWindowContents ( builder );
 
-    // create the accelerators from &'s
-    // createLabelAccelerators(mainWindow);
-
     mainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Options"));
 
     // set the dialog title

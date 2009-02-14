@@ -204,14 +204,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omFootnoteStyle">
+                      <object class="GtkComboBox" id="omFootnoteStyle">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
-                        <child>
-                          <object class="GtkMenu" id="menFootnoteStyle">
-			</object>
-                        </child>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -222,14 +217,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omNumbering">
+                      <object class="GtkComboBox" id="omNumbering">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
-                        <child>
-                          <object class="GtkMenu" id="menNumbering">
-			</object>
-                        </child>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -461,14 +451,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omEndnoteStyle">
+                      <object class="GtkComboBox" id="omEndnoteStyle">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
-                        <child>
-                          <object class="GtkMenu" id="menEndnoteStyle">
-			</object>
-                        </child>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -479,14 +464,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omEndnotePlacement">
+                      <object class="GtkComboBox" id="omEndnotePlacement">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
-                        <child>
-                          <object class="GtkMenu" id="menEndnotePlacement">
-			</object>
-                        </child>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
