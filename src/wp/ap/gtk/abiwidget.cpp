@@ -54,6 +54,7 @@
 #include "ap_UnixApp.h"
 #include "ut_sleep.h"
 #include "fv_View.h"
+#include "fg_Graphic.h"
 #include "fl_DocLayout.h"
 #include "ut_go_file.h"
 #include "ut_timer.h"
