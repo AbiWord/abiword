@@ -27,6 +27,7 @@
 
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
+#include "xap_GtkComboBoxHelpers.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -439,26 +440,6 @@ void AP_UnixDialog_FormatFootnotes::event_Delete(void)
 }
 
 
-static void 
-_makeTextComboBox(GtkComboBox * combo, bool withIntData)
-{
-	GtkListStore * store;
-	if (withIntData) {
-		store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
-	}
-	else {
-		store = gtk_list_store_new(1, G_TYPE_STRING);
-	}
-	gtk_combo_box_set_model(combo, GTK_TREE_MODEL(store));
-	
-	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
-	GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), cell, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell,
-								   "text", 0, NULL);
-
-}
-
 
 static void
 _populateComboBox(GtkComboBox * combo, 
@@ -522,14 +503,14 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 		
 	m_wFootnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omFootnoteStyle"));
 	UT_ASSERT(m_wFootnotesStyleMenu );
-	_makeTextComboBox(m_wFootnotesStyleMenu, true);
-	_populateComboBox(m_wFootnotesStyleMenu, *footnoteTypeList);
+	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, true);
+	XAP_populateComboBoxWithIndex(m_wFootnotesStyleMenu, *footnoteTypeList);
 	gtk_combo_box_set_active(m_wFootnotesStyleMenu, 0);
 
 	m_wEndnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnoteStyle"));
 	UT_ASSERT(m_wEndnotesStyleMenu);
-	_makeTextComboBox(m_wEndnotesStyleMenu, true);
-	_populateComboBox(m_wEndnotesStyleMenu, *footnoteTypeList);
+	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, true);
+	XAP_populateComboBoxWithIndex(m_wEndnotesStyleMenu, *footnoteTypeList);
 	gtk_combo_box_set_active(m_wEndnotesStyleMenu, 0);
 
 //
@@ -537,7 +518,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
-	_makeTextComboBox(m_wFootnoteNumberingMenu, false);
+	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, false);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
 	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
@@ -553,7 +534,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
-	_makeTextComboBox(m_wEndnotesPlaceMenu, false);
+	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, false);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
 	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);

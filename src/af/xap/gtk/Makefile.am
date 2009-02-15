@@ -18,6 +18,8 @@ conditional_src =
 libgtk_la_SOURCES = \
 	xap_GtkObjectHolder.h \
 	xap_GtkSignalBlocker.h \
+	xap_GtkComboBoxHelpers.h \
+	xap_GtkComboBoxHelpers.cpp \
 	xap_EmbeddedFeatures.h \
 	xap_UnixApp.cpp \
 	xap_UnixApp.h \

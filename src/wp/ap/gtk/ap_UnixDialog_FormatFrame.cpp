@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (C) 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -29,6 +30,8 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkSignalBlocker.h"
+#include "xap_GtkComboBoxHelpers.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -346,17 +349,15 @@ void AP_UnixDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & sThick)
 			dClose = diff;
 		}
 	}
-	g_signal_handler_block(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
-	gtk_option_menu_set_history (GTK_OPTION_MENU(m_wBorderThickness),
-							  closest);
-	g_signal_handler_unblock(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), closest);
 }
 
 void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 {
 	if(m_wBorderThickness)
 	{
-		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wBorderThickness));
+		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderThickness));
 		double thickness = m_dThickness[history];
 
 		UT_UTF8String sThickness;
@@ -372,19 +373,19 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 
 void AP_UnixDialog_FormatFrame::event_ApplyToChanged(void)
 {
-        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosParagraph )))
-        {
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosParagraph )))
+	{
 	     setPositionMode(FL_FRAME_POSITIONED_TO_BLOCK);  
 	}
 	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosColumn )))
-        {
+	{
 	     setPositionMode(FL_FRAME_POSITIONED_TO_COLUMN);  
 	}
 	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosPage )))
-        {
+	{
 	     setPositionMode(FL_FRAME_POSITIONED_TO_PAGE);  
 	}
-        applyChanges();
+	applyChanges();
 }
 
 void AP_UnixDialog_FormatFrame::destroy(void)
@@ -449,7 +450,7 @@ void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 {
 	GtkWidget * window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
 	// get the path where our UI file is located
 	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatFrame.xml";
@@ -534,6 +535,18 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 // Now the Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
+	GtkComboBox *combo = GTK_COMBO_BOX(m_wBorderThickness);
+	XAP_makeGtkComboBoxText(combo, false);
+	// TODO WTF is this hardcoded. 
+	gtk_combo_box_append_text(combo, "1/2 pt");
+	gtk_combo_box_append_text(combo, "3/4 pt");
+	gtk_combo_box_append_text(combo, "1 pt");
+	gtk_combo_box_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_append_text(combo, "3 pt");
+	gtk_combo_box_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_append_text(combo, "6 pt");
+	gtk_combo_box_set_active(combo, 0);
 	
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -565,11 +578,11 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"destroy",
-							GTK_SIGNAL_FUNC(s_destroy_clicked),
+							G_CALLBACK(s_destroy_clicked),
 							reinterpret_cast<gpointer>(this));
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"delete_event",
-							GTK_SIGNAL_FUNC(s_delete_clicked),
+							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyButton),
