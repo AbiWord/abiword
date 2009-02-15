@@ -250,14 +250,9 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkOptionMenu" id="optionPageUnits">
+                                  <object class="GtkComboBox" id="optionPageUnits">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="history">-1</property>
-                                    <child>
-                                      <object class="GtkMenu" id="menu1">
-				    </object>
-                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -752,14 +747,9 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkOptionMenu" id="optionMarginUnits">
+                          <object class="GtkComboBox" id="optionMarginUnits">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="history">-1</property>
-                            <child>
-                              <object class="GtkMenu" id="menu2">
-			    </object>
-                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

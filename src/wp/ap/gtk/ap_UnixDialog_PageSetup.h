@@ -83,9 +83,6 @@ public:
 	GtkWidget * m_PageHbox;
 	GtkWidget * m_MarginHbox;
 
-	GtkWidget * glade_menuitem;
-	GtkWidget * optionMarginUnits_menu;
-	GtkWidget * optionPageUnits_menu;
 
 	guint m_iEntryPageWidthID;
 	guint m_iEntryPageHeightID;

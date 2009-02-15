@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +18,7 @@
  * 02111-1307, USA.
  */
 
+
 #include "ut_assert.h"
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -24,7 +26,8 @@
 #include "ap_Strings.h"
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
-
+#include "xap_GtkSignalBlocker.h"
+#include "xap_GtkComboBoxHelpers.h"
 #include "ap_UnixDialog_PageSetup.h"
 
 #include <string.h>
@@ -54,7 +57,7 @@ create_pixmap (GtkWidget *w, const char **data)
 	gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
 							 NULL, const_cast<gchar **>(data));
 
-	pixmap = gtk_pixmap_new (gdkpixmap, mask);
+	pixmap = gtk_image_new_from_pixmap (gdkpixmap, mask);
 	gdk_pixmap_unref (gdkpixmap);
 	gdk_bitmap_unref (mask);
 	return pixmap;
@@ -118,35 +121,10 @@ inline char * _0(const XAP_StringSet * pSS, XAP_String_Id id)
 
 #define _(a, x) _0(pSS, a##_STRING_ID_##x)
 
-// string tags to stuff stored in widget data
-#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG		"value"
-
-// convenience macro
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w, m, d, f)				\
-        do {												\
-                g_object_set_data (G_OBJECT (w), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(m));                \
-                g_object_set_data (G_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
-	        g_signal_connect (G_OBJECT (w), "activate",	\
-                G_CALLBACK (f),		\
-                static_cast<gpointer>(this));							\
-        } while (0)
 
 /*********************************************************************************/
 
 // static event callbacks
-
-static void s_menu_item_activate (GtkWidget * widget)
-{
-	GtkWidget *option_menu = static_cast<GtkWidget *>(g_object_get_data (G_OBJECT (widget),
-								   WIDGET_MENU_OPTION_PTR));
-	UT_ASSERT(option_menu && GTK_IS_OPTION_MENU (option_menu));
-
-	gpointer p = g_object_get_data (G_OBJECT (widget),
-					  WIDGET_MENU_VALUE_TAG);
-
-	g_object_set_data (G_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
-}
 
 static void s_Landscape_changed(GtkWidget * w,  AP_UnixDialog_PageSetup *dlg)
 {
@@ -164,14 +142,12 @@ static void s_page_size_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 static void s_page_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
 	UT_return_if_fail(w && dlg);
-	s_menu_item_activate (w);
 	dlg->event_PageUnitsChanged ();
 }
 
 static void s_margin_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
 	UT_return_if_fail(w && dlg);
-	s_menu_item_activate (w);
 	dlg->event_MarginUnitsChanged ();
 }
 
@@ -279,12 +255,12 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setWidth(sAfter.utf8_str());
-	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
-	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
-	gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
-	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth),m_iEntryPageWidthID);
-
+	{
+		XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+		int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
+		gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
+		gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
+	}
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_updatePageSizeList();
 }
@@ -296,11 +272,12 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_setHeight(sAfter.utf8_str());
 
-	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
-	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sAfter.utf8_str() );
-	gtk_editable_set_position(GTK_EDITABLE(m_entryPageHeight), pos);
-	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight),m_iEntryPageHeightID);
+	{
+		XAP_GtkSignalBlocker b(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
+		int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
+		gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sAfter.utf8_str() );
+		gtk_editable_set_position(GTK_EDITABLE(m_entryPageHeight), pos);
+	}
 	_updatePageSizeList();
 }
 
@@ -311,9 +288,8 @@ void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 	gint page_index = static_cast<gint>(fp_PageSize::NameToPredefined 
 						(m_PageSize.getPredefinedName ()));
 
-	g_signal_handler_block(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
+	XAP_GtkSignalBlocker b(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(m_comboPageSize), page_index);
-	g_signal_handler_unblock(G_OBJECT(m_comboPageSize), m_iComboPageSizeListID);
 }
 
 void AP_UnixDialog_PageSetup::event_OK (void)
@@ -367,8 +343,8 @@ void AP_UnixDialog_PageSetup::event_Cancel (void)
 #define FMT_STRING "%0.2f"
 void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 {
-	UT_Dimension pu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
-										   WIDGET_MENU_VALUE_TAG)));
+	UT_Dimension pu = static_cast<UT_Dimension>(XAP_comboBoxGetActiveInt(
+													GTK_COMBO_BOX(m_optionPageUnits)));
 
 	double width, height;
 
@@ -406,7 +382,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 
 	// change the units in the dialog, too.
 	UT_Dimension new_units = ps.getDims();
-	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (new_units));
+	gtk_combo_box_set_active (GTK_COMBO_BOX (m_optionPageUnits), fp_2_pos (new_units));
 
 	float w, h;
 
@@ -434,19 +410,17 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 	  g_free (val);
   }
   else
-  {
+  {																	
+	  UT_Dimension dim = (UT_Dimension)XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_optionPageUnits));
 	  ps.Set(atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth))),
 			 atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight))),
-			 static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data 
-												  (G_OBJECT (m_optionPageUnits), 
-						   WIDGET_MENU_VALUE_TAG))));
+			 dim);
   }
 }
 
 void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-	UT_Dimension mu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
-										WIDGET_MENU_VALUE_TAG)));
+	UT_Dimension mu =  (UT_Dimension)XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_optionMarginUnits));
 
 	float top, bottom, left, right, header, footer;
 
@@ -540,6 +514,12 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
  					  G_CALLBACK(s_Landscape_changed),
  					   static_cast<gpointer>(this));
 
+	g_signal_connect(G_OBJECT(m_optionPageUnits),
+					 "changed",
+					 G_CALLBACK(s_page_units_changed), this);
+	g_signal_connect(G_OBJECT(m_optionMarginUnits),
+					 "changed",
+					 G_CALLBACK(s_margin_units_changed), this);
 }
 
 GtkWidget * AP_UnixDialog_PageSetup::_getWidget(const char * szNameBase, UT_sint32 iLevel)
@@ -656,7 +636,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	{
 		gtk_list_store_append(pagesize_store, &pagesize_iter);
 		gtk_list_store_set(pagesize_store, &pagesize_iter,
-					0, const_cast<char *>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)),
+					0, fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i),
 					1, this,
 					-1);
 	}
@@ -667,47 +647,21 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 							static_cast<gpointer>(this));
 
 	/* setup page units menu */
-	optionPageUnits_menu = gtk_menu_new ();
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_IN, s_page_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_CM, s_page_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionPageUnits, DIM_MM, s_page_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionPageUnits), optionPageUnits_menu);
-	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionPageUnits), fp_2_pos (getPageUnits()));
+	GtkComboBox *combo = GTK_COMBO_BOX(m_optionPageUnits);
+	XAP_makeGtkComboBoxText(combo, true);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
+	gtk_combo_box_set_active(combo, fp_2_pos (getPageUnits()));
 
 	/* setup margin units menu */
-	optionMarginUnits_menu = gtk_menu_new ();
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_IN, s_margin_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_CM, s_margin_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
-
-	glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, m_optionMarginUnits, DIM_MM, s_margin_units_changed);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
-
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_optionMarginUnits), optionMarginUnits_menu);
+	combo = GTK_COMBO_BOX(m_optionMarginUnits);
+	XAP_makeGtkComboBoxText(combo, true);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
+	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
 	last_margin_unit = getMarginUnits ();
-	gtk_option_menu_set_history (GTK_OPTION_MENU (m_optionMarginUnits), fp_2_pos(last_margin_unit));
+	gtk_combo_box_set_active(combo, fp_2_pos(last_margin_unit));
 
 	/* add margin XPM image to the margin window */
 	customPreview = create_pixmap (m_MarginHbox, margin_xpm);

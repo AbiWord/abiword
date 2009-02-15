@@ -30,5 +30,7 @@
 void XAP_makeGtkComboBoxText(GtkComboBox * combo, bool withIntData);
 void XAP_populateComboBoxWithIndex(GtkComboBox * combo, 
 								   const UT_GenericVector<const char*> & vec);
+void XAP_appendComboBoxTextAndInt(GtkComboBox * combo, const char * text, int value);
+int  XAP_comboBoxGetActiveInt(GtkComboBox * combo);
 
 #endif

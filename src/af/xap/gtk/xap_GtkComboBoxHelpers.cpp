@@ -1,5 +1,3 @@
-
-
 /* AbiWord
  * Copyright (C) 2009 Hubert Figuiere
  * 
@@ -53,3 +51,22 @@ void XAP_populateComboBoxWithIndex(GtkComboBox * combo,
 	}
 }
 
+void XAP_appendComboBoxTextAndInt(GtkComboBox * combo, const char * text,
+								  int value)
+{
+	GtkTreeIter iter;
+	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, text, 1, value, -1);
+}
+
+
+int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
+{
+	int value = 0;
+	GtkTreeIter iter;
+	gtk_combo_box_get_active_iter(combo, &iter);
+	GtkTreeModel *store = gtk_combo_box_get_model(combo);
+	gtk_tree_model_get(store, &iter, 1, &value, -1);
+	return value;
+}
