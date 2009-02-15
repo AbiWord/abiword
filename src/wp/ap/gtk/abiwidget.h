@@ -83,10 +83,10 @@ G_BEGIN_DECLS
 /**************************************************************************/
 
 #define ABI_TYPE_WIDGET        (abi_widget_get_type ())
-#define ABI_WIDGET(obj)        (GTK_CHECK_CAST((obj), ABI_TYPE_WIDGET, AbiWidget))
-#define IS_ABI_WIDGET(obj)     (GTK_CHECK_TYPE((obj), ABI_TYPE_WIDGET))
-#define IS_ABI_WIDGET_CLASS(k) (GTK_CHECK_CLASS_TYPE ((k), ABI_TYPE_WIDGET))
-#define ABI_WIDGET_CLASS(k)    (GTK_CHECK_CLASS_CAST ((k), ABI_TYPE_WIDGET, AbiWidgetClass))
+#define ABI_WIDGET(obj)        (G_TYPE_CHECK_INSTANCE_CAST((obj), ABI_TYPE_WIDGET, AbiWidget))
+#define IS_ABI_WIDGET(obj)     (G_TYPE_CHECK_INSTANCE_TYPE((obj), ABI_TYPE_WIDGET))
+#define IS_ABI_WIDGET_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), ABI_TYPE_WIDGET))
+#define ABI_WIDGET_CLASS(k)    (G_TYPE_CHECK_CLASS_CAST ((k), ABI_TYPE_WIDGET, AbiWidgetClass))
 	
   /* forward declarations */
   typedef struct _AbiWidget      AbiWidget;
@@ -270,7 +270,7 @@ G_BEGIN_DECLS
   /* widget creation functions */
   GtkWidget * abi_widget_new (void);
   GtkWidget * abi_widget_new_with_file (const gchar * file);
-  GtkType     abi_widget_get_type	(void);
+  GType     abi_widget_get_type	(void);
   void        abi_widget_turn_on_cursor(AbiWidget * widget);
   void        abi_widget_draw(AbiWidget * w);
 

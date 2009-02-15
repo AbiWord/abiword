@@ -24,17 +24,17 @@
 #ifndef ABI_TABLE_H
 #define ABI_TABLE_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define ABITABLE_TYPE_WIDGET     (abi_table_get_type ())
-#define ABITABLE_WIDGET(obj)     (GTK_CHECK_CAST((obj), ABITABLE_TYPE_WIDGET, AbiTable))
-#define IS_ABITABLE_WIDGET(obj)  (GTK_CHECK_TYPE((obj), ABITABLE_TYPE_WIDGET))
-#define IS_ABITABLE_WIDGET_CLASS(obj)  (GTK_CHECK_CLASS_CAST((obj), ABITABLE_TYPE_WIDGET))
-#define ABITABLE_WIDGET_CLASS(k) (GTK_CHECK_CLASS_CAST((k), ABITABLE_TYPE_WIDGET,AbiTableClass))
+#define ABITABLE_WIDGET(obj)     (G_TYPE_CHECK_INSTANCE_CAST((obj), ABITABLE_TYPE_WIDGET, AbiTable))
+#define IS_ABITABLE_WIDGET(obj)  (G_TYPE_CHECK_INSTANCE_TYPE((obj), ABITABLE_TYPE_WIDGET))
+#define IS_ABITABLE_WIDGET_CLASS(obj)  (G_TYPE_CHECK_CLASS_CAST((obj), ABITABLE_TYPE_WIDGET))
+#define ABITABLE_WIDGET_CLASS(k) (G_TYPE_CHECK_CLASS_CAST((k), ABITABLE_TYPE_WIDGET,AbiTableClass))
 
 typedef struct _AbiTable
 {
@@ -76,7 +76,7 @@ typedef struct
 } AbiTableClass;
 
 
-GtkType    abi_table_get_type   (void);
+GType    abi_table_get_type   (void);
 GtkWidget *abi_table_new        (void);
 
 /* sets the number of selected rows & cols */

@@ -100,14 +100,14 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
-		gtk_tool_item_set_tooltip (tool_item, toolbar->tooltips, text, private_text);
+		gtk_tool_item_set_tooltip_text(tool_item, text);
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
 		GtkWidget *box = gtk_event_box_new ();
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
-		gtk_tooltips_set_tip (toolbar->tooltips, box, text, private_text);
+		gtk_widget_set_tooltip_text (GTK_WIDGET(toolbar), text);
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;
@@ -851,7 +851,7 @@ bool EV_UnixToolbar::synthesize(void)
 	GtkToolbarStyle style = getStyle();
 	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
 	
-	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
+//	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
 	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);

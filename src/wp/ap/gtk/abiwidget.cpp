@@ -1992,7 +1992,7 @@ abiwidget_remove (GtkContainer *container,
 //
 // Needed for the gtkbin class
 //
-static GtkType
+static GType
 abiwidget_child_type (GtkContainer *container)
 {
 	if (!GTK_BIN (container)->child)
@@ -2169,7 +2169,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	// set our parent class
 	parent_class = (GtkBinClass *)
-		gtk_type_class (gtk_bin_get_type());
+		g_type_class_ref (gtk_bin_get_type());
 	
 	// set our custom destroy method
 	object_class->destroy = abi_widget_destroy_gtk;

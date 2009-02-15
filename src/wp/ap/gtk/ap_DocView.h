@@ -25,10 +25,10 @@
 G_BEGIN_DECLS
 	
 #define AT_TYPE_DOCVIEW      (ap_DocView_get_type ())
-#define AP_DOCVIEW(obj)       (GTK_CHECK_CAST((obj), AT_TYPE_DOCVIEW, ApDocView))
-#define IS_AP_DOCVIEW(obj)     (GTK_CHECK_TYPE((obj), AT_TYPE_DOCVIEW))
-#define IS_AP_DOCVIEW_CLASS(k) (GTK_CHECK_CLASS_TYPE ((k), AT_TYPE_DOCVIEW))
-#define AP_DOCVIEW_CLASS(k)    (GTK_CHECK_CLASS_CAST ((k), AT_TYPE_DOCVIEW, AbiWidgetClass))
+#define AP_DOCVIEW(obj)       (G_TYPE_CHECK_INSTANCE_CAST((obj), AT_TYPE_DOCVIEW, ApDocView))
+#define IS_AP_DOCVIEW(obj)     (G_TYPE_CHECK_INSTANCE_TYPE((obj), AT_TYPE_DOCVIEW))
+#define IS_AP_DOCVIEW_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), AT_TYPE_DOCVIEW))
+#define AP_DOCVIEW_CLASS(k)    (G_TYPE_CHECK_CLASS_CAST ((k), AT_TYPE_DOCVIEW, AbiWidgetClass))
 	
   /* forward declarations */
   typedef struct _ApDocView      ApDocView;
@@ -49,7 +49,7 @@ G_BEGIN_DECLS
 	
   /* the public API */
   GtkWidget * ap_DocView_new (void);
-  GtkType     ap_DocView_get_type	(void);
+  GType     ap_DocView_get_type	(void);
 
 G_END_DECLS
 

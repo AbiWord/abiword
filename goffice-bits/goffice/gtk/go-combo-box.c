@@ -791,10 +791,9 @@ go_combo_box_set_relief (GOComboBox *combo, GtkReliefStyle relief)
 }
 
 void
-go_combo_box_set_tooltip (GOComboBox *c, GtkTooltips *tips,
-			   char const *text, char const *priv_text)
+go_combo_box_set_tooltip_text (GOComboBox *c, char const *text)
 {
 /* FIXME FIXME FIXME this is ugly the tip moves as we jump from preview to arrow */
-	gtk_tooltips_set_tip (tips, c->priv->display_widget, text, priv_text);
-	gtk_tooltips_set_tip (tips, c->priv->arrow_button, text, priv_text);
+	gtk_widget_set_tooltip_text(c->priv->display_widget, text);
+	gtk_widget_set_tooltip_text(c->priv->arrow_button, text);
 }

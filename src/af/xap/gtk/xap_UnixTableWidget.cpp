@@ -702,19 +702,19 @@ abi_table_init (AbiTable* table)
 	gtk_container_add(GTK_CONTAINER(table), GTK_WIDGET(table->button_box));
 
 	g_signal_connect(G_OBJECT(table), "pressed",
-					 reinterpret_cast<GtkSignalFunc>(on_pressed), static_cast<gpointer>(table));
+			 G_CALLBACK(on_pressed), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "expose_event",
-					 reinterpret_cast<GtkSignalFunc>(on_drawing_area_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_drawing_area_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
-					 reinterpret_cast<GtkSignalFunc>(on_motion_notify_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_motion_notify_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "button_release_event",
-					 reinterpret_cast<GtkSignalFunc>(on_button_release_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_button_release_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "button_press_event",
-					 reinterpret_cast<GtkSignalFunc>(on_button_release_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_button_release_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "leave_notify_event",
-					 reinterpret_cast<GtkSignalFunc>(on_leave_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_leave_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->window), "key_press_event",
-					 reinterpret_cast<GtkSignalFunc>(on_key_event), static_cast<gpointer>(table));
+			 G_CALLBACK(on_key_event), static_cast<gpointer>(table));
 
 	gtk_widget_set_events (GTK_WIDGET(table->area), GDK_EXPOSURE_MASK
 						   | GDK_LEAVE_NOTIFY_MASK
