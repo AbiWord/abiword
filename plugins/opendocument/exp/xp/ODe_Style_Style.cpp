@@ -1522,7 +1522,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("left-color", pValue);
     if (ok && pValue != NULL) {
-	    m_leftColor == pValue;
+	    m_leftColor = pValue;
     } else if (m_leftColor.empty()) {
         m_leftColor = "000000";
     }
@@ -1538,7 +1538,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("right-color", pValue);
     if (ok && pValue != NULL) {
-	    m_rightColor == pValue;
+	    m_rightColor = pValue;
     } else if (m_rightColor.empty()) {
         m_rightColor = "000000";
     }
@@ -1554,7 +1554,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("top-color", pValue);
     if (ok && pValue != NULL) {
-	    m_topColor == pValue;
+	    m_topColor = pValue;
     } else if (m_topColor.empty()) {
         m_topColor = "000000";
     }
@@ -1570,7 +1570,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     ok = rAP.getProperty("bot-color", pValue);
     if (ok && pValue != NULL) {
-	    m_bottomColor == pValue;
+	    m_bottomColor = pValue;
     } else if (m_bottomColor.empty()) {
         m_bottomColor = "000000";
     }
