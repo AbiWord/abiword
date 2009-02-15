@@ -1815,7 +1815,9 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context,
 	end_p = pView->mapDocPosSimple (FV_DOCPOS_EOB);
 	here = pView->getInsPoint ();
 
-	UT_UCSChar * text = pView->getTextBetweenPos (begin_p, end_p);
+	UT_UCSChar * text = NULL;
+	if (end_p > begin_p)
+		text = pView->getTextBetweenPos (begin_p, end_p);
 
 	if (!text)
 		return TRUE;
