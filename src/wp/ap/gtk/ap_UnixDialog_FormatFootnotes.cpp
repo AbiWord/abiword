@@ -18,8 +18,6 @@
  * 02111-1307, USA.
  */
 
-#define GTK_DISABLE_DEPRECATED
-
 #include <stdlib.h>
 #include <time.h>
 
