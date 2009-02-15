@@ -1115,12 +1115,15 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
-    // This is a static function.
+    // This is a static function.	
+	
+	if (!g_thread_supported ())
+		g_thread_init (NULL);	
     
     // initialize our application.
 	int exit_status = 0;
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
-
+	
 	/* this brace is here to ensure that our local variables on the stack
 	 * do not outlive the application object by giving them a lower scope
 	 */
@@ -1143,7 +1146,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		fprintf(logfile,"Really display %d \n",have_display);
 #endif
 		if (have_display > 0) {
-			gtk_init (&argc, &argv);
 			Args.addOptions(gtk_get_option_group(TRUE));
 			Args.parseOptions();
 		}

@@ -976,8 +976,11 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
 
 int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 {
-    // This is a static function.
-    
+    // This is a static function.	
+	
+    if (!g_thread_supported ())
+        g_thread_init (NULL);	
+	    
     UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
     UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
     UT_DEBUGMSG(("Build Options: \t%s\n", XAP_App::s_szBuild_Options));
