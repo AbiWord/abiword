@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,8 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
-#undef GTK_DISABLE_DEPRECATED
 
 #include <stdlib.h>
 #include <time.h>
@@ -67,12 +66,22 @@ AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
 
 /*****************************************************************/
 
-static void s_blist_clicked(GtkWidget * /*clist*/, gint row, gint /*column*/,
-										  GdkEventButton * /*event*/, AP_UnixDialog_InsertHyperlink *me)
+static void s_blist_clicked(GtkTreeSelection * select,
+							AP_UnixDialog_InsertHyperlink *me)
 {
-	me->setRow(row);
-	gtk_entry_set_text(GTK_ENTRY(me->m_entry), me->m_pBookmarks[row]);
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	if(gtk_tree_selection_get_selected(select, &model, &iter)) {
+		GtkTreePath * path = gtk_tree_model_get_path(model, &iter);
+		gint* rows = gtk_tree_path_get_indices(path);
+		if(rows) {
+			me->setRow(*rows);
+			gtk_entry_set_text(GTK_ENTRY(me->m_entry), 
+							   me->m_pBookmarks[*rows]);
+		}
+	}
 }
+
 
 /***********************************************************************/
 void AP_UnixDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
@@ -84,7 +93,7 @@ void AP_UnixDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 
 	// select the first row of the list (this must come after the
  	// call to _connectSignals)
- 	gtk_clist_unselect_row(GTK_CLIST(m_clist),0,0);
+// 	gtk_clist_unselect_row(GTK_CLIST(m_clist),0,0);
 
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false))
 	  {
@@ -153,10 +162,21 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_widget_show(m_swindow);
   gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
-	
-  m_clist = gtk_clist_new (1);
-  gtk_clist_set_selection_mode(GTK_CLIST(m_clist), GTK_SELECTION_BROWSE);
-  gtk_clist_column_titles_hide(GTK_CLIST(m_clist));
+   
+  GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
+
+  GtkTreeView * treeview;
+  m_clist = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+  treeview = GTK_TREE_VIEW(m_clist);
+  gtk_tree_view_set_headers_visible(treeview, FALSE);
+  gtk_tree_selection_set_mode(gtk_tree_view_get_selection(treeview), 
+							  GTK_SELECTION_BROWSE);
+
+  GtkCellRenderer *renderer = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
+  GtkTreeViewColumn *col;
+  col = gtk_tree_view_column_new_with_attributes("",
+												 renderer, "text", 0, NULL);
+  gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col);
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
   DELETEPV(m_pBookmarks);
@@ -170,8 +190,11 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
     	
   qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(gchar*),my_cmp);
 
-  for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++)
-  	  gtk_clist_append (GTK_CLIST (m_clist), const_cast<gchar **>(reinterpret_cast<const gchar **>(&m_pBookmarks[i])));
+  for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++) {
+		  GtkTreeIter iter;
+		  gtk_list_store_append(store, &iter);
+		  gtk_list_store_set(store, &iter, 0, m_pBookmarks[i], -1);
+  }
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
 }
@@ -214,6 +237,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 
 void AP_UnixDialog_InsertHyperlink::_connectSignals (void)
 {
-	g_signal_connect (G_OBJECT (m_clist), "select_row",
-						G_CALLBACK (s_blist_clicked), this);
+	GtkTreeSelection *select = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_clist));
+	g_signal_connect (G_OBJECT(select), "changed",
+					  G_CALLBACK (s_blist_clicked), this);
 }
