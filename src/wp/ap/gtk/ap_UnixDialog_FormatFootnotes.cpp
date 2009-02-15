@@ -440,20 +440,6 @@ void AP_UnixDialog_FormatFootnotes::event_Delete(void)
 }
 
 
-
-static void
-_populateComboBox(GtkComboBox * combo, 
-				  const UT_GenericVector<const char*> & vec)
-{
-	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
-	GtkTreeIter iter;
-	
-	for(UT_sint32 i = 0; i < vec.getItemCount(); i++) {
-		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter, 0, vec[i], 1, i, -1);
-	}
-}
-
 /*****************************************************************/
 GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 {
