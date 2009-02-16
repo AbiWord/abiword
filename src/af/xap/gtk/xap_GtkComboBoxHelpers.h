@@ -41,4 +41,13 @@ void XAP_appendComboBoxTextAndStringString(GtkComboBox * combo,
 										   const char * value2);
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo);
 
+/** set the active item based on a column value
+ * @param combo the combobox
+ * @param col the column
+ * @param value the value to look for
+ * @return true if set, false if not found.
+ */
+bool XAP_comboBoxSetActiveFromIntCol(GtkComboBox * combo, 
+									 int col, int value);
+
 #endif

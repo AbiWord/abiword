@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
+ * Copyright (C) 2009 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -26,9 +27,9 @@
 #include "ut_debugmsg.h"
 #include "ut_unixMisc.h"
 
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkComboBoxHelpers.h"
+#include "xap_GtkSignalBlocker.h"
 
 #include "gr_UnixCairoGraphics.h"
 
@@ -344,10 +345,8 @@ void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 			dClose = diff;
 		}
 	}
-	g_signal_handler_block(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
-	gtk_option_menu_set_history (GTK_OPTION_MENU(m_wBorderThickness),
-							  closest);
-	g_signal_handler_unblock(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), closest);
 }
 
 void AP_UnixDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
@@ -361,7 +360,7 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 {
 	if(m_wBorderThickness)
 	{
-		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wBorderThickness));
+		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderThickness));
 		double thickness = m_dThickness[history];
 
 		UT_UTF8String sThickness;
@@ -379,7 +378,7 @@ void AP_UnixDialog_FormatTable::event_ApplyToChanged(void)
 {
 	if (m_wApplyToMenu)
 	{
-		gint history = gtk_option_menu_get_history(GTK_OPTION_MENU(m_wApplyToMenu));
+		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wApplyToMenu));
 		switch (history)
 		{
 			case 0:
@@ -502,39 +501,36 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 // Now the Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
+	GtkComboBox *combo = GTK_COMBO_BOX(m_wBorderThickness);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
+	gtk_combo_box_append_text(combo, "1/2 pt");
+	gtk_combo_box_append_text(combo, "3/4 pt");
+	gtk_combo_box_append_text(combo, "1 pt");
+	gtk_combo_box_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_append_text(combo, "3 pt");
+	gtk_combo_box_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_append_text(combo, "6 pt");
+	gtk_combo_box_set_active(combo, 0);
 
 	// add the options to the "Apply to" menu
 	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
 	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
 	m_wApplyToMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omApplyTo"));
-	GtkWidget * menu = gtk_menu_new();
+	combo = GTK_COMBO_BOX(m_wApplyToMenu);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
 	
-	gchar * unixstr = NULL;	// used for conversions
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
-	FREEP(unixstr);	
-
+	gtk_combo_box_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
-	FREEP(unixstr);	
-
+	gtk_combo_box_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
-	FREEP(unixstr);	
-
+	gtk_combo_box_append_text(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
-	FREEP(unixstr);	
+	gtk_combo_box_append_text(combo, s.utf8_str());
 
-	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wApplyToMenu), menu);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wApplyToMenu), 0);
-	gtk_widget_show_all(menu);
-
+	gtk_combo_box_set_active(combo, 0);
 
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
@@ -566,11 +562,11 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"destroy",
-							GTK_SIGNAL_FUNC(s_destroy_clicked),
+							G_CALLBACK(s_destroy_clicked),
 							reinterpret_cast<gpointer>(this));
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"delete_event",
-							GTK_SIGNAL_FUNC(s_delete_clicked),
+							G_CALLBACK(s_delete_clicked),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyButton),

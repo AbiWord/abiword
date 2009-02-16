@@ -103,3 +103,21 @@ int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
 	gtk_tree_model_get(store, &iter, 1, &value, -1);
 	return value;
 }
+
+bool XAP_comboBoxSetActiveFromIntCol(GtkComboBox * combo, 
+									 int col, int value)
+{
+	GtkTreeIter iter;
+	GtkTreeModel *store = gtk_combo_box_get_model(combo);
+	if(gtk_tree_model_get_iter_first(store, &iter)) {
+		do {
+			int v;
+			gtk_tree_model_get(store, &iter, col, &v, -1);
+			if(v == value) {
+				gtk_combo_box_set_active_iter(combo, &iter);
+				return true;
+			}
+		} while(gtk_tree_model_iter_next(store, &iter));
+	}
+	return false;
+}

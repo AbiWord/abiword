@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkComboBoxHelpers.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -52,17 +53,10 @@
 
 /*****************************************************************/
 
-#define WIDGET_MENU_OPTION_PTR  "menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG  "value"
-
 #define WID(widget)   GTK_WIDGET(gtk_builder_get_object(builder, widget))
 
 /*****************************************************************/
 
-typedef struct TBData {
-    const gchar *name;
-    int visible;
-} TBData;
 
 XAP_Dialog * AP_UnixDialog_Options::static_constructor ( XAP_DialogFactory * pFactory,
         XAP_Dialog_Id id )
@@ -127,34 +121,34 @@ void AP_UnixDialog_Options::runModal ( XAP_Frame * pFrame )
 /// All this color selection code is stolen from the ap_UnixDialog_Background
 /// dialog
 ///
-#define CTI(c, v) (unsigned char)(c[v] * 255.0)
-
 /* static */ void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
         gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
     UT_ASSERT ( csel && dlg );
 
-    char color[10];
-    gdouble cur[4];
+	GdkColor gdkcolor;
 
-    gtk_color_selection_get_color ( csel, cur );
-    sprintf ( color,"#%02x%02x%02x",CTI ( cur, 0 ), CTI ( cur, 1 ), CTI ( cur, 2 ) );
-    strncpy ( dlg->m_CurrentTransparentColor,static_cast<const gchar *> ( color ),9 );
+	gtk_color_selection_get_current_color(csel, &gdkcolor);
 
-    UT_DEBUGMSG ( ( "Changing Color [%s]\n", color ) );
+	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(gdkcolor);
+	UT_HashColor hash_color;
+    strncpy ( dlg->m_CurrentTransparentColor, hash_color.setColor(*rgbcolor), 9 );
+	
+    UT_DEBUGMSG ( ( "Changing Color [%s]\n", hash_color.c_str() ) );
+	delete rgbcolor;
 
     if ( strcmp ( dlg->m_CurrentTransparentColor, "#ffffff" ) == 0 )
         gtk_widget_set_sensitive ( dlg->m_buttonColSel_Defaults, FALSE );
     else
         gtk_widget_set_sensitive ( dlg->m_buttonColSel_Defaults, TRUE );
 
-    // Update document view throuh instant apply magic. Emitting the "clicked" signal will result in a loop and
+    // Update document view through instant apply magic. Emitting the "clicked" 
+	// signal will result in a loop and
     // many dialogs popping up. Hacky, because we directly call a callback.
     s_control_changed ( dlg->m_pushbuttonNewTransparentColor, data );
 }
 
-#undef CTI
 
 void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 {
@@ -190,13 +184,10 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     UT_RGBColor c;
     UT_parseColor ( m_CurrentTransparentColor,c );
+	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
 
-    gdouble currentColor[4] = { 0, 0, 0, 0 };
-    currentColor[0] = ( static_cast<gdouble> ( c.m_red ) / static_cast<gdouble> ( 255.0 ) );
-    currentColor[1] = ( static_cast<gdouble> ( c.m_grn ) / static_cast<gdouble> ( 255.0 ) );
-    currentColor[2] = ( static_cast<gdouble> ( c.m_blu ) / static_cast<gdouble> ( 255.0 ) );
-
-    gtk_color_selection_set_color ( GTK_COLOR_SELECTION ( colorsel ), currentColor );
+    gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
+	gdk_color_free(gcolor);
 
     // run into the gtk main loop for this window. If the reponse is 0, the user pressed Defaults.
     // Don't destroy it if he did so.
@@ -205,12 +196,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
         strncpy ( m_CurrentTransparentColor,static_cast<const gchar *> ( "ffffff" ),9 );
 
         UT_parseColor ( m_CurrentTransparentColor,c );
-        gdouble currentColor[4] = { 0, 0, 0, 0 };
-        currentColor[0] = ( static_cast<gdouble> ( c.m_red ) / static_cast<gdouble> ( 255.0 ) );
-        currentColor[1] = ( static_cast<gdouble> ( c.m_grn ) / static_cast<gdouble> ( 255.0 ) );
-        currentColor[2] = ( static_cast<gdouble> ( c.m_blu ) / static_cast<gdouble> ( 255.0 ) );
-
-        gtk_color_selection_set_color ( GTK_COLOR_SELECTION ( colorsel ), currentColor );
+		gcolor = UT_UnixRGBColorToGdkColor(c);
+        gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor );
+		gdk_color_free(gcolor);
     }
 //
 // Finish up here after a close or window delete signal.
@@ -227,55 +215,26 @@ void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
 }
 
 /*****************************************************************/
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)   \
-    do {       \
-        g_signal_connect(G_OBJECT(w), "activate", \
-                         G_CALLBACK(s_menu_item_activate),  \
-                         static_cast<gpointer>(this));   \
-    } while (0)
 
 void AP_UnixDialog_Options::_setupUnitMenu ( GtkWidget *optionmenu, const XAP_StringSet *pSS )
 {
-    GtkWidget *menu;
-    GtkWidget *menuitem;
+	GtkComboBox *combo = GTK_COMBO_BOX(optionmenu);
     UT_UTF8String s;
 
-    menu = gtk_menu_new ();
-
+	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
     // inches
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_inch, s );
-    menuitem = gtk_menu_item_new_with_label ( s.utf8_str() );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_OPTION_PTR, static_cast<gpointer> ( optionmenu ) );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER ( DIM_IN ) );
-    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE ( menuitem );
-    gtk_menu_append ( GTK_MENU ( menu ), menuitem );
-
+	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_IN);
     // cm
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_cm, s );
-    menuitem = gtk_menu_item_new_with_label ( s.utf8_str() );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_OPTION_PTR, static_cast<gpointer> ( optionmenu ) );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER ( DIM_CM ) );
-    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE ( menuitem );
-    gtk_menu_append ( GTK_MENU ( menu ), menuitem );
-
+	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_CM);
     // points
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_points, s );
-    menuitem = gtk_menu_item_new_with_label ( s.utf8_str() );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_OPTION_PTR, static_cast<gpointer> ( optionmenu ) );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER ( DIM_PT ) );
-    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE ( menuitem );
-    gtk_menu_append ( GTK_MENU ( menu ), menuitem );
-
+	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_PT);
     // picas
     pSS->getValueUTF8 ( XAP_STRING_ID_DLG_Unit_pica, s );
-    menuitem = gtk_menu_item_new_with_label ( s.utf8_str() );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_OPTION_PTR, static_cast<gpointer> ( optionmenu ) );
-    g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER ( DIM_PI ) );
-    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE ( menuitem );
-    gtk_menu_append ( GTK_MENU ( menu ), menuitem );
-
-    gtk_widget_show_all ( menu );
-    gtk_option_menu_set_menu ( GTK_OPTION_MENU ( optionmenu ), menu );
+	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), DIM_PI);
+	gtk_combo_box_set_active(combo, 0);
 }
 
 void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
@@ -534,7 +493,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
         UT_ASSERT ( g_object_get_data ( G_OBJECT ( w ), "tControl" ) == NULL );
 
         g_object_set_data ( G_OBJECT ( w ), "tControl", reinterpret_cast<gpointer> ( i ) );
-        if ( GTK_IS_OPTION_MENU ( w ) || GTK_IS_ENTRY ( w ) )
+        if ( GTK_IS_COMBO_BOX ( w ) || GTK_IS_ENTRY ( w ) )
             g_signal_connect ( G_OBJECT ( w ),
                                "changed",
                                G_CALLBACK ( s_control_changed ),
@@ -750,82 +709,23 @@ void AP_UnixDialog_Options::_setAutoSaveFilePeriod ( const UT_String &stPeriod )
 
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits ( void )
 {
-    UT_ASSERT ( m_menuUnits && GTK_IS_OPTION_MENU ( m_menuUnits ) );
-    return ( UT_Dimension ) ( GPOINTER_TO_INT ( g_object_get_data ( G_OBJECT ( m_menuUnits ), WIDGET_MENU_VALUE_TAG ) ) );
+    UT_ASSERT ( m_menuUnits && GTK_IS_COMBO_BOX ( m_menuUnits ) );
+	return ( UT_Dimension ) XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_menuUnits));
 }
 
 gint AP_UnixDialog_Options::_gatherOuterQuoteStyle ( void )
 {
-    UT_ASSERT ( m_omOuterQuoteStyle && GTK_IS_OPTION_MENU ( m_omOuterQuoteStyle ) );
-    return  GPOINTER_TO_INT ( g_object_get_data ( G_OBJECT ( m_omOuterQuoteStyle ), WIDGET_MENU_VALUE_TAG ) );
+    UT_ASSERT ( m_omOuterQuoteStyle && GTK_IS_COMBO_BOX( m_omOuterQuoteStyle ) );
+	return XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_omOuterQuoteStyle));
 }
 
 
 gint AP_UnixDialog_Options::_gatherInnerQuoteStyle ( void )
 {
-    UT_ASSERT ( m_omInnerQuoteStyle && GTK_IS_OPTION_MENU ( m_omInnerQuoteStyle ) );
-    return  GPOINTER_TO_INT ( g_object_get_data ( G_OBJECT ( m_omInnerQuoteStyle ), WIDGET_MENU_VALUE_TAG ) );
+    UT_ASSERT ( m_omInnerQuoteStyle && GTK_IS_COMBO_BOX ( m_omInnerQuoteStyle ) );
+	return XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(m_omInnerQuoteStyle));
 }
 
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// This function will lookup a option box by the value stored in the
-// user data under the key WIDGET_MENU_VALUE_TAG
-//
-typedef struct {
-    int index;
-    int found;
-    const gchar *key;
-    gpointer data;
-} search_data;
-
-static void search_for_value ( GtkWidget *widget, gpointer _value )
-{
-    search_data *value = static_cast<search_data *> ( _value );
-
-    if ( !GTK_IS_MENU_ITEM ( widget ) )
-        return;
-
-    value->index++;
-
-    gint v = GPOINTER_TO_INT ( g_object_get_data ( G_OBJECT ( widget ), value->key ) );
-    if ( v == GPOINTER_TO_INT ( value->data ) )
-    {
-        // UT_DEBUGMSG(("search_for_value [%d]", static_cast<gint>(value->data) ));
-        value->found = value->index;
-    }
-}
-
-// returns -1 if not found
-static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, const gchar *key )
-{
-    UT_ASSERT ( option_menu && key && GTK_IS_OPTION_MENU ( option_menu ) );
-
-    // at least make sure the value will be restored by the _gather
-    g_object_set_data ( G_OBJECT ( option_menu ), key, value );
-
-    // lookup for the key with the value of dim
-    search_data data = { -1, -1, key, value };
-
-    GtkWidget *menu = gtk_option_menu_get_menu ( GTK_OPTION_MENU ( option_menu ) );
-    UT_ASSERT ( menu&&GTK_IS_MENU ( menu ) );
-
-    // iterate through all the values
-    gtk_container_forall ( GTK_CONTAINER ( menu ), search_for_value, static_cast<gpointer> ( &data ) );
-
-    // if we found a value that matches, then say select it
-    if ( data.found >= 0 )
-    {
-        gtk_option_menu_set_history ( GTK_OPTION_MENU ( option_menu ), data.found );
-        //UT_DEBUGMSG(("search found %d\n", data.found ));
-    }
-    else 
-    {
-        UT_DEBUGMSG ( ( "%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ) );
-    }
-
-    return data.found;
-}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -833,34 +733,20 @@ static int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, cons
 
 void AP_UnixDialog_Options::_setViewRulerUnits ( UT_Dimension dim )
 {
-    UT_ASSERT ( m_menuUnits && GTK_IS_OPTION_MENU ( m_menuUnits ) );
+    UT_ASSERT ( m_menuUnits && GTK_COMBO_BOX ( m_menuUnits ) );
 
-    int r = option_menu_set_by_key ( m_menuUnits, reinterpret_cast<gpointer> ( dim ), WIDGET_MENU_VALUE_TAG );
-
-    if ( r < 0 ) {
-        UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
-    }
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_menuUnits), 1, dim);
 }
 void AP_UnixDialog_Options::_setOuterQuoteStyle ( gint nIndex )
 {
-    UT_ASSERT ( m_omOuterQuoteStyle && GTK_IS_OPTION_MENU ( m_omOuterQuoteStyle ) );
-
-    int r = option_menu_set_by_key ( m_omOuterQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
-
-    if ( r < 0 ) {
-        UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
-    }
+    UT_ASSERT ( m_omOuterQuoteStyle && GTK_COMBO_BOX ( m_omOuterQuoteStyle ) );
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_omOuterQuoteStyle), 1, nIndex);
 }
 
 void AP_UnixDialog_Options::_setInnerQuoteStyle ( gint nIndex )
 {
-    UT_ASSERT ( m_omInnerQuoteStyle && GTK_IS_OPTION_MENU ( m_omInnerQuoteStyle ) );
-
-    int r = option_menu_set_by_key ( m_omInnerQuoteStyle, reinterpret_cast<gpointer> ( nIndex ), WIDGET_MENU_VALUE_TAG );
-
-    if ( r < 0 ) {
-        UT_DEBUGMSG ( ( "option_menu_set_by_key failed\n" ) );
-    }
+    UT_ASSERT ( m_omInnerQuoteStyle && GTK_COMBO_BOX ( m_omInnerQuoteStyle ) );
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_omInnerQuoteStyle), 1, nIndex);
 }
 
 DEFINE_GET_SET_BOOL ( AutoLoadPlugins )
@@ -940,28 +826,6 @@ void AP_UnixDialog_Options::_setNotebookPageNum ( int pn )
     gtk_widget_set_sensitive ( dlg->m_tableAutoSaveFile, is_toggled );
 }
 
-/*static*/ gint AP_UnixDialog_Options::s_menu_item_activate ( GtkWidget * widget, gpointer data )
-{
-    AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
-
-    UT_UNUSED ( dlg );
-    UT_ASSERT ( widget && dlg );
-
-    GtkWidget *option_menu = static_cast<GtkWidget *> ( g_object_get_data ( G_OBJECT ( widget ),
-                             WIDGET_MENU_OPTION_PTR ) );
-    UT_ASSERT ( option_menu && GTK_IS_OPTION_MENU ( option_menu ) );
-
-    gpointer p = g_object_get_data ( G_OBJECT ( widget ),
-                                     WIDGET_MENU_VALUE_TAG );
-
-    g_object_set_data ( G_OBJECT ( option_menu ), WIDGET_MENU_VALUE_TAG, p );
-
-    //TODO: This code is now shared between RulerUnits and DefaultPaperSize
-    //so anyone who wants to resurect this msg. needs to add a conditional
-    //UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)(reinterpret_cast<UT_uint32>(p))) ) );
-
-    return TRUE;
-}
 
 void AP_UnixDialog_Options::_storeWindowData ( void )
 {
@@ -970,11 +834,9 @@ void AP_UnixDialog_Options::_storeWindowData ( void )
 
 void AP_UnixDialog_Options::_setupSmartQuotesCombos(  GtkWidget *optionmenu  )
 {
-    GtkWidget *menu;
-    GtkWidget *menuitem;
-    UT_UTF8String s;
+	GtkComboBox * combo = GTK_COMBO_BOX(optionmenu);
 
-    menu = gtk_menu_new ();
+	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 
     UT_UCSChar wszDisplayString[4];
 	for (size_t i = 0; XAP_EncodingManager::smartQuoteStyles[i].leftQuote != (UT_UCSChar)0; ++i)
@@ -984,15 +846,8 @@ void AP_UnixDialog_Options::_setupSmartQuotesCombos(  GtkWidget *optionmenu  )
 		wszDisplayString[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
 		wszDisplayString[3] = (gunichar)0;
         gchar* szDisplayStringUTF8 = g_ucs4_to_utf8 ( wszDisplayString, -1, NULL, NULL, NULL );
-		menuitem = gtk_menu_item_new_with_label ( szDisplayStringUTF8 );
-		g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_OPTION_PTR, static_cast<gpointer> ( optionmenu ) );
-		g_object_set_data ( G_OBJECT ( menuitem ), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER ( i ) );
-		CONNECT_MENU_ITEM_SIGNAL_ACTIVATE ( menuitem );
-		gtk_menu_append ( GTK_MENU ( menu ), menuitem );
-
+		XAP_appendComboBoxTextAndInt(combo, szDisplayStringUTF8, i);
         g_free ( szDisplayStringUTF8 );
 	}
-	
-    gtk_widget_show_all ( menu );
-    gtk_option_menu_set_menu ( GTK_OPTION_MENU ( optionmenu ), menu );
+	gtk_combo_box_set_active(combo, 0);
 }

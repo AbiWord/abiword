@@ -124,6 +124,8 @@ public:
 	UT_HashColor ();
 	~UT_HashColor ();
 
+	const char * c_str() const
+	{ return m_colorBuffer; }
 	/* The following 5 functions return a pointer to m_colorBuffer on success,
 	 * or 0 on failure (invalid or unknown color).
 	 */

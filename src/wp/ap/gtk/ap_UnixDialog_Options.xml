@@ -184,14 +184,9 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkOptionMenu" id="omUnits">
+                              <object class="GtkComboBox" id="omUnits">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="history">-1</property>
-                                <child>
-                                  <object class="GtkMenu" id="menu1">
-				</object>
-                                </child>
                               </object>
                               <packing>
                                 <property name="padding">0</property>
@@ -1257,14 +1252,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkOptionMenu" id="omOuterQuoteStyle">
+                  <object class="GtkComboBox" id="omOuterQuoteStyle">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="history">-1</property>
-                    <child>
-                      <object class="GtkMenu" id="menu2">
-		    </object>
-                    </child>
                   </object>
                   <packing>
                     <property name="padding">0</property>
@@ -1297,14 +1287,9 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkOptionMenu" id="omInnerQuoteStyle">
+                  <object class="GtkComboBox" id="omInnerQuoteStyle">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="history">-1</property>
-                    <child>
-                      <object class="GtkMenu" id="menu3">
-		    </object>
-                    </child>
                   </object>
                   <packing>
                     <property name="padding">0</property>

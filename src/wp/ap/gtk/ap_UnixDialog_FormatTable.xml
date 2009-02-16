@@ -193,77 +193,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omBorderThickness">
+                      <object class="GtkComboBox" id="omBorderThickness">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">0</property>
-                        <child>
-                          <object class="GtkMenu" id="mnBorderThickness">
-                            <child>
-                              <object class="GtkMenuItem" id="1/4_pt1">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">1/4 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="1/2_pt1">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">1/2 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="3/4_ pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">3/4 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="1_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">1 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="1_1/2_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">1 1/2 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="2_1/4_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">2 1/4 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="3_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">3 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="4_1/2_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">4 1/2 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuItem" id="6_pt">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">6 pt</property>
-                                <property name="use_underline">True</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -847,14 +779,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkOptionMenu" id="omApplyTo">
+                      <object class="GtkComboBox" id="omApplyTo">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
-                        <child>
-                          <object class="GtkMenu" id="menu1">
-			</object>
-                        </child>
                       </object>
                       <packing>
                         <property name="padding">0</property>
