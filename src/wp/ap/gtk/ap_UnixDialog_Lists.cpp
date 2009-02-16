@@ -919,18 +919,16 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
-	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 0);
+	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
 	gtk_widget_show (start_sb);
-	gtk_adjustment_set_page_size(GTK_ADJUSTMENT (start_sb_adj), 10);
 	gtk_table_attach (GTK_TABLE (table2), start_sb, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 
-	text_align_sb_adj = gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 0);
+	text_align_sb_adj = gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 1);
 	text_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (text_align_sb_adj), 0.05, 2);
 	gtk_widget_show (text_align_sb);
-	gtk_adjustment_set_page_size(GTK_ADJUSTMENT (text_align_sb_adj), 1);
 	gtk_table_attach (GTK_TABLE (table2), text_align_sb, 1, 2, 4, 5,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
