@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -200,7 +201,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	const char* iSelectedFont = iDrawSymbol->getSelectedFont();
 	s_Prev_Font = iSelectedFont;
 	UT_DEBUGMSG(("Selected Font at startup %s \n",iSelectedFont));
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))),
 					   iSelectedFont);
 
 	// Show the Previously selected symbol
@@ -211,7 +212,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// return to ap_Editmethods and wait for something interesting
 	// to happen.
 #else
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
+	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))),
 					   DEFAULT_UNIX_SYMBOL_FONT);
 
 	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), DEFAULT_UNIX_SYMBOL_FONT);
@@ -224,7 +225,7 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
 #else
-	const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
+	const char * symfont = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))));
 	m_Inserted_Symbol = gucharmap_table_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
 	_insert(m_Inserted_Symbol, symfont);
 #endif
@@ -248,7 +249,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 
 void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 {
-	const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
+	const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))));
 
 #ifndef WITH_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
@@ -731,16 +732,19 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 {
-	GtkWidget *fontcombo = gtk_combo_new();
+	GtkWidget *fontcombo = gtk_combo_box_entry_new_text();
 	gtk_widget_show(fontcombo);
 
 	// ensure we don't override this without freeing...
 	_deleteInsertedFontList();
 	m_InsertS_Font_list = _getGlistFonts ();
-	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
+	for(GList * l = g_list_first(m_InsertS_Font_list); l; l = g_list_next(l))
+	{
+		gtk_combo_box_append_text(GTK_COMBO_BOX(fontcombo), (const char*)(l->data));
+	}
 
 	// Turn off keyboard entry in the font selection box
-	gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fontcombo)->entry), FALSE);
+	gtk_editable_set_editable(GTK_EDITABLE(gtk_bin_get_child(GTK_BIN(fontcombo))), FALSE);
 
 	return fontcombo;
 }
@@ -755,11 +759,11 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp
-	GtkEntry * blah = GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry);
+	GtkEntry * blah = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo)));
 	g_signal_connect(G_OBJECT(&blah->widget),
-					   "changed",
-					   GTK_SIGNAL_FUNC(s_new_font),
-					   static_cast<gpointer>(this));
+					 "changed",
+					 G_CALLBACK(s_new_font),
+					 static_cast<gpointer>(this));
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
@@ -811,13 +815,13 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
         // VScrollbar events
 	g_signal_connect(G_OBJECT(m_vadjust),
 	                                 "value-changed",
-					 GTK_SIGNAL_FUNC(s_new_row),
+					 G_CALLBACK(s_new_row),
 		                         static_cast<gpointer>(this));
         
 	// Mouse wheel events
 	g_signal_connect(G_OBJECT(m_SymbolMap),
 	                                 "scroll_event",
-					 GTK_SIGNAL_FUNC(s_scroll_event),
+					 G_CALLBACK(s_scroll_event),
 		                         static_cast<gpointer>(this));
 
 #else

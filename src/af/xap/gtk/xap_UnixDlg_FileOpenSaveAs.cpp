@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +25,7 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -39,6 +41,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkComboBoxHelpers.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_UnixDlg_FileOpenSaveAs.h"
@@ -246,13 +249,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// If, however, the user doesn't want suffixes, they don't have to have them.  
 			{
 				//UT_uint32 end = g_strv_length(m_szSuffixes);
-	
-				GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
-					gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
-				UT_ASSERT(activeItem);
-	
-				UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
-					G_OBJECT(activeItem), "user_data"));
+   				UT_sint32 nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(filetypes_pulldown));
 	
 				// set to first item, which should probably be auto detect
 				// TODO : "probably" isn't very good.
@@ -416,8 +413,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	if (!m_bSave)
 		return;
 
-	UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
-				G_OBJECT(w), "user_data"));
+	UT_sint32 nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(w));
 	UT_DEBUGMSG(("File type widget is %x filetype number is %d \n",w,nFileType));
 	if(nFileType == 0)
 	{
@@ -657,7 +653,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
 
 	// pulldown menu
-	filetypes_pulldown = gtk_option_menu_new();
+	filetypes_pulldown = gtk_combo_box_new();
 	gtk_widget_show(filetypes_pulldown);
 
 	// hack so that i can make this widget small vertically
@@ -669,22 +665,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	//
 	// add the filters to the dropdown list
 	//
-	GtkWidget * menu = gtk_menu_new();
-	UT_ASSERT(menu);
-
-	GtkWidget * thismenuitem = NULL;
-
-	char buffer[1024];
+	GtkComboBox* combo = GTK_COMBO_BOX(filetypes_pulldown);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 
 	// Auto-detect is always an option, but a special one, so we use
 	// a pre-defined constant for the type, and don't use the user-supplied
 	// types yet.
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect,s);
-	g_snprintf(buffer, 1024, "%s", s.utf8_str());
-	thismenuitem = gtk_menu_item_new_with_label(buffer);
-	g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
-	gtk_widget_show(thismenuitem);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
+	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO);
 
 	UT_sint32 activeItemIndex = -1;
 	
@@ -701,33 +689,26 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if (m_nTypeList[i] == m_nDefaultFileType)
 				activeItemIndex = i;
 			
-			g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
-			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(m_nTypeList[i]));
-			gtk_widget_show(thismenuitem);
-			gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
+			XAP_appendComboBoxTextAndInt(combo, m_szDescriptions[i], m_nTypeList[i]);
 //
 // Attach a callback when it is activated to change the file suffix
 //
-			g_signal_connect(G_OBJECT(thismenuitem), "activate",
-							 G_CALLBACK(s_filetypechanged),	
-							 reinterpret_cast<gpointer>(this));
+//			g_signal_connect(G_OBJECT(thismenuitem), "activate",
+//							 G_CALLBACK(s_filetypechanged),	
+//							 reinterpret_cast<gpointer>(this));
 		}
 	}
 
-	// Set menu item to default type from index (i) above if we're a SAVEAS
-		
-	gtk_widget_show(menu);
-	
-	// add menu to the option menu widget
-	gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
 	m_wFileTypes_PullDown = filetypes_pulldown;
 	// dialog; open dialog always does auto-detect
 	// TODO: should this also apply to the open dialog?
 	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
 	{
-		gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
-		gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
+		gtk_combo_box_set_active(combo, activeItemIndex + 1);
+	}
+	else
+	{ 
+		gtk_combo_box_set_active(combo, 0);
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
@@ -748,6 +729,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				"file-activated",
 				G_CALLBACK(s_file_activated), &m_answer);	
 
+	g_signal_connect(G_OBJECT(filetypes_pulldown), "changed",
+					 G_CALLBACK(s_filetypechanged),	
+					 reinterpret_cast<gpointer>(this));
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -858,9 +842,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 		// what a long ugly line of code
-		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
-		UT_ASSERT(activeItem);
-		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
+		m_nFileType = XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(filetypes_pulldown));
 #else
 		// the hildon dlg does not have type selector, so we always need to force autodetect
 		m_nFileType = -1;
