@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (c) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +18,7 @@
  * 02111-1307, USA.
  */
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -31,6 +33,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkSignalBlocker.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -186,13 +189,15 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Populate the window's data items
 	_populateWindowData();
 
-    g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
-	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
-	g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+    {
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+	}
 
-    g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
-	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
-	g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+	{
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+	}
 	
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
@@ -303,22 +308,15 @@ void AP_UnixDialog_Columns::readSpin(void)
 	}
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
-	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
-							 m_oneHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
-							 m_twoHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleThree),
-							 m_threeHandlerID);
+	{
+		XAP_GtkSignalBlocker b1(G_OBJECT(m_wtoggleOne), m_oneHandlerID);
+		XAP_GtkSignalBlocker b2(G_OBJECT(m_wtoggleTwo), m_twoHandlerID);
+		XAP_GtkSignalBlocker b3(G_OBJECT(m_wtoggleThree), m_threeHandlerID);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne),
-							   m_oneHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo),
-							   m_twoHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree),
-							   m_threeHandlerID);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
+	}
 #endif
 	setColumns( val );
 	m_pColumnsPreview->draw();
@@ -336,12 +334,12 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 	g_signal_handler_block(G_OBJECT(m_wtoggleThree),
 							 m_threeHandlerID);
 #endif
+	{
 		// DOM: TODO: rewrite me
-	g_signal_handler_block(G_OBJECT(m_wSpin),
-							 m_spinHandlerID);
-	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
-	g_signal_handler_unblock(G_OBJECT(m_wSpin),
-							   m_spinHandlerID);
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpin),
+						   m_spinHandlerID);
+		gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
+	}
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	switch (icolumns)
@@ -395,11 +393,10 @@ void AP_UnixDialog_Columns::doMaxHeightEntry(void)
 	{
 		setMaxHeight(szHeight);
 
-		g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wMaxColumnHeightEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wMaxColumnHeightEntry), pos);
-		g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	}
 }
 
@@ -410,11 +407,10 @@ void AP_UnixDialog_Columns::doSpaceAfterEntry(void)
 	{
 		setSpaceAfter(szAfter);
 
-		g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wSpaceAfterEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
 		gtk_editable_set_position(GTK_EDITABLE(m_wSpaceAfterEntry), pos);
-		g_signal_handler_unblock(G_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 	}
 }
 
@@ -578,9 +574,9 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_container_set_border_width (GTK_CONTAINER (wDrawFrame), 4);
 
 	wPreviewArea = createDrawingArea ();
-	gtk_widget_ref (wPreviewArea);
+	g_object_ref (wPreviewArea);
 	g_object_set_data_full (G_OBJECT (windowColumns), "wPreviewArea", wPreviewArea,
-								  (GtkDestroyNotify) gtk_widget_unref);
+							(GDestroyNotify) g_object_unref);
 	gtk_widget_show(wPreviewArea);
 	gtk_container_add (GTK_CONTAINER (wDrawFrame), wPreviewArea);
 #endif /* HAVE_HILDON */

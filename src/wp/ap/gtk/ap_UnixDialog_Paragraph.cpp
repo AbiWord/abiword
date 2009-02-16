@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,8 +23,6 @@
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -36,6 +35,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkComboBoxHelpers.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -108,6 +108,13 @@ static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * d
 	dlg->event_MenuChanged(widget);
 }
 
+static void s_combobox_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_ComboBoxChanged(widget);
+}
+
 static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -162,9 +169,6 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
-		XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-		UT_ASSERT(unixapp);
-
 		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
 
 		// make a new Unix GC
@@ -233,6 +237,20 @@ void AP_UnixDialog_Paragraph::event_MenuChanged(GtkWidget * widget)
 
 	UT_uint32 value = (UT_uint32) GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
 									WIDGET_MENU_VALUE_TAG));
+
+	_setMenuItemValue(id, value);
+}
+
+
+void AP_UnixDialog_Paragraph::event_ComboBoxChanged(GtkWidget * widget)
+{
+	UT_ASSERT(widget && GTK_IS_COMBO_BOX(widget));
+
+	
+	tControl id = (tControl) GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+								   WIDGET_MENU_PARENT_ID_TAG));
+
+	UT_uint32 value = (UT_uint32)XAP_comboBoxGetActiveInt(GTK_COMBO_BOX(widget));
 
 	_setMenuItemValue(id, value);
 }
@@ -307,7 +325,7 @@ void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 
 GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	GtkWidget * windowParagraph;
 	GtkWidget * windowContents;
@@ -349,24 +367,20 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowMain)
 {
 	// grab the string set
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	GtkWidget * vboxContents;
 	GtkWidget * tabMain;
 	GtkWidget * boxSpacing;
 	GtkWidget * hboxAlignment;
-	GtkWidget * listAlignment;
-	GtkWidget * listAlignment_menu;
-	GtkWidget * glade_menuitem;
+	GtkComboBox * listAlignment;
 	GtkWidget * spinbuttonLeft;
 	GtkWidget * spinbuttonRight;
-	GtkWidget * listSpecial;
-	GtkWidget * listSpecial_menu;
+	GtkComboBox * listSpecial;
 	GtkWidget * spinbuttonBy;
 	GtkWidget * spinbuttonBefore;
 	GtkWidget * spinbuttonAfter;
-	GtkWidget * listLineSpacing;
-	GtkWidget * listLineSpacing_menu;
+	GtkComboBox * listLineSpacing;
 	GtkWidget * spinbuttonAt;
 	GtkWidget * labelAlignment;
 	GtkWidget * labelBy;
@@ -449,57 +463,26 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	hboxAlignment = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxAlignment);
-	listAlignment = gtk_option_menu_new ();
+	listAlignment = GTK_COMBO_BOX(gtk_combo_box_new ());
+	XAP_makeGtkComboBoxText(listAlignment, G_TYPE_INT);
 	/**/ g_object_set_data(G_OBJECT(listAlignment), WIDGET_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	gtk_widget_show (listAlignment);
-	gtk_box_pack_start (GTK_BOX (hboxAlignment), listAlignment, FALSE, FALSE, 0);
+	gtk_widget_show (GTK_WIDGET(listAlignment));
+	gtk_box_pack_start (GTK_BOX (hboxAlignment), GTK_WIDGET(listAlignment), FALSE, FALSE, 0);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxAlignment, 1,2, 0,1,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	listAlignment_menu = gtk_menu_new ();
-	
-	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listAlignment, " ", 0); // add an empty menu option to fix bug 594
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemLeft = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listAlignment, s.utf8_str(), align_LEFT);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemCentered = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_VALUE_TAG, (gpointer) align_CENTERED);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listAlignment, s.utf8_str(), align_CENTERED);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemRight = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_VALUE_TAG, (gpointer) align_RIGHT);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listAlignment, s.utf8_str(), align_RIGHT);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemJustified = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_VALUE_TAG, (gpointer) align_JUSTIFIED);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
+	XAP_appendComboBoxTextAndInt(listAlignment, s.utf8_str(), align_JUSTIFIED);
+	gtk_combo_box_set_active(listAlignment, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_DomDirection,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -545,9 +528,9 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	spinbuttonLeft_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
 //	spinbuttonLeft = gtk_spin_button_new (NULL, 1, 1);
 	spinbuttonLeft = gtk_entry_new();
-	gtk_widget_ref (spinbuttonLeft);
+	g_object_ref (spinbuttonLeft);
 	g_object_set_data_full (G_OBJECT (windowMain), "spinbuttonLeft", spinbuttonLeft,
-							  (GtkDestroyNotify) gtk_widget_unref);
+							  (GDestroyNotify) g_object_unref);
 	/**/ g_object_set_data(G_OBJECT(spinbuttonLeft), WIDGET_ID_TAG, (gpointer) id_SPIN_LEFT_INDENT);
 	gtk_widget_show (spinbuttonLeft);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonLeft, 1,2, 2,3,
@@ -590,53 +573,29 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_misc_set_alignment (GTK_MISC (labelSpecial), 0, 0.5);
 #endif
 
-	listSpecial = gtk_option_menu_new ();
+	listSpecial = GTK_COMBO_BOX(gtk_combo_box_new ());
+	XAP_makeGtkComboBoxText(listSpecial, G_TYPE_INT);
 	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	gtk_widget_show (listSpecial);
+	gtk_widget_show (GTK_WIDGET(listSpecial));
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 3, 4, 2, 3,
                     (GtkAttachOptions) (GTK_SHRINK),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 #else
-	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 2,3, 3,4,
+	gtk_table_attach ( GTK_TABLE(boxSpacing), GTK_WIDGET(listSpecial), 2,3, 3,4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 #endif
-	listSpecial_menu = gtk_menu_new ();
-
-	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listSpecial, " ", 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemNone = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_VALUE_TAG, (gpointer) indent_NONE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listSpecial, s.utf8_str(), indent_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemFirstLine = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_VALUE_TAG, (gpointer) indent_FIRSTLINE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listSpecial, s.utf8_str(), indent_FIRSTLINE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemHanging = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_VALUE_TAG, (gpointer) indent_HANGING);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpecial), listSpecial_menu);
+	XAP_appendComboBoxTextAndInt(listSpecial, s.utf8_str(),  indent_HANGING);
+	gtk_combo_box_set_active(listSpecial, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBy,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -733,72 +692,27 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_label_set_justify (GTK_LABEL (labelLineSpacing), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelLineSpacing), 0, 0.5);
 
-	listLineSpacing = gtk_option_menu_new ();
+	listLineSpacing = GTK_COMBO_BOX(gtk_combo_box_new ());
+	XAP_makeGtkComboBoxText(listLineSpacing, G_TYPE_INT);
 	/**/ g_object_set_data(G_OBJECT(listLineSpacing), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	gtk_table_attach ( GTK_TABLE(boxSpacing), listLineSpacing, 2,3, 6,7,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
-	listLineSpacing_menu = gtk_menu_new ();
-	
-	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);	
-	
+	gtk_table_attach ( GTK_TABLE(boxSpacing), GTK_WIDGET(listLineSpacing), 2,3, 6,7,
+					   (GtkAttachOptions) (GTK_FILL),
+					   (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+	XAP_appendComboBoxTextAndInt(listLineSpacing, " ", 0); // add an empty menu option to fix bug 594
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemSingle = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_SINGLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_SINGLE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemOneAndHalf = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ONEANDHALF);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_ONEANDHALF);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemDouble = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_DOUBLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_DOUBLE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemAtLeast = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ATLEAST);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_ATLEAST);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemExactly = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_EXACTLY);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_EXACTLY);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
-	FREEP(unixstr);
-	/**/ m_menuitemMultiple = glade_menuitem;
-	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_MULTIPLE);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listLineSpacing), listLineSpacing_menu);
+	XAP_appendComboBoxTextAndInt(listLineSpacing, s.utf8_str(), spacing_MULTIPLE);
+	gtk_combo_box_set_active(listLineSpacing, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAt,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -828,7 +742,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (labelAfter);
 	gtk_widget_show (spinbuttonAfter);
 	gtk_widget_show (labelLineSpacing);
-	gtk_widget_show (listLineSpacing);
+	gtk_widget_show (GTK_WIDGET(listLineSpacing));
 	gtk_widget_show (labelAt);	
 	gtk_widget_show (spinbuttonAt);
 #endif /* HAVE_HILDON */ 	
@@ -979,23 +893,21 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	m_windowContents = vboxContents;
 
-	m_listAlignment = listAlignment;
+	m_listAlignment = GTK_WIDGET(listAlignment);
 
 //	m_spinbuttonLeft_adj = spinbuttonLeft_adj;
 	m_spinbuttonLeft = spinbuttonLeft;
 
 //	m_spinbuttonRight_adj = spinbuttonRight_adj;
 	m_spinbuttonRight = spinbuttonRight;
-	m_listSpecial = listSpecial;
-	m_listSpecial_menu = listSpecial_menu;
+	m_listSpecial = GTK_WIDGET(listSpecial);
 //	m_spinbuttonBy_adj = spinbuttonBy_adj;
 	m_spinbuttonBy = spinbuttonBy;
 //	m_spinbuttonBefore_adj = spinbuttonBefore_adj;
 	m_spinbuttonBefore = spinbuttonBefore;
 //	m_spinbuttonAfter_adj = spinbuttonAfter_adj;
 	m_spinbuttonAfter = spinbuttonAfter;
-	m_listLineSpacing = listLineSpacing;
-	m_listLineSpacing_menu = listLineSpacing_menu;
+	m_listLineSpacing = GTK_WIDGET(listLineSpacing);
 //	m_spinbuttonAt_adj = spinbuttonAt_adj;
 	m_spinbuttonAt = spinbuttonAt;
 
@@ -1055,22 +967,12 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
 
-	// connect to option menus
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemLeft);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemCentered);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemRight);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemJustified);
-
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemNone);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemFirstLine);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemHanging);
-
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemSingle);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemOneAndHalf);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemDouble);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemAtLeast);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemExactly);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemMultiple);
+	g_signal_connect(G_OBJECT(m_listAlignment), "changed",
+					 G_CALLBACK(s_combobox_changed), this);
+	g_signal_connect(G_OBJECT(m_listSpecial), "changed",
+					 G_CALLBACK(s_combobox_changed), this);
+	g_signal_connect(G_OBJECT(m_listLineSpacing), "changed",
+					 G_CALLBACK(s_combobox_changed), this);
 
 	// all the checkbuttons
 	g_signal_connect(G_OBJECT(m_checkbuttonWidowOrphan), "toggled",
@@ -1103,8 +1005,8 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 
 	// alignment option menu
 	UT_ASSERT(m_listAlignment);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
-								(gint) _getMenuItemValue(id_MENU_ALIGNMENT));
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_listAlignment), 1, 
+									(gint) _getMenuItemValue(id_MENU_ALIGNMENT));
 
 	// indent and paragraph margins
 	UT_ASSERT(m_spinbuttonLeft);
@@ -1120,7 +1022,7 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 
 	UT_ASSERT(m_listSpecial);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_listSpecial), 1,
 								(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
 
 	// spacing
@@ -1137,7 +1039,7 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
 
 	UT_ASSERT(m_listLineSpacing);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_listLineSpacing), 1,
 								(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
 
 	// set the check boxes
@@ -1172,7 +1074,7 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
+			XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_listSpecial),1,
 										(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
 		}
 	}
@@ -1201,7 +1103,7 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
+			XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(m_listLineSpacing),1,
 										(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
 		}
 	}

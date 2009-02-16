@@ -48,6 +48,7 @@ public:
 
 		// menus take a "changed" event
 		virtual void event_MenuChanged(GtkWidget * widget);
+	virtual void event_ComboBoxChanged(GtkWidget * widget);
 
 		// spin buttons can take "increment", "decrement", and "changed"
 		virtual void event_SpinIncrement(GtkWidget * widget);
@@ -91,33 +92,18 @@ public:
 	GtkWidget * m_windowContents;
 
 	GtkWidget * m_listAlignment;
-	GtkWidget * m_menuitemLeft;
-	GtkWidget * m_menuitemCentered;
-	GtkWidget * m_menuitemRight;
-	GtkWidget * m_menuitemJustified;
 
 	GtkWidget * m_spinbuttonLeft;
 	GtkWidget * m_spinbuttonRight;
 	GtkWidget * m_spinbuttonBy;
 
 	GtkWidget * m_listSpecial;
-	GtkWidget * m_listSpecial_menu;
-	GtkWidget * m_menuitemNone;
-	GtkWidget * m_menuitemFirstLine;
-	GtkWidget * m_menuitemHanging;
 
 	GtkWidget * m_spinbuttonBefore;
 	GtkWidget * m_spinbuttonAfter;
 	GtkWidget * m_spinbuttonAt;
 
 	GtkWidget * m_listLineSpacing;
-	GtkWidget * m_listLineSpacing_menu;
-	GtkWidget * m_menuitemSingle;
-	GtkWidget * m_menuitemOneAndHalf;
-	GtkWidget * m_menuitemDouble;
-	GtkWidget * m_menuitemAtLeast;
-	GtkWidget * m_menuitemExactly;
-	GtkWidget * m_menuitemMultiple;
 
 	GtkWidget * m_drawingareaPreview;
 
