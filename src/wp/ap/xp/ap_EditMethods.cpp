@@ -2976,7 +2976,7 @@ Defun1(filePreviewWeb)
 	// rather directly use with gsf stdio.
 	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
 	if (err) {
-		g_warning (err->message);
+		g_warning ("%s", err->message);
 		g_error_free (err); err = NULL;
 		return UT_ERROR;
 	}
@@ -3823,6 +3823,7 @@ Defun(fileRevert)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+  UT_UNUSED(pCallData);
   UT_return_val_if_fail (pAV_View, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 
@@ -4106,7 +4107,7 @@ Defun(warpInsPtToXY)
 	return true;
 }
 
-static void sActualMoveLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+static void sActualMoveLeft(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
@@ -4155,7 +4156,7 @@ Defun1(warpInsPtLeft)
 	return true;
 }
 
-static void sActualMoveRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+static void sActualMoveRight(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
@@ -4619,7 +4620,7 @@ Defun1(cursorImageSize)
 	return true;
 }
 
-static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCallData, bool bStartDlg, PT_DocPosition pos)
+static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pCallData*/, bool bStartDlg, PT_DocPosition pos)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;

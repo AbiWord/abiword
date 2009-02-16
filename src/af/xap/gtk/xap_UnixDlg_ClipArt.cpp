@@ -226,7 +226,7 @@ gboolean XAP_UnixDialog_ClipArt::fillStore()
 	error = NULL;
 	dir = g_dir_open (this->dir_path, 0, &error);
 	if (error) {
-		g_warning (error->message);
+		g_warning ("%s", error->message);
 		g_error_free (error);
 		return FALSE;
 	}
@@ -252,7 +252,7 @@ gboolean XAP_UnixDialog_ClipArt::fillStore()
 		error = NULL;
 		pixbuf = gdk_pixbuf_new_from_file_at_size (file_path, 48, 48, &error);
 		if (error) {
-			g_warning (error->message);
+			g_warning ("%s", error->message);
 			g_error_free (error);
 			goto next;
 		}
