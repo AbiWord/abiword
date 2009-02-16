@@ -648,7 +648,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 
 	/* setup page units menu */
 	GtkComboBox *combo = GTK_COMBO_BOX(m_optionPageUnits);
-	XAP_makeGtkComboBoxText(combo, true);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);
@@ -656,7 +656,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 
 	/* setup margin units menu */
 	combo = GTK_COMBO_BOX(m_optionMarginUnits);
-	XAP_makeGtkComboBoxText(combo, true);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_inch), DIM_IN);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_cm), DIM_CM);
 	XAP_appendComboBoxTextAndInt(combo, _(XAP, DLG_Unit_mm), DIM_MM);

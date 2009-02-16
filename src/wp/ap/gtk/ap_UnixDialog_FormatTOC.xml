@@ -379,10 +379,9 @@
                                 <property name="xscale">0</property>
                                 <property name="yscale">1</property>
                                 <child>
-                                  <object class="GtkOptionMenu" id="wLevelOption">
+                                  <object class="GtkComboBox" id="wLevelOption">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="history">-1</property>
                                   </object>
                                 </child>
                               </object>
@@ -544,10 +543,9 @@
                     <property name="xscale">0</property>
                     <property name="yscale">1</property>
                     <child>
-                      <object class="GtkOptionMenu" id="wDetailsLevel">
+                      <object class="GtkComboBox" id="wDetailsLevel">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="history">-1</property>
                       </object>
                     </child>
                   </object>
@@ -764,10 +762,9 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkOptionMenu" id="wLabelChoose">
+                          <object class="GtkComboBox" id="wLabelChoose">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="history">-1</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -1046,10 +1043,9 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkOptionMenu" id="wTabLeaderChoose">
+                          <object class="GtkComboBox" id="wTabLeaderChoose">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="history">-1</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -1060,10 +1056,9 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkOptionMenu" id="wPageNumberingChoose">
+                          <object class="GtkComboBox" id="wPageNumberingChoose">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="history">-1</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

@@ -21,15 +21,29 @@
 #include "xap_GtkComboBoxHelpers.h"
 
 
-void XAP_makeGtkComboBoxText(GtkComboBox * combo, bool withIntData)
+void XAP_makeGtkComboBoxText(GtkComboBox * combo, GType secondary)
 {
 	GtkListStore * store;
-	if (withIntData) {
-		store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_INT);
+	if (secondary != G_TYPE_NONE) {
+		store = gtk_list_store_new(2, G_TYPE_STRING, secondary);
 	}
 	else {
 		store = gtk_list_store_new(1, G_TYPE_STRING);
 	}
+	gtk_combo_box_set_model(combo, GTK_TREE_MODEL(store));
+	
+	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
+	GtkCellRenderer *cell = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), cell, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), cell,
+								   "text", 0, NULL);
+}
+
+void XAP_makeGtkComboBoxText2(GtkComboBox * combo, GType secondary,
+							  GType tertiary)
+{
+	GtkListStore * store;
+	store = gtk_list_store_new(3, G_TYPE_STRING, secondary, tertiary);
 	gtk_combo_box_set_model(combo, GTK_TREE_MODEL(store));
 	
 	gtk_cell_layout_clear(GTK_CELL_LAYOUT(combo));
@@ -60,6 +74,25 @@ void XAP_appendComboBoxTextAndInt(GtkComboBox * combo, const char * text,
 	gtk_list_store_set(store, &iter, 0, text, 1, value, -1);
 }
 
+void XAP_appendComboBoxTextAndString(GtkComboBox * combo, const char * text,
+									 const char * value)
+{
+	GtkTreeIter iter;
+	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, text, 1, value, -1);
+}
+
+void XAP_appendComboBoxTextAndStringString(GtkComboBox * combo, 
+										   const char * text,
+										   const char * value,
+										   const char *value2)
+{
+	GtkTreeIter iter;
+	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, text, 1, value, 2, value2, -1);
+}
 
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
 {

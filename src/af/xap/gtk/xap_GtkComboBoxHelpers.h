@@ -27,10 +27,18 @@
 
 #include "ut_vector.h"
 
-void XAP_makeGtkComboBoxText(GtkComboBox * combo, bool withIntData);
+void XAP_makeGtkComboBoxText(GtkComboBox * combo, GType secondaryType);
+void XAP_makeGtkComboBoxText2(GtkComboBox * combo, GType secondaryType,
+							  GType tertiaryType);
 void XAP_populateComboBoxWithIndex(GtkComboBox * combo, 
 								   const UT_GenericVector<const char*> & vec);
 void XAP_appendComboBoxTextAndInt(GtkComboBox * combo, const char * text, int value);
+void XAP_appendComboBoxTextAndString(GtkComboBox * combo, const char * text, 
+									 const char * value);
+void XAP_appendComboBoxTextAndStringString(GtkComboBox * combo, 
+										   const char * text, 
+										   const char * value1, 
+										   const char * value2);
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo);
 
 #endif

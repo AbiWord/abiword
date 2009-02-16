@@ -489,13 +489,13 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 		
 	m_wFootnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omFootnoteStyle"));
 	UT_ASSERT(m_wFootnotesStyleMenu );
-	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, true);
+	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, G_TYPE_NONE);
 	XAP_populateComboBoxWithIndex(m_wFootnotesStyleMenu, *footnoteTypeList);
 	gtk_combo_box_set_active(m_wFootnotesStyleMenu, 0);
 
 	m_wEndnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnoteStyle"));
 	UT_ASSERT(m_wEndnotesStyleMenu);
-	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, true);
+	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, G_TYPE_NONE);
 	XAP_populateComboBoxWithIndex(m_wEndnotesStyleMenu, *footnoteTypeList);
 	gtk_combo_box_set_active(m_wEndnotesStyleMenu, 0);
 
@@ -504,7 +504,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
-	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, false);
+	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
 	gtk_combo_box_append_text(m_wFootnoteNumberingMenu, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
@@ -520,7 +520,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
-	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, false);
+	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
 	gtk_combo_box_append_text(m_wEndnotesPlaceMenu, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);

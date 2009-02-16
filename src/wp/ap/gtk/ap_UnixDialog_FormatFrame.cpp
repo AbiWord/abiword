@@ -536,7 +536,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
 	GtkComboBox *combo = GTK_COMBO_BOX(m_wBorderThickness);
-	XAP_makeGtkComboBoxText(combo, false);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
 	// TODO WTF is this hardcoded. 
 	gtk_combo_box_append_text(combo, "1/2 pt");
 	gtk_combo_box_append_text(combo, "3/4 pt");
