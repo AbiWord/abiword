@@ -20,7 +20,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <X11/keysym.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
