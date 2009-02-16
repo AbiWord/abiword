@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000-2002 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,25 +48,21 @@ static void s_color_cleared(GtkWidget * /*btn*/, AP_UnixDialog_Background * dlg)
 	dlg->colorCleared();
 }
 
-#define CTI(c, v) (int)(c[v] * 255.0)
-
 static void s_color_changed(GtkWidget * csel,
 			    AP_UnixDialog_Background * dlg)
 {
 	UT_ASSERT(csel && dlg);
   
 	GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
-	gdouble cur [4];
+	GdkColor cur;
 
-	gtk_color_selection_get_color (w, cur);
-
-	static char buf_color[12];
-
-	sprintf(buf_color,"%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
-	dlg->setColor ((const gchar *) buf_color);
+	gtk_color_selection_get_current_color (w, &cur);
+	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(cur);
+	UT_HashColor hash_color;
+	dlg->setColor (hash_color.setColor(*rgbcolor) + 1); // return with # prefix
+	delete rgbcolor;
 }
 
-#undef CTI
 
 /*****************************************************************/
 
@@ -159,13 +156,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	{
 		UT_parseColor(pszC,c);
 	}
-	gdouble currentColor[4] = { 0.0, 0.0, 0.0, 0 };
-	currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-	currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-	currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
+	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
 
-	gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
-								   currentColor);
+    gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
+	gdk_color_free(gcolor);
+
 	m_wColorsel = colorsel;
 //
 // Button to clear background color
@@ -216,9 +211,13 @@ void AP_UnixDialog_Background::eventCancel (void)
 void AP_UnixDialog_Background::colorCleared(void)
 {
 	setColor(NULL);
-	gdouble currentColor[4] = { 1., 1., 1., 0 };
-	gtk_color_selection_set_color (GTK_COLOR_SELECTION(m_wColorsel),
-								   currentColor);
+	GdkColor gcolor;
+	gcolor.pixel = 0;
+	gcolor.red = 0xffff;
+	gcolor.blue = 0xffff;
+	gcolor.green = 0xffff;
+	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION(m_wColorsel),
+										   &gcolor);
 }	
 	
 
