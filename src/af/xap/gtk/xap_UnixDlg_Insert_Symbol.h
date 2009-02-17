@@ -80,7 +80,7 @@ private:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 	GtkWidget * m_SymbolMap;
-	GtkWidget * m_fontcombo;	
+	GtkWidget * m_fontcombo;
 	GtkAdjustment * m_vadjust;
 	GList     * m_InsertS_Font_list;
 	UT_GenericVector<gchar*>   m_fontlist;

@@ -212,10 +212,11 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// return to ap_Editmethods and wait for something interesting
 	// to happen.
 #else
-	gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))),
-					   DEFAULT_UNIX_SYMBOL_FONT);
-
-	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), DEFAULT_UNIX_SYMBOL_FONT);
+	PangoFontDescription* font_desc = pango_font_description_new();
+	pango_font_description_set_family(font_desc, DEFAULT_UNIX_SYMBOL_FONT);
+	pango_font_description_set_absolute_size(font_desc, 14 * PANGO_SCALE);
+	gucharmap_charmap_set_font_desc (GUCHARMAP_CHARMAP (m_SymbolMap), font_desc);
+	pango_font_description_free(font_desc);
 #endif /* WITH_GUCHARMAP */
 }
 
@@ -225,9 +226,12 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
 #else
-	const char * symfont = gtk_entry_get_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_fontcombo))));
-	m_Inserted_Symbol = gucharmap_table_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
-	_insert(m_Inserted_Symbol, symfont);
+		const char * symfont = NULL;
+		PangoFontDescription *desc;
+		g_object_get(G_OBJECT(m_SymbolMap), "font-desc", &desc, NULL);
+		symfont = pango_font_description_get_family(desc);
+		m_Inserted_Symbol = gucharmap_chartable_get_active_character(gucharmap_charmap_get_chartable(GUCHARMAP_CHARMAP(m_SymbolMap)));
+		_insert(m_Inserted_Symbol, symfont);
 #endif
 }
 
@@ -273,10 +277,15 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	_setScrolledWindow ();
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-#else
-	gucharmap_charmap_set_font (GUCHARMAP_CHARMAP (m_SymbolMap), buffer);
+#else 
+	PangoFontDescription* font_desc = pango_font_description_new();
+	pango_font_description_set_family(font_desc, buffer);
+	pango_font_description_set_absolute_size(font_desc, 14 * PANGO_SCALE);
+	gucharmap_charmap_set_font_desc (GUCHARMAP_CHARMAP (m_SymbolMap), font_desc);
+	pango_font_description_free(font_desc);
 #endif
 }
+
 void XAP_UnixDialog_Insert_Symbol::New_Row(void)
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
@@ -666,12 +675,13 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
 #else
-	m_SymbolMap = gucharmap_charmap_new (
-		GUCHARMAP_CHAPTERS(gucharmap_block_chapters_new ()));
-	gtk_widget_show (m_SymbolMap);
+	GucharmapChaptersModel *model = GUCHARMAP_CHAPTERS_MODEL(gucharmap_block_chapters_model_new ());
+	m_SymbolMap = gucharmap_charmap_new ();
+	gucharmap_charmap_set_chapters_model(GUCHARMAP_CHARMAP(m_SymbolMap), 
+										 model);
 	gtk_box_pack_start (GTK_BOX (tmp), m_SymbolMap, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (m_SymbolMap), 5);
-
+	gtk_widget_show(m_SymbolMap);
 	gtk_widget_set_size_request (m_windowMain, 700, 300);
 #endif
 
@@ -755,7 +765,6 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					 "response",
 					 G_CALLBACK(s_dlg_response),
 					 static_cast<gpointer>(this));
-
 
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp

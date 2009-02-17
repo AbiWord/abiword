@@ -43,7 +43,7 @@ done
 if test "x$goffice_req" = x; then
   goffice_req=libgoffice-0.6
 fi
-gucharmap_req='gucharmap >= 1.4'
+gucharmap_req='gucharmap-2'
 hildon_pkgs='hildon-libs hildon-fm dbus-1 libosso libosso-gsf-1'
 # placeholder for accumulated optional deps
 opt_pkgs=''
