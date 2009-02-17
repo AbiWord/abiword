@@ -56,9 +56,6 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_pParaPreview = NULL;
 	m_pCharPreview = NULL;
 	m_pAbiPreview = NULL;
-	
-	if(m_vecCharProps.getItemCount() > 0)
-		m_vecCharProps.clear();
 }
 
 AP_Dialog_Styles::~AP_Dialog_Styles(void)
@@ -1232,7 +1229,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 //
 // set our Vector of Character Properties into the preview class.
 //
-	m_pCharPreview->setVecProperties( &m_vecCharProps);
+	m_pCharPreview->setVecProperties( &m_mapCharProps);
 }
 
 /*!
@@ -1585,7 +1582,7 @@ void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 	UT_return_if_fail (m_pCharPreview); // add this when we make a char preview
 
 	// force a redraw
-	m_pCharPreview->setVecProperties( &m_vecCharProps);
+	m_pCharPreview->setVecProperties( &m_mapCharProps);
 	m_pCharPreview->draw();
 }
 
@@ -1661,8 +1658,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		}
 
 // Clear out old contents of the char vector if they exist
-		if(m_vecCharProps.getItemCount() > 0)
-			m_vecCharProps.clear();
+		m_mapCharProps.clear();
 
 	    // now loop through and pass out each property:value combination for characters
 
@@ -1696,8 +1692,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 //
 // Put them in our property vector for the Character preview
 //
-			m_vecCharProps.addItem((void *) szName);
-			m_vecCharProps.addItem((void *) szValue);
+			m_mapCharProps[szName] = szValue;
 		}
 
 		if (!m_curStyleDesc.empty())

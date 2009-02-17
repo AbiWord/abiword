@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,12 +29,10 @@
 #define PREVIEW_ENTRY_DEFAULT_STRING	"AaBbYyZz"
 
 XAP_FontPreview::XAP_FontPreview()
+	: m_width(PREVIEW_WIDTH)
+	, m_height(PREVIEW_HEIGHT)
+	, m_pFontPreview(NULL)
 {
-	m_pColorBackground      = NULL;
-	m_pFontPreview          = NULL;
-	m_width					= PREVIEW_WIDTH;
-	m_height				= PREVIEW_HEIGHT;
-	
 	UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
 
@@ -49,37 +48,21 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! font priview created!!!!!\n"));
-	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
+	m_pFontPreview = new XAP_Preview_FontPreview(gc,NULL);
 	UT_return_if_fail(m_pFontPreview);
 	
 	m_pFontPreview->setDrawString(m_drawString);
-	m_pFontPreview->setVecProperties(&m_vecProps);
+	m_pFontPreview->setVecProperties(&m_mapProps);
 	m_pFontPreview->setWindowSize(width, height);
 	m_width = gc->tlu(width);
 	m_height = gc->tlu(height);
 	addOrReplaceVecProp("font-size","36pt");
 }
 
-void XAP_FontPreview::addOrReplaceVecProp(const gchar * pszProp,
-										  const gchar * pszVal)
+void XAP_FontPreview::addOrReplaceVecProp(const std::string & pszProp,
+										  const std::string & pszVal)
 {
-	UT_sint32 iCount = m_vecProps.getItemCount();
-	const char * pszV = NULL;
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = reinterpret_cast<const gchar *>(m_vecProps.getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if((iCount > 0)&&(i < iCount))
-		m_vecProps.setNthItem(i+1, static_cast<const void *>(pszVal), NULL);
-	else
-	{
-		m_vecProps.addItem(static_cast<const void *>(pszProp));
-		m_vecProps.addItem(static_cast<const void *>(pszVal));
-	}
-	return;
+	m_mapProps[pszProp] = pszVal;
 }
 
 void XAP_FontPreview::setFontFamily(const gchar * pFontFamily)

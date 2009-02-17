@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +21,9 @@
 #ifndef AP_Dialog_Styles_H
 #define AP_Dialog_Styles_H
 
+#include <string>
+#include <map>
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "fv_View.h"
@@ -34,6 +38,8 @@ class XAP_Frame;
 class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 {
  public:
+	typedef std::map<std::string,std::string> PropMap;
+
 	AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Styles(void);
 
@@ -113,7 +119,7 @@ private:
 	PT_DocPosition                m_posBefore;
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;
-	UT_Vector                     m_vecCharProps;
+	PropMap                       m_mapCharProps;
 	UT_String                     m_ListProps[8];
 };
 

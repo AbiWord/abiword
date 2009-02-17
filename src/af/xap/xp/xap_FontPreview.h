@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,13 +21,15 @@
 #ifndef XAP_FONTPREVIEW_H
 #define XAP_FONTPREVIEW_H
 
+#include <string>
+#include <map>
+
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-#include "ut_string.h"
-#include "ut_vector.h"
-#include "gr_Graphics.h"
 #include "xap_Dlg_FontChooser.h"
+
+class GR_Graphics;
 
 // some hardcoded values for the preview window size
 #define PREVIEW_WIDTH 400
@@ -35,11 +38,13 @@
 class ABI_EXPORT XAP_FontPreview
 {
 public:
+	typedef std::map<std::string,std::string> PropMap;
+
 	XAP_FontPreview();	
 	virtual ~XAP_FontPreview(void);
 
-	void							addOrReplaceVecProp(const gchar * pszProp,
-														const gchar * pszVal);
+	void							addOrReplaceVecProp(const std::string & pszProp,
+														const std::string & pszVal);
 	void							setFontFamily(const gchar * pFontFamily);
 	void							setText(const gchar * pFontFamily);
 	void							draw(void);
@@ -47,13 +52,12 @@ protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-	const gchar *                m_pColorBackground;
 	UT_sint32						m_width;
 	UT_sint32						m_height;
 private:
 	XAP_Preview_FontPreview *       m_pFontPreview;
 	UT_UCSChar *                    m_drawString;
-	UT_Vector						m_vecProps;
+	PropMap 						m_mapProps;
 };
 
 #endif /* XAP_FONTPREVIEW_H */

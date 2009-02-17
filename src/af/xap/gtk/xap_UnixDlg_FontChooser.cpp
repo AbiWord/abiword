@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +21,6 @@
  */
 
 // 9/4/04 Updated to use GtkTreeView , Tim O'Brien (obrientimo@vuw.ac.nz)
-
 
 #include <stdio.h>
 #include <string.h>
@@ -144,13 +144,11 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_gc = NULL;
 	m_pFrame = NULL;
 	m_doneFirstFont = false;
-	for(UT_sint32 i = 0; i < 4;i++)
-	{
-		m_currentFGColor[i] = 0.0;
-		m_currentBGColor[i] = 0.0;
-		m_funkyColor[i] = 0.0;
-	}
 
+	memset(&m_currentFGColor, 0, sizeof(m_currentFGColor));
+	memset(&m_currentBGColor, 0, sizeof(m_currentBGColor));
+	m_currentBGColorTransparent = false;
+	memset(&m_funkyColor, 0, sizeof(m_funkyColor));
 }
 
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
@@ -205,8 +203,8 @@ static void s_select_row_size(GtkTreeSelection * /* widget */, XAP_UnixDialog_Fo
 static gboolean s_drawing_area_expose(GtkWidget * w,
 								  GdkEventExpose * /* pExposeEvent */)
 {
-	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
-		                              gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixDialog_FontChooser * dlg = 
+		(XAP_UnixDialog_FontChooser *)g_object_get_data(G_OBJECT(w), "user-data");
 	dlg->updatePreview();
 //	g_idle_add(static_cast<GSourceFunc>(do_update),static_cast<gpointer>(dlg));
 	return TRUE;
@@ -280,9 +278,7 @@ void XAP_UnixDialog_FontChooser::transparencyChanged(void)
 	if(bTrans)
 	{
 		addOrReplaceVecProp("bgcolor","transparent");
-		m_currentBGColor[RED]  = -1;
-		m_currentBGColor[GREEN] = -1;
-		m_currentBGColor[BLUE] = -1;
+		m_currentBGColorTransparent = true;
 	}
 	updatePreview();
 }
@@ -378,41 +374,26 @@ void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
 
 void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 {
-	static char buf_color[8];
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
-
-	// test for funkyColor-has-been-changed-to-sane-color case
-	if (m_currentFGColor[RED] >= 0 &&
-		m_currentFGColor[GREEN] >= 0 &&
-		m_currentFGColor[BLUE] >= 0)
-	{
-		sprintf(buf_color, "%02x%02x%02x",
-				static_cast<unsigned int>(m_currentFGColor[RED] 	* static_cast<gdouble>(255.0)),
-				static_cast<unsigned int>(m_currentFGColor[GREEN]	* static_cast<gdouble>(255.0)),
-				static_cast<unsigned int>(m_currentFGColor[BLUE] 	* static_cast<gdouble>(255.0)));
-		addOrReplaceVecProp("color",static_cast<gchar *>(buf_color));
-	}
+	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_colorSelector), &m_currentFGColor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentFGColor);
+	UT_HashColor hash_color;
+	const char * c = hash_color.setColor(*rgbcolor);
+	addOrReplaceVecProp("color",  c + 1);
+	delete rgbcolor;
 	updatePreview();
 }
 
 
 void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 {
-	static char buf_color[8];
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_colorSelector), &m_currentBGColor);
+	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentFGColor);
+	UT_HashColor hash_color;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
+	m_currentBGColorTransparent = false;
 	// test for funkyColor-has-been-changed-to-sane-color case
-	if (m_currentBGColor[RED] >= 0 &&
-		m_currentBGColor[GREEN] >= 0 &&
-		m_currentBGColor[BLUE] >= 0)
-	{
-		sprintf(buf_color, "%02x%02x%02x",
-				static_cast<unsigned int>(m_currentBGColor[RED] 	* static_cast<gdouble>(255.0)),
-				static_cast<unsigned int>(m_currentBGColor[GREEN]	* static_cast<gdouble>(255.0)),
-				static_cast<unsigned int>(m_currentBGColor[BLUE] 	* static_cast<gdouble>(255.0)));
-
-		addOrReplaceVecProp("bgcolor",static_cast<gchar *>(buf_color));
-	}
+	addOrReplaceVecProp("bgcolor", hash_color.setColor(*rgbcolor) + 1);
+	delete rgbcolor;
 	updatePreview();
 }
 
@@ -492,9 +473,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //  	GtkWidget *hboxForEncoding;
 	table1 = gtk_table_new (2, 3, FALSE);
 	gtk_widget_set_name (table1, "table1");
-	gtk_widget_ref (table1);
+	g_object_ref (G_OBJECT(table1));
 	g_object_set_data_full (G_OBJECT (window1), "table1", table1,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (table1);
 
 	UT_UTF8String s;
@@ -509,9 +490,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	vbox1 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox1, "vbox1");
-	gtk_widget_ref (vbox1);
+	g_object_ref (G_OBJECT(vbox1));
 	g_object_set_data_full (G_OBJECT (window1), "vbox1", vbox1,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (vbox1);
 	gtk_table_attach (GTK_TABLE (table1), vbox1, 0, 1, 0, 2,
 					  static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
@@ -520,17 +501,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontLabel,s);
 	labelFont = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelFont, "labelFont");
-	gtk_widget_ref (labelFont);
+	g_object_ref (labelFont);
 	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelFont);
 	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 0);
 
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
-	gtk_widget_ref (scrolledwindow1);
+	g_object_ref (scrolledwindow1);
 	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (scrolledwindow1);
 	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -539,17 +520,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	listFonts = createFontTabTreeView();
 	gtk_widget_set_name (listFonts, "listFonts");
-	gtk_widget_ref (listFonts);
+	g_object_ref (listFonts);
 	g_object_set_data_full (G_OBJECT (window1), "listFonts", listFonts,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
 
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox2, "vbox2");
-	gtk_widget_ref (vbox2);
+	g_object_ref (vbox2);
 	g_object_set_data_full (G_OBJECT (window1), "vbox2", vbox2,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (vbox2);
 	gtk_table_attach (GTK_TABLE (table1), vbox2, 1, 2, 0, 1,
 					  static_cast<GtkAttachOptions>(GTK_FILL),
@@ -558,17 +539,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleLabel,s);
 	labelStyle = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelStyle, "labelStyle");
-	gtk_widget_ref (labelStyle);
+	g_object_ref (labelStyle);
 	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelStyle);
 	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 0);
 
 	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
-	gtk_widget_ref (scrolledwindow2);
+	g_object_ref (scrolledwindow2);
 	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (scrolledwindow2);
 	gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow2, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
@@ -577,17 +558,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	listStyles = createFontTabTreeView();
 	gtk_widget_set_name (listStyles, "listStyles");
-	gtk_widget_ref (listStyles);
+	g_object_ref (listStyles);
 	g_object_set_data_full (G_OBJECT (window1), "listStyles", listStyles,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
 
 	vbox3 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox3, "vbox3");
-	gtk_widget_ref (vbox3);
+	g_object_ref (vbox3);
 	g_object_set_data_full (G_OBJECT (window1), "vbox3", vbox3,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (vbox3);
 	gtk_table_attach (GTK_TABLE (table1), vbox3, 2, 3, 0, 1,
 					  static_cast<GtkAttachOptions>(GTK_FILL),
@@ -596,17 +577,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SizeLabel,s);
 	labelSize = gtk_label_new (s.utf8_str());
 	gtk_widget_set_name (labelSize, "labelSize");
-	gtk_widget_ref (labelSize);
+	g_object_ref (labelSize);
 	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelSize);
 	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 0);
 
 	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
-	gtk_widget_ref (scrolledwindow3);
+	g_object_ref (scrolledwindow3);
 	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (scrolledwindow3);
 	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
@@ -615,17 +596,17 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	listSizes = createFontTabTreeView();
 	gtk_widget_set_name (listSizes, "listSizes");
-	gtk_widget_ref (listSizes);
+	g_object_ref (listSizes);
 	g_object_set_data_full (G_OBJECT (window1), "listSizes", listSizes,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
 
 	vboxmisc = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vboxmisc, "vboxmisc");
-	gtk_widget_ref (vboxmisc);
+	g_object_ref (vboxmisc);
 	g_object_set_data_full (G_OBJECT (window1), "vboxmisc", vboxmisc,
-							  reinterpret_cast<GtkDestroyNotify>(gtk_widget_unref));
+							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (vboxmisc);
 	gtk_table_attach (GTK_TABLE (table1), vboxmisc, 1, 3, 1, 2,
 					  static_cast<GtkAttachOptions>(GTK_FILL),
@@ -643,25 +624,25 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck,s);
 	checkbuttonStrikeout = gtk_check_button_new_with_label (s.utf8_str());
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_UnderlineCheck,s);
 	checkbuttonUnderline = gtk_check_button_new_with_label (s.utf8_str());
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_OverlineCheck,s);
 	checkbuttonOverline = gtk_check_button_new_with_label (s.utf8_str());
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
 	gtk_widget_show (checkbuttonOverline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck,s);
 	checkbuttonHidden = gtk_check_button_new_with_label (s.utf8_str());
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
 	gtk_widget_show (checkbuttonHidden);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
 
@@ -723,7 +704,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	// setting the height takes into account the border applied on all
 	// sides, so we need to double the single border width
 	gtk_widget_set_size_request (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
-	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
+	gtk_container_set_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
@@ -929,23 +910,28 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
-	if (!getVal("font-style") || !getVal("font-weight"))
+	const char * weight = getVal("font-weight");
+	const char * style = getVal("font-style");
+	if (!style || !weight)
 		st = LIST_STYLE_NONE;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
-			 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
-		st = LIST_STYLE_NORMAL;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
-			 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
-		st = LIST_STYLE_BOLD;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
-			 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
-		st = LIST_STYLE_ITALIC;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
-			 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
-		st = LIST_STYLE_BOLD_ITALIC;
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	else {
+		bool isBold = !g_ascii_strcasecmp(weight, "bold");
+		bool isItalic = !g_ascii_strcasecmp(style, "italic");
+		if (!isBold && !isItalic) {
+			st = LIST_STYLE_NORMAL;
+		}
+		else if (!isItalic && isBold) {
+			st = LIST_STYLE_BOLD;
+		}
+		else if (isItalic && !isBold) {
+			st = LIST_STYLE_ITALIC;
+		}
+		else if (isItalic && isBold) {
+			st = LIST_STYLE_BOLD_ITALIC;
+		}
+		else {
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	// select and scroll to style name
@@ -969,16 +955,15 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	// Set color in the color selector
-	if (getVal("color"))
+	if (const char *clr = getVal("color"))
 	{
 		UT_RGBColor c;
-		UT_parseColor(getVal("color"), c);
+		UT_parseColor(clr, c);
 
-		m_currentFGColor[RED] = (static_cast<gdouble>(c.m_red) / static_cast<gdouble>(255.0));
-		m_currentFGColor[GREEN] = (static_cast<gdouble>(c.m_grn) / static_cast<gdouble>(255.0));
-		m_currentFGColor[BLUE] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
-
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_currentFGColor);
+		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
+		m_currentFGColor = *color;
+		gdk_color_free(color);
+		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_colorSelector), &m_currentFGColor);
 	}
 	else
 	{
@@ -987,7 +972,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// the cases except where the user specifically enters -1 for
 		// all Red, Green and Blue attributes manually.  This user
 		// should expect it not to touch the color.  :)
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), m_funkyColor);
+		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_colorSelector), &m_funkyColor);
 	}
 
 	// Set color in the color selector
@@ -997,11 +982,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_RGBColor c;
 		UT_parseColor(getVal("bgcolor"), c);
 
-		m_currentBGColor[RED] = (static_cast<gdouble>(c.m_red) / static_cast<gdouble>(255.0));
-		m_currentBGColor[GREEN] = (static_cast<gdouble>(c.m_grn) / static_cast<gdouble>(255.0));
-		m_currentBGColor[BLUE] = (static_cast<gdouble>(c.m_blu) / static_cast<gdouble>(255.0));
+		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
+		m_currentBGColor = *color;
+		gdk_color_free(color);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
-		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
+		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_bgcolorSelector), &m_currentBGColor);
 	}
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);
@@ -1029,7 +1014,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 // This enables callbacks on the preview area with a widget pointer to
 // access this dialog.
 //
-	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
+	g_object_set_data(G_OBJECT(m_preview), "user-data", this);
 
 	// unfreeze updates of the preview
 	m_blockUpdate = false;

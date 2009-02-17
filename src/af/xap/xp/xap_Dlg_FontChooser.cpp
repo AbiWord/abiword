@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,9 +69,6 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedSuperScript	= false;
 	m_bChangedSubScript		= false;
 
-	if(m_vecProps.getItemCount() > 0)
-		m_vecProps.clear();
-
 	UT_UCS4_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
 
@@ -115,35 +113,13 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 	UT_return_if_fail(m_pFontPreview);
 
 	m_pFontPreview->setWindowSize(width, height);
-	m_pFontPreview->setVecProperties( & m_vecProps);
+	m_pFontPreview->setVecProperties( & m_mapProps);
 }
 
-void XAP_Dialog_FontChooser::addOrReplaceVecProp(const gchar * pszProp,
-												 const gchar * pszVal)
+void XAP_Dialog_FontChooser::addOrReplaceVecProp(const std::string & pszProp,
+												 const std::string & pszVal)
 {
-	UT_sint32 iCount = m_vecProps.getItemCount();
-	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = (const gchar *) m_vecProps.getNthItem(i);
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-		m_vecProps.setNthItem(i+1, (void *) pszVal, NULL);
-	else
-	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
-	}
-	return;
+	m_mapProps[pszProp] = pszVal;
 }
 
 /*!
@@ -186,23 +162,13 @@ void XAP_Dialog_FontChooser::event_previewClear(void)
  * vecProp(n)   :   vecProp(n+1)
  * "property"   :   "value"
  */
-const gchar * XAP_Dialog_FontChooser::getVal(const gchar * szProp) const
+const char * XAP_Dialog_FontChooser::getVal(const std::string & szProp) const
 {
-	UT_sint32 i = m_vecProps.getItemCount();
-	if(i <= 0)
+	PropMap::const_iterator iter = m_mapProps.find(szProp);
+	if(iter == m_mapProps.end()) {
 		return NULL;
-	UT_sint32 j;
-	const gchar * pszV = NULL;
-	for(j= 0; j<i ;j=j+2)
-	{
-		pszV = (const gchar *) m_vecProps.getNthItem(j);
-		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
-			break;
 	}
-	if( j < i )
-		return  (const gchar *) m_vecProps.getNthItem(j+1);
-	else
-		return NULL;
+	return iter->second.c_str();
 }
 
 /*!
@@ -211,18 +177,22 @@ const gchar * XAP_Dialog_FontChooser::getVal(const gchar * szProp) const
  * This method wipes out all the old values and clears all the bools
  * assciated with them.
  */
-void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
+void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 {
-	UT_sint32 remCount = vProps->getItemCount();
+	UT_sint32 remCount = vProps.getItemCount();
 	if(remCount <= 0)
 		return;
-	UT_sint32 locCount = m_vecProps.getItemCount();
-	if(locCount>=0)
-		m_vecProps.clear();
+	// BAD BAD, we have wrong count
+	UT_ASSERT_HARMLESS(remCount % 2 == 0);
+	if(remCount % 2) {
+		remCount--;
+	}
+	m_mapProps.clear();
 	UT_sint32 i = 0;
-	for(i=0; i< remCount; i++)
+	for(i=0; i< remCount; i+=2)
 	{
-		m_vecProps.addItem(vProps->getNthItem(i));
+		m_mapProps.insert(std::make_pair((const char*)vProps.getNthItem(i), 
+										 (const char*)vProps.getNthItem(i+1)));
 	}
 //
 // Do the Text decorations
@@ -529,30 +499,22 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
  *
  * This code stolen from ap_Dialog_Lists.cpp
  */
-void XAP_Preview_FontPreview::setVecProperties( const UT_Vector * vFontProps)
+void XAP_Preview_FontPreview::setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps)
 {
-	m_vecProps = const_cast<UT_Vector *>(vFontProps);
+	m_mapProps = vFontProps;
 }
 
 /*!
  * This method returns a pointer to the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists.
  */
-const gchar * XAP_Preview_FontPreview::getVal(const gchar * szProp)
+const gchar * XAP_Preview_FontPreview::getVal(const std::string & szProp)
 {
-	UT_sint32 i = m_vecProps->getItemCount();
-	UT_sint32 j;
-	const gchar * pszV = NULL;
-	for(j= 0; j<i ;j=j+2)
-	{
-		pszV = (const gchar *) m_vecProps->getNthItem(j);
-		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
-			break;
-	}
-	if((i > 0)&&(j < i))
-		return  (const gchar *) m_vecProps->getNthItem(j+1);
-	else
+	XAP_Dialog_FontChooser::PropMap::const_iterator iter = m_mapProps->find(szProp);
+	if(iter == m_mapProps->end()) {
 		return NULL;
+	}
+	return iter->second.c_str();
 }
 
 /*
@@ -587,11 +549,11 @@ void XAP_Preview_FontPreview::draw(void)
 	UT_RGBColor FGcolor(0,0,0);
 	const char * pszFGColor = getVal("color");
 	if(pszFGColor)
-		UT_parseColor(getVal("color"),FGcolor);
+		UT_parseColor(pszFGColor,FGcolor);
 	UT_RGBColor BGcolor(m_clrBackground);
 	const char * pszBGColor = getVal("bgcolor");
 	if(pszBGColor && strcmp(pszBGColor,"transparent") != 0)
-		UT_parseColor(getVal("bgcolor"),BGcolor);
+		UT_parseColor(pszBGColor,BGcolor);
 //
 // Get the font and bold/italic- ness
 //

@@ -97,11 +97,10 @@ protected:
 
 	// parent frame
 	XAP_Frame *			m_pFrame;
-	gdouble m_currentFGColor[4];
-	gdouble m_currentBGColor[4];
-	gdouble m_funkyColor[4];
-
-
+	GdkColor m_currentFGColor;
+	GdkColor m_currentBGColor;
+	bool m_currentBGColorTransparent;
+	GdkColor m_funkyColor;
 };
 
 #endif /* XAP_UNIXDIALOG_FONTCHOOSER_H */

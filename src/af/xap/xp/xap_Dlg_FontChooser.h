@@ -2,6 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,50 +30,26 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+
+#include <map>
+#include <string>
+
 #include "ut_string.h"
-#include "ut_vector.h"
 
 #include "xap_Dialog.h"
 #include "xap_Preview.h"
 #include "gr_Graphics.h"
 
 class GR_Graphics;
-
-class ABI_EXPORT XAP_Preview_FontPreview  : public XAP_Preview
-{
-public:
-	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
-	virtual ~XAP_Preview_FontPreview(void);
-	void setVecProperties( const UT_Vector * vFontProps);
-    const gchar * getVal(const gchar * szProp);
-	void draw(void);
-	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
-	void clearScreen(void);
-
-
-protected:
-	UT_Vector * m_vecProps;
-	UT_RGBColor m_clrBackground;
-	const UT_UCSChar * m_pszChars;
-	
-private:
-
-	XAP_Preview_FontPreview();
-	XAP_Preview_FontPreview(const XAP_Preview_FontPreview &other);
-	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other);
-
-	GR_Font * m_pFont;
-	
-	UT_sint32 m_iAscent;
-	UT_sint32 m_iDescent;
-	UT_sint32 m_iHeight;
-};
+class XAP_Preview_FontPreview; //forward, see below
 
 /*****************************************************************/
 
 class ABI_EXPORT XAP_Dialog_FontChooser : public XAP_Dialog_NonPersistent
 {
 public:
+	typedef std::map<std::string,std::string> PropMap;
+
 	XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_FontChooser(void);
 
@@ -87,12 +64,12 @@ public:
 	    return m_drawString;
 	  }
 
-	void                            addOrReplaceVecProp(const gchar * pszProp,
-														const gchar * pszVal);
+	void                            addOrReplaceVecProp(const std::string & pszProp,
+														const std::string & pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
-	const gchar *                getVal(const gchar * szProp) const;
-	void                            setAllPropsFromVec(UT_Vector * vProps);
+	const char *                    getVal(const std::string & szProp) const;
+	void                            setAllPropsFromVec(const UT_Vector & vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
 	void							setFontFamily(const gchar * pFontFamily);
@@ -154,7 +131,7 @@ protected:
 	bool                            m_bSuperScript;			/* input/output */
 	bool                            m_bSubScript;			/* input/output */
 
-	UT_Vector                       m_vecProps; // Holds the current
+	PropMap                         m_mapProps; // Holds the current
 	XAP_Preview_FontPreview *       m_pFontPreview;
 
 	bool							m_bChangedFontFamily;	/* output */
@@ -173,6 +150,36 @@ protected:
 	bool                            m_bChangedSubScript;	/* output */
 
 	UT_UCSChar *                    m_drawString;
+};
+
+class ABI_EXPORT XAP_Preview_FontPreview  : public XAP_Preview
+{
+public:
+	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
+	virtual ~XAP_Preview_FontPreview(void);
+	void setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps);
+    const gchar * getVal(const std::string &);
+	void draw(void);
+	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
+	void clearScreen(void);
+
+
+protected:
+	const XAP_Dialog_FontChooser::PropMap * m_mapProps;
+	UT_RGBColor m_clrBackground;
+	const UT_UCSChar * m_pszChars;
+	
+private:
+
+	XAP_Preview_FontPreview();
+	XAP_Preview_FontPreview(const XAP_Preview_FontPreview &other);
+	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other);
+
+	GR_Font * m_pFont;
+	
+	UT_sint32 m_iAscent;
+	UT_sint32 m_iDescent;
+	UT_sint32 m_iHeight;
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */
