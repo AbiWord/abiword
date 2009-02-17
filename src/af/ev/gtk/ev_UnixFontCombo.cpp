@@ -160,7 +160,7 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
 	GtkObjectClass *gtk_object_class = GTK_OBJECT_CLASS (klass);
 	GtkCellRendererClass *cell_renderer_class = GTK_CELL_RENDERER_CLASS (klass);
 
-	abi_cell_renderer_font_parent_class = (GtkCellRendererTextClass*) gtk_type_class (GTK_TYPE_CELL_RENDERER_TEXT);
+	abi_cell_renderer_font_parent_class = (GtkCellRendererTextClass*) g_type_class_ref (GTK_TYPE_CELL_RENDERER_TEXT);
 
 	gtk_object_class->destroy = abi_cell_renderer_font_instance_destroy;
 
@@ -311,7 +311,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass)
 {
 	GObjectClass *g_object_class = G_OBJECT_CLASS (klass);
 
-	abi_font_combo_parent_class = (GtkComboBoxClass*) gtk_type_class (GTK_TYPE_COMBO_BOX);
+	abi_font_combo_parent_class = (GtkComboBoxClass*) g_type_class_ref (GTK_TYPE_COMBO_BOX);
 
 	g_object_class = (GObjectClass *) klass;
 	g_object_class->dispose = abi_font_combo_dispose;

@@ -56,7 +56,7 @@ ap_DocView_class_init (ApDocViewClass *dv_class)
 
 	// set our parent class
 	parent_class = (GtkDrawingAreaClass *)
-		gtk_type_class (gtk_drawing_area_get_type());
+		g_type_class_ref (gtk_drawing_area_get_type());
 	
 	// Disable focus handlers because they emit superfluous expose
 	// events, causing flicker.
