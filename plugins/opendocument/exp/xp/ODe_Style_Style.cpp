@@ -2,6 +2,7 @@
  * 
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+ * Copyright 2009 AbiSource Corporation B.V.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
