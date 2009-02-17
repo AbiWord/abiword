@@ -103,16 +103,20 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     // this case.
     m_tableWideCellStyle.fetchAttributesFromAbiCell(pAP);
 
+    // NOTE: Don't use the number of table-column-props values to determine
+    // the number of columns in the table. There can be more values than there
+    // are actual columns; see bug 11863 for an example.
     m_numColumns = 0;
+    UT_uint32 curColProp = 0;
     ok = pAP->getProperty("table-column-props", pValue);
     if (ok && pValue != NULL) {
         pVar = pValue;
         while (*pVar != 0) {
             if (*pVar == '/') {
                 if (!buffer.empty()) {
-
+                    curColProp++;
                     UT_UTF8String_sprintf(styleName, "%s.col%u",
-                                          m_tableName.utf8_str(), m_numColumns+1);
+                                          m_tableName.utf8_str(), curColProp);
                                           
                     pStyle = m_rAutomatiStyles.addTableColumnStyle(styleName);
                     pStyle->setColumnWidth(buffer.c_str());
@@ -123,8 +127,6 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                 } else {
                     columnStyleNames.addItem(new UT_UTF8String(""));
                 }
-
-                m_numColumns++;
             } else {
                 buffer += *pVar;
             }
@@ -133,19 +135,26 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
     }
 
     buffer.clear();
+
+    // NOTE: Don't use the number of table-row-height values to determine
+    // the number of rows in the table. There can be more values than there
+    // are actual rows; see bug 11863 for an example.
     m_numRows = 0;
+    UT_uint32 curRowProp = 0;
     ok = pAP->getProperty("table-row-heights", pValue);
     if (ok && pValue != NULL) {
         pVar = pValue;
         while (*pVar != 0) {
             if (*pVar == '/') {
                 if (!buffer.empty()) {
-
+                    curRowProp++;
                     UT_UTF8String_sprintf(styleName, "%s.row%u",
-                                          m_tableName.utf8_str(), m_numRows+1);
+                                          m_tableName.utf8_str(), curRowProp);
 
                     pStyle = m_rAutomatiStyles.addTableRowStyle(styleName);
-                    pStyle->setRowHeight(buffer.c_str());
+					// Row heights values in AbiWord really are *minimum* row
+					//  heights; the property name is unfortunate.
+                    pStyle->setMinRowHeight(buffer.c_str());
                     
                     rowStyleNames.addItem(new UT_UTF8String(styleName));
 
@@ -153,18 +162,12 @@ void ODe_Table_Listener::openTable(const PP_AttrProp* pAP,
                 } else {
                     rowStyleNames.addItem(new UT_UTF8String(""));
                 }
-                
-                m_numRows++;
             } else {
                 buffer += *pVar;
             }
             pVar++;
         }
     }
-    
-    // Don't create m_pColumns here, because we can't expect table-column-props to
-    // always have the correct amount of columns (due to corrupt files, bugs, etc.).
-    // m_pRows and table-row-heights have the same problem.
 }
 
 

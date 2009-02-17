@@ -619,6 +619,17 @@ void ODe_Style_Style::setRowHeight(const gchar* pRowHeight) {
 /**
  * 
  */
+void ODe_Style_Style::setMinRowHeight(const gchar* pMinRowHeight) {
+    if (m_pRowProps == NULL) {
+        m_pRowProps = new RowProps();
+    }
+    m_pRowProps->m_minRowHeight = pMinRowHeight;
+}
+
+
+/**
+ * 
+ */
 bool ODe_Style_Style::hasTableStyleProps(const PP_AttrProp* pAP) {
     const gchar* pValue;
     bool ok;
@@ -1428,7 +1439,8 @@ bool ODe_Style_Style::ColumnProps::operator==(
  * 
  */
 bool ODe_Style_Style::RowProps::isEmpty() const {
-    return m_rowHeight.empty();
+    return m_rowHeight.empty() && 
+           m_minRowHeight.empty();
 }
 
 
@@ -1445,6 +1457,7 @@ void ODe_Style_Style::RowProps::write(UT_UTF8String& rOutput,
     rOutput += "<style:table-row-properties";
     
     ODe_writeAttribute(rOutput, "style:row-height", m_rowHeight);
+    ODe_writeAttribute(rOutput, "style:min-row-height", m_minRowHeight);
     
     rOutput += "/>\n";
 }

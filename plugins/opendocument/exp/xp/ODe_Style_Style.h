@@ -100,6 +100,7 @@ public:
     void setBreakBefore(const gchar* pBreakBefore);    
     void setColumnWidth(const gchar* pColumnWidth);
     void setRowHeight(const gchar* pRowHeight);
+    void setMinRowHeight(const gchar* pMinRowHeight);
     void inheritTableCellProperties(const ODe_Style_Style& tableStyle);
     void setWrap(const UT_UTF8String& rWrap);
     void setRunThrough(const UT_UTF8String& rRunThrough);
@@ -234,6 +235,7 @@ private:
         bool operator==(const RowProps& rRowProps) const;
         
         UT_UTF8String m_rowHeight;       // style:row-height
+        UT_UTF8String m_minRowHeight;    // style:min-row-height
     } *m_pRowProps;
 
 
