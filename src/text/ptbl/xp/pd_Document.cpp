@@ -436,9 +436,10 @@ const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i) const
  * Add the current documents UUID as the author to the attribute list if 
  * the author attribute is not present.
  * The caller must delete [] the szAttsOut after use.
-  * Returns true if author attribute is present. 
+ * @param storage an UT_String storage for until the properties are copied.
+ * Returns true if author attribute is present. 
 */
-bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut)
+bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, UT_String &storage)
 {
 	// Set Author attribute
 	UT_sint32 icnt =  0;
@@ -466,14 +467,13 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		szAttsOut = new const gchar * [icnt+3];
 	UT_sint32 i = 0;
 	for(i = 0; i< icnt; i++)
-		szAttsOut[i] =  const_cast<const gchar*>(szAttsIn[i]);
+		szAttsOut[i] =  szAttsIn[i];
 	if(bFound)
 	{
 		szAttsOut[icnt] = NULL;
 		return bFound;
 	}
 	szAttsOut[icnt] = PT_AUTHOR_NAME;
-	UT_String sNum;
 	if(getMyAuthorInt() == -1)
 	{
 		UT_sint32 k = findFirstFreeAuthorInt();
@@ -482,9 +482,9 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
 		sendAddAuthorCR(pA);
 	}
-	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	UT_String_sprintf(storage,"%d",getMyAuthorInt());
 	m_iLastAuthorInt = getMyAuthorInt();
-	szAttsOut[icnt+1] = sNum.c_str();
+	szAttsOut[icnt+1] = storage.c_str();
 	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
 	szAttsOut[icnt+2] = NULL;
 	return false;
@@ -1126,7 +1126,8 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 		return false;
 	}
 	const gchar ** szAttsAuthor = NULL;
-	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	UT_String storage;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties);
 	delete [] szAttsAuthor;
 	return b;
@@ -1143,7 +1144,8 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	}
 	pf_Frag_Object * pfo = NULL;
 	const gchar ** szAttsAuthor = NULL;
-	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	UT_String storage;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties, &pfo);
 	delete [] szAttsAuthor;
 	*pField = pfo->getField();
@@ -1281,7 +1283,8 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	bool f;
 	deferNotifications();
 	const gchar ** szAttsAuthor = NULL;
-	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	UT_String storage;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,szAttsAuthor,properties);
 	delete [] szAttsAuthor;
 	processDeferredNotifications();
@@ -1311,7 +1314,8 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 		return false;
 	}
 	const gchar ** szAttsAuthor = NULL;
-	addAuthorAttributeIfBlank(attributes,szAttsAuthor);
+	UT_String storage;
+	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b =  m_pPieceTable->insertStrux(dpos,pts,szAttsAuthor,properties,ppfs_ret);
 	delete [] szAttsAuthor;
 	return b;

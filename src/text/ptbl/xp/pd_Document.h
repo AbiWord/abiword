@@ -199,8 +199,6 @@ public:
 	void                    setShowAuthors(bool bAuthors);
 	bool                    isShowAuthors(void) const
 	{ return m_bShowAuthors;}
-	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut);
-	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
 	bool                    isExportAuthorAtts(void) const;
 	void                    setExportAuthorAtts(bool bExport);
 	UT_sint32               getMyAuthorInt(void) const;
@@ -215,6 +213,8 @@ public:
 	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
 	UT_sint32               findFirstFreeAuthorInt(void) const;
  private:
+	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, UT_String & storage);
+	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
 	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps);
  public:
 	//
