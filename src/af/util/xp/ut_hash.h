@@ -51,15 +51,6 @@ template <class T> class ABI_EXPORT hash_slot;
 
 template <class T> class ABI_EXPORT UT_GenericStringMap;
 
-	// Like a std cursor
-
-class ABI_EXPORT _UT_StringMapImp
-{
-
-
-};
-
-
 template <class T> class ABI_EXPORT UT_GenericStringMap
 {
 public:
