@@ -61,22 +61,24 @@ private:
 	void            _createTABTypeItems(void);
 	void            _createLevelItems(void);
 	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
-	gpointer        _makeProp(const char * szProp, UT_sint32 i);
 
 	void 			_setHasHeadingSensitivity(bool bSensitive);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
+	GtkWidget * m_wLabelChoose;
+	GtkWidget * m_wPageNumberingChoose;
 	GtkBuilder * m_pBuilder;
 	UT_Vector   m_vecChangeStyleBtns;
 	UT_Vector   m_vecStyleEntries;
 	UT_Vector   m_vecTextTypes;
-	UT_GenericVector<UT_UTF8String*>   m_vecAllPropVals;
 	UT_sint32   m_iIndentValue;
 	UT_sint32   m_iStartValue;
 	guint       m_iStartID;
 	guint       m_iIndentID;
+	static void s_NumType_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me );
+
 };
 
 #endif /* AP_UNIXDIALOG_FORMATOC_H */

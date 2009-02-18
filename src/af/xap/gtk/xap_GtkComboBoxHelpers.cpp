@@ -94,6 +94,17 @@ void XAP_appendComboBoxTextAndStringString(GtkComboBox * combo,
 	gtk_list_store_set(store, &iter, 0, text, 1, value, 2, value2, -1);
 }
 
+void XAP_appendComboBoxTextAndIntString(GtkComboBox * combo, 
+										const char * text,
+										const int value,
+										const char *value2)
+{
+	GtkTreeIter iter;
+	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, text, 1, value, 2, value2, -1);
+}
+
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo)
 {
 	int value = 0;

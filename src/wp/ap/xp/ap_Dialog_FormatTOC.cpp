@@ -75,20 +75,6 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_vecTABLeadersProp.addItem("dot");
 	m_vecTABLeadersProp.addItem("hyphen");
 	m_vecTABLeadersProp.addItem("underline");
-	m_vecLabelPropValue.addItem("numeric");
-	m_vecLabelPropValue.addItem("numeric-square-brackets");
-	m_vecLabelPropValue.addItem("numeric-paren");
-	m_vecLabelPropValue.addItem("numeric-open-paren");
-	m_vecLabelPropValue.addItem("lower");
-	m_vecLabelPropValue.addItem("lower-paren");
-	m_vecLabelPropValue.addItem("lower-paren-open");
-	m_vecLabelPropValue.addItem("upper");
-	m_vecLabelPropValue.addItem("upper-paren");
-	m_vecLabelPropValue.addItem("upper-paren-open");
-	m_vecLabelPropValue.addItem("lower-roman");
-	m_vecLabelPropValue.addItem("lower-roman-paren");
-	m_vecLabelPropValue.addItem("upper-roman");
-	m_vecLabelPropValue.addItem("upper-roman-paren");
 }
 
 AP_Dialog_FormatTOC::~AP_Dialog_FormatTOC(void)

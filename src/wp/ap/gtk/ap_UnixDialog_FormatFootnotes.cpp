@@ -331,102 +331,11 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), static_cast<gboolean>(getRestartEndnoteOnSection()));
 
-	switch(getFootnoteType())
-	{
-	case FOOTNOTE_TYPE_NUMERIC:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,0);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,1);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,2);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,3);
-		break;
-	case FOOTNOTE_TYPE_LOWER:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,4);
-		break;
-	case FOOTNOTE_TYPE_LOWER_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,5);
-		break;
-	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,6);
-		break;
-	case FOOTNOTE_TYPE_UPPER:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,7);
-		break;
-	case FOOTNOTE_TYPE_UPPER_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,8);
-		break;
-	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,9);
-		break;
-	case FOOTNOTE_TYPE_LOWER_ROMAN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,10);
-		break;
-	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,11);
-		break;
-	case FOOTNOTE_TYPE_UPPER_ROMAN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,12);
-		break;
-	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,13);
-		break;
-	default:
-		gtk_combo_box_set_active ( m_wFootnotesStyleMenu,0);
-	}
+	XAP_comboBoxSetActiveFromIntCol(m_wFootnotesStyleMenu, 1, 
+									(int)getFootnoteType());
 
-
-	switch(getEndnoteType())
-	{
-	case FOOTNOTE_TYPE_NUMERIC:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,0);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,1);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,2);
-		break;
-	case FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,3);
-		break;
-	case FOOTNOTE_TYPE_LOWER:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,4);
-		break;
-	case FOOTNOTE_TYPE_LOWER_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,5);
-		break;
-	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,6);
-		break;
-	case FOOTNOTE_TYPE_UPPER:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,7);
-		break;
-	case FOOTNOTE_TYPE_UPPER_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,8);
-		break;
-	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,9);
-		break;
-	case FOOTNOTE_TYPE_LOWER_ROMAN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,10);
-		break;
-	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,11);
-		break;
-	case FOOTNOTE_TYPE_UPPER_ROMAN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,12);
-		break;
-	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,13);
-		break;
-	default:
-		gtk_combo_box_set_active ( m_wEndnotesStyleMenu,0);
-	}
+	XAP_comboBoxSetActiveFromIntCol(m_wEndnotesStyleMenu, 1, 
+									(int)getEndnoteType());
 }
 
 void AP_UnixDialog_FormatFootnotes::event_Cancel(void)
@@ -437,6 +346,16 @@ void AP_UnixDialog_FormatFootnotes::event_Cancel(void)
 void AP_UnixDialog_FormatFootnotes::event_Delete(void)
 {
 	setAnswer(AP_Dialog_FormatFootnotes::a_DELETE);
+}
+
+
+static void _populateCombo(GtkComboBox * combo, const FootnoteTypeDesc * desc_list)
+{
+	const FootnoteTypeDesc * current = desc_list;
+	for( ; current->n !=  _FOOTNOTE_TYPE_INVALID; current++) {
+		XAP_appendComboBoxTextAndInt(combo, current->label, 
+									 static_cast<int>(current->n));
+	}
 }
 
 
@@ -483,20 +402,20 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 // Now extract widgets from the menu items
 //
 
-	const UT_GenericVector<const gchar*>* footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
 	
 		
 	m_wFootnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omFootnoteStyle"));
 	UT_ASSERT(m_wFootnotesStyleMenu );
-	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, G_TYPE_NONE);
-	XAP_populateComboBoxWithIndex(m_wFootnotesStyleMenu, *footnoteTypeList);
+	XAP_makeGtkComboBoxText(m_wFootnotesStyleMenu, G_TYPE_INT);
+	_populateCombo(m_wFootnotesStyleMenu, footnoteTypeList);
 	gtk_combo_box_set_active(m_wFootnotesStyleMenu, 0);
 
 	m_wEndnotesStyleMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnoteStyle"));
 	UT_ASSERT(m_wEndnotesStyleMenu);
-	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, G_TYPE_NONE);
-	XAP_populateComboBoxWithIndex(m_wEndnotesStyleMenu, *footnoteTypeList);
+	XAP_makeGtkComboBoxText(m_wEndnotesStyleMenu, G_TYPE_INT);
+	_populateCombo(m_wEndnotesStyleMenu, footnoteTypeList);
 	gtk_combo_box_set_active(m_wEndnotesStyleMenu, 0);
 
 //

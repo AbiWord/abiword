@@ -71,22 +71,22 @@
 
 #define REDRAW_UPDATE_MSECS	500
 
-const char * s_FootnoteTypeDesc[] = {
-	"1, 2, 3,...",
-	"[1], [2], [3],...",
-	"(1), (2), (3),...",
-	"1), 2), 3),...",
-	"a, b, c,...",
-	"(a), (b), (c),...",
-	"a), b), c)...",
-	"A, B, C,...",
-	"(A), (B), (C)...",
-	"A), B), C),...",
-	"i, ii, iii,...",
-	"(i), (ii), (iii),...",
-	"I, II, III,...",
-	"(I), (II), (III),...",
-	NULL
+const FootnoteTypeDesc s_FootnoteTypeDesc[] = {
+	{ FOOTNOTE_TYPE_NUMERIC, "1, 2, 3,...", "numeric" },
+	{ FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS, "[1], [2], [3],...", "numeric-square-brackets" },
+	{ FOOTNOTE_TYPE_NUMERIC_PAREN, "(1), (2), (3),...", "numeric-paren" },
+	{ FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN,"1), 2), 3),...", "numeric-open-paren" },
+	{ FOOTNOTE_TYPE_LOWER, "a, b, c,...", "lower" },
+	{ FOOTNOTE_TYPE_LOWER_PAREN, "(a), (b), (c),...", "lower-paren" },
+	{ FOOTNOTE_TYPE_LOWER_OPEN_PAREN, "a), b), c)...", "lower-paren-open" },
+	{ FOOTNOTE_TYPE_UPPER, "A, B, C,...", "upper" },
+	{ FOOTNOTE_TYPE_UPPER_PAREN, "(A), (B), (C)...", "upper-paren" },
+	{ FOOTNOTE_TYPE_UPPER_OPEN_PAREN, "A), B), C),...", "upper-paren-open" },
+	{ FOOTNOTE_TYPE_LOWER_ROMAN, "i, ii, iii,...", "lower-roman" },
+	{ FOOTNOTE_TYPE_LOWER_ROMAN_PAREN, "(i), (ii), (iii),...", "lower-roman-paren" },
+	{ FOOTNOTE_TYPE_UPPER_ROMAN, "I, II, III,...", "upper-roman" },
+	{ FOOTNOTE_TYPE_UPPER_ROMAN_PAREN, "(I), (II), (III),...", "upper-roman-paren" },
+	{ _FOOTNOTE_TYPE_INVALID, NULL, NULL }
 };
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)

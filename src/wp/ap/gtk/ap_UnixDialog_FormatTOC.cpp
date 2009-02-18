@@ -65,7 +65,37 @@ static void s_destroy_clicked(GtkWidget * /*wid*/, AP_UnixDialog_FormatTOC * me 
    me->event_Close();
 }
 
-static void s_NumType_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+void AP_UnixDialog_FormatTOC::s_NumType_changed(GtkWidget * wid, 
+												AP_UnixDialog_FormatTOC * me )
+{
+
+	GtkTreeIter iter;
+	GtkComboBox * combo = GTK_COMBO_BOX(wid);
+	gtk_combo_box_get_active_iter(combo, &iter);
+	GtkTreeModel *store = gtk_combo_box_get_model(combo);
+	const char * value1;
+	if(wid == me->m_wLabelChoose) {
+		value1 = "toc-label-type";
+	}
+	else if (wid == me->m_wPageNumberingChoose) {
+		value1 = "toc-page-type";
+	}
+	else {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+	char * value2;
+	gtk_tree_model_get(store, &iter, 2, &value2, -1);
+
+	UT_UTF8String sProp = value1;
+	UT_UTF8String sVal = value2;
+	UT_String sNum =  UT_String_sprintf("%d",me->getDetailsLevel());
+	sProp += sNum.c_str();
+	me->setTOCProperty(sProp,sVal);
+	g_free(value2);
+}
+
+
+static void s_TabLeader_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
 
 	GtkTreeIter iter;
@@ -158,6 +188,8 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 	  m_windowMain(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
+	  m_wLabelChoose(NULL),
+	  m_wPageNumberingChoose(NULL),
 	  m_pBuilder(NULL),
 	  m_iIndentValue(1),
 	  m_iStartValue(1)
@@ -172,7 +204,6 @@ AP_UnixDialog_FormatTOC::~AP_UnixDialog_FormatTOC(void)
 
 void AP_UnixDialog_FormatTOC::event_Close(void)
 {
-//	UT_VECTOR_PURGEALL(UT_String *,m_vecAllPropVals);
 	destroy();
 }
 
@@ -533,39 +564,33 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 
 void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 {
-	const UT_GenericVector<const gchar*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	const UT_GenericVector<const gchar*> * vecPropList = getVecLabelPropValue();
-	UT_sint32 nTypes = vecTypeList->getItemCount();
-	UT_UTF8String * sProp = NULL;
-	UT_UTF8String * sVal = NULL;
+	const FootnoteTypeDesc* vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
-	UT_sint32 j = 0;
-	sProp = new UT_UTF8String("toc-label-type");
-	m_vecAllPropVals.addItem(sProp);
-	GtkComboBox * combo = GTK_COMBO_BOX(_getWidget("wLabelChoose"));
-	XAP_makeGtkComboBoxText2(combo, G_TYPE_STRING, G_TYPE_STRING);
-	for(j=0; j< nTypes; j++)
+//	sProp = new UT_UTF8String("toc-label-type");
+	m_wLabelChoose = _getWidget("wLabelChoose");
+	GtkComboBox * combo = GTK_COMBO_BOX(m_wLabelChoose);
+	XAP_makeGtkComboBoxText2(combo, G_TYPE_INT, G_TYPE_STRING);
+	const FootnoteTypeDesc* current = vecTypeList;
+	for(; current->n != _FOOTNOTE_TYPE_INVALID; current++)
 	{
-		sVal = new UT_UTF8String(vecTypeList->getNthItem(j));
-		m_vecAllPropVals.addItem(sVal);
-		const gchar * szLab = static_cast<const gchar *>(vecTypeList->getNthItem(j));
-		UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
-		XAP_appendComboBoxTextAndStringString(combo, szLab, 
-											  sProp->utf8_str(), vecPropList->getNthItem(j));
+		UT_DEBUGMSG(("Got label %s for prop %s \n",current->label,
+					 current->prop));
+		XAP_appendComboBoxTextAndIntString(combo, current->label, 
+										   current->n, current->prop);
 	}
 
 // Now the Page Numbering style
 //
-	sProp = new UT_UTF8String("toc-page-type");
-	m_vecAllPropVals.addItem(sProp);
-	combo = GTK_COMBO_BOX(_getWidget("wPageNumberingChoose"));
-	XAP_makeGtkComboBoxText2(combo, G_TYPE_STRING, G_TYPE_STRING);
-	for(j=0; j< nTypes; j++)
+//	sProp = new UT_UTF8String("toc-page-type");
+	m_wPageNumberingChoose = _getWidget("wPageNumberingChoose");
+	combo = GTK_COMBO_BOX(m_wPageNumberingChoose);
+	XAP_makeGtkComboBoxText2(combo, G_TYPE_INT, G_TYPE_STRING);
+	current = vecTypeList;
+	for(; current->n != _FOOTNOTE_TYPE_INVALID; current++)
 	{
-		sVal = new UT_UTF8String(vecTypeList->getNthItem(j));
-		m_vecAllPropVals.addItem(sVal);
-		XAP_appendComboBoxTextAndStringString(combo, vecTypeList->getNthItem(j), 
-											  sProp->utf8_str(), vecPropList->getNthItem(j));
+		XAP_appendComboBoxTextAndIntString(combo, current->label, 
+										   current->n, current->prop);
+
 	}
 }
 
@@ -575,20 +600,16 @@ void AP_UnixDialog_FormatTOC::_createTABTypeItems(void)
 	const UT_GenericVector<const gchar*> * vecLabels = getVecTABLeadersLabel();
 	const UT_GenericVector<const gchar*> * vecProps = getVecTABLeadersProp();
 	UT_sint32 nTypes = vecLabels->getItemCount();
-	UT_UTF8String * sProp = NULL;
-	UT_UTF8String * sVal = NULL;
 	UT_sint32 j = 0;
-	sProp = new UT_UTF8String("toc-tab-leader");
+	const char *sProp = "toc-tab-leader";
 	GtkComboBox * combo = GTK_COMBO_BOX(_getWidget("wTabLeaderChoose"));
 	XAP_makeGtkComboBoxText2(combo, G_TYPE_STRING, G_TYPE_STRING);
 	for(j=0; j< nTypes; j++)
 	{
-		m_vecAllPropVals.addItem(sProp);
-		sVal = new UT_UTF8String(vecProps->getNthItem(j));
-		m_vecAllPropVals.addItem(sVal);
+		const gchar *sVal = vecProps->getNthItem(j);
 		const gchar * szLab = vecLabels->getNthItem(j);
 		UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
-		XAP_appendComboBoxTextAndStringString(combo, szLab, sProp->utf8_str(), sVal->utf8_str());
+		XAP_appendComboBoxTextAndStringString(combo, szLab, sProp, sVal);
 	}
 }
 
@@ -600,35 +621,25 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
 
 	GtkWidget * pW = _getWidget("edHeadingText");
 	UT_UTF8String sVal;
-	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
+	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	setTOCProperty("toc-heading",sVal.utf8_str());
 
 // Text before and after
 
 	pW = _getWidget("edTextAfter");
-	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
+	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	UT_UTF8String sProp;
-	s_gchars_to_utf8str(static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop")),sProp);
+	sProp = static_cast<const char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
 	UT_String sNum =  UT_String_sprintf("%d",getDetailsLevel());
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 
 	pW = _getWidget("edTextBefore");
-	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
-	s_gchars_to_utf8str(static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop")),sProp);
+	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
+	sProp = static_cast<const char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 	Apply();
-}
-
-gpointer AP_UnixDialog_FormatTOC::_makeProp(const char * szProp, UT_sint32 i)
-{
-	UT_UTF8String sLocal = szProp;
-	UT_UTF8String sVal = UT_UTF8String_sprintf("%d",i);
-	sLocal += sVal;
-	UT_UTF8String * pS = new UT_UTF8String(sLocal);
-	m_vecAllPropVals.addItem(pS);
-	return (gpointer) pS->utf8_str();
 }
 
 /*!
@@ -749,12 +760,12 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	sVal = getTOCPropVal("toc-label-type",getDetailsLevel());
 	pW = _getWidget("wLabelChoose"); 
 	UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(pW),iHist);
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(pW),1,iHist);
 
 	sVal = getTOCPropVal("toc-page-type",getDetailsLevel());
 	pW = _getWidget("wPageNumberingChoose"); 
 	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
-	gtk_combo_box_set_active(GTK_COMBO_BOX(pW),iHist);
+	XAP_comboBoxSetActiveFromIntCol(GTK_COMBO_BOX(pW),1,iHist);
 
 	sVal = getTOCPropVal("toc-source-style",getMainLevel());
 	pW = _getWidget("wFillStyle");
@@ -839,6 +850,6 @@ void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 					 (gpointer) this);
 	g_signal_connect(G_OBJECT(_getWidget("wTabLeaderChoose")),
 					 "changed",
-					 G_CALLBACK(s_NumType_changed),
+					 G_CALLBACK(s_TabLeader_changed),
 					 (gpointer) this);
 }

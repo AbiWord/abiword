@@ -50,10 +50,18 @@ typedef enum _FootnoteType
 	FOOTNOTE_TYPE_LOWER_ROMAN,
 	FOOTNOTE_TYPE_LOWER_ROMAN_PAREN,
 	FOOTNOTE_TYPE_UPPER_ROMAN,
-	FOOTNOTE_TYPE_UPPER_ROMAN_PAREN
+	FOOTNOTE_TYPE_UPPER_ROMAN_PAREN,
+	_FOOTNOTE_TYPE_INVALID = 10000
 } FootnoteType;
 
-extern const char * s_FootnoteTypeDesc[];
+/** describe a footnote. */
+typedef struct {
+	FootnoteType n;        /**< numeric value */
+	const char * label;    /**< UI label */
+	const char * prop;     /**< property string */
+} FootnoteTypeDesc;
+
+extern const FootnoteTypeDesc s_FootnoteTypeDesc[];
 
 class FV_View;
 class fl_DocListener;

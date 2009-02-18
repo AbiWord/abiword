@@ -39,6 +39,10 @@ void XAP_appendComboBoxTextAndStringString(GtkComboBox * combo,
 										   const char * text, 
 										   const char * value1, 
 										   const char * value2);
+void XAP_appendComboBoxTextAndIntString(GtkComboBox * combo, 
+										   const char * text, 
+										   int value1, 
+										   const char * value2);
 int  XAP_comboBoxGetActiveInt(GtkComboBox * combo);
 
 /** set the active item based on a column value

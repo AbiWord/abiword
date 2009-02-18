@@ -64,8 +64,6 @@ public:
 		{ return & m_vecTABLeadersLabel;}
 	const UT_GenericVector<const gchar*> *       getVecTABLeadersProp(void)
 		{ return & m_vecTABLeadersProp;}
-	const UT_GenericVector<const gchar*>*   getVecLabelPropValue(void)
-		{ return & m_vecLabelPropValue;}
 	void              incrementStartAt(UT_sint32 iLevel, bool bInc);
     double            getIncrement(const char * sz);
     void              incrementIndent(UT_sint32 iLevel, bool bInc);
@@ -87,7 +85,6 @@ private:
 	UT_UTF8String         m_sTOCProps;
 	UT_GenericVector<const gchar*> m_vecTABLeadersLabel;
 	UT_GenericVector<const gchar*> m_vecTABLeadersProp;
-	UT_GenericVector<const gchar*> m_vecLabelPropValue;
 	UT_sint32   m_iMainLevel;
 	UT_sint32   m_iDetailsLevel;
 };
