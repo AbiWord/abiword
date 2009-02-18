@@ -1470,6 +1470,7 @@ void ODe_Style_Style::RowProps::write(UT_UTF8String& rOutput,
 ODe_Style_Style::RowProps& ODe_Style_Style::RowProps::operator=(
                                                 const RowProps& rRowProps) {
     m_rowHeight = rRowProps.m_rowHeight;
+    m_minRowHeight = rRowProps.m_minRowHeight;
     return *this;
 }
 
@@ -1479,7 +1480,8 @@ ODe_Style_Style::RowProps& ODe_Style_Style::RowProps::operator=(
  */
 bool ODe_Style_Style::RowProps::operator==(
                             const ODe_Style_Style::RowProps& rRowProps) const {
-    return m_rowHeight == rRowProps.m_rowHeight;
+    return m_rowHeight == rRowProps.m_rowHeight &&
+           m_minRowHeight == rRowProps.m_minRowHeight;
 }
 
 
