@@ -2476,6 +2476,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 							const char * name, char * value)
 {
 	UT_HashColor color;
+	UT_UTF8String sLineHeight;
 
 	const char * verbatim = 0;
 
@@ -2704,6 +2705,29 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 				(strcmp (name, "widows")        == 0))
 				{
 					verbatim = value;
+				}
+			else if (strcmp (name, "line-height") == 0)
+				{
+					// examples of handled values: line-height: 1.4,
+					// line-height: 14pt, line-height: 140%
+
+					double d = UT_convertDimensionless (value);
+
+					if (d > 0)
+					{
+						UT_Dimension units = UT_determineDimension (value, DIM_none);
+
+						if (units == DIM_none || units == DIM_PT)
+						{
+							verbatim = value;
+						}
+						else if (units == DIM_PERCENT)
+						{
+							UT_LocaleTransactor t(LC_NUMERIC, "C");
+							sLineHeight = UT_UTF8String_sprintf("%.1f", d/100.0);
+							verbatim = sLineHeight.utf8_str();
+						}
+					}
 				}
 		}
 	if (css_mask & CSS_MASK_IMAGE)
