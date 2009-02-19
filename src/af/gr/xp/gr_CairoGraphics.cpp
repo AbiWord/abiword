@@ -1885,6 +1885,7 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 			return;
 		}
 
+		g_object_unref(pItem->analysis.font);
 		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
@@ -1974,6 +1975,7 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 		}
 
 		// the PangoItem has to take ownership of that.
+		g_object_unref(pItem->analysis.font);
 		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
@@ -3195,6 +3197,7 @@ static PangoGlyph getGlyphForChar(UT_UCS4Char g,
 			return PANGO_GLYPH_EMPTY;
 		}
 
+		g_object_unref(pItem->analysis.font);
 		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
