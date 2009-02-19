@@ -126,6 +126,12 @@ static void s_dialog_response(GtkWidget * /* widget */,
 	}
 }
 
+static void dialog_response(GtkWidget *widget,
+							gint answer,
+							XAP_Dialog_FileOpenSaveAs::tAnswer * ptr) {
+	s_dialog_response(widget, answer, ptr);
+}
+
 static void s_delete_clicked(GtkWidget 	* /*widget*/, 
 							 GdkEvent 	* /*event*/, 
 							 gpointer 	 data)
@@ -723,7 +729,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	g_signal_connect (G_OBJECT (m_FC),
 				"response",
-				G_CALLBACK(s_dialog_response), &m_answer);
+				G_CALLBACK(dialog_response), &m_answer);
 	
 	g_signal_connect (G_OBJECT (m_FC),
 				"file-activated",
