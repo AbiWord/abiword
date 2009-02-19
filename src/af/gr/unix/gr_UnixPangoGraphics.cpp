@@ -81,6 +81,20 @@ UT_VersionInfo GR_UnixPangoGraphics::s_Version;
 int            GR_UnixPangoGraphics::s_iMaxScript = 0;
 
 
+static void _pango_item_list_free(GList * items) 
+{
+	GList * l;
+	for( l = items; l ; l = l->next) {
+		if(l->data) {
+			pango_item_free(static_cast<PangoItem*>(l->data));
+			l->data = NULL;
+		}
+	}
+	g_list_free(items);
+}
+
+
+
 class GR_UnixPangoItem: public GR_Item
 {
 	friend class GR_UnixPangoGraphics;
@@ -1059,6 +1073,11 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		}
 	}
 
+	if(pfs) 
+	{
+		g_object_unref((GObject*)pfs);
+		pfs = NULL;
+	}
 	if (pFontSubst)
 	{
 		/*
@@ -1068,7 +1087,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		if (pItem->m_pi->analysis.font)
 			g_object_unref (G_OBJECT (pItem->m_pi->analysis.font));
 		
-		pItem->m_pi->analysis.font = pFontSubst;
+		pItem->m_pi->analysis.font = (PangoFont*)g_object_ref((GObject*)pFontSubst);
 	}
 	
 	RI->m_iCharCount = si.m_iLength;
@@ -1126,6 +1145,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	PangoFont * pf = pango_context_load_font(getLayoutContext(), pfd);
 	pango_font_description_free(pfd);
 	
+	// no need to ref pf because it will replaced right after
 	pItem->m_pi->analysis.font = pf;
 
 	// need to set the embedding level here based on the level of our run
@@ -1136,8 +1156,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pScaledGlyphs);
 
-	if (pPangoFontOrig)
-		pItem->m_pi->analysis.font = pPangoFontOrig;
+	pItem->m_pi->analysis.font = pPangoFontOrig;
 		
 	if(RI->m_pLogOffsets)
 	{
@@ -2206,11 +2225,12 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_ASSERT(pItem);
 			if(pGstring)
 				pango_glyph_string_free(pGstring);
-			g_list_free(pItems);
+			_pango_item_list_free(pItems);
 			return;
 		}
 
-		pItem->analysis.font = pf;
+		g_object_unref(pItem->analysis.font);
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
 					pItem->length,
@@ -2233,7 +2253,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
-	g_list_free(pItems);
+	_pango_item_list_free(pItems);
 }
 
 UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
@@ -2290,13 +2310,13 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		if(!pItem)
 		{
 			UT_ASSERT(pItem);
-			if(pGstring)
-				pango_glyph_string_free(pGstring);
-			g_list_free(pItems);
-			return 0;
+			iWidth = 0;
+			goto cleanup;
 		}
 
-		pItem->analysis.font = pf;
+		// the PangoItem has to take ownership of that.
+		g_object_unref(pItem->analysis.font);
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
 					pItem->length,
@@ -2383,9 +2403,12 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 	
 	xxx_UT_DEBUGMSG(("Length %d, Offset %d\n", iLength, iOffset));
 	
+cleanup:
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
-	g_list_free(pItems);
+
+	_pango_item_list_free(pItems);
+
 	return iWidth;
 }
 
@@ -3976,7 +3999,8 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	{
 		PangoGlyphString * pGlyphs = pango_glyph_string_new();
 		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
-		pItem->analysis.font = pf;
+		g_object_unref(pItem->analysis.font);
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str() + pItem->offset, pItem->length,
 					& pItem->analysis, pGlyphs);
@@ -3988,7 +4012,7 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	}
 
 	gnome_print_grestore (m_gpc);
-	g_list_free(pItems);
+ 	_pango_item_list_free(pItems);
 }
 
 bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
