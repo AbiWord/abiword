@@ -65,6 +65,20 @@ UT_VersionInfo GR_CairoGraphics::s_Version;
 int            GR_CairoGraphics::s_iMaxScript = 0;
 
 
+static void _pango_item_list_free(GList * items) 
+{
+	GList * l;
+	for( l = items; l ; l = l->next) {
+		if(l->data) {
+			pango_item_free(static_cast<PangoItem*>(l->data));
+			l->data = NULL;
+		}
+	}
+	g_list_free(items);
+}
+
+
+
 class GR_UnixPangoItem: public GR_Item
 {
 	friend class GR_CairoGraphics;
@@ -698,6 +712,11 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		}
 	}
 
+	if(pfs) 
+	{
+		g_object_unref((GObject*)pfs);
+		pfs = NULL;
+	}
 	if (pFontSubst)
 	{
 		/*
@@ -707,7 +726,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		if (pItem->m_pi->analysis.font)
 			g_object_unref (G_OBJECT (pItem->m_pi->analysis.font));
 		
-		pItem->m_pi->analysis.font = pFontSubst;
+		pItem->m_pi->analysis.font = (PangoFont*)g_object_ref((GObject*)pFontSubst);
 	}
 	
 	RI->m_iCharCount = si.m_iLength;
@@ -765,6 +784,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	PangoFont * pf = pango_context_load_font(getLayoutContext(), pfd);
 	pango_font_description_free(pfd);
 	
+	// no need to ref pf because it will replaced right after
 	pItem->m_pi->analysis.font = pf;
 
 	// need to set the embedding level here based on the level of our run
@@ -775,8 +795,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pScaledGlyphs);
 
-	if (pPangoFontOrig)
-		pItem->m_pi->analysis.font = pPangoFontOrig;
+	pItem->m_pi->analysis.font = pPangoFontOrig;
 		
 	if(RI->m_pLogOffsets)
 	{
@@ -1862,11 +1881,11 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_ASSERT(pItem);
 			if(pGstring)
 				pango_glyph_string_free(pGstring);
-			g_list_free(pItems);
+			_pango_item_list_free(pItems);
 			return;
 		}
 
-		pItem->analysis.font = pf;
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
 					pItem->length,
@@ -1893,7 +1912,7 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
-	g_list_free(pItems);
+	_pango_item_list_free(pItems);
 }
 
 UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
@@ -1950,13 +1969,12 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 		if(!pItem)
 		{
 			UT_ASSERT(pItem);
-			if(pGstring)
-				pango_glyph_string_free(pGstring);
-			g_list_free(pItems);
-			return 0;
+			iWidth = 0;
+			goto cleanup;
 		}
 
-		pItem->analysis.font = pf;
+		// the PangoItem has to take ownership of that.
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
 					pItem->length,
@@ -1968,6 +1986,9 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 		UT_uint32 h = LR.height/PANGO_SCALE;
 		xxx_UT_DEBUGMSG(("measure string iWidth %d height %d \n",iWidth,h));
 		if (height && *height < h)
+
+
+
 			*height = h;
 
 		int * pLogOffsets = NULL;
@@ -2043,9 +2064,12 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	
 	xxx_UT_DEBUGMSG(("Length %d, Offset %d\n", iLength, iOffset));
 	
+cleanup:
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
-	g_list_free(pItems);
+
+	_pango_item_list_free(pItems);
+
 	return iWidth;
 }
 
@@ -3167,11 +3191,11 @@ static PangoGlyph getGlyphForChar(UT_UCS4Char g,
 			UT_ASSERT(pItem);
 			if(pGstring)
 				pango_glyph_string_free(pGstring);
-			g_list_free(pItems);
+			_pango_item_list_free(pItems);
 			return PANGO_GLYPH_EMPTY;
 		}
 
-		pItem->analysis.font = pf;
+		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
 					pItem->length,
@@ -3180,8 +3204,9 @@ static PangoGlyph getGlyphForChar(UT_UCS4Char g,
 	}
 
 	PangoGlyph glyph = pGstring->glyphs[0].glyph;
-	pango_glyph_string_free(pGstring);
-
+	if(pGstring)
+		pango_glyph_string_free(pGstring);
+	_pango_item_list_free(pItems);
 	return glyph;
 }
 
