@@ -37,24 +37,6 @@
 #include "ap_UnixDialog_FormatTOC.h"
 
 
-static void s_gchars_to_utf8str(const gchar * psz, UT_UTF8String & sStr)
-{
-    sStr = psz;
-#if 0
-    unsigned char sz[16];
-	UT_uint32 i =0;
-	guchar s =0;
-	while(psz && *psz != 0)
-	{
-		s = static_cast<guchar>(*psz);
-		i = s;
-		g_unichar_to_utf8(i,sz);
-		psz++;
-		sStr += reinterpret_cast<const char *>(sz);
-	}
-#endif
-}
-
 static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * /*me*/ )
 {
     abiDestroyWidget( wid ) ;// will emit signals for us
@@ -73,12 +55,12 @@ void AP_UnixDialog_FormatTOC::s_NumType_changed(GtkWidget * wid,
 	GtkComboBox * combo = GTK_COMBO_BOX(wid);
 	gtk_combo_box_get_active_iter(combo, &iter);
 	GtkTreeModel *store = gtk_combo_box_get_model(combo);
-	const char * value1;
+	UT_UTF8String sProp;
 	if(wid == me->m_wLabelChoose) {
-		value1 = "toc-label-type";
+		sProp = "toc-label-type";
 	}
 	else if (wid == me->m_wPageNumberingChoose) {
-		value1 = "toc-page-type";
+		sProp = "toc-page-type";
 	}
 	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -86,7 +68,6 @@ void AP_UnixDialog_FormatTOC::s_NumType_changed(GtkWidget * wid,
 	char * value2;
 	gtk_tree_model_get(store, &iter, 2, &value2, -1);
 
-	UT_UTF8String sProp = value1;
 	UT_UTF8String sVal = value2;
 	UT_String sNum =  UT_String_sprintf("%d",me->getDetailsLevel());
 	sProp += sNum.c_str();
