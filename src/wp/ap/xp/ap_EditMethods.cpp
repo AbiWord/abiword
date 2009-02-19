@@ -3655,8 +3655,9 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 					pDoc->signalListeners(PD_SIGNAL_SAVEDOC);
 				}
 				bRemoteSave = pDoc->isDirty();
+				UT_DEBUGMSG(("remote save %d\n", bRemoteSave));
 			}
-			if(!bRemoteSave)
+			if(bRemoteSave)
 				bRet = EX(fileSave);
 			if (!bRet)								// didn't successfully save,
 				return false;					//	  so don't close
