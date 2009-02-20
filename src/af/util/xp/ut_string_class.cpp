@@ -776,8 +776,9 @@ UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS4Char            rhs)
 
 UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
 {
-	UT_return_val_if_fail(rhs && *rhs, *this);
-	pimpl->append (rhs);
+	UT_return_val_if_fail(rhs, *this);
+	if(*rhs)
+		pimpl->append (rhs);
 	return *this;
 }
 
