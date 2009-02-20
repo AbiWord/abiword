@@ -4554,10 +4554,12 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 	UT_UTF8String tmp;
 	UT_DEBUGMSG(("Width of Object %s \n",szWidth ? szWidth : "(null)"));
 		
+#if defined(DEBUG)
 	UT_sint32 iObjectWidth, iObjectHeight;
-	UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight);
-	UT_DEBUGMSG(("Real object dimensions: (%d x %d)\n", iObjectWidth, iObjectHeight));
-		
+	if(UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight)) {
+		UT_DEBUGMSG(("Real object dimensions: (%d x %d)\n", iObjectWidth, iObjectHeight));
+	}
+#endif
 	if (szWidth)
 		{
 			m_utf8_1 += " width=\"";
