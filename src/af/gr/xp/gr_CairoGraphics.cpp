@@ -3100,6 +3100,9 @@ void GR_PangoFont::reloadFont(GR_CairoGraphics * pG)
 		g_object_unref(m_pf);
 	}
 	m_pf = pango_context_load_font(pG->getContext(), m_pfdDev);
+	if(m_pLayoutF) {
+		g_object_unref(m_pLayoutF);
+	}
 	m_pLayoutF = pango_context_load_font(pG->getLayoutContext(), m_pfdLay);
 
 	UT_return_if_fail( m_pf );
