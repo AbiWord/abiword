@@ -398,7 +398,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	GError *err = NULL;
 	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
 	if (err) {
-		g_warning (err->message);
+		g_warning ("%s", err->message);
 		g_error_free (err); err = NULL;
 		return FALSE;
 	}
