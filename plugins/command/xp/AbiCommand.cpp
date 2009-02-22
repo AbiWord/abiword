@@ -266,8 +266,8 @@ AbiCommand::doCommands (void)
 			UT_UTF8String *pTok =
 				const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(toks.getNthItem (0)));
 
-			if (pTok && strcmp (pTok->utf8_str (), "quit") == 0
-				|| strcmp (pTok->utf8_str (), "q") == 0)
+			if (pTok && (strcmp (pTok->utf8_str (), "quit") == 0
+				|| strcmp (pTok->utf8_str (), "q") == 0))
 				bQuit = true;
 			else
 			{
