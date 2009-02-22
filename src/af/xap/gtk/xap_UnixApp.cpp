@@ -208,7 +208,7 @@ void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height
 void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
 								 UT_uint32 * height, UT_uint32 * flags)
 {
-	UT_ASSERT(x && y && width && height);
+	UT_return_if_fail(x && y && width && height);
 	*x = m_geometry.x;
 	*y = m_geometry.y;
 	*width = m_geometry.width;

@@ -44,7 +44,7 @@ enum
 
 static void s_color_cleared(GtkWidget * /*btn*/, AP_UnixDialog_Background * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->colorCleared();
 }
 
