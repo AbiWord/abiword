@@ -1228,7 +1228,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
             UT_ASSERT(ok);
             
-            // Inserts a tab character. AbiWord seens to need it in order to
+            // Inserts a tab character. AbiWord seems to need it in order to
             // implement the space between the list mark (number/bullet) and
             // the list text.
             UT_UCS4String string = "\t";
