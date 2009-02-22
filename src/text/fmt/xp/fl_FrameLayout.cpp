@@ -594,9 +594,7 @@ void fl_FrameLayout::_createFrameContainer(void)
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	UT_ASSERT(pCL != NULL);
-
-	UT_ASSERT(pCL->getLastContainer());
+	UT_ASSERT(pCL && pCL->getLastContainer());
 	pFrameContainer->setWidth(m_iWidth);
 	pFrameContainer->setHeight(m_iHeight);
 	// Now do Frame image
