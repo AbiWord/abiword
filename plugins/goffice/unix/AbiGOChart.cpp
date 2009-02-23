@@ -743,6 +743,7 @@ void GOChartView::render(UT_Rect & rec)
 	cairo_save (cr);
 	cairo_translate (cr, x, y);
 	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
+	cairo_new_path (cr); // just in case a path has not been ended
 	cairo_restore (cr);
 }
 

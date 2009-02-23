@@ -641,6 +641,7 @@ void GOComponentView::render(UT_Rect & rec)
 		cairo_save (cr);
 		cairo_translate (cr, x, y);
 		go_component_render (component, cr, myWidth, myHeight);
+		cairo_new_path (cr); // just in case a path has not been ended
 		cairo_restore (cr);
 	}
 }
