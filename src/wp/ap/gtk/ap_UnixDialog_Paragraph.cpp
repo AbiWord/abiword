@@ -101,13 +101,6 @@ static void s_spin_changed(GtkWidget * widget,
 	dlg->event_SpinChanged(widget);
 }
 
-static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{
-	UT_ASSERT(widget && dlg);
-
-	dlg->event_MenuChanged(widget);
-}
-
 static void s_combobox_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -942,12 +935,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                 (gpointer) this);							\
         } while (0)
 
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "activate",	\
-                G_CALLBACK(s_menu_item_activate),		\
-                (gpointer) this);							\
-        } while (0)
 
 void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 {
