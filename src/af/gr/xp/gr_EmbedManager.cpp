@@ -381,7 +381,7 @@ UT_sint32 GR_EmbedManager::getDescent(UT_sint32 /*uid*/)
 /*!
  * Set the colour of any text rendered by the view specified by uid.
  */
-void GR_EmbedManager::setColor(UT_sint32 , UT_RGBColor )
+void GR_EmbedManager::setColor(UT_sint32 , const UT_RGBColor & )
 {
   // FIXME write this
 }

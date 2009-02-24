@@ -41,6 +41,8 @@
 
 #include <sys/stat.h>
 
+#include <fontconfig/fontconfig.h>
+
 #include "ut_debugmsg.h"
 #include "ut_path.h"
 #include "ut_string.h"
@@ -76,6 +78,9 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	  m_controlFactory(),
 	  m_szTmpFile(NULL)
 {
+	int fc_inited = FcInit();
+	UT_ASSERT(fc_inited);
+
 	_setAbiSuiteLibDir();
 
 	memset(&m_geometry, 0, sizeof(m_geometry));
@@ -138,6 +143,7 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp()
 {
 	removeTmpFile();
+//	FcFini();
 }
 
 void XAP_UnixApp::removeTmpFile(void)

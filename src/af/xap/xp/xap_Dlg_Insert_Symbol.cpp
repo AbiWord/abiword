@@ -134,7 +134,7 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 void XAP_Dialog_Insert_Symbol::_insert(UT_UCSChar c, const char* symfont)
 {
 	UT_return_if_fail(m_pListener);
-
+	UT_ASSERT(symfont);
 	if (c == 0x00) 
 	{
 		 // Pango certainly doesn't like shaping 0x00 characters (it crashes when trying), 
@@ -149,7 +149,7 @@ void XAP_Dialog_Insert_Symbol::_insert(UT_UCSChar c, const char* symfont)
 	m_pListener->setView(getActiveFrame()->getCurrentView());
 
 	UT_DEBUGMSG(("Insert Char %x \n",c));
-	m_pListener->insertSymbol(c, (char*)symfont);
+	m_pListener->insertSymbol(c, symfont);
 }
 
 void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)

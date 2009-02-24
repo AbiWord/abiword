@@ -19,8 +19,8 @@
  
 
 
-#ifndef UTUNIXMISC_H
-#define UTUNIXMISC_H
+#ifndef UTUNIXCOLOR_H
+#define UTUNIXCOLOR_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -28,15 +28,13 @@
 
 #ifdef TOOLKIT_GTK
 #include <gdk/gdk.h>
-#include <gtk/gtk.h>
-typedef GtkWidget AbiNativeWidget;
 
-#ifndef UTMISC_H
-#include "ut_misc.h"
+#ifndef UTCOLOR_H
+#include "ut_color.h"
 #endif
 
 UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color);
 GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb);
 #endif
 
-#endif /* UTUNIXMISC_H */
+#endif /* UTUNIXCOLOR_H */

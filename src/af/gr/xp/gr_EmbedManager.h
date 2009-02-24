@@ -23,7 +23,6 @@
 #include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_misc.h"
 #include "ev_EditBits.h"
 
 class GR_Graphics;
@@ -31,6 +30,8 @@ class GR_Image;
 class UT_ByteBuf;
 class AD_Document;
 class UT_ByteBuf;
+class UT_RGBColor;
+class UT_Rect;
 
 class ABI_EXPORT GR_EmbedView
 {
@@ -64,7 +65,7 @@ public:
     GR_Graphics *          getGraphics(void);
     virtual  void          setGraphics(GR_Graphics * pG);
     virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
-    virtual void           setColor(UT_sint32 uid, UT_RGBColor c);
+    virtual void           setColor(UT_sint32 uid, const UT_RGBColor & c);
     virtual UT_sint32      getWidth(UT_sint32 uid);
     virtual UT_sint32      getAscent(UT_sint32 uid) ;
     virtual UT_sint32      getDescent(UT_sint32 uid) ;

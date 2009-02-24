@@ -23,8 +23,8 @@
 #ifndef GR_CARET_H
 #define GR_CARET_H
 
+#include "ut_color.h"
 #include "ut_timer.h"
-#include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string_class.h"
 

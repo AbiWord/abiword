@@ -41,7 +41,7 @@
 #endif
 
 #include "ut_string_class.h"
-#include "ut_misc.h"
+#include "ut_color.h"
 
 class ABI_EXPORT PP_PropertyMap
 {

@@ -20,6 +20,8 @@ libxp_la_SOURCES = \
 	ut_bytebuf.cpp \
 	ut_bytebuf.h \
 	ut_case.h \
+	ut_color.h \
+	ut_color.cpp \
 	ut_crc32.cpp \
 	ut_crc32.h \
 	ut_debugmsg.h \

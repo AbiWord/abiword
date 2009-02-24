@@ -38,105 +38,10 @@
 
 #include <string>
 
-class UT_RGBColor;
 class UT_Rect;
 class UT_String;
 class UT_UTF8String;
 
-// ----------------------------------------------------------------
-#define UT_RGBCOLOR_PROXIMITY 45
-
-class ABI_EXPORT UT_RGBColor
-{
-public:
-	UT_RGBColor();
-	UT_RGBColor(unsigned char, unsigned char, unsigned char, bool bTransparent = false);
-	UT_RGBColor(const UT_RGBColor&);
-	bool operator != (const UT_RGBColor &op1)
-	{
-		return (op1.m_red != m_red || op1.m_grn != m_grn || op1.m_blu != m_blu);
-	}
-
-	bool operator == (const UT_RGBColor &op1)
-	{
-		return (op1.m_red == m_red && op1.m_grn == m_grn && op1.m_blu == m_blu);
-	}
-	
-	// returns true if the two colors are near each other in the RGB space
-	bool operator %= (const UT_RGBColor &op1)
-	{
-		UT_uint32 iDiff = abs(m_red - op1.m_red) + abs(m_grn - op1.m_grn) + abs(m_blu - op1.m_blu);
-		return (iDiff < UT_RGBCOLOR_PROXIMITY);
-	}
-
-	UT_RGBColor & operator ^= (const UT_RGBColor &op1)
-	{
-		m_red ^= op1.m_red;
-		m_grn ^= op1.m_grn;
-		m_blu ^= op1.m_blu;
-		return *this;
-	}
-
-	UT_RGBColor & operator += (const unsigned char inc)
-	{
-		m_red += inc;
-		m_grn += inc;
-		m_blu += inc;
-		return *this;
-	}
-
-	UT_RGBColor & operator += (const  UT_RGBColor &inc)
-	{
-		m_red += inc.m_red;
-		m_grn += inc.m_grn;
-		m_blu += inc.m_blu;
-		return *this;
-	}
-
-	UT_RGBColor & operator -= (const  UT_RGBColor &inc)
-	{
-		m_red -= inc.m_red;
-		m_grn -= inc.m_grn;
-		m_blu -= inc.m_blu;
-		return *this;
-	}
-
-	inline bool isTransparent() const {return m_bIsTransparent;}
-	bool setColor(const char * pszColor);
-
-	unsigned char m_red;
-	unsigned char m_grn;
-	unsigned char m_blu;
-	bool m_bIsTransparent;
-	
-};
-
-void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b, bool bTransparent = false);
-ABI_EXPORT void UT_parseColor(const char*, UT_RGBColor&);
-ABI_EXPORT std::string UT_colorToHex(const char*, bool bPrefix = false);
-
-class ABI_EXPORT UT_HashColor
-{
-private:
-	char m_colorBuffer[8]; // format: "" or "#abc123" (i.e., '#' + 6 lower-case hex digits)
-
-public:
-	UT_HashColor ();
-	~UT_HashColor ();
-
-	const char * c_str() const
-	{ return m_colorBuffer; }
-	/* The following 5 functions return a pointer to m_colorBuffer on success,
-	 * or 0 on failure (invalid or unknown color).
-	 */
-	const char * setColor (unsigned char r, unsigned char g, unsigned char b);
-	const char * setColor (const UT_RGBColor & color) { return setColor (color.m_red, color.m_grn, color.m_blu); }
-	const char * setColor (const char * color); // try match hash (e.g., "#C01bB7") or name (e.g., "turquoise")
-	const char * lookupNamedColor (const char * color_name); // "Orange" or "blue" or "LightGoldenRodYellow" or...
-	const char * setHashIfValid (const char * color_hash);   // "ff0013" or "AD5FE6" or... (NOTE: no '#')
-
-	const UT_RGBColor rgb (); // Call this *if* setColor () succeeds; otherwise defaults to black.
-};
 
 // ----------------------------------------------------------------
 class ABI_EXPORT UT_Rect
@@ -323,7 +228,8 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
 #ifdef TOOLKIT_GTK
-#include "ut_unixMisc.h"
+#include <gtk/gtk.h>
+typedef GtkWidget AbiNativeWidget;
 #else
 // TODO maintainers please fix their platform
 typedef void AbiNativeWidget;
