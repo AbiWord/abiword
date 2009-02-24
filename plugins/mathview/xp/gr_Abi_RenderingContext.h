@@ -25,7 +25,7 @@
 #include <MathView/RGBColor.hh>
 #include <MathView/RenderingContext.hh>
 
-#include "ut_misc.h" // for UT_RGBColor
+#include "ut_color.h"
 #include "ut_units.h" // for UT_LAYOUT_RESOLUTION
 
 class GR_Abi_RenderingContext : public RenderingContext
