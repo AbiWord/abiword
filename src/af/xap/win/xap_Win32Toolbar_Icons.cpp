@@ -20,6 +20,7 @@
 #include <windows.h>
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_color.h"
 #include "ut_Xpm2Bmp.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32App.h"

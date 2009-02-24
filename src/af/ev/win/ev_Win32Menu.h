@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 #include "ev_Menu.h"
+#include "ut_color.h"
 #include "ut_misc.h"
 #include <vector>
 //#include "ap_Win32FrameImpl.h"

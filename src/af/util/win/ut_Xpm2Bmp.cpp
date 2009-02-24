@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_color.h"
 #include "ut_misc.h"
 #include "ut_hash.h"
 #include "ut_string.h"
