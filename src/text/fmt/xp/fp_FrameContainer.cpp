@@ -403,7 +403,7 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
     pCol = pPage->getNthColumnLeader(iColLeader);
     while(pCol)
     {
-      UT_uint32 i = 0;
+      UT_sint32 i = 0;
       UT_sint32 iYCol = pCol->getY(); // Vertical position relative to page.
       for(i=0; i< pCol->countCons(); i++)
       {

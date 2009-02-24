@@ -218,7 +218,7 @@ void fp_Container::clearBrokenContainers(void)
 	}
 	if (0 != getBrokenCount())
 	{
-		UT_uint32 i =0;
+		UT_sint32 i =0;
 
 		for(i=0;(i<countCons()) && (0 != getBrokenCount());i++)
 		{
@@ -369,13 +369,13 @@ void fp_Container::addCon(fp_ContainerObject * pCon)
 	pCon->ref();
 }
 
-fp_ContainerObject *  fp_Container:: getNthCon(UT_uint32 i) const
+fp_ContainerObject *  fp_Container:: getNthCon(UT_sint32 i) const
 { 
 	if(countCons() == 0) return NULL;
 	return m_vecContainers.getNthItem(i);
 }
 
-UT_uint32  fp_Container::countCons(void) const
+UT_sint32  fp_Container::countCons(void) const
 {
 	return m_vecContainers.getItemCount();
 }

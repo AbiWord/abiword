@@ -2609,7 +2609,7 @@ void fp_CellContainer::layout(void)
 		return;
 	}
 	pMyBrokenTable = getBrokenTable(static_cast<fp_Container*>(getNthCon(0)));
-	for (UT_uint32 i=0; i < countCons(); i++)
+	for (UT_sint32 i=0; i < countCons(); i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
 //
@@ -3204,7 +3204,7 @@ static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
  */
 fp_CellContainer * fp_TableContainer::getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 col)
 {
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	fp_CellContainer * pCell = NULL;
 	bool bFound = false;
 	for(i=0; (i<countCons()) && !bFound; i++)

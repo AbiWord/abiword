@@ -166,7 +166,7 @@ void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts)
 		pCol = m_vecColumnLeaders.getNthItem(i);
 		while(pCol)
 		{
-			UT_uint32 j= 0;
+			UT_sint32 j= 0;
 			fp_ContainerObject * pCon = NULL;
 			for(j = 0; j< pCol->countCons(); j++)
 			{

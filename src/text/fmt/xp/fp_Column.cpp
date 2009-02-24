@@ -1035,7 +1035,7 @@ bool fp_VerticalContainer::validate(void)
 	UT_sint32 curBot = 0;
 	UT_sint32 oldTop = -1;
 	UT_sint32 oldBot = -1;
-	UT_uint32 i =0;
+	UT_sint32 i =0;
 	bool bValid = true;
 	for(i=0; i<countCons();i++)
 	{

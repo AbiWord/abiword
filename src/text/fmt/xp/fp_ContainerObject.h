@@ -264,9 +264,9 @@ public:
     virtual void        setPrev(fp_ContainerObject * pPrev);
 	void                   clearCons(void)
 		{ m_vecContainers.clear();}
-	fp_ContainerObject *   getNthCon(UT_uint32 i) const;
+	fp_ContainerObject *   getNthCon(UT_sint32 i) const;
 	void                   addCon(fp_ContainerObject * pCon);
-	UT_uint32              countCons(void) const;
+	UT_sint32              countCons(void) const;
 	UT_sint32              findCon(fp_ContainerObject * pCon) const;
 	void                   justRemoveNthCon(UT_sint32 i);
 	void                   deleteNthCon(UT_sint32 i);
