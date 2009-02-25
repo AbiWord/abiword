@@ -4769,7 +4769,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setClipRect(NULL);
 	}
 	
-	UT_DEBUGMSG(("End _draw\n"));
+	xxx_UT_DEBUGMSG(("End _draw\n"));
 
 }
 
