@@ -31,12 +31,6 @@
 #include "xap_Strings.h"
 #include "xap_Frame.h"
 
-#include "xap_UnixApp.h"
-#include "xap_UnixFrameImpl.h"
-#include "xap_UnixDialogHelper.h"
-
-#include "gr_UnixImage.h"
-
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
@@ -49,8 +43,6 @@
 #include <pango/pango-engine.h>
 
 #include <math.h>
-
-#include <gdk/gdk.h>
 
 // only became "public" in pango 1.20. see http://bugzilla.gnome.org/show_bug.cgi?id=472303
 #ifndef PANGO_GLYPH_EMPTY
@@ -2076,24 +2068,6 @@ cleanup:
 }
 
 
-/*!
- * Create a new image from the Raster rgba byte buffer defined by pBB.
- * The dimensions of iWidth and iHeight are in logical units but the image
- * doesn't scale if the resolution or zoom changes. Instead you must create
- * a new image.
- */
-GR_Image* GR_CairoGraphics::createNewImage (const char* pszName,
-											    const UT_ByteBuf* pBB,
-												UT_sint32 iWidth,
-												UT_sint32 iHeight,
-												GR_Image::GRType /*iType*/)
-{
-   	GR_Image* pImg = NULL;
-
-	pImg = new GR_UnixImage(pszName);
-	pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
-   	return pImg;
-}
 
 
 /*!
@@ -2105,13 +2079,10 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 {
 	UT_ASSERT(pImg);
 
-   	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
+   	GR_CairoRasterImage * pCairoImage = static_cast<GR_CairoRasterImage *>(pImg);
 
-	GdkPixbuf * image = pUnixImage->getData();
-	UT_return_if_fail(image);
-
-   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
-   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+   	UT_sint32 iImageWidth = pCairoImage->getDisplayWidth();
+   	UT_sint32 iImageHeight = pCairoImage->getDisplayHeight();
 
 	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
 	double idx = _tdudX(xDest);
@@ -2120,7 +2091,7 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
 
-	gdk_cairo_set_source_pixbuf(m_cr, image, idx, idy);
+	pCairoImage->cairoSetSource(m_cr, idx, idy);
 	cairo_pattern_t *pattern = cairo_get_source(m_cr);
 	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
 	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);

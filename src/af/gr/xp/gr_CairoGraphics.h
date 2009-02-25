@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +38,7 @@
 #define GR_UNIXPANGO_BUILTIN
 
 #ifndef GR_UNIXPANGO_BUILTIN
-#define PLUGIN_NAME "Pango graphics class for Unix"
+#define PLUGIN_NAME "Cairo Pango graphics"
 #endif
 
 /************************************************************************/
@@ -46,6 +47,19 @@
 class GR_PangoRenderInfo;
 class GR_CairoGraphics;
 class XAP_Frame;
+
+
+/** An abstract Cairo image */
+class GR_CairoRasterImage
+	: public GR_RasterImage
+{
+public:
+	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
+
+
+};
+
+
 
 class ABI_EXPORT GR_PangoFont : public GR_Font
 {
@@ -249,11 +263,11 @@ public:
 	int pftlu(int pf) const;
 
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
-	virtual GR_Image*	createNewImage(const char* pszName,
-									   const UT_ByteBuf* pBB,
-									   UT_sint32 iDisplayWidth,
-									   UT_sint32 iDisplayHeight,
-									   GR_Image::GRType =GR_Image::GRT_Raster);
+//	virtual GR_Image*	createNewImage(const char* pszName,
+//									   const UT_ByteBuf* pBB,
+//									   UT_sint32 iDisplayWidth,
+//									   UT_sint32 iDisplayHeight,
+//									   GR_Image::GRType =GR_Image::GRT_Raster);
  
   	virtual bool		startPrint(void);
 	virtual bool		endPrint(void);

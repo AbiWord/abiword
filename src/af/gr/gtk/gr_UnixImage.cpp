@@ -407,3 +407,9 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	
 	return true;
 }
+
+
+void GR_UnixImage::cairoSetSource(cairo_t * cr, double x, double y)
+{
+	gdk_cairo_set_source_pixbuf(cr, m_image, x, y);
+}

@@ -22,11 +22,10 @@
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include "gr_Image.h"
+#include "gr_CairoGraphics.h"
 
-class ABI_EXPORT GR_UnixImage : public GR_RasterImage
+class ABI_EXPORT GR_UnixImage : public GR_CairoRasterImage
 {
-	friend class GR_UnixCairoGraphics;
 public:
 	GR_UnixImage(const char* pszName);
 	GR_UnixImage(const char* pszName, GdkPixbuf * pPixbif);
@@ -40,10 +39,13 @@ public:
 	virtual UT_sint32  rowStride (void) const;
     virtual GR_Image::GRType getType(void) const;
    	GdkPixbuf *			getData(void) const { return m_image; }
+	void setData(GdkPixbuf *data)
+	{ m_image = data;}
     virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
     virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
     virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
     void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual void cairoSetSource(cairo_t *, double x, double y);
 
 private:
 	GdkPixbuf * m_image;

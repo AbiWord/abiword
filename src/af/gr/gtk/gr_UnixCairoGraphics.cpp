@@ -87,6 +87,26 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
 }
 
 
+/*!
+ * Create a new image from the Raster rgba byte buffer defined by pBB.
+ * The dimensions of iWidth and iHeight are in logical units but the image
+ * doesn't scale if the resolution or zoom changes. Instead you must create
+ * a new image.
+ */
+GR_Image* GR_UnixCairoGraphics::createNewImage (const char* pszName,
+											    const UT_ByteBuf* pBB,
+												UT_sint32 iWidth,
+												UT_sint32 iHeight,
+												GR_Image::GRType /*iType*/)
+{
+   	GR_Image* pImg = NULL;
+
+	pImg = new GR_UnixImage(pszName);
+	pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
+   	return pImg;
+}
+
+
 void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 {
 	if (m_cursor == c)
@@ -347,9 +367,9 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_return_val_if_fail(pix, NULL);
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
-	pImg->m_image = pix;
+	pImg->setData(pix);
 	pImg->setDisplaySize(idw,idh);
-	return static_cast<GR_Image *>(pImg);
+	return pImg;
 }
 
 
