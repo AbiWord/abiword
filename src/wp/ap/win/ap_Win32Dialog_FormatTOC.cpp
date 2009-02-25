@@ -780,7 +780,7 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 		UT_String sNum;		
 
 		const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-		const char * szVal = footnoteTypeList[nSelected].label;
+		const char * szVal = footnoteTypeList[nSelected].prop;
 		sProp = static_cast<char *> ("toc-page-type");
 		sVal = static_cast<const char *> (szVal);
 		
