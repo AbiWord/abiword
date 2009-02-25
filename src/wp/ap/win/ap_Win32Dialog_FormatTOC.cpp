@@ -605,17 +605,14 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	
 
 	/* Now the Page Numbering style */
-	const UT_GenericVector<const gchar*> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	const UT_GenericVector<const gchar*> * vecPropList = getContainer()->getVecLabelPropValue();
-	UT_sint32 nTypes = vecTypeList->getItemCount();
+	const FootnoteTypeDesc * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 	UT_UTF8String * sProp = NULL;	
 	UT_UTF8String  val;
-	int j;
 	
 	sProp = new UT_UTF8String("toc-page-type");		
-	for (j=0; j< nTypes; j++)
+	for (; vecTypeList->n !=  _FOOTNOTE_TYPE_INVALID; vecTypeList++)
 	{
-		const char * szVal = static_cast<const char *>(vecTypeList->getNthItem(j));
+		const char * szVal = vecTypeList->label;
 		item = SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE, 
 			CB_ADDSTRING, 0, (LPARAM) szVal);
 			
@@ -632,10 +629,10 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	/* Tab Type styles */
 	const UT_GenericVector<const gchar*> * vecLabels = getContainer()->getVecTABLeadersLabel();
 	const UT_GenericVector<const gchar*> * vecProps = getContainer()->getVecTABLeadersProp();
-	nTypes = vecLabels->getItemCount();
-	sProp = NULL;	
+	UT_sint32 nTypes = vecLabels->getItemCount();
 	sProp = new UT_UTF8String("toc-tab-leader");	
-	for(j=0; j< nTypes; j++)
+
+	for(UT_sint32 j=0; j< nTypes; j++)
 	{
 		const char * szLab = static_cast<const char *>(vecLabels->getNthItem(j));
 		UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));		
@@ -782,8 +779,8 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 	{	
 		UT_String sNum;		
 
-		const UT_GenericVector<const gchar*> * vecPropList = getContainer()->getVecLabelPropValue();
-		const char * szVal = static_cast<const char *>(vecPropList->getNthItem(nSelected));
+		const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+		const char * szVal = footnoteTypeList[nSelected].label;
 		sProp = static_cast<char *> ("toc-page-type");
 		sVal = static_cast<const char *> (szVal);
 		

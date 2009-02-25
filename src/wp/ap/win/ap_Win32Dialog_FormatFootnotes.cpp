@@ -136,20 +136,19 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 	int nItem;
 	int nDefF = 0;
 	int nDefE = 0;
-	const UT_GenericVector<const gchar*>* pType = getFootnoteTypeLabelList();
-	UT_return_val_if_fail( pType, 0 );
+	const FootnoteTypeDesc * footnoteTypeList = getFootnoteTypeLabelList();
 
-	for(UT_uint32 i = 0; i < pType->getItemCount(); ++i)
+	for(UT_uint32 i = 0; footnoteTypeList->n !=  _FOOTNOTE_TYPE_INVALID; footnoteTypeList++, i++)
 	{
 		 nItem = SendDlgItemMessage(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, CB_ADDSTRING, 0,
-									(LPARAM)pType->getNthItem(i));
+									(LPARAM)footnoteTypeList->label);
 		 SendDlgItemMessage(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_FSTYLE, CB_SETITEMDATA, nItem, (LPARAM)i);
 
 		 if (i==(UT_uint32)getFootnoteType())
 		  	nDefF = i;			
 
 		 nItem = SendDlgItemMessage(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, CB_ADDSTRING, 0,
-									(LPARAM)pType->getNthItem(i));
+									(LPARAM)footnoteTypeList->label);
 		 SendDlgItemMessage(hWnd, AP_RID_DIALOG_FORMATFOOTNOTES_COMBO_ESTYLE, CB_SETITEMDATA, nItem, (LPARAM)i);
 		 
 		 if (i==(UT_uint32)getEndnoteType())
