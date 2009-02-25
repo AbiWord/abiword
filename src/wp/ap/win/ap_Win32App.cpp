@@ -1051,6 +1051,9 @@ ReturnTrue:
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
+	if (!g_thread_supported ())
+		g_thread_init (NULL);	
+	
 	bool bShowApp = true;
 	BOOL bInitialized = FALSE; 
 	

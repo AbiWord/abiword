@@ -1192,7 +1192,9 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 {
     // This is a static function.
-    
+    if (!g_thread_supported ())
+        g_thread_init (NULL);
+
     // initialize our application.
 	XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
