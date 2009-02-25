@@ -70,9 +70,11 @@ const UT_String ABIPAINT_PREF_KEY_szProgramName = "szImageEditor";
 static DECLARE_ABI_PLUGIN_METHOD(editImage);
 ABI_GRAYABLE_MENUITEM_PROTOTYPE(editImage);
 Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName);
+#ifdef ENABLE_BMP
 static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp);
-static DECLARE_ABI_PLUGIN_METHOD(specify);
 static DECLARE_ABI_PLUGIN_METHOD(useBmp);
+#endif
+static DECLARE_ABI_PLUGIN_METHOD(specify);
 ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(useBmp);
 
 

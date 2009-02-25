@@ -112,6 +112,8 @@ EV_Menu_ItemState ABI_GRAYABLE_MENUITEM(m)(AV_View * pAV_View, XAP_Menu_Id id)
 #define DECLARE_ABI_GRAYABLE_MENUITEM(m,boolFunc) \
 ABI_GRAYABLE_MENUITEM_PROTOTYPE(m) \
 { \
+    UT_UNUSED(pAV_View); \
+    UT_UNUSED(id); \
 	if (boolFunc()) \
 		return EV_MIS_ZERO; \
 	else \

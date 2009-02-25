@@ -337,7 +337,8 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 	DWORD status;
 #else
 	char * gimpArgs[3];
-	gimpArgs[0] = "gimp";
+	// this is pretty ugly to const_cast. No choice.
+	gimpArgs[0] = const_cast<char *>("gimp");
 	gimpArgs[1] = const_cast<char *>(szTmp.c_str());
 	gimpArgs[2] = NULL;
 	UT_sint32 pid;
