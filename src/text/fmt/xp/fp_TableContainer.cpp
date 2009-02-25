@@ -1964,6 +1964,14 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke)
 	{
 		return true;
 	}
+	//
+	// The broken table is containtained within this cell. 
+	// ie The cell spans several pages.
+	//
+	if((pBroke->getYBreak() >= getY()) && (yCellBot >= pBroke->getYBottom()))
+	{
+		return true;
+	}
 	return false;
 }
 
