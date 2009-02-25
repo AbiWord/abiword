@@ -417,6 +417,8 @@ G_BEGIN_DECLS
   gboolean abi_widget_set_show_margin (AbiWidget * w, gboolean bShowMargin);
   gboolean abi_widget_get_show_margin (AbiWidget * w);
 
+  GdkPixbuf * abi_widget_render_page_to_image(AbiWidget *w, int page_number);
+
   /* header/footer functions */
   gboolean abi_widget_remove_header (AbiWidget * w);
   gboolean abi_widget_remove_footer (AbiWidget * w);
