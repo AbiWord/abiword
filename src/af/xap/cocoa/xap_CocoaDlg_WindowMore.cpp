@@ -158,9 +158,9 @@ void XAP_CocoaDialog_WindowMore::_populateWindowData(void)
 	{
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_ASSERT(f);
-		const char * s = f->getTitle(128);	// TODO: chop this down more? 
+		UT_UTF8String s = f->getTitle();
 		
-		[m_dataSource addString:[NSString stringWithUTF8String:s]];
+		[m_dataSource addString:[NSString stringWithUTF8String:s.utf8_str()]];
 	} 
 
 	// Select the one we're in

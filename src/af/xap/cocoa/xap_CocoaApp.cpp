@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003-2004 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,8 +52,8 @@
 
 /*****************************************************************/
 
-XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_App(pArgs, szAppName), 
+XAP_CocoaApp::XAP_CocoaApp(const char * szAppName)
+	: XAP_App(szAppName), 
 	m_dialogFactory(this), 
 	m_controlFactory(),
 	m_pCocoaMenu(NULL),

@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003-2004 Hubert Figuiere
+ * Copyright (C) 2001, 2003-2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,7 +48,7 @@ class EV_CocoaMenuBar;
 class XAP_CocoaApp : public XAP_App
 {
 public:
-	XAP_CocoaApp(XAP_Args* pArgs, const char* szAppName);
+	XAP_CocoaApp(const char* szAppName);
 	virtual ~XAP_CocoaApp();
 
 	virtual const char * 					getDefaultEncoding () const;
