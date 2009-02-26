@@ -8820,9 +8820,9 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		UT_DEBUGMSG(("MARCM: Current table size is (%dx%d)\n", numRows, numCols));		
 		
 		// determine the range of the cells that should be adjusted
-		UT_sint32 rowStart;
+		UT_sint32 rowStart = 0;
 		UT_sint32 rowEnd;
-		UT_sint32 colStart;
+		UT_sint32 colStart = 0;
 		UT_sint32 colEnd;
 		
 		if(applyTo == FORMAT_TABLE_ROW )
