@@ -2,8 +2,8 @@
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2005 Hubert Figuiere
  * Copyright (C) 2002-2005 Francis James Franklin
+ * Copyright (C) 2001-2005, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,8 +35,6 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-#include <popt.h>
-
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -48,7 +46,6 @@
 #include "ut_Script.h"
 
 #include "ev_CocoaMenuBar.h"
-#include "ev_EditMethod.h"
 
 #include "xap_Args.h"
 #include "xap_CocoaAppController.h"
@@ -115,8 +112,8 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
   /param szAppName A string representing the name of the app.
 	Currently always AbiWord (I think).
 */
-AP_CocoaApp::AP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
-    : AP_App(pArgs,szAppName),
+AP_CocoaApp::AP_CocoaApp(const char * szAppName)
+    : AP_App(szAppName),
 	  m_pStringSet(0),
 	  m_pClipboard(0),
 	  m_bHasSelection(false),
@@ -974,7 +971,7 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
 
 /*****************************************************************/
 
-int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
+int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
 {
     // This is a static function.	
 	
@@ -995,73 +992,77 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // initialize our application.
 	[XAP_CocoaApplication sharedApplication];
 	
-    XAP_Args XArgs = XAP_Args(argc,argv);
-	AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(&XArgs, szAppName);
-	AP_Args Args = AP_Args(&XArgs, szAppName, pMyCocoaApp);
-	Args.parsePoptOpts();    
-
-	// Step 1: Initialize Cocoa and create the APP.
-    // if the initialize fails, we don't have icons, fonts, etc.
-    if (!pMyCocoaApp->initialize())
+	AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(szAppName);
+	
 	{
-		delete pMyCocoaApp;
-		return -1;	// make this something standard?
-	}
+		XAP_Args XArgs = XAP_Args(argc, argv);
+		AP_Args Args = AP_Args(&XArgs, szAppName, pMyCocoaApp);
+		
+		Args.parseOptions();
 
-	// Step 2: Handle all non-window args.
+		// Step 1: Initialize Cocoa and create the APP.
+		// if the initialize fails, we don't have icons, fonts, etc.
+		if (!pMyCocoaApp->initialize())
+		{
+			delete pMyCocoaApp;
+			return -1;	// make this something standard?
+		}
 
-	bool windowlessArgsWereSuccessful = true;
-	if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful))
-		return false;
+		// Step 2: Handle all non-window args.
 
-    // Setup signal handlers, primarily for segfault
-    // If we segfaulted before here, we *really* blew it
-    
-    struct sigaction sa;
-    
-    sa.sa_handler = signalWrapper;
-    
-    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-/* #ifndef AIX - I presume these are always #define not extern... -fjf */
+		bool windowlessArgsWereSuccessful = true;
+		if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful))
+				return false;
+
+		// Setup signal handlers, primarily for segfault
+		// If we segfaulted before here, we *really* blew it
+		
+		struct sigaction sa;
+		
+		sa.sa_handler = signalWrapper;
+		
+		sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+		sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+	/* #ifndef AIX - I presume these are always #define not extern... -fjf */
 #if defined (SA_NODEFER) && defined (SA_RESETHAND)
-    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+		sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
 #else
-    sa.sa_flags = 0;
+		sa.sa_flags = 0;
 #endif
-    
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-    sigaction(SIGQUIT, &sa, NULL);
-    sigaction(SIGFPE, &sa, NULL);
-    // TODO: handle SIGABRT
-    
-    // this function takes care of all the command line args.
-    // if some args are botched, it returns false and we should
-    // continue out the door.
-	// We used to check for bShowApp here.  It shouldn't be needed
-	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-    // if (pMyCocoaApp->openCmdLineFiles(&Args))
+		
+		sigaction(SIGSEGV, &sa, NULL);
+		sigaction(SIGBUS, &sa, NULL);
+		sigaction(SIGILL, &sa, NULL);
+		sigaction(SIGQUIT, &sa, NULL);
+		sigaction(SIGFPE, &sa, NULL);
+		// TODO: handle SIGABRT
+		
+		// this function takes care of all the command line args.
+		// if some args are botched, it returns false and we should
+		// continue out the door.
+		// We used to check for bShowApp here.  It shouldn't be needed
+		// anymore, because doWindowlessArgs was supposed to bail already. -PL
+		// if (pMyCocoaApp->openCmdLineFiles(&Args))
 
-	if (true) // really don't want to be opening files atm anyway
-    {
-		[pool release];
+		if (true) // really don't want to be opening files atm anyway
+		{
+			[pool release];
 
-		// turn over control to Cocoa
-		[NSApp run];
+			// turn over control to Cocoa
+			[NSApp run];
 
-		pool = [[NSAutoreleasePool alloc] init];
+			pool = [[NSAutoreleasePool alloc] init];
+		}
+		else
+		{
+			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+		}
+		
+		/* destroy the App.  It should take care of deleting all frames.
+		 */
+		pMyCocoaApp->shutdown();
+
 	}
-    else
-	{
-		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-	}
-    
-    /* destroy the App.  It should take care of deleting all frames.
-	 */
-    pMyCocoaApp->shutdown();
-
     delete pMyCocoaApp;
     
 	if (pool)
@@ -1071,12 +1072,10 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     return 0;
 }
 
-void AP_CocoaApp::errorMsgBadArg(AP_Args * Args, int nextopt)
+void AP_CocoaApp::errorMsgBadArg(const char *msg)
 {
-	printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
-			poptBadOption (Args->poptcon, 0),
-			poptStrerror (nextopt),
-			Args->XArgs->m_argv[0]);
+	printf ("%s.\nRun '%s --help' to see a full list of available command line options.\n",
+			msg, g_get_prgname());
 }
 
 void AP_CocoaApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
@@ -1091,58 +1090,9 @@ void AP_CocoaApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
- 	AP_CocoaApp * pMyCocoaApp = static_cast<AP_CocoaApp*>(Args->getApp());
-
 	bSuccess = true;
 
-	if(Args->m_sPlugin)
-	{
-//
-// Start a plugin rather than the main abiword application.
-//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		Args->m_sPlugin = poptGetArg(Args->poptcon);
-		bool bFound = false;
-		if(Args->m_sPlugin != NULL)
-		{
-			const UT_GenericVector<XAP_Module*>* pVec = XAP_ModuleManager::instance().enumModules ();
-			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
-			{
-				pModule = (XAP_Module *)pVec->getNthItem (i);
-				szName = pModule->getModuleInfo()->name;
-				if(strcmp(szName,Args->m_sPlugin) == 0)
-					bFound = true;
-			}
-		}
-		if(!bFound)
-		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
-			bSuccess = false;
-			return false;
-		}
-//
-// You must put the name of the ev_EditMethod in the usage field
-// of the plugin registered information.
-//
-		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = pMyCocoaApp->getEditMethodContainer();
-		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
-		if(!pInvoke)
-		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
-			bSuccess = false;
-			return false;
-		}
-//
-// Execute the plugin, then quit
-//
-		ev_EditMethod_invoke(pInvoke, UT_String("Called From CocoaApp"));
-		return false;
-	}
-
-	return true;
+	return openCmdLinePlugins(Args, bSuccess);
 }
 
 /*!

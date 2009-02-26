@@ -2,8 +2,8 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2004 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
+ * Copyright (C) 2001-2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,11 +32,11 @@
 
 #include "ap_App.h"
 #include "ut_bytebuf.h"
-#include "xap_Args.h"
 #include "xap_CocoaApp.h"
 #include "pt_Types.h"
 
 
+class AP_Args;
 class XAP_StringSet;
 class AV_View;
 class GR_Image;
@@ -45,7 +45,7 @@ class AP_CocoaClipboard;
 class AP_CocoaApp : public AP_App
 {
 public:
-	AP_CocoaApp(XAP_Args * pArgs, const char * szAppName);
+	AP_CocoaApp(const char * szAppName);
 
 	virtual ~AP_CocoaApp();
 
@@ -82,13 +82,13 @@ public:
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
 
-	static int main (const char * szAppName, int argc, const char ** argv);
+	static int main (const char * szAppName, int argc, char ** argv);
 
 	void							catchSignals(int sig_num);
 
 	void loadAllPlugins ();
 
-	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
+	virtual void errorMsgBadArg(const char*);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);

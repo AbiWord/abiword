@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz and others
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -69,7 +69,8 @@ class ABI_EXPORT AP_App : public XAP_App_BaseClass
 	/* Allow additional platform-specific windowless args. */
 	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 
-	bool openCmdLineFiles(AP_Args * args);
+	bool openCmdLineFiles(const AP_Args * args);
+	bool openCmdLinePlugins(const AP_Args * args, bool & bSuccess);
  private:
 
 };

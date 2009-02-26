@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1313,61 +1314,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		return false;
 	}
 
-	if(Args->m_sPluginArgs)
-	{
-//
-// Start a plugin rather than the main abiword application.
-//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		const char * szRequest = NULL;
-		bool bFound = false;	
-		if(Args->m_sPluginArgs[0])
-		{
-			const char * szRequest = Args->m_sPluginArgs[0];
-			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-			UT_DEBUGMSG((" %d plugins loaded \n",pVec->getItemCount()));
-			for (UT_sint32 i = 0; (i < pVec->size()) && !bFound; i++)
-			{
-				pModule = pVec->getNthItem (i);
-				szName = pModule->getModuleInfo()->name;
-				UT_DEBUGMSG(("%s\n", szName));
-				if(strcmp(szName,szRequest) == 0)
-				{
-					bFound = true;
-				}
-			}
-		}
-		if(!bFound)
-		{
-			fprintf(stderr, "Plugin %s not found or loaded \n",szRequest);
-			bSuccess = false;
-			return false;
-		}
-//
-// You must put the name of the ev_EditMethod in the usage field
-// of the plugin registered information.
-//
-		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
-		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
-		if(!pInvoke)
-		{
-			fprintf(stderr, "Plugin %s invoke method %s not found \n",
-					Args->m_sPluginArgs[0],evExecute);
-			bSuccess = false;
-			return false;
-		}
-//
-// Execute the plugin, then quit
-//
-		UT_String *sCommandLine = Args->getPluginOptions();
-		ev_EditMethod_invoke(pInvoke, *sCommandLine);
-		delete(sCommandLine);
-		return false;
-	}
-
-	return true;
+	return openCmdLinePlugins(Args, bSuccess);
 }
 
 /*!

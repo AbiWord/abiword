@@ -30,7 +30,7 @@
 #include "ut_debugmsg.h"
 #include "ap_CocoaApp.h"
 
-int main (int argc, const char **argv)
+int main (int argc, char **argv)
 {
 #ifdef DEBUG
 	UT_DEBUGMSG(("activating NSDebug\n"));
