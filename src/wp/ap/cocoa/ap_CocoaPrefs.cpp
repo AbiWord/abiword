@@ -43,8 +43,8 @@ const char * AP_CocoaPrefs::_getPrefsPathname(void) const
 	if(!buf.empty())
 	  return buf.c_str();
 
-	const char * szDirectory = xap_App::getApp()->getUserPrivateDirectory();
-	char * szFile = "AbiWord.Profile";
+	const char * szDirectory = XAP_App::getApp()->getUserPrivateDirectory();
+	const char * szFile = "AbiWord.Profile";
 
 	buf = szDirectory;
 	if (!buf.size() || szDirectory[buf.size()-1] != '/')
