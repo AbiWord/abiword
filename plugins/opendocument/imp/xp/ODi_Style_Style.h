@@ -181,7 +181,7 @@ public:
      */
     const UT_UTF8String* getWrap(bool local) const;
     
-    const UT_UTF8String* getBackgroundColor() const {return &m_backgroundColor;}
+    const UT_UTF8String* getBackgroundColor() const;
     
     const UT_UTF8String* getColumnWidth() const {return &m_columnWidth;}
     

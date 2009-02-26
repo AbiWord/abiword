@@ -503,6 +503,11 @@ void ODi_Style_Style::_parse_style_graphicProperties(const gchar** ppProps) {
         m_wrap = pVal;
     }
 
+    pVal = UT_getAttribute("style:parent-style-name", ppProps);
+    if (pVal && *pVal) {
+        m_parentStyleName = pVal;
+    }
+
     pVal = UT_getAttribute("fo:border-top", ppProps);
     if (pVal) {
         _stripColorLength(m_borderTop_color, m_borderTop_thickness, m_haveTopBorder, pVal);
@@ -859,6 +864,16 @@ const UT_UTF8String* ODi_Style_Style::getWrap(bool local) const {
             return &m_wrap;
         }
     }
+}
+
+
+const UT_UTF8String* ODi_Style_Style::getBackgroundColor() const
+{
+    if (m_backgroundColor.empty() && m_pParentStyle) {
+        return m_pParentStyle->getBackgroundColor();
+    }
+
+    return &m_backgroundColor;
 }
 
 
