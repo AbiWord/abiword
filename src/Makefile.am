@@ -7,7 +7,7 @@ platform_ldflags =
 resources = 
 
 if TOOLKIT_COCOA
-AM_CXXFLAGS = -x objective-c++
+AM_CPPFLAGS = -x objective-c++
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
 endif
 

@@ -401,18 +401,18 @@ if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
 		      -Wunused -Wpointer-arith ; do
-		SAVE_CXXFLAGS="$CXXFLAGS"
-		CXXFLAGS="$CXXFLAGS $option"
+		SAVE_CPPFLAGS="$CPPFLAGS"
+		CPPFLAGS="$CPPFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
 		AC_TRY_COMPILE([], [],
 			has_option=yes,
 			has_option=no,)
 		if test $has_option = no; then
-		  CXXFLAGS="$SAVE_CXXFLAGS"
+		  CPPFLAGS="$SAVE_CPPFLAGS"
 		fi
 		AC_MSG_RESULT($has_option)
 		unset has_option
-		unset SAVE_CXXFLAGS
+		unset SAVE_CPPFLAGS
 	done
 	unset option
 fi
@@ -446,6 +446,7 @@ if test "$TOOLKIT" == "win"; then
 	SYSTEM_CFLAGS="-mthreads"
 elif test "$TOOLKIT" == "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
+        SYSTEM_LIBS="-framework Cocoa"
 else
 	deps_pkgs="$deps_pkgs $gtk_pkgs"
 fi
