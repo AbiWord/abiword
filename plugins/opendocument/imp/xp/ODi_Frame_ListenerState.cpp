@@ -33,6 +33,8 @@
 // AbiWord includes
 #include <pt_Types.h>
 #include <pd_Document.h>
+#include <ut_locale.h>
+#include <ut_units.h>
 
 
 /**
@@ -212,45 +214,17 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
         // In-line wrapping.
         // No frames are used on AbiWord for in-line wrapping.
         // It uses a <image> tag right in the paragraph text.
-        
-        m_inlinedImage = true;
-        
-        const gchar* pWidth;
-        const gchar* pHeight;
-        
-        if(!m_rAbiData.addImageDataItem(dataId, ppAtts)) {
-            UT_DEBUGMSG(("ODT import: no suitable image importer found\n"));
-            return;
-        }
-       
-        const gchar* attribs[5];
-        UT_String propsBuffer;
-        
-        pWidth = m_rElementStack.getStartTag(0)->getAttributeValue("svg:width");
-        UT_ASSERT(pWidth);
-        
-        pHeight = m_rElementStack.getStartTag(0)->getAttributeValue("svg:height");
-        UT_ASSERT(pHeight);  
-        
-        UT_String_sprintf(propsBuffer, "width:%s; height:%s", pWidth, pHeight);
-        
-        attribs[0] = "props";
-        attribs[1] = propsBuffer.c_str();
-        attribs[2] = "dataid";
-        attribs[3] = dataId.c_str();
-        attribs[4] = 0;
-    
-        if (!m_pAbiDocument->appendObject (PTO_Image, attribs)) {
-            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        }
+
+        _drawInlineImage(ppAtts);
         
     } else {
         // We define a frame with the image in it.
-        
+
         if (m_rElementStack.hasElement("draw:text-box")) {
-            // AbiWord can't have nested frames (a framed image inside a textbox).
-            // Abort mission!
-            rAction.ignoreElement();
+            // AbiWord can't have nested frames (a framed image inside a textbox),
+            // so convert it to an inline image for now
+
+            _drawInlineImage(ppAtts);
             return;
         }
         
@@ -290,6 +264,41 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
 
 }
 
+void ODi_Frame_ListenerState::_drawInlineImage (const gchar** ppAtts)
+{
+    const gchar* pWidth = NULL;
+    const gchar* pHeight = NULL;
+    UT_String dataId;
+
+    m_inlinedImage = true;
+
+    if(!m_rAbiData.addImageDataItem(dataId, ppAtts)) {
+        UT_DEBUGMSG(("ODT import: no suitable image importer found\n"));
+        return;
+    }
+
+    const gchar* attribs[5];
+    UT_String propsBuffer;
+        
+    pWidth = m_rElementStack.getStartTag(0)->getAttributeValue("svg:width");
+    UT_ASSERT(pWidth);
+        
+    pHeight = m_rElementStack.getStartTag(0)->getAttributeValue("svg:height");
+    UT_ASSERT(pHeight);  
+        
+    UT_String_sprintf(propsBuffer, "width:%s; height:%s", pWidth, pHeight);
+        
+    attribs[0] = "props";
+    attribs[1] = propsBuffer.c_str();
+    attribs[2] = "dataid";
+    attribs[3] = dataId.c_str();
+    attribs[4] = 0;
+    
+    if (!m_pAbiDocument->appendObject (PTO_Image, attribs)) {
+        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+    }
+
+}
 
 /**
  * 
@@ -400,6 +409,29 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
 }
 
 
+static bool _convertBorderThickness(const char* szIncoming, UT_UTF8String& sConverted)
+{
+    UT_return_val_if_fail(szIncoming && *szIncoming, false);
+
+    double d = 0.0f;
+    UT_Dimension units = UT_determineDimension (szIncoming, DIM_none);
+
+    if (units == DIM_none) {
+        // no (valid) dimension specified, we'll assume inches
+        d = UT_convertToInches(szIncoming);
+        d = UT_convertInchesToDimension(d, DIM_PT);
+
+    } else {
+        d = UT_convertToPoints(szIncoming);
+    }
+
+    UT_LocaleTransactor t(LC_NUMERIC, "C");
+    sConverted = UT_UTF8String_sprintf("%.2fpt", d);
+
+    return true;
+}
+
+
 /**
  * @param ppAtts The attributes of a <draw:text-box> element.
  * @param rAction Any action to be taken, regarding state change.
@@ -411,6 +443,7 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
     const gchar* pStyleName = NULL;
     const ODi_Style_Style* pGraphicStyle = NULL;
     UT_UTF8String props;
+    UT_UTF8String sThickness;
     
     props = "frame-type:textbox";
             
@@ -428,8 +461,6 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
     if (!props.empty()) {
         props += "; ";
     }
-
-    // TODO: translate border thicknesses
 
     if (m_rElementStack.getStartTag(0)) {
         pStyleName = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
@@ -480,6 +511,51 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
         } else {
             props += "; top-style:0";
         }
+
+        if(pGraphicStyle->getBorderBottom_thickness() && !pGraphicStyle->getBorderBottom_thickness()->empty()) {
+
+            sThickness.clear();
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderBottom_thickness()->utf8_str(), sThickness);
+
+            if(bRet) {
+                props += "; bot-thickness:";
+                props += sThickness.utf8_str();
+            }
+        }
+
+        if(pGraphicStyle->getBorderLeft_thickness() && !pGraphicStyle->getBorderLeft_thickness()->empty()) {
+
+            sThickness.clear();
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderLeft_thickness()->utf8_str(), sThickness);
+
+            if(bRet) {
+                props += "; left-thickness:";
+                props += sThickness.utf8_str();
+            }
+        }
+
+        if(pGraphicStyle->getBorderRight_thickness() && !pGraphicStyle->getBorderRight_thickness()->empty()) {
+
+            sThickness.clear();
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderRight_thickness()->utf8_str(), sThickness);
+
+            if(bRet) {
+                props += "; right-thickness:";
+                props += sThickness.utf8_str();
+            }
+        }
+
+        if(pGraphicStyle->getBorderTop_thickness() && !pGraphicStyle->getBorderTop_thickness()->empty()) {
+
+            sThickness.clear();
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderTop_thickness()->utf8_str(), sThickness);
+
+            if(bRet) {
+                props += "; top-thickness:";
+                props += sThickness.utf8_str();
+            }
+        }
+
     } else {  //just hard-code some defaults
         props += "bot-style:1; left-style:1; right-style:1; top-style:1";
     }

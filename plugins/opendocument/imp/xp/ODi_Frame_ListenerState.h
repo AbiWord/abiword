@@ -62,6 +62,8 @@ private:
      */
     void _drawImage (const gchar** ppAtts, ODi_ListenerStateAction& rAction);
 
+    void _drawInlineImage (const gchar** ppAtts);
+
     /**
      * @param ppAtts The attributes of a <draw:object> element.
      */
