@@ -1409,6 +1409,10 @@ abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 	//
 	// AbiWord counts from 0 but we let the caller count from 1.
 	//
+	if(iPage <= 0)
+	{
+		return NULL;
+	}
 	iPage--;
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
