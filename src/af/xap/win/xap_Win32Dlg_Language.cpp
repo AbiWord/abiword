@@ -127,6 +127,9 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 	HTREEITEM hSel = NULL;	
 	
 	UT_Vector* pVec = getAvailableDictionaries();		
+	if (!pVec)
+		return; // occurs when you compile without ENABLE_SPELL
+
 	tvins.hParent = NULL;
 	tvins.hInsertAfter = TVI_LAST;  	
 	tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;               
