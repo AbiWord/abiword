@@ -229,8 +229,8 @@ public:
 	virtual void _setUILanguage(const UT_String &stExt);
 	virtual gint _gatherOuterQuoteStyle();
 	virtual gint _gatherInnerQuoteStyle();
-	virtual void _setOuterQuoteStyle(gint index);
-	virtual void _setInnerQuoteStyle(gint index);
+	virtual void _setOuterQuoteStyle(const gint index);
+	virtual void _setInnerQuoteStyle(const gint index);
 
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);

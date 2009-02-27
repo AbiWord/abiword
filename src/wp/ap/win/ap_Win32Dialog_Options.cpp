@@ -444,7 +444,7 @@ void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 		m_curLang = stExt;
 }
 
-void AP_Win32Dialog_Options::_setOuterQuoteStyle(gint index)
+void AP_Win32Dialog_Options::_setOuterQuoteStyle(const gint index)
 {
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_OUTERQUOTE);
 	UT_return_if_fail(hCombo);
@@ -455,7 +455,7 @@ void AP_Win32Dialog_Options::_setOuterQuoteStyle(gint index)
 	SendMessage(hCombo, CB_SETCURSEL, index, 0);
 }
 
-void AP_Win32Dialog_Options::_setInnerQuoteStyle(gint index)
+void AP_Win32Dialog_Options::_setInnerQuoteStyle(const gint index)
 {
 	HWND hCombo = GetDlgItem((HWND)getPage(PG_SMARTQUOTES), AP_RID_DIALOG_OPTIONS_COMBO_INNERQUOTE);
 	UT_return_if_fail(hCombo);
@@ -651,7 +651,7 @@ AP_Win32Dialog_Options_General::~AP_Win32Dialog_Options_General()
 {
 	if (m_pVecUILangs)
 	{		
-		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
+		for (UT_sint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
 			g_free ((void *)m_pVecUILangs->getNthItem(i));
 			
 		delete m_pVecUILangs;		
