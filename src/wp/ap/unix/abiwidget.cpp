@@ -1401,10 +1401,15 @@ abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 
 /*!
  * Caller owns the returned GdkPixmap and must free it after use.
+ * The first page is "1"
  */
 extern "C" GdkPixbuf *
 abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
 {
+	//
+	// AbiWord counts from 0 but we let the caller count from 1.
+	//
+	iPage--;
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return FALSE;
