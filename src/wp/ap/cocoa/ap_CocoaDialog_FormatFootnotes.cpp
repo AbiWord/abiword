@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -229,6 +229,19 @@ void AP_CocoaDialog_FormatFootnotes::event_EndRestartSection(NSButton* widget)
 	_xap = dynamic_cast<AP_CocoaDialog_FormatFootnotes*>(owner);
 }
 
+
+static void _fillPopupWithFootnoteTypeDesc(NSPopUpButton* menu, const FootnoteTypeDesc *vec)
+{
+		
+	[menu removeAllItems];
+	const FootnoteTypeDesc *current;
+	for (current = vec; current->n != _FOOTNOTE_TYPE_INVALID; current++) {
+		[menu addItemWithTitle:[NSString stringWithUTF8String:current->label]];
+	}
+}
+
+
+
 -(void)windowDidLoad
 {
 	if(_xap) {
@@ -247,8 +260,8 @@ void AP_CocoaDialog_FormatFootnotes::event_EndRestartSection(NSButton* widget)
 		LocalizeControl(_endNtInitialValueLabel, pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);	
 		LocalizeControl(_endNtRestartSectionBtn, pSS, AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
 	
-		FillPopupWithCStrVector(_ftNtStylePopup, *AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList());
-		FillPopupWithCStrVector(_endNtStylePopup, *AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList());
+		_fillPopupWithFootnoteTypeDesc(_ftNtStylePopup, AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList());
+		_fillPopupWithFootnoteTypeDesc(_endNtStylePopup, AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList());
 
 		// Footnotes number menu
 		[_ftNtRestartPopup removeAllItems];

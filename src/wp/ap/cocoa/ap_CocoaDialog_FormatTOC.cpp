@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001-2002, 2004 Hubert Figuiere
+ * Copyright (C) 2001-2002, 2004, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -211,18 +211,14 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (void)createNumberingItems:(NSPopUpButton *)popup
 {
-	const UT_GenericVector<const gchar *> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-
-	UT_sint32 nTypes = vecTypeList->getItemCount();
+	const FootnoteTypeDesc* vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
 	[popup removeAllItems];
-
-	for (UT_sint32 n = 0; n < nTypes; n++)
-		{
-			const gchar * typeList = vecTypeList->getNthItem(n);
-
-			[popup addItemWithTitle:[NSString stringWithUTF8String:((const char *) typeList)]];
-		}
+	const FootnoteTypeDesc *current;
+	for (current = vecTypeList; current->n != _FOOTNOTE_TYPE_INVALID ; current++)
+	{
+		[popup addItemWithTitle:[NSString stringWithUTF8String:current->label]];
+	}
 }
 
 - (void)sync
@@ -450,7 +446,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 - (void)saveDetailLevelSettings
 {
 	if (_xap) {
-		const UT_GenericVector<const gchar *> * vecPropList = _xap->getVecLabelPropValue();
+		const FootnoteTypeDesc * vecPropList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 
 		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getDetailsLevel());
 		UT_UTF8String sTOCProp;
@@ -468,7 +464,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		sTOCProp  = "toc-label-type";
 		sTOCProp += sLevelNo;
-		sVal = vecPropList->getNthItem((UT_sint32) [_numberingTypeData indexOfSelectedItem]);
+		sVal = vecPropList[ [_numberingTypeData indexOfSelectedItem] ].prop;
 		_xap->setTOCProperty(sTOCProp, sVal);
 
 		sTOCProp  = "toc-label-after";
@@ -508,7 +504,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		sTOCProp  = "toc-page-type";
 		sTOCProp += sLevelNo;
-		sVal = vecPropList->getNthItem((UT_sint32) [_pageNumberingData indexOfSelectedItem]);
+		sVal = vecPropList[ [_pageNumberingData indexOfSelectedItem]].prop;
 		_xap->setTOCProperty(sTOCProp, sVal);
 
 		// sTOCProp  = "toc-indent";
