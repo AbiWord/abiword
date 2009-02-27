@@ -1,3 +1,22 @@
+## AbiSource Applications
+## Copyrught (C) 2009 Hubert Figuiere
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
 noinst_LTLIBRARIES = libcocoa.la
 
@@ -9,6 +28,43 @@ AM_CPPFLAGS = \
 #	-DPREFIX=\""$(prefix)"\" 				\
 #	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 #	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"
+
+nobase_resources_DATA = ap_CocoaDialog_Background.nib/*.nib\
+	ap_CocoaDialog_Break.nib/*.nib\
+	ap_CocoaDialog_Columns.nib/*.nib\
+	ap_CocoaDialog_Field.nib/*.nib\
+	ap_CocoaDialog_FormatFootnotes.nib/*.nib\
+	ap_CocoaDialog_FormatFrame.nib/*.nib\
+	ap_CocoaDialog_FormatTOC.nib/*.nib\
+	ap_CocoaDialog_FormatTable.nib/*.nib\
+	ap_CocoaDialog_Goto.nib/*.nib\
+	ap_CocoaDialog_HdrFtr.nib/*.nib\
+	ap_CocoaDialog_InsertBookmark.nib/*.nib\
+	ap_CocoaDialog_InsertHyperlink.nib/*.nib\
+	ap_CocoaDialog_InsertTable.nib/*.nib\
+	ap_CocoaDialog_Latex.nib/*.nib\
+	ap_CocoaDialog_ListRevisions.nib/*.nib\
+	ap_CocoaDialog_Lists.nib/*.nib\
+	ap_CocoaDialog_MailMerge.nib/*.nib\
+	ap_CocoaDialog_MarkRevisions.nib/*.nib\
+	ap_CocoaDialog_MergeCells.nib/*.nib\
+	ap_CocoaDialog_MetaData.nib/*.nib\
+	ap_CocoaDialog_New.nib/*.nib\
+	ap_CocoaDialog_Options.nib/*.nib\
+	ap_CocoaDialog_PageNumbers.nib/*.nib\
+	ap_CocoaDialog_PageSetup.nib/*.nib\
+	ap_CocoaDialog_Paragraph.nib/*.nib\
+	ap_CocoaDialog_Replace.nib/*.nib\
+	ap_CocoaDialog_Spell.nib/*.nib\
+	ap_CocoaDialog_SplitCells.nib/*.nib\
+	ap_CocoaDialog_Styles.nib/*.nib\
+	ap_CocoaDialog_StylesModify.nib/*.nib\
+	ap_CocoaDialog_Stylist.nib/*.nib\
+	ap_CocoaDialog_Tab.nib/*.nib\
+	ap_CocoaDialog_ToggleCase.nib/*.nib\
+	ap_CocoaDialog_WordCount.nib/*.nib\
+	ap_CocoaFrame.nib/*.nib\
+	$(NULL)
 
 libcocoa_la_SOURCES = \
 	ap_CocoaApp.h \

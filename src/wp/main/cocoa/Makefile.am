@@ -1,5 +1,4 @@
 ## AbiSource Applications
-## Copyright (C) 2002 Francis James Franklin
 ## Copyrught (C) 2009 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
@@ -17,13 +16,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-# can't use $(top_builddir)/src/
-bundledir = /AbiWord.app
-contentsdir = $(bundledir)/Contents
-macosdir = $(contentsdir)/MacOS
-frameworksdir = $(contentsdir)/Frameworks
-resourcesdir = $(contentsdir)/Resources
-englishdir = $(resourcesdir)/English.lproj
+include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
-
-englishbuilddir = $(mainbuilddir)/AbiWord.app/Contents/Resources/English.lproj
+nobase_resources_DATA = MainMenu.nib/*.nib
+resources_DATA = bundle/*.icns bundle/*.tif bundle/*.png
+contents_DATA = bundle/Info.plist bundle/PkgInfo

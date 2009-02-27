@@ -7,8 +7,8 @@ platform_ldflags =
 resources = 
 
 if TOOLKIT_COCOA
-CPPFLAGS += -x objective-c++
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
+include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 endif
 
 if TOOLKIT_GTK
@@ -24,7 +24,11 @@ platform_ldflags += -Wl,--gc-sections -Wl,--export-all-symbols -Wl,--enable-auto
 resources += Win32Resources.lo
 endif
 
+if TOOLKIT_COCOA
+frameworks_LTLIBRARIES = libabiword-2.7.la
+else
 lib_LTLIBRARIES = libabiword-2.7.la
+endif
 
 libabiword_2_7_la_CPPFLAGS = \
 	$(WP_CPPFLAGS) \
@@ -35,6 +39,7 @@ libabiword_2_7_la_LDFLAGS = \
 	--no-undefined \
 	-avoid-version \
 	-export-dynamic
+	
 
 libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
@@ -78,7 +83,30 @@ Win32Resources.lo: $(top_srcdir)/src/wp/main/win/Win32Main.rc
 
 bin_PROGRAMS =
 
+if TOOLKIT_COCOA
+# MacOS
+macos_PROGRAMS = AbiWord
 
+AbiWord_CPPFLAGS = \
+	-x objective-c++ \
+	$(libabiword_2_7_la_CPPFLAGS)
+
+AbiWord_LDFLAGS = \
+	$(DEPS_LIBS) \
+	--no-undefined \
+	-avoid-version \
+	-export-dynamic
+#	-dylib_install_name @executable_path/../Frameworks/libabiword-2.7.dylib
+
+AbiWord_LDADD = \
+	libabiword-2.7.la
+
+AbiWord_SOURCES = \
+	$(main_cpp)
+
+
+else
+# not MacOS
 if ENABLE_DYNAMIC
 
 bin_PROGRAMS += abiword-dynamic
@@ -126,9 +154,8 @@ abiword_SOURCES = \
 	$(main_cpp)
 
 endif # ENABLE_STATIC
+endif # TOOLKIT_COCOA
 
 CLEANFILES = \
 	abiword.dll.a
-
-include $(top_srcdir)/objc.mk
 

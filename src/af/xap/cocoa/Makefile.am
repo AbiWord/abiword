@@ -1,3 +1,23 @@
+## AbiSource Applications
+## Copyrught (C) 2009 Hubert Figuiere
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+
+include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
 noinst_LTLIBRARIES = libcocoa.la
 
@@ -10,6 +30,22 @@ AM_CPPFLAGS = \
 	-DABI_BUILD_VERSION="\"$(VERSION)\""
 
 #	-DDATADIR="\"$(datadir)\""
+
+nobase_resources_DATA = xap_CocoaDlg_About.nib/*.nib \
+	xap_CocoaDlg_DocComparison.nib/*.nib \
+	xap_CocoaDlg_FontChooser.nib/*.nib \
+	xap_CocoaDlg_HTMLOptions.nib/*.nib \
+	xap_CocoaDlg_History.nib/*.nib \
+	xap_CocoaDlg_Image.nib/*.nib \
+	xap_CocoaDlg_Insert_Symbol.nib/*.nib \
+	xap_CocoaDlg_Language.nib/*.nib \
+	xap_CocoaDlg_Password.nib/*.nib \
+	xap_CocoaDlg_PluginManager.nib/*.nib \
+	xap_CocoaDlg_Zoom.nib/*.nib \
+	xap_CocoaFileOpen_Views.nib/*.nib \
+	xap_CocoaToolPalette.nib/*.nib \
+	xap_GenericListChooser_Controller.nib/*.nib \
+	$(NULL)
 
 libcocoa_la_SOURCES = \
 	xap_CocoaAbiConversions.h \
