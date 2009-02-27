@@ -9,6 +9,12 @@ resources =
 if TOOLKIT_COCOA
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
 include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
+
+install-exec-hook:
+	install_name_tool \
+			-id @executable_path/../Frameworks/libabiword-2.7.dylib $(DESTDIR)/$(frameworksdir)/libabiword-2.7.dylib
+	install_name_tool -change $(prefix)/lib/libabiword-2.7.dylib @executable_path/../Frameworks/libabiword-2.7.dylib \
+		$(DESTDIR)/$(macosdir)/AbiWord
 endif
 
 if TOOLKIT_GTK
@@ -39,7 +45,11 @@ libabiword_2_7_la_LDFLAGS = \
 	--no-undefined \
 	-avoid-version \
 	-export-dynamic
-	
+
+
+if TOOLKIT_COCOA
+libabiword_2_7_la_LDFLAGS += -headerpad_max_install_names
+endif	
 
 libabiword_2_7_la_LIBADD = \
 	$(opt_libs) \
@@ -95,7 +105,8 @@ AbiWord_LDFLAGS = \
 	$(DEPS_LIBS) \
 	--no-undefined \
 	-avoid-version \
-	-export-dynamic
+	-export-dynamic \
+	-headerpad_max_install_names 
 #	-dylib_install_name @executable_path/../Frameworks/libabiword-2.7.dylib
 
 AbiWord_LDADD = \
