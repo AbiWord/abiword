@@ -1699,7 +1699,7 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 #elif defined(TOOLKIT_WIN)
 #include "gr_Win32Graphics.h"
 #elif defined(TOOLKIT_COCOA)
-#error hub: please implement offscreen graphics for cocoa, so that the OSX port can use abicommand, abicollab, exporters that flatten fields, and the upcoming s5 plugin can paginate
+#warning implement offscreen
 #endif
 
 /**
