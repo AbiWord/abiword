@@ -36,6 +36,7 @@ passepartout_la_LDFLAGS = \
 	-no-undefined
 
 passepartout_la_SOURCES = 
+nodist_EXTRA_passepartout_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

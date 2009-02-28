@@ -37,6 +37,8 @@ freetranslation_la_LDFLAGS = \
 
 freetranslation_la_SOURCES = 
 
+nodist_EXTRA_freetranslation_la_SOURCES = dummy.cpp
+
 EXTRA_DIST = \
 	plugin.m4
 

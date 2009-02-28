@@ -37,6 +37,9 @@ applix_la_LDFLAGS = \
 
 applix_la_SOURCES = 
 
+# needed to call the C++ ld driver
+nodist_EXTRA_applix_la_SOURCES = dummy.cpp
+
 EXTRA_DIST = \
 	plugin.m4
 

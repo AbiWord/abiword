@@ -36,6 +36,7 @@ kword_la_LDFLAGS = \
 	-no-undefined
 
 kword_la_SOURCES = 
+nodist_EXTRA_kword_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

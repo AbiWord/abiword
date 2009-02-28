@@ -40,6 +40,7 @@ latex_la_LDFLAGS = \
 	-no-undefined
 
 latex_la_SOURCES = 
+nodist_EXTRA_latex_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

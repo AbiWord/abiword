@@ -554,11 +554,20 @@ AC_SUBST([WP_CPPFLAGS])
 ABIWORD_SERIES="abi_series"
 AC_DEFINE_UNQUOTED([ABIWORD_SERIES], [ "$ABIWORD_SERIES" ], [major.minor])
 AC_SUBST(ABIWORD_SERIES)
+AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
+if test "$TOOLKIT" == "cocoa"; then
+AC_SUBST(ABIWORD_CONTENTSDIR, "/Abiword.app/Contents")
+AC_SUBST(ABIWORD_DATADIR,    "${ABIWORD_CONTENTSDIR}/Resources")
+AC_SUBST(ABIWORD_UIDIR,      "${ABIWORD_CONTENTSDIR}/Resources")
+AC_SUBST(ABIWORD_MACOSDIR,   "${ABIWORD_CONTENTSDIR}/MacOS")
+AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_CONTENTSDIR}/Plug-ins")
+AC_SUBST(ABIWORD_LIBDIR,     "${ABIWORD_CONTENTSDIR}/Frameworks")
+else
 AC_SUBST(ABIWORD_DATADIR,    "${datadir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_UIDIR,   "${ABIWORD_DATADIR}/ui")
-AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_LIBDIR,     "${libdir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
 AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_LIBDIR}/plugins")
+fi
 
 # maybe just switch on TOOLKIT instead of the fancy TARGET defines
 # also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
@@ -583,9 +592,9 @@ if test "$TOOLKIT" == "win"; then
 elif test "$TOOLKIT" == "cocoa"; then
 	AC_DEFINE([TOOLKIT_COCOA], [1], [Build cocoa user interface])
 	AC_DEFINE([XAP_DONTUSE_XOR], [1], [do not use XOR drawing functions])
-	# override static/dynamic, on win32 only static is possible
-	enable_dynamic="no"
-	enable_static="yes"
+	# override static/dynamic, on cocoa. dynamic only
+	enable_dynamic="yes"
+	enable_static="no"
 else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
 	# build static binary by default
@@ -600,7 +609,6 @@ AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" == "yes")
 
 PKG_CHECK_MODULES(PLUGIN,[$glib_req])
 PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS} -DABI_DLL'
-# TODO possibly cocoa needs something similar to win32
 if test "$TOOLKIT" == "gtk" && 
    test "$enable_dynamic" == "yes"; then
 	# link plugins to work around gcc visibility issue with 
@@ -609,6 +617,8 @@ if test "$TOOLKIT" == "gtk" &&
 elif test "$TOOLKIT" == "win"; then
 	# link plugins to the executable so they can be loaded
 	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src -labiword'
+elif test "$TOOLKIT" == "cocoa" ; then 
+	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
 fi
 AC_SUBST([PLUGIN_CFLAGS])
 AC_SUBST([PLUGIN_LIBS])

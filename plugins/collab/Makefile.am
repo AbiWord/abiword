@@ -1,4 +1,7 @@
 
+if TOOLKIT_COCOA
+SUBDIRS =
+else
 SUBDIRS = backends core
 
 plugindir = $(ABIWORD_PLUGINSDIR)
@@ -15,6 +18,7 @@ collab_la_LDFLAGS = \
 	-no-undefined
 
 collab_la_SOURCES = 
+nodist_EXTRA_collab_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4
@@ -34,3 +38,4 @@ collab.dll: .libs/libcollab.a
 
 endif # TOOLKIT_WIN
 
+endif # TOOLKIT_COCOA

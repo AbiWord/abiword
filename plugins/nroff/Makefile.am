@@ -36,6 +36,7 @@ nroff_la_LDFLAGS = \
 	-no-undefined
 
 nroff_la_SOURCES = 
+nodist_EXTRA_nroff_la_SOURCES =  dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

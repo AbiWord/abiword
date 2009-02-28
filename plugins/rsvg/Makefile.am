@@ -14,6 +14,7 @@ rsvg_la_LDFLAGS = \
 	-no-undefined
 
 rsvg_la_SOURCES = 
+nodist_EXTRA_rsvg_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

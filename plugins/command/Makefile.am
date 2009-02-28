@@ -1,4 +1,6 @@
+if TOOLKIT_COCOA
 
+else
 SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
@@ -29,4 +31,4 @@ command.dll: .libs/libcommand.a
 	$(CXX) -shared $^ -o $@ -Wl,--enable-auto-import -Wl,--out-implib,$@.a $(COMMAND_LIBS)
 
 endif # TOOLKIT_WIN
-
+endif

@@ -38,6 +38,7 @@ paint_la_LDFLAGS = \
 	-no-undefined
 
 paint_la_SOURCES = 
+nodist_EXTRA_paint_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

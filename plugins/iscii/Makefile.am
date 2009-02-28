@@ -36,6 +36,7 @@ iscii_la_LDFLAGS = \
 	-no-undefined
 
 iscii_la_SOURCES = 
+nodist_EXTRA_iscii_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

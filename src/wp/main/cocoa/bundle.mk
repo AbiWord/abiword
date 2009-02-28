@@ -18,11 +18,12 @@
 ## 02111-1307, USA.
 
 # can't use $(top_builddir)/src/
-bundledir = /AbiWord.app
-contentsdir = $(bundledir)/Contents
-macosdir = $(contentsdir)/MacOS
-frameworksdir = $(contentsdir)/Frameworks
-resourcesdir = $(contentsdir)/Resources
+# bundledir = /AbiWord.app
+contentsdir = $(ABIWORD_CONTENTSDIR)
+macosdir = $(ABIWORD_MACOSDIR)
+frameworksdir = $(ABIWORD_LIBDIR)
+plugindir = $(ABIWORD_PLUGINSDIR)
+resourcesdir = $(ABIWORD_DATADIR)
 englishdir = $(resourcesdir)/English.lproj
 
 

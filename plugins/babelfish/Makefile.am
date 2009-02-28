@@ -35,7 +35,9 @@ babelfish_la_LDFLAGS = \
 	-module \
 	-no-undefined
 
-babelfish_la_SOURCES = 
+babelfish_la_SOURCES =
+
+nodist_EXTRA_babelfish_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

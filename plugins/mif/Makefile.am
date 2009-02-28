@@ -36,6 +36,7 @@ mif_la_LDFLAGS = \
 	-no-undefined
 
 mif_la_SOURCES = 
+nodist_EXTRA_mif_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

@@ -37,6 +37,8 @@ clarisworks_la_LDFLAGS = \
 
 clarisworks_la_SOURCES = 
 
+nodist_EXTRA_clarisworks_la_SOURCES = dummy.cpp
+
 EXTRA_DIST = \
 	plugin.m4
 

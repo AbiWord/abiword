@@ -36,6 +36,7 @@ opml_la_LDFLAGS = \
 	-no-undefined
 
 opml_la_SOURCES = 
+nodist_EXTRA_opml_la_SOURCES = dummy.cpp
 
 EXTRA_DIST = \
 	plugin.m4

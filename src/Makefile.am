@@ -12,8 +12,10 @@ include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
 install-exec-hook:
 	install_name_tool \
-			-id @executable_path/../Frameworks/libabiword-2.7.dylib $(DESTDIR)/$(frameworksdir)/libabiword-2.7.dylib
-	install_name_tool -change $(prefix)/lib/libabiword-2.7.dylib @executable_path/../Frameworks/libabiword-2.7.dylib \
+			-id @executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
+			$(DESTDIR)/$(frameworksdir)/libabiword-@ABIWORD_SERIES@.dylib
+	install_name_tool -change $(prefix)/lib/libabiword-@ABIWORD_SERIES@.dylib \
+		@executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
 		$(DESTDIR)/$(macosdir)/AbiWord
 endif
 
@@ -71,6 +73,13 @@ libabiword_2_7_la_LIBADD = \
 
 if TOOLKIT_GTK
 libabiword_2_7_la_LIBADD += text/fmt/gtk/libgtk.la
+
+# headers are GTK only.
+libabiword_2_7_includedir = @ABIWORD_HEADERSDIR@
+libabiword_2_7_include_HEADERS = \
+	wp/ap/gtk/abiwidget.h \
+	wp/main/gtk/libabiword.h \
+	af/xap/gtk/xap_UnixTableWidget.h
 endif
 
 libabiword_2_7_la_DEPENDENCIES = \
@@ -80,11 +89,6 @@ libabiword_2_7_la_SOURCES = \
 	$(top_srcdir)/src/wp/main/xp/abi_ver.cpp \
 	$(libabiword_cpp)
 
-libabiword_2_7_includedir = $(includedir)/abiword-2.7
-libabiword_2_7_include_HEADERS = \
-	wp/ap/gtk/abiwidget.h \
-	wp/main/gtk/libabiword.h \
-	af/xap/gtk/xap_UnixTableWidget.h
 
 # TODO is it possible to track dependencies for that?
 WINDRES_CPPFLAGS = -I$(top_srcdir)/src/af/xap/win -I$(top_srcdir)/src/af/util/win -I$(top_srcdir)/src/wp/ap/win
@@ -107,7 +111,6 @@ AbiWord_LDFLAGS = \
 	-avoid-version \
 	-export-dynamic \
 	-headerpad_max_install_names 
-#	-dylib_install_name @executable_path/../Frameworks/libabiword-2.7.dylib
 
 AbiWord_LDADD = \
 	libabiword-2.7.la

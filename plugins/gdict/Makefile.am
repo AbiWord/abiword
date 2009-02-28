@@ -1,4 +1,7 @@
 
+if TOOLKIT_COCOA
+
+else
 SUBDIRS = unix
 
 if GDICT_BUILTIN
@@ -23,3 +26,4 @@ gdict_la_SOURCES =
 EXTRA_DIST = \
 	plugin.m4
 
+endif
