@@ -5,16 +5,16 @@ gdict_deps="no"
 
 if test "$enable_gdict" != ""; then
 
-AC_MSG_CHECKING([for unix platform])
-if test "$PLATFORM" == "unix"; then
+AC_MSG_CHECKING([for unix/gtk platform])
+if test "$TOOLKIT" == "gtk"; then
   AC_MSG_RESULT([yes])
   gdict_deps="yes"
 else
   AC_MSG_RESULT([no])
   if test "$enable_gdict" == "auto"; then
-    AC_MSG_WARN([gdict plugin: only supported on UNIX platforms])
+    AC_MSG_WARN([gdict plugin: only supported on UNIX/gtk platforms])
   else
-    AC_MSG_ERROR([gdict plugin: only supported on UNIX platforms])
+    AC_MSG_ERROR([gdict plugin: only supported on UNIX/gtk platforms])
   fi
 fi
 

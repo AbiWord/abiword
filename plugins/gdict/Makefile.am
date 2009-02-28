@@ -1,7 +1,6 @@
 
-if TOOLKIT_COCOA
+if TOOLKIT_GTK
 
-else
 SUBDIRS = unix
 
 if GDICT_BUILTIN
