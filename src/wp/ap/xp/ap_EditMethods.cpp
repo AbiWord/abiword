@@ -2708,6 +2708,8 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 		return false;
 	}
 
+	g_free(pNewFile);
+
 	// ignore all of this stuff
 	if (!overwriteName)
 		return bOK;
@@ -2715,7 +2717,6 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	// update the MRU list
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
-	g_free(pNewFile);
 
 	if (pFrame->getViewNumber() > 0)
 	{
