@@ -275,7 +275,19 @@ UT_Error IE_Exp_OpenXML::startText(int target)
  */
 UT_Error IE_Exp_OpenXML::writeText(int target, const char* text)
 {
-	UT_UTF8String sEscText = text;
+	UT_UTF8String sEscText = "";
+
+	while(text && *text)
+	{
+		// ignore invalid XML characters
+		if((*text >= 0x20 && *text != 0x7f) || (*text == '\n' || *text == '\r' || *text == '\t'))
+			sEscText += *text;
+
+		// TODO: column breaks and page breaks are being discarded due to the above check
+
+		text++;
+	}
+
 	sEscText.escapeXML();
 
 	return writeTargetStream(target, sEscText.utf8_str());
