@@ -1147,7 +1147,7 @@ try
 		for(UT_uint32 i = 0;i<pMyWin32App->m_vecFrames.getItemCount();i++)
 		{
 			AP_Win32Frame * curFrame = (AP_Win32Frame*)pMyWin32App->m_vecFrames[i];
-			UT_return_val_if_fail (curFrame, 1);
+			UT_continue_if_fail(curFrame);
 		
 			HWND hwnd = curFrame->getTopLevelWindow();
 			ShowWindow(hwnd, iCmdShow);
@@ -1229,7 +1229,7 @@ catch (...)
 	for(;i<pApp->m_vecFrames.getItemCount();i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
-		UT_return_val_if_fail (curFrame,1);
+		UT_continue_if_fail(curFrame);
 
 		// again, we want to catch any exception thrown while saving individual documents,
 		// in order to run through the whole loop
