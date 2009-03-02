@@ -48,6 +48,7 @@
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
 #include <pango/pangoxft.h>
+#include <pango/pangofc-fontmap.h>
 
 #ifdef HAVE_PANGOFT2
   #include <pango/pangoft2.h>
@@ -328,8 +329,12 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
-	g_object_unref(m_pLayoutFontMap);
 	g_object_unref(m_pLayoutContext);
+	if(m_pLayoutFontMap) {
+		// see bug http://bugzilla.gnome.org/show_bug.cgi?id=143542
+		pango_fc_font_map_cache_clear((PangoFcFontMap*)m_pLayoutFontMap);
+		g_object_unref(m_pLayoutFontMap);
+	}
 
 	if (m_pXftDraw)
 		g_free(m_pXftDraw);
