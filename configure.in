@@ -460,7 +460,6 @@ fi
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 dnl specific gtk214 test.
 if test "$TOOLKIT" == "gtk"; then
-        DEPS_CFLAGS="$DEPS_CFLAGS -DGTK_DISABLE_DEPRECATED"
 	PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 
                  [abi_cv_gtk214=no])
 	if test "$abi_cv_gtk214" == "yes" ; then
