@@ -109,8 +109,10 @@ UT_uint32 AP_Frame::getZoomPercentage(void)
 {
 	// !m_pData can happen when calling dlgZoom from AbiCommand; 
 	// !m_pG can happen when called from an uninitialized abiwidget
-	UT_return_val_if_fail(m_pData && static_cast<AP_FrameData*>(m_pData)->m_pG, 100); // 100 seems like the sanest default
-	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
+	if(m_pData && static_cast<AP_FrameData*>(m_pData)->m_pG)
+		return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
+
+	return 100; // 100 seems like the sanest default
 }
 
 AP_Frame::~AP_Frame()
