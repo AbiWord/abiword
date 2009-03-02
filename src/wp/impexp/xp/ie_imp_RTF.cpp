@@ -7520,6 +7520,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pLevel->m_pCharProps = pChars;
 	pLevel->m_pbParaProps = pbParas;
 	pLevel->m_pbCharProps = pbChars;
+	delete pList->m_RTF_level[levelCount];
 	pList->m_RTF_level[levelCount] = pLevel;
 #if 0 // Sevior use this!! The other method can lead to inccorect results upon
 	// import. If we export RTF list ID starting at 10000 they might clash
