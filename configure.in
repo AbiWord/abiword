@@ -166,7 +166,7 @@ AC_ARG_ENABLE([builtin-plugins],
 ])
 
 AC_ARG_ENABLE([menubutton], 
-	[AS_HELP_STRING([--enable-menubutton], [(gtk only) menu-button instead of menu-bar])], 
+	[AS_HELP_STRING([--enable-menubutton], [(Gtk+ only) menu-button instead of menu-bar])], 
 [
 	abi_cv_menubutton="$enableval"
 ],[
@@ -174,7 +174,7 @@ AC_ARG_ENABLE([menubutton],
 ])
 
 AC_ARG_ENABLE([print], 
-	[AS_HELP_STRING([--disable-print], [(gtk only) do not include printing support])], 
+	[AS_HELP_STRING([--disable-print], [(Gtk+ only) do not include printing support])], 
 [
 	abi_cv_print="$enableval"
 ],[
@@ -187,7 +187,7 @@ if test "$abi_cv_print" == "yes" &&
 fi
 
 AC_ARG_ENABLE([spell], 
-	[AS_HELP_STRING([--disable-spell], [(gtk only) do not include spell checking support])], 
+	[AS_HELP_STRING([--disable-spell], [(Gtk+ only) do not include spell checking support])], 
 [
 	abi_cv_spell="$enableval"
 ],[
@@ -209,7 +209,7 @@ if test "$abi_cv_spell" == "yes"; then
 fi
 
 AC_ARG_ENABLE([statusbar], 
-	[AS_HELP_STRING([--disable-statusbar], [(gtk only) do not include status bar])], 
+	[AS_HELP_STRING([--disable-statusbar], [(Gtk+ only) do not include status bar])], 
 [
 	abi_cv_statusbar="$enableval"
 ],[
@@ -245,7 +245,7 @@ AC_DEFINE([EMBEDDED_TARGET_HILDON],  [2], [Hildon embedded platform])
 AC_DEFINE([EMBEDDED_TARGET_POKY],    [3], [Poky embedded platform])
 
 AC_ARG_ENABLE([embedded],
-	[AS_HELP_STRING([--enable-embedded], [=generic|hildon|poky, (gtk only), build for embedded platform])],
+	[AS_HELP_STRING([--enable-embedded], [=generic|hildon|poky, (Gtk+ only), build for embedded platform])],
 [
 	abi_cv_embedded_platform="$enableval"
 	case "$enableval" in
@@ -287,7 +287,7 @@ AC_ARG_ENABLE([debug],
 #
 
 AC_ARG_WITH([gnomevfs], 
-	[AS_HELP_STRING([--with-gnomevfs], [(gtk only) use gnome-vfs library])], 
+	[AS_HELP_STRING([--with-gnomevfs], [(Gtk+ only) use gnome-vfs library])], 
 [
 	abi_cv_gnomevfs="$withval"
 ],[
@@ -327,7 +327,7 @@ if test "$abi_cv_gio" == "yes"; then
 fi
 
 AC_ARG_WITH([goffice], 
-	[AS_HELP_STRING([--with-goffice], [(gtk only) use goffice library])], 
+	[AS_HELP_STRING([--with-goffice], [(Gtk+ only) use goffice library])], 
 [
 	abi_cv_goffice="$withval"
 ],[
@@ -355,7 +355,7 @@ else
 fi
 
 AC_ARG_WITH([gucharmap], 
-	[AS_HELP_STRING([--with-gucharmap], [(gtk only) use gucharmap library])], 
+	[AS_HELP_STRING([--with-gucharmap], [(Gtk+ only) use gucharmap library])], 
 [
 	abi_cv_gucharmap="$withval"
 ],[
@@ -376,14 +376,19 @@ if test "$abi_cv_gucharmap" == "yes"; then
 	opt_pkgs="$opt_pkgs $gucharmap_req"
 fi
 
-AC_ARG_WITH(darwinports,[  --with-darwinports     add /opt/local/... to CPP/LDFLAGS (Mac OSX)],[
+AC_ARG_WITH([darwinports],
+	[AS_HELP_STRING([--with-darwinports], [(Mac OSX only) add `/opt/local' prefix to CPP/LDFLAGS])], 
+[
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/opt/local/include"
                 LDFLAGS="$LDFLAGS -L/opt/local/lib"
 		CC=g++
         fi
 ])
-AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
+
+AC_ARG_WITH([fink],
+	[AS_HELP_STRING([--with-fink], [(Mac OSX only) add `/sw' prefix to CPP/LDFLAGS])], 
+[
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/sw/include"
                 LDFLAGS="$LDFLAGS -L/sw/lib"
