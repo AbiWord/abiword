@@ -324,7 +324,7 @@ void AP_UnixFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
   {
     UT_DEBUGMSG(("Hiding Menu \n"));
     gtk_widget_hide(m_pUnixMenu->getMenuBar());
-    UT_DEBUGMSG(("Hiding scrollbar %x \n"));
+    UT_DEBUGMSG(("Hiding scrollbar \n"));
     gtk_widget_hide(m_vScroll);
   }
   else
