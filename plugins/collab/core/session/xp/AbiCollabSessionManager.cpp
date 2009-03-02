@@ -20,6 +20,10 @@
  * 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_App.h"
@@ -1385,15 +1389,19 @@ void AbiCollabSessionManager::_deleteAccount(AccountHandler* pHandler)
 
 void AbiCollabSessionManager::_nullUpdate()
 {
-#ifdef WIN32
+#if defined(TOOLKIT_WIN32)
 		MSG msg;
 		for (UT_sint32 i = 0 ; i < 10 ; i++ )
 			if (PeekMessage(&msg, (HWND) NULL, 0, 0, PM_REMOVE))
 				DispatchMessage(&msg);
 		Sleep(10);
-#else
+#elif defined(TOOLKIT_GTK)
 		for (UT_sint32 i = 0; (i < 10) && gtk_events_pending(); i++)
 			gtk_main_iteration ();
 		usleep(1000*10);
+#elif defined(TOOLKIT_COCOA)
+#warning _nullUpdate needs implementation for Cocoa
+#else 
+#error unknown platform
 #endif	
 }
