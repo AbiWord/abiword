@@ -284,8 +284,8 @@ combo_box_set_active_text (GtkComboBox *combo,
 		g_signal_handler_block (G_OBJECT (combo), handler_id);
 		prelight_handler_id = 0;
 		if (ABI_IS_FONT_COMBO (combo)) {
-				prelight_handler_id = * (gulong *) g_object_get_data (G_OBJECT (combo), PROP_HANDLER_ID);
-				g_signal_handler_block (G_OBJECT (combo), prelight_handler_id);
+			prelight_handler_id = GPOINTER_TO_UINT(g_object_get_data (G_OBJECT (combo), PROP_HANDLER_ID));
+			g_signal_handler_block (G_OBJECT (combo), prelight_handler_id);
 		}
 
 		gtk_combo_box_set_active_iter (combo, &iter);
@@ -298,7 +298,7 @@ combo_box_set_active_text (GtkComboBox *combo,
 	else if (ABI_IS_FONT_COMBO (combo)) {
 		// special case font combo, non existant entries are added
 		g_signal_handler_block (G_OBJECT (combo), handler_id);
-		prelight_handler_id = * (gulong *) g_object_get_data (G_OBJECT (combo), PROP_HANDLER_ID);
+		prelight_handler_id = GPOINTER_TO_UINT(g_object_get_data (G_OBJECT (combo), PROP_HANDLER_ID));
 		g_signal_handler_block (G_OBJECT (combo), prelight_handler_id);
 
 		abi_font_combo_insert_font (ABI_FONT_COMBO (combo), text, TRUE);
@@ -585,6 +585,9 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp 	*pUnixApp,
 EV_UnixToolbar::~EV_UnixToolbar(void)
 {
 	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
+	if(m_wVSizeGroup) {
+		g_object_unref(m_wVSizeGroup);
+	}
 	_releaseListener();
 }
 
@@ -787,6 +790,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
+	g_object_ref(m_wVSizeGroup);
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
@@ -870,7 +874,10 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				setDragIcon(wwd, (GtkImage*)gtk_image_new_from_stock(ABIWORD_INSERT_TABLE, GTK_ICON_SIZE_DND));
+				GtkImage * dragimage = (GtkImage*)gtk_image_new_from_stock(ABIWORD_INSERT_TABLE, GTK_ICON_SIZE_DND);
+				g_object_ref_sink(dragimage);
+				setDragIcon(wwd, dragimage);  // does not take ownership
+				g_object_unref(dragimage);
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -902,7 +909,10 @@ bool EV_UnixToolbar::synthesize(void)
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				gchar *stock_id = abi_stock_from_toolbar_id(pLabel->getIconName());
-				setDragIcon(wwd, (GtkImage*)gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_DND));
+				GtkImage *dragimage = (GtkImage*)gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_DND);
+				g_object_ref_sink(dragimage);
+				setDragIcon(wwd, dragimage); // does not take dragimage ownership
+				g_object_unref(dragimage);
 				g_free (stock_id);
 				stock_id = NULL;
 				gtk_drag_dest_set(wwd,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
@@ -938,10 +948,10 @@ bool EV_UnixToolbar::synthesize(void)
 					proxy_action_name = "dlgFont";
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-					gulong *handler_id = new gulong;
+					gulong handler_id;
 					combo = abi_font_combo_new ();
 					gtk_widget_set_name (combo, "AbiFontCombo");
-					*handler_id = g_signal_connect (G_OBJECT(combo), "prelight", 
+					handler_id = g_signal_connect (G_OBJECT(combo), "prelight", 
 												    G_CALLBACK(_wd::s_font_prelight), 
 												    wd);
 					g_signal_connect (G_OBJECT(combo), "popup-opened", 
@@ -950,7 +960,8 @@ bool EV_UnixToolbar::synthesize(void)
 					g_signal_connect (G_OBJECT(combo), "popup-closed", 
 									  G_CALLBACK(_wd::s_font_popup_closed), 
 									  wd);
-					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID, handler_id);
+					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID,
+									   GUINT_TO_POINTER(handler_id));
 					// same size for font and font-size combos
 					// gtk_widget_set_size_request (combo, 0, -1);
 					// gtk_size_group_add_widget (m_wHSizeGroup, combo);

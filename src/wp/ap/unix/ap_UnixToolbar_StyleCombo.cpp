@@ -178,6 +178,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 			m_vecContents.addItem((const char *)list->data);
 
 		} while (NULL != (list = g_slist_next(list)));
+		g_slist_free(list);
 	}		
 
 	return true;
