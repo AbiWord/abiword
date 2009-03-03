@@ -943,11 +943,16 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		goto cleanup;
 
 	case TT_PRE:
+	{
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
-		requireBlock ();
+
+		const gchar * style = _getXMLPropValue ("style", atts);
+		newBlock ("Plain Text", style, NULL);
+
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
 		goto cleanup;
+	}
 
 	case TT_H1:
 	case TT_H2:
