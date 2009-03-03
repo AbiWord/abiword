@@ -174,7 +174,7 @@ void AP_CocoaDialog_Paragraph::event_CheckToggled(id sender)
 
 	int state = [sender state];
 
-	tCheckState cs;
+	tCheckState cs = check_FALSE;
 
 	switch (state) {
 	case NSOnState:
@@ -359,8 +359,7 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 
 - (id) initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Paragraph"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Paragraph"];
 }
 
 - (void)setXAPOwner:(XAP_Dialog*)owner
@@ -452,16 +451,19 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)tabAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Tabs();
 }
 

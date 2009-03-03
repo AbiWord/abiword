@@ -540,7 +540,7 @@ const XAP_StringSet * AP_CocoaApp::getStringSet(void) const
   server (well sorta) all at one time.
   \param pDocRange a range of the document to be copied
 */
-void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
+void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/)
 {
 
     UT_ByteBuf bufRTF;
@@ -596,7 +596,7 @@ static const char * aszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_R
   that is present.  try to get the content in the order listed.
 */
 // FIXME: this code is butt ugly.
-void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard,
+void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/,
 									bool bHonorFormatting)
 {
     const char * szFormatFound = NULL;
@@ -1119,7 +1119,7 @@ static int s_signal_count = 0;
   call abort, so we still get a core dump that we can debug.
   \param sig_num the integer representing which signal we recieved
 */
-void AP_CocoaApp::catchSignals(int sig_num)
+void AP_CocoaApp::catchSignals(int /*sig_num*/)
 {
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)
@@ -1135,7 +1135,7 @@ void AP_CocoaApp::catchSignals(int sig_num)
     
     UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 	
-    UT_uint32 i = 0;
+    UT_sint32 i = 0;
 	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {

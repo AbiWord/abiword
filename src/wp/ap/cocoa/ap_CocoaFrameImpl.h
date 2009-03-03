@@ -96,7 +96,7 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	virtual XAP_CocoaFrameController *_createController();
 	virtual	void	_createDocView(GR_Graphics* &pG);
 
-	virtual void _hideMenuScroll(bool bHideMenuScroll) { UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); }
+	virtual void _hideMenuScroll(bool /*bHideMenuScroll*/) { UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); }
 
 	void giveFocus();
 private:

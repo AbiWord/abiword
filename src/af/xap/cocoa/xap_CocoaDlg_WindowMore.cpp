@@ -154,7 +154,7 @@ void XAP_CocoaDialog_WindowMore::_populateWindowData(void)
 	// We just do one thing here, which is fill the list with
 	// all the windows.
 
-	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
+	for (UT_sint32 i = 0; i < m_pApp->getFrameCount(); i++)
 	{
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_ASSERT(f);

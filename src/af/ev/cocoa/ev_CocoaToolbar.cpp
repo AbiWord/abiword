@@ -87,11 +87,13 @@
 
 - (IBAction)aColor_FG:(id)sender
 {
+	UT_UNUSED(sender);
 	[self setColor:AP_TOOLBAR_ID_COLOR_FORE];
 }
 
 - (IBAction)aColor_BG:(id)sender
 {
+	UT_UNUSED(sender);
 	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
 }
 
@@ -380,7 +382,7 @@ UT_sint32 EV_CocoaToolbar::destroy(void)
  * This method rebuilds the toolbar and places it in the position it previously
  * occupied.
  */
-void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
+void EV_CocoaToolbar::rebuildToolbar(UT_sint32 /*oldpos*/)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
@@ -407,6 +409,7 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 
 - (void)drawRect:(NSRect)aRect
 {
+	UT_UNUSED(aRect);
 	[[NSColor lightGrayColor] set];
 
 	[NSBezierPath strokeRect:[self frame]];

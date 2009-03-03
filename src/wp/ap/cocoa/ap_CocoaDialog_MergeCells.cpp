@@ -41,7 +41,7 @@ AP_CocoaDialog_MergeCells::~AP_CocoaDialog_MergeCells(void)
 	// 
 }
 
-void AP_CocoaDialog_MergeCells::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_MergeCells::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_MergeCellsController alloc] initFromNib];
 
@@ -83,7 +83,7 @@ void AP_CocoaDialog_MergeCells::activate(void)
 	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_MergeCells::notifyActiveFrame(XAP_Frame * pFrame)
+void AP_CocoaDialog_MergeCells::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	setAllSensitivities();
 }
@@ -104,10 +104,11 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
-		{
-			_xap = 0;
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
+	{
+		return nil;
+	}
+	_xap = NULL;
 	return self;
 }
 
@@ -149,29 +150,34 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	_xap->event_Close();
 }
 
 - (IBAction)mergeAbove:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setMergeType(AP_Dialog_MergeCells::radio_above);
 	_xap->onMerge();
 }
 
 - (IBAction)mergeBelow:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setMergeType(AP_Dialog_MergeCells::radio_below);
 	_xap->onMerge();
 }
 
 - (IBAction)mergeLeft:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setMergeType(AP_Dialog_MergeCells::radio_left);
 	_xap->onMerge();
 }
 
 - (IBAction)mergeRight:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setMergeType(AP_Dialog_MergeCells::radio_right);
 	_xap->onMerge();
 }

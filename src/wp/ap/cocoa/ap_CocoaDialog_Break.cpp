@@ -58,7 +58,7 @@ AP_CocoaDialog_Break::~AP_CocoaDialog_Break(void)
 
 /*****************************************************************/
 
-void AP_CocoaDialog_Break::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Break::runModal(XAP_Frame * /*pFrame*/)
 {
 	// Build the window's widgets and arrange them
 	m_dlg = [[AP_CocoaDialog_BreakController alloc] initFromNib];	// autoreleased
@@ -93,10 +93,10 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Break"])
-	{
-		m_xap = 0;
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_Break"]) {
+		return nil;
 	}
+	m_xap = NULL;
 	return self;
 }
 
@@ -108,7 +108,7 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (void)discardXAP
 {
-	m_xap = nil;
+	m_xap = NULL;
 }
 
 - (void)windowDidLoad
@@ -130,6 +130,7 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_ASSERT(m_xap);
 	m_xap->_setAnswer(AP_Dialog_Break::a_CANCEL);
 	[NSApp stopModal];
@@ -137,6 +138,7 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_ASSERT(m_xap);
 
 	AP_Dialog_Break::breakType type = AP_Dialog_Break::b_PAGE;
@@ -182,6 +184,7 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (IBAction)insertAction:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self _updateButtonsState];
 }
 

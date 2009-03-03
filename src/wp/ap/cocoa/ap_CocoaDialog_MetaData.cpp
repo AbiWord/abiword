@@ -128,8 +128,7 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_MetaData"];	
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_MetaData"];	
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
@@ -170,12 +169,14 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 
 - (IBAction)cancelBtnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->cancelAction();
 }
 
 
 - (IBAction)okBtnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->okAction();
 }
 

@@ -71,7 +71,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	
     // HACK: I need more speed
-	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 
+	virtual void      drawGlyph(UT_uint32 /*glyph_idx*/, UT_sint32 /*xoff*/, UT_sint32 /*yoff*/) 
 		{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,

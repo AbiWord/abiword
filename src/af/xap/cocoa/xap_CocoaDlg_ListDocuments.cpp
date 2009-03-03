@@ -112,7 +112,7 @@ void XAP_CocoaDialog_ListDocuments::_populateWindowData(void)
 }
 
 
-void XAP_CocoaDialog_ListDocuments::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_ListDocuments::runModal(XAP_Frame * /*pFrame*/)
 {
 	NSWindow* window;
 	m_dlg = [XAP_GenericListChooser_Controller loadFromNib];

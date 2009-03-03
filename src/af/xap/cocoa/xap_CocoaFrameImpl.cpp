@@ -470,7 +470,7 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 
 /*****************************************************************/
 bool XAP_CocoaFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
-										   UT_sint32 x, UT_sint32 y)
+										   UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	bool bResult = true;
 
@@ -553,6 +553,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (BOOL)windowShouldClose:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_DEBUGMSG (("shouldCloseDocument\n"));
 	UT_ASSERT (m_frame);
 	XAP_App * pApp = XAP_App::getApp();
@@ -606,6 +607,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	UT_DEBUGMSG(("windowDidBecomeKey: '%s'\n", [[[self window] title] UTF8String]));
 
 	XAP_Frame * pFrame = m_frame->getFrame ();
@@ -620,6 +622,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidExpose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	UT_DEBUGMSG(("windowDidExpose:\n"));
 //	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
 //			object:self];
@@ -627,6 +630,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidResignKey:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	UT_DEBUGMSG(("windowDidResignKey: '%s'\n", [[[self window] title] UTF8String]));
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
@@ -650,8 +654,10 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 - (id)initWith:(XAP_CocoaFrameImpl *)frame
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaFrameController initWith:frame\n"));
+	if(![self initWithWindowNibName:frame->_getNibName()]) {	/* this one will make the call to [super init]  */
+		return nil;
+	}
 	m_frame = frame;
-	[self initWithWindowNibName:frame->_getNibName()];	/* this one will make the call to [super init]  */
 	[[self window] setAcceptsMouseMovedEvents:YES];		/* can't we set that from IB (FIXME) */
 	[[self window] makeFirstResponder:self];
 	return self;

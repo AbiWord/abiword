@@ -84,8 +84,8 @@ bool XAP_CocoaModule::load (const char * name)
 			/* This is an ordinary plugin.
 			 */
 			m_bLoaded = false;
-
-			if (m_module = g_module_open(name, G_MODULE_BIND_LAZY))
+			m_module = g_module_open(name, G_MODULE_BIND_LAZY);
+			if (m_module)
 			{
 				m_bLoaded = true;
 				UT_DEBUGMSG(("FJF: plugin loaded: \"%s\"\n", m_module_path.utf8_str()));

@@ -57,7 +57,7 @@ XAP_CocoaDialog_DocComparison::~XAP_CocoaDialog_DocComparison(void)
 {
 }
 
-void XAP_CocoaDialog_DocComparison::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_DocComparison::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_DocComparisonController alloc] initFromNib];
 	
@@ -124,6 +124,7 @@ void XAP_CocoaDialog_DocComparison::_populateWindowData(void)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[NSApp stopModal];
 }
 

@@ -53,7 +53,7 @@ XAP_CocoaDialog_Language::~XAP_CocoaDialog_Language(void)
 	// 
 }
 
-void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Language::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_Language_Controller alloc] initFromNib];
 
@@ -90,22 +90,21 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_Language"])
-		{
-			_xap = 0;
+	if (![super initWithWindowNibName:@"xap_CocoaDlg_Language"]) {
+		return nil;
+	}
+	_xap = 0;
 
-			m_Selection = 0;
-			m_SelectionIndex = -1;
+	m_Selection = 0;
+	m_SelectionIndex = -1;
 
-			m_bApplyToDocument = NO;
+	m_bApplyToDocument = NO;
 
-			m_Languages = [[NSMutableArray alloc] initWithCapacity:100];
-			if (!m_Languages)
-				{
-					[self release];
-					self = nil;
-				}
-		}
+	m_Languages = [[NSMutableArray alloc] initWithCapacity:100];
+	if (!m_Languages) {
+		[self release];
+		return nil;
+	}
 	return self;
 }
 
@@ -209,6 +208,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aCancel:(id)sender
 {
+	UT_UNUSED(sender);
 	if (m_Selection)
 		{
 			[m_Selection release];
@@ -221,6 +221,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aOK:(id)sender
 {
+	UT_UNUSED(sender);
 	m_bApplyToDocument = ([oDocumentDefault state] == NSOnState) ? YES : NO;
 
 	[NSApp stopModal];
@@ -228,6 +229,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aLanguageTable:(id)sender
 {
+	UT_UNUSED(sender);
 	if (m_Selection)
 		{
 			[m_Selection release];
@@ -253,11 +255,14 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
  */
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	UT_UNUSED(aTableView);
 	return (int) [m_Languages count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
 	return [m_Languages objectAtIndex:((unsigned) rowIndex)];
 }
 
@@ -265,11 +270,17 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
  */
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aCell);
+	UT_UNUSED(aTableColumn);
+	UT_UNUSED(rowIndex);
 	// 
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(rowIndex);
 	return YES;
 }
 

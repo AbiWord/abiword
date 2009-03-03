@@ -51,11 +51,13 @@
 
 - (NSRect)rectForPage:(int)page
 {
+	UT_UNUSED(page);
 	return [self bounds];
 }
 
 - (void)drawRect:(NSRect)rect 
 {
+	UT_UNUSED(rect);
     // Drawing code here.
 	if ([NSGraphicsContext currentContextDrawingToScreen]) {
 		UT_ASSERT_NOT_REACHED();		

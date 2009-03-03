@@ -41,7 +41,7 @@ AP_CocoaDialog_SplitCells::~AP_CocoaDialog_SplitCells(void)
 	// 
 }
 
-void AP_CocoaDialog_SplitCells::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_SplitCells::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_SplitCellsController alloc] initFromNib];
 
@@ -82,7 +82,7 @@ void AP_CocoaDialog_SplitCells::activate(void)
 	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_SplitCells::notifyActiveFrame(XAP_Frame */*pFrame*/)
 {
 	setAllSensitivities();
 }
@@ -102,10 +102,10 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_SplitCells"])
-		{
-			_xap = 0;
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_SplitCells"]) {
+		return nil;
+	}
+	_xap = NULL;
 	return self;
 }
 
@@ -151,41 +151,48 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	_xap->event_Close();
 }
 
 - (IBAction)splitLeft:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(hori_left);
 	_xap->onSplit();
 }
 
 - (IBAction)splitMiddleH:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(hori_mid);
 	_xap->onSplit();
 }
 
 - (IBAction)splitRight:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(hori_right);
 	_xap->onSplit();
 }
 
 - (IBAction)splitTop:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(vert_above);
 	_xap->onSplit();
 }
 
 - (IBAction)splitMiddleV:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(vert_mid);
 	_xap->onSplit();
 }
 
 - (IBAction)splitBottom:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setSplitType(vert_below);
 	_xap->onSplit();
 }

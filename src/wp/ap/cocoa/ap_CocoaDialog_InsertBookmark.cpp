@@ -59,7 +59,7 @@ AP_CocoaDialog_InsertBookmark::~AP_CocoaDialog_InsertBookmark(void)
 }
 
 /*****************************************************************/
-void AP_CocoaDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_InsertBookmark::runModal(XAP_Frame * /*pFrame*/)
 {
 
 	m_dlg = [[AP_CocoaDialog_InsertBookmarkController alloc] initFromNib];
@@ -104,7 +104,9 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertBookmark"];
+	if(![super initWithWindowNibName:@"ap_CocoaDialog_InsertBookmark"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -131,7 +133,7 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 		LocalizeControl(_addBtn, pSS, XAP_STRING_ID_DLG_OK);
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_bookmarkLabel, pSS, AP_STRING_ID_DLG_InsertBookmark_Msg);
-		for(UT_uint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
+		for(UT_sint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
 			[_bookmarkCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
 		}
 		[_bookmarkCombo selectItemWithObjectValue:[NSString stringWithUTF8String:_xap->getBookmark()]];
@@ -146,11 +148,13 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 
 - (IBAction)addBtn:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)cancelBtn:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 

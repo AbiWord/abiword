@@ -210,8 +210,7 @@ void AP_CocoaDialog_FormatFootnotes::event_EndRestartSection(NSButton* widget)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatFootnotes"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_FormatFootnotes"];
 }
 
 -(void)discardXAP
@@ -278,6 +277,7 @@ static void _fillPopupWithFootnoteTypeDesc(NSPopUpButton* menu, const FootnoteTy
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
@@ -303,6 +303,7 @@ static void _fillPopupWithFootnoteTypeDesc(NSPopUpButton* menu, const FootnoteTy
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 

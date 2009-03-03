@@ -38,6 +38,194 @@ class AP_CocoaDialog_Options;
 
 @class AP_CocoaDialog_OptionsController;
 
+// I have no clue what the AP_PreferenceScheme and AP_PreferenceSchemeManager are for -- hub
+// But they are moved out of the XP code.
+
+/* AP_PreferenceScheme AP_PreferenceSchemeManager are helper classes for the Options dialog.
+ */
+class AP_PreferenceSchemeManager;
+
+class ABI_EXPORT AP_PreferenceScheme
+{
+private:
+	struct BoolOptionData
+	{
+		bool	m_default;	// Default value for option from _builtin_ scheme
+		bool	m_original;	// This scheme's original value
+		bool	m_current;	// New value for this scheme specified by user
+		bool	m_editable;	// Whether the user can change the value (possibly unused)
+	};
+	struct IntOptionData
+	{
+		UT_sint32	m_default;	// Default value for option from _builtin_ scheme
+		UT_sint32	m_original;	// This scheme's original value
+		UT_sint32	m_current;	// New value for this scheme specified by user
+		bool		m_editable;	// Whether the user can change the value (possibly unused)
+	};
+	struct StringOptionData
+	{
+		const char *	m_default;	// Default value for option from _builtin_ scheme
+		const char *	m_original;	// This scheme's original value
+		const char *	m_current;	// New value for this scheme specified by user
+		bool			m_editable;	// Whether the user can change the value (possibly unused)
+	};
+public:
+	enum BoolOption
+		{
+			bo_AutoSave = 0,
+			bo_CheckSpelling,
+			bo_CursorBlink,
+			bo_DirectionMarkers,
+			bo_DirectionRTL,
+			bo_GlyphSaveVisual,
+			bo_GlyphShaping,
+			bo_HighlightMisspelled,	// NOT (YET?) IMPLEMENTED
+			bo_IgnoreNumbered,
+			bo_IgnoreUppercase,
+			bo_IgnoreURLs,
+			bo_CheckGrammar,
+			bo_SmartQuotes,
+			bo_CustomSmartQuotes,
+			bo_LayoutMarks,
+			bo_MainDictionaryOnly,	// NOT (YET?) IMPLEMENTED
+			bo_Plugins,
+			bo_Ruler,
+			bo_SaveScheme,			// NOT (YET?) IMPLEMENTED
+			bo_ScreenColor,
+			bo_StatusBar,
+			bo_SuggestCorrections,	// NOT (YET?) IMPLEMENTED
+			bo_ToolbarExtra,
+			bo_ToolbarFormat,
+			bo_ToolbarStandard,
+			bo_ToolbarTable,
+			bo_ViewAll,				// NOT (YET?) IMPLEMENTED
+			bo_ViewHidden,			// NOT (YET?) IMPLEMENTED
+			bo__count
+		};
+
+	AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeManager, XAP_PrefsScheme * pPrefsScheme);
+
+	~AP_PreferenceScheme();
+
+	bool getBoolOptionValue(BoolOption bo, bool & bIsEditable)
+	{
+		bool bCurrentValue = false;
+
+		if (bo < bo__count)
+			{
+				bCurrentValue = m_BOData[bo].m_current;
+				bIsEditable   = m_BOData[bo].m_editable;
+			}
+		else
+			{
+				bIsEditable = false;
+			}
+		return bCurrentValue;
+	}
+	void			setBoolOptionValue(BoolOption bo, bool bNewValue);
+
+	bool			currentIsDefaults() const	{ return m_bCurrentIsDefaults; }
+	bool			currentIsOriginal() const	{ return m_bCurrentIsOriginal; }
+
+	void			restoreDefaults();	// sets current values to the default
+	void			saveChanges();		// saves any changes to the scheme
+	void			applySettings();	// update the interface to match the current settings
+
+	/* This imposes a range check on the data, so that minutes is an integer between 1 and 60 inclusive;
+	 * all functions return the (new) current value.
+	 */
+	const char *	getAutoSaveMinutes() const { return m_szAutoSaveMinutes; }
+	const char *	setAutoSaveMinutes(const char * szAutoSaveMinutes);
+	const char *	incrementAutoSaveMinutes();
+	const char *	decrementAutoSaveMinutes();
+
+	const char *	getAutoSaveExtension() const { return m_soAutoSaveExtension.m_current; }
+	const char *	setAutoSaveExtension(const char * szAutoSaveExtension);
+
+	UT_uint32		getUILangIndex() const { return static_cast<UT_uint32>(m_ioUILangIndex.m_current); }
+	UT_uint32		setUILangIndex(UT_uint32 index);
+
+	UT_uint32		getUnitsIndex() const { return static_cast<UT_uint32>(m_ioUnitsIndex.m_current); }
+	UT_uint32		setUnitsIndex(UT_uint32 index);
+
+private:
+	void	lookupDefaultOptionValues();
+	void	sync();
+
+	AP_PreferenceSchemeManager *	m_pSchemeManager;
+
+	XAP_PrefsScheme *				m_pPrefsScheme;
+
+	bool							m_bCurrentIsDefaults;
+	bool							m_bCurrentIsOriginal;
+
+	IntOptionData					m_ioAutoSaveMinutes;
+	char							m_szAutoSaveMinutes[8];
+
+	StringOptionData				m_soAutoSaveExtension;
+
+	IntOptionData					m_ioUILangIndex;
+	IntOptionData					m_ioUnitsIndex;
+
+	struct BoolOptionData			m_BOData[bo__count];
+};
+
+class ABI_EXPORT AP_PreferenceSchemeManager
+{
+private:
+	AP_PreferenceSchemeManager();
+public:
+	~AP_PreferenceSchemeManager();
+
+	static AP_PreferenceSchemeManager *		create_manager();
+
+	AP_PreferenceScheme *	getCurrentScheme() const { return m_pCurrentScheme; }
+
+	bool					haveUnsavedChanges() const { return m_bHaveUnsavedChanges; }
+	void					updateUnsavedChanges(bool bCallerHasUnsavedChanges = false);
+
+	// TODO
+
+	const gchar * getNthLanguage(UT_uint32 n) const
+	{
+		return ((n + 1) < m_LanguageCount) ? m_ppLanguage[n+1] : 0;
+	}
+	const gchar * getNthLanguageCode(UT_uint32 n) const
+	{
+		return ((n + 1) < m_LanguageCount) ? m_ppLanguageCode[n+1] : 0;
+	}
+	UT_uint32				getLanguageCount() const { return (m_LanguageCount - 1); }
+	UT_uint32				getLanguageIndex(const gchar * szLanguageCode) const;
+
+	const char * getPopUp_NthUnits(UT_uint32 n) const
+	{
+		return ((n < m_PopUp_UnitsCount) ? m_PopUp_UnitsList[n] : 0);
+	}
+	UT_uint32				getPopUp_UnitsCount() const { return m_PopUp_UnitsCount; }
+	UT_uint32				getPopUp_UnitsIndex(const gchar * szUnits) const;
+
+	static const gchar *	reverseTranslate(const char * PopUp_Units);
+
+private:
+	void					_constructLanguageArrays();
+	void					_constructPopUpArrays();
+
+	bool										m_bHaveUnsavedChanges;
+
+	AP_PreferenceScheme *						m_pCurrentScheme;
+
+	UT_GenericVector<AP_PreferenceScheme *>		m_vecSchemes;
+
+	UT_Language									m_LanguageTable;
+	UT_uint32									m_LanguageCount;
+	const gchar **							m_ppLanguage;
+	const gchar **							m_ppLanguageCode;
+
+	UT_uint32									m_PopUp_UnitsCount;
+	char *										m_PopUp_UnitsList[4];
+};
+
+
 enum AP_CocoaDialog_SchemesButton_ID
 	{
 		CDS_Button_Close = 0,

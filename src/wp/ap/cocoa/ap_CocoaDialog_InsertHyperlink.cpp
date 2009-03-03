@@ -59,7 +59,7 @@ AP_CocoaDialog_InsertHyperlink::~AP_CocoaDialog_InsertHyperlink(void)
 
 
 /***********************************************************************/
-void AP_CocoaDialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_InsertHyperlink::runModal(XAP_Frame * /*pFrame*/)
 {
 
 	m_dlg = [[AP_CocoaDialog_InsertHyperlinkController alloc] initFromNib];
@@ -109,8 +109,7 @@ void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertHyperlink"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_InsertHyperlink"];
 }
 
 -(void)discardXAP
@@ -159,16 +158,19 @@ void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 
 - (IBAction)addBtn:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)cancelBtn:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)selectBtn:(id)sender
 {
+	UT_UNUSED(sender);
 	int row = [_bookmarkList selectedRow];
 	[_hyperlinkValue setStringValue:[[_datasource array] objectAtIndex:row]];
 }

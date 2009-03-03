@@ -101,7 +101,7 @@ void AP_CocoaDialog_PageSetup::runModal(XAP_Frame * pFrame)
 	m_pFrame = 0;
 }
 
-bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * ctrl, NSPrintInfo * printInfo)
+bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * /*ctrl*/, NSPrintInfo * printInfo)
 {
 	NSRect bounds = [printInfo imageablePageBounds];
 
@@ -248,6 +248,7 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * c
 
 - (IBAction)unitAction:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_Dimension mu = (UT_Dimension) [[_unitPopup selectedItem] tag];
 
 	float top    = [   _topMargin floatValue];

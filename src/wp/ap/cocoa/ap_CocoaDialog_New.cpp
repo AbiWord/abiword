@@ -182,7 +182,9 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_New"];
+	if(![super initWithWindowNibName:@"ap_CocoaDialog_New"]) {
+		return nil;
+	}
 	m_templates = [[NSMutableArray alloc] init];
 	return self;
 }
@@ -220,12 +222,12 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 	NSEnumerator* iter = [templateDirs objectEnumerator];
 	NSString * obj;
-	while (obj = [iter nextObject]) {
+	while ((obj = [iter nextObject])) {
 		NSArray* files = [[NSFileManager defaultManager] directoryContentsAtPath:obj];
 		if (files) {
 			NSEnumerator *iter2 = [files objectEnumerator];
 			NSString* obj2;
-			while (obj2 = [iter2 nextObject]) {
+			while ((obj2 = [iter2 nextObject])) {
 				NSRange range = [obj2 rangeOfString:@".awt" options:NSLiteralSearch];
 				if (range.location != NSNotFound) {
 					[_dataSource addString:obj2];
@@ -243,6 +245,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if ([_templateList selectedRow] < 0) // I don't think this happens
 		[self synchronizeGUI:_openBtn];
 	else
@@ -251,6 +254,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
@@ -261,11 +265,13 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (IBAction)chooseAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ToggleOpenExisting();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Ok();
 }
 

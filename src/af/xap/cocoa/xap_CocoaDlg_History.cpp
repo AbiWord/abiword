@@ -80,7 +80,7 @@ XAP_CocoaDialog_History::~XAP_CocoaDialog_History(void)
 {
 }
 
-void XAP_CocoaDialog_History::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_History::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_HistoryController alloc] initFromNib];
 	
@@ -232,16 +232,19 @@ void XAP_CocoaDialog_History::event_Cancel()
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)historySelect:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_uint32 item = [_historyList selectedRow];
 	_xap->setSelectionId(item);
 }

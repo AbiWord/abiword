@@ -57,10 +57,10 @@
 
 - (id)init
 {
-	if (self = [super init])
-		{
-			m_bPanelCanOrderOut = YES;
-		}
+	if (![super init]) {
+		return nil;
+	}
+	m_bPanelCanOrderOut = YES;
 	return self;
 }
 
@@ -88,10 +88,10 @@
 
 - (id)init
 {
-	if (self = [super init])
-		{
-			m_bPanelCanOrderOut = YES;
-		}
+	if (![super init]) {
+		return nil;
+	}
+	m_bPanelCanOrderOut = YES;
 	return self;
 }
 
@@ -107,10 +107,9 @@
 
 - (void)orderOut:(id)sender
 {
-	if ([self panelCanOrderOut])
-		{
-			[super orderOut:sender];
-		}
+	if ([self panelCanOrderOut]) {
+		[super orderOut:sender];
+	}
 }
 
 @end
@@ -122,11 +121,11 @@
 
 - (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap
 {
-	if (self = [super init])
-		{
-			_xap = xap;
-			m_bInsertGraphic = NO;
-		}
+	if (![super init]) {
+		return nil;
+	}
+	_xap = xap;
+	m_bInsertGraphic = NO;
 	return self;
 }
 
@@ -183,24 +182,26 @@
 - (void)addItemWithTitle:(NSString *)title fileType:(int)type
 {
 	if (m_bInsertGraphic)
-		{
-			[oFTIPopUp addItemWithTitle:title];
-			[[oFTIPopUp lastItem] setTag:type];
-		}
+	{
+		[oFTIPopUp addItemWithTitle:title];
+		[[oFTIPopUp lastItem] setTag:type];
+	}
 	else
-		{
-			[oFTPopUp addItemWithTitle:title];
-			[[oFTPopUp lastItem] setTag:type];
-		}
+	{
+		[oFTPopUp addItemWithTitle:title];
+		[[oFTPopUp lastItem] setTag:type];
+	}
 }
 
 - (IBAction)selectFileType:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->_setSelectedFileType([[sender selectedItem] tag]);
 }
 
 - (void)panelSelectionDidChange:(id)sender
 {
+	UT_UNUSED(sender);
 	if (m_bInsertGraphic)
 		_xap->_updatePreview();
 }
@@ -254,16 +255,18 @@ XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 {
-	if (!m_accessoryViewsController)
-		if (m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this]) {
+	if (!m_accessoryViewsController) {
+		m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this];
+		if (m_accessoryViewsController) {
 			if (![NSBundle loadNibNamed:@"xap_CocoaFileOpen_Views" owner:m_accessoryViewsController]) {
 				NSLog (@"Couldn't load nib xap_CocoaFileOpen_Views");
 				[m_accessoryViewsController release];
 				m_accessoryViewsController = 0;
 			}
 		}
+	}
 	UT_ASSERT(m_accessoryViewsController);
 	if (!m_accessoryViewsController)
 		return;
@@ -738,8 +741,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
 						GR_CocoaImage * pImage = new GR_CocoaImage(0);
 
 						pImage->convertFromBuffer(png, iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
-		
-						if (image = pImage->getNSImage()) {
+						image = pImage->getNSImage();
+						if (image) {
 							NSSize imageSize;
 							imageSize.width  = static_cast<float>(iImageWidth);
 							imageSize.height = static_cast<float>(iImageHeight);

@@ -49,7 +49,7 @@ AP_CocoaDialog_Latex::~AP_CocoaDialog_Latex(void)
 	// ...
 }
 
-void AP_CocoaDialog_Latex::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_Latex::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_LatexController alloc] initFromNib];
 
@@ -73,7 +73,7 @@ void  AP_CocoaDialog_Latex::activate(void)
 		}
 }
 
-void AP_CocoaDialog_Latex::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_Latex::notifyActiveFrame(XAP_Frame */*pFrame*/)
 {
 	// ...
 }
@@ -139,10 +139,9 @@ bool AP_CocoaDialog_Latex::getLatexFromGUI(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Latex"])
-		{
-			// ...
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_Latex"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -180,18 +179,21 @@ bool AP_CocoaDialog_Latex::getLatexFromGUI(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if (_xap)
 		_xap->event_Close();
 }
 
 - (IBAction)aClose:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		_xap->event_Close();
 }
 
 - (IBAction)aInsert:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		_xap->event_Insert();
 }

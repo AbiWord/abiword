@@ -226,7 +226,7 @@ void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 	_colorChanged([m_dlg bgColor], "bgcolor", buf_color);
 }
 
-void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 {
 	UT_ASSERT(m_pApp);
 
@@ -308,7 +308,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 }
 
-bool XAP_CocoaDialog_FontChooser::getEntryString(char ** string)
+bool XAP_CocoaDialog_FontChooser::getEntryString(const char ** string)
 {
 	UT_ASSERT(string);
 
@@ -328,7 +328,7 @@ void XAP_CocoaDialog_FontChooser::updatePreview(void)
 	}
 	
 	// if a font has been set since this dialog was launched, draw things with it
-	char * entryString;
+	const char * entryString;
 
 	if (!getEntryString(&entryString)) {
 		return;
@@ -470,6 +470,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[[NSColorPanel sharedColorPanel] orderOut:self];
 
 	static_cast<XAP_CocoaDialog_FontChooser *>(_xap)->_okAction();
@@ -477,6 +478,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[[NSColorPanel sharedColorPanel] orderOut:self];
 
 	static_cast<XAP_CocoaDialog_FontChooser *>(_xap)->_cancelAction();

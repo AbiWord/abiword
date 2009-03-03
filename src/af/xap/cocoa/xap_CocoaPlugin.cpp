@@ -126,10 +126,11 @@ public:
 
 - (id)init
 {
-	if (self = [super init])
+	if (![super init])
 	{
-		m_delegate = nil;
+		return nil;
 	}
+	m_delegate = nil;
 	return self;
 }
 

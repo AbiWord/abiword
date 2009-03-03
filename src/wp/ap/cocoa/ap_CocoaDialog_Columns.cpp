@@ -200,7 +200,7 @@ void AP_CocoaDialog_Columns::incrSpaceAfter(bool bIncrement)
 
 /*****************************************************************/
 
-void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
+void AP_CocoaDialog_Columns::enableLineBetweenControl(bool /*bState*/)
 {
 }
 
@@ -209,8 +209,7 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Columns"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Columns"];
 }
 
 -(void)discardXAP
@@ -261,26 +260,31 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 	
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)lineBetweenAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->checkLineBetween();
 }
 
 - (IBAction)maxColSizeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->doMaxHeightEntry([[_maxColSizeData stringValue] UTF8String]);
 }
 
 - (IBAction)maxColSizeStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 	bool bIncr = ([_maxColSizeStepper intValue] == 0) ? false : true;
 
 	[_maxColSizeStepper setIntValue:1];
@@ -290,6 +294,7 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (IBAction)numOfColAction:(id)sender
 {
+	UT_UNUSED(sender);
 	int count = [sender intValue];
 
 	count = (count < 1) ? 1 : ((count > 20) ? 20 : count);
@@ -299,6 +304,7 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (IBAction)numOfColStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[_numOfColumnData setIntValue:[sender intValue]];
 
 	_xap->colNumberChanged();
@@ -306,16 +312,19 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (IBAction)oneAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Toggle(1);
 }
 
 - (IBAction)twoAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Toggle(2);
 }
 
 - (IBAction)threeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Toggle(3);
 }
 
@@ -336,11 +345,13 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (IBAction)spaceAfterColAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->doSpaceAfterEntry();
 }
 
 - (IBAction)spaceAfterColStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 	bool bIncr = ([_spaceAfterColStepper intValue] == 0) ? false : true;
 
 	[_spaceAfterColStepper setIntValue:1];

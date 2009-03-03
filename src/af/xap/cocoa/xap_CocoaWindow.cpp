@@ -39,13 +39,16 @@ static float s_ToolbarHeight = 0.0;
 
 - (id)initWithWindow:(NSWindow *)window withXAPWindow:(XAP_CocoaWindow *)xap
 {
-	self = [super initWithWindow:window];
+	if(![super initWithWindow:window]) {
+		return nil;
+	}
 	m_window = xap;
 	return self;
 }
 
 - (void)windowDidResize:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if (m_window) 
 		m_window->_windowResized ();
 }

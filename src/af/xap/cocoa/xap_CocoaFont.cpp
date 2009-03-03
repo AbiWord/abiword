@@ -192,6 +192,7 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 	UT_uint32 i, begin;
 	bool lastState = false;
 	bool currentState = false;
+	begin = 0;
 	if (_m_coverage) {
 		xxx_UT_DEBUGMSG(("getCoverage(): return cached coverage\n"));
 		coverage = *_m_coverage;
@@ -224,18 +225,18 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
+bool XAP_CocoaFont::glyphBox(UT_UCS4Char /*g*/, UT_Rect & /*rec*/, GR_Graphics * /*pG*/)
 {
 	bool bHaveGlyph = false;
 
-	NSGlyph aGlyph;
 
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+#if 0  
+	NSGlyph aGlyph;
 	NSRect rect;
 
 	UT_UCS4Char c = remapChar(g, remapFont(m_font));
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-#if 0  
 	if (!m_LayoutHelper)
 	{
 		m_LayoutHelper = new XAP_CocoaFont_LayoutHelper(m_font);
@@ -299,7 +300,7 @@ void XAP_CocoaFont::_initMetricsLayouts(void)
 //	UT_ASSERT(status == 0);
 }
 
-UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, ATSUStyle style) const
+UT_sint32 XAP_CocoaFont::_measureChar(UT_UCSChar cChar, ATSUStyle /*style*/) const
 {
 	if (!s_atsuLayout) {
 		_initMetricsLayouts();
@@ -462,94 +463,94 @@ UT_UCS4Char XAP_CocoaFont::remapChar(UT_UCS4Char charCode, RemapFont rf)
 
 - (id)initWithFontFamilyName:(NSString *)fontFamilyName known:(BOOL)known
 {
-	if (self = [super init])
+	if (![super init]) {
+		return nil;
+	}
+	m_FontFamilyName = fontFamilyName;
+	[m_FontFamilyName retain];
+
+	NSFontManager * FM = [NSFontManager sharedFontManager];
+
+	m_indexRegular    = -1;
+	m_indexItalic     = -1;
+	m_indexBold       = -1;
+	m_indexBoldItalic = -1;
+
+	if (known)
 	{
-		m_FontFamilyName = fontFamilyName;
-		[m_FontFamilyName retain];
+		NSArray * Members = [FM availableMembersOfFontFamily:m_FontFamilyName];
 
-		NSFontManager * FM = [NSFontManager sharedFontManager];
+		m_count = [Members count];
 
-		m_indexRegular    = -1;
-		m_indexItalic     = -1;
-		m_indexBold       = -1;
-		m_indexBoldItalic = -1;
+		m_FontNames             = [[NSMutableArray alloc] initWithCapacity:m_count];
+		m_FontMembers           = [[NSMutableArray alloc] initWithCapacity:m_count];
+		m_AttributedFontMembers = [[NSMutableArray alloc] initWithCapacity:m_count];
 
-		if (known)
+		for (unsigned i = 0; i < m_count; i++)
 		{
-			NSArray * Members = [FM availableMembersOfFontFamily:m_FontFamilyName];
+			NSArray * Member = [Members objectAtIndex:i];
 
-			m_count = [Members count];
+			NSString * fontName   = [Member objectAtIndex:0];
+			NSString * memberName = [Member objectAtIndex:1];
 
-			m_FontNames             = [[NSMutableArray alloc] initWithCapacity:m_count];
-			m_FontMembers           = [[NSMutableArray alloc] initWithCapacity:m_count];
-			m_AttributedFontMembers = [[NSMutableArray alloc] initWithCapacity:m_count];
-
-			for (unsigned i = 0; i < m_count; i++)
-			{
-				NSArray * Member = [Members objectAtIndex:i];
-
-				NSString * fontName   = [Member objectAtIndex:0];
-				NSString * memberName = [Member objectAtIndex:1];
-
-				NSFont * font = [NSFont fontWithName:fontName size:[NSFont smallSystemFontSize]];
-
-				NSDictionary * attr = font ? [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName] : [NSDictionary dictionary];
-
-				[m_FontNames             addObject:fontName];
-				[m_FontMembers           addObject:memberName];
-				[m_AttributedFontMembers addObject:[[NSAttributedString alloc] initWithString:memberName attributes:attr]];
-
-				if ([memberName isEqualToString:@"Regular"] ||
-					[memberName isEqualToString:@"Plain"])
-				{
-					m_indexRegular = (int) i;
-				}
-				else if ([memberName isEqualToString:@"Italic"]  ||
-						 [memberName isEqualToString:@"Oblique"] ||
-						 [memberName isEqualToString:@"Inclined"])
-				{
-					m_indexItalic = (int) i;
-				}
-				else if ([memberName isEqualToString:@"Bold"])
-				{
-					m_indexBold = (int) i;
-				}
-				else if ([memberName isEqualToString:@"Bold Italic"]   || [memberName isEqualToString:@"BoldItalic"]  ||
-						 [memberName isEqualToString:@"Bold Oblique"]  || [memberName isEqualToString:@"BoldOblique"] ||
-						 [memberName isEqualToString:@"Bold Inclined"] || [memberName isEqualToString:@"BoldInclined"])
-				{
-					m_indexBoldItalic = (int) i;
-				}
-			}
-
-			unsigned indexRegular = (m_indexRegular >= 0) ? ((unsigned) m_indexRegular) : 0;
-
-			NSArray * Member = [Members objectAtIndex:indexRegular];
-
-			NSString * fontName = [Member objectAtIndex:0];
-
-			NSFont * font = [NSFont fontWithName:fontName size:[NSFont systemFontSize]];
+			NSFont * font = [NSFont fontWithName:fontName size:[NSFont smallSystemFontSize]];
 
 			NSDictionary * attr = font ? [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName] : [NSDictionary dictionary];
 
-			m_AttributedFontFamilyName = [[NSAttributedString alloc] initWithString:m_FontFamilyName attributes:attr];
+			[m_FontNames             addObject:fontName];
+			[m_FontMembers           addObject:memberName];
+			[m_AttributedFontMembers addObject:[[NSAttributedString alloc] initWithString:memberName attributes:attr]];
+
+			if ([memberName isEqualToString:@"Regular"] ||
+				[memberName isEqualToString:@"Plain"])
+			{
+				m_indexRegular = (int) i;
+			}
+			else if ([memberName isEqualToString:@"Italic"]  ||
+					 [memberName isEqualToString:@"Oblique"] ||
+					 [memberName isEqualToString:@"Inclined"])
+			{
+				m_indexItalic = (int) i;
+			}
+			else if ([memberName isEqualToString:@"Bold"])
+			{
+				m_indexBold = (int) i;
+			}
+			else if ([memberName isEqualToString:@"Bold Italic"]   || [memberName isEqualToString:@"BoldItalic"]  ||
+					 [memberName isEqualToString:@"Bold Oblique"]  || [memberName isEqualToString:@"BoldOblique"] ||
+					 [memberName isEqualToString:@"Bold Inclined"] || [memberName isEqualToString:@"BoldInclined"])
+			{
+				m_indexBoldItalic = (int) i;
+			}
 		}
-		else
-		{
-			NSDictionary * attr = [NSDictionary dictionaryWithObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];
 
-			m_AttributedFontFamilyName = [[NSAttributedString alloc] initWithString:m_FontFamilyName attributes:attr];
+		unsigned indexRegular = (m_indexRegular >= 0) ? ((unsigned) m_indexRegular) : 0;
 
-			m_count = 1;
+		NSArray * Member = [Members objectAtIndex:indexRegular];
 
-			m_FontNames             = [[NSMutableArray alloc] initWithCapacity:1];
-			m_FontMembers           = [[NSMutableArray alloc] initWithCapacity:1];
-			m_AttributedFontMembers = [[NSMutableArray alloc] initWithCapacity:1];
+		NSString * fontName = [Member objectAtIndex:0];
 
-			[m_FontNames             addObject:fontFamilyName];
-			[m_FontMembers           addObject:@"-"];
-			[m_AttributedFontMembers addObject:[[NSAttributedString alloc] initWithString:@"-" attributes:attr]];
-		}
+		NSFont * font = [NSFont fontWithName:fontName size:[NSFont systemFontSize]];
+
+		NSDictionary * attr = font ? [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName] : [NSDictionary dictionary];
+
+		m_AttributedFontFamilyName = [[NSAttributedString alloc] initWithString:m_FontFamilyName attributes:attr];
+	}
+	else
+	{
+		NSDictionary * attr = [NSDictionary dictionaryWithObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];
+
+		m_AttributedFontFamilyName = [[NSAttributedString alloc] initWithString:m_FontFamilyName attributes:attr];
+
+		m_count = 1;
+
+		m_FontNames             = [[NSMutableArray alloc] initWithCapacity:1];
+		m_FontMembers           = [[NSMutableArray alloc] initWithCapacity:1];
+		m_AttributedFontMembers = [[NSMutableArray alloc] initWithCapacity:1];
+
+		[m_FontNames             addObject:fontFamilyName];
+		[m_FontMembers           addObject:@"-"];
+		[m_AttributedFontMembers addObject:[[NSAttributedString alloc] initWithString:@"-" attributes:attr]];
 	}
 	return self;
 }
@@ -636,16 +637,16 @@ UT_UCS4Char XAP_CocoaFont::remapChar(UT_UCS4Char charCode, RemapFont rf)
 
 - (id)initWithFontFamily:(NSString *)fontFamily helper:(XAP_CocoaFontFamilyHelper *)helper index:(unsigned)index
 {
-	if (self = [super init])
-	{
-		m_FontFamily = fontFamily;
-		[m_FontFamily retain];
-		
-		m_FontFamilyHelper = helper;
-		[m_FontFamilyHelper retain];
-
-		m_index = index;
+	if (![super init]) {
+		return nil;
 	}
+	m_FontFamily = fontFamily;
+	[m_FontFamily retain];
+	
+	m_FontFamilyHelper = helper;
+	[m_FontFamilyHelper retain];
+
+	m_index = index;
 	return self;
 }
 

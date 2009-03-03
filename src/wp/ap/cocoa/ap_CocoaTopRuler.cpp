@@ -120,7 +120,7 @@ NSWindow * AP_CocoaTopRuler::getRootWindow(void)
 	return m_rootWindow;
 }
 
-void AP_CocoaTopRuler::_drawMarginProperties(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+void AP_CocoaTopRuler::_drawMarginProperties(const UT_Rect * /*pClipRect*/, AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D /*clr*/)
 {
 	if (!m_pG)
 		return;

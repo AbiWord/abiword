@@ -422,7 +422,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 		NSEnumerator *enumerator = [docAreaSubviews objectEnumerator];
 		NSView* aSubview;
 	
-		while (aSubview = [enumerator nextObject]) {
+		while ((aSubview = [enumerator nextObject])) {
 			[aSubview removeFromSuperviewWithoutNeedingDisplay];
 		}
 		
@@ -580,7 +580,7 @@ void AP_CocoaFrameImpl::_createDocumentWindow()
 	pData->m_pLeftRuler = pCocoaLeftRuler;
 }
 
-void AP_CocoaFrameImpl::_createStatusBarWindow(XAP_CocoaNSStatusBar * statusBar)
+void AP_CocoaFrameImpl::_createStatusBarWindow(XAP_CocoaNSStatusBar * /*statusBar*/)
 {
 	XAP_Frame*	pFrame = getFrame();
 	
@@ -661,6 +661,7 @@ void AP_CocoaFrameImpl::giveFocus()
 
 - (IBAction)rulerClick:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_DEBUGMSG(("ruler action"));
 }
 
@@ -686,7 +687,9 @@ void AP_CocoaFrameImpl::giveFocus()
 
 -(id)initWithFrame:(NSRect)frame andController:(AP_CocoaFrameController*)controller vertical:(BOOL)vertical
 {
-	self = [super initWithFrame:frame];
+	if(![super initWithFrame:frame]) {
+		return nil;
+	}
 	UT_DEBUGMSG (("x = %f, y = %f, w = %f, h = %f\n", frame.origin.x, frame.origin.y,
 			frame.size.width, frame.size.height));
 	if (vertical) {

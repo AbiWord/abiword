@@ -90,12 +90,12 @@ void AP_CocoaDialog_FormatTOC::activate(void)
 		}
 }
 
-void AP_CocoaDialog_FormatTOC::notifyActiveFrame(XAP_Frame * pFrame)
+void AP_CocoaDialog_FormatTOC::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	// 
 }
 
-void AP_CocoaDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_FormatTOC::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_FormatTOC_Controller alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -116,10 +116,9 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"])
-		{
-			// 
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -329,6 +328,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)headingStyleAction:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap) {
 		UT_UTF8String sTOCProp = "toc-heading-style";
 
@@ -342,6 +342,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)fillStyleAction:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap) {
 		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getMainLevel());
 		UT_UTF8String sTOCProp = "toc-source-style";
@@ -357,6 +358,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)displayStyleAction:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap) {
 		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getMainLevel());
 		UT_UTF8String sTOCProp = "toc-dest-style";
@@ -372,6 +374,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)startAtStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->incrementStartAt(_xap->getDetailsLevel(), ([_startAtStepper intValue] > 1));
 	[_startAtStepper setIntValue:1];
 
@@ -381,11 +384,13 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)startAtAction:(id)sender
 {
+	UT_UNUSED(sender);
 	// TODO ??
 }
 
 - (IBAction)indentStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->incrementIndent(_xap->getDetailsLevel(), ([_indentStepper intValue] > 1));
 	[_indentStepper setIntValue:1];
 
@@ -395,6 +400,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)indentAction:(id)sender
 {
+	UT_UNUSED(sender);
 	// TODO ??
 }
 
@@ -514,6 +520,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[self saveMainLevelSettings];
 	[self saveDetailLevelSettings];
 
@@ -577,6 +584,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if (_xap)
 		_xap->destroy();
 }

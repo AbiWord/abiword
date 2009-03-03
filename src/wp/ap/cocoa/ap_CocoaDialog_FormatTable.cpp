@@ -61,7 +61,7 @@ AP_CocoaDialog_FormatTable::~AP_CocoaDialog_FormatTable(void)
 {
 }
 
-void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_FormatTableController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -100,12 +100,12 @@ void AP_CocoaDialog_FormatTable::setSensitivity(bool bSens)
 	[m_dlg setSensitivity:bSens];
 }
 
-void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
+void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor /*clr*/)
 {
 	UT_ASSERT_NOT_REACHED(); // TODO
 }
 
-void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
+void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
 {
 	UT_ASSERT_NOT_REACHED();
 }
@@ -164,7 +164,7 @@ void AP_CocoaDialog_FormatTable::activate(void)
 }
 
 
-void AP_CocoaDialog_FormatTable::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_FormatTable::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	ConstructWindowName();
 	NSWindow *window = [m_dlg window];
@@ -188,8 +188,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatTable"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_FormatTable"];
 }
 
 -(void)discardXAP
@@ -238,15 +237,18 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->applyChanges();
 }
 
 - (IBAction)bgColorAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)borderColorAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)bottomBorderAction:(id)sender
@@ -263,6 +265,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)removeImageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->clearImage();
 }
 
@@ -274,6 +277,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)selectImageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->askForGraphicPathName();
 }
 
@@ -285,6 +289,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)applyToAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ApplyToChanged();
 }
 

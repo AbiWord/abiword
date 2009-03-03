@@ -54,7 +54,7 @@ bool XAP_CocoaWidget::getState(void)
 }
 
 /** set the widget visible state */
-void XAP_CocoaWidget::setVisible(bool visible)
+void XAP_CocoaWidget::setVisible(bool /*visible*/)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }

@@ -299,8 +299,7 @@ void AP_CocoaDialog_Tab::_clearList()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Tab"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Tab"];
 }
 
 - (void)dealloc
@@ -359,34 +358,41 @@ void AP_CocoaDialog_Tab::_clearList()
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->cancelAction();
 }
 
 - (IBAction)clearAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->clearAction();
 }
 
 - (IBAction)clearAllAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->clearAllAction();
 }
 
 - (IBAction)defaultTabAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)defaultTabStepperAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->okAction();
 }
 
 - (IBAction)setAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->setAction();
 }
 
@@ -403,11 +409,13 @@ void AP_CocoaDialog_Tab::_clearList()
 
 - (IBAction)positionEditAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->positionEditAction();
 }
 
 - (void)tabListAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_proxy->tabListAction([_tabList selectedRow]);
 }
 

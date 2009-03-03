@@ -100,7 +100,7 @@ void AP_CocoaDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tCon
 	_updatePreview(m_recentAlign, m_recentControl);
 }
 
-void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_PageNumbersController alloc] initFromNib];
 	
@@ -138,8 +138,7 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_PageNumbers"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_PageNumbers"];
 }
 
 -(void)discardXAP
@@ -199,11 +198,13 @@ void AP_CocoaDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 

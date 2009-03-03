@@ -25,7 +25,7 @@
 #include "ap_PrintingDelegate.h"
 
 
-void s_printPage(PD_Document *doc,  GR_Graphics *pGraphics,
+void s_printPage(PD_Document */*doc*/,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
 		     UT_sint32 iWidth,  UT_sint32 iHeight,
              int nPage)

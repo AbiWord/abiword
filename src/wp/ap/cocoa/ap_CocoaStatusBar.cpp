@@ -132,7 +132,7 @@ XAP_CocoaNSStatusBar * AP_CocoaStatusBar::createWidget(void)
 	
 	NSFont* font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
 	
-	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {
+	for (UT_sint32 k=0; k<getFields()->getItemCount(); k++) {
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
 		UT_ASSERT(pf); // we should NOT have null elements
 		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
@@ -196,7 +196,7 @@ void AP_CocoaStatusBar::_repositionFields(NSArray *fields)
 	NSEnumerator* iter = [fields objectEnumerator];
 	NSTextField* obj;
 	float prevX = 0;
-	while (obj = [iter nextObject]) {
+	while ((obj = [iter nextObject])) {
 		int tag = [obj tag];
 		NSRect frame = [obj frame];
 		frame.origin.x = prevX;
@@ -239,7 +239,9 @@ void AP_CocoaStatusBar::hide(void)
 
 - (id)initWithFrame:(NSRect)frame
 {
-	self = [super initWithFrame:frame];
+	if(![super initWithFrame:frame]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -250,6 +252,7 @@ void AP_CocoaStatusBar::hide(void)
 
 - (void)statusBarDidResize:(NSNotification *)notification
 {
+	UT_UNUSED(notification);
 	if (_xap) {
 		UT_DEBUGMSG(("-[XAP_CocoaNSStatusBar statusBarDidResize:]\n"));
 		_xap->_repositionFields([self subviews]);

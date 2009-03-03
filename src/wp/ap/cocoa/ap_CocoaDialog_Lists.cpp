@@ -73,7 +73,7 @@ AP_CocoaDialog_Lists::~AP_CocoaDialog_Lists(void)
 }
 
 
-void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
+void AP_CocoaDialog_Lists::runModal( XAP_Frame * /*pFrame*/)
 {
 	FL_ListType  savedListType;
 	setModal();
@@ -121,7 +121,7 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 }
 
 
-void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
+void AP_CocoaDialog_Lists::runModeless (XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_ListsController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -154,7 +154,6 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 						 (UT_uint32) bounds.size.height);
 
 	// Next construct a timer for auto-updating the dialog
-	GR_Graphics * pG = NULL;
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this);
 	m_bDestroy_says_stopupdating = false;
 
@@ -246,7 +245,7 @@ void AP_CocoaDialog_Lists::activate (void)
 	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_Lists::notifyActiveFrame(XAP_Frame */*pFrame*/)
 {
 	ConstructWindowName();
 	[[m_dlg window] setTitle:[NSString stringWithUTF8String:getWindowName()]];
@@ -675,8 +674,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Lists"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Lists"];
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
@@ -788,6 +786,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if(Current_Dialog->isDirty()) {
 		return;
 	}
@@ -811,12 +810,14 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->applyClicked();
 	// [NSApp stopModal];
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->destroy();
 }
 
@@ -834,6 +835,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)setDefaultAction:(id)sender
 {
+	UT_UNUSED(sender);
   	_xap->setDirty();
 	_xap->customChanged();
 }
@@ -852,6 +854,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)styleChangedAction:(id)sender
 {
+	UT_UNUSED(sender);
 	if(_xap->dontUpdate()) {
 		return;
 	}
@@ -884,6 +887,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)valueChangedAction:(id)sender
 {
+	UT_UNUSED(sender);
 	if(_xap->dontUpdate()) {
 		return;
 	}

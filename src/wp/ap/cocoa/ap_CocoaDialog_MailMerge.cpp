@@ -59,47 +59,48 @@ AP_CocoaDialog_MailMerge::~AP_CocoaDialog_MailMerge(void)
 	destroy();
 }
 
-void AP_CocoaDialog_MailMerge::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_MailMerge::runModeless(XAP_Frame * /*pFrame*/)
 {
-	if (m_dlg = [[AP_CocoaDialog_MailMerge_Controller alloc] initFromNib])
+	m_dlg = [[AP_CocoaDialog_MailMerge_Controller alloc] initFromNib];
+	if (m_dlg)
+	{
+		[m_dlg setXAPOwner:this];
+		[m_dlg window];
+
+		// TODO
+
+		// Save dialog the ID number and pointer to the widget
+		UT_sint32 sid = (UT_sint32) getDialogId();
+		m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if (pFrame)
 		{
-			[m_dlg setXAPOwner:this];
-			[m_dlg window];
-
-			// TODO
-
-			// Save dialog the ID number and pointer to the widget
-			UT_sint32 sid = (UT_sint32) getDialogId();
-			m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-			if (XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame())
-				{
-					setActiveFrame(pFrame);
-					init();
-				}
-
-			activate();
+			setActiveFrame(pFrame);
+			init();
 		}
+
+		activate();
+	}
 }
 
 void AP_CocoaDialog_MailMerge::activate(void)
 {
 	if (m_dlg)
-		{
-			[m_dlg windowToFront];
-			[m_dlg updateAvailableFields];
-		}
+	{
+		[m_dlg windowToFront];
+		[m_dlg updateAvailableFields];
+	}
 }
 
 void AP_CocoaDialog_MailMerge::destroy(void)
 {
 	if (m_dlg)
-		{
-			[m_dlg close];
-			[m_dlg release];
+	{
+		[m_dlg close];
+		[m_dlg release];
 
-			modeless_cleanup();
-		}
+		modeless_cleanup();
+	}
 	m_dlg = 0;
 }
 
@@ -114,26 +115,26 @@ void AP_CocoaDialog_MailMerge::eventInsert(NSString * field_name)
 void AP_CocoaDialog_MailMerge::setFieldList()
 {
 	if (m_dlg)
-		{
-			[m_dlg updateAvailableFields];
-		}
+	{
+		[m_dlg updateAvailableFields];
+	}
 }
 
 @implementation AP_CocoaDialog_MailMerge_Controller
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"])
-		{
-			_xap = 0;
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"]) {
+		return nil;
+	}
+	_xap = NULL;
 
-			m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
-			if (!m_AvailableFields)
-				{
-					[self release];
-					self = nil;
-				}
-		}
+	m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
+	if (!m_AvailableFields)
+	{
+		[self release];
+		return nil;
+	}
 	return self;
 }
 
@@ -181,6 +182,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (IBAction)aFieldsTable:(id)sender
 {
+	UT_UNUSED(sender);
 	// 
 }
 
@@ -191,6 +193,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (IBAction)aOpenFile:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		if (XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame())
 			{
@@ -201,12 +204,14 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (IBAction)aClose:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		_xap->destroy();
 }
 
 - (IBAction)aInsert:(id)sender
 {
+	UT_UNUSED(sender);
 	NSString * field_name = [oFieldName stringValue];
 
 	if ([field_name length])
@@ -234,11 +239,14 @@ void AP_CocoaDialog_MailMerge::setFieldList()
  */
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	UT_UNUSED(aTableView);
 	return (int) [m_AvailableFields count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
 	return [m_AvailableFields objectAtIndex:rowIndex];
 }
 
@@ -246,6 +254,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
  */
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	int row = [oFieldsTable selectedRow];
 	if (row >= 0)
 		{
@@ -259,6 +268,9 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
+	UT_UNUSED(rowIndex);
 	[aCell setFont:[NSFont systemFontOfSize:10.0f]];
 }
 

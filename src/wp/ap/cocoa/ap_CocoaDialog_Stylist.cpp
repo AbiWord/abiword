@@ -58,12 +58,12 @@
 
 -(id)initWithValue:(const char*)value row:(int)row andCol:(int)col
 {
-	self = [super init];
-	if (self) {
-		_value = [[NSString alloc] initWithUTF8String:value];
-		_row = row;
-		_col = col;
+	if(![super init]) {
+		return nil;
 	}
+	_value = [[NSString alloc] initWithUTF8String:value];
+	_row = row;
+	_col = col;
 	return self;
 }
 
@@ -179,7 +179,7 @@ void AP_CocoaDialog_Stylist::activate(void)
 	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_Stylist::notifyActiveFrame(XAP_Frame */*pFrame*/)
 {
     UT_ASSERT(m_dlg);
 }
@@ -208,7 +208,7 @@ void AP_CocoaDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 	}
 }
 
-void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Stylist::runModal(XAP_Frame * /*pFrame*/)
 {
 	bool bUsingModeless = (m_dlg ? true : false);
 
@@ -247,7 +247,7 @@ void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
 	}
 }
 
-void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -342,8 +342,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Stylist"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Stylist"];
 }
 
 - (void)discardXAP
@@ -389,6 +388,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if (_xap)
 		_xap->event_Close();
 }
@@ -416,6 +416,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Apply();
 }
 
@@ -458,6 +459,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item == nil) {
 		return [_xap->getItems() count];
 	}
@@ -469,6 +471,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (![item isKindOfClass:[StyleNode class]]) {
 		return NO;
 	}
@@ -477,6 +480,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item == nil) {
 		return [_xap->getItems() objectAtIndex:index];
 	}
@@ -488,11 +492,16 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
+	UT_UNUSED(outlineView);
+	UT_UNUSED(tableColumn);
 	return [item value];
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
+	UT_UNUSED(outlineView);
+	UT_UNUSED(tableColumn);
+	UT_UNUSED(item);
 	[cell setFont:[NSFont systemFontOfSize:10.0f]];
 }
 

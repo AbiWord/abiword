@@ -55,7 +55,7 @@ AP_CocoaDialog_HdrFtr::~AP_CocoaDialog_HdrFtr(void)
 {
 }
 
-void AP_CocoaDialog_HdrFtr::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_HdrFtr::runModal(XAP_Frame * /*pFrame*/)
 {
 
 	m_dlg = [[AP_CocoaDialog_HdrFtrController alloc] initFromNib];
@@ -110,8 +110,7 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_HdrFtr"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_HdrFtr"];
 }
 
 -(void)discardXAP
@@ -178,16 +177,19 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->eventOk();
 }
 
 - (IBAction)btnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->CheckChanged(sender);
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->eventCancel();
 }
 
@@ -199,6 +201,7 @@ void AP_CocoaDialog_HdrFtr::RestartSpinChanged(UT_sint32 RestartValue)
 
 - (IBAction)restartBtnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_sint32 RestartValue = [restartAtData intValue];
 	if([restartPgNumberBtn state] == NSOnState)
 	{

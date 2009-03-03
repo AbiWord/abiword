@@ -63,7 +63,7 @@ AP_CocoaDialog_FormatFrame::~AP_CocoaDialog_FormatFrame(void)
 	// 
 }
 
-void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_FormatFrameController alloc] initFromNib];
 
@@ -103,7 +103,7 @@ void AP_CocoaDialog_FormatFrame::setSensitivity(bool bSens)
 	[m_dlg setSensitivity:bSens];
 }
 
-void AP_CocoaDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & sThick)
+void AP_CocoaDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
 {
 	UT_ASSERT_NOT_REACHED();
 }
@@ -173,7 +173,7 @@ void AP_CocoaDialog_FormatFrame::activate(void)
 	_populateWindowData();
 }
 
-void AP_CocoaDialog_FormatFrame::notifyActiveFrame(XAP_Frame * pFrame)
+void AP_CocoaDialog_FormatFrame::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 #if 0
 	ConstructWindowName();
@@ -282,15 +282,15 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatFrame"])
-		{
-			m_menuButtonTag = 0;
-			m_activeMenuTag = 0;
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_FormatFrame"]) {
+		return nil;
+	}
+	m_menuButtonTag = 0;
+	m_activeMenuTag = 0;
 
-			m_bEnabled = YES;
+	m_bEnabled = YES;
 
-			_xap = 0;
-		}
+	_xap = 0;
 	return self;
 }
 
@@ -523,6 +523,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)bgColorAction:(id)sender
 {
+	UT_UNUSED(sender);
 	NSColor * color = [_bgColorWell color];
 
 	float red;
@@ -661,6 +662,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button
 {
+	UT_UNUSED(menu);
 	m_menuButtonTag = [button tag];
 
 	switch (m_menuButtonTag)
@@ -693,21 +695,25 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)selectImageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->askForGraphicPathName();
 }
 
 - (IBAction)removeImageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->clearImage();
 }
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->applyChanges();
 }
 
 - (IBAction)applyToAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ApplyToChanged();
 }
 
@@ -773,6 +779,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)wrapAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setWrapping([_wrapSwitch state] == NSOnState);
 }
 
@@ -797,6 +804,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)positionAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setPositionMode((FL_FrameFormatMode) [[_positionPopUp selectedItem] tag]);
 }
 

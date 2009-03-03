@@ -510,7 +510,7 @@ void  AP_CocoaDialog_Styles::modifyRunModal(void)
 	}
 }
 
-void AP_CocoaDialog_Styles::event_modifySheetDidEnd(int code)
+void AP_CocoaDialog_Styles::event_modifySheetDidEnd(int /*code*/)
 {
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -810,15 +810,12 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Styles"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Styles"];
 }
 
 -(void)discardXAP
 {
-	if (_xap) {
-		_xap = NULL;
-	}
+	_xap = NULL;
 }
 
 -(void)dealloc
@@ -862,16 +859,19 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (IBAction)applyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Apply();
 }
 
 - (IBAction)closeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Close();
 }
 
 - (IBAction)deleteAction:(id)sender
 {
+	UT_UNUSED(sender);
 	NSString *str;
 	int row = [_availStylesList selectedRow];
 	if (row >= 0) {
@@ -892,11 +892,13 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (IBAction)modifyAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ModifyClicked();
 }
 
 - (IBAction)newAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_NewClicked();
 }
 
@@ -913,8 +915,7 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_StylesModify"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_StylesModify"];
 }
 
 -(void)discardXAP
@@ -990,16 +991,19 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (IBAction)basedOnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_basedOn();
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Modify_Cancel();
 }
 
 - (IBAction)followStyleAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_followedBy();
 }
 
@@ -1029,31 +1033,37 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Modify_OK();
 }
 
 - (IBAction)removeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_RemoveProperty();
 }
 
 - (IBAction)shortcutAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)styleNameAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->new_styleName();
 }
 
 - (IBAction)styleTypeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_styleType();
 }
 
 
 - (void)sheetDidEnd:(NSWindow*)sheet returnCode:(int)returnCode contextInfo:(void  *)c
 {
+	UT_UNUSED(c);
 	[sheet orderOut:self];
 	_xap->event_modifySheetDidEnd(returnCode);	
 }

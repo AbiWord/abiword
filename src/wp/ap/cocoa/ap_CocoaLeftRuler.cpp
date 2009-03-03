@@ -129,7 +129,8 @@ NSWindow * AP_CocoaLeftRuler::getRootWindow(void)
 	return m_rootWindow;
 }
 
-void AP_CocoaLeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */, AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+void AP_CocoaLeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */, AP_LeftRulerInfo * pInfo, 
+                                              GR_Graphics::GR_Color3D /*clr*/)
 {
 	if (!m_pG)
 		return;

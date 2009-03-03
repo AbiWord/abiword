@@ -87,7 +87,7 @@ bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 	return true;
 }
 
-bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
+bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 {
 	return true;
 }
@@ -319,6 +319,7 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {
+	UT_UNUSED(menuItem);
 	return XAP_App::getApp()->getLastFocussedFrame() ? YES : NO;
 }
 
@@ -829,7 +830,7 @@ NSMenu * EV_CocoaMenu::MenuStack_pop()
 	return menu;
 }
 
-bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
+bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 /*layout_pos*/)
 {
 	return false;
 }

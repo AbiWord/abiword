@@ -79,7 +79,7 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 	NSEnumerator*	enumerator = [list objectEnumerator];
 	m_vecContents.clear();
 
-	while (item = [enumerator nextObject]) {
+	while ((item = [enumerator nextObject])) {
 		const char * fName = g_strdup([item UTF8String]);
 		UT_ASSERT (fName);
 		if (true /* (*fName != '.') && (*fName != '#') */) {	// this is also what Camino does, but cf Bug 6638

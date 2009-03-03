@@ -166,124 +166,118 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 - (id)initWithModule:(XAP_CocoaModule *)module
 {
-	if (self = [super init])
-	{
-		m_entry = 0;
-
-		m_name = 0;
-		m_author = 0;
-		m_version = 0;
-		m_description = 0;
-		m_usage = 0;
-
-		m_module = module;
-		m_plugin = 0;
-
-		if (!m_module)
-		{
-			[self release];
-			self = 0;
-		}
+	if (![super init]) {
+		return nil;
 	}
-	if (self)
-	{
-		const XAP_ModuleInfo * mi = m_module->getModuleInfo();
+	m_entry = 0;
 
-		if (mi->name)
-			m_name = [NSString stringWithUTF8String:(mi->name)];
-		if (mi->author)
-			m_author = [NSString stringWithUTF8String:(mi->author)];
-		if (mi->version)
-			m_version = [NSString stringWithUTF8String:(mi->version)];
-		if (mi->desc)
-			m_description = [NSString stringWithUTF8String:(mi->desc)];
-		if (mi->usage)
-			m_usage = [NSString stringWithUTF8String:(mi->usage)];
+	m_name = 0;
+	m_author = 0;
+	m_version = 0;
+	m_description = 0;
+	m_usage = 0;
 
-		if (m_name == 0)
-			m_name = @"";
-		if (m_author == 0)
-			m_author = @"";
-		if (m_version == 0)
-			m_version = @"";
-		if (m_description == 0)
-			m_description = @"";
-		if (m_usage == 0)
-			m_usage = @"";
+	m_module = module;
+	m_plugin = 0;
 
-		[m_name retain];
-		[m_author retain];
-		[m_version retain];
-		[m_description retain];
-		[m_usage retain];
-
-		m_entry = [[NSAttributedString alloc] initWithString:m_name];
+	if (!m_module) {
+		[self release];
+		return nil;
 	}
+	const XAP_ModuleInfo * mi = m_module->getModuleInfo();
+
+	if (mi->name)
+		m_name = [NSString stringWithUTF8String:(mi->name)];
+	if (mi->author)
+		m_author = [NSString stringWithUTF8String:(mi->author)];
+	if (mi->version)
+		m_version = [NSString stringWithUTF8String:(mi->version)];
+	if (mi->desc)
+		m_description = [NSString stringWithUTF8String:(mi->desc)];
+	if (mi->usage)
+		m_usage = [NSString stringWithUTF8String:(mi->usage)];
+
+	if (m_name == 0)
+		m_name = @"";
+	if (m_author == 0)
+		m_author = @"";
+	if (m_version == 0)
+		m_version = @"";
+	if (m_description == 0)
+		m_description = @"";
+	if (m_usage == 0)
+		m_usage = @"";
+
+	[m_name retain];
+	[m_author retain];
+	[m_version retain];
+	[m_description retain];
+	[m_usage retain];
+
+	m_entry = [[NSAttributedString alloc] initWithString:m_name];
 	return self;
 }
 
 - (id)initWithPlugin:(XAP_CocoaPlugin *)plugin
 {
-	if (self = [super init])
-	{
-		m_entry = 0;
-
-		m_name = 0;
-		m_author = 0;
-		m_version = 0;
-		m_description = 0;
-		m_usage = 0;
-
-		m_module = 0;
-		m_plugin = plugin;
-
-		if (!m_plugin)
-		{
-			[self release];
-			self = 0;
-		}
-		else if (![m_plugin delegate])
-		{
-			[self release];
-			self = 0;
-		}
+	if (![super init]) {
+		return nil;
 	}
-	if (self)
+	m_entry = 0;
+
+	m_name = 0;
+	m_author = 0;
+	m_version = 0;
+	m_description = 0;
+	m_usage = 0;
+
+	m_module = 0;
+	m_plugin = plugin;
+
+	if (!m_plugin)
 	{
-		id <XAP_CocoaPluginDelegate> delegate = [m_plugin delegate];
-
-		m_name        = [delegate pluginName];
-		m_author      = [delegate pluginAuthor];
-		m_version     = [delegate pluginVersion];
-		m_description = [delegate pluginDescription];
-		m_usage       = [delegate pluginUsage];
-
-		if (m_name == 0)
-			m_name = @"";
-		if (m_author == 0)
-			m_author = @"";
-		if (m_version == 0)
-			m_version = @"";
-		if (m_description == 0)
-			m_description = @"";
-		if (m_usage == 0)
-			m_usage = @"";
-
-		[m_name retain];
-		[m_author retain];
-		[m_version retain];
-		[m_description retain];
-		[m_usage retain];
-
-		NSDictionary * attr = 0;
-
-		if ([delegate pluginIsActive])
-			attr = [NSDictionary dictionaryWithObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
-		else
-			attr = [NSDictionary dictionaryWithObject:[NSColor  grayColor] forKey:NSForegroundColorAttributeName];
-
-		m_entry = [[NSAttributedString alloc] initWithString:m_name attributes:attr];
+		[self release];
+		return nil;
 	}
+	else if (![m_plugin delegate])
+	{
+		[self release];
+		return nil;
+	}
+
+	id <XAP_CocoaPluginDelegate> delegate = [m_plugin delegate];
+
+	m_name        = [delegate pluginName];
+	m_author      = [delegate pluginAuthor];
+	m_version     = [delegate pluginVersion];
+	m_description = [delegate pluginDescription];
+	m_usage       = [delegate pluginUsage];
+
+	if (m_name == 0)
+		m_name = @"";
+	if (m_author == 0)
+		m_author = @"";
+	if (m_version == 0)
+		m_version = @"";
+	if (m_description == 0)
+		m_description = @"";
+	if (m_usage == 0)
+		m_usage = @"";
+
+	[m_name retain];
+	[m_author retain];
+	[m_version retain];
+	[m_description retain];
+	[m_usage retain];
+
+	NSDictionary * attr = 0;
+
+	if ([delegate pluginIsActive])
+		attr = [NSDictionary dictionaryWithObject:[NSColor blackColor] forKey:NSForegroundColorAttributeName];
+	else
+		attr = [NSDictionary dictionaryWithObject:[NSColor  grayColor] forKey:NSForegroundColorAttributeName];
+
+	m_entry = [[NSAttributedString alloc] initWithString:m_name attributes:attr];
 	return self;
 }
 
@@ -386,14 +380,14 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_PluginManager"])
+	if (![super initWithWindowNibName:@"xap_CocoaDlg_PluginManager"]) {
+		return nil;
+	}
+	m_PluginRefs = [[NSMutableArray alloc] initWithCapacity:16];
+	if (!m_PluginRefs)
 	{
-		m_PluginRefs = [[NSMutableArray alloc] initWithCapacity:16];
-		if (!m_PluginRefs)
-		{
-			[self dealloc];
-			self = 0;
-		}
+		[self dealloc];
+		return nil;
 	}
 	return self;
 }
@@ -489,11 +483,13 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 - (IBAction)closeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	[NSApp stopModal];
 }
 
 - (IBAction)installAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Load();
 
 	[self reloadPluginList];
@@ -506,6 +502,7 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
  */
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	int selection = [oPluginList selectedRow];
 	if (selection >= 0)
 	{
@@ -531,11 +528,14 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
  */
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	UT_UNUSED(aTableView);
 	return (int) [m_PluginRefs count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
 	XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:rowIndex];
 
 	return [pRef entry];

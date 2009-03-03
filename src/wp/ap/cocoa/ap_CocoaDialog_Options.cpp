@@ -61,7 +61,7 @@ AP_CocoaDialog_Options::~AP_CocoaDialog_Options()
 	// 
 }
 
-void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Options::runModal(XAP_Frame * /*pFrame*/)
 {
 	AP_PreferenceSchemeManager * SchemeManager = AP_PreferenceSchemeManager::create_manager();
 	UT_ASSERT(SchemeManager);
@@ -155,45 +155,40 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Options"])
-		{
-			m_pSchemeManager = 0;
-			m_pActiveScheme  = 0;
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_Options"]) {
+		return nil;
+	}
+	m_pSchemeManager = 0;
+	m_pActiveScheme  = 0;
 
-			m_LanguageList = 0;
-			m_UnitsList    = 0;
+	m_LanguageList = 0;
+	m_UnitsList    = 0;
 
-			m_LanguageList = [[NSMutableArray alloc] initWithCapacity:128];
-			if (!m_LanguageList)
-				{
-					[self release];
-					self = 0;
-				}
-		}
-	if (self)
-		{
-			m_UnitsList = [[NSMutableArray alloc] initWithCapacity:4];
-			if (!m_UnitsList)
-				{
-					[self release];
-					self = 0;
-				}
-		}
+	m_LanguageList = [[NSMutableArray alloc] initWithCapacity:128];
+	if (!m_LanguageList) {
+		[self release];
+		return nil;
+	}
+	m_UnitsList = [[NSMutableArray alloc] initWithCapacity:4];
+	if (!m_UnitsList) {
+		[self release];
+		return nil;
+	}
 	return self;
 }
 
 - (oneway void)dealloc
 {
 	if (m_LanguageList)
-		{
-			[m_LanguageList release];
-			m_LanguageList = 0;
-		}
+	{
+		[m_LanguageList release];
+		m_LanguageList = 0;
+	}
 	if (m_UnitsList)
-		{
-			[m_UnitsList release];
-			m_UnitsList = 0;
-		}
+	{
+		[m_UnitsList release];
+		m_UnitsList = 0;
+	}
 	[super dealloc];
 }
 
@@ -236,11 +231,11 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	count = static_cast<int>(CDO_PopUp__count);
 
 	for (int i = 0; i < count; i++)
-		{
-			[PopUp_List[i] setTag:i];
-			[PopUp_List[i] setEnabled:NO];
-			[PopUp_List[i] removeAllItems];
-		}
+	{
+		[PopUp_List[i] setTag:i];
+		[PopUp_List[i] setEnabled:NO];
+		[PopUp_List[i] removeAllItems];
+	}
 
 #define defn(X,Y)		Switch_List[CDO_##X] = o##X; m_BOList[CDO_##X] = Y
 
@@ -455,11 +450,13 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aColorWell:(id)sender
 {
+	UT_UNUSED(sender);
 	// TODO
 }
 
 - (IBAction)aField_Extension:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_ASSERT(m_pActiveScheme);
 	if (m_pActiveScheme)
 		{
@@ -470,6 +467,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aField_Minutes:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_ASSERT(m_pActiveScheme);
 	if (m_pActiveScheme)
 		{
@@ -509,6 +507,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aStepper:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_ASSERT(m_pActiveScheme);
 	if (m_pActiveScheme)
 		{
@@ -638,16 +637,20 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	UT_UNUSED(aTableView);
 	return (int) [m_LanguageList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
 	return [m_LanguageList objectAtIndex:((unsigned) rowIndex)];
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	UT_ASSERT(m_pActiveScheme);
 	if (m_pActiveScheme)
 		{
@@ -662,7 +665,903 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aTableColumn);
+	UT_UNUSED(rowIndex);
 	[aCell setFont:[NSFont systemFontOfSize:10.0f]];
 }
 
 @end
+
+
+
+static const char * s_null_extension = XAP_PREF_DEFAULT_AutoSaveFileExt;
+
+#ifdef FREEP_EXT
+#undef FREEP_EXT
+#endif
+#define FREEP_EXT(S)	do { if (S) { if ((S) != s_null_extension) g_free((void *) (S)); }; (S) = 0; } while (0)
+
+#ifdef CHECK_EXT
+#undef CHECK_EXT
+#endif
+#define CHECK_EXT(S)	do { if (!(S)) (S) = s_null_extension; } while (0)
+
+AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeManager, XAP_PrefsScheme * pPrefsScheme) :
+	m_pSchemeManager(pSchemeManager),
+	m_pPrefsScheme(pPrefsScheme),
+	m_bCurrentIsDefaults(false),
+	m_bCurrentIsOriginal(true)
+{
+	UT_uint32 i = 0;
+	UT_uint32 count = static_cast<UT_uint32>(bo__count);
+
+	for (i = 0; i < count; i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_default  = false;
+			m_BOData[bo].m_editable = false;
+		}
+	lookupDefaultOptionValues();
+
+	for (i = 0; i < count; i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_original = m_BOData[bo].m_default;
+		}
+
+	bool bValue = false;
+
+	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_AutoSaveFile,							&bValue))
+		m_BOData[bo_AutoSave		].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_AutoSpellCheck,						&bValue))
+		m_BOData[bo_CheckSpelling	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&bValue))
+		m_BOData[bo_CheckGrammar	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( XAP_PREF_KEY_SmartQuotesEnable,						&bValue))
+		m_BOData[bo_SmartQuotes	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( XAP_PREF_KEY_CustomSmartQuotes,						&bValue))
+		m_BOData[bo_CustomSmartQuotes	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&bValue))
+		m_BOData[bo_CursorBlink		].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,		&bValue))
+		m_BOData[bo_DirectionMarkers].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_DefaultDirectionRtl,					&bValue))
+		m_BOData[bo_DirectionRTL	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_SaveContextGlyphs,					&bValue))
+		m_BOData[bo_GlyphSaveVisual	].m_original = bValue;
+
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_HighlightMisspelled].m_original = bValue;
+
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_SpellCheckNumbers,					&bValue))
+		m_BOData[bo_IgnoreNumbered	].m_original = bValue; // TODO: Is this reversed?
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_SpellCheckCaps,						&bValue))
+		m_BOData[bo_IgnoreUppercase	].m_original = bValue; // TODO: Is this reversed?
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_SpellCheckInternet,					&bValue))
+		m_BOData[bo_IgnoreURLs		].m_original = bValue; // TODO: Is this reversed?
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_ParaVisible,							&bValue))
+		m_BOData[bo_LayoutMarks		].m_original = bValue;
+
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_MainDictionaryOnly	].m_original = bValue;
+
+	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_AutoLoadPlugins,						&bValue))
+		m_BOData[bo_Plugins			].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_RulerVisible,							&bValue))
+		m_BOData[bo_Ruler			].m_original = bValue;
+
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_SaveScheme			].m_original = bValue;
+
+	// TODO: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ScreenColor			].m_original = bValue;
+
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,						&bValue))
+		m_BOData[bo_StatusBar		].m_original = bValue;
+
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_SuggestCorrections	].m_original = bValue;
+
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_ExtraBarVisible,						&bValue))
+		m_BOData[bo_ToolbarExtra	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_FormatBarVisible,						&bValue))
+		m_BOData[bo_ToolbarFormat	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_StandardBarVisible,					&bValue))
+		m_BOData[bo_ToolbarStandard	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_TableBarVisible,						&bValue))
+		m_BOData[bo_ToolbarTable	].m_original = bValue;
+
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ViewAll			].m_original = bValue;
+	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ViewHidden			].m_original = bValue;
+
+	for (i = 0; i < count; i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_current = m_BOData[bo].m_original;
+		}
+
+	const gchar * pszValue = 0;
+
+	/* Auto-Save Period
+	 */
+	m_ioAutoSaveMinutes.m_original = m_ioAutoSaveMinutes.m_default;
+
+	pszValue = 0;
+	if (m_pPrefsScheme->getValue(XAP_PREF_KEY_AutoSaveFilePeriod, &pszValue))
+		{
+			UT_ASSERT(pszValue);
+
+			int ASM = static_cast<int>(m_ioAutoSaveMinutes.m_default);
+
+			if (pszValue)
+				if (sscanf(pszValue, "%d", &ASM) == 1)
+					{
+						if (ASM < 1)
+							ASM = 1;
+						if (ASM > 60)
+							ASM = 60;
+
+						m_ioAutoSaveMinutes.m_original = static_cast<UT_sint32>(ASM);
+					}
+		}
+	m_ioAutoSaveMinutes.m_current = m_ioAutoSaveMinutes.m_original;
+
+	sprintf(m_szAutoSaveMinutes, "%d", static_cast<int>(m_ioAutoSaveMinutes.m_current));
+		
+	/* Auto-Save Extension
+	 */
+	m_soAutoSaveExtension.m_original = 0;
+	m_soAutoSaveExtension.m_current  = 0;
+
+	pszValue = 0;
+	if (m_pPrefsScheme->getValue(XAP_PREF_KEY_AutoSaveFileExt, &pszValue))
+		{
+			UT_ASSERT(pszValue);
+			if (pszValue)
+				{
+					m_soAutoSaveExtension.m_original = g_strdup(pszValue);
+					CHECK_EXT(m_soAutoSaveExtension.m_original);
+				}
+		}
+	if (m_soAutoSaveExtension.m_original == 0)
+		{
+			m_soAutoSaveExtension.m_original = g_strdup(m_soAutoSaveExtension.m_default);
+			CHECK_EXT(m_soAutoSaveExtension.m_original);
+		}
+	m_soAutoSaveExtension.m_current = g_strdup(m_soAutoSaveExtension.m_original);
+	CHECK_EXT(m_soAutoSaveExtension.m_current);
+
+	/* StringSet
+	 */
+	m_ioUILangIndex.m_original = m_ioUILangIndex.m_default;
+
+	pszValue = 0;
+	if (m_pPrefsScheme->getValue(AP_PREF_KEY_StringSet, &pszValue))
+		{
+			UT_ASSERT(pszValue);
+			if (pszValue)
+				m_ioUILangIndex.m_original = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(pszValue));
+		}
+	m_ioUILangIndex.m_current = m_ioUILangIndex.m_original;
+
+	/* PopUp Units
+	 */
+	m_ioUnitsIndex.m_original = m_ioUnitsIndex.m_default;
+
+	pszValue = 0;
+	if (m_pPrefsScheme->getValue(AP_PREF_KEY_RulerUnits, &pszValue))
+		{
+			UT_ASSERT(pszValue);
+			if (pszValue)
+				m_ioUnitsIndex.m_original = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(pszValue));
+		}
+	m_ioUnitsIndex.m_current = m_ioUnitsIndex.m_original;
+
+	// TODO
+
+	sync();
+}
+
+AP_PreferenceScheme::~AP_PreferenceScheme()
+{
+	FREEP_EXT(m_soAutoSaveExtension.m_default);
+	FREEP_EXT(m_soAutoSaveExtension.m_original);
+	FREEP_EXT(m_soAutoSaveExtension.m_current);
+	// 
+}
+
+void AP_PreferenceScheme::setBoolOptionValue(BoolOption bo, bool bNewValue)
+{
+	if ((bo < 0) || (bo >= bo__count))
+		{
+			UT_DEBUGMSG(("AP_PreferenceScheme::setBoolOptionValue: BoolOption value out of range!\n"));
+			return;
+		}
+	if (!m_BOData[bo].m_editable)
+		{
+			UT_DEBUGMSG(("AP_PreferenceScheme::setBoolOptionValue: BoolOption value is not editable!\n"));
+			return;
+		}
+	m_BOData[bo].m_current = bNewValue;
+
+	sync();
+}
+
+/* sets current values to the default
+ */
+void AP_PreferenceScheme::restoreDefaults()
+{
+	if (m_bCurrentIsDefaults) return;
+
+	for (UT_uint32 i = 0; i < static_cast<UT_uint32>(bo__count); i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_current = m_BOData[bo].m_default;
+		}
+
+	/* Auto-Save Period
+	 */
+	m_ioAutoSaveMinutes.m_current = m_ioAutoSaveMinutes.m_default;
+
+	sprintf(m_szAutoSaveMinutes, "%d", static_cast<int>(m_ioAutoSaveMinutes.m_current));
+		
+	/* Auto-Save Extension
+	 */
+	FREEP_EXT(m_soAutoSaveExtension.m_current);
+
+	m_soAutoSaveExtension.m_current = g_strdup(m_soAutoSaveExtension.m_default);
+	CHECK_EXT(m_soAutoSaveExtension.m_current);
+
+	/* StringSet
+	 */
+	m_ioUILangIndex.m_current = m_ioUILangIndex.m_default;
+
+	/* PopUp Units
+	 */
+	m_ioUnitsIndex.m_current = m_ioUnitsIndex.m_default;
+
+	// TODO
+
+	sync();
+}
+
+/* saves any changes to the scheme
+ */
+void AP_PreferenceScheme::saveChanges()
+{
+	if (m_bCurrentIsOriginal) return;
+
+	BoolOption bo;
+
+	bo = bo_AutoSave;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_AutoSaveFile,						 m_BOData[bo].m_current);
+
+	bo = bo_CheckSpelling;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_AutoSpellCheck,					 m_BOData[bo].m_current);
+
+
+	bo = bo_CheckGrammar;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_AutoGrammarCheck,					 m_BOData[bo].m_current);
+
+	bo = bo_SmartQuotes;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( XAP_PREF_KEY_SmartQuotesEnable,					 m_BOData[bo].m_current);
+
+	bo = bo_CustomSmartQuotes;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( XAP_PREF_KEY_CustomSmartQuotes,					 m_BOData[bo].m_current);
+
+	bo = bo_CursorBlink;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_CursorBlink,						 m_BOData[bo].m_current);
+
+	bo = bo_DirectionMarkers;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,	 m_BOData[bo].m_current);
+
+	bo = bo_DirectionRTL;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_DefaultDirectionRtl,				 m_BOData[bo].m_current);
+
+	bo = bo_GlyphSaveVisual;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_SaveContextGlyphs,				 m_BOData[bo].m_current);
+
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_HighlightMisspelled	].m_current);
+
+	bo = bo_IgnoreNumbered;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_SpellCheckNumbers,				 m_BOData[bo].m_current); // TODO: Is this reversed?
+
+	bo = bo_IgnoreUppercase;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_SpellCheckCaps,					 m_BOData[bo].m_current); // TODO: Is this reversed?
+
+	bo = bo_IgnoreURLs;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_SpellCheckInternet,				 m_BOData[bo].m_current); // TODO: Is this reversed?
+
+	bo = bo_LayoutMarks;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_ParaVisible,						 m_BOData[bo].m_current);
+
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_MainDictionaryOnly	].m_current);
+
+	bo = bo_Plugins;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_AutoLoadPlugins,					 m_BOData[bo].m_current);
+
+	bo = bo_Ruler;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_RulerVisible,						 m_BOData[bo].m_current);
+
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_SaveScheme			].m_current);
+
+	// TODO: m_pPrefsScheme->setValueBool("", m_BOData[bo_ScreenColor				].m_current);
+
+	bo = bo_StatusBar;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_StatusBarVisible,					 m_BOData[bo].m_current);
+
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_SuggestCorrections	].m_current);
+
+	bo = bo_ToolbarExtra;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_ExtraBarVisible,					 m_BOData[bo].m_current);
+
+	bo = bo_ToolbarFormat;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_FormatBarVisible,					 m_BOData[bo].m_current);
+
+	bo = bo_ToolbarStandard;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_StandardBarVisible,				 m_BOData[bo].m_current);
+
+	bo = bo_ToolbarTable;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_TableBarVisible,					 m_BOData[bo].m_current);
+
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_ViewAll				].m_current);
+	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_ViewHidden			].m_current);
+
+	for (UT_uint32 i = 0; i < static_cast<UT_uint32>(bo__count); i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_original = m_BOData[bo].m_current;
+		}
+
+	/* Auto-Save Period
+	 */
+	m_pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, m_szAutoSaveMinutes);
+
+	m_ioAutoSaveMinutes.m_original = m_ioAutoSaveMinutes.m_current;
+
+	/* Auto-Save Extension
+	 */
+	m_pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFileExt, m_soAutoSaveExtension.m_current);
+
+	FREEP_EXT(m_soAutoSaveExtension.m_original);
+
+	m_soAutoSaveExtension.m_original = g_strdup(m_soAutoSaveExtension.m_current);
+	CHECK_EXT(m_soAutoSaveExtension.m_original);
+
+	const gchar * szValue = 0;
+
+	/* StringSet
+	 */
+	szValue = m_pSchemeManager->getNthLanguageCode(static_cast<UT_uint32>(m_ioUILangIndex.m_current));
+	m_pPrefsScheme->setValue(AP_PREF_KEY_StringSet, szValue);
+
+	m_ioUILangIndex.m_original = m_ioUILangIndex.m_current;
+
+	/* PopUp Units
+	 */
+	szValue = m_pSchemeManager->getPopUp_NthUnits(static_cast<UT_uint32>(m_ioUnitsIndex.m_current));
+	m_pPrefsScheme->setValue(AP_PREF_KEY_RulerUnits, AP_PreferenceSchemeManager::reverseTranslate(szValue));
+
+	m_ioUnitsIndex.m_original = m_ioUnitsIndex.m_current;
+
+	// TODO
+
+	sync();
+}
+
+/* update the interface to match the current settings
+ */
+void AP_PreferenceScheme::applySettings()
+{
+	// TODO
+}
+
+const char * AP_PreferenceScheme::setAutoSaveMinutes(const char * szAutoSaveMinutes)
+{
+	int ASM = 5;
+
+	if (szAutoSaveMinutes)
+		if (sscanf(szAutoSaveMinutes, "%d", &ASM) == 1)
+			{
+				if (ASM < 1)
+					ASM = 1;
+				if (ASM > 60)
+					ASM = 60;
+
+				m_ioAutoSaveMinutes.m_current = static_cast<UT_sint32>(ASM);
+
+				sprintf(m_szAutoSaveMinutes, "%d", static_cast<int>(m_ioAutoSaveMinutes.m_current));
+
+				sync();
+			}
+	return m_szAutoSaveMinutes;
+}
+
+const char * AP_PreferenceScheme::incrementAutoSaveMinutes()
+{
+	if (m_ioAutoSaveMinutes.m_current < 60)
+		{
+			m_ioAutoSaveMinutes.m_current++;
+
+			sprintf(m_szAutoSaveMinutes, "%d", static_cast<int>(m_ioAutoSaveMinutes.m_current));
+
+			sync();
+		}
+	return m_szAutoSaveMinutes;
+}
+
+const char * AP_PreferenceScheme::decrementAutoSaveMinutes()
+{
+	if (m_ioAutoSaveMinutes.m_current > 1)
+		{
+			m_ioAutoSaveMinutes.m_current--;
+
+			sprintf(m_szAutoSaveMinutes, "%d", static_cast<int>(m_ioAutoSaveMinutes.m_current));
+
+			sync();
+		}
+	return m_szAutoSaveMinutes;
+}
+
+const char * AP_PreferenceScheme::setAutoSaveExtension(const char * szAutoSaveExtension)
+{
+	if (szAutoSaveExtension)
+		{
+			FREEP_EXT(m_soAutoSaveExtension.m_current);
+
+			m_soAutoSaveExtension.m_current = g_strdup(szAutoSaveExtension);
+			CHECK_EXT(m_soAutoSaveExtension.m_current);
+
+			sync();
+		}
+	return m_soAutoSaveExtension.m_current;
+}
+
+UT_uint32 AP_PreferenceScheme::setUILangIndex(UT_uint32 index)
+{
+	if (index < m_pSchemeManager->getLanguageCount())
+		{
+			m_ioUILangIndex.m_current = static_cast<UT_sint32>(index);
+
+			sync();
+		}
+	return m_ioUILangIndex.m_current;
+}
+
+UT_uint32 AP_PreferenceScheme::setUnitsIndex(UT_uint32 index)
+{
+	if (index < m_pSchemeManager->getPopUp_UnitsCount())
+		{
+			m_ioUnitsIndex.m_current = static_cast<UT_sint32>(index);
+
+			sync();
+		}
+	return m_ioUnitsIndex.m_current;
+}
+
+void AP_PreferenceScheme::lookupDefaultOptionValues()
+{
+	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+	UT_ASSERT(pPrefs);
+	if (!pPrefs) return;
+
+	XAP_PrefsScheme * pScheme = pPrefs->getScheme(pPrefs->getBuiltinSchemeName());
+	UT_ASSERT(pScheme);
+	if (!pScheme) return;
+
+	pScheme->getValueBool(XAP_PREF_KEY_AutoSaveFile,						&(m_BOData[bo_AutoSave			].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_AutoSpellCheck,						&(m_BOData[bo_CheckSpelling		].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&(m_BOData[bo_CheckGrammar		].m_default));
+	pScheme->getValueBool( XAP_PREF_KEY_SmartQuotesEnable,						&(m_BOData[bo_SmartQuotes		].m_default));
+	pScheme->getValueBool( XAP_PREF_KEY_CustomSmartQuotes,						&(m_BOData[bo_CustomSmartQuotes		].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&(m_BOData[bo_CursorBlink		].m_default));
+	pScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,	&(m_BOData[bo_DirectionMarkers	].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_DefaultDirectionRtl,					&(m_BOData[bo_DirectionRTL		].m_default));
+	pScheme->getValueBool(XAP_PREF_KEY_SaveContextGlyphs,					&(m_BOData[bo_GlyphSaveVisual	].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_HighlightMisspelled	].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_SpellCheckNumbers,					&(m_BOData[bo_IgnoreNumbered	].m_default)); // TODO: Is this reversed?
+	pScheme->getValueBool( AP_PREF_KEY_SpellCheckCaps,						&(m_BOData[bo_IgnoreUppercase	].m_default)); // TODO: Is this reversed?
+	pScheme->getValueBool( AP_PREF_KEY_SpellCheckInternet,					&(m_BOData[bo_IgnoreURLs		].m_default)); // TODO: Is this reversed?
+	pScheme->getValueBool( AP_PREF_KEY_ParaVisible,							&(m_BOData[bo_LayoutMarks		].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_MainDictionaryOnly	].m_default));
+	pScheme->getValueBool(XAP_PREF_KEY_AutoLoadPlugins,						&(m_BOData[bo_Plugins			].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_RulerVisible,						&(m_BOData[bo_Ruler				].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SaveScheme			].m_default));
+	// TODO: pScheme->getValueBool("",&(m_BOData[bo_ScreenColor			].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,					&(m_BOData[bo_StatusBar			].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SuggestCorrections	].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_ExtraBarVisible,						&(m_BOData[bo_ToolbarExtra		].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_FormatBarVisible,					&(m_BOData[bo_ToolbarFormat		].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_StandardBarVisible,					&(m_BOData[bo_ToolbarStandard	].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_TableBarVisible,						&(m_BOData[bo_ToolbarTable		].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_ViewAll				].m_default));
+	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_ViewHidden			].m_default));
+
+	// m_BOData[bo_IgnoreNumbered	].m_default = !m_BOData[bo_IgnoreNumbered	].m_default;
+	// m_BOData[bo_IgnoreUppercase	].m_default = !m_BOData[bo_IgnoreUppercase	].m_default;
+	// m_BOData[bo_IgnoreURLs		].m_default = !m_BOData[bo_IgnoreURLs		].m_default;
+
+	const gchar * pszValue = 0;
+
+	/* Auto-Save Period
+	 */
+	int ASM = 5;
+
+	pszValue = 0;
+	pScheme->getValue(XAP_PREF_KEY_AutoSaveFilePeriod, &pszValue);
+	UT_ASSERT(pszValue);
+	if (pszValue)
+		sscanf(pszValue, "%d", &ASM);
+	if (ASM < 1)
+		ASM = 1;
+	if (ASM > 60)
+		ASM = 60;
+
+	m_ioAutoSaveMinutes.m_default = static_cast<UT_sint32>(ASM);
+
+	/* Auto-Save Extension
+	 */
+	m_soAutoSaveExtension.m_default = 0;
+
+	pszValue = 0;
+	pScheme->getValue(XAP_PREF_KEY_AutoSaveFileExt, &pszValue);
+	UT_ASSERT(pszValue);
+	if (pszValue)
+		m_soAutoSaveExtension.m_default = g_strdup(pszValue);
+
+	CHECK_EXT(m_soAutoSaveExtension.m_default);
+
+	/* StringSet
+	 */
+	pszValue = 0;
+	pScheme->getValue(AP_PREF_KEY_StringSet, &pszValue);
+	UT_ASSERT(pszValue);
+	if (pszValue)
+		m_ioUILangIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(pszValue));
+	else
+		m_ioUILangIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(AP_PREF_DEFAULT_StringSet));
+
+	/* PopUp Units
+	 */
+	pszValue = 0;
+	pScheme->getValue(AP_PREF_KEY_RulerUnits, &pszValue);
+	UT_ASSERT(pszValue);
+	if (pszValue)
+		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(pszValue));
+	else
+		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(AP_PREF_DEFAULT_RulerUnits));
+
+	// TODO
+}
+
+void AP_PreferenceScheme::sync()
+{
+	bool bPreviousWasOriginal = m_bCurrentIsOriginal;
+
+	m_bCurrentIsDefaults = true;
+	m_bCurrentIsOriginal = true;
+
+	for (UT_uint32 i = 0; i < static_cast<UT_uint32>(bo__count); i++)
+		{
+			BoolOption bo = static_cast<BoolOption>(i);
+
+			m_BOData[bo].m_editable = true;
+
+			if (m_BOData[bo].m_current != m_BOData[bo].m_default)
+				m_bCurrentIsDefaults = false;
+			if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+				m_bCurrentIsOriginal = false;
+		}
+
+	/* Auto-Save Period
+	 */
+	if (m_ioAutoSaveMinutes.m_current != m_ioAutoSaveMinutes.m_default)
+		m_bCurrentIsDefaults = false;
+	if (m_ioAutoSaveMinutes.m_current != m_ioAutoSaveMinutes.m_original)
+		m_bCurrentIsOriginal = false;
+
+	/* Auto-Save Extension
+	 */
+	if (strcmp(m_soAutoSaveExtension.m_current, m_soAutoSaveExtension.m_default))
+		m_bCurrentIsDefaults = false;
+	if (strcmp(m_soAutoSaveExtension.m_current, m_soAutoSaveExtension.m_original))
+		m_bCurrentIsOriginal = false;
+
+	/* StringSet
+	 */
+	if (m_ioUILangIndex.m_current != m_ioUILangIndex.m_default)
+		m_bCurrentIsDefaults = false;
+	if (m_ioUILangIndex.m_current != m_ioUILangIndex.m_original)
+		m_bCurrentIsOriginal = false;
+
+	/* PopUp Units
+	 */
+	if (m_ioUnitsIndex.m_current != m_ioUnitsIndex.m_default)
+		m_bCurrentIsDefaults = false;
+	if (m_ioUnitsIndex.m_current != m_ioUnitsIndex.m_original)
+		m_bCurrentIsOriginal = false;
+
+	if (bPreviousWasOriginal != m_bCurrentIsOriginal)
+		{
+			m_pSchemeManager->updateUnsavedChanges(!m_bCurrentIsOriginal);
+		}
+
+	// NOT (YET?) IMPLEMENTED:
+	m_BOData[bo_HighlightMisspelled	].m_editable = false;
+	m_BOData[bo_MainDictionaryOnly	].m_editable = false;
+	m_BOData[bo_SaveScheme			].m_editable = false;
+	m_BOData[bo_SuggestCorrections	].m_editable = false;
+	m_BOData[bo_ViewAll				].m_editable = false;
+	m_BOData[bo_ViewHidden			].m_editable = false;
+
+	// TODO:
+	m_BOData[bo_ScreenColor			].m_editable = false;
+}
+
+
+AP_PreferenceSchemeManager::AP_PreferenceSchemeManager() :
+	m_bHaveUnsavedChanges(false),
+	m_LanguageCount(0),
+	m_ppLanguage(0),
+	m_ppLanguageCode(0)
+{
+	_constructLanguageArrays();
+	_constructPopUpArrays();
+	// 
+}
+
+AP_PreferenceSchemeManager::~AP_PreferenceSchemeManager()
+{
+	UT_uint32 count = m_vecSchemes.getItemCount();
+
+	for (UT_uint32 i = 0; i < count; i++)
+		{
+			AP_PreferenceScheme * pScheme = m_vecSchemes.getNthItem(i);
+			DELETEP(pScheme);
+		}
+
+	DELETEPV(m_ppLanguage);
+	DELETEPV(m_ppLanguageCode);
+
+	while (m_PopUp_UnitsCount)
+		{
+			g_free(m_PopUp_UnitsList[--m_PopUp_UnitsCount]);
+		}
+}
+
+AP_PreferenceSchemeManager * AP_PreferenceSchemeManager::create_manager()
+{
+	AP_PreferenceSchemeManager * manager = 0;
+	manager = new AP_PreferenceSchemeManager;
+	if (manager)
+	{
+		// TODO: we need all the schemes, not just the current...
+
+		XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
+		UT_ASSERT(pPrefs);
+		if (!pPrefs)
+		{
+			DELETEP(manager);
+			return 0;
+		}
+		XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+		UT_ASSERT(pScheme);
+		if (!pScheme)
+		{
+			DELETEP(manager);
+			return 0;
+		}
+
+		AP_PreferenceScheme * current = 0;
+
+		current = new AP_PreferenceScheme(manager, pScheme);
+
+		if (current)
+		{
+			manager->m_vecSchemes.addItem(current);
+			manager->m_pCurrentScheme = current;
+		}
+	}
+	return manager;
+}
+
+void AP_PreferenceSchemeManager::updateUnsavedChanges(bool bCallerHasUnsavedChanges)
+{
+	if (bCallerHasUnsavedChanges)
+	{
+		m_bHaveUnsavedChanges = true;
+		return;
+	}
+
+	UT_uint32 count = m_vecSchemes.getItemCount();
+
+	m_bHaveUnsavedChanges = false;
+
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		AP_PreferenceScheme * pScheme = m_vecSchemes.getNthItem(i);
+		if (!pScheme->currentIsOriginal())
+		{
+			m_bHaveUnsavedChanges = true;
+			break;
+		}
+	}
+}
+
+UT_uint32 AP_PreferenceSchemeManager::getLanguageIndex(const gchar * szLanguageCode) const
+{
+	UT_uint32 index = 1;
+
+	if (szLanguageCode)
+		for (UT_uint32 i = 1; i < m_LanguageCount; i++)
+			if (strcmp(m_ppLanguageCode[i], szLanguageCode) == 0)
+				{
+					index = i;
+					break;
+				}
+	return (index - 1);
+}
+
+static int s_compareQ(const void * a, const void * b)
+{
+	const gchar ** A = (const gchar **) a;
+	const gchar ** B = (const gchar **) b;
+
+	return g_utf8_collate(*A,*B);
+}
+
+void AP_PreferenceSchemeManager::_constructLanguageArrays()
+{
+	m_LanguageCount = m_LanguageTable.getCount();
+
+	const gchar ** ppLanguageTemp = new const gchar * [m_LanguageCount];
+
+	m_ppLanguage     = new const gchar * [m_LanguageCount];
+	m_ppLanguageCode = new const gchar * [m_LanguageCount];
+
+	UT_ASSERT(ppLanguageTemp && m_ppLanguage && m_ppLanguageCode);
+
+	if (!(ppLanguageTemp && m_ppLanguage && m_ppLanguageCode))
+		{
+			DELETEPV(  ppLanguageTemp);
+			DELETEPV(m_ppLanguage);
+			DELETEPV(m_ppLanguageCode);
+
+			m_LanguageCount = 0; // grr...
+			return;
+		}
+
+	UT_uint32 i;
+	UT_uint32 nDontSort = 0;
+	UT_uint32 nSort     = 0;
+
+	for(i = 0; i < m_LanguageCount; i++)
+		{
+			if (m_LanguageTable.getNthId(i) == XAP_STRING_ID_LANG_0) // Unsorted languages
+				{
+					m_ppLanguage[nDontSort] = m_LanguageTable.getNthLangName(i);
+					nDontSort++;
+				}
+			else
+				{
+					ppLanguageTemp[nSort] = m_LanguageTable.getNthLangName(i);
+					nSort++;
+				}
+		}
+
+	/* sort the temporary array
+	 */
+	qsort(ppLanguageTemp, m_LanguageCount-nDontSort, sizeof(gchar *), s_compareQ);
+
+	/* Copy the sorted codes and a ssign each language its code
+	 */
+	for (UT_uint32 nLang = 0; nLang < m_LanguageCount; nLang++)
+		{
+			if (nLang >= nDontSort)
+				{
+					m_ppLanguage[nLang] = ppLanguageTemp[nLang-nDontSort];
+				}
+			for(i = 0; i < m_LanguageCount; i++)
+				{
+					if (strcmp (m_ppLanguage[nLang], m_LanguageTable.getNthLangName(i)) == 0)
+						{
+							m_ppLanguageCode[nLang] = m_LanguageTable.getNthLangCode(i);
+							break;
+						}
+				}
+		}
+	DELETEPV(ppLanguageTemp);
+}
+
+/* TODO: make this dynamic!
+ */
+static const gchar * s_internal_units[5] = { "in", "cm", "mm", "pt", "pi" };
+
+UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const gchar * szUnits) const
+{
+	UT_uint32 index = 0;
+
+	if (szUnits)
+		for (UT_uint32 i = 0; i < 5; i++)
+			if ((strcmp(s_internal_units[i], szUnits) == 0) || (strcmp(m_PopUp_UnitsList[i], szUnits) == 0))
+				{
+					index = i;
+					break;
+				}
+	return index;
+}
+
+const gchar * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp_Units)
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	const gchar * tmp = 0;
+
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch);
+	if (tmp && (strcmp (tmp, PopUp_Units) == 0))
+		return s_internal_units[0];
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm);
+	if (tmp && (strcmp (tmp, PopUp_Units) == 0))
+		return s_internal_units[1];
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm);
+	if (tmp && (strcmp (tmp, PopUp_Units) == 0))
+		return s_internal_units[2];
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points);
+	if (tmp && (strcmp (tmp, PopUp_Units) == 0))
+		return s_internal_units[3];
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica);
+	if (tmp && (strcmp (tmp, PopUp_Units) == 0))
+		return s_internal_units[4];
+
+	return s_internal_units[0];
+}
+
+void AP_PreferenceSchemeManager::_constructPopUpArrays()
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	const gchar * tmp = 0;
+
+	m_PopUp_UnitsCount = 0;
+
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch);
+	if (tmp)
+		m_PopUp_UnitsList[m_PopUp_UnitsCount++] = g_strdup(tmp);
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm);
+	if (tmp)
+		m_PopUp_UnitsList[m_PopUp_UnitsCount++] = g_strdup(tmp);
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm);
+	if (tmp)
+		m_PopUp_UnitsList[m_PopUp_UnitsCount++] = g_strdup(tmp);
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points);
+	if (tmp)
+		m_PopUp_UnitsList[m_PopUp_UnitsCount++] = g_strdup(tmp);
+	tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica);
+	if (tmp)
+		m_PopUp_UnitsList[m_PopUp_UnitsCount++] = g_strdup(tmp);
+
+	UT_ASSERT(m_PopUp_UnitsCount == 5); // must match size of s_internal_units[] // TODO: make dynamic!
+
+	// TODO
+}

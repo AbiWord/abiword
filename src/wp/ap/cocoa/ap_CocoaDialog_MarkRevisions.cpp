@@ -83,7 +83,7 @@ void AP_CocoaDialog_MarkRevisions::event_FocusToggled ()
 }
 
 
-void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * /*pFrame*/)
 {
 	/* comment below should be re-read after analysing the UNIX code  -- Hub*/
 	
@@ -147,8 +147,7 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_MarkRevisions"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_MarkRevisions"];
 }
 
 -(void)discardXAP
@@ -201,22 +200,26 @@ void AP_CocoaDialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)radio1Action:(id)sender
 {
+	UT_UNUSED(sender);
 	[_radio2 setState:NSOffState];
 	_xap->event_FocusToggled();
 }
 
 - (IBAction)radio2Action:(id)sender
 {
+	UT_UNUSED(sender);
 	[_radio1 setState:NSOffState];
 	_xap->event_FocusToggled();
 }

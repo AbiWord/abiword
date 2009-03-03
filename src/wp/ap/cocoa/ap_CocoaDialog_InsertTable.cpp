@@ -59,7 +59,7 @@ AP_CocoaDialog_InsertTable::~AP_CocoaDialog_InsertTable(void)
 {
 }
 
-void AP_CocoaDialog_InsertTable::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_InsertTable::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_InsertTableController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -112,8 +112,7 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 @implementation AP_CocoaDialog_InsertTableController
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertTable"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_InsertTable"];
 }
 
 -(void)discardXAP
@@ -163,11 +162,13 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)colSizeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	BOOL bEnabled = (AP_Dialog_InsertTable::b_FIXEDSIZE == (AP_Dialog_InsertTable::columnType) [[_radioMatrix selectedCell] tag]) ? YES : NO;
 
 	[_fixedColSizeData    setEnabled:bEnabled];
@@ -216,6 +217,7 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 

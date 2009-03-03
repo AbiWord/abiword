@@ -42,10 +42,10 @@
 
 - (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame
 {
-	if (self = [super initWith:frame andFrame:windowFrame])
-	{
-		m_hasMarkedText = NO;
+	if (![super initWith:frame andFrame:windowFrame]) {
+		return nil;
 	}
+	m_hasMarkedText = NO;
 	return self;
 }
 
@@ -73,204 +73,248 @@
 /* NSResponder methods */
 - (void)insertNewline:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"insertParagraphBreak"];
 }
 
 - (void)insertTab:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"insertTab"];
 }
 
 - (void)deleteBackward:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"delLeft"];
 }
 
 - (void)deleteForward:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"delRight"];
 }
 
 - (void)moveForward:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtRight"];
 }
 
 - (void)moveRight:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtRight"];
 }
 
 - (void)moveBackward:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
 - (void)moveLeft:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
 - (void)moveUp:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtPrevLine"];
 }
 
 - (void)moveDown:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtNextLine"];
 }
 - (void)moveWordForward:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtEOW"];
 }
 - (void)moveWordBackward:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtBOW"];
 }
 
 - (void)moveWordRight:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtEOW"];
 }
 
 - (void)moveWordLeft:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtBOW"];
 }
 
 - (void)moveToBeginningOfLine:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtBOL"];
 }
 
 - (void)moveToEndOfLine:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtEOL"];
 }
 - (void)moveToBeginningOfParagraph:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtBOP"];
 }
 - (void)moveToEndOfParagraph:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtEOP"];
 }
 #if 0
 // implement the Edit method first
 - (void)moveParagraphBackwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelBOP"];
 }
 - (void)moveParagraphForwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelEOP"];
 }
 #endif
 
 - (void)moveToEndOfDocument:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtEOD"];
 }
 
 - (void)moveToBeginningOfDocument:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtBOD"];
 }
 
 - (void)moveToEndOfDocumentAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelEOD"];
 }
 - (void)moveToBeginningOfDocumentAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelBOD"];
 }
 
 - (void)pageDown:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtNextScreen"];
 }
 - (void)pageUp:(id)sender;
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtPrevScreen"];
 }
 
 - (void)moveLeftAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelLeft"];
 }
 - (void)moveRightAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelRight"];
 }
 
 - (void)moveBackwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelLeft"];
 }
 - (void)moveForwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelRight"];
 }
 
 - (void)moveWordForwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelEOW"];
 }
 - (void)moveWordRightAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelEOW"];
 }
 
 - (void)moveWordBackwardAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelBOW"];
 }
 - (void)moveWordLeftAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelBOW"];
 }
 
 - (void)moveUpAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelPrevLine"];
 }
 - (void)moveDownAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelNextLine"];
 }
 - (void)moveToBeginningOfLineAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelBOL"];
 }
 - (void)moveToEndOfLineAndModifySelection:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"extSelEOL"];
 }
 
 - (void)scrollPageUp:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollPageUp"];
 }
 - (void)scrollPageDown:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollPageDown"];
 }
 - (void)scrollLineUp:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollLineUp"];
 }
 - (void)scrollLineDown:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollLineDown"];
 }
 - (void)scrollToBeginningOfDocument:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollToTop"];
 }
 - (void)scrollToEndOfDocument:(id)sender
 {
+	UT_UNUSED(sender);
 	[self invokeEditMethod:"scrollToBottom"];
 }
 
@@ -278,6 +322,7 @@
 /* NSTextInput protocol */
 - (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange
 {
+	UT_UNUSED(theRange);
 	UT_ASSERT_NOT_REACHED();
 	return nil;
 }
@@ -285,6 +330,7 @@
 
 - (unsigned int)characterIndexForPoint:(NSPoint)thePoint
 {
+	UT_UNUSED(thePoint);
 	UT_ASSERT_NOT_REACHED();
 	return 0xffffffff;
 }
@@ -309,14 +355,14 @@
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange
 {
 	// UT_ASSERT_NOT_REACHED();
-UT_DEBUGMSG(("characterRange=(location=%u,length=%u)\n",theRange.location,theRange.length));
+	UT_DEBUGMSG(("characterRange=(location=%u,length=%u)\n",theRange.location,theRange.length));
 	return NSZeroRect;
 }
 
 
 - (BOOL)hasMarkedText
 {
-UT_DEBUGMSG(("m_hasMarkedText=%s\n",m_hasMarkedText ? "YES" : "NO"));
+	UT_DEBUGMSG(("m_hasMarkedText=%s\n",m_hasMarkedText ? "YES" : "NO"));
 	return m_hasMarkedText;
 }
 

@@ -153,7 +153,7 @@ XAP_CocoaDialog_Image::~XAP_CocoaDialog_Image(void)
 {
 }
 
-void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Image::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_ImageController alloc] initFromNib];
 	
@@ -189,7 +189,9 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_Image"];
+	if(![super initWithWindowNibName:@"xap_CocoaDlg_Image"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -247,22 +249,26 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Ok();
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 
 - (IBAction)widthChanged:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->doWidthEntry();
 }
 
 - (IBAction)widthNumStepperChanged:(id)sender
 {
+	UT_UNUSED(sender);
 	bool bIncrement = ([_widthNumStepper intValue] > 1);
 	[_widthNumStepper setIntValue:1];
 	_xap->doWidthSpin(bIncrement);
@@ -270,11 +276,13 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 - (IBAction)heightChanged:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->doHeightEntry();
 }
 
 - (IBAction)heightNumStepperChanged:(id)sender
 {
+	UT_UNUSED(sender);
 	bool bIncrement = ([_heightNumStepper intValue] > 1);
 	[_heightNumStepper setIntValue:1];
 	_xap->doHeightSpin(bIncrement);
@@ -282,6 +290,7 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 - (IBAction)preserveAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->aspectCheckbox();
 }
 
@@ -329,6 +338,7 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 - (IBAction)wrapAction:(id)sender
 {
+	UT_UNUSED(sender);
 	BOOL bEnabled = (([self textWrap] == WRAP_INLINE) ? NO : YES);
 
 	[_imagePlaceLabel  setEnabled:bEnabled];
@@ -338,23 +348,23 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 - (void)setTextWrap:(WRAPPING_TYPE)textWrap isEnabled:(BOOL)enabled
 {
 	switch (textWrap)
-		{
-		case WRAP_INLINE:
-			[_textWrapMatrix selectCellAtRow:0 column:0];
-			break;
-		case WRAP_TEXTRIGHT:
-			[_textWrapMatrix selectCellAtRow:1 column:0];
-			break;
-		case WRAP_TEXTLEFT:
-			[_textWrapMatrix selectCellAtRow:2 column:0];
-			break;
-		case WRAP_TEXTBOTH:
-			[_textWrapMatrix selectCellAtRow:3 column:0];
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
+	{
+	case WRAP_INLINE:
+		[_textWrapMatrix selectCellAtRow:0 column:0];
+		break;
+	case WRAP_TEXTRIGHT:
+		[_textWrapMatrix selectCellAtRow:1 column:0];
+		break;
+	case WRAP_TEXTLEFT:
+		[_textWrapMatrix selectCellAtRow:2 column:0];
+		break;
+	case WRAP_TEXTBOTH:
+		[_textWrapMatrix selectCellAtRow:3 column:0];
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 	[_textWrapLabel  setEnabled:enabled];
 	[_textWrapMatrix setEnabled:enabled];
 }
@@ -364,43 +374,43 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 	WRAPPING_TYPE type = WRAP_INLINE;
 
 	switch ([_textWrapMatrix selectedRow])
-		{
-		case 0:
-			type = WRAP_INLINE;
-			break;
-		case 1:
-			type = WRAP_TEXTRIGHT;
-			break;
-		case 2:
-			type = WRAP_TEXTLEFT;
-			break;
-		case 3:
-			type = WRAP_TEXTBOTH;
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
+	{
+	case 0:
+		type = WRAP_INLINE;
+		break;
+	case 1:
+		type = WRAP_TEXTRIGHT;
+		break;
+	case 2:
+		type = WRAP_TEXTLEFT;
+		break;
+	case 3:
+		type = WRAP_TEXTBOTH;
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 	return type;
 }
 
 - (void)setImagePlacement:(POSITION_TO)imagePlacement isEnabled:(BOOL)enabled
 {
 	switch (imagePlacement)
-		{
-		case POSITION_TO_PARAGRAPH:
-			[_imagePlaceMatrix selectCellAtRow:0 column:0];
-			break;
-		case POSITION_TO_COLUMN:
-			[_imagePlaceMatrix selectCellAtRow:1 column:0];
-			break;
-		case POSITION_TO_PAGE:
-			[_imagePlaceMatrix selectCellAtRow:2 column:0];
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
+	{
+	case POSITION_TO_PARAGRAPH:
+		[_imagePlaceMatrix selectCellAtRow:0 column:0];
+		break;
+	case POSITION_TO_COLUMN:
+		[_imagePlaceMatrix selectCellAtRow:1 column:0];
+		break;
+	case POSITION_TO_PAGE:
+		[_imagePlaceMatrix selectCellAtRow:2 column:0];
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 	[_imagePlaceLabel  setEnabled:enabled];
 	[_imagePlaceMatrix setEnabled:enabled];
 }
@@ -410,20 +420,20 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 	POSITION_TO type = POSITION_TO_PARAGRAPH;
 
 	switch ([_imagePlaceMatrix selectedRow])
-		{
-		case 0:
-			type = POSITION_TO_PARAGRAPH;
-			break;
-		case 1:
-			type = POSITION_TO_COLUMN;
-			break;
-		case 2:
-			type = POSITION_TO_PAGE;
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
+	{
+	case 0:
+		type = POSITION_TO_PARAGRAPH;
+		break;
+	case 1:
+		type = POSITION_TO_COLUMN;
+		break;
+	case 2:
+		type = POSITION_TO_PAGE;
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 	return type;
 }
 

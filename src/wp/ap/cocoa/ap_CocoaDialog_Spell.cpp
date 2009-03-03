@@ -165,7 +165,7 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
 	[m_dlg setMisspelled:attrStr scroll:offset];
 
 	[m_suggestionList removeAllStrings];
-	for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
+	for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
 		UT_UTF8String str((UT_UCSChar*)m_Suggestions->getNthItem(i));
 		[m_suggestionList addUT_UTF8String:str];
 	}
@@ -271,7 +271,7 @@ void AP_CocoaDialog_Spell::event_Cancel()
    [NSApp stopModal];
 }
 
-void AP_CocoaDialog_Spell::event_SuggestionSelected(int row, int column)
+void AP_CocoaDialog_Spell::event_SuggestionSelected(int row, int /*column*/)
 {
 	if (!m_Suggestions->getItemCount()) {
 		return;
@@ -292,8 +292,7 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Spell"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Spell"];
 }
 
 -(void)discardXAP
@@ -333,42 +332,50 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 
 - (IBAction)addToDictAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_AddToDict();
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)changeAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Change();
 }
 
 - (IBAction)changeAllAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ChangeAll();
 }
 
 - (IBAction)ignoreAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Ignore();
 }
 
 - (IBAction)ignoreAllAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_IgnoreAll();
 }
 
 - (IBAction)replacementChanged:(id)sender
 {
+	UT_UNUSED(sender);
 	[_suggestionList deselectAll:self];
 	_xap->event_ReplacementChanged();
 }
 
 - (void)suggestionSelected:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_SuggestionSelected([_suggestionList selectedRow], [_suggestionList selectedColumn]);
 }
 

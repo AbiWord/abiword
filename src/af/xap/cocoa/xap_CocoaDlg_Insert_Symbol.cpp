@@ -65,12 +65,12 @@ XAP_CocoaDialog_Insert_Symbol::~XAP_CocoaDialog_Insert_Symbol(void)
 	// 
 }
 
-void XAP_CocoaDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Insert_Symbol::runModal(XAP_Frame * /*pFrame*/)
 {
 	// 
 }
 
-void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * /*pFrame*/)
 {
 	/* First see if the dialog is already running
 	 */
@@ -88,7 +88,7 @@ void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
 }
 
-void XAP_CocoaDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	// ...
 }
@@ -186,79 +186,79 @@ static unichar s_remap[224] = {
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_Insert_Symbol"])
+	if (![super initWithWindowNibName:@"xap_CocoaDlg_Insert_Symbol"]) {
+		return nil;
+	}
+	m_FontList = 0;
+	m_CurrentFont = 0;
+	m_CurrentFontName = 0;
+
+	m_Symbol_lo = 0;
+	m_Symbol_hi = 0;
+
+	char hex[14] = { '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	int i;
+	unichar uc[3];
+
+	uc[1] = (unichar) ((unsigned char) 'x');
+	uc[2] = 0;
+	for (i = 0; i < 14; i++)
+	{
+		uc[0] = (unichar) ((unsigned char) hex[i]);
+		m_OffsetString[i] = [[NSString alloc] initWithCharacters:uc length:2];
+	}
+
+	uc[1] = 0;
+	for (i = 0; i < 224; i++)
+	{
+		uc[0] = (unichar) (i + 32);
+		m_SymbolString[i] = [[NSString alloc] initWithCharacters:uc length:1];
+		uc[0] = s_remap[i];
+		m_Remap_String[i] = [[NSString alloc] initWithCharacters:uc length:1];
+		m_SymbolWidth[i] = 0;
+	}
+
+	NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+	unsigned count = [pAvailableFontFamilies count];
+	if (count)
+	{
+		m_FontList = [[NSMutableArray alloc] initWithCapacity:count];
+		if (m_FontList)
 		{
-			m_FontList = 0;
-			m_CurrentFont = 0;
-			m_CurrentFontName = 0;
+			for (unsigned ff = 0; ff < count; ff++)
+			{
+				NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
 
-			m_Symbol_lo = 0;
-			m_Symbol_hi = 0;
+				/* const char * szFF = [pFontFamily UTF8String]; */
 
-			char hex[14] = { '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-			int i;
-			unichar uc[3];
-
-			uc[1] = (unichar) ((unsigned char) 'x');
-			uc[2] = 0;
-			for (i = 0; i < 14; i++)
+				if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
 				{
-					uc[0] = (unichar) ((unsigned char) hex[i]);
-					m_OffsetString[i] = [[NSString alloc] initWithCharacters:uc length:2];
+					[m_FontList addObject:pFontFamily];
 				}
-
-			uc[1] = 0;
-			for (i = 0; i < 224; i++)
-				{
-					uc[0] = (unichar) (i + 32);
-					m_SymbolString[i] = [[NSString alloc] initWithCharacters:uc length:1];
-					uc[0] = s_remap[i];
-					m_Remap_String[i] = [[NSString alloc] initWithCharacters:uc length:1];
-					m_SymbolWidth[i] = 0;
-				}
-
-			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
-
-			unsigned count = [pAvailableFontFamilies count];
-			if (count)
-				{
-					m_FontList = [[NSMutableArray alloc] initWithCapacity:count];
-					if (m_FontList)
-						{
-							for (unsigned ff = 0; ff < count; ff++)
-								{
-									NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
-
-									/* const char * szFF = [pFontFamily UTF8String]; */
-
-									if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
-										{
-											[m_FontList addObject:pFontFamily];
-										}
-								}
-							if ([m_FontList count])
-								{
-									[m_FontList sortUsingSelector:@selector(compare:)];
-								}
-							else
-								{
-									UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no usable font families?\n"));
-
-									[m_FontList release];
-									m_FontList = 0;
-								}
-						}
-				}
+			}
+			if ([m_FontList count])
+			{
+				[m_FontList sortUsingSelector:@selector(compare:)];
+			}
 			else
-				{
-					UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no available font families?\n"));
-				}
-			if (!m_FontList)
-				{
-					[self dealloc];
-					self = nil;
-				}
+			{
+				UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no usable font families?\n"));
+
+				[m_FontList release];
+				m_FontList = 0;
+			}
 		}
+	}
+	else
+	{
+		UT_DEBUGMSG(("XAP_CocoaDlg_Insert_Symbol -initFromNib: no available font families?\n"));
+	}
+	if (!m_FontList)
+	{
+		[self dealloc];
+		return nil;
+	}
 	return self;
 }
 
@@ -352,6 +352,7 @@ static unichar s_remap[224] = {
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	[oSymbolTable setDelegate:nil];
 	[oSymbolTable setDataSource:nil];
 	[oSymbolTable setTarget:nil];
@@ -367,6 +368,7 @@ static unichar s_remap[224] = {
 
 - (IBAction)aSingleClick:(id)sender
 {
+	UT_UNUSED(sender);
 	int columnIndex = [oSymbolTable clickedColumn];
 	int    rowIndex = [oSymbolTable clickedRow   ];
 
@@ -421,6 +423,7 @@ static unichar s_remap[224] = {
 
 - (IBAction)aAdd:(id)sender
 {
+	UT_UNUSED(sender);
 	int index = m_Symbol_hi * 16 + m_Symbol_lo;
 	if (m_SymbolWidth[index] == 0)
 		return;
@@ -443,6 +446,7 @@ static unichar s_remap[224] = {
 
 - (IBAction)aFontFamily:(id)sender
 {
+	UT_UNUSED(sender);
 	[self fontFamilyDidChange];
 
 	[oPreview setFont:[NSFont fontWithName:m_CurrentFontName size:36.0f]];
@@ -457,6 +461,7 @@ static unichar s_remap[224] = {
 
 - (IBAction)aFont:(id)sender
 {
+	UT_UNUSED(sender);
 	NSArray * fonts = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:[oFontFamily titleOfSelectedItem]];
 
 	NSArray * font = [fonts objectAtIndex:[oFont indexOfSelectedItem]];
@@ -528,6 +533,7 @@ static unichar s_remap[224] = {
 
 - (IBAction)aRemapGlyphs:(id)sender
 {
+	UT_UNUSED(sender);
 	m_bRemapGlyphs = ([oRemapGlyphs state] == NSOnState) ? YES : NO;
 
 	[self recalculateSymbolWidths];
@@ -560,11 +566,13 @@ static unichar s_remap[224] = {
  */
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	UT_UNUSED(aTableView);
 	return 14;
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
 	NSString * identifier = [aTableColumn identifier];
 
 	const char * cid = [identifier UTF8String];
@@ -616,11 +624,17 @@ static unichar s_remap[224] = {
  */
 - (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(aCell);
+	UT_UNUSED(aTableColumn);
+	UT_UNUSED(rowIndex);
 	// ...
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
 {
+	UT_UNUSED(aTableView);
+	UT_UNUSED(rowIndex);
 	return NO;
 }
 

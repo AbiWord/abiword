@@ -26,10 +26,10 @@
 
 - (id)init
 {
-	self = [super init];
-	if (self) {
-		_array = [[NSMutableArray alloc] init];
+	if (![super init]) {
+		return nil;
 	}
+	_array = [[NSMutableArray alloc] init];
 	return self;
 }
 
@@ -43,12 +43,15 @@
 /* NSTableDataSource */
 - (int)numberOfRowsInTableView:(NSTableView *)tableView
 {
+	UT_UNUSED(tableView);
 	return [_array count];
 }
 
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
 {
+	UT_UNUSED(tableView);
+	UT_UNUSED(tableColumn);
 	return [_array objectAtIndex:row];
 }
 

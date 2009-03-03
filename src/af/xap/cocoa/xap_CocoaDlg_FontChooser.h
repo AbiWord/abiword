@@ -131,7 +131,7 @@ public:
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
-	bool					getEntryString(char ** string);
+	bool					getEntryString(const char ** string);
 
 	/* GUI actions */
 	void _okAction(void);

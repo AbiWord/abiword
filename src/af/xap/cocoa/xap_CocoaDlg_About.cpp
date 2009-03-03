@@ -132,11 +132,13 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 - (IBAction)okBtnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	m_xap->event_OK();
 }
 
 - (IBAction)webBtnAction:(id)sender
 {
+	UT_UNUSED(sender);
 	m_xap->event_URL();
 }
 

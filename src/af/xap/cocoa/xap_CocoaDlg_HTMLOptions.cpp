@@ -46,7 +46,7 @@ XAP_CocoaDialog_HTMLOptions::~XAP_CocoaDialog_HTMLOptions ()
 }
 
 
-void XAP_CocoaDialog_HTMLOptions::runModal (XAP_Frame * pFrame)
+void XAP_CocoaDialog_HTMLOptions::runModal (XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDialog_HTMLOptions_Controller alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
@@ -211,58 +211,68 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)restoreAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_RestoreSettings();
 }
 
 - (IBAction)saveAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_SaveSettings();
 }
 
 - (IBAction)allowExtraMarkupAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_AllowAWML();
 }
 
 - (IBAction)declareXMLAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_DeclareXML();
 }
 
 - (IBAction)embedCSSAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_EmbedCSS();
 }
 
 - (IBAction)embedImageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_EmbedImages();
 }
 
 - (IBAction)exportHTMLAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_Is4();
 }
 
 - (IBAction)exportPHPAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->toggle_AbiWebDoc();
 }
 
 
 - (void)toggle:(XAP_CocoaDialog_HTMLOptions::options)btn withValue:(bool)value
 {
-	NSButton *ctrl;
+	NSButton *ctrl = nil;
 	switch(btn) {
 	case XAP_CocoaDialog_HTMLOptions::IS4:
 		ctrl = _exportHTMLBtn;
@@ -291,7 +301,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 
 - (void)enable:(XAP_CocoaDialog_HTMLOptions::options)btn withValue:(bool)value
 {
-	NSButton *ctrl;
+	NSButton *ctrl = nil;
 	switch(btn) {
 	case XAP_CocoaDialog_HTMLOptions::IS4:
 		ctrl = _exportHTMLBtn;
@@ -320,7 +330,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 
 - (bool)valueOf:(XAP_CocoaDialog_HTMLOptions::options)btn
 {
-	NSButton *ctrl;
+	NSButton *ctrl = nil;
 	switch(btn) {
 	case XAP_CocoaDialog_HTMLOptions::IS4:
 		ctrl = _exportHTMLBtn;

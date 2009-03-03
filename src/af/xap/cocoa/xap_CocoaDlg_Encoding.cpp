@@ -81,7 +81,7 @@ XAP_CocoaDialog_Encoding::~XAP_CocoaDialog_Encoding(void)
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_Encoding::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Encoding::runModal(XAP_Frame * /*pFrame*/)
 {
 
 	NSWindow* window;

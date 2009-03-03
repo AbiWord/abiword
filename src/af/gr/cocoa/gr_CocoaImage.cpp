@@ -74,7 +74,7 @@ bool		GR_CocoaImage::convertToBuffer(UT_ByteBuf** ppBB) const
  * Returns true if pixel at point (x,y) in device units is transparent.
  * See gr_UnixImage.cpp for how it's done in GTK.
  */
-bool	GR_CocoaImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+bool	GR_CocoaImage::isTransparentAt(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	UT_ASSERT(0);
 	return false;
@@ -194,7 +194,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth,
 }
 
 
-bool GR_CocoaImage::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_CocoaImage::render(GR_Graphics * /*pGR*/, UT_sint32 /*iDisplayWidth*/, UT_sint32 /*iDisplayHeight*/)
 {
 	UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
 	

@@ -276,41 +276,49 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 
 - (IBAction)zoom200Action:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Radio200Clicked();
 }
 
 - (IBAction)zoom100Action:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Radio100Clicked();
 }
 
 - (IBAction)zoom75Action:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Radio75Clicked();
 }
 
 - (IBAction)zoomPageWidthAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_RadioPageWidthClicked();
 }
 
 - (IBAction)zoomWholePageAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_RadioWholePageClicked();
 }
 
 - (IBAction)zoomPercentAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_RadioPercentClicked();
 }
 
@@ -323,6 +331,7 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 
 - (IBAction)zoomChangedAction:(id)sender
 {
+	UT_UNUSED(sender);
 	int percent = [_percentField intValue];
 	percent = (percent < XAP_DLG_ZOOM_MINIMUM_ZOOM) ? XAP_DLG_ZOOM_MINIMUM_ZOOM :
 			 ((percent > XAP_DLG_ZOOM_MAXIMUM_ZOOM) ? XAP_DLG_ZOOM_MAXIMUM_ZOOM : percent);

@@ -69,7 +69,7 @@ void  AP_CocoaDialog_WordCount::activate(void)
 	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_WordCount::runModeless(XAP_Frame * pFrame)
+void AP_CocoaDialog_WordCount::runModeless(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_WordCountController alloc] initFromNib];
 
@@ -124,7 +124,7 @@ void AP_CocoaDialog_WordCount::event_CloseWindow(void)
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 }
 
-void AP_CocoaDialog_WordCount::notifyActiveFrame(XAP_Frame * pFrame)
+void AP_CocoaDialog_WordCount::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	event_Update();
 }
@@ -151,10 +151,11 @@ void AP_CocoaDialog_WordCount::destroy(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_WordCount"])
-		{
-			_xap = 0;
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_WordCount"])
+	{
+		return nil;
+	}
+	_xap = NULL;
 	return self;
 }
 
@@ -177,6 +178,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	_xap->event_CloseWindow();
 }
 

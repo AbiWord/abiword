@@ -60,10 +60,10 @@ static const NSString * COMMENT_COL_ID = @"comment";
 
 - (id)init
 {
-	self = [super init];
-	if (self) {
-		_array = [[NSMutableArray alloc] init];
+	if(![super init]) {
+		return nil;
 	}
+	_array = [[NSMutableArray alloc] init];
 	return self;
 }
 
@@ -93,12 +93,14 @@ static const NSString * COMMENT_COL_ID = @"comment";
 /* NSTableDataSource */
 - (int)numberOfRowsInTableView:(NSTableView *)tableView
 {
+	UT_UNUSED(tableView);
 	return [_array count];
 }
 
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
 {
+	UT_UNUSED(tableView);
 	int idx = -1;
 	NSArray *line = [_array objectAtIndex:row];
 	
@@ -216,8 +218,7 @@ void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_ListRevisions"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_ListRevisions"];
 }
 
 -(void)discardXAP
@@ -258,6 +259,7 @@ void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
@@ -269,6 +271,7 @@ void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 

@@ -72,7 +72,7 @@ XAP_CocoaDialog_Password::~XAP_CocoaDialog_Password(void)
 {
 }
 
-void XAP_CocoaDialog_Password::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Password::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[XAP_CocoaDlg_PasswordController alloc] initFromNib];
 	
@@ -98,7 +98,9 @@ void XAP_CocoaDialog_Password::runModal(XAP_Frame * pFrame)
 @implementation XAP_CocoaDlg_PasswordController
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_Password"];
+	if(![super initWithWindowNibName:@"xap_CocoaDlg_Password"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -135,11 +137,13 @@ void XAP_CocoaDialog_Password::runModal(XAP_Frame * pFrame)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel ();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Ok ();
 }
 

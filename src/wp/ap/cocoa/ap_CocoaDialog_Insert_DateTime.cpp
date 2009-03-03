@@ -84,7 +84,7 @@ AP_CocoaDialog_Insert_DateTime::~AP_CocoaDialog_Insert_DateTime(void)
 
 /*****************************************************************/
 
-void AP_CocoaDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Insert_DateTime::runModal(XAP_Frame * /*pFrame*/)
 {
 	NSWindow* window;
 	m_dlg = [XAP_GenericListChooser_Controller loadFromNib];

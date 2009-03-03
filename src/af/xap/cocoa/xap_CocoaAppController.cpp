@@ -42,7 +42,7 @@
 struct EV_CocoaKeyEquiv
 {
 	XAP_Menu_Id		menuid;
-	char *			equiv;
+	const char *			equiv;
 	unsigned int	modifier;
 };
 
@@ -80,24 +80,28 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 
 - (void)terminate:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_UCS4String ucs4_empty;
 	ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
 }
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_UCS4String ucs4_empty;
 	ev_EditMethod_invoke("dlgAbout", ucs4_empty);
 }
 
 - (void)orderFrontPreferencesPanel:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_UCS4String ucs4_empty;
 	ev_EditMethod_invoke("dlgOptions", ucs4_empty);
 }
 
 - (void)openContextHelp:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
 	ev_EditMethod_invoke("helpContents", ucs4_empty); // [TODO: this needs to be redireced to firstResponder]
 }
@@ -315,34 +319,34 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		return nil;
 	}
 
-	if (self = [super init])
-	{
-		XAP_AppController_Instance = self;
-
-		m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
-
-		m_bApplicationLaunching   = YES;
-
-		m_bAutoLoadPluginsAfterLaunch = NO;
-
-		m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
-		m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
-
-		m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
-		m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
-
-		[m_FontFamilyDictionary retain];
-
-		m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
-
-		m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
-		m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
-
-		m_PluginsToolsSeparator = [NSMenuItem separatorItem];
-		[m_PluginsToolsSeparator retain];
-
-		m_ToolProviders = [[NSMutableArray alloc] initWithCapacity:4];
+	if(![super init]) {
+		return nil;
 	}
+	XAP_AppController_Instance = self;
+
+	m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
+
+	m_bApplicationLaunching   = YES;
+
+	m_bAutoLoadPluginsAfterLaunch = NO;
+
+	m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
+	m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+
+	m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
+	m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
+
+	[m_FontFamilyDictionary retain];
+
+	m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
+
+	m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
+	m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
+
+	m_PluginsToolsSeparator = [NSMenuItem separatorItem];
+	[m_PluginsToolsSeparator retain];
+
+	m_ToolProviders = [[NSMutableArray alloc] initWithCapacity:4];
 	return self;
 }
 
@@ -368,11 +372,13 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
 {
+	UT_UNUSED(sender);
 	return [key isEqualToString:@"orderedDocuments"];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	if (const char * home = getenv("HOME"))
 	{
 		NSString * desktop = [[NSString stringWithUTF8String:home] stringByAppendingPathComponent:@"Desktop"];
@@ -391,6 +397,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationDidFinishLaunching:]\n"));
 	m_bApplicationLaunching = NO;
 
@@ -468,6 +475,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender // probably unused now that NSApp's terminate is overridden
 {
+	UT_UNUSED(sender);
 	UT_DEBUGMSG(("- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender\n"));
 	UT_UCS4String ucs4_empty;
 	bool bQuit = ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
@@ -476,6 +484,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification // probably unused now that NSApp's terminate is overridden
 {
+	UT_UNUSED(aNotification);
 	if ([XAP_CocoaToolPalette instantiated])
 	{
 		[[XAP_CocoaToolPalette instance:self] close];
@@ -484,6 +493,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
+	UT_UNUSED(theApplication);
 	if (m_bApplicationLaunching == YES)
 	{
 		[m_FilesRequestedDuringLaunch addObject:filename];
@@ -533,6 +543,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
+	UT_UNUSED(theApplication);
 	if (m_bApplicationLaunching == YES)
 	{
 		return YES;
@@ -555,6 +566,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
 {
+	UT_UNUSED(theApplication);
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
 	if (!pEMC) {
 		return NO;
@@ -570,12 +582,14 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (id)dockFileNew:(id)sender
 {
+	UT_UNUSED(sender);
 	[self applicationOpenUntitledFile:NSApp];
 	return self;
 }
 
 - (id)dockFileOpen:(id)sender
 {
+	UT_UNUSED(sender);
 	[self applicationOpenFile:NSApp];
 	return self;
 }

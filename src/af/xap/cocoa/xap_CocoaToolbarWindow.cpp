@@ -40,14 +40,14 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 - (id)initWithContentRect:(NSRect)windowFrame
 {
-	if (self = [super initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES])
-	{
-		[self setBecomesKeyOnlyIfNeeded:YES];
-		[self setHidesOnDeactivate:YES];
-		[self setReleasedWhenClosed:YES]; // ??
-		[self setExcludedFromWindowsMenu:YES];
-		[self setCanHide:YES];
+	if (![super initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:YES])	{
+		return nil;
 	}
+	[self setBecomesKeyOnlyIfNeeded:YES];
+	[self setHidesOnDeactivate:YES];
+	[self setReleasedWhenClosed:YES]; // ??
+	[self setExcludedFromWindowsMenu:YES];
+	[self setCanHide:YES];
 	return self;
 }
 
@@ -77,25 +77,23 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 - (id)initWithWindow:(NSWindow *)window
 {
-	if (self = [super initWithWindow:window])
+	if (![super initWithWindow:window])
 	{
-		m_windows = [[NSMutableArray alloc] initWithCapacity:4];
-		if (!m_windows)
-		{
-			[self release];
-			self = 0;
-		}
-		m_SummaryID = @"";
-		[m_SummaryID retain];
+		return nil;
+	}
+	m_windows = [[NSMutableArray alloc] initWithCapacity:4];
+	if (!m_windows)
+	{
+		[self release];
+		return nil;
+	}
+	m_SummaryID = @"";
+	[m_SummaryID retain];
 
-		m_bounds.size.height = 0;
-	}
-	if (self)
-	{
-		NSNotificationCenter * NC = [NSNotificationCenter defaultCenter];
-		[NC addObserver:self selector:@selector(showToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameNeedToolbar)    object:nil];
-		[NC addObserver:self selector:@selector(hideToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar) object:nil];
-	}
+	m_bounds.size.height = 0;
+	NSNotificationCenter * NC = [NSNotificationCenter defaultCenter];
+	[NC addObserver:self selector:@selector(showToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameNeedToolbar)    object:nil];
+	[NC addObserver:self selector:@selector(hideToolbarNotification:) name:(XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar) object:nil];
 	return self;
 }
 

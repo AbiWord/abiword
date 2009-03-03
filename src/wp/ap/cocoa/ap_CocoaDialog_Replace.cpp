@@ -252,8 +252,7 @@ void AP_CocoaDialog_Replace::_updateLists()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Replace"];
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_Replace"];
 }
 
 -(void)discardXAP
@@ -293,6 +292,7 @@ void AP_CocoaDialog_Replace::_updateLists()
 	
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	_xap->event_CloseWindow();
 }
 
@@ -304,31 +304,37 @@ void AP_CocoaDialog_Replace::_updateLists()
 
 - (IBAction)findAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Find();
 }
 
 - (IBAction)findAndReplaceAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Replace();
 }
 
 - (IBAction)matchCaseAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_MatchCaseToggled();
 }
 
 - (IBAction)wholeWordAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_WholeWordToggled();
 }
 
 - (IBAction)findReverseAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ReverseFindToggled();
 }
 
 - (IBAction)replaceAllAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_ReplaceAll();
 }
 

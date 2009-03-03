@@ -92,14 +92,14 @@ void XAP_CocoaDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_Print::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_Print::runModal(XAP_Frame * /*pFrame*/)
 {
 	UT_ASSERT_NOT_REACHED();
 }
 
 
-void XAP_CocoaDialog_Print::runPrint(XAP_Frame * pFrame, FV_View * pPrintView,
-							UT_sint32 iWidth, UT_sint32 iHeight)
+void XAP_CocoaDialog_Print::runPrint(XAP_Frame * /*pFrame*/, FV_View * pPrintView,
+							UT_sint32 /*iWidth*/, UT_sint32 /*iHeight*/)
 {
 	UT_ASSERT(m_pPrintGraphics);
 	XAP_PrintingNSView* printingView = (XAP_PrintingNSView*)m_pPrintGraphics->_getView();

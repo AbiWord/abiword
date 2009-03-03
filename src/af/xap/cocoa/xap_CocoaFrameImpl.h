@@ -85,13 +85,13 @@ public:
 	virtual bool				_close();
 	virtual bool				_raise();
 	virtual bool				_show();
-	virtual void 				_setFullScreen(bool isFullScreen) {}
+	virtual void 				_setFullScreen(bool /*isFullScreen*/ ) { UT_ASSERT(UT_NOT_IMPLEMENTED); }
 	virtual bool				_updateTitle();
 	virtual UT_sint32			_setInputMode(const char * szName);
-	virtual void _hideMenuScroll(bool bHideMenuScroll)
+	virtual void _hideMenuScroll(bool /*bHideMenuScroll*/)
 		{ UT_ASSERT(UT_NOT_IMPLEMENTED); }
 	virtual void                _nullUpdate () const;
-	virtual void                _setCursor(GR_Graphics::Cursor c) {}
+	virtual void                _setCursor(GR_Graphics::Cursor /*c*/) { }
 
 	NSWindow *					getTopLevelWindow() const;
 	NSView *					getVBoxWidget() const;

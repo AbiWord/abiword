@@ -118,7 +118,7 @@ AP_CocoaFrame::~AP_CocoaFrame()
 	killFrameData();
 }
 
-bool AP_CocoaFrame::initialize(XAP_FrameMode frameMode)
+bool AP_CocoaFrame::initialize(XAP_FrameMode /*frameMode*/)
 {
 	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
 	UT_DEBUGMSG(("AP_CocoaFrame::initialize\n"));
@@ -210,7 +210,7 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 
 
 
-void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 & /*x*/, UT_sint32 & /*y*/)
 {
 	// translate the given document mouse coordinates into absolute screen coordinates.
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
@@ -420,7 +420,7 @@ bool AP_CocoaFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	return true;
 }
 
-void AP_CocoaFrame::_setViewFocus(AV_View *pView)
+void AP_CocoaFrame::_setViewFocus(AV_View * /*pView*/)
 {
 	AP_CocoaFrameImpl * pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
 	pFrameImpl->giveFocus();

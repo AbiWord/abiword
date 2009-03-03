@@ -19,6 +19,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "ut_types.h"
+
 #import "XAP_GenericListChooser_Controller.h"
 
 
@@ -38,6 +40,7 @@
 
 - (IBAction)cancelClicked:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_proxy) {
 		_proxy->cancelAction();
 	}
@@ -45,6 +48,7 @@
 
 - (IBAction)listClicked:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_proxy) {
 		_proxy->selectAction();
 	}
@@ -52,6 +56,7 @@
 
 - (IBAction)okClicked:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_proxy) {
 		_proxy->okAction();
 	}

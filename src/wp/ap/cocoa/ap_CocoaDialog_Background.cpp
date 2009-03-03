@@ -50,7 +50,7 @@ AP_CocoaDialog_Background::~AP_CocoaDialog_Background(void)
 	// 
 }
 
-void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Background::runModal(XAP_Frame * /*pFrame*/)
 {
 	if (AP_CocoaDialog_Background_Controller * dlg = [[AP_CocoaDialog_Background_Controller alloc] initFromNib])
 		{
@@ -68,10 +68,10 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Background"])
-		{
-			_xap = 0;
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_Background"]) {
+		return nil;
+	}
+	_xap = NULL;
 	return self;
 }
 
@@ -148,6 +148,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aColor:(id)sender
 {
+	UT_UNUSED(sender);
 	NSColor * color = [oColorWell color];
 
 	float red;
@@ -169,6 +170,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aClear:(id)sender
 {
+	UT_UNUSED(sender);
 	float r = 1;
 	float g = 1;
 	float b = 1;
@@ -182,6 +184,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aCancel:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		_xap->_setAnswer(AP_Dialog_Background::a_CANCEL);
 
@@ -192,6 +195,7 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 
 - (IBAction)aOK:(id)sender
 {
+	UT_UNUSED(sender);
 	if (_xap)
 		_xap->_setAnswer(AP_Dialog_Background::a_OK);
 

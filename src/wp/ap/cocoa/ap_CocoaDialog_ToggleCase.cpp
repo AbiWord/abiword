@@ -60,7 +60,7 @@ AP_CocoaDialog_ToggleCase::~AP_CocoaDialog_ToggleCase(void)
 {
 }
 
-void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * /*pFrame*/)
 {
 	NSWindow* window;
 
@@ -79,9 +79,7 @@ void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_ToggleCase"];
-	
-	return self;
+	return [super initWithWindowNibName:@"ap_CocoaDialog_ToggleCase"];
 }
 
 - (void)awakeFromNib
@@ -144,6 +142,7 @@ void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	switch ([[_caseMatrix selectedCell] tag]) {
 	case 0:
 		_xap->setCase(CASE_SENTENCE);
@@ -170,6 +169,7 @@ void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->setAnswer(_xap->a_CANCEL);
     [NSApp stopModal];
 }

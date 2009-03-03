@@ -62,7 +62,7 @@ AP_CocoaDialog_Field::~AP_CocoaDialog_Field(void)
 
 /*****************************************************************/
 
-void AP_CocoaDialog_Field::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_Field::runModal(XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_FieldController alloc] initFromNib];
 	
@@ -205,10 +205,10 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 
 - (id)initFromNib
 {
-	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"])
-		{
-			_xap = 0;
-		}
+	if (![super initWithWindowNibName:@"ap_CocoaDialog_Field"]) {
+		return nil;
+	}
+	_xap = NULL;
 	return self;
 }
 
@@ -272,23 +272,27 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	_xap->types_changed([_typesList selectedRow]);
 	[_fieldsList reloadData];
 }
 
 - (void)typesAction:(id)sender
 {
+	UT_UNUSED(sender);
 	// _xap->types_changed([_typesList selectedRow]);
 	// [_fieldsList reloadData];
 }
 
 - (IBAction)cancelAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_Cancel();
 }
 
 - (IBAction)okAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_OK();
 }
 

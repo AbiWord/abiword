@@ -177,6 +177,7 @@
 
 - (void)hasBeenResized:(NSNotification*)notif
 {
+	UT_UNUSED(notif);
 	if (m_pGR) {
 		AV_View * pView = m_pFrame->getCurrentView();
 		NSRect rect = [self bounds];

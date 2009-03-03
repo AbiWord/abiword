@@ -137,7 +137,7 @@ int AP_CocoaDialog_Goto::getSelectedRow (void)
 	return (m_iRow);
 }
 
-void AP_CocoaDialog_Goto::runModeless (XAP_Frame * pFrame)
+void AP_CocoaDialog_Goto::runModeless (XAP_Frame * /*pFrame*/)
 {
 	m_dlg = [[AP_CocoaDialog_GotoController alloc] initFromNib];
 
@@ -169,7 +169,7 @@ void AP_CocoaDialog_Goto::activate (void)
 	[m_dlg windowToFront];
 }
 
-void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * pFrame)
+void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {
 	ConstructWindowName();
 	[[m_dlg window] setTitle:[NSString stringWithUTF8String:getWindowName()]];
@@ -180,7 +180,9 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * pFrame)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Goto"];
+	if(![super initWithWindowNibName:@"ap_CocoaDialog_Goto"]) {
+		return nil;
+	}
 	return self;
 }
 
@@ -237,25 +239,30 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * pFrame)
 
 - (IBAction)backAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_backward();
 }
 
 - (IBAction)closeAction:(id)sender
 {
+	UT_UNUSED(sender);
 }
 
 - (IBAction)forwardAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_forward();
 }
 
 - (IBAction)jumpToAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_goto([[valueCombo stringValue] UTF8String]);
 }
 
 - (IBAction)valueComboAction:(id)sender
 {
+	UT_UNUSED(sender);
 	_xap->event_valueChanged();
 }
 

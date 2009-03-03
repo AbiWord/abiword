@@ -204,10 +204,13 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 	static char * upd_cache = 0;
 	if (upd_cache) return upd_cache; // points to the static buffer
 	
-	char * szHome = getenv("HOME");
-	if (!szHome || !*szHome) szHome = ".";
+	const char * szHome = getenv("HOME");
+	if (!szHome || !*szHome) {
+		szHome = ".";
+	}
 	
-	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX) return NULL;
+	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX) 
+		return NULL;
 	
 	strcpy(upd_buffer,szHome);
 	strcat(upd_buffer,"/");
@@ -355,7 +358,7 @@ XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
 	NSEnumerator* iter = [array objectEnumerator];
 	NSWindow* win;
 	
-	while (win = [iter nextObject]) {
+	while ((win = [iter nextObject]) != nil) {
 		id ctrl = [win delegate];
 		if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]]) {
 			myFrame = [(XAP_CocoaFrameController*)ctrl frameImpl]->getFrame();
@@ -368,12 +371,12 @@ XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
 }
 
 const char*         XAP_CocoaApp::_findNearestFont(const char* pszFontFamily,
-												   const char* pszFontStyle,
-												   const char* pszFontVariant,
-												   const char* pszFontWeight,
-												   const char* pszFontStretch,
-												   const char* pszFontSize,
-												   const char * pszLang)
+												   const char* /*pszFontStyle*/,
+												   const char* /*pszFontVariant*/,
+												   const char* /*pszFontWeight*/,
+												   const char* /*pszFontStretch*/,
+												   const char* /*pszFontSize*/,
+												   const char * /*pszLang*/)
 {
 	return pszFontFamily;
 }

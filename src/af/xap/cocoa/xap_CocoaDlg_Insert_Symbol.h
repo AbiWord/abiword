@@ -103,7 +103,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			notifyActiveFrame(XAP_Frame * pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame * pFrame) { };
+	virtual void			notifyCloseFrame(XAP_Frame * ) { };
 	virtual void			activate(void);
 	virtual void			destroy(void);
 
