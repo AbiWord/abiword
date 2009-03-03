@@ -5,7 +5,6 @@
  * Copyright (C) 2009 Hubert Figuiere <hub@figuiere.net>. 
  *     Whose contributions are under GPLv2+
  * Copyright (C) 2004 Morten Welinder (terra@gnome.org)
- * Copyright (C) 2004 Yukihiro Nakai  <nakai@gnome.gr.jp>
  * Copyright (C) 2003, Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or
