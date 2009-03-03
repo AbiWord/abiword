@@ -79,12 +79,12 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_vecLabelPropValue.addItem("numeric-square-brackets");
 	m_vecLabelPropValue.addItem("numeric-paren");
 	m_vecLabelPropValue.addItem("numeric-open-paren");
-	m_vecLabelPropValue.addItem("upper");
-	m_vecLabelPropValue.addItem("upper-paren");
-	m_vecLabelPropValue.addItem("upper-paren-open");
 	m_vecLabelPropValue.addItem("lower");
 	m_vecLabelPropValue.addItem("lower-paren");
 	m_vecLabelPropValue.addItem("lower-paren-open");
+	m_vecLabelPropValue.addItem("upper");
+	m_vecLabelPropValue.addItem("upper-paren");
+	m_vecLabelPropValue.addItem("upper-paren-open");
 	m_vecLabelPropValue.addItem("lower-roman");
 	m_vecLabelPropValue.addItem("lower-roman-paren");
 	m_vecLabelPropValue.addItem("upper-roman");
