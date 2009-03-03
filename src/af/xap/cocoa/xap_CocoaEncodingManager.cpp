@@ -95,7 +95,7 @@ static GHashTable *category_table= NULL;
 
 /*read an alias file for the locales*/
 static void
-read_aliases (char *file)
+read_aliases (const char *file)
 {
   FILE *fp;
   char buf[256];
@@ -521,9 +521,12 @@ void  XAP_CocoaEncodingManager::initialize()
 				const char* my_locname = (char*)my_lst->data;
 				
 	    		char* my_lang,*my_terr,*my_cs,*my_mod;
+				my_lang = my_terr = my_cs = my_mod = NULL;
     			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
-				g_free (my_mod);	// unneeded
-				my_mod = NULL;
+				if(my_mod) {
+					g_free (my_mod);
+					my_mod = NULL;
+				}
 				if (my_mask & COMPONENT_CODESET)
 				{
 					Native8BitEncodingName = my_cs+1;
