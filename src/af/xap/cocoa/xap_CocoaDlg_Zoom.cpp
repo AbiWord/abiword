@@ -228,8 +228,7 @@ void XAP_CocoaDialog_Zoom::_storeWindowData(void)
 
 - (id) initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_Zoom"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_Zoom"];
 }
 
 

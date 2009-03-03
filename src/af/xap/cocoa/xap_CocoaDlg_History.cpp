@@ -197,8 +197,7 @@ void XAP_CocoaDialog_History::event_Cancel()
 @implementation XAP_CocoaDialog_HistoryController
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_History"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_History"];
 }
 
 -(void)discardXAP

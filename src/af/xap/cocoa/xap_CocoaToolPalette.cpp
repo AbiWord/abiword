@@ -89,28 +89,28 @@ enum _XAP_CocoaTool_Id
 
 - (id)initWithPalette:(const struct XAP_CocoaPaletteRef *)palette
 {
-	self = [super init];
-	if (self) {
-		UT_ASSERT(palette);
-		UT_ASSERT(palette->Name);
-
-		m_Name = [[NSString alloc] initWithString:(palette->Name)];
-		UT_ASSERT(palette->Title && palette->Box);
-
-		m_Title = palette->Title;
-		m_Box   = palette->Box;
-
-		[m_Title retain];
-		[m_Box   retain];
-
-		NSRect frame;
-
-		frame = [m_Title frame];
-		m_heightTitle = static_cast<UT_uint32>(frame.size.height);
-
-		frame = [m_Box frame];
-		m_heightBox = static_cast<UT_uint32>(frame.size.height);
+	if(![super init]) {
+		return nil;
 	}
+	UT_ASSERT(palette);
+	UT_ASSERT(palette->Name);
+
+	m_Name = [[NSString alloc] initWithString:(palette->Name)];
+	UT_ASSERT(palette->Title && palette->Box);
+
+	m_Title = palette->Title;
+	m_Box   = palette->Box;
+
+	[m_Title retain];
+	[m_Box   retain];
+
+	NSRect frame;
+
+	frame = [m_Title frame];
+	m_heightTitle = static_cast<UT_uint32>(frame.size.height);
+
+	frame = [m_Box frame];
+	m_heightBox = static_cast<UT_uint32>(frame.size.height);
 	return self;
 }
 
@@ -394,34 +394,40 @@ enum _XAP_CocoaTool_Id
 
 - (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)name
 {
-	if (self = [super init])
+	if (![super init])
 	{
-		m_IsLevel = YES;
+		return  nil;
+	}
+	
+	m_IsLevel = YES;
 
-		m_Name  = name;
-		m_Value = @"";
+	m_Name  = name;
+	m_Value = @"";
 
-		[m_Name  retain];
-		[m_Value retain];
+	[m_Name  retain];
+	[m_Value retain];
 
-		m_Properties = 0;
+	m_Properties = nil;
 
-		if (int count = static_cast<int>(pAP->getPropertyCount())) {
-			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
-				for (int i = 0; i < count; i++) {
-					const gchar * szName  = 0;
-					const gchar * szValue = 0;
+	UT_sint32 count = pAP->getPropertyCount();
+	if (count) {
+		m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)];
+		if (!m_Properties) {
+			[self release];
+			return nil;
+		}
+		for (UT_sint32 i = 0; i < count; i++) {
+			const char * szName  = NULL;
+			const char * szValue = NULL;
 
-					if (pAP->getNthProperty(i, szName, szValue)) {
-						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
-						NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+			if (pAP->getNthProperty(i, szName, szValue)) {
+				NSString * name  = [NSString stringWithUTF8String:(szName )];
+				NSString * value = [NSString stringWithUTF8String:(szValue)];
 
-						XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
-						if (property) {
-							[m_Properties addObject:property];
-							[property release];
-						}
-					}
+				XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+				if (property) {
+					[m_Properties addObject:property];
+					[property release];
 				}
 			}
 		}
@@ -431,34 +437,38 @@ enum _XAP_CocoaTool_Id
 
 - (id)initWithStyle:(PD_Style *)style levelName:(NSString *)name
 {
-	if (self = [super init])
-	{
-		m_IsLevel = YES;
+	if (![super init]) {
+		return nil;
+	}
+	m_IsLevel = YES;
 
-		m_Name  = name;
-		m_Value = @"";
+	m_Name  = name;
+	m_Value = @"";
 
-		[m_Name  retain];
-		[m_Value retain];
+	[m_Name  retain];
+	[m_Value retain];
 
-		m_Properties = 0;
+	m_Properties = nil;
 
-		if (int count = static_cast<int>(style->getPropertyCount())) {
-			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
-				for (int i = 0; i < count; i++) {
-					const gchar * szName  = 0;
-					const gchar * szValue = 0;
+	UT_sint32 count = static_cast<int>(style->getPropertyCount());
+	if (count) {
+		m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)];
+		if (!m_Properties) {
+			[self release];
+			return nil;
+		}
+		for (UT_sint32 i = 0; i < count; i++) {
+			const char * szName  = NULL;
+			const char * szValue = NULL;
 
-					if (style->getNthProperty(i, szName, szValue)) {
-						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
-						NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+			if (style->getNthProperty(i, szName, szValue)) {
+				NSString * name  = [NSString stringWithUTF8String:(szName )];
+				NSString * value = [NSString stringWithUTF8String:(szValue)];
 
-						XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
-						if (property) {
-							[m_Properties addObject:property];
-							[property release];
-						}
-					}
+				XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+				if (property) {
+					[m_Properties addObject:property];
+					[property release];
 				}
 			}
 		}
@@ -468,19 +478,18 @@ enum _XAP_CocoaTool_Id
 
 - (id)initWithPropertyName:(NSString *)name propertyValue:(NSString *)value
 {
-	self = [super init];
-	if (self)
-	{
-		m_IsLevel = NO;
-
-		m_Name  = name;
-		m_Value = value;
-
-		[m_Name  retain];
-		[m_Value retain];
-
-		m_Properties = 0;
+	if(![super init]) {
+		return nil;
 	}
+	m_IsLevel = NO;
+
+	m_Name  = name;
+	m_Value = value;
+
+	[m_Name  retain];
+	[m_Value retain];
+
+	m_Properties = nil;
 	return self;
 }
 
@@ -512,11 +521,7 @@ enum _XAP_CocoaTool_Id
 
 - (BOOL)isItemExpandable
 {
-	if (m_IsLevel)
-	{
-		return YES;
-	}
-	return NO;
+	return m_IsLevel;
 }
 
 - (id)child:(int)index
@@ -577,12 +582,13 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (id)initWithOutlineView:(NSOutlineView *)outlineView
 {
-	if (self = [super init])
+	if (![super init])
 	{
-		m_OutlineView = outlineView;
-
-		m_PropertyLevels = [[NSMutableArray alloc] initWithCapacity:6];
+		return nil;
 	}
+	m_OutlineView = outlineView;
+
+	m_PropertyLevels = [[NSMutableArray alloc] initWithCapacity:6];
 	return self;
 }
 
@@ -673,6 +679,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item)
 	{
 		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
@@ -683,6 +690,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item)
 	{
 		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
@@ -693,6 +701,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item)
 	{
 		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
@@ -703,6 +712,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
+	UT_UNUSED(outlineView);
 	if (item)
 	{
 		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
@@ -713,11 +723,17 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
+	UT_UNUSED(outlineView);
+	UT_UNUSED(tableColumn);
+	UT_UNUSED(item);
 	[cell setFont:[NSFont systemFontOfSize:10.0f]];
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayOutlineCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
+	UT_UNUSED(outlineView);
+	UT_UNUSED(tableColumn);
+	UT_UNUSED(item);
 	[cell setFont:[NSFont systemFontOfSize:10.0f]];
 }
 
@@ -756,6 +772,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (void)toggleVisibility:(id)sender
 {
+	UT_UNUSED(sender);
 	NSPanel * panel = (NSPanel *) [self window];
 
 	if ([panel isVisible]) {
@@ -789,19 +806,21 @@ static XAP_CocoaToolPalette * s_instance = nil;
 + (XAP_CocoaToolPalette *)instance:(id)sender
 {
 	if (!s_instance) {
-		if (s_instance = [[XAP_CocoaToolPalette alloc] init])
+		s_instance = [[XAP_CocoaToolPalette alloc] init];
+		if (!s_instance)
 		{
-			bool visible = false;
-			XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
-			UT_ASSERT(pPrefs);
+			return nil;
+		}
+		bool visible = false;
+		XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
+		UT_ASSERT(pPrefs);
 
-			XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-			UT_ASSERT(pPrefsScheme);
-			
-			pPrefsScheme->getValueBool(XAP_PREF_KEY_ToolPaletteVisible, &visible);
-			if (visible) {
-				[s_instance showWindow:sender];
-			}
+		XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+		UT_ASSERT(pPrefsScheme);
+		
+		pPrefsScheme->getValueBool(XAP_PREF_KEY_ToolPaletteVisible, &visible);
+		if (visible) {
+			[s_instance showWindow:sender];
 		}
 	}
 	return s_instance;
@@ -814,81 +833,80 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (id)init
 {
-	self = [super initWithWindowNibName:@"xap_CocoaToolPalette"];
-	if (self)
+	if(![super initWithWindowNibName:@"xap_CocoaToolPalette"]) {
+		return nil;
+	}
+	m_ToolChest = 0;
+	m_PaletteView = 0;
+	m_Properties_DataSource = 0;
+
+	m_pMenuActionSet = 0;
+	m_pToolbarActionSet = 0;
+	m_pEditMethodContainer = 0;
+	m_pFontFamilies = 0;
+	m_pCurrentFontFamily = 0;
+	m_pCurrentFontFamilyHelper = 0;
+	m_Listener = 0;
+
+	XAP_CocoaApp * pCocoaApp = dynamic_cast<XAP_CocoaApp *>(XAP_App::getApp());
+	UT_ASSERT(pCocoaApp);
+
+	m_pMenuActionSet       = pCocoaApp->getMenuActionSet();
+	m_pToolbarActionSet    = pCocoaApp->getToolbarActionSet();
+	m_pEditMethodContainer = pCocoaApp->getEditMethodContainer();
+
+	if (!m_pToolbarActionSet || !m_pMenuActionSet || !m_pEditMethodContainer)
 	{
-		m_ToolChest = 0;
-		m_PaletteView = 0;
-		m_Properties_DataSource = 0;
+		UT_ASSERT(m_pToolbarActionSet && m_pMenuActionSet && m_pEditMethodContainer);
+	}
+	NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
 
-		m_pMenuActionSet = 0;
-		m_pToolbarActionSet = 0;
-		m_pEditMethodContainer = 0;
-		m_pFontFamilies = 0;
-		m_pCurrentFontFamily = 0;
-		m_pCurrentFontFamilyHelper = 0;
-		m_Listener = 0;
+	unsigned count = [pAvailableFontFamilies count];
+	if (count)
+	{
+		m_pFontFamilies = [[NSMutableArray alloc] initWithCapacity:count];
+		if (m_pFontFamilies) {
+			for (unsigned ff = 0; ff < count; ff++) {
+				NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
 
-		XAP_CocoaApp * pCocoaApp = dynamic_cast<XAP_CocoaApp *>(XAP_App::getApp());
-		UT_ASSERT(pCocoaApp);
+				/* const char * szFF = [pFontFamily UTF8String]; */
 
-		m_pMenuActionSet       = pCocoaApp->getMenuActionSet();
-		m_pToolbarActionSet    = pCocoaApp->getToolbarActionSet();
-		m_pEditMethodContainer = pCocoaApp->getEditMethodContainer();
-
-		if (!m_pToolbarActionSet || !m_pMenuActionSet || !m_pEditMethodContainer)
-		{
-			UT_ASSERT(m_pToolbarActionSet && m_pMenuActionSet && m_pEditMethodContainer);
-		}
-		NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
-
-		unsigned count = [pAvailableFontFamilies count];
-		if (count)
-		{
-			m_pFontFamilies = [[NSMutableArray alloc] initWithCapacity:count];
-			if (m_pFontFamilies) {
-				for (unsigned ff = 0; ff < count; ff++) {
-					NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
-
-					/* const char * szFF = [pFontFamily UTF8String]; */
-
-					if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
-					{
-						[m_pFontFamilies addObject:pFontFamily];
-					}
-				}
-				if ([m_pFontFamilies count]) {
-					[m_pFontFamilies sortUsingSelector:@selector(compare:)];
-				}
-				else {
-					UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no usable font families?\n"));
-
-					[m_pFontFamilies release];
-					m_pFontFamilies = 0;
+				if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
+				{
+					[m_pFontFamilies addObject:pFontFamily];
 				}
 			}
+			if ([m_pFontFamilies count]) {
+				[m_pFontFamilies sortUsingSelector:@selector(compare:)];
+			}
+			else {
+				UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no usable font families?\n"));
+
+				[m_pFontFamilies release];
+				m_pFontFamilies = 0;
+			}
 		}
-		else
-		{
-			UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no available font families?\n"));
-		}
-		UT_TRY
-		{
-			m_ToolChest = new struct XAP_CocoaToolRef[XAP_COCOA_TOOL_ID__COUNT_];
-		}
-		UT_CATCH(...)
-		{
-			m_ToolChest = nil;
-		}
-		m_PaletteView = [[XAP_CocoaPaletteView alloc] init];
-		UT_TRY
-		{
-			m_Listener = new XAP_CocoaToolPaletteListener(self);
-		}
-		UT_CATCH(...)
-		{
-			m_Listener = 0;
-		}
+	}
+	else
+	{
+		UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no available font families?\n"));
+	}
+	UT_TRY
+	{
+		m_ToolChest = new struct XAP_CocoaToolRef[XAP_COCOA_TOOL_ID__COUNT_];
+	}
+	UT_CATCH(...)
+	{
+		m_ToolChest = nil;
+	}
+	m_PaletteView = [[XAP_CocoaPaletteView alloc] init];
+	UT_TRY
+	{
+		m_Listener = new XAP_CocoaToolPaletteListener(self);
+	}
+	UT_CATCH(...)
+	{
+		m_Listener = 0;
 	}
 	return self;
 }
@@ -1017,7 +1035,8 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		[m_ToolChest[i].button setBordered:NO];
 
 		if (m_ToolChest[i].ttipid != AP_STRING_ID__FIRST__) {
-			if (tooltip = pSS->getValue(m_ToolChest[i].ttipid))
+			tooltip = pSS->getValue(m_ToolChest[i].ttipid);
+			if (tooltip)
 			{
 				[m_ToolChest[i].button setToolTip:[NSString stringWithUTF8String:tooltip]];
 			}
@@ -1032,19 +1051,23 @@ static XAP_CocoaToolPalette * s_instance = nil;
 		}
 	}
 
-	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE))
+	tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE);
+	if (tooltip)
 	{
 		[oDocumentStyle setToolTip:[NSString stringWithUTF8String:tooltip]];
 	}
-	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_FONT))
+	tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_FONT);
+	if (tooltip)
 	{
 		[oFontName setToolTip:[NSString stringWithUTF8String:tooltip]];
 	}
-	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SIZE))
+	tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SIZE);
+	if (tooltip)
 	{
 		[oFontSize setToolTip:[NSString stringWithUTF8String:tooltip]];
 	}
-	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_ZOOM))
+	tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_ZOOM);
+	if (tooltip)
 	{
 		[oZoom setToolTip:[NSString stringWithUTF8String:tooltip]];
 	}
@@ -1056,7 +1079,8 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 	[[oDocumentStyle menu] setAutoenablesItems:NO];
 
-	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
+	m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties];
+	if (m_Properties_DataSource)
 	{
 		[oProperties setIndentationPerLevel:10.0f];
 		[oProperties setDataSource:m_Properties_DataSource];
@@ -1078,6 +1102,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	UT_UNUSED(aNotification);
 	XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
 	UT_return_if_fail (pPrefs);
 
@@ -1092,6 +1117,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (void)toggleVisibility:(id)sender
 {
+	UT_UNUSED(sender);
 	if ([oPanel isVisible]) {
 		[oPanel orderOut:self];
 	}
@@ -1189,21 +1215,25 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aColor_FG:(id)sender
 {
+	UT_UNUSED(sender);
 	[self setColor:AP_TOOLBAR_ID_COLOR_FORE];
 }
 
 - (IBAction)aColor_BG:(id)sender
 {
+	UT_UNUSED(sender);
 	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
 }
 
 - (IBAction)aSwitch_FG:(id)sender
 {
+	UT_UNUSED(sender);
 	// TODO
 }
 
 - (IBAction)aSwitch_BG:(id)sender
 {
+	UT_UNUSED(sender);
 	// TODO
 }
 
@@ -1224,6 +1254,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aDocumentStyle:(id)sender
 {
+	UT_UNUSED(sender);
 	if (!m_pViewCurrent) {
 		return;
 	}
@@ -1257,6 +1288,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aFontName:(id)sender
 {
+	UT_UNUSED(sender);
 	if (!m_pViewCurrent) {
 		return;
 	}
@@ -1290,6 +1322,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aFontMemberName:(id)sender
 {
+	UT_UNUSED(sender);
 	if (!m_pViewCurrent) {
 		return;
 	}
@@ -1376,6 +1409,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aFontSize:(id)sender
 {
+	UT_UNUSED(sender);
 	if (!m_pViewPrevious)
 	{
 		if (m_pFramePrevious) {
@@ -1610,6 +1644,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 - (IBAction)aZoom:(id)sender
 {
+	UT_UNUSED(sender);
 	if (!m_pViewPrevious)
 	{
 		if (m_pFramePrevious) {
@@ -2135,7 +2170,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 
 		fontFamilyName = requestedFontFamilyName;
 	}
-	else if (fontRef = [pController helperReferenceForFont:requestedFontFamilyName])
+	else if ((fontRef = [pController helperReferenceForFont:requestedFontFamilyName]))
 	{
 		// (b) really a font name
 
@@ -2304,7 +2339,7 @@ void XAP_CocoaToolPaletteListener::setCurrentView(AV_View * view)
 	}
 }
 
-bool XAP_CocoaToolPaletteListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool XAP_CocoaToolPaletteListener::notify(AV_View * pView, const AV_ChangeMask /*mask*/)
 {
 	if (pView == m_pView)
 	{

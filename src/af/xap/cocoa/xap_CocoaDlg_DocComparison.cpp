@@ -86,8 +86,7 @@ void XAP_CocoaDialog_DocComparison::_populateWindowData(void)
 @implementation XAP_CocoaDialog_DocComparisonController
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_DocComparison"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_DocComparison"];
 }
 
 -(void)discardXAP

@@ -91,15 +91,12 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_About"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_About"];
 }
 
 -(void)discardXAP
 {
-	if (m_xap) {
-		m_xap = NULL;
-	}
+	m_xap = NULL;
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner

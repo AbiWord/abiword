@@ -56,11 +56,11 @@ static NSPoint s_ButtonMenuPoint[3] = {
 
 - (id)initWithFrame:(NSRect)frameRect
 {
-	if (self = [super initWithFrame:frameRect])
-		{
-			m_menu = 0;
-			m_controller = 0;
-		}
+	if (![super initWithFrame:frameRect]) {
+		return nil;
+	}
+	m_menu = nil;
+	m_controller = nil;
 	return self;
 }
 
@@ -73,52 +73,52 @@ static NSPoint s_ButtonMenuPoint[3] = {
 - (void)mouseDown:(NSEvent *)theEvent
 {
 	if (m_menu && [self isEnabled])
+	{
+		if (m_controller)
 		{
-			if (m_controller)
-				{
-					[m_controller menuWillActivate:m_menu forButton:self];
-				}
-			[NSMenu popUpContextMenu:m_menu withEvent:theEvent forView:self];
+			[m_controller menuWillActivate:m_menu forButton:self];
 		}
+		[NSMenu popUpContextMenu:m_menu withEvent:theEvent forView:self];
+	}
 	else
-		{
-			[super mouseDown:theEvent];
-		}
+	{
+		[super mouseDown:theEvent];
+	}
 }
 
 - (void)drawRect:(NSRect)aRect
 {
 	if ([self state] == NSOnState)
-		{
-			[[NSColor colorWithCalibratedWhite:0.0f alpha:0.25] set];
+	{
+		[[NSColor colorWithCalibratedWhite:0.0f alpha:0.25] set];
 
-			NSBezierPath * path = [NSBezierPath bezierPath];
+		NSBezierPath * path = [NSBezierPath bezierPath];
 
-			[path  moveToPoint:s_ButtonOnPoint[ 0]];
-			[path curveToPoint:s_ButtonOnPoint[ 2] controlPoint1:s_ButtonOnPoint[ 1] controlPoint2:s_ButtonOnPoint[ 1]];
-			[path  lineToPoint:s_ButtonOnPoint[ 3]];
-			[path curveToPoint:s_ButtonOnPoint[ 5] controlPoint1:s_ButtonOnPoint[ 4] controlPoint2:s_ButtonOnPoint[ 4]];
-			[path  lineToPoint:s_ButtonOnPoint[ 6]];
-			[path curveToPoint:s_ButtonOnPoint[ 8] controlPoint1:s_ButtonOnPoint[ 7] controlPoint2:s_ButtonOnPoint[ 7]];
-			[path  lineToPoint:s_ButtonOnPoint[ 9]];
-			[path curveToPoint:s_ButtonOnPoint[11] controlPoint1:s_ButtonOnPoint[10] controlPoint2:s_ButtonOnPoint[10]];
-			[path closePath];
-			[path fill];
-		}
+		[path  moveToPoint:s_ButtonOnPoint[ 0]];
+		[path curveToPoint:s_ButtonOnPoint[ 2] controlPoint1:s_ButtonOnPoint[ 1] controlPoint2:s_ButtonOnPoint[ 1]];
+		[path  lineToPoint:s_ButtonOnPoint[ 3]];
+		[path curveToPoint:s_ButtonOnPoint[ 5] controlPoint1:s_ButtonOnPoint[ 4] controlPoint2:s_ButtonOnPoint[ 4]];
+		[path  lineToPoint:s_ButtonOnPoint[ 6]];
+		[path curveToPoint:s_ButtonOnPoint[ 8] controlPoint1:s_ButtonOnPoint[ 7] controlPoint2:s_ButtonOnPoint[ 7]];
+		[path  lineToPoint:s_ButtonOnPoint[ 9]];
+		[path curveToPoint:s_ButtonOnPoint[11] controlPoint1:s_ButtonOnPoint[10] controlPoint2:s_ButtonOnPoint[10]];
+		[path closePath];
+		[path fill];
+	}
 	[super drawRect:aRect];
 
 	if (m_menu)
-		{
-			[[NSColor blackColor] set];
+	{
+		[[NSColor blackColor] set];
 
-			NSBezierPath * path = [NSBezierPath bezierPath];
+		NSBezierPath * path = [NSBezierPath bezierPath];
 
-			[path moveToPoint:s_ButtonMenuPoint[0]];
-			[path lineToPoint:s_ButtonMenuPoint[1]];
-			[path lineToPoint:s_ButtonMenuPoint[2]];
-			[path closePath];
-			[path fill];
-		}
+		[path moveToPoint:s_ButtonMenuPoint[0]];
+		[path lineToPoint:s_ButtonMenuPoint[1]];
+		[path lineToPoint:s_ButtonMenuPoint[2]];
+		[path closePath];
+		[path fill];
+	}
 }
 
 @end
@@ -177,11 +177,6 @@ NSString * AP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
 	return filename;
 }
 
-typedef struct _my_argb {
-	UT_RGBColor rgb;
-	unsigned char alpha;
-} my_argb;
-
 
 /*!
 	returns the pixmap for the named icon
@@ -191,7 +186,6 @@ typedef struct _my_argb {
  */
 NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 {
-#if 1
 	UT_ASSERT(szIconID && *szIconID);
 
 	NSImage * pixmap = nil;
@@ -217,116 +211,5 @@ NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 		UT_ASSERT_NOT_REACHED();
 	}
 	return pixmap;
-#else
-	UT_uint32 width, height, nrColors, charsPerPixel;
-	
-	const char ** pIconData = NULL;
-	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	
-	bool bFound = _findIconDataByName(szIconID, &pIconData, &sizeofIconData);
-	if (!bFound)
-		return nil;
-
-
-	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
-					&width,&height,&nrColors,&charsPerPixel);
-	UT_ASSERT (n == 4);
-	my_argb *pRGB = (my_argb*)g_try_malloc((nrColors + 1) * sizeof(my_argb));
-	UT_ASSERT(pRGB);
-	UT_StringPtrMap hash(61);
-	UT_RGBColor color(0,0,0);
-	
-	// walk thru the palette
-	const char ** pIconDataPalette = &pIconData[1];
-	for (UT_uint32 k=0; (k < nrColors); k++)
-	{
-		char bufSymbol[10];
-		char bufKey[10];
-		char bufColorValue[100];
-
-		// we expect something of the form: ".. c #000000"
-		// but we allow a space as a character in the symbol, so we
-		// get the first field the hard way.
-		memset(bufSymbol,0,sizeof(bufSymbol));
-		for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-			bufSymbol[kPx] = pIconDataPalette[k][kPx];
-		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
-		
-		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
-						" %s %s",&bufKey,&bufColorValue);
-		UT_ASSERT(nf == 2);
-		UT_ASSERT(bufKey[0] = 'c');
-
-		// make the ".." a hash key and store our color index as the data.
-		// we add k+1 because the hash code does not like null pointers...
-		hash.insert(bufSymbol,(void *)(k+1));
-		
-		// store the actual color value in the 
-		// rgb quad array with our color index.
-		if (g_ascii_strcasecmp(bufColorValue,"None")==0) {
-			pRGB[k].rgb.m_red = 255;
-			pRGB[k].rgb.m_grn = 255;
-			pRGB[k].rgb.m_blu = 255;
-			pRGB[k].alpha = 0;
-		}
-		else
-		{
-			// TODO fix this to also handle 
-			// #ffffeeeedddd type color references
-			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
-			UT_parseColor(bufColorValue, color);
-			pRGB[k].rgb = color;
-			pRGB[k].alpha   = 255;
-		}
-	}
-
-	long bytesPerRow = width;
-	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
-							pixelsWide:width pixelsHigh:height bitsPerSample:8 samplesPerPixel:4
-							hasAlpha:YES isPlanar:YES 
-							colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:0 
-							bitsPerPixel:0];
-
-	int rgb_index;
-	const char ** pIconDataImage = &pIconDataPalette[nrColors];
-	unsigned char *planes [5];
-	[bitmap getBitmapDataPlanes:planes];
-
-	for (UT_uint32 kRow=0; (kRow < height); kRow++) {
-		const char * p = pIconDataImage[kRow];
-		
-		for (UT_uint32 kCol=0; (kCol < width); kCol++) {
-			char bufPixel[10];
-			memset(bufPixel,0,sizeof(bufPixel));
-			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
-				bufPixel[kPx] = *p++;
-
-			//printf("Looking for character %s \n", bufPixel);
-			const void * pEntry = hash.pick(bufPixel);
-			
-			rgb_index = ((UT_Byte)(pEntry)) -1;
-			//printf("Returned hash index %d \n", rgb_index); 
-
-			*(planes[0] + kRow * bytesPerRow + kCol) 
-							= pRGB[rgb_index].rgb.m_red;
-			*(planes[1] + kRow * bytesPerRow + kCol) 
-							= pRGB[rgb_index].rgb.m_grn;
-			*(planes[2] + kRow * bytesPerRow + kCol) 
-							= pRGB[rgb_index].rgb.m_blu; 
-			*(planes[3] + kRow * bytesPerRow + kCol) 
-							= pRGB[rgb_index].alpha;
-		}
-	}
-
-	FREEP(pRGB);
-
-	pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
-	[pixmap addRepresentation:bitmap];
-	[bitmap release];
-
-	UT_ASSERT (pixmap);	
-
-	return [pixmap autorelease];
-#endif
 }
 

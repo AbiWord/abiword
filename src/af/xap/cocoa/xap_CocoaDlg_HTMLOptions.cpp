@@ -168,8 +168,7 @@ void XAP_CocoaDialog_HTMLOptions::event_Cancel ()
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_HTMLOptions"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_HTMLOptions"];
 }
 
 -(void)discardXAP

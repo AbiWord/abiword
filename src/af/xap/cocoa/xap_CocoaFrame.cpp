@@ -53,9 +53,11 @@
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaNSView initWith:Frame\n"));
 	UT_ASSERT (frame);
+	if(![super initWithFrame:windowFrame]) {
+		return nil;
+	}
 	m_pFrame = frame;
 	m_pGR = NULL;
-	self = [super initWithFrame:windowFrame];
 	[[NSNotificationCenter defaultCenter] addObserver:self
 					selector:@selector(hasBeenResized:)
 					name:NSViewFrameDidChangeNotification object:self];

@@ -374,8 +374,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"xap_CocoaDlg_FontChooser"];
-	return self;
+	return [super initWithWindowNibName:@"xap_CocoaDlg_FontChooser"];
 }
 
 -(void)discardXAP

@@ -39,26 +39,17 @@
 
 - (id)initWithName:(NSString *)name
 {
+	if (![super init])
+	{
+		return nil;
+	}
 	UT_ASSERT(name);
-	if (!name)
-	{
-		name = @"(null)";
-	}
 
-	UT_ASSERT([name length]);
-	if ([name length] == 0)
-	{
-		name = @"(null)";
-	}
+	m_name = name;
+	[m_name retain];
 
-	if (self = [super init])
-	{
-		m_name = name;
-		[m_name retain];
-
-		m_identifiers = [[NSMutableArray      alloc] initWithCapacity:16];
-		m_tools       = [[NSMutableDictionary alloc] initWithCapacity:16];
-	}
+	m_identifiers = [[NSMutableArray      alloc] initWithCapacity:16];
+	m_tools       = [[NSMutableDictionary alloc] initWithCapacity:16];
 	return self;
 }
 
