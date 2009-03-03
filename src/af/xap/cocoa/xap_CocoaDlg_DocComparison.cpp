@@ -129,8 +129,14 @@ void XAP_CocoaDialog_DocComparison::_populateWindowData(void)
 
 - (void)populate
 {
-	[_doc1 setStringValue:[NSString stringWithUTF8String:_xap->getPath1()]];
-	[_doc2 setStringValue:[NSString stringWithUTF8String:_xap->getPath2()]];
+	const char * path = _xap->getPath1();
+	if(path) {
+		[_doc1 setStringValue:[NSString stringWithUTF8String:path]];
+	}
+	path = _xap->getPath2();
+	if(path) {
+		[_doc2 setStringValue:[NSString stringWithUTF8String:path]];
+	}
 	[_relationshipData setStringValue:[NSString stringWithUTF8String:_xap->getResultValue(0)]];
 	[_contentData setStringValue:[NSString stringWithUTF8String:_xap->getResultValue(1)]];
 	[_formatData setStringValue:[NSString stringWithUTF8String:_xap->getResultValue(2)]];
