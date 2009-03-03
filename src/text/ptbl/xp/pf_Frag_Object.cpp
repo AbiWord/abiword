@@ -47,7 +47,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     pAP->getAttribute(static_cast<const gchar *>("name"), pszName);
     pAP->getAttribute(static_cast<const gchar *>("param"), pszParam);
 
-    fd_Field::FieldType fieldType;
+    fd_Field::FieldType fieldType = fd_Field::FD_None;
 
     if (objectType==PTO_Field) 
     {
