@@ -10,11 +10,11 @@ if TOOLKIT_COCOA
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
 include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
-install-exec-hook:
+install-data-hook:
 	install_name_tool \
 			-id @executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
 			$(DESTDIR)/$(frameworksdir)/libabiword-@ABIWORD_SERIES@.dylib
-	install_name_tool -change $(prefix)/lib/libabiword-@ABIWORD_SERIES@.dylib \
+	install_name_tool -change $(frameworksdir)/libabiword-@ABIWORD_SERIES@.dylib \
 		@executable_path/../Frameworks/libabiword-@ABIWORD_SERIES@.dylib \
 		$(DESTDIR)/$(macosdir)/AbiWord
 endif
