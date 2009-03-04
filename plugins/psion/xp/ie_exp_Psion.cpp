@@ -1194,7 +1194,7 @@ bool PL_Psion_Listener::_setStyleLayout(PD_Style *style,
 bool PL_Psion_Listener::_processStyles(void)
 {
 	UT_GenericVector<PD_Style *> vecStyles;
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	PD_Style * pStyle=NULL;
 	psiconv_word_style style;
 

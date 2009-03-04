@@ -38,7 +38,7 @@
 class IE_Imp_Psion_Sniffer : public IE_ImpSniffer
 {
 public:
-	IE_Imp_Psion_Sniffer(const char * name): IE_ImpSniffer(name) {}
+	IE_Imp_Psion_Sniffer(const char * _name): IE_ImpSniffer(_name) {}
 	virtual ~IE_Imp_Psion_Sniffer() {}
 protected:
 	UT_Confidence_t checkContents (const char *szBuf, UT_uint32 iNumbytes,
@@ -48,7 +48,7 @@ protected:
 class IE_Imp_Psion_Word_Sniffer : public IE_Imp_Psion_Sniffer
 {
 public:
-	IE_Imp_Psion_Word_Sniffer(const char * name): IE_Imp_Psion_Sniffer(name) {}
+	IE_Imp_Psion_Word_Sniffer(const char * _name): IE_Imp_Psion_Sniffer(_name) {}
 	virtual ~IE_Imp_Psion_Word_Sniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
@@ -66,8 +66,8 @@ class IE_Imp_Psion_TextEd_Sniffer :
 	                                                public IE_Imp_Psion_Sniffer
 {
 public:
-	IE_Imp_Psion_TextEd_Sniffer(const char * name): 
-                                                  IE_Imp_Psion_Sniffer(name) {}
+	IE_Imp_Psion_TextEd_Sniffer(const char * _name): 
+                                                  IE_Imp_Psion_Sniffer(_name) {}
 	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();

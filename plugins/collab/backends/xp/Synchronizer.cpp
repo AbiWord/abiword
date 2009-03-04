@@ -280,8 +280,8 @@ void Synchronizer::signal() // Win32 Implementation
 void Synchronizer::signal() // Unix Implementation
 {
 	UT_DEBUGMSG(("Signalling the main loop\n"));
-	unsigned char signal = 0xff;
-	if (write(fdw, &signal, 1) != 1)
+	unsigned char _signal = 0xff;
+	if (write(fdw, &_signal, 1) != 1)
 		UT_DEBUGMSG(("Error signaling main loop!\n"));
 }
 #endif
@@ -297,8 +297,8 @@ void Synchronizer::_consume()
 	// void on win32
 #else
 	// Unix Implementation
-	char signal = 0;
-	if (read(fdr, &signal, 1) != 1)
+	char _signal = 0;
+	if (read(fdr, &_signal, 1) != 1)
 		UT_DEBUGMSG(("Error signaling main loop!\n"));
 #endif
 }

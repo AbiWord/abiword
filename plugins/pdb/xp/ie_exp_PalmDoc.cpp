@@ -45,8 +45,8 @@ IE_Exp_PalmDoc::~IE_Exp_PalmDoc()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_PalmDoc_Sniffer::IE_Exp_PalmDoc_Sniffer (const char * name) :
-  IE_ExpSniffer(name)
+IE_Exp_PalmDoc_Sniffer::IE_Exp_PalmDoc_Sniffer (const char * _name) :
+  IE_ExpSniffer(_name)
 {
   // 
 }
@@ -79,12 +79,12 @@ bool IE_Exp_PalmDoc_Sniffer::getDlgLabels(const char ** pszDesc,
 
 UT_Error IE_Exp_PalmDoc::_writeDocument(void)
 {
-	GsfOutput * fp = getFp();
+	GsfOutput * fp1 = getFp();
 
     m_index = 0x406f8000;
     m_recOffset = 0x00001000;
 
-    if (fp != NULL)
+    if (fp1 != NULL)
     {
 		const char * szFilename = getFileName ();
         /********** create and write m_header **********************************/
@@ -111,14 +111,14 @@ UT_Error IE_Exp_PalmDoc::_writeDocument(void)
         m_header.nextRecordList		= 0;
         m_header.numRecords		= 0;		/* placeholder - value will be added later*/
 
-        gsf_output_write(fp, PDB_HEADER_SIZE, (guint8*)&m_header);
+        gsf_output_write(fp1, PDB_HEADER_SIZE, (guint8*)&m_header);
 
         UT_DEBUGMSG(("Creating rec0 offset & index....\n"));
-        PUT_DWord(fp, m_recOffset );
-        PUT_DWord(fp, m_index++ );
+        PUT_DWord(fp1, m_recOffset );
+        PUT_DWord(fp1, m_index++ );
 
         UT_DEBUGMSG(("Creating rec0....\n"));
-		gsf_output_seek(fp, m_recOffset, G_SEEK_SET);
+		gsf_output_seek(fp1, m_recOffset, G_SEEK_SET);
 
         m_rec0.version		= _swap_Word (2); /* 1 = plain text, 2 = compressed text */
         m_rec0.reserved1	= 0;
@@ -127,9 +127,9 @@ UT_Error IE_Exp_PalmDoc::_writeDocument(void)
         m_rec0.rec_size		= _swap_Word( RECORD_SIZE_MAX );
         m_rec0.reserved2	= 0;
 
-        gsf_output_write(fp, sizeof(m_rec0),(guint8*)&m_rec0);
+        gsf_output_write(fp1, sizeof(m_rec0),(guint8*)&m_rec0);
 
-        m_recOffset = gsf_output_tell(fp);
+        m_recOffset = gsf_output_tell(fp1);
         m_numRecords++;
         xxx_UT_DEBUGMSG(("m_numRecords = %d\n", m_numRecords));
     }

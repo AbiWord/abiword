@@ -81,7 +81,6 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
   {
     return true;
   }
-  UT_sint32 i =0;
   pB->getGrammarSquiggles()->deleteAll();
   if(m_vecSentences.getItemCount() == 1)
   {
@@ -97,9 +96,9 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
     }
 
   }
-  for(i=0; i< m_vecSentences.getItemCount(); i++)
+  for(UT_sint32 j=0; j< m_vecSentences.getItemCount(); j++)
   {
-    PieceOfText * pTxt = m_vecSentences.getNthItem(i);
+    PieceOfText * pTxt = m_vecSentences.getNthItem(j);
     //    printf("Original Sentence Low %d High %d |%s|\n",pTxt->iInLow,pTxt->iInHigh,pTxt->sText.utf8_str());
     
     if(isSentenceBlank(pTxt->sText.utf8_str()))
@@ -115,9 +114,9 @@ bool Abi_GrammarCheck::CheckBlock(fl_BlockLayout * pB)
       // Add an invisible POB to cover the entire entence. We use this
       // to turn off squiggles when editing the sentence.
       //
-      fl_PartOfBlock * pPOB = new fl_PartOfBlock(pTxt->iInLow,(pTxt->iInHigh- pTxt->iInLow +1));
-      pPOB->setInvisible();
-      pB->getGrammarSquiggles()->add(pPOB);
+      fl_PartOfBlock * pPOB1 = new fl_PartOfBlock(pTxt->iInLow,(pTxt->iInHigh- pTxt->iInLow +1));
+      pPOB1->setInvisible();
+      pB->getGrammarSquiggles()->add(pPOB1);
       //
       // Insert the Part Of Block Into the GrammarSquiggles
       //

@@ -1574,14 +1574,16 @@ static void itex2MML_keep_error (const char * msg)
   itex2MML_last_error = itex2MML_copy_escaped (msg);
 }
 
+int itex2MML_do_html_filter (const char * buffer, unsigned long length, const int forbid_markup);
+
 int itex2MML_html_filter (const char * buffer, unsigned long length)
 {
-  itex2MML_do_html_filter (buffer, length, 0);
+  return itex2MML_do_html_filter (buffer, length, 0);
 }
 
 int itex2MML_strict_html_filter (const char * buffer, unsigned long length)
 {
-  itex2MML_do_html_filter (buffer, length, 1);
+  return itex2MML_do_html_filter (buffer, length, 1);
 }
 
 int itex2MML_do_html_filter (const char * buffer, unsigned long length, const int forbid_markup)
@@ -1620,7 +1622,7 @@ int itex2MML_do_html_filter (const char * buffer, unsigned long length, const in
 
   if (ptr2 == end) goto _finish;
 
- _until_html:
+/* _until_html:*/
   ptr1 = ptr2;
 
   if (ptr2 + 1 < end)

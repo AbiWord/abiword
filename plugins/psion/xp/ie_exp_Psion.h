@@ -41,7 +41,7 @@
 class IE_Exp_Psion_Word_Sniffer : public IE_ExpSniffer
 {
 public:
-	IE_Exp_Psion_Word_Sniffer (const char * name): IE_ExpSniffer(name) {}
+	IE_Exp_Psion_Word_Sniffer (const char * _name): IE_ExpSniffer(_name) {}
 	virtual ~IE_Exp_Psion_Word_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
@@ -61,7 +61,7 @@ public:
 class IE_Exp_Psion_TextEd_Sniffer : public IE_ExpSniffer
 {
 public:
-	IE_Exp_Psion_TextEd_Sniffer (const char * name): IE_ExpSniffer(name) {}
+	IE_Exp_Psion_TextEd_Sniffer (const char * _name): IE_ExpSniffer(_name) {}
 	virtual ~IE_Exp_Psion_TextEd_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);

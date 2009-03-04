@@ -51,8 +51,8 @@ _zero_fill(  Byte *p,  int len )
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp_PalmDoc_Sniffer::IE_Imp_PalmDoc_Sniffer (const char * name) :
-  IE_ImpSniffer(name)
+IE_Imp_PalmDoc_Sniffer::IE_Imp_PalmDoc_Sniffer (const char * _name) :
+  IE_ImpSniffer(_name)
 {
   // 
 }
@@ -175,7 +175,7 @@ UT_Error IE_Imp_PalmDoc::_writeHeader(GsfInput * /* m_pdfp */)
 	return UT_OK;
 }
 
-UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * m_pdfp)
+UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * pdfp)
 {
 	UT_GrowBuf gbBlock(1024);
 	bool bEatLF = false;
@@ -183,15 +183,15 @@ UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * m_pdfp)
 	UT_UCSChar c;
 	UT_UCS4Char wc;
 
-	pdb_header	m_header;
-	doc_record0	m_rec0;
+	pdb_header	header;
+	doc_record0	rec0;
 	bool		bCompressed = false;
 	int		num_records, rec_num;
 	DWord		file_size, offset;
 
-	gsf_input_read( m_pdfp, PDB_HEADER_SIZE, (guint8*)&m_header);
-	if (strncmp( m_header.type,    DOC_TYPE,    sizeof(m_header.type) ) ||
-	    strncmp( m_header.creator, DOC_CREATOR, sizeof(m_header.creator) ))
+	gsf_input_read( pdfp, PDB_HEADER_SIZE, (guint8*)&header);
+	if (strncmp( header.type,    DOC_TYPE,    sizeof(header.type) ) ||
+	    strncmp( header.creator, DOC_CREATOR, sizeof(header.creator) ))
         {
 		UT_DEBUGMSG(("This is not a DOC file!\n"));
 
@@ -200,38 +200,38 @@ UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * m_pdfp)
 		return UT_OK;
 	}
 
-	num_records = _swap_Word( m_header.numRecords ) - 1;
+	num_records = _swap_Word( header.numRecords ) - 1;
 
-	gsf_input_seek( m_pdfp, PDB_HEADER_SIZE, G_SEEK_SET );
-	GET_DWord( m_pdfp, offset );
-	gsf_input_seek( m_pdfp, offset, G_SEEK_SET );
-	gsf_input_read( m_pdfp, sizeof(m_rec0), (guint8*)&m_rec0);
+	gsf_input_seek( pdfp, PDB_HEADER_SIZE, G_SEEK_SET );
+	GET_DWord( pdfp, offset );
+	gsf_input_seek( pdfp, offset, G_SEEK_SET );
+	gsf_input_read( pdfp, sizeof(rec0), (guint8*)&rec0);
 
-	if ( _swap_Word( m_rec0.version ) == 2 )
+	if ( _swap_Word( rec0.version ) == 2 )
 		bCompressed = true;
 
-	gsf_input_seek( m_pdfp, 0, G_SEEK_END );
-	file_size = gsf_input_tell( m_pdfp );
+	gsf_input_seek( pdfp, 0, G_SEEK_END );
+	file_size = gsf_input_tell( pdfp );
 
 	for (rec_num = 1; rec_num <= num_records; ++rec_num )
 	{
 		DWord next_offset;
 
-		gsf_input_seek( m_pdfp, PDB_HEADER_SIZE + PDB_RECORD_HEADER_SIZE * rec_num, G_SEEK_SET);
-		GET_DWord( m_pdfp, offset );
+		gsf_input_seek( pdfp, PDB_HEADER_SIZE + PDB_RECORD_HEADER_SIZE * rec_num, G_SEEK_SET);
+		GET_DWord( pdfp, offset );
 		if( rec_num < num_records )
 		{
-			gsf_input_seek( m_pdfp, PDB_HEADER_SIZE + PDB_RECORD_HEADER_SIZE * (rec_num + 1), G_SEEK_SET);
-			GET_DWord( m_pdfp, next_offset );
+			gsf_input_seek( pdfp, PDB_HEADER_SIZE + PDB_RECORD_HEADER_SIZE * (rec_num + 1), G_SEEK_SET);
+			GET_DWord( pdfp, next_offset );
 		}
 		else
 			next_offset = file_size;
 
-		gsf_input_seek( m_pdfp, offset, G_SEEK_SET );
+		gsf_input_seek( pdfp, offset, G_SEEK_SET );
 
 		// be overly cautious here
 		_zero_fill (m_buf->buf, BUFFER_SIZE);
-		gsf_input_read(m_pdfp, next_offset - offset, m_buf->buf);
+		gsf_input_read(pdfp, next_offset - offset, m_buf->buf);
 		m_buf->position = next_offset - offset;
 
 		if ( bCompressed )
@@ -344,7 +344,7 @@ DWord IE_Imp_PalmDoc::_swap_DWord( DWord r )
     }
 }
 
-void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
+void IE_Imp_PalmDoc::_uncompress( buffer *buf )
 {
 	buffer *m_new_buf = new buffer;
 	UT_uint16 i, j;
@@ -353,13 +353,13 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 	// set all of these to 0 initially
 	_zero_fill (m_new_buf->buf, BUFFER_SIZE);
 
-	for (i = j = 0; i < m_buf->position && j < BUFFER_SIZE; )
+	for (i = j = 0; i < buf->position && j < BUFFER_SIZE; )
 	{
-		c = m_buf->buf[ i++ ];
+		c = buf->buf[ i++ ];
 
 		if ( c >= 1 && c <= 8 )
 			while ( c-- && j < BUFFER_SIZE-1)
-				m_new_buf->buf[ j++ ] = m_buf->buf[ i++ ];
+				m_new_buf->buf[ j++ ] = buf->buf[ i++ ];
 
 		else if ( c <= 0x7F )
 			m_new_buf->buf[ j++ ] = c;
@@ -375,7 +375,7 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 		    unsigned int temp_c = c;
 		    // c--> temp_c //tomy 2001.11.13 
 		    temp_c = (temp_c << 8) ;
-		    temp_c = temp_c + m_buf->buf[ i++ ];
+		    temp_c = temp_c + buf->buf[ i++ ];
 		    di = (temp_c & 0x3FFF) >> COUNT_BITS;
 		    for (n = (temp_c & ((1 << COUNT_BITS) - 1)) + 3; n-- && j < BUFFER_SIZE
 			   ; ++j )
@@ -385,8 +385,8 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 	}
 	UT_ASSERT(j <= BUFFER_SIZE);
 
-	memcpy( static_cast<void *>(m_buf->buf), static_cast<void *>(m_new_buf->buf), static_cast<size_t>(j) );
+	memcpy( static_cast<void *>(buf->buf), static_cast<void *>(m_new_buf->buf), static_cast<size_t>(j) );
 
-	m_buf->position = j;
+	buf->position = j;
 	delete( m_new_buf );
 }
