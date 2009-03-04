@@ -100,7 +100,7 @@ void AP_Dialog_FormatTable::setActiveFrame(XAP_Frame * /*pFrame*/)
 
 void AP_Dialog_FormatTable::ConstructWindowName(void)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
 	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));
@@ -153,8 +153,7 @@ void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_FormatTable::askForGraphicPathName(void)
 {
-	UT_return_if_fail(m_pApp);
-	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
 	UT_return_if_fail(pFrame);
 	XAP_DialogFactory * pDialogFactory
@@ -277,7 +276,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
 {
 	XAP_String_Id String_id;
-	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	switch (errorCode)
 	  {
 	  case -301:
@@ -330,7 +329,7 @@ void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
  */
 void AP_Dialog_FormatTable::setAllSensitivities(void)
 {
-	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 		setSensitivity(pView->isInTable());
@@ -342,7 +341,7 @@ void AP_Dialog_FormatTable::setAllSensitivities(void)
 
 void AP_Dialog_FormatTable::setCurCellProps(void)
 {
-	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
@@ -480,7 +479,7 @@ void AP_Dialog_FormatTable::applyChanges()
 	if (m_vecProps.getItemCount() == 0)
 		return;
 
-    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+    FV_View * pView = static_cast<FV_View *>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentView());
 	const gchar ** propsArray  = new const gchar * [m_vecProps.getItemCount()+1];
 	propsArray[m_vecProps.getItemCount()] = NULL;
 	
