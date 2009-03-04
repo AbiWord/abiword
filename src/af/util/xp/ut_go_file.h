@@ -90,8 +90,6 @@ ABI_EXPORT time_t UT_go_file_get_date_accessed (char const *uri);
 ABI_EXPORT time_t UT_go_file_get_date_modified (char const *uri);
 ABI_EXPORT time_t UT_go_file_get_date_changed  (char const *uri);
 
-ABI_EXPORT gchar	*UT_go_url_decode		(gchar const *text);
-ABI_EXPORT gchar	*UT_go_url_encode		(gchar const *text, int type);
 ABI_EXPORT GError	*UT_go_url_show		(gchar const *url);
 ABI_EXPORT gboolean UT_go_url_check_extension (gchar const *uri,
 				 gchar const *std_ext,
