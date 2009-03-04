@@ -570,14 +570,15 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	
 	if (pEM)
 	{
+		XAP_Frame * pFrame = m_frame->getFrame ();
+		UT_ASSERT(pFrame);
+		AV_View * pView = pFrame->getCurrentView();	
+		UT_ASSERT(pView);
 		if (pEM->Fn(m_frame->getFrame()->getCurrentView(),NULL))
 		{
 			// returning YES means close the window
 			// but first let's warn the app controller not to assume our existence
 			
-			XAP_Frame * pFrame = m_frame->getFrame ();
-			AV_View * pView = pFrame->getCurrentView();
-
 			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 			[pController unsetCurrentView:pView inFrame:pFrame];
 
