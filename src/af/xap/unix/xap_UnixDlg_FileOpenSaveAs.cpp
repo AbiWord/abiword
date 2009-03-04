@@ -427,20 +427,10 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 		return;
 	}
 
-	UT_String sFileName;
-	gchar * uri = gtk_file_chooser_get_uri(m_FC);
-	gchar * filename = NULL;
-
-	if(uri)
-		filename = UT_go_filename_from_uri(uri);
-
-	if(filename)
-		sFileName = filename;
-	else
-		sFileName = uri;
-
-	FREEP(uri);
+	gchar * filename = gtk_file_chooser_get_filename(m_FC);
+	UT_String sFileName = filename;
 	FREEP(filename);
+
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
 	UT_sint32 i = 0;
