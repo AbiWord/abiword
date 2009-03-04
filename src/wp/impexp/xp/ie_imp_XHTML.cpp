@@ -766,7 +766,6 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	const gchar ** atts =
 		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
 	
-	int i = 0;
 	int failLine;
 	failLine = 0;
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
@@ -775,10 +774,10 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	                                                // this just avoids all the processing if there is an error
 #define NEW_ATTR_SZ 3
  	const gchar *new_atts[NEW_ATTR_SZ];
-	gchar * sz;
-	sz = NULL;
+	gchar * sz1;
+	sz1 = NULL;
 
-	for(i = 0; i < NEW_ATTR_SZ; i++)
+	for(int i = 0; i < NEW_ATTR_SZ; i++)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 	UT_uint16 *parentID;
@@ -1165,11 +1164,11 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		if( p_val )
 		{
 			X_CheckError(requireBlock ());
-		    sz = g_strdup("xlink:href");
-		    new_atts[0] = sz;
-	    	sz = NULL;
-		    sz = g_strdup(p_val);
-		    new_atts[1] = sz;
+		    sz1 = g_strdup("xlink:href");
+		    new_atts[0] = sz1;
+	    	sz1 = NULL;
+		    sz1 = g_strdup(p_val);
+		    new_atts[1] = sz1;
 			X_CheckError(appendObject(PTO_Hyperlink,new_atts));
 		}
 		else
@@ -1183,19 +1182,15 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 				UT_sint32 i;
  				const gchar *bm_new_atts[5];
 				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-	    		sz = NULL;
-			    sz = g_strdup("type");
-				bm_new_atts[0] = sz; 
-	    		sz = NULL;
-			    sz = g_strdup("start");
-				bm_new_atts[1] = sz;
-	    		sz = NULL;
-			    sz = g_strdup("name");
-			    bm_new_atts[2] = sz;
-	    		sz = NULL;
-		    	sz = g_strdup(p_val);
+			    sz1 = g_strdup("type");
+				bm_new_atts[0] = sz1; 
+			    sz1 = g_strdup("start");
+				bm_new_atts[1] = sz1;
+			    sz1 = g_strdup("name");
+			    bm_new_atts[2] = sz1;
+		    	sz1 = g_strdup(p_val);
 				m_szBookMarkName = g_strdup(p_val);
-			    bm_new_atts[3] = sz;
+			    bm_new_atts[3] = sz1;
 				if (m_szBookMarkName)
 				{
 					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
@@ -1204,18 +1199,16 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 				if (m_szBookMarkName && (m_parseState == _PS_Sec))
 				{
-					for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-					sz = g_strdup("type");
-					bm_new_atts[0] = sz; 
-					sz = NULL;
-					sz = g_strdup("end");
-					bm_new_atts[1] = sz;
-					sz = NULL;
-					sz = g_strdup("name");
-					bm_new_atts[2] = sz;
-					sz = NULL;
-					sz = g_strdup(m_szBookMarkName);
-					bm_new_atts[3] = sz;
+					for(i = 0; i < 5; i++) 
+						bm_new_atts[i] = NULL;
+					sz1 = g_strdup("type");
+					bm_new_atts[0] = sz1; 
+					sz1 = g_strdup("end");
+					bm_new_atts[1] = sz1;
+					sz1 = g_strdup("name");
+					bm_new_atts[2] = sz1;
+					sz1 = g_strdup(m_szBookMarkName);
+					bm_new_atts[3] = sz1;
 					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 
 					FREEP(m_szBookMarkName);
@@ -1375,40 +1368,33 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		UT_String dataid;
 		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
 
-		sz = NULL;
-		sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
-		X_CheckError(sz);
-		api_atts[0] = sz;
-		sz = NULL;
-		sz = g_strdup(utf8val.utf8_str ());
-		X_CheckError(sz);
-		api_atts[1] = sz;
-		sz = NULL;
-		sz = g_strdup("dataid");
-		X_CheckError(sz);
-		api_atts[2] = sz;
-		sz = NULL;
-		sz = g_strdup(dataid.c_str ());
-		X_CheckError(sz);
-		api_atts[3] = sz;
+		sz1 = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
+		X_CheckError(sz1);
+		api_atts[0] = sz1;
+		sz1 = g_strdup(utf8val.utf8_str ());
+		X_CheckError(sz1);
+		api_atts[1] = sz1;
+		sz1 = g_strdup("dataid");
+		X_CheckError(sz1);
+		api_atts[2] = sz1;
+		sz1 = g_strdup(dataid.c_str ());
+		X_CheckError(sz1);
+		api_atts[3] = sz1;
 
-		sz = g_strdup("title");
-		X_CheckError(sz);
-		api_atts[4] = sz;
-		sz = NULL;
-		sz = g_strdup(szTitle == NULL ? "" : szTitle);
-		X_CheckError(sz);
-		api_atts[5] = sz;
-		sz = NULL;
+		sz1 = g_strdup("title");
+		X_CheckError(sz1);
+		api_atts[4] = sz1;
+		sz1 = g_strdup(szTitle == NULL ? "" : szTitle);
+		X_CheckError(sz1);
+		api_atts[5] = sz1;
 
-		sz = g_strdup("alt");
-		X_CheckError(sz);
-		api_atts[6] = sz;
-		sz = NULL;
-		sz = g_strdup(szAlt == NULL ? "" : szAlt);
-		X_CheckError(sz);
-		api_atts[7] = sz;
-		sz = NULL;
+		sz1 = g_strdup("alt");
+		X_CheckError(sz1);
+		api_atts[6] = sz1;
+		sz1 = g_strdup(szAlt == NULL ? "" : szAlt);
+		X_CheckError(sz1);
+		api_atts[7] = sz1;
+		sz1 = NULL;
 
 		api_atts[8] = NULL;
 

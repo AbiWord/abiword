@@ -405,13 +405,13 @@ void AP_UnixDialog_FormatFrame::activate(void)
 	gdk_window_raise (m_windowMain->window);
 }
 
-void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *_pFrame)
 {
     UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
-	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(_pFrame->getCurrentView());
 	if(pView && pView->isInFrame(pView->getPoint()))
 	{
 		fl_BlockLayout * pBL = pView->getCurrentBlock();

@@ -505,21 +505,21 @@ void AP_Dialog_Styles::ModifyFont(void)
 	// worry about initializing a combo box with a choice
 	// (and because they are all stuck under one CSS attribute).
 
-	bool bUnderline = false;
-	bool bOverline = false;
-	bool bStrikeOut = false;
-	bool bTopline = false;
-	bool bBottomline = false;
-	const gchar * s = getPropsVal("text-decoration");
-	if (s)
+	bool bUnderline2 = false;
+	bool bOverline2 = false;
+	bool bStrikeOut2 = false;
+	bool bTopline2 = false;
+	bool bBottomline2 = false;
+	const gchar * s2 = getPropsVal("text-decoration");
+	if (s2)
 	{
-		bUnderline = (strstr(s, "underline") != NULL);
-		bOverline = (strstr(s, "overline") != NULL);
-		bStrikeOut = (strstr(s, "line-through") != NULL);
-		bTopline = (strstr(s, "topline") != NULL);
-		bBottomline = (strstr(s, "bottomline") != NULL);
+		bUnderline2 = (strstr(s2, "underline") != NULL);
+		bOverline2 = (strstr(s2, "overline") != NULL);
+		bStrikeOut2 = (strstr(s2, "line-through") != NULL);
+		bTopline2 = (strstr(s2, "topline") != NULL);
+		bBottomline2 = (strstr(s2, "bottomline") != NULL);
 	}
-	pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopline,bBottomline);
+	pDialog->setFontDecoration(bUnderline2,bOverline2,bStrikeOut2,bTopline2,bBottomline2);
 /*
     bool bDirection;
 	s = UT_getAttribute("dir", props_in);
@@ -540,36 +540,36 @@ void AP_Dialog_Styles::ModifyFont(void)
 
 	if (bOK)
 	{
-		const gchar * s;
+		const gchar * s1;
 
-		if (pDialog->getChangedFontFamily(&s))
+		if (pDialog->getChangedFontFamily(&s1))
 		{
-			addOrReplaceVecProp("font-family", s);
+			addOrReplaceVecProp("font-family", s1);
 		}
 
-		if (pDialog->getChangedFontSize(&s))
+		if (pDialog->getChangedFontSize(&s1))
 		{
-			addOrReplaceVecProp("font-size", s);
+			addOrReplaceVecProp("font-size", s1);
 		}
 
-		if (pDialog->getChangedFontWeight(&s))
+		if (pDialog->getChangedFontWeight(&s1))
 		{
-			addOrReplaceVecProp("font-weight", s);
+			addOrReplaceVecProp("font-weight", s1);
 		}
 
-		if (pDialog->getChangedFontStyle(&s))
+		if (pDialog->getChangedFontStyle(&s1))
 		{
-			addOrReplaceVecProp("font-style", s);
+			addOrReplaceVecProp("font-style", s1);
 		}
 
-		if (pDialog->getChangedColor(&s))
+		if (pDialog->getChangedColor(&s1))
 		{
-			addOrReplaceVecProp("color", s);
+			addOrReplaceVecProp("color", s1);
 		}
 
-		if (pDialog->getChangedBGColor(&s))
+		if (pDialog->getChangedBGColor(&s1))
 		{
-			addOrReplaceVecProp("bgcolor", s);
+			addOrReplaceVecProp("bgcolor", s1);
 		}
 
 		bool bUnderline = false;

@@ -1283,7 +1283,6 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		Args->getApp()->setGeometry(x, y, width, height, f);
 	}
 
- 	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 
 	{
 		//

@@ -621,13 +621,13 @@ static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
 
 void AP_UnixDialog_Lists::_fillFontMenu(GtkListStore* store)
 {
-	GList* m_glFonts;
+	GList* glFonts;
 	gint i;
 	gint nfonts;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	m_glFonts = _getGlistFonts();
-	nfonts = g_list_length(m_glFonts);
+	glFonts = _getGlistFonts();
+	nfonts = g_list_length(glFonts);
 
 	addToStore(store, pSS, AP_STRING_ID_DLG_Lists_Current_Font,
 			   0);
@@ -637,7 +637,7 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkListStore* store)
 		GtkTreeIter iter;
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 
-						   0, static_cast<const gchar *>(g_list_nth_data (m_glFonts, i)), 
+						   0, static_cast<const gchar *>(g_list_nth_data (glFonts, i)), 
 						   1, i+1, -1);
 	}
 }
@@ -1108,8 +1108,8 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 	    }
 	}
 		
-	m_glFonts =  g_list_reverse(glFonts);
-	return m_glFonts;
+	glFonts =  g_list_reverse(glFonts);
+	return glFonts;
 }
 
 

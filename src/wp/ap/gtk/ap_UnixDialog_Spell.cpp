@@ -348,7 +348,7 @@ void
 AP_UnixDialog_Spell::_updateWindow (void)
 {             
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_txWrong));
-	GtkTextIter iter;
+	GtkTextIter iter2;
 
 	// Empty buffer
 	gtk_text_buffer_set_text(buffer, "", -1);
@@ -368,8 +368,8 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	p = m_pWordIterator->getCurrentWord(iLength);
 	gchar * word = (gchar*) _convertToMB(p, iLength);
 	GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
-	gtk_text_buffer_get_end_iter(buffer, &iter);
-	gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
+	gtk_text_buffer_get_end_iter(buffer, &iter2);
+	gtk_text_buffer_insert_with_tags(buffer, &iter2, word, -1, txt_tag, NULL);
 	// word is freed at the end of the method...
 	
 	// insert end of sentence
@@ -377,8 +377,8 @@ AP_UnixDialog_Spell::_updateWindow (void)
 	if (0 < iLength)
 	{
 		gchar * postword = (gchar*) _convertToMB(p, iLength);
-		gtk_text_buffer_get_end_iter(buffer, &iter);
-		gtk_text_buffer_insert(buffer, &iter, postword, -1);
+		gtk_text_buffer_get_end_iter(buffer, &iter2);
+		gtk_text_buffer_insert(buffer, &iter2, postword, -1);
 		FREEP(postword);
 	}
 	else
@@ -386,8 +386,8 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		// Insert space to make gtk_text_buffer understand that it
 		// really should highlight the selected word. This is a
 		// workaround for bug 5459. It really should be fixed in GTK.
-		gtk_text_buffer_get_end_iter(buffer, &iter);
-		gtk_text_buffer_insert(buffer, &iter, " ", -1);
+		gtk_text_buffer_get_end_iter(buffer, &iter2);
+		gtk_text_buffer_insert(buffer, &iter2, " ", -1);
 	}
 	// TODO: set scroll position so misspelled word is centered
 

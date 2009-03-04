@@ -391,28 +391,28 @@ void AP_Dialog_Lists::Apply(void)
 		getView()->getDocument()->beginUserAtomicGlob();
 		for(i=0;i < count; i++)
 		{
-			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
-			if(pBlock->isListItem() == true && m_NewListType == NOT_A_LIST)
+			fl_BlockLayout * pBlock2 = (fl_BlockLayout *) vBlock.getNthItem(i);
+			if(pBlock2->isListItem() == true && m_NewListType == NOT_A_LIST)
 			{
 //
 // This stops the current list.
 //
-				if(pBlock->isListItem() == true)
+				if(pBlock2->isListItem() == true)
 				{
-					getView()->getDocument()->StopList(pBlock->getStruxDocHandle());
+					getView()->getDocument()->StopList(pBlock2->getStruxDocHandle());
 				}
 			}
-			else if ( pBlock->isListItem() == false && m_NewListType != NOT_A_LIST )
+			else if ( pBlock2->isListItem() == false && m_NewListType != NOT_A_LIST )
 			{
 //
 // This starts the new list
 //
-				pBlock->getDocument()->disableListUpdates();
+				pBlock2->getDocument()->disableListUpdates();
 				if(i == 0)
 				{
-					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1);
-					pBlock->getDocument()->enableListUpdates();
-					pBlock->getDocument()->updateDirtyLists();
+					pBlock2->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1);
+					pBlock2->getDocument()->enableListUpdates();
+					pBlock2->getDocument()->updateDirtyLists();
 				}
 				else
 				{
@@ -426,24 +426,24 @@ void AP_Dialog_Lists::Apply(void)
 				}
 
 			}
-			else if( pBlock->getAutoNum() && (pBlock->getAutoNum()->getNumLabels() > 1) && m_NewListType != NOT_A_LIST )
+			else if( pBlock2->getAutoNum() && (pBlock2->getAutoNum()->getNumLabels() > 1) && m_NewListType != NOT_A_LIST )
 			{
 //
 // This starts a sublist.
 //
-				UT_uint32 curlevel = pBlock->getLevel();
-				UT_uint32 currID = pBlock->getAutoNum()->getID();
+				UT_uint32 curlevel = pBlock2->getLevel();
+				UT_uint32 currID = pBlock2->getAutoNum()->getID();
 				curlevel++;
-				pBlock->getDocument()->disableListUpdates();
+				pBlock2->getDocument()->disableListUpdates();
 //
 // Need to update m_fAlign and m_fIndent to reflect the higher level of indentation.
 //
 				if(i == 0)
 				{
 					m_fAlign = m_fAlign + (float) LIST_DEFAULT_INDENT;
-					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
-					pBlock->getDocument()->enableListUpdates();
-					pBlock->getDocument()->updateDirtyLists();
+					pBlock2->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
+					pBlock2->getDocument()->enableListUpdates();
+					pBlock2->getDocument()->updateDirtyLists();
 				}
 				else
 				{
@@ -457,17 +457,17 @@ void AP_Dialog_Lists::Apply(void)
 					}
 				}
 			}
-			else if( pBlock->getAutoNum() && (pBlock->getAutoNum()->getNumLabels() <= 1) && m_NewListType != NOT_A_LIST )
+			else if( pBlock2->getAutoNum() && (pBlock2->getAutoNum()->getNumLabels() <= 1) && m_NewListType != NOT_A_LIST )
 			{
 //
 // The list at the current point only has one item which is the current paragraph.
 // We can't share an sdh amongst two autonum's so we can't start a sublist.
 // We'll change the list style instead.
 //
-				getView()->changeListStyle(pBlock->getAutoNum(),m_NewListType,m_iStartValue,(gchar *) m_pszDelim,(gchar *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
-				if(pBlock->getAutoNum() != NULL)
+				getView()->changeListStyle(pBlock2->getAutoNum(),m_NewListType,m_iStartValue,(gchar *) m_pszDelim,(gchar *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
+				if(pBlock2->getAutoNum() != NULL)
 				{
-					pBlock->getAutoNum()->update(0);
+					pBlock2->getAutoNum()->update(0);
 				}
 
 			}

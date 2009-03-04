@@ -3619,7 +3619,7 @@ bool IE_Imp_RTF::HandleField()
   \param isXML whether xmlField is used or not.
   \see IE_Imp_RTF::HandleField
  */
-gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool & isXML)
+gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool & isXML)
 {
 	// this is quite complex as field instructions are not really document in the RTF specs.
 	// we will guess as much us possible.
@@ -3663,14 +3663,14 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, bool &
 	isXML = false;
 
 	// buffer is empty, nothing to parse
-	if (buf.getLength() == 0)
+	if (_buf.getLength() == 0)
 	{
 		FREEP (xmlField);
 		return NULL;
 	}
 
-	len = buf.getLength ();
-	const UT_Byte *pBuf = buf.getPointer (0);
+	len = _buf.getLength ();
+	const UT_Byte *pBuf = _buf.getPointer (0);
 
 	newBuf =  static_cast<char *>(g_try_malloc (sizeof (char) * (len + 1)));
 	memcpy (newBuf, pBuf, len);
@@ -6538,8 +6538,8 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 //
 // Handle case of no id in any lists. If this is the case no need to remap
 //
-	fl_AutoNum * pAuto = getDoc()->getListByID(id);
-	if(pAuto == NULL)
+	fl_AutoNum * pAuto1 = getDoc()->getListByID(id);
+	if(pAuto1 == NULL)
 	{
 	        return id;
 	}
@@ -6670,7 +6670,7 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 
 bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 {
-	const gchar* attribs[PT_MAX_ATTRIBUTES*2 + 1];
+	const gchar* attribs1[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
 
 //
@@ -6873,10 +6873,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 
 
 	// Lists. If the paragraph has a list element handle it.
-	UT_String szLevel;
+	UT_String szLevel1;
 	UT_String szStyle;
-	UT_String szListID;
-	UT_String szParentID;
+	UT_String szListID1;
+	UT_String szParentID1;
 	UT_uint32 id = 0,pid = 0,startValue = 0;
 //
 // This is for our own extensions to RTF.
@@ -6900,26 +6900,26 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	  // First off assemble the list attributes
 	  //
 		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
-		UT_String_sprintf(szListID,"%d",id);
+		UT_String_sprintf(szListID1,"%d",id);
 		pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
-		UT_String_sprintf(szParentID,"%d",pid);
+		UT_String_sprintf(szParentID1,"%d",pid);
 		if(pid == 0)
 			m_currentRTFState.m_paraProps.m_level = 1;
-		UT_String_sprintf(szLevel,"%d",m_currentRTFState.m_paraProps.m_level);
+		UT_String_sprintf(szLevel1,"%d",m_currentRTFState.m_paraProps.m_level);
 
-		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount++] = szListID.c_str();
+		attribs1[attribsCount++] = szListID1.c_str();
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount++] = szParentID.c_str();
+		attribs1[attribsCount++] = szParentID1.c_str();
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount++] = szLevel.c_str();
+		attribs1[attribsCount++] = szLevel1.c_str();
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
-		attribs[attribsCount] = NULL;
+		attribs1[attribsCount] = NULL;
 	}
 
 //
@@ -6968,13 +6968,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 //
 // Got attributes
 //
-		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szListID;
-		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szParentID;
-		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = szLevel;
-		attribs[attribsCount]   = NULL;
+		attribs1[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = szListID;
+		attribs1[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = szParentID;
+		attribs1[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = szLevel;
+		attribs1[attribsCount]   = NULL;
 
 //
 // Next do character properties redefined in this list
@@ -7134,9 +7134,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	{
 		UT_uint32 styleNumber = m_currentRTFState.m_paraProps.m_styleNumber;
 		const char * styleName = static_cast<const char *>(m_styleTable[styleNumber]);
-		attribs[attribsCount++] = PT_STYLE_ATTRIBUTE_NAME;
-		attribs[attribsCount++] = styleName;
-		attribs[attribsCount]   = NULL;
+		attribs1[attribsCount++] = PT_STYLE_ATTRIBUTE_NAME;
+		attribs1[attribsCount++] = styleName;
+		attribs1[attribsCount]   = NULL;
 	}
 //
 // If there are character properties defined now write them into our buffer
@@ -7154,7 +7154,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	{
 		propBuffer[eol] = 0;
 	}
-	attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
+	attribs1[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
 //
 // if we are reading a file or parsing header and footers
 // and we're in a list, append char props to this.
@@ -7164,14 +7164,14 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		buildCharacterProps(propBuffer);
 		xxx_UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 	}
-	attribs[attribsCount++] = propBuffer.c_str();
-	attribs[attribsCount] = NULL;
+	attribs1[attribsCount++] = propBuffer.c_str();
+	attribs1[attribsCount] = NULL;
 
 	if(m_currentRTFState.m_revAttr.size())
 	{
-		attribs[attribsCount++] = "revision";
-		attribs[attribsCount++] = m_currentRTFState.m_revAttr.utf8_str();
-		attribs[attribsCount] = NULL;
+		attribs1[attribsCount++] = "revision";
+		attribs1[attribsCount++] = m_currentRTFState.m_revAttr.utf8_str();
+		attribs1[attribsCount] = NULL;
 	}
 	
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing header and footers
@@ -7182,11 +7182,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			bool bret = false;
 			if(m_pDelayedFrag)
 			{
-				bret = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs);
+				bret = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs1);
 			}
 			else
 			{
-				bret = getDoc()->appendStrux(PTX_Block, attribs);
+				bret = getDoc()->appendStrux(PTX_Block, attribs1);
 			}
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -7226,11 +7226,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			bool ok = false;
 			if(m_pDelayedFrag)
 			{
-				ok = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs);
+				ok = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs1);
 			}
 			else
 			{
-				ok = getDoc()->appendStrux(PTX_Block, attribs);
+				ok = getDoc()->appendStrux(PTX_Block, attribs1);
 			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
@@ -7298,7 +7298,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				pAuto->findAndSetParentItem();
 				pAuto->markAsDirty();
 			}
-			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste,attribs1, NULL,PTX_Block);
 		}
 		else if(bUseInsertNotAppend())
 		{
@@ -7323,7 +7323,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
-			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
+			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs1,NULL,PTX_Block);
 			//
 			// Now check if this strux has associated list element. If so stop the list!
 			//
@@ -11949,7 +11949,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			ParseChar(*sz);
 			sz++;
 		}
-		RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+		keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
 		TranslateKeywordID(keywordID, parameter, paramUsed);
 		str.clear();
 	}

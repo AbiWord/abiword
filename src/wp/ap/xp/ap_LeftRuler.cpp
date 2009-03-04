@@ -329,17 +329,17 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 	{
 		return;
 	}
-	FV_View * pView = static_cast<FV_View *>(m_pView);
-	GR_Graphics * pG = pView->getGraphics();
+	FV_View * pView1 = static_cast<FV_View *>(m_pView);
+	GR_Graphics * pG = pView1->getGraphics();
 	if(pG == NULL)
 	{
 		return;
 	}
-	if(pView->getDocument() == NULL)
+	if(pView1->getDocument() == NULL)
 	{
 		return;
 	}
-	if(pView->getDocument()->isPieceTableChanging())
+	if(pView1->getDocument()->isPieceTableChanging())
 	{
 		return;
 	}
@@ -400,9 +400,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 
 	const gchar * properties[3];
 
-	bool hdrftr = pView->isHdrFtrEdit();
+	bool hdrftr = pView1->isHdrFtrEdit();
 
-	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+	fl_HdrFtrShadow * pShadow = pView1->getEditShadow();
 
 	bool hdr = (hdrftr && 
 				pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
@@ -411,7 +411,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 	{
 		hfType = pShadow->getHdrFtrSectionLayout()->getHFType();
 	}
-    PT_DocPosition insPos = pView->getPoint();
+    PT_DocPosition insPos = pView1->getPoint();
 	UT_sint32 iPage = -1;
 	fl_DocSectionLayout * pDSL = NULL;
 	if(pShadow)
@@ -436,7 +436,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 		{
 			UT_String sHeights;
 			UT_DEBUGMSG(("Release TOP Margin 1 \n"));
-			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView->isInFrame(pView->getPoint()))
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView1->isInFrame(pView1->getPoint()))
 			{
 				dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 				UT_DEBUGMSG(("Release TOP Margin 1 Column \n"));
@@ -457,7 +457,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				sHeights = pG->invertDimension(tick.dimType,dyrel);
 				properties[1] = sHeights.c_str();
 				properties[2] = NULL;
-				pView->setSectionFormat(properties);
+				pView1->setSectionFormat(properties);
 			}
 			else
 			{
@@ -520,11 +520,11 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 			}
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
-			notify(pView, AV_CHG_HDRFTR);
-			pView->setPoint(insPos);
-			pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
-			pView->setPoint(insPos);
-			pView->ensureInsertionPointOnScreen();
+			notify(pView1, AV_CHG_HDRFTR);
+			pView1->setPoint(insPos);
+			pView1->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+			pView1->setPoint(insPos);
+			pView1->ensureInsertionPointOnScreen();
 //
 // Put the point at the right point in the header/footer on the right page.
 //
@@ -537,12 +537,12 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 					UT_return_if_fail(pShadowC);
 					pShadow = pShadowC->getShadow();
 					UT_return_if_fail(pShadow);
-					pView->setHdrFtrEdit(pShadow);
+					pView1->setHdrFtrEdit(pShadow);
 				}
-				pView->setPoint(insPos);
-				pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
-				pView->setPoint(insPos);
-				pView->ensureInsertionPointOnScreen();
+				pView1->setPoint(insPos);
+				pView1->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+				pView1->setPoint(insPos);
+				pView1->ensureInsertionPointOnScreen();
 			}
 
 			return;
@@ -551,7 +551,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 
 	case DW_BOTTOMMARGIN:
 		{
-			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView->isInFrame(pView->getPoint()))
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView1->isInFrame(pView1->getPoint()))
 			{
 
 				dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
@@ -573,7 +573,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				UT_String sHeights = pG->invertDimension(tick.dimType,dyrel);
 				properties[1] = sHeights.c_str();
 				properties[2] = NULL;
-				pView->setSectionFormat(properties);
+				pView1->setSectionFormat(properties);
 			}
 			else
 			{
@@ -619,11 +619,11 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 			}
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
-			notify(pView, AV_CHG_HDRFTR);
-			pView->setPoint(insPos);
-			pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
-			pView->setPoint(insPos);
-			pView->ensureInsertionPointOnScreen();
+			notify(pView1, AV_CHG_HDRFTR);
+			pView1->setPoint(insPos);
+			pView1->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+			pView1->setPoint(insPos);
+			pView1->ensureInsertionPointOnScreen();
 //
 // Put the point at the right point in the header/footer on the right page.
 //
@@ -634,12 +634,12 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				{
 					fp_ShadowContainer* pShadowC = pPage->getHdrFtrP(hfType);
 					pShadow = pShadowC->getShadow();
-					pView->setHdrFtrEdit(pShadow);
+					pView1->setHdrFtrEdit(pShadow);
 				}
-				pView->setPoint(insPos);
-				pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
-				pView->setPoint(insPos);
-				pView->ensureInsertionPointOnScreen();
+				pView1->setPoint(insPos);
+				pView1->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+				pView1->setPoint(insPos);
+				pView1->ensureInsertionPointOnScreen();
 			}
 			return;
 		}
@@ -670,7 +670,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 //
 			if(m_infoCache.m_vecTableRowInfo == NULL)
 			{
-				pView->getLeftRulerInfo(m_draggingDocPos,&m_infoCache);
+				pView1->getLeftRulerInfo(m_draggingDocPos,&m_infoCache);
 				UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 				if(m_infoCache.m_vecTableRowInfo == NULL)
@@ -751,20 +751,20 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 			}
 			xxx_UT_DEBUGMSG(("cell marker string is %s \n",sHeights.c_str()));
 			const char * props[3] = {"table-row-heights",sHeights.c_str(),NULL};
-			if(!pView->getDragTableLine())
+			if(!pView1->getDragTableLine())
 			{
-				pView->setTableFormat(props);
+				pView1->setTableFormat(props);
 			}
 			else
 			{
 				fl_SectionLayout * pSL = pCell->getSectionLayout();
 				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 				PT_DocPosition pos = pBL->getPosition();
-				if(!pView->isInTable())
+				if(!pView1->isInTable())
 				{
-					pView->setPoint(pos);
+					pView1->setPoint(pos);
 				}
-				pView->setTableFormat(pos,props);
+				pView1->setTableFormat(pos,props);
 			}
 			m_draggingDocPos =0;
 			return;
@@ -858,13 +858,13 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 {
 	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
 	xxx_UT_DEBUGMSG(("In Left mouseMotion \n"));
-	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView == NULL)
+	FV_View * pView1 = static_cast<FV_View *>(m_pView);
+	if(pView1 == NULL)
 	{
 		return;
 	}
-	GR_Graphics * pG = pView->getGraphics();
-	if(m_pG && pView->isLayoutFilling())
+	GR_Graphics * pG = pView1->getGraphics();
+	if(m_pG && pView1->isLayoutFilling())
 	{
 		if(m_pG)
 		{
@@ -872,17 +872,17 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		return;
 	}
-	if(pView->getDocument() == NULL)
+	if(pView1->getDocument() == NULL)
 	{
 		return;
 	}
-	if(pView->getDocument()->isPieceTableChanging())
+	if(pView1->getDocument()->isPieceTableChanging())
 	{
 		return;
 	}
 	if(!m_bValidMouseClick)
 	{
-		pView->getLeftRulerInfo(&m_infoCache);
+		pView1->getLeftRulerInfo(&m_infoCache);
 	}
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 

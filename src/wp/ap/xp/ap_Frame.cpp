@@ -585,7 +585,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 		bool bMatch = false;
 		for (i=0; !bMatch && (i< vecClones.getItemCount()); i++)
 		{
-			XAP_Frame *pF = static_cast<XAP_Frame *>(vecClones.getNthItem(i));
+			pF = static_cast<XAP_Frame *>(vecClones.getNthItem(i));
 			bMatch = (pF == pLastFrame);
 		}
 		if(bMatch)

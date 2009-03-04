@@ -13610,17 +13610,17 @@ UT_return_val_if_fail(pDialog, false);//
 	pView->getSectionFormat(&propsSectionIn);
 	const char * szRestart = NULL;
 	szRestart = UT_getAttribute("section-restart",propsSectionIn);
-	const char * szRestartValue = NULL;
-	szRestartValue = UT_getAttribute("section-restart-value",propsSectionIn);
+	const char * szRestartValue1 = NULL;
+	szRestartValue1 = UT_getAttribute("section-restart-value",propsSectionIn);
 	bool bRestart = false;
 	if(szRestart && *szRestart && (strcmp(szRestart,"1") == 0))
 	{
 		bRestart = true;
 	}
 	UT_sint32 restartValue = 1;
-	if(szRestartValue && *szRestartValue)
+	if(szRestartValue1 && *szRestartValue1)
 	{
-		restartValue = atoi(szRestartValue);
+		restartValue = atoi(szRestartValue1);
 	}
 	pDialog->setRestart(bRestart, restartValue, false);
 	FREEP(propsSectionIn);

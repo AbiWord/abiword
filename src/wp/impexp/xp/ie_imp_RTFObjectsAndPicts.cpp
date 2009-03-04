@@ -197,7 +197,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	double cropb = 0.0f;
 	double cropl = 0.0f;
 	double cropr = 0.0f;
-	bool resize = false;
+	bool resize1 = false;
 	if (!bUseInsertNotAppend())
 	{
 		// non-null file, we're importing a doc
@@ -210,13 +210,13 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		{
 		case RTFProps_ImageProps::ipstGoal:
 			UT_DEBUGMSG (("Goal\n"));
-			resize = true;
+			resize1 = true;
 			wInch = static_cast<double>(imgProps.wGoal) / 1440.0f;
 			hInch = static_cast<double>(imgProps.hGoal) / 1440.0f;
 			break;
 		case RTFProps_ImageProps::ipstScale:
 			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
-			resize = true;
+			resize1 = true;
 			if ((imgProps.wGoal != 0) && (imgProps.hGoal != 0)) {
 				// want image scaled against the w&h specified, not the image's natural size
 				wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * (imgProps.wGoal/ 1440.0f));
@@ -227,7 +227,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			}
 			break;
 		default:
-			resize = false;
+			resize1 = false;
 			break;
 		}
 
@@ -237,10 +237,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			cropb = imgProps.cropb / 1440.0f;
 			cropl = imgProps.cropl / 1440.0f;
 			cropr = imgProps.cropr / 1440.0f;
-			resize = true;
+			resize1 = true;
 		}
 	  
-		if (resize) 
+		if (resize1) 
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
@@ -252,7 +252,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		const gchar* propsArray[5];
 		propsArray[0] = static_cast<const gchar *>("dataid");
 		propsArray[1] = static_cast<const gchar *>(image_name);
-		if (resize)
+		if (resize1)
 		{
 			propsArray[2] = static_cast<const gchar *>("props");
 			propsArray[3] = propBuffer.c_str();
@@ -409,7 +409,7 @@ bool IE_Imp_RTF::HandlePicture()
 	// this method loads a picture from the file
 	// and insert it in the document.
 
-	unsigned char ch;
+	unsigned char ch1;
 	bool bPictProcessed = false;
 	PictFormat format = picNone;
 
@@ -423,10 +423,10 @@ bool IE_Imp_RTF::HandlePicture()
 	RTF_KEYWORD_ID keywordID;
 
 	do {
-		if (!ReadCharFromFile(&ch))
+		if (!ReadCharFromFile(&ch1))
 			return false;
 
-		switch (ch)
+		switch (ch1)
 		{
 		case '\\':
 			UT_return_val_if_fail(!bPictProcessed, false);
@@ -558,7 +558,7 @@ bool IE_Imp_RTF::HandlePicture()
 				UT_UTF8String_sprintf(image_name,"%d",getDoc()->getUID(UT_UniqueId::Image));
 
 				// the first char belongs to the picture too
-				SkipBackChar(ch);
+				SkipBackChar(ch1);
 
 				if (!LoadPictData(format, image_name.utf8_str(), imageProps, isBinary, binaryLen))
 					if (!SkipCurrentGroup(false))
@@ -567,11 +567,11 @@ bool IE_Imp_RTF::HandlePicture()
 				bPictProcessed = true;
 			}
 		}
-	} while (ch != '}');
+	} while (ch1 != '}');
 
 	// The last brace is put back on the stream, so that the states stack
 	// doesn't get corrupted
-	SkipBackChar(ch);
+	SkipBackChar(ch1);
 
 	return true;
 }
