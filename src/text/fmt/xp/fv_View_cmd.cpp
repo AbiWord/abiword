@@ -774,12 +774,12 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	bool bDirection;
 	_findPositionCoords(posOfColumn, bEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 	UT_return_val_if_fail(pBlock,false);
-	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
-	UT_return_val_if_fail(pCL,false);
-	pCL = pCL->myContainingLayout();
-	UT_return_val_if_fail(pCL,false);
-	UT_return_val_if_fail((pCL->getContainerType() == FL_CONTAINER_TABLE),false);
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL);
+	fl_ContainerLayout * pCL2 = pBlock->myContainingLayout();
+	UT_return_val_if_fail(pCL2,false);
+	pCL2 = pCL2->myContainingLayout();
+	UT_return_val_if_fail(pCL2,false);
+	UT_return_val_if_fail((pCL2->getContainerType() == FL_CONTAINER_TABLE),false);
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL2);
 	m_Selection.setTableLayout(pTL);
 //
 // Now loop through the column and collect all the cells.
@@ -1537,8 +1537,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	PL_StruxDocHandle secSDH = NULL;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
 #if DEBUG
-	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
 #endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
@@ -2016,7 +2016,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 //
 // OK we have to work to find the right place to insert the cell.
 //
-				UT_sint32 jLeft,jRight,jTop,jBot;
+				UT_sint32 jLeft2,jRight2,jTop2,jBot2;
 				if(bBefore)
 				{
 //
@@ -2038,8 +2038,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 						while(j < numCols && !bBBefore)
 						{
 							posCell = findCellPosAt(posCol,k,j);
-							getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
-							if(jTop == i)
+							getCellParams(posCell+1,&jLeft2,&jRight2,&jTop2,&jBot2);
+							if(jTop2 == i)
 							{ 
 								bBBefore = true;
 								UT_String_sprintf(sLeft,"%d",iColInsertAt);
@@ -2573,7 +2573,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
-	PT_DocPosition posTable,posCell;
+	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
 
@@ -2704,8 +2704,8 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 			bEnd = true;
 			break;
 		}
-		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		posCell2 =  m_pDoc->getStruxPosition(cellSDH);
+		getCellParams(posCell2+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		bool bChange = false;
 		iNewLeft = iCurLeft;
@@ -2737,7 +2737,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 			props[6] = "bot-attach";
 			UT_String_sprintf(sBot,"%d",iCurBot);
 			props[7] = sBot.c_str();
-			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell2+1,posCell2+1,NULL,props,PTX_SectionCell);
 		}
 		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
@@ -2850,7 +2850,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
-	PT_DocPosition posTable,posCell;
+	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 
@@ -2986,8 +2986,8 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			bEnd = true;
 			break;
 		}
-		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		posCell2 =  m_pDoc->getStruxPosition(cellSDH);
+		getCellParams(posCell2+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		bool bChange = false;
 		iNewTop = iCurTop;
@@ -3019,7 +3019,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			props[6] = "bot-attach";
 			UT_String_sprintf(sBot,"%d",iNewBot);
 			props[7] = sBot.c_str();
-			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell2+1,posCell2+1,NULL,props,PTX_SectionCell);
 		}
 		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
@@ -3263,8 +3263,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	PL_StruxDocHandle secSDH = NULL;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
 #if DEBUG
-	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
 #endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
@@ -3829,11 +3829,11 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			m_pDoc->disableListUpdates();
 
 			nBlock = _findBlockAtPosition(getPoint());
-			fl_AutoNum * pAuto = nBlock->getAutoNum();
-			if(pAuto != NULL )
+			fl_AutoNum * pAuto2 = nBlock->getAutoNum();
+			if(pAuto2 != NULL )
 			{
 				PL_StruxDocHandle sdh = nBlock->getStruxDocHandle();
-				if((bisList == true) && (pAuto->getFirstItem() == sdh || pAuto->getLastItem() == sdh))
+				if((bisList == true) && (pAuto2->getFirstItem() == sdh || pAuto2->getLastItem() == sdh))
 				{
 					m_pDoc->StopList(sdh);
 					PT_DocPosition listPoint,posEOD;
@@ -4666,15 +4666,15 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 
 	// TODO maybe we should not exit if annotation is not present (ex. auto-generated annotations may become not be editable!)
 	UT_UTF8String sText("");
-	UT_UTF8String sTitle("");
-	UT_UTF8String sAuthor("");
+	UT_UTF8String sTitle2("");
+	UT_UTF8String sAuthor2("");
 	bool b = getAnnotationText(aID,sText);
 	if(!b)
 		return false;
 	
 	// Optional fields
-	getAnnotationTitle(aID,sTitle);
-	getAnnotationAuthor(aID,sAuthor);
+	getAnnotationTitle(aID,sTitle2);
+	getAnnotationAuthor(aID,sAuthor2);
 	
 	// edit annotation
 	
@@ -4695,8 +4695,8 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	
 	// set initial annotation properties
 	// TODO add support for all fields
-	pDialog->setTitle(sTitle.utf8_str());
-	pDialog->setAuthor(sAuthor.utf8_str());
+	pDialog->setTitle(sTitle2.utf8_str());
+	pDialog->setAuthor(sAuthor2.utf8_str());
 	pDialog->setDescription(sText.utf8_str());
 	
 	// run the dialog

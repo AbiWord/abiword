@@ -672,24 +672,24 @@ void fl_FrameLayout::format(void)
 	{
 		getNewContainer();
 	}
-	fl_ContainerLayout*	pBL = getFirstLayout();
+	fl_ContainerLayout*	pBL2 = getFirstLayout();
 	bool bOnPage = false;
-	while (pBL)
+	while (pBL2)
 	{
-		pBL->format();
+		pBL2->format();
 		UT_sint32 count = 0;
-		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		while(pBL2->getLastContainer() == NULL || pBL2->getFirstContainer()==NULL)
 		{
 			UT_DEBUGMSG(("Error formatting a block try again \n"));
 			count = count + 1;
-			pBL->format();
+			pBL2->format();
 			if(count > 3)
 			{
 				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
 				break;
 			}
 		}
-		pBL = pBL->getNext();
+		pBL2 = pBL2->getNext();
 	}
 	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
 	if(!m_bIsOnPage)

@@ -1818,16 +1818,16 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			UT_sint32 xC, yC;
 
 			PT_DocPosition iNewP;
-			fp_Page* pPage = _getPageForXY(xP, yP, xC, yC);
+			fp_Page* pPage2 = _getPageForXY(xP, yP, xC, yC);
 			bool isTOC = false;
-			pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
+			pPage2->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
 			UT_sint32 ii =0;
 			while((iNewP == iOldPoint) && (ii < 100) && (yPoint > 0))
 			{
 				yPoint -= iAfter;
 				yP = yPoint + iPageOffset - m_yScrollOffset;
-				pPage = _getPageForXY(xP, yP, xC, yC);
-				pPage->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
+				pPage2 = _getPageForXY(xP, yP, xC, yC);
+				pPage2->mapXYToPosition(xC, yC, iNewP, bBOL, bEOL,isTOC);
 				ii++;
 			}
 			if(yPoint < 0)
@@ -3608,8 +3608,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	xxx_UT_DEBUGMSG(("Draw between positions %d to %d \n",iPos1,iPos2));
 	fp_Run* pRun1;
 	fp_Run* pRun2;
-	UT_sint32 xoff;
-	UT_sint32 yoff;
+	UT_sint32 xoff2;
+	UT_sint32 yoff2;
 	UT_uint32 uheight;
 	UT_GenericVector<CellLine *> vecTables;
 	UT_GenericVector<fp_Page *>vecPages;
@@ -3651,14 +3651,14 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
 
-		fl_BlockLayout* pBlock = pCurRun->getBlock();
+		fl_BlockLayout* pBlock2 = pCurRun->getBlock();
 		fp_Line * pLine = pCurRun->getLine();
 		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 		{
 			UT_VECTOR_PURGEALL(CellLine *, vecTables);
 			return true;
 		}
-		PT_DocPosition curpos = pBlock->getPosition() + pCurRun->getBlockOffset();
+		PT_DocPosition curpos = pBlock2->getPosition() + pCurRun->getBlockOffset();
 		if ((pCurRun->getLength() > 0 ) && (pCurRun == pRun2 || curpos >= posEnd))
 		{
 			bDone = true;
@@ -3668,11 +3668,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 //			break;
 		}
 		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
-		UT_return_val_if_fail(pBlock,false);
+		UT_return_val_if_fail(pBlock2,false);
 //
 // Look to see if the Block is in a table.
 //
-		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		fl_ContainerLayout * pCL = pBlock2->myContainingLayout();
 		bool bCellSelected = false;
 		if(pCL->getContainerType() == FL_CONTAINER_CELL)
 		{
@@ -3755,16 +3755,16 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				UT_VECTOR_PURGEALL(CellLine *, vecTables);
 				return true;
 			}
-			pLine->getScreenOffsets(pCurRun, xoff, yoff);
+			pLine->getScreenOffsets(pCurRun, xoff2, yoff2);
 			dg_DrawArgs da;
 			da.bDirtyRunsOnly = false;
 			da.pG = m_pG;
-			da.xoff = xoff;
-			da.yoff = yoff + pLine->getAscent();
-			xxx_UT_DEBUGMSG(("Draw Position CurRun %x CurLine %x Yoffset %d \n",pCurRun,pLine,yoff));
+			da.xoff = xoff2;
+			da.yoff = yoff2 + pLine->getAscent();
+			xxx_UT_DEBUGMSG(("Draw Position CurRun %x CurLine %x Yoffset %d \n",pCurRun,pLine,yoff2));
 			if(!bClear)
 			{
-				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff));
+				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff2));
 //				UT_sint32 iLow = getSelectionAnchor();
 //				UT_sint32 iHigh = getPoint();
 //				if(iHigh < iLow
@@ -3774,7 +3774,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			}
 			else
 			{
-				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff));
+				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d xoff %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint(),xoff2));
 				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);
@@ -3792,7 +3792,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		{
 			fl_BlockLayout* pNextBlock;
 
-			pNextBlock = pBlock->getNextBlockInDocument();
+			pNextBlock = pBlock2->getNextBlockInDocument();
 			if (pNextBlock)
 			{
 				pCurRun = pNextBlock->getFirstRun();

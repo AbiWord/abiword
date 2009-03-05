@@ -89,14 +89,14 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+			pf_Frag_Strux * pfs2 = static_cast<pf_Frag_Strux*>(pf);
 
-			if(pfs->getStruxType() == pst)
+			if(pfs2->getStruxType() == pst)
 				break;
 
 			if(bSkipEmbededSections)
 			{
-				if(pfs->getStruxType() == PTX_EndTOC)
+				if(pfs2->getStruxType() == PTX_EndTOC)
 				{
 					while(pf)
 					{
@@ -111,7 +111,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-				if(pfs->getStruxType() == PTX_EndFrame)
+				if(pfs2->getStruxType() == PTX_EndFrame)
 				{
 					while(pf)
 					{
@@ -127,7 +127,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 					}
 				}
 
-				if(pfs->getStruxType() == PTX_EndEndnote)
+				if(pfs2->getStruxType() == PTX_EndEndnote)
 				{
 					while(pf)
 					{
@@ -142,7 +142,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-				if(pfs->getStruxType() == PTX_EndFootnote)
+				if(pfs2->getStruxType() == PTX_EndFootnote)
 				{
 					while(pf)
 					{
@@ -157,7 +157,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-				if(pfs->getStruxType() == PTX_EndMarginnote)
+				if(pfs2->getStruxType() == PTX_EndMarginnote)
 				{
 					while(pf)
 					{

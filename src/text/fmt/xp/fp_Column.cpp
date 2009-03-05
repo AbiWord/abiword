@@ -1300,10 +1300,10 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 //
 // Deal with wrapped lines where more than one line can have the same Y
 //
-		fp_Line * pLine = static_cast<fp_Line *>(pContainer);
-		if(pLine->isWrapped())
+		fp_Line * pLine2 = static_cast<fp_Line *>(pContainer);
+		if(pLine2->isWrapped())
 		{
-			fp_Line * pNext = static_cast<fp_Line *>(pLine->getNext());
+			fp_Line * pNext = static_cast<fp_Line *>(pLine2->getNext());
 			if(pNext && pNext->isSameYAsPrevious())
 			{
 				fp_ContainerObject *pBest = pContainer;
@@ -1337,12 +1337,12 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 											pos, bBOL, bEOL,isTOC);
 			}
 		}
-		else if(!pLine->canContainPoint())
+		else if(!pLine2->canContainPoint())
 		{
 			// lines that cannot contain point are those that are located in blocks that
 			// cannot contain point (hidden, collapsed, etc. So we need to find the block
 			// that can contain point
-			fl_BlockLayout * pBlock = pLine->getBlock();
+			fl_BlockLayout * pBlock = pLine2->getBlock();
 			UT_return_if_fail( pBlock );
 
 			pBlock = pBlock->getNextBlockInDocument();
@@ -1355,7 +1355,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 			if(!pBlock)
 			{
 				// look the other way (reusing pNext, even though it will be previous)
-				pBlock = pLine->getBlock();
+				pBlock = pLine2->getBlock();
 
 				pBlock = pBlock->getPrevBlockInDocument();
 
@@ -1593,7 +1593,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 i;
-	fp_TOCContainer *pTOC = NULL;
+	fp_TOCContainer *pTOC2 = NULL;
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_return_if_fail(pNextContainer);
 	if (pNextContainer->isEmpty())
@@ -1652,11 +1652,11 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			}
 			if(pContainer->getContainerType() == FP_CONTAINER_TOC)
 			{
-				pTOC = static_cast<fp_TOCContainer *>(pContainer);
-				xxx_UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to filled Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
-				if(!pTOC->isThisBroken())
+				pTOC2 = static_cast<fp_TOCContainer *>(pContainer);
+				xxx_UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to filled Col \n",pTOC2,i,pTOC2->getPrevContainerInSection()));
+				if(!pTOC2->isThisBroken())
 				{
-					pTOC->deleteBrokenTOCs(true);
+					pTOC2->deleteBrokenTOCs(true);
 				}
 				bTOC = true;
 			}
@@ -1685,7 +1685,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			}
 		}
 	}
-	if(pTOC)
+	if(pTOC2)
 	{
 		//UT_sint32 iTOC = pNextContainer->findCon(pTOC);
 		xxx_UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
@@ -1838,7 +1838,7 @@ void fp_Column::layout(void)
 {
 	clearWrappedLines();
 	_setMaxContainerHeight(0);
-	UT_sint32 iY = 0, iPrevY = 0;
+	UT_sint32 iY = 0, iPrevY2 = 0;
 	UT_sint32 iOldY  =-1;
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_Line * pLastLine = NULL;
@@ -1966,21 +1966,21 @@ void fp_Column::layout(void)
 				fp_Line * pLine = static_cast<fp_Line *>(pPrevContainer);
 				while(pLine && pLine->isSameYAsPrevious())
 				{
-					pLine->setAssignedScreenHeight(iY - iPrevY);
+					pLine->setAssignedScreenHeight(iY - iPrevY2);
 					pLine = static_cast<fp_Line *>(pLine->getPrev());
 				}
 				if(pLine)
 				{
-					pLine->setAssignedScreenHeight(iY - iPrevY);
+					pLine->setAssignedScreenHeight(iY - iPrevY2);
 				}
 			}
 			else
 			{
-				xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY));
-				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+				xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY2));
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY2);
 			}
 		}
-		iPrevY = iY;
+		iPrevY2 = iY;
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
@@ -1990,18 +1990,18 @@ void fp_Column::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-		UT_ASSERT((iY - iPrevY + getGraphics()->tlu(1)) > 0);
+		UT_ASSERT((iY - iPrevY2 + getGraphics()->tlu(1)) > 0);
 		if(pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			fp_Line * pLine = static_cast<fp_Line *>(pPrevContainer);
 			while(pLine && pLine->isSameYAsPrevious())
 			{
-				pLine->setAssignedScreenHeight(iY - iPrevY);
+				pLine->setAssignedScreenHeight(iY - iPrevY2);
 				pLine = static_cast<fp_Line *>(pLine->getPrev());
 			}
 			if(pLine)
 			{
-				pLine->setAssignedScreenHeight(iY - iPrevY);
+				pLine->setAssignedScreenHeight(iY - iPrevY2);
 			}
 		}
 	}

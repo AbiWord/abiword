@@ -591,9 +591,9 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		// getTextWidth() takes LOGICAL offset
 		m_pRenderInfo->m_iOffset = i;
 		m_pRenderInfo->m_iLength = 1;
-		UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
-		iLeftWidth += iCW;
-		iRightWidth -= iCW;
+		UT_sint32 iCW2 = getGraphics()->getTextWidth(*m_pRenderInfo);
+		iLeftWidth += iCW2;
+		iRightWidth -= iCW2;
 
 		UT_UCS4Char c = text.getChar();
 		bool bCanBreak = false;
@@ -773,9 +773,9 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		// catch the case of a click directly on the left half of the
 		// first character in the run
 		UT_uint32 k = iVisDirection == UT_BIDI_RTL ? getLength() - 1 : 0;
-		UT_sint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
+		UT_sint32 iCW2 = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
 
-		if (x < (iCW / 2))
+		if (x < (iCW2 / 2))
 		{
 			pos = getBlock()->getPosition() + getOffsetFirstVis();
 
@@ -2714,7 +2714,8 @@ void fp_TextRun::resetJustification(bool bPermanent)
 void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
 	UT_return_if_fail(m_pRenderInfo);
-	
+	UT_sint32 len = getLength();
+
 	if(!iAmount)
 	{
 		// this can happend near the start of the line (the line is
@@ -2727,9 +2728,9 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		return;
 	}
 
-	if(iSpacesInRun && getLength() > 0)
+	if(iSpacesInRun && len > 0)
 	{
-		m_pRenderInfo->m_iLength = getLength();
+		m_pRenderInfo->m_iLength = len;
 	
 		_setWidth(getWidth() + iAmount);
 
@@ -2741,9 +2742,10 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		// will be again removed
 		UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
-		text.setUpperLimit(text.getPosition() + getLength() - 1);
+		text.setUpperLimit(text.getPosition() + len - 1);
 		m_pRenderInfo->m_pText = & text;
-		m_pRenderInfo->m_iLength = getLength();
+		UT_ASSERT(len == getLength());
+//		m_pRenderInfo->m_iLength = getLength();
 #else
 		m_pRenderInfo->m_pText = NULL;
 #endif

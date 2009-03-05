@@ -267,15 +267,15 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	UT_sint32 i= 0;
 	UT_sint32 nWrapped = 0;
-	fp_Container * pFirst = NULL;
+	fp_Container * pFirst2 = NULL;
 	fl_BlockLayout * pFirstBL = NULL;
 	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
 	{
 		fp_Column * pCol = getNthColumnLeader(i);
 		if(i == 0)
 		{
-			pFirst = static_cast<fp_Container *>(pCol->getNthCon(0));
-			if(pFirst == NULL)
+			pFirst2 = static_cast<fp_Container *>(pCol->getNthCon(0));
+			if(pFirst2 == NULL)
 			{
 				return NULL;
 			}
@@ -325,13 +325,13 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	vecBL.clear();
 	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
 	{
-		fp_Column * pCol = getNthColumnLeader(i);
-		while(pCol)
+		fp_Column * pCol2 = getNthColumnLeader(i);
+		while(pCol2)
 		{
 			UT_sint32 j = 0;
-			for(j=0; j < static_cast<UT_sint32>(pCol->countCons()); j++)
+			for(j=0; j < static_cast<UT_sint32>(pCol2->countCons()); j++)
 			{
-				fp_Container * pCon = static_cast<fp_Container *>(pCol->getNthCon(j));
+				fp_Container * pCon = static_cast<fp_Container *>(pCol2->getNthCon(j));
 				xxx_UT_DEBUGMSG(("Look at con %x at j %d \n",pCon,j));
 				if(pCon->getContainerType() == FP_CONTAINER_LINE)
 				{
@@ -478,11 +478,11 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							while(pLine && pLine->getBlock() == pBL)
 							{
 								k++;
-								if(k >= static_cast<UT_sint32>(pCol->countCons()))
+								if(k >= static_cast<UT_sint32>(pCol2->countCons()))
 								{
 									break;
 								}
-								pCon = static_cast<fp_Container *>(pCol->getNthCon(k));
+								pCon = static_cast<fp_Container *>(pCol2->getNthCon(k));
 								if(pCon->getContainerType() == FP_CONTAINER_LINE)
 								{
 									pLine = static_cast<fp_Line *>(pCon);
@@ -608,11 +608,11 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							while(pLine && pLine->getBlock() == pBL)
 							{
 								k++;
-								if(k >= static_cast<UT_sint32>(pCol->countCons()))
+								if(k >= static_cast<UT_sint32>(pCol2->countCons()))
 								{
 									break;
 								}
-								pCon = static_cast<fp_Container *>(pCol->getNthCon(k));
+								pCon = static_cast<fp_Container *>(pCol2->getNthCon(k));
 								if(pCon->getContainerType() == FP_CONTAINER_LINE)
 								{
 									pLine = static_cast<fp_Line *>(pCon);
@@ -629,7 +629,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				if(j< 0)
 				  j = 0;
 			}
-			pCol = static_cast<fp_Column *>(pCol->getFollower());
+			pCol2 = static_cast<fp_Column *>(pCol2->getFollower());
 		}
 	}
 	if(vecBL.getItemCount() == 0)
@@ -2832,20 +2832,20 @@ bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
 	return true;
 }
 
-void fp_Page::removeFrameContainer(fp_FrameContainer * pFC)
+void fp_Page::removeFrameContainer(fp_FrameContainer * _pFC)
 {
 
-	markDirtyOverlappingRuns(pFC);
+	markDirtyOverlappingRuns(_pFC);
 	UT_sint32 ndx = 0;
 	bool isAbove = false;
-	if(pFC->isAbove())
+	if(_pFC->isAbove())
 	{
-	    ndx = m_vecAboveFrames.findItem(pFC);
+	    ndx = m_vecAboveFrames.findItem(_pFC);
 	    isAbove = true;
 	}
 	else
 	{
-	    ndx = m_vecBelowFrames.findItem(pFC);
+	    ndx = m_vecBelowFrames.findItem(_pFC);
 	}
 	if(ndx>=0)
 	{
@@ -2935,9 +2935,9 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	return true;
 }
 
-void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
+void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * _pFC)
 {
-	UT_sint32 ndx = m_vecFootnotes.findItem(pFC);
+	UT_sint32 ndx = m_vecFootnotes.findItem(_pFC);
 	if(ndx>=0)
 	{
 		m_vecFootnotes.deleteNthItem(ndx);
@@ -3032,9 +3032,9 @@ bool fp_Page::insertAnnotationContainer(fp_AnnotationContainer * pAC)
 	return true;
 }
 
-void fp_Page::removeAnnotationContainer(fp_AnnotationContainer * pAC)
+void fp_Page::removeAnnotationContainer(fp_AnnotationContainer * _pAC)
 {
-	UT_sint32 ndx = m_vecAnnotations.findItem(pAC);
+	UT_sint32 ndx = m_vecAnnotations.findItem(_pAC);
 	if(ndx>=0)
 	{
 		m_vecAnnotations.deleteNthItem(ndx);

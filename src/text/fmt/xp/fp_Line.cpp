@@ -1090,15 +1090,15 @@ void fp_Line::clearScreen(void)
 		fp_Run* pRun;
 		bool bNeedsClearing = true;
 
-		UT_sint32 i;
+		UT_sint32 j;
 
 		pRun = m_vecRuns.getNthItem(0);
 		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 			return;
 
-		for (i = 0; i < count; i++)
+		for (j = 0; j < count; j++)
 		{
-			pRun = m_vecRuns.getNthItem(i);
+			pRun = m_vecRuns.getNthItem(j);
 
 			if(!pRun->isDirty())
 			{

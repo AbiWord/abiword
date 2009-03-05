@@ -1278,10 +1278,10 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		pDSL->setLastEndnoteContainer(pECon);
 		pECon->setNext(NULL);
 		pECon->setPrev(NULL);
-		fp_Column * pCol =  static_cast<fp_Column *>(pDSL->getLastContainer());
-		if(pCol)
+		fp_Column * pCol2 =  static_cast<fp_Column *>(pDSL->getLastContainer());
+		if(pCol2)
 		{
-			pCol->addContainer(pECon);
+			pCol2->addContainer(pECon);
 //
 // No height defined yet. Can't layout
 //
@@ -1514,7 +1514,7 @@ bool FL_DocLayout::addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock)
 	pBlock->getStyle(sStyle);
 	UT_sint32 i = 0;
 	UT_sint32 inTOC = count;
-	UT_sint32 addTOC = 0;
+	UT_sint32 _addTOC = 0;
 
 	for(i=0; i<count; i++)
 	{
@@ -1540,11 +1540,11 @@ bool FL_DocLayout::addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock)
 			if(pTOC->isStyleInTOC(sStyle))
 			{
 				pTOC->addBlock(pBlock);
-				addTOC++;
+				_addTOC++;
 			}
 		}
 	}
-	if((inTOC <= 0) && (addTOC == 0))
+	if((inTOC <= 0) && (_addTOC == 0))
 	{
 		return false;
 	}
@@ -4206,16 +4206,16 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			gint nOuterQuoteStyleIndex = 0; // Default to English
 			gint nInnerQuoteStyleIndex = 1; // Default to English
 			bool bUseCustomQuotes = false;
-			bool bOK = true;
+			bool bOK2 = true;
 			
 			// 1st - See if we should use custom quotes
 			if (m_pPrefs)
 			{
-				bOK = m_pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_CustomSmartQuotes), &bUseCustomQuotes );
-				if (bOK && bUseCustomQuotes)
+				bOK2 = m_pPrefs->getPrefsValueBool( static_cast<const gchar *>(XAP_PREF_KEY_CustomSmartQuotes), &bUseCustomQuotes );
+				if (bOK2 && bUseCustomQuotes)
 				{
-					bool bOK = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_OuterQuoteStyle), nOuterQuoteStyleIndex );
-					if (!bOK)
+					bool bOK1 = m_pPrefs->getPrefsValueInt( static_cast<const gchar *>(XAP_PREF_KEY_OuterQuoteStyle), nOuterQuoteStyleIndex );
+					if (!bOK1)
 					{
 						nOuterQuoteStyleIndex = 0; // English if bad
 					}
@@ -4231,7 +4231,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			}
 
 			// 2nd - Not using custom quotes, look up doc lang
-			if (!bOK || !bUseCustomQuotes)
+			if (!bOK2 || !bUseCustomQuotes)
 			{
 				const char * pszLang = NULL;
 				const gchar ** props_in = NULL;

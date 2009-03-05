@@ -455,8 +455,8 @@ void fp_AnnotationContainer::draw(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	fl_AnnotationLayout * pAL = static_cast<fl_AnnotationLayout *>(getSectionLayout());
-	FL_DocLayout * pDL = pAL->getDocLayout();
+	fl_AnnotationLayout * pAL2 = static_cast<fl_AnnotationLayout *>(getSectionLayout());
+	FL_DocLayout * pDL = pAL2->getDocLayout();
 	m_iLabelWidth = 0;
 	if(!pDL->displayAnnotations())
 	  return;

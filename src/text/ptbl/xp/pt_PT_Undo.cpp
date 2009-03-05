@@ -297,8 +297,8 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (bFound, false);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UNDO_return_val_if_fail (bFoundStrux, false);
+			bool bFoundStrux2 = _getStruxFromFrag(pf,&pfs);
+			UNDO_return_val_if_fail (bFoundStrux2, false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
@@ -343,8 +343,8 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (fragOffset == 0,false);
 			
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UNDO_return_val_if_fail (bFoundStrux,false);
+			bool bFoundStrux2 = _getStruxFromFrag(pf,&pfs);
+			UNDO_return_val_if_fail (bFoundStrux2,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
@@ -381,8 +381,8 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (fragOffset == 0, false);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UNDO_return_val_if_fail (bFoundStrux,false);
+			bool bFoundStrux2 = _getStruxFromFrag(pf,&pfs);
+			UNDO_return_val_if_fail (bFoundStrux2,false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
@@ -413,8 +413,8 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (bFound, false);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UNDO_return_val_if_fail (bFoundStrux, false);
+			bool bFoundStrux2 = _getStruxFromFrag(pf,&pfs);
+			UNDO_return_val_if_fail (bFoundStrux2, false);
 			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);

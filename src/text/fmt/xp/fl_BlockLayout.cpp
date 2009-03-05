@@ -2595,12 +2595,12 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		_removeAllEmptyLines(); // try again
 		return;
 	}
-	fp_Run * pRun = pLine->getLastRun();
+	fp_Run * pRun2 = pLine->getLastRun();
 	if(pLine->getHeight() == 0)
 	{
-		pLine->recalcHeight(pRun);
+		pLine->recalcHeight(pRun2);
 	}
-	pRun = pRun->getNextRun();
+	pRun2 = pRun2->getNextRun();
 	m_pVertContainer = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 	m_iLinePosInContainer = m_pVertContainer->findCon(pLine)+1;
 	if(m_iLinePosInContainer < 0)
@@ -2625,10 +2625,10 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	//
 	// Stuff remaining content on the line
 	//
-	while(pRun)
+	while(pRun2)
 	{
-		pLine->addRun(pRun);
-		pRun= pRun->getNextRun();
+		pLine->addRun(pRun2);
+		pRun2 = pRun2->getNextRun();
 	}
 	//
 	// Remove all the lines after this
@@ -2655,10 +2655,10 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	UT_sint32 iMaxW = m_pVertContainer->getWidth();
 	iMaxW -=  getLeftMargin();
 	iMaxW -= getRightMargin();
-	bool bFirst = false;
+	bool bFirst2 = false;
 	if(pLine == static_cast<fp_Line *>(getFirstContainer()))
 	{
-		bFirst = true;
+		bFirst2 = true;
 		UT_BidiCharType iBlockDir = getDominantDirection();
 		if(iBlockDir == UT_BIDI_LTR)
 		{
@@ -3314,12 +3314,12 @@ void fl_BlockLayout::format()
 #endif
 	bool bJustifyStuff = false;
 	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
-	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_SHADOW))
+	fl_ContainerLayout * pCL2 = myContainingLayout();
+	while(pCL2 && (pCL2->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL2->getContainerType() != FL_CONTAINER_SHADOW))
 	{
-		pCL = pCL->myContainingLayout();
+		pCL2 = pCL2->myContainingLayout();
 	}
-	if(pCL && (pCL->getContainerType() == FL_CONTAINER_SHADOW))
+	if(pCL2 && (pCL2->getContainerType() == FL_CONTAINER_SHADOW))
 	{
 		xxx_UT_DEBUGMSG(("Formatting a block in a shadow \n"));
 		xxx_UT_DEBUGMSG(("m_pSectionLayout Type is %d \n",m_pSectionLayout->getContainerType()));
@@ -3438,11 +3438,11 @@ void fl_BlockLayout::format()
 			pRun = pRun->getNextRun();
 		}
 
-		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
-		while(pLine && 	bJustifyStuff)
+		fp_Line* pLine2 = static_cast<fp_Line *>(getFirstContainer());
+		while(pLine2 && 	bJustifyStuff)
 		{
-			pLine->resetJustification(!bJustifyStuff); // temporary reset
-			pLine = static_cast<fp_Line *>(pLine->getNext());
+			pLine2->resetJustification(!bJustifyStuff); // temporary reset
+			pLine2 = static_cast<fp_Line *>(pLine2->getNext());
 		}
 
 		// Recalculate widths of Runs if necessary.
@@ -9580,7 +9580,7 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 	// Starts a new list at the current block with list style style all other
 	// attributes and properties are the default values
 	//
-	FL_ListType lType;
+	FL_ListType lType2;
 	PD_Style* pStyle = 0;
 	const gchar* szDelim     = 0;
 	const gchar* szDec       = 0;
@@ -9696,8 +9696,8 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 		level++;
 	}
 
-	lType = getListTypeFromStyle(szListStyle);
-	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
+	lType2 = getListTypeFromStyle(szListStyle);
+	StartList( lType2, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
 void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const gchar*> * va) const
@@ -11360,25 +11360,25 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		// handle revisions and hidden text correctly
 		// hidden text is to be ignored (i.e., hidden from the spellcheker)
 		// delete revisions that are visible are also to be ignored
-		fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
-		if(pRun == NULL)
-			{
-				xxx_UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
-				return false;
-			}
-		UT_return_val_if_fail( pRun, false );
+		fp_Run * pRun2 = m_pBL->findRunAtOffset(m_iWordOffset);
+		if(pRun2 == NULL)
+		{
+			xxx_UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
+			return false;
+		}
+		UT_return_val_if_fail( pRun2, false );
 		bool bRevised = false;
 
-		while(pRun && (UT_sint32)pRun->getBlockOffset() < m_iWordOffset + iWordLength)
+		while(pRun2 && (UT_sint32)pRun2->getBlockOffset() < m_iWordOffset + iWordLength)
 		{
-			if(pRun->getVisibility() != FP_VISIBLE ||
-			   (pRun->containsRevisions() && pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION))
+			if(pRun2->getVisibility() != FP_VISIBLE ||
+			   (pRun2->containsRevisions() && pRun2->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION))
 			{
 				bRevised = true;
 				break;
 			}
 
-			pRun = pRun->getNextRun();
+			pRun2 = pRun2->getNextRun();
 		}
 		
 		if (bNeedsMutation || bRevised)
@@ -11431,15 +11431,15 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 					bool bNotVisible = pRun->getVisibility() != FP_VISIBLE;
 					bool bIgnore = bNotVisible || bDeletedVisible;
 			
-					_spell_type * st = NULL;
+					_spell_type * st2 = NULL;
 			
 					if(vWordLimits.getItemCount())
-						st = vWordLimits.getLastItem();
+						st2 = vWordLimits.getLastItem();
 			
-					if(st && st->bIgnore == bIgnore)
+					if(st2 && st2->bIgnore == bIgnore)
 					{
 						// this run continues the last ignore section, just adjust to the end
-						st->iEnd += iMaxLen;
+						st2->iEnd += iMaxLen;
 					}
 					else
 					{

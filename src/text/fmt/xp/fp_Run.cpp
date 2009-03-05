@@ -2277,7 +2277,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 	// need to clear full height of line, in case we had a selection
 
-	UT_sint32 iFillHeight = getLine()->getHeight();
+	UT_sint32 iFillHeight2 = getLine()->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
 
 	xxx_UT_DEBUGMSG(("iFillTop Tab %d YTopOfRun %d \n",iFillTop, pDA->yoff - getAscent()));
@@ -2310,16 +2310,16 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		 ((iSel1 <= iRunBase)	&& (iSel2 > iRunBase))		)
 	{
-		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight2);
         if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight2);
         }
 	}
 	else
 	{
-		Fill(pG,DA_xoff, iFillTop, getWidth(), iFillHeight);
+		Fill(pG,DA_xoff, iFillTop, getWidth(), iFillHeight2);
         if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight2);
         }
 	}
 	if (m_leader != FL_LEADER_NONE)

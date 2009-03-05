@@ -466,7 +466,7 @@ bool FV_VisualDragText::reposOffsets(UT_sint32 x, UT_sint32 y)
     bAdjustX = true;
     dx -= getGraphics()->tlu(20);
     m_iInitialOffX -= dx;
-    UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+    expX.set(0,m_recCurFrame.top,0,m_recCurFrame.height);
     m_recCurFrame.left += dx;
     m_recOrigLeft.left += dx;
     m_recOrigRight.left += dx;
@@ -476,7 +476,7 @@ bool FV_VisualDragText::reposOffsets(UT_sint32 x, UT_sint32 y)
     bAdjustY = true;
     dy -= getGraphics()->tlu(20);
     m_iInitialOffY -= dy;
-    UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+    expY.set(m_recCurFrame.left,0,m_recCurFrame.width,0);
     m_recCurFrame.top += dy;
     m_recOrigLeft.top += dy;
     m_recOrigRight.top += dy;
@@ -809,20 +809,20 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	    //
 	    // Look to see if we have a rectangular table selection
 	    //
-	    UT_sint32 iExtra = 1;
-	    if(m_pView->getDocument()->isTableAtPos(posLow+iExtra))
+	    UT_sint32 nExtra = 1;
+	    if(m_pView->getDocument()->isTableAtPos(posLow+nExtra))
 	    {
-	      iExtra++;
+	      nExtra++;
 	    }
-	    if(m_pView->getDocument()->isCellAtPos(posLow+iExtra))
+	    if(m_pView->getDocument()->isCellAtPos(posLow+nExtra))
 	    {
-	      iExtra++;
+	      nExtra++;
 	    }
-	    if(m_pView->getDocument()->isBlockAtPos(posLow+iExtra))
+	    if(m_pView->getDocument()->isBlockAtPos(posLow+nExtra))
 	    {
-	      iExtra++;
+	      nExtra++;
 	    }
-	    fp_CellContainer * pCellConLow = m_pView->getCellAtPos(posLow+iExtra);
+	    fp_CellContainer * pCellConLow = m_pView->getCellAtPos(posLow+nExtra);
 	    if(pCellConLow == NULL)
 	      goto do_broken;
 	    fl_CellLayout * pCellLow = static_cast<fl_CellLayout *>(pCellConLow->getSectionLayout());

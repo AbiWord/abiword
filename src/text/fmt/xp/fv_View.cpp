@@ -4292,12 +4292,12 @@ bool FV_View::getStyle(const gchar ** style) const
 	}
 
 	// 1. get block style at insertion point
-	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
-	if(pBlock == NULL)
+	fl_BlockLayout* pBlock2 = _findBlockAtPosition(posStart);
+	if(pBlock2 == NULL)
 	{
 		return false;
 	}
-	pBlock->getAP(pBlockAP);
+	pBlock2->getAP(pBlockAP);
 
 	szBlock = x_getStyle(pBlockAP, true);
 
@@ -4306,21 +4306,21 @@ bool FV_View::getStyle(const gchar ** style) const
 	{
 		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
 
-		while (pBlock && (pBlock != pBlockEnd))
+		while (pBlock2 && (pBlock2 != pBlockEnd))
 		{
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pBlock = pBlock->getNextBlockInDocument();
+			pBlock2 = pBlock2->getNextBlockInDocument();
 
-			if (!pBlock)
+			if (!pBlock2)
 			{
 				// at EOD, so just bail
 				break;
 			}
 
 			// did block format change?
-			pBlock->getAP(pAP);
+			pBlock2->getAP(pAP);
 			if (pBlockAP != pAP)
 			{
 				pBlockAP = pAP;
@@ -4335,7 +4335,7 @@ bool FV_View::getStyle(const gchar ** style) const
 				{
 					// doesn't match, so stop looking
 					szBlock = NULL;
-					pBlock = NULL;
+					pBlock2 = NULL;
 					break;
 				}
 			}
@@ -5828,7 +5828,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	gchar pszStart[80],pszAlign[20],pszIndent[20];
 	UT_GenericVector<const gchar*> va,vp;
 	UT_GenericVector<PL_StruxDocHandle> vb;
-	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
+	PL_StruxDocHandle sdh2 = pAuto->getNthBlock(i);
 	m_pDoc->beginUserAtomicGlob();
 
 	// Signal PieceTable Change
@@ -5840,12 +5840,12 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	{
 		// Stop lists in all elements
 		i = 0;
-		sdh = pAuto->getNthBlock(i);
-		while(sdh != NULL)
+		sdh2 = pAuto->getNthBlock(i);
+		while(sdh2 != NULL)
 		{
-			vb.addItem(sdh);
+			vb.addItem(sdh2);
 			i++;
-			sdh = pAuto->getNthBlock(i);
+			sdh2 = pAuto->getNthBlock(i);
 		}
 		for(i=0; i< vb.getItemCount(); ++i)
 		{
@@ -5921,14 +5921,14 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	props[i] = static_cast<gchar *>(NULL);
 
 	i = 0;
-	sdh = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
-	while(sdh != NULL)
+	sdh2 = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
+	while(sdh2 != NULL)
 	{
-		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
+		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh2)+fl_BLOCK_STRUX_OFFSET;
 //		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 		i++;
-		sdh = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
+		sdh2 = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
 		_generalUpdate();
 	}
 
@@ -9562,7 +9562,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			return;
 		}
 		fl_SectionLayout * pSection = NULL;
-		fl_DocSectionLayout * pDSL = NULL;
+		fl_DocSectionLayout * pDSL2 = NULL;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 		if(pContainer == NULL)
 		{
@@ -9592,28 +9592,28 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			pDSL2 = static_cast<fl_DocSectionLayout *>(pSection);
 			isFootnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			pDSL2 = static_cast<fl_DocSectionLayout *>(pSection);
 			isEndnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_ANNOTATION)
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			pDSL2 = static_cast<fl_DocSectionLayout *>(pSection);
 			isAnnotation = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = static_cast<fl_DocSectionLayout*>(pSection);
+			pDSL2 = static_cast<fl_DocSectionLayout*>(pSection);
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
@@ -9624,10 +9624,10 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 
-			pInfo->m_yTopMargin = pDSL->getTopMargin();
+			pInfo->m_yTopMargin = pDSL2->getTopMargin();
 			UT_ASSERT(pInfo->m_yTopMargin>= 0);
 
-			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+			pInfo->m_yBottomMargin = pDSL2->getBottomMargin();
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_CELL)
 		{
@@ -9743,7 +9743,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		else if(isHdrFtrEdit())
 		{
 			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
-			pDSL = pHF->getDocSectionLayout();
+			pDSL2 = pHF->getDocSectionLayout();
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
@@ -9751,15 +9751,15 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 			if(pHF->getHFType() >= FL_HDRFTR_FOOTER)
 			{
-				pInfo->m_yTopMargin = pPage->getHeight() - pDSL->getBottomMargin();
+				pInfo->m_yTopMargin = pPage->getHeight() - pDSL2->getBottomMargin();
 				UT_ASSERT(pInfo->m_yTopMargin>= 0);
-				pInfo->m_yBottomMargin = pDSL->getFooterMargin();
+				pInfo->m_yBottomMargin = pDSL2->getFooterMargin();
 			}
 			else
 			{
-				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
+				pInfo->m_yTopMargin = pDSL2->getHeaderMargin();
 				UT_ASSERT(pInfo->m_yTopMargin>= 0);
-				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
+				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL2->getTopMargin();
 			}
 
 		}		
@@ -11256,21 +11256,21 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
   {  
 	  return false;
   }
-  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-  if(pfs->getStruxType() == PTX_EndTOC)
+  pf_Frag_Strux * pfs2 = static_cast<pf_Frag_Strux *>(pf);
+  if(pfs2->getStruxType() == PTX_EndTOC)
   {
 	  return true;
   }
-  if((pfs->getStruxType() == PTX_EndFootnote) || 
-     (pfs->getStruxType() == PTX_EndAnnotation)|| 
-     (pfs->getStruxType() == PTX_EndEndnote) || 
-     (pfs->getStruxType() == PTX_Block) )
+  if((pfs2->getStruxType() == PTX_EndFootnote) || 
+     (pfs2->getStruxType() == PTX_EndAnnotation)|| 
+     (pfs2->getStruxType() == PTX_EndEndnote) || 
+     (pfs2->getStruxType() == PTX_Block) )
   {
 	  return false;
   }
-  if((pfs->getStruxType() == PTX_Section) || (pfs->getStruxType() == PTX_SectionHdrFtr))
+  if((pfs2->getStruxType() == PTX_Section) || (pfs2->getStruxType() == PTX_SectionHdrFtr))
   {
-	  if(pfs->getPos() < pos)
+	  if(pfs2->getPos() < pos)
 	  {
 		  return true;
 	  }

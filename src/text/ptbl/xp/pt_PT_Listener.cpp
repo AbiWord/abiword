@@ -63,7 +63,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	PL_StruxFmtHandle sfh = 0;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
-	pf_Frag_Strux * pfs = NULL;
+	pf_Frag_Strux * pfs2 = NULL;
 	bool bListensOnly = (pListener->getType() >= PTL_CollabExport);
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
@@ -90,8 +90,8 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
 					PL_StruxDocHandle sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pfs = (pf_Frag_Strux *) sdh;
-					blockOffset = pos - pfs->getPos() -1;
+					pfs2 = (pf_Frag_Strux *) sdh;
+					blockOffset = pos - pfs2->getPos() -1;
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_return_val_if_fail (bStatus1,false);
 					// I do not understand at all why this was set to
@@ -116,16 +116,16 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			
 		case pf_Frag::PFT_Strux:
 			{
-				pfs = static_cast<pf_Frag_Strux *> (pf);
+				pfs2 = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
 			        if(bListensOnly)
 				{
-					pfs->setFmtHandle(listenerId,sfh);
+					pfs2->setFmtHandle(listenerId,sfh);
 			                break;
 				}
 				PX_ChangeRecord * pcr = NULL;
-				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+				bool bStatus1 = pfs2->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1, false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 
@@ -135,7 +135,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				// UT_ASSERT_HARMLESS( sfh || !bAdd );
 				if (bAdd && sfh)
 				{
-					pfs->setFmtHandle(listenerId,sfh);
+					pfs2->setFmtHandle(listenerId,sfh);
 				}
 				
 				if (pcr)
@@ -143,7 +143,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if (!bStatus2)
 					return false;
 				blockOffset = 0;
-				if(isEndFootnote(pfs))
+				if(isEndFootnote(pfs2))
 				{
 					sfh = NULL;
 				}
@@ -218,8 +218,8 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
 					PL_StruxDocHandle sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pfs = (pf_Frag_Strux *) sdh;
-					blockOffset = pos - pfs->getPos() -1;
+					pfs2 = (pf_Frag_Strux *) sdh;
+					blockOffset = pos - pfs2->getPos() -1;
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_return_val_if_fail (bStatus1, false);
 					bAddOffset = false;

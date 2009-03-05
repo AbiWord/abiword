@@ -710,7 +710,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_ASSERT(m_pCurrentSL);
 		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
-		fl_ContainerLayout*	pCL = NULL;
+		fl_ContainerLayout*	pCL2 = NULL;
 //
 // Look to see if we're in a table.
 //
@@ -734,14 +734,14 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 
 
 		UT_DEBUGMSG(("!!!!Appending Frame \n"));
-		pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FRAME);
-		if (!pCL)
+		pCL2 = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FRAME);
+		if (!pCL2)
 		{
 			UT_DEBUGMSG(("no memory for TableLayout"));
 			return false;
 		}
-		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL);
-		*psfh = (PL_StruxFmtHandle)pCL;
+		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL2);
+		*psfh = (PL_StruxFmtHandle)pCL2;
 	}
 	break;
 	case PTX_EndFrame:
@@ -1215,7 +1215,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	{
 		const PX_ChangeRecord_StruxChange * pcrxc = static_cast<const PX_ChangeRecord_StruxChange *> (pcr);
 
-		fl_Layout * pL = (fl_Layout *)sfh;
+		fl_Layout * pL2 = (fl_Layout *)sfh;
 
 		// TODO getOldIndexAP() is only intended for use by the document.
 		// TODO this assert is probably wrong. --- BUT EVERYTIME IT HAS
@@ -1223,14 +1223,14 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		// UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
 		// UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
 
-		switch (pL->getType())
+		switch (pL2->getType())
 		{
 		case PTX_Section:
 		case PTX_SectionEndnote:
 		case PTX_SectionAnnotation:
 		case PTX_SectionFootnote:
 		{
-			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
+			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL2);
 			
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
@@ -1242,7 +1242,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				UT_WARNINGMSG(("getAttrProp() failed in %s:%d",
 							   __FILE__, __LINE__));
 			}
-			PL_StruxDocHandle sdh = pL->getStruxDocHandle();
+			PL_StruxDocHandle sdh = pL2->getStruxDocHandle();
 	
 			const gchar* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
@@ -1315,7 +1315,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// Tomas, June 7, 2003
 			
 			chgMask = AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR;
-			fl_SectionLayout * pCL = static_cast<fl_SectionLayout *>(pL);
+			fl_SectionLayout * pCL = static_cast<fl_SectionLayout *>(pL2);
 			fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			if(pCLSL->getType() == FL_SECTION_SHADOW)
 			{
@@ -1346,7 +1346,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 // Doesn't know if it's a header or a footer or the DocSection and hences pages
 // It associated with. Tell it now.
 //
-			fl_HdrFtrSectionLayout* pHFSL = static_cast<fl_HdrFtrSectionLayout*>(pL);
+			fl_HdrFtrSectionLayout* pHFSL = static_cast<fl_HdrFtrSectionLayout*>(pL2);
 			
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
 //
@@ -1406,28 +1406,28 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
         case PTX_SectionTable:
 		{
-			fl_TableLayout * pTL = (fl_TableLayout *) pL;
+			fl_TableLayout * pTL = (fl_TableLayout *) pL2;
 			UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
  			bResult = pTL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
 		case PTX_SectionCell:
 		{
-			fl_CellLayout * pCL = (fl_CellLayout *) pL;
+			fl_CellLayout * pCL = (fl_CellLayout *) pL2;
 			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_CELL);
 			bResult = pCL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
 		case PTX_SectionFrame:
 		{
-			fl_FrameLayout * pFL = (fl_FrameLayout *) pL;
+			fl_FrameLayout * pFL = (fl_FrameLayout *) pL2;
 			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 			bResult = pFL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
 		case PTX_SectionTOC:
 		{
-			fl_TOCLayout * pTOCL = (fl_TOCLayout *) pL;
+			fl_TOCLayout * pTOCL = (fl_TOCLayout *) pL2;
 			UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
 			bResult = pTOCL->doclistener_changeStrux(pcrxc);
 			goto finish_up;

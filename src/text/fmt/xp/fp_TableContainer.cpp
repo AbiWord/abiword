@@ -227,9 +227,9 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
 /*!
  * This Method returns the column or shadow that embeds the container given.
  */
-fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * pCon)
+fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 {
-	fp_TableContainer * pBroke = getBrokenTable(pCon);
+	fp_TableContainer * pBroke = getBrokenTable(_pCon);
 	if(pBroke == NULL)
 	{
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
@@ -647,15 +647,15 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 {
 	UT_sint32 iTop = getY();
-	UT_sint32 iBot = iTop + getHeight();
-	UT_sint32 iBreak = pBroke->getYBreak();
-	UT_sint32 iBottom = pBroke->getYBottom();
-	xxx_UT_DEBUGMSG(("Doing TweakTable on %x iTop %d iBot %d iBreak %d iBottom %d \n",pBroke,iTop,iBot, iBreak,iBottom));
-	if(iBot < iBreak)
+	UT_sint32 iBot2 = iTop + getHeight();
+	UT_sint32 iBreak2 = pBroke->getYBreak();
+	UT_sint32 iBottom2 = pBroke->getYBottom();
+	xxx_UT_DEBUGMSG(("Doing TweakTable on %x iTop %d iBot %d iBreak %d iBottom %d \n",pBroke,iTop,iBot2, iBreak2,iBottom2));
+	if(iBot2 < iBreak2)
 	{
 		return 0;
 	}
-	if(iTop > iBottom)
+	if(iTop > iBottom2)
 	{
 		return 0;
 	}
@@ -728,9 +728,9 @@ UT_sint32 fp_CellContainer::getSpannedHeight(void)
 	{
 		return 0;
 	}
-	fp_CellContainer * pCell = pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach());
+	fp_CellContainer * pCell2 = pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach());
 	UT_sint32 height = 0;
-	if(pCell)
+	if(pCell2)
 	{
 		height = pTab->getYOfRow(getBottomAttach()) - getY();
 	}
@@ -2063,23 +2063,23 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	GR_Graphics * pG = pDA->pG;
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
-	fp_TableContainer * pTab = NULL;
+	fp_TableContainer * pTab2 = NULL;
 	bool bIsNested = isInNestedTable();
 	if(pBroke && pBroke->isThisBroken())
 	{
-		pTab = pBroke->getMasterTable();
+		pTab2 = pBroke->getMasterTable();
 	}
 	else
 	{
-		pTab = static_cast<fp_TableContainer *>(getContainer());
+		pTab2 = static_cast<fp_TableContainer *>(getContainer());
 	}
 // draw bottom if this cell is the last of the table and fully contained on the page
 
-	m_bDrawBot = (pTab->getCellAtRowColumn(getBottomAttach(),getLeftAttach()) == NULL);
+	m_bDrawBot = (pTab2->getCellAtRowColumn(getBottomAttach(),getLeftAttach()) == NULL);
 
 // draw right if this cell is the rightmost of the table
 
-	m_bDrawRight = (pTab->getCellAtRowColumn(getTopAttach(),getRightAttach()) == NULL);
+	m_bDrawRight = (pTab2->getCellAtRowColumn(getTopAttach(),getRightAttach()) == NULL);
 	m_bDrawRight = true;
 	m_bDrawLeft = true;
    
@@ -2279,7 +2279,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		getSectionLayout()->clearNeedsRedraw();
 	}
 	drawLines(pBroke,pG);
-	pTab->setRedrawLines();
+	pTab2->setRedrawLines();
     _drawBoundaries(pDA,pBroke);
 }
 
