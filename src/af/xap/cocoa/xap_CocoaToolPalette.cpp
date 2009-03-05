@@ -392,7 +392,7 @@ enum _XAP_CocoaTool_Id
 
 @implementation XAP_PaletteProperties_Level
 
-- (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)name
+- (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)pname
 {
 	if (![super init])
 	{
@@ -401,7 +401,7 @@ enum _XAP_CocoaTool_Id
 	
 	m_IsLevel = YES;
 
-	m_Name  = name;
+	m_Name  = pname;
 	m_Value = @"";
 
 	[m_Name  retain];
@@ -435,14 +435,14 @@ enum _XAP_CocoaTool_Id
 	return self;
 }
 
-- (id)initWithStyle:(PD_Style *)style levelName:(NSString *)name
+- (id)initWithStyle:(PD_Style *)style levelName:(NSString *)pname
 {
 	if (![super init]) {
 		return nil;
 	}
 	m_IsLevel = YES;
 
-	m_Name  = name;
+	m_Name  = pname;
 	m_Value = @"";
 
 	[m_Name  retain];

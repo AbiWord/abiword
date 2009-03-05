@@ -145,10 +145,10 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 	}
 }
 
-- (void)_showAllToolbars:(XAP_CocoaFrameController *)frame
+- (void)_showAllToolbars:(XAP_CocoaFrameController *)wframe
 {
-	UT_ASSERT(frame);
-	if (!frame)
+	UT_ASSERT(wframe);
+	if (!wframe)
 	{
 		[self removeAllToolbars];
 		return;
@@ -156,7 +156,7 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 
 	bool bNewConfiguration = true;
 
-	NSString * SummaryID = [frame getToolbarSummaryID];
+	NSString * SummaryID = [wframe getToolbarSummaryID];
 	if ([m_SummaryID isEqualToString:SummaryID])
 	{
 		XAP_CocoaFrameImpl::setToolbarRect(m_bounds);
@@ -167,11 +167,10 @@ static XAP_CocoaToolbarWindow_Controller * s_pSharedToolbar = nil;
 		[self removeAllToolbars];
 
 		[m_SummaryID release];
-		m_SummaryID = SummaryID;
-		[m_SummaryID retain];
+		m_SummaryID = [SummaryID retain];
 	}
 
-	NSArray * toolbars = [frame getToolbars];
+	NSArray * toolbars = [wframe getToolbars];
 
 	unsigned count = [toolbars count];
 	if (!count)

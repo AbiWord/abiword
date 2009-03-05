@@ -84,7 +84,7 @@ public:
 	void         event_styleType(void);
 	void         modifyRunModal(void);
 	void         event_modifySheetDidEnd(int code);
-	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
+	void         setIsNew(bool _isNew) {m_bIsNew = _isNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
 	gchar *   getNewStyleName(void) const {return (gchar *) m_newStyleName;}
 	gchar *   getBasedonName(void) const {return (gchar *) m_basedonName;}

@@ -180,7 +180,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	static bool			_isFlipped();
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
-	void				setIsPrinting(bool isPrinting) { m_bIsPrinting = isPrinting; };
+	void				setIsPrinting(bool _isPrinting) { m_bIsPrinting = _isPrinting; };
 	bool				isPrinting(void) const { return m_bIsPrinting; };
 	/* Cocoa Specific */
 	static	float		_getScreenResolution(void);

@@ -305,7 +305,7 @@ void AP_Dialog_Tab::_event_Set(void)
 */
 void AP_Dialog_Tab::_event_Update(void)
 {
-	fl_TabStop *pTabInfo = NULL;
+	fl_TabStop *pTabInfo1 = NULL;
 
 	// check the validity of the input
 	UT_String buffer;
@@ -319,8 +319,8 @@ void AP_Dialog_Tab::_event_Update(void)
 
 	// delete tab
 	UT_uint32 ndx = _gatherSelectTab();
-	pTabInfo = m_tabInfo.getNthItem(ndx);
-	_deleteTabFromTabString(pTabInfo);
+	pTabInfo1 = m_tabInfo.getNthItem(ndx);
+	_deleteTabFromTabString(pTabInfo1);
 	m_tabInfo.deleteNthItem(ndx);
 
 
@@ -343,14 +343,14 @@ void AP_Dialog_Tab::_event_Update(void)
 	UT_sint32 i;
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
-		UT_return_if_fail (pTabInfo);
+		pTabInfo1 = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		UT_return_if_fail (pTabInfo1);
 
 		// if we have a tab at that unit
-		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		if ( memcmp(cbuffer, _getTabString(pTabInfo1), Dimension_size) == 0 )
 		{
 			// Delete the tab.
-			_deleteTabFromTabString(pTabInfo);
+			_deleteTabFromTabString(pTabInfo1);
 			break;
 		}
 	}

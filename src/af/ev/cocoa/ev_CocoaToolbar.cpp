@@ -752,9 +752,9 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	UT_ASSERT(pToolbarActionSet);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	for (UT_uint32 j=0; (j < nrLabelItemsInLayout); j++)
 	{
-		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
+		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(j);
 		UT_ASSERT(pLayoutItem);
 
 		XAP_Toolbar_Id tlbrid = pLayoutItem->getToolbarId();

@@ -473,9 +473,9 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 			return 22;
 #endif
 		default:
-			return "6"; // Custom
 			break;
 	}
+	return "6"; // Custom
 }
 
 void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, const char * name)

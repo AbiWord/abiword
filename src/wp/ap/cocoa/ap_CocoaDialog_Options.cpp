@@ -1028,11 +1028,11 @@ void AP_PreferenceScheme::saveChanges()
 	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_ViewHidden			].m_current);
 
 	for (UT_uint32 i = 0; i < static_cast<UT_uint32>(bo__count); i++)
-		{
-			BoolOption bo = static_cast<BoolOption>(i);
+	{
+		BoolOption bo1 = static_cast<BoolOption>(i);
 
-			m_BOData[bo].m_original = m_BOData[bo].m_current;
-		}
+		m_BOData[bo1].m_original = m_BOData[bo1].m_current;
+	}
 
 	/* Auto-Save Period
 	 */

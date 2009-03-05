@@ -47,7 +47,7 @@ const IE_MimeConfidence * IE_Imp_Tidy_Sniffer::getMimeConfidence ()
 
 #endif /* XHTML_NAMED_CONSTRUCTORS */
 
-UT_Confidence_t IE_Imp_Tidy_Sniffer::recognizeContents (const char * szBuf, UT_uint32 iNumbytes)
+UT_Confidence_t IE_Imp_Tidy_Sniffer::recognizeContents (const char * /*szBuf*/, UT_uint32 /*iNumbytes*/)
 {
 	return UT_CONFIDENCE_ZILCH;
 }
