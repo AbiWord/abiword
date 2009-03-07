@@ -66,7 +66,7 @@ double GR_CairoPrintGraphics::getResolutionRatio(void) const
 
 bool GR_CairoPrintGraphics::GR_CairoPrintGraphics::startPrint(void)
 {
-	m_bDoShowPage = true;
+	m_bDoShowPage = false;
 	return true;
 }
 
