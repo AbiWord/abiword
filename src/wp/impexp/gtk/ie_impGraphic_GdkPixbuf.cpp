@@ -653,7 +653,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 	}
 
 	if (_gdk_pixbuf_get_module((guchar *)szBuf, iNum))
-		return UT_CONFIDENCE_PERFECT;
+		return UT_CONFIDENCE_GOOD;
 	return UT_CONFIDENCE_ZILCH;
 }
 

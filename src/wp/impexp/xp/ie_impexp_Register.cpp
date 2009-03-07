@@ -61,7 +61,7 @@ void IE_ImpExp_RegisterXP ()
   /* graphical types first */
 
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicPNG_Sniffer ());
-  //IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
 
   /* now text-file types */
 

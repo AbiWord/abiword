@@ -58,16 +58,16 @@ static void _write_flush(png_structp /*png_ptr*/) { } // Empty Fuction.
 
 //------------------------------------------------------------------------------------
 
-class IE_RSVGGraphic : public IE_ImpGraphic
+class IE_RSVGBitmapGraphic : public IE_ImpGraphic
 {
 public:
 
-	IE_RSVGGraphic()
+	IE_RSVGBitmapGraphic()
 		: IE_ImpGraphic(), m_pPngBB(0)
 	{
 	}
 	
-	virtual ~IE_RSVGGraphic()
+	virtual ~IE_RSVGBitmapGraphic()
 	{
 		// we likely don't own the m_pPngBB, so don't free it
 	}
@@ -321,7 +321,7 @@ public:
 	
 	virtual UT_Error constructImporter(IE_ImpGraphic **ppieg)
 	{
-		*ppieg = new IE_RSVGGraphic();
+		*ppieg = new IE_RSVGBitmapGraphic();
 		if (*ppieg == NULL)
 			return UT_IE_NOMEMORY;
 		return UT_OK;

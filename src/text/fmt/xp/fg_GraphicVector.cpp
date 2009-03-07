@@ -205,27 +205,36 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
 	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
 	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
 
+	m_iMaxH = maxH;
+	m_iMaxW = maxW;
+
+	// load SVGs at their natural size
+	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, -1, -1, GR_Image::GRT_Vector);
+
+
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
+		// we have a specified size, so use it
 		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
 		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
-	}
-	else
+	} 
+	else 
 	{
-		UT_sint32 iLogicalWidth, iLogicalHeight; // throwaway
-		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLogicalWidth, iLogicalHeight);
+		// or else, get the image's natural size
+		iDisplayWidth = pImage->getDisplayWidth();
+		iDisplayHeight = pImage->getDisplayHeight();
 	}
-	UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",static_cast<int>(iDisplayWidth),static_cast<int>(iDisplayHeight)));
-	UT_ASSERT(iDisplayWidth > 0);
-	UT_ASSERT(iDisplayHeight > 0);
 
+	// see if our image is allowed to be that big
 	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
-	if (maxH != 0 && iDisplayHeight > maxH) iDisplayHeight = maxH;
-	m_iMaxH = maxH;
-	m_iMaxW = maxW;
-	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
+	if (maxH != 0 && iDisplayHeight > maxH) iDisplayHeight = maxH;	
+
+	// then scale the image to the specified size
+	UT_Rect r(0, 0, iDisplayWidth, iDisplayHeight);
+	pImage->scaleImageTo(pG, r);
+
 	return pImage;
 }
 

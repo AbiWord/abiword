@@ -23,17 +23,13 @@
 #include "ut_types.h"
 #include "gr_Image.h"
 
-#include "ut_xml.h"
-#include "ut_vector.h"
-
-class UT_svg;
-class UT_SVGMatrix;
 class GR_Graphics;
 
 class ABI_EXPORT GR_VectorImage : public GR_Image
 {
 public:
 	GR_VectorImage(const char* szName);
+	GR_VectorImage();
 	virtual ~GR_VectorImage();
 	
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
@@ -48,24 +44,8 @@ public:
 	virtual bool            hasAlpha(void) const;
 	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
 
-
 private:
-   	bool m_status;
-   
-	UT_sint32 m_iDisplayOx;
-	UT_sint32 m_iDisplayOy;
-
-	UT_svg *m_pSVG;
 	UT_ByteBuf *m_pBB_Image;
-public:
-	UT_sint32 getDisplayOx() const { return m_iDisplayOx; }
-	UT_sint32 getDisplayOy() const { return m_iDisplayOy; }
-
-	UT_svg *getSVG() const { return m_pSVG; }
-
-	UT_sint32 m_iTreeLevel;
-	UT_GenericVector<UT_SVGMatrix*> m_SVG_Matrix;
-	UT_SVGMatrix *m_CurrentMatrix;
 };
 
 #endif /* GR_VECTORIMAGE */

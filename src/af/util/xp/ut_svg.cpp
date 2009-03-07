@@ -125,8 +125,8 @@ bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
 
 bool UT_SVG_recognizeContent(const char* szBuf,UT_uint32 iNumbytes)
 {
-	UT_svg data(0,UT_svg::pm_recognizeContent);
-	return _recognizeContent(szBuf,iNumbytes,&data);
+  UT_UNUSED(iNumbytes);
+  return (strstr(szBuf, "<svg") != NULL || strstr(szBuf, "<!DOCTYPE svg") != NULL);
 }
 
 static bool _recognizeContent(const char* buffer,UT_uint32 buflen,UT_svg* data)

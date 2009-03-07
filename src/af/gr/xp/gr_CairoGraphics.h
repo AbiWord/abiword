@@ -49,17 +49,20 @@ class GR_CairoGraphics;
 class XAP_Frame;
 
 
+class GR_CairoVectorImage 
+	: public GR_VectorImage
+{
+public:
+	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
+};
+
 /** An abstract Cairo image */
 class GR_CairoRasterImage
 	: public GR_RasterImage
 {
 public:
 	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
-
-
 };
-
-
 
 class ABI_EXPORT GR_PangoFont : public GR_Font
 {

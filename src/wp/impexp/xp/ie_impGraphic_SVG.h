@@ -29,6 +29,7 @@ class ABI_EXPORT IE_ImpGraphicSVG_Sniffer : public IE_ImpGraphicSniffer
 {
  public:
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes);
 	virtual bool getDlgLabels (const char ** szDesc,

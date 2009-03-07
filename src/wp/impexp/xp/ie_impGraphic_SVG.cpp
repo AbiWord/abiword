@@ -36,6 +36,22 @@ const IE_SuffixConfidence * IE_ImpGraphicSVG_Sniffer::getSuffixConfidence ()
 	return IE_ImpGraphicSVG_Sniffer__SuffixConfidence;
 }
 
+// supported mimetypes
+static IE_MimeConfidence IE_ImpGraphicSVG_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	"image/svg+xml",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_FULL, 	"image/svg",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_FULL, 	"image/svg-xml",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_FULL, 	"image/xml-svg",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_FULL, 	"image/vnd.adobe.svg+xml",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_FULL, 	"image/svg+xml-compressed",	UT_CONFIDENCE_PERFECT 	},
+	{ IE_MIME_MATCH_BOGUS, 	"", 			UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_ImpGraphicSVG_Sniffer::getMimeConfidence ()
+{
+	return IE_ImpGraphicSVG_Sniffer__MimeConfidence;
+}
+
 UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
   UT_DEBUGMSG(("SVG SNIFF happenning \n"));

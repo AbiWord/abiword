@@ -2079,10 +2079,8 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 {
 	UT_ASSERT(pImg);
 
-   	GR_CairoRasterImage * pCairoImage = static_cast<GR_CairoRasterImage *>(pImg);
-
-   	UT_sint32 iImageWidth = pCairoImage->getDisplayWidth();
-   	UT_sint32 iImageHeight = pCairoImage->getDisplayHeight();
+   	UT_sint32 iImageWidth = pImg->getDisplayWidth();
+   	UT_sint32 iImageHeight = pImg->getDisplayHeight();
 
 	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
 	double idx = _tdudX(xDest);
@@ -2091,7 +2089,12 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
 
-	pCairoImage->cairoSetSource(m_cr, idx, idy);
+	if (pImg->getType() == GR_Image::GRT_Raster) {
+		static_cast<GR_CairoRasterImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
+	} else if (pImg->getType() == GR_Image::GRT_Vector) {
+		static_cast<GR_CairoVectorImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
+	}
+
 	cairo_pattern_t *pattern = cairo_get_source(m_cr);
 	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
 	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);
