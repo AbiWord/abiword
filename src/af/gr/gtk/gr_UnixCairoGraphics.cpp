@@ -20,14 +20,55 @@
  */
 
 #include "gr_UnixCairoGraphics.h"
+#include "gr_CairoImage.h"
 #include "gr_Painter.h"
 #include "gr_UnixImage.h"
 #include "xap_App.h"
 #include "ut_bytebuf.h"
 
+GR_UnixCairoGraphicsBase::~GR_UnixCairoGraphicsBase()
+{
+}
+
+/*!
+ * Create a new image from the Raster rgba byte buffer defined by pBB.
+ * The dimensions of iWidth and iHeight are in logical units but the image
+ * doesn't scale if the resolution or zoom changes. Instead you must create
+ * a new image.
+ */
+GR_Image* GR_UnixCairoGraphicsBase::createNewImage (const char* pszName,
+													const UT_ByteBuf* pBB,
+													UT_sint32 iWidth,
+													UT_sint32 iHeight,
+													GR_Image::GRType iType)
+{
+   	GR_Image* pImg = NULL;
+
+	if (iType == GR_Image::GRT_Raster) {
+		pImg = new GR_UnixImage(pszName);
+		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
+	} else if (iType == GR_Image::GRT_Vector) {
+		pImg = new GR_RSVGVectorImage(pszName);
+		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));		
+	} else {
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+   	return pImg;
+}
+
+GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase()
+	: GR_CairoGraphics()
+{
+}
+
+GR_UnixCairoGraphicsBase::GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution)
+	: GR_CairoGraphics(cr, iDeviceResolution)
+{
+}
 
 GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkDrawable * win)
-	: GR_CairoGraphics()
+	: GR_UnixCairoGraphicsBase()
 	, m_pWin(win)
 {
 	if (_getDrawable())
@@ -86,186 +127,6 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
 
 	m_bHave3DColors = true;
 }
-
-#include <librsvg/rsvg.h>
-#include <librsvg/rsvg-cairo.h>
-
-class GR_RSVGVectorImage : public GR_CairoVectorImage {
-public:
-
-	GR_RSVGVectorImage(const char* name) 
-		: GR_CairoVectorImage(), graphics(0), surface(0), svg(0), scaleX(1.0), scaleY(1.0), needsNewSurface(false)
-	{
-		if (name)
-			{
-				setName(name);
-			}
-		else
-			{
-				setName("SVGImage");
-			}
-	}
-
-	virtual ~GR_RSVGVectorImage()
-	{
-		reset();
-	}
-
-	virtual bool convertToBuffer(UT_ByteBuf** ppBB) const
-	{
-		UT_ByteBuf* pBB = new UT_ByteBuf;
-		
-		bool bCopied = pBB->append(data.getPointer(0), data.getLength());
-		
-		if (!bCopied) DELETEP(pBB);
-		
-		*ppBB = pBB;
-		
-		return bCopied;
-	}
-
-	virtual bool convertFromBuffer(const UT_ByteBuf* pBB, 
-								   UT_sint32 iDisplayWidth, 
-								   UT_sint32 iDisplayHeight) {
-		reset();
-		
-		data.append(pBB->getPointer(0), pBB->getLength());
-
-		bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
-		
-		gboolean result;
-		
-		svg = rsvg_handle_new();
-		
-		result = rsvg_handle_write(svg, pBB->getPointer(0), pBB->getLength(), NULL);
-		if (!result) {
-			g_object_unref(G_OBJECT(svg));
-			svg = 0;
-			
-			return false;
-		}
-		
-		result = rsvg_handle_close(svg, NULL);
-		
-		if (!result) {
-			g_object_unref(G_OBJECT(svg));
-			svg = 0;
-			
-			return false;
-		}
-		
-		rsvg_handle_get_dimensions(svg, &size);
-		
-		if (!forceScale)
-			setupScale(size.width, size.height);
-		else
-			setupScale(iDisplayWidth, iDisplayHeight);
-		
-		return true;
-	}
-	
-	virtual void cairoSetSource(cairo_t *cr, double x, double y) {
-		createSurface(cr);
-		if (surface == NULL) {
-			return;
-		}
-		
-		cairo_set_source_surface(cr, surface, x, y);
-		cairo_paint(cr);
-	}
-	
-	virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
-	{	
-		setupScale(pG->tdu(rec.width), pG->tdu(rec.height));
-	}
-
-private:
-
-	void reset() {
-		data.truncate(0);
-		if (svg) {
-			g_object_unref(G_OBJECT(svg));
-			svg = 0;
-		}
-
-		if (surface) {
-			cairo_surface_destroy(surface);
-			surface = 0;
-		}
-
-		scaleX = scaleY = 1.0;
-		graphics = 0;
-		needsNewSurface = false;
-		memset(&size, 0, sizeof(RsvgDimensionData));
-	}
-
-	void setupScale(UT_sint32 w, UT_sint32 h) {
-		setDisplaySize(w, h);
-
-		scaleX = (double)w / size.width;
-		scaleY = (double)h / size.height;
-
-		needsNewSurface = true;
-	}
-
-	void createSurface(cairo_t* cairo) {
-		if (!needsNewSurface && cairo == graphics)
-			return; // already have a similar surface for this graphics at this size
-
-		if (surface != 0) { // get rid of any previous surface
-			cairo_surface_destroy(surface);
-			surface = 0;
-		}
-
-		surface = cairo_surface_create_similar(cairo_get_target(cairo), 
-											   CAIRO_CONTENT_COLOR_ALPHA,
-											   getDisplayWidth(),
-											   getDisplayHeight());
-		
-		// render to the similar surface once. blit subsequently.
-		cairo_t* cr = cairo_create(surface);
-		cairo_scale(cr, scaleX, scaleY);
-		rsvg_handle_render_cairo(svg, cr);
-		cairo_destroy(cr);
-	}
-	
-	UT_ByteBuf data;
-	RsvgDimensionData size;
-	cairo_t* graphics;
-	cairo_surface_t* surface;
-	RsvgHandle* svg;
-	double scaleX;
-	double scaleY;
-	bool needsNewSurface;
-};
-
-/*!
- * Create a new image from the Raster rgba byte buffer defined by pBB.
- * The dimensions of iWidth and iHeight are in logical units but the image
- * doesn't scale if the resolution or zoom changes. Instead you must create
- * a new image.
- */
-GR_Image* GR_UnixCairoGraphics::createNewImage (const char* pszName,
-											    const UT_ByteBuf* pBB,
-												UT_sint32 iWidth,
-												UT_sint32 iHeight,
-												GR_Image::GRType iType)
-{
-   	GR_Image* pImg = NULL;
-
-	if (iType == GR_Image::GRT_Raster) {
-		pImg = new GR_UnixImage(pszName);
-		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
-	} else if (iType == GR_Image::GRT_Vector) {
-		pImg = new GR_RSVGVectorImage(pszName);
-		pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));		
-	} else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-   	return pImg;
-}
-
 
 void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 {

@@ -22,234 +22,140 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
-#include "gr_Graphics.h"
+#include "gr_CairoGraphics.h"
 
 #include <stdlib.h>
 
-/**
- * DAL: we may want this to hold any cairo surface type, in which case we'll need to
- * DAL: pay more attention to surface types
- */
-
-GR_CairoImage::GR_CairoImage(const char* szName)
-	: m_image(NULL)
+GR_RSVGVectorImage::GR_RSVGVectorImage(const char* name) 
+	: GR_CairoVectorImage(), graphics(0), surface(0), svg(0), scaleX(1.0), scaleY(1.0), needsNewSurface(false)
 {
-	setName(szName ? szName : "GR_CairoImage");
-}
-
-GR_CairoImage::~GR_CairoImage()
-{
-	if (m_image)
+	if (name)
 		{
-			cairo_surface_destroy(m_image);
-		}
-}
-
-GR_Image::GRType GR_CairoImage::getType(void) const
-{
-	return GR_Image::GRT_Raster;
-}
-
-/**
- * Returns a reference to the underlying surface. It's the caller's responsibility
- * to release the reference after they're done using it.
- */
-cairo_surface_t *GR_CairoImage::getSurface()
-{
-	if (!m_image)
-		{
-			return 0;
-		}
-	
-	return cairo_surface_reference(m_image);
-}
-
-/**
- * Acquires a reference to the image surface @surface
- */
-void GR_CairoImage::setSurface(cairo_surface_t *surface)
-{
-	if (m_image)
-		{
-			cairo_surface_destroy(m_image);
-		}
-	
-	m_image = surface ? cairo_surface_reference(surface) : 0;
-}
-
-bool GR_CairoImage::hasAlpha(void) const
-{
-	UT_return_val_if_fail(m_image, false);
-	UT_return_val_if_fail(cairo_surface_get_type(m_image) == CAIRO_SURFACE_TYPE_IMAGE, false);
-	
-	cairo_format_t format = cairo_image_surface_get_format(m_image);
-	
-	switch (format)
-		{
-		case CAIRO_FORMAT_ARGB32:
-		case CAIRO_FORMAT_A8:
-		case CAIRO_FORMAT_A1:
-			return true;
-		}
-	
-	return false;
-}
-
-UT_sint32 GR_CairoImage::rowStride(void) const
-{
-	UT_return_val_if_fail(m_image, 0);
-	UT_return_val_if_fail(cairo_surface_get_type(m_image) == CAIRO_SURFACE_TYPE_IMAGE, 0);
-
-	return cairo_image_surface_get_stride(m_image);
-}
-
-bool GR_CairoImage::saveToPNG(const char *szURI)
-{
-	UT_ByteBuf *pBB;
-	
-	if (convertToBuffer(&pBB))
-		{
-			bool res = pBB->writeToURI(szURI);
-			delete pBB;
-			
-			return res;
-		}
-	
-	return false;
-}
-
-/*! 
- * Returns true if pixel at point (x,y) in device units is transparent.
- */
-bool GR_CairoImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
-{
-	UT_return_val_if_fail(m_image, false);
-	UT_return_val_if_fail(cairo_surface_get_type(m_image) == CAIRO_SURFACE_TYPE_IMAGE, false);
-	
-	if (!hasAlpha())
-		{
-			return false;
-		}
-	
-	unsigned char *data;
-	
-	data = cairo_image_surface_get_data(m_image);
-	UT_return_val_if_fail(data, false);
-	
-	int stride = cairo_image_surface_get_stride(m_image);
-	int height = cairo_image_surface_get_height(m_image);
-	int width  = cairo_image_surface_get_width(m_image);
-	
-	UT_return_val_if_fail((x >= 0) && (x < width), false);
-	UT_return_val_if_fail((y >= 0) && (y < height), false);
-	
-	cairo_format_t format = cairo_image_surface_get_format(m_image);
-	
-	if (CAIRO_FORMAT_A1 == format)
-		{
-			UT_ASSERT(UT_TODO);
-			return false;
-		}
-	else if (CAIRO_FORMAT_A8 == format)
-		{
-			UT_uint8 *b = &data[(stride * y) + (x * 4)];
-			
-			// each pixel is a 8-bit quantity holding an alpha value
-			return (*b == 0xff);
-		}
-	else if (CAIRO_FORMAT_ARGB32 == format)
-		{
-			// each pixel is a 32-bit quantity, with alpha in the upper 8 bits, then red, then green, then blue. 
-			// The 32-bit quantities are stored native-endian. Pre-multiplied alpha is used.
-			UT_uint8 *b = &data[(stride * y) + (x * 4)];
-			UT_uint32 pixel;
-			UT_uint8  alpha;
-			
-			memcpy (&pixel, b, sizeof (uint32_t));
-			alpha = (pixel & 0xff000000) >> 24;
-			
-			return (alpha == 0xff);
-		}
-	
-	UT_ASSERT_NOT_REACHED();
-	
-	return false;  
-}
-
-static cairo_status_t write_to_png(void *closure,
-								   const unsigned char *data,
-								   unsigned int length)
-{
-	UT_ByteBuf *pBB = static_cast<UT_ByteBuf *>(closure);
-	
-	if (pBB->append(data, length))
-		{
-			return CAIRO_STATUS_SUCCESS;
-		}
-	
-	return CAIRO_STATUS_WRITE_ERROR;
-}
-
-/*!
- * This method fills a byte buffer with a PNG representation of itself.
- * This can be saved in the PT as a data-item and recreated.
- * ppBB is a pointer to a pointer of a byte buffer. It's the callers
- * job to delete it.
- */
-bool GR_CairoImage::convertToBuffer(UT_ByteBuf **ppBB) const
-{
-	*ppBB = 0;
-	
-	UT_return_val_if_fail(m_image, false);
-	
-	UT_ByteBuf *pBB = new UT_ByteBuf();
-	if (CAIRO_STATUS_SUCCESS == cairo_surface_write_to_png_stream(m_image, write_to_png, pBB))
-		{
-			*ppBB = pBB;
-			return true;
+			setName(name);
 		}
 	else
 		{
-			delete pBB;
-			return false;
+			setName("SVGImage");
 		}
 }
 
-struct CairoPngStreamClosure
+GR_RSVGVectorImage::~GR_RSVGVectorImage()
 {
-	CairoPngStreamClosure(const UT_ByteBuf *bb)
-		: pBB(bb), pos(0)
-	{
+	reset();
+}
+
+bool GR_RSVGVectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
+{
+	UT_ByteBuf* pBB = new UT_ByteBuf;
+	
+	bool bCopied = pBB->append(data.getPointer(0), data.getLength());
+	
+	if (!bCopied) DELETEP(pBB);
+	
+	*ppBB = pBB;
+	
+	return bCopied;
+}
+
+bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB, 
+										   UT_sint32 iDisplayWidth, 
+										   UT_sint32 iDisplayHeight) {
+	reset();
+	
+	data.append(pBB->getPointer(0), pBB->getLength());
+	
+	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
+	
+	gboolean result;
+	
+	svg = rsvg_handle_new();
+		
+	result = rsvg_handle_write(svg, pBB->getPointer(0), pBB->getLength(), NULL);
+	if (!result) {
+		g_object_unref(G_OBJECT(svg));
+		svg = 0;
+		
+		return false;
 	}
 	
-	const UT_ByteBuf *pBB;
-	UT_uint32 pos;
-};
-
-static cairo_status_t read_from_png(void *closure,
-									unsigned char *data,
-									unsigned int length)
-{
-	CairoPngStreamClosure *bb = static_cast<CairoPngStreamClosure *>(closure);
+	result = rsvg_handle_close(svg, NULL);
 	
-	if ((length + bb->pos) > bb->pBB->getLength())
-		{
-			return CAIRO_STATUS_READ_ERROR;
-		}
+	if (!result) {
+		g_object_unref(G_OBJECT(svg));
+		svg = 0;
+		
+		return false;
+	}
 	
-	memcpy(data, bb->pBB->getPointer(bb->pos), length);
-	bb->pos += length;
+	rsvg_handle_get_dimensions(svg, &size);
 	
-	return CAIRO_STATUS_SUCCESS;
+	if (!forceScale)
+		setupScale(size.width, size.height);
+	else
+		setupScale(iDisplayWidth, iDisplayHeight);
+	
+	return true;
 }
 
-bool GR_CairoImage::convertFromBuffer(const UT_ByteBuf *pBB)
-{
-	// overwrites any previous image that might've been there
-
-	CairoPngStreamClosure closure(pBB);
-	cairo_surface_t *surface = cairo_image_surface_create_from_png_stream(read_from_png, &closure);
-	setSurface(surface);
+void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr, double x, double y) {
+	createSurface(cr);
+	if (surface == NULL) {
+		return;
+	}
 	
-	return surface != 0;
+	cairo_set_source_surface(cr, surface, x, y);
+	cairo_paint(cr);
+}
+
+void GR_RSVGVectorImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
+{	
+	setupScale(pG->tdu(rec.width), pG->tdu(rec.height));
+}
+
+void GR_RSVGVectorImage::reset() {
+	data.truncate(0);
+	if (svg) {
+		g_object_unref(G_OBJECT(svg));
+		svg = 0;
+	}
+	
+	if (surface) {
+		cairo_surface_destroy(surface);
+		surface = 0;
+	}
+	
+	scaleX = scaleY = 1.0;
+	graphics = 0;
+	needsNewSurface = false;
+	memset(&size, 0, sizeof(RsvgDimensionData));
+}
+
+void GR_RSVGVectorImage::setupScale(UT_sint32 w, UT_sint32 h) {
+	setDisplaySize(w, h);
+	
+	scaleX = (double)w / size.width;
+	scaleY = (double)h / size.height;
+	
+	needsNewSurface = true;
+}
+
+void GR_RSVGVectorImage::createSurface(cairo_t* cairo) {
+	if (!needsNewSurface && cairo == graphics)
+		return; // already have a similar surface for this graphics at this size
+	
+	if (surface != 0) { // get rid of any previous surface
+		cairo_surface_destroy(surface);
+		surface = 0;
+	}
+	
+	surface = cairo_surface_create_similar(cairo_get_target(cairo), 
+										   CAIRO_CONTENT_COLOR_ALPHA,
+										   getDisplayWidth(),
+										   getDisplayHeight());
+	
+	// render to the similar surface once. blit subsequently.
+	cairo_t* cr = cairo_create(surface);
+	cairo_scale(cr, scaleX, scaleY);
+	rsvg_handle_render_cairo(svg, cr);
+	cairo_destroy(cr);
 }

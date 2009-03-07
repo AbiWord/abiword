@@ -42,9 +42,25 @@ public:
 	GdkWindow     * m_win;
 };
 
+class ABI_EXPORT GR_UnixCairoGraphicsBase
+	: public GR_CairoGraphics
+{
+ public:
+	~GR_UnixCairoGraphicsBase();
+
+	virtual GR_Image*	createNewImage(const char* pszName,
+									   const UT_ByteBuf* pBB,
+									   UT_sint32 iDisplayWidth,
+									   UT_sint32 iDisplayHeight,
+									   GR_Image::GRType =GR_Image::GRT_Raster);
+ protected:
+	GR_UnixCairoGraphicsBase();
+	GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution);
+};
+
 
 class ABI_EXPORT GR_UnixCairoGraphics
-	: public GR_CairoGraphics
+	: public GR_UnixCairoGraphicsBase
 {
 public:
 	~GR_UnixCairoGraphics();
@@ -67,11 +83,6 @@ public:
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	void				init3dColors(GtkStyle * pStyle);
-	virtual GR_Image*	createNewImage(const char* pszName,
-									   const UT_ByteBuf* pBB,
-									   UT_sint32 iDisplayWidth,
-									   UT_sint32 iDisplayHeight,
-									   GR_Image::GRType =GR_Image::GRT_Raster);
 
 protected:
 	GR_UnixCairoGraphics(GdkDrawable * win = NULL);

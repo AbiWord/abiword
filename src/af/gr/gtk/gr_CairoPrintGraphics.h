@@ -26,10 +26,10 @@
 #endif
 #include <cairo.h>
 
-#include "gr_CairoGraphics.h"
+#include "gr_UnixCairoGraphics.h"
 
 
-class ABI_EXPORT GR_CairoPrintGraphics : public GR_CairoGraphics
+class ABI_EXPORT GR_CairoPrintGraphics : public GR_UnixCairoGraphicsBase
 {
 	bool m_bDoShowPage;
 public:

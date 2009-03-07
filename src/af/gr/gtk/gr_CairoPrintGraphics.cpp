@@ -21,7 +21,7 @@
 #include "gr_CairoPrintGraphics.h"
 
 GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResolution)
-  : GR_CairoGraphics(cr, iDeviceResolution),
+  : GR_UnixCairoGraphicsBase(cr, iDeviceResolution),
 	m_bDoShowPage(false),
 	m_dResRatio(1.0)
 {
