@@ -32,18 +32,20 @@
 #include "ut_assert.h"
 
 #include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
 #include "ie_impGraphic_WMF.h"
 
 #include <stdio.h>
+#include <math.h>
 
 #include <libwmf/api.h>
 #include <libwmf/gd.h>
+#include <libwmf/svg.h>
 
-extern "C" int  AbiWord_WMF_read (void * context);
-extern "C" int  AbiWord_WMF_seek (void * context,long pos);
-extern "C" long AbiWord_WMF_tell (void * context);
-
-extern "C" int  AbiWord_WMF_function (void * context,char * buffer,int length);
+static int  AbiWord_WMF_read (void * context);
+static int  AbiWord_WMF_seek (void * context,long pos);
+static long AbiWord_WMF_tell (void * context);
+static int  AbiWord_WMF_function (void * context,char * buffer,int length);
 
 typedef struct _bbuf_read_info  bbuf_read_info;
 typedef struct _bbuf_write_info bbuf_write_info;
@@ -60,6 +62,9 @@ struct _bbuf_write_info
 {
 	UT_ByteBuf* pByteBuf;
 };
+
+#define WMF2SVG_MAXPECT (1 << 0)
+#define WMF2SVG_MAXSIZE (1 << 1)
 
 // supported suffixes
 static IE_SuffixConfidence IE_ImpGraphicWMF_Sniffer__SuffixConfidence[] = {
@@ -102,37 +107,221 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 {
 	UT_Error err = UT_OK;
 
-	UT_ByteBuf * pBBpng = 0;
-
-	FG_GraphicRaster * pFGR = 0;
-
 	*ppfg = 0;
-
 	UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Begin -\n"));
 
-	err = convertGraphic(pBBwmf,&pBBpng);
-   	if (err != UT_OK) {
-		UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
-		return err;
-	}
+	bool importAsPNG = true;
 
-	pFGR = new FG_GraphicRaster();
-	if(pFGR == 0) {
-		UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Ins. Mem.\n"));
-		err = UT_IE_NOMEMORY;
-	}
-	else if(!pFGR->setRaster_PNG(pBBpng)) {
-		UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Fake type?\n"));
-		DELETEP(pFGR);
-		err = UT_IE_FAKETYPE;
-	}
-	else {
-		*ppfg = (FG_Graphic *) pFGR;
+#ifdef TOOLKIT_GTK
+	importAsPNG = false;
+#endif
+
+	if (importAsPNG) {
+
+		UT_ByteBuf * pBBpng = 0;
+
+		FG_GraphicRaster * pFGR = 0;
+
+		err = convertGraphic(pBBwmf,&pBBpng);
+		if (err != UT_OK) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
+			return err;
+		}
+
+		pFGR = new FG_GraphicRaster();
+		if(pFGR == 0) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Ins. Mem.\n"));
+			err = UT_IE_NOMEMORY;
+		}
+		else if(!pFGR->setRaster_PNG(pBBpng)) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Fake type?\n"));
+			DELETEP(pFGR);
+			err = UT_IE_FAKETYPE;
+		}
+		else {
+			*ppfg = (FG_Graphic *) pFGR;
+		}
+	} else {
+		UT_ByteBuf *svg = 0;
+		err = convertGraphicToSVG(pBBwmf, &svg);
+		if (err != UT_OK) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Conversion failed...\n"));
+			return err;
+		}
+
+		FG_GraphicVector * pFGR = 0;
+		pFGR = new FG_GraphicVector();
+		if(pFGR == 0) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Ins. Mem.\n"));
+			err = UT_IE_NOMEMORY;
+		}
+		else if(!pFGR->setVector_SVG(svg)) {
+			UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic Fake type?\n"));
+			DELETEP(pFGR);
+			err = UT_IE_FAKETYPE;
+		}
+		else {
+			*ppfg = (FG_Graphic *) pFGR;
+		}
 	}
 
 	UT_DEBUGMSG(("IE_ImpGraphic_WMF::importGraphic - End\n"));
 
 	return err;
+}
+
+static int explicit_wmf_error (const char* str, wmf_error_t err)
+{
+	UT_UNUSED(str);
+	switch (err)
+	{
+	case wmf_E_None:
+		return 0;
+	default:
+		return 1;
+	}
+}
+
+UT_Error IE_ImpGraphic_WMF::convertGraphicToSVG(UT_ByteBuf* pBBwmf, UT_ByteBuf** ppBB)
+{
+	int status = 0;
+
+	unsigned int disp_width  = 0;
+	unsigned int disp_height = 0;
+
+	float wmf_width;
+	float wmf_height;
+	float ratio_wmf;
+	float ratio_bounds;
+
+	unsigned long flags;
+
+	unsigned int max_width  = 768;
+	unsigned int max_height = 512;
+	unsigned long max_flags = 0;
+
+	static const char* Default_Description = "wmf2svg";
+
+	wmf_error_t err;
+
+	wmf_svg_t* ddata = 0;
+
+	wmfAPI* API = 0;
+	wmfD_Rect bbox;
+
+	wmfAPI_Options api_options;
+
+	bbuf_read_info  read_info;
+
+	*ppBB = 0;
+
+	flags = 0;
+
+	flags = WMF_OPT_IGNORE_NONFATAL | WMF_OPT_FUNCTION;
+	api_options.function = wmf_svg_function;
+
+	err = wmf_api_create (&API,flags,&api_options);
+	status = explicit_wmf_error ("wmf_api_create",err);
+
+	if (status)
+	{	if (API) wmf_api_destroy (API);
+		return (UT_ERROR);
+	}
+
+	read_info.pByteBuf = pBBwmf;
+
+	read_info.len = pBBwmf->getLength();
+	read_info.pos = 0;
+
+	err = wmf_bbuf_input (API,AbiWord_WMF_read,AbiWord_WMF_seek,AbiWord_WMF_tell,(void *) &read_info);
+	if (err != wmf_E_None) {
+		UT_DEBUGMSG(("IE_ImpGraphic_WMF::convertGraphic Bad input set\n"));
+		wmf_api_destroy(API);
+		return UT_ERROR;
+	}
+
+	err = wmf_scan (API,0,&(bbox));
+	status = explicit_wmf_error ("wmf_scan",err);
+
+	if (status)
+	{	wmf_api_destroy (API);
+		return UT_ERROR;
+	}
+
+/* Okay, got this far, everything seems cool.
+ */
+	ddata = WMF_SVG_GetData (API);
+
+	ddata->out = wmf_stream_create(API, NULL);
+
+	ddata->Description = (char *)Default_Description;
+
+	ddata->bbox = bbox;
+
+	wmf_display_size (API,&disp_width,&disp_height,72,72);
+
+	wmf_width  = (float) disp_width;
+	wmf_height = (float) disp_height;
+
+	if ((wmf_width <= 0) || (wmf_height <= 0))
+	{	fputs ("Bad image size - but this error shouldn't occur...\n",stderr);
+		status = 1;
+		wmf_api_destroy (API);
+		return UT_ERROR;
+	}
+
+	if ((wmf_width  > (float) max_width )
+	 || (wmf_height > (float) max_height))
+	{	if (max_flags == 0) max_flags = WMF2SVG_MAXPECT;
+	}
+
+	if (max_flags == WMF2SVG_MAXPECT) /* scale the image */
+	{	ratio_wmf = wmf_height / wmf_width;
+		ratio_bounds = (float) max_height / (float) max_width;
+
+		if (ratio_wmf > ratio_bounds)
+		{	ddata->height = max_height;
+			ddata->width  = (unsigned int) ((float) ddata->height / ratio_wmf);
+		}
+		else
+		{	ddata->width  = max_width;
+			ddata->height = (unsigned int) ((float) ddata->width  * ratio_wmf);
+		}
+	}
+	else if (max_flags == WMF2SVG_MAXSIZE) /* bizarre option, really */
+	{	ddata->width  = max_width;
+		ddata->height = max_height;
+	}
+	else
+	{	ddata->width  = (unsigned int) ceil ((double) wmf_width );
+		ddata->height = (unsigned int) ceil ((double) wmf_height);
+	}
+
+	ddata->flags |= WMF_SVG_INLINE_IMAGES;
+
+	ddata->flags |= WMF_GD_OUTPUT_MEMORY | WMF_GD_OWN_BUFFER;
+
+	if (status == 0)
+	{	err = wmf_play (API,0,&(bbox));
+		status = explicit_wmf_error ("wmf_play",err);
+	}
+
+	unsigned long stream_len = 0;
+	char *stream;
+	wmf_stream_destroy(API, ddata->out, &stream, &stream_len);
+
+	if (status == 0) {
+		UT_ByteBuf* pBB = new UT_ByteBuf;
+		pBB->append((const UT_Byte*)stream, (UT_uint32)stream_len);
+		*ppBB = pBB;
+		wmf_free(API, stream);
+		wmf_api_destroy (API);
+		return UT_OK;
+	}
+
+	wmf_api_destroy (API);
+	wmf_free(API, stream);
+	return UT_ERROR;
 }
 
 UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
@@ -292,7 +481,7 @@ UT_Error IE_ImpGraphic_WMF::convertGraphic(UT_ByteBuf* pBBwmf,
 }
 
 // returns unsigned char cast to int, or EOF
-extern "C" int AbiWord_WMF_read (void * context)
+static int AbiWord_WMF_read (void * context)
 {
 	bbuf_read_info * info = (bbuf_read_info *) context;
 
@@ -309,7 +498,7 @@ extern "C" int AbiWord_WMF_read (void * context)
 }
 
 // returns (-1) on error, else 0
-extern "C" int AbiWord_WMF_seek (void * context,long pos)
+static int AbiWord_WMF_seek (void * context,long pos)
 {
 	bbuf_read_info * info = (bbuf_read_info *) context;
 
@@ -319,14 +508,14 @@ extern "C" int AbiWord_WMF_seek (void * context,long pos)
 }
 
 // returns (-1) on error, else pos
-extern "C" long AbiWord_WMF_tell (void * context)
+static long AbiWord_WMF_tell (void * context)
 {
 	bbuf_read_info * info = (bbuf_read_info *) context;
 
 	return (long) info->pos;
 }
 
-extern "C" int AbiWord_WMF_function (void * context,char * buffer,int length)
+static int AbiWord_WMF_function (void * context,char * buffer,int length)
 {
 	bbuf_write_info * info = (bbuf_write_info *) context;
 

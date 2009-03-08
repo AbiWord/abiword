@@ -49,6 +49,8 @@ public:
 					       UT_ByteBuf** ppBB);
 
 private:
+
+	UT_Error convertGraphicToSVG(UT_ByteBuf* pBB, UT_ByteBuf** ppBB);
 };
 
 #endif /* IE_IMPGRAPHIC_WMF_H */
