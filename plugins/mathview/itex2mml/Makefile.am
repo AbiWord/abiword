@@ -3,9 +3,9 @@ noinst_LTLIBRARIES = libitex2mml.la
 
 AM_CPPFLAGS =
 
-LEX_YY_C = $(builddir)/lex.yy.c
-Y_TAB_C = $(builddir)/y.tab.c
-Y_TAB_H = $(builddir)/y.tab.h
+LEX_YY_C = lex.yy.c
+Y_TAB_C = y.tab.c
+Y_TAB_H = y.tab.h
 
 libitex2mml_la_SOURCES = \
 	itex2MML.h \
