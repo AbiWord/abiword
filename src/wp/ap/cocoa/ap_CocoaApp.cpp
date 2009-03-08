@@ -1115,7 +1115,7 @@ static int s_signal_count = 0;
 /*!
   This function actually handles signals.  The most commonly recieved
   one is SIGSEGV, the segfault signal.  We want to clean up, save the
-  user's files to backup locations (currently <filename>.SEGFAULTED) and then
+  user's files to backup locations (currently <filename>.saved) and then
   call abort, so we still get a core dump that we can debug.
   \param sig_num the integer representing which signal we recieved
 */
@@ -1140,8 +1140,12 @@ void AP_CocoaApp::catchSignals(int /*sig_num*/)
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_CocoaFrame * curFrame = (AP_CocoaFrame*) m_vecFrames[i];
-		UT_ASSERT(curFrame);
-		curFrame->backup(".CRASHED", abiType);
+		UT_continue_if_fail(curFrame);
+
+		if(curFrame->getFilename() == NULL)
+			curFrame->backup(".abw.saved", abiType);
+		else
+			curFrame->backup(".saved", abiType);
     }
     
     fflush(stdout);
