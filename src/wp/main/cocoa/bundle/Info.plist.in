@@ -308,7 +308,7 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>CRASHED</string>
+				<string>saved</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>ABWSaved.icns</string>
