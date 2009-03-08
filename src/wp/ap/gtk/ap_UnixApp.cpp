@@ -768,7 +768,7 @@ void AP_UnixApp::loadAllPlugins ()
 	GError *err = NULL;
 	GDir *dir = g_dir_open (path.c_str(), 0, &err);
 	if (err) {
-		g_warning (err->message);
+		g_warning ("%s", err->message);
 		g_error_free (err), err = NULL;
 		continue;
 	}
@@ -1285,10 +1285,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 
 	if (Args->m_sPrintTo) 
 	{
-		//
-		// Dom please FIXME
-		//
-		fprintf(stderr,"DOM will decide what to do here \n");
+		fprintf(stderr, "%s\n", m_pStringSet->getValue(AP_STRING_ID_COMMAND_LINE_PRINTING_DEPRECATED));
 
 		bSuccess = false;
 		return false;

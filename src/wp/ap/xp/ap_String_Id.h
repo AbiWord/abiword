@@ -1620,3 +1620,5 @@ dcl(TOOLBAR_TOOLTIP_MERGERIGHT, "Merge with right cell")
 dcl(TOOLBAR_TOOLTIP_MERGEABOVE, "Merge with cell above")
 dcl(TOOLBAR_TOOLTIP_MERGEBELOW, "Merge with cell below")
 dcl(TOOLBAR_TOOLTIP_MENU, "Menu")
+
+dcl(COMMAND_LINE_PRINTING_DEPRECATED, "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'")
