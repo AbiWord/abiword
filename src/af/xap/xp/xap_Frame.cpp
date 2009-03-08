@@ -412,10 +412,16 @@ void XAP_Frame::_createAutoSaveTimer()
 	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
 	UT_String stPeriod;
 	
-	XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
-	UT_ASSERT(stPeriod.empty() == false);
-	m_iAutoSavePeriod = atoi(stPeriod.c_str());
-	
+	bool bFound = XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
+
+	if(!bFound || stPeriod.empty())
+		m_iAutoSavePeriod = atoi(XAP_PREF_DEFAULT_AutoSaveFilePeriod);
+	else
+		m_iAutoSavePeriod = atoi(stPeriod.c_str());
+
+	if(m_iAutoSavePeriod < 1)
+		m_iAutoSavePeriod = 1;
+
 	// stPeriod is in minutes, and we should use milliseconds
 	timer->set(m_iAutoSavePeriod * 60000);
 	m_iIdAutoSaveTimer = timer->getIdentifier();
@@ -679,7 +685,12 @@ void XAP_Frame::setAutoSaveFile(bool b)
 	if (b && !m_iIdAutoSaveTimer)
 	{
 		UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
-		UT_ASSERT(m_iAutoSavePeriod != 0);
+		if(m_iAutoSavePeriod < 1)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			m_iAutoSavePeriod = 1;
+		}
+
 		timer->set(m_iAutoSavePeriod * 60000);
 		m_iIdAutoSaveTimer = timer->getIdentifier();
 		timer->start();
@@ -699,6 +710,14 @@ void XAP_Frame::setAutoSaveFile(bool b)
 	if(b)
 	{
 		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+		if(m_iAutoSavePeriod < 1)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			m_iAutoSavePeriod = 1;
+		}
+
+		// reset the timer, because the interval might have changed (Bug 9329)
+		timer->set(m_iAutoSavePeriod * 60000);
 		timer->start();
 		return;
 	}
