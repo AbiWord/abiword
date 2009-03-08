@@ -56,6 +56,7 @@ class ABI_EXPORT GR_UnixCairoGraphicsBase
  protected:
 	GR_UnixCairoGraphicsBase();
 	GR_UnixCairoGraphicsBase(cairo_t *cr, UT_uint32 iDeviceResolution);
+
 };
 
 

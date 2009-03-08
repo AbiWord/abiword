@@ -128,7 +128,8 @@ void XAP_UnixDialog_Print::BeginPrint(GtkPrintContext   *context)
 	m_pPrintGraphics = (GR_Graphics *) new GR_CairoPrintGraphics(cr,72.0);
 	double ScreenRes = m_pView->getGraphics()->getDeviceResolution();
 	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->setResolutionRatio(72.0/ScreenRes);
-
+	xxx_UT_DEBUGMSG(("Resolution Ratio set to %f \n",72.0/ScreenRes));
+	xxx_UT_DEBUGMSG(("Resolution Ratio of Direct call is %f Cast call is %f \n",m_pPrintGraphics->getResolutionRatio(),	static_cast<GR_CairoPrintGraphics *>(m_pPrintGraphics)->getResolutionRatio()));
 	if(m_pView->getViewMode() == VIEW_PRINT )
 	{
 			m_pPrintLayout = m_pDL;

@@ -25,7 +25,7 @@ GR_CairoPrintGraphics::GR_CairoPrintGraphics(cairo_t *cr, UT_uint32 iDeviceResol
 	m_bDoShowPage(false),
 	m_dResRatio(1.0)
 {
-	
+
 }
 	
 GR_CairoPrintGraphics::~GR_CairoPrintGraphics()
