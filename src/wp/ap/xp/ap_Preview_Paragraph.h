@@ -83,7 +83,7 @@ class ABI_EXPORT AP_Preview_Paragraph_Block
 	// when a string is set, we break it into words for
 	// easy layout, and store the word content (UT_UCSChar *)
 	// and its measured length in pixels (UT_uint32)
-	UT_Vector m_words;
+	UT_GenericVector<UT_UCSChar *> m_words;
 	UT_NumberVector m_widths;
 };
 
@@ -133,7 +133,7 @@ class ABI_EXPORT AP_Preview_Paragraph : public XAP_Preview
 	virtual void 	_drawPageBackground(void);
 	virtual void	_drawPageBorder(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);
-	virtual UT_uint32 _appendLine(UT_Vector * words,
+	virtual UT_uint32 _appendLine(UT_GenericVector<UT_UCSChar *> * words,
 								  UT_NumberVector * widths,
 								  UT_uint32 startWithWord,
 								  UT_uint32 left,

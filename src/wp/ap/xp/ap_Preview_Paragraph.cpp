@@ -84,7 +84,7 @@ AP_Preview_Paragraph_Block::~AP_Preview_Paragraph_Block()
 	// all at once.
 	if (m_words.getItemCount() > 0)
 	{
-		UT_UCSChar * word = (UT_UCSChar *) m_words.getNthItem(0);
+		UT_UCSChar * word = m_words.getNthItem(0);
 		FREEP(word);
 	}
 }
@@ -97,7 +97,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	// word (see the destructor for notes)
 	if (m_words.getItemCount() > 0)
 	{
-		UT_UCSChar * word = (UT_UCSChar *) m_words.getNthItem(0);
+		UT_UCSChar * word = m_words.getNthItem(0);
 		FREEP(word);
 		m_words.clear();
 	}
@@ -583,8 +583,8 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 	UT_uint32 ypre = 0;
 	UT_uint32 ypost = 0;
 
-	UT_uint32 wordCounter = 0;
-	UT_uint32 wordCount = block->m_words.getItemCount();
+	UT_sint32 wordCounter = 0;
+	UT_sint32 wordCount = block->m_words.getItemCount();
 
 	m_gc->setColor(block->m_clr);
 
@@ -659,7 +659,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 }
 
 // returns number of words it plotted
-UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
+UT_uint32 AP_Preview_Paragraph::_appendLine(UT_GenericVector<UT_UCSChar*> * words,
 											UT_NumberVector * widths,
 											UT_uint32 startWithWord,
 											UT_uint32 left,
@@ -758,7 +758,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	{
 		// this will not produce correct results in true bidi text, since the words that are inconsistend
 		// with the overall pargraph direction will be in wrong order, but that is not a big deal
-		s = (UT_UCS4Char *)words->getNthItem(k);
+		s = words->getNthItem(k);
 		size = s.size() + 1;
 		pBuf = (UT_UCS4Char *)UT_calloc(size, sizeof(UT_UCS4Char));
 		memset(pBuf, 0, size * sizeof(UT_UCS4Char));
