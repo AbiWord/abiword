@@ -250,6 +250,7 @@ protected:
 	
 private:
 	void						_createAutoSaveTimer();
+	void						_removeAutoSaveFile();
 
 	UT_UTF8String				m_sTitle;
 	UT_UTF8String				m_sNonDecoratedTitle;
