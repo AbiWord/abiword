@@ -40,6 +40,7 @@ dcl(MSG_NoUndo, "This operation cannot be undone. Are you sure you want to proce
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
+dcl(ReadOnly,					"Read-Only")
 
 /*  Styles */
 dcl(STYLE_NUMBER_LIST,		"Numbered List")

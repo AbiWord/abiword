@@ -103,6 +103,16 @@ bool XAP_FrameImpl::_updateTitle()
 
 	UT_return_val_if_fail(m_pFrame && m_pFrame->m_pDoc,false);
 
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_val_if_fail(pSS, false);
+
+	UT_UTF8String s;
+	UT_GOFilePermissions *perm = NULL;
+	const gchar *szURI = m_pFrame->m_pDoc->getFilename();
+
+	if (szURI && *szURI)
+		perm = UT_go_get_file_permissions(szURI);
+
 	/* first try to use the metadata title as our title */
 	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", m_pFrame->m_sTitle) && m_pFrame->m_sTitle.size()) {
 		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
@@ -110,30 +120,50 @@ bool XAP_FrameImpl::_updateTitle()
 		if (m_pFrame->m_pDoc->isDirty())
 			m_pFrame->m_sTitle = "*" + m_pFrame->m_sTitle;
 
+		if (perm && !perm->owner_write)
+		{
+			if(pSS->getValueUTF8(XAP_STRING_ID_ReadOnly,s))
+				m_pFrame->m_sTitle += " (" + s + ")";
+		}
+
+		FREEP(perm);
 		return true;
 	}
 	
 	/* that failed. let's use the filename instead */
 
-	const gchar *szURI = m_pFrame->m_pDoc->getFilename();
-
 	if (szURI && *szURI) 
 	{
 		gchar *szName = UT_go_basename_from_uri (szURI);
 		UT_UTF8String sUntruncatedString(szName);
-		g_free (szName); szName = NULL;
+		FREEP(szName);
+
+		int lenRO = 0;
+		if (perm && !perm->owner_write)
+		{
+			if(pSS->getValueUTF8(XAP_STRING_ID_ReadOnly,s))
+				lenRO = s.size();
+		}
+		if (lenRO > MAX_TITLE_LENGTH)
+		{
+			// broken translation file?
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			lenRO = 0;
+		}
+
 		// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
 		UT_UTF8Stringbuf::UTF8Iterator iter = sUntruncatedString.getIterator ();
 		iter = iter.start ();
-		for (int currentSize = sUntruncatedString.size(); currentSize > MAX_TITLE_LENGTH; currentSize--)
+		for (int currentSize = sUntruncatedString.size(); currentSize > (MAX_TITLE_LENGTH - lenRO); currentSize--)
 			iter.advance();
 		m_pFrame->m_sTitle = iter.current();
+
+		if(lenRO > 0)
+			m_pFrame->m_sTitle += " (" + s + ")";
 	}
 	else
 	{
 		UT_ASSERT(m_pFrame->m_iUntitled);
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_UTF8String s;
 		pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument,s);
 		
 		m_pFrame->m_sTitle = UT_UTF8String_sprintf(m_pFrame->m_sTitle,s.utf8_str(),m_pFrame->m_iUntitled);
@@ -153,6 +183,7 @@ bool XAP_FrameImpl::_updateTitle()
 	if (m_pFrame->m_pDoc->isDirty())
 		m_pFrame->m_sTitle = "*" + m_pFrame->m_sTitle;
 
+	FREEP(perm);
 	return true;
 }
 //#endif
