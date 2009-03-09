@@ -2992,7 +2992,12 @@ Defun1(filePreviewWeb)
 	// document extension or rename what we're working on
 	char *uri = UT_go_filename_to_uri(file.c_str());
 	if(uri)
+	{
+		if(XAP_App::getApp()->getPrefs())
+			XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
+
 		errSaved = pAV_View->cmdSaveAs(uri, IE_Exp::fileTypeForSuffix(".xhtml"), false);
+	}
 	else
 		errSaved = UT_IE_COULDNOTWRITE;
 
