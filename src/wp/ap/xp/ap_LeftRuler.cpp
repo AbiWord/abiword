@@ -705,8 +705,8 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 //
 			UT_sint32 i =0;
 			xxx_UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
-			AP_LeftRulerTableInfo * pTInfo =  NULL;
-			pTInfo = const_cast<AP_LeftRulerTableInfo *>(reinterpret_cast<const AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(0)));
+			const AP_LeftRulerTableInfo * pTInfo =  NULL;
+			pTInfo = m_infoCache.m_vecTableRowInfo->getNthItem(0);
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTInfo->m_pCell->getContainer());
 			fp_CellContainer * pCell = NULL;
 			posPrev =pTab->getYOfRow(0);  ;
@@ -716,13 +716,13 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				UT_sint32 iCurPos = 0;
 				if(!bLast)
 				{
-					pTInfo =  static_cast<AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(i));
+					pTInfo = m_infoCache.m_vecTableRowInfo->getNthItem(i);
 					pCell = pTInfo->m_pCell;
 					iCurPos = pTab->getYOfRow(pCell->getTopAttach());
 				}
 				else
 				{
-					pTInfo =  static_cast<AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(i-1));
+					pTInfo = m_infoCache.m_vecTableRowInfo->getNthItem(i-1);
 					pCell = pTInfo->m_pCell;
 					iCurPos = pTab->getYOfRow(pCell->getBottomAttach());
 				}
@@ -1428,11 +1428,11 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 
 	if(iCell < pInfo->m_iNumRows)
 	{
-		pLInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell));
+		pLInfo = pInfo->m_vecTableRowInfo->getNthItem(iCell);
 	}
 	else
 	{
-		pLInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1));
+		pLInfo = pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1);
 	}
 
 //	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
@@ -1515,15 +1515,15 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	} 
 	else
 	{
-		UT_sint32 imax = static_cast<UT_sint32>(pInfo->m_vecTableRowInfo->getItemCount());
+		UT_sint32 imax = pInfo->m_vecTableRowInfo->getItemCount();
 		AP_LeftRulerTableInfo * pKInfo = NULL;
 		if(iCell - 1 < imax)
 		{
-			pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell-1));
+			pKInfo = pInfo->m_vecTableRowInfo->getNthItem(iCell-1);
 		}
 		else
 		{
-			pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(imax-1));
+			pKInfo = pInfo->m_vecTableRowInfo->getNthItem(imax-1);
 		}
 		bottomSpacing = pKInfo->m_iBotSpacing;
 	}
