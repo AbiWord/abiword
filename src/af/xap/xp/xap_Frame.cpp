@@ -30,6 +30,7 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_timer.h"
+#include "ut_go_file.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_FrameImpl.h"
@@ -138,12 +139,9 @@ XAP_Frame::~XAP_Frame(void)
 	/* if we're auto-saving files and now we're exiting normally
 	 * delete/unlink the file
 	 */
-	// bool autosave = true;
-	// getApp()->getPrefsValueBool(XAP_PREF_KEY_AutoSaveFile, &autosave);
-	if (/* autosave && */ m_stAutoSaveNamePrevious.size())
+	if (!m_stAutoSaveNamePrevious.empty())
 	{
-		UT_DEBUGMSG(("DOM: removing backup file %s\n", m_stAutoSaveNamePrevious.c_str()));
-		g_unlink ( m_stAutoSaveNamePrevious.c_str() );
+		_removeAutoSaveFile();
 	}
 
 	// only delete the things that we created...
@@ -426,6 +424,38 @@ void XAP_Frame::_createAutoSaveTimer()
 	timer->set(m_iAutoSavePeriod * 60000);
 	m_iIdAutoSaveTimer = timer->getIdentifier();
 	UT_DEBUGMSG(("Creating auto save timer [%d] with a timeout of [%d] minutes.\n", m_iIdAutoSaveTimer, m_iAutoSavePeriod));
+}
+
+void XAP_Frame::_removeAutoSaveFile()
+{
+	const char *filename = NULL;
+	bool bURI = UT_go_path_is_uri(m_stAutoSaveNamePrevious.c_str());
+
+	if(bURI)
+	{
+		filename = UT_go_filename_from_uri(m_stAutoSaveNamePrevious.c_str());
+	}
+	else
+	{
+		// It shouldn't be a file name here, but handle it nonetheless
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		filename = m_stAutoSaveNamePrevious.c_str();
+	}
+
+	if(filename)
+	{
+		UT_DEBUGMSG(("DOM: removing backup file %s\n", filename));
+		int res = g_unlink(filename);
+
+		if(res == -1)
+		{
+			UT_DEBUGMSG(("Failed to unlink old backup file %s\n", filename));
+		}
+
+		// only g_free in the UT_go_filename_from_uri case
+		if(bURI)
+			FREEP(filename);
+	}
 }
 
 /*!
@@ -815,7 +845,7 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());
   UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
   UT_String backupName;
-  UT_DEBUGMSG(("In make Backup name. Old Name is  %s \n",oldName.c_str()));
+  UT_DEBUGMSG(("In make Backup name. Old Name is (%s) \n",oldName.c_str()));
   if (oldName.empty())
   {
       const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
@@ -831,7 +861,19 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   
   backupName = oldName + ext;
 
-  UT_DEBUGMSG(("DOM: created backup filename %s\n", backupName.c_str()));
+  const char* uri = NULL;
+  bool bURI = UT_go_path_is_uri(backupName.c_str());
+
+  if(!bURI)
+    uri = UT_go_filename_to_uri(backupName.c_str());
+
+  if(uri)
+  {
+    backupName = uri;
+    FREEP(uri);
+  }
+
+  UT_DEBUGMSG(("DOM: created backup filename (%s)\n", backupName.c_str()));
 
   return backupName;
 }
@@ -861,7 +903,7 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 		/* If the user does a Save-As to rename the file then the auto-save name also changes, so
 		 * need to remove the old backup file...
 		 */
-		g_unlink(m_stAutoSaveNamePrevious.c_str());
+		_removeAutoSaveFile();
 	}
 	m_stAutoSaveNamePrevious = backupName;
 	
@@ -881,7 +923,15 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 		error = m_pDoc->saveAs(backupName.c_str(), iEFT, false);
 	}
 
-	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
+	if(error == UT_OK)
+	{
+		UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
+	}
+	else
+	{
+		// TODO: alert the user
+		UT_DEBUGMSG(("File backup failed.\n"));
+	}
 
 	m_bBackupInProgress = false;
 	return error;
