@@ -995,11 +995,13 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_bChangedStrikeOut = m_bStrikeout;
 	m_bChangedUnderline = m_bUnderline;
 	m_bChangedOverline = m_bOverline;
+	m_bChangedHidden = m_bHidden;
 
-	// set the strikeout and underline check buttons
+	// set the strikeout, underline, overline, and hidden check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkHidden), m_bHidden);
 
 	m_doneFirstFont = true;
 
