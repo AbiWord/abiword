@@ -3415,7 +3415,7 @@ Defun(dlgMetaData)
 		  pApp->getFrame(i)->updateTitle ();
 	  }	  
 
-      // TODO: set the document as dirty when something changed
+      pDocument->forceDirty();
     }
 
   // release the dialog
