@@ -39,13 +39,13 @@ public:
 
   // redefined methods
 
-  virtual SmartPtr<ColorArea> color(const AreaRef& area, const RGBColor& color) const
-  { return GR_Abi_ColorArea::create(area, color); }
+  virtual SmartPtr<ColorArea> color(const AreaRef& area, const RGBColor& _color) const
+  { return GR_Abi_ColorArea::create(area, _color); }
   virtual SmartPtr<InkArea> ink(const AreaRef& area) const
   { return GR_Abi_InkArea::create(area); }
 #if 0
-  virtual AreaRef background(const AreaRef& area, const RGBColor& color) const
-  { return GR_Abi_BackgroundArea::create(area, color); }
+  virtual AreaRef background(const AreaRef& area, const RGBColor& _color) const
+  { return GR_Abi_BackgroundArea::create(area, _color); }
 #endif
 
   // new methods
