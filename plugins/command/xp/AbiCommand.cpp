@@ -553,7 +553,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 				UT_UTF8String *pCom1 =
 					const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
 				printf(" Filename %s \n",pCom1->utf8_str());
-				char *suffix = rindex (pCom1->utf8_str (), '.');
+				const char *suffix = const_cast<const char*>(rindex (pCom1->utf8_str (), '.'));
 
 				if (suffix != NULL)
 				{
