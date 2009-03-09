@@ -60,7 +60,7 @@ const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail 
 static GOptionEntry _entries[] = {
         {"geometry", 'g', 0, G_OPTION_ARG_STRING, &AP_Args::m_sGeometry, "Set initial frame geometry", "GEOMETRY"} ,
         {"to", 't', 0, G_OPTION_ARG_STRING, &AP_Args::m_sToFormat, "Target format of the file (abw, zabw, rtf, txt, utf8, html, ...), depends on available filter plugins", "FORMAT"},
-        {"verbose", '\0', 0, G_OPTION_ARG_INT, &AP_Args::m_iVerbose, "Set verbosity level (0, 1, 2)", "LEVEL"},
+        {"verbose", '\0', 0, G_OPTION_ARG_INT, &AP_Args::m_iVerbose, "Set verbosity level (0, 1, 2), with 2 being the most verbose", "LEVEL"},
         {"print", 'p',0, G_OPTION_ARG_STRING, &AP_Args::m_sPrintTo, "Print this file to printer","'Printer name' or '-' for default printer"},
         {"plugin", 'E', 0, G_OPTION_ARG_STRING_ARRAY, &AP_Args::m_sPluginArgs, "Execute plugin NAME instead of the main application", NULL},
         {"merge", 'm', 0, G_OPTION_ARG_STRING, &AP_Args::m_sMerge, "Mail-merge", "FILE"},
