@@ -3203,7 +3203,8 @@ bool GR_PangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	UT_uint32 iSize = (UT_uint32)(0.5 + resRatio *(double)pG->getResolution() /
 								  (double)pG->getDeviceResolution());
-	
+	if(ink_rect.x <0) 
+	   ink_rect.x=0;
 	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.x));
 	
 	rec.width  = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.width));
