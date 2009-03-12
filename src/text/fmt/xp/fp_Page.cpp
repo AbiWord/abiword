@@ -208,7 +208,9 @@ bool fp_Page::isOnScreen(void)
 	{
 		return false;
 	}
-	if(yoff > getHeight())
+	if(!m_pView)
+		return false;
+	if(yoff > m_pView->getWindowHeight())
 	{
 		return false;
 	}

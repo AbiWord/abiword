@@ -323,6 +323,7 @@ bool fp_CellContainer::containsNestedTables(void)
 /*!
  * Return the screen rectangle that is the intersection of the cell and the
  * broken table.
+ * If the height or width is negative, the cell is not in the broken table.
  */
 void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
 {
@@ -1332,7 +1333,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 // Cell is above this page
 //
-			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
+			UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
 			return;
 		}
 		if(m_iTopY > pBroke->getYBottom())
@@ -2090,6 +2091,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	UT_Rect bRec;
 	fp_Page * pPage;
 	_getBrokenRect(pBroke, pPage, bRec,pG);
+	if((bRec.height < 0) || (bRec.width < 0))
+		return;
 	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
 	{
 		fl_DocSectionLayout * pDSL = getSectionLayout()->getDocSectionLayout();
@@ -2144,7 +2147,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		FV_View * pView = getPage()->getDocLayout()->getView();
 		
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
-			UT_ASSERT((bRec.left + bRec.width) < pView->getWidthPagesInRow(getPage()) ); /////////////////////////////////////
+		UT_ASSERT((bRec.left + bRec.width) < static_cast<UT_sint32>(pView->getWidthPagesInRow(getPage())) ); /////////////////////////////////////
 		
 		if(bIsNested)
 		{
