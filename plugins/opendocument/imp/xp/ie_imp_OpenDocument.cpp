@@ -140,7 +140,6 @@ UT_Error IE_Imp_OpenDocument::_handleMimetype ()
     if (!pInput) {
         UT_DEBUGMSG(("Error: didn't get a mimetype. Assuming that it's a"
         " application/vnd.oasis.opendocument.text document\n"));
-        UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return UT_OK;
     }
 
@@ -152,15 +151,17 @@ UT_Error IE_Imp_OpenDocument::_handleMimetype ()
             gsf_input_size (pInput));
     }
 
+    UT_Error err = UT_OK;
+
     if ((strcmp("application/vnd.oasis.opendocument.text", mimetype.utf8_str()) != 0) &&
         (strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) != 0))
     {
         UT_DEBUGMSG(("*** Unknown mimetype '%s'\n", mimetype.utf8_str()));
-        return UT_IE_BOGUSDOCUMENT;
+        err = UT_IE_BOGUSDOCUMENT;
     }
 
     g_object_unref (G_OBJECT (pInput));
-    return UT_OK;
+    return err;
 }
 
 gboolean gsf_infile_child_exists(GsfInfile *infile, char const *name)
