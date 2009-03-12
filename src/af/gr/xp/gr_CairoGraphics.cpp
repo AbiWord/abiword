@@ -3141,7 +3141,7 @@ bool GR_PangoFont::doesGlyphExist(UT_UCS4Char g)
 	return true;
 }
 
-static double fontPoints2float(UT_uint32 iSize, UT_uint32 iFontPoints)
+static double fontPoints2float(UT_sint32 iSize, UT_sint32 iFontPoints)
 {
 	return iSize * ((double)iFontPoints / PANGO_SCALE) * 1.44/20.; // Last 20 is points to inches
 }
@@ -3201,10 +3201,9 @@ bool GR_PangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	PangoRectangle ink_rect;
 	pango_font_get_glyph_extents(m_pLayoutF, iGlyphIndx, &ink_rect, NULL);
 
-	UT_uint32 iSize = (UT_uint32)(0.5 + resRatio *(double)pG->getResolution() /
+	UT_sint32 iSize = (UT_sint32)(0.5 + resRatio *(double)pG->getResolution() /
 								  (double)pG->getDeviceResolution());
-	if(ink_rect.x <0) 
-	   ink_rect.x=0;
+
 	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.x));
 	
 	rec.width  = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, ink_rect.width));
