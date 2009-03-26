@@ -1183,9 +1183,10 @@ void s_DocBook_Listener::_closeCell(void)
 	_closeParagraph();
 
 	if(_tagTop() == TT_ENTRY)
+	{
 		_tagClose(TT_ENTRY,"entry",true,false,true);
-	else
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+
 }
 
 void s_DocBook_Listener::_closeRow(void)
@@ -1193,9 +1194,9 @@ void s_DocBook_Listener::_closeRow(void)
 	_closeCell();
 
 	if (_tagTop() == TT_ROW)
+	{
 		_tagClose(TT_ROW,"row");
-	else
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 }
 
 void s_DocBook_Listener::_handleDocument(void)
@@ -1206,9 +1207,8 @@ void s_DocBook_Listener::_handleDocument(void)
 	const gchar* szValue = 0;
 
 	m_pDocument->getAttrProp (docApi, &pDAP);
-	UT_return_if_fail(pDAP);
 
-	if(pDAP->getProperty("lang", szValue))
+	if(pDAP && pDAP->getProperty("lang", szValue))
 	{
 		buf += " lang=\"";
 		buf += szValue;
@@ -1434,7 +1434,7 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 	if(!m_bInParagraph) // an image might also be in a section heading
 	{
 		_closeSectionTitle();
-		_openBlock(true); //don't send any properties
+		_openBlock(true);
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1599,7 +1599,7 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 	if(!m_bInParagraph) // an equation might also be in a section heading
 	{
 		_closeSectionTitle();
-		_openBlock(true); //don't send any properties
+		_openBlock(true);
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1677,7 +1677,7 @@ void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	if(!m_bInParagraph) // a chart might also be in a section heading
 	{
 		_closeSectionTitle();
-		_openBlock(true); //don't send any properties
+		_openBlock(true);
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1757,10 +1757,6 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 				buf += szStyle;
 				buf += "\"";
 			}
-			else
-			{
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			}
 		}
 
 		_tagOpen(TT_PHRASE,buf,false,false,false);
@@ -1775,10 +1771,6 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 				buf += szValue;
 				buf += "\"";
 			}
-			else
-			{
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			}
 
 			_tagOpenClose(buf,true,false,false);
 		}
@@ -1790,10 +1782,6 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 			{
 				buf += szValue;
 				buf += "\"";
-			}
-			else
-			{
-				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 
 			_tagOpenClose(buf,true,false,false);
@@ -1808,10 +1796,6 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 		}
 
 		_tagClose(TT_PHRASE,"phrase",false,false,false);
-	}
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
