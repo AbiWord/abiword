@@ -117,8 +117,8 @@ protected:
 	void				_openChapter (PT_AttrPropIndex api);
 	void				_openChapterTitle (PT_AttrPropIndex api);
 	void				_openList(PT_AttrPropIndex api);
-	void				_openBlock (PT_AttrPropIndex api, bool indent);
-	void				_openPlainBlock (PT_AttrPropIndex api, bool indent);
+	void				_openBlock (bool indent);
+	void				_openPlainBlock ();
 	void				_handleDocument(void);
 	void				_handleMetaData(void);
 	void				_handleRevisions(void);
@@ -133,8 +133,8 @@ protected:
 	void				_handleHdrFtr(PT_AttrPropIndex api);
 	void				_handleFootnote(PT_AttrPropIndex api);
 	void				_openTable(PT_AttrPropIndex api);
-	void				_openNestedTable(PT_AttrPropIndex api);
-	void				_openCell(PT_AttrPropIndex api);
+	void				_openNestedTable();
+	void				_openCell();
 	void				_openRow(void);
 	void				_closeNestedTable(void);
 	void				_closeTable(void);

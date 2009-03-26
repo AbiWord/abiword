@@ -389,14 +389,6 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Doc;
 		X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
 
-		const gchar ** condition = getCondition(atts);
-
-		if(condition)
-		{
-			X_CheckError(getDoc()->setAttrProp(condition));
-			DELETEPV(condition);
-		}
-
 		m_iSectionDepth = 0;	/* not in a section, nor a chapter */
 
 		if(tokenIndex == TT_ARTICLE)
@@ -446,9 +438,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 		if(!strcmp(p_val,"abi-frame"))
 		{
-			const gchar ** condition = getCondition(atts);
-			X_CheckError(appendStrux(PTX_SectionFrame, condition));
-			DELETEPV(condition);
+			X_CheckError(appendStrux(PTX_SectionFrame, NULL));
 
 			m_iTitleDepth--;
 			m_bInFrame = true;
@@ -752,9 +742,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		{
 			m_parseState = _PS_Block;
 
-			const gchar ** condition = getCondition(atts);
-			X_CheckError(appendStrux(PTX_Block, condition));
-			DELETEPV(condition);
+			X_CheckError(appendStrux(PTX_Block, NULL));
 
 			m_iBlockDepth++;
 		}
@@ -1210,9 +1198,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Sec);
 		requireBlock();
 
-		const gchar ** condition = getCondition(atts);
-		X_CheckError(appendStrux(PTX_SectionTOC, condition));
-		DELETEPV(condition);
+		X_CheckError(appendStrux(PTX_SectionTOC, NULL));
 
 		m_bInTOC = true;
 		break;
@@ -1292,10 +1278,8 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Table);
 		m_parseState = _PS_Cell;
 
-		//TODO: handle non-abi cells
-		const gchar ** condition = getCondition(atts);
-		X_CheckError(appendStrux(PTX_SectionCell, condition));
-		DELETEPV(condition);
+		//TODO: use the table helper
+		X_CheckError(appendStrux(PTX_SectionCell, NULL));
 
 		break;
 	}
@@ -1306,9 +1290,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_CheckError(appendStrux(PTX_SectionCell,static_cast<const gchar **>(NULL)));
 		requireBlock();
 
-		const gchar ** condition = getCondition(atts);
-		X_CheckError(appendStrux(PTX_SectionTable, condition));
-		DELETEPV(condition);
+		X_CheckError(appendStrux(PTX_SectionTable, NULL));
 
 		m_parseState = _PS_Table; //requireBlock() will reset this
 		break;
@@ -2982,31 +2964,6 @@ void IE_Imp_DocBook :: createImage (const char *name, const gchar **atts)
 	DELETEP(pfg);
 }
 /*****************************************************************************/
-
-const gchar ** IE_Imp_DocBook :: getCondition (const gchar **atts)
-{
-	const gchar **buf = new const gchar*[3];
-	buf[2] = NULL;
-
-	const gchar *p_val = NULL;
-	p_val = _getXMLPropValue(static_cast<const gchar *>("condition"), atts);
-
-	if(p_val)
-	{
-		buf[0] = PT_PROPS_ATTRIBUTE_NAME;
-		buf[1] = (gchar*)p_val;
-	}
-	else
-	{
-		buf[0] = NULL;
-	}
-
-	if(buf[0])
-		return buf;
-
-	DELETEPV(buf);
-	return (const gchar **)NULL;
-}
 
 UT_uint32 IE_Imp_DocBook::tagTop(void)
 {

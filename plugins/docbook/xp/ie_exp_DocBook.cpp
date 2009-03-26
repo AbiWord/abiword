@@ -459,19 +459,12 @@ void s_DocBook_Listener :: _openList (PT_AttrPropIndex /*api*/)
 */
 }
 
-void s_DocBook_Listener :: _openBlock(PT_AttrPropIndex api, bool indent)
+void s_DocBook_Listener :: _openBlock(bool indent)
 {
 	if(m_bInTitle)
 		return;
 
-	UT_UTF8String condition = _getProps(api), buf = "para";
-
-	if(condition.length())
-	{
-		buf += " condition=\"";
-		buf += condition.escapeXML();
-		buf += "\"";
-	}
+	UT_UTF8String buf = "para";
 
 	_closeParagraph();
 	_tagOpen(TT_BLOCK,buf,false,indent,indent);
@@ -479,19 +472,12 @@ void s_DocBook_Listener :: _openBlock(PT_AttrPropIndex api, bool indent)
 	m_iBlockType = BT_NORMAL;
 }
 
-void s_DocBook_Listener :: _openPlainBlock(PT_AttrPropIndex api, bool /*indent*/)
+void s_DocBook_Listener :: _openPlainBlock()
 {
 	if(m_bInTitle)
 		return;
 
-	UT_UTF8String condition = _getProps(api), buf = "literallayout";
-
-	if(condition.length())
-	{
-		buf += " condition=\"";
-		buf += condition.escapeXML();
-		buf += "\"";
-	}
+	UT_UTF8String buf = "literallayout";
 
 	_closeParagraph();
 	_tagOpen(TT_PLAINTEXT,buf,true,false,false);
@@ -506,12 +492,12 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 
 	if(m_bInTable && (_tagTop() == TT_ROW)) //no <entry>, can happen on bad .doc import
 	{
-		_openCell(api);
+		_openCell();
 	}
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP), indent = false;
-	UT_UTF8String buf(""), condition("");
+	UT_UTF8String buf("");
 
 	if (bHaveProp && pAP)
 	{
@@ -529,7 +515,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else if(!m_bInTitle)
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 				}
 				return;
 			}
@@ -546,7 +532,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else if(!m_bInTitle)
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 					m_sParentStyle = szValue;
 				}
 				return;
@@ -564,7 +550,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 					m_sParentStyle = szValue;
 				}
 				return;
@@ -582,7 +568,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 					m_sParentStyle = szValue;
 				}
 				return;
@@ -597,7 +583,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 					m_sParentStyle = szValue;
 				}
 				return;
@@ -614,7 +600,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 					m_sParentStyle = szValue;
 				}
 				return;
@@ -639,7 +625,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				if ((!m_bInParagraph) || (!(m_iBlockType == BT_PLAINTEXT)))
 				{
 					indent = _decideIndent();
-					_openPlainBlock(api,indent);
+					_openPlainBlock();
 				}
 				else
 					m_pie -> write ("\n");
@@ -664,13 +650,6 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				}
 
 				buf = "para";
-				condition = _getProps(api);
-				if(condition.length())
-				{
-					buf += " condition=\"";
-					buf += condition.escapeXML();
-					buf += "\"";
-				}
 
 				indent = _decideIndent();
 				_tagOpen(TT_BLOCK,buf,false,indent,indent); //don't indent in tables
@@ -683,20 +662,12 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 
 				if(!_inSectionStrux() && !m_bInTitle)
 				{
-					condition = _getProps(api);
 					buf = "para";
 
 					if(strcmp (szValue, m_sLastStyle.utf8_str()))  // not a coalescing run
 					{
 						_openSection(api,m_iSectionDepth,szValue);
 						_closeSectionTitle(); //no title
-					}
-
-					if(condition.length())
-					{
-						buf += " condition=\"";
-						buf += condition.escapeXML();
-						buf += "\"";
 					}
 
 					_closeParagraph();
@@ -709,7 +680,7 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 				else
 				{
 					indent = _decideIndent();
-					_openBlock(api,indent);
+					_openBlock(indent);
 				}
 				return;
 			}
@@ -731,14 +702,6 @@ void s_DocBook_Listener :: _openParagraph(PT_AttrPropIndex api)
 			}
 
 			buf = "para";
-			condition = _getProps(api);
-			if(condition.length())
-			{
-				buf += " condition=\"";
-				buf += condition.escapeXML();
-				buf += "\"";
-			}
-
 			indent = _decideIndent();
 			_tagOpen(TT_BLOCK,buf,false,indent,indent); //don't indent in table
 		}
@@ -781,7 +744,7 @@ void s_DocBook_Listener :: _openSection (PT_AttrPropIndex api, int sub, const UT
 	if(_tagTop() == TT_TITLE)
 		_closeSectionTitle();
 
-	UT_UTF8String section = "section", escaped = "", condition = "";
+	UT_UTF8String section = "section", escaped = "";
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	const gchar * szValue = 0;
@@ -794,16 +757,7 @@ void s_DocBook_Listener :: _openSection (PT_AttrPropIndex api, int sub, const UT
 		section += escaped;
 		section += "\"";
 	}
-	if(pAP && bHaveProp && (!strcmp(content.utf8_str(),"abi-frame")))  //we only need this for frames
-	{
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			section += " condition=\"";
-			section += condition.escapeXML();
-			section += "\"";
-		}
-	}
+
 	_tagOpen(TT_SECTION,section);
 	m_iSectionDepth++;
 	m_bInSection = true;
@@ -833,7 +787,7 @@ void s_DocBook_Listener :: _openSpan(PT_AttrPropIndex api)
 	if(m_bInSpan)
 		_closeSpan();
 	
-	UT_UTF8String buf = "phrase", condition="";
+	UT_UTF8String buf = "phrase";
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
@@ -856,14 +810,6 @@ void s_DocBook_Listener :: _openSpan(PT_AttrPropIndex api)
 		if ((pAP->getProperty(static_cast<const gchar *>("font-weight"), szValue)) && !strcmp(szValue, "bold"))
 		{
 			buf += " role=\"strong\"";
-		}
-
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			buf += " condition=\"";
-			buf += condition.escapeXML();
-			buf += "\"";
 		}
 
 		_tagOpen(TT_PHRASE,buf,false,false,false);
@@ -1120,13 +1066,11 @@ void s_DocBook_Listener::_openTable(PT_AttrPropIndex api)
 
 	if(m_bInTable)
 	{
-		_openNestedTable(api);
+		_openNestedTable();
 		return;
 	}
 
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	UT_UTF8String buf(""), condition("");
+	UT_UTF8String buf("");
 	UT_sint32 nCols = mTableHelper.getNumCols();
 
 	if(!m_bInSection) //tables as first elements
@@ -1143,17 +1087,6 @@ void s_DocBook_Listener::_openTable(PT_AttrPropIndex api)
 
 	buf = "informaltable frame=\"all\"";
 
-	if(pAP && bHaveProp)
-	{
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			buf += " condition=\"";
-			buf += condition.escapeXML();
-			buf += "\"";
-		}
-	}
-
 	_tagOpen(TT_TABLE,buf);
 
 	UT_UTF8String tgroup(UT_UTF8String_sprintf("tgroup cols='%d' align='left' colsep='1' rowsep='1'", nCols));
@@ -1169,13 +1102,10 @@ void s_DocBook_Listener::_openTable(PT_AttrPropIndex api)
 	m_bInTable = true;
 }
 
-void s_DocBook_Listener::_openNestedTable(PT_AttrPropIndex api)
+void s_DocBook_Listener::_openNestedTable()
 {
 	if(m_iNestedTable != 0) //docbook only allows one level of nesting
 		return;
-
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if(_tagTop() != TT_ROW)
 		_openRow();
@@ -1183,30 +1113,16 @@ void s_DocBook_Listener::_openNestedTable(PT_AttrPropIndex api)
 	UT_sint32 nCols = mTableHelper.getNumCols();
 
 	UT_UTF8String entrytbl(UT_UTF8String_sprintf("entrytbl cols='%d' align='left' colsep='1' rowsep='1'", nCols));
-	UT_UTF8String condition("");
-
-	if(pAP && bHaveProp)
-	{
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			entrytbl += " condition=\"";
-			entrytbl += condition.escapeXML();
-			entrytbl += "\"";
-		}
-	}
 
 	_tagOpen(TT_ENTRYTBL,entrytbl);
 	_tagOpen(TT_TBODY,"tbody");
 	m_iNestedTable = 1;
 }
 
-void s_DocBook_Listener::_openCell(PT_AttrPropIndex api)
+void s_DocBook_Listener::_openCell()
 {
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_sint32 rowspan = 1, colspan = 1;
-	UT_UTF8String entry ("entry"), condition("");
+	UT_UTF8String entry ("entry");
   
 	rowspan = mTableHelper.getBot() - mTableHelper.getTop();
 	colspan = mTableHelper.getRight() - mTableHelper.getLeft();
@@ -1217,17 +1133,6 @@ void s_DocBook_Listener::_openCell(PT_AttrPropIndex api)
 		entry += UT_UTF8String_sprintf(" morerows='%d'", rowspan-1);
 	if (colspan > 1)
 		entry += UT_UTF8String_sprintf(" namest='c%d' nameend='c%d'", mTableHelper.getLeft()+1, mTableHelper.getRight());
-
-	if(pAP && bHaveProp)
-	{
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			entry += " condition=\"";
-			entry += condition.escapeXML();
-			entry += "\"";
-		}
-	}
 
 	_tagOpen(TT_ENTRY,entry,false,true,true);
 }
@@ -1295,19 +1200,13 @@ void s_DocBook_Listener::_closeRow(void)
 
 void s_DocBook_Listener::_handleDocument(void)
 {
-	UT_UTF8String buf("book condition=\""), condition("");
+	UT_UTF8String buf("book");
 	PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
 	const PP_AttrProp * pDAP = NULL;
 	const gchar* szValue = 0;
 
 	m_pDocument->getAttrProp (docApi, &pDAP);
 	UT_return_if_fail(pDAP);
-
-	condition = _getProps(docApi);
-	if(condition.length())
-		buf += condition.escapeXML();
-
-	buf += "\"";
 
 	if(pDAP->getProperty("lang", szValue))
 	{
@@ -1534,10 +1433,8 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 	}
 	if(!m_bInParagraph) // an image might also be in a section heading
 	{
-		PT_AttrPropIndex empty = 0;
-
 		_closeSectionTitle();
-		_openBlock(empty,true); //don't send any properties
+		_openBlock(true); //don't send any properties
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1688,7 +1585,7 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 
 void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 {
-	UT_UTF8String buf(""), escaped(""), condition("");
+	UT_UTF8String buf(""), escaped("");
 	const gchar* szValue = 0;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -1701,10 +1598,8 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 	}
 	if(!m_bInParagraph) // an equation might also be in a section heading
 	{
-		PT_AttrPropIndex empty = 0;
-
 		_closeSectionTitle();
-		_openBlock(empty,true); //don't send any properties
+		_openBlock(true); //don't send any properties
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1748,14 +1643,6 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 			escaped += "\"";
 		}
 
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			escaped += " condition=\"";
-			escaped += condition.escapeXML();
-			escaped += "\"";
-		}
-
 		_tagOpenClose(escaped,true,false,false);
 
 /*  TODO: save mathml somehow
@@ -1776,7 +1663,7 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 
 void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 {
-	UT_UTF8String buf(""), escaped(""), condition("");
+	UT_UTF8String buf(""), escaped("");
 	const gchar* szValue = 0;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -1789,10 +1676,8 @@ void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	}
 	if(!m_bInParagraph) // a chart might also be in a section heading
 	{
-		PT_AttrPropIndex empty = 0;
-
 		_closeSectionTitle();
-		_openBlock(empty,true); //don't send any properties
+		_openBlock(true); //don't send any properties
 	}
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
@@ -1832,14 +1717,6 @@ void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 			escaped += "\"";
 		}
 
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			escaped += " condition=\"";
-			escaped += condition.escapeXML();
-			escaped += "\"";
-		}
-
 		_tagOpenClose(escaped,true,false,false);
 		_tagClose(TT_IMAGEOBJECT,"imageobject",false,false,false);
 		_tagClose(TT_MEDIAOBJECT,"mediaobject",false,false,false);
@@ -1849,13 +1726,13 @@ void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 
 void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api)
 {
-	UT_UTF8String buf(""), escaped(""), condition("");
+	UT_UTF8String buf(""), escaped("");
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	const gchar * szValue = 0, * szStyle = 0;
 
 	if(!m_bInParagraph)
-		_openBlock(api,false);
+		_openBlock(false);
 
 	m_pie->populateFields ();
 
@@ -1872,13 +1749,6 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 		buf += szValue;
 		buf += "\"";
 
-		condition = _getProps(api);
-		if(condition.length())
-		{
-			buf += " condition=\"";
-			buf += condition.escapeXML();
-			buf += "\"";
-		}
 		if (!strcmp (szValue, "endnote_anchor"))  //give the endnote <para> a unique id
 		{
 			if(pAP->getAttribute("endnote-id", szStyle))
@@ -1947,7 +1817,7 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 
 void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 {
-	UT_UTF8String buf(""), condition(""), content("toc");
+	UT_UTF8String buf(""), content("toc");
 	const gchar* szValue = 0;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -1967,14 +1837,6 @@ void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 	else  // get the default
 	{
 		XAP_App::getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_TOC_TocHeading, buf);
-	}
-
-	condition = _getProps(api);
-	if(condition.length())
-	{
-		content += " condition=\"";
-		content += condition.escapeXML();
-		content += "\"";
 	}
 
 	// TODO: populate the TOC
@@ -2083,7 +1945,7 @@ void s_DocBook_Listener::_handleFootnote(PT_AttrPropIndex api)
 	if(m_bInTitle)  //in a section or chapter title
 	{
 		_closeSectionTitle();
-		_openBlock(api,true);		
+		_openBlock(true);		
 	}
 
 	_tagOpen(TT_FOOTNOTE,buf,false,false,false);
@@ -2204,7 +2066,7 @@ bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle sdh,
 				// regular cell
 				_closeParagraph();
 				mTableHelper.OpenCell(pcr->getIndexAP());
-				_openCell(pcr->getIndexAP());
+				_openCell();
 			}
 			return true;
 		}
@@ -2339,28 +2201,6 @@ UT_Error IE_Exp_DocBook::_writeDocument(void)
 
 /*****************************************************************/
 /*****************************************************************/
-
-const UT_UTF8String s_DocBook_Listener::_getProps(PT_AttrPropIndex api)
-{
-	UT_UTF8String buf("");
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-	const gchar * szName = 0, * szValue = 0;
-
-	UT_return_val_if_fail(pAP && bHaveProp,"");
-
-	UT_uint32 k = 0;
-	while (pAP->getNthProperty (k++, szName, szValue))
-	{
-		buf += szName;
-		buf += ":";
-		buf += szValue;
-		if(k < pAP->getPropertyCount())
-			buf += "; ";
-	}
-
-	return buf;
-}
 
 void s_DocBook_Listener::_handleDataItems(void)
 {
