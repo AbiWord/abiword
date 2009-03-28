@@ -568,6 +568,11 @@ bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 			}
 
+			case PTO_Annotation:
+			{
+				return true;
+			}
+
 			default:
 				UT_ASSERT_HARMLESS(UT_TODO);
 				return true;
@@ -672,8 +677,10 @@ bool s_WML_Listener::populateStrux(PL_StruxDocHandle sdh,
 
 	case PTX_EndEndnote:
 	case PTX_EndFootnote:
+	case PTX_EndAnnotation:
 	case PTX_SectionEndnote:
 	case PTX_SectionFootnote:
+	case PTX_SectionAnnotation:
 	{
 		return true;
 	}
