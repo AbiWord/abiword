@@ -43,6 +43,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "ev_EditMethod.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
@@ -258,13 +259,13 @@ AbiCommand::doCommands (void)
 		//
 		// break it into tokens
 		//
-		UT_Vector toks;
+		UT_GenericVector<const UT_UTF8String*> toks;
 
 		tokenizeString (toks, pCom);
 		if (toks.getItemCount () > 0)
 		{
-			UT_UTF8String *pTok =
-				const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(toks.getNthItem (0)));
+			const UT_UTF8String *pTok =
+				static_cast < const UT_UTF8String * >(toks.getNthItem (0));
 
 			if (pTok && (strcmp (pTok->utf8_str (), "quit") == 0
 				|| strcmp (pTok->utf8_str (), "q") == 0))
@@ -301,10 +302,10 @@ AbiCommand::doCommands (void)
 /*!
  * Break the string into tokens. Handles quotes and double quotes.
 \params char * pStr String from readline
-\params UT_Vector & reference to the vector we'll fill with UT_UTF8String * pointers.
+\params UT_GenericVector<const UT_UTF8String*> & reference to the vector we'll fill with UT_UTF8String * pointers.
  */
 bool
-AbiCommand::tokenizeString (UT_Vector & tok, char *pStr)
+AbiCommand::tokenizeString (UT_GenericVector<const UT_UTF8String*> & tok, char *pStr)
 {
 	int _argc = 0;
 	char **_argv = NULL;
@@ -313,8 +314,8 @@ AbiCommand::tokenizeString (UT_Vector & tok, char *pStr)
 	{
 		for (int i = 0; i < _argc; i++)
 		{
-			UT_UTF8String *pTok = new UT_UTF8String (_argv[i]);
-			tok.addItem (static_cast < void *>(pTok));
+			const UT_UTF8String *pTok = new UT_UTF8String (_argv[i]);
+			tok.addItem (pTok);
 		}
 
 		g_strfreev (_argv);
@@ -329,13 +330,13 @@ AbiCommand::tokenizeString (UT_Vector & tok, char *pStr)
  * clear the token vector pointed to by pvecToks
  */
 void
-AbiCommand::clearTokenVector (UT_Vector & vecToks)
+AbiCommand::clearTokenVector (UT_GenericVector<const UT_UTF8String*> & vecToks)
 {
 	UT_sint32 i = 0;
 
 	for (i = 0; i < vecToks.getItemCount (); i++)
 	{
-		UT_UTF8String *pComm = const_cast< UT_UTF8String * >(static_cast< const UT_UTF8String * >(vecToks.getNthItem (i)));
+		const UT_UTF8String *pComm = vecToks.getNthItem (i);
 		delete pComm;
 	}
 
@@ -347,16 +348,15 @@ AbiCommand::clearTokenVector (UT_Vector & vecToks)
 // returns 0 on success; -1 otherwise
 //
 UT_sint32
-AbiCommand::parseTokens (UT_Vector * pToks)
+AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 {
-	UT_uint32 count = pToks->getItemCount ();
-	UT_uint32 i = 0;
+	UT_sint32 count = pToks->getItemCount ();
+	UT_sint32 i = 0;
 
 	if (count == 0)
 		return -1;
 
-	UT_UTF8String *pCom0 =
-		const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (0)));
+	const UT_UTF8String *pCom0 = pToks->getNthItem (0);
 
 	//
 	// New document
@@ -389,8 +389,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		printf ("Attempting to load a document \n");
 		if (count >= 2)
 		{
-			UT_UTF8String *pCom1 =
-				const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+			const UT_UTF8String *pCom1 = pToks->getNthItem (1);
 			PD_Document *pDoc = new PD_Document ();
 
 			UT_Error error = pDoc->readFromFile (pCom1->utf8_str (), IEFT_Unknown);
@@ -522,8 +521,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		if (m_pCurView && (pToks->getItemCount () > 1))
 		{
 			bool bEOD = false;
-			UT_UTF8String *pFind =
-				const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+			const UT_UTF8String *pFind = pToks->getNthItem (1);
 			const UT_UCSChar *pUCSFind =
 				reinterpret_cast < UT_UCSChar * >(UT_calloc (pFind->size () + 1, sizeof (UT_UCSChar)));
 			static_cast < FV_View * >(m_pCurView)->findSetMatchCase (true);
@@ -550,10 +548,9 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 
 			if (pToks->getItemCount () > 1)
 			{
-				UT_UTF8String *pCom1 =
-					const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+				const UT_UTF8String *pCom1 = pToks->getNthItem (1);
 				printf(" Filename %s \n",pCom1->utf8_str());
-				const char *suffix = const_cast<const char*>(rindex (pCom1->utf8_str (), '.'));
+				const char *suffix = rindex (pCom1->utf8_str (), '.');
 
 				if (suffix != NULL)
 				{
@@ -598,11 +595,11 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 			return -1;
 
 		// input filename is pToks[1]
-		src = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+		src = *pToks->getNthItem (1);
 		if (pToks->getItemCount () > 2)
 		{
 			// destination filename is pToks[2]
-			dest = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (2)));
+			dest = *pToks->getNthItem (2);
 		}
 		else
 		{
@@ -614,7 +611,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		{
 			UT_UTF8String extension = ".";
 
-			extension += *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (3)));
+			extension += *pToks->getNthItem (3);
 			ieft = IE_Exp::fileTypeForSuffix (extension.utf8_str ());
 		}
 		else
@@ -640,7 +637,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		if (pToks->getItemCount () < 2)
 			return -1;
 
-		UT_UTF8String pidFile = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+		UT_UTF8String pidFile = *pToks->getNthItem (1);
 		FILE *pidF = fopen (pidFile.utf8_str (), "wb");
 
 		if (pidF)
@@ -663,7 +660,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 
 		m_bRunAsServer = true;
 		m_iPID = getpid ();
-		m_sErrorFile = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+		m_sErrorFile = *pToks->getNthItem (1);
 
 		return 0;
 	}
@@ -678,10 +675,10 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 		if (pToks->getItemCount () < 5)
 			return -1;
 
-		src = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-		destPNG = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (2)));
-		sWidth = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (3)));
-		sHeight = *const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (4)));
+		src = *pToks->getNthItem (1);
+		destPNG = *pToks->getNthItem (2);
+		sWidth = *pToks->getNthItem (3);
+		sHeight = *pToks->getNthItem (4);
 
 		UT_sint32 iWidth = atoi (sWidth.utf8_str ());
 		UT_sint32 iHeight = atoi (sHeight.utf8_str ());
@@ -756,7 +753,7 @@ AbiCommand::parseTokens (UT_Vector * pToks)
 
 			for (i = 1; i < count; i++)
 			{
-				UT_UTF8String *pComm = const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
+				const UT_UTF8String *pComm = pToks->getNthItem (i);
 				calldata += *pComm;
 			}
 
@@ -869,12 +866,12 @@ AbiCommand::viewDoc (void)
 // Move the insertion point to various places.
 //
 bool
-AbiCommand::movePoint (UT_Vector * pToks)
+AbiCommand::movePoint (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if (m_pCurView != NULL)
 	{
-		UT_UTF8String *pTarget = const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-		FV_DocPos docpos;
+		const UT_UTF8String *pTarget = pToks->getNthItem (1);
+		FV_DocPos docpos = FV_DOCPOS_BOB;
 		bool bRelMove = false;
 		bool bAbsMove = false;
 		UT_sint32 amt = 0;
@@ -953,20 +950,18 @@ AbiCommand::movePoint (UT_Vector * pToks)
 // token 2
 //
 bool
-AbiCommand::replaceAll (UT_Vector * pToks)
+AbiCommand::replaceAll (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if (m_pCurView != NULL)
 	{
-		UT_UTF8String *pFind =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-		UT_UTF8String *pReplace =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (2)));
-		const UT_UCSChar *pUCSFind =
+		const UT_UTF8String *pFind = pToks->getNthItem (1);
+		const UT_UTF8String *pReplace = pToks->getNthItem (2);
+		UT_UCSChar *pUCSFind =
 			reinterpret_cast < UT_UCSChar * >(UT_calloc (pFind->size () + 1, sizeof (UT_UCSChar)));
-		const UT_UCSChar *pUCSReplace =	reinterpret_cast < UT_UCSChar *	>(UT_calloc (pReplace->size () + 1, sizeof (UT_UCSChar)));
+		UT_UCSChar *pUCSReplace =	reinterpret_cast < UT_UCSChar *	>(UT_calloc (pReplace->size () + 1, sizeof (UT_UCSChar)));
 
-		UT_UCS4_strcpy_char (const_cast < UT_UCS4Char * >(pUCSFind), pFind->utf8_str ());
-		UT_UCS4_strcpy_char (const_cast < UT_UCS4Char * >(pUCSReplace), pReplace->utf8_str ());
+		UT_UCS4_strcpy_char (pUCSFind, pFind->utf8_str ());
+		UT_UCS4_strcpy_char (pUCSReplace, pReplace->utf8_str ());
 		static_cast < FV_View * >(m_pCurView)->findSetStartAtInsPoint ();
 		static_cast < FV_View * >(m_pCurView)->findSetFindString (pUCSFind);
 		static_cast < FV_View * >(m_pCurView)->findSetReplaceString (pUCSReplace);
@@ -986,15 +981,14 @@ AbiCommand::replaceAll (UT_Vector * pToks)
 // Point.
 //
 bool
-AbiCommand::insertText (UT_Vector * pToks)
+AbiCommand::insertText (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if (m_pCurView != NULL && pToks->getItemCount () > 1)
 	{
-		UT_UTF8String *pText =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-		UT_UCSChar *pUCSText =
-			static_cast < UT_UCSChar * >(UT_calloc (pText->size () + 1, sizeof (UT_UCSChar)));
-		UT_UCS4_strcpy_char (static_cast < UT_UCS4Char * >(pUCSText), pText->utf8_str ());
+		const UT_UTF8String *pText = pToks->getNthItem (1);
+		UT_UCS4Char *pUCSText =
+			static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
+		UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
 		static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
 		FREEP (pUCSText);
 
@@ -1009,12 +1003,11 @@ AbiCommand::insertText (UT_Vector * pToks)
 // command line.
 //
 bool
-AbiCommand::deleteText (UT_Vector * pToks)
+AbiCommand::deleteText (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if ((m_pCurView != NULL) && (pToks->getItemCount() > 1))
 	{
-		UT_UTF8String *pCom1 =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
+		const UT_UTF8String *pCom1 = pToks->getNthItem (1);
 		UT_sint32 count = atoi (pCom1->utf8_str ());
 
 		static_cast < FV_View * >(m_pCurView)->cmdCharDelete ((count > 0), count);
@@ -1029,22 +1022,20 @@ AbiCommand::deleteText (UT_Vector * pToks)
 // token 2
 //
 bool
-AbiCommand::replaceNext (UT_Vector * pToks)
+AbiCommand::replaceNext (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	if (m_pCurView != NULL)
 	{
-		UT_UTF8String *pFind =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (1)));
-		UT_UTF8String *pReplace =
-			const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (2)));
-		const UT_UCSChar *pUCSFind =
+		const UT_UTF8String *pFind = pToks->getNthItem (1);
+		const UT_UTF8String *pReplace = pToks->getNthItem (2);
+		UT_UCSChar *pUCSFind =
 			reinterpret_cast < UT_UCSChar *	>(UT_calloc (pFind->size () + 1, sizeof (UT_UCSChar)));
-		const UT_UCSChar *pUCSReplace =
+		UT_UCSChar *pUCSReplace =
 			reinterpret_cast < UT_UCSChar *	>(UT_calloc (pReplace->size () + 1, sizeof (UT_UCSChar)));
 		bool bEOD = false;
 
-		UT_UCS4_strcpy_char (const_cast < UT_UCS4Char * >(pUCSFind), pFind->utf8_str ());
-		UT_UCS4_strcpy_char (const_cast < UT_UCS4Char * >(pUCSReplace), pReplace->utf8_str ());
+		UT_UCS4_strcpy_char (pUCSFind, pFind->utf8_str ());
+		UT_UCS4_strcpy_char (pUCSReplace, pReplace->utf8_str ());
 
 		static_cast < FV_View * >(m_pCurView)->findSetFindString (pUCSFind);
 		static_cast < FV_View * >(m_pCurView)->findSetReplaceString (pUCSReplace);
@@ -1063,7 +1054,7 @@ AbiCommand::replaceNext (UT_Vector * pToks)
 // Print the current documents to the files listed on the command line
 //
 bool
-AbiCommand::printFiles (UT_Vector * pToks)
+AbiCommand::printFiles (const UT_GenericVector<const UT_UTF8String*> * pToks)
 {
 	UT_return_val_if_fail(m_pCurDoc, false);
 	XAP_DialogFactory * pDialogFactory
@@ -1074,8 +1065,7 @@ AbiCommand::printFiles (UT_Vector * pToks)
 	pDialog->setPreview(false);
 	for (UT_sint32 i = 1; i < pToks->getItemCount (); i++)
 	{
-		UT_UTF8String *pPrinter =
-		  const_cast < UT_UTF8String * >(static_cast < const UT_UTF8String * >(pToks->getNthItem (i)));
+		const UT_UTF8String *pPrinter = pToks->getNthItem (i);
 		
 		// pPrinter is a printer name, and "-" is our special name for the default printer.
 
