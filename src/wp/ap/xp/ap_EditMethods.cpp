@@ -10865,7 +10865,7 @@ Defun(setPosImage)
 // Get the dataID of the image.
 
 	const char * dataID = pImageRun->getDataId();
-	PP_AttrProp * pImageAP = const_cast<PP_AttrProp*>(pImageRun->getSpanAP());
+	const PP_AttrProp * pImageAP = pImageRun->getSpanAP();
 	UT_String sFrameProps;
 	UT_String sProp;
 	UT_String sVal;
