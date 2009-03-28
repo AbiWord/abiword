@@ -1550,7 +1550,7 @@ Defun1(scrollToBottom)
 	return true;
 }
 
-Defun1(fileNew)
+Defun0(fileNew)
 {
 	CHECK_FRAME;
 	XAP_App * pApp = XAP_App::getApp();
@@ -3334,7 +3334,7 @@ Defun1(dlgAbout)
 	return true;
 }
 
-Defun(dlgMetaData)
+Defun1(dlgMetaData)
 {
   CHECK_FRAME;
   UT_return_val_if_fail (pAV_View, false);
@@ -3425,7 +3425,7 @@ Defun(dlgMetaData)
   return true ;
 }
 
-Defun(fileNewUsingTemplate)
+Defun1(fileNewUsingTemplate)
 {
 	CHECK_FRAME;
 	XAP_Frame * pFrame = NULL;
@@ -3825,12 +3825,11 @@ Defun(querySaveAndExit)
 	the methods within the same file.
 */
 
-Defun(fileRevert)
+Defun1(fileRevert)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-  UT_UNUSED(pCallData);
   UT_return_val_if_fail (pAV_View, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 
@@ -5457,7 +5456,7 @@ Defun(editLatexEquation)
 }
 
 
-Defun(editEmbed)
+Defun1(editEmbed)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -5625,7 +5624,7 @@ Defun(selectColumnClick)
 }
 
 
-static void sActualDelLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+static void sActualDelLeft(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
@@ -5663,7 +5662,7 @@ Defun1(delLeft)
 }
 
 
-static void sActualDelRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+static void sActualDelRight(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
@@ -7241,7 +7240,7 @@ Defun1(copy)
 	return true;
 }
 
-static void sActualPaste(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+static void sActualPaste(AV_View *  pAV_View, EV_EditMethodCallData * /*pCallData*/)
 {
 	ABIWORD_VIEW;
 	pView->cmdPaste();
@@ -8261,7 +8260,7 @@ Defun1(fontSizeDecrease)
 	return _fontSizeChange(pView, false);
 }
 
-Defun(cairoPrint)
+Defun1(cairoPrint)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -8290,7 +8289,7 @@ Defun(cairoPrint)
 }
 
 
-Defun(cairoPrintPreview)
+Defun1(cairoPrintPreview)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -8319,7 +8318,7 @@ Defun(cairoPrintPreview)
 }
 
 
-Defun(cairoPrintDirectly)
+Defun1(cairoPrintDirectly)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -8351,7 +8350,7 @@ Defun(cairoPrintDirectly)
 	return true;
 }
 
-Defun(formatPainter)
+Defun1(formatPainter)
 {
   CHECK_FRAME;
   ABIWORD_VIEW;
@@ -9945,7 +9944,7 @@ UT_return_val_if_fail(pScheme, false);
 	return true;
 }
 
-Defun(lockToolbarLayout)
+Defun1(lockToolbarLayout)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -9964,7 +9963,7 @@ UT_return_val_if_fail(pScheme, false);
 	return true;
 }
 
-Defun(defaultToolbarLayout)
+Defun1(defaultToolbarLayout)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -9989,7 +9988,7 @@ UT_return_val_if_fail(pFrameData, false);
 	return true;
 }
 
-Defun(viewNormalLayout)
+Defun1(viewNormalLayout)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -10030,7 +10029,7 @@ UT_return_val_if_fail(pScheme, false);
 }
 
 
-Defun(viewWebLayout)
+Defun1(viewWebLayout)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -10068,7 +10067,7 @@ UT_return_val_if_fail(pScheme, false);
 	return true;
 }
 
-Defun(viewPrintLayout)
+Defun1(viewPrintLayout)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -10817,7 +10816,7 @@ Defun1(dlgBorders)
 	return true;
 }
 
-Defun(setPosImage)
+Defun1(setPosImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -10967,7 +10966,7 @@ Defun(setPosImage)
 	return true;
 }
 
-Defun (dlgFmtPosImage)
+Defun1(dlgFmtPosImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -12603,7 +12602,7 @@ Defun1(sectColumns2)
 	return true;
 }
 
-Defun(sectColumns3)
+Defun1(sectColumns3)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -13391,7 +13390,7 @@ Defun(executeScript)
 }
 
 
-Defun(dlgColorPickerFore)
+Defun1(dlgColorPickerFore)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -13437,7 +13436,7 @@ UT_return_val_if_fail(pDialog, false);//
 }
 
 
-Defun(dlgColorPickerBack)
+Defun1(dlgColorPickerBack)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -13482,7 +13481,7 @@ UT_return_val_if_fail(pDialog, false);//
 	return bOK;
 }
 
-Defun(dlgBackground)
+Defun1(dlgBackground)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -13526,7 +13525,7 @@ UT_return_val_if_fail(pDialog, false);
 }
 
 
-Defun(dlgHdrFtr)
+Defun1(dlgHdrFtr)
 {
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
@@ -13752,7 +13751,7 @@ UT_return_val_if_fail(pDialog, false);//
 	return bOK;
 }
 
-Defun(hyperlinkCopyLocation)
+Defun1(hyperlinkCopyLocation)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -13790,7 +13789,7 @@ Defun(hyperlinkJump)
 }
 
 
-Defun(hyperlinkJumpPos)
+Defun1(hyperlinkJumpPos)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14403,7 +14402,7 @@ Defun(beginHDrag)
 	return true;
 }
 
-Defun(clearSetCols)
+Defun1(clearSetCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14414,7 +14413,7 @@ Defun(clearSetCols)
 }
 
 
-Defun(autoFitTable)
+Defun1(autoFitTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14423,7 +14422,7 @@ Defun(autoFitTable)
 	return bres;
 }
 
-Defun(clearSetRows)
+Defun1(clearSetRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14764,7 +14763,7 @@ Defun(releaseFrame)
 }
 
 
-Defun(deleteFrame)
+Defun1(deleteFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14774,7 +14773,7 @@ Defun(deleteFrame)
 	return true;
 }
 
-Defun(cutFrame)
+Defun1(cutFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14785,7 +14784,7 @@ Defun(cutFrame)
 }
 
 
-Defun(copyFrame)
+Defun1(copyFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14806,7 +14805,7 @@ Defun(copyFrame)
 }
 
 
-Defun(selectFrame)
+Defun1(selectFrame)
 {
 	CHECK_FRAME;
 	UT_DEBUGMSG(("Select Frame \n"));
@@ -14816,7 +14815,7 @@ Defun(selectFrame)
 	return true;
 }
 
-Defun(dlgFormatFrame)
+Defun1(dlgFormatFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -15019,21 +15018,21 @@ Defun(btn0VisualText)
 	return true;
 }
 
-Defun(repeatThisRow)
+Defun0(repeatThisRow)
 {
 	CHECK_FRAME;
 //	ABIWORD_VIEW;
 	return true;
 }
 
-Defun(removeThisRowRepeat)
+Defun0(removeThisRowRepeat)
 {
 	CHECK_FRAME;
 //	ABIWORD_VIEW;
 	return true;
 }
 
-Defun(tableToTextCommas)
+Defun1(tableToTextCommas)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -15043,7 +15042,7 @@ Defun(tableToTextCommas)
 }
 
 
-Defun(tableToTextTabs)
+Defun1(tableToTextTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -15052,7 +15051,7 @@ Defun(tableToTextTabs)
 	return true;
 }
 
-Defun(tableToTextCommasTabs)
+Defun1(tableToTextCommasTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -15061,7 +15060,7 @@ Defun(tableToTextCommasTabs)
 	return true;
 }
 
-Defun(doEscape)
+Defun1(doEscape)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
