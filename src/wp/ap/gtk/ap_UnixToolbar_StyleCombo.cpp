@@ -145,17 +145,17 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	}
 
 	const char * szName;
-	PD_Style * pStyle;
+	const PD_Style * pStyle;
 	GSList *list = NULL;
 
-	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,const_cast<const PD_Style**>(&pStyle))); k++)
+	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
 		if (!pStyle) {
 			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
 		}
 
 		if (!pStyle->isDisplayed() && 
-		    !(dynamic_cast<PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed())) {
+		    !(dynamic_cast<const PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed())) {
 			continue;
 		}
 
