@@ -71,7 +71,20 @@ const char* OXML_Image::getId()
 UT_Error OXML_Image::serialize(IE_Exp_OpenXML* exporter)
 {
 	std::string filename(id);
-	filename += ".png";
+
+	if(!mimeType || !strcmp(mimeType, "image/png"))
+	{
+		filename += ".png";
+	}
+	else if(!strcmp(mimeType, "image/svg+xml"))
+	{
+		filename += ".svg";
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
+
 	return exporter->writeImage(filename.c_str(), data);
 }
 

@@ -29,6 +29,7 @@
  */
 IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
   : IE_Exp (pDocument), 
+	m_pDoc(pDocument),
 	root(NULL),
 	relsDir(NULL),
 	wordDir(NULL),
@@ -1749,6 +1750,8 @@ const gchar * IE_Exp_OpenXML::computeFontSize(const gchar* str)
  */
 void IE_Exp_OpenXML::_cleanup ()
 {
+	m_pDoc = NULL;
+
 	if(footnoteStream && !gsf_output_is_closed(footnoteStream))
 		gsf_output_close(footnoteStream);
 
@@ -1981,6 +1984,7 @@ UT_Error IE_Exp_OpenXML::startContentTypes()
 	str += "<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>";
 	str += "<Default Extension=\"xml\" ContentType=\"application/xml\"/>";
 	str += "<Default Extension=\"png\" ContentType=\"image/png\"/>";
+	str += "<Default Extension=\"svg\" ContentType=\"image/svg+xml\"/>";
 	str += "<Override PartName=\"/word/document.xml\" ";
 	str += "ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>";
 	str += "<Override PartName=\"/word/styles.xml\" ";

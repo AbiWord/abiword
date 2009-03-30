@@ -60,7 +60,7 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 
 		std::string filename("");
 		filename += sEscValue.utf8_str();
-		filename += ".png";
+		filename += getExtension(exporter->getDoc(), szValue);
 
 		std::string relId("rId");
 		relId += getId();
@@ -81,4 +81,27 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * /*pDocument*/)
 {
 	//TODO
 	return UT_OK;
+}
+
+const std::string OXML_Element_Image::getExtension(PD_Document *pDocument, const gchar *szDataID)
+{
+	std::string sExt = "";
+
+	UT_return_val_if_fail(szDataID, sExt);
+	UT_return_val_if_fail(*szDataID, sExt);
+	UT_return_val_if_fail(pDocument, sExt);
+
+	const UT_ByteBuf * pByteBuf = NULL;
+	const gchar * szMimeType = NULL;
+	const gchar** pszMimeType = &szMimeType;
+
+	if(pDocument->getDataItemDataByName(szDataID, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+	{
+		if(!szMimeType || !strcmp(szMimeType, "image/png"))
+			sExt = ".png";
+		else if(!strcmp(szMimeType, "image/svg+xml"))
+			sExt = ".svg";
+	}
+
+	return sExt;
 }

@@ -40,6 +40,9 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+
+private:
+	const std::string getExtension(PD_Document *pDocument, const gchar *szDataID);
 };
 
 #endif //_OXML_ELEMENT_IMAGE_H_

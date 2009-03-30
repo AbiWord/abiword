@@ -186,11 +186,13 @@ public:
 	UT_Error setNoProof(int target);
 	UT_Error setTextBoxWidth(int target, const gchar* width);
 	UT_Error setTextBoxHeight(int target, const gchar* height);
+	PD_Document* getDoc() {return m_pDoc;};
 
 protected:
     virtual UT_Error _writeDocument(void);
     
 private:
+	PD_Document* m_pDoc;
 	GsfOutfile* root; //.docx file zip root
 	GsfOutfile* relsDir; // _rels
 	GsfOutfile* wordDir; // word 
