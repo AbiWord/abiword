@@ -37,7 +37,9 @@ public:
 
     virtual GR_Image *  createImageSegment(GR_Graphics * /*pG*/, 
 										   const UT_Rect & /*rec*/)
-		{ UT_ASSERT_NOT_REACHED() ; return NULL; }
+		// TODO: we need createImageSegment for converting inline images to positioned images
+		// via the context menu
+		{ UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED) ; return NULL; }
 
    	virtual GRType		getType() const { return GRT_Vector; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
