@@ -111,10 +111,9 @@ protected:
 	void				_handleEmbedded(PT_AttrPropIndex api);
 	void				_handleField(const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void				_handleHyperlink(PT_AttrPropIndex api);
-	void				_handleImage(PT_AttrPropIndex api);
+	void				_handleImage(PT_AttrPropIndex api, bool bPos = false);
 	void				_handleMath(PT_AttrPropIndex api);
 	void				_handleMetaData(void);
-	void				_handlePositionedImage(PT_AttrPropIndex api);
 	
 	void				_emitTOC (PT_AttrPropIndex api);
 	bool				_styleDescendsFrom(const char * style_name, const char * base_name);

@@ -308,7 +308,7 @@ void s_WML_Listener::_openSection(PT_AttrPropIndex api)
 	if(pAP && bHaveProp && (pAP->getAttribute("strux-image-dataid", szValue)))
 	{
 		_openSpan(api);
-		_handlePositionedImage(api);
+		_handleImage(api, true);
 		_closeSpan();
 		return; //don't open a new section
 	}
@@ -1009,7 +1009,7 @@ void s_WML_Listener::_handleMath(PT_AttrPropIndex api)
 /*****************************************************************/
 /*****************************************************************/
 
-void s_WML_Listener::_handleImage(PT_AttrPropIndex api)
+void s_WML_Listener::_handleImage(PT_AttrPropIndex api, bool bPos)
 {
 	//this should never happen, but it doesn't hurt to make sure
 	if((m_bInTable && (!m_bInRow || !m_bInCell)))
@@ -1022,18 +1022,41 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api)
 	const gchar* szValue = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue));
+	if(!(bHaveProp && pAP))
+		return;
 
-	UT_UTF8String buf;
+	bool bRes = false;
+	if(bPos)
+		bRes = pAP->getAttribute("strux-image-dataid", szValue);
+	else
+		bRes = pAP->getAttribute("dataid", szValue);
+
+	if(!(bRes && szValue && *szValue))
+		return;
+
 	char * dataid = g_strdup(static_cast<const char*>(szValue));
-	m_utvDataIDs.push_back(dataid);
+	UT_return_if_fail(dataid);
 
+	m_utvDataIDs.push_back(dataid);
 	char * temp = _stripSuffix(UT_go_basename(szValue), '_');
 	char * fstripped = _stripSuffix(temp, '.');
-	UT_UTF8String_sprintf(buf, "%s.png", fstripped);
 
+	UT_UTF8String buf = fstripped;
 	FREEP(temp);
 	FREEP(fstripped);
+
+	const UT_ByteBuf * pByteBuf = NULL;
+	const gchar * szMimeType = NULL;
+	const gchar** pszMimeType = &szMimeType;
+
+	if(m_pDocument->getDataItemDataByName(dataid, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
+	{
+		if(!szMimeType || !strcmp(szMimeType, "image/png"))
+			buf += ".png";
+		else if(!strcmp(szMimeType, "image/svg+xml"))
+			buf += ".svg";
+	}
+
 
 	m_pie->write("<img alt=\""); //an alt attribute is required in WML
 
@@ -1059,110 +1082,21 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api)
 	const gchar * szHeight = 0;
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
-	if(pAP->getProperty("width", szWidth))
+	if(pAP->getProperty("width", szWidth) && szWidth && *szWidth)
 	{
-		if(szWidth)
-		{
-			UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szWidth, DIM_PX));
-			m_pie->write (" width=\"");
-			m_pie->write (buf.utf8_str());
-			m_pie->write ("\"");
-		}
+		UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szWidth, DIM_PX));
+		m_pie->write (" width=\"");
+		m_pie->write (buf.utf8_str());
+		m_pie->write ("\"");
 	}
-	if(pAP->getProperty("height", szHeight))
+	if(pAP->getProperty("height", szHeight) && szHeight && *szHeight)
 	{
-		if(szHeight)
-		{
-			UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szHeight, DIM_PX));
-			m_pie->write (" height=\"");
-			m_pie->write (buf.utf8_str());
-			m_pie->write ("\"");
-		}
+		UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szHeight, DIM_PX));
+		m_pie->write (" height=\"");
+		m_pie->write (buf.utf8_str());
+		m_pie->write ("\"");
 	}
-	if(pAP->getProperty("lang", szValue))
-	{
-		m_pie->write(" xml:lang=\"");
-		m_pie->write(szValue);
-		m_pie->write("\"");
-	}
-				
-	m_pie->write("/>");
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-void s_WML_Listener::_handlePositionedImage(PT_AttrPropIndex api)
-{
-	//this should never happen, but it doesn't hurt to make sure
-	if((m_bInTable && (!m_bInRow || !m_bInCell)))
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-
-	const PP_AttrProp * pAP = NULL;
-	const gchar* szValue = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-
-	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("strux-image-dataid", szValue));
-
-	UT_UTF8String buf;
-	char * dataid = g_strdup(static_cast<const char*>(szValue));
-	m_utvDataIDs.push_back(dataid);
-
-	char * temp = _stripSuffix(UT_go_basename(szValue), '_');
-	char * fstripped = _stripSuffix(temp, '.');
-	UT_UTF8String_sprintf(buf, "%s.png", fstripped);
-
-	FREEP(temp);
-	FREEP(fstripped);
-
-	m_pie->write("<img alt=\""); //an alt attribute is required in WML
-
-	if(pAP->getAttribute("alt", szValue))  // check for existing alt text
-	{
-		UT_UTF8String alt = szValue;
-		alt.escapeXML();
-		m_pie->write(alt.utf8_str());
-	}
-	else  // fall back to the file name
-	{
-		m_pie->write("AbiWord Image ");
-		m_pie->write(buf.utf8_str());
-	}
-
-	m_pie->write("\" src=\"");
-	m_pie->write(UT_go_basename(m_pie->getFileName()).utf8_str());
-	m_pie->write("_data/");
-	m_pie->write(buf.utf8_str());
-	m_pie->write("\"");
-
-	const gchar * szWidth = 0;
-	const gchar * szHeight = 0;
-	UT_LocaleTransactor t(LC_NUMERIC, "C");
-
-	if(pAP->getProperty("width", szWidth))
-	{
-		if(szWidth)
-		{
-			UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szWidth, DIM_PX));
-			m_pie->write (" width=\"");
-			m_pie->write (buf.utf8_str());
-			m_pie->write ("\"");
-		}
-	}
-	if(pAP->getProperty("height", szHeight))
-	{
-		if(szHeight)
-		{
-			UT_UTF8String_sprintf(buf, "%f", UT_convertToDimension(szHeight, DIM_PX));
-			m_pie->write (" height=\"");
-			m_pie->write (buf.utf8_str());
-			m_pie->write ("\"");
-		}
-	}
-	if(pAP->getProperty("lang", szValue))
+	if(pAP->getProperty("lang", szValue) && szValue && *szValue)
 	{
 		m_pie->write(" xml:lang=\"");
 		m_pie->write(szValue);
@@ -1210,16 +1144,24 @@ void s_WML_Listener::_handleDataItems(void)
 			}
 
 			if (!strcmp(szMimeType, "image/svg+xml"))
+			{
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.svg", fname.utf8_str(), szName, loc);
-			if (!strcmp(szMimeType, "application/mathml+xml"))
+			}
+			else if (!strcmp(szMimeType, "application/mathml+xml"))
+			{
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.mathml", fname.utf8_str(), szName, loc);
-			else // PNG Image
+			}
+			else if (!strcmp(szMimeType, "image/png"))// PNG Image
 			{
 				char * temp = _stripSuffix(UT_go_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
 				FREEP(temp);
 				UT_UTF8String_sprintf(fname, "%s/%s.png", fname.utf8_str(), fstripped);
 				FREEP(fstripped);
+			}
+			else
+			{
+				UT_DEBUGMSG(("WML export: Unhandled/ignored mime type: %s\n", szMimeType));
 			}
 
 			GsfOutput *fp = UT_go_file_create (fname.utf8_str(), NULL);
