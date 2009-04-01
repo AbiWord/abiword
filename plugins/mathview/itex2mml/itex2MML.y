@@ -1,5 +1,5 @@
-/*             itex2MML 1.3.2
- *   itex2MML.y last modified 11/10/2007
+/*             itex2MML 1.3.8
+ *   itex2MML.y last modified 3/23/2009
  */
 
 %{
@@ -258,6 +258,16 @@
      return copy ? copy : itex2MML_empty_string;
    }
 
+ /* Create a hex character reference string corresponding to code
+  */
+ char * itex2MML_character_reference (unsigned long int code)
+   {
+#define ENTITY_LENGTH 10
+     char * entity = (char *) malloc(ENTITY_LENGTH);
+     sprintf(entity, "&#x%05x;", code);
+     return entity;
+   }
+
  void itex2MML_free_string (char * str)
    {
      if (str && str != itex2MML_empty_string)
@@ -267,7 +277,7 @@
 %}
 
 %left TEXOVER TEXATOP
-%token CHAR STARTMATH STARTDMATH ENDMATH MI MIB MN MO SUP SUB MROWOPEN MROWCLOSE LEFT RIGHT BIG BBIG BIGG BBIGG BIGL BBIGL BIGGL BBIGGL FRAC TFRAC MATHOP MOP MOL MOLL MOF PERIODDELIM OTHERDELIM LEFTDELIM RIGHTDELIM MOS MOB SQRT ROOT BINOM UNDER OVER OVERBRACE UNDERBRACE UNDEROVER TENSOR MULTI ARRAY COLSEP ROWSEP ARRAYOPTS COLLAYOUT COLALIGN ROWALIGN ALIGN EQROWS EQCOLS ROWLINES COLLINES FRAME PADDING ATTRLIST ITALICS BOLD SLASHED RM BB ST END BBLOWERCHAR BBUPPERCHAR CALCHAR FRAKCHAR CAL FRAK ROWOPTS TEXTSIZE SCSIZE SCSCSIZE DISPLAY TEXTSTY TEXTBOX TEXTSTRING XMLSTRING CELLOPTS ROWSPAN COLSPAN THINSPACE MEDSPACE THICKSPACE QUAD QQUAD NEGSPACE PHANTOM HREF UNKNOWNCHAR EMPTYMROW STATLINE TOGGLE FGHIGHLIGHT BGHIGHLIGHT SPACE INTONE INTTWO INTTHREE BAR WIDEBAR VEC WIDEVEC HAT WIDEHAT CHECK WIDECHECK TILDE WIDETILDE DOT DDOT UNARYMINUS UNARYPLUS BEGINENV ENDENV MATRIX PMATRIX BMATRIX BBMATRIX VMATRIX VVMATRIX SVG ENDSVG SMALLMATRIX CASES ALIGNED GATHERED SUBSTACK PMOD RMCHAR COLOR BGCOLOR
+%token CHAR STARTMATH STARTDMATH ENDMATH MI MIB MN MO SUP SUB MROWOPEN MROWCLOSE LEFT RIGHT BIG BBIG BIGG BBIGG BIGL BBIGL BIGGL BBIGGL FRAC TFRAC MATHOP MOP MOL MOLL MOF PERIODDELIM OTHERDELIM LEFTDELIM RIGHTDELIM MOS MOB SQRT ROOT BINOM UNDER OVER OVERBRACE UNDERBRACE UNDEROVER TENSOR MULTI ARRAY COLSEP ROWSEP ARRAYOPTS COLLAYOUT COLALIGN ROWALIGN ALIGN EQROWS EQCOLS ROWLINES COLLINES FRAME PADDING ATTRLIST ITALICS BOLD SLASHED RM BB ST END BBLOWERCHAR BBUPPERCHAR BBDIGIT CALCHAR FRAKCHAR CAL FRAK ROWOPTS TEXTSIZE SCSIZE SCSCSIZE DISPLAY TEXTSTY TEXTBOX TEXTSTRING XMLSTRING CELLOPTS ROWSPAN COLSPAN THINSPACE MEDSPACE THICKSPACE QUAD QQUAD NEGSPACE PHANTOM HREF UNKNOWNCHAR EMPTYMROW STATLINE TOGGLE FGHIGHLIGHT BGHIGHLIGHT SPACE INTONE INTTWO INTTHREE BAR WIDEBAR VEC WIDEVEC HAT WIDEHAT CHECK WIDECHECK TILDE WIDETILDE DOT DDOT UNARYMINUS UNARYPLUS BEGINENV ENDENV MATRIX PMATRIX BMATRIX BBMATRIX VMATRIX VVMATRIX SVG ENDSVG SMALLMATRIX CASES ALIGNED GATHERED SUBSTACK PMOD RMCHAR COLOR BGCOLOR
 
 %%
 
@@ -909,27 +919,34 @@ rmchars: RMCHAR {
   itex2MML_free_string($2);
 };
 
-bbold: BB ST bbletters END {
+bbold: BB ST bbchars END {
   $$ = itex2MML_copy3("<mi>", $3, "</mi>");
   itex2MML_free_string($3);
 };
 
-bbletters: bbletter {
+bbchars: bbchar {
   $$ = itex2MML_copy_string($1);
   itex2MML_free_string($1);
 }
-| bbletters bbletter {
+| bbchars bbchar {
   $$ = itex2MML_copy2($1, $2);
   itex2MML_free_string($1);
   itex2MML_free_string($2);
 };
 
-bbletter: BBLOWERCHAR {
+bbchar: BBLOWERCHAR {
   $$ = itex2MML_copy3("&", $1, "opf;");
   itex2MML_free_string($1);
 }
 | BBUPPERCHAR {
   $$ = itex2MML_copy3("&", $1, "opf;");
+  itex2MML_free_string($1);
+}
+| BBDIGIT {
+  /* Blackboard digits 0-9 correspond to Unicode characters 0x1D7D8-0x1D7E1 */
+  char * end = $1 + 1;
+  int code = 0x1D7D8 + strtoul($1, &end, 10);
+  $$ = itex2MML_character_reference(code);
   itex2MML_free_string($1);
 };
 
@@ -1574,16 +1591,14 @@ static void itex2MML_keep_error (const char * msg)
   itex2MML_last_error = itex2MML_copy_escaped (msg);
 }
 
-int itex2MML_do_html_filter (const char * buffer, unsigned long length, const int forbid_markup);
-
 int itex2MML_html_filter (const char * buffer, unsigned long length)
 {
-  return itex2MML_do_html_filter (buffer, length, 0);
+  itex2MML_do_html_filter (buffer, length, 0);
 }
 
 int itex2MML_strict_html_filter (const char * buffer, unsigned long length)
 {
-  return itex2MML_do_html_filter (buffer, length, 1);
+  itex2MML_do_html_filter (buffer, length, 1);
 }
 
 int itex2MML_do_html_filter (const char * buffer, unsigned long length, const int forbid_markup)
@@ -1622,7 +1637,7 @@ int itex2MML_do_html_filter (const char * buffer, unsigned long length, const in
 
   if (ptr2 == end) goto _finish;
 
-/* _until_html:*/
+ _until_html:
   ptr1 = ptr2;
 
   if (ptr2 + 1 < end)

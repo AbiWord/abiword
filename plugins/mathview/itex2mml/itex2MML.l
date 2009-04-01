@@ -1,5 +1,5 @@
-/*             itex2MML 1.3.5
- *   itex2MML.l last modified 2/29/2008
+/*             itex2MML 1.3.8
+ *   itex2MML.l last modified 3/23/2009
  */
 
 %{
@@ -112,6 +112,8 @@ int itex2MML_displaymode = 0;
 "\\setminus"   {yylval=itex2MML_copy_string("&setminus;"); return MO;}
 "\\backslash"   {yylval=itex2MML_copy_string("&bsol;"); return MO;}
 "\\smallsetminus"   {yylval=itex2MML_copy_string("&#xFE68;"); return MOF;}
+
+"\\sslash" {yylval=itex2MML_copy_string("&#x20EB;"); return MO;}
 
 "\\lfloor" |
 "\\lceil"  |
@@ -652,6 +654,9 @@ int itex2MML_displaymode = 0;
 "\\Vee"  |
 "\\bigvee"       {yylval=itex2MML_copy_string("&bigvee;"); return MOB;}
 
+"\\invamp"  |
+"\\parr"       {yylval=itex2MML_copy_string("&#8523;"); return MOL;}
+
 "\\frac"         {return FRAC;}
 "\\tfrac"         {return TFRAC;}
 
@@ -855,6 +860,7 @@ int itex2MML_displaymode = 0;
 "\}"  {BEGIN(MATH); return END;}
 [a-z] {yylval=itex2MML_copy_string(yytext); return BBLOWERCHAR;}
 [A-Z]   {yylval=itex2MML_copy_string(yytext); return BBUPPERCHAR;}
+[0-9]   {yylval=itex2MML_copy_string(yytext); return BBDIGIT;}
 [\t\n\r ]+       ;
 .           {return yytext[0];}
 }
