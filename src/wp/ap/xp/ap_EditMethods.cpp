@@ -152,7 +152,6 @@
 #include "fp_FootnoteContainer.h"
 
 
-// RIVERA TODO last one should be changed to something platform independant
 #include "ap_Dialog_Annotation.h"
 #include "ap_Preview_Annotation.h"
 
@@ -691,7 +690,6 @@ public:
 	static EV_EditMethod_Fn purgeAllRevisions;
 	static EV_EditMethod_Fn startNewRevision;
 	
-	//RIVERA
     static EV_EditMethod_Fn insAnnotation;
     static EV_EditMethod_Fn insAnnotationFromSel;
     static EV_EditMethod_Fn editAnnotation;
