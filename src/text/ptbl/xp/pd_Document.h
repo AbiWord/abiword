@@ -395,6 +395,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					setDataItemToken(void* pHandle, void* pToken);
 	bool					getDataItemData(void * pHandle,
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
+	bool					getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot = true) const;
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 

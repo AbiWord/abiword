@@ -4472,6 +4472,48 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	return true;
 }
 
+/*! This function accepts a data ID and assigns the file extension of the corresponding data item.
+	 \param szDataID The incoming data ID to look up
+	 \param sExt The extension string that is populated on success
+	 \param bDot A boolean to determine whether the extension string will be prefixed with a dot ('.').
+	 Defaults to true.
+	 \return Returns true only if the data item is found _and_ an extension is assigned.
+*/
+
+bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot) const
+{
+	UT_return_val_if_fail(szDataID && *szDataID, false);
+
+	const char * szMimeType = NULL;
+	const char** pszMimeType = &szMimeType;
+ 
+	if(getDataItemDataByName(szDataID, NULL, reinterpret_cast<const void**>(pszMimeType), NULL))
+	{
+		if(!szMimeType || !*szMimeType)
+			return false;
+
+		if(!strcmp(szMimeType, "image/png"))
+		{
+			sExt = (bDot ? "." : "");
+			sExt += "png";
+			return true;
+		}
+		else if(!strcmp(szMimeType, "image/svg+xml"))
+		{
+			sExt = (bDot ? "." : "");
+			sExt += "svg";
+			return true;	
+		}
+		else
+		{
+			UT_DEBUGMSG(("getDataItemFileExtension(): unhandled/ignored mime type: %s\n", szMimeType));
+		}
+	}
+
+	return false;
+}
+
+
 bool PD_Document::setDataItemToken(void * pHandle,
 									  void* pToken)
 {
