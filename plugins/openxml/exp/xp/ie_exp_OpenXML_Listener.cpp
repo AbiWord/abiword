@@ -969,8 +969,8 @@ UT_Error IE_Exp_OpenXML_Listener::addImages()
 
 		if(!(strcmp(szMimeType, "image/png") == 0 || strcmp(szMimeType, "image/svg+xml") == 0))
 		{
-			// If you add a mime type, make sure to update the extension code in OXML_Image.cpp
-			// and OXML_Element_Image.cpp
+			// If you add a mime type, make sure to update the extension code in
+			// PD_Document::getDataItemFileExtension()
 			UT_DEBUGMSG(("OpenXML export: unhandled/ignored mime type: %s\n", szMimeType));
 
 			szName = NULL;
