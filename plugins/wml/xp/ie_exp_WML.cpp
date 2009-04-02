@@ -1045,18 +1045,10 @@ void s_WML_Listener::_handleImage(PT_AttrPropIndex api, bool bPos)
 	FREEP(temp);
 	FREEP(fstripped);
 
-	const UT_ByteBuf * pByteBuf = NULL;
-	const gchar * szMimeType = NULL;
-	const gchar** pszMimeType = &szMimeType;
-
-	if(m_pDocument->getDataItemDataByName(dataid, &pByteBuf, reinterpret_cast<const void**>(pszMimeType), NULL))
-	{
-		if(!szMimeType || !strcmp(szMimeType, "image/png"))
-			buf += ".png";
-		else if(!strcmp(szMimeType, "image/svg+xml"))
-			buf += ".svg";
-	}
-
+	std::string sExt;
+	if(!m_pDocument->getDataItemFileExtension(dataid, sExt))
+		sExt = ".png";
+	buf += sExt;
 
 	m_pie->write("<img alt=\""); //an alt attribute is required in WML
 
