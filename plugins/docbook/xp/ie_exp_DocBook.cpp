@@ -1379,12 +1379,12 @@ void s_DocBook_Listener::_handleRevisions(void)
 	UT_sint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
-		pRev = vRevisions.getNthItem(k);
-		if(!pRev)
-			break;  //make sure we output </revhistory>
-
 		if(k == 0)
 			_tagOpen(TT_REVHISTORY,"revhistory");
+
+		pRev = vRevisions.getNthItem(k);
+		if(!pRev)
+			continue;
 
 		UT_UTF8String s;
 		UT_UCS4String s4;
