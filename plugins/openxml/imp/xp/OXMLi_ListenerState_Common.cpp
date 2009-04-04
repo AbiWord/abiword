@@ -197,6 +197,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				!strcmp(rqst->pName, "i") || 
 				!strcmp(rqst->pName, "u") ||
 				!strcmp(rqst->pName, "color") ||
+				!strcmp(rqst->pName, "vertAlign") || // for subscript and superscript
 				!strcmp(rqst->pName, "highlight") ||
 				!strcmp(rqst->pName, "strike") ||
 				!strcmp(rqst->pName, "dstrike") ||
@@ -226,6 +227,16 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-style", "normal") ));
 				}
 
+			} else if (!strcmp(rqst->pName, "vertAlign")) {
+				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+				if (val == NULL || !*val || !strcmp(val, "baseline")) {
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "normal") ));
+				} else if (!strcmp(val, "superscript")) {
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "superscript") ));
+				} else if (!strcmp(val, "subscript")) {
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "subscript") ));
+				}
+				
 			} else if (!strcmp(rqst->pName, "u")) {
 				const gchar * newVal = UT_getAttribute("w:val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(newVal != NULL) );
@@ -548,6 +559,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				!strcmp(rqst->pName, "i") || 
 				!strcmp(rqst->pName, "u") ||
 				!strcmp(rqst->pName, "color") ||
+				!strcmp(rqst->pName, "vertAlign") ||
 				!strcmp(rqst->pName, "highlight") ||
 				!strcmp(rqst->pName, "strike") ||
 				!strcmp(rqst->pName, "dstrike") ||
