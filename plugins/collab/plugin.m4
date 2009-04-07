@@ -32,7 +32,7 @@ AC_ARG_ENABLE([collab-backend-tcp],
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp], [], 
 	[
-		AC_MSG_ERROR([collab plugin: boost asio is required for the collab plugin TCP backend, see http://asio.sourceforge.net])
+		AC_MSG_ERROR([collab plugin: asio is required for the collab plugin TCP backend, see http://think-async.com/])
 	])
 	AC_LANG_POP
 ], [
