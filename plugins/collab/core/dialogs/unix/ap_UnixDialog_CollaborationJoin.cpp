@@ -263,7 +263,7 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 {
 	GtkTreeIter iter;
-	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_INT, G_TYPE_BOOLEAN);
+	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
@@ -276,7 +276,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 			));
 			
 		// add all buddies belonging to this account
-		for (UT_sint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
+		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
 			BuddyPtr pBuddy = accounts.getNthItem(i)->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);
@@ -371,8 +371,8 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gint handler_idx;	
-	gint buddy_idx;	
+	guint handler_idx;	
+	guint buddy_idx;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
@@ -422,8 +422,8 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gint handler_idx;	
-	gint buddy_idx;	
+	guint handler_idx;	
+	guint buddy_idx;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
