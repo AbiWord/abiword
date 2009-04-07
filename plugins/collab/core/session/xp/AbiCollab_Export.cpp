@@ -430,7 +430,7 @@ bool ABI_Collab_Export::_isGlobEnd(UT_Byte istart, UT_Byte istop)
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool ABI_Collab_Export::change(PL_StruxFmtHandle sfh,
+bool ABI_Collab_Export::change(PL_StruxFmtHandle /*sfh*/,
 				const PX_ChangeRecord * pcr)
 {
 	// build new packet
@@ -485,7 +485,7 @@ bool ABI_Collab_Export::change(PL_StruxFmtHandle sfh,
  * Handles new packet, by either adding it to a glob if we're doing a glob,
  * or by pushing it to the collab session directly
  */
-void ABI_Collab_Export::_handleNewPacket(ChangeRecordSessionPacket* pPacket, const PX_ChangeRecord* pcr ) 
+void ABI_Collab_Export::_handleNewPacket(ChangeRecordSessionPacket* pPacket, const PX_ChangeRecord* /*pcr*/) 
 {
 	UT_return_if_fail( pPacket );
 	
@@ -511,7 +511,7 @@ void ABI_Collab_Export::_handleNewPacket(ChangeRecordSessionPacket* pPacket, con
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle sfh,
+bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -562,7 +562,7 @@ bool ABI_Collab_Export::signal(UT_uint32 iSignal)
  * Note: this is a really weird signal, coming from a PD_Document
  * Note: If anything, a Frame should emit this signal to its listeners
  */
-void ABI_Collab_Export::setNewDocument(PD_Document * pDoc)
+void ABI_Collab_Export::setNewDocument(PD_Document * /*pDoc*/)
 {
 	UT_DEBUGMSG(("ABI_Collab_Export::setNewDocument() - ignored\n"));
 	// we are connected to a session, we can't just replace the document!

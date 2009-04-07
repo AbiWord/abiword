@@ -1102,7 +1102,7 @@ BuddyPtr AbiCollabSessionManager::constructBuddy(const std::string& identifier, 
 	return BuddyPtr();
 }
 
-bool AbiCollabSessionManager::processPacket(AccountHandler& handler, Packet* packet, BuddyPtr buddy) 
+bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet* packet, BuddyPtr buddy) 
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::processPacket()\n"));
 	UT_return_val_if_fail(packet, false);

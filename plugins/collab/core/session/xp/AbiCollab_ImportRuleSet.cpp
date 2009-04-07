@@ -74,7 +74,7 @@ bool AbiCollab_ImportRuleSet::_isSaveInsert(const ChangeAdjust& ca, const Abstra
 	return false; // just to be on the save side
 }
 
-bool AbiCollab_ImportRuleSet::_isSafeFmtChange(const ChangeAdjust& ca, const AbstractChangeRecordSessionPacket& acrsp, UT_sint32 iRemotePosAdjust)
+bool AbiCollab_ImportRuleSet::_isSafeFmtChange(const ChangeAdjust& /*ca*/, const AbstractChangeRecordSessionPacket& /*acrsp*/, UT_sint32 /*iRemotePosAdjust*/)
 {
 	// check for save formatting change overlaps; for example, it is perfectly fine if person A adds
 	// a 'bold' property, while person B at the same time adds an 'italic' property

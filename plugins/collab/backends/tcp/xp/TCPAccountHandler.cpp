@@ -263,7 +263,7 @@ BuddyPtr TCPAccountHandler::constructBuddy(const PropertyMap& props)
 	return boost::shared_ptr<TCPBuddy>(new TCPBuddy(this, hi->second, boost::lexical_cast<std::string>(port)));
 }
 
-BuddyPtr TCPAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
+BuddyPtr TCPAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return TCPBuddyPtr();
@@ -293,7 +293,7 @@ void TCPAccountHandler::forceDisconnectBuddy(BuddyPtr buddy)
 	(*it).second->disconnect();
 }
 
-bool TCPAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+bool TCPAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
