@@ -129,7 +129,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
 
 ABI_FAR_CALL
-int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
 {
 	return 1; 
 }
@@ -200,6 +200,8 @@ bool any_accounts_online( const UT_GenericVector<AccountHandler *>& vecAccounts 
  */
 Defun_EV_GetMenuItemState_Fn(collab_GetState_ShowAuthors)
 {
+	UT_UNUSED(id);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
 
@@ -223,6 +225,8 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_ShowAuthors)
  */
 Defun_EV_GetMenuItemState_Fn(collab_GetState_Joined)
 {
+	UT_UNUSED(id);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	if (!any_accounts_online( pManager->getAccounts() )) return EV_MIS_Gray;
 	
@@ -246,6 +250,8 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_Joined)
  */
 Defun_EV_GetMenuItemState_Fn(collab_GetState_Recording)
 {
+	UT_UNUSED(id);
+
 	// only do this in debug mode
 #if !defined(ABICOLLAB_RECORD_ALWAYS) && defined(DEBUG)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -278,6 +284,9 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_Recording)
  */
 Defun_EV_GetMenuItemState_Fn(collab_GetState_AnyActive)
 {
+	UT_UNUSED(pAV_View);
+	UT_UNUSED(id);
+
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
  	const UT_GenericVector<AccountHandler*>& vecAccounts = pManager->getAccounts();
 
@@ -566,7 +575,7 @@ void s_abicollab_remove_menus()
 	}
 }
 
-bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_offer(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	UT_DEBUGMSG(("s_abicollab_offer\n"));
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -591,7 +600,7 @@ bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d)
 	return true;
 }
 
-bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData* /*d*/)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -602,7 +611,7 @@ bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d)
 	return true;
 }
 
-bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_join(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);
@@ -648,7 +657,7 @@ bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
 }
 
 
-bool s_abicollab_accounts(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_accounts(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	// Get the current view that the user is in.
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -664,7 +673,7 @@ bool s_abicollab_accounts(AV_View* v, EV_EditMethodCallData *d)
 	return true;
 }
 
-bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_record(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	UT_DEBUGMSG(("s_abicollab_offer\n"));
 	// this option only works in debug mode
@@ -691,7 +700,7 @@ bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d)
 	return true;
 }
 
-bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_viewrecord(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
 	UT_DEBUGMSG(("s_abicollab_record\n"));
 	
@@ -727,7 +736,7 @@ bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d)
 	return true;
 }
 
-bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d)
+bool s_abicollab_command_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 {
 	UT_DEBUGMSG(("s_abicollab_command_invoke()\n"));
 
