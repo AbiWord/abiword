@@ -196,7 +196,7 @@ bool ServiceAccountHandler::isOnline()
 	return m_bOnline;
 }
 
-BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& props)
+BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);	
@@ -251,7 +251,7 @@ bool ServiceAccountHandler::recognizeBuddyIdentifier(const std::string& identifi
 	return true;
 }
 
-bool ServiceAccountHandler::send(const Packet* packet)
+bool ServiceAccountHandler::send(const Packet* /*packet*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::send(const Packet*)\n"));
 	// this are typically announce session broadcast events and the like,
@@ -277,8 +277,8 @@ bool ServiceAccountHandler::send(const Packet* packet, BuddyPtr pBuddy)
 	return true;
 }
 
-void ServiceAccountHandler::_write_handler(const asio::error_code& e, std::size_t bytes_transferred,
-											boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet)
+void ServiceAccountHandler::_write_handler(const asio::error_code& e, std::size_t /*bytes_transferred*/,
+											boost::shared_ptr<const RealmBuddy> /*recipient*/, boost::shared_ptr<realm::protocolv1::Packet> packet)
 {
 	if (e)
 	{
@@ -291,8 +291,8 @@ void ServiceAccountHandler::_write_handler(const asio::error_code& e, std::size_
 		UT_DEBUGMSG(("Packet sent: 0x%x\n", packet->type()));
 }										   
 
-void ServiceAccountHandler::_write_result(const asio::error_code& e, std::size_t bytes_transferred,
-													ConnectionPtr connection, boost::shared_ptr<realm::protocolv1::Packet> packet)
+void ServiceAccountHandler::_write_result(const asio::error_code& e, std::size_t /*bytes_transferred*/,
+													ConnectionPtr /*connection*/, boost::shared_ptr<realm::protocolv1::Packet> packet)
 {
 	if (e)
 	{
@@ -326,7 +326,7 @@ void ServiceAccountHandler::getSessionsAsync()
 	async_list_docs_ptr->start();	
 }
 
-void ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)
+void ServiceAccountHandler::getSessionsAsync(const Buddy& /*buddy*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::getSessionsAsync(const Buddy& buddy)\n"));
 
@@ -1086,14 +1086,14 @@ bool ServiceAccountHandler::_splitDescriptor(const std::string& descriptor, uint
 	if (descriptor.compare(0, uri_id.size(), uri_id) != 0)
 		return false;
 
-	int at_pos = descriptor.find_last_of("@");
+	size_t at_pos = descriptor.find_last_of("@");
 	if (at_pos == std::string::npos)
 		return false;
 
 	domain = descriptor.substr(at_pos+1);
 	std::string user_part = descriptor.substr(uri_id.size(), at_pos - uri_id.size());
 
-	int colon_pos = user_part.find_first_of(":");
+	size_t colon_pos = user_part.find_first_of(":");
 	if (colon_pos == std::string::npos)
 		return false;
 
@@ -1123,7 +1123,7 @@ std::string ServiceAccountHandler::_getDomain()
 	std::string https = "https://";
 	UT_return_val_if_fail(uri.compare(0, https.size(), https) == 0, "")
 
-	int slash_pos = uri.find_first_of("/", https.size());
+	size_t slash_pos = uri.find_first_of("/", https.size());
 	if (slash_pos == std::string::npos)
 		slash_pos = uri.size();
 	std::string domain = uri.substr(https.size(), slash_pos-https.size());
