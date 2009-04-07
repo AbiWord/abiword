@@ -108,7 +108,7 @@ Packet::Packet( AbiCollab* session )
 {
 }
 
-void Packet::serialize(Archive & ar)
+void Packet::serialize(Archive& /*ar*/)
 {
 }
 
@@ -232,9 +232,9 @@ void ChangeRecordSessionPacket::serialize( Archive& ar )
 	ar << COMPACT_INT(m_iRemoteRev);
 }
 
-static const std::string& getPXTypeStr( PX_ChangeRecord::PXType t )
+static const std::string getPXTypeStr( PX_ChangeRecord::PXType t )
 {
-	UT_return_val_if_fail(t >= PX_ChangeRecord::PXT_GlobMarker && t <= PX_ChangeRecord::PXT_ChangeDocProp, str(boost::format( "<invalid value %d>" ) % int(t) ));
+	UT_return_val_if_fail(t >= PX_ChangeRecord::PXT_GlobMarker && t <= PX_ChangeRecord::PXT_ChangeDocProp, str(boost::format( "<invalid value passed to getPXTypeStr: %d>" ) % int(t) ));
 	static std::string pxTypeStrs[] = {
 		"PXT_GlobMarker",
 		"PXT_InsertSpan", 
@@ -409,9 +409,9 @@ std::string Props_ChangeRecordSessionPacket::toStr() const
 /* *            *_ChangeRecordSessionPacket              */
 /* ***************************************************** */
 
-static const std::string& getPTStruxTypeStr( PTStruxType p )
+static const std::string getPTStruxTypeStr( PTStruxType p )
 {
-	UT_return_val_if_fail(p >= PTX_Section && p <= PTX_StruxDummy, str(boost::format( "<invalid value %d>" ) % int(p) ));
+	UT_return_val_if_fail(p >= PTX_Section && p <= PTX_StruxDummy, str(boost::format( "<invalid value passed to getPTStruxTypeStr: %d>" ) % int(p) ));
 	static std::string PacketSessionTypeStrs[] = {
 		"PTX_Section",
 		"PTX_Block",
@@ -482,9 +482,9 @@ void Object_ChangeRecordSessionPacket::serialize( Archive& ar )
 	ar << (int&)m_eObjectType;
 }
 
-static const std::string& getPTObjectTypeStr( PTObjectType p )
+static const std::string getPTObjectTypeStr( PTObjectType p )
 {
-	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Embed, str(boost::format( "<invalid value %d>" ) % int(p) ));
+	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Embed, str(boost::format( "<invalid value passed to getPTObjectTypeStr: %d>" ) % int(p) ));
 	static std::string PTObjectTypeStrs[] = {
 		"PTO_Image", 
 		"PTO_Field", 
