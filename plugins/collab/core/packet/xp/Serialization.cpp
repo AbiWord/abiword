@@ -19,28 +19,7 @@
  * 02111-1307, USA.
  */
 
-#include <string>
-#include <vector>
-
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xmlreader.h>
-
-#include "ut_vector.h"
-#include "pd_Document.h"
-#include "px_ChangeRecord.h"
-#include "px_CR_SpanChange.h"
-#include "px_CR_FmtMarkChange.h"  
-#include "px_CR_SpanChange.h"
-#include "px_CR_FmtMark.h"        
-#include "px_CR_Span.h"
-#include "px_CR_Glob.h"           
-#include "px_CR_StruxChange.h"
-#include "px_CR_ObjectChange.h"   
-#include "px_CR_Strux.h"
-#include "px_CR_Object.h"
-#include "AbiCollab_Packet.h"
-#include "pt_Types.h"
+#include <stdlib.h>
 
 #include "Serialization.h"
 

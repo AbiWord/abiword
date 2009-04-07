@@ -2,6 +2,7 @@
  * AbiCollab - Code to enable the modification of remote documents.
  * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 One Laptop Per Child
+ * Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -64,10 +65,10 @@ enum PClassType // send over the net to identify classes
 	PCT_ProtocolErrorPacket,
 	
 	//
-	// packets
+	// session packets
 	//
 	/* misc. session packets */
-	PCT_SignalSessionPacket = 0x10,				// update _PCT_FirstChange if you move this
+	PCT_SignalSessionPacket = 0x10,				// update _PCT_FirstSessionPacket if you move this
 	PCT_RevertSessionPacket,
 	PCT_RevertAckSessionPacket,
 	PCT_GlobSessionPacket,
@@ -79,7 +80,13 @@ enum PClassType // send over the net to identify classes
 	PCT_DeleteStrux_ChangeRecordSessionPacket,
 	PCT_Object_ChangeRecordSessionPacket,
 	PCT_Data_ChangeRecordSessionPacket,
-	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChange and _PCT_LastChangeRecord if you move this
+	PCT_Glob_ChangeRecordSessionPacket,			// update _PCT_LastChangeRecord if you move this
+	/* session takeover packets */
+	PCT_SessionTakeoverRequestPacket = 0x40,	// update _PCT_FirstSessionTakeoverPacket if you move this
+	PCT_SessionTakeoverAckPacket,
+	PCT_SessionFlushedPacket,
+	PCT_SessionReconnectRequestPacket,
+	PCT_SessionReconnectAckPacket,				// update _PCT_LastSessionTakeoverPacket and _PCT_LastSessionPacket if you move this
 
 	//
 	// events
@@ -105,21 +112,17 @@ enum PClassType // send over the net to identify classes
 	//
 	// meta values (KEEP THESE UPDATED WHEN ADDING NEW PACKET TYPES!!)
 	//
-	// FIXME: rename _PCT_FirstChange to _PCT_FirstSession
-	_PCT_FirstChange = PCT_SignalSessionPacket,
-	_PCT_LastChange = PCT_Glob_ChangeRecordSessionPacket,
+	_PCT_FirstSessionPacket = PCT_SignalSessionPacket,
+	_PCT_LastSessionPacket = PCT_SessionReconnectAckPacket,
 	
 	_PCT_FirstChangeRecord = PCT_ChangeRecordSessionPacket,
 	_PCT_LastChangeRecord = PCT_Glob_ChangeRecordSessionPacket,
 	
+	_PCT_FirstSessionTakeoverPacket = PCT_SessionTakeoverRequestPacket,
+	_PCT_LastSessionTakeoverPacket = PCT_SessionReconnectAckPacket,
+	
 	_PCT_FirstEvent = PCT_AccountNewEvent,
 	_PCT_LastEvent = PCT_GetSessionsResponseEvent
-};
-
-struct RawPacket
-{
-	Buddy* buddy; // TODO: free the buddy somewhere, or make it not a pointer (please do the latter) - MARCM
-	std::string packet;
 };
 
 class PX_ChangeRecord;
@@ -541,6 +544,96 @@ public:
 
 private:
 	UT_sint32			m_iRev;
+};
+
+
+/*************************************************************
+ * Session Takeover Packets                                  *
+ *************************************************************/
+
+class AbstractSessionTakeoverPacket : public SessionPacket
+{
+public:
+	AbstractSessionTakeoverPacket() {}
+
+	AbstractSessionTakeoverPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: SessionPacket(sSessionId, sDocUUID)
+		{}
+		
+	static bool isInstanceOf(const SessionPacket& packet);
+};
+
+class SessionTakeoverRequestPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionTakeoverRequestPacket);
+	SessionTakeoverRequestPacket() {}
+	SessionTakeoverRequestPacket(
+		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+	);
+
+	bool promote() const
+		{ return m_bPromote; }
+
+	const std::vector<std::string>& getBuddyIdentifiers() const
+		{ return m_vBuddyIdentifiers; }
+		
+	virtual std::string toStr() const;
+
+private:
+	bool						m_bPromote;
+	std::vector<std::string>	m_vBuddyIdentifiers;
+};
+
+class SessionTakeoverAckPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionTakeoverAckPacket);
+	SessionTakeoverAckPacket() {}
+	SessionTakeoverAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
+
+	virtual std::string toStr() const;	
+};
+
+class SessionFlushedPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionFlushedPacket);
+	SessionFlushedPacket() {}
+	SessionFlushedPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
+
+	virtual std::string toStr() const;
+};
+
+class SessionReconnectRequestPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionReconnectRequestPacket);
+	SessionReconnectRequestPacket() {}
+	SessionReconnectRequestPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
+		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
+
+	virtual std::string toStr() const;
+};
+
+class SessionReconnectAckPacket : public AbstractSessionTakeoverPacket
+{
+public:
+	DECLARE_PACKET(SessionReconnectAckPacket);
+	SessionReconnectAckPacket() {}
+	SessionReconnectAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		UT_sint32 iRev);
+
+	UT_sint32					getRev() const
+		{ return m_iRev; }
+	
+	virtual std::string toStr() const;
+
+private:
+	UT_sint32					m_iRev;	
 };
 
 #endif /* ABICOLLAB_PACKET_H */

@@ -20,6 +20,10 @@
 #ifndef __SERVICEBUDDY__
 #define __SERVICEBUDDY__
 
+#include <string>
+#include <stdint.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include <backends/xp/Buddy.h>
 #include <backends/xp/AccountHandler.h>
@@ -27,19 +31,26 @@
 class ServiceBuddy : public Buddy
 {
 public:
-	ServiceBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	ServiceBuddy(AccountHandler* handler, const std::string& email, const std::string& domain)
+		: Buddy(handler),
+		m_email(email),
+		m_domain(domain)
 	{
 		setVolatile(true);
 	}
 	
-	virtual Buddy* clone() const { return new ServiceBuddy( *this ); }
-	
-	virtual UT_UTF8String		getDescription() const
+	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		// TODO: append the group name or something like that
-		return getName();
+		if (include_session_info)
+			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+		return UT_UTF8String("acn://") + m_email.c_str() + UT_UTF8String("@") + m_domain.c_str();
 	}
+	
+	virtual UT_UTF8String getDescription() const
+		{ return m_email.c_str(); }
+	
+	const std::string& getEmail() const
+		{ return m_email; }
 	
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -62,6 +73,12 @@ public:
 		}
 		return first;
 	}
+	
+private:
+	std::string		m_email;
+	std::string		m_domain;
 };
+
+typedef boost::shared_ptr<ServiceBuddy> ServiceBuddyPtr;
 
 #endif /* __SERVICEBUDDY__ */

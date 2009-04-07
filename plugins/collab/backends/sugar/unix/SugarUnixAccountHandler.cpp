@@ -84,9 +84,8 @@ void SugarAccountHandler::storeProperties()
 
 SugarBuddy* SugarAccountHandler::getBuddy(const UT_UTF8String& name)
 {
-	// find buggy through AccountHandler class
-	Buddy* buddy = AccountHandler::getBuddy( name );
-	return static_cast<SugarBuddy*>( buddy );
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
 }
 
 ConnectResult SugarAccountHandler::connect()
@@ -121,6 +120,18 @@ Buddy* SugarAccountHandler::constructBuddy(const PropertyMap& props)
 	// presence framework would always be unique to one buddy; hence the
 	// dbus address will do for now
 	return new SugarBuddy(this, cit->second.c_str(), cit->second.c_str());
+}
+
+Buddy* SugarAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+{
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	return false;
 }
 
 void  SugarAccountHandler::handleEvent(Session& pSession)

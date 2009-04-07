@@ -19,6 +19,8 @@
 #ifndef __REALM_BUDDY__
 #define __REALM_BUDDY__
 
+#include <stdint.h>
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/lexical_cast.hpp>
@@ -31,8 +33,11 @@ class RealmConnection;
 class RealmBuddy : public Buddy , public boost::enable_shared_from_this<RealmBuddy>
 {
 public:
-	RealmBuddy(AccountHandler* handler, UT_uint8 realm_connection_id, bool master, RealmConnection& connection)
-		: Buddy(handler, boost::lexical_cast<std::string>(realm_connection_id).c_str()),
+	RealmBuddy(AccountHandler* handler, uint64_t user_id, const std::string& domain,
+					UT_uint8 realm_connection_id, bool master, boost::shared_ptr<RealmConnection> connection)
+		: Buddy(handler),
+		m_user_id(user_id),
+		m_domain(domain),
 		m_realm_connection_id(realm_connection_id),
 		m_master(master),
 		m_connection(connection)
@@ -40,11 +45,18 @@ public:
 		setVolatile(true);
 	}
 	
-	virtual Buddy* clone() const { return new RealmBuddy( *this ); }
-	
-	virtual UT_UTF8String		getDescription() const
+	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		return getName();
+		return UT_UTF8String("acn://") + 
+					boost::lexical_cast<std::string>(m_user_id).c_str() + 
+					(include_session_info ? UT_UTF8String(":") + boost::lexical_cast<std::string>((uint32_t)m_realm_connection_id).c_str() : UT_UTF8String("")) +
+					UT_UTF8String("@") + 
+					m_domain.c_str();
+	}
+	
+	virtual UT_UTF8String getDescription() const
+	{
+		return getDescriptor();
 	}
 	
 	virtual const DocTreeItem* getDocTreeItems() const
@@ -56,12 +68,12 @@ public:
 		return shared_from_this();
 	}
 
-	boost::shared_ptr<const RealmBuddy> ptr() const {
-		return shared_from_this();
+	boost::shared_ptr<RealmConnection> connection() {
+		return m_connection;
 	}
 
-	RealmConnection& connection() const {
-		return m_connection;
+	uint64_t user_id() const {
+		return m_user_id;
 	}
 
 	UT_uint8 realm_connection_id() const {
@@ -72,10 +84,20 @@ public:
 		return m_master;
 	}
 	
+	void demote() {
+		m_master = false;
+	}
+
+	void promote() {
+		m_master = true;
+	}
+	
 private:
-	UT_uint8 m_realm_connection_id;
-	bool m_master;
-	RealmConnection& m_connection;
+	uint64_t			m_user_id;
+	std::string			m_domain;
+	UT_uint8			m_realm_connection_id;
+	bool				m_master;
+	boost::shared_ptr<RealmConnection>		m_connection;
 };
 
 typedef boost::shared_ptr<RealmBuddy> RealmBuddyPtr;

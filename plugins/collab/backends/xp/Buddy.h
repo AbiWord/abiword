@@ -20,6 +20,7 @@
 #define __BUDDY_H__
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -30,12 +31,11 @@ class AccountHandler;
 
 using std::vector;
 
- class Buddy 
+class Buddy 
 {
 public:
-	Buddy(AccountHandler* handler, const UT_UTF8String& name)
+	Buddy(AccountHandler* handler)
 		: m_handler(handler),
-		m_name(name),
 		m_volatile(false)
 	{
 	}
@@ -44,13 +44,21 @@ public:
 	/*
 	 * Buddy management
 	 */
-	virtual Buddy* clone() const = 0;
+	
+	// Should be globally unique if possible, so it can be used to identify 
+	// authors when they reconnect or to allow sessions to be taken over. 
+	// Session takeover can NOT be enabled in the account handler if the buddy 
+	// descriptor is not globally unique.
+	// When a buddy decriptor is not globally unique, then it must at least 
+	// uniquely identify a buddy within a collaboration session.
+	//
+	// When include_session_info is true, the descriptor should contain
+	// all the information required to construct a buddy object from it for the 
+	// backends that support session takeover
+	// When include_session_info is false, the descriptor only has to include the
+	// information needed to *recognize* a particular author
+	virtual UT_UTF8String		   getDescriptor(bool include_session_info = false) const = 0;
 
-	/*
-	 * User management
-	 */
-	virtual const UT_UTF8String&	getName() const
-		{ return m_name; }
 	virtual UT_UTF8String			getDescription() const = 0;
 	AccountHandler*					getHandler() const
 		{ return m_handler; }
@@ -96,9 +104,11 @@ public:
 	
 private:
 	AccountHandler*				m_handler;
-	UT_UTF8String				m_name;
+	UT_UTF8String				m_descriptor;
 	vector<DocHandle*>			m_docHandles;
 	bool						m_volatile;
 };
+
+typedef boost::shared_ptr<Buddy> BuddyPtr;
 
 #endif /* BUDDY_H */

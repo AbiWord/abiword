@@ -30,13 +30,11 @@ class DocHandle;
  class SugarBuddy : public Buddy
 {
 public:
-	SugarBuddy(AccountHandler* handler, const UT_UTF8String& name, const UT_UTF8String dbusName)
-		: Buddy(handler, name),
+	SugarBuddy(AccountHandler* handler, const UT_UTF8String& descriptor, const UT_UTF8String dbusName)
+		: Buddy(handler, descriptor),
 		m_sDBusName(dbusName)
 	{
 	}
-	
-	virtual Buddy* clone() const { return new SugarBuddy( *this ); }
 	
 	virtual UT_UTF8String		getDescription() const
 		{ return getName(); }

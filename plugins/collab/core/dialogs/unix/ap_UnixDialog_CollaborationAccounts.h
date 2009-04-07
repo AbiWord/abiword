@@ -38,7 +38,7 @@ public:
 	void				eventSelectAccount();
 	void				eventOnline(AccountHandler* pHandler, bool online);
 
-	virtual void		signal(const Event& event, const Buddy* pSource);
+	virtual void		signal(const Event& event, BuddyPtr pSource);
 
 	GtkListStore*		getModel()
 		{ return m_wModel; }

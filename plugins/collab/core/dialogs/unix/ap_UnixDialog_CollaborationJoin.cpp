@@ -34,6 +34,7 @@ enum
 	DESCRIPTION_COLUMN = 0,
 	CONNECTED_COLUMN,
 	DOCHANDLE_COLUMN,
+	HANDLER_COLUMN,
 	BUDDY_COLUMN,
 	VISIBLE_COLUMN,
 	NUM_COLUMNS
@@ -262,7 +263,7 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 {
 	GtkTreeIter iter;
-	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_INT, G_TYPE_BOOLEAN);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
@@ -277,7 +278,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 		// add all buddies belonging to this account
 		for (UT_sint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
 		{
-			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
+			BuddyPtr pBuddy = accounts.getNthItem(i)->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);
 
 			gtk_tree_store_append (model, &iter, NULL);
@@ -285,6 +286,7 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 					DESCRIPTION_COLUMN, pBuddy->getDescription().utf8_str(), 
 					CONNECTED_COLUMN, false, /* joined */
 					DOCHANDLE_COLUMN, 0, /* dochandle */
+					HANDLER_COLUMN, 0, /* account handler */
 					BUDDY_COLUMN, 0, /* buddy */
 					VISIBLE_COLUMN, false, /* visibility */
 					-1);
@@ -302,7 +304,8 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 						DESCRIPTION_COLUMN, (item->m_docHandle ? item->m_docHandle->getName().utf8_str() : "null"),
 						CONNECTED_COLUMN, pManager->isActive(item->m_docHandle->getSessionId()),
 						DOCHANDLE_COLUMN, item->m_docHandle,
-						BUDDY_COLUMN, pBuddy,
+						HANDLER_COLUMN, i,
+						BUDDY_COLUMN, j,
 						VISIBLE_COLUMN, true,
 						-1);
 			}
@@ -368,11 +371,13 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gpointer buddy;	
+	gint handler_idx;	
+	gint buddy_idx;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy, -1);	
+	gtk_tree_model_get (model, &iter, HANDLER_COLUMN, &handler_idx, -1);	
+	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy_idx, -1);
 	
 	if (!doc_handle || connected)
 	{
@@ -380,10 +385,19 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
 		return;
 	}
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
+	if (handler_idx >= accounts.getItemCount() || buddy_idx >= accounts.getNthItem(handler_idx)->getBuddies().size())
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		return;
+	}
 	
 	UT_DEBUGMSG(("Got a document we can connect to!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
-	m_pBuddy = reinterpret_cast<Buddy*>(buddy);
+	m_pBuddy = accounts.getNthItem(handler_idx)->getBuddies()[buddy_idx];
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 
@@ -408,11 +422,13 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gpointer buddy;	
+	gint handler_idx;	
+	gint buddy_idx;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
 	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy, -1);	
+	gtk_tree_model_get (model, &iter, HANDLER_COLUMN, &handler_idx, -1);	
+	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy_idx, -1);
 	
 	if (!doc_handle || !connected)
 	{
@@ -420,10 +436,19 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
 		return;
 	}
+
+	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
+	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
+	if (handler_idx >= accounts.getItemCount() || buddy_idx >= accounts.getNthItem(handler_idx)->getBuddies().size())
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
+		return;
+	}
 	
 	UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-	m_pBuddy = reinterpret_cast<Buddy*>(buddy);
+	m_pBuddy = accounts.getNthItem(handler_idx)->getBuddies()[buddy_idx];
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 
@@ -448,11 +473,9 @@ void AP_UnixDialog_CollaborationJoin::eventSelectionChanged(GtkTreeView *treevie
 	// get the row data
 	gboolean connected;
 	gpointer doc_handle;
-	gpointer buddy;	
 
 	gtk_tree_model_get (model, &iter, CONNECTED_COLUMN, &connected, -1);
-	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);
-	gtk_tree_model_get (model, &iter, BUDDY_COLUMN, &buddy, -1);	
+	gtk_tree_model_get (model, &iter, DOCHANDLE_COLUMN, &doc_handle, -1);	
 
 	if (!doc_handle)
 	{

@@ -3,6 +3,7 @@
  * Copyright (C) 2005 by Martin Sevior
  * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
  * Copyright (C) 2007 One Laptop Per Child
+ * Copyright (C) 2008 AbiSource Corporation B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -180,7 +181,7 @@ void SessionPacket::serialize( Archive& ar )
 
 bool SessionPacket::isInstanceOf(const Packet& packet)
 {
-	return (packet.getClassType() >= _PCT_FirstChange && packet.getClassType() <= _PCT_LastChange);
+	return (packet.getClassType() >= _PCT_FirstSessionPacket && packet.getClassType() <= _PCT_LastSessionPacket);
 }
 
 std::string SessionPacket::toStr() const
@@ -820,4 +821,109 @@ std::string RevertAckSessionPacket::toStr() const
 {
 	return SessionPacket::toStr() +
 		str(boost::format("RevertAckSessionPacket: m_iRev: %1%\n") % m_iRev);
+}
+
+/* ***************************************************** */
+/* *            AbstractSessionTakeoverPacket            */
+/* ***************************************************** */
+
+bool AbstractSessionTakeoverPacket::isInstanceOf(const SessionPacket& packet)
+{
+	return (packet.getClassType() >= _PCT_FirstSessionTakeoverPacket && packet.getClassType() <= _PCT_LastSessionTakeoverPacket);
+}
+
+/* ***************************************************** */
+/* *             SessionTakeoverRequestPacket            */
+/* ***************************************************** */
+
+SessionTakeoverRequestPacket::SessionTakeoverRequestPacket(
+		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
+		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
+	) : AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
+	m_bPromote(bPromote),
+	m_vBuddyIdentifiers(vBuddyIdentifiers)
+{
+}
+
+void SessionTakeoverRequestPacket::serialize( Archive& ar )
+{
+	SessionPacket::serialize( ar );
+	ar << m_bPromote;
+	ar << m_vBuddyIdentifiers;
+}
+
+std::string SessionTakeoverRequestPacket::toStr() const
+{
+	std::string s = SessionPacket::toStr() + 
+		"SessionTakeoverRequestPacket:\n  promote: ";
+	s += m_bPromote ? "true" : "false";
+	s += "\n";
+	for (std::vector<std::string>::const_iterator it = m_vBuddyIdentifiers.begin(); it != m_vBuddyIdentifiers.end(); it++)
+		s += std::string("  Buddy: ") + *it + "\n";
+	return s;
+}
+
+/* ***************************************************** */
+/* *             SessionTakeoverAckPacket                */
+/* ***************************************************** */
+
+void SessionTakeoverAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
+std::string SessionTakeoverAckPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionTakeoverAckPacket\n";
+}
+
+/* ***************************************************** */
+/* *             SessionFlushedPacket                    */
+/* ***************************************************** */
+
+void SessionFlushedPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
+std::string SessionFlushedPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionFlushedPacket\n";
+}
+
+/* ***************************************************** */
+/* *             SessionReconnectRequestPacket           */
+/* ***************************************************** */
+
+void SessionReconnectRequestPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+}
+
+std::string SessionReconnectRequestPacket::toStr() const
+{
+	return SessionPacket::toStr() + "SessionReconnectRequestPacket\n";
+}
+
+/* ***************************************************** */
+/* *             SessionReconnectAckPacket               */
+/* ***************************************************** */
+
+SessionReconnectAckPacket::SessionReconnectAckPacket(
+	const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_sint32 iRev)
+	: AbstractSessionTakeoverPacket(sSessionId, sDocUUID),
+	m_iRev(iRev)
+{
+}
+
+void SessionReconnectAckPacket::serialize(Archive& ar)
+{
+	SessionPacket::serialize(ar);
+	ar << m_iRev;
+}
+
+std::string SessionReconnectAckPacket::toStr() const
+{
+	return SessionPacket::toStr() +
+		str(boost::format("SessionReconnectAckPacket: m_iRev: %1%\n") % m_iRev);
 }

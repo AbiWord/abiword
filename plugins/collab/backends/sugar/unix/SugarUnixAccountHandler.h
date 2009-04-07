@@ -65,6 +65,12 @@ public:
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual void							forceDisconnectBuddy(Buddy* pBuddy);
+	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
+
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return false; }
 
 	// packet management
 	virtual bool							send(const Packet* pPacket);

@@ -72,9 +72,10 @@ bool AccountHandler::operator==(AccountHandler & rhHandler) {
 	return returnval;
 }
 
-void AccountHandler::addBuddy(Buddy* buddy)
+void AccountHandler::addBuddy(BuddyPtr pBuddy)
 {
-	m_vecBuddies.push_back(buddy);
+	UT_return_if_fail(pBuddy);
+	m_vBuddies.push_back(pBuddy);
 	
 	// signal all listeners we have a new buddy
 	AccountAddBuddyEvent event;
@@ -82,118 +83,84 @@ void AccountHandler::addBuddy(Buddy* buddy)
 	AbiCollabSessionManager::getManager()->signal(event);
 }
 
-Buddy* AccountHandler::getBuddy(const UT_UTF8String& name)
+void AccountHandler::deleteBuddy(BuddyPtr pBuddy)
 {
-	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	UT_return_if_fail(pBuddy);
+	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
 	{
-		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		if (pBuddy->getName() == name)
-			return pBuddy;
-	}		
-	UT_DEBUGMSG(("Getting buddy (%s) failed\n", name.utf8_str()));
-	return 0;
-}
-
-void AccountHandler::deleteBuddy(const UT_UTF8String& name)
-{
-	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
-	{
-		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		if (pBuddy->getName() == name)
+		BuddyPtr pB = *it;
+		UT_continue_if_fail(pB);
+		if (pB == pBuddy)
 		{
-			m_vecBuddies.deleteNthItem(i);
+			m_vBuddies.erase(it);
 			return;
 		}
-	}		
+	}
+	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 }
 
 void AccountHandler::deleteBuddies()
 {
-	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
-	{
-		Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		DELETEP(pBuddy);
-	}
-	m_vecBuddies.clear();
-}
-
-void AccountHandler::forceDisconnectBuddy(Buddy* /*buddy*/)
-{
+	m_vBuddies.clear();
 }
 		
 void AccountHandler::getSessionsAsync()
 {
-	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
-	{
-		const Buddy* pBuddy = m_vecBuddies.getNthItem(i);
-		getSessionsAsync(*pBuddy);
-	}
+	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
+		getSessionsAsync(*it);
 }
 
-void AccountHandler::getSessionsAsync(const Buddy& buddy)
+void AccountHandler::getSessionsAsync(BuddyPtr pBuddy)
 {
 	GetSessionsEvent event;
-	send(&event, buddy);
+	send(&event, pBuddy);
 }
 
-void AccountHandler::joinSessionAsync(const Buddy& buddy, DocHandle& docHandle)
+void AccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle)
 {
 	JoinSessionRequestEvent event( docHandle.getSessionId() );
-	send(&event, buddy);
+	send(&event, pBuddy);
 }
 
 bool AccountHandler::hasSession(const UT_UTF8String& sSessionId)
 {
-	for (UT_sint32 i = 0; i < m_vecBuddies.getItemCount(); i++)
+	for (std::vector<BuddyPtr>::iterator it = m_vBuddies.begin(); it != m_vBuddies.end(); it++)
 	{
-		const Buddy* pBuddy = m_vecBuddies.getNthItem(i);
+		BuddyPtr pBuddy = *it;
+		UT_continue_if_fail(pBuddy);
 		if (pBuddy->getDocHandle(sSessionId))
 			return true;
 	}
 	return false;
 }
 
-void AccountHandler::signal(const Event& event, const Buddy* pSource)
+void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
 
 	// broadcast this event over our network (if applicable for each message type)
-	UT_GenericVector<Buddy*> vRecipients = 
+	std::vector<BuddyPtr> vRecipients = 
 		(event.isBroadcast() ? getBuddies() : event.getRecipients());
 	
-	for (UT_sint32 i = 0; i < vRecipients.getItemCount(); i++)
+	for (std::vector<BuddyPtr>::iterator it = vRecipients.begin(); it != m_vBuddies.end(); it++)
 	{
-		Buddy* pRecipient = vRecipients.getNthItem(i);
-		if (pRecipient)
+		BuddyPtr pRecipient = *it;
+		UT_continue_if_fail(pRecipient);
+
+		if (!pSource || (pSource != pRecipient))
 		{
-			if (!pSource || 
-				(pSource && pRecipient->getName() != pSource->getName())
-				)
-			{
-				send(&event, *pRecipient);
-			}
-			else
-			{
-				// the event came originated at this buddy, so make sure not to send it
-				// back to him, as it would result in a broadcast storm and
-				// kill the network really fast
-			}
+			send(&event, pRecipient);
+		}
+		else
+		{
+			// the event originated from this buddy, so make sure not to send it
+			// back to him, as it would result in a broadcast storm and
+			// kill the network really fast
 		}
 	}
 }
 
-// TODO: deprecate this function
-void AccountHandler::handleMessage(const RawPacket& pRp)
-{
-	UT_return_if_fail(pRp.buddy);
-	
-	Packet* pPacket = _createPacket(pRp.packet, pRp.buddy);
-	UT_return_if_fail(pPacket);
-	
-	handleMessage(pPacket, pRp.buddy);
-}
-
-void AccountHandler::handleMessage(Packet* pPacket, Buddy* pBuddy)
+void AccountHandler::handleMessage(Packet* pPacket, BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pPacket);
 	UT_return_if_fail(pBuddy);	
@@ -217,7 +184,7 @@ void AccountHandler::handleMessage(Packet* pPacket, Buddy* pBuddy)
 	DELETEP(pPacket);
 }
 
-Packet* AccountHandler::_createPacket(const std::string& packet, Buddy* pBuddy)
+Packet* AccountHandler::_createPacket(const std::string& packet, BuddyPtr pBuddy)
 {
 	UT_return_val_if_fail(pBuddy, NULL);
 	
@@ -232,7 +199,7 @@ Packet* AccountHandler::_createPacket(const std::string& packet, Buddy* pBuddy)
 		if (version > 0)
 		{
 			UT_DEBUGMSG(("Discarding packet, wrong version %d (expected %d)\n", version, ABICOLLAB_PROTOCOL_VERSION));
-			_sendProtocolError(*pBuddy, PE_Invalid_Version);
+			_sendProtocolError(pBuddy, PE_Invalid_Version);
 			return NULL;
 		}
 		else
@@ -285,7 +252,7 @@ void AccountHandler::_createPacketStream( std::string& sString, const Packet* pP
 	UT_DEBUGMSG(("PACKET SENT: [%s] %u bytes in serialized string\n", Packet::getPacketClassname( (PClassType)classId ), osa.Size()));
 }
 
-bool AccountHandler::_handleProtocolError(Packet* packet, Buddy* buddy)
+bool AccountHandler::_handleProtocolError(Packet* packet, BuddyPtr buddy)
 {
 	// packet and buddy must always be set
 	UT_return_val_if_fail(packet, false);
@@ -296,15 +263,15 @@ bool AccountHandler::_handleProtocolError(Packet* packet, Buddy* buddy)
 		return false;
 
 	// we have an error!
-	ProtocolErrorPacket* pee = static_cast<ProtocolErrorPacket*>( packet );
+	ProtocolErrorPacket* pee = static_cast<ProtocolErrorPacket*>(packet);
 	// report the error
-	_reportProtocolError( pee->getRemoteVersion(), pee->getErrorEnum(), *buddy );
+	_reportProtocolError(pee->getRemoteVersion(), pee->getErrorEnum(), buddy);
 	// and remove buddy
-	forceDisconnectBuddy( buddy );
+	forceDisconnectBuddy(buddy);
 	return true;
 }
 
-void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBuddyOnJoin )
+void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 {
 	// packet and buddy must always be set
 	UT_return_if_fail(packet);
@@ -319,10 +286,10 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 	{			
 		case PCT_JoinSessionRequestEvent:
 		{
-			JoinSessionRequestEvent* jse = static_cast<JoinSessionRequestEvent*>( packet );
+			JoinSessionRequestEvent* jse = static_cast<JoinSessionRequestEvent*>(packet);
 			
 			// lookup session
-			AbiCollab* pSession = pManager->getSessionFromSessionId( jse->getSessionId() );
+			AbiCollab* pSession = pManager->getSessionFromSessionId(jse->getSessionId());
 			UT_return_if_fail(pSession);
 		
 			// lookup exporter
@@ -333,42 +300,24 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 			const UT_GenericVector<ChangeAdjust *>* pExpAdjusts = pExport->getAdjusts();
 			UT_return_if_fail(pExpAdjusts);
 		
-			// TODO: ask the user to authorize this request
-			bool bAuthorized = true;
-			if (bAuthorized)
+			PD_Document* pDoc = pSession->getDocument();
+			
+			// serialize entire document into string
+			JoinSessionRequestResponseEvent jsre(jse->getSessionId());
+			if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
 			{
-				PD_Document* pDoc = pSession->getDocument();
+				// set more document properties
+				jsre.m_iRev = pDoc->getCRNumber();
+				jsre.m_sDocumentId = pDoc->getDocUUIDString();
+				if (pDoc->getFilename())
+					jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
 				
-				// serialize entire document into string
-				JoinSessionRequestResponseEvent jsre( jse->getSessionId() );
-				if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
-				{
-					// set more document properties
-					jsre.m_iRev = pDoc->getCRNumber();
-					jsre.m_sDocumentId = pDoc->getDocUUIDString();
-					if (pDoc->getFilename())
-						jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
-					
-					// send to buddy!
-					send( &jsre, *buddy );
-					
-					if (autoAddBuddyOnJoin)
-					{
-						// check if we already know this buddy
-						Buddy* existing = getBuddy(buddy->getName());
-						if (!existing)
-						{
-							// we don't know this buddy yet; add this one as a volatile buddy
-							buddy->setVolatile(true);
-							addBuddy(buddy);
-						}
-					}
+				// send to buddy!
+				send(&jsre, buddy);
 				
-					// add this buddy to the collaboration session
-					pSession->addCollaborator(buddy);
-				}
+				// add this buddy to the collaboration session
+				pSession->addCollaborator(buddy);
 			}
-			break;
 		}
 		
 		case PCT_JoinSessionRequestResponseEvent:
@@ -387,7 +336,7 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 						gchar* fname = g_strdup(jsre->m_sDocumentName.utf8_str());
 						pDoc->setFilename(fname);
 					}
-					pManager->joinSession( jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL );
+					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL);
 				}
 				else 
 				{
@@ -420,7 +369,7 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 			}
-			send(&gsre, *buddy);
+			send(&gsre, buddy);
 			break;
 		}
 		
@@ -432,7 +381,7 @@ void AccountHandler::_handlePacket( Packet* packet, Buddy* buddy, bool autoAddBu
 				DocHandle* pDocHandle = new DocHandle((*it).first, (*it).second);
 				vDocHandles.addItem(pDocHandle);
 			}
-			pManager->setDocumentHandles( *buddy, vDocHandles );
+			pManager->setDocumentHandles(buddy, vDocHandles);
 			break;
 		}
 		
@@ -453,9 +402,11 @@ BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 }
 #endif
 
-void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 errorEnum, const Buddy& buddy ) 
+void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr /* buddy*/) 
 {
-	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n",showProtocolErrorReports,remoteVersion,errorEnum));
+	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n", showProtocolErrorReports, remoteVersion, errorEnum));
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+/*
 	if (showProtocolErrorReports) {
 		static std::set<std::string> reportedBuddies;
 
@@ -464,10 +415,13 @@ void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 er
 			switch (errorEnum) {
 				case PE_Invalid_Version:
 					msg = UT_UTF8String_sprintf("Your buddy %s is using a different version of collaboration software (expected %d, got %d).\n"
-												"You will not be able to collaborate with him/her.", buddy.getName().utf8_str(), ABICOLLAB_PROTOCOL_VERSION, remoteVersion);
+												"You will not be able to collaborate with him/her.", 
+												buddy.getDescription().utf8_str(), // TODO: make the name more user-friendly
+												ABICOLLAB_PROTOCOL_VERSION, remoteVersion);
 					break;
 				default:
-					msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum, buddy.getName().utf8_str() );
+					msg = UT_UTF8String_sprintf("An unknown error code %d was reported by buddy %s.", errorEnum,
+													buddy.getDescription().utf8_str()); // TODO: make the name more user-friendly
 					break;
 			}
 			XAP_App::getApp()->getLastFocussedFrame()->showMessageBox(
@@ -476,15 +430,17 @@ void AccountHandler::_reportProtocolError( UT_sint32 remoteVersion, UT_sint32 er
 				XAP_Dialog_MessageBox::a_OK);
 		}
 	}
+*/
 }
 
-void AccountHandler::_sendProtocolError( const Buddy& buddy, UT_sint32 errorEnum ) 
+void AccountHandler::_sendProtocolError(BuddyPtr pBuddy, UT_sint32 errorEnum)
 {
-	ProtocolErrorPacket event( errorEnum );
-	send( &event, buddy );
+	UT_return_if_fail(pBuddy);
+	ProtocolErrorPacket event(errorEnum);
+	send(&event, pBuddy);
 }
 
-void AccountHandler::enableProtocolErrorReports( bool enable ) 
+void AccountHandler::enableProtocolErrorReports(bool enable) 
 {
 	showProtocolErrorReports = enable;
 }

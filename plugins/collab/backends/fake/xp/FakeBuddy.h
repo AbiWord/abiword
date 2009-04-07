@@ -30,12 +30,10 @@ class DocHandle;
  class FakeBuddy : public Buddy
 {
 public:
-	FakeBuddy(AccountHandler* handler, const UT_UTF8String& name)
-		: Buddy(handler, name)
+	FakeBuddy(AccountHandler* handler, const UT_UTF8String& descriptor)
+		: Buddy(handler, descriptor)
 	{
 	}
-	
-	virtual Buddy* clone() const { return new FakeBuddy( *this ); }
 	
 	virtual UT_UTF8String		getDescription() const
 		{ return getName(); }

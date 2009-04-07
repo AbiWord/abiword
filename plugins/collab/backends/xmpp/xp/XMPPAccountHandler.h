@@ -37,8 +37,6 @@ using std::map;
 #include "ut_types.h"
 #include "XMPPBuddy.h"
 
-class RawPacket;
-
 #define XMPP_RESOURCE "AbiCollab"
 
 extern AccountHandlerConstructor XMPPAccountHandlerConstructor;
@@ -70,19 +68,27 @@ public:
 	virtual void			storeProperties() = 0;
 
 	// user management
-	virtual Buddy*			constructBuddy(const PropertyMap& vProps);
+	virtual BuddyPtr		constructBuddy(const PropertyMap& vProps);
+	virtual BuddyPtr		constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
+	virtual bool			recognizeBuddyIdentifier(const std::string& identifier);
 	virtual bool			allowsManualBuddies()
 		{ return true; }
+	virtual void			forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
+	
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet	
 	
 		// packet management
 	virtual bool			send(const Packet* pPacket);
-	virtual bool 			send(const Packet* pPacket, const Buddy& buddy);
+	virtual bool 			send(const Packet* pPacket, BuddyPtr pBuddy);
 	
-	virtual void 			handleMessage(const gchar* pPacket, const std::string& buddy);
+	virtual void 			handleMessage(const gchar* packet_data, const std::string& from_address);
 
 private:
 	UT_UTF8String			_getNameFromFqa(const UT_UTF8String& fqa);
-	bool					_send(const char* base64data, const Buddy& buddy);
+	bool					_send(const char* base64data, XMPPBuddyPtr pBuddy);
+	XMPPBuddyPtr			_getBuddy(const std::string& from_address);
 		
 	// connection management
 	LmConnection *			m_pConnection;

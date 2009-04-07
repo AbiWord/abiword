@@ -79,7 +79,9 @@ public:
 		{ return & m_vecAdjusts;}
 	UT_GenericVector<ChangeAdjust *> * getAdjusts(void)
 		{ return & m_vecAdjusts;}
-	void addFakeImportAdjust(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev); // used to initialize the adjustment stack when a remote document is received
+		
+	void				masterInit();
+	void				slaveInit(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev);
 	
 private:
 
@@ -89,6 +91,9 @@ private:
 	void							_mapPropsAtts(
 											UT_sint32 indx, 
 											std::map<UT_UTF8String,UT_UTF8String>& props, std::map<UT_uint8,UT_UTF8String>& atts );
+
+	void				_init();
+	void				_cleanup();
 
 	//! Document which is client of this DocListener
 	PD_Document*		m_pDoc;

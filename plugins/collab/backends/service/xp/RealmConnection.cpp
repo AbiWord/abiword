@@ -27,7 +27,7 @@ namespace rpv1 = realm::protocolv1;
 
 RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, 
 								 const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
-								 boost::function<void (RealmConnection&)> sig)
+								 boost::function<void (boost::shared_ptr<RealmConnection>)> sig)
 	: m_io_service(),
 	m_ca_file(ca_file),
 	m_address(address),
@@ -118,7 +118,7 @@ void RealmConnection::addBuddy(RealmBuddyPtr buddy_ptr)
 
 void RealmConnection::removeBuddy(UT_uint8 realm_connection_id)
 {
-	for (std::vector<boost::shared_ptr<RealmBuddy> >::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
+	for (std::vector<RealmBuddyPtr>::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
 	{
 		UT_continue_if_fail(*it);
 		if ((*it)->realm_connection_id() == realm_connection_id)
@@ -133,7 +133,7 @@ void RealmConnection::removeBuddy(UT_uint8 realm_connection_id)
 
 RealmBuddyPtr RealmConnection::getBuddy(UT_uint8 realm_connection_id)
 {
-	for (std::vector<boost::shared_ptr<RealmBuddy> >::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
+	for (std::vector<RealmBuddyPtr>::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
 	{
 		UT_continue_if_fail(*it);
 		if ((*it)->realm_connection_id() == realm_connection_id)
@@ -142,6 +142,26 @@ RealmBuddyPtr RealmConnection::getBuddy(UT_uint8 realm_connection_id)
 		}		
 	}
 	return RealmBuddyPtr();
+}
+
+void RealmConnection::promote()
+{
+	UT_DEBUGMSG(("RealmConnection::promote()\n"));
+
+	// promote this connection to master
+	m_master = true;
+
+	// drop the privileges from the master buddy
+	for (std::vector<RealmBuddyPtr>::iterator it = m_buddies.begin(); it != m_buddies.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		if ((*it)->master())
+		{
+			UT_DEBUGMSG(("Demoting buddy %s\n", (*it)->getDescription().utf8_str()));
+			(*it)->demote();
+			break;
+		}
+	}
 }
 
 void RealmConnection::_disconnect()
@@ -175,7 +195,7 @@ void RealmConnection::_disconnect()
 
 void RealmConnection::_signal()
 {
-	m_sig(*this);
+	m_sig(shared_from_this());
 }
 
 bool RealmConnection::_login()

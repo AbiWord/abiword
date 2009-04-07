@@ -20,21 +20,24 @@
 #ifndef __SERVICEACCOUNTHANDLER__
 #define __SERVICEACCOUNTHANDLER__
 
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include "xap_Types.h"
 #include "ut_string_class.h"
+
 #include <backends/xp/AccountHandler.h>
-#include "soa.h"
 #include "AbiCollabSaveInterceptor.h"
-#include "RealmBuddy.h"
-#include "RealmConnection.h"
-#include "RealmProtocol.h"
 #include "AsioRealmProtocol.h"
-#include "ServiceErrorCodes.h"
 #include "pl_Listener.h"
+#include "RealmConnection.h"
+#include "RealmBuddy.h"
+#include "RealmProtocol.h"
+#include "ServiceBuddy.h"
+#include "ServiceErrorCodes.h"
+#include "soa.h"
 
 namespace acs = abicollab::service;
 namespace rpv1 = realm::protocolv1;
@@ -44,11 +47,12 @@ class GetSessionsResponseEvent;
 class JoinSessionRequestResponseEvent;
 class ServiceBuddy;
 class AbiCollabService_Export;
+class RealmBuddy;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
-typedef std::pair<GetSessionsResponseEvent, ServiceBuddy*> SessionBuddyPair;
-typedef boost::shared_ptr<std::vector<SessionBuddyPair> > SessionBuddyPtr;
+typedef std::pair<GetSessionsResponseEvent, ServiceBuddyPtr> SessionBuddyPair;
+typedef boost::shared_ptr<std::vector<SessionBuddyPair> > SessionBuddyPairPtr;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
 
@@ -76,45 +80,58 @@ public:
 	virtual bool							isOnline();
 
 	// user management
-	virtual Buddy*							constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
-	
+	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
+	virtual void							forceDisconnectBuddy(BuddyPtr) { /* TODO: implement me? */ }
+
 	// packet management
 	virtual bool							send(const Packet* packet);
-	virtual bool							send(const Packet* packet, const Buddy& buddy);
+	virtual bool							send(const Packet* packet, BuddyPtr pBuddy);
 
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
-	virtual void							joinSessionAsync(const Buddy& buddy, DocHandle& docHandle);
+	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	acs::SOAP_ERROR							openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId);
 	void                                                            removeExporter(void); 
+	
+	// session management
+	virtual bool							allowsSessionTakeover()
+		{ return true; }
+
 	// signal management
-	virtual void							signal(const Event& event, const Buddy* pSource);
+	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
+	ServiceBuddyPtr							_getBuddy(ServiceBuddyPtr pBuddy);
+
 	template <class T>
-	void _send(boost::shared_ptr<T> packet, boost::shared_ptr<const RealmBuddy> recipient)
+	void _send(boost::shared_ptr<T> packet, RealmBuddyPtr recipient)
 	{
-		realm::protocolv1::send(*packet, recipient->connection().socket(),
+		realm::protocolv1::send(*packet, recipient->connection()->socket(),
 			boost::bind(&ServiceAccountHandler::_write_handler, this,
 							asio::placeholders::error, asio::placeholders::bytes_transferred, recipient,
-							boost::static_pointer_cast<realm::protocolv1::Packet>(packet)));
+							boost::static_pointer_cast<rpv1::Packet>(packet)));
 	}
 
 	void									_write_handler(const asio::error_code& e, std::size_t bytes_transferred,
-													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<realm::protocolv1::Packet> packet);
+													boost::shared_ptr<const RealmBuddy> recipient, boost::shared_ptr<rpv1::Packet> packet);
+
+	void									_write_result(const asio::error_code& e, std::size_t bytes_transferred,
+													ConnectionPtr connection, boost::shared_ptr<rpv1::Packet> packet);
 
 	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
-													SessionBuddyPtr sessions_ptr);
-	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPtr sessions_ptr);
+													bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr);
+	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& session_id, const std::string& filename);
@@ -122,16 +139,16 @@ private:
 													const std::string& filename);
 	
 	void									_handleJoinSessionRequestResponse(
-													JoinSessionRequestResponseEvent* jsre, Buddy* pBuddy, 
+													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
-	void									_handleRealmPacket(RealmConnection& connection);
+	void									_handleRealmPacket(ConnectionPtr connection);
 	ConnectionPtr							_getConnection(const std::string& session_id);
 	void									_removeConnection(const std::string& session_id);
-	void									_handleMessages(RealmConnection& connection);
+	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
-	virtual	void							_handlePacket(Packet* packet, Buddy* buddy, bool /*autoAddBuddyOnJoin*/)
-		{ AccountHandler::_handlePacket(packet, buddy, false); }
-
+	bool									_splitDescriptor(const std::string& descriptor, uint64_t& user_id, uint8_t& conn_id, std::string& domain);
+	std::string								_getDomain();
+	bool									_parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 
 	bool									m_bOnline;  // only used to determine if we are allowed to 
 														// communicate with abicollab.net or not

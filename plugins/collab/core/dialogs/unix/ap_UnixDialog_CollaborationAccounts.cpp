@@ -350,7 +350,7 @@ void AP_UnixDialog_CollaborationAccounts::eventOnline(AccountHandler* pHandler, 
 	}
 }
 
-void AP_UnixDialog_CollaborationAccounts::signal(const Event& event, const Buddy* /*pSource*/)
+void AP_UnixDialog_CollaborationAccounts::signal(const Event& event, BuddyPtr /*pSource*/)
 {
 	UT_DEBUGMSG(("AP_UnixDialog_CollaborationAccounts::signal()\n"));
 	switch (event.getClassType())

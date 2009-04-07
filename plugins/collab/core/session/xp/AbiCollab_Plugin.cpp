@@ -619,7 +619,7 @@ bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d)
 	pDialog->runModal(pFrame);
 	// Handle the dialog outcome
 	AP_Dialog_CollaborationJoin::tAnswer answer = pDialog->getAnswer();
-	Buddy* pBuddy = const_cast<Buddy*>(pDialog->getBuddy()); // FIXME: bad const cast (it should probably stay const)
+	BuddyPtr pBuddy = pDialog->getBuddy();
 	DocHandle* pDocHandle = pDialog->getDocHandle();
 	pFactory->releaseDialog(pDialog);
 	
