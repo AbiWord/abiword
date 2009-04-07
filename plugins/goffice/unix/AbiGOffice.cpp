@@ -105,7 +105,7 @@ abi_cmd_context_init (GOCmdContextClass *iface)
 GSF_CLASS_FULL (AbiCmdContext, abi_cmd_context,
 		NULL, NULL, NULL, NULL,
 		NULL, G_TYPE_OBJECT, 0,
-		GSF_INTERFACE (abi_cmd_context_init, GO_CMD_CONTEXT_TYPE))
+		GSF_INTERFACE (abi_cmd_context_init, GO_TYPE_CMD_CONTEXT))
 
 //
 // AbiGOffice_addToMenus
@@ -445,13 +445,13 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	cc = GO_CMD_CONTEXT (g_object_new (ABI_CMD_CONTEXT_TYPE, NULL));
 	go_component_set_command_context (cc);
 	/* Initialize plugins manager */
-	go_plugins_init (cc, NULL, NULL, NULL, TRUE, GO_PLUGIN_LOADER_MODULE_TYPE);
+	go_plugins_init (cc, NULL, NULL, NULL, TRUE, GO_TYPE_PLUGIN_LOADER_MODULE);
 	/* Ensure some types are created */
- 	GO_DATA_SCALAR_STR_TYPE;
-	GO_DATA_VECTOR_STR_TYPE;
- 	GO_DATA_SCALAR_VAL_TYPE;
-	GO_DATA_VECTOR_VAL_TYPE;
- 	GO_DATA_MATRIX_VAL_TYPE;
+ 	GO_TYPE_DATA_SCALAR_STR;
+	GO_TYPE_DATA_VECTOR_STR;
+ 	GO_TYPE_DATA_SCALAR_VAL;
+	GO_TYPE_DATA_VECTOR_VAL;
+ 	GO_TYPE_DATA_MATRIX_VAL;
    // Add to AbiWord's menus.
 	mime_types = go_components_get_mime_types ();
 	g_slist_foreach (mime_types, (GFunc) create_manager_cb, pApp);

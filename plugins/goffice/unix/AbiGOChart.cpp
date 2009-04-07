@@ -49,9 +49,9 @@
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-libxml.h>
 
-#define ABI_CONTROL_GUI_TYPE     (abi_control_gui_get_type ())
-#define ABI_CONTROL_GUI(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), ABI_CONTROL_GUI_TYPE, AbiControlGUI))
-#define IS_ABI_CONTROL_GUI(o)    (G_TYPE_CHECK_INSTANCE_TYPE ((o), ABI_CONTROL_GUI_TYPE))
+#define ABI_TYPE_CONTROL_GUI     (abi_control_gui_get_type ())
+#define ABI_CONTROL_GUI(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), ABI_TYPE_CONTROL_GUI, AbiControlGUI))
+#define ABI_IS_CONTROL_GUI(o)    (G_TYPE_CHECK_INSTANCE_TYPE ((o), ABI_TYPE_CONTROL_GUI))
 
 class AbiGO_LocaleTransactor
 {
@@ -295,7 +295,7 @@ abi_control_gui_class_init (GObjectClass *klass)
 GSF_CLASS_FULL (AbiControlGUI, abi_control_gui,
 		NULL, NULL, abi_control_gui_class_init, NULL,
 		abi_control_gui_init, G_TYPE_OBJECT, 0,
-		GSF_INTERFACE (abi_go_plot_data_allocator_init, GOG_DATA_ALLOCATOR_TYPE);
+		GSF_INTERFACE (abi_go_plot_data_allocator_init, GOG_TYPE_DATA_ALLOCATOR);
 		/*GSF_INTERFACE (abi_cmd_context_init, GO_CMD_CONTEXT_TYPE)*/)
 
 static void
@@ -309,7 +309,7 @@ graph_user_config_free_data (gpointer data,
 static void
 cb_update_graph (GogGraph *graph, gpointer data)
 {
-	g_return_if_fail (IS_GOG_GRAPH (graph));
+	g_return_if_fail (GOG_IS_GRAPH (graph));
 	AbiControlGUI *acg = ABI_CONTROL_GUI (data);
 	AbiGO_LocaleTransactor tn(LC_NUMERIC, "C");
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
@@ -358,9 +358,9 @@ AbiGOChart_Create(G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCallData 
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
 	UT_ByteBuf myByteBuf;
 
-	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_CONTROL_GUI_TYPE, NULL));
+	AbiControlGUI *acg = ABI_CONTROL_GUI(g_object_new (ABI_TYPE_CONTROL_GUI, NULL));
 
-	GogGraph *graph = (GogGraph *) g_object_new(GOG_GRAPH_TYPE, NULL);
+	GogGraph *graph = (GogGraph *) g_object_new(GOG_TYPE_GRAPH, NULL);
 	/* by default, create one chart and add it to the graph */
 	gog_object_add_by_name(GOG_OBJECT(graph), "Chart", NULL);
 	GClosure *closure = g_cclosure_new(G_CALLBACK (cb_update_graph), acg,
@@ -701,7 +701,7 @@ GOChartView::GOChartView(GR_GOChartManager * pGOMan): m_pGOMan(pGOMan)
 {
 	m_Graph = NULL;
 	m_Image = NULL;
-	m_Renderer = GOG_RENDERER(g_object_new(GOG_RENDERER_TYPE, NULL));
+	m_Renderer = GOG_RENDERER(g_object_new(GOG_TYPE_RENDERER, NULL));
 	pix_width = pix_height = 0;
 	width = height = 0;
 	m_Guru = NULL;
@@ -772,7 +772,7 @@ void GOChartView::modify()
 	UT_return_if_fail (m_Graph);
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
-	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_CONTROL_GUI_TYPE, NULL));
+	AbiControlGUI *acg = ABI_CONTROL_GUI (g_object_new (ABI_TYPE_CONTROL_GUI, NULL));
 
 	acg->pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
 	acg->pView = this;
