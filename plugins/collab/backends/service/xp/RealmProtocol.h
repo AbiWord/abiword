@@ -45,8 +45,8 @@ public:
 
 	static PacketPtr construct(uint8_t type);
 
-	static bool s_valid(char type);
-	static uint32_t s_body_size(char type);
+	static bool s_valid(unsigned char type);
+	static uint32_t s_body_size(unsigned char type);
 
 	// Should be overwritten when the packet size is variable
 	// Returns: the minimal number of bytes additionally needed before we can

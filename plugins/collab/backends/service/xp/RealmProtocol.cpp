@@ -41,15 +41,15 @@ Packet::Packet(uint8_t type)
 	: m_type(type)
 {}
 
-bool Packet::s_valid(char type) {
-	return type > 0 && type < __LAST_PACKET__;
+bool Packet::s_valid(unsigned char type) {
+	return type < __LAST_PACKET__;
 }
 
-uint32_t Packet::s_body_size(char type) {
+uint32_t Packet::s_body_size(unsigned char type) {
 	return body_size[type];
 }
 
-int Packet::complete(const char* buf, size_t size) {
+int Packet::complete(const char* /*buf*/, size_t size) {
 	if (size >= body_size[m_type])
 		return 0;
 	return body_size[m_type]-size;
