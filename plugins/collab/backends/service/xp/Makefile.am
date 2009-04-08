@@ -36,6 +36,7 @@ libxp_la_SOURCES = \
 	ServiceErrorCodes.h \
 	soa.h \
 	soa_result.h \
+	soa_soup.cpp \
 	soa_soup.h \
 	soa_types.h \
 	tls_tunnel.cpp \
