@@ -33,6 +33,7 @@ libxp_la_SOURCES = \
 	ServiceAccountHandler.cpp \
 	ServiceAccountHandler.h \
 	ServiceBuddy.h \
+	ServiceErrorCodes.cpp \
 	ServiceErrorCodes.h \
 	soa.h \
 	soa_result.h \

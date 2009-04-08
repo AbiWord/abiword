@@ -16,39 +16,22 @@
  * 02111-1307, USA.
  */
 
-#ifndef __SERVICE_ERRORCODES__
-#define __SERVICE_ERRORCODES__
-
-#include "soa.h"
+#include <boost/lexical_cast.hpp>
+#include "ServiceErrorCodes.h"
 
 namespace abicollab {
 namespace service {
 
-enum SOAP_ERROR
+SOAP_ERROR error(const soa::SoapFault& fault)
 {
-	// generic error (reserved)
-	SOAP_ERROR_OK = 0x00,
-	SOAP_ERROR_GENERIC = 0x01,
-	
-	// exception soap errors
-	SOAP_ERROR_GENERIC_EXCEPTION = 0x101,
-	SOAP_ERROR_DATABASE_EXCEPTION = 0x102,
-	
-	// abicollab soap errors
-	SOAP_ERROR_INVALID_PASSWORD = 0x201,
-	SOAP_ERROR_INVALID_EMAIL = 0x202
-	// TODO: add more errors
-	
-	// saveDocument soap errors
-	// TODO: add more errors
-		
-	// openDocument soap errors
-	// TODO: add more errors
-};
-
-SOAP_ERROR error(const soa::SoapFault& fault);
+	if (!fault.string())
+		return SOAP_ERROR_GENERIC;
+	try {
+		return static_cast<SOAP_ERROR>(boost::lexical_cast<int>(fault.string()->value()));
+	} catch (boost::bad_lexical_cast&) {
+		return SOAP_ERROR_GENERIC;
+	}
+}
 
 }
 }
-
-#endif /* __SERVICE_ERRORCODES__ */
