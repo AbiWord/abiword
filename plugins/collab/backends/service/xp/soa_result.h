@@ -30,6 +30,7 @@
 #define __SOA_RESULT__
 
 #include <string>
+#include <strings.h>
 #include <boost/shared_ptr.hpp>
 #include "soa_types.h"
 #include <libxml/parser.h>
