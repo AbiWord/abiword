@@ -29,6 +29,7 @@
 #ifndef __SOA_TYPES__
 #define __SOA_TYPES__
 
+#include <vector>
 #include <stdint.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
