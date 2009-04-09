@@ -214,10 +214,10 @@ ServiceAccountHandler* IE_Imp_AbiCollab::_getAccount(const std::string& email, c
 	// check if we already have an account handler for this server;
 	// if not, we'll create it
 	ServiceAccountHandler* pExistingServiceAccount = NULL;
-	const UT_GenericVector<AccountHandler *> accounts = pManager->getAccounts();
-	for (UT_sint32 i = 0; i < accounts.getItemCount(); i++)
+	const std::vector<AccountHandler *> accounts = pManager->getAccounts();
+	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
-		AccountHandler* pAccount = accounts.getNthItem(i);
+		AccountHandler* pAccount = accounts[i];
 		UT_continue_if_fail(pAccount);
 		// FIXME: don't hardcode this storage type; make it a static class variable
 		if (pAccount->getStorageType() == "com.abisource.abiword.abicollab.backend.service")

@@ -243,7 +243,7 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 							acrsp.getPos(), acrsp.getLength(), pChange->getLocalPos(), pChange->getLocalLength()));
                 }
 				
-				if (static_cast<UT_sint32>(pChange->getLocalPos()) < acrsp.getPos()+iIncomingStateAdjust)
+				if (pChange->getLocalPos() < acrsp.getPos()+iIncomingStateAdjust)
 				{
 					UT_DEBUGMSG(("Normal Upward influence detected\n"));
 					iIncomingStateAdjust += pChange->getLocalAdjust();

@@ -172,7 +172,7 @@ bool DiskSessionRecorder::dumpSession(const std::string& filename)
 	{
 		UT_DEBUGMSG(("Session is %s\n",bLocallyControlled?"locally controlled":"not locally controlled"));
 		
-		size_t packetCounter = 0;
+		UT_uint32 packetCounter = 0;
 		for (vector<RecordedPacket*>::const_iterator cit = packets.begin(); cit != packets.end(); cit++)
 		{
 			const RecordedPacket* rp = *cit;

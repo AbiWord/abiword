@@ -177,7 +177,7 @@ GtkWidget * AP_UnixDialog_CollaborationJoin::_constructWindow(void)
 	
 	_refreshAccounts();
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	gtk_widget_set_sensitive(m_wAddBuddy, pManager->getAccounts().getItemCount() != 0); // TODO: fix this
+	gtk_widget_set_sensitive(m_wAddBuddy, pManager->getAccounts().size() != 0); // TODO: fix this
 	gtk_widget_set_sensitive(m_wDeleteBuddy, false); // TODO: implement this
 	gtk_widget_set_sensitive(m_wRefresh, true);	
 	gtk_widget_set_sensitive(m_wConnect, false);
@@ -266,19 +266,19 @@ GtkTreeStore* AP_UnixDialog_CollaborationJoin::_constructModel()
 	GtkTreeStore* model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_POINTER, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_BOOLEAN);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
+	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
 
-	for (UT_sint32 i = 0; i < accounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
 		UT_DEBUGMSG(("Getting buddies for account: %s of type %s\n", 
-				accounts.getNthItem(i)->getDescription().utf8_str(), 
-				accounts.getNthItem(i)->getDisplayType().utf8_str()
+				accounts[i]->getDescription().utf8_str(), 
+				accounts[i]->getDisplayType().utf8_str()
 			));
 			
 		// add all buddies belonging to this account
-		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
+		for (UT_uint32 j = 0; j < accounts[i]->getBuddies().size(); j++)
 		{
-			BuddyPtr pBuddy = accounts.getNthItem(i)->getBuddies()[j];
+			BuddyPtr pBuddy = accounts[i]->getBuddies()[j];
 			UT_continue_if_fail(pBuddy);
 
 			gtk_tree_store_append (model, &iter, NULL);
@@ -387,8 +387,8 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	}
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
-	if (handler_idx >= accounts.getItemCount() || buddy_idx >= accounts.getNthItem(handler_idx)->getBuddies().size())
+	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
+	if (handler_idx >= accounts.size() || buddy_idx >= accounts[handler_idx]->getBuddies().size())
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
@@ -397,7 +397,7 @@ void AP_UnixDialog_CollaborationJoin::eventConnect()
 	
 	UT_DEBUGMSG(("Got a document we can connect to!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_CONNECT;
-	m_pBuddy = accounts.getNthItem(handler_idx)->getBuddies()[buddy_idx];
+	m_pBuddy = accounts[handler_idx]->getBuddies()[buddy_idx];
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 
@@ -438,8 +438,8 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 	}
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
-	if (handler_idx >= accounts.getItemCount() || buddy_idx >= accounts.getNthItem(handler_idx)->getBuddies().size())
+	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
+	if (handler_idx >= accounts.size() || buddy_idx >= accounts[handler_idx]->getBuddies().size())
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		m_answer = AP_Dialog_CollaborationJoin::a_CLOSE;
@@ -448,7 +448,7 @@ void AP_UnixDialog_CollaborationJoin::eventDisconnect()
 	
 	UT_DEBUGMSG(("Got a document we can disconnect from!\n"));
 	m_answer = AP_Dialog_CollaborationJoin::a_DISCONNECT;
-	m_pBuddy = accounts.getNthItem(handler_idx)->getBuddies()[buddy_idx];
+	m_pBuddy = accounts[handler_idx]->getBuddies()[buddy_idx];
 	m_pDocHandle = reinterpret_cast<DocHandle*>(doc_handle);
 }
 

@@ -108,7 +108,7 @@ public:
 												getRegisteredAccountHandlers(void)
 		{ return m_regAccountHandlers; }
 	bool										addAccount(AccountHandler* pHandler);
-	const UT_GenericVector<AccountHandler *>&	getAccounts() const
+	const std::vector<AccountHandler *>&		getAccounts() const
 		{ return m_vecAccounts; }
 	void										destroyAccounts();
 	bool										destroyAccount(AccountHandler* pHandler);
@@ -159,7 +159,7 @@ private:
 	
 	// account code
 	UT_GenericVector<AccountHandlerConstructor>	m_regAccountHandlers;
-	UT_GenericVector<AccountHandler *>			m_vecAccounts;
+	std::vector<AccountHandler *>				m_vecAccounts;
 	UT_GenericVector<EventListener *>			m_vecEventListeners;
 	
 	// asynchronous opertation registration

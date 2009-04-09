@@ -208,7 +208,7 @@ ChangeRecordSessionPacket::ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev,
 			int iRemoteRev)
 	: AbstractChangeRecordSessionPacket(sSessionId, sDocUUID),
@@ -558,9 +558,9 @@ void GlobSessionPacket::addPacket(SessionPacket* pPacket)
 	pPacket->setParent( this );
 }
 
-UT_sint32 GlobSessionPacket::getPos() const
+PT_DocPosition GlobSessionPacket::getPos() const
 {
-	UT_sint32 iGlobPos = 0;
+	PT_DocPosition  iGlobPos = 0;
 
 	for (size_t i = 0; i < m_pPackets.size(); i++)
 	{
@@ -622,7 +622,6 @@ UT_sint32 GlobSessionPacket::getLength() const
 					ChangeRecordSessionPacket* crp = static_cast<ChangeRecordSessionPacket*>(pPacket);
 					
 					UT_ASSERT_HARMLESS(crp->getLength() >= 0);
-					UT_ASSERT_HARMLESS(crp->getPos() >= 0);
 					
 					if (!pFirstPacket ||
 						crp->getPos() < pFirstPacket->getPos())

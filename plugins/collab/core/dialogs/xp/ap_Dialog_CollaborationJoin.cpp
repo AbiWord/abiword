@@ -62,7 +62,7 @@ void AP_Dialog_CollaborationJoin::_eventAddBuddy()
 	if (pDialog->getAnswer() == AP_Dialog_CollaborationAddBuddy::a_OK)
 	{
 		AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-		UT_return_if_fail(pManager->getAccounts().getItemCount() != 0)
+		UT_return_if_fail(pManager->getAccounts().size() != 0)
 	
 		AccountHandler* pAccount = pDialog->_getActiveAccount();
 		UT_return_if_fail(pAccount);
@@ -94,11 +94,11 @@ void AP_Dialog_CollaborationJoin::_refreshAllDocHandlesAsync()
 {
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
-	const UT_GenericVector<AccountHandler *> accounts = pManager->getAccounts();
-	for (UT_sint32 i = 0; i < accounts.size(); i++)
+	const std::vector<AccountHandler *> accounts = pManager->getAccounts();
+	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
 		// update all document handles
-		AccountHandler* pHandler = accounts.getNthItem(i);
+		AccountHandler* pHandler = accounts[i];
 		pHandler->getSessionsAsync();
 	}
 }
@@ -111,11 +111,11 @@ void AP_Dialog_CollaborationJoin::_refreshAccounts()
 	
 	// Check to see if we should enable buddy addition
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
-	const UT_GenericVector<AccountHandler*>& accounts = pManager->getAccounts();
+	const std::vector<AccountHandler*>& accounts = pManager->getAccounts();
 	bool bEnableAddition = false;
 
 	// Loop through accounts
-	for (UT_sint32 i = 0; i < accounts.getItemCount() && ! bEnableAddition; i++)
+	for (UT_uint32 i = 0; i < accounts.size() && ! bEnableAddition; i++)
 	{
 		UT_continue_if_fail(accounts[i]);
 		bEnableAddition = accounts[i]->allowsManualBuddies();

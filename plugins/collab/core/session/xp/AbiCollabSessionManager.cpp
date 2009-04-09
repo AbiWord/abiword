@@ -419,50 +419,48 @@ void AbiCollabSessionManager::storeProfile()
 				// TODO: one could check every return value here, but I'm lazy right now
 				xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("AbiCollabProfile"));
 				
-				for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+				for (UT_uint32 i = 0; i < m_vecAccounts.size(); i++)
 				{
-					AccountHandler* pHandler = m_vecAccounts.getNthItem(i);
-					if (pHandler)
+					AccountHandler* pHandler = m_vecAccounts[i];
+					UT_continue_if_fail(pHandler);
+					
+					xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("AccountHandler"));
+					
+					// write out the account handler type
+					xmlTextWriterWriteAttribute(writer, reinterpret_cast<const xmlChar*>("type"), BAD_CAST pHandler->getStorageType().utf8_str());
+					
+					// write out the account handler properties
+					for (PropertyMap::const_iterator cit = pHandler->getProperties().begin(); cit != pHandler->getProperties().end(); cit++)
 					{
-						xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("AccountHandler"));
-						
-						// write out the account handler type
-						xmlTextWriterWriteAttribute(writer, reinterpret_cast<const xmlChar*>("type"), BAD_CAST pHandler->getStorageType().utf8_str());
-						
-						// write out the account handler properties
-						for (PropertyMap::const_iterator cit = pHandler->getProperties().begin(); cit != pHandler->getProperties().end(); cit++)
-						{
-							xmlTextWriterWriteElement(writer, BAD_CAST cit->first.c_str(), BAD_CAST BAD_CAST cit->second.c_str());
-						}
-						
-						// write out the account handler buddies
-						xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("buddies"));
-						
-						for (UT_uint32 j = 0; j < pHandler->getBuddies().size(); j++)
-						{
-							BuddyPtr pBuddy = pHandler->getBuddies()[j];
-							UT_continue_if_fail(pBuddy);
-							if (!pBuddy->isVolatile())
-							{
-								// we need to be able to store buddy properties
-								UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-								/*xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("buddy"));
-								// write out the buddy properties
-								// TODO: for now, the only useful property a buddy has is its "name";
-								// However in the future we really should write out a generic property list
-								xmlTextWriterWriteElement(
-										writer,
-										reinterpret_cast<const xmlChar*>("name"), 
-										reinterpret_cast<const xmlChar*>(pBuddy->getName().utf8_str())
-									);
-								xmlTextWriterEndElement(writer);*/ /* end buddy */
-							}
-						}
-						
-						xmlTextWriterEndElement(writer); /* end buddies */
-						
-						xmlTextWriterEndElement(writer); /* end AccountHandler */
+						xmlTextWriterWriteElement(writer, BAD_CAST cit->first.c_str(), BAD_CAST BAD_CAST cit->second.c_str());
 					}
+					
+					// write out the account handler buddies
+					xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("buddies"));
+					
+					for (UT_uint32 j = 0; j < pHandler->getBuddies().size(); j++)
+					{
+						BuddyPtr pBuddy = pHandler->getBuddies()[j];
+						UT_continue_if_fail(pBuddy);
+						if (!pBuddy->isVolatile())
+						{
+							// we need to be able to store buddy properties
+							UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+							/*xmlTextWriterStartElement(writer, reinterpret_cast<const xmlChar*>("buddy"));
+							// write out the buddy properties
+							// TODO: for now, the only useful property a buddy has is its "name";
+							// However in the future we really should write out a generic property list
+							xmlTextWriterWriteElement(
+									writer,
+									reinterpret_cast<const xmlChar*>("name"), 
+									reinterpret_cast<const xmlChar*>(pBuddy->getName().utf8_str())
+								);
+							xmlTextWriterEndElement(writer);*/ /* end buddy */
+						}
+					}
+					
+					xmlTextWriterEndElement(writer); /* end buddies */
+					xmlTextWriterEndElement(writer); /* end AccountHandler */
 				}
 				
 				xmlTextWriterEndElement(writer); /* end AbiCollabProfile */
@@ -913,9 +911,7 @@ bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);
 	bool bUnique = true;
-	int i;
-	int iAccounts = m_vecAccounts.size();
-	for (i = 0; i<iAccounts && bUnique; i++)
+	for (UT_uint32 i = 0; i < m_vecAccounts.size() && bUnique; i++)
 	{
 		UT_continue_if_fail(m_vecAccounts[i]);
 		if (pHandler->getStorageType() == m_vecAccounts[i]->getStorageType())
@@ -940,11 +936,8 @@ bool AbiCollabSessionManager::addAccount(AccountHandler* pHandler)
 
 void AbiCollabSessionManager::destroyAccounts(void)
 {
-	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
-	{
-		AccountHandler * pHandler = m_vecAccounts.getNthItem(i);
-		_deleteAccount(pHandler);
-	}
+	for (UT_uint32 i = 0; i < m_vecAccounts.size(); i++)
+		_deleteAccount(m_vecAccounts[i]);
 	m_vecAccounts.clear();
 }
 
@@ -952,11 +945,11 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 {
 	UT_return_val_if_fail(pHandler, false);
 
-	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < m_vecAccounts.size(); i++)
 	{
-		UT_continue_if_fail(m_vecAccounts.getNthItem(i));
+		UT_continue_if_fail(m_vecAccounts[i]);
 		
-		if (pHandler == m_vecAccounts.getNthItem(i))
+		if (pHandler == m_vecAccounts[i])
 		{
 			UT_DEBUGMSG(("Destroying account handler %s\n", pHandler->getDescription().utf8_str()));
 
@@ -981,7 +974,7 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 				}
 			}
 
-			m_vecAccounts.deleteNthItem(i);
+			m_vecAccounts.erase(m_vecAccounts.begin() + i, m_vecAccounts.begin() + i + 1);
 			_deleteAccount(pHandler);
 			return true;
 		}
@@ -1089,9 +1082,9 @@ BuddyPtr AbiCollabSessionManager::constructBuddy(const std::string& identifier, 
 	UT_DEBUGMSG(("AbiCollabSessionManager::constructBuddy() - identifier: %s\n", identifier.c_str()));
 
 	// find an account hander to handle this identifier
-	for (UT_sint32 i = 0; i < m_vecAccounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < m_vecAccounts.size(); i++)
 	{
-		AccountHandler* pHandler = m_vecAccounts.getNthItem(i);
+		AccountHandler* pHandler = m_vecAccounts[i];
 		UT_continue_if_fail(pHandler);
 
 		if (pHandler->recognizeBuddyIdentifier(identifier))

@@ -44,7 +44,7 @@ bool AbiCollab_ImportRuleSet::_isSaveInsert(const ChangeAdjust& ca, const Abstra
 	if (ca.m_pPacket->getClassType() != PCT_GlobSessionPacket && acrsp.getClassType() != PCT_GlobSessionPacket)
 	{
 		// overlapping inserts are just fine in the case of non-globs, as long as the start positions differ
-		return static_cast<UT_sint32>(ca.getLocalPos()) != (acrsp.getPos()+iRemotePosAdjust);
+		return ca.getLocalPos() != (acrsp.getPos()+iRemotePosAdjust);
 	}
 
 	//

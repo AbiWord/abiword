@@ -246,7 +246,7 @@ public:
 	
 	static bool isInstanceOf(const SessionPacket& packet);
 	
-	virtual UT_sint32 getPos() const = 0;
+	virtual PT_DocPosition getPos() const = 0;
 	virtual UT_sint32 getLength() const = 0;
 	virtual UT_sint32 getAdjust() const = 0;
 	virtual UT_sint32 getRev() const = 0;
@@ -268,13 +268,13 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-		 	int iPos,
+		 	PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev);
 	
 	PX_ChangeRecord::PXType getPXType() const			{ return m_cType; }
 	
-	virtual UT_sint32 getPos() const					{ return m_iPos; }
+	virtual PT_DocPosition getPos() const				{ return m_iPos; }
 	virtual UT_sint32 getLength() const					{ return m_iLength; }
 	virtual UT_sint32 getAdjust() const					{ return m_iAdjust; }
 	virtual UT_sint32 getRev() const 					{ return m_iRev; }
@@ -294,7 +294,7 @@ private:
 	UT_sint32					m_iLength;
 	UT_sint32					m_iAdjust;
 
-	UT_sint32					m_iPos;
+	PT_DocPosition				m_iPos;
 	UT_sint32					m_iRev;
 	UT_sint32					m_iRemoteRev;
 };
@@ -308,7 +308,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -352,7 +352,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -373,7 +373,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -393,7 +393,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -413,7 +413,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -435,7 +435,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -459,7 +459,7 @@ public:
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
 			const UT_UTF8String& sDocUUID, 
-			int iPos,
+			PT_DocPosition iPos,
 			int iRev, 
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
@@ -486,7 +486,7 @@ public:
 
 	void addPacket(SessionPacket* pPacket);
 	
-	virtual UT_sint32 getPos() const;
+	virtual PT_DocPosition getPos() const;
 	virtual UT_sint32 getLength() const;
 	virtual UT_sint32 getAdjust() const;
 	virtual UT_sint32 getRev() const;

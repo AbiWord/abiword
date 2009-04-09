@@ -183,11 +183,11 @@ static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
 /*!
  * returns true if at least one account is online
  */
-bool any_accounts_online( const UT_GenericVector<AccountHandler *>& vecAccounts )
+bool any_accounts_online( const std::vector<AccountHandler *>& vecAccounts )
 {
-	for (UT_sint32 i = 0; i < vecAccounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < vecAccounts.size(); i++)
 	{
-		AccountHandler* pHandler = vecAccounts.getNthItem(i);
+		AccountHandler* pHandler = vecAccounts[i];
 		if (pHandler && pHandler->isOnline())
 		{
 			return true;
@@ -288,11 +288,11 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_AnyActive)
 	UT_UNUSED(id);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
- 	const UT_GenericVector<AccountHandler*>& vecAccounts = pManager->getAccounts();
+ 	const std::vector<AccountHandler*>& vecAccounts = pManager->getAccounts();
 
-	for (UT_sint32 i = 0; i < vecAccounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < vecAccounts.size(); i++)
 	{
-		AccountHandler* pHandler = vecAccounts.getNthItem(i);
+		AccountHandler* pHandler = vecAccounts[i];
 		if (pHandler && pHandler->isOnline())
 			return EV_MIS_ZERO;
 	}
