@@ -61,6 +61,8 @@ class fl_BlockLayout;
 class fp_Run;
 class UT_UTF8String;
 class pp_Author;
+class _ImagePage;
+class _TextboxPage;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -775,6 +777,8 @@ private:
 	bool                    m_bExportAuthorAtts;
 	UT_sint32               m_iMyAuthorInt;
 	UT_sint32               m_iLastAuthorInt;
+	UT_GenericVector<_ImagePage *> m_pPendingImagePage;
+	UT_GenericVector<_TextboxPage *> m_pPendingTextboxPage;
 };
 
 #endif /* PD_DOCUMENT_H */

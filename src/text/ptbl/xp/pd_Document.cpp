@@ -73,6 +73,82 @@
 
 #include "ut_go_file.h"
 
+/*! 
+ * Helper class to import Page Referenced Images
+ */
+class ABI_EXPORT  _ImagePage
+{
+public:
+	_ImagePage(UT_ByteBuf * pImageData, UT_sint32 iPage, double xInch, double yInch, const char * pzProps) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
+	{
+		m_pImageData.append(pImageData->getPointer(0),pImageData->getLength());
+		m_sProps = pzProps;
+	}
+	virtual ~_ImagePage(void)
+	{
+	}
+	const UT_ByteBuf * getByteBuf(void) const
+	{
+		return &m_pImageData;
+	}
+	UT_sint32 getPageNo(void) const
+	{
+		return m_iPage;
+	}
+	double getXInch(void) const
+	{
+		return m_xInch;
+	}
+	double getYInch(void) const
+	{
+		return m_yInch;
+	}
+private:
+	UT_ByteBuf m_pImageData;
+	UT_sint32 m_iPage;
+	double m_xInch;
+	double m_yInch;
+	UT_UTF8String m_sProps;
+};
+
+/*!
+ * Helpder class to import Page Referenced TextBoxes
+ */
+class ABI_EXPORT _TextboxPage
+{
+public:
+	_TextboxPage(UT_sint32 iPage, double xInch, double yInch,const char * pzProps, UT_UTF8String & sContent) : m_iPage(iPage),m_xInch(xInch),m_yInch(yInch)
+	{
+		m_sProps = pzProps;
+		m_sContent = sContent;
+	}
+	virtual ~_TextboxPage(void)
+	{
+	}
+	const UT_UTF8String * getContent(void) const
+	{
+		return &m_sContent;
+	}
+	UT_sint32 getPageNo(void) const
+	{
+		return m_iPage;
+	}
+	double getXInch(void) const
+	{
+		return m_xInch;
+	}
+	double getYInch(void) const
+	{
+		return m_yInch;
+	}
+private:
+	UT_sint32 m_iPage;
+	double m_xInch;
+	double m_yInch;
+	UT_UTF8String m_sProps;
+	UT_UTF8String m_sContent;
+};
+
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
 
