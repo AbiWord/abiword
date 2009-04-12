@@ -309,6 +309,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 #ifdef ENABLE_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 {
+  UT_UNUSED(pAV_View);
+  UT_UNUSED(id);
   EV_Menu_ItemState s = EV_MIS_ZERO ;
 
   XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
@@ -330,6 +332,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 {
+  UT_UNUSED(id);
   ABIWORD_VIEW ;
   UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -343,6 +346,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BookmarkOK)
 {
+	UT_UNUSED(id);
   ABIWORD_VIEW ;
   UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -374,6 +378,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BookmarkOK)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 {
+  UT_UNUSED(id);
   ABIWORD_VIEW ;
   UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -457,6 +462,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW ;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -473,6 +479,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW ;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -489,6 +496,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW ;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -711,6 +719,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive)
 {
+  UT_UNUSED(pAV_View);
+  UT_UNUSED(id);
   EV_Menu_ItemState s = EV_MIS_ZERO;
 
   UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
@@ -806,6 +816,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_FmtHdrFtr)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -1225,6 +1236,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1238,6 +1250,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1250,6 +1263,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_History)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	PD_Document * pDoc = pView->getDocument();
@@ -1264,6 +1278,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_History)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisionsCheck)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1286,6 +1301,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisionsCheck)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1307,6 +1323,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1320,6 +1337,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1331,6 +1349,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->getDocument()->isConnected())
@@ -1348,6 +1367,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1373,6 +1393,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1405,6 +1426,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1431,6 +1453,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1458,6 +1481,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1471,6 +1495,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1482,6 +1507,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1493,6 +1519,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_PointInTable)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1504,6 +1531,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_PointInTable)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_PointOrAnchorInTable)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	bool bP = pView->isInTable(pView->getPoint());
@@ -1517,6 +1545,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_PointOrAnchorInTable)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableIsRepeat)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1535,6 +1564,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableIsRepeat)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1576,6 +1606,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isTOCSelected())
@@ -1587,6 +1618,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
@@ -1600,6 +1632,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->getHyperLinkRun(pView->getPoint()) != NULL)
@@ -1659,6 +1692,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InAnnotation)
 // RIVERA
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	XAP_App *pApp = XAP_App::getApp();
@@ -1674,6 +1708,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ToggleAnnotations)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isImageSelected())
@@ -1694,6 +1729,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SetPosImage)
 {
+	UT_UNUSED(id);
         ABIWORD_VIEW;
   	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	bool bCont= false;
@@ -1723,6 +1759,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SetPosImage)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFrame)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isInFrame(pView->getPoint()))
@@ -1735,6 +1772,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFrame)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	
@@ -1803,11 +1841,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 // HACK TO ALWAYS DISABLE A MENU ITEM... DELETE ME
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled)
 {
+	UT_UNUSED(pAV_View);
+	UT_UNUSED(id);
     return EV_MIS_Gray;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent)
 {
+	UT_UNUSED(pAV_View);
+	UT_UNUSED(id);
   // ABIWORD_VIEW;
   // UT_return_val_if_fail(pView, EV_MIS_ZERO);
 
@@ -1867,6 +1909,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, EV_MIS_ZERO);
 
@@ -1880,6 +1923,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MailMerge)
 {
+	UT_UNUSED(id);
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, EV_MIS_ZERO);
 	
