@@ -12031,6 +12031,7 @@ UT_return_val_if_fail(pDialog, false);
 
 Defun1(sortColsAscend)
 {
+	UT_UNUSED(pAV_View);
 	CHECK_FRAME;
 	//ABIWORD_VIEW;
 	return true;
@@ -12038,6 +12039,7 @@ Defun1(sortColsAscend)
 
 Defun1(sortColsDescend)
 {
+	UT_UNUSED(pAV_View);
 	CHECK_FRAME;
 	//ABIWORD_VIEW;
 	return true;
@@ -12045,6 +12047,7 @@ Defun1(sortColsDescend)
 
 Defun1(sortRowsAscend)
 {
+	UT_UNUSED(pAV_View);
 	CHECK_FRAME;
 	//ABIWORD_VIEW;
 	return true;
@@ -12052,6 +12055,7 @@ Defun1(sortRowsAscend)
 
 Defun1(sortRowsDescend)
 {
+	UT_UNUSED(pAV_View);
 	CHECK_FRAME;
 	//ABIWORD_VIEW;
 	return true;
