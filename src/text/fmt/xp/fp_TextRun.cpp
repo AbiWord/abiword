@@ -2714,7 +2714,7 @@ void fp_TextRun::resetJustification(bool bPermanent)
 void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
 	UT_return_if_fail(m_pRenderInfo);
-	UT_sint32 len = getLength();
+	UT_uint32 len = getLength();
 
 	if(!iAmount)
 	{
