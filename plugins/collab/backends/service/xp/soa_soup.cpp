@@ -31,6 +31,7 @@
 #include <libsoup/soup.h>
 #include <boost/lexical_cast.hpp>
 #include <soa_soup.h>
+#include "ut_assert.h"
 
 namespace soup_soa {
 
@@ -176,7 +177,7 @@ namespace soup_soa {
 		}
 		catch (boost::bad_lexical_cast &)
 		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // unless the server is really broken
+       			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // unless the server is really broken
 			return;
 		}
 #endif
