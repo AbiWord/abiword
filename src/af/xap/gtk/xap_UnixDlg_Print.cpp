@@ -397,6 +397,10 @@ void XAP_UnixDialog_Print::cleanup(void)
 	}
 	static_cast<GR_CairoGraphics *>(m_pView->getGraphics())->resetFontMapResolution();
 	DELETEP(m_pPrintGraphics);
+	//
+	// Finish pending expose events.
+	//
+	m_pFrame->nullUpdate();
 }
 
 void XAP_UnixDialog_Print::PrintDirectly(XAP_Frame * pFrame, const char * szFilename, const char * szPrinter)
