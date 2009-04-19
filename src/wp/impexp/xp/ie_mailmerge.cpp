@@ -311,7 +311,10 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		// we must open in binary mode for UCS-2 compatibility
 		if ( ( f = UT_go_file_open( szFilename, NULL ) ) != NULL )
 		{
-		  iNumbytes = UT_MIN(sizeof(szBuf) - 1, gsf_input_size(f));
+		  gsf_off_t stream_size = gsf_input_size(f);
+		  if (stream_size == -1)
+				return UT_ERROR;
+		  iNumbytes = UT_MIN(sizeof(szBuf) - 1, static_cast<UT_uint64>(stream_size));
 		  gsf_input_read(f, iNumbytes, (guint8*)szBuf);
 		  g_object_unref(G_OBJECT(f));
 		  szBuf[iNumbytes] = '\0';
