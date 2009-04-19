@@ -1586,7 +1586,7 @@ void fp_Page::updateColumnX()
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		if((m_pView->getViewMode() == VIEW_NORMAL) || (m_pView->getViewMode() == VIEW_WEB) &&
+		if((m_pView->getViewMode() == VIEW_NORMAL || m_pView->getViewMode() == VIEW_WEB) &&
 		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			iLeftMargin = m_pView->getNormalModeXOffset();
@@ -1697,7 +1697,7 @@ void fp_Page::_reformatColumns(void)
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		if((m_pView->getViewMode() == VIEW_NORMAL) || (m_pView->getViewMode() == VIEW_WEB) &&
+		if((m_pView->getViewMode() == VIEW_NORMAL || m_pView->getViewMode() == VIEW_WEB) &&
 		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			iLeftMargin = m_pView->getNormalModeXOffset();
@@ -1876,7 +1876,7 @@ void fp_Page::_reformatFootnotes(void)
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
 
-		if((m_pView->getViewMode() == VIEW_NORMAL) || (m_pView->getViewMode() == VIEW_WEB) &&
+		if((m_pView->getViewMode() == VIEW_NORMAL || m_pView->getViewMode() == VIEW_WEB) &&
 		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 			pFC->setX(m_pView->getTabToggleAreaWidth());
 		else
@@ -1945,7 +1945,7 @@ void fp_Page::_reformatAnnotations(void)
 		fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
 
-		if((m_pView->getViewMode() == VIEW_NORMAL) || (m_pView->getViewMode() == VIEW_WEB) &&
+		if((m_pView->getViewMode() == VIEW_NORMAL || m_pView->getViewMode() == VIEW_WEB) &&
 		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 			pAC->setX(m_pView->getTabToggleAreaWidth());
 		else
