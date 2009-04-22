@@ -144,10 +144,10 @@ private:
 		gdk_pixbuf_ref (pixbuf);
 		
 		// Initialize stuff to create our PNG.
-		UT_Error ut_error = Initialize_PNG();
-		if (ut_error)
+		UT_Error error = Initialize_PNG();
+		if (error)
 			{
-				return ut_error;
+				return error;
 			}
 		
 		if (setjmp(m_pPNG->jmpbuf))
