@@ -220,7 +220,9 @@ void s_DocBook_Listener::_tagClose(UT_uint32 tagID, const UT_UTF8String & conten
 	xxx_UT_DEBUGMSG(("Popping %d off of stack\n",i));
 
 	if(i != tagID)
+	{
 		UT_DEBUGMSG(("DocBook export: possible mismatched tag. Requested: %d, Popped: %d\n",tagID,i));
+	}
 }
 
 void s_DocBook_Listener::_tagOpen(UT_uint32 tagID, const UT_UTF8String & content, bool newline, bool indent, bool increase)

@@ -822,7 +822,9 @@ void IE_Imp_XSL_FO::endElement(const gchar *name)
 	m_utnsTagStack.pop((UT_sint32*)&i);
 
 	if(i != tokenIndex)
-		UT_DEBUGMSG(("DocBook: Parse error!\n"));
+	{
+		UT_DEBUGMSG(("XSL-FO: Parse error!\n"));
+	}
 
 	switch (tokenIndex)
 	{
