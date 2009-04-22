@@ -502,7 +502,10 @@ public:
 			UT_XML default_xml;
 
 			default_xml.setListener (this);
-			return default_xml.parse (szFilename);
+
+			std::string sFile;
+			convertURI(sFile, szFilename);
+			return default_xml.parse (sFile.c_str());
 		}
 	
 	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
@@ -511,7 +514,10 @@ public:
 		m_vecHeaders = &out_vec;
 		
 		default_xml.setListener (this);
-		return default_xml.parse (szFilename);
+
+		std::string sFile;
+		convertURI(sFile, szFilename);
+		return default_xml.parse (sFile.c_str());
 	}
 
 private:
@@ -528,6 +534,22 @@ private:
 		}
 
 		m_vecHeaders->addItem (new UT_UTF8String (str));
+	}
+
+	void convertURI(std::string &sFile, const char *szURI)
+	{
+		bool bURI = UT_go_path_is_uri(szURI);
+		if(bURI)
+		{
+			const gchar *filename = UT_go_filename_from_uri(szURI);
+			sFile = filename;
+			FREEP(filename);
+		}
+		else
+		{
+			sFile = szURI;
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	UT_UTF8String mKey;
