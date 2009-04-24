@@ -1737,7 +1737,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SetPosImage)
 	{
 		bCont = true;
 	}
-	if(!bCont & pView->getFrameEdit()->isActive())
+	if(!bCont && pView->getFrameEdit()->isActive())
 	{
 	        fl_FrameLayout * pFL = pView->getFrameLayout();
 		if(pFL && pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
