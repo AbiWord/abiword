@@ -1356,7 +1356,8 @@ void XAP_EncodingManager::initialize()
 		sprintf(fulllocname,"%s_%s.%s",isocode,terrname,enc);		
 	}
 	else {
-		strcpy(langandterr,isocode);
+		strncpy(langandterr,isocode,sizeof(langandterr)-1);
+		langandterr[sizeof(langandterr)-1] = '\0';
 		sprintf(fulllocname,"%s.%s",isocode,enc);
 	}
 	const char* NativeTexEncodingName = search_rmap_with_opt_suffix(native_tex_enc_map,enc);
