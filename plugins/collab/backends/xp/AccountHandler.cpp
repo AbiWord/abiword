@@ -318,6 +318,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 				// add this buddy to the collaboration session
 				pSession->addCollaborator(buddy);
 			}
+			break;
 		}
 		
 		case PCT_JoinSessionRequestResponseEvent:
