@@ -5153,7 +5153,8 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	if (!name)
 		name = "*";
 
-	strcpy (szFieldValue, name);
+	strncpy (szFieldValue, name, FPFIELD_MAX_LENGTH);
+	szFieldValue[FPFIELD_MAX_LENGTH] = '\0';
 
 	if (getField())
 	  getField()->setValue(static_cast<const gchar*>(szFieldValue));
