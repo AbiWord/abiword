@@ -709,7 +709,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 			pTInfo = m_infoCache.m_vecTableRowInfo->getNthItem(0);
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTInfo->m_pCell->getContainer());
 			fp_CellContainer * pCell = NULL;
-			posPrev =pTab->getYOfRow(0);  ;
+			posPrev =pTab->getYOfRow(0);
 			for(i=1;i<=m_infoCache.m_vecTableRowInfo->getItemCount();i++)
 			{
 				bool bLast = (m_infoCache.m_vecTableRowInfo->getItemCount() == i);

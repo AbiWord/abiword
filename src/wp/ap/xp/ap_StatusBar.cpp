@@ -59,8 +59,7 @@ AP_StatusBarField::AP_StatusBarField(AP_StatusBar * pSB)
 
 AP_StatusBarField::~AP_StatusBarField(void)
 {
-    if(m_pStatusBarFieldListener)
-	delete(m_pStatusBarFieldListener);
+    DELETEP(m_pStatusBarFieldListener);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -341,10 +340,7 @@ void AP_StatusBarField_ProgressBar::setStatusProgressType(int start, int end, in
     m_ProgressFlags = flags;
     m_ProgressStartPoint = 0;
 
-    if (m_ProgressTimer) {
-	delete m_ProgressTimer;
-	m_ProgressTimer = NULL;
-    }
+    DELETEP(m_ProgressTimer);
 
     if (m_ProgressStart == m_ProgressEnd &&
 	(m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_STARTBAR) {  

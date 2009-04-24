@@ -337,7 +337,7 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 {
 	UT_Error error = UT_OK;
 	AP_Frame * pClone = static_cast<AP_Frame *>(pF);
-	XAP_Frame::tZoomType iZoomType = pF->getZoomType();;
+	XAP_Frame::tZoomType iZoomType = pF->getZoomType();
 	setZoomType(iZoomType);
 	UT_uint32 iZoom = XAP_Frame::getZoomPercentage();
 	ENSUREP_C(pClone);

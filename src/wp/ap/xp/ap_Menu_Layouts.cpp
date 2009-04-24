@@ -807,6 +807,5 @@ void XAP_Menu_Factory::removeContextMenu(EV_EditMouseContext menuID)
 {
 	_vectt * pVectt;
 	m_vecTT.setNthItem (menuID, NULL, (const void**)&pVectt);
-	if (pVectt)
-		delete pVectt;
+	DELETEP(pVectt);
 }

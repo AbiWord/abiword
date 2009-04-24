@@ -30,8 +30,7 @@ AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFac
 
 AP_Dialog_InsertHyperlink::~AP_Dialog_InsertHyperlink(void)
 {
-	if(m_pHyperlink)
-		delete [] m_pHyperlink;
+	DELETEPV(m_pHyperlink);
 }
 
 void AP_Dialog_InsertHyperlink::setAnswer(AP_Dialog_InsertHyperlink::tAnswer a)
@@ -63,9 +62,7 @@ const gchar * AP_Dialog_InsertHyperlink::getHyperlink() const
 
 void AP_Dialog_InsertHyperlink::setHyperlink(const gchar * link)
 {
-	if(m_pHyperlink)
-		delete [] m_pHyperlink;
-
+	DELETEPV(m_pHyperlink);
 	UT_uint32 len = strlen(link);
 	m_pHyperlink = new gchar [len+1];
 	strncpy(m_pHyperlink, link, len + 1);

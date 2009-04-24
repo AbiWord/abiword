@@ -60,9 +60,7 @@ AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
-  if (NULL != m_pszTabStops)
-    delete [] m_pszTabStops;
-
+  DELETEPV(m_pszTabStops);
   UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 

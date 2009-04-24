@@ -140,9 +140,7 @@ char * AP_Dialog_MarkRevisions::getComment1()
 
 void AP_Dialog_MarkRevisions::setComment2(const char * pszComment)
 {
-	if(m_pComment2)
-		delete [] m_pComment2;
-
+	DELETEPV(m_pComment2);
 	m_pComment2 = new UT_UCS4Char [strlen(pszComment) + 1];
 	UT_return_if_fail(m_pComment2);
 

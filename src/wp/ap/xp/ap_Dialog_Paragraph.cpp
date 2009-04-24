@@ -1292,7 +1292,7 @@ AP_Dialog_Paragraph::sControlData::sControlData (const sControlData & rhs) :
 
 AP_Dialog_Paragraph::sControlData::~sControlData ()
 {
-	if (m_szData) delete [] m_szData;
+	DELETEPV(m_szData);
 }
 
 AP_Dialog_Paragraph::sControlData & AP_Dialog_Paragraph::sControlData::operator= (const sControlData & rhs)
