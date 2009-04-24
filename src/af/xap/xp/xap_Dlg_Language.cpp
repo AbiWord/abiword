@@ -112,12 +112,9 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 
 XAP_Dialog_Language::~XAP_Dialog_Language(void)
 {
-	if(m_pLangTable)
-		delete m_pLangTable;
-	if(m_ppLanguages)
-		delete [] m_ppLanguages;
-	if(m_ppLanguagesCode)
-		delete [] m_ppLanguagesCode;
+	DELETEP(m_pLangTable);
+	DELETEPV(m_ppLanguages);
+	DELETEPV(m_ppLanguagesCode);
 }
 
 // we will not use the value passed to us, but rather will reference

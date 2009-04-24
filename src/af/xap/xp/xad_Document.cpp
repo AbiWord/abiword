@@ -121,12 +121,9 @@ AD_Document::~AD_Document()
 	if (m_szFilename)
 		g_free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
 
-	if(m_pUUID)
-		delete m_pUUID;
-	if(m_pOrigUUID)
-		delete m_pOrigUUID;
-	if(m_pMyUUID)
-		delete m_pMyUUID;
+	DELETEP(m_pUUID);
+	DELETEP(m_pOrigUUID);
+	DELETEP(m_pMyUUID);
 }
 
 bool AD_Document::isOrigUUID(void) const
@@ -1392,8 +1389,7 @@ bool AD_VersionData::operator == (const AD_VersionData &v)
 
 AD_VersionData::~AD_VersionData()
 {
-	if(m_pUUID)
-		delete m_pUUID;
+	DELETEP(m_pUUID);
 }
 
 time_t AD_VersionData::getTime()const

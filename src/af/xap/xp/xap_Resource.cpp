@@ -56,12 +56,8 @@ XAP_InternalResource::~XAP_InternalResource ()
 
 void XAP_InternalResource::clear ()
 {
-	if (m_buffer)
-		{
-			delete [] m_buffer;
-			m_buffer = 0;
-			m_buffer_length = 0;
-		}
+	DELETEPV(m_buffer);
+	m_buffer_length = 0;
 }
 
 const char * XAP_InternalResource::buffer (const char * new_buffer, UT_uint32 new_buffer_length, bool base64_encoded)

@@ -60,8 +60,7 @@ XAP_Dialog_Encoding::XAP_Dialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Di
 XAP_Dialog_Encoding::~XAP_Dialog_Encoding(void)
 {
 	DELETEP (m_pEncTable);
-	if(m_ppEncodings)
-		delete [] m_ppEncodings;
+	DELETEPV(m_ppEncodings);
 }
 
 // we will not use the value passed to us, but rather will reference

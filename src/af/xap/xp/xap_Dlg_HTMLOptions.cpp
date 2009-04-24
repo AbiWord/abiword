@@ -44,9 +44,7 @@ XAP_Dialog_HTMLOptions::XAP_Dialog_HTMLOptions (XAP_DialogFactory * pDlgFactory,
 
 XAP_Dialog_HTMLOptions::~XAP_Dialog_HTMLOptions(void)
 {
-	//
-	if(m_pLinkCSS)
-		delete m_pLinkCSS;
+	DELETEP(m_pLinkCSS);
 }
 
 void XAP_Dialog_HTMLOptions::setHTMLOptions (XAP_Exp_HTMLOptions * exp_opt, XAP_App * app)
