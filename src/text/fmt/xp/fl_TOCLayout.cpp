@@ -1829,7 +1829,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 		else
 		{
-			m_bInherit1 = false;;
+			m_bInherit1 = false;
 		}
 	}
 	pszTOCLABELINHERITS = NULL;
@@ -1845,7 +1845,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 		else
 		{
-			m_bInherit2 = false;;
+			m_bInherit2 = false;
 		}
 	}
 	pszTOCLABELINHERITS = NULL;
@@ -1861,7 +1861,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 		else
 		{
-			m_bInherit3 = false;;
+			m_bInherit3 = false;
 		}
 	}
 	pszTOCLABELINHERITS = NULL;
@@ -1877,7 +1877,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		}
 		else
 		{
-			m_bInherit4 = false;;
+			m_bInherit4 = false;
 		}
 	}
 //

@@ -121,10 +121,8 @@ fl_TableLayout::~fl_TableLayout()
 	m_bDoingDestructor = true;
 	_purgeLayout();
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
-	if (pTC)
-	{
-		delete pTC;
-	}
+	DELETEP(pTC);
+
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 	UT_VECTOR_PURGEALL(fl_ColProps *, m_vecColProps);
@@ -1102,7 +1100,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		if(atoi(pszHomogeneous) == 1)
 		{
-			m_bIsHomogeneous = true;;
+			m_bIsHomogeneous = true;
 		}
 	}
 	else

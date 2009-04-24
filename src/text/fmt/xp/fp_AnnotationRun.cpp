@@ -66,10 +66,7 @@ fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 	// is to a potentially volatile location
 	if(bFound)
 	{
-	        if(m_pTarget)
-		{
-		    delete [] m_pTarget;
-		}
+	        DELETEPV(m_pTarget);
 		UT_uint32 iTargetLen = strlen(pTarget);
 		m_pTarget = new gchar [iTargetLen + 1];
 		strncpy(m_pTarget, pTarget, iTargetLen + 1);
@@ -94,9 +91,7 @@ fp_AnnotationRun::fp_AnnotationRun(fl_BlockLayout* pBL,
 
 fp_AnnotationRun::~fp_AnnotationRun()
 {
-	if(m_pTarget)
-		delete [] m_pTarget;
-	m_pTarget = NULL;
+	DELETEPV(m_pTarget);
 }
 
 
@@ -242,7 +237,7 @@ bool fp_AnnotationRun::_recalcWidth(void)
     if(!m_bIsStart)
     {
 	_setWidth(0);
-	return false;;
+	return false;
     }
     UT_sint32 iNewWidth = calcWidth();
     m_iRealWidth = iNewWidth;

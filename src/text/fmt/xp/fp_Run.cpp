@@ -402,11 +402,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 #endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
-	if(m_pRevisions)
-	{
-		delete m_pRevisions;
-		m_pRevisions = NULL;
-	}
+	DELETEP(m_pRevisions);
 
 	setVisibility(FP_VISIBLE); // set default visibility
 	
@@ -1058,12 +1054,12 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 						findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
 					    if(bRTL) //rtl needs translation
 						{
-							xLeft = x1 + _getView()->getPageViewLeftMargin();;
+							xLeft = x1 + _getView()->getPageViewLeftMargin();
 							xLeft -= _getView()->getXScrollOffset();
 						}
 						else
 						{
-							xRight = x1 + _getView()->getPageViewLeftMargin();;
+							xRight = x1 + _getView()->getPageViewLeftMargin();
 							xRight -= _getView()->getXScrollOffset();
 						}
 					}
@@ -3046,9 +3042,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 
 fp_HyperlinkRun::~fp_HyperlinkRun()
 {
-	if(m_pTarget)
-		delete [] m_pTarget;
-	m_pTarget = NULL;
+	DELETEPV(m_pTarget);
 }
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
@@ -3147,9 +3141,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		// we just need its representation so the base class can
 		// handle us properly
 		PP_RevisionAttr * pRev = getRevisions();
-
-		if(pRev)
-			delete pRev;
+		DELETEP(pRev);
 
 		_setRevisions(new PP_RevisionAttr(pRevision));
 	}
@@ -3433,14 +3425,8 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 
 fp_ImageRun::~fp_ImageRun()
 {
-	if (m_pImage)
-	{
-		delete m_pImage;
-	}
-	if(m_pFGraphic)
-	{
-		delete m_pFGraphic;
-	}
+	DELETEP(m_pImage);
+	DELETEP(m_pFGraphic);
 }
 
 void fp_ImageRun::regenerateImage(GR_Graphics * pG)

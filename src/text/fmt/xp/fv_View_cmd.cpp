@@ -2971,7 +2971,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
 		m_pDoc->endUserAtomicGlob();
-		return false;;
+		return false;
 	}
 	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
 	PT_DocPosition posEndCell;

@@ -9586,9 +9586,9 @@ void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
 	const gchar* szDec       = 0;
 	const gchar* szStart     = 0;
 	const gchar* szAlign     = 0;
-	const gchar* szIndent    = 0;;
+	const gchar* szIndent    = 0;
 	const gchar* szFont      = 0;
-	const gchar* szListStyle = 0;;
+	const gchar* szListStyle = 0;
 	UT_uint32 startv, level, currID;
 
 	// TODO -- this mixture of float and double is a mess, we should

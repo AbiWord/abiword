@@ -3330,7 +3330,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 			
 			blockLeft = pBlock->getDominantDirection() == UT_BIDI_LTR
 				? UT_convertToInches(pBlock->getProperty(margin_left,true))
-				: UT_convertToInches(pBlock->getProperty(margin_right,true));;
+				: UT_convertToInches(pBlock->getProperty(margin_right,true));
 		}
 //
 // Look for Numbered Heading in the prev block style or it's ancestry.
@@ -9973,7 +9973,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
 			{
-				m_prevMouseContext = EV_EMC_POSOBJECT;;
+				m_prevMouseContext = EV_EMC_POSOBJECT;
 				xxx_UT_DEBUGMSG(("Over positioned object \n"));
 				return EV_EMC_POSOBJECT;
 			}

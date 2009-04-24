@@ -180,7 +180,7 @@ void FV_View::_eraseSelection(void)
 		iPos2 = m_Selection.getSelectionAnchor();
 	}
 	m_iLowDrawPoint = 0;
-	m_iHighDrawPoint = 0;;
+	m_iHighDrawPoint = 0;
 
 	_clearBetweenPositions(iPos1, iPos2, true);
 }

@@ -90,9 +90,7 @@ void fp_DirectionMarkerRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		// we just need its representation so the base class can
 		// handle us properly
 		PP_RevisionAttr * pRev = getRevisions();
-
-		if(pRev)
-			delete pRev;
+		DELETEP(pRev);
 
 		_setRevisions(new PP_RevisionAttr(pRevision));
 	}

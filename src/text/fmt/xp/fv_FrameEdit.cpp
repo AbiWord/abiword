@@ -769,8 +769,8 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		UT_sint32 origX = x + iCursorOff;
 		UT_sint32 origY = y + iCursorOff;
 		UT_sint32 iSize = getGraphics()->tlu(32);
-		m_recCurFrame.left = origX - iSize;;
-		m_recCurFrame.top = origY - iSize;;
+		m_recCurFrame.left = origX - iSize;
+		m_recCurFrame.top = origY - iSize;
 		m_recCurFrame.width = iSize;
 		m_recCurFrame.height = iSize;
 		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
@@ -1668,7 +1668,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 		else if((oldPoint >= oldFramePoint) && (oldPoint >= newFramePoint))
 		{
-			newPoint = oldPoint  - oldFrameLen + newFrameLen;;
+			newPoint = oldPoint  - oldFrameLen + newFrameLen;
 		}
 		else // oldPoint >= oldFramePoint && (oldPoint < newFramePoint)
 		{

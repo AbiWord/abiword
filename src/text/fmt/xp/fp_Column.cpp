@@ -1060,7 +1060,7 @@ bool fp_VerticalContainer::validate(void)
 				continue;
 			}
 		}
-		curBot = curTop + iH;                    ;
+		curBot = curTop + iH;
 		UT_ASSERT(oldBot <= curTop);
 		if(oldBot > curTop)
 		{
@@ -1431,7 +1431,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 						return;
 					}
 
-					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );;
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 				}
 				else
 				{

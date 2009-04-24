@@ -327,7 +327,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 			if( i > 0)
 			{
 				i--;
-				pParentItem = pParent->getNthBlock(i);;
+				pParentItem = pParent->getNthBlock(i);
 				posParent = m_pDoc->getStruxPosition(pParentItem);
 				if( posParent > posClosest)
 				{

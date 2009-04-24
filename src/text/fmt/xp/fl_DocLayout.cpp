@@ -1594,7 +1594,7 @@ bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 			return true;
 		}
 	}
-	return false;;
+	return false;
 }
 
 /*!
