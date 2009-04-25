@@ -345,7 +345,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		if(pBroke->getYBreak() > 0)
 		{
 			fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
-			UT_DEBUGMSG(("Broken nested table y %d ybreak %d height %d prev Y %d height %d yBreak %d \n",pBroke->getY(),pBroke->getYBreak(),pBroke->getHeight(),pPrev->getY(),pPrev->getHeight(),pPrev->getYBreak()));
+			xxx_UT_DEBUGMSG(("Broken nested table y %d ybreak %d height %d prev Y %d height %d yBreak %d \n",pBroke->getY(),pBroke->getYBreak(),pBroke->getHeight(),pPrev->getY(),pPrev->getHeight(),pPrev->getYBreak()));
 		}
 #endif
 	}
@@ -555,6 +555,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		iTop -= ydiff;
 		iBot -= ydiff;
 	}
+	xxx_UT_DEBUGMSG(("_getBrokenRect Returned Top %d height = %d \n",iTop,iBot-iTop));
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
@@ -1278,6 +1279,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
  */
 void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 {
+	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
 	UT_return_if_fail(getPage());
 
 	bool bNested = false;
@@ -1333,7 +1335,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 // Cell is above this page
 //
-			UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
+			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
 			return;
 		}
 		if(m_iTopY > pBroke->getYBottom())
@@ -1898,7 +1900,7 @@ void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
 	fl_ContainerLayout * pCL = pCell->getFirstLayout();
 	while(pCL)
 	{
-		UT_DEBUGMSG(("Looking at CL %x for delete \n",pCL));
+		xxx_UT_DEBUGMSG(("Looking at CL %x for delete \n",pCL));
 		if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 		{
 			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL);
@@ -2186,15 +2188,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			{
 				ydiff = da.yoff + static_cast<fp_TableContainer *>(pContainer)->getHeight();
 			}
+			xxx_UT_DEBUGMSG((" -1- da.yoff %d ydiff %d \n",da.yoff,ydiff));
+			//			UT_ASSERT(da.yoff > 1000);
 			if(containsNestedTables())
 			{
-				xxx_UT_DEBUGMSG(("draw nested somewhere da.yoff %d ytop %d ybot %d \n",da.yoff,ytop,ybot));
+				xxx_UT_DEBUGMSG(("draw nested somewhere da.yoff %d ytop %d ybot %d ydiff %d \n",da.yoff,ytop,ybot,ydiff));
 			}
 			if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 			{
 //
 // Draw the top of the cell if the cell starts on this page.
 //
+				xxx_UT_DEBUGMSG((" -2- da.yoff %d ydiff %d \n",da.yoff,ydiff));
 				if(i == 0)
 				{
 					m_bDrawTop = true;
@@ -2202,17 +2207,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 				bStart = true;
 
 				if(containsNestedTables())
-					{
-						xxx_UT_DEBUGMSG((" drawBroken drawing container %d da.yoff %d pContainer->getY()  %d \n",i,da.yoff,pContainer->getY()));
-					}
+				{
+					xxx_UT_DEBUGMSG((" drawBroken drawing container %d da.yoff %d pContainer->getY()  %d \n",i,da.yoff,pContainer->getY()));
+				}
 				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 				{
 					fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 					if(pTab->isThisBroken())
 					{
-						xxx_UT_DEBUGMSG(("Draw nested broken table \n"));
-						da.yoff -= pTab->getYBreak();
-						pTab->draw(&da);
+						xxx_UT_DEBUGMSG(("Draw nested broken table da.yoff %d yBreak %d \n",da.yoff,pTab->getYBreak()));
+						dg_DrawArgs daa = da;
+						daa.yoff -= pTab->getYBreak();
+						pTab->draw(&daa);
 						iLastDraw = i;
 					}
 					else
@@ -2243,12 +2249,13 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 					{
 						pContainer->setBreakTick(getBreakTick());
 						pContainer->setMyBrokenContainer(pBroke);
+						xxx_UT_DEBUGMSG((" -3- da.yoff %d ydiff %d \n",da.yoff,ydiff));
 						pContainer->draw(&da);
 						iLastDraw = i;
 					}
 					else
 					{
-						UT_DEBUGMSG(("pCon->BrokenContainer %x pBroke %x \n",pContainer->getMyBrokenContainer(),pBroke));
+						xxx_UT_DEBUGMSG(("pCon->BrokenContainer %x pBroke %x \n",pContainer->getMyBrokenContainer(),pBroke));
 					}
 				}
 			}
@@ -2273,11 +2280,11 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		m_bDirty = false;
 		if(bIsNested)
 		{
-			UT_DEBUGMSG(("Clearing nested cell redraw %x \n",this));
+			xxx_UT_DEBUGMSG(("Clearing nested cell redraw %x \n",this));
 		}
 		else if(containsNestedTables())
 		{
-			UT_DEBUGMSG(("Clearing cell contained nested table of redraw %x \n",this));
+			xxx_UT_DEBUGMSG(("Clearing cell contained nested table of redraw %x \n",this));
 		}
 		getSectionLayout()->clearNeedsRedraw();
 	}
@@ -2304,14 +2311,14 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 	UT_sint32 iBreakTick = getBreakTick();
 	iBreakTick++;
 	setBreakTick(iBreakTick);
-	UT_DEBUGMSG(("iBreakTick is %d \n",getBreakTick()));
+	xxx_UT_DEBUGMSG(("iBreakTick is %d \n",getBreakTick()));
 	if(!containsNestedTables())
 	{
 		return NULL;
 	}
 	vpos -= 2; // make broken container wholly within the cell.
 	UT_sint32 count = countCons();
-	UT_DEBUGMSG(("vBREAK cell at  %d \n",vpos));
+	xxx_UT_DEBUGMSG(("vBREAK cell at  %d \n",vpos));
 	UT_sint32 i =0;
 	fp_Container * pCon;
 	bool bBreak = false;
@@ -2320,10 +2327,10 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 	for(i=0; i< count; i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
-		UT_DEBUGMSG(("Looking Container iY  %d height %d \n",iY,pCon->getHeight()));
+		xxx_UT_DEBUGMSG(("Looking Container iY  %d height %d \n",iY,pCon->getHeight()));
 		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			 UT_DEBUGMSG(("Looking at nested table to break at  %d height %d \n",vpos,pCon->getHeight()));
+			 xxx_UT_DEBUGMSG(("Looking at nested table to break at  %d height %d \n",vpos,pCon->getHeight()));
   		}
 		if(iY <= vpos && iY + pCon->getHeight() > vpos)
 		{
@@ -2336,7 +2343,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 			{
 				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
-					UT_DEBUGMSG(("Want to break nested table at %d \n",vpos));
+					xxx_UT_DEBUGMSG(("Want to break nested table at %d \n",vpos));
 					fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon);
 					if(!pTab->isThisBroken())
 					{
@@ -2353,8 +2360,8 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 							pCon = static_cast<fp_Container *>(pTab->VBreakAt(0));
 							fp_TableContainer * pBTab = static_cast<fp_TableContainer *>(pCon);
 							pBTab->setY(iY);
-							UT_DEBUGMSG(("Break Nested table Con %x at 0 y %d height %d \n",pCon,pCon->getY(),pCon->getHeight()));
-							UT_DEBUGMSG(("Break Nested table Table %x at 0 y %d height %d \n",pBTab,pBTab->getY(),pBTab->getHeight()));
+							xxx_UT_DEBUGMSG(("Break Nested table Con %x at 0 y %d height %d \n",pCon,pCon->getY(),pCon->getHeight()));
+							xxx_UT_DEBUGMSG(("Break Nested table Table %x at 0 y %d height %d \n",pBTab,pBTab->getY(),pBTab->getHeight()));
 						}
 					}
 				}
@@ -2376,7 +2383,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 					pBroke = pPrevTab->VBreakAt(vpos - pMaster->getY() - pPrevTab->getYBreak());
 					pBroke->setY(vpos);
 					static_cast<fp_TableContainer *>(pBroke)->setY(pBroke->getY());
-					UT_DEBUGMSG(("Made broken nested Table %x Y %d height %d \n",pBroke,pBroke->getY(),pBroke->getHeight()));
+					xxx_UT_DEBUGMSG(("Made broken nested Table %x Y %d height %d \n",pBroke,pBroke->getY(),pBroke->getHeight()));
 					bBreak = true;
 					break;
 				}
@@ -3785,7 +3792,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 					UT_sint32 j = i;
 					while(j >= 0)
 					{
-						UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pPrevCon)); 
+						xxx_UT_DEBUGMSG(("Also remove table %x from column %x \n",pBroke,pPrevCon)); 
 						pPrevCon->deleteNthCon(j);
 						j = pPrevCon->findCon(pBroke);
 					}
@@ -4798,7 +4805,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw table %x \n",this));
+	UT_DEBUGMSG(("TablecONTAINER enter draw table yoff %d \n",pDA->yoff));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
 		xxx_UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
@@ -5266,18 +5273,18 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	UT_sint32 iCount = 0;
 	fp_TableContainer * pPrev = this;
 	while(pPrev != NULL)
-		{
-			iCount++;
-			pPrev = static_cast<fp_TableContainer *>(pPrev->getPrev());
-		}
-	xxx_UT_DEBUGMSG(("Drawing %d table in broken chain \n",iCount));
+	{
+		iCount++;
+		pPrev = static_cast<fp_TableContainer *>(pPrev->getPrev());
+	}
+	UT_DEBUGMSG(("Drawing %d table in broken chain yoff %d \n",iCount,pDA->yoff));
 	if(iCount > 0)
 	{
 		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
 	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
-		xxx_UT_DEBUGMSG(("Draw broken nested Table %x yBreak %d \n",this,getYBreak()));
+		xxx_UT_DEBUGMSG(("Draw broken nested Table - 0 %x yBreak %d \n",this,getYBreak()));
 		bIsNested = true;
 		if(getYBreak() > 0)
 		{
@@ -5294,18 +5301,19 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(m_pFirstBrokenCell)
 	{
 		pCell = m_pFirstBrokenCell;
-		xxx_UT_DEBUGMSG(("Starting at cell %x \n",pCell));
+		UT_DEBUGMSG(("Doing FirstBrokenCell Starting at cell %x \n",pCell));
 		while(pCell)
 		{
 			xxx_UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",pCell,pCell->isDirty()));
 			if(pCell->containsNestedTables())
-				{	
+			{	
 				xxx_UT_DEBUGMSG(("SEVIOR: 2 Cell Contains nested tables cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-				}	
+			}	
 			dg_DrawArgs da = *pDA;
 			if(!bIsNested)
 			{
 				da.yoff = da.yoff - getYBreak();
+				UT_DEBUGMSG((" -1- Not Nested yoff %d \n",da.yoff));
 			}
 			if(bDirtyOnly)
 			{
@@ -5347,13 +5355,14 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	}
 	else
 	{
+		UT_DEBUGMSG(("Not doing FirstBrokenCell \n"));
 		while(pCell)
 		{
 			UT_sint32 botY = 0;
 			if(pCell->containsNestedTables())
-				{
+			{
 					xxx_UT_DEBUGMSG(("SEVIOR: 1 Cell Contains nested tables cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-				}	
+			}	
 			if(pCell->getBottomAttach() < pMaster->getNumRows())
 			{
 				botY = pMaster->getYOfRow(pCell->getBottomAttach());
@@ -5376,11 +5385,16 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			{
 				dg_DrawArgs da = *pDA;
 				if(pCell->containsNestedTables())
-					{
+				{
 						xxx_UT_DEBUGMSG(("SEVIOR: drawing cell with nested tables yoff %d cellY %d cellHeight %d YBreak %d yBottom %d \n",da.yoff,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-					}
+						//
+						// Doing this fixes the overflow onto next page
+						// for nest spanning 2 pages but not 3 page
+						da.yoff = da.yoff + getYBreak();
+				}
 				da.yoff = da.yoff - getYBreak();
 				iCountCells++;
+				xxx_UT_DEBUGMSG((" -2- da.yoff set to %d \n",da.yoff));
 				pCell->drawBroken(&da, this);
 				if(m_pFirstBrokenCell == NULL)
 				{
