@@ -391,7 +391,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 	} else if (	!strcmp(rqst->pName, "type") ||
 				!strcmp(rqst->pName, "footerReference") ||
-				!strcmp(rqst->pName, "headerReference")) {
+				!strcmp(rqst->pName, "headerReference") ||
+				!strcmp(rqst->pName, "cols")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
 		if (!contextTag.compare("sectPr")) {
@@ -464,6 +465,18 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 				OXML_SharedSection hdr = doc->getHeader(id);
 				UT_return_if_fail(_error_if_fail( UT_OK == hdr->setAttribute("type", type) ));
+			}
+			else if (!strcmp(rqst->pName, "cols")) {
+				const gchar * num = UT_getAttribute("w:num", rqst->ppAtts);
+				const gchar * sep = UT_getAttribute("w:sep", rqst->ppAtts);
+
+				if(!sep)
+					sep = "off";
+				
+				UT_return_if_fail( this->_error_if_fail((num != NULL) && (sep != NULL)) );
+				OXML_SharedSection last = OXML_Document::getCurrentSection();
+				last->setProperty("columns", num);
+				last->setProperty("column-line", sep);
 			}
 		}
 

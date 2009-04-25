@@ -369,7 +369,7 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	}
 
 	//Appending new section
-	attr = this->getAttributes();
+	attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_Section, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
