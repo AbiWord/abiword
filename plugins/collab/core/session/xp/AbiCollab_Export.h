@@ -29,7 +29,7 @@
 #include "xav_Listener.h"
 #include "pl_Listener.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollab_Packet.h>
+#include <packet/xp/AbiCollab_Packet.h>
 
 class FL_DocLayout;
 class PD_Document;

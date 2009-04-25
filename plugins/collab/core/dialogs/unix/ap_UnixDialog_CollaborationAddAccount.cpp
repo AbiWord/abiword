@@ -24,7 +24,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "ut_string_class.h"
 #include <xp/AbiCollabSessionManager.h>
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/AccountHandler.h>
 
 #include "ap_UnixDialog_CollaborationAddAccount.h"
 

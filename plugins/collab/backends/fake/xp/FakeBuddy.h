@@ -21,9 +21,9 @@
 #define __FAKEBUDDY_H__
 
 #include <map>
-#include <backends/xp/Buddy.h>
-#include <backends/xp/DocTreeItem.h>
-#include <backends/xp/AccountHandler.h>
+#include <core/account/xp/Buddy.h>
+#include <core/account/xp/DocTreeItem.h>
+#include <core/account/xp/AccountHandler.h>
 
 class DocHandle;
 

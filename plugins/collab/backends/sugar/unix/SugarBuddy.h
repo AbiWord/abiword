@@ -21,9 +21,9 @@
 #define __SUGARBUDDY_H__
 
 #include <map>
-#include <backends/xp/Buddy.h>
-#include <backends/xp/DocTreeItem.h>
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/Buddy.h>
+#include <account/xp/DocTreeItem.h>
+#include <account/xp/AccountHandler.h>
 
 class DocHandle;
 

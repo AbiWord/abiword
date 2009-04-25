@@ -6,8 +6,7 @@ AM_CPPFLAGS = \
 	-I$(srcdir)/.. \
 	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../.. \
-	-I$(srcdir)/../../../core/packet \
-	-I$(srcdir)/../../../core/session
+	-I$(srcdir)/../../../core
 
 libunix_la_SOURCES = \
 	ap_UnixDialog_GenericInput.cpp \

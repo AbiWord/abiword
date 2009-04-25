@@ -16,7 +16,7 @@
  * 02111-1307, USA.
  */
 
-#include <backends/xp/Buddy.h>
+#include <Buddy.h>
 #include <xp/AbiCollabSessionManager.h>
 
 void Buddy::addDocHandle(DocHandle* pDocHandle)

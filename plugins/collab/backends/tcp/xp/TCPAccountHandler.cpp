@@ -22,9 +22,8 @@
 #include "TCPAccountHandler.h"
 #include "TCPBuddy.h"
 
-#include <backends/xp/AccountEvent.h>
-
-#include <xp/AbiCollabSessionManager.h>
+#include <account/xp/AccountEvent.h>
+#include <session/xp/AbiCollabSessionManager.h>
 
 TCPAccountHandler::TCPAccountHandler()
 	: AccountHandler(),

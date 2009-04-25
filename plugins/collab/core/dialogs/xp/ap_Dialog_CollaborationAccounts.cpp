@@ -23,7 +23,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "ap_Dialog_CollaborationAddAccount.h"
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/AccountHandler.h>
 
 #include "ap_Dialog_CollaborationAccounts.h"
 

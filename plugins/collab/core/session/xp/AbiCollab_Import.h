@@ -35,8 +35,8 @@
 #include "xav_Listener.h"
 #include "pl_Listener.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollab_Packet.h>
-#include <backends/xp/Buddy.h>
+#include <packet/xp/AbiCollab_Packet.h>
+#include <account/xp/Buddy.h>
 
 class FL_DocLayout;
 class PD_Document;

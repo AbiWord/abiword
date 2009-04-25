@@ -25,8 +25,8 @@
 #include "xav_View.h"
 #include "ut_vector.h"
 #include <xp/AbiCollabSessionManager.h>
-#include <backends/xp/Event.h>
-#include <backends/xp/EventListener.h>
+#include <account/xp/Event.h>
+#include <account/xp/EventListener.h>
 
 class ConnectionHandler;
 

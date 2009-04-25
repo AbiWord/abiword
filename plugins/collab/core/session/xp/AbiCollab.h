@@ -37,10 +37,10 @@
 #include "ut_string_class.h"
 #include "ut_uuid.h"
 
-#include <backends/xp/Buddy.h>
-#include <xp/AbiCollab_Packet.h>
-#include <xp/AbiCollab_Import.h>
-#include <xp/AbiCollab_Export.h>
+#include <account/xp/Buddy.h>
+#include <packet/xp/AbiCollab_Packet.h>
+#include <session/xp/AbiCollab_Import.h>
+#include <session/xp/AbiCollab_Export.h>
 
 class FL_DocLayout;
 class PD_Document;

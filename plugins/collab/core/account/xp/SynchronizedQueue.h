@@ -22,8 +22,8 @@
 #include <deque>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <backends/xp/lock.h>
-#include <backends/xp/Synchronizer.h>
+#include <core/account/xp/lock.h>
+#include <core/account/xp/Synchronizer.h>
 
 class EmptyQueueException {};
 

@@ -23,9 +23,8 @@
 #include "xap_UnixDialogHelper.h"
 #include "ut_string_class.h"
 #include <xp/AbiCollabSessionManager.h>
-#include <backends/xp/Event.h>
-#include <backends/xp/AccountEvent.h>
-#include <backends/xmpp/xp/XMPPBuddy.h>
+#include <account/xp/Event.h>
+#include <account/xp/AccountEvent.h>
 
 #include "ap_UnixDialog_CollaborationJoin.h"
 

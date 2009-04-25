@@ -30,7 +30,7 @@
 #include "ut_string_class.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Types.h"
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/AccountHandler.h>
 #include <libxml/tree.h>
 
 #ifdef WIN32

@@ -21,8 +21,8 @@
 #define __SESSIONEVENT_H__
 
 #include "Event.h"
-#include <xp/AbiCollab.h>
-#include <xp/AbiCollab_Packet.h>
+#include <session/xp/AbiCollab.h>
+#include <packet/xp/AbiCollab_Packet.h>
 
 class StartSessionEvent : public Event
 {

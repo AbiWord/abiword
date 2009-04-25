@@ -39,9 +39,8 @@
 #include "px_CR_Object.h"
 #include "AbiCollab_Packet.h"
 #include "pt_Types.h"
-#include <core/session/xp/AbiCollab_Plugin.h>
-
-#include <backends/xp/Buddy.h>
+#include <session/xp/AbiCollab_Plugin.h>
+#include <account/xp/Buddy.h>
 
 const gchar * szAbiCollab_Packet_PTName[] =
 {

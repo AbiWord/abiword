@@ -41,7 +41,7 @@
 #include "AbiCollab_Import.h"
 #include "AbiCollab_ImportRuleSet.h"
 #include "AbiCollab.h"
-#include <backends/xp/Buddy.h>
+#include <account/xp/Buddy.h>
 
 ABI_Collab_Import::ABI_Collab_Import(AbiCollab* pAbiCollab, PD_Document* doc):
 	m_pDoc(doc),

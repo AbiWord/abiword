@@ -22,7 +22,7 @@
 
 #include <set>
 
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/AccountHandler.h>
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
 #include <dbus/dbus-glib-lowlevel.h>

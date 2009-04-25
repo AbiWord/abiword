@@ -20,7 +20,7 @@
 #define __TCPACCOUNTHANDLER__
 
 #include <boost/shared_ptr.hpp>
-#include <backends/xp/AccountHandler.h>
+#include <core/account/xp/AccountHandler.h>
 
 #include "IOServerHandler.h"
 #include "TCPBuddy.h"

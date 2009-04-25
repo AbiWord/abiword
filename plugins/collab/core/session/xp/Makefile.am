@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libxp.la
 AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/.. \
+	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../.. \
 	-I$(srcdir)/../../dialogs \
 	-I$(srcdir)/../../packet \

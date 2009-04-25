@@ -20,7 +20,7 @@
  * 02111-1307, USA.
  */
 
-#include <backends/xp/Buddy.h>
+#include <account/xp/Buddy.h>
 
 #include <xp/DiskSessionRecorder.h>
 #include <xp/AbiCollab_Plugin.h>

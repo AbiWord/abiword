@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libunix.la
 AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/.. \
+	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../.. \
 	-I$(srcdir)/../../packet \
 	-I$(srcdir)/../../session

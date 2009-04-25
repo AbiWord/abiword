@@ -22,7 +22,7 @@
 #include "xap_Frame.h"
 #include "xap_UnixDialogHelper.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollabSessionManager.h>
 
 #include "ap_UnixDialog_GenericProgress.h"
 

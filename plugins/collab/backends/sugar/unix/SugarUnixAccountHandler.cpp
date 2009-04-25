@@ -19,13 +19,13 @@
 
 #include "SugarUnixAccountHandler.h"
 #include "SugarBuddy.h"
-#include <xp/AccountEvent.h>
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/AbiCollab.h>
+#include <account/xp/AccountEvent.h>
+#include <account/xp/Event.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollab.h>
 #include <ev_EditMethod.h>
 #include <xap_App.h>
 #include <fv_View.h>
-#include <xp/Event.h>
 
 // some fucntion prototype declarations
 static bool s_offerTube(AV_View* v, EV_EditMethodCallData *d);

@@ -25,8 +25,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"
-#include <backends/xp/Buddy.h>
-#include <backends/xp/AccountHandler.h>
+#include <core/account/xp/Buddy.h>
+#include <core/account/xp/AccountHandler.h>
 
 class ServiceBuddy : public Buddy
 {

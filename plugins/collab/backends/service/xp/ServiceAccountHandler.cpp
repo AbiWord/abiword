@@ -37,7 +37,7 @@
 #include "ServiceBuddy.h"
 #include "ServiceAccountHandler.h"
 #include "ap_Dialog_GenericInput.h"
-#include <backends/xp/SessionEvent.h>
+#include <core/account/xp/SessionEvent.h>
 #include <core/session/xp/AbiCollabSessionManager.h>
 #include "AbiCollabService_Export.h"
 

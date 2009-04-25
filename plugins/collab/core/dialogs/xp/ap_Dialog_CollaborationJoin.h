@@ -24,9 +24,9 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "ut_vector.h"
-#include <backends/xp/AccountHandler.h>
-#include <backends/xp/Buddy.h>
-#include <backends/xp/EventListener.h>
+#include <account/xp/AccountHandler.h>
+#include <account/xp/Buddy.h>
+#include <account/xp/EventListener.h>
 
 extern pt2Constructor ap_Dialog_CollaborationJoin_Constructor;
 

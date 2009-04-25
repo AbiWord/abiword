@@ -47,9 +47,9 @@
 #include <windows.h>
 #endif
 
-#include <backends/xp/AccountHandler.h>
-#include <backends/xp/Buddy.h>
-#include <backends/xp/SessionEvent.h>
+#include <account/xp/AccountHandler.h>
+#include <account/xp/Buddy.h>
+#include <account/xp/SessionEvent.h>
 
 #include <xp/AbiCollab_Export.h>
 #include <xp/AbiCollab_Import.h>

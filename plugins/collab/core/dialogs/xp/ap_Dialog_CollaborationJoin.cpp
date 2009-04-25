@@ -27,8 +27,8 @@
 #include "ap_Dialog_CollaborationJoin.h"
 #include "ap_Dialog_CollaborationAddBuddy.h"
 
-#include <backends/xp/AccountHandler.h>
-#include <backends/xp/AccountEvent.h>
+#include <account/xp/AccountHandler.h>
+#include <account/xp/AccountEvent.h>
 
 // TODO : remove this!!!
 #include <backends/xmpp/xp/XMPPBuddy.h>

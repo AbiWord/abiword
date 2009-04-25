@@ -20,8 +20,8 @@
 #define __EVENT_H__	
 
 #include <vector>
-#include <backends/xp/Buddy.h>
-#include <xp/EventPacket.h>
+#include <account/xp/Buddy.h>
+#include <packet/xp/EventPacket.h>
 
 class Event	: public EventPacket
 {

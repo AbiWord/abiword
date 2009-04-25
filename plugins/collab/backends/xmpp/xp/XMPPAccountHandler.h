@@ -31,7 +31,7 @@ using std::map;
 #include <loudmouth/loudmouth.h>
 #include <libxml/tree.h>
 
-#include <backends/xp/AccountHandler.h>
+#include <account/xp/AccountHandler.h>
 #include "stdio.h"
 #include "ut_string_class.h"
 #include "ut_types.h"

@@ -28,7 +28,7 @@
 #include "xap_Types.h"
 #include "ut_string_class.h"
 
-#include <backends/xp/AccountHandler.h>
+#include <core/account/xp/AccountHandler.h>
 #include "AbiCollabSaveInterceptor.h"
 #include "AsioRealmProtocol.h"
 #include "pl_Listener.h"

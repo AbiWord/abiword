@@ -25,11 +25,11 @@
 #include <vector>
 #include "ut_types.h"
 #include "ut_string_class.h"
-#include <backends/xp/Buddy.h>
 #include "ut_vector.h"
 #include "DocHandle.h"
-#include <xp/AbiCollab_Packet.h>
-#include <backends/xp/EventListener.h>
+#include <packet/xp/AbiCollab_Packet.h>
+#include <account/xp/Buddy.h>
+#include <account/xp/EventListener.h>
 #ifdef WIN32
 #include <windows.h>
 #endif

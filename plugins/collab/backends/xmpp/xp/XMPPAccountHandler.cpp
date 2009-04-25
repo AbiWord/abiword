@@ -31,15 +31,15 @@
 #include "XMPPAccountHandler.h"
 #include "XMPPBuddy.h"
 
-#include <backends/xp/AccountEvent.h>
-#include <backends/xp/SessionEvent.h>
+#include <account/xp/AccountEvent.h>
+#include <account/xp/SessionEvent.h>
 
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/AbiCollab.h>
-#include <xp/AbiCollab_Plugin.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollab.h>
+#include <session/xp/AbiCollab_Plugin.h>
 
-#include <xp/AbiCollab_Packet.h>
-#include <xp/EventPacket.h>
+#include <packet/xp/AbiCollab_Packet.h>
+#include <packet/xp/EventPacket.h>
 
 static LmHandlerResult presence_handler(LmMessageHandler      *handler,
 					LmConnection          *connection,
