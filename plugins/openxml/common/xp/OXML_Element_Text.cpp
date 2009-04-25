@@ -47,10 +47,11 @@ OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :
 	setText(text, length);
 }
 
-void OXML_Element_Text::setText(const gchar * text, int length)
+void OXML_Element_Text::setText(const gchar * text, int /*length*/)
 {
 	UT_TRY {
-		m_pString = new UT_UCS4String(text, length);
+		std::string str(text);
+		m_pString = new UT_UCS4String(str);
 	} UT_CATCH (UT_CATCH_ANY) {
 		m_pString = NULL;
 	} UT_END_CATCH

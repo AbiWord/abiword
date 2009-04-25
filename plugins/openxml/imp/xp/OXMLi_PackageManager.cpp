@@ -127,7 +127,12 @@ UT_Error OXMLi_PackageManager::parseDocumentTheme()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(THEME_PART);
-	return parseChildByType(doc, THEME_PART, &listener, "a"); //TODO: detect namespace override
+	UT_Error err = parseChildByType(doc, THEME_PART, &listener, "a"); //TODO: detect namespace override
+	//themes are optional in .docx files
+	if(err != UT_OK){
+		UT_DEBUGMSG(("FRT: OpenXML Theme Part is not found\n"));
+	}
+	return UT_OK;
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentSettings()
@@ -162,7 +167,9 @@ UT_Error OXMLi_PackageManager::parseChildById( GsfInput * parent, const char * i
 UT_Error OXMLi_PackageManager::parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener, const gchar * ns )
 {
 	GsfInput * pInput = getChildByType(parent, type);
-	UT_return_val_if_fail(pInput != NULL, UT_ERROR);
+	if(!pInput)
+		return UT_ERROR;
+
 	return _parseStream( pInput, pListener, ns);
 }
 
