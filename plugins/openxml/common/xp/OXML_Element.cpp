@@ -134,17 +134,6 @@ UT_Error OXML_Element::addToPT(PD_Document * pDocument)
 	const gchar ** atts = getAttributesWithProps();
 
 	switch (m_tag) {
-	case P_TAG:
-		if (atts != NULL) {
-			ret = pDocument->appendStrux(PTX_Block, atts) ? UT_OK : UT_ERROR;
-			if(ret != UT_OK) {
-				UT_ASSERT_HARMLESS(ret == UT_OK);
-				return ret;
-			}
-		} else {
-			ret = pDocument->appendStrux(PTX_Block, NULL) ? UT_OK : UT_ERROR;
-		}
-		break;
 	case PG_BREAK:
 	{
 		UT_UCSChar ucs = UCS_FF;
@@ -167,6 +156,8 @@ UT_Error OXML_Element::addToPT(PD_Document * pDocument)
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
 		break;
+
+	case P_TAG: //fall through to default
 	case R_TAG: //fall through to default
 	case T_TAG: //fall through to default
 	default:

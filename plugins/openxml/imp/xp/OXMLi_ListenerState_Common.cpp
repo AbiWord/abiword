@@ -61,7 +61,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 	if (!strcmp(rqst->pName, "p")) {
 		//New paragraph...
-		OXML_SharedElement elem(new OXML_Element("", P_TAG, BLOCK));
+		OXML_SharedElement elem(new OXML_Element_Paragraph(""));
 		rqst->stck->push(elem);
 
 		rqst->handled = true;
@@ -76,7 +76,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
 		if (!contextTag.compare("pPr") || !contextTag.compare("body")) {
-			OXML_SharedElement dummy(new OXML_Element("Dummy", P_TAG, BLOCK));
+			OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
 			rqst->stck->push(dummy);
 
 			m_pendingSectBreak = true;

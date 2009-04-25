@@ -201,10 +201,24 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 
 UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 {
-	//TODO Move the OXML_Element addToPT case P_TAG code here
-	//the importer needs to be updated to create OXML_Element_Paragraph object
-	//instead of generic OXML_Element object for representing a paragraph
-	return OXML_Element::addToPT(pDocument);
+	UT_Error ret = UT_OK;
+
+	if (pDocument == NULL)
+		return UT_ERROR;
+
+	const gchar ** atts = getAttributesWithProps();
+
+	if (atts != NULL) {
+		ret = pDocument->appendStrux(PTX_Block, atts) ? UT_OK : UT_ERROR;
+		if(ret != UT_OK) {
+			UT_ASSERT_HARMLESS(ret == UT_OK);
+			return ret;
+		}
+	} else {
+		ret = pDocument->appendStrux(PTX_Block, NULL) ? UT_OK : UT_ERROR;
+	}
+
+	return addChildrenToPT(pDocument);
 }
 
 const gchar* OXML_Element_Paragraph::getListLevel()
