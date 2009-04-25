@@ -1,5 +1,5 @@
 
-DIST_SUBDIRS = fake service sugar tcp xmpp xp
+DIST_SUBDIRS = fake service sugar tcp xmpp
 SUBDIRS = 
 
 noinst_LTLIBRARIES = libbackends.la
