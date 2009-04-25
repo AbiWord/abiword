@@ -59,9 +59,9 @@ AC_ARG_ENABLE([collab-backend-service],
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp],
 	[
-		PKG_CHECK_EXISTS(libsoup-2.4 >= 2.4.0, 
+		PKG_CHECK_EXISTS(libsoup-2.4, 
 		[
-			collab_service_req="libsoup-2.4 >= 2.4.0"
+			collab_service_req="libsoup-2.4"
 			enable_collab_backend_service="yes"
 			collab_soup_24="yes"
 		], [
