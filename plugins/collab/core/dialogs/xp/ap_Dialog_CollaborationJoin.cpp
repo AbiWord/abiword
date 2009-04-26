@@ -131,6 +131,7 @@ void AP_Dialog_CollaborationJoin::signal(const Event& event, BuddyPtr /*pSource*
 		case PCT_AccountNewEvent:
 		// case Event::AccountDelete:
 			_refreshAccounts();
+			break;
 		case PCT_AccountAddBuddyEvent:
 		case PCT_AccountDeleteBuddyEvent:
 		case PCT_AccountBuddyOnlineEvent:
