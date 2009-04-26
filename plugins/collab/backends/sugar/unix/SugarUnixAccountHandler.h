@@ -73,7 +73,7 @@ public:
 
 	// packet management
 	virtual bool							send(const Packet* pPacket);
-	virtual bool							send(const Packet* pPacket, const Buddy& buddy);
+	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
 	Packet*									createPacket(const std::string& packet, BuddyPtr pBuddy);
 	
 	// event management

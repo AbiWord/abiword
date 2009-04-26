@@ -177,19 +177,19 @@ bool SugarAccountHandler::send(const Packet* pPacket)
 	return true;
 }
 
-bool SugarAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
+bool SugarAccountHandler::send(const Packet* pPacket, BuddyPtr pBuddy)
 {
 	UT_DEBUGMSG(("SugarAccountHandler::send(const Packet* pPacket, const Buddy& buddy)\n"));
 	UT_return_val_if_fail(pPacket, false);
 	UT_return_val_if_fail(m_pTube, false);
 	
-	SugarBuddy& sugarBuddy = (SugarBuddy&)buddy;
-	UT_DEBUGMSG(("Sending packet to sugar buddy on dbus addess: %s\n", sugarBuddy.getDBusAddress().utf8_str()));
+	SugarBuddyPtr pSugarBuddy = boost::static_pointer_cast<SugarBuddy>(pBuddy);
+	UT_DEBUGMSG(("Sending packet to sugar buddy on dbus addess: %s\n", pSugarBuddy->getDBusAddress().utf8_str()));
 
-	DBusMessage* pMessage = dbus_message_new_method_call(sugarBuddy.getDBusAddress().utf8_str(), "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
+	DBusMessage* pMessage = dbus_message_new_method_call(pSugarBuddy->getDBusAddress().utf8_str(), "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
 	// TODO: check dst
-	/*bool dst =*/ dbus_message_set_destination(pMessage, sugarBuddy.getDBusAddress().utf8_str());
-	UT_DEBUGMSG(("Destination (%s) set on message\n", sugarBuddy.getDBusAddress().utf8_str()));
+	/*bool dst =*/ dbus_message_set_destination(pMessage, pSugarBuddy->getDBusAddress().utf8_str());
+	UT_DEBUGMSG(("Destination (%s) set on message\n", pSugarBuddy->getDBusAddress().utf8_str()));
 
 	// we don't want replies, because then then easily run into dbus timeout problems 
 	// when sending large packets
