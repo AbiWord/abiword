@@ -1933,6 +1933,7 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle sdh,
 		_closeSection();
 		 */
 		m_pie->write("\\tableofcontents \n");
+		return true;
 	}
 	case PTX_EndTOC:
 		return true;
