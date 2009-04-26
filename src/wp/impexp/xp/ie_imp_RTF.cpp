@@ -8651,7 +8651,7 @@ bool IE_Imp_RTF::ReadFontTable()
 					// I don't think it's worth refusing to load the file just because
 					// the panose string is wrong.
 					UT_DEBUGMSG(("RTF: Panose string for font with index %d invalid, ignoring.\n", fontIndex));
-					sFontNamesAndPanose[SFontTableState::Panose] == "";
+					sFontNamesAndPanose[SFontTableState::Panose] = "";
 				}
 				// Register the font.
 				if (!RegisterFont(fontFamily, pitch, fontIndex, charSet, 
