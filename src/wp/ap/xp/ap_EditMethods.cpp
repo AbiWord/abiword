@@ -12323,7 +12323,10 @@ Defun1(toggleDomDirection)
 
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBl, false );
-	strcpy(cur_alignment,pBl->getProperty("text-align"));
+
+	strncpy(cur_alignment,pBl->getProperty("text-align"),sizeof(cur_alignment)-1);
+	cur_alignment[sizeof(cur_alignment)-1] = '\0';
+
 	properties[3] = static_cast<gchar *>(&cur_alignment[0]);
 
 
