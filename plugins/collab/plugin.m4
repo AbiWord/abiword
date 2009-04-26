@@ -2,7 +2,7 @@
 collab_req="libxml-2.0 >= 2.4.0"
 collab_xmpp_req="loudmouth-1.0 >= 1.0.1"
 collab_sugar_req="dbus-glib-1 >= 0.70"
-collab_service_req= 		# tested for libsoup-2.2 or -2.4
+collab_service_req="libsoup-2.4"
 collab_pkgs="$collab_req" 	# accumulate required packages
 
 AC_ARG_ENABLE([collab-backend-fake], 
@@ -55,36 +55,21 @@ AC_ARG_ENABLE([collab-backend-service],
     [AS_HELP_STRING([--enable-collab-backend-service], [abicollab.net backend (default: off); NOTE to packagers: do NOT enable this, the service is not publically available yet])], 
 [
 	enable_collab_backend_service=$enableval
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADERS([asio.hpp], [], 
+	[
+		AC_MSG_ERROR([collab plugin: asio is required for the the abicollab.net backend, see http://think-async.com/])
+	])
+	AC_LANG_POP
 ], [
 	AC_LANG_PUSH(C++)
 	AC_CHECK_HEADERS([asio.hpp],
 	[
-		PKG_CHECK_EXISTS(libsoup-2.4, 
-		[
-			collab_service_req="libsoup-2.4"
-			enable_collab_backend_service="yes"
-			collab_soup_24="yes"
-		], [
-			PKG_CHECK_EXISTS(libsoup-2.2 >= 2.2.100,
-			[
-				collab_service_req="libsoup-2.2 >= 2.2.100"
-				enable_collab_backend_service="yes"
-			], [
-				AC_MSG_WARN([collab plugin: libsoup-2.2 >= 2.2.100 or libsoup-2.4 is required for the abicollab.net backend])
-			])
-		])
-	], [
-		AC_MSG_WARN([collab plugin: boost asio is required for the the abicollab.net backend, see http://asio.sourceforge.net])
+		enable_collab_backend_service="yes"
 	])
 	AC_LANG_POP
 ])
-if test "$enable_collab_backend_service" == "yes"; then
-  # default to 2.2 if neither is found, this will show up in the pkg-config error msg
-  if test "$collab_service_req" == ""; then
-    collab_service_req="libsoup-2.2 >= 2.2.100"
-  fi
-  collab_pkgs="$collab_pkgs $collab_service_req"
-fi
+test "$enable_collab_backend_service" == "yes" && collab_pkgs="$collab_pkgs $collab_service_req"
 
 AC_ARG_ENABLE([collab-record-always], 
     [AS_HELP_STRING([--enable-collab-record-always], [Always record AbiCollab sessions (default: off)])], 
@@ -120,9 +105,6 @@ fi
 
 PKG_CHECK_MODULES(COLLAB,[ $collab_pkgs ])
 
-if test "$collab_soup_24" == "yes"; then
-	COLLAB_CFLAGS="$COLLAB_CFLAGS -DSOUP24"   	
-fi
 if test "$enable_collab_backend_fake" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_FAKE"
 fi
@@ -136,7 +118,7 @@ if test "$enable_collab_backend_sugar" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SUGAR"
 fi
 if test "$enable_collab_backend_service" == "yes"; then
-	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE"
+	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_HANDLER_SERVICE -DSOUP24"
 fi
 if test "$enable_collab_record_always" == "yes"; then
 	COLLAB_CFLAGS="$COLLAB_CFLAGS -DABICOLLAB_RECORD_ALWAYS"
