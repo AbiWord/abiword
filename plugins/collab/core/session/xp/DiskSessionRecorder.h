@@ -30,7 +30,7 @@
 #include "ut_assert.h"
 #include "ut_go_file.h"
 
-#include <xp/AbiCollab.h>
+#include <session/xp/AbiCollab.h>
 
 class RecordedPacket
 {

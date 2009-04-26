@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 #include <ev_EditMethod.h>
 #include <xap_App.h>
 #include <fv_View.h>
@@ -31,13 +32,12 @@
 #endif
 
 #include <FakeAccountHandler.h>
-#include <FakeBuddy.h>
-#include <xp/Event.h>
-#include <xp/AccountEvent.h>
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/AbiCollab.h>
-#include <xp/DiskSessionRecorder.h>
-#include <backends/xp/SessionEvent.h>
+#include <account/xp/Event.h>
+#include <account/xp/AccountEvent.h>
+#include <account/xp/SessionEvent.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollab.h>
+#include <session/xp/DiskSessionRecorder.h>
 
 FakeAccountHandler::FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Frame* pFrame)
 	: AccountHandler(),
@@ -46,9 +46,9 @@ FakeAccountHandler::FakeAccountHandler(const UT_UTF8String& sSessionURI, XAP_Fra
 	m_pSession(NULL),
 	m_bLocallyControlled(false),
 	m_pDoc(NULL),
+	m_iIndex(1),
 	m_iLocalRev(0),
-	m_iRemoteRev(0),
-	m_iIndex(1)
+	m_iRemoteRev(0)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::FakeAccountHandler()\n"));
 }
@@ -76,12 +76,6 @@ void FakeAccountHandler::storeProperties()
 {
 }
 
-FakeBuddy* FakeAccountHandler::getBuddy(const UT_UTF8String& name)
-{
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
-}
-
 ConnectResult FakeAccountHandler::connect()
 {
 	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
@@ -99,25 +93,37 @@ bool FakeAccountHandler::isOnline()
 	return true;
 }
 
-Buddy* FakeAccountHandler::constructBuddy(const PropertyMap& props)
+FakeBuddyPtr FakeAccountHandler::getBuddy(const UT_UTF8String& description)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		FakeBuddyPtr pBuddy = boost::static_pointer_cast<FakeBuddy>(*it);
+		UT_continue_if_fail(pBuddy);
+		if (pBuddy->getDescription() == description)
+			return pBuddy;
+	}
+	return FakeBuddyPtr();
+}
+
+BuddyPtr FakeAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::constructBuddy()\n"));
 
 	PropertyMap::const_iterator cit = props.find("name");
-	UT_return_val_if_fail(cit != props.end(), 0);
-	UT_return_val_if_fail(cit->second.size() > 0, 0);
+	UT_return_val_if_fail(cit != props.end(), FakeBuddyPtr());
+	UT_return_val_if_fail(cit->second.size() > 0, FakeBuddyPtr());
 
 	UT_DEBUGMSG(("Constructing FakeBuddy (name: %s)\n", cit->second.c_str()));
-	return new FakeBuddy(this, cit->second.c_str());
+	return boost::shared_ptr<FakeBuddy>(new FakeBuddy(this, cit->second.c_str()));
 }
 
-Buddy* FakeAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr FakeAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
+	return FakeBuddyPtr();
 }
 
-bool FakeAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+bool FakeAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
@@ -133,7 +139,7 @@ bool FakeAccountHandler::send(const Packet* pPacket)
 	return true;
 }
 
-bool FakeAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
+bool FakeAccountHandler::send(const Packet* pPacket, const Buddy& /*buddy*/)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::send(const Packet* pPacket, const Buddy& buddy)\n"));
 	UT_return_val_if_fail(pPacket, false);
@@ -154,6 +160,8 @@ bool FakeAccountHandler::initialize(UT_UTF8String* pForceSessionId)
 	// store a property unique to this handler, so different fake account
 	// handlers won't be treated as "equal"
 	addProperty("sessionid", m_pSession->getSessionId().utf8_str());
+
+	return true;
 }
 
 void FakeAccountHandler::cleanup()
@@ -205,7 +213,7 @@ bool FakeAccountHandler::_loadDocument(UT_UTF8String* pForceSessionId)
 	// create a new documenyt to replay our recorded session in
 	UT_return_val_if_fail(AbiCollabSessionManager::deserializeDocument(&m_pDoc, jsrre.m_sZABW, false) == UT_OK, false);
 	UT_return_val_if_fail(m_pDoc, false);
-	m_pDoc->setFilename("void");
+	m_pDoc->setFilename(strdup("void"));
 	
 	if (m_bLocallyControlled)
 	{
@@ -262,7 +270,7 @@ bool FakeAccountHandler::_createSession()
 	// do a quick scan through the m_packets to find the session and document id's
 	UT_UTF8String sSessionId("");
 	UT_UTF8String sDocUUID("");
-	for (UT_sint32 i = 1; i < m_packets.size(); i++)
+	for (UT_uint32 i = 1; i < m_packets.size(); i++)
 	{
 		UT_continue_if_fail (m_packets[i] && m_packets[i]->m_pPacket && SessionPacket::isInstanceOf(*m_packets[i]->m_pPacket));
 		SessionPacket* sp = static_cast<SessionPacket*>(m_packets[i]->m_pPacket);
@@ -277,7 +285,7 @@ bool FakeAccountHandler::_createSession()
 	{
 		UT_DEBUGMSG(("Starting a locally controlled collaboration session: %s\n", sSessionId.utf8_str()));
 		// FIXME: we need to set the proper collab id
-		m_pSession = pManager->startSession(m_pDoc, sSessionId);
+		m_pSession = pManager->startSession(m_pDoc, sSessionId, NULL);
 	}
 	else
 	{
@@ -285,12 +293,12 @@ bool FakeAccountHandler::_createSession()
 		
 		// do a quick scan through the m_packets to find a remote buddy (which is
 		// automatically the session controller then
-		Buddy* pCollaborator = NULL;
-		for (UT_sint32 i = 1; i < m_packets.size(); i++)
+		BuddyPtr pCollaborator = FakeBuddyPtr();
+		for (UT_uint32 i = 1; i < m_packets.size(); i++)
 		{
 			if (m_packets[i]->m_bHasBuddy)
 			{
-				pCollaborator = new FakeBuddy(this, m_packets[i]->m_buddyName);
+				pCollaborator = boost::shared_ptr<FakeBuddy>(new FakeBuddy(this, m_packets[i]->m_buddyName));
 				break;
 			}
 		}
@@ -298,11 +306,12 @@ bool FakeAccountHandler::_createSession()
 		if (!pCollaborator)
 		{
 			UT_DEBUGMSG(("The session controller never sent a changerecord, so we don't know who he is; inventing a name\n"));
-			pCollaborator = new FakeBuddy(this, "Fake::NoName");
+			pCollaborator = boost::shared_ptr<FakeBuddy>(new FakeBuddy(this, "Fake::NoName"));
 		}
 		
 		addBuddy(pCollaborator);
-		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, false, true);
+		XAP_Frame* pFrame = XAP_App::getApp()->newFrame(); // FIXME: this is a memory leak
+		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, pFrame);
 		pManager->joinSession(m_pSession, pCollaborator);
 	}
 
@@ -338,7 +347,7 @@ bool FakeAccountHandler::process()
 	if (sink && !e)
 	{
 		UT_DEBUGMSG(("Writing regression test result to %s\n", abwFile.utf8_str()));
-		UT_Error result = m_pDoc->saveAs(sink, IE_Exp::fileTypeForSuffix(".abw"), true);
+		/*UT_Error result =*/ m_pDoc->saveAs(sink, IE_Exp::fileTypeForSuffix(".abw"), true);
 		gsf_output_close(GSF_OUTPUT(sink));
 	}
 	else
@@ -346,6 +355,8 @@ bool FakeAccountHandler::process()
 		
 	// FIXME: do we leak the layout here?
 	// ...
+
+	return true;
 }
 
 bool FakeAccountHandler::_import(const RecordedPacket& rp)
@@ -367,7 +378,7 @@ bool FakeAccountHandler::_import(const RecordedPacket& rp)
 				if (!getBuddy(rp.m_buddyName))
 				{
 					UT_DEBUGMSG(("Adding new buddy to the collaboration session: %s\n", rp.m_buddyName.utf8_str()));
-					FakeBuddy* pNewCollaborator = new FakeBuddy(this, rp.m_buddyName);
+					FakeBuddyPtr pNewCollaborator = boost::shared_ptr<FakeBuddy>(new FakeBuddy(this, rp.m_buddyName));
 					addBuddy(pNewCollaborator);
 					m_pSession->addCollaborator(pNewCollaborator);
 				}
@@ -406,14 +417,16 @@ bool FakeAccountHandler::_import(const RecordedPacket& rp)
 				if (AbstractChangeRecordSessionPacket::isInstanceOf(*sp))
 				{
 					ABI_Collab_Import* pImport = m_pSession->getImport();
-					// FIXME: fix memory leak
-					pImport->_import(*sp, 0, *new FakeBuddy(this, "NULL"));
+					FakeBuddyPtr pBuddy = boost::shared_ptr<FakeBuddy>(new FakeBuddy(this, "NULL"));
+					pImport->_import(*sp, 0, pBuddy);
 				}
 				else
 					UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 				break;
 		}
-	}	
+	}
+
+	return true;
 }
 
 bool FakeAccountHandler::getCurrentRev(UT_sint32& iLocalRev, UT_sint32& iRemoteRev)
@@ -438,9 +451,9 @@ bool FakeAccountHandler::stepToRemoteRev(UT_sint32 iRemoteRev)
 	UT_return_val_if_fail(m_pSession, false);
 	UT_return_val_if_fail(m_packets.size() > 1, false);
 
-	for (UT_sint32 i = m_iIndex; i<m_packets.size(); i++)
+	for (UT_uint32 i = m_iIndex; i < m_packets.size(); i++)
 	{
-		m_iIndex = i+1;
+		m_iIndex = i + 1;
 		RecordedPacket& rp = *m_packets[i];
 		UT_continue_if_fail(rp.m_pPacket && SessionPacket::isInstanceOf(*rp.m_pPacket));
 		SessionPacket* sp = static_cast<SessionPacket*>(rp.m_pPacket);
@@ -474,7 +487,7 @@ bool FakeAccountHandler::canStep()
 	UT_return_val_if_fail(m_pSession, false);
 	UT_return_val_if_fail(m_packets.size() > 1, false);
 
-	for (UT_sint32 i = m_iIndex; i<m_packets.size(); i++)
+	for (UT_uint32 i = m_iIndex; i < m_packets.size(); i++)
 	{
 		RecordedPacket& rp = *m_packets[i];
 		UT_continue_if_fail(rp.m_pPacket && SessionPacket::isInstanceOf(*rp.m_pPacket));
@@ -495,9 +508,9 @@ bool FakeAccountHandler::step(UT_sint32& iLocalRev)
 	UT_return_val_if_fail(m_pSession, false);
 	UT_return_val_if_fail(m_packets.size() > 1, false);
 
-	for (UT_sint32 i = m_iIndex; i<m_packets.size(); i++)
+	for (UT_uint32 i = m_iIndex; i < m_packets.size(); i++)
 	{
-		m_iIndex = i+1;
+		m_iIndex = i + 1;
 		RecordedPacket& rp = *m_packets[i];
 		UT_continue_if_fail(rp.m_pPacket && SessionPacket::isInstanceOf(*rp.m_pPacket));
 		SessionPacket* sp = static_cast<SessionPacket*>(rp.m_pPacket);

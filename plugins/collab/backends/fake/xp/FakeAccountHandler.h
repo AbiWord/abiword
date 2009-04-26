@@ -20,12 +20,12 @@
 #ifndef __FAKEACCOUNTHANDLER__
 #define __FAKEACCOUNTHANDLER__
 
-#include <backends/xp/AccountHandler.h>
-#include <backends/xp/Buddy.h>
+#include <account/xp/AccountHandler.h>
+#include <account/xp/Buddy.h>
+#include "FakeBuddy.h"
 
 class RecordedPacket;
 class AbiCollab;
-class FakeBuddy;
 class PD_Document;
 
 class FakeAccountHandler : public AccountHandler
@@ -41,9 +41,9 @@ public:
 	
 	// dialog management 
 	virtual void							storeProperties();
-	virtual void							embedDialogWidgets(void* pEmbeddingParent)
+	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
-	virtual void							removeDialogWidgets(void* pEmbeddingParent)
+	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 
 	// connection management
@@ -54,8 +54,9 @@ public:
 		{ return false; }
 	
 	// user management
-	FakeBuddy*								getBuddy( const UT_UTF8String& name );
-	virtual Buddy*							constructBuddy(const PropertyMap& props);
+	FakeBuddyPtr								getBuddy(const UT_UTF8String& description);
+	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
