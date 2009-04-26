@@ -54,12 +54,13 @@ public:
 		{ return false; }
 	
 	// user management
-	FakeBuddyPtr								getBuddy(const UT_UTF8String& description);
+	FakeBuddyPtr							getBuddy(const UT_UTF8String& description);
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
 	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 
 	// session management
@@ -68,7 +69,7 @@ public:
 
 	// packet management
 	virtual bool							send(const Packet* pPacket);
-	virtual bool							send(const Packet* pPacket, const Buddy& buddy);
+	virtual bool							send(const Packet* pPacket, BuddyPtr pBuddy);
 	
 	// functions for the regression test
 	bool									process();

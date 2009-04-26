@@ -123,6 +123,12 @@ BuddyPtr FakeAccountHandler::constructBuddy(const std::string& /*descriptor*/, B
 	return FakeBuddyPtr();
 }
 
+void FakeAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
+{
+	UT_return_if_fail(pBuddy);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+}
+
 bool FakeAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
@@ -139,7 +145,7 @@ bool FakeAccountHandler::send(const Packet* pPacket)
 	return true;
 }
 
-bool FakeAccountHandler::send(const Packet* pPacket, const Buddy& /*buddy*/)
+bool FakeAccountHandler::send(const Packet* pPacket, BuddyPtr /*pBuddy*/)
 {
 	UT_DEBUGMSG(("FakeAccountHandler::send(const Packet* pPacket, const Buddy& buddy)\n"));
 	UT_return_val_if_fail(pPacket, false);

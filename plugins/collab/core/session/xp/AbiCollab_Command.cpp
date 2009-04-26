@@ -141,7 +141,7 @@ bool AbiCollab_Command::_doCmdRegression(const UT_UTF8String& sSessionFile)
 #endif
 }
 
-bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool /*bSingleStep*/)
+bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool bSingleStep)
 {
 	UT_UNUSED(sServerSessionFile);
 	UT_UNUSED(sClientSessionFile);
@@ -190,9 +190,13 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 		if (iServerLocalRev == iClientRemoteRev && iServerRemoteRev == iClientLocalRev)
 		{
 			if (pServerHandler->canStep())
+			{
 				UT_ASSERT_HARMLESS(pServerHandler->step(iServerLocalRev));
+			}
 			else if (pClientHandler->canStep())
+			{
 				UT_ASSERT_HARMLESS(pClientHandler->step(iClientLocalRev));
+			}
 			else
 			{
 				UT_DEBUGMSG(("Neither server nor client can step; assuming we are done...\n"));
@@ -218,6 +222,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 	g_free(server_uri);
 	return true;
 #else
+	UT_UNUSED(bSingleStep);
 	fprintf(stderr, "Can't run the abicollab in debug mode: the \"fake\" abiword backend is disabled\n");
 	return false;
 #endif
