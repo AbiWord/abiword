@@ -430,8 +430,7 @@ void IE_MailMerge::unregisterAllMergers ()
 	for (UT_uint32 i = 0; i < size; i++)
     {
 		pSniffer = m_sniffers.getNthItem(i);
-		if (pSniffer)
-			delete pSniffer;
+		DELETEP(pSniffer);
 	}
 
 	m_sniffers.clear();

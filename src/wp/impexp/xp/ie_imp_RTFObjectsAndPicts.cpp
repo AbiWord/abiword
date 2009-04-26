@@ -793,6 +793,7 @@ bool IE_Imp_ShpPropParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 		ie->setStruxImage(true);
 		ie->clearImageName();
 		ie->HandlePicture();
+		break;
 	default:
 		break;
 	}

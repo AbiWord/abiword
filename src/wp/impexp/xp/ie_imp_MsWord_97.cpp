@@ -842,17 +842,10 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 	UT_VECTOR_PURGEALL(emObject *, m_vecEmObjects);
 	UT_VECTOR_PURGEALL(textboxPos *, m_vecTextboxPos);
 
-	if(m_pTextboxes)
-		delete [] m_pTextboxes;
-
-	if(m_pFootnotes)
-		delete [] m_pFootnotes;
-
-	if(m_pEndnotes)
-		delete [] m_pEndnotes;
-
-	if(m_pHeaders)
-		delete [] m_pHeaders;
+	DELETEPV(m_pTextboxes);
+	DELETEPV(m_pFootnotes);
+	DELETEPV(m_pEndnotes);
+	DELETEPV(m_pHeaders);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -5613,17 +5606,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 {
 	UT_uint32 i;
 
-	if(m_pFootnotes)
-	{
-		delete [] m_pFootnotes;
-		m_pFootnotes = NULL;
-	}
-
-	if(m_pEndnotes)
-	{
-		delete [] m_pEndnotes;
-		m_pEndnotes = NULL;
-	}
+	DELETEPV(m_pFootnotes);
+	DELETEPV(m_pEndnotes);
 
 	m_iFootnotesCount = 0;
 	m_iEndnotesCount = 0;
@@ -5866,11 +5850,7 @@ void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 	UT_uint32 *pPLCF_dgg = NULL;
 	UT_uint32 *pPLCF_txt = NULL;
 
-	if(m_pTextboxes)
-	{
-		delete [] m_pTextboxes;
-		m_pTextboxes = NULL;
-	}
+	DELETEPV(m_pTextboxes);
 
 	bool bTextboxError = false;
 	m_iTextboxCount = 0;
@@ -6692,11 +6672,7 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 {
 	UT_uint32 i, k;
 
-	if(m_pHeaders)
-	{
-		delete [] m_pHeaders;
-		m_pHeaders = NULL;
-	}
+	DELETEPV(m_pHeaders);
 
 	m_iHeadersCount = 0;
 	UT_uint32 *pPLCF_txt = NULL;

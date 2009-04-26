@@ -83,8 +83,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 	for (UT_uint32 i = 0; i < size; i++)
 	{
 		pSniffer = IE_IMP_GraphicSniffers.getNthItem(i);
-		if (pSniffer)
-			delete pSniffer;
+		DELETEP(pSniffer);
 	}
 
 	IE_IMP_GraphicSniffers.clear();

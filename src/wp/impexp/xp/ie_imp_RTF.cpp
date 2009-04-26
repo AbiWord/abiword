@@ -1103,6 +1103,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet,
 			// TODO What is different?  Iconv only supports one MS Hebrew codepage.
 			case 181:	// HEBREWUSER_CHARSET
 				UT_DEBUGMSG(("RTF Font charset 'HEBREWUSER'??\n"));
+				// fall through (for now)
 			case 177:	// HEBREW_CHARSET
 				m_szEncoding = "CP1255";	// MS-HEBR
 				break;
@@ -2665,7 +2666,7 @@ UT_Error IE_Imp_RTF::_parseFile(GsfInput* fp)
 	if(!getLoadStylesOnly() && !m_parsingHdrFtr)
 	{
 		double width = 12240./1440.; // default width in twips
-		double height = 15840./1440;; // default height in twips
+		double height = 15840./1440; // default height in twips
 		if(fp != NULL)
 		{
 			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
@@ -6817,6 +6818,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			break;
 		default:
 			UT_ASSERT_NOT_REACHED();	// so what is it?
+			// fall through
 		case RTFProps_ParaProps::pjLeft:
 			propBuffer += "left";
 			break;
@@ -7681,7 +7683,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			}
 			if(!pView->isInDocSection(m_dposPaste))
 			{
-				return false;;
+				return false;
 			}
 			bSuccess = insertStrux(PTX_Section);
 			if (bSuccess)
@@ -11550,6 +11552,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 		     	break;
 		    default:
 			    UT_ASSERT_NOT_REACHED();	// so what is it?
+			    // fall through
 		    case RTFProps_ParaProps::pjLeft:
 			    s += "left; ";
 			    break;
