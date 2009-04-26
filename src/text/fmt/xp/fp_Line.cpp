@@ -3612,7 +3612,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 		//if this is unidirectional rtl text, we just fill the map sequentially
 		//from back to start
-		if(pView && pView->getBidiOrder() == FV_Order_Logical_RTL || !m_iRunsLTRcount)
+		if((pView && pView->getBidiOrder() == FV_Order_Logical_RTL) || !m_iRunsLTRcount)
 		{
 			xxx_UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));
 			for(i = 0; i < count/2; i++)

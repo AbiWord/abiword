@@ -414,15 +414,12 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	GR_Painter painter(pG);
 	bool bIsSelected = false;
 
-	if ( !pG->queryProperties(GR_Graphics::DGP_PAPER) && ( isInSelectedTOC() ||
-	    /* pView->getFocus()!=AV_FOCUS_NONE && */
-		(iSel1 <= iRunBase)
-		&& (iSel2 > iRunBase)
-		))
+	if ( !pG->queryProperties(GR_Graphics::DGP_PAPER) && 
+	     (isInSelectedTOC() || ((iSel1 <= iRunBase) && (iSel2 > iRunBase)))
+	   )
 	{
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
-
 	}
 	else
 	{
