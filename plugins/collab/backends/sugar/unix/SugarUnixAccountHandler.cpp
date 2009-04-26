@@ -82,12 +82,6 @@ void SugarAccountHandler::storeProperties()
 	// all our info always directly from sugar
 }
 
-SugarBuddy* SugarAccountHandler::getBuddy(const UT_UTF8String& name)
-{
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
-}
-
 ConnectResult SugarAccountHandler::connect()
 {
 	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
@@ -105,41 +99,40 @@ bool SugarAccountHandler::isOnline()
 	return true;
 }
 
-Buddy* SugarAccountHandler::constructBuddy(const PropertyMap& props)
+BuddyPtr SugarAccountHandler::constructBuddy(const PropertyMap& props)
 {
 	UT_DEBUGMSG(("SugarAccountHandler::constructBuddy()\n"));
 
 	PropertyMap::const_iterator cit = props.find("dbusAddress");
-	UT_return_val_if_fail(cit != props.end(), 0);
-	UT_return_val_if_fail(cit->second.size() > 0, 0);
+	UT_return_val_if_fail(cit != props.end(), SugarBuddyPtr());
+	UT_return_val_if_fail(cit->second.size() > 0, SugarBuddyPtr());
 
 	UT_DEBUGMSG(("Constructing SugarBuddy (dbusAddress: %s)\n", cit->second.c_str()));
-	// we're lazy, so we'll reuse the dbus address for the buddy's name
 	// NOTE: the buddy name must uniquely identify a buddy, and I can't
 	// guarantee at the moment that the name we could get from the sugar
 	// presence framework would always be unique to one buddy; hence the
 	// dbus address will do for now
-	return new SugarBuddy(this, cit->second.c_str(), cit->second.c_str());
+	return boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, cit->second.c_str()));
 }
 
-Buddy* SugarAccountHandler::constructBuddy(const std::string& descriptor, Buddy* pBuddy)
+BuddyPtr SugarAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-	return NULL;
+	return SugarBuddyPtr();
 }
 
-bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+bool SugarAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
 }
 
-void  SugarAccountHandler::handleEvent(Session& pSession)
+void  SugarAccountHandler::handleEvent(Session& /*pSession*/)
 {
 	// TODO: implement me
 }
 
-void SugarAccountHandler::signal(const Event& event, const Buddy* pSource)
+void SugarAccountHandler::signal(const Event& event, BuddyPtr pSource)
 {
 	AccountHandler::signal(event, pSource);
 
@@ -163,7 +156,7 @@ void SugarAccountHandler::signal(const Event& event, const Buddy* pSource)
 			{
 				UT_DEBUGMSG(("Got dochandle, going to initiate a join on it!\n"));
 				// FIXME: remove const cast
-				pManager->joinSessionInitiate(const_cast<Buddy*>(pSource), pDocHandle);
+				pManager->joinSessionInitiate(pSource, pDocHandle);
 			}
 			else
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -191,12 +184,12 @@ bool SugarAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
 	UT_return_val_if_fail(m_pTube, false);
 	
 	SugarBuddy& sugarBuddy = (SugarBuddy&)buddy;
-	UT_DEBUGMSG(("Sending packet to sugar buddy on dbus addess: %s\n", sugarBuddy.getDBusName().utf8_str()));
+	UT_DEBUGMSG(("Sending packet to sugar buddy on dbus addess: %s\n", sugarBuddy.getDBusAddress().utf8_str()));
 
-	DBusMessage* pMessage = dbus_message_new_method_call(sugarBuddy.getDBusName().utf8_str(), "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
+	DBusMessage* pMessage = dbus_message_new_method_call(sugarBuddy.getDBusAddress().utf8_str(), "/org/laptop/Sugar/Presence/Buddies", INTERFACE, SEND_ONE_METHOD);
 	// TODO: check dst
-	bool dst = dbus_message_set_destination(pMessage, sugarBuddy.getDBusName().utf8_str());
-	UT_DEBUGMSG(("Destination (%s) set on message\n", sugarBuddy.getDBusName().utf8_str()));
+	/*bool dst =*/ dbus_message_set_destination(pMessage, sugarBuddy.getDBusAddress().utf8_str());
+	UT_DEBUGMSG(("Destination (%s) set on message\n", sugarBuddy.getDBusAddress().utf8_str()));
 
 	// we don't want replies, because then then easily run into dbus timeout problems 
 	// when sending large packets
@@ -208,7 +201,7 @@ bool SugarAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
 	_createPacketStream( data, pPacket );
 
 	const char* packet_contents = &data[0];
-	bool append = dbus_message_append_args(pMessage,
+	/*bool append =*/ dbus_message_append_args(pMessage,
 					DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE, &packet_contents, data.size(),
 					DBUS_TYPE_INVALID);
 	UT_DEBUGMSG(("Appended packet contents\n"));
@@ -219,6 +212,11 @@ bool SugarAccountHandler::send(const Packet* pPacket, const Buddy& buddy)
 		dbus_connection_flush(m_pTube);
 	dbus_message_unref(pMessage);
 	return sent;
+}
+
+Packet* SugarAccountHandler::createPacket(const std::string& packet, BuddyPtr pBuddy)
+{
+	return _createPacket(packet, pBuddy);
 }
 
 void SugarAccountHandler::_registerEditMethods()
@@ -278,7 +276,6 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 
 	UT_DEBUGMSG(("Got tube address: %s\n", tubeDBusAddress.utf8_str()));
 
-	DBusError error;
 	m_pTube = dbus_connection_open(tubeDBusAddress.utf8_str(), NULL);
 	if (m_pTube)
 	{
@@ -315,7 +312,6 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 
 	// TODO: check that we aren't already in a session; this backend can only join one session at a time (for now)
 
-	DBusError error;
 	m_pTube = dbus_connection_open(tubeDBusAddress.utf8_str(), NULL);
 	if (m_pTube)
 	{
@@ -343,7 +339,7 @@ bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDB
 	UT_DEBUGMSG(("SugarAccountHandler::joinBuddy()\n"));
 	UT_return_val_if_fail(pView, false);
 
-	Buddy* pBuddy = new SugarBuddy(this, buddyDBusAddress, buddyDBusAddress);
+	SugarBuddyPtr pBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, buddyDBusAddress));
 	addBuddy(pBuddy);
 
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
@@ -361,8 +357,8 @@ bool SugarAccountHandler::joinBuddy(FV_View* pView, const UT_UTF8String& buddyDB
 	}
 	else
 	{
-		UT_DEBUGMSG(("Buddy joined, while we are NOT hosting a session; requesting sessions buddy: %s\n", pBuddy->getName().utf8_str()));
-		getSessionsAsync(*pBuddy);
+		UT_DEBUGMSG(("Buddy joined, while we are NOT hosting a session; requesting sessions buddy: %s\n", pBuddy->getDescriptor(false).utf8_str()));
+		getSessionsAsync(pBuddy);
 		return true;
 	}
 
@@ -388,9 +384,8 @@ bool SugarAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& budd
 		AbiCollab* pSession = pManager->getSessionFromDocumentId(pDoc->getDocUUIDString());
 		if (pSession)
 		{	
-			Buddy* pTmpBuddy = new SugarBuddy(this, buddyDBusAddress, buddyDBusAddress);
+			SugarBuddyPtr pTmpBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy(this, buddyDBusAddress));
 			pSession->removeCollaborator(pTmpBuddy);
-			DELETEP(pTmpBuddy);
 			return true;
 		}
 	}
@@ -404,10 +399,22 @@ bool SugarAccountHandler::disjoinBuddy(FV_View* pView, const UT_UTF8String& budd
 	return false;
 }
 
-void SugarAccountHandler::forceDisconnectBuddy(Buddy* pBuddy)
+void SugarAccountHandler::forceDisconnectBuddy(BuddyPtr pBuddy)
 {
 	UT_return_if_fail(pBuddy);
-	m_ignoredBuddies.insert(pBuddy->getName());
+	m_ignoredBuddies.insert(pBuddy->getDescriptor(false));
+}
+
+SugarBuddyPtr SugarAccountHandler::getBuddy(const UT_UTF8String& dbusAddress)
+{
+	for (std::vector<BuddyPtr>::iterator it = getBuddies().begin(); it != getBuddies().end(); it++)
+	{
+		SugarBuddyPtr pBuddy = boost::static_pointer_cast<SugarBuddy>(*it);
+		UT_continue_if_fail(pBuddy);
+		if (pBuddy->getDBusAddress() == dbusAddress)
+			return pBuddy;
+	}
+	return SugarBuddyPtr();
 }
 
 static bool s_offerTube(AV_View* v, EV_EditMethodCallData *d)
@@ -509,18 +516,22 @@ DBusHandlerResult s_dbus_handle_message(DBusConnection *connection, DBusMessage 
 			if (!pHandler->isIgnoredBuddy(senderDBusAddress))
 			{
 				// import the packet
-				RawPacket rp;
-				SugarBuddy* pSender = pHandler->getBuddy( senderDBusAddress );
-				if (!pSender)
+				BuddyPtr pBuddy = pHandler->getBuddy(senderDBusAddress);
+				if (!pBuddy)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					pSender = new SugarBuddy( pHandler, senderDBusAddress, senderDBusAddress );
-					pHandler->addBuddy(pSender);
+					pBuddy = boost::shared_ptr<SugarBuddy>(new SugarBuddy( pHandler, senderDBusAddress));
+					pHandler->addBuddy(pBuddy);
 				}
-				rp.buddy = pSender;
-				rp.packet.resize( packet_size );
-				memcpy( &rp.packet[0], packet_data, packet_size );
-				pHandler->handleMessage(rp);
+
+				// FIXME: inefficient copying of data
+				std::string packet_str(' ', packet_size);
+				memcpy(&packet_str[0], packet_data, packet_size);
+				Packet* pPacket = pHandler->createPacket(packet_str, pBuddy);
+				UT_return_val_if_fail(pPacket, DBUS_HANDLER_RESULT_NOT_YET_HANDLED); // TODO: shouldn't we just disconnect here?
+
+				// handle!
+				pHandler->handleMessage(pPacket, pBuddy);
 			}
 
 			//dbus_free(packet);

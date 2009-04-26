@@ -29,7 +29,7 @@
 
 class DocHandle;
 
- class TCPBuddy : public Buddy
+class TCPBuddy : public Buddy
 {
 public:
 	TCPBuddy(AccountHandler* handler, const std::string& server, const std::string& port)

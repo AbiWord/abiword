@@ -27,17 +27,22 @@
 
 class DocHandle;
 
- class SugarBuddy : public Buddy
+class SugarBuddy : public Buddy
 {
 public:
-	SugarBuddy(AccountHandler* handler, const UT_UTF8String& descriptor, const UT_UTF8String dbusName)
-		: Buddy(handler, descriptor),
-		m_sDBusName(dbusName)
+	SugarBuddy(AccountHandler* handler, const UT_UTF8String dbusAddress)
+		: Buddy(handler),
+		m_sDBusAddress(dbusAddress)
 	{
+	}
+
+	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
+	{
+		return UT_UTF8String("sugar://") + m_sDBusAddress;
 	}
 	
 	virtual UT_UTF8String		getDescription() const
-		{ return getName(); }
+		{ return m_sDBusAddress; }
 		
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
@@ -45,14 +50,16 @@ public:
 		return NULL;
 	}
 
-	const UT_UTF8String& getDBusName()
+	const UT_UTF8String& getDBusAddress()
 	{
-		return m_sDBusName;
+		return m_sDBusAddress;
 	}
 
 private:
 
-	UT_UTF8String		m_sDBusName;
+	UT_UTF8String		m_sDBusAddress;
 };
+
+typedef boost::shared_ptr<SugarBuddy> SugarBuddyPtr;
 
 #endif /* SUGARBUDDY_H */

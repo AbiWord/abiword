@@ -47,9 +47,9 @@ public:
 	
 	// dialog management 
 	virtual void							storeProperties();
-	virtual void							embedDialogWidgets(void* pEmbeddingParent)
+	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
-	virtual void							removeDialogWidgets(void* pEmbeddingParent)
+	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 
 	// connection management
@@ -60,12 +60,11 @@ public:
 		{ return m_bLocallyControlled; }
 	
 	// user management
-	SugarBuddy*								getBuddy( const UT_UTF8String& name );
-	virtual Buddy*							constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
+	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
-	virtual void							forceDisconnectBuddy(Buddy* pBuddy);
-	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
+	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 
 	// session management
@@ -75,14 +74,16 @@ public:
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, const Buddy& buddy);
+	Packet*									createPacket(const std::string& packet, BuddyPtr pBuddy);
 	
 	// event management
 	void									handleEvent(Session& pSession);
 
 	// signal management
-	virtual void							signal(const Event& event, const Buddy* pSource);
+	virtual void							signal(const Event& event, BuddyPtr pSource);
 
 	// tube & buddy management
+	SugarBuddyPtr							getBuddy(const UT_UTF8String& dbusAddress);
 	bool									offerTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
 	bool									joinTube(FV_View* pView, const UT_UTF8String& tubeDBusAddress);
 	bool									joinBuddy(FV_View* pView, const UT_UTF8String& buddyDBusAddress);
