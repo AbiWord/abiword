@@ -59,7 +59,6 @@ public:
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
 	virtual bool							allowsManualBuddies()
 		{ return false; }
-	virtual Buddy*							constructBuddy(const std::string& descriptor, Buddy* pBuddy);
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
 
