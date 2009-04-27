@@ -236,10 +236,10 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	UT_DEBUGMSG(("AbiCollabSessionManager::registerAccountHandlers()\n"));
 
 #ifdef ABICOLLAB_HANDLER_XMPP
-	m_regAccountHandlers.push_back(XMPPAccountHandlerConstructor);
+	m_regAccountHandlers[XMPPAccountHandler::getStorageType()] = XMPPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_TCP
-	m_regAccountHandlers.push_back(TCPAccountHandlerConstructor);
+	m_regAccountHandlers[TCPAccountHandler::getStorageType()] = TCPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_SUGAR
 	// we don't want to regerister a sugar account handler here, 
@@ -252,7 +252,7 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
 	if (tls_tunnel::Proxy::tls_tunnel_init())
-		m_regAccountHandlers.push_back(ServiceAccountHandlerConstructor);
+		m_regAccountHandlers[ServiceAccountHandler::getStorageType()] = ServiceAccountHandlerConstructor;
 #endif
 	return true;
 }
@@ -312,80 +312,84 @@ void AbiCollabSessionManager::loadProfile()
 
 						// find the account handler belonging to this type
 						UT_UTF8String handlerType = reinterpret_cast<char *>(xmlGetProp(accountNode, reinterpret_cast<const xmlChar*>("type"))); 
-						for (UT_sint32 i = 0; i < m_regAccountHandlers.getItemCount(); i++)
-						{
-							AccountHandlerConstructor constructor = m_regAccountHandlers.getNthItem(i);
-							AccountHandler* pHandler = constructor();
-							UT_continue_if_fail(pHandler);
+						std::map<UT_UTF8String, AccountHandlerConstructor>::iterator handler_iter = m_regAccountHandlers.find(handlerType);
+						if (handler_iter == m_regAccountHandlers.end())
+						    continue; // could happen for example when the sugar backend is found in the profile, which does not have a registered account handler belowing to it for now
+						
+						AccountHandlerConstructor constructor = handler_iter->second;
+						AccountHandler* pHandler = constructor();
+						UT_continue_if_fail(pHandler);
 
-							if (pHandler->getStorageType() == handlerType)
+						for (xmlNode* accountProp = accountNode->children; accountProp; accountProp = accountProp->next)
+						{
+							if (accountProp->type == XML_ELEMENT_NODE)
 							{
-								for (xmlNode* accountProp = accountNode->children; accountProp; accountProp = accountProp->next)
+								// some node names are pre-defined...
+								if (strcmp(reinterpret_cast<const char*>(accountProp->name), "buddies") == 0)
 								{
-									if (accountProp->type == XML_ELEMENT_NODE)
+									for (xmlNode* buddyNode = accountProp->children; buddyNode; buddyNode = buddyNode->next)
 									{
-										// some node names are pre-defined...
-										if (strcmp(reinterpret_cast<const char*>(accountProp->name), "buddies") == 0)
+										if (buddyNode->type == XML_ELEMENT_NODE)
 										{
-											for (xmlNode* buddyNode = accountProp->children; buddyNode; buddyNode = buddyNode->next)
+											if (strcmp(reinterpret_cast<const char*>(buddyNode->name), "buddy") == 0)
 											{
-												if (buddyNode->type == XML_ELEMENT_NODE)
+												// read all buddy properties
+												PropertyMap vBuddyProps;
+												if (buddyNode->children)
 												{
-													if (strcmp(reinterpret_cast<const char*>(buddyNode->name), "buddy") == 0)
+													for (xmlNode* buddyPropertyNode = buddyNode->children; buddyPropertyNode; buddyPropertyNode = buddyPropertyNode->next)
 													{
-														// read all buddy properties
-														PropertyMap vBuddyProps;
-														if (buddyNode->children)
+														if (buddyPropertyNode->type == XML_ELEMENT_NODE)
 														{
-															for (xmlNode* buddyPropertyNode = buddyNode->children; buddyPropertyNode; buddyPropertyNode = buddyPropertyNode->next)
+															UT_UTF8String buddyPropValue = reinterpret_cast<const char*>(xmlNodeGetContent(buddyPropertyNode));
+															if (buddyPropertyNode->name && *buddyPropertyNode->name && buddyPropValue.size() > 0)
 															{
-																if (buddyPropertyNode->type == XML_ELEMENT_NODE)
-																{
-																	UT_UTF8String buddyPropValue = reinterpret_cast<const char*>(xmlNodeGetContent(buddyPropertyNode));
-																	if (buddyPropertyNode->name && *buddyPropertyNode->name && buddyPropValue.size() > 0)
-																	{
-																		vBuddyProps.insert(PropertyMap::value_type(
-																				reinterpret_cast<const char*>(buddyPropertyNode->name), 
-																				buddyPropValue.utf8_str())
-																			);
-																	}
-																	else
-																		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-																}
+																vBuddyProps.insert(PropertyMap::value_type(
+																		reinterpret_cast<const char*>(buddyPropertyNode->name), 
+																		buddyPropValue.utf8_str())
+																	);
 															}
+															else
+																UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 														}
-														else
-															UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // a buddy with no properties at all should really not happen
-														
-														// construct the buddy	
-														BuddyPtr pBuddy = pHandler->constructBuddy(vBuddyProps);
-														if (pBuddy)
-														{
-															// add the buddy to the account handler
-															pHandler->addBuddy(pBuddy);
-														}
-													}
-													else
-													{
-														UT_DEBUGMSG(("Got unexpected tag within a <buddies> section (%s)\n", buddyNode->name));
-														UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 													}
 												}
+												else
+													UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // a buddy with no properties at all should really not happen
+												
+												// construct the buddy	
+												BuddyPtr pBuddy = pHandler->constructBuddy(vBuddyProps);
+												if (pBuddy)
+												{
+													// add the buddy to the account handler
+													pHandler->addBuddy(pBuddy);
+												}
 											}
-										}
-										else
-										{
-											// ... the rest are generic properties
-											UT_UTF8String propValue = reinterpret_cast<const char*>(xmlNodeGetContent(accountProp));
-											pHandler->addProperty(reinterpret_cast<const char*>(accountProp->name), propValue.utf8_str());
+											else
+											{
+												UT_DEBUGMSG(("Got unexpected tag within a <buddies> section (%s)\n", buddyNode->name));
+												UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+											}
 										}
 									}
 								}
-								if (addAccount(pHandler)) // only if not a duplicate
-									if (pHandler->autoConnect())
-										pHandler->connect();
-								break;
+								else
+								{
+									// ... the rest are generic properties
+									UT_UTF8String propValue = reinterpret_cast<const char*>(xmlNodeGetContent(accountProp));
+									pHandler->addProperty(reinterpret_cast<const char*>(accountProp->name), propValue.utf8_str());
+								}
 							}
+						}
+
+						// add the account to the account list if it is not a duplicate
+						if (addAccount(pHandler))
+						{
+							if (pHandler->autoConnect())
+								pHandler->connect();
+						}
+						else
+						{
 							_deleteAccount(pHandler);
 						}
 					}

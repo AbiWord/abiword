@@ -46,7 +46,7 @@ static LmHandlerResult presence_handler(LmMessageHandler      *handler,
 					LmMessage             *m,
 					gpointer               user_data)
 {
-//vi	XMPPAccountHandler * pHandler = static_cast<XMPPAccountHandler *>(user_data);
+//	XMPPAccountHandler * pHandler = static_cast<XMPPAccountHandler *>(user_data);
 	LmMessageNode* node = lm_message_get_node(m);
 	if (node)
 	{

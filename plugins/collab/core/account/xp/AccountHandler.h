@@ -79,9 +79,10 @@ public:
 	virtual ~AccountHandler() {}
 
 	// housekeeping
+	static UT_UTF8String					getStorageType()
+		{ /* every backend should re-implement this static function */ return "null"; };
 	virtual UT_UTF8String					getDescription() = 0;	
 	virtual UT_UTF8String					getDisplayType() = 0;
-	virtual UT_UTF8String					getStorageType() = 0;	
 	
 	void									addProperty(const string& key, const string& value)
 		{ m_properties[key] = value; }

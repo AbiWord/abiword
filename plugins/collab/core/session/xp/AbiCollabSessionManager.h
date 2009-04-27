@@ -104,7 +104,7 @@ public:
 	// account code
 	bool										registerAccountHandlers(void);
 	bool										unregisterAccountHandlers(void);
-	const UT_GenericVector<AccountHandlerConstructor>&
+	const std::map<UT_UTF8String, AccountHandlerConstructor>&
 												getRegisteredAccountHandlers(void)
 		{ return m_regAccountHandlers; }
 	bool										addAccount(AccountHandler* pHandler);
@@ -158,7 +158,7 @@ private:
 	UT_GenericVector<AbiCollab *>				m_vecSessions;
 	
 	// account code
-	UT_GenericVector<AccountHandlerConstructor>	m_regAccountHandlers;
+	std::map<UT_UTF8String, AccountHandlerConstructor>	m_regAccountHandlers;
 	std::vector<AccountHandler *>				m_vecAccounts;
 	UT_GenericVector<EventListener *>			m_vecEventListeners;
 	

@@ -124,21 +124,20 @@ void AP_UnixDialog_CollaborationAddAccount::_populateWindowData()
 	GtkTreeIter iter;
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 
-	for (UT_sint32 i = 0; i < pManager->getRegisteredAccountHandlers().size(); i++)
+	for (std::map<UT_UTF8String, AccountHandlerConstructor>::const_iterator cit = pManager->getRegisteredAccountHandlers().begin(); cit != pManager->getRegisteredAccountHandlers().end(); cit++)
 	{
-		AccountHandlerConstructor pConstructor = pManager->getRegisteredAccountHandlers().getNthItem(i);
-		if (pConstructor)
+		AccountHandlerConstructor pConstructor = cit->second;
+		UT_continue_if_fail(pConstructor);
+
+		// TODO: we need to free these somewhere
+		AccountHandler* pHandler = pConstructor();
+		if (pHandler)
 		{
-			// TODO: we need to free these somewhere
-			AccountHandler* pHandler = pConstructor();
-			if (pHandler)
-			{
-				gtk_list_store_append (store, &iter);
-				gtk_list_store_set (store, &iter,
-							0, pHandler->getDisplayType().utf8_str(),
-							1, pHandler,
-							-1);
-			}
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter,
+						0, pHandler->getDisplayType().utf8_str(),
+						1, pHandler,
+						-1);
 		}
 	}
 	m_model = GTK_TREE_MODEL (store);

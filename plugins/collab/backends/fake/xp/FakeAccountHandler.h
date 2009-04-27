@@ -35,9 +35,9 @@ public:
 	virtual ~FakeAccountHandler();
 
 	// housekeeping
+	static UT_UTF8String					getStorageType();
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
-	virtual UT_UTF8String					getStorageType();
 	
 	// dialog management 
 	virtual void							storeProperties();
