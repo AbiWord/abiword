@@ -74,7 +74,7 @@ class ABI_EXPORT UT_XML
   void _init();
   void _cleanup();
 
-  const char* removeNamespacePrefix(const char* name); 
+  std::string removeNamespacePrefix(const char* name); 
 
  protected:
   bool reset_all ();

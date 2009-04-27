@@ -172,9 +172,16 @@ void UT_XML::flush_all ()
     }
 }
 
-const char* UT_XML::removeNamespacePrefix(const char* name)
+std::string UT_XML::removeNamespacePrefix(const char* name)
 {
+  if(!name)
+	return "";
+
   std::string name_str(name);	
+
+  if(m_namespaces.empty())
+	return name_str;
+
   size_t colon_index = name_str.find(':');
 
   if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
@@ -182,17 +189,17 @@ const char* UT_XML::removeNamespacePrefix(const char* name)
 	  std::string name_space = name_str.substr(0, colon_index);
 	  std::string tag_name = name_str.substr(colon_index+1);
 
-	  std::list<std::string>::iterator it=m_namespaces.begin();
-	  do {
+	  std::list<std::string>::iterator it;
+	  
+	  for(it=m_namespaces.begin(); it!=m_namespaces.end(); ++it){		
 		std::string ns = (*it);
 		if(ns.compare(name_space.c_str()) == 0)
 		{
-			return tag_name.c_str();		
+			return tag_name;		
 		}
-		++it;
-      } while ( it!=m_namespaces.end() );
+      }
     }
-  return name;
+  return name_str;
 }
 
 /* Declared in ut_xml.h as: void UT_XML::startElement (const gchar * name, const gchar ** atts);
@@ -203,20 +210,23 @@ void UT_XML::startElement (const char * name, const char ** atts)
 
   flush_all ();
 
-  name = removeNamespacePrefix(name);
+  const char* suffix = name;
+
+  if(!m_namespaces.empty())
+	suffix = removeNamespacePrefix(name).c_str();
 
   if (m_bSniffing)
     {
-      if (strcmp (name,m_xml_type) == 0) m_bValid = true;
+      if (strcmp (suffix,m_xml_type) == 0) m_bValid = true;
       stop (); // proceed no further - we don't have any listener
       return;
     }
 
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
-	  m_pListener->startElement (name, atts);
+	  m_pListener->startElement (suffix, atts);
   if (m_pExpertListener)
-	  m_pExpertListener->StartElement (name, atts);
+	  m_pExpertListener->StartElement (suffix, atts);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::endElement (const gchar * name);
@@ -227,13 +237,16 @@ void UT_XML::endElement (const char * name)
 
   flush_all ();
 
-  name = removeNamespacePrefix(name);
+  const char* suffix = name;
+
+  if(!m_namespaces.empty())
+	suffix = removeNamespacePrefix(name).c_str();
 
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
-	  m_pListener->endElement (name);
+	  m_pListener->endElement (suffix);
   if (m_pExpertListener)
-	  m_pExpertListener->EndElement (name);
+	  m_pExpertListener->EndElement (suffix);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::charData (const gchar * buffer, int length);
