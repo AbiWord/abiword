@@ -32,6 +32,8 @@
 #endif
 #include "ut_bytebuf.h"
 
+#include <list>
+
 /* gchar definition moved to ut_types.h */
 
 ABI_EXPORT char * UT_XML_Decode( const char * inKey );
@@ -45,7 +47,8 @@ class ABI_EXPORT UT_XML
 
   /* Strip "svg:" from "svg:svg" etc. in element names, pass any other namespace indicators
    */
-  void setNameSpace (const char * xml_namespace);
+  void addNameSpace (const char * xml_namespace);
+  void clearNameSpaces();
   UT_sint32           getNumMinorErrors(void) const
   { return m_iMinorErrors;}
 	
@@ -71,13 +74,14 @@ class ABI_EXPORT UT_XML
   void _init();
   void _cleanup();
 
+  const char* removeNamespacePrefix(const char* name); 
+
  protected:
   bool reset_all ();
  private:
   void flush_all ();
 
-  const char * m_namespace;
-  int m_nslength;
+  std::list<std::string> m_namespaces;
 
  public:
   /* Returns true iff the name of the first element is xml_type or opt_namespace:xml_type

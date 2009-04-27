@@ -105,8 +105,6 @@ UT_XML::UT_XML () :
   m_chardata_max(0),
   m_iMinorErrors(0),
   m_iRecoveredErrors(0),
-  m_namespace(0),
-  m_nslength(0),
   m_bSniffing(false),
   m_bValid(false),
   m_xml_type(0),
@@ -124,7 +122,7 @@ UT_XML::~UT_XML ()
 
   if (m_chardata_buffer) g_free (m_chardata_buffer);
 
-  FREEP (m_namespace);
+  clearNameSpaces();
 }
 
 bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require)
@@ -174,6 +172,29 @@ void UT_XML::flush_all ()
     }
 }
 
+const char* UT_XML::removeNamespacePrefix(const char* name)
+{
+  std::string name_str(name);	
+  size_t colon_index = name_str.find(':');
+
+  if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
+    {
+	  std::string name_space = name_str.substr(0, colon_index);
+	  std::string tag_name = name_str.substr(colon_index+1);
+
+	  std::list<std::string>::iterator it=m_namespaces.begin();
+	  do {
+		std::string ns = (*it);
+		if(ns.compare(name_space.c_str()) == 0)
+		{
+			return tag_name.c_str();		
+		}
+		++it;
+      } while ( it!=m_namespaces.end() );
+    }
+  return name;
+}
+
 /* Declared in ut_xml.h as: void UT_XML::startElement (const gchar * name, const gchar ** atts);
  */
 void UT_XML::startElement (const char * name, const char ** atts)
@@ -182,11 +203,8 @@ void UT_XML::startElement (const char * name, const char ** atts)
 
   flush_all ();
 
-  if (m_nslength)
-    if (strncmp (name,m_namespace,m_nslength) == 0)
-      {
-	if (*(name + m_nslength) == ':') name += m_nslength + 1;
-      }
+  name = removeNamespacePrefix(name);
+
   if (m_bSniffing)
     {
       if (strcmp (name,m_xml_type) == 0) m_bValid = true;
@@ -209,11 +227,7 @@ void UT_XML::endElement (const char * name)
 
   flush_all ();
 
-  if (m_nslength)
-    if (strncmp (name,m_namespace,m_nslength) == 0)
-      {
-	if (*(name + m_nslength) == ':') name += m_nslength + 1;
-      }
+  name = removeNamespacePrefix(name);
 
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
@@ -298,14 +312,20 @@ void UT_XML::defaultData (const char * buffer, int length)
 
 /* I'm still very confused about XML namespaces so the handling here is likely to change a lot as I learn...
  */
-void UT_XML::setNameSpace (const char * xml_namespace)
+void UT_XML::addNameSpace (const char * xml_namespace)
 {
-  FREEP (m_namespace);
-  if (xml_namespace) m_namespace = g_strdup (xml_namespace);
+  if(!xml_namespace)
+	return;
 
-  m_nslength = 0;
-  if (m_namespace) m_nslength = strlen (m_namespace);
+  std::string ns(xml_namespace);
+  m_namespaces.push_back(ns);
 }
+
+void UT_XML::clearNameSpaces()
+{
+  m_namespaces.clear();
+}
+
 
 bool UT_XML::sniff (const UT_ByteBuf * pBB, const char * xml_type)
 {

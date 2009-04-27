@@ -255,7 +255,7 @@ UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamList
 
 	UT_XML reader;
 	reader.setListener(pListener);
-	reader.setNameSpace(ns);
+	reader.addNameSpace(ns);
 
 	if (gsf_input_size (stream) > 0) {
 		len = gsf_input_remaining (stream);
