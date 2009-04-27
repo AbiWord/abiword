@@ -470,10 +470,12 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				const gchar * num = UT_getAttribute("w:num", rqst->ppAtts);
 				const gchar * sep = UT_getAttribute("w:sep", rqst->ppAtts);
 
+				if(!num || atoi(num)<1)
+					num = "1";
+
 				if(!sep)
 					sep = "off";
 				
-				UT_return_if_fail( this->_error_if_fail((num != NULL) && (sep != NULL)) );
 				OXML_SharedSection last = OXML_Document::getCurrentSection();
 				last->setProperty("columns", num);
 				last->setProperty("column-line", sep);
@@ -584,7 +586,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	} else if (	!strcmp(rqst->pName, "type") ||
 				!strcmp(rqst->pName, "footerReference") ||
-				!strcmp(rqst->pName, "headerReference")) {
+				!strcmp(rqst->pName, "headerReference") ||
+				!strcmp(rqst->pName, "cols")) {
 		std::string contextTag = rqst->context->back();
 		if (!contextTag.compare("sectPr")) {
 			rqst->handled = true;
