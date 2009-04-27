@@ -41,10 +41,9 @@
 #include <packet/xp/AbiCollab_Packet.h>
 #include <packet/xp/EventPacket.h>
 
-static LmHandlerResult presence_handler(LmMessageHandler      *handler,
-					LmConnection          *connection,
-					LmMessage             *m,
-					gpointer               user_data)
+static LmHandlerResult presence_handler(LmMessageHandler* /*handler*/,
+					LmConnection * /*connection*/, LmMessage* m,
+					gpointer /*user_data*/)
 {
 //	XMPPAccountHandler * pHandler = static_cast<XMPPAccountHandler *>(user_data);
 	LmMessageNode* node = lm_message_get_node(m);
@@ -72,10 +71,9 @@ static LmHandlerResult presence_handler(LmMessageHandler      *handler,
 	return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 
-static LmHandlerResult stream_error_handler(LmMessageHandler      *handler,
-					LmConnection          *connection,
-					LmMessage             *m,
-					gpointer               user_data)
+static LmHandlerResult stream_error_handler(LmMessageHandler* /*handler*/,
+					LmConnection* /*connection*/, LmMessage* /*m*/,
+					gpointer user_data)
 {
 	XMPPAccountHandler * pHandler = static_cast<XMPPAccountHandler *>(user_data);
 	UT_return_val_if_fail(pHandler, LM_HANDLER_RESULT_REMOVE_MESSAGE);	
@@ -90,10 +88,9 @@ static LmHandlerResult stream_error_handler(LmMessageHandler      *handler,
 
 }
 
-static LmHandlerResult chat_handler(LmMessageHandler      *handler,
-				    LmConnection          *connection,
-				    LmMessage             *m,
-				    gpointer               user_data)
+static LmHandlerResult chat_handler(LmMessageHandler* /*handler*/,
+				    LmConnection* /*connection*/, LmMessage* m,
+				    gpointer user_data)
 {
 	XMPPAccountHandler * pHandler = static_cast<XMPPAccountHandler *>(user_data);
 	UT_return_val_if_fail(pHandler, LM_HANDLER_RESULT_REMOVE_MESSAGE);
@@ -127,7 +124,7 @@ static LmHandlerResult chat_handler(LmMessageHandler      *handler,
 	return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }
 
-static void lm_connection_open_async_cb(LmConnection *connection, gboolean success, gpointer user_data)
+static void lm_connection_open_async_cb(LmConnection* /*connection*/, gboolean success, gpointer user_data)
 {
 	UT_DEBUGMSG(("lm_connection_open_async_cb()\n"));
 
@@ -145,7 +142,7 @@ static void lm_connection_open_async_cb(LmConnection *connection, gboolean succe
 	}
 }
 
-static void lm_connection_authenticate_async_cb(LmConnection *connection, gboolean success, gpointer user_data)
+static void lm_connection_authenticate_async_cb(LmConnection* /*connection*/, gboolean success, gpointer user_data)
 {
 	UT_DEBUGMSG(("lm_connection_authenticate_async_cb()\n"));
 
@@ -498,13 +495,13 @@ BuddyPtr XMPPAccountHandler::constructBuddy(const PropertyMap& vProps)
 	return XMPPBuddyPtr();
 }
 
-BuddyPtr XMPPAccountHandler::constructBuddy(const std::string& descriptor, BuddyPtr pBuddy)
+BuddyPtr XMPPAccountHandler::constructBuddy(const std::string& /*descriptor*/, BuddyPtr /*pBuddy*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return XMPPBuddyPtr();
 }
 
-bool XMPPAccountHandler::recognizeBuddyIdentifier(const std::string& identifier)
+bool XMPPAccountHandler::recognizeBuddyIdentifier(const std::string& /*identifier*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
