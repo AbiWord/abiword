@@ -75,18 +75,22 @@ class JoinSessionRequestResponseEvent : public Event
 {
 public:
 	DECLARE_PACKET(JoinSessionRequestResponseEvent);
-	JoinSessionRequestResponseEvent() : m_sDocumentName(""), m_sDocumentId(""), m_sSessionId("") {}
-	JoinSessionRequestResponseEvent(const UT_UTF8String& sessionId)
+	JoinSessionRequestResponseEvent() : m_sDocumentName(""), m_sDocumentId(""), m_sSessionId(""), m_iAuthorId(0) {}
+	JoinSessionRequestResponseEvent(const UT_UTF8String& sessionId, UT_sint32 iAuthorId)
 		: m_iRev(0)
 		, m_sDocumentName("")
 		, m_sDocumentId("")
 		, m_sSessionId(sessionId)
+		, m_iAuthorId(iAuthorId)
 	{
 		UT_ASSERT(m_sSessionId != "");
 	}
 
 	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
+
+	UT_sint32					getAuthorId() const
+		{ return m_iAuthorId; }
 	
 	virtual std::string	toStr() const;
 	
@@ -96,7 +100,8 @@ public:
 	UT_UTF8String				m_sDocumentId;
 
 private:
-	UT_UTF8String				m_sSessionId;	
+	UT_UTF8String				m_sSessionId;
+	UT_sint32					m_iAuthorId;
 };
 
 class DisjoinSessionEvent : public Event

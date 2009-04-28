@@ -79,15 +79,15 @@ void JoinSessionRequestEvent::serialize(Archive & ar)
 void JoinSessionRequestResponseEvent::serialize(Archive & ar)
 {
 	Event::serialize( ar );
-	ar << m_sSessionId << m_sZABW << m_iRev << m_sDocumentId << m_sDocumentName;
+	ar << m_sSessionId << m_sZABW << m_iRev << m_sDocumentId << m_sDocumentName << m_iAuthorId;
 }
 
 std::string	JoinSessionRequestResponseEvent::toStr() const
 {
 	return
 		Event::toStr() +
-		str(boost::format("JoinSessionRequestResponseEvent: m_sZABW: %1% bytes, m_iRev: %2%, m_sDocumentId: %3%, m_sDocumentName: %4%\n") %
-			m_sZABW.size() % m_iRev % m_sDocumentId.utf8_str() % m_sDocumentName.utf8_str() );
+		str(boost::format("JoinSessionRequestResponseEvent: m_sZABW: %1% bytes, m_iRev: %2%, m_sDocumentId: %3%, m_sDocumentName: %4%, m_iAuthorId: %5%\n") %
+			m_sZABW.size() % m_iRev % m_sDocumentId.utf8_str() % m_sDocumentName.utf8_str() % m_iAuthorId );
 }
 
 void DisjoinSessionEvent::serialize(Archive & ar)

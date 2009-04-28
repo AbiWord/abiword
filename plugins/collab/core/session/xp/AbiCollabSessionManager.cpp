@@ -720,7 +720,8 @@ void AbiCollabSessionManager::joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pD
 }
 
 void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
-												const UT_UTF8String& docUUID, UT_sint32 iRev, BuddyPtr pCollaborator,
+												const UT_UTF8String& docUUID, UT_sint32 iRev, 
+												UT_sint32 iAuthorId, BuddyPtr pCollaborator,
 												XAP_Frame *pFrame)
 {
 	UT_DEBUGMSG(("AbiCollabSessionManager::joinSession()\n"));
@@ -734,8 +735,7 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	pFrame->loadDocument(pDoc);
 #else
 	UT_return_if_fail(_setupFrame(&pFrame, pDoc));
-#endif	
-	
+#endif
 
 	AbiCollab* pSession = new AbiCollab(sSessionId, pDoc, docUUID, iRev, pCollaborator, pFrame);
 	m_vecSessions.push_back(pSession);
@@ -744,18 +744,12 @@ void AbiCollabSessionManager::joinSession(const UT_UTF8String& sSessionId, PD_Do
 	JoinSessionEvent event(sSessionId);
 	event.addRecipient(pCollaborator);
 	signal(event);
-	//
-	// uwog!!! Look Here!!! This is where you can set the 
-	// author name, email, session-id etc!
-	//
-	UT_sint32 iNextFree = pDoc->findFirstFreeAuthorInt();
-	if(pDoc->getNumAuthors() == 0)
-		iNextFree++;
-	pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(),iNextFree);
-	PP_AttrProp * pPA = pA->getAttrProp();
-	pPA->setProperty("sessionid",sSessionId.utf8_str());
-	pDoc->setMyAuthorInt(iNextFree);
-	pDoc->sendAddAuthorCR(pA);
+
+	// the author object representing us should already be present in the document
+	// that was sent to us; fetch it using the author id the master gave us
+	pp_Author * pA = pDoc->getAuthorByInt(iAuthorId);
+	UT_return_if_fail(pA);
+	pDoc->setMyAuthorInt(iAuthorId);
 }
 
 void AbiCollabSessionManager::joinSession(AbiCollab* pSession, BuddyPtr pCollaborator)

@@ -849,7 +849,7 @@ void ServiceAccountHandler::_handleJoinSessionRequestResponse(
 	gchar* fname = g_strdup(filename.c_str());
 	(*pDoc)->setFilename(fname);
 
-	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, pBuddy, pFrame);
+	pManager->joinSession(jsre->getSessionId(), *pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), pBuddy, pFrame);
 }
 
 void ServiceAccountHandler::_handleRealmPacket(ConnectionPtr connection)

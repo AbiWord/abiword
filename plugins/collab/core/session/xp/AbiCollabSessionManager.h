@@ -92,8 +92,8 @@ public:
 	void										closeSessions();
 	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);
 	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
-														const UT_UTF8String& docUUID, UT_sint32 iRev, BuddyPtr pCollaborator,
-														XAP_Frame *pFrame);
+														const UT_UTF8String& docUUID, UT_sint32 iRev, UT_sint32 iAuthorId,
+														BuddyPtr pCollaborator, XAP_Frame *pFrame);
 	void										joinSession(AbiCollab* pSession, BuddyPtr pCollaborator);
 	void										disjoinSession(const UT_UTF8String& sSessionId);	
 	bool										isLocallyControlled(PD_Document* pDoc);

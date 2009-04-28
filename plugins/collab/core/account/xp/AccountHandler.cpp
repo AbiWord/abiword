@@ -28,6 +28,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Dlg_MessageBox.h"
+#include "pp_Author.h"
 #include <set>
 
 const string AccountHandler::getProperty(const string& key)
@@ -301,9 +302,18 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 			UT_return_if_fail(pExpAdjusts);
 		
 			PD_Document* pDoc = pSession->getDocument();
+
+			// add this author to the document
+			// TODO: recognize if we already know this author
+			UT_sint32 iAuthorId = (pDoc->getNumAuthors() == 0 ? 1 : pDoc->findFirstFreeAuthorInt());
+			pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(), iAuthorId);
+			PP_AttrProp * pPA = pA->getAttrProp();
+			// TODO: fill in the buddy descriptor
+			//pPA->setProperty("sessionid", sSessionId.utf8_str());
+			pDoc->sendAddAuthorCR(pA);
 			
 			// serialize entire document into string
-			JoinSessionRequestResponseEvent jsre(jse->getSessionId());
+			JoinSessionRequestResponseEvent jsre(jse->getSessionId(), iAuthorId);
 			if (AbiCollabSessionManager::serializeDocument(pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
 			{
 				// set more document properties
@@ -337,7 +347,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 						gchar* fname = g_strdup(jsre->m_sDocumentName.utf8_str());
 						pDoc->setFilename(fname);
 					}
-					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, buddy, NULL);
+					pManager->joinSession(jsre->getSessionId(), pDoc, jsre->m_sDocumentId, jsre->m_iRev, jsre->getAuthorId(), buddy, NULL);
 				}
 				else 
 				{
@@ -403,8 +413,12 @@ BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 }
 #endif
 
-void AccountHandler::_reportProtocolError(UT_sint32 /*remoteVersion*/, UT_sint32 /*errorEnum*/, BuddyPtr /* buddy*/) 
+void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr /* buddy*/) 
 {
+#ifndef DEBUG
+	UT_UNUSED(remoteVersion);
+	UT_UNUSED(errorEnum);
+#endif
 	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n", showProtocolErrorReports, remoteVersion, errorEnum));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 /*

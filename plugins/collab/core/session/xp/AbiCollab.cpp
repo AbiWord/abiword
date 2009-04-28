@@ -548,11 +548,14 @@ void AbiCollab::startRecording( SessionRecorderInterface* pRecorder )
 	
 	const UT_GenericVector<ChangeAdjust *>* pExpAdjusts = m_Export.getAdjusts();
 	UT_return_if_fail(pExpAdjusts);
+
+	 // FIXME: fill this properly
+	UT_sint32 iAuthorId = -1;
 	
 	// create initial document packet to recorder
 	// so the recorder knows the initial state
 	// serialize entire document into string
-	JoinSessionRequestResponseEvent jsre( getSessionId() );
+	JoinSessionRequestResponseEvent jsre(getSessionId(), iAuthorId);
 	if (AbiCollabSessionManager::serializeDocument(m_pDoc, jsre.m_sZABW, false /* no base64 */) == UT_OK)
 	{
 		// set more document properties
