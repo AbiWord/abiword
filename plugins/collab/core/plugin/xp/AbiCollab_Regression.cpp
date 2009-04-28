@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include "ut_debugmsg.h"
-#include <xp/AbiCollab_Regression.h>
+#include "AbiCollab_Regression.h"
 
 bool AbiCollab_Regression::execute()
 {

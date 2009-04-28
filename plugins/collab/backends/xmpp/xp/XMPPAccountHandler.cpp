@@ -36,10 +36,11 @@
 
 #include <session/xp/AbiCollabSessionManager.h>
 #include <session/xp/AbiCollab.h>
-#include <session/xp/AbiCollab_Plugin.h>
 
 #include <packet/xp/AbiCollab_Packet.h>
 #include <packet/xp/EventPacket.h>
+
+#include <plugin/xp/AbiCollab_Plugin.h>
 
 static LmHandlerResult presence_handler(LmMessageHandler* /*handler*/,
 					LmConnection * /*connection*/, LmMessage* m,
@@ -66,7 +67,9 @@ static LmHandlerResult presence_handler(LmMessageHandler* /*handler*/,
 			}
 		}
 		else
+		{
 			UT_DEBUGMSG(("presence message without from\n"));
+		}
 	}
 	return LM_HANDLER_RESULT_REMOVE_MESSAGE;
 }

@@ -297,7 +297,9 @@ bool SugarAccountHandler::offerTube(FV_View* pView, const UT_UTF8String& tubeDBu
 		return true;
 	}
 	else
+	{
 		UT_DEBUGMSG(("Failed to open a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
+	}
 
 	return false;
 }
@@ -329,7 +331,9 @@ bool SugarAccountHandler::joinTube(FV_View* pView, const UT_UTF8String& tubeDBus
 		pManager->registerEventListener(this);
 	}
 	else
+	{
 		UT_DEBUGMSG(("Failed to open a dbus connection for tube: %s\n", tubeDBusAddress.utf8_str()));
+	}
 
 	return false;
 }

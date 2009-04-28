@@ -44,13 +44,15 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
-#include <xp/AbiCollab_Plugin.h>
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/ap_Dialog_CollaborationJoin.h>
-#include <xp/ap_Dialog_CollaborationAccounts.h>
-#include <xp/AbiCollab.h>
-#include <xp/AbiCollab_Command.h>
-#include <xp/DiskSessionRecorder.h>
+#include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
+
+#include <session/xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollab.h>
+#include <session/xp/DiskSessionRecorder.h>
+
+#include "AbiCollab_Command.h"
+#include "AbiCollab_Plugin.h"
 
 // forward declarations
 static void s_abicollab_add_menus();

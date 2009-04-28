@@ -24,7 +24,7 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "ut_vector.h"
-#include <xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollabSessionManager.h>
 #include <account/xp/Event.h>
 #include <account/xp/EventListener.h>
 

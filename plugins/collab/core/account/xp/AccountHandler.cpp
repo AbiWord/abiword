@@ -403,7 +403,7 @@ BOOL AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 }
 #endif
 
-void AccountHandler::_reportProtocolError(UT_sint32 remoteVersion, UT_sint32 errorEnum, BuddyPtr /* buddy*/) 
+void AccountHandler::_reportProtocolError(UT_sint32 /*remoteVersion*/, UT_sint32 /*errorEnum*/, BuddyPtr /* buddy*/) 
 {
 	UT_DEBUGMSG(("_reportProtocolError: showProtocolErrorReports=%d remoteVersion=%d errorEnum=%d\n", showProtocolErrorReports, remoteVersion, errorEnum));
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);

@@ -20,12 +20,10 @@
  * 02111-1307, USA.
  */
 
-#include <account/xp/Buddy.h>
-
-#include <xp/DiskSessionRecorder.h>
-#include <xp/AbiCollab_Plugin.h>
-
 #include <gsf/gsf-output-stdio.h>
+#include <account/xp/Buddy.h>
+#include <plugin/xp/AbiCollab_Plugin.h>
+#include "DiskSessionRecorder.h"
 
 DiskSessionRecorder::DiskSessionRecorder(AbiCollab* pSession)
 	: SessionRecorderInterface(pSession)

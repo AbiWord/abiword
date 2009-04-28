@@ -357,7 +357,9 @@ bool FakeAccountHandler::process()
 		gsf_output_close(GSF_OUTPUT(sink));
 	}
 	else
+	{
 		UT_DEBUGMSG(("Error writing regression test result to %s\n", abwFile.utf8_str()));
+	}
 		
 	// FIXME: do we leak the layout here?
 	// ...

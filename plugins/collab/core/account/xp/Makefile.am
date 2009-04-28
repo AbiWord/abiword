@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	$(COLLAB_CFLAGS) \
 	-I$(srcdir)/../.. \
 	-I$(srcdir)/../../packet \
+	-I$(srcdir)/../../plugin \
 	-I$(srcdir)/../../session
 
 libxp_la_SOURCES = \

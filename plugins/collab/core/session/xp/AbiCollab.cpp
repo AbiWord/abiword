@@ -51,13 +51,15 @@
 #include <account/xp/Buddy.h>
 #include <account/xp/SessionEvent.h>
 
-#include <xp/AbiCollab_Export.h>
-#include <xp/AbiCollab_Import.h>
-#include <xp/AbiCollab.h>
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/AbiCollab_Packet.h>
-#include <xp/AbiCollab_Command.h>
-#include <xp/DiskSessionRecorder.h>
+#include <packet/xp/AbiCollab_Packet.h>
+
+#include <plugin/xp/AbiCollab_Command.h>
+
+#include "AbiCollab_Export.h"
+#include "AbiCollab_Import.h"
+#include "AbiCollab.h"
+#include "AbiCollabSessionManager.h"
+#include "DiskSessionRecorder.h"
 
 ChangeAdjust::ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iRemoteDocPos, const UT_UTF8String& sRemoteDocUUID) 
 	: m_pPacket(static_cast<const AbstractChangeRecordSessionPacket*>(packet.clone())),
