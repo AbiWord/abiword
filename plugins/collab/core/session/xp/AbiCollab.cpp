@@ -352,7 +352,9 @@ void AbiCollab::push(SessionPacket* pPacket)
 		// send!
 		bool res = pHandler->send(pPacket, pCollaborator);
 		if (!res)
+		{
 			UT_DEBUGMSG(("Error sending a packet!\n"));
+		}
 	}
 }
 
@@ -373,7 +375,9 @@ bool AbiCollab::push(SessionPacket* pPacket, BuddyPtr collaborator)
 	// send!
 	bool res = pHandler->send(pPacket, collaborator);
 	if (!res)
+	{
 		UT_DEBUGMSG(("Error sending a packet to collaborator %s!\n", collaborator->getDescription().utf8_str()));
+	}
 
 	return res;
 }
