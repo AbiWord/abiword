@@ -42,8 +42,8 @@
 #ifdef ABICOLLAB_HANDLER_FAKE
 #include <backends/fake/xp/FakeAccountHandler.h>
 #endif
-#include <xp/AbiCollabSessionManager.h>
-#include <xp/DiskSessionRecorder.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <session/xp/DiskSessionRecorder.h>
 #include "AbiCollab_Command.h"
 
 AbiCollab_Command::AbiCollab_Command(const UT_UTF8String& argv)
