@@ -203,6 +203,8 @@ public:
 	{ return m_bShowAuthors;}
 	bool                    isExportAuthorAtts(void) const;
 	void                    setExportAuthorAtts(bool bExport);
+	UT_GenericVector<pp_Author*>& getAuthors()
+	{ return m_vecAuthors; }
 	UT_sint32               getMyAuthorInt(void) const;
 	void                    setMyAuthorInt(UT_sint32 iAuthor);
 	UT_sint32               getLastAuthorInt(void) const;
