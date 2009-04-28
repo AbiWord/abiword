@@ -551,6 +551,7 @@ void AbiCollab::startRecording( SessionRecorderInterface* pRecorder )
 
 	 // FIXME: fill this properly
 	UT_sint32 iAuthorId = -1;
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	
 	// create initial document packet to recorder
 	// so the recorder knows the initial state

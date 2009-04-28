@@ -75,7 +75,7 @@ class JoinSessionRequestResponseEvent : public Event
 {
 public:
 	DECLARE_PACKET(JoinSessionRequestResponseEvent);
-	JoinSessionRequestResponseEvent() : m_sDocumentName(""), m_sDocumentId(""), m_sSessionId(""), m_iAuthorId(0) {}
+	JoinSessionRequestResponseEvent() : m_sDocumentName(""), m_sDocumentId(""), m_sSessionId(""), m_iAuthorId(-1) {}
 	JoinSessionRequestResponseEvent(const UT_UTF8String& sessionId, UT_sint32 iAuthorId)
 		: m_iRev(0)
 		, m_sDocumentName("")

@@ -303,14 +303,40 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 		
 			PD_Document* pDoc = pSession->getDocument();
 
-			// add this author to the document
-			// TODO: recognize if we already know this author
-			UT_sint32 iAuthorId = (pDoc->getNumAuthors() == 0 ? 1 : pDoc->findFirstFreeAuthorInt());
-			pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(), iAuthorId);
-			PP_AttrProp * pPA = pA->getAttrProp();
-			// TODO: fill in the buddy descriptor
-			//pPA->setProperty("sessionid", sSessionId.utf8_str());
-			pDoc->sendAddAuthorCR(pA);
+			// add this author to the document if we don't recognize him
+			UT_sint32 iAuthorId = -1;
+			UT_UTF8String buddyDescriptor = buddy->getDescriptor();
+			UT_GenericVector<pp_Author*> authors = pDoc->getAuthors();
+			UT_DEBUGMSG(("Scanning %d authors to see if we recognize this buddy\n", authors.getItemCount()));
+			for (UT_sint32 i = 0; i < authors.getItemCount(); i++)
+			{
+				pp_Author* pAuthor = authors.getNthItem(i);
+				UT_continue_if_fail(pAuthor);
+
+				const gchar* szDescriptor = NULL;
+				pAuthor->getProperty("abicollab-descriptor", szDescriptor);
+				if (!szDescriptor)
+					continue;
+
+				if (buddyDescriptor != szDescriptor)
+					continue;
+
+				// yay, we know this author!
+				iAuthorId = pAuthor->getAuthorInt();
+				UT_DEBUGMSG(("Found known author with descriptior %s, id %d!\n", buddyDescriptor.utf8_str(), iAuthorId));
+				break;
+			}
+			
+			if (iAuthorId == -1)
+			{
+				// we don't know this author yet, create a new author object for him
+				iAuthorId = pDoc->findFirstFreeAuthorInt();
+				pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(), iAuthorId);
+				PP_AttrProp * pPA = pA->getAttrProp();
+				pPA->setProperty("abicollab-descriptor", buddyDescriptor.utf8_str());
+				pDoc->sendAddAuthorCR(pA);
+				UT_DEBUGMSG(("Added a new author to the documument with descriptor %s, id %d\n", buddyDescriptor.utf8_str(), iAuthorId));
+			}
 			
 			// serialize entire document into string
 			JoinSessionRequestResponseEvent jsre(jse->getSessionId(), iAuthorId);
