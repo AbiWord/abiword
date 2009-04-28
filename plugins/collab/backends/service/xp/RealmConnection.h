@@ -29,7 +29,7 @@
 #include "RealmGrowBuffer.h"
 #include "RealmProtocol.h"
 #include "tls_tunnel.h"
-#include <core/account/xp/SynchronizedQueue.h>
+#include <sync/xp/SynchronizedQueue.h>
 
 class AP_Dialog_GenericProgress;
 

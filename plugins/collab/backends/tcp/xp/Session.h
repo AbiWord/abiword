@@ -22,8 +22,8 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <deque>
-#include <core/account/xp/lock.h>
-#include <core/account/xp/Synchronizer.h>
+#include <sync/xp/lock.h>
+#include <sync/xp/Synchronizer.h>
 
 class TCPAccountHandler;
 

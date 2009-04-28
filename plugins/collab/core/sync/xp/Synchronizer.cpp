@@ -282,7 +282,9 @@ void Synchronizer::signal() // Unix Implementation
 	UT_DEBUGMSG(("Signalling the main loop\n"));
 	unsigned char _signal = 0xff;
 	if (write(fdw, &_signal, 1) != 1)
+	{
 		UT_DEBUGMSG(("Error signaling main loop!\n"));
+	}
 }
 #endif
 
@@ -299,6 +301,8 @@ void Synchronizer::_consume()
 	// Unix Implementation
 	char _signal = 0;
 	if (read(fdr, &_signal, 1) != 1)
+	{
 		UT_DEBUGMSG(("Error signaling main loop!\n"));
+	}
 #endif
 }

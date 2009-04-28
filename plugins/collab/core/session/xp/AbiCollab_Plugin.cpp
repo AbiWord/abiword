@@ -275,6 +275,7 @@ Defun_EV_GetMenuItemState_Fn(collab_GetState_Recording)
 	// not a session
 	return EV_MIS_Gray;
 #else
+	UT_UNUSED(pAV_View);
 	return EV_MIS_Gray;
 #endif
 }
@@ -745,9 +746,13 @@ bool s_abicollab_command_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 	
 	AbiCollab_Command command(argv);
 	if (command.execute())
+	{
 		UT_DEBUGMSG(("AbiCollab command executed successful\n"));
+	}
 	else
+	{
 		UT_DEBUGMSG(("AbiCollab command failed to execute successfully\n"));
+	}
 
 	return true;
 }

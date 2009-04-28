@@ -25,7 +25,7 @@
 #include <boost/function.hpp>
 #include <asio.hpp>
 
-#include <core/account/xp/Synchronizer.h>
+#include <sync/xp/Synchronizer.h>
 #include "Session.h"
 
 class TCPAccountHandler;

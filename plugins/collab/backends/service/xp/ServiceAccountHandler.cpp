@@ -288,7 +288,9 @@ void ServiceAccountHandler::_write_handler(const asio::error_code& e, std::size_
 	}
 	
 	if (packet)
+	{
 		UT_DEBUGMSG(("Packet sent: 0x%x\n", packet->type()));
+	}
 }										   
 
 void ServiceAccountHandler::_write_result(const asio::error_code& e, std::size_t /*bytes_transferred*/,
@@ -302,7 +304,9 @@ void ServiceAccountHandler::_write_result(const asio::error_code& e, std::size_t
 	}
 
 	if (packet)
+	{
 		UT_DEBUGMSG(("Packet sent: 0x%x\n", packet->type()));
+	}
 }
 
 void ServiceAccountHandler::getSessionsAsync()

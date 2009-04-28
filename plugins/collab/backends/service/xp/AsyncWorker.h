@@ -25,7 +25,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include "ut_debugmsg.h"
-#include <core/account/xp/Synchronizer.h>
+#include <sync/xp/Synchronizer.h>
 
 template <class T>
 class AsyncWorker : private boost::noncopyable, public boost::enable_shared_from_this<AsyncWorker<T> >

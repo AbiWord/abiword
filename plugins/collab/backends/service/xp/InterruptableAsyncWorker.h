@@ -123,17 +123,25 @@ private:
 		{
 			UT_DEBUGMSG(("We are finished, closing dialog...\n"));
 			if (m_pProgressDlg)
+			{
 				m_pProgressDlg->close();
+			}
 			else
+			{
 				UT_DEBUGMSG(("Skipping dialog closure; it is destructed already\n"));
+			}
 		}
 		else
 		{
 			UT_DEBUGMSG(("Setting progress value to %d%%\n", m_progress));
 			if (m_pProgressDlg) // it could be that we have no dialog when we have been cancelled
+			{
 				m_pProgressDlg->setProgress(m_progress);
+			}
 			else
+			{
 				UT_DEBUGMSG(("Skipping dialog progress update; it is destructed already\n"));
+			}
 		}
 	}
 	
