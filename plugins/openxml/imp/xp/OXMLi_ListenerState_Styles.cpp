@@ -46,6 +46,8 @@ OXMLi_ListenerState_Styles::~OXMLi_ListenerState_Styles()
 
 void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 {
+	UT_DEBUGMSG(("FRT:STYLE:%s\n", rqst->pName));
+
 	UT_return_if_fail( _error_if_fail(rqst != NULL) );
 
 	if (!strcmp(rqst->pName, "docDefaults")) {
@@ -61,8 +63,8 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 
 		rqst->handled = true;
 	} else if (!strcmp(rqst->pName, "style")) {
-		const gchar * id = UT_getAttribute("w:styleId", rqst->ppAtts);
-		const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+		const gchar * id = UT_getAttribute("styleId", rqst->ppAtts);
+		const gchar * type = UT_getAttribute("type", rqst->ppAtts);
 		UT_return_if_fail( _error_if_fail( id != NULL ));
 		if (!strcmp(id, "Normal")) id = "_Normal"; //Cannot interfere with document defaults
 		m_pCurrentStyle = new OXML_Style(id, ""); //TODO: wrap this in try/catch
@@ -83,7 +85,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 	} else if (	!strcmp(rqst->pName, "name") ||
 				!strcmp(rqst->pName, "basedOn") ||
 				!strcmp(rqst->pName, "next")) {
-		const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+		const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 		UT_return_if_fail( _error_if_fail( m_pCurrentStyle != NULL && val != NULL ));
 		if (!strcmp(val, "Normal")) val = "_Normal"; //Cannot interfere with document defaults
 

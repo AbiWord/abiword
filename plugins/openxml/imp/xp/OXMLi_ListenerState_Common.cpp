@@ -97,7 +97,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		OXML_SharedElement para = rqst->stck->top();
 
 		if (!strcmp(rqst->pName, "jc")) {
-			const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+			const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 
 			if (!val || !*val)
 				return;
@@ -117,10 +117,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			}
 
 		} else if (!strcmp(rqst->pName, "ind")) {
-			const gchar * left = UT_getAttribute("w:left", rqst->ppAtts);
-			const gchar * right = UT_getAttribute("w:right", rqst->ppAtts);
-			const gchar * fLine = UT_getAttribute("w:firstLine", rqst->ppAtts);
-			const gchar * hanging = UT_getAttribute("w:hanging", rqst->ppAtts);
+			const gchar * left = UT_getAttribute("left", rqst->ppAtts);
+			const gchar * right = UT_getAttribute("right", rqst->ppAtts);
+			const gchar * fLine = UT_getAttribute("firstLine", rqst->ppAtts);
+			const gchar * hanging = UT_getAttribute("hanging", rqst->ppAtts);
 
 			std::string final = "";
 			if (left != NULL) {
@@ -149,9 +149,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			}
 
 		} else if (!strcmp(rqst->pName, "spacing")) {
-			const gchar * before = UT_getAttribute("w:before", rqst->ppAtts);
-			const gchar * after = UT_getAttribute("w:after", rqst->ppAtts);
-			const gchar * lineRule = UT_getAttribute("w:lineRule", rqst->ppAtts);
+			const gchar * before = UT_getAttribute("before", rqst->ppAtts);
+			const gchar * after = UT_getAttribute("after", rqst->ppAtts);
+			const gchar * lineRule = UT_getAttribute("lineRule", rqst->ppAtts);
 
 			std::string final = "";
 			if (before != NULL) {
@@ -166,14 +166,14 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			}
 			if (lineRule != NULL && !strcmp(lineRule, "auto")) {
 				//For now, we only handle "auto".
-				const gchar * line = UT_getAttribute("w:line", rqst->ppAtts);
+				const gchar * line = UT_getAttribute("line", rqst->ppAtts);
 				UT_return_if_fail( _error_if_fail(line != NULL) );
 				double ln_spc = UT_convertDimensionless(line) / 240;
 				final = UT_convertToDimensionlessString(ln_spc);
 				UT_return_if_fail( _error_if_fail( UT_OK == para->setProperty("line-height", final.c_str()) ));
 			}
 		} else if (!strcmp(rqst->pName, "pStyle")) {
-			const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+			const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 			UT_return_if_fail( _error_if_fail(val != NULL) );
 			if (!strcmp(val, "Normal")) val = "_Normal"; //Cannot interfere with document defaults
 			OXML_Document * doc = OXML_Document::getInstance();
@@ -212,7 +212,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			OXML_SharedElement run = rqst->stck->top();
 
 			if (!strcmp(rqst->pName, "b")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = UT_getAttribute("val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-weight", "bold") ));
 				} else {
@@ -220,7 +220,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 
 			} else if (!strcmp(rqst->pName, "i")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = UT_getAttribute("val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-style", "italic") ));
 				} else {
@@ -228,7 +228,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 
 			} else if (!strcmp(rqst->pName, "vertAlign")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 				if (val == NULL || !*val || !strcmp(val, "baseline")) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-position", "normal") ));
 				} else if (!strcmp(val, "superscript")) {
@@ -238,7 +238,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				
 			} else if (!strcmp(rqst->pName, "u")) {
-				const gchar * newVal = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * newVal = UT_getAttribute("val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(newVal != NULL) );
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
@@ -255,12 +255,12 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", final_val.c_str()) ));
 
 			} else if (!strcmp(rqst->pName, "color")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 				if (val != NULL) {
 					if (!strcmp(val, "auto")) val = "#000000";
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("color", val)));
 				} else {
-					val = UT_getAttribute("w:themeColor", rqst->ppAtts);
+					val = UT_getAttribute("themeColor", rqst->ppAtts);
 					UT_return_if_fail( this->_error_if_fail(val != NULL) );
 					std::string color = "#000000"; //default color in case of illegal themeColor value.
 					OXML_Document * doc = OXML_Document::getInstance();
@@ -297,7 +297,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 
 			} else if (!strcmp(rqst->pName, "highlight")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 				if (!strcmp(val, "darkYellow")) val = "olive"; //the only value not supported by CSS (equivalent to Olive)
 				else if (!strcmp(val, "none")) val = "black"; //bypass inherited color value when "none"
@@ -311,7 +311,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("bgcolor", val)));
 
 			} else if (!strcmp(rqst->pName, "strike") || !strcmp(rqst->pName, "dstrike")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = UT_getAttribute("val", rqst->ppAtts);
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("text-decoration", previousVal)) {
@@ -337,10 +337,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_CharRange range = UNKNOWN_RANGE;
 
 				const gchar * ascii = NULL; //TODO: add support for eastAsia, bidi, and hAnsi
-				if (NULL != (ascii = UT_getAttribute("w:asciiTheme", rqst->ppAtts))) {
+				if (NULL != (ascii = UT_getAttribute("asciiTheme", rqst->ppAtts))) {
 					this->getFontLevelRange(ascii, level, range);
 					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
-				} else if (NULL != (ascii = UT_getAttribute("w:ascii", rqst->ppAtts))) {
+				} else if (NULL != (ascii = UT_getAttribute("ascii", rqst->ppAtts))) {
 					fontName = ascii;
 					fontName = fmgr->getValidFont(fontName); //Make sure the name is valid
 				} else {
@@ -349,7 +349,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail( _error_if_fail( UT_OK == run->setProperty("font-family", fontName.c_str()) ));
 
 			} else if (!strcmp(rqst->pName, "lang")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
+				const gchar * val = UT_getAttribute("val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("lang", previousVal)) {
 					if ( 0 != strcmp(previousVal, "-none-"))
@@ -360,12 +360,12 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 			} else if (!strcmp(rqst->pName, "noProof")) {
 				//noProof has priority over lang, so no need to check for previous values
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = UT_getAttribute("val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") )
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", "-none-") ));
 
 			} else if (!strcmp(rqst->pName, "vanish")) {
-				const gchar * isOn = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * isOn = UT_getAttribute("val", rqst->ppAtts);
 				if (isOn == NULL || !strcmp(isOn, "on") || !strcmp(isOn, "1") || !strcmp(isOn, "true") ) {
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("display", "none") ));
 				} else {
@@ -373,7 +373,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 
 			} else if (!strcmp(rqst->pName, "sz")) {
-				const gchar * szStr = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * szStr = UT_getAttribute("val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(szStr != NULL) );
 				double sz = UT_convertDimensionless(szStr) / 2; //TODO: error-check this
 				std::string pt_value = UT_convertToDimensionlessString(sz);
@@ -397,7 +397,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		std::string contextTag = rqst->context->back();
 		if (!contextTag.compare("sectPr")) {
 			if (!strcmp(rqst->pName, "type")) {
-				const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
+				const gchar * val = UT_getAttribute("val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 
 				OXML_SharedSection last = OXML_Document::getCurrentSection();
@@ -413,7 +413,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				rqst->handled = true;
 
 			} else if (!strcmp(rqst->pName, "footerReference")) {
-				const gchar * id = UT_getAttribute("r:id", rqst->ppAtts);
+				const gchar * id = UT_getAttribute("id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
 				OXML_SharedSection last = OXML_Document::getCurrentSection();
 
@@ -422,7 +422,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail(_error_if_fail(doc != NULL));
-				const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+				const gchar * type = UT_getAttribute("type", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(type != NULL) );
 
 				if (!strcmp(type, "default")) {
@@ -440,7 +440,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail(_error_if_fail( UT_OK == ftr->setAttribute("type", type) ));
 
 			} else if (!strcmp(rqst->pName, "headerReference")) {
-				const gchar * id = UT_getAttribute("r:id", rqst->ppAtts);
+				const gchar * id = UT_getAttribute("id", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(id != NULL) );
 				OXML_SharedSection last = OXML_Document::getCurrentSection();
 
@@ -449,7 +449,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 
 				OXML_Document * doc = OXML_Document::getInstance();
 				UT_return_if_fail(_error_if_fail(doc != NULL));
-				const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+				const gchar * type = UT_getAttribute("type", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(type != NULL) );
 
 				if (!strcmp(type, "default")) {
@@ -467,8 +467,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				UT_return_if_fail(_error_if_fail( UT_OK == hdr->setAttribute("type", type) ));
 			}
 			else if (!strcmp(rqst->pName, "cols")) {
-				const gchar * num = UT_getAttribute("w:num", rqst->ppAtts);
-				const gchar * sep = UT_getAttribute("w:sep", rqst->ppAtts);
+				const gchar * num = UT_getAttribute("num", rqst->ppAtts);
+				const gchar * sep = UT_getAttribute("sep", rqst->ppAtts);
 
 				if(!num || atoi(num)<1)
 					num = "1";
@@ -496,7 +496,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		
 	} else if (!strcmp(rqst->pName, "br")) {
-		const gchar * type = UT_getAttribute("w:type", rqst->ppAtts);
+		const gchar * type = UT_getAttribute("type", rqst->ppAtts);
 // The optional attribute can be missing. In that case a default 
 // value is implied.
 //		UT_return_if_fail( this->_error_if_fail(type != NULL) );

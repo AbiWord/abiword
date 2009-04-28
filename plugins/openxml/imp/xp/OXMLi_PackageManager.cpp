@@ -100,7 +100,7 @@ UT_Error OXMLi_PackageManager::parseDocumentStream()
 {
 	OXMLi_StreamListener listener; 
 	listener.setupStates(DOCUMENT_PART);
-	return _parseStream( _getDocumentStream(), &listener, "w" ); //TODO: detect namespace override
+	return _parseStream( _getDocumentStream(), &listener, "xml" ); //xml is the default top-level namespace
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentHdrFtr( const char * id )
@@ -109,7 +109,7 @@ UT_Error OXMLi_PackageManager::parseDocumentHdrFtr( const char * id )
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(HEADER_PART, id); //Doesn't matter whether it's header or footer
-	return parseChildById(doc, id, &listener, "w"); //TODO: detect namespace override
+	return parseChildById(doc, id, &listener, "xml"); 
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentStyles()
@@ -118,7 +118,7 @@ UT_Error OXMLi_PackageManager::parseDocumentStyles()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(STYLES_PART);
-	return parseChildByType(doc, STYLES_PART, &listener, "w"); //TODO: detect namespace override
+	return parseChildByType(doc, STYLES_PART, &listener, "xml"); 
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentTheme()
@@ -127,7 +127,7 @@ UT_Error OXMLi_PackageManager::parseDocumentTheme()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(THEME_PART);
-	UT_Error err = parseChildByType(doc, THEME_PART, &listener, "a"); //TODO: detect namespace override
+	UT_Error err = parseChildByType(doc, THEME_PART, &listener, "xml"); 
 	//themes are optional in .docx files
 	if(err != UT_OK){
 		UT_DEBUGMSG(("FRT: OpenXML Theme Part is not found\n"));
@@ -141,7 +141,7 @@ UT_Error OXMLi_PackageManager::parseDocumentSettings()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(DOCSETTINGS_PART);
-	return parseChildByType(doc, DOCSETTINGS_PART, &listener, "w"); //TODO: detect namespace override
+	return parseChildByType(doc, DOCSETTINGS_PART, &listener, "xml"); 
 }
 
 GsfInput* OXMLi_PackageManager::getChildById( GsfInput * parent, const char * id )

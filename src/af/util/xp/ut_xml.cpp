@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_xml.h"
+#include "ut_hash.h"
 
 #include "ut_misc.h"
 #include "ut_string_class.h"
@@ -194,10 +195,8 @@ std::string UT_XML::removeNamespacePrefix(const char* name)
 	  for(it=m_namespaces.begin(); it!=m_namespaces.end(); ++it){		
 		std::string ns = (*it);
 		if(ns.compare(name_space.c_str()) == 0)
-		{
 			return tag_name;		
-		}
-      }
+	  }
     }
   return name_str;
 }
@@ -211,9 +210,33 @@ void UT_XML::startElement (const char * name, const char ** atts)
   flush_all ();
 
   const char* suffix = name;
-
+  const gchar** attsList = atts;
+  UT_GenericStringMap<char*> attsMap;
+	
   if(!m_namespaces.empty())
-	suffix = removeNamespacePrefix(name).c_str();
+  {    
+	//process attributes first to detect any new namespaces
+	const char ** pp = atts;  
+	while (*pp)
+	{
+		const char* szName = g_strdup(removeNamespacePrefix(pp[0]).c_str());
+		char* szValue = g_strdup(pp[1]);
+		attsMap.insert(szName, szValue);
+		//new namespaces may occur inside any tag in the xml file as attributes
+		//Ex: xmlns:wx="..."  --> here we extract new namespace wx and add it to namespaces.
+		if((strncmp(szName, "xmlns", 5) == 0) && (strlen(szName) > 6))
+		{
+			//we have found a new namespace
+			const char* ns = szName+6;
+			addNameSpace(ns);
+		}
+		pp += 2;
+	}
+	attsList = attsMap.list();
+
+	//process the name after attributes since it may use the new namespace
+	suffix = g_strdup(removeNamespacePrefix(name).c_str());
+  }
 
   if (m_bSniffing)
     {
@@ -224,9 +247,9 @@ void UT_XML::startElement (const char * name, const char ** atts)
 
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
-	  m_pListener->startElement (suffix, atts);
+	  m_pListener->startElement (suffix, attsList);
   if (m_pExpertListener)
-	  m_pExpertListener->StartElement (suffix, atts);
+	  m_pExpertListener->StartElement (suffix, attsList);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::endElement (const gchar * name);

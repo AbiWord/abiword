@@ -39,9 +39,9 @@
 void OXMLi_ListenerState_DocSettings::startElement (OXMLi_StartElementRequest * rqst)
 {
 	if (!strcmp(rqst->pName, "themeFontLang")) {
-		const gchar * val = UT_getAttribute("w:val", rqst->ppAtts);
-		const gchar * eastAsia = UT_getAttribute("w:eastAsia", rqst->ppAtts);
-		const gchar * bidi = UT_getAttribute("w:bidi", rqst->ppAtts);
+		const gchar * val = UT_getAttribute("val", rqst->ppAtts);
+		const gchar * eastAsia = UT_getAttribute("eastAsia", rqst->ppAtts);
+		const gchar * bidi = UT_getAttribute("bidi", rqst->ppAtts);
 
 		OXML_Document * doc = OXML_Document::getInstance();
 		UT_return_if_fail( this->_error_if_fail(doc != NULL) );
