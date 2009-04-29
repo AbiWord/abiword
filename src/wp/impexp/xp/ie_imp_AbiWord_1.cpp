@@ -798,10 +798,9 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_AuthorSec);
 		m_parseState = _PS_Author;
 
-		const gchar * szUUID = UT_getAttribute("uuid",atts);
 		const gchar * szInt = UT_getAttribute("id",atts);
 		UT_sint32 iAuthorInt = atoi(szInt);
-		pp_Author * pA = getDoc()->addAuthor(szUUID,iAuthorInt);
+		pp_Author * pA = getDoc()->addAuthor(iAuthorInt);
 		PP_AttrProp * pPA = pA->getAttrProp();
 		const gchar * szProps = UT_getAttribute(PT_PROPS_ATTRIBUTE_NAME,atts);
 		if(szProps)

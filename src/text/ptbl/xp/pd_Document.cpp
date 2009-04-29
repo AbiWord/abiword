@@ -340,29 +340,10 @@ pp_Author *  PD_Document::getNthAuthor(UT_sint32 i) const
 	return m_vecAuthors.getNthItem(i);
 }
 
-pp_Author * PD_Document::getAuthorByUUID(const gchar * szUUID) const
-{
-	if(!szUUID)
-		return NULL;
-	UT_sint32 i = 0;
-	bool bFound = false;
-	for(i=0; i< m_vecAuthors.getItemCount(); i++)
-	{
-		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
-		{
-			bFound = true;
-			break;
-		}
-	}
-	if(bFound)
-		return m_vecAuthors.getNthItem(i);
-	return NULL;
-}
-
-pp_Author *  PD_Document::addAuthor(const gchar * szUUID, UT_sint32 iAuthor)
+pp_Author *  PD_Document::addAuthor(UT_sint32 iAuthor)
 {
 	UT_DEBUGMSG(("creating author with int %d \n",iAuthor));
-	m_vecAuthors.addItem(new pp_Author(this,szUUID,iAuthor));
+	m_vecAuthors.addItem(new pp_Author(this, iAuthor));
 	return 	m_vecAuthors.getNthItem(m_vecAuthors.getItemCount()-1);
 }
 
@@ -371,8 +352,9 @@ bool PD_Document::sendAddAuthorCR(pp_Author * pAuthor)
 	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"addauthor",NULL};
 	const gchar ** szProps = NULL;
 	_buildAuthorProps(pAuthor, szProps);
-	bool b= createAndSendDocPropCR(szAtts,szProps);
-	delete [] szProps;
+	UT_return_val_if_fail(szProps, false);
+	bool b = createAndSendDocPropCR(szAtts,szProps);
+	DELETEPV(szProps);
 	return b;
 }
 
@@ -382,8 +364,9 @@ bool PD_Document::sendChangeAuthorCR(pp_Author * pAuthor)
 	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"changeauthor",NULL};
 	const gchar ** szProps = NULL;
 	_buildAuthorProps(pAuthor, szProps);
-	bool b= createAndSendDocPropCR(szAtts,szProps);
-	delete [] szProps;
+	UT_return_val_if_fail(szProps, false);
+	bool b = createAndSendDocPropCR(szAtts,szProps);
+	DELETEPV(szProps);
 	return b;
 }
 
@@ -391,18 +374,16 @@ bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps
 {
 	const PP_AttrProp * pAP = pAuthor->getAttrProp();
 	UT_uint32 iCnt= pAP->getPropertyCount();
-	szProps = new const gchar * [2*iCnt +5];
-	szProps[0] = "uuid";
-	szProps[1] = pAuthor->getUUID();
+	szProps = new const gchar * [2*iCnt + 3];
 	static UT_String sVal;
 	UT_DEBUGMSG(("_buildAuthorProps getAuthorInt %d \n",pAuthor->getAuthorInt()));
 	UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
-	szProps[2] = "id";
-	szProps[3] = sVal.c_str();
+	szProps[0] = "id";
+	szProps[1] = sVal.c_str();
 	UT_uint32 i = 0;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
-	UT_uint32 j = 4;
+	UT_uint32 j = 2;
 	for(i=0;i<iCnt;i++)
 	{
 		pAP->getNthProperty(i,szName,szValue);
@@ -515,7 +496,7 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		UT_sint32 k = findFirstFreeAuthorInt();
 		setMyAuthorInt(k);
 		m_iLastAuthorInt = k;
-		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		pp_Author * pA = addAuthor(k);
 		sendAddAuthorCR(pA);
 	}
 	UT_String_sprintf(storage,"%d",getMyAuthorInt());
@@ -562,7 +543,7 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 	{
 		UT_sint32 k = findFirstFreeAuthorInt();
 		setMyAuthorInt(k);
-		pp_Author * pA = addAuthor(getOrigDocUUIDString() ,k);
+		pp_Author * pA = addAuthor(k);
 		sendAddAuthorCR(pA);
 	}
 	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
@@ -1942,23 +1923,19 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 	}
 	else if(strcmp(szLCValue,"addauthor") == 0)
 	{
-		const gchar * szUUID=NULL;
 		const gchar * szInt=NULL;
-		AP.getProperty("uuid",szUUID);
 		AP.getProperty("id",szInt);
-		UT_DEBUGMSG(("addauthor docprop CR received uuid %s int %d \n",szUUID,szInt));
-		if(szUUID && szInt)
+		UT_DEBUGMSG(("addauthor docprop CR received int %d \n",szInt));
+		if(szInt)
 		{
 			UT_sint32 iAuthor = atoi(szInt);
-			pp_Author * pA = addAuthor(szUUID,iAuthor);
+			pp_Author * pA = addAuthor(iAuthor);
 			UT_uint32 j = 0;
 			const gchar * szName = NULL;
 			szValue = NULL;
 			PP_AttrProp * pAP = pA->getAttrProp();
 			while(AP.getNthProperty(j++,szName,szValue))
 			{
-				if(strcmp(szName,"uuid") == 0)
-					continue;
 				if(strcmp(szName,"id") == 0)
 					continue;
 				if(*szValue)
@@ -1969,17 +1946,12 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 	}
 	else if(strcmp(szLCValue,"changeauthor") == 0)
 	{
-		const gchar * szUUID=NULL;
 		const gchar * szInt=NULL;
 		pp_Author * pA = NULL;
 		if(AP.getProperty("id",szInt) && szInt && *szInt)
 	    {
 			UT_sint32 iAuthor = atoi(szInt);
 			pA = getAuthorByInt(iAuthor);
-		}
-		else if( AP.getProperty("uuid",szUUID) && szUUID && *szUUID)
-		{
-			pA = getAuthorByUUID(szUUID);
 		}
 		if(pA)
 		{
@@ -1988,8 +1960,6 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 			const gchar * szName = NULL;
 			while(AP.getNthProperty(j++,szName,szValue))
 			{
-				if(strcmp(szName,"uuid") == 0)
-					continue;
 				if(strcmp(szName,"id") == 0)
 					continue;
 				if(*szValue)

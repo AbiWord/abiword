@@ -209,8 +209,7 @@ public:
 	UT_sint32               getNumAuthors(void) const;
 	pp_Author *             getNthAuthor(UT_sint32 i) const;
 	pp_Author *             getAuthorByInt(UT_sint32 i) const;
-	pp_Author *             getAuthorByUUID(const gchar * szUUID) const;
-	pp_Author *             addAuthor(const gchar * szUUID, UT_sint32 iAuthor);
+	pp_Author *             addAuthor(UT_sint32 iAuthor);
 	bool                    sendAddAuthorCR(pp_Author * pAuthor);
 	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
 	UT_sint32               findFirstFreeAuthorInt(void) const;

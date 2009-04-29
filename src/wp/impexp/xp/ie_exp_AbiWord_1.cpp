@@ -1775,9 +1775,7 @@ void s_AbiWord_1_Listener::_handleAuthors(void)
 	for(i=0;i<nAuthors;i++)
 	{
 		pp_Author * pAuthor = m_pDocument->getNthAuthor(i);
-		m_pie->write("<author uuid=\"");
-		m_pie->write(pAuthor->getUUID());
-		m_pie->write("\" id=\"");
+		m_pie->write("<author id=\"");
 		UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
 		m_pie->write(sVal.c_str());
 		m_pie->write("\" ");

@@ -331,7 +331,7 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 			{
 				// we don't know this author yet, create a new author object for him
 				iAuthorId = pDoc->findFirstFreeAuthorInt();
-				pp_Author * pA = pDoc->addAuthor(pDoc->getOrigDocUUIDString(), iAuthorId);
+				pp_Author * pA = pDoc->addAuthor(iAuthorId);
 				PP_AttrProp * pPA = pA->getAttrProp();
 				pPA->setProperty("abicollab-descriptor", buddyDescriptor.utf8_str());
 				pDoc->sendAddAuthorCR(pA);

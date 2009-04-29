@@ -30,8 +30,8 @@ class PD_Document;
 class ABI_EXPORT pp_Author
 {
 public:
-  pp_Author(PD_Document * pDoc, const gchar * szUUID, UT_sint32 iID):
-  m_pDoc(pDoc), m_sUUID(szUUID), m_iAuthorInt(iID) {};
+  pp_Author(PD_Document * pDoc, UT_sint32 iID):
+  m_pDoc(pDoc), m_iAuthorInt(iID) {};
   virtual ~pp_Author(){};
 
   PP_AttrProp *      getAttrProp(void)
@@ -42,15 +42,11 @@ public:
   bool      getProperty(const gchar * szName, const gchar *& szValue) const
   { return  m_AP.getProperty(szName,szValue);}
 
-  const gchar *      getUUID(void) const
-  { return static_cast<const gchar *>(m_sUUID.utf8_str());}
-
   UT_sint32          getAuthorInt(void) const
   { return m_iAuthorInt;}
 
 private:
   PD_Document *     m_pDoc;
-  UT_UTF8String     m_sUUID;
   UT_sint32         m_iAuthorInt;
   PP_AttrProp       m_AP;
 };
