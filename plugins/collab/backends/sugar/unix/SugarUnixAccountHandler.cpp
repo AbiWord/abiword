@@ -71,7 +71,7 @@ UT_UTF8String SugarAccountHandler::getDisplayType()
 	return "Sugar Presence Service";
 }
 
-UT_UTF8String SugarAccountHandler::getStorageType()
+UT_UTF8String SugarAccountHandler::getStaticStorageType()
 {
 	return "com.abisource.abiword.abicollab.backend.sugar";
 }

@@ -193,7 +193,7 @@ UT_UTF8String XMPPAccountHandler::getDisplayType()
 	return "Jabber (XMPP)";
 }
 
-UT_UTF8String XMPPAccountHandler::getStorageType()
+UT_UTF8String XMPPAccountHandler::getStaticStorageType()
 {
 	return "com.abisource.abiword.abicollab.backend.xmpp";
 }

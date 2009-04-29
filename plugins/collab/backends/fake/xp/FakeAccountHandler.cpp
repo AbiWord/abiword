@@ -67,7 +67,7 @@ UT_UTF8String FakeAccountHandler::getDisplayType()
 	return "Fake AbiCollab Backend";
 }
 
-UT_UTF8String FakeAccountHandler::getStorageType()
+UT_UTF8String FakeAccountHandler::getStaticStorageType()
 {
 	return "com.abisource.abiword.abicollab.backend.fake";
 }

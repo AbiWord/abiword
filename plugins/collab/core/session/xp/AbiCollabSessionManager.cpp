@@ -236,10 +236,10 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 	UT_DEBUGMSG(("AbiCollabSessionManager::registerAccountHandlers()\n"));
 
 #ifdef ABICOLLAB_HANDLER_XMPP
-	m_regAccountHandlers[XMPPAccountHandler::getStorageType()] = XMPPAccountHandlerConstructor;
+	m_regAccountHandlers[XMPPAccountHandler::getStaticStorageType()] = XMPPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_TCP
-	m_regAccountHandlers[TCPAccountHandler::getStorageType()] = TCPAccountHandlerConstructor;
+	m_regAccountHandlers[TCPAccountHandler::getStaticStorageType()] = TCPAccountHandlerConstructor;
 #endif
 #ifdef ABICOLLAB_HANDLER_SUGAR
 	// we don't want to regerister a sugar account handler here, 
@@ -252,7 +252,7 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 #endif
 #ifdef ABICOLLAB_HANDLER_SERVICE
 	if (tls_tunnel::Proxy::tls_tunnel_init())
-		m_regAccountHandlers[ServiceAccountHandler::getStorageType()] = ServiceAccountHandlerConstructor;
+		m_regAccountHandlers[ServiceAccountHandler::getStaticStorageType()] = ServiceAccountHandlerConstructor;
 #endif
 	return true;
 }

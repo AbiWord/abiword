@@ -109,7 +109,7 @@ UT_UTF8String ServiceAccountHandler::getDisplayType()
 	return "AbiCollab.net Collaboration Service";
 }
 
-UT_UTF8String ServiceAccountHandler::getStorageType()
+UT_UTF8String ServiceAccountHandler::getStaticStorageType()
 {
 	return SERVICE_ACCOUNT_HANDLER_TYPE;
 }

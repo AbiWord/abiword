@@ -41,7 +41,9 @@ public:
 	virtual ~SugarAccountHandler();
 
 	// housekeeping
-	static UT_UTF8String					getStorageType();
+	static UT_UTF8String					getStaticStorageType();
+	virtual UT_UTF8String					getStorageType()
+		{ return getStaticStorageType(); }	
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
 	

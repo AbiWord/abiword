@@ -57,7 +57,7 @@ UT_UTF8String TCPAccountHandler::getDisplayType()
 	return "Direct Connection (TCP)";
 }
 
-UT_UTF8String TCPAccountHandler::getStorageType()
+UT_UTF8String TCPAccountHandler::getStaticStorageType()
 {
 	return "com.abisource.abiword.abicollab.backend.tcp";
 }

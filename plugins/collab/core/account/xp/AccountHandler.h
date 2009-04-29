@@ -79,8 +79,9 @@ public:
 	virtual ~AccountHandler() {}
 
 	// housekeeping
-	static UT_UTF8String					getStorageType()
+	static UT_UTF8String					getStaticStorageType()
 		{ /* every backend should re-implement this static function */ return "null"; };
+	virtual UT_UTF8String					getStorageType() = 0;
 	virtual UT_UTF8String					getDescription() = 0;	
 	virtual UT_UTF8String					getDisplayType() = 0;
 	
