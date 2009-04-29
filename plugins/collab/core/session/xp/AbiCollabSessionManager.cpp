@@ -329,47 +329,32 @@ void AbiCollabSessionManager::loadProfile()
 								{
 									for (xmlNode* buddyNode = accountProp->children; buddyNode; buddyNode = buddyNode->next)
 									{
-										if (buddyNode->type == XML_ELEMENT_NODE)
+										if (buddyNode->type != XML_ELEMENT_NODE)
+										    continue;
+										UT_continue_if_fail(strcmp(reinterpret_cast<const char*>(buddyNode->name), "buddy") == 0);
+										UT_continue_if_fail(buddyNode->children);
+										
+										// read all buddy properties
+										PropertyMap vBuddyProps;
+										for (xmlNode* buddyPropertyNode = buddyNode->children; buddyPropertyNode; buddyPropertyNode = buddyPropertyNode->next)
 										{
-											if (strcmp(reinterpret_cast<const char*>(buddyNode->name), "buddy") == 0)
-											{
-												// read all buddy properties
-												PropertyMap vBuddyProps;
-												if (buddyNode->children)
-												{
-													for (xmlNode* buddyPropertyNode = buddyNode->children; buddyPropertyNode; buddyPropertyNode = buddyPropertyNode->next)
-													{
-														if (buddyPropertyNode->type == XML_ELEMENT_NODE)
-														{
-															UT_UTF8String buddyPropValue = reinterpret_cast<const char*>(xmlNodeGetContent(buddyPropertyNode));
-															if (buddyPropertyNode->name && *buddyPropertyNode->name && buddyPropValue.size() > 0)
-															{
-																vBuddyProps.insert(PropertyMap::value_type(
-																		reinterpret_cast<const char*>(buddyPropertyNode->name), 
-																		buddyPropValue.utf8_str())
-																	);
-															}
-															else
-																UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-														}
-													}
-												}
-												else
-													UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); // a buddy with no properties at all should really not happen
-												
-												// construct the buddy	
-												BuddyPtr pBuddy = pHandler->constructBuddy(vBuddyProps);
-												if (pBuddy)
-												{
-													// add the buddy to the account handler
-													pHandler->addBuddy(pBuddy);
-												}
-											}
-											else
-											{
-												UT_DEBUGMSG(("Got unexpected tag within a <buddies> section (%s)\n", buddyNode->name));
-												UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-											}
+											UT_continue_if_fail(buddyPropertyNode->type == XML_ELEMENT_NODE);
+											
+											UT_UTF8String buddyPropValue = reinterpret_cast<const char*>(xmlNodeGetContent(buddyPropertyNode));
+											UT_continue_if_fail(buddyPropertyNode->name && *buddyPropertyNode->name && buddyPropValue.size() > 0);
+											
+											vBuddyProps.insert(PropertyMap::value_type(
+													reinterpret_cast<const char*>(buddyPropertyNode->name), 
+													buddyPropValue.utf8_str())
+												);
+										}
+										
+										// construct the buddy	
+										BuddyPtr pBuddy = pHandler->constructBuddy(vBuddyProps);
+										if (pBuddy)
+										{
+											// add the buddy to the account handler
+											pHandler->addBuddy(pBuddy);
 										}
 									}
 								}
