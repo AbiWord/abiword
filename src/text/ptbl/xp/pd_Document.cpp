@@ -206,7 +206,6 @@ PD_Document::PD_Document()
 #endif
 	UT_UTF8String sDoc;
 	getOrigDocUUID()->toString(sDoc);
-	getNumFromAuthorUUID(sDoc.utf8_str());
 }
 
 PD_Document::~PD_Document()
@@ -330,29 +329,6 @@ bool PD_Document::isMarginChangeOnly(void) const
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-/*!
- * Author methods, get an integer that locates a given UUID. If this UUID
- * is not found return -1
- */
-UT_sint32 PD_Document::getNumFromAuthorUUID(const char * szUUID) const
-{
-	if(!szUUID)
-		return NULL;
-	UT_sint32 i = 0;
-	bool bFound = false;
-	for(i=0; i< m_vecAuthors.getItemCount(); i++)
-	{
-		if(strcmp(static_cast<const char *>(m_vecAuthors.getNthItem(i)->getUUID()),szUUID)==0)
-		{
-			bFound = true;
-			break;
-		}
-	}
-	if(bFound)
-		return m_vecAuthors.getNthItem(i)->getAuthorInt();
-	return -1;
-}
 
 UT_sint32 PD_Document::getNumAuthors() const
 {
@@ -490,22 +466,6 @@ void PD_Document::setMyAuthorInt(UT_sint32 i)
 UT_sint32 PD_Document::getLastAuthorInt(void) const
 {
 	return m_iLastAuthorInt;
-}
-
-
-
-/*!
- * get a UUID from it's location. If it's not present return NULL
- */
-const char * PD_Document::getAuthorUUIDFromNum(UT_sint32 i) const
-{
-	UT_sint32 j = 0;
-	for(j=0; j< m_vecAuthors.getItemCount(); j++)
-	{
-		if(m_vecAuthors.getNthItem(j)->getAuthorInt() == i)
-			return m_vecAuthors.getNthItem(j)->getUUID();
-	}
-	return NULL;
 }
 
 /*!

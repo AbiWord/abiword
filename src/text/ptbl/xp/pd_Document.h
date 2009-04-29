@@ -196,8 +196,6 @@ public:
 
 	// Author methods
 
-	const char *            getAuthorUUIDFromNum(UT_sint32 id) const;
-	UT_sint32               getNumFromAuthorUUID(const char * szUUID) const;
 	void                    setShowAuthors(bool bAuthors);
 	bool                    isShowAuthors(void) const
 	{ return m_bShowAuthors;}
