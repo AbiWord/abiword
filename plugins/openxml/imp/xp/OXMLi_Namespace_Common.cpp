@@ -79,7 +79,7 @@ void OXMLi_Namespace_Common::addNamespace(const char* ns, char* uri)
 
 const char* OXMLi_Namespace_Common::processName(const char* name)
 {
-	std::string name_str(g_strdup(name));	    
+	std::string name_str(name);	    
   	size_t colon_index = name_str.find(':');
 
 	if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
@@ -94,7 +94,7 @@ const char* OXMLi_Namespace_Common::processName(const char* name)
 			return name;
 		}
 
-		const char* key = URIToKey->pick(g_strdup(uri));
+		const char* key = URIToKey->pick(uri);
 		if(!key)
 		{
 			UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri));
@@ -117,7 +117,7 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 
 	while (*pp)
 	{
-		std::string name_str(g_strdup(pp[0]));	    
+		std::string name_str(pp[0]);	    
 	  	size_t colon_index = name_str.find(':');
 
 		if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
@@ -127,7 +127,7 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 			
 			if(name_space.compare("xmlns") == 0)
 			{
-				nsToURI->insert(g_strdup(tag_name.c_str()),g_strdup(pp[1])); 
+				nsToURI->insert(tag_name.c_str(),g_strdup(pp[1])); 
 			}
 			else
 			{	
@@ -138,7 +138,7 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 					continue;
 				}
 
-				const char* key = URIToKey->pick(g_strdup(uri));
+				const char* key = URIToKey->pick(uri);
 				if(!key)
 				{
 					UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri));
@@ -148,7 +148,7 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 				std::string pName(key);
 				pName += ":";
 				pName += tag_name;
-				const char* ppName = g_strdup(pName.c_str());
+				const char* ppName = pName.c_str();
 				char* ppVal = g_strdup(pp[1]);
 				attsMap->insert(ppName, ppVal);
 			}

@@ -63,13 +63,13 @@ const gchar* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr,
 
 	while (*p)
 	{
-		if (str.compare(g_strdup(p[0])) == 0)
+		if (str.compare(p[0]) == 0)
 			break;
 		p += 2;
 	}
 
 	if (*p)
-		return g_strdup(p[1]);
+		return p[1];
 	else
 		return NULL;
 }
