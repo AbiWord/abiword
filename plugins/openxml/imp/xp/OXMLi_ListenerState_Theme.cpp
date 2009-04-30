@@ -39,28 +39,28 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail(_error_if_fail( UT_OK == _initializeTheme() ));
 
-	if (	!strcmp(rqst->pName, "hslClr") || 
-			!strcmp(rqst->pName, "prstClr") || 
-			!strcmp(rqst->pName, "schemeClr") ||
-			!strcmp(rqst->pName, "scrgbClr") ||
-			!strcmp(rqst->pName, "srgbClr") ||
-			!strcmp(rqst->pName, "sysClr") ) {
+	if (	nameMatches(rqst->pName, NS_A_KEY, "hslClr") || 
+			nameMatches(rqst->pName, NS_A_KEY, "prstClr") || 
+			nameMatches(rqst->pName, NS_A_KEY, "schemeClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "scrgbClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "srgbClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "sysClr") ) {
 
-		std::string context = rqst->context->at(rqst->context->size() - 2);
-		if (context.compare("clrScheme")) return; //we only worry about the color scheme for now.
+		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
+		if (!contextMatches(contextTag.c_str(), NS_A_KEY, "clrScheme")) return; //we only worry about the color scheme for now.
 
 		std::string color = "";
 
-		if (!strcmp(rqst->pName, "hslClr")) {
+		if (nameMatches(rqst->pName, NS_A_KEY, "hslClr")) {
 			//parse Hue, Saturation, Luminance color model
-		} else if (!strcmp(rqst->pName, "prstClr")) {
+		} else if (nameMatches(rqst->pName, NS_A_KEY, "prstClr")) {
 			//parse preset color
-			const gchar * val = UT_getAttribute("val", rqst->ppAtts);
+			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
 			UT_return_if_fail( this->_error_if_fail(val != NULL) );
 			color = _getHexFromPreset(val);
-		} else if (!strcmp(rqst->pName, "schemeClr")) {
+		} else if (nameMatches(rqst->pName, NS_A_KEY, "schemeClr")) {
 			//parse scheme color
-			const gchar * val = UT_getAttribute("val", rqst->ppAtts);
+			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
 			UT_return_if_fail( this->_error_if_fail(val != NULL) );
 			if (!strcmp(val, "lt1")) { color = m_theme->getColor(LIGHT1);
 			} else if (!strcmp(val, "lt2")) { color = m_theme->getColor(LIGHT2);
@@ -75,11 +75,11 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 			} else if (!strcmp(val, "hlink")) { color = m_theme->getColor(HYPERLINK);
 			} else if (!strcmp(val, "folHlink")) { color = m_theme->getColor(FOLLOWED_HYPERLINK);
 			}
-		} else if (!strcmp(rqst->pName, "scrgbClr")) {
+		} else if (nameMatches(rqst->pName, NS_A_KEY, "scrgbClr")) {
 			//parse RGB color, percentage variant
-			const gchar * r = UT_getAttribute("r", rqst->ppAtts);
-			const gchar * g = UT_getAttribute("g", rqst->ppAtts);
-			const gchar * b = UT_getAttribute("b", rqst->ppAtts);
+			const gchar * r = attrMatches(NS_A_KEY, "r", rqst->ppAtts);
+			const gchar * g = attrMatches(NS_A_KEY, "g", rqst->ppAtts);
+			const gchar * b = attrMatches(NS_A_KEY, "b", rqst->ppAtts);
 			UT_return_if_fail( this->_error_if_fail(r != NULL && g != NULL && b != NULL ));
 			char dR, dG, dB; //test these conversions for data loss
 			dR = 255 * (UT_convertDimensionless(r) / 100000);
@@ -91,15 +91,15 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 			UT_ASSERT(result != NULL);
 			color = result;
 
-		} else if (!strcmp(rqst->pName, "srgbClr")) {
+		} else if (nameMatches(rqst->pName, NS_A_KEY, "srgbClr")) {
 			//parse RGB color, hex variant
-			const gchar * val = UT_getAttribute("val", rqst->ppAtts);
+			const gchar * val = attrMatches(NS_A_KEY, "val", rqst->ppAtts);
 			UT_return_if_fail( this->_error_if_fail(val != NULL) );
 			color = "#";
 			color += val;
-		} else if (!strcmp(rqst->pName, "sysClr")) {
+		} else if (nameMatches(rqst->pName, NS_A_KEY, "sysClr")) {
 			//parse system color; for now we only worry about last computed color.
-			const gchar * hexVal = UT_getAttribute("lastClr", rqst->ppAtts);
+			const gchar * hexVal = attrMatches(NS_A_KEY, "lastClr", rqst->ppAtts);
 			if(hexVal != NULL) {
 				color = "#";
 				color += hexVal;
@@ -108,59 +108,59 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 
 		if (!color.compare("") || color[0] != '#') return;
 
-		context = rqst->context->back();
+		contextTag = rqst->context->back();
 
-		if (!context.compare("accent1")) {
+		if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent1")) {
 			m_theme->setColor(ACCENT1, color);
-		} else if (!context.compare("accent2")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent2")) {
 			m_theme->setColor(ACCENT2, color);
-		} else if (!context.compare("accent3")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent3")) {
 			m_theme->setColor(ACCENT3, color);
-		} else if (!context.compare("accent4")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent4")) {
 			m_theme->setColor(ACCENT4, color);
-		} else if (!context.compare("accent5")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent5")) {
 			m_theme->setColor(ACCENT5, color);
-		} else if (!context.compare("accent6")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent6")) {
 			m_theme->setColor(ACCENT6, color);
-		} else if (!context.compare("dk1")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "dk1")) {
 			m_theme->setColor(DARK1, color);
-		} else if (!context.compare("dk2")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "dk2")) {
 			m_theme->setColor(DARK2, color);
-		} else if (!context.compare("lt1")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "lt1")) {
 			m_theme->setColor(LIGHT1, color);
-		} else if (!context.compare("lt2")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "lt2")) {
 			m_theme->setColor(LIGHT2, color);
-		} else if (!context.compare("hlink")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "hlink")) {
 			m_theme->setColor(HYPERLINK, color);
-		} else if (!context.compare("folHlink")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "folHlink")) {
 			m_theme->setColor(FOLLOWED_HYPERLINK, color);
 		}
 
 		rqst->handled = true;
 
-	} else if (	!strcmp(rqst->pName, "latin") ||
-				!strcmp(rqst->pName, "ea") ||
-				!strcmp(rqst->pName, "cs") ||
-				!strcmp(rqst->pName, "font") ) {
-		const gchar * typeface = UT_getAttribute("typeface", rqst->ppAtts);
+	} else if (	nameMatches(rqst->pName, NS_A_KEY, "latin") ||
+				nameMatches(rqst->pName, NS_A_KEY, "ea") ||
+				nameMatches(rqst->pName, NS_A_KEY, "cs") ||
+				nameMatches(rqst->pName, NS_A_KEY, "font") ) {
+		const gchar * typeface = attrMatches(NS_A_KEY, "typeface", rqst->ppAtts);
 		UT_return_if_fail( this->_error_if_fail(typeface != NULL) );
 
 		const gchar * script = NULL;
-		if ( !strcmp(rqst->pName, "latin")) {
+		if ( nameMatches(rqst->pName, NS_A_KEY, "latin")) {
 			script = "latin";
-		} else if ( !strcmp(rqst->pName, "ea")) {
+		} else if ( nameMatches(rqst->pName, NS_A_KEY, "ea")) {
 			script = "ea";
-		} else if ( !strcmp(rqst->pName, "cs")) {
+		} else if ( nameMatches(rqst->pName, NS_A_KEY, "cs")) {
 			script = "cs";
 		} else {
-			script = UT_getAttribute("script", rqst->ppAtts);
+			script = attrMatches(NS_A_KEY, "script", rqst->ppAtts);
 			UT_return_if_fail( this->_error_if_fail(script != NULL) );
 		}
 		//TODO: check for unicode compatibility for typeface name
-		std::string parentTag = rqst->context->back();
-		if (!parentTag.compare("majorFont")) {
+		std::string contextTag = rqst->context->back();
+		if (contextMatches(contextTag.c_str(), NS_A_KEY, "majorFont")) {
 			m_theme->setMajorFont(script, typeface);
-		} else if (!parentTag.compare("minorFont")) {
+		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "minorFont")) {
 			m_theme->setMinorFont(script, typeface);
 		}
 
@@ -177,16 +177,17 @@ void OXMLi_ListenerState_Theme::endElement (OXMLi_EndElementRequest * rqst)
 			!strcmp(rqst->pName, "srgbClr") ||
 			!strcmp(rqst->pName, "sysClr") ) {
 
-		std::string context = rqst->context->at(rqst->context->size() - 2);
-		if (context.compare("clrScheme")) return;
+		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
+		if (!contextMatches(contextTag.c_str(), NS_A_KEY, "clrScheme")) return;
 		rqst->handled = true;
-	} else if (	!strcmp(rqst->pName, "latin") ||
-				!strcmp(rqst->pName, "ea") ||
-				!strcmp(rqst->pName, "cs") ||
-				!strcmp(rqst->pName, "font") ) {
+	} else if (	nameMatches(rqst->pName, NS_A_KEY, "latin") ||
+				nameMatches(rqst->pName, NS_A_KEY, "ea") ||
+				nameMatches(rqst->pName, NS_A_KEY, "cs") ||
+				nameMatches(rqst->pName, NS_A_KEY, "font") ) {
 
-		std::string context = rqst->context->back();
-		if (context.compare("majorFont") && context.compare("minorFont")) return;
+		std::string contextTag = rqst->context->back();
+		if (contextMatches(contextTag.c_str(), NS_A_KEY, "majorFont") && contextMatches(contextTag.c_str(), NS_A_KEY, "minorFont"))
+			return;
 		rqst->handled = true;
 	}
 

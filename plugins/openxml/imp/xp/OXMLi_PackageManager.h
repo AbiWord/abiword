@@ -89,12 +89,12 @@ private:
 
 	GsfInput * getChildById( GsfInput * parent, const char * id );
 	GsfInput * getChildByType( GsfInput * parent, OXML_PartType type );
-	UT_Error parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener, const gchar * ns );
-	UT_Error parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener, const gchar * ns );
+	UT_Error parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener );
+	UT_Error parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener );
 
 	const char * _getFullType( OXML_PartType type );
 	GsfInput * _getDocumentStream();
-	UT_Error _parseStream( GsfInput * stream, OXMLi_StreamListener * pListener, const gchar * ns  );
+	UT_Error _parseStream( GsfInput * stream, OXMLi_StreamListener * pListener );
 
 	static OXMLi_PackageManager * s_pInst;
 

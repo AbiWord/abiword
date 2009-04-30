@@ -48,7 +48,7 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "body")) {
+	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
 		//This signals the start of the first section.
 		OXML_SharedSection sect(new OXML_Section());
 		sect->setBreakType(CONTINUOUS_BREAK); //First section of the document does not have breaks at beginning and end
@@ -64,7 +64,7 @@ void OXMLi_ListenerState_MainDocument::endElement (OXMLi_EndElementRequest * rqs
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "body")) {
+	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
 		//end of the body, nothing to do
 		rqst->handled = true;
 	}

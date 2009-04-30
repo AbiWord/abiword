@@ -37,6 +37,43 @@ OXMLi_ListenerState::~OXMLi_ListenerState()
 {
 }
 
+bool OXMLi_ListenerState::contextMatches(const char* name, const char* ns, const char* tag)
+{
+	return nameMatches(name, ns, tag);
+}
+
+bool OXMLi_ListenerState::nameMatches(const char* name, const char* ns, const char* tag)
+{
+	std::string str(ns);
+	str += ":";
+	str += tag;
+
+	return str.compare(name) == 0;
+}
+
+const gchar* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr, const gchar** atts)
+{
+	UT_return_val_if_fail( ns && attr && atts, NULL );
+
+	std::string str(ns);
+	str += ":";
+	str += attr;
+
+	const gchar** p = atts;
+
+	while (*p)
+	{
+		if (str.compare(g_strdup(p[0])) == 0)
+			break;
+		p += 2;
+	}
+
+	if (*p)
+		return g_strdup(p[1]);
+	else
+		return NULL;
+}
+
 bool OXMLi_ListenerState::_error_if_fail(bool val)
 {
 	if (val != true && m_pListener != NULL) {

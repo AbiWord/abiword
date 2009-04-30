@@ -38,10 +38,10 @@
 
 void OXMLi_ListenerState_DocSettings::startElement (OXMLi_StartElementRequest * rqst)
 {
-	if (!strcmp(rqst->pName, "themeFontLang")) {
-		const gchar * val = UT_getAttribute("val", rqst->ppAtts);
-		const gchar * eastAsia = UT_getAttribute("eastAsia", rqst->ppAtts);
-		const gchar * bidi = UT_getAttribute("bidi", rqst->ppAtts);
+	if (nameMatches(rqst->pName, NS_W_KEY, "themeFontLang")) {
+		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		const gchar * eastAsia = attrMatches(NS_W_KEY, "eastAsia", rqst->ppAtts);
+		const gchar * bidi = attrMatches(NS_W_KEY, "bidi", rqst->ppAtts);
 
 		OXML_Document * doc = OXML_Document::getInstance();
 		UT_return_if_fail( this->_error_if_fail(doc != NULL) );
@@ -68,7 +68,7 @@ void OXMLi_ListenerState_DocSettings::startElement (OXMLi_StartElementRequest * 
 
 void OXMLi_ListenerState_DocSettings::endElement (OXMLi_EndElementRequest * rqst)
 {
-	if (!strcmp(rqst->pName, "themeFontLang")) {
+	if (nameMatches(rqst->pName, NS_W_KEY, "themeFontLang")) {
 		rqst->handled = true;
 	}
 }

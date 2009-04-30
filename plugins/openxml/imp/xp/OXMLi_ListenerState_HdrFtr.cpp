@@ -50,7 +50,7 @@ void OXMLi_ListenerState_HdrFtr::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "hdr") || !strcmp(rqst->pName, "ftr"))
+	if (nameMatches(rqst->pName, NS_W_KEY, "hdr") || nameMatches(rqst->pName, NS_W_KEY, "ftr"))
 	{
 		OXML_SharedElement dummy(new OXML_Element("", P_TAG, BLOCK));
 		rqst->stck->push(dummy);
@@ -63,7 +63,7 @@ void OXMLi_ListenerState_HdrFtr::endElement (OXMLi_EndElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if (!strcmp(rqst->pName, "hdr") || !strcmp(rqst->pName, "ftr"))
+	if (nameMatches(rqst->pName, NS_W_KEY, "hdr") || nameMatches(rqst->pName, NS_W_KEY, "ftr"))
 	{
 		OXML_SharedSection s(new OXML_Section(m_partId));
 		OXML_SharedElement container = rqst->stck->top();
@@ -73,7 +73,7 @@ void OXMLi_ListenerState_HdrFtr::endElement (OXMLi_EndElementRequest * rqst)
 		OXML_Document * doc = OXML_Document::getInstance();
 		UT_return_if_fail( this->_error_if_fail(doc != NULL) );
 
-		if (!strcmp(rqst->pName, "hdr"))
+		if (nameMatches(rqst->pName, NS_W_KEY, "hdr"))
 			doc->addHeader(s);
 		else
 			doc->addFooter(s);

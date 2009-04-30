@@ -52,6 +52,11 @@ public:
 	virtual void startElement (OXMLi_StartElementRequest * rqst) = 0;
 	virtual void endElement (OXMLi_EndElementRequest * rqst) = 0;
 	virtual void charData (OXMLi_CharDataRequest * rqst) = 0;
+
+	bool nameMatches(const char* name, const char* ns, const char* tag);
+	const gchar* attrMatches(const char* ns, const gchar* attr, const gchar** atts);
+	bool contextMatches(const char* name, const char* ns, const char* tag);
+	
 protected:
 	bool _error_if_fail(bool val);
 	UT_Error _flushTopLevel(OXMLi_ElementStack * stck);

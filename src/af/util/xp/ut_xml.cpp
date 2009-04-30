@@ -122,8 +122,6 @@ UT_XML::~UT_XML ()
   _cleanup();
 
   if (m_chardata_buffer) g_free (m_chardata_buffer);
-
-  clearNameSpaces();
 }
 
 bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require)
@@ -173,34 +171,6 @@ void UT_XML::flush_all ()
     }
 }
 
-std::string UT_XML::removeNamespacePrefix(const char* name)
-{
-  if(!name)
-	return "";
-
-  std::string name_str(name);	
-
-  if(m_namespaces.empty())
-	return name_str;
-
-  size_t colon_index = name_str.find(':');
-
-  if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
-    {
-	  std::string name_space = name_str.substr(0, colon_index);
-	  std::string tag_name = name_str.substr(colon_index+1);
-
-	  std::list<std::string>::iterator it;
-	  
-	  for(it=m_namespaces.begin(); it!=m_namespaces.end(); ++it){		
-		std::string ns = (*it);
-		if(ns.compare(name_space.c_str()) == 0)
-			return tag_name;		
-	  }
-    }
-  return name_str;
-}
-
 /* Declared in ut_xml.h as: void UT_XML::startElement (const gchar * name, const gchar ** atts);
  */
 void UT_XML::startElement (const char * name, const char ** atts)
@@ -209,47 +179,18 @@ void UT_XML::startElement (const char * name, const char ** atts)
 
   flush_all ();
 
-  const char* suffix = name;
-  const gchar** attsList = atts;
-  UT_GenericStringMap<char*> attsMap;
-	
-  if(!m_namespaces.empty())
-  {    
-	//process attributes first to detect any new namespaces
-	const char ** pp = atts;  
-	while (*pp)
-	{
-		const char* szName = g_strdup(removeNamespacePrefix(pp[0]).c_str());
-		char* szValue = g_strdup(pp[1]);
-		attsMap.insert(szName, szValue);
-		//new namespaces may occur inside any tag in the xml file as attributes
-		//Ex: xmlns:wx="..."  --> here we extract new namespace wx and add it to namespaces.
-		if((strncmp(szName, "xmlns", 5) == 0) && (strlen(szName) > 6))
-		{
-			//we have found a new namespace
-			const char* ns = szName+6;
-			addNameSpace(ns);
-		}
-		pp += 2;
-	}
-	attsList = attsMap.list();
-
-	//process the name after attributes since it may use the new namespace
-	suffix = g_strdup(removeNamespacePrefix(name).c_str());
-  }
-
   if (m_bSniffing)
     {
-      if (strcmp (suffix,m_xml_type) == 0) m_bValid = true;
+	if (strcmp (name,m_xml_type) == 0) m_bValid = true;
       stop (); // proceed no further - we don't have any listener
       return;
     }
 
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
-	  m_pListener->startElement (suffix, attsList);
+	  m_pListener->startElement (name, atts);
   if (m_pExpertListener)
-	  m_pExpertListener->StartElement (suffix, attsList);
+	  m_pExpertListener->StartElement (name, atts);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::endElement (const gchar * name);
@@ -260,16 +201,11 @@ void UT_XML::endElement (const char * name)
 
   flush_all ();
 
-  const char* suffix = name;
-
-  if(!m_namespaces.empty())
-	suffix = removeNamespacePrefix(name).c_str();
-
   UT_ASSERT (m_pListener || m_pExpertListener);
   if (m_pListener)
-	  m_pListener->endElement (suffix);
+	  m_pListener->endElement (name);
   if (m_pExpertListener)
-	  m_pExpertListener->EndElement (suffix);
+	  m_pExpertListener->EndElement (name);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::charData (const gchar * buffer, int length);
@@ -345,23 +281,6 @@ void UT_XML::defaultData (const char * buffer, int length)
   m_chardata_length += length;
   m_chardata_buffer[m_chardata_length] = 0;
 }
-
-/* I'm still very confused about XML namespaces so the handling here is likely to change a lot as I learn...
- */
-void UT_XML::addNameSpace (const char * xml_namespace)
-{
-  if(!xml_namespace)
-	return;
-
-  std::string ns(xml_namespace);
-  m_namespaces.push_back(ns);
-}
-
-void UT_XML::clearNameSpaces()
-{
-  m_namespaces.clear();
-}
-
 
 bool UT_XML::sniff (const UT_ByteBuf * pBB, const char * xml_type)
 {

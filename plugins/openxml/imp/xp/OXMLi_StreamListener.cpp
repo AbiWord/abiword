@@ -39,7 +39,8 @@
 
 OXMLi_StreamListener::OXMLi_StreamListener() : 
 	m_pElemStack(new OXMLi_ElementStack()), 
-	m_parseStatus(UT_OK)
+	m_parseStatus(UT_OK),
+	m_namespaces(new OXMLi_Namespace_Common())
 {
 	clearStates();
 }
@@ -47,12 +48,14 @@ OXMLi_StreamListener::OXMLi_StreamListener() :
 OXMLi_StreamListener::~OXMLi_StreamListener()
 {
 	DELETEP(m_pElemStack);
+	DELETEP(m_namespaces);
 	clearStates();
 }
 
 void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 {
 	OXMLi_ListenerState * state = NULL;
+	m_namespaces->reset();
 	switch (type) {
 	case DOCUMENT_PART:
 		state = new OXMLi_ListenerState_MainDocument();
@@ -114,14 +117,18 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 {
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
-	OXMLi_StartElementRequest rqst = { pName, ppAtts, m_pElemStack, &m_context, false };
+	const gchar** atts = m_namespaces->processAttributes(ppAtts);
+	const gchar* name = m_namespaces->processName(pName);
+
+	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, &m_context, false };
+
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->startElement(&rqst);
 		++it;
 	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled );
 
-	m_context.push_back(pName);
+	m_context.push_back(name);
 }
 
 void OXMLi_StreamListener::endElement (const gchar* pName)
@@ -130,7 +137,9 @@ void OXMLi_StreamListener::endElement (const gchar* pName)
 
 	m_context.pop_back();
 
-	OXMLi_EndElementRequest rqst = { pName, m_pElemStack, &m_context, false };
+	const gchar* name = m_namespaces->processName(pName);
+
+	OXMLi_EndElementRequest rqst = { name, m_pElemStack, &m_context, false };
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->endElement(&rqst);

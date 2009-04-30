@@ -100,7 +100,7 @@ UT_Error OXMLi_PackageManager::parseDocumentStream()
 {
 	OXMLi_StreamListener listener; 
 	listener.setupStates(DOCUMENT_PART);
-	return _parseStream( _getDocumentStream(), &listener, "xml" ); //xml is the default top-level namespace
+	return _parseStream( _getDocumentStream(), &listener); 
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentHdrFtr( const char * id )
@@ -109,7 +109,7 @@ UT_Error OXMLi_PackageManager::parseDocumentHdrFtr( const char * id )
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(HEADER_PART, id); //Doesn't matter whether it's header or footer
-	return parseChildById(doc, id, &listener, "xml"); 
+	return parseChildById(doc, id, &listener); 
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentStyles()
@@ -118,7 +118,7 @@ UT_Error OXMLi_PackageManager::parseDocumentStyles()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(STYLES_PART);
-	return parseChildByType(doc, STYLES_PART, &listener, "xml"); 
+	return parseChildByType(doc, STYLES_PART, &listener); 
 }
 
 UT_Error OXMLi_PackageManager::parseDocumentTheme()
@@ -127,7 +127,7 @@ UT_Error OXMLi_PackageManager::parseDocumentTheme()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(THEME_PART);
-	UT_Error err = parseChildByType(doc, THEME_PART, &listener, "xml"); 
+	UT_Error err = parseChildByType(doc, THEME_PART, &listener); 
 	//themes are optional in .docx files
 	if(err != UT_OK){
 		UT_DEBUGMSG(("FRT: OpenXML Theme Part is not found\n"));
@@ -141,7 +141,7 @@ UT_Error OXMLi_PackageManager::parseDocumentSettings()
 	UT_return_val_if_fail(doc != NULL, UT_ERROR);
 	OXMLi_StreamListener listener;
 	listener.setupStates(DOCSETTINGS_PART);
-	return parseChildByType(doc, DOCSETTINGS_PART, &listener, "xml"); 
+	return parseChildByType(doc, DOCSETTINGS_PART, &listener); 
 }
 
 GsfInput* OXMLi_PackageManager::getChildById( GsfInput * parent, const char * id )
@@ -157,20 +157,20 @@ GsfInput* OXMLi_PackageManager::getChildByType( GsfInput * parent, OXML_PartType
 	return gsf_open_pkg_get_rel_by_type(parent, fulltype);
 }
 
-UT_Error OXMLi_PackageManager::parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener, const gchar * ns )
+UT_Error OXMLi_PackageManager::parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener)
 {
 	GsfInput * pInput = getChildById(parent, id);
 	UT_return_val_if_fail(pInput != NULL, UT_ERROR);
-	return _parseStream( pInput, pListener, ns);
+	return _parseStream( pInput, pListener);
 }
 
-UT_Error OXMLi_PackageManager::parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener, const gchar * ns )
+UT_Error OXMLi_PackageManager::parseChildByType( GsfInput * parent, OXML_PartType type, OXMLi_StreamListener * pListener)
 {
 	GsfInput * pInput = getChildByType(parent, type);
 	if(!pInput)
 		return UT_ERROR;
 
-	return _parseStream( pInput, pListener, ns);
+	return _parseStream( pInput, pListener);
 }
 
 const char * OXMLi_PackageManager::_getFullType( OXML_PartType type )
@@ -235,9 +235,9 @@ GsfInput * OXMLi_PackageManager::_getDocumentStream()
 	return m_pDocPart;
 }
 
-UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamListener * pListener, const gchar * ns )
+UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamListener * pListener)
 {
-	UT_return_val_if_fail(stream != NULL && pListener != NULL && ns != NULL, UT_ERROR);
+	UT_return_val_if_fail(stream != NULL && pListener != NULL , UT_ERROR);
 
 	//First, we check if this stream has already been parsed before
 	std::string part_name = gsf_input_name(stream); //TODO: determine if part names are truly unique
@@ -255,7 +255,6 @@ UT_Error OXMLi_PackageManager::_parseStream( GsfInput * stream, OXMLi_StreamList
 
 	UT_XML reader;
 	reader.setListener(pListener);
-	reader.addNameSpace(ns);
 
 	if (gsf_input_size (stream) > 0) {
 		len = gsf_input_remaining (stream);

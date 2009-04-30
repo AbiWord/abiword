@@ -30,6 +30,7 @@
 // Internal includes
 #include <OXMLi_Types.h>
 #include <OXMLi_ListenerState.h>
+#include <OXMLi_Namespace_Common.h>
 
 // External includes
 #include <list>
@@ -64,6 +65,7 @@ private:
 	OXMLi_ContextVector m_context;
 	std::list<OXMLi_ListenerState*> m_states;
 	UT_Error m_parseStatus;
+	OXMLi_Namespace_Common* m_namespaces;
 
 	void pushState(OXMLi_ListenerState * s);
 	void popState();

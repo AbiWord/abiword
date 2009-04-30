@@ -29,5 +29,7 @@ libxp_la_SOURCES = \
 	OXMLi_PackageManager.h \
 	OXMLi_StreamListener.cpp \
 	OXMLi_StreamListener.h \
+	OXMLi_Namespace_Common.cpp \
+	OXMLi_Namespace_Common.h \
 	OXMLi_Types.h
 
