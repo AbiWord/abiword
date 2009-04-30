@@ -37,12 +37,12 @@ OXMLi_ListenerState::~OXMLi_ListenerState()
 {
 }
 
-bool OXMLi_ListenerState::contextMatches(const char* name, const char* ns, const char* tag)
+bool OXMLi_ListenerState::contextMatches(std::string name, const char* ns, const char* tag)
 {
 	return nameMatches(name, ns, tag);
 }
 
-bool OXMLi_ListenerState::nameMatches(const char* name, const char* ns, const char* tag)
+bool OXMLi_ListenerState::nameMatches(std::string name, const char* ns, const char* tag)
 {
 	std::string str(ns);
 	str += ":";

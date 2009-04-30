@@ -27,41 +27,37 @@
 #include <OXMLi_Types.h>
 
 OXMLi_Namespace_Common::OXMLi_Namespace_Common() :
-	nsToURI(new UT_GenericStringMap<char*>()),
-	URIToKey(new UT_GenericStringMap<char*>()),
-	attsMap(new UT_GenericStringMap<char*>())
+	m_attsMap(new UT_GenericStringMap<char*>())
 {
 	reset();
 }
 
 OXMLi_Namespace_Common::~OXMLi_Namespace_Common()
 {
-	DELETEP(nsToURI);
-	DELETEP(URIToKey);
-	DELETEP(attsMap);
+	DELETEP(m_attsMap);
 }
 
 void OXMLi_Namespace_Common::reset()
 {
-	nsToURI->clear();
-	URIToKey->clear();
+	m_nsToURI.clear();
+	m_uriToKey.clear();
 
 	//add known URIs here
-	nsToURI->insert(g_strdup(NS_R_KEY), g_strdup(NS_R_URI));
-	nsToURI->insert(g_strdup(NS_V_KEY), g_strdup(NS_V_URI));
-	nsToURI->insert(g_strdup(NS_WX_KEY), g_strdup(NS_WX_URI));
-	nsToURI->insert(g_strdup(NS_WP_KEY), g_strdup(NS_WP_URI));
-	nsToURI->insert(g_strdup(NS_A_KEY), g_strdup(NS_A_URI));
-	nsToURI->insert(g_strdup(NS_W_KEY), g_strdup(NS_W_URI));
-	nsToURI->insert(g_strdup(NS_XML_KEY), g_strdup(NS_XML_URI));
+	m_nsToURI.insert(std::make_pair(NS_R_KEY, NS_R_URI));
+	m_nsToURI.insert(std::make_pair(NS_V_KEY, NS_V_URI));
+	m_nsToURI.insert(std::make_pair(NS_WX_KEY, NS_WX_URI));
+	m_nsToURI.insert(std::make_pair(NS_WP_KEY, NS_WP_URI));
+	m_nsToURI.insert(std::make_pair(NS_A_KEY, NS_A_URI));
+	m_nsToURI.insert(std::make_pair(NS_W_KEY, NS_W_URI));
+	m_nsToURI.insert(std::make_pair(NS_XML_KEY, NS_XML_URI));
 	
-	URIToKey->insert(g_strdup(NS_R_URI), g_strdup(NS_R_KEY));
-	URIToKey->insert(g_strdup(NS_V_URI), g_strdup(NS_V_KEY));
-	URIToKey->insert(g_strdup(NS_WX_URI), g_strdup(NS_WX_KEY));
-	URIToKey->insert(g_strdup(NS_WP_URI), g_strdup(NS_WP_KEY));
-	URIToKey->insert(g_strdup(NS_A_URI), g_strdup(NS_A_KEY));
-	URIToKey->insert(g_strdup(NS_W_URI), g_strdup(NS_W_KEY));
-	URIToKey->insert(g_strdup(NS_XML_URI), g_strdup(NS_XML_KEY));
+	m_uriToKey.insert(std::make_pair(NS_R_URI, NS_R_KEY));
+	m_uriToKey.insert(std::make_pair(NS_V_URI, NS_V_KEY));
+	m_uriToKey.insert(std::make_pair(NS_WX_URI, NS_WX_KEY));
+	m_uriToKey.insert(std::make_pair(NS_WP_URI, NS_WP_KEY));
+	m_uriToKey.insert(std::make_pair(NS_A_URI, NS_A_KEY));
+	m_uriToKey.insert(std::make_pair(NS_W_URI, NS_W_KEY));
+	m_uriToKey.insert(std::make_pair(NS_XML_URI, NS_XML_KEY));
 }
 
 void OXMLi_Namespace_Common::addNamespace(const char* ns, char* uri)
@@ -72,12 +68,12 @@ void OXMLi_Namespace_Common::addNamespace(const char* ns, char* uri)
 		return;
 	}
 
-	const char* szName = g_strdup(ns);
-	char* szValue = g_strdup(uri);
-	nsToURI->insert(szName, szValue);
+	std::string szName(ns);
+	std::string szValue(uri);
+	m_nsToURI.insert(std::make_pair(szName, szValue));
 }
 
-const char* OXMLi_Namespace_Common::processName(const char* name)
+std::string OXMLi_Namespace_Common::processName(const char* name)
 {
 	std::string name_str(name);	    
   	size_t colon_index = name_str.find(':');
@@ -87,32 +83,33 @@ const char* OXMLi_Namespace_Common::processName(const char* name)
 		std::string name_space = name_str.substr(0, colon_index);
 		std::string tag_name = name_str.substr(colon_index+1);
 
-		const char* uri = nsToURI->pick(name_space.c_str());
-		if(!uri)
+		std::map<std::string, std::string>::iterator iter = m_nsToURI.find(name_space);
+		if(iter == m_nsToURI.end())
 		{
 			UT_DEBUGMSG(("FRT:OpenXML importer unhandled URI for namespace:%s\n", name_space.c_str()));
-			return name;
+			return name_str;
 		}
+		std::string uri = iter->second;
 
-		const char* key = URIToKey->pick(uri);
-		if(!key)
+		iter = m_uriToKey.find(uri);
+		if(iter == m_uriToKey.end())
 		{
-			UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri));
-			return name;
+			UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri.c_str()));
+			return name_str;
 		}
 		
-		std::string pName(key);
+		std::string pName = iter->second;		
 		pName += ":";
 		pName += tag_name;
-		return g_strdup(pName.c_str());
+		return pName;
 	}
-	return name;
+	return name_str;
 }
 
 const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 {
 	const char ** pp = atts;  
-	attsMap->clear();
+	m_attsMap->clear();
 	const gchar** attsList = atts;
 
 	while (*pp)
@@ -127,35 +124,36 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 			
 			if(name_space.compare("xmlns") == 0)
 			{
-				nsToURI->insert(tag_name.c_str(),g_strdup(pp[1])); 
+				m_nsToURI.insert(std::make_pair(tag_name,pp[1])); 
 			}
 			else
 			{	
-				const char* uri = nsToURI->pick(name_space.c_str());
-				if(!uri)
+				std::map<std::string, std::string>::iterator iter = m_nsToURI.find(name_space);
+				if(iter == m_nsToURI.end())
 				{
 					UT_DEBUGMSG(("FRT:OpenXML importer unhandled URI for namespace:%s\n", name_space.c_str()));
 					continue;
 				}
+				std::string uri = iter->second;
 
-				const char* key = URIToKey->pick(uri);
-				if(!key)
+				iter = m_uriToKey.find(uri);
+				if(iter == m_uriToKey.end())
 				{
-					UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri));
+					UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri.c_str()));
 					continue;
 				}
 
-				std::string pName(key);
+				std::string pName = iter->second;		
 				pName += ":";
 				pName += tag_name;
-				const char* ppName = pName.c_str();
+				const char* ppName = g_strdup(pName.c_str());
 				char* ppVal = g_strdup(pp[1]);
-				attsMap->insert(ppName, ppVal);
+				m_attsMap->insert(ppName, ppVal);
 			}
 		}
 		pp += 2;
 	}
 
-	attsList = attsMap->list();
+	attsList = m_attsMap->list();
 	return attsList;
 }

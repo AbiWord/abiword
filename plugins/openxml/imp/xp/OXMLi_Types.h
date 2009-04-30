@@ -35,7 +35,7 @@ typedef std::vector<std::string> OXMLi_ContextVector;
 
 struct OXMLi_StartElementRequest
 {
-	const gchar * pName;
+	std::string pName;
 	const gchar ** ppAtts;
 	OXMLi_ElementStack * stck;
 	OXMLi_ContextVector * context;
@@ -44,7 +44,7 @@ struct OXMLi_StartElementRequest
 
 struct OXMLi_EndElementRequest
 {
-	const gchar * pName;
+	std::string pName;
 	OXMLi_ElementStack * stck;
 	OXMLi_ContextVector * context;
 	bool handled;

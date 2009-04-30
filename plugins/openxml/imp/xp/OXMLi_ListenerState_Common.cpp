@@ -75,8 +75,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "pPr") || 
-			contextMatches(contextTag.c_str(), NS_W_KEY, "body")) {
+		if (contextMatches(contextTag, NS_W_KEY, "pPr") || 
+			contextMatches(contextTag, NS_W_KEY, "body")) {
 			OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
 			rqst->stck->push(dummy);
 
@@ -94,9 +94,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "pStyle")) {
 	//Verify the context...
 	std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-	if (contextMatches(contextTag.c_str(), NS_W_KEY, "p") ||
-		contextMatches(contextTag.c_str(), NS_W_KEY, "pPrDefault") || 
-		contextMatches(contextTag.c_str(), NS_W_KEY, "style")) { 
+	if (contextMatches(contextTag, NS_W_KEY, "p") ||
+		contextMatches(contextTag, NS_W_KEY, "pPrDefault") || 
+		contextMatches(contextTag, NS_W_KEY, "style")) { 
 
 		OXML_SharedElement para = rqst->stck->top();
 
@@ -212,9 +212,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "sz") ) {
 		//Verify the context...
 		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "r") ||
-			contextMatches(contextTag.c_str(), NS_W_KEY, "rPrDefault") || 
-			contextMatches(contextTag.c_str(), NS_W_KEY, "style")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r") ||
+			contextMatches(contextTag, NS_W_KEY, "rPrDefault") || 
+			contextMatches(contextTag, NS_W_KEY, "style")) {
 			OXML_SharedElement run = rqst->stck->top();
 
 			if (nameMatches(rqst->pName, NS_W_KEY, "b")) {
@@ -402,7 +402,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "cols")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "sectPr")) {
+		if (contextMatches(contextTag, NS_W_KEY, "sectPr")) {
 			if (nameMatches(rqst->pName, NS_W_KEY, "type")) {
 				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
@@ -494,7 +494,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
 		//Verify the context...
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "r")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r")) {
 			//This is an actual tab to be inserted
 			OXML_SharedElement tab ( new OXML_Element_Text("\t", 2) );
 			rqst->stck->push(tab);
@@ -557,8 +557,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "pPr") ||
-			contextMatches(contextTag.c_str(), NS_W_KEY, "body")) {
+		if (contextMatches(contextTag, NS_W_KEY, "pPr") ||
+			contextMatches(contextTag, NS_W_KEY, "body")) {
 			OXML_SharedSection sect = OXML_Document::getCurrentSection();
 			UT_return_if_fail(_error_if_fail(sect.get() != NULL));
 			OXML_SharedElement dummy = rqst->stck->top();
@@ -597,12 +597,12 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "headerReference") ||
 				nameMatches(rqst->pName, NS_W_KEY, "cols")) {
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "sectPr")) {
+		if (contextMatches(contextTag, NS_W_KEY, "sectPr")) {
 			rqst->handled = true;
 		}
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "tab")) {
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_W_KEY, "r")) {
+		if (contextMatches(contextTag, NS_W_KEY, "r")) {
 			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck) ) );
 			rqst->handled = true;
 		}

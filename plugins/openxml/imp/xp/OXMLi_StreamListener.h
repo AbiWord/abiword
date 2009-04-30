@@ -62,7 +62,7 @@ public:
 
 private:
 	OXMLi_ElementStack* m_pElemStack;
-	OXMLi_ContextVector m_context;
+	OXMLi_ContextVector* m_context;
 	std::list<OXMLi_ListenerState*> m_states;
 	UT_Error m_parseStatus;
 	OXMLi_Namespace_Common* m_namespaces;

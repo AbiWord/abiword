@@ -47,7 +47,7 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 			nameMatches(rqst->pName, NS_A_KEY, "sysClr") ) {
 
 		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-		if (!contextMatches(contextTag.c_str(), NS_A_KEY, "clrScheme")) return; //we only worry about the color scheme for now.
+		if (!contextMatches(contextTag, NS_A_KEY, "clrScheme")) return; //we only worry about the color scheme for now.
 
 		std::string color = "";
 
@@ -110,29 +110,29 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 
 		contextTag = rqst->context->back();
 
-		if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent1")) {
+		if (contextMatches(contextTag, NS_A_KEY, "accent1")) {
 			m_theme->setColor(ACCENT1, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent2")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "accent2")) {
 			m_theme->setColor(ACCENT2, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent3")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "accent3")) {
 			m_theme->setColor(ACCENT3, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent4")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "accent4")) {
 			m_theme->setColor(ACCENT4, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent5")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "accent5")) {
 			m_theme->setColor(ACCENT5, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "accent6")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "accent6")) {
 			m_theme->setColor(ACCENT6, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "dk1")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "dk1")) {
 			m_theme->setColor(DARK1, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "dk2")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "dk2")) {
 			m_theme->setColor(DARK2, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "lt1")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "lt1")) {
 			m_theme->setColor(LIGHT1, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "lt2")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "lt2")) {
 			m_theme->setColor(LIGHT2, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "hlink")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "hlink")) {
 			m_theme->setColor(HYPERLINK, color);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "folHlink")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "folHlink")) {
 			m_theme->setColor(FOLLOWED_HYPERLINK, color);
 		}
 
@@ -158,9 +158,9 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		//TODO: check for unicode compatibility for typeface name
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_A_KEY, "majorFont")) {
+		if (contextMatches(contextTag, NS_A_KEY, "majorFont")) {
 			m_theme->setMajorFont(script, typeface);
-		} else if (contextMatches(contextTag.c_str(), NS_A_KEY, "minorFont")) {
+		} else if (contextMatches(contextTag, NS_A_KEY, "minorFont")) {
 			m_theme->setMinorFont(script, typeface);
 		}
 
@@ -170,15 +170,15 @@ void OXMLi_ListenerState_Theme::startElement (OXMLi_StartElementRequest * rqst)
 
 void OXMLi_ListenerState_Theme::endElement (OXMLi_EndElementRequest * rqst)
 {
-	if (	!strcmp(rqst->pName, "hslClr") || 
-			!strcmp(rqst->pName, "prstClr") || 
-			!strcmp(rqst->pName, "schemeClr") ||
-			!strcmp(rqst->pName, "scrgbClr") ||
-			!strcmp(rqst->pName, "srgbClr") ||
-			!strcmp(rqst->pName, "sysClr") ) {
+	if (	nameMatches(rqst->pName, NS_A_KEY, "hslClr") || 
+			nameMatches(rqst->pName, NS_A_KEY, "prstClr") || 
+			nameMatches(rqst->pName, NS_A_KEY, "schemeClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "scrgbClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "srgbClr") ||
+			nameMatches(rqst->pName, NS_A_KEY, "sysClr") ) {
 
 		std::string contextTag = rqst->context->at(rqst->context->size() - 2);
-		if (!contextMatches(contextTag.c_str(), NS_A_KEY, "clrScheme")) return;
+		if (!contextMatches(contextTag, NS_A_KEY, "clrScheme")) return;
 		rqst->handled = true;
 	} else if (	nameMatches(rqst->pName, NS_A_KEY, "latin") ||
 				nameMatches(rqst->pName, NS_A_KEY, "ea") ||
@@ -186,7 +186,7 @@ void OXMLi_ListenerState_Theme::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_A_KEY, "font") ) {
 
 		std::string contextTag = rqst->context->back();
-		if (contextMatches(contextTag.c_str(), NS_A_KEY, "majorFont") && contextMatches(contextTag.c_str(), NS_A_KEY, "minorFont"))
+		if (contextMatches(contextTag, NS_A_KEY, "majorFont") && contextMatches(contextTag, NS_A_KEY, "minorFont"))
 			return;
 		rqst->handled = true;
 	}

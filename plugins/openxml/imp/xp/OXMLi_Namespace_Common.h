@@ -57,14 +57,14 @@ public:
 	virtual ~OXMLi_Namespace_Common();
 	void reset(); //should be called when we start parsing a new xml file
 	void addNamespace(const char* ns, char* uri);
-	const char* processName(const char* name);
+	std::string processName(const char* name);
 	const char** processAttributes(const char** attributes);
 
 
 private:
-	UT_GenericStringMap<char*>* nsToURI;
-	UT_GenericStringMap<char*>* URIToKey;
-	UT_GenericStringMap<char*>* attsMap;
+	std::map<std::string, std::string> m_nsToURI;
+	std::map<std::string, std::string> m_uriToKey;
+	UT_GenericStringMap<char*>* m_attsMap;
 
 };
 

@@ -39,6 +39,7 @@
 
 OXMLi_StreamListener::OXMLi_StreamListener() : 
 	m_pElemStack(new OXMLi_ElementStack()), 
+	m_context(new OXMLi_ContextVector()),
 	m_parseStatus(UT_OK),
 	m_namespaces(new OXMLi_Namespace_Common())
 {
@@ -49,6 +50,7 @@ OXMLi_StreamListener::~OXMLi_StreamListener()
 {
 	DELETEP(m_pElemStack);
 	DELETEP(m_namespaces);
+	DELETEP(m_context);
 	clearStates();
 }
 
@@ -118,9 +120,9 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
 	const gchar** atts = m_namespaces->processAttributes(ppAtts);
-	const gchar* name = m_namespaces->processName(pName);
+	std::string name = m_namespaces->processName(pName);
 
-	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, &m_context, false };
+	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, m_context, false };
 
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
@@ -128,18 +130,17 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 		++it;
 	} while ( this->getStatus() == UT_OK && it!=m_states.end() && !rqst.handled );
 
-	m_context.push_back(name);
+	m_context->push_back(name);
 }
 
 void OXMLi_StreamListener::endElement (const gchar* pName)
 {
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
-	m_context.pop_back();
+	m_context->pop_back();
+	std::string name = m_namespaces->processName(pName);
 
-	const gchar* name = m_namespaces->processName(pName);
-
-	OXMLi_EndElementRequest rqst = { name, m_pElemStack, &m_context, false };
+	OXMLi_EndElementRequest rqst = { name, m_pElemStack, m_context, false };
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->endElement(&rqst);
@@ -151,7 +152,7 @@ void OXMLi_StreamListener::charData (const gchar* pBuffer, int length)
 {
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
-	OXMLi_CharDataRequest rqst = { pBuffer, length, m_pElemStack, &m_context, false };
+	OXMLi_CharDataRequest rqst = { pBuffer, length, m_pElemStack, m_context, false };
 	std::list<OXMLi_ListenerState*>::iterator it=m_states.begin();
 	do {
 		(*it)->charData(&rqst);
