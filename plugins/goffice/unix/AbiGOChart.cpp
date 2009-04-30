@@ -162,11 +162,11 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 	{
 		// try to get values, but on error, get strings
 		data = go_data_vector_val_new (NULL, 0, NULL);
-		if (go_data_from_str (data, str))
+		if (go_data_unserialize (data, str, NULL))
 			break;
 		g_object_unref (data);
 		data = go_data_vector_str_new (NULL, 0, NULL);
-		if (go_data_from_str (data, str))
+		if (go_data_unserialize (data, str, NULL))
 			break;
 		g_object_unref (data);
 		data = NULL;
@@ -174,7 +174,7 @@ cb_graph_dim_editor_update (GtkEntry *gee,
 		break;
 	case GOG_DATA_MATRIX:
 		data = go_data_matrix_val_new (NULL, 0, 0, NULL);
-		if (go_data_from_str (data, str))
+		if (go_data_unserialize (data, str, NULL))
 			break;
 		g_object_unref (data);
 		data = NULL;
@@ -235,7 +235,7 @@ abi_data_allocator_editor (G_GNUC_UNUSED GogDataAllocator *dalloc,
 
 	val = gog_dataset_get_dim (dataset, dim_i);
 	if (val != NULL) {
-		char *txt = go_data_as_str (val);
+		char *txt = go_data_serialize (val, NULL);
 		gtk_entry_set_text (editor->entry, txt);
 		g_free (txt);
 	}
@@ -315,7 +315,7 @@ cb_update_graph (GogGraph *graph, gpointer data)
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
 	GsfOutput* output = gsf_output_memory_new ();
 	GsfXMLOut* xml = gsf_xml_out_new (output);
-	gog_object_write_xml_sax(GOG_OBJECT (graph), xml);
+	gog_object_write_xml_sax(GOG_OBJECT (graph), xml, NULL);
 	UT_Byte const *bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (output));
 	UT_ByteBuf myByteBuf;
 	myByteBuf.append(bytes, gsf_output_size (output));
@@ -754,7 +754,7 @@ void GOChartView::loadBuffer(UT_UTF8String & sGOChartXML)
 	AbiGO_LocaleTransactor tn(LC_NUMERIC, "C");
 	AbiGO_LocaleTransactor tm(LC_MONETARY, "C");
 	xmlDocPtr xml = xmlParseMemory((const char*)sGOChartXML.utf8_str(), sGOChartXML.byteLength());
-	m_Graph = GOG_GRAPH (gog_object_new_from_xml (NULL, xml->children));
+	m_Graph = GOG_GRAPH (gog_object_new_from_xml (NULL, xml->children, NULL));
 	xmlFreeDoc(xml);
 	if (m_Graph)
 		g_object_set (G_OBJECT (m_Renderer), "model", m_Graph, NULL);
