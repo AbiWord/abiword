@@ -26,21 +26,21 @@
 // Internal includes
 #include <OXMLi_Types.h>
 
-OXMLi_Namespace_Common::OXMLi_Namespace_Common() :
-	m_attsMap(new UT_GenericStringMap<char*>())
+OXMLi_Namespace_Common::OXMLi_Namespace_Common()
 {
 	reset();
 }
 
 OXMLi_Namespace_Common::~OXMLi_Namespace_Common()
 {
-	DELETEP(m_attsMap);
+
 }
 
 void OXMLi_Namespace_Common::reset()
 {
 	m_nsToURI.clear();
 	m_uriToKey.clear();
+	m_attsMap.clear();
 
 	//add known URIs here
 	m_nsToURI.insert(std::make_pair(NS_R_KEY, NS_R_URI));
@@ -106,11 +106,10 @@ std::string OXMLi_Namespace_Common::processName(const char* name)
 	return name_str;
 }
 
-const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
+std::map<std::string, std::string>* OXMLi_Namespace_Common::processAttributes(const char** atts)
 {
 	const char ** pp = atts;  
-	m_attsMap->clear();
-	const gchar** attsList = atts;
+	m_attsMap.clear();
 
 	while (*pp)
 	{
@@ -146,14 +145,12 @@ const char** OXMLi_Namespace_Common::processAttributes(const char** atts)
 				std::string pName = iter->second;		
 				pName += ":";
 				pName += tag_name;
-				const char* ppName = g_strdup(pName.c_str());
-				char* ppVal = g_strdup(pp[1]);
-				m_attsMap->insert(ppName, ppVal);
+				std::string pVal(pp[1]);
+				m_attsMap.insert(std::make_pair(pName, pVal));
 			}
 		}
 		pp += 2;
 	}
 
-	attsList = m_attsMap->list();
-	return attsList;
+	return &m_attsMap;
 }

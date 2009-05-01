@@ -37,12 +37,12 @@ OXMLi_ListenerState::~OXMLi_ListenerState()
 {
 }
 
-bool OXMLi_ListenerState::contextMatches(std::string name, const char* ns, const char* tag)
+bool OXMLi_ListenerState::contextMatches(const std::string & name, const char* ns, const char* tag)
 {
 	return nameMatches(name, ns, tag);
 }
 
-bool OXMLi_ListenerState::nameMatches(std::string name, const char* ns, const char* tag)
+bool OXMLi_ListenerState::nameMatches(const std::string & name, const char* ns, const char* tag)
 {
 	std::string str(ns);
 	str += ":";
@@ -51,27 +51,20 @@ bool OXMLi_ListenerState::nameMatches(std::string name, const char* ns, const ch
 	return str.compare(name) == 0;
 }
 
-const gchar* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr, const gchar** atts)
+const char* OXMLi_ListenerState::attrMatches(const char* ns, const gchar* attr, std::map<std::string, std::string>* atts)
 {
-	UT_return_val_if_fail( ns && attr && atts, NULL );
+	UT_return_val_if_fail( ns && attr, NULL );
 
 	std::string str(ns);
 	str += ":";
 	str += attr;
 
-	const gchar** p = atts;
+	std::map<std::string, std::string>::iterator iter = atts->find(str);
 
-	while (*p)
-	{
-		if (str.compare(p[0]) == 0)
-			break;
-		p += 2;
-	}
-
-	if (*p)
-		return p[1];
-	else
+	if(iter == atts->end())
 		return NULL;
+	else
+		return (iter->second).c_str();
 }
 
 bool OXMLi_ListenerState::_error_if_fail(bool val)

@@ -58,13 +58,13 @@ public:
 	void reset(); //should be called when we start parsing a new xml file
 	void addNamespace(const char* ns, char* uri);
 	std::string processName(const char* name);
-	const char** processAttributes(const char** attributes);
+	std::map<std::string, std::string>* processAttributes(const char** attributes);
 
 
 private:
 	std::map<std::string, std::string> m_nsToURI;
 	std::map<std::string, std::string> m_uriToKey;
-	UT_GenericStringMap<char*>* m_attsMap;
+	std::map<std::string, std::string> m_attsMap;
 
 };
 
