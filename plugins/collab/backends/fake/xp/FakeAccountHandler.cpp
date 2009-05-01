@@ -290,8 +290,8 @@ bool FakeAccountHandler::_createSession()
 	if (m_bLocallyControlled)
 	{
 		UT_DEBUGMSG(("Starting a locally controlled collaboration session: %s\n", sSessionId.utf8_str()));
-		// FIXME: we need to set the proper collab id
-		m_pSession = pManager->startSession(m_pDoc, sSessionId, NULL);
+		// FIXME: we need to set the proper collab id and master descriptor
+		m_pSession = pManager->startSession(m_pDoc, sSessionId, NULL, "fake://master");
 	}
 	else
 	{

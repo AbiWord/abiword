@@ -598,7 +598,9 @@ bool s_abicollab_offer(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	else
 	{
 		UT_UTF8String sSessionId("");
-		pManager->startSession(pDoc, sSessionId, NULL);
+		// TODO: we could use/generate a proper descriptor when there is only
+		// 1 account where we share this document over
+		pManager->startSession(pDoc, sSessionId, NULL, "");
 	}
 	return true;
 }

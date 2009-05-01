@@ -98,7 +98,7 @@ public:
 	virtual void							getSessionsAsync(const Buddy& buddy);
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
-	acs::SOAP_ERROR							openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
+	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
 	UT_Error								saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId);
 	void                                                            removeExporter(void); 
 	
@@ -109,6 +109,9 @@ public:
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);
 
+	// misc functions
+	static bool								parseUserInfo(const std::string& userinfo, uint64_t& user_id);
+	
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
@@ -135,7 +138,7 @@ private:
 													bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr);
 	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr);
 	
-	acs::SOAP_ERROR							_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
+	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& session_id, const std::string& filename);
 	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& filename);

@@ -377,12 +377,12 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 	
 	UT_DEBUGMSG(("Joining document %s\n", docHandle.getSessionId().utf8_str()));
 	
-	UT_sint64 doc_id;
+	UT_uint64 doc_id;
 	try {
-		doc_id = boost::lexical_cast<int64_t>(docHandle.getSessionId().utf8_str());
+		doc_id = boost::lexical_cast<uint64_t>(docHandle.getSessionId().utf8_str());
 	} catch (boost::bad_lexical_cast &) {
 		// TODO: report error
-		UT_DEBUGMSG(("Error casting doc_id (%s) to an UT_sint64\n", docHandle.getSessionId().utf8_str()));
+		UT_DEBUGMSG(("Error casting doc_id (%s) to an UT_uint64\n", docHandle.getSessionId().utf8_str()));
 		return;
 	}
 	UT_return_if_fail(doc_id != 0);
@@ -420,7 +420,7 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 	}
 }
 
-acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
+acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %lld\n", doc_id));
 	
@@ -431,7 +431,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 
 	// construct a SOAP method call to gets our documents
 	soa::function_call fc("openDocument", "openDocumentResponse");
-	fc("email", email)("password", password)("doc_id", doc_id)("revision", static_cast<int64_t>(revision));
+	fc("email", email)("password", password)("doc_id", static_cast<int64_t>(doc_id))("revision", static_cast<int64_t>(revision));
 
 	// execute the call
 	boost::shared_ptr<ProgressiveSoapCall> call(new ProgressiveSoapCall(uri, fc, verify_webapp_host?m_ssl_ca_file:""));
@@ -493,7 +493,7 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_sint64 doc_id, UT_sint64 
 	
 	// load the document
 	acs::SOAP_ERROR open_result = master->value()
-				? _openDocumentMaster(rcp, pDoc, pFrame, session_id, filename)
+				? _openDocumentMaster(connection, rcp, pDoc, pFrame, session_id, filename)
 				: _openDocumentSlave(connection, pDoc, pFrame, filename);
 
 	if (open_result != acs::SOAP_ERROR_OK)
@@ -522,7 +522,7 @@ ServiceBuddyPtr ServiceAccountHandler::_getBuddy(ServiceBuddyPtr pBuddy)
 	return ServiceBuddyPtr();
 }
 
-acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
+acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 																 	const std::string& session_id, const std::string& filename)
 {
 	UT_return_val_if_fail(rcp || pDoc, acs::SOAP_ERROR_GENERIC);
@@ -548,7 +548,9 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentMaster(soa::CollectionPtr rc
 	
 	// start the session
 	UT_UTF8String sSessionId = session_id.c_str();
-	pManager->startSession(*pDoc, sSessionId, pFrame);
+	RealmBuddyPtr buddy(
+				new RealmBuddy(this, connection->user_id(), _getDomain(), connection->connection_id(), connection->master(), connection));
+	pManager->startSession(*pDoc, sSessionId, pFrame, buddy->getDescriptor());
 	
 	return acs::SOAP_ERROR_OK;
 }
@@ -625,7 +627,7 @@ UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8Str
 			soa::function_call fc("saveDocument", "saveDocumentResponse");
 			fc("email", email)
 				("password", password)
-				("doc_id", connection_ptr->doc_id())
+				("doc_id", static_cast<int64_t>(connection_ptr->doc_id()))
 				(soa::Base64Bin("data", document));
 
 			// execute the call and ignore the result (the revision number stored)
@@ -692,6 +694,36 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 			// TODO: implement me
 			break;
 	}
+}
+
+bool ServiceAccountHandler::parseUserInfo(const std::string& userinfo, uint64_t& user_id)
+{
+	xmlDocPtr doc = xmlReadMemory(&userinfo[0], userinfo.size(), "noname.xml", NULL, 0);
+	UT_return_val_if_fail(doc, false);
+		
+	xmlNode* rootNode = xmlDocGetRootElement(doc);
+	if (!rootNode || strcasecmp(reinterpret_cast<const char*>(rootNode->name), "user") != 0) {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	xmlChar* id = xmlGetProp(rootNode, reinterpret_cast<const xmlChar*>("id"));
+	std::string id_str = reinterpret_cast<char *>(id); 
+	FREEP(id);
+
+	try
+	{
+		user_id = boost::lexical_cast<uint64_t>(id_str);
+	}
+	catch (boost::bad_lexical_cast&)
+	{
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	xmlFreeDoc(doc);
+	return true;
 }
 
 // NOTE: _listDocuments can be called from a thread other than our mainloop;
@@ -1017,7 +1049,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 					UT_DEBUGMSG(("User information:\n%s\n", ujp->getUserInfo()->c_str()));
 
 					uint64_t user_id;
-					UT_return_if_fail(_parseUserInfo(*ujp->getUserInfo(), user_id));
+					UT_return_if_fail(ServiceAccountHandler::parseUserInfo(*ujp->getUserInfo(), user_id));
 					UT_DEBUGMSG(("Adding buddy, uid: %lld, cid: %d\n", user_id, ujp->getConnectionId()));
 					RealmBuddyPtr buddy(
 								new RealmBuddy(this, user_id, _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), ujp->isMaster(), connection));
@@ -1133,34 +1165,4 @@ std::string ServiceAccountHandler::_getDomain()
 	std::string domain = uri.substr(https.size(), slash_pos-https.size());
 	UT_return_val_if_fail(domain.size() > 0, "");
 	return domain;
-}
-
-bool ServiceAccountHandler::_parseUserInfo(const std::string& userinfo, uint64_t& user_id)
-{
-	xmlDocPtr doc = xmlReadMemory(&userinfo[0], userinfo.size(), "noname.xml", NULL, 0);
-	UT_return_val_if_fail(doc, false);
-		
-	xmlNode* rootNode = xmlDocGetRootElement(doc);
-	if (!rootNode || strcasecmp(reinterpret_cast<const char*>(rootNode->name), "user") != 0) {
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		xmlFreeDoc(doc);
-		return false;
-	}
-
-	xmlChar* id = xmlGetProp(rootNode, reinterpret_cast<const xmlChar*>("id"));
-	std::string id_str = reinterpret_cast<char *>(id); 
-	FREEP(id);
-
-	try
-	{
-		user_id = boost::lexical_cast<uint64_t>(id_str);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-		xmlFreeDoc(doc);
-		return false;
-	}
-
-	xmlFreeDoc(doc);
-	return true;
 }

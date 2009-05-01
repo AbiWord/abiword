@@ -87,7 +87,8 @@ public:
 	AbiCollab*									getSessionFromSessionId(const UT_UTF8String& sSessionId);
 	const UT_GenericVector<AbiCollab *>&		getSessions(void) const
 		{ return m_vecSessions;}
-	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, XAP_Frame* pFrame);
+	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId,
+														XAP_Frame* pFrame,  const UT_UTF8String& masterDescriptor);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
 	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);

@@ -21,12 +21,13 @@
 #include <boost/lexical_cast.hpp>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ServiceAccountHandler.h"
 #include "RealmConnection.h"
 
 namespace rpv1 = realm::protocolv1;
 
 RealmConnection::RealmConnection(const std::string& ca_file, const std::string& address, int port, 
-								 const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
+								 const std::string& cookie, UT_uint64 doc_id, bool master, const std::string& session_id,
 								 boost::function<void (boost::shared_ptr<RealmConnection>)> sig)
 	: m_io_service(),
 	m_ca_file(ca_file),
@@ -35,6 +36,8 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 	m_socket(m_io_service),
 	m_thread_ptr(),
 	m_cookie(cookie),
+	m_user_id(0),
+	m_connection_id(0),
 	m_doc_id(doc_id),
 	m_master(master),
 	m_session_id(session_id),
@@ -207,7 +210,7 @@ bool RealmConnection::_login()
 	std::string& header = *header_ptr;
 	
 	UT_uint32 proto_magic = 0x000A0B01;
-	UT_uint32 proto_version = 0x01;
+	UT_uint32 proto_version = 0x02;
 	// FIXME: not Big Endian safe!!
 	memcpy(&header[0], &proto_magic, sizeof(UT_uint32));
 	memcpy(&header[sizeof(UT_uint32)], &proto_version, sizeof(UT_uint32));
@@ -253,8 +256,46 @@ bool RealmConnection::_login()
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
 	}	
-	
+
+	// read the user joined packet that contains our own user information,
+	// as per protocol version 2
+	UserJoinedPacketPtr ujpp = _receiveUserJoinedPacket();
+	UT_return_val_if_fail(ujpp, false);
+
+	UT_return_val_if_fail(ServiceAccountHandler::parseUserInfo(*ujpp->getUserInfo(), m_user_id), false);
+	m_connection_id = ujpp->getConnectionId();
+
 	return true;
+}
+
+UserJoinedPacketPtr RealmConnection::_receiveUserJoinedPacket()
+{
+	// receive the packet type
+	std::string msg(1, '\0');
+	asio::read(m_socket, asio::buffer(&msg[0], msg.size()));
+	rpv1::packet_type packet_type = static_cast<rpv1::packet_type>(msg[0]);
+	if (packet_type != rpv1::PACKET_USERJOINED)
+		return UserJoinedPacketPtr();
+	
+	try {
+		// receive the packet data
+		uint32_t payload_size = 0;
+		uint8_t connection_id = 0;
+		uint8_t master = 0;
+
+		boost::array<asio::mutable_buffer, 3> buf = {{
+			asio::buffer(&payload_size, sizeof(payload_size)),
+			asio::buffer(&connection_id, sizeof(connection_id)),
+			asio::buffer(&master, sizeof(master)) }};
+		asio::read(m_socket, buf);
+
+		boost::shared_ptr<std::string> userinfo_ptr(new std::string(payload_size - 2, '\0'));
+		asio::read(m_socket, asio::buffer(&(*userinfo_ptr)[0], userinfo_ptr->size()));
+
+		return UserJoinedPacketPtr(new rpv1::UserJoinedPacket(connection_id, static_cast<bool>(master), userinfo_ptr));
+	} catch (asio::system_error se) {
+		return UserJoinedPacketPtr(); 
+	}
 }
 
 void RealmConnection::_receive()

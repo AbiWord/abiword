@@ -48,11 +48,14 @@ struct PendingDocumentProperties
 	std::string filename;
 };
 
+class UserJoinedPacket;
+typedef boost::shared_ptr<realm::protocolv1::UserJoinedPacket> UserJoinedPacketPtr;
+
 class RealmConnection : public boost::enable_shared_from_this<RealmConnection>
 {
 public:
 	RealmConnection(const std::string& ca_file, const std::string& address, int port, 
-					const std::string& cookie, UT_sint64 doc_id, bool master, const std::string& session_id,
+					const std::string& cookie, UT_uint64 doc_id, bool master, const std::string& session_id,
 					boost::function<void (boost::shared_ptr<RealmConnection>)> sig);
 	
 	bool								connect();
@@ -64,8 +67,12 @@ public:
 	RealmBuddyPtr						getBuddy(UT_uint8 realm_connection_id);
 	std::vector<RealmBuddyPtr>&			getBuddies()
 		{ return m_buddies; }
-	
-	UT_sint64							doc_id()
+
+	UT_uint64							user_id()
+		{ return m_user_id; }
+	UT_uint8							connection_id()
+		{ return m_connection_id; }
+	UT_uint64							doc_id()
 		{ return m_doc_id; }	
 	bool								master()
 		{ return m_master; }
@@ -94,6 +101,7 @@ private:
 	void								_disconnect();
 	void								_signal();
 	bool								_login();
+	UserJoinedPacketPtr					_receiveUserJoinedPacket();
 	void								_receive();
 	void								_message(const asio::error_code& e,
 												std::size_t bytes_transferred,
@@ -110,7 +118,9 @@ private:
 	asio::ip::tcp::socket				m_socket;
 	boost::shared_ptr<asio::thread>		m_thread_ptr;
 	std::string							m_cookie;
-	UT_sint64							m_doc_id;
+	UT_uint64							m_user_id; // only valid after login
+	UT_uint8							m_connection_id; // only valid after login
+	UT_uint64							m_doc_id;
 	bool								m_master;
 	std::string							m_session_id;
 	realm::GrowBuffer					m_buf;

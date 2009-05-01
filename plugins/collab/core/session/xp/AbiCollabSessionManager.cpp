@@ -621,9 +621,11 @@ AbiCollab* AbiCollabSessionManager::getSessionFromSessionId(const UT_UTF8String&
 	return NULL;
 }
 
-AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, XAP_Frame* pFrame)
+AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8String& sSessionId, 
+			XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor)
 {
-	UT_DEBUGMSG(("Starting collaboration session for document with id %s\n", pDoc->getDocUUIDString()));
+	UT_DEBUGMSG(("Starting collaboration session for document with id %s, master descriptor: %s\n",
+			pDoc->getDocUUIDString(), masterDescriptor.utf8_str()));
 	
 	if (sSessionId == "")
 	{
@@ -632,6 +634,69 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 		pUUID->toString(sSessionId);
 	}
 
+	if (masterDescriptor != "")
+	{
+		// search for a buddy descriptor in the authors list that matches this 
+		// descriptor, and make that the active author; if such an author does
+		// not exist, then search for an author with no abicollab property set 
+		// at all, and give it this buddy descriptor (ie, we assume that it is 
+		// "us", even though it might not always be a valid assumption).
+
+		int iAuthorId = -1;
+		UT_GenericVector<pp_Author*> authors = pDoc->getAuthors();
+		pp_Author* pEmptyAuthor = NULL;
+		UT_DEBUGMSG(("Scanning %d authors to see if we recognize this master buddy\n", authors.getItemCount()));
+		for (UT_sint32 i = 0; i < authors.getItemCount(); i++)
+		{
+			pp_Author* pAuthor = authors.getNthItem(i);
+			UT_continue_if_fail(pAuthor);
+
+			const gchar* szDescriptor = NULL;
+			pAuthor->getProperty("abicollab-descriptor", szDescriptor);
+			if (!szDescriptor)
+			{
+				if (!pEmptyAuthor && !pAuthor->getAttrProp()->hasProperties())
+					pEmptyAuthor = pAuthor;
+				continue;
+			}
+
+			if (masterDescriptor != szDescriptor)
+				continue;
+
+			// yay, we already editted this document ourselves!
+			iAuthorId = pAuthor->getAuthorInt();
+			pDoc->setMyAuthorInt(iAuthorId);
+			UT_DEBUGMSG(("Found our own author object with descriptior %s, id %d!\n", masterDescriptor.utf8_str(), iAuthorId));
+			break;
+		}
+
+		if (iAuthorId == -1)
+		{
+			if (pEmptyAuthor)
+			{
+				// reuse this author object and make it our own
+				iAuthorId = pEmptyAuthor->getAuthorInt();
+				PP_AttrProp * pPA = pEmptyAuthor->getAttrProp();
+				pPA->setProperty("abicollab-descriptor", masterDescriptor.utf8_str());
+				pDoc->setMyAuthorInt(iAuthorId);
+				pDoc->sendChangeAuthorCR(pEmptyAuthor);
+				UT_DEBUGMSG(("Reusing empty author object with id %d, setting descriptor to %s!\n", iAuthorId, masterDescriptor.utf8_str()));
+			}
+			else
+			{
+				UT_DEBUGMSG(("No suitable author found in the document for descriptor %s\n", masterDescriptor.utf8_str()));
+				
+				iAuthorId = pDoc->findFirstFreeAuthorInt();
+				pp_Author * pA = pDoc->addAuthor(iAuthorId);
+				pDoc->setMyAuthorInt(iAuthorId);
+				PP_AttrProp * pPA = pA->getAttrProp();
+				pPA->setProperty("abicollab-descriptor", masterDescriptor.utf8_str());
+				pDoc->sendAddAuthorCR(pEmptyAuthor);
+				UT_DEBUGMSG(("Added a new author to the documument with descriptor %s, id %d\n", masterDescriptor.utf8_str(), iAuthorId));
+			}
+		}
+	}
+	
 	UT_DEBUGMSG(("Creating a new collaboration session with UUID: %s\n", sSessionId.utf8_str()));
 
 	UT_return_val_if_fail(_setupFrame(&pFrame, pDoc), NULL);
