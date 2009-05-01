@@ -50,6 +50,7 @@
 #include "px_CR_Strux.h"
 #include "xap_EncodingManager.h"
 #include "fd_Field.h"
+#include "fl_DocLayout.h"
 #include "ie_exp.h"
 #include "gr_Graphics.h"
 #include "ie_Table.h"
@@ -348,8 +349,8 @@ void IE_Exp_S5::_writeSlide(FV_View* view, UT_uint32 pageno)
 	pExpHtml.copyToBuffer (&range, &bufXHTML);
 
 	// HACK to grab the body, so as to not need changes to the HTML exporter
-	char *body = strstr((const char *)bufXHTML.getPointer(0), "<body>");
-	char *end_body = strstr((const char *)bufXHTML.getPointer(0), "</body>");
+	const char *body = strstr((const char *)bufXHTML.getPointer(0), "<body>");
+	const char *end_body = strstr((const char *)bufXHTML.getPointer(0), "</body>");
 
 	if (body && end_body)
 		write(body + strlen("<body>"), end_body - (body + strlen("<body>")));
