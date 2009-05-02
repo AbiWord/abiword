@@ -134,6 +134,7 @@ bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 			// make the document clean (even if it isn't _yet_)
 			pDoc->setClean();
 			pDoc->signalListeners(PD_SIGNAL_DOCNAME_CHANGED);
+			return true;
 		}
 	}
 	return false;
