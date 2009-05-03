@@ -349,6 +349,7 @@ pp_Author *  PD_Document::addAuthor(UT_sint32 iAuthor)
 
 bool PD_Document::sendAddAuthorCR(pp_Author * pAuthor)
 {
+	UT_return_val_if_fail(pAuthor, false);
 	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"addauthor",NULL};
 	const gchar ** szProps = NULL;
 	_buildAuthorProps(pAuthor, szProps);

@@ -691,7 +691,7 @@ AbiCollab* AbiCollabSessionManager::startSession(PD_Document* pDoc, UT_UTF8Strin
 				pDoc->setMyAuthorInt(iAuthorId);
 				PP_AttrProp * pPA = pA->getAttrProp();
 				pPA->setProperty("abicollab-descriptor", masterDescriptor.utf8_str());
-				pDoc->sendAddAuthorCR(pEmptyAuthor);
+				pDoc->sendAddAuthorCR(pA);
 				UT_DEBUGMSG(("Added a new author to the documument with descriptor %s, id %d\n", masterDescriptor.utf8_str(), iAuthorId));
 			}
 		}
