@@ -32,6 +32,7 @@
 #include <OXMLi_ListenerState_HdrFtr.h>
 #include <OXMLi_ListenerState_Theme.h>
 #include <OXMLi_ListenerState_DocSettings.h>
+#include <OXMLi_ListenerState_Numbering.h>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -84,6 +85,10 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 		state = new OXMLi_ListenerState_HdrFtr(partId);
 		this->pushState(state);
 		state = new OXMLi_ListenerState_Common();
+		this->pushState(state);
+		break;
+	case NUMBERING_PART:
+		state = new OXMLi_ListenerState_Numbering();
 		this->pushState(state);
 		break;
 	default:

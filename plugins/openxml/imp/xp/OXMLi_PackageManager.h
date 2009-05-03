@@ -83,6 +83,11 @@ public:
 	*/
 	UT_Error parseDocumentSettings();
 
+	//! Parses the numbering associated with the Main Document part of the package.
+	/*! The parser automatically adds the information to the OXML_Document singleton.
+	*/
+	UT_Error parseDocumentNumbering();
+
 private:
 	OXMLi_PackageManager();
 	virtual ~OXMLi_PackageManager();

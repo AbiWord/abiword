@@ -25,6 +25,8 @@ libxp_la_SOURCES = \
 	OXMLi_ListenerState_Styles.h \
 	OXMLi_ListenerState_Theme.cpp \
 	OXMLi_ListenerState_Theme.h \
+	OXMLi_ListenerState_Numbering.cpp \
+	OXMLi_ListenerState_Numbering.h \
 	OXMLi_PackageManager.cpp \
 	OXMLi_PackageManager.h \
 	OXMLi_StreamListener.cpp \

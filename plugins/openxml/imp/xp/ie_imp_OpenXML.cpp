@@ -101,6 +101,11 @@ UT_Error IE_Imp_OpenXML::_loadFile (GsfInput * oo_src)
 		UT_DEBUGMSG(("OpenXML import: failed to parse the document styles\n"));
 	}
 
+	if (UT_OK != (ret = mgr->parseDocumentNumbering()))
+	{
+		UT_DEBUGMSG(("OpenXML import: failed to parse the document numbering\n"));
+	}
+
 	if (UT_OK != (ret = mgr->parseDocumentStream()))
 	{
 		_cleanup();
