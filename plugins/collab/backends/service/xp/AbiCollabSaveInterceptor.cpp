@@ -109,23 +109,25 @@ bool AbiCollabSaveInterceptor::saveRemotely(PD_Document * pDoc)
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	AbiCollab* pSession = pManager->getSession(pDoc);
 	// the session id should be unique on a specific account handler; let's 
-	// just look it up amonst all our account handlers (not too efficient or
+	// just look it up amongst all our account handlers (not too efficient or
 	// elegant, but it works)
 	for (UT_uint32 i = 0; i < pManager->getAccounts().size(); i++)
 	{
 		AccountHandler* pHandler = pManager->getAccounts()[i];
 		UT_continue_if_fail(pHandler);
-		if (pHandler->hasSession(pSession->getSessionId()) &&
-			pHandler->getStorageType() == SERVICE_ACCOUNT_HANDLER_TYPE)
+		if (pHandler->getStorageType() == SERVICE_ACCOUNT_HANDLER_TYPE)
 		{
 			ServiceAccountHandler* pServiceHandler = static_cast<ServiceAccountHandler*>(pHandler);
-			UT_DEBUGMSG(("Found the abicollab webservice account handler that controls this session!\n"));
+			ConnectionPtr connection_ptr = pServiceHandler->getConnection(pDoc);
+			if (!connection_ptr)
+				continue; // apparently we need another abicollab account
+			UT_DEBUGMSG(("Found the abicollab webservice account handler (%s) that controls this session!\n", pServiceHandler->getDescription().utf8_str()));
 
 			pManager->beginAsyncOperation(pSession);
 			// FIXME: guarantee save order!
 			boost::shared_ptr<AsyncWorker<UT_Error> > async_save_ptr(
 						new AsyncWorker<UT_Error>(
-							boost::bind(&ServiceAccountHandler::saveDocument, pServiceHandler, pDoc, pSession->getSessionId()),
+							boost::bind(&ServiceAccountHandler::saveDocument, pServiceHandler, pDoc, connection_ptr),
 							boost::bind(&AbiCollabSaveInterceptor::_save_cb, this, _1, pSession)
 						)
 					);

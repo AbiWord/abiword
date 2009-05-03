@@ -79,6 +79,10 @@ public:
 	void								promote();
 	const std::string&					session_id()
 		{ return m_session_id; }
+	PD_Document*						getDocument()
+		{ return m_pDoc; }
+	void								setDocument(PD_Document* pDoc)
+		{ m_pDoc = pDoc; }
 	SynchronizedQueue<PacketPtr>&		queue()
 		{ return m_packet_queue; }
 	asio::ip::tcp::socket&				socket()
@@ -123,6 +127,7 @@ private:
 	UT_uint64							m_doc_id;
 	bool								m_master;
 	std::string							m_session_id;
+	PD_Document*						m_pDoc;
 	realm::GrowBuffer					m_buf;
 	SynchronizedQueue<PacketPtr>		m_packet_queue;
 	boost::function<void (boost::shared_ptr<RealmConnection>)> m_sig;

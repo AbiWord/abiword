@@ -196,6 +196,18 @@ bool ServiceAccountHandler::isOnline()
 	return m_bOnline;
 }
 
+ConnectionPtr ServiceAccountHandler::getConnection(PD_Document* pDoc)
+{
+	UT_return_val_if_fail(pDoc, ConnectionPtr());
+	for (std::vector<ConnectionPtr>::iterator it = m_connections.begin(); it != m_connections.end(); it++)
+	{
+		UT_continue_if_fail(*it);
+		if ((*it)->getDocument() == pDoc)
+			return *it;
+	}
+	return ConnectionPtr();
+}
+
 BuddyPtr ServiceAccountHandler::constructBuddy(const PropertyMap& /*props*/)
 {
 	UT_DEBUGMSG(("ServiceAccountHandler::constructBuddy() - TODO: implement me\n"));
@@ -505,7 +517,9 @@ acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 
 	}
 	
 	UT_DEBUGMSG(("Document loaded successfully\n"));
+	connection->setDocument(*pDoc);
 	m_connections.push_back(connection);
+
 	return acs::SOAP_ERROR_OK;
 }
 
@@ -595,57 +609,44 @@ acs::SOAP_ERROR ServiceAccountHandler::_openDocumentSlave(ConnectionPtr connecti
 	return acs::SOAP_ERROR_OK;
 }
 
-// FIXME: this function can be called from another thread; 
-// don't allow it to access data from the main thread
 // NOTE: saveDocument can be called from a thread other than our mainloop;
 // Don't let access or modify any data from the mainloop!
-// FIXME FIXME FIXME: we should NOT touch m_connections!!!!
-UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId)
+// FIXME FIXME FIXME: we should NOT call getProperty and serializeDocument!!!
+UT_Error ServiceAccountHandler::saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr)
 {
-	UT_DEBUGMSG(("Saving document with session id %s to webservice!\n", sSessionId.utf8_str()));
 	UT_return_val_if_fail(pDoc, UT_ERROR);
+	UT_return_val_if_fail(connection_ptr, UT_ERROR);		
+	UT_DEBUGMSG(("Saving document with id %lld, session id %s to webservice!\n",
+	             connection_ptr->doc_id(), connection_ptr->session_id().c_str()));
 	
-	// find the realm connection beloning to this session to fetch the document id
-	for (std::vector<boost::shared_ptr<RealmConnection> >::iterator it = m_connections.begin(); it != m_connections.end(); it++)
-	{
-		boost::shared_ptr<RealmConnection> connection_ptr = *it;
-		UT_continue_if_fail(connection_ptr);
-		if (connection_ptr->session_id() == sSessionId.utf8_str())
-		{
-			UT_DEBUGMSG(("Saving document id %lld\n", connection_ptr->doc_id()));
-			
-			const std::string uri = getProperty("uri");
-			const std::string email = getProperty("email");
-			const std::string password = getProperty("password");
-			bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
+	const std::string uri = getProperty("uri");
+	const std::string email = getProperty("email");
+	const std::string password = getProperty("password");
+	bool verify_webapp_host = (getProperty("verify-webapp-host") == "true");
 
-			boost::shared_ptr<std::string> document(new std::string(""));
-			if (AbiCollabSessionManager::serializeDocument(pDoc, *document, true) != UT_OK)
-				return UT_ERROR;
-			
-			// construct a SOAP method call to gets our documents
-			soa::function_call fc("saveDocument", "saveDocumentResponse");
-			fc("email", email)
-				("password", password)
-				("doc_id", static_cast<int64_t>(connection_ptr->doc_id()))
-				(soa::Base64Bin("data", document));
+	boost::shared_ptr<std::string> document(new std::string(""));
+	UT_return_val_if_fail(AbiCollabSessionManager::serializeDocument(pDoc, *document, true) == UT_OK, UT_ERROR);
+	
+	// construct a SOAP method call to gets our documents
+	soa::function_call fc("saveDocument", "saveDocumentResponse");
+	fc("email", email)
+		("password", password)
+		("doc_id", static_cast<int64_t>(connection_ptr->doc_id()))
+		(soa::Base64Bin("data", document));
 
-			// execute the call and ignore the result (the revision number stored)
-			try {
-				soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), verify_webapp_host?m_ssl_ca_file:"");
-				UT_return_val_if_fail(soap_result, UT_ERROR);
-			} catch (soa::SoapFault& fault) {
-				UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
-						 fault.detail() ? fault.detail()->value().c_str() : "(null)",
-						 fault.string() ? fault.string()->value().c_str() : "(null)"));
-				return UT_ERROR;
-			}
-
-			return UT_OK;
-		}
+	// execute the call and ignore the result (the revision number stored)
+	try {
+		soa::GenericPtr soap_result = soup_soa::invoke(uri, soa::method_invocation("urn:AbiCollabSOAP", fc), verify_webapp_host?m_ssl_ca_file:"");
+		UT_return_val_if_fail(soap_result, UT_ERROR);
+	} catch (soa::SoapFault& fault) {
+		UT_DEBUGMSG(("Caught a soap fault: %s (error code: %s)!\n", 
+				 fault.detail() ? fault.detail()->value().c_str() : "(null)",
+				 fault.string() ? fault.string()->value().c_str() : "(null)"));
+		return UT_ERROR;
 	}
 
-	return UT_ERROR;
+	UT_DEBUGMSG(("Document uploaded successfully\n"));
+	return UT_OK;
 }
 
 void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)

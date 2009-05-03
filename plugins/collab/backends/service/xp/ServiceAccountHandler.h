@@ -80,6 +80,7 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
+	ConnectionPtr							getConnection(PD_Document* pDoc);
 
 	// user management
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
@@ -99,8 +100,8 @@ public:
 	virtual bool							hasSession(const UT_UTF8String& sSessionId);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
 	acs::SOAP_ERROR							openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame);
-	UT_Error								saveDocument(PD_Document* pDoc, const UT_UTF8String& sSessionId);
-	void                                                            removeExporter(void); 
+	UT_Error								saveDocument(PD_Document* pDoc, ConnectionPtr connection_ptr);
+	void									removeExporter(void);
 	
 	// session management
 	virtual bool							allowsSessionTakeover()
@@ -147,7 +148,7 @@ private:
 													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename);
 	void									_handleRealmPacket(ConnectionPtr connection);
-	ConnectionPtr							_getConnection(const std::string& session_id);
+	ConnectionPtr							_getConnection(const std::string& session_id);	
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);

@@ -41,6 +41,7 @@ RealmConnection::RealmConnection(const std::string& ca_file, const std::string& 
 	m_doc_id(doc_id),
 	m_master(master),
 	m_session_id(session_id),
+	m_pDoc(NULL),
 	m_buf(1024), // always have a reasonable block of free memory available to cut back on the memory allocations a bit,
 	m_packet_queue(boost::bind(&RealmConnection::_signal, this)), // TODO: shouldn't this be a shared pointer? Can't we handle signals in this way while this object has been already deleted? - MARCM
 	m_sig(sig),
