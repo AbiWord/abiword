@@ -670,12 +670,18 @@ void ServiceAccountHandler::signal(const Event& event, BuddyPtr pSource)
 	{
 		case PCT_CloseSessionEvent:
 			{
-				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent, disconnecting the realm connection...\n"));
+				UT_DEBUGMSG(("Got a PCT_CloseSessionEvent\n"));
 				const CloseSessionEvent cse = static_cast<const CloseSessionEvent&>(event);
 				UT_return_if_fail(!pSource); // we shouldn't receive these events over the wire on this backend
 				ConnectionPtr connection_ptr = _getConnection(cse.getSessionId().utf8_str());
-				UT_return_if_fail(connection_ptr);
-				connection_ptr->disconnect();
+				// if we don't host this session, then we have no connection for it; 
+				// this is perfectly valid, for example if there are more than 1 active
+				// service accounts
+				if (connection_ptr)
+				{
+					UT_DEBUGMSG(("We host this session, disconnecting the realm connection...\n"));
+					connection_ptr->disconnect();
+				}
 			}
 			break;
 		case PCT_DisjoinSessionEvent:
