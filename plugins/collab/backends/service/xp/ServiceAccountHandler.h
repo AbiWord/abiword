@@ -51,8 +51,7 @@ class RealmBuddy;
 
 extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 
-typedef std::pair<GetSessionsResponseEvent, ServiceBuddyPtr> SessionBuddyPair;
-typedef boost::shared_ptr<std::vector<SessionBuddyPair> > SessionBuddyPairPtr;
+typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > BuddySessionsPtr;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
 
@@ -136,8 +135,8 @@ private:
 													ConnectionPtr connection, boost::shared_ptr<rpv1::Packet> packet);
 
 	acs::SOAP_ERROR							_listDocuments(const std::string uri, const std::string email, const std::string password, 
-													bool verify_webapp_host, SessionBuddyPairPtr sessions_ptr);
-	void									_listDocuments_cb(acs::SOAP_ERROR error, SessionBuddyPairPtr sessions_ptr);
+													bool verify_webapp_host, BuddySessionsPtr sessions_ptr);
+	void									_listDocuments_cb(acs::SOAP_ERROR error, BuddySessionsPtr sessions_ptr);
 	
 	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
 													const std::string& session_id, const std::string& filename);
