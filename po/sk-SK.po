@@ -1,13 +1,16 @@
-# Copyright (C) 2000-2008 Free Software Foundation, Inc.
-# Jaroslav Ryník <jrynik@szm.sk>, 2008.
+# Slovak translation of AbiWord.
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# This file is distributed under the same license as the AbiWord package.
+# Martin Lacko <lacko@host.sk>, 2001.
+# Jaroslav Ryník <jrynik@szm.sk>, 2008-2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord\n"
+"Project-Id-Version: AbiWord 2.7.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-24 05:17+0100\n"
-"PO-Revision-Date: 2009-03-03 09:43+0100\n"
-"Last-Translator: Jaroslav Ryník <jrynik dot yahoo dot co dot uk>\n"
+"PO-Revision-Date: 2009-04-27 22:32+0100\n"
+"Last-Translator: Jaroslav Ryník <jrynik@yahoo.co.uk>\n"
 "Language-Team: Slovak\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -43,12 +46,12 @@ msgid ""
 " You cannot use this name. Choose Another \n"
 msgstr ""
 " — Vyhradený. \n"
-" Tento názov nemôžete použiť. Prosím, vyberte si iný. \n"
+" Tento názov nemôžete použiť. Prosím, vyberte si iný \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:29
 msgid " Auto Update"
-msgstr "Automaticky prepočítavať slová"
+msgstr " Automaticky prepočítavať slová"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:31
@@ -83,7 +86,7 @@ msgid ""
 "\n"
 "Otherwise, please be patient."
 msgstr ""
-"Funkcia %s ešte nie je implementovaná.\n"
+"Funkcia %s ešte nie je v prevádzke.\n"
 "\n"
 "Ak ste programátor, pokojne môžete doplniť kód %s, riadok %d\n"
 "a poslať patch na:\n"
@@ -116,7 +119,7 @@ msgstr "&2 %s"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h.h:55
 msgid "&2 .........."
-msgstr "&2 .........."
+msgstr "&2 ......"
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -129,7 +132,7 @@ msgstr "&3 %s"
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h.h:61
 msgid "&3 ----------"
-msgstr "&3 ----------"
+msgstr "&3 ------"
 
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
@@ -183,18 +186,18 @@ msgstr "&9 %s"
 #: po/tmp/ap_String_Id.h.h:84
 #, c-format
 msgid "&About %s"
-msgstr "O programe &%s"
+msgstr "O progr&ame %s"
 
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:86
 msgid "&Accept revision"
-msgstr "&Prijať zmenu v texte"
+msgstr "&Vykonať korektúru"
 
 #. DLG_Spell_AddToDict
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:89
 msgid "&Add"
-msgstr "&Pridaj do slovníka"
+msgstr "&Zapísať do slovníka"
 
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:91
@@ -214,7 +217,7 @@ msgstr "&Všetko"
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Annotations"
-msgstr "&Odsadenie"
+msgstr "&Poznámky"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h.h:99
@@ -229,7 +232,7 @@ msgstr "&Na:"
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:103
 msgid "&Auto Spellcheck"
-msgstr "&Automaticky kontrolovať preklepy"
+msgstr "Preklepy kontrolovať &automaticky"
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:105
@@ -239,12 +242,12 @@ msgstr "&Automaticky prispôsobiť tabuľku"
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Automatically save this Scheme"
-msgstr "&Automaticky ukladať túto schému"
+msgstr "Nastavenia ukladať &automaticky"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h.h:109
 msgid "&Available formats:"
-msgstr "&Dostupné spôsoby zápisu:"
+msgstr "&Dostupné formáty:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:111
@@ -254,7 +257,7 @@ msgstr "&Pred:"
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:113
 msgid "&Bold"
-msgstr "&tučné"
+msgstr "&Tučné"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h.h:115
@@ -269,23 +272,23 @@ msgstr "&Zlom"
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&Cell"
-msgstr "&bunku"
+msgstr "&Bunku"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:122
 msgid "&Cells"
-msgstr "b&unky"
+msgstr "B&unky"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:124
 msgid "&Center"
-msgstr "&na stred"
+msgstr "&Nastred"
 
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:126
 msgid "&Change"
-msgstr "Na&hradiť"
+msgstr "N&ahradiť"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:128
@@ -301,7 +304,7 @@ msgstr "&Zatvoriť"
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Column"
-msgstr "&stĺpec"
+msgstr "&Stĺpec"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:135
@@ -316,7 +319,7 @@ msgstr "&Stĺpce"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Compare documents"
-msgstr "po&rovnať dokumenty"
+msgstr "Po&rovnať dokumenty"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:141
@@ -331,7 +334,7 @@ msgstr "&Vytvoriť a upravovať štýly"
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:145
 msgid "&Current Preferences Scheme"
-msgstr "Súč&asné nastavenia schémy"
+msgstr "Ter&ajšie nastavenia schémy"
 
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:147
@@ -356,7 +359,7 @@ msgstr "&Slovník..."
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:155
 msgid "&Direction Marker"
-msgstr "Značku &pre smer textu"
+msgstr "Značku &smeru textu"
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:157
@@ -387,7 +390,7 @@ msgstr "&Upraviť"
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:168
 msgid "&Edit annotation"
-msgstr "Upr&aviť formátovaciu značku"
+msgstr "Upr&aviť poznámku"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:170
@@ -402,12 +405,12 @@ msgstr "P&ovoliť okrúhle úvodzovky"
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:174
 msgid "&Endnote"
-msgstr "&Koncová poznámka"
+msgstr "&Koncovú poznámku"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:176
 msgid "&Even page"
-msgstr "Pá&rne strany"
+msgstr "Pá&rna strana"
 
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:178
@@ -488,17 +491,17 @@ msgstr "&Výška:"
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:209
 msgid "&Help"
-msgstr "&Nápoveda"
+msgstr "&Pomocník"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:211
 msgid "&Hidden Text"
-msgstr "&Skrytý text"
+msgstr "&Schovať text"
 
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Highlight misspelled words"
-msgstr "&zvýrazniť slová s preklepmi"
+msgstr "&Zvýrazniť slová s preklepmi"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:215
@@ -508,7 +511,7 @@ msgstr "Hypertextový &odkaz"
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:217
 msgid "&Ignore"
-msgstr "&Preskočiť vždy"
+msgstr "&Preskočiť"
 
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:219
@@ -529,7 +532,7 @@ msgstr "&Importovať štýly"
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:226
 msgid "&In web browser"
-msgstr "V okne &internetového prehľadávača"
+msgstr "Ako &internetovú stránku"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h.h:228
@@ -553,12 +556,12 @@ msgstr "&Interval:"
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:236
 msgid "&Italic"
-msgstr "&kurzíva"
+msgstr "&Kurzíva"
 
 #. MENU_LABEL_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:238
 msgid "&Jump to annotation"
-msgstr "&Choď na anotáciu"
+msgstr "&Prejsť na poznámku"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:240
@@ -568,17 +571,17 @@ msgstr "P&rejsť na odkaz"
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:242
 msgid "&Justify"
-msgstr "&do bloku"
+msgstr "&Do bloku"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h.h:244
 msgid "&Keep lines together"
-msgstr "U&držať riadky spolu"
+msgstr "Riadky u&držať spolu"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:246
 msgid "&LRM"
-msgstr "&zľava doprava"
+msgstr "&Zľava doprava"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:248
@@ -593,12 +596,12 @@ msgstr "&Jazyk"
 #. MENU_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:252
 msgid "&Left"
-msgstr "&vľavo"
+msgstr "&Vľavo"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h.h:254
 msgid "&Left-to-right text"
-msgstr "text &zľava doprava"
+msgstr "Text &zľava doprava"
 
 #. DLG_Para_LabelLeft
 #. DLG_PageSetup_Left
@@ -624,12 +627,12 @@ msgstr "Pole &hromadnej korešpondencie"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&Maintain Full History"
-msgstr "ukladať &celú históriu"
+msgstr "Ukladať &celú históriu"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:267
 msgid "&Mark revisions while typing"
-msgstr "počas písania &označovať zmeny v texte"
+msgstr "&Označovať korektúry počas písania"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:269
@@ -664,7 +667,7 @@ msgstr "&Nové okno"
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:281
 msgid "&New using Template"
-msgstr "Vytvoriť nový pomocou šablón&y"
+msgstr "Nový pomocou šablón&y"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -689,7 +692,7 @@ msgstr "&Typ číslovania:"
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:291
 msgid "&Odd page"
-msgstr "&Nepárne strany"
+msgstr "&Nepárna strana"
 
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:293
@@ -704,12 +707,12 @@ msgstr "&Otvoriť súbor"
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:297
 msgid "&Overline"
-msgstr "či&ara nad"
+msgstr "Či&ara nad"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:299
 msgid "&Page Width"
-msgstr "Na Šírku o&brazovky"
+msgstr "Na šírku s&trany"
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:301
@@ -759,7 +762,7 @@ msgstr "Zob&razenie ako pri tlači"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:319
 msgid "&Purge History"
-msgstr "&vymaž históriu"
+msgstr "&Vymazať históriu"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:321
@@ -769,7 +772,7 @@ msgstr "&Koniec"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:323
 msgid "&RLM"
-msgstr "&sprava doľava"
+msgstr "&Sprava doľava"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:325
@@ -779,7 +782,7 @@ msgstr "&Opakovať zmenu"
 #. MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:327
 msgid "&Reject revision"
-msgstr "&odmietnuť zmenu v texte"
+msgstr "&Nevykonať korektúru"
 
 #. DLG_FR_ReplaceButton
 #: po/tmp/ap_String_Id.h.h:329
@@ -794,22 +797,22 @@ msgstr "&Obnoviť"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:333
 msgid "&Reset to default layout"
-msgstr "Zm&eniť na pôvodné rozmiestnenie"
+msgstr "Nastaviť p&redvolené rozmiestnenie"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:335
 msgid "&Revisions"
-msgstr "Z&meny v texte (revízie)"
+msgstr "Korek&túry (revízie)"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:337
 msgid "&Right"
-msgstr "v&pravo"
+msgstr "Do&prava"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:339
 msgid "&Right-to-left text"
-msgstr "text sp&rava doľava"
+msgstr "Text sp&rava doľava"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
@@ -821,7 +824,7 @@ msgstr "V&pravo:"
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:345
 msgid "&Row"
-msgstr "r&iadok"
+msgstr "R&iadok"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:347
@@ -846,7 +849,7 @@ msgstr "Uložiť &webovú stránku"
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:355
 msgid "&Search for Help"
-msgstr "&Hľadať v nápovede"
+msgstr "&Hľadať v pomocníkovi"
 
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:357
@@ -856,12 +859,12 @@ msgstr "&Označiť"
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:359
 msgid "&Select revision"
-msgstr "Vybrať &zmenu v texte zo zoznamu"
+msgstr "Vybrať si &korektúru"
 
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:361
 msgid "&Show History"
-msgstr "zobraziť &históriu"
+msgstr "Zobraziť &históriu"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:363
@@ -896,7 +899,7 @@ msgstr "&Stavový panel"
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:375
 msgid "&Subscript"
-msgstr "&dolný index"
+msgstr "&Dolný index"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:377
@@ -913,7 +916,7 @@ msgstr "&Vodiaci znak:"
 #. MENU_LABEL_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:383
 msgid "&Table"
-msgstr "&tabuľku"
+msgstr "&Tabuľku"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:385
@@ -953,7 +956,7 @@ msgstr "&Typy:"
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:399
 msgid "&Underline"
-msgstr "&podčiarknuté"
+msgstr "&Podčiarknuté"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:401
@@ -986,7 +989,7 @@ msgstr "&Celá strana/1 okno"
 #. DLG_FR_WholeWord
 #: po/tmp/ap_String_Id.h.h:412
 msgid "&Whole word"
-msgstr "&Len v celých slovách"
+msgstr "&Len celé slová"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:414
@@ -1012,7 +1015,7 @@ msgstr "&Lupa"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:423
 msgid "(All revisions visible)"
-msgstr "(Teraz vidíte všetky zmeny v texte)"
+msgstr "(Teraz vidíte všetky korektúry)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:425
@@ -1069,7 +1072,7 @@ msgstr "3 stĺpce"
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h.h:450
 msgid "<< Prev"
-msgstr "<< Predchádzaj."
+msgstr "<< Predch"
 
 #. MSG_Exception
 #: po/tmp/ap_String_Id.h.h:452
@@ -1083,7 +1086,7 @@ msgstr ""
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:454
 msgid "A&lways suggest corrections"
-msgstr "&vždy navrhovať opravy"
+msgstr "&Vždy navrhovať opravy"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h.h:456
@@ -1094,12 +1097,12 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h.h:458
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "Abiword nemôže otvoriť súbor %s. Asi ide o neplatný dokument"
+msgstr "Abiword nevie otvoriť súbor %s. Asi ide o neplatný dokument"
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:460
 msgid "AbiWord finished checking the selection."
-msgstr "Abiword dokončil kontrolu vo vybranej časti textu."
+msgstr "Abiword dokončil kontrolu označenej časti textu."
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:462
@@ -1123,8 +1126,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord je vyrobený pre novú verziu systémového súboru COMCTL32.DLL,\n"
-"ktorý nemáte (COMCTL32.DLL, verzia 4.72 alebo novší).\n"
+"AbiWord je naprogamovaný na novšiu verziu systémového súboru COMCTL32.DLL\n"
+"ako má ten, ktorý máte na počítači (COMCTL32.DLL, verzia 4.72 alebo novšia).\n"
 "Ako vyriešiť tento problém, vysvetľuje rubrika FAQ na stránke AbiSource.\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1139,7 +1142,7 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "Program AbiWord potrebuje súbor %s.dll\n"
-"Prosím, navštívte stránku http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm a nainštalujte si ho."
+"Prosím, stiahnite a nainštalujte si ho zo stránky http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:470
@@ -1154,44 +1157,44 @@ msgstr "O projekte GNOME Office"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:474
 msgid "Accept the suggested change"
-msgstr "Príjme navrhovanú zmenu"
+msgstr "Vykoná navrhovanú zmenu"
 
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:477
 msgid "Add a column to this table after the current column"
-msgstr "Pridajte stĺpec za aktuálny"
+msgstr "Pridajte za tento stĺpec ešte jeden"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:480
 msgid "Add a row to this table after the current row"
-msgstr "Pridajte riadok za aktuálny"
+msgstr "Pridajte za tento riadok ešte jeden"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:482
 msgid "Add borders and shading to the selection"
-msgstr "Nastavte okraje a tieňovanie označenému textu"
+msgstr "Nastavte označenému textu okraje a tieňovanie"
 
 #. TOOLBAR_LABEL_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:484
 msgid "Add column after"
-msgstr "Pridajte stĺpec za"
+msgstr "Pridajte za tento stĺpec ešte jeden"
 
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:486
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Pridajte alebo upravte odrážky a číslovanie odseku"
+msgstr "Pridajte alebo upravte odrážky a číslovanie v označenom odseku"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:488
 msgid "Add row after"
-msgstr "Pridať riadok za"
+msgstr "Pridať pod tento riadok ešte jeden"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:490
 msgid "Add this word to the custom dictionary"
-msgstr "Pridá toto slovo do vlastného slovníka"
+msgstr "Zapíše toto slovo do vlastného slovníka"
 
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:492
@@ -1229,7 +1232,7 @@ msgstr "Všetky"
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:505
 msgid "Allow formatting using styles only"
-msgstr "Dovolí formátovanie len pomocou štýlov"
+msgstr "Povolí formátovať len pomocou štýlov"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:507
@@ -1251,13 +1254,13 @@ msgstr "Spustenie programu"
 #: po/tmp/ap_String_Id.h.h:513
 #: po/tmp/xap_String_Id.h.h:63
 msgid "Apply"
-msgstr "&Použiť"
+msgstr "Použiť"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:516
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Na vybraný text použiť formátovanie skopírované z predchádzajúceho odseku"
+msgstr "Na označený text sa použije formátovanie skopírované z predošlého odseku"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:518
@@ -1277,7 +1280,7 @@ msgstr "Arabské znaky"
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:524
 msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "Ste si istý, že si nechcete ukladať celú históriu? Ak budete pokračovať, nebudete sa môcť vrátiť k predchádzajúcim verziám dokumentu."
+msgstr "Určite si nechcete ukladať celú históriu? Ak budete pokračovať, nebudete sa môcť vrátiť k predchádzajúcim verziám dokumentu."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:526
@@ -1287,7 +1290,7 @@ msgstr "Aspoň"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:528
 msgid "Attach to Previous List"
-msgstr "Pridať k prechádzajúcemu zoznamu"
+msgstr "Pridať do predošlého zoznamu"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1305,17 +1308,17 @@ msgstr "Automatické &ukladanie"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:535
 msgid "Auto &save current file every"
-msgstr "Automaticky &uložiť súbor každých"
+msgstr "Súbor &ukladať automaticky každých"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:537
 msgid "Auto Save"
-msgstr "Automaticky ukladať súbory"
+msgstr "Súbory ukladať automaticky"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:539
 msgid "Auto replace misspelled words"
-msgstr "Automaticky nahradiť preklepy"
+msgstr "Automaticky opravovať preklepy"
 
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:541
@@ -1345,7 +1348,7 @@ msgstr "Automatická veľkosť stĺpca"
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:551
 msgid "Automatically load all plugins found"
-msgstr "automaticky spustiť všetky nájdené moduly"
+msgstr "Automaticky spustiť všetky nájdené moduly"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:553
@@ -1355,7 +1358,7 @@ msgstr "Automaticky kontrolovať preklepy v dokumente"
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:555
 msgid "Automatically update"
-msgstr "Automaticky aktualizovať"
+msgstr "Aktualizovať automaticky"
 
 #. MSG_AutoMerge
 #: po/tmp/ap_String_Id.h.h:557
@@ -1370,12 +1373,12 @@ msgstr "Dostupné polia"
 #. DLG_DateTime_AvailableFormats_Capital
 #: po/tmp/ap_String_Id.h.h:561
 msgid "Available Formats"
-msgstr "Dostupné spôsoby zápisu"
+msgstr "Dostupné formáty"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:563
 msgid "Available Styles"
-msgstr "Dostupné štýly"
+msgstr "Štýly na výber"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h.h:565
@@ -1397,7 +1400,7 @@ msgstr "Farba pozadia:"
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:573
 msgid "Bar"
-msgstr "s čiarou"
+msgstr "S čiarou"
 
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:575
@@ -1426,18 +1429,18 @@ msgstr "Tučné"
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:585
 msgid "Boo&kmark"
-msgstr "Zálož&ka"
+msgstr "Zálož&ku"
 
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:587
 msgid "Bookmark"
-msgstr "záložku"
+msgstr "Záložku"
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:589
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Záložka \"%s\" sa v tomto dokumente nenašla."
+msgstr "Záložku „%s“ sa nepodarilo nájsť."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1460,7 +1463,7 @@ msgstr "Okraje a tieňovanie"
 #: po/tmp/ap_String_Id.h.h:599
 #, c-format
 msgid "Bottom Margin [%s]"
-msgstr "Dolné okraje [%s]"
+msgstr "Dolný okraj [%s]"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #. TOOLBAR_LABEL_FMT_BOTTOMLINE
@@ -1492,7 +1495,7 @@ msgstr "Voľby pre tvorbu"
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:612
 msgid "Build Target"
-msgstr "Cieľ pre tvorbu"
+msgstr "Cieľ vytvorenia"
 
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:614
@@ -1526,7 +1529,7 @@ msgstr "Štýl tlačidiel"
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:626
 msgid "C&hange Case"
-msgstr "Z&meniť malé/veľké písmená"
+msgstr "Z&meniť na malé alebo VEĽKÉ písmená"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:628
@@ -1561,7 +1564,7 @@ msgstr "Zabudovaný štýl sa nedá upraviť"
 #. PRINT_CANNOTSTARTPRINTJOB
 #: po/tmp/ap_String_Id.h.h:640
 msgid "Cannot start print job"
-msgstr "Nemožno spustiť tlačovú úlohu"
+msgstr "Tlačová úloha sa nedá spustiť"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h.h:642
@@ -1573,28 +1576,28 @@ msgstr "Kategória:"
 #. TOOLBAR_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:646
 msgid "Center"
-msgstr "Na stred"
+msgstr "Nastred"
 
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:648
 msgid "Center Tab"
-msgstr "Stredový tabulátor"
+msgstr "Vycentrovať tabulátor"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:651
 msgid "Center alignment"
-msgstr "Zarovnanie textu na stred"
+msgstr "Zarovnanie textu nastred"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:653
 msgid "Center-align the paragraph"
-msgstr "Zarovná odsek na stred"
+msgstr "Zarovná odsek nastred"
 
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h.h:655
 msgid "Centered"
-msgstr "na stred"
+msgstr "Nastred"
 
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h.h:657
@@ -1614,7 +1617,7 @@ msgstr "Zmeniť farbu pozadia"
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:663
 msgid "Change Case"
-msgstr "Zmeniť malé/veľké písmená"
+msgstr "Zmeniť na malé alebo VEĽKÉ"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:665
@@ -1622,7 +1625,7 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
-"Zmeniť aktuálny \n"
+"Zmeniť tento \n"
 "zoznam"
 
 #. DLG_Background_TitleHighlight
@@ -1654,38 +1657,38 @@ msgstr "Zmení prevládajúci smer odseku"
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:678
 msgid "Change the case of the selected text"
-msgstr "Zmení znaky vo vybranom texte na malé/veľké"
+msgstr "Písmená v označenom zmení texte na malé alebo VEĽKÉ"
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:680
 msgid "Change the font of the selected text"
-msgstr "Zmení písmo vybraného textu"
+msgstr "Zmení písmo v označenom texte"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:682
 msgid "Change the format of the selected paragraph"
-msgstr "Zmení vlastnosti vybraného odseku"
+msgstr "Môžete zmeniť vlastnosti označeného odseku"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:685
 msgid "Change the language of the selected text"
-msgstr "Zmeňte jazyk vybraného textu"
+msgstr "Zmeňte jazyk označeného textu"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:687
 msgid "Change the number of columns"
-msgstr "Zmení počet stĺpcov"
+msgstr "Zmeníte počet stĺpcov"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:689
 msgid "Change the printing options"
-msgstr "Môžete zmeniť nastavenia tlače (okraje, formát papiera)"
+msgstr "Môžete zmeniť nastavenia tlače"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:691
 msgid "Change the properties of the Text Box"
-msgstr "Zmení vlastnosti textového rámu"
+msgstr "Zmeníte vlastnosti textového rámu"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1698,12 +1701,12 @@ msgstr "Zmení vlastnosti textového rámu"
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:701
 msgid "Change to this suggested spelling"
-msgstr "Zmení na toto slovo"
+msgstr "Opravte týmto slovom"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Change your document's page background"
-msgstr "Zmení farbu pozadia v dokumente"
+msgstr "Zmeníte farbu pozadia v dokumente"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:705
@@ -1723,7 +1726,7 @@ msgstr "Počet znakov"
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:711
 msgid "Character Count (w/o spaces)"
-msgstr "Počet znakov bez medzier"
+msgstr "Počet znakov (bez medzier)"
 
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:713
@@ -1748,22 +1751,22 @@ msgstr "&Skontrolovať preklepy"
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Check &grammar as you type"
-msgstr "počas písania kontrolovať &gramatiku"
+msgstr "&Gramatiku kontrolovať počas písania"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:723
 msgid "Check for &Updates"
-msgstr "&Vyhľadať akutualizácie"
+msgstr "&Vyhľadať aktualizácie"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:725
 msgid "Check online for newer versions of AbiWord"
-msgstr "Vyhľadá na internete novšie verzie AbiWordu"
+msgstr "Na internete vyhľadá novšie verzie AbiWordu"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:727
 msgid "Check s&pelling as you type"
-msgstr "&kontrolovať preklepy počas písania"
+msgstr "&Preklepy kontrolovať počas písania"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:729
@@ -1778,17 +1781,17 @@ msgstr "Vybrať"
 #. DLG_Options_Label_ChooseForTransparent
 #: po/tmp/ap_String_Id.h.h:733
 msgid "Choose Screen Color"
-msgstr "Vybrať farbu obrazovky"
+msgstr "Vybrať si farbu obrazovky"
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:735
 msgid "Choose screen color for AbiWord"
-msgstr "Vybrať farbu obrazovky AbiWordu"
+msgstr "Vybrať si farbu obrazovky AbiWordu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:737
 msgid "Choose which revision you wish to view"
-msgstr "Vyberte si zmenu v texte, na ktorú sa chcete pozrieť"
+msgstr "Vyberte si korektúru, na ktorú sa chcete pozrieť"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:739
@@ -1797,7 +1800,7 @@ msgid ""
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
 msgstr ""
 "V ľavej časti si vyberte cieľ.\n"
-"Ak chcete využiť tlačidlo „Prejsť na“, stačí, keď napíšete číslo strany. Môžete tiež pridať +/- pre posun o určitý počet strán, riadkov alebo záložiek nižšie alebo vyššie.\tNapr., ak napíšete „+2“, kliknete na „riadok“ a stlačíte tlačidlo „Prejsť na“, posuniete sa o 2 riadky nižšie."
+"Ak chcete využiť tlačidlo „Prejsť na“, stačí, keď napíšete číslo strany. Môžete tiež pridať +/- pre posun o určitý počet strán, riadkov alebo záložiek nižšie alebo vyššie.\tNapr., ak napíšete „+2“, kliknete na „Riadok“ a stlačíte tlačidlo „Prejsť na“, posuniete sa o 2 riadky nižšie."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:741
@@ -1822,27 +1825,27 @@ msgstr "Zmazať farbu pozadia"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:749
 msgid "Clear Highlight Color"
-msgstr "Vyčistiť farbu zvýraznenia"
+msgstr "Odstrániť zvýraznenie"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:751
 msgid "Close all windows and exit?"
-msgstr "Mám zatvoriť všetky okna a skončiť?"
+msgstr "Chcete zatvoriť všetky okná a skončiť?"
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Close all windows in the application and exit"
-msgstr "Zatvorí všetky okna a ukončí program"
+msgstr "Zatvoríte všetky okna a ukončíte program"
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:755
 msgid "Close the document"
-msgstr "Zatvorí tento dokument"
+msgstr "Zatvoríte tento dokument"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:757
 msgid "Co&lumn"
-msgstr "s&tĺpec"
+msgstr "S&tĺpec"
 
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
@@ -1855,7 +1858,7 @@ msgstr "Farba:"
 #. DLG_FormatTable_Apply_To_Column
 #: po/tmp/ap_String_Id.h.h:762
 msgid "Column"
-msgstr "stĺpec"
+msgstr "Stĺpec"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h.h:764
@@ -1877,12 +1880,12 @@ msgstr "Stĺpce"
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:770
 msgid "Columns &Left"
-msgstr "stĺpce naľ&avo"
+msgstr "Stĺpce naľ&avo"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
 #: po/tmp/ap_String_Id.h.h:772
 msgid "Columns &Right"
-msgstr "stĺpce na&pravo"
+msgstr "Stĺpce na&pravo"
 
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h.h:774
@@ -1892,12 +1895,12 @@ msgstr "Komentár"
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:776
 msgid "Comment to be associated with the revision:"
-msgstr "Komentár, ktorý bude pripojený k zmene:"
+msgstr "Komentár, ktorý bude pripojený ku korektúre:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:778
 msgid "Compare active document to another document"
-msgstr "Porovná tento dokument s iným"
+msgstr "Program porovná tento dokument s iným"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:780
@@ -1923,7 +1926,7 @@ msgstr "Obsah"
 #: po/tmp/ap_String_Id.h.h:788
 #, c-format
 msgid "Continue previous revision (number %d)"
-msgstr "Pokračovať v predchádzajúcej zmene textu (číslo %d)"
+msgstr "Pokračovať v predošlej korektúre (číslo %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h.h:790
@@ -1938,7 +1941,7 @@ msgstr "Prispel(i):"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:794
 msgid "Convert Selected Text to a Table"
-msgstr "Zmení vybraný text na tabuľku"
+msgstr "Označený text zmení na tabuľku"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:796
@@ -1965,7 +1968,7 @@ msgstr "Kopírovať"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:806
 msgid "Copy Embedded Object"
-msgstr "Skopíruje objekt vložený z iného programu do schránky"
+msgstr "Skopíruje objekt z iného programu do schránky"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:808
@@ -2012,7 +2015,7 @@ msgstr "Súbor %s sa nedá otvoriť na písanie"
 #: po/tmp/ap_String_Id.h.h:824
 #, c-format
 msgid "Could not open file %s."
-msgstr "Súbor %s sa nepodarilo uložiť."
+msgstr "Súbor %s sa nepodarilo otvoriť."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:826
@@ -2024,7 +2027,7 @@ msgstr "Do súboru %s sa nedá písať"
 #: po/tmp/ap_String_Id.h.h:828
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Súbor %s sa nepodarilo uložiť."
+msgstr "Do súboru %s sa nepodarilo zapísať zmeny."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:830
@@ -2034,7 +2037,7 @@ msgstr "Zistí počet slov v dokumente"
 #. FIELD_Document_Coverage
 #: po/tmp/ap_String_Id.h.h:832
 msgid "Coverage"
-msgstr "Dosah"
+msgstr "Rozsah ochrany"
 
 #. DLG_MetaData_Coverage_LBL
 #: po/tmp/ap_String_Id.h.h:834
@@ -2044,7 +2047,7 @@ msgstr "Rozsah ochrany:"
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h.h:836
 msgid "Create a fax"
-msgstr "Vytvoriť fax"
+msgstr "Napísať fax"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h.h:838
@@ -2081,7 +2084,7 @@ msgstr "Vytvoriť z výber&u"
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:852
 msgid "Creator"
-msgstr "Vytvoril"
+msgstr "Vytvoril(a)"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:854
@@ -2096,17 +2099,17 @@ msgstr "Aktuálny dátum"
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:858
 msgid "Current Font"
-msgstr "Aktuálne písmo"
+msgstr "Použité písmo"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:860
 msgid "Current List Label"
-msgstr "Aktuálny názov zoznamu"
+msgstr "Názov tohto zoznamu"
 
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h.h:862
 msgid "Current List Type"
-msgstr "Aktuálny typ zoznamu"
+msgstr "Použitý typ zoznamu"
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:864
@@ -2153,7 +2156,7 @@ msgstr "Vystrihnúť"
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:882
 msgid "Cut Embedded Object"
-msgstr "Skopíruje objekt vložený z iného programu a odstráni ho z dokumentu"
+msgstr "Vystrihnúť objekt z iného programu"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:884
@@ -2173,7 +2176,7 @@ msgstr "Vystrihnúť textový rám"
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:890
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Presunie označený text do schránky"
+msgstr "Vystrihne označený text a presunie ho do schránky"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:892
@@ -2216,12 +2219,12 @@ msgstr "&Predvolené"
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:907
 msgid "Decimal"
-msgstr "des. čiarka"
+msgstr "Des. čiarka"
 
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:909
 msgid "Decimal Tab"
-msgstr "Tabulátor na desatinné čísla"
+msgstr "Desatinný tabulátor"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
@@ -2233,17 +2236,17 @@ msgstr "Zmenšiť odsadenie (medzeru od okraja)"
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:915
 msgid "Default date (w/o time)"
-msgstr "Nastavený dátum (bez času)"
+msgstr "Predvolený dátum (bez času)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h.h:917
 msgid "Default date representation"
-msgstr "Nastavený formát dátumu"
+msgstr "Predvolený formát dátumu"
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:919
 msgid "Default page size"
-msgstr "Nastavená veľkosť strany"
+msgstr "Predvolená veľkosť strany"
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:921
@@ -2253,7 +2256,7 @@ msgstr "Predvolené tabul.:"
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:923
 msgid "Default to right-to-left direction of text"
-msgstr "predvolený smer textu sprava doľava"
+msgstr "Predvolený smer textu na sprava doľava"
 
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h.h:925
@@ -2264,7 +2267,7 @@ msgstr "Definovať hlavné vlastnosti"
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:928
 msgid "Define or apply style for the selection"
-msgstr "Vyberte alebo upravte štýl pre označený text"
+msgstr "Vyberte si alebo použite štýl na označený text"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2288,12 +2291,12 @@ msgstr "Odstrániť &stĺpec"
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:938
 msgid "Delete Column"
-msgstr "Odstráni stĺpec"
+msgstr "Vymaže stĺpec"
 
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:940
 msgid "Delete Embedded Object"
-msgstr "Odstráni objekt z iného programu"
+msgstr "Vymaže objekt z iného programu"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:942
@@ -2374,7 +2377,7 @@ msgstr "Vymažete z tabuľky tento riadok"
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h.h:976
 msgid "Description"
-msgstr "Vlastnosti"
+msgstr "Popis"
 
 #. DLG_MetaData_Description_LBL
 #. DLG_Annotation_Description_LBL
@@ -2400,32 +2403,32 @@ msgstr "Slovníky"
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Different footer on facing pages"
-msgstr "iná päta na protiľahlých stranách"
+msgstr "Iná päta na protiľahlých stranách"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:987
 msgid "Different footer on first page"
-msgstr "iná päta na prvej strane"
+msgstr "Iná päta na prvej strane"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:989
 msgid "Different footer on last page"
-msgstr "iná päta na poslednej strane"
+msgstr "Iná päta na poslednej strane"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Different header on facing pages"
-msgstr "iná hlavička na protiľahlých stranách"
+msgstr "Iná hlavička na protiľahlých stranách"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:993
 msgid "Different header on first page"
-msgstr "iná hlavička na prvej strane"
+msgstr "Iná hlavička na prvej strane"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:995
 msgid "Different header on last page"
-msgstr "iná hlavička na poslednej strane"
+msgstr "Iná hlavička na poslednej strane"
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:997
@@ -2440,12 +2443,12 @@ msgstr "Zobrazí zoznam spolupracovníkov"
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1001
 msgid "Display Help Contents"
-msgstr "Zobrazí obsah nápovedy"
+msgstr "Zobrazí obsah pomocníka"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Display Help Index"
-msgstr "Zobrazí register nápovedy"
+msgstr "Zobrazí register pomocníka"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1005
@@ -2455,7 +2458,7 @@ msgstr "Zobrazí znaky, ktoré sa nedajú vytlačiť"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:1007
 msgid "Display program information, version number, and copyright"
-msgstr "Zobrazí informácie o programe, číslo verzie a autorské práva"
+msgstr "Zobrazí informácie o programe, číslo verzie a informácie o autorských právach"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:1009
@@ -2465,12 +2468,12 @@ msgstr "Zobraziť štýl:"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:1011
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "Chcete zmazať zoznam ignorovaných slov vo všetkých dokumentoch?"
+msgstr "Chcete zmazať zoznam preskakovaných slov vo všetkých dokumentoch?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:1013
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Chcete zmazať zoznam ignorovaných slov v tomto dokumente?"
+msgstr "Chcete zmazať zoznam preskakovaných slov v tomto dokumente?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:1015
@@ -2490,7 +2493,7 @@ msgstr "Dokumenty"
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Don't restart"
-msgstr "číslovať nepretržite"
+msgstr "Číslovať nepretržite"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:1023
@@ -2516,7 +2519,7 @@ msgstr "Upraviť poznámku"
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1032
 msgid "Edit Equation"
-msgstr "Uprav matematický výraz"
+msgstr "Upraviť matematický výraz"
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #. TOOLBAR_LABEL_EDIT_FOOTER
@@ -2537,7 +2540,7 @@ msgstr "Upraviť hlavičku"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1044
 msgid "Edit Latex Equation"
-msgstr "Matematický výraz programu Latex"
+msgstr "Upravíte matematický výraz z programu Latex"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1046
@@ -2552,32 +2555,32 @@ msgstr "Upraví hypertextový odkaz"
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1050
 msgid "Edit text at the top or bottom of every page"
-msgstr "Upraví text v hlavičke a päte na každej strane"
+msgstr "Upravíte text v hlavičke alebo päte na každej strane"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:1052
 msgid "Edit the Footer on the current page"
-msgstr "Upraviť pätu na tejto strane"
+msgstr "Upravíte pätu na tejto strane"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:1054
 msgid "Edit the Header on the current page"
-msgstr "Upraviť hlavičku na tento strane"
+msgstr "Upravíte hlavičku na tento strane"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h.h:1056
 msgid "Embedded"
-msgstr "Číslovaný"
+msgstr "Vložený"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1058
 msgid "Enable F&ormatting Tools"
-msgstr "Do&voliť nástroje na úpravu textu"
+msgstr "Po&voliť nástroje na úpravu textu"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1060
 msgid "Enable Smooth Scrolling"
-msgstr "Dovoliť jemné rolovanie"
+msgstr "Dovoliť rýchle rolovanie"
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h.h:1062
@@ -2597,7 +2600,7 @@ msgstr "Odkaz na koncovú poznámku"
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h.h:1068
 msgid "Endnote style"
-msgstr "Štýl pozn. na konci"
+msgstr "Štýl konc. pozn."
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1070
@@ -2625,18 +2628,18 @@ msgstr "Chyba pri importe súboru %s."
 #: po/tmp/ap_String_Id.h.h:1078
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Chyba pri pokuse uložiť súbor %s."
+msgstr "Pri ukladaní súboru %s došlo k chybe: nepodarilo sa vytvoriť súbor"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:1080
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Súbor %s sa nepodarilo uložiť: nesprávne meno"
+msgstr "Súbor %s sa nepodarilo uložiť: nesprávny názov"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:1082
 msgid "Ex. script"
-msgstr "Spustiť skript"
+msgstr "Spúšť. skript"
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:1084
@@ -2657,12 +2660,12 @@ msgstr "Spustí pomocné skripty"
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:1091
 msgid "Execute script"
-msgstr "Spustí pomocné skripty"
+msgstr "Spustí skripty"
 
 #. DLG_ListRevisions_Label1
 #: po/tmp/ap_String_Id.h.h:1093
 msgid "Existing revisions:"
-msgstr "Existujúce zmeny textu:"
+msgstr "Existujúce korektúry:"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h.h:1095
@@ -2756,17 +2759,17 @@ msgstr "Hľadať"
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Find &next revision"
-msgstr "nájsť ď&alšiu zmenu"
+msgstr "Nájsť ď&alšiu korektúru"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1131
 msgid "Find &previous revision"
-msgstr "nájsť &predchádzajúcu zmenu"
+msgstr "Nájsť &predošlú korektúru"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1133
 msgid "Find next visible revision in the document"
-msgstr "Nájde ďalšiu viditeľnú zmenu dokumentu"
+msgstr "Nájde ďalšiu zmenu v dokumente"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1135
@@ -2797,22 +2800,22 @@ msgstr "Presná veľkosť stĺpca:"
 #. DLG_Lists_FoldingLevel1
 #: po/tmp/ap_String_Id.h.h:1145
 msgid "Fold below level 1"
-msgstr "Skryť text pod úrovňou 1"
+msgstr "Pod úrovňou 1"
 
 #. DLG_Lists_FoldingLevel2
 #: po/tmp/ap_String_Id.h.h:1147
 msgid "Fold below level 2"
-msgstr "Skryť text pod úrovňou 2"
+msgstr "Pod úrovňou 2"
 
 #. DLG_Lists_FoldingLevel3
 #: po/tmp/ap_String_Id.h.h:1149
 msgid "Fold below level 3"
-msgstr "Skryť text pod úrovňou 3"
+msgstr "Pod úrovňou 3"
 
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h.h:1151
 msgid "Fold below level 4"
-msgstr "Skryť text pod úrovňou 4"
+msgstr "Pod úrovňou 4"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1153
@@ -2833,7 +2836,7 @@ msgstr "Písmo"
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h.h:1160
 msgid "Font Choose"
-msgstr "Vyberte písmo"
+msgstr "Vyberte si písmo"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -2954,7 +2957,7 @@ msgstr "Vložte objekt z iného programu"
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1212
 msgid "Format Endnotes"
-msgstr "Formát poznámky pod čiarou"
+msgstr "Formát koncovej poznámky"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h.h:1214
@@ -3017,7 +3020,7 @@ msgstr "Zmení písmo dokumentu pomocou štýlu"
 #: po/tmp/ap_String_Id.h.h:1237
 #: po/tmp/xap_String_Id.h.h:343
 msgid "Format:"
-msgstr "Formát (spôsob zápisu):"
+msgstr "Formát:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1239
@@ -3034,7 +3037,7 @@ msgstr "Z programu Latex"
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
 #: po/tmp/ap_String_Id.h.h:1245
 msgid "Full Screen"
-msgstr "&Celá obrazovka"
+msgstr "Na &celú obrazovku"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3133,24 +3136,24 @@ msgstr "Odrážky v tvare srdca"
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:1282
 msgid "Hebrew List"
-msgstr "Zoznam pre hebrejčinu"
+msgstr "Zoznam po hebrejsky"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
 #. TOOLBAR_TOOLTIP_HELP
 #: po/tmp/ap_String_Id.h.h:1286
 msgid "Help"
-msgstr "Nápoveda"
+msgstr "Pomocník"
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1288
 msgid "Help &Contents"
-msgstr "&Obsah nápovedy"
+msgstr "&Obsah pomocníka"
 
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:1290
 msgid "Help &Introduction"
-msgstr "Ú&vod k nápovede"
+msgstr "Ú&vod k pomocníkovi"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1292
@@ -3172,7 +3175,7 @@ msgstr "Skryť text pod úrovňou zoznamu"
 #. TOOLBAR_TOOLTIP_COLOR_BACK
 #: po/tmp/ap_String_Id.h.h:1300
 msgid "Highlight"
-msgstr "Zvýraznenie textu"
+msgstr "Zvýrazniť text"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h.h:1302
@@ -3197,12 +3200,12 @@ msgstr "Ikony"
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:1310
 msgid "Ignore"
-msgstr "Ignorovať"
+msgstr "Preskočiť"
 
 #. DLG_Options_Label_SpellIgnoreWords
 #: po/tmp/ap_String_Id.h.h:1312
 msgid "Ignore Words"
-msgstr "Preskakovať"
+msgstr "Preskakovať slová"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1314
@@ -3212,7 +3215,7 @@ msgstr "Vždy preskočí toto slovo v dokumente"
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:1316
 msgid "Ignored words:"
-msgstr "Ignorované slová:"
+msgstr "Preskakované slová:"
 
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
@@ -3267,12 +3270,12 @@ msgstr "Začiatočné písmená veľké"
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1339
 msgid "Initial Endnote value"
-msgstr "Začať číslovať od"
+msgstr "Zač. hodnota KP"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h.h:1341
 msgid "Initial Footnote value"
-msgstr "Začať číslovať od"
+msgstr "Zač. hodnota PPČ"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h.h:1343
@@ -3336,7 +3339,7 @@ msgstr "Vložiť matematický výraz"
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1367
 msgid "Insert Equation from a LaTeX expression"
-msgstr "Vložiť matematický výraz z výrazu programu Latex"
+msgstr "Vložiť matematický rovnicu z výrazu programu LaTeX"
 
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1369
@@ -3421,7 +3424,7 @@ msgstr "Vloží stĺpec napravo"
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1404
 msgid "Insert a footnote"
-msgstr "Vloží koncovú poznámku"
+msgstr "Vloží poznámku pod čiarou"
 
 #. TOOLBAR_STATUSLINE_FMT_HYPERLINK
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
@@ -3541,12 +3544,12 @@ msgstr "Vložiť tabuľku"
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:1455
 msgid "Insert the Sum of a Table Column"
-msgstr "Vypočíta súčet stĺpca"
+msgstr "Vloží súčet stĺpca"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:1457
 msgid "Insert the Sum of a Table Row"
-msgstr "Vypočíta súčet riadka"
+msgstr "Vloží súčet riadka"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1459
@@ -3580,7 +3583,7 @@ msgstr "Kurzíva"
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h.h:1471
 msgid "Jump to annotation"
-msgstr "Choď na formátovaciu značku"
+msgstr "Prejsť na poznámku"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1473
@@ -3606,12 +3609,12 @@ msgstr "Zarovná odsek do bloku"
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:1482
 msgid "Justify the paragraph"
-msgstr "Zarovná odseku do bloku"
+msgstr "Zarovná odsek do bloku"
 
 #. DLG_Para_PushKeepWithNext
 #: po/tmp/ap_String_Id.h.h:1484
 msgid "Keep with ne&xt"
-msgstr "Ud&ržať odsek s ďalším"
+msgstr "Ud&ržať odsek s nasledujúcim"
 
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:1486
@@ -3632,7 +3635,7 @@ msgstr "Kľúčové slová:"
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h.h:1493
 msgid "LaTeX Equation"
-msgstr "Matematický výraz programu Latex"
+msgstr "Rovnica z programu Latex"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1495
@@ -3682,19 +3685,19 @@ msgstr "Vodiaci znak"
 #. TOOLBAR_LABEL_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1516
 msgid "Left"
-msgstr "vľavo"
+msgstr "Vľavo"
 
 #. LeftIndentStatus
 #: po/tmp/ap_String_Id.h.h:1518
 #, c-format
 msgid "Left Indent [%s]"
-msgstr "Ľavé odsadenie [%s]"
+msgstr "Odsadenie zľava [%s]"
 
 #. LeftIndentTextIndentStatus
 #: po/tmp/ap_String_Id.h.h:1520
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
-msgstr "Ľavé odsadenie [%s] Odsadenie prvého riadka [%s]"
+msgstr "Odsadenie zľava [%s] Odsadenie prvého riadka [%s]"
 
 #. LeftMarginStatus
 #: po/tmp/ap_String_Id.h.h:1522
@@ -3756,7 +3759,7 @@ msgstr "Ria&dkovanie:"
 #. DLG_Goto_Target_Line
 #: po/tmp/ap_String_Id.h.h:1545
 msgid "Line"
-msgstr "riadok"
+msgstr "Riadok"
 
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h.h:1547
@@ -3776,7 +3779,7 @@ msgstr "Zlomy riadkov a strán"
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1553
 msgid "Line below the selection (toggle)"
-msgstr "Zobrazí/zmaže čiaru pod textom"
+msgstr "Zobrazí alebo zmaže čiaru pod textom"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:1555
@@ -3806,7 +3809,7 @@ msgstr "Vlastnosti zoznamu"
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h.h:1565
 msgid "List Styles"
-msgstr "Štýly pre zoznam"
+msgstr "Štýly zoznamov"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1567
@@ -3816,7 +3819,7 @@ msgstr "Zoznamy"
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1569
 msgid "Lock the layout of the current toolbars"
-msgstr "Zamkne zobrazenie panelov s nástrojmi"
+msgstr "Zamkne rozmiestnenie panelov s nástrojmi"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
@@ -3841,22 +3844,22 @@ msgstr "Hromadná korešpondencia"
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:1578
 msgid "Make the selection bold (toggle)"
-msgstr "V označenom texte zmení písmo na tučné (hrubé) a tučné písmo zmení na normálne"
+msgstr "V označenom texte zmení písmo na tučné (hrubé) a tučné písmo zmení na obyčajné"
 
 #. MENU_STATUSLINE_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:1580
 msgid "Make the selection italic (toggle)"
-msgstr "V označenom texte zmení písmo na na kurzívu (šikmé) a kurzívu zmení na normálne písmo"
+msgstr "V označenom texte zmení písmo na kurzívu (šikmé) a kurzívu zmení na obyčajné písmo"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:1582
 msgid "Make the selection subscript (toggle)"
-msgstr "V označenom texte zmení písmo na na dolný index a dolný index zmení na normálne písmo"
+msgstr "V označenom texte zmení písmo na na dolný index a dolný index zmení na obyčajné písmo"
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1584
 msgid "Make the selection superscript (toggle)"
-msgstr "V označenom texte zmení písmo na horný index a horný index zmení na normálne písmo"
+msgstr "V označenom texte zmení písmo na horný index a horný index zmení na obyčajné písmo"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h.h:1586
@@ -3876,12 +3879,12 @@ msgstr "Okraje"
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1592
 msgid "Mark Revisions"
-msgstr "Označiť zmeny textu"
+msgstr "Označenie zmien textu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:1594
 msgid "Mark changes as you type"
-msgstr "počas písania označovať zmeny "
+msgstr "Označovať zmeny počas písania"
 
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:1596
@@ -3898,7 +3901,7 @@ msgstr "Maximálna veľkosť stĺpca"
 #. TOOLBAR_TOOLTIP_MENU
 #: po/tmp/ap_String_Id.h.h:1602
 msgid "Menu"
-msgstr "Ponuka"
+msgstr "Menu"
 
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h.h:1604
@@ -3930,12 +3933,12 @@ msgstr "Zlúčiť vpravo"
 #. TOOLBAR_LABEL_MERGEABOVE
 #: po/tmp/ap_String_Id.h.h:1616
 msgid "Merge above"
-msgstr "Zlúči nad"
+msgstr "Spojí bunku s tou, ktorá je nad ňou"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1618
 msgid "Merge another document into the active document using revision marks"
-msgstr "Zlúči iný dokument s aktuálnym pomocou značiek zmeny textu"
+msgstr "Pomocou značiek korektúr zlúči tento dokument s iným"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1620
@@ -3991,7 +3994,7 @@ msgstr "Vojenský čas"
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h.h:1644
 msgid "Misc."
-msgstr "Rôzne"
+msgstr "Rôznor."
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1646
@@ -4121,7 +4124,7 @@ msgstr "Žiadny pred"
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:1693
 msgid "Normal View"
-msgstr "Normálne zobrazenie"
+msgstr "obyčajné zobrazenie"
 
 #. DLG_Spell_UnknownWord
 #: po/tmp/ap_String_Id.h.h:1695
@@ -4187,12 +4190,12 @@ msgstr "Čísla"
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:1721
 msgid "OVR"
-msgstr "OVR"
+msgstr "PREPIS"
 
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h.h:1723
 msgid "One"
-msgstr "jeden"
+msgstr "Jeden"
 
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:1725
@@ -4264,7 +4267,7 @@ msgstr "Na otvorenie súboru %s nie je dosť pamäte"
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h.h:1758
 msgid "Outer (double) quote style"
-msgstr "Štýl vonkajších (dvojitých — našich) úvodzoviek"
+msgstr "Štýl vonkajších (dvojitých, našich) úvodzoviek"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4278,7 +4281,7 @@ msgstr "Čiara nad text"
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1764
 msgid "Overline the selection (toggle)"
-msgstr "Nad označeným textom sa zobrazí/zmizne čiara"
+msgstr "Nad označeným textom sa zobrazí alebo zmizne čiara"
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1766
@@ -4288,7 +4291,7 @@ msgstr "V&lastnosti"
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1768
 msgid "P&urge revisions"
-msgstr "Vy&mazať zmeny textu"
+msgstr "Vy&mazať korektúry"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1770
@@ -4299,7 +4302,7 @@ msgstr "Vložiť ne&formátované"
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h.h:1773
 msgid "Page"
-msgstr "stranu"
+msgstr "Stranu"
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:1775
@@ -4319,7 +4322,7 @@ msgstr "Fa&rba strany"
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:1781
 msgid "Page Image"
-msgstr "vybrať obrázok ako pozadie strany"
+msgstr "Obrázok stránky"
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1783
@@ -4334,7 +4337,7 @@ msgstr "Číslo strany"
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h.h:1787
 msgid "Page Number Properties"
-msgstr "Vlastnosti číslovania strán"
+msgstr "Nastavenie číslovania strán"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:1789
@@ -4360,7 +4363,7 @@ msgstr "Nastavenie strany"
 #: po/tmp/ap_String_Id.h.h:1797
 #, c-format
 msgid "Page: %d/%d"
-msgstr "Strana: %d z/o %d"
+msgstr "Strana: %d z(o) %d"
 
 #. DLG_WordCount_Pages
 #: po/tmp/ap_String_Id.h.h:1799
@@ -4438,12 +4441,12 @@ msgstr "Tabuľka"
 #. DLG_FormatFootnotes_EndPlaceEndDoc
 #: po/tmp/ap_String_Id.h.h:1830
 msgid "Place at end of document"
-msgstr "na konci dokumentu"
+msgstr "Na konci dokumentu"
 
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h.h:1832
 msgid "Place at end of section"
-msgstr "na konci kapitoly"
+msgstr "Na konci kapitoly"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h.h:1834
@@ -4454,48 +4457,48 @@ msgstr "Umiestnenie"
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h.h:1837
 msgid "Position"
-msgstr "Pozícia"
+msgstr "Umiestnenie"
 
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h.h:1839
 msgid "Position Text Box"
-msgstr "Pozícia textového rámu"
+msgstr "Umiestnenie textového rámu"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h.h:1841
 msgid "Position to Column"
-msgstr "Pozícia v stĺpci"
+msgstr "Umiestnenie podľa stĺpca"
 
 #. DLG_FormatFrame_SetToPage
 #: po/tmp/ap_String_Id.h.h:1843
 msgid "Position to Page"
-msgstr "Pozícia na strane"
+msgstr "Umiestnenie podľa strany"
 
 #. DLG_FormatFrame_SetToParagraph
 #: po/tmp/ap_String_Id.h.h:1845
 msgid "Position to Paragraph"
-msgstr "Pozícia v odseku"
+msgstr "Umiestnenie podľa odseku"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1847
 msgid "Position:"
-msgstr "Pozícia:"
+msgstr "Umiestnenie:"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1849
 msgid "Pr&eferences"
-msgstr "Na&stavenia"
+msgstr "Pr&edvoľby"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1852
 msgid "Preference Schemes"
-msgstr "Možnosti schém"
+msgstr "Nastavenia schém"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1854
 msgid "Preferences"
-msgstr "Možnosti"
+msgstr "Predvoľby"
 
 #. DLG_Styles_ModifyPreview
 #. DLG_Para_LabelPreview
@@ -4521,7 +4524,7 @@ msgstr "Ukáže dokument ako webovou stránku"
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1869
 msgid "Preview the document before printing"
-msgstr "Ukáže dokument pred tlačou"
+msgstr "Ukáže dokument ako pred tlačou"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1871
@@ -4544,7 +4547,7 @@ msgstr "&Tlačiť ihneď"
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1877
 msgid "Print Layout"
-msgstr "Rozmiestnenie pri tlači"
+msgstr "Rozmiestnenie ako pri tlači"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1879
@@ -4559,18 +4562,18 @@ msgstr "Ukážka pre tlač"
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1883
 msgid "Print all or part of the document"
-msgstr "Vytlačí celý dokument"
+msgstr "Vytlačíte celý dokument alebo jeho časť"
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1886
 msgid "Print the document"
-msgstr "Vytlačí celý dokument"
+msgstr "Vytlačíte celý dokument"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1888
 msgid "Print using the internal PS driver"
-msgstr "Vytlačí cez vnútorný PS ovladač"
+msgstr "Vytlačíte pomocou vnútorného PS ovladača"
 
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1890
@@ -4601,17 +4604,17 @@ msgstr "Nah&radiť"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h.h:1900
 msgid "RTL &Document"
-msgstr "&dokument"
+msgstr "&Dokument sprava doľava"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1902
 msgid "RTL &Paragraph"
-msgstr "&odsek sprava doľava"
+msgstr "&Odsek sprava doľava"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h.h:1904
 msgid "RTL &Section"
-msgstr "&Výber"
+msgstr "&Výber sprava doľava"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4636,13 +4639,13 @@ msgstr "Naposledy &otvorené súbory"
 #. TOOLBAR_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1914
 msgid "Redo"
-msgstr "Znovu"
+msgstr "Znova"
 
 #. TOOLBAR_STATUSLINE_EDIT_REDO
 #. TOOLBAR_TOOLTIP_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1917
 msgid "Redo editing"
-msgstr "Späť úpravy"
+msgstr "Opakovať úpravy"
 
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1919
@@ -4653,7 +4656,7 @@ msgstr "Znovu vykoná odvolanú úpravu"
 #. MENU_STATUSLINE_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:1922
 msgid "Reduce or enlarge the document display"
-msgstr "Zmenší alebo zväčší zobrazenia dokumentu"
+msgstr "Zmenší alebo zväčší zobrazenie dokumentu"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h.h:1924
@@ -4684,7 +4687,7 @@ msgstr "Odstrániť hlavičku"
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1938
 msgid "Remove Property from Style"
-msgstr "Odstrániť vlastnosť zo štýlu"
+msgstr "Odstrániť vlastnosť štýlu"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1940
@@ -4714,7 +4717,7 @@ msgstr "Odstráni pätu na tejto strane "
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1950
 msgid "Remove the Header on this page from the Document"
-msgstr "Z dokumentu  na tejto strane odstráni hlavičku"
+msgstr "Z dokumentu na tejto strane odstráni hlavičku"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1952
@@ -4724,17 +4727,17 @@ msgstr "Odstráni obrázok a uloží ho do schránky"
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1954
 msgid "Remove the Image from the Document"
-msgstr "Odstráni obrázok z dokumentu"
+msgstr "Odstráni obrázok"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1956
 msgid "Remove the Text Box from the Document"
-msgstr "Odstráni textový rám z dokumentu"
+msgstr "Odstráni textový rám"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1958
 msgid "Remove the suggested change"
-msgstr "Odstráni navrhovanú zmenu"
+msgstr "Zmaže navrhovanú zmenu"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1960
@@ -4775,7 +4778,7 @@ msgstr "Nahlásiť &chybu"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1975
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "Nahláste chybu v programe a pomôžte Abiwordu, aby sa stal ešte lepším"
+msgstr "Nahláste chybu a pomôžte Abiwordu, aby bol ešte lepším"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1977
@@ -4837,7 +4840,7 @@ msgstr "Vrátiť sa k uloženému súboru %s?"
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:2000
 msgid "Revision ID"
-msgstr "ID zmeny textu"
+msgstr "ID korektúry"
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -4845,13 +4848,13 @@ msgstr "ID zmeny textu"
 #. TOOLBAR_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:2005
 msgid "Right"
-msgstr "vpravo"
+msgstr "Vpravo"
 
 #. RightIndentStatus
 #: po/tmp/ap_String_Id.h.h:2007
 #, c-format
 msgid "Right Indent [%s]"
-msgstr "Pravé odsadenie [%s]"
+msgstr "Odsadenie sprava [%s]"
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h.h:2009
@@ -4878,7 +4881,7 @@ msgstr "Zarovná odsek doprava"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:2018
 msgid "Right-to-left &dominant"
-msgstr "pre&vláda text sprava doľava"
+msgstr "Pre&vláda text sprava doľava"
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:2020
@@ -4893,17 +4896,17 @@ msgstr "Práva:"
 #. DLG_FormatTable_Apply_To_Row
 #: po/tmp/ap_String_Id.h.h:2024
 msgid "Row"
-msgstr "riadok"
+msgstr "Riadok"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h.h:2026
 msgid "Rows &Above"
-msgstr "riadky &nad"
+msgstr "Riadky &nad"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
 #: po/tmp/ap_String_Id.h.h:2028
 msgid "Rows &Below"
-msgstr "riadky &pod"
+msgstr "Riadky &pod"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:2030
@@ -4913,7 +4916,7 @@ msgstr "S&kripty"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2032
 msgid "S&how revisions"
-msgstr "zobraziť &zmeny textu"
+msgstr "Zobraziť &korektúry"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:2034
@@ -5008,7 +5011,7 @@ msgstr "Mierka..."
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:2072
 msgid "Search for help about..."
-msgstr "Vyhľadá nápovedu k slovu..."
+msgstr "Vyhľadá pomoc k slovu..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:2074
@@ -5023,17 +5026,17 @@ msgstr "Sekúnd od začiatku letopočtu"
 #. DLG_Break_SectionBreaks_Capital
 #: po/tmp/ap_String_Id.h.h:2078
 msgid "Section Breaks"
-msgstr "Zlomy v kapitole"
+msgstr "Zlomy kapitoly"
 
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h.h:2080
 msgid "Section breaks"
-msgstr "Zlomy v kapitole"
+msgstr "Zlomy kapitoly"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:2082
 msgid "See history of the current document"
-msgstr "Zobrazí históriu aktuálneho dokumentu"
+msgstr "Zobrazí históriu tohto dokumentu"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -5070,50 +5073,50 @@ msgstr "Výber zmeny textu"
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:2096
 msgid "Select Row"
-msgstr "Vyberie riadok"
+msgstr "Označí riadok"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:2098
 msgid "Select Table"
-msgstr "Vyberie tabuľku"
+msgstr "Označí tabuľku"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2100
 msgid "Select Text Box"
-msgstr "Vybrať textový rám"
+msgstr "Označiť textový rám"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:2102
 msgid "Select a target bookmark from the list."
-msgstr "Vyberte cieľovú záložku zo zoznamu."
+msgstr "Vyberte si záložku zo zoznamu."
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
 #: po/tmp/ap_String_Id.h.h:2105
 msgid "Select image from File"
-msgstr "Vybrať obrázok zo súboru"
+msgstr "Vybrať si obrázok zo súboru"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2107
 msgid "Select the Text Box"
-msgstr "Vyberie textový rám"
+msgstr "Označí textový rám"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:2109
 msgid "Select the entire document"
-msgstr "Vyberie celý dokument"
+msgstr "Označí celý dokument"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
 #: po/tmp/ap_String_Id.h.h:2111
 #: po/tmp/xap_String_Id.h.h:675
 msgid "Selection"
-msgstr "výber"
+msgstr "Výber"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:2113
 msgid "Sentence case"
-msgstr "Veľké písmená vo na začiatku vety"
+msgstr "VEĽKÉ písmená na začiatku vety"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2115
@@ -5133,17 +5136,17 @@ msgstr "Oddelí text v tabuľke tabulátormi"
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2121
 msgid "Separate with commas"
-msgstr "oddeliť čiarkami"
+msgstr "Oddeliť čiarkami"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2123
 msgid "Separate with commas and tabs"
-msgstr "oddeliť čiarkami a tabulátormi"
+msgstr "Oddeliť čiarkami a tabulátormi"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2125
 msgid "Separate with tabs"
-msgstr "oddeliť tabulátormi"
+msgstr "Oddeliť tabulátormi"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2127
@@ -5174,7 +5177,7 @@ msgstr "Automaticky vložiť obrázok"
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h.h:2138
 msgid "Set Text Wrapping"
-msgstr "Nastavenie zalamovania textu"
+msgstr "Nastavenie zalomenia textu"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2140
@@ -5215,7 +5218,7 @@ msgstr "Bez obrázka"
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:2155
 msgid "Set preferences"
-msgstr "Nastavenia"
+msgstr "Nastavíte vlastnosti programu"
 
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:2157
@@ -5225,7 +5228,7 @@ msgstr "Nastavenie tabulátorov"
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2159
 msgid "Set the type and styles of the Table of Contents"
-msgstr "Nastaví typy a štýly obsahu"
+msgstr "Nastavíte typy a štýly obsahu"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:2161
@@ -5292,17 +5295,17 @@ msgstr "Zobraziť for&mátovacie značky"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2185
 msgid "Show document &before revisions"
-msgstr "zobraziť dokument &pred zmenami v texte"
+msgstr "Zobraziť dokument &pred vykonaním korektúr"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2187
 msgid "Show document a&fter revisions"
-msgstr "zobraziť dokument &po zmenách v texte"
+msgstr "Zobraziť dokument &po vykonaní korektúr"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2189
 msgid "Show document after &previous revisions"
-msgstr "zobraziť dokument po pre&dchádzajúcich zmenách textu"
+msgstr "Zobraziť dokument po pre&dchádzajúcich zmenách textu"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:2191
@@ -5312,12 +5315,12 @@ msgstr "Zobrazí zoznam všetkých dokumentov"
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:2193
 msgid "Show or hide the rulers"
-msgstr "Zobrazí/skryje pravítko"
+msgstr "Zobrazí alebo skryje pravítko"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:2195
 msgid "Show or hide the status bar"
-msgstr "Zobrazí/skryje stavový panel"
+msgstr "Zobrazí alebo skryje stavový panel"
 
 #. MENU_STATUSLINE_VIEW_TB_1
 #. MENU_STATUSLINE_VIEW_TB_2
@@ -5325,7 +5328,7 @@ msgstr "Zobrazí/skryje stavový panel"
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h.h:2200
 msgid "Show or hide the toolbar"
-msgstr "Zobrazí/skryje panel s nástrojmi"
+msgstr "Zobrazí alebo skryje panel s nástrojmi"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2202
@@ -5335,17 +5338,17 @@ msgstr "Zobrazí zmeny v texte aktuálneho dokumentu"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2204
 msgid "Show what the document looks like after previous revisions"
-msgstr "Zobrazí dokument po predchádzajúcich zmenách v texte"
+msgstr "Ukáže, ako dokument vyzeral po predošlých zmenách v texte"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2206
 msgid "Show what the document looks like after revisions"
-msgstr "Zobrazí dokument po zmenách v texte"
+msgstr "Ukáže, ako bude dokument vyzerať po vykonaní zmien v texte"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2208
 msgid "Show what the document looks like before revisions"
-msgstr "Zobrazí dokument pred zmenami v texte"
+msgstr "Ukáže, ako dokument vyzeral pred vykonaním zmien v texte"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2210
@@ -5355,13 +5358,13 @@ msgstr "Zobraziť..."
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h.h:2212
 msgid "Show/hide annotations"
-msgstr "Zobraziť/schovať poznámky"
+msgstr "Zobraziť alebo schovať poznámky"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2215
 msgid "Show/hide formatting marks"
-msgstr "Zobrazí/skryje formátovacie značky"
+msgstr "Zobrazí alebo skryje formátovacie značky"
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h.h:2217
@@ -5620,17 +5623,17 @@ msgstr "Začať podzoznam"
 #. DLG_MarkRevisions_Check2Label
 #: po/tmp/ap_String_Id.h.h:2323
 msgid "Start a new revision"
-msgstr "Zaznamenať novú zmenu v texte"
+msgstr "Urobiť novú korektúru"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2325
 msgid "Start ne&w revision"
-msgstr "Zaznamenať n&ovú zmenu v texte"
+msgstr "Urobiť n&ovú korektúru"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2327
 msgid "Start revision distinct from the current one"
-msgstr "Začať odlišnú zmenu od aktuálnej"
+msgstr "Urobiť odlišnú zmenu od tejto"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2329
@@ -5768,12 +5771,12 @@ msgstr "Sčítať riadok tabuľky"
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2384
 msgid "Summary"
-msgstr "Súhrn"
+msgstr "Resumé"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:2386
 msgid "Supe&rscript"
-msgstr "ho&rný index"
+msgstr "Ho&rný index"
 
 #. TOOLBAR_LABEL_FMT_SUPERSCRIPT
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
@@ -5803,7 +5806,7 @@ msgstr "T&abuľka"
 #: po/tmp/ap_String_Id.h.h:2398
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Rozmiestnenie tabulátorov [%s]"
+msgstr "Umiestnenie tabulátorov [%s]"
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h.h:2400
@@ -5821,7 +5824,7 @@ msgstr "Odstrániť tabulátory:"
 #: po/tmp/ap_String_Id.h.h:2406
 #: po/tmp/xap_String_Id.h.h:723
 msgid "Table"
-msgstr "tabuľku"
+msgstr "Tabuľku"
 
 #. DLG_InsertTable_TableSize_Capital
 #: po/tmp/ap_String_Id.h.h:2408
@@ -5911,6 +5914,11 @@ msgstr "Zalomenie textu"
 msgid "Text and Icon"
 msgstr "Text a ikona"
 
+#. COMMAND_LINE_PRINTING_DEPRECATED
+#: po/tmp/ap_String_Id.h.h:2445
+msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+msgstr "Príkaz „--print“ sa od Abiwordu 2.8 nepoužíva. Na dosiahnutie rovnakého cieľa môžete namiesto neho použiť nástroje na konverziu pre príkazový riadok Abiwordu a potom nahrať súbor do spoolera - zariadenia na dočasné uloženie súborov, ktoré sa majú vytlačiť na disk. Napr. „abiword --to=ps --to-name=fd://1 myfile.txt | lpr“"
+
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2445
 msgid "The margins selected are too large to fit on the page."
@@ -5949,7 +5957,7 @@ msgstr "Zmeny sa prejavia len ak znova spustíte AbiWord alebo vytvoríte nový 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2459
 msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
-msgstr "V dokumente boli urobené zmeny, ktoré teraz nevidno. Viac o práci so zmenami v texte nájdete v dokumentácii k programu AbiWord."
+msgstr "V dokumente boli urobené zmeny, ktoré teraz nevidíte. Viac o práci so zmenami v texte nájdete v dokumentácii k programu AbiWord."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2461
@@ -5968,7 +5976,7 @@ msgstr ""
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:2465
 msgid "Three"
-msgstr "tri"
+msgstr "Tri"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
@@ -6031,7 +6039,7 @@ msgstr "Odrážky v tvare trojuholníka"
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2489
 msgid "Two"
-msgstr "dva"
+msgstr "Dva"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2491
@@ -6041,7 +6049,7 @@ msgstr "Typ"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2493
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Zadajte názov pre novú záložku, alebo nejakú vyberte zo zoznamu."
+msgstr "Napíšte názov novej záložky, alebo si vyberte nejakú zo zoznamu."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2495
@@ -6176,7 +6184,7 @@ msgstr "Zobrazí tento dokument"
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2551
 msgid "View tooltips"
-msgstr "Zobraziť tipy v paneli"
+msgstr "Zobraziť pomocný text"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2553
@@ -6192,7 +6200,7 @@ msgstr "Vidno"
 #: po/tmp/ap_String_Id.h.h:2557
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Varovanie: zadaná záložka [%s] neexistuje."
+msgstr "Varovanie: zadaná záložka (%s) neexistuje."
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2559
@@ -6218,7 +6226,7 @@ msgstr "Počet slov"
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:2568
 msgid "Wordprocessing"
-msgstr "Správa slov"
+msgstr "Písanie textu"
 
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2570
@@ -6228,12 +6236,12 @@ msgstr "Slov bez pozn. pod č. a konc. p.:"
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2572
 msgid "Words in &UPPERCASE"
-msgstr "slová s &VEĽKÝMI písmenami"
+msgstr "Slová s &VEĽKÝMI písmenami"
 
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:2574
 msgid "Words with num&bers"
-msgstr "slová s čís&lami"
+msgstr "Slová s čís&lami"
 
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:2576
@@ -6283,42 +6291,42 @@ msgstr "Lupa"
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2594
 msgid "Zoom to &100%"
-msgstr "zväčšiť na &100%"
+msgstr "Na &100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2596
 msgid "Zoom to &200%"
-msgstr "zväčšiť na &200%"
+msgstr "Na &200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2598
 msgid "Zoom to &50%"
-msgstr "zväčšiť na &50%"
+msgstr "Na &50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2600
 msgid "Zoom to &75%"
-msgstr "zväčšiť na &75%"
+msgstr "Na &75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2602
 msgid "Zoom to 100%"
-msgstr "Zväčší na 100%"
+msgstr "Na 100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2604
 msgid "Zoom to 200%"
-msgstr "Zväčší na 200%"
+msgstr "Na 200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2606
 msgid "Zoom to 50%"
-msgstr "Zväčší na 50%"
+msgstr "Na 50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2608
 msgid "Zoom to 75%"
-msgstr "Zväčší na 75%"
+msgstr "Na 75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:2610
@@ -6338,7 +6346,7 @@ msgstr "custom.dic"
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:2616
 msgid "dd/mm/yy"
-msgstr "d. m. yyyy"
+msgstr "dd/mm/yy"
 
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:2618
@@ -6353,7 +6361,7 @@ msgstr "minút(y)"
 #. FIELD_DateTime_MMDDYY
 #: po/tmp/ap_String_Id.h.h:2622
 msgid "mm/dd/yy"
-msgstr "mm. dd. yyyy"
+msgstr "mm/dd/yy"
 
 #. DLG_ToggleCase_ToggleCase
 #: po/tmp/ap_String_Id.h.h:2624
@@ -6387,7 +6395,7 @@ msgstr "&75%"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:17
 msgid "&Page width"
-msgstr "šírku s&trany"
+msgstr "Na šírku s&trany"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:19
@@ -6397,7 +6405,7 @@ msgstr "Nastaviť &jazyk"
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:23
 msgid "&Whole page"
-msgstr "&celú stranu"
+msgstr "Na &celú stranu"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:25
@@ -6412,12 +6420,12 @@ msgstr "(test preskočený)"
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Adresár v tomto umiestnení neexistuje."
+msgstr "V tomto umiestnení adresár neexistuje."
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "Správca modulov Abiwordu"
+msgstr "Manažér modulov programu Abiword"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -6426,25 +6434,25 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord nemohol nájsť súbor pre kontrolu preklepov %s.dll\n"
+"AbiWord nevedel nájsť súbor na kontrolu preklepov %s.dll\n"
 "Prosím, stiahnite a nainštalujte si Aspell z http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
 #, c-format
 msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "AbiWord nemohol úplne obnoviť verziu dokumentu %d, pretože informácie o verzii nie sú úplné."
+msgstr "AbiWordu sa nepodarilo úplne obnoviť verziu %d, pretože o nej nemá všetky potrebné informácie."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
 #, c-format
 msgid "AbiWord cannot restore version %d of the document because the version information is missing."
-msgstr "AbiWord nemohol obnoviť verziu dokumentu %d, pretože informácie o verzii chýbajú."
+msgstr "AbiWordu sa nepodarilo obnoviť verziu %d, pretože o nej nemá potrebné informácie."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
 msgid "AbiWord: Print Preview"
-msgstr "AbiWord: Ukážka pred tlačou"
+msgstr "AbiWord: ukážka pred tlačou"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:41
@@ -6475,7 +6483,7 @@ msgstr "Albánčina"
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:53
 msgid "All (*.*)"
-msgstr "Všetky typy súborov (*.*)"
+msgstr "Všetky súbory (*.*)"
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:55
@@ -6490,7 +6498,7 @@ msgstr "Všetky obrázky"
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Allow extra markup in AWML namespace"
-msgstr "Povoliť špeciálne značky pre AWML"
+msgstr "Povoliť špeciálne značky v AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:61
@@ -6540,7 +6548,7 @@ msgstr "Arménčina, ARMSCII-8"
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Assamese"
-msgstr "Asámčina (India)"
+msgstr "Asamčina (India)"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:83
@@ -6550,7 +6558,7 @@ msgstr "Astúrčina (Španielsko)"
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:87
 msgid "Auto-insert direction markers"
-msgstr "Automaticky vložiť značky pre smer textu"
+msgstr "Automaticky vložiť značky smeru textu"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:89
@@ -6600,7 +6608,7 @@ msgstr "Pobaltské jazyky, kódová stránka Windows 1256"
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Basque"
-msgstr "Baskitčina"
+msgstr "Baskičtina"
 
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:109
@@ -6660,7 +6668,7 @@ msgstr "Katalánčina"
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Central Aymara"
-msgstr "Stredná Ajmarčina"
+msgstr "Stredná ajmarčina"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:141
@@ -6680,12 +6688,12 @@ msgstr "Stredoeurópske, kódová stránka Windows 1250"
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:147
 msgid "Change Language when changing keyboard"
-msgstr "pri zmene klávesnice zmeniť aj jazyk"
+msgstr "Pri zmene klávesnice zmeniť aj jazyk"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chapter Heading"
-msgstr "Nadpis kapitoly"
+msgstr "Názov kapitoly"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:151
@@ -6750,7 +6758,7 @@ msgstr "Tradičná čínština, kódová stránka Windows 950"
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:175
 msgid "Choose document from the list:"
-msgstr "Vyberte dokument zo zoznamu:"
+msgstr "Vyberte si dokument zo zoznamu:"
 
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h.h:177
@@ -6765,7 +6773,7 @@ msgstr "Clip Art"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h.h:181
 msgid "Clip Art could not be loaded"
-msgstr "Prvok Clip Art sa nepodarilo spustiť"
+msgstr "Clip Art sa nepodarilo spustiť"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:183
@@ -6845,7 +6853,7 @@ msgstr "Korzičtina"
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Could not activate/load plugin"
-msgstr "Tento modul sa nedá nahrať/zapnúť"
+msgstr "Tento modul sa nedá zapnúť/spustiť"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:217
@@ -6856,17 +6864,17 @@ msgstr "Modul sa nedá vypnúť "
 #: po/tmp/xap_String_Id.h.h:219
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "slovník pre jazyk: %s sa nedá spustiť"
+msgstr "Slovník pre tento jazyk (%s) sa nedá spustiť"
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Created"
-msgstr "Vytvorené"
+msgstr "Vytvorená"
 
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Created:"
-msgstr "Vytvoril:"
+msgstr "Vytvoril(a):"
 
 #. LANG_HR_HR
 #: po/tmp/xap_String_Id.h.h:225
@@ -6931,17 +6939,17 @@ msgstr "Predvolený jazyk: "
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:251
 msgid "Define Image Placement"
-msgstr "Zadajte umiestnenie obrázka"
+msgstr "Vyberte si umiestnenie obrázka"
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:253
 msgid "Define Text Wrapping"
-msgstr "Vybrať zalomenie textu"
+msgstr "Zvoľte si zalomenie textu"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:262
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Chcete odstrániť ikonu z panela s nástrojmi?"
+msgstr "Chcete túto ikonu odstrániť z panela s nástrojmi?"
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:264
@@ -6966,7 +6974,7 @@ msgstr "Názov dokumentu:"
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h.h:272
 msgid "Documents compared"
-msgstr "Dokumenty boli porovnané"
+msgstr "Porovnanie dokumentov sa skončilo"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:274
@@ -6986,7 +6994,7 @@ msgstr "Efekty"
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:280
 msgid "Embed (CSS) style sheet"
-msgstr "Vložiť (CSS) kaskádové štýly"
+msgstr "Vložiť súbor s kaskádovými štýlmi (CSS)"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:282
@@ -6996,7 +7004,7 @@ msgstr "Vložiť písma"
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:284
 msgid "Embed images in URLs (Base64-encoded)"
-msgstr "Obrázky vložiť ako internetové stránky (v kódovaní Base64)"
+msgstr "Vložiť Obrázky na www stránky (v kódovaní Base64)"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:286
@@ -7046,12 +7054,12 @@ msgstr "Angličtina (Juhoafrická republika)"
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:304
 msgid "English (UK)"
-msgstr "Angličtina (Spojené kráľovstvo...)"
+msgstr "Angličtina (Veľká Británia)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:306
 msgid "English (US)"
-msgstr "Angličtina (Spojené štáty)"
+msgstr "Angličtina (USA)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:308
@@ -7086,7 +7094,7 @@ msgstr "Exportovať s PHP inštrukciami"
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:320
 msgid "Farsi"
-msgstr "Farčina"
+msgstr "Fársí"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:322
@@ -7102,12 +7110,12 @@ msgstr "Súbor s týmto názvom už existuje. Mám prepísať obsah súboru „%
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h.h:326
 msgid "File to record editing:"
-msgstr "Súbor na záznam úprav:"
+msgstr "Súbor, v ktorom treba urobiť úpravy:"
 
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h.h:328
 msgid "File to replay editing:"
-msgstr "Súbor na opakovanie úprav:"
+msgstr "Súbor, z ktorého treba zopakovať úpravy:"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:330
@@ -7162,7 +7170,7 @@ msgstr "Od: "
 #. LANG_GL
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Galician (Galego)"
-msgstr "Galíčtina"
+msgstr "Galícijčina"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:359
@@ -7197,7 +7205,7 @@ msgstr "Nemčina (Švajčiarsko)"
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Grayscale"
-msgstr "V stupňoch šedej"
+msgstr "V odtieňoch šedej"
 
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h.h:373
@@ -7227,12 +7235,12 @@ msgstr "Možnosti pre export do HTML"
 #. LANG_HA_NE
 #: po/tmp/xap_String_Id.h.h:385
 msgid "Hausa (Niger)"
-msgstr "Hausa (Niger)"
+msgstr "Hauština (Niger)"
 
 #. LANG_HA_NG
 #: po/tmp/xap_String_Id.h.h:387
 msgid "Hausa (Nigeria)"
-msgstr "Hausa (Nigéria)"
+msgstr "Hauština (Nigéria)"
 
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:389
@@ -7297,7 +7305,7 @@ msgstr "Schovať text"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:415
 msgid "HighLight Color"
-msgstr "Farba zvýraznenia"
+msgstr "Farba zvýrazňovača"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:417
@@ -7322,7 +7330,7 @@ msgstr "Islandčina, Macintosh"
 #. DLG_History_Id
 #: po/tmp/xap_String_Id.h.h:425
 msgid "Identifier:"
-msgstr "Identifikácia:"
+msgstr "Identifikátor:"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:427
@@ -7332,12 +7340,12 @@ msgstr "Vlastnosti obrázka"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:429
 msgid "Image floats above text"
-msgstr "Obrázok sa pohybuje nad text"
+msgstr "Obrázok sa pohybuje nad textom"
 
 #. DLG_Image_InLine
 #: po/tmp/xap_String_Id.h.h:431
 msgid "Image placed in-line (no text wrapping)"
-msgstr "Obrázok je vložený medzi riadkami (text nekopíruje tvar obr.)"
+msgstr "Obrázok vložiť medzi riadky (bez zalomenia)"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:435
@@ -7357,7 +7365,7 @@ msgstr "Indonézština"
 #. XIM_Methods
 #: po/tmp/xap_String_Id.h.h:441
 msgid "Input Methods"
-msgstr "Vstupné metódy"
+msgstr "Metódy vstupov"
 
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h.h:445
@@ -7412,7 +7420,7 @@ msgstr "Interlingua"
 #. LANG_IU_CA
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Inuktitut"
-msgstr "Inuktčina"
+msgstr "Inuitské dialekty (Kanada)"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:467
@@ -7457,7 +7465,7 @@ msgstr "Japončina, kódová stránka Windows 932"
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h.h:485
 msgid "Kannada"
-msgstr "Kannada"
+msgstr "Kannadčina (India)"
 
 #. LANG_KO_KR
 #. LANG_KO
@@ -7473,7 +7481,7 @@ msgstr "Kórejčina, EUC-KR"
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h.h:492
 msgid "Korean, Johab"
-msgstr "Kórejčina, Johab"
+msgstr "Kórejčina, Džohab"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h.h:494
@@ -7518,7 +7526,7 @@ msgstr "Litovčina"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h.h:510
 msgid "Loading Clip Art"
-msgstr "Spúšťam prvok Clip Art"
+msgstr "Spúšťam Clip Art"
 
 #. LANG_MK
 #: po/tmp/xap_String_Id.h.h:516
@@ -7528,7 +7536,7 @@ msgstr "Macedónčina"
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h.h:518
 msgid "Make default for document"
-msgstr "nastaviť pre každý dokument"
+msgstr "Nastaviť pre každý dokument"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h.h:520
@@ -7548,12 +7556,12 @@ msgstr "Marathičtina"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:526
 msgid "Marshallese (Marshall Islands)"
-msgstr "Maršálčina (Maršálove ostrovy)"
+msgstr "Maršalčina (Maršálove ostrovy)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:528
 msgid "Marshallese (Nauru)"
-msgstr "Maršálčina (Nauru)"
+msgstr "Maršalčina (Nauru)"
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h.h:530
@@ -7588,7 +7596,7 @@ msgstr "Žiadny obrázok"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:542
 msgid "No plugin selected"
-msgstr "Nevybrali ste žiadny modul"
+msgstr "Nevybrali ste si žiadny modul"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:544
@@ -7598,7 +7606,7 @@ msgstr "Normálny"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:546
 msgid "Norwegian Bokmal"
-msgstr "Nórčina Bokmal"
+msgstr "Nórčina Bokmål"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:548
@@ -7658,12 +7666,12 @@ msgstr "Ďalšie..."
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:574
 msgid "P&ercent:"
-msgstr "p&ercent:"
+msgstr "P&ercent:"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:576
 msgid "Page Width"
-msgstr "šírku strany"
+msgstr "Na šírku strany"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:578
@@ -7688,7 +7696,7 @@ msgstr "Neformátovaný text"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:586
 msgid "Plugin Details:"
-msgstr "Detaily modulu:"
+msgstr "Podrobnosti o module:"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:588
@@ -7713,17 +7721,17 @@ msgstr "Portugalčina (Portugalsko)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h.h:596
 msgid "Position relative to its Column"
-msgstr "Umiestniť vzhľadom na stĺpec"
+msgstr "Umiestnenie podľa stĺpca"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h.h:598
 msgid "Position relative to its Page"
-msgstr "Umiestniť vzhľadom na stranu"
+msgstr "Umiestnenie podľa strany"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h.h:600
 msgid "Position relative to nearest paragraph"
-msgstr "Umiestniť vzhľadom na najbližší odsek"
+msgstr "Umiestnenie podľa najbližšieho odseku"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:602
@@ -7748,12 +7756,12 @@ msgstr "Tlačiť súbor ako typ:"
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:615
 msgid "Print in: "
-msgstr "Tlačiť: "
+msgstr "Tlačiť na: "
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:617
 msgid "Print to: "
-msgstr "Tlačiť na: "
+msgstr "Tlačiť do: "
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:619
@@ -7790,6 +7798,11 @@ msgstr "Kečuánčina (3 samohlásky)"
 msgid "Quechua (5 vowels)"
 msgstr "Kečuánčina (5 samohlások)"
 
+#. ReadOnly
+#: po/tmp/xap_String_Id.h.h:633
+msgid "Read-Only"
+msgstr "Len na čítanie"
+
 #. DLG_FOSA_RecordToFileTitle
 #: po/tmp/xap_String_Id.h.h:633
 msgid "Record Editing to File"
@@ -7808,7 +7821,7 @@ msgstr "Vzťah:"
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h.h:639
 msgid "Replay Editing from File"
-msgstr "Opakovať úpravy ako v súbore"
+msgstr "Urobiť úpravy ako v súbore"
 
 #. DLG_Restore
 #: po/tmp/xap_String_Id.h.h:641
@@ -7823,7 +7836,7 @@ msgstr "Pôvodné nastavenia"
 #. DLG_DocComparison_Results
 #: po/tmp/xap_String_Id.h.h:645
 msgid "Results"
-msgstr "Výsledky"
+msgstr "Výsledok"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:647
@@ -7863,7 +7876,7 @@ msgstr "Uložiť nastavenia"
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:661
 msgid "Save file as type:"
-msgstr "Uložiť súbor ako typ:"
+msgstr "Vyberte si typ súboru:"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:663
@@ -7998,12 +8011,12 @@ msgstr "Text je zalomený z oboch strán obrázka"
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h.h:735
 msgid "Text wrapped to the Left of the Image"
-msgstr "Text je zalomený z ľavej strany obrázka"
+msgstr "Text je zalomený naľavo od obrázka"
 
 #. DLG_Image_WrappedRight
 #: po/tmp/xap_String_Id.h.h:737
 msgid "Text wrapped to the Right of the Image"
-msgstr "Text je zalomený z pravej strany obrázka"
+msgstr "Text je zalomený napravo od obrázka"
 
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:739
@@ -8034,13 +8047,13 @@ msgstr "Adresár „%s“ je chránený proti zápisu."
 #. DLG_FOSA_ExtensionDoesNotMatch
 #: po/tmp/xap_String_Id.h.h:749
 msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
-msgstr "Táto prípona nezodpovedá zvolenému typu súboru. Chcete ju aj tak použiť?"
+msgstr "Táto prípona nepasuje k typu tohto súboru. Chcete tento názov aj tak použiť?"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:751
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "Najnovšia zmena textu, ktorá môže byť úplne obnovená je %d. Chcete ju  obnoviť namiesto tejto? Ak chcete čiastočne obnoviť zmenu %d, stlačte Nie."
+msgstr "Najbližšia zmena textu, ktorá môže byť úplne obnovená je %d. Chcete ju obnoviť namiesto tejto? Ak chcete čiastočne obnoviť zmenu %d, stlačte Nie."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:753
@@ -8090,7 +8103,7 @@ msgstr "Turečtina, kódová stránka Windows 1254"
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:779
 msgid "Type of text wrapping"
-msgstr "Typy zalomenia textu"
+msgstr "Typ zalomenia textu"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:781
@@ -8292,7 +8305,7 @@ msgstr "Západoeurópske, kódová stránka Windows 1252"
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:868
 msgid "Whole Page"
-msgstr "Celá strana"
+msgstr "Na celú stranu"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:870
@@ -8323,12 +8336,12 @@ msgstr "Jidiš"
 #: po/tmp/xap_String_Id.h.h:880
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Predtým, ako budete pokračovať, mali by ste v dokumente %s uložiť zmeny.  Chcete to urobiť teraz?"
+msgstr "Predtým, ako budete pokračovať, by ste v dokumente %s mali uložiť zmeny. Chcete to urobiť teraz?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:884
 msgid "Zoom to"
-msgstr "Zväčšiť na"
+msgstr "Zväčšiť alebo zmenšiť"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:886
