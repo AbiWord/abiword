@@ -1026,6 +1026,7 @@ bool AbiCollabSessionManager::destroyAccount(AccountHandler* pHandler)
 
 void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_GenericVector<DocHandle*>& vDocHandles)
 {
+	UT_DEBUGMSG(("Setting document handles for buddy %s\n", pBuddy->getDescriptor().utf8_str()));
 	UT_return_if_fail(pBuddy);
 
 	// create a copy of the current document handles, which
@@ -1035,19 +1036,11 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 	for (UT_sint32 i = 0; i < vDocHandles.size(); i++)
 	{
 		DocHandle* pDocHandle = vDocHandles.getNthItem(i);
-		// sanity checking
-		if (!pDocHandle)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			continue;
-		}
+		UT_continue_if_fail(pDocHandle);
+
 		// sanity checking
 		UT_UTF8String sId = pDocHandle->getSessionId();
-		if (sId.size() == 0)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			continue;
-		}
+		UT_continue_if_fail(sId.size() > 0);
 	
 		// construct a nice document name
 		UT_UTF8String sDocumentName = pDocHandle->getName();
@@ -1101,20 +1094,16 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 	while (it != oldDocHandles.end())
 	{
 		DocHandle* pDocHandle = *it;
-		if (pDocHandle)
-		{
-			// TODO: when we are a part of this session, then handle that properly
-		
-			UT_DEBUGMSG(("Purging existing DocHandle (%s) for buddy (%s)\n", pDocHandle->getSessionId().utf8_str(), pBuddy->getDescription().utf8_str()));
-			UT_UTF8String pDestroyedSessionId = pDocHandle->getSessionId();
-			pBuddy->destroyDocHandle(pDestroyedSessionId);
-			CloseSessionEvent event(pDestroyedSessionId);
-			signal(event, pBuddy);
-		}
-		else
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
+		UT_continue_if_fail(pDocHandle);
+
+		// TODO: when we are a part of this session, then handle that properly
+	
+		UT_DEBUGMSG(("Purging existing DocHandle (%s) for buddy (%s)\n", pDocHandle->getSessionId().utf8_str(), pBuddy->getDescription().utf8_str()));
+		UT_UTF8String pDestroyedSessionId = pDocHandle->getSessionId();
+		pBuddy->destroyDocHandle(pDestroyedSessionId);
+		CloseSessionEvent event(pDestroyedSessionId);
+		signal(event, pBuddy);
+
 		it = oldDocHandles.erase(it);
 	}
 }
