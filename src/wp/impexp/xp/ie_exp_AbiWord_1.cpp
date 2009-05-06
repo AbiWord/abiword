@@ -692,6 +692,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 	const UT_UCSChar * pData;
 
 	UT_return_if_fail(sizeof(UT_Byte) == sizeof(char));
+	sBuf.reserve(length);
 
 	for (pData=data; (pData<data+length); /**/)
 	{

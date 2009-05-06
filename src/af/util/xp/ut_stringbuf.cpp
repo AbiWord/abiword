@@ -299,12 +299,20 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 
 	if (!sz || (!n && !*sz))
 		return;
+
+	/* The vast majority of calls to appendUCS4 -- maybe all? -- pass in
+	   1 for n, so we can halve the number of calls to g_unichar_to_utf8
+	   (in most cases) by caching the first byte length. */
+	int iCache;
 	
 	for (i = 0; (i < n) || (n == 0); i++)
 	{
 		if((0 == sz[i]) && (0 == n))
 			break;
 		int seql = UT_Unicode::UTF8_ByteLength (sz[i]);
+		if(i == 0)
+			iCache = seql;
+
 		if (seql < 0) 
 			continue; // not UCS-4 !!
 		if (seql == 0) 
@@ -319,7 +327,12 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	{
 		if((0 == sz[i]) && (0 == n))
 			break;
-		int seql = UT_Unicode::UTF8_ByteLength (sz[i]);
+		int seql;
+		if(i == 0)
+			seql = iCache;
+		else
+			seql = UT_Unicode::UTF8_ByteLength (sz[i]);
+
 		if (seql < 0) 
 			continue; // not UCS-4 !!
 		if (seql == 0) 
