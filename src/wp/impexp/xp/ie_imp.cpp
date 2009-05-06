@@ -824,6 +824,11 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 					best_sniffer = s;
 					best_confidence = confidence;
 					ieft = (IEFileType) (k+1);
+
+					// short-circuit when we have perfect confidence for both
+					if (suffix_confidence == UT_CONFIDENCE_PERFECT &&
+					    content_confidence == UT_CONFIDENCE_PERFECT)
+						break;
 				}
 		  }
 		if (best_sniffer)
