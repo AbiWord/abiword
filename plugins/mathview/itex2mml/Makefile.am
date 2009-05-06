@@ -29,6 +29,8 @@ DISTCLEANFILES = \
 	$(BUILT_SOURCES) \
 	$(Y_TAB_H)
 
+$(Y_TAB_H):	$(Y_TAB_C)
+
 $(Y_TAB_C):	$(srcdir)/itex2MML.y
 		$(YACC) -p $(YYPREFIX) -d $<
 
