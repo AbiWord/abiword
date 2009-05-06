@@ -853,7 +853,7 @@ UT_uint32 fl_AutoNum::getNumLabels() const
 
 UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 /*depth*/) const
 {
-	UT_ASSERT(m_pItems.getItemCount() > 0);
+	UT_return_val_if_fail(m_pItems.getItemCount() >= 0, -1)
 
 	PL_StruxDocHandle pTmp;
 	UT_uint32 ndx = 0;

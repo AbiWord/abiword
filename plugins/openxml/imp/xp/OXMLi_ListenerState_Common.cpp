@@ -87,7 +87,34 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 /********************************
  ****  PARAGRAPH FORMATTING  ****
  ********************************/
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "ilvl")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
+		if(contextMatches(contextTag, NS_W_KEY, "numPr")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			if(!val || !*val)
+				return;
+			std::string level(val);
+			para->setAttribute("level", level.c_str());					
+		}		
+		rqst->handled = true;
+	} else if ( nameMatches(rqst->pName, NS_W_KEY, "numId")){
+		//verify the context
+		std::string contextTag = rqst->context->back();
+		if(contextMatches(contextTag, NS_W_KEY, "numPr")){
+			OXML_SharedElement para = rqst->stck->top();
+			const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+			if(!val || !*val)
+				return;
+			std::string numId(val);
 
+			OXML_Document* doc = OXML_Document::getInstance();
+			std::string absNumId = doc->getMappedNumberingId(numId);
+			if(!absNumId.empty())
+				para->setAttribute("listid", absNumId.c_str());					
+		}		
+		rqst->handled = true;
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "jc") ||
 				nameMatches(rqst->pName, NS_W_KEY, "ind") ||
 				nameMatches(rqst->pName, NS_W_KEY, "spacing") ||

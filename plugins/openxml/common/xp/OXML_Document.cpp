@@ -430,6 +430,13 @@ UT_Error OXML_Document::addToPT(PD_Document * pDocument)
 		if (ret != UT_OK) return ret;
 	}
 
+	//Adding lists to PT
+	OXML_ListMap::iterator it4;
+	for (it4 = m_lists_by_id.begin(); it4 != m_lists_by_id.end(); it4++) {
+		ret = it4->second->addToPT(pDocument);
+		if (ret != UT_OK) return ret;
+	}
+
 	return ret;
 }
 
@@ -446,3 +453,18 @@ void OXML_Document::_assignHdrFtrIds()
 		index++;
 	}
 }
+
+std::string OXML_Document::getMappedNumberingId(std::string numId)
+{
+	std::map<std::string, std::string>::iterator iter = m_numberingMap.find(numId);
+	if(iter == m_numberingMap.end())
+		return "";
+	return iter->second; 
+}
+
+bool OXML_Document::setMappedNumberingId(std::string numId, std::string abstractNumId)
+{
+	m_numberingMap.insert(std::make_pair(numId, abstractNumId));
+	return m_numberingMap.find(numId) != m_numberingMap.end();
+}
+

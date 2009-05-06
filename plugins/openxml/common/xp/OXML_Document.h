@@ -105,6 +105,9 @@ public:
 	*/
 	UT_Error addToPT(PD_Document * pDocument);
 
+	std::string getMappedNumberingId(std::string numId);
+	bool setMappedNumberingId(std::string numId, std::string abstractNumId);
+
 private:
 	static OXML_Document* s_docInst;
 	OXML_Document();
@@ -125,6 +128,8 @@ private:
 
 	OXML_ListMap m_lists_by_id;
 	OXML_ImageMap m_images_by_id;
+
+	std::map<std::string, std::string> m_numberingMap;
 
 	void _assignHdrFtrIds();
 };

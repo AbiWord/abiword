@@ -34,6 +34,7 @@
 
 // External includes
 #include <string>
+#include <sstream>
 
 OXML_List::OXML_List() : 
 	OXML_ObjectWithAttrProp(),
@@ -302,9 +303,46 @@ UT_Error OXML_List::serializeNumbering(IE_Exp_OpenXML* exporter)
 	return exporter->finishNumbering(TARGET_NUMBERING);
 }
 
-UT_Error OXML_List::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_List::addToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_ERROR;
+
+	const gchar* ppAttr[13];
+
+	std::stringstream out;
+	out << id;
+	std::string listId = out.str();
+	out.str("");
+	out << parentId;
+	std::string parentListId = out.str();
+	out.str("");
+	out << type;
+	std::string listType = out.str();
+	out.str("");
+	out << startValue;
+	std::string listStartVal = out.str();
+	std::string listDelim("%L."); //TODO: need to fix for openxml delim
+	std::string listDecimal(".");
+	if(decimal)
+		listDecimal = decimal;
+
+	ppAttr[0] = "id";
+	ppAttr[1] = listId.c_str();
+	ppAttr[2] = "parentid";
+	ppAttr[3] = parentListId.c_str();
+	ppAttr[4] = "type";
+	ppAttr[5] = listType.c_str();
+	ppAttr[6] = "start-value";
+	ppAttr[7] = listStartVal.c_str();
+	ppAttr[8] = "list-delim";
+	ppAttr[9] = listDelim.c_str();
+	ppAttr[10] = "list-decimal";
+	ppAttr[11] = listDecimal.c_str();
+	ppAttr[12] = 0;
+    
+	if (pDocument->appendList(ppAttr))
+		err = UT_OK;
+
+	return err;
 }
 

@@ -34,9 +34,19 @@
 class OXMLi_ListenerState_Numbering : public OXMLi_ListenerState
 {
 public:
+	OXMLi_ListenerState_Numbering();
 	void startElement (OXMLi_StartElementRequest * rqst);
 	void endElement (OXMLi_EndElementRequest * rqst);
 	void charData (OXMLi_CharDataRequest * rqst);
+
+private:
+	OXML_List* m_currentList;
+	std::string m_currentNumId;
+	std::string m_parentListId;
+
+	void handleLevel(const gchar* ilvl);
+	void handleFormattingType(const gchar* val);
+	
 };
 
 #endif //_OXMLI_LISTENERSTATE_NUMBERING_H_
