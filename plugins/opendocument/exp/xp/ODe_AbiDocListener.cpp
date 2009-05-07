@@ -1263,6 +1263,7 @@ void ODe_AbiDocListener::_outputData(const UT_UCSChar* pData, UT_uint32 length) 
     UT_uint32 nSpaces = 0;
 
     UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+    sBuf.reserve(length);
 
     for (p=pData; (p<pData+length); /**/)
     {
