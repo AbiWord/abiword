@@ -327,8 +327,10 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 		char * szDupValue = szValue ? g_strdup(szValue) : NULL;
 
 		// get rid of any illegal chars we might have been given
-		UT_validXML(copy);
-		UT_validXML(szDupValue);
+		if(!UT_isValidXML(copy))
+			UT_validXML(copy);
+		if(!UT_isValidXML(szDupValue))
+			UT_validXML(szDupValue);
 
 		const char * pEntry = m_pAttributes->pick(copy);
 
@@ -398,7 +400,8 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
 
 	// get rid of any illegal chars we might have been given in the value
-	UT_validXML(szValue2);
+	if(!UT_isValidXML(szValue2))
+		UT_validXML(szValue2);
 	
 	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
