@@ -1732,6 +1732,7 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
 
+	sBuf.reserve(length);
 	for (pData=data; (pData<data+length); /**/)
 	{
 		switch (*pData)

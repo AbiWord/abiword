@@ -200,6 +200,7 @@ void s_Applix_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		return;
 	}
 
+	sBuf.reserve(length);
 	for (pData=data; (pData<data+length); /**/)
 	{
 		switch (*pData)

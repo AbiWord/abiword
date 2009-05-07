@@ -465,6 +465,7 @@ void s_HRText_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	
 	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
 
+	sBuf.reserve(length);
 	for (pData=data; (pData<data+length); /**/)
 	{
 		if(!m_wctomb.wctomb(pC,mbLen,*pData))

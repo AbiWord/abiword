@@ -127,6 +127,7 @@ static void outputCharData (GsfOutput * output, const UT_UCSChar * data, UT_uint
    
    UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
    
+   sBuf.reserve(length);
    for (pData=data; (pData<data+length); /**/)
    {
       switch (*pData)

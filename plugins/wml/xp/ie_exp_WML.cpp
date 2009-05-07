@@ -1242,6 +1242,7 @@ void s_WML_Listener::_outputDataUnchecked(const UT_UCSChar * data, UT_uint32 len
 	const UT_UCSChar * pData;
 	m_bWasSpace = false;
 
+	sBuf.reserve(length);
 	for (pData=data; (pData<data+length); /**/)
 	{
 		switch (*pData)

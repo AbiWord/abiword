@@ -187,6 +187,7 @@ void Passepartout_Listener::_outputData(const UT_UCSChar * data, UT_uint32 lengt
   UT_UTF8String sBuf;
   const UT_UCSChar * pData;
   
+  sBuf.reserve(length);
   for (pData=data; (pData<data+length); /**/)
     {
       switch (*pData)
