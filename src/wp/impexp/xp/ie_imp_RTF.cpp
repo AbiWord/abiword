@@ -7450,10 +7450,10 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			UT_ASSERT_HARMLESS (UT_SHOULD_NOT_HAPPEN);
 		}
 	}
+
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	if(true /*m_currentRTFState.m_sectionProps.m_leftMargTwips != 0*/)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-
 		propBuffer += "; page-margin-left:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_leftMargTwips)/1440.;
 		UT_String sinch;
@@ -7462,7 +7462,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_rightMargTwips != 0*/)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; page-margin-right:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_rightMargTwips)/1440.;
 		UT_String sinch;
@@ -7471,7 +7470,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; page-margin-top:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_topMargTwips)/1440.;
 		UT_String sinch;
@@ -7480,7 +7478,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; page-margin-bottom:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_bottomMargTwips)/1440.;
 		UT_String sinch;
@@ -7489,7 +7486,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0*/)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; column-gap:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_colSpaceTwips)/1440.;
 		UT_String sinch;
@@ -7517,14 +7513,12 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		double inch = static_cast<double>(sheader)/1440.;
 		UT_String sinch;
 
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
 		propBuffer += sinch;
 	}
 #if 0
 	if(m_currentRTFState.m_sectionProps.m_gutterTwips != 0)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; page-margin-footer:";
 		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_gutterTwips)/1440.;
 		UT_String sinch;
@@ -7535,7 +7529,6 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 #endif
 	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
 	{
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += "; page-margin-footer:";
 		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_footerYTwips)/1440.;
 		UT_String sinch;
