@@ -22,6 +22,10 @@
 #include "config.h"
 #endif
 
+// need this to include what Pango considers 'low-level' api
+#define PANGO_ENABLE_ENGINE
+#define PANGO_ENABLE_BACKEND
+
 #include "gr_UnixPangoGraphics.h"
 #include "gr_Painter.h"
 
@@ -41,9 +45,6 @@
 #include "ut_misc.h"
 #include "ut_vector.h"
 #include "ut_locale.h"
-
-// need this to include what Pango considers 'low-level' api
-#define PANGO_ENABLE_ENGINE
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
