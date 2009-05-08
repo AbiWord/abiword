@@ -436,7 +436,7 @@ bool Stylist_tree::isUser(const PD_Style * pStyle) const
  */
 UT_sint32 Stylist_tree::getNumRows(void)
 {
-	return static_cast<UT_sint32>(m_vecStyleRows.getItemCount());
+	return m_vecStyleRows.getItemCount();
 }
 
 
@@ -499,7 +499,7 @@ UT_sint32 Stylist_tree::getNumCols(UT_sint32 row)
  */
 UT_sint32 Stylist_tree::getNumStyles(void) const
 {
-	return static_cast<UT_sint32>(m_vecAllStyles.getItemCount());
+	return m_vecAllStyles.getItemCount();
 }
 
 /*!
@@ -551,7 +551,7 @@ void Stylist_row::getRowName(UT_UTF8String & sRowName)
 
 UT_sint32 Stylist_row::getNumCols(void)
 {
-	return static_cast<UT_sint32>(m_vecStyles.getItemCount());
+	return m_vecStyles.getItemCount();
 }
 
 bool Stylist_row::findStyle(UT_UTF8String & sStyleName, UT_sint32 & col)

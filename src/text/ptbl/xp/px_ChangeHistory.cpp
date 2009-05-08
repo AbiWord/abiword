@@ -68,7 +68,7 @@ void px_ChangeHistory::clearHistory()
 
 void px_ChangeHistory::_invalidateRedo(void)
 {
-	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
+	UT_sint32 kLimit = m_vecChangeRecords.getItemCount();
 	UT_return_if_fail (m_undoPosition <= kLimit);
 
 	UT_sint32 i = m_undoPosition - m_iAdjustOffset;
@@ -85,7 +85,7 @@ void px_ChangeHistory::_invalidateRedo(void)
 		else
 		    i++;
 	}
-	m_undoPosition = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
+	m_undoPosition = m_vecChangeRecords.getItemCount();
 	if (m_savePosition > m_undoPosition)
 		m_savePosition = -1;
 	m_iAdjustOffset = 0;
@@ -367,7 +367,7 @@ bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) co
 
 bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 {
-	if ((m_iAdjustOffset == 0) && (m_undoPosition >= static_cast<UT_sint32>(m_vecChangeRecords.getItemCount())))
+	if ((m_iAdjustOffset == 0) && (m_undoPosition >= m_vecChangeRecords.getItemCount()))
 		return false;
 	
 	if (m_bOverlap)
@@ -493,7 +493,7 @@ bool px_ChangeHistory::didRedo(void)
 	    clearHistory();
 	    return false;
 	}
-	if ((m_undoPosition - m_iAdjustOffset) >= static_cast<UT_sint32>(m_vecChangeRecords.getItemCount()))
+	if ((m_undoPosition - m_iAdjustOffset) >= m_vecChangeRecords.getItemCount())
 		return false;
 	PX_ChangeRecord * pcr = m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 
@@ -529,7 +529,7 @@ void px_ChangeHistory::_printHistory(UT_sint32 iPrev) const
 	}
 	else
 	{
-		iStart = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount()) -1;
+		iStart = m_vecChangeRecords.getItemCount() -1;
 		iStop = iStart + iPrev;
 	}
 	if(iStop <0)

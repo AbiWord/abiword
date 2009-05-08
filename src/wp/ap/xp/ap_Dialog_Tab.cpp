@@ -189,7 +189,7 @@ void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 
 	if(index >= 0)
 	{
-		UT_return_if_fail (index < (UT_sint32)m_tabInfo.getItemCount());
+		UT_return_if_fail (index < m_tabInfo.getItemCount());
 
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(index);
 
@@ -403,7 +403,7 @@ void AP_Dialog_Tab::_event_Clear(void)
 
 	if(index != -1)
 	{
-		UT_return_if_fail(index < static_cast<UT_sint32>(m_tabInfo.getItemCount()));
+		UT_return_if_fail(index < m_tabInfo.getItemCount());
 
 		_deleteTabFromTabString(m_tabInfo.getNthItem(index));
 

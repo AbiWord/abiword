@@ -102,7 +102,7 @@ const char * AP_BindingSet::getNextInCycle(const char * szCurrent)
 	int kMatch = -1;
 	UT_sint32 k;
 	
-	for (k=0; k<static_cast<UT_sint32>(m_vecBindings.getItemCount()); k++)
+	for (k=0; k<m_vecBindings.getItemCount(); k++)
 	  if (g_ascii_strcasecmp(m_vecBindings.getNthItem(k)->m_name,szCurrent) == 0)
 		{
 			kMatch = k;
@@ -112,7 +112,7 @@ const char * AP_BindingSet::getNextInCycle(const char * szCurrent)
 	if (kMatch == -1)
 		return NULL;
 
-	for (k=kMatch+1; k<static_cast<UT_sint32>(m_vecBindings.getItemCount()); k++)
+	for (k=kMatch+1; k<m_vecBindings.getItemCount(); k++)
 	  if (m_vecBindings.getNthItem(k)->m_bCanCycle)
 			return m_vecBindings.getNthItem(k)->m_name;
 	for (k=0; k<kMatch; k++)

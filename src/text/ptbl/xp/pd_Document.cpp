@@ -332,7 +332,7 @@ bool PD_Document::isMarginChangeOnly(void) const
 
 UT_sint32 PD_Document::getNumAuthors() const
 {
-	return static_cast<UT_sint32>(m_vecAuthors.getItemCount());
+	return m_vecAuthors.getItemCount();
 }
 
 pp_Author *  PD_Document::getNthAuthor(UT_sint32 i) const

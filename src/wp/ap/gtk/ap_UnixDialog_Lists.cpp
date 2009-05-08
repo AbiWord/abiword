@@ -342,7 +342,7 @@ void AP_UnixDialog_Lists::setFoldLevelInGUI(void)
 void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 {
 	UT_sint32 i = 0;
-	UT_sint32 count = static_cast<UT_sint32>(m_vecFoldCheck.getItemCount());
+	UT_sint32 count = m_vecFoldCheck.getItemCount();
 	if(iLevel >= count)
 	{
 		return;

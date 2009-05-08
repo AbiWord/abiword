@@ -103,7 +103,7 @@ public:
 			xxx_UT_DEBUGMSG(("SEVIOR: Deleting AP_TopRulerInfo %x \n",this));
 			if(m_vecTableColInfo)
 			{
-				UT_sint32 count = static_cast<UT_sint32>(m_vecTableColInfo->getItemCount());
+				UT_sint32 count = m_vecTableColInfo->getItemCount();
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
@@ -113,7 +113,7 @@ public:
 			}
 			if(m_vecFullTable)
 			{
-				UT_sint32 count = static_cast<UT_sint32>(m_vecFullTable->getItemCount());
+				UT_sint32 count = m_vecFullTable->getItemCount();
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{

@@ -164,7 +164,7 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 
 XAP_DiskStringSet::~XAP_DiskStringSet(void)
 {
-	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecStringsXAP.getItemCount());
+	UT_sint32 kLimit = m_vecStringsXAP.getItemCount();
 	UT_sint32 k;
 
 	for (k=kLimit-1; k>=0; k--)

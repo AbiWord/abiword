@@ -1077,7 +1077,7 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 
 	if(k >= length)
 	{
-		for(i=0; i< static_cast<UT_sint32>(vecStr.getItemCount()); i++)
+		for(i=0; i<vecStr.getItemCount(); i++)
 		{
 			char * psz = vecStr.getNthItem(i);
 			FREEP(psz);
@@ -1086,7 +1086,7 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 	}
 
 	const char ** pszStr = static_cast<const char **>(UT_calloc(vecStr.getItemCount(),sizeof(char *)));
-	for(i=0; i< static_cast<UT_sint32>(vecStr.getItemCount()); i++)
+	for(i=0; i<vecStr.getItemCount(); i++)
 		pszStr[i] = vecStr.getNthItem(i);
 	pixbuf = gdk_pixbuf_new_from_xpm_data(pszStr);
 	DELETEP(pszStr);

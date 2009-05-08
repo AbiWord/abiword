@@ -3068,7 +3068,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 //
 // shift-drag-release keep the width of the table constant
 //
-				if(m_draggingCell == static_cast<UT_sint32>(m_infoCache.m_vecTableColInfo->getItemCount()))
+				if(m_draggingCell == m_infoCache.m_vecTableColInfo->getItemCount())
 				{
 					bDragRightMost = true;
 				}
@@ -3078,7 +3078,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					leftDrag = pTInfo->m_iLeftCellPos ;
 				}
 				
-				for(i=1; i <= static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount());i++)
+				for(i=1; i <= m_infoCache.m_vecFullTable->getItemCount();i++)
 				{
 					UT_sint32 left =0;
 					UT_sint32 right = 0;
@@ -3091,7 +3091,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 						left = pTInfo->m_iLeftCellPos + xAbsLeft1 + pTInfo->m_iLeftSpacing;
 					else
 						left =  m_draggingCenter;
-					if(i < static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()))
+					if(i < m_infoCache.m_vecFullTable->getItemCount())
 					{
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
 						bOnDraggingRight = (leftDrag == pTInfo->m_iLeftCellPos);
@@ -3099,17 +3099,17 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 //
 // Now set the right marker
 //
-					if(i != static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bOnDraggingRight)
+					if(i != m_infoCache.m_vecFullTable->getItemCount() && !bOnDraggingRight)
 					{
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i));
 						right = pTInfo->m_iLeftCellPos + xAbsLeft1 + pTInfo->m_iLeftSpacing;
 					}
-					else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && !bDragRightMost)
+					else if(i == m_infoCache.m_vecFullTable->getItemCount() && !bDragRightMost)
 					{
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
 						right = pTInfo->m_iRightCellPos + xAbsLeft1 - pTInfo->m_iLeftSpacing;
 					}
-					else if(i == static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount()) && bDragRightMost )
+					else if(i == m_infoCache.m_vecFullTable->getItemCount() && bDragRightMost )
 					{
 						right = m_draggingCenter;
 					}
@@ -3138,7 +3138,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 // Just change the width of the cell to the left of marker unless is the
 // first cell
 //
-				UT_sint32 iNumCells =  static_cast<UT_sint32>(m_infoCache.m_vecFullTable->getItemCount());
+				UT_sint32 iNumCells = m_infoCache.m_vecFullTable->getItemCount();
 				if(m_draggingCell == 0)
 				{
 					bDragLeftMost = true;

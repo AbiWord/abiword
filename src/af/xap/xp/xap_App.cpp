@@ -292,7 +292,7 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
      UT_sint32 i=0;
      bool bFound = false;
      GR_EmbedManager * pCur = NULL;
-     for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
+     for(i=0; !bFound && (i< m_vecEmbedManagers.getItemCount()); i++)
      {
        pCur =  m_vecEmbedManagers.getNthItem(i);
        UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d strcmp %d \n",pCur->getObjectType(),szObjectType,strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
