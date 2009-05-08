@@ -22,4 +22,4 @@ ui_DATA = \
 	ap_UnixDialog_GenericProgress.xml
 
 EXTRA_DIST = \
-	$(xml_DATA)
+	$(ui_DATA)
