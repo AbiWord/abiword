@@ -231,7 +231,21 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 
 		ret = setAttribute("parentid", parentid.c_str());
 		if(ret != UT_OK)
-			return ret; 			
+			return ret; 	
+
+		//now copy over properties from the corresponding OXML_List object
+		OXML_Document* doc = OXML_Document::getInstance();
+		if(doc)
+		{
+			OXML_SharedList sList = doc->getListById(atoi(listid.c_str()));
+			if(sList)
+			{
+				ret = setProperties(sList->getProperties());
+				if(ret != UT_OK)
+					return ret; 	
+			}
+		}
+
 	}
 
 	const gchar ** atts = getAttributesWithProps();

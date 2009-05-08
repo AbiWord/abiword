@@ -132,6 +132,13 @@ UT_Error OXML_Document::addList(const OXML_SharedList & obj)
 	return UT_OK;
 }
 
+OXML_SharedList OXML_Document::getListById(UT_uint32 id)
+{
+	OXML_ListMap::iterator it;
+	it = m_lists_by_id.find(id);
+	return it != m_lists_by_id.end() ? it->second : OXML_SharedList() ;
+}
+
 UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);

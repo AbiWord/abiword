@@ -60,7 +60,6 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 		nameMatches(rqst->pName, NS_W_KEY, "lvlJc") ||
 		nameMatches(rqst->pName, NS_W_KEY, "lvlPicBulletId") ||
 		nameMatches(rqst->pName, NS_W_KEY, "lvlRestart") ||
-		nameMatches(rqst->pName, NS_W_KEY, "pStyle") ||
 		nameMatches(rqst->pName, NS_W_KEY, "suff")
 		)
 	{
@@ -134,6 +133,20 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 		}
 		rqst->handled = true;	
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pPr"))
+	{
+		//insert a dummy paragraph element to stack 
+		//so that we can collect the properties from common listener
+		OXML_SharedElement dummy(new OXML_Element_Paragraph(""));
+		rqst->stck->push(dummy);
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "rPr"))
+	{
+		OXML_SharedElement dummy(new OXML_Element_Run(""));
+		rqst->stck->push(dummy);
+		rqst->handled = true;
+	}
 }
 
 void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
@@ -154,7 +167,6 @@ void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
 		nameMatches(rqst->pName, NS_W_KEY, "lvlRestart") ||
 		nameMatches(rqst->pName, NS_W_KEY, "lvlText") ||
 		nameMatches(rqst->pName, NS_W_KEY, "numFmt") ||
-		nameMatches(rqst->pName, NS_W_KEY, "pStyle") ||
 		nameMatches(rqst->pName, NS_W_KEY, "start") ||
 		nameMatches(rqst->pName, NS_W_KEY, "suff") ||
 		nameMatches(rqst->pName, NS_W_KEY, "abstractNumId")
@@ -178,6 +190,15 @@ void OXMLi_ListenerState_Numbering::endElement (OXMLi_EndElementRequest * rqst)
 	else if(nameMatches(rqst->pName, NS_W_KEY, "num"))
 	{
 		m_currentNumId.clear(); //set it to empty string
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "pPr") || 
+			nameMatches(rqst->pName, NS_W_KEY, "rPr"))
+	{
+		OXML_SharedElement dummy = rqst->stck->top();
+		m_currentList->setAttributes(dummy->getAttributes());
+		m_currentList->setProperties(dummy->getProperties());
+		rqst->stck->pop(); //remove the dummy element
 		rqst->handled = true;
 	}
 }

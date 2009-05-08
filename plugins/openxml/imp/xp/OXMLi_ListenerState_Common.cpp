@@ -96,7 +96,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			if(!val || !*val)
 				return;
 			std::string level(val);
-			para->setAttribute("level", level.c_str());					
+			para->setAttribute("level", level.c_str());	
 		}		
 		rqst->handled = true;
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "numId")){
@@ -122,7 +122,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 	//Verify the context...
 	std::string contextTag = rqst->context->at(rqst->context->size() - 2);
 	if (contextMatches(contextTag, NS_W_KEY, "p") ||
-		contextMatches(contextTag, NS_W_KEY, "pPrDefault") || 
+		contextMatches(contextTag, NS_W_KEY, "pPrDefault") ||
+		contextMatches(contextTag, NS_W_KEY, "lvl") ||  
 		contextMatches(contextTag, NS_W_KEY, "style")) { 
 
 		OXML_SharedElement para = rqst->stck->top();

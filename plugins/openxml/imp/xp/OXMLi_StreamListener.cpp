@@ -90,6 +90,8 @@ void OXMLi_StreamListener::setupStates(OXML_PartType type, const char * partId)
 	case NUMBERING_PART:
 		state = new OXMLi_ListenerState_Numbering();
 		this->pushState(state);
+		state = new OXMLi_ListenerState_Common();
+		this->pushState(state);
 		break;
 	default:
 		return; //Nothing else is supported at the moment
