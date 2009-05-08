@@ -11231,7 +11231,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		}
 
 		// if the stylesheet is malformed there might be nothing in the table ...
-		if (nesting == 1 && (UT_sint32)m_styleTable.getItemCount() > styleNumber )
+		if (nesting == 1 && m_styleTable.getItemCount() > styleNumber )
 		{
 			// Reached the end of a single style definition.
 			// Use it.
@@ -11297,7 +11297,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 // Now we loop through them all and write them into our document.
 //
-	UT_sint32 count = static_cast<UT_sint32>(vecStyles.getItemCount());
+	UT_sint32 count = vecStyles.getItemCount();
 	UT_sint32 i = 0;
 	for(i=0; i< count; i++)
 	{
@@ -11306,7 +11306,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		attribsCount = 0;
 		attribs[attribsCount] = NULL;
 		UT_GenericVector<const gchar*> * pCurStyleVec = vecStyles.getNthItem(i);
-		UT_sint32 nAtts = static_cast<UT_sint32>(pCurStyleVec->getItemCount());
+		UT_sint32 nAtts = pCurStyleVec->getItemCount();
 		UT_sint32 j = 0;
 		const char * szName = NULL;
 

@@ -902,7 +902,7 @@ UT_sint32 ie_imp_table::OpenCell(void)
 	m_pCurImpCell = pNewCell;
 	m_vecCells.addItem(pNewCell);
 	UT_sint32 count =0;
-	UT_sint32 i = static_cast<UT_sint32>(m_vecCells.getItemCount()) - 1;
+	UT_sint32 i = m_vecCells.getItemCount() - 1;
 	while((pNewCell->getRow() == m_iRowCounter) && (i>= 0))
 	{
 		pNewCell = m_vecCells.getNthItem(i);
@@ -926,7 +926,7 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cel
 	ie_imp_cell * pCell = NULL;
 	bool bFound = false;
 	UT_sint32 iFound = 0;
-	for(i=0; !bFound && (i < static_cast<UT_sint32>(m_vecCells.getItemCount())); i++)
+	for(i=0; !bFound && (i < m_vecCells.getItemCount()); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getRow() == row)
@@ -940,7 +940,7 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cel
 		return bFound;
 	}
 	bool bEnd = false;
-	for(i=iFound; !bEnd && (i<static_cast<UT_sint32>(m_vecCells.getItemCount())); i++)
+	for(i=iFound; !bEnd && (i<m_vecCells.getItemCount()); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getRow() != row)
@@ -1004,8 +1004,8 @@ UT_sint32 ie_imp_table::NewRow(void)
 		vecCur.clear();
 		getVecOfCellsOnRow(m_iRowCounter-1, &vecPrev);
 		getVecOfCellsOnRow(m_iRowCounter, &vecCur);
-		UT_sint32 szPrevRow = static_cast<UT_sint32>(vecPrev.getItemCount());
-		UT_sint32 szCurRow = static_cast<UT_sint32>(vecCur.getItemCount());
+		UT_sint32 szPrevRow = vecPrev.getItemCount();
+		UT_sint32 szCurRow = vecCur.getItemCount();
 //
 // Look if this row is just a copy of the previous. We decide this if there
 // are no values of cellX set.
@@ -1043,7 +1043,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 			UT_DEBUGMSG(("Cur cell %d cellx %d \n",i,curX));
 			bool bMatch = false;
 			UT_sint32 j = 0;
-			for(j=0; !bMatch && (j < static_cast<UT_sint32>(m_vecCellX.getItemCount())); j++)
+			for(j=0; !bMatch && (j < m_vecCellX.getItemCount()); j++)
 			{
 				UT_sint32 prevX = m_vecCellX.getNthItem(j);
 				UT_DEBUGMSG(("Prev cell %d cellx %d \n",j,prevX));
@@ -1096,7 +1096,7 @@ void ie_imp_table::setCellRowNthCell(UT_sint32 row, UT_sint32 col)
 	ie_imp_cell * pCell = NULL;
 	UT_sint32 ColCount = 0;
 	bool bFound = false;
-	for(i=0; !bFound && (i < static_cast<UT_sint32>(m_vecCells.getItemCount())); i++)
+	for(i=0; !bFound && (i < m_vecCells.getItemCount()); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getRow() == row)
@@ -1194,7 +1194,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 //
 		UT_String sColWidth;
 		sColWidth.clear();
-		for(i=0; i< static_cast<UT_sint32>(m_vecCellX.getItemCount()); i++)
+		for(i=0; i< m_vecCellX.getItemCount(); i++)
 		{
 			UT_sint32 iCellx = m_vecCellX.getNthItem(i);
 			xxx_UT_DEBUGMSG(("final cellx import cellx %d iPrev %x \n",iCellx,iPrev));
@@ -1221,7 +1221,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 #if DEBUG
 	ie_imp_cell * pOldCell = NULL;
 #endif
-	for(i=0; i< static_cast<UT_sint32>(m_vecCells.getItemCount());i++)
+	for(i=0; i< m_vecCells.getItemCount();i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight() && !pCell->isMergedLeft())
@@ -1381,7 +1381,7 @@ void ie_imp_table::_buildCellXVector(void)
 	m_vecCellX.clear();
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	for(i=0; i< static_cast<UT_sint32>(m_vecCells.getItemCount()); i++)
+	for(i=0; i< m_vecCells.getItemCount(); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		UT_sint32 cellx = pCell->getCellX();
@@ -1403,7 +1403,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	bool bFound = false;
 	UT_sint32 iFound = 0;
 	UT_sint32 iSub = 0;
-	for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecCellX.getItemCount())); i++)
+	for(i=0; !bFound && (i< m_vecCellX.getItemCount()); i++)
 	{
 		UT_sint32 icellx = m_vecCellX.getNthItem(i);
 		if(icellx == -1)
@@ -1429,7 +1429,7 @@ ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
 	UT_sint32 i = 0;
 	ie_imp_cell * pCell = NULL;
 	bool bfound = false;
-	for(i=0; i< static_cast<UT_sint32>(m_vecCells.getItemCount()); i++)
+	for(i=0; i< m_vecCells.getItemCount(); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		UT_sint32 icellx = pCell->getCellX();
@@ -1472,7 +1472,7 @@ void ie_imp_table::buildTableStructure(void)
 	UT_sint32 iTop=0;
 	UT_sint32 iBot=0;
 
-	for(i=0; i< static_cast<UT_sint32>(m_vecCells.getItemCount()); i++)
+	for(i=0; i< m_vecCells.getItemCount(); i++)
 	{
 		bool bSkipThis = false;
 		pCell = m_vecCells.getNthItem(i);
@@ -1563,7 +1563,7 @@ UT_sint32  ie_imp_table::getNumRows(void)
 	UT_sint32 numrows = 0;
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i >=0 ; i--)
+	for(i= m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getRow() > numrows)
@@ -1592,7 +1592,7 @@ void ie_imp_table::deleteRow(UT_sint32 row)
 	ie_imp_cell * pCell = NULL;
 	UT_DEBUGMSG(("Deleting row %d \n",row));
 	m_iPosOnRow = 0;
-	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i>=0; i--)
+	for(i= m_vecCells.getItemCount() -1; i>=0; i--)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		UT_DEBUGMSG(("Look at Cell %d row %d cellx %d \n",i,pCell->getRow(),pCell->getCellX()));
@@ -1684,7 +1684,7 @@ void ie_imp_table::removeExtraneousCells(void)
 {
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i >=0 ; i--)
+	for(i= m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getCellX() == -1 && (pCell->getCellSDH() != NULL))
@@ -1705,7 +1705,7 @@ void ie_imp_table::_removeAllStruxes(void)
 {
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	for(i= static_cast<UT_sint32>(m_vecCells.getItemCount()) -1; i >=0 ; i--)
+	for(i= m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getCellSDH())
@@ -1731,7 +1731,7 @@ bool ie_imp_table::removeRow(UT_sint32 row)
 	UT_sint32 iFound =0;
 	bool bFound = false;
 	ie_imp_cell * pCell = NULL;
-	for(i=0; !bFound &&  (i< static_cast<UT_sint32>(m_vecCells.getItemCount())); i++)
+	for(i=0; !bFound &&  (i< m_vecCells.getItemCount()); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		bFound = (pCell->getRow() == row);
@@ -1742,11 +1742,11 @@ bool ie_imp_table::removeRow(UT_sint32 row)
 		return false;
 	}
 	i = iFound;
-	while(pCell != NULL && i < static_cast<UT_sint32>(m_vecCells.getItemCount()))
+	while(pCell != NULL && i < m_vecCells.getItemCount())
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Removing cell %x from row %d \n",pCell,row));
 		m_vecCells.deleteNthItem(i);
-		if(i<static_cast<UT_sint32>(m_vecCells.getItemCount()))
+		if(i<m_vecCells.getItemCount())
 		{
 			pCell = m_vecCells.getNthItem(i);
 			if(pCell->getRow() != row)
@@ -1772,7 +1772,7 @@ void ie_imp_table::appendRow(UT_GenericVector<ie_imp_cell*>* pVecRowOfCells)
 	}
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	for(i=0; i <static_cast<UT_sint32>(pVecRowOfCells->getItemCount()); i++)
+	for(i=0; i <pVecRowOfCells->getItemCount(); i++)
 	{
 		pCell = pVecRowOfCells->getNthItem(i);
 		pCell->setImpTable(this);
@@ -1792,7 +1792,7 @@ ie_imp_cell * ie_imp_table::getNthCellOnRow(UT_sint32 iCell)
 	UT_sint32 iCellOnRow =0;
 	UT_sint32 i=0;
 	bool bFound = false;
-	for(i=0; !bFound &&  (i< static_cast<UT_sint32>(m_vecCells.getItemCount())); i++)
+	for(i=0; !bFound &&  (i< m_vecCells.getItemCount()); i++)
 	{
 		pCell = m_vecCells.getNthItem(i);
 		if(pCell->getRow() == m_iRowCounter)
@@ -1925,7 +1925,7 @@ bool ie_imp_table_control::NewRow(void)
 	ie_imp_cell * pCell = NULL;
 	bool bFound = false;
 	bool bAuto = false;
-	for(i=0; i < static_cast<UT_sint32>(vecRow.getItemCount()) && !bFound;i++)
+	for(i=0; i < vecRow.getItemCount() && !bFound;i++)
 	{
 		pCell = vecRow.getNthItem(i);
 		if(pCell->getCellSDH())
@@ -2260,7 +2260,7 @@ void IE_Imp_TableHelper::padRowWithCells(UT_GenericVector<CellHelper *>& vecCell
 	CellHelper * pCell = NULL;
 	UT_sint32 i =0;
 	bool bFoundRow = false;
-	for(i= static_cast<UT_sint32>(vecCells.getItemCount()-1); i>=0;i--)
+	for(i= vecCells.getItemCount()-1; i>=0;i--)
 		{
 			pCell = vecCells.getNthItem(i);
 			if(pCell->m_top == row)
@@ -2307,7 +2307,7 @@ CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> 
 {
 	CellHelper * pCell = NULL;
 	UT_sint32 i =0;
-	for(i= static_cast<UT_sint32>(vecCells.getItemCount()-1); i>=0;i--)
+	for(i=vecCells.getItemCount()-1; i>=0;i--)
 		{
 			pCell = vecCells.getNthItem(i);
 			if((pCell->m_left <= col) && (pCell->m_right > col) && (pCell->m_top == row))
@@ -2440,7 +2440,7 @@ bool IE_Imp_TableHelper::tdEnd(void)
 			pVecCells->addItem(m_current);
 			return false;
 		}
-	if(iPrev == static_cast<UT_sint32>(pVecCells->getItemCount()))
+	if(iPrev == pVecCells->getItemCount())
 		{
 			pVecCells->addItem(m_current);
 			return true;

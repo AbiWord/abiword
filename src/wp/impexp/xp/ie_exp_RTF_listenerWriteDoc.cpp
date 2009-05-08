@@ -3567,7 +3567,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		UT_sint32 j =0;
 		if(vecColProps.getItemCount() > 0)
 		{
-			for(j= 0; (j< m_Table.getRight()) && (j < static_cast<UT_sint32>(vecColProps.getItemCount())); j++)
+			for(j= 0; (j< m_Table.getRight()) && (j < vecColProps.getItemCount()); j++)
 			{
 				fl_ColProps * pColP = vecColProps.getNthItem(j);
 				double bigWidth = static_cast<double>(pColP->m_iColWidth);

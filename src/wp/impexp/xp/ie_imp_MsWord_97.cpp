@@ -1245,7 +1245,7 @@ void IE_Imp_MsWord_97::_flush ()
 	  if(m_vecEmObjects.getItemCount() > 0)
 	  {
 		  UT_sint32 i =0;
-		  for(i=0;i< static_cast<UT_sint32>(m_vecEmObjects.getItemCount()); i++)
+		  for(i=0;i< m_vecEmObjects.getItemCount(); i++)
 		  {
 			  pObject = m_vecEmObjects.getNthItem(i);
 			  const gchar* propsArray[5];
