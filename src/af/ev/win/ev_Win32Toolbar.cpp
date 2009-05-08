@@ -261,6 +261,14 @@ WHICHPROC s_lpfnDefToolBar;
 LRESULT CALLBACK EV_Win32Toolbar::_ToolBarWndProc (HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	if (uMessage == WM_CTLCOLORSTATIC) {
+		if(SetBkColor((HDC) wParam, GetSysColor(COLOR_WINDOW)) == CLR_INVALID)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
+		if(SetTextColor((HDC) wParam, GetSysColor(COLOR_WINDOWTEXT)) == CLR_INVALID)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 		return (LRESULT) GetSysColorBrush (COLOR_WINDOW);
 	}
 	
