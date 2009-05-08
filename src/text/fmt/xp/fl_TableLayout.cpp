@@ -379,12 +379,12 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 		{
 			i = pUpCon->findCon(pPrevCon);
 			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
-			if(i >= 0 && (i+1) < static_cast<UT_sint32>(pUpCon->countCons()))
+			if(i >= 0 && (i+1) < pUpCon->countCons())
 			{
 				pUpCon->insertConAt(pNewTab,i+1);
 				pNewTab->setContainer(pUpCon);
 			}
-			else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
+			else if( i >=0 &&  (i+ 1) == pUpCon->countCons())
 			{
 				pUpCon->addCon(pNewTab);
 				pNewTab->setContainer(pUpCon);

@@ -303,7 +303,7 @@ void fp_FrameContainer::clearScreen(void)
 	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+leftThick+rightThick,getFullHeight()+topThick+botThick+getGraphics()->tlu(1) +1);
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();

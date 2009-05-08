@@ -602,7 +602,7 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 		UT_sint32 i = 0;
 		if(!bNoRecursive)
 		{
-			for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+			for(i=0; i< countCons(); i++)
 			{
 				pCon = static_cast<fp_Container *>(getNthCon(i));
 				pCon->clearScreen();
@@ -672,7 +672,7 @@ UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 	{
 		pFirst = pBroke->getMasterTable()->getFirstBrokenTable();
 	}
-	for(i=0; !bStop && (i<static_cast<UT_sint32>(countCons())); i++)
+	for(i=0; !bStop && (i<countCons()); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
@@ -889,7 +889,7 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	pCellL->_localCollapse();
 	pCellL->format();
 	UT_sint32 i = 0;
-	for(i =0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i =0; i< countCons(); i++)
 	{
 		fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
@@ -2167,7 +2167,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 	xxx_UT_DEBUGMSG(("number containers %d \n",countCons()));
 	UT_sint32 iLastDraw = 0;
-	for ( i = 0; (i< static_cast<UT_sint32>(countCons()) && !bStop); i++)
+	for ( i = 0; (i< countCons() && !bStop); i++)
 	{
 		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 		if(pBroke->isInBrokenTable(this, pContainer))
@@ -2275,7 +2275,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			xxx_UT_DEBUGMSG(("drawBroken: Container line:2  container pos  %d ytop %d ybot %d pBroke %x \n",pContainer->getY(),ytop,ybot,pBroke));
 		}
 	}
-	if((iLastDraw >= static_cast<UT_sint32>(countCons())-1) && !bStop)
+	if((iLastDraw >= countCons()-1) && !bStop)
 	{
 		m_bDirty = false;
 		if(bIsNested)
@@ -4071,11 +4071,11 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			i = pUpCon->findCon(this);
 		}
 	}
-	if(i >=0 && i < static_cast<UT_sint32>(pUpCon->countCons()) -1)
+	if(i >=0 && i < pUpCon->countCons() -1)
 	{
 		pUpCon->insertConAt(pBroke,i+1);
 	}
-	else if( i == static_cast<UT_sint32>(pUpCon->countCons()) -1)
+	else if( i == pUpCon->countCons() -1)
 	{
 		pUpCon->addCon(pBroke);
 	}
@@ -4116,7 +4116,7 @@ UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 	UT_sint32 iTweak = 0;
 	fp_CellContainer * pCell = NULL;
 	UT_sint32 i = 0;
-	for(i =0; i<static_cast<UT_sint32>(pTab->countCons()); i++)
+	for(i =0; i<pTab->countCons(); i++)
 	{
 		pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(i));
 		UT_sint32 iTwk = pCell->tweakBrokenTable(pBroke);

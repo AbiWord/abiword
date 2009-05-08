@@ -331,7 +331,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		while(pCol2)
 		{
 			UT_sint32 j = 0;
-			for(j=0; j < static_cast<UT_sint32>(pCol2->countCons()); j++)
+			for(j=0; j < pCol2->countCons(); j++)
 			{
 				fp_Container * pCon = static_cast<fp_Container *>(pCol2->getNthCon(j));
 				xxx_UT_DEBUGMSG(("Look at con %x at j %d \n",pCon,j));
@@ -480,7 +480,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							while(pLine && pLine->getBlock() == pBL)
 							{
 								k++;
-								if(k >= static_cast<UT_sint32>(pCol2->countCons()))
+								if(k >= pCol2->countCons())
 								{
 									break;
 								}
@@ -610,7 +610,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							while(pLine && pLine->getBlock() == pBL)
 							{
 								k++;
-								if(k >= static_cast<UT_sint32>(pCol2->countCons()))
+								if(k >= pCol2->countCons())
 								{
 									break;
 								}
@@ -753,7 +753,7 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 		pColumn = getNthColumnLeader(i);
 		while(pColumn)
 		{
-			for(j =0; j< static_cast<UT_sint32>(pColumn->countCons()) && !bFound;j++)
+			for(j =0; j< pColumn->countCons() && !bFound;j++)
 			{
 				fp_Container * pCon = static_cast<fp_Container*>(pColumn->getNthCon(j));
 				if(pCon->getContainerType() == FP_CONTAINER_TABLE)

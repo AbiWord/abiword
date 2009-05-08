@@ -1598,7 +1598,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	UT_return_if_fail(pNextContainer);
 	if (pNextContainer->isEmpty())
 	{
-		for (i=ndx; i< static_cast<UT_sint32>(countCons()); i++)
+		for (i=ndx; i< countCons(); i++)
 		{
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
@@ -1631,7 +1631,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	else
 	{
 		bool bTOC = false;
-		for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
+		for (i=countCons() - 1; i >= ndx; i--)
 		{
 			bTOC = false;
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
@@ -1690,7 +1690,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		//UT_sint32 iTOC = pNextContainer->findCon(pTOC);
 		xxx_UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
 	}
-	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
+	for (i=countCons() - 1; i >= ndx; i--)
 	{
 		deleteNthCon(i);
 	}
@@ -1728,7 +1728,7 @@ fp_Column::~fp_Column()
 void fp_Column::collapseEndnotes(void)
 {
 	UT_sint32 i = 0;
-	for(i=static_cast<UT_sint32>(countCons())-1; i>= 0; i--)
+	for(i=countCons()-1; i>= 0; i--)
 	{
 		fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
 		if(pCon->getContainerType() == FP_CONTAINER_ENDNOTE)
@@ -1850,7 +1850,7 @@ void fp_Column::layout(void)
 	// changes position.
 	//
 	m_iRedrawHeight = -1;
-	for (i=0; i < static_cast<UT_sint32>(countCons()) ; i++)
+	for (i=0; i < countCons(); i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
 

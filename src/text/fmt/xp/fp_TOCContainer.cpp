@@ -150,7 +150,7 @@ void fp_TOCContainer::clearScreen(void)
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
@@ -166,7 +166,7 @@ void fp_TOCContainer::forceClearScreen(void)
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
@@ -538,11 +538,11 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 			i = pUpCon->findCon(this);
 		}
 	}
-	if(i >=0 && i < static_cast<UT_sint32>(pUpCon->countCons()) -1)
+	if(i >=0 && i < pUpCon->countCons() -1)
 	{
 		pUpCon->insertConAt(pBroke,i+1);
 	}
-	else if( i == static_cast<UT_sint32>(pUpCon->countCons()) -1)
+	else if( i == pUpCon->countCons() -1)
 	{
 		pUpCon->addCon(pBroke);
 	}

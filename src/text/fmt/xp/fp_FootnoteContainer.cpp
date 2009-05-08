@@ -123,7 +123,7 @@ void fp_FootnoteContainer::clearScreen(void)
 
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
@@ -406,7 +406,7 @@ void fp_AnnotationContainer::clearScreen(void)
 		getFillType()->Fill(getGraphics(),srcX,srcY,xoff-m_iLabelWidth,yoff,iWidth,getHeight());
 	}
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
@@ -692,7 +692,7 @@ void fp_EndnoteContainer::clearScreen(void)
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
+	for(i=0; i< countCons(); i++)
 	{
 		xxx_UT_DEBUGMSG(("Clear screen on container %d in endnote \n",i));
 		pCon = static_cast<fp_Container *>(getNthCon(i));
