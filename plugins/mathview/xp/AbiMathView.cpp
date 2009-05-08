@@ -651,7 +651,7 @@ UT_sint32  GR_MathManager::_makeMathView(void)
 	pMathView->setMathMLNamespaceContext(
 				     MathMLNamespaceContext::create(pMathView, 
                                      m_pMathGraphicDevice));
-	return static_cast<UT_sint32>(m_vecMathView.getItemCount()-1);
+	return m_vecMathView.getItemCount()-1;
 }
 
 void GR_MathManager::_loadMathML(UT_sint32 uid, UT_UTF8String & sMathBuf)
@@ -695,7 +695,7 @@ UT_sint32 GR_MathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, const
 	pItem->m_iAPI = api;
 	pItem->m_bHasSnapshot = false;
 	m_vecItems.addItem(pItem);
-	UT_ASSERT(static_cast<UT_sint32>(m_vecItems.getItemCount()) == (iNew+1));
+	UT_ASSERT(m_vecItems.getItemCount() == (iNew+1));
 
 	return iNew;
 }

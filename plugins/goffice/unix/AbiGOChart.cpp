@@ -426,7 +426,7 @@ UT_sint32  GR_GOChartManager::_makeGOChartView(void)
 {
      last_created_view = new GOChartView(this);
      m_vecGOChartView.addItem(last_created_view);
-     return static_cast<UT_sint32>(m_vecGOChartView.getItemCount()-1);
+     return m_vecGOChartView.getItemCount()-1;
 }
 
 void GR_GOChartManager::_loadGOChartXML(UT_sint32 uid, UT_UTF8String & sGOChartBuf)
@@ -458,7 +458,7 @@ UT_sint32 GR_GOChartManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_
   pItem->m_iAPI = api;
   pItem->m_bHasSnapshot = false;
   m_vecItems.addItem(pItem);
-  UT_ASSERT(static_cast<UT_sint32>(m_vecItems.getItemCount()) == (iNew+1));
+  UT_ASSERT(m_vecItems.getItemCount() == (iNew+1));
   return iNew;
 }
 

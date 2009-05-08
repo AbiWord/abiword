@@ -340,7 +340,7 @@ UT_sint32  GR_GOComponentManager::_makeGOComponentView(void)
 {
      GOComponentView * pGOComponentView = new GOComponentView(this);
      m_vecGOComponentView.addItem(pGOComponentView);
-     return static_cast<UT_sint32>(m_vecGOComponentView.getItemCount()-1);
+     return m_vecGOComponentView.getItemCount()-1;
 }
 
 void GR_GOComponentManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
@@ -365,7 +365,7 @@ UT_sint32 GR_GOComponentManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api
   pItem->m_iAPI = api;
   pItem->m_bHasSnapshot = false;
   m_vecItems.addItem(pItem);
-  UT_ASSERT(static_cast<UT_sint32>(m_vecItems.getItemCount()) == (iNew+1));
+  UT_ASSERT(m_vecItems.getItemCount() == (iNew+1));
   return iNew;
 }
 
