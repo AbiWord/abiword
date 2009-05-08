@@ -10,12 +10,11 @@ if test "$enable_command" != ""; then
 				AC_CHECK_HEADER(readline/history.h,[
 						AC_CHECK_LIB(readline,readline,[
 								command_deps="yes"
-								COMMAND_LIBS="-ltermcap $COMMAND_LIBS"
 						],[     AC_CHECK_LIB(readline,rl_initialize,[
 										command_deps="yes"
-										COMMAND_LIBS="-lcurses $COMMAND_LIBS"
-								],,-lcurses)
-						],-ltermcap)
+
+								],,)
+						],)
 				])
 		])
 	fi
