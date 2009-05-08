@@ -1415,7 +1415,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
 				bool bNew = false;
-				if(iProp >= static_cast<UT_sint32>(m_vecRowProps.getItemCount()))
+				if(iProp >= m_vecRowProps.getItemCount())
 				{
 					bNew = true;
 					pRowP = new fl_RowProps;
@@ -2595,7 +2595,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		{
 			UT_sint32 i = 0;
 			UT_sint32 cellW = 0; 
-			for(i=getLeftAttach(); i<getRightAttach() && i<static_cast<UT_sint32>(pVecCols->getItemCount());i++)
+			for(i=getLeftAttach(); i<getRightAttach() && i<pVecCols->getItemCount();i++)
 			{
 				fl_ColProps* pCol = pVecCols->getNthItem(i);
 				cellW += pCol->m_iColWidth;
@@ -2610,7 +2610,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		{
 			UT_sint32 i = 0;
 			UT_sint32 cellH = 0; 
-			for(i=getTopAttach(); i<getBottomAttach() && i<static_cast<UT_sint32>(pVecRows->getItemCount());i++)
+			for(i=getTopAttach(); i<getBottomAttach() && i<pVecRows->getItemCount();i++)
 			{
 				fl_RowProps* pRow = pVecRows->getNthItem(i);
 				cellH += pRow->m_iRowHeight;

@@ -396,7 +396,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							}
 						}
 						UT_sint32 k = 0;
-						for(k=0; k<static_cast<UT_sint32>(vecCollapse.getItemCount());k++)
+						for(k=0; k<vecCollapse.getItemCount();k++)
 						{
 							pBL = vecCollapse.getNthItem(k);
 							pBL->collapse();
@@ -463,7 +463,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							fl_BlockLayout * pBL = pLine->getBlock();
 							bool bPrev = false;
 							UT_sint32 k = 0;
-							for(k=0; k<static_cast<UT_sint32>(vecBL.getItemCount()); k++)
+							for(k=0; k<vecBL.getItemCount(); k++)
 							{
 								_BL * ppBL = vecBL.getNthItem(k);
 								if(ppBL->m_pBL == pBL)
@@ -593,7 +593,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 							fl_BlockLayout * pBL = pLine->getBlock();
 							bool bPrev = false;
 							UT_sint32 k = 0;
-							for(k=0; k<static_cast<UT_sint32>(vecBL.getItemCount()); k++)
+							for(k=0; k<vecBL.getItemCount(); k++)
 							{
 								_BL * ppBL = vecBL.getNthItem(k);
 								if(ppBL->m_pBL == pBL)
@@ -640,7 +640,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	}
 	_BL * pBLine = vecBL.getNthItem(0);
 	pFirstBL = pBLine->m_pBL;
-	for(i=0; i<static_cast<UT_sint32>(vecBL.getItemCount()); i++)
+	for(i=0; i<vecBL.getItemCount(); i++)
 	{
 		pBLine = vecBL.getNthItem(i);
 		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));

@@ -340,7 +340,7 @@ bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 		return ((pos >= posLow) && (pos <=posHigh));
 	}
 	UT_sint32 i =0;
-	for(i=0; i < static_cast<UT_sint32>(m_vecSelRanges.getItemCount()); i++)
+	for(i=0; i < m_vecSelRanges.getItemCount(); i++)
 	{
 		PD_DocumentRange * pDocRange = m_vecSelRanges.getNthItem(i);
 		xxx_UT_DEBUGMSG(("Looking at pos %d low %d high %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
@@ -446,5 +446,5 @@ PD_DocumentRange * FV_Selection::getNthSelection(UT_sint32 i) const
  */
 UT_sint32 FV_Selection::getNumSelections(void) const
 {
-	return static_cast<UT_sint32>(m_vecSelRanges.getItemCount());
+	return m_vecSelRanges.getItemCount();
 }

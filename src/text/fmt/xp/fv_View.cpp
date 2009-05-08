@@ -671,7 +671,7 @@ void FV_View:: fixInsertionPointCoords(void)
 void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
 	fv_CaretProps * pCaretProps = NULL;
-	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_sint32 iCount = m_vecCarets.getItemCount();
 	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
@@ -3227,7 +3227,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 	UT_GenericVector<fl_BlockLayout *> vListBlocks;
 	UT_GenericVector<fl_BlockLayout *> vNoListBlocks;
 
-	for(i=0; i< static_cast<UT_sint32>(vBlock.getItemCount()); i++)
+	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 		fl_BlockLayout * pBlock =  vBlock.getNthItem(i);
 		if(pBlock->isListItem())
@@ -3244,7 +3244,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 // Have to stop lists in reverse order so undo works!
 //
-	for(i = static_cast<UT_sint32>(vListBlocks.getItemCount()) -1; i>=0; i--)
+	for(i = vListBlocks.getItemCount() -1; i>=0; i--)
 	{
 		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
 		fl_BlockLayout * pBlock =  vListBlocks.getNthItem(i);
@@ -3307,7 +3307,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 // Have to start lists in order so undo works!
 //
-	for(i=0; i<static_cast<UT_sint32>(vNoListBlocks.getItemCount()); i++)
+	for(i=0; i<vNoListBlocks.getItemCount(); i++)
 	{
 		UT_DEBUGMSG(("Doing Block %d of %d \n",i,vNoListBlocks.getItemCount()));
 		fl_BlockLayout * pBlock = vNoListBlocks.getNthItem(i);
@@ -3399,7 +3399,7 @@ UT_sint32 FV_View::getNumColumnsInSelection(void) const
 	fl_BlockLayout * pBlock = NULL;
 	fl_CellLayout * pCell = NULL;
 	fp_CellContainer * pCellCon = NULL;
-	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
+	for(i=0; i< vecBlocks.getItemCount();i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
@@ -3448,7 +3448,7 @@ UT_sint32 FV_View::getNumRowsInSelection(void) const
 			startpos = m_Selection.getSelectionAnchor();
 		}
 	}
-	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
+	for(i=0; i< vecBlocks.getItemCount();i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
 		if((getNumSelections() == 0) && ((pBlock->getPosition() + pBlock->getLength() - 1) <= startpos))
@@ -9146,7 +9146,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	UT_return_if_fail(pSection);
 	if(pInfo->m_vecTableColInfo)
 	{
-		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecTableColInfo->getItemCount());
+		UT_sint32 count = pInfo->m_vecTableColInfo->getItemCount();
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{
@@ -9157,7 +9157,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	}
 	if(pInfo->m_vecFullTable)
 	{
-		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecFullTable->getItemCount());
+		UT_sint32 count = pInfo->m_vecFullTable->getItemCount();
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{
@@ -9509,7 +9509,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 	if(pInfo->m_vecTableRowInfo)
 	{
-		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecTableRowInfo->getItemCount());
+		UT_sint32 count = pInfo->m_vecTableRowInfo->getItemCount();
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{

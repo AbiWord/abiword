@@ -205,7 +205,7 @@ AP_DiskStringSet::AP_DiskStringSet(XAP_App * pApp)
 
 AP_DiskStringSet::~AP_DiskStringSet(void)
 {
-	UT_sint32 kLimit = (UT_sint32)m_vecStringsAP.getItemCount();
+	UT_sint32 kLimit = m_vecStringsAP.getItemCount();
 	UT_sint32 k;
 
 	for (k=kLimit-1; k>=0; k--)

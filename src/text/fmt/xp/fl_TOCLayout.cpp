@@ -692,7 +692,7 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 	{
 		m_vecEntries.insertItemAt(pNewEntry,0);
 	}
-	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()))
+	else if (iAllBlocks < m_vecEntries.getItemCount())
 	{
 		m_vecEntries.insertItemAt(pNewEntry,iAllBlocks);
 	}
@@ -739,7 +739,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	UT_sint32 i = 0;
 	bool bFound = false;
 	
-	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
 		pEntry = m_vecEntries.getNthItem(i);
 		pPrevBL = pEntry->getBlock();
@@ -840,7 +840,7 @@ UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock,
 	TOCEntry * pThisEntry = NULL;
 	fl_BlockLayout * pThisBL = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(pVecEntries->getItemCount()); i++)
+	for(i=0; i< pVecEntries->getItemCount(); i++)
 	{
 
 		pThisEntry = pVecEntries->getNthItem(i);
@@ -884,7 +884,7 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 	fl_BlockLayout * pThisBL = NULL;
 	UT_sint32 i = 0;
 	bool bFound = false;
-	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
 		pThisEntry = m_vecEntries.getNthItem(i);
 		pThisBL = pThisEntry->getBlock();
@@ -913,7 +913,7 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool /*bDontRecurs
 	fl_BlockLayout * pThisBL = NULL;
 	UT_sint32 i = 0;
 	bool bFound = false;
-	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
 		pThisEntry = m_vecEntries.getNthItem(i);
 		pThisBL = pThisEntry->getBlock();
@@ -1010,7 +1010,7 @@ void fl_TOCLayout::_calculateLabels(void)
 	TOCEntry * pPrevEntry = NULL;
 	UT_Stack stEntry;
 	stEntry.push(NULL);
-	UT_sint32 iCount = static_cast<UT_sint32>(m_vecEntries.getItemCount());
+	UT_sint32 iCount = m_vecEntries.getItemCount();
 	if(iCount == 0)
 	{
 		return;
@@ -1158,7 +1158,7 @@ bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 	TOCEntry * pEntry = NULL;
 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
 
 		pEntry = m_vecEntries.getNthItem(i);
@@ -1180,7 +1180,7 @@ UT_UTF8String & fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
 	bool bFound = false;
-	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
+	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
 
 		pEntry = m_vecEntries.getNthItem(i);

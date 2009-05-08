@@ -580,7 +580,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 		FooterFirstV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterFirstV.c_str());
 	}
-	UT_sint32 countHdrFtr = (UT_sint32) vecHdrFtr.getItemCount();
+	UT_sint32 countHdrFtr = vecHdrFtr.getItemCount();
 	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, num Header/Footers %d\n",countHdrFtr));
 	if(0 == countHdrFtr)
 	{

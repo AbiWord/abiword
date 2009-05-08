@@ -3828,7 +3828,7 @@ fl_ContainerLayout* fl_HdrFtrSectionLayout::findMatchingContainer(fl_ContainerLa
  */
 void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 {
-	UT_sint32 iCount = static_cast<UT_sint32>(m_vecPages.getItemCount());
+	UT_sint32 iCount = m_vecPages.getItemCount();
 //
 // Check that the pages we have are still valid. Delete them if they're not.
 //
@@ -3853,7 +3853,7 @@ void fl_HdrFtrSectionLayout::checkAndRemovePages(void)
 			pageForDelete.addItem(ppPage);
 		}
 	}
-	for(i=0; i< static_cast<UT_sint32>(pageForDelete.getItemCount()); i++)
+	for(i=0; i< pageForDelete.getItemCount(); i++)
 	{
 		fp_Page * pPage = pageForDelete.getNthItem(i);
 		deletePage(pPage);

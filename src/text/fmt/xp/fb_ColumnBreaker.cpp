@@ -304,7 +304,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
 					UT_sint32 i =0;
-					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
+					for(i=0; i< vecFootnotes.getItemCount();i++)
 					{
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
@@ -326,7 +326,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
 					UT_sint32 i =0;
-					for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+					for(i=0; i< vecAnnotations.getItemCount();i++)
 					{
 						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
 						if(pAC && ((pAC->getPage() == NULL) || (pAC->getPage() != pCurPage)))
@@ -764,7 +764,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Page * pCurPage = pCurColumn->getPage();
 					UT_ASSERT(pCurPage);
 					UT_sint32 i =0;
-					for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
+					for(i=0; i< vecFootnotes.getItemCount();i++)
 					{
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
 						if(pFC != NULL)
@@ -798,7 +798,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Page * pCurPage = pCurColumn->getPage();
 					UT_ASSERT(pCurPage);
 					UT_sint32 i =0;
-					for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+					for(i=0; i< vecAnnotations.getItemCount();i++)
 					{
 						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
 						if(pAC != NULL)
@@ -844,7 +844,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						fp_Page * pCurPage = pCurColumn->getPage();
 						UT_ASSERT(pCurPage);
 						UT_sint32 i =0;
-						for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
+						for(i=0; i< vecFootnotes.getItemCount();i++)
 						{
 							xxx_UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
 							fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
@@ -876,7 +876,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						fp_Page * pCurPage = pCurColumn->getPage();
 						UT_ASSERT(pCurPage);
 						UT_sint32 i =0;
-						for(i=0; i< static_cast<UT_sint32>(vecAnnotations.getItemCount());i++)
+						for(i=0; i< vecAnnotations.getItemCount();i++)
 						{
 							xxx_UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
 							fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);

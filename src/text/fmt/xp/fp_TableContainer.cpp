@@ -3281,7 +3281,7 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	UT_return_val_if_fail(pTL, 0);
 	const  UT_GenericVector<fl_RowProps*>* pVecRow = pTL->getVecRowProps();
-	if(static_cast<UT_sint32>(pVecRow->getItemCount()) < (iRow + 1))
+	if(pVecRow->getItemCount() < (iRow + 1))
 	{
 		if(m_iRowHeight == 0)
 		{
@@ -4842,13 +4842,13 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 
 UT_sint32 fp_TableContainer::getNumRows(void) const
 {
-	return static_cast<UT_sint32>(m_vecRows.getItemCount());
+	return m_vecRows.getItemCount();
 }
 
 
 UT_sint32 fp_TableContainer::getNumCols(void) const
 {
-	return static_cast<UT_sint32>(m_vecColumns.getItemCount());
+	return m_vecColumns.getItemCount();
 }
 
 /*! 
@@ -6036,7 +6036,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
   const UT_GenericVector<fl_ColProps*> * pVecColProps = pTL->getVecColProps();
   if(pVecColProps->getItemCount() > 0)
   {
-	  for (col = 0; (col < static_cast<UT_sint32>(pVecColProps->getItemCount())) && (col <getNumCols()); col++)
+	  for (col = 0; (col < pVecColProps->getItemCount()) && (col <getNumCols()); col++)
 	  {
 		  fl_ColProps * pColProp = pVecColProps->getNthItem(col);
 		  getNthCol(col)->allocation = pColProp->m_iColWidth - getNthCol(col)->spacing;
@@ -6137,13 +6137,13 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 
 fp_TableRowColumn * fp_TableContainer::getNthCol(UT_sint32 i)
 {
-	UT_ASSERT(i < static_cast<UT_sint32>(m_vecColumns.getItemCount()));
+	UT_ASSERT(i < m_vecColumns.getItemCount());
 	return m_vecColumns.getNthItem(i);
 }
 
 fp_TableRowColumn * fp_TableContainer::getNthRow(UT_sint32 i)
 {
-	UT_ASSERT(i < static_cast<UT_sint32>(m_vecRows.getItemCount()));
+	UT_ASSERT(i < m_vecRows.getItemCount());
 	return m_vecRows.getNthItem(i);
 }
 
@@ -6170,7 +6170,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
-	  if(bDefinedColWidth && (col < static_cast<UT_sint32>(pVecColProps->getItemCount())) )
+	  if(bDefinedColWidth && (col < pVecColProps->getItemCount()) )
 	  {
 		  fl_ColProps * pColProp = pVecColProps->getNthItem(col);
 		  getNthCol(col)->requisition = pColProp->m_iColWidth;

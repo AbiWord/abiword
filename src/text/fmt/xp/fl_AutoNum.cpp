@@ -1030,7 +1030,7 @@ bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 	UT_sint32 itemloc = m_pItems.findItem(const_cast<void *>(pItem));
 	if (itemloc == -1)
 		return false;
-	if(itemloc == static_cast<UT_sint32>(m_pItems.getItemCount() - 1))
+	if(itemloc == m_pItems.getItemCount() - 1)
 		return true;
 	else
 		return false;

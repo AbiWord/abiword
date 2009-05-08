@@ -549,7 +549,7 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	PP_Revision * r0 = (PP_Revision *)m_vRev.getNthItem(0);
 	UT_return_if_fail(r0);
 	
-	for(i = 1; i < (UT_sint32)m_vRev.getItemCount(); ++i)
+	for(i = 1; i < m_vRev.getItemCount(); ++i)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 		UT_return_if_fail( r );
@@ -991,7 +991,7 @@ void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
 */
 void PP_RevisionAttr::removeAllLesserOrEqualIds(UT_uint32 iId)
 {
-	for(UT_sint32 i = 0; i < (UT_sint32)m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
@@ -1012,7 +1012,7 @@ void PP_RevisionAttr::removeAllLesserOrEqualIds(UT_uint32 iId)
 */
 void PP_RevisionAttr::removeAllHigherOrEqualIds(UT_uint32 iId)
 {
-	for(UT_sint32 i = 0; i < (UT_sint32)m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 

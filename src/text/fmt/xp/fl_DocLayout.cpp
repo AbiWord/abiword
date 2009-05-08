@@ -199,7 +199,7 @@ FL_DocLayout::~FL_DocLayout()
 
 	DELETEP(m_pRedrawUpdateTimer);
 
-	UT_sint32 count = static_cast<UT_sint32>(m_vecPages.getItemCount()) -1;
+	UT_sint32 count = m_vecPages.getItemCount() -1;
 	while(count >= 0)
 	{
 		fp_Page * pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(count));
@@ -957,7 +957,7 @@ void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
 fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
 {
 	UT_ASSERT(i>=0);
-	if(i >= static_cast<UT_sint32>(m_vecFootnotes.getItemCount()))
+	if(i >= m_vecFootnotes.getItemCount())
 	{
 		return NULL;
 	}
@@ -988,7 +988,7 @@ fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
 	UT_sint32 i = 0;
 	fl_FootnoteLayout * pTarget = NULL;
  	fl_FootnoteLayout * pFL = NULL;
-	for(i=0; i<static_cast<UT_sint32>(m_vecFootnotes.getItemCount()); i++)
+	for(i=0; i<m_vecFootnotes.getItemCount(); i++)
 	{
 		pFL = getNthFootnote(i);
 		if(pFL->getFootnotePID() == footpid)
@@ -1022,7 +1022,7 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 	{
 		pPageTarget = pCon->getPage();
 	}
-	for(i=0; i<static_cast<UT_sint32>(m_vecFootnotes.getItemCount()); i++)
+	for(i=0; i<m_vecFootnotes.getItemCount(); i++)
 	{
 		pFL = getNthFootnote(i);
 		if(!m_bRestartFootSection && !m_bRestartFootPage)
@@ -1128,7 +1128,7 @@ void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
 {
 	UT_ASSERT(i>=0);
-	if(i >= static_cast<UT_sint32>(m_vecAnnotations.getItemCount()))
+	if(i >= m_vecAnnotations.getItemCount())
 	{
 		return NULL;
 	}
@@ -1171,7 +1171,7 @@ fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
 	UT_sint32 i = 0;
 	fl_AnnotationLayout * pTarget = NULL;
  	fl_AnnotationLayout * pFL = NULL;
-	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	for(i=0; i<m_vecAnnotations.getItemCount(); i++)
 	{
 		pFL = getNthAnnotation(i);
 		if(pFL->getAnnotationPID() == annpid)
@@ -1192,7 +1192,7 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
 	UT_sint32 i =0;
 	UT_sint32 pos = 0;
  	fl_AnnotationLayout * pAL = NULL;
-	for(i=0; i<static_cast<UT_sint32>(m_vecAnnotations.getItemCount()); i++)
+	for(i=0; i<m_vecAnnotations.getItemCount(); i++)
 	{
 		pAL = getNthAnnotation(i);
 		if(pAL->getAnnotationPID() == annpid)
@@ -1380,7 +1380,7 @@ void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
 fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
 {
 	UT_ASSERT(i>=0);
-	if(i >= static_cast<UT_sint32>(m_vecEndnotes.getItemCount()))
+	if(i >= m_vecEndnotes.getItemCount())
 	{
 		return NULL;
 	}
@@ -1411,7 +1411,7 @@ fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid)
 	UT_sint32 i = 0;
 	fl_EndnoteLayout * pTarget = NULL;
  	fl_EndnoteLayout * pFL = NULL;
-	for(i=0; i<static_cast<UT_sint32>(m_vecEndnotes.getItemCount()); i++)
+	for(i=0; i<m_vecEndnotes.getItemCount(); i++)
 	{
 		pFL = getNthEndnote(i);
 		if(pFL->getEndnotePID() == footpid)
@@ -1445,7 +1445,7 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 	{
 		pPageTarget = pCon->getPage();
 	}
-	for(i=0; i<static_cast<UT_sint32>(m_vecEndnotes.getItemCount()); i++)
+	for(i=0; i<m_vecEndnotes.getItemCount(); i++)
 	{
 		pFL = getNthEndnote(i);
 		if(!m_bRestartEndSection)
@@ -1475,7 +1475,7 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 
 UT_sint32 FL_DocLayout::getNumTOCs(void)
 {
-	return static_cast<UT_sint32 >(m_vecTOC.getItemCount());
+	return m_vecTOC.getItemCount();
 }
 
 fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i)

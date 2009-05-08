@@ -1929,7 +1929,7 @@ void fp_Column::layout(void)
 		{
 			pLastLine = static_cast<fp_Line *>(pContainer);
 			iHeight = pLastLine->getHeight();
-			UT_sint32 count = static_cast<UT_sint32>(vecBlocks.getItemCount());
+			UT_sint32 count = vecBlocks.getItemCount();
 			if(count == 0)
 			{
 				vecBlocks.addItem(pLastLine->getBlock());

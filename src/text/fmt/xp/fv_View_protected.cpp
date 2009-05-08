@@ -235,7 +235,7 @@ void FV_View::_clearSelection(void)
 			PD_DocumentRange * pTmp2 = new PD_DocumentRange(m_pDoc,pTmp->m_pos1,pTmp->m_pos2);
 			vecRanges.addItem(pTmp2);
 		}
-		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
+		for(i=0; i< vecRanges.getItemCount();i++)
 		{
 			PD_DocumentRange * pDocR = vecRanges.getNthItem(i);
 			if(pDocR)
@@ -250,7 +250,7 @@ void FV_View::_clearSelection(void)
 			}
 		}
 		_resetSelection();
-		for(i=0; i< static_cast<UT_sint32>(vecRanges.getItemCount());i++)
+		for(i=0; i< vecRanges.getItemCount();i++)
 		{
 			PD_DocumentRange * pDocR = vecRanges.getNthItem(i);
 			if(pDocR)
@@ -3813,14 +3813,14 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 //
 	xxx_UT_DEBUGMSG(("Drawing lines in tables %d \n",vecTables.getItemCount()));
 	UT_sint32 i =0;
-	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
+	for(i=0; i< vecTables.getItemCount(); i++)
 	{
  		CellLine * pCellLine = vecTables.getNthItem(i);
 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics());
 		pCellLine->m_pCell->drawLinesAdjacent();
 
 	}
-	for(i=0; i< static_cast<UT_sint32>(vecPages.getItemCount()); i++)
+	for(i=0; i< vecPages.getItemCount(); i++)
 	{
 		fp_Page * pPage = vecPages.getNthItem(i);
 		UT_sint32 xoff,yoff;
@@ -4209,7 +4209,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixAllInsertionPointCoords() const
 {
 	fv_CaretProps * pCaretProps = NULL;
-	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_sint32 iCount = m_vecCarets.getItemCount();
 	UT_sint32 i = 0;
 	for(i=0; i<iCount;i++)
 	{

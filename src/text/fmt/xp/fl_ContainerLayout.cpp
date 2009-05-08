@@ -1235,7 +1235,7 @@ void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 
 UT_sint32 fl_ContainerLayout::getNumFrames(void) const
 {
-	return static_cast<UT_sint32>(m_vecFrames.getItemCount());
+	return m_vecFrames.getItemCount();
 }
 
 fl_FrameLayout * fl_ContainerLayout::getNthFrameLayout(UT_sint32 i) const

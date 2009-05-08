@@ -5005,7 +5005,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 
-	for(UT_sint32 i = 0; i < static_cast<UT_sint32>(I.getItemCount()) - 1; ++i)
+	for(UT_sint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{
 		UT_uint32 iRunOffset = I.getNthOffset(i);
 		UT_uint32 iRunLength = I.getNthLength(i);
@@ -6696,7 +6696,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
-			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			for(i=0; i<vecBlocksInTOCs.getItemCount();i++)
 			{
 				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_deleteSpan(pcrs);
@@ -8524,7 +8524,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
-			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			for(i=0; i<vecBlocksInTOCs.getItemCount();i++)
 			{
 				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_insertObject(pcro);
@@ -8643,7 +8643,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
 		{
 			UT_sint32 i = 0;
-			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			for(i=0; i<vecBlocksInTOCs.getItemCount();i++)
 			{
 				fl_BlockLayout * pBL = vecBlocksInTOCs.getNthItem(i);
 				pBL->doclistener_deleteObject(pcro);

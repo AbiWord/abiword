@@ -80,7 +80,7 @@ AD_Document * XAP_Dialog_ListDocuments::getDocument(void) const
 
 void XAP_Dialog_ListDocuments::_setSelDocumentIndx(UT_sint32 i)
 {
-	UT_return_if_fail(i <= (UT_sint32)m_vDocs.getItemCount());
+	UT_return_if_fail(i <= m_vDocs.getItemCount());
 	m_ndxSelDoc = i;
 }
 
