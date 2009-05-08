@@ -222,7 +222,7 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api, con
 {
   GR_EmbedView * pEmV= new GR_EmbedView(pDoc,api);
   m_vecSnapshots.addItem(pEmV);
-  UT_sint32 iNew = static_cast<UT_sint32>(m_vecSnapshots.getItemCount())-1;
+  UT_sint32 iNew = m_vecSnapshots.getItemCount()-1;
   pEmV->m_sDataID = szDataID;
   pEmV->getSnapShots();
   pEmV->m_iZoom = getGraphics()->getZoomPercentage();
@@ -249,7 +249,7 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api, con
  */
 void GR_EmbedManager::makeSnapShot(UT_sint32 uid, UT_Rect & /*rec*/)
 {
-  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= m_vecSnapshots.getItemCount()))
     {
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       return;
@@ -289,7 +289,7 @@ bool GR_EmbedManager::modify(UT_sint32 /*uid*/)
  */
 bool GR_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 /*api*/)
 {
-  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= m_vecSnapshots.getItemCount()))
     {
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       return false;
@@ -394,7 +394,7 @@ void GR_EmbedManager::setColor(UT_sint32 , const UT_RGBColor & )
  */
 void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
 {
-  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= m_vecSnapshots.getItemCount()))
     {
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       return;
@@ -454,7 +454,7 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
  */
 void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
 {
-  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= m_vecSnapshots.getItemCount()))
     {
       return;
     }

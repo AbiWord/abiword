@@ -190,7 +190,7 @@ GR_Graphics::~GR_Graphics()
 	xxx_UT_DEBUGMSG(("Deleting graphics class %x \n",this));
 	DELETEP(m_pCaret);
 	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(m_vecCarets.getItemCount());i++)
+	for(i=0; i< m_vecCarets.getItemCount();i++)
 	{
 		GR_Caret * pCaret = m_vecCarets.getNthItem(i);
 		DELETEP(pCaret);
@@ -205,7 +205,7 @@ void GR_Graphics::_destroyFonts ()
 
 GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i) const
 {
-	if (i>= static_cast<UT_sint32>(m_vecCarets.getItemCount()))
+	if (i>= m_vecCarets.getItemCount())
 		return NULL;
 	return m_vecCarets.getNthItem(i);
 }

@@ -126,7 +126,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_sint32 id)
 		(s_blink_timeout, this, UT_WorkerFactory::TIMER, outMode));
 	m_blinkTimeout->set(_getCursorBlinkTimeout());
 
-	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount()) + 1;
+	m_iCaretNumber = pG->m_vecCarets.getItemCount() + 1;
 
 	setBlink (false);
 }
