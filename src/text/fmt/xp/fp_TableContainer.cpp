@@ -344,8 +344,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 #if DEBUG
 		if(pBroke->getYBreak() > 0)
 		{
-			fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
-			UT_UNUSED(pPrev);
+			// fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
 			xxx_UT_DEBUGMSG(("Broken nested table y %d ybreak %d height %d prev Y %d height %d yBreak %d \n",pBroke->getY(),pBroke->getYBreak(),pBroke->getHeight(),pPrev->getY(),pPrev->getHeight(),pPrev->getYBreak()));
 		}
 #endif
