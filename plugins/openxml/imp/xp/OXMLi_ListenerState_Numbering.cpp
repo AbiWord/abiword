@@ -72,7 +72,8 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 		const gchar* abstractNumId = attrMatches(NS_W_KEY, "abstractNumId", rqst->ppAtts);
 		if(abstractNumId)
 		{
-			m_parentListId = std::string(abstractNumId);
+			m_parentListId = std::string("1");
+			m_parentListId += abstractNumId;
 		}
 		rqst->handled = true;
 	}
@@ -126,7 +127,8 @@ void OXMLi_ListenerState_Numbering::startElement (OXMLi_StartElementRequest * rq
 		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 		if(val && !m_currentNumId.empty())
 		{
-			std::string abstractNumId(val);
+			std::string abstractNumId("1"); //starts at 10 instead of zero
+			abstractNumId += val;
 			OXML_Document* doc = OXML_Document::getInstance();
 			doc->setMappedNumberingId(m_currentNumId, abstractNumId);
 		}

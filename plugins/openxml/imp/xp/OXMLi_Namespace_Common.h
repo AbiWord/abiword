@@ -37,6 +37,11 @@
 #define NS_WP_URI "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
 #define NS_A_URI "http://schemas.openxmlformats.org/drawingml/2006/main"
 #define NS_W_URI "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+#define NS_VE_URI "http://schemas.openxmlformats.org/markup-compatibility/2006"
+#define NS_O_URI "urn:schemas-microsoft-com:office:office"
+#define NS_M_URI "http://schemas.openxmlformats.org/officeDocument/2006/math"
+#define NS_W10_URI "urn:schemas-microsoft-com:office:word"
+#define NS_WNE_URI "http://schemas.microsoft.com/office/word/2006/wordml"
 #define NS_XML_URI "NO_URI_FOR_XML_NAMESPACE"
 //more to come here
 
@@ -46,6 +51,11 @@
 #define NS_WP_KEY "WP"
 #define NS_A_KEY "A"
 #define NS_W_KEY "W"
+#define NS_VE_KEY "VE"
+#define NS_O_KEY "O"
+#define NS_M_KEY "M"
+#define NS_W10_KEY "W10"
+#define NS_WNE_KEY "WNE"
 #define NS_XML_KEY "xml"
 //more to come here
 
@@ -58,7 +68,7 @@ public:
 	void reset(); //should be called when we start parsing a new xml file
 	void addNamespace(const char* ns, char* uri);
 	std::string processName(const char* name);
-	std::map<std::string, std::string>* processAttributes(const char** attributes);
+	std::map<std::string, std::string>* processAttributes(const char* tag, const char** attributes);
 
 
 private:

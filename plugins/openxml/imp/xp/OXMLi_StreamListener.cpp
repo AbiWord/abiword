@@ -124,7 +124,7 @@ void OXMLi_StreamListener::startElement (const gchar* pName, const gchar** ppAtt
 {
 	UT_return_if_fail(!m_states.empty() || m_parseStatus == UT_OK);
 
-	std::map<std::string, std::string>* atts = m_namespaces->processAttributes(ppAtts);
+	std::map<std::string, std::string>* atts = m_namespaces->processAttributes(pName, ppAtts);
 	std::string name = m_namespaces->processName(pName);
 
 	OXMLi_StartElementRequest rqst = { name, atts, m_pElemStack, m_context, false };

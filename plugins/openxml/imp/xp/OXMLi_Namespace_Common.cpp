@@ -49,6 +49,11 @@ void OXMLi_Namespace_Common::reset()
 	m_nsToURI.insert(std::make_pair(NS_WP_KEY, NS_WP_URI));
 	m_nsToURI.insert(std::make_pair(NS_A_KEY, NS_A_URI));
 	m_nsToURI.insert(std::make_pair(NS_W_KEY, NS_W_URI));
+	m_nsToURI.insert(std::make_pair(NS_VE_KEY, NS_VE_URI));
+	m_nsToURI.insert(std::make_pair(NS_O_KEY, NS_O_URI));
+	m_nsToURI.insert(std::make_pair(NS_M_KEY, NS_M_URI));
+	m_nsToURI.insert(std::make_pair(NS_W10_KEY, NS_W10_URI));
+	m_nsToURI.insert(std::make_pair(NS_WNE_KEY, NS_WNE_URI));
 	m_nsToURI.insert(std::make_pair(NS_XML_KEY, NS_XML_URI));
 	
 	m_uriToKey.insert(std::make_pair(NS_R_URI, NS_R_KEY));
@@ -57,6 +62,11 @@ void OXMLi_Namespace_Common::reset()
 	m_uriToKey.insert(std::make_pair(NS_WP_URI, NS_WP_KEY));
 	m_uriToKey.insert(std::make_pair(NS_A_URI, NS_A_KEY));
 	m_uriToKey.insert(std::make_pair(NS_W_URI, NS_W_KEY));
+	m_uriToKey.insert(std::make_pair(NS_VE_URI, NS_VE_KEY));
+	m_uriToKey.insert(std::make_pair(NS_O_URI, NS_O_KEY));
+	m_uriToKey.insert(std::make_pair(NS_M_URI, NS_M_KEY));
+	m_uriToKey.insert(std::make_pair(NS_W10_URI, NS_W10_KEY));
+	m_uriToKey.insert(std::make_pair(NS_WNE_URI, NS_WNE_KEY));
 	m_uriToKey.insert(std::make_pair(NS_XML_URI, NS_XML_KEY));
 }
 
@@ -106,48 +116,69 @@ std::string OXMLi_Namespace_Common::processName(const char* name)
 	return name_str;
 }
 
-std::map<std::string, std::string>* OXMLi_Namespace_Common::processAttributes(const char** atts)
+std::map<std::string, std::string>* OXMLi_Namespace_Common::processAttributes(const char* tag, const char** atts)
 {
 	const char ** pp = atts;  
 	m_attsMap.clear();
+
+	std::string name_space("");
+	std::string tag_name("");
 
 	while (*pp)
 	{
 		std::string name_str(pp[0]);	    
 	  	size_t colon_index = name_str.find(':');
 
-		if ((colon_index != std::string::npos) && (colon_index < name_str.length()-1))
+		if (!((colon_index != std::string::npos) && (colon_index < name_str.length()-1)))
 		{
-			std::string name_space = name_str.substr(0, colon_index);
-			std::string tag_name = name_str.substr(colon_index+1);
-			
-			if(name_space.compare("xmlns") == 0)
+			//attribute doesn't have a namespace prefix
+			//try to use tag's namespace
+			std::string tag_str(tag);
+			colon_index = tag_str.find(':');
+			if (!((colon_index != std::string::npos) && (colon_index < tag_str.length()-1)))
 			{
-				m_nsToURI.insert(std::make_pair(tag_name,pp[1])); 
+				//well, tag also doesn't have a namespace prefix, let's skip this attribute
+				UT_DEBUGMSG(("FRT:OpenXML importer unhandled attribute:%s\n", name_str.c_str()));
+				pp += 2;
+				continue;
 			}
-			else
-			{	
-				std::map<std::string, std::string>::iterator iter = m_nsToURI.find(name_space);
-				if(iter == m_nsToURI.end())
-				{
-					UT_DEBUGMSG(("FRT:OpenXML importer unhandled URI for namespace:%s\n", name_space.c_str()));
-					continue;
-				}
-				std::string uri = iter->second;
-
-				iter = m_uriToKey.find(uri);
-				if(iter == m_uriToKey.end())
-				{
-					UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri.c_str()));
-					continue;
-				}
-
-				std::string pName = iter->second;		
-				pName += ":";
-				pName += tag_name;
-				std::string pVal(pp[1]);
-				m_attsMap.insert(std::make_pair(pName, pVal));
+			name_space = tag_str.substr(0, colon_index);
+			tag_name = name_str;
+		}
+		else
+		{
+			//attribute has a namespace prefix, let's extract it
+			name_space = name_str.substr(0, colon_index);
+			tag_name = name_str.substr(colon_index+1);
+		}
+			
+		if(name_space.compare("xmlns") == 0)
+		{
+			m_nsToURI.insert(std::make_pair(tag_name,pp[1])); 
+		}
+		else
+		{	
+			std::map<std::string, std::string>::iterator iter = m_nsToURI.find(name_space);
+			if(iter == m_nsToURI.end())
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer unhandled URI for namespace:%s\n", name_space.c_str()));
+				pp += 2;
+				continue;
 			}
+			std::string uri = iter->second;
+			iter = m_uriToKey.find(uri);
+			if(iter == m_uriToKey.end())
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer unhandled namespace key for uri:%s\n", uri.c_str()));
+				pp += 2;
+				continue;
+			}
+
+			std::string pName = iter->second;		
+			pName += ":";
+			pName += tag_name;
+			std::string pVal(pp[1]);
+			m_attsMap.insert(std::make_pair(pName, pVal));
 		}
 		pp += 2;
 	}

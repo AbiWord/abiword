@@ -216,7 +216,11 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 		std::string parentid(pListId);
 		parentid += "0";
 		listid += level;
-
+		if(!level.compare("0"))
+		{	
+			parentid = "0";		
+		}
+		
 		ret = setAttribute("level", pListLevel);
 		if(ret != UT_OK)
 			return ret;
@@ -227,7 +231,7 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 
 		ret = setAttribute("parentid", parentid.c_str());
 		if(ret != UT_OK)
-			return ret; 	
+			return ret; 			
 	}
 
 	const gchar ** atts = getAttributesWithProps();
@@ -241,8 +245,8 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 	} else {
 		ret = pDocument->appendStrux(PTX_Block, NULL) ? UT_OK : UT_ERROR;
 	}
+		
 
-	
 	if(pListId && pListLevel)
 	{
 		const gchar* ppAttr[3];
@@ -256,6 +260,9 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 		const gchar** ppAtts = getAttributesWithProps();
 
 		pDocument->appendFmt(ppAtts);
+		
+		UT_UCS4String string = "\t";
+		pDocument->appendSpan(string.ucs4_str(), string.size());
 	}
 	
 	return addChildrenToPT(pDocument);
