@@ -85,9 +85,10 @@ void AP_Win32Dialog_ListRevisions::runModal(XAP_Frame * pFrame)
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
-	if(result == -1)
+	if (result == -1)
+	{
 		UT_DEBUGMSG(( "AP_Win32Dialog_ListRevisions::runModal error %d\n", GetLastError() ));
-
+	}
 }
 
 BOOL CALLBACK AP_Win32Dialog_ListRevisions::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
