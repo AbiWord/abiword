@@ -5976,8 +5976,11 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	attribsR[iOffR++] = footpid.c_str();
 	attribsR[iOffR++] = "props";
 	attribsR[iOffR++] = m_charProps.c_str();
-	attribsR[iOffR++] = "style";
-	attribsR[iOffR++] = m_charStyle.c_str();
+	if(!m_charStyle.empty())
+	{
+		attribsR[iOffR++] = "style";
+		attribsR[iOffR++] = m_charStyle.c_str();
+	}
 		
 	UT_return_val_if_fail( iOffR <= sizeof(attribsR)/sizeof(gchar*), false );
 	
