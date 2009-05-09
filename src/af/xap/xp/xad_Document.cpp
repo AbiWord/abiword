@@ -332,7 +332,7 @@ bool AD_Document::getHistoryNthAutoRevisioned(UT_uint32 i)const
 /*!
     Get get cumulative edit time for n-th record in version history
 */
-UT_uint32 AD_Document::getHistoryNthEditTime(UT_uint32 i)const
+time_t AD_Document::getHistoryNthEditTime(UT_uint32 i)const
 {
 	if(!m_vHistory.getItemCount() || !m_pUUID)
 		return 0;
@@ -1073,7 +1073,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 		// history record
 		UT_sint32 iCount = getHistoryCount();
 		const AD_VersionData * pVLast = NULL;
-		UT_uint32 iEditTime = 0;
+		time_t iEditTime = 0;
 		
 		for(UT_sint32 j = 0; j < iCount; ++j)
 		{

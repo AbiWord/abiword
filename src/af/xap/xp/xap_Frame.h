@@ -217,7 +217,7 @@ public:
 	bool                        isMenuBarShown(void) const { return m_bShowMenubar;}
 	virtual void                setStatusBarShown(bool /*bShowStatusbar*/) {}
 	virtual void                setMenuBarShown(bool /*bShowMenubar*/) {}
-	UT_uint32                   getTimeSinceSave() const;
+	time_t                      getTimeSinceSave() const;
 	bool                        isFrameLocked(void) const 
 	                            {return m_bIsFrameLocked;}
 	void                        setFrameLocked(bool bLock) 

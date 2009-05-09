@@ -145,10 +145,10 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 			}
 		case 4:
 			{
-				UT_uint32 iEditTime = m_pDoc->getEditTime();
-				UT_uint32 iHours = iEditTime / 3600;
-				UT_uint32 iMinutes = (iEditTime % 3600)/60;
-				UT_uint32 iSeconds = (iEditTime % 3600) % 60;
+				time_t iEditTime = m_pDoc->getEditTime();
+				time_t iHours = iEditTime / 3600;
+				time_t iMinutes = (iEditTime % 3600)/60;
+				time_t iSeconds = (iEditTime % 3600) % 60;
 				
 				UT_String_sprintf(S,"%.2d:%.2d:%.2d", iHours, iMinutes, iSeconds);
 				return g_strdup(S.c_str());

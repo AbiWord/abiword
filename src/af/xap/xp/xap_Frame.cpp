@@ -1049,7 +1049,7 @@ void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolba
 	m_bHasDroppedTB = true;
 }
 
-UT_uint32 XAP_Frame::getTimeSinceSave() const
+time_t XAP_Frame::getTimeSinceSave() const
 {
 	return m_pDoc->getTimeSinceSave();
 }

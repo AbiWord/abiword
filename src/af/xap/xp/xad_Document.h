@@ -171,16 +171,16 @@ public:
 	/**
 	 * Returns the # of seconds since the last save of this file 
 	 */
-	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
+	time_t          getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
 	void            setLastSavedTime(time_t t) {m_lastSavedTime = t;}
 	virtual UT_uint32 getLastSavedAsType() const = 0;
 
-	UT_uint32       getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
+	time_t          getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
 	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
 	void            setLastOpenedTime(time_t t) {m_lastOpenedTime = t;}
 
-	UT_uint32       getEditTime()const {return (m_iEditTime + (time(NULL) - m_lastOpenedTime));}
+	time_t          getEditTime()const {return (m_iEditTime + (time(NULL) - m_lastOpenedTime));}
 	void            setEditTime(UT_uint32 t) {m_iEditTime = t;}
 
 	void            setDocVersion(UT_uint32 i){m_iVersion = i;}
@@ -205,7 +205,7 @@ public:
 	UT_uint32       getHistoryNthId(UT_uint32 i)const;
 	time_t          getHistoryNthTime(UT_uint32 i)const;
 	time_t          getHistoryNthTimeStarted(UT_uint32 i)const;
-	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
+	time_t          getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
 	UT_uint32       getHistoryNthTopXID(UT_uint32 i)const;
@@ -317,7 +317,7 @@ private:
 	bool			m_bPieceTableChanging;
 	time_t          m_lastSavedTime;
 	time_t          m_lastOpenedTime;
-	UT_uint32       m_iEditTime;     // previous edit time (up till open)
+	time_t          m_iEditTime;     // previous edit time (up till open)
 	UT_uint32       m_iVersion;
 
 	// these are for tracking versioning
