@@ -43,7 +43,11 @@ public:
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
+	UT_Error addChildrenToPT(PD_Document * pDocument);
 	virtual void setNumCols(UT_sint32 numCols);
+
+	int getRowNumber();
+	int getCurrentColumnNumber();
 
 protected:
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
@@ -52,6 +56,8 @@ private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	UT_sint32 numCols;
 	OXML_Element_Table* table;
+	int m_rowNumber;
+	int m_currentColumnNumber;
 };
 
 #endif //_OXML_ELEMENT_ROW_H_

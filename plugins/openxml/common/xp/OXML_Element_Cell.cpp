@@ -28,13 +28,18 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Cell::OXML_Element_Cell(std::string id, OXML_Element_Table* tbl, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
+//External includes
+#include <sstream>
+
+OXML_Element_Cell::OXML_Element_Cell(std::string id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
+									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
 	OXML_Element(id, TC_TAG, CELL),
 	m_iLeft(left), 
 	m_iRight(right), 
 	m_iTop(top), 
 	m_iBottom(bottom),
-	table(tbl)
+	table(tbl),
+	row(rw)
 {
 
 }
@@ -230,10 +235,58 @@ UT_Error OXML_Element_Cell::serializeProperties(IE_Exp_OpenXML* exporter)
 }
 
 
-UT_Error OXML_Element_Cell::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error ret = UT_OK;
+
+	m_iTop = row->getRowNumber(); //top
+	m_iLeft = row->getCurrentColumnNumber(); //left
+	m_iBottom = m_iTop + 1;
+	m_iRight = m_iLeft + 1; //TODO: merged cells not implemented yet
+	
+	//add props:bot-attach, left-attach, right-attach, top-attach
+	std::stringstream out;
+	out << m_iTop;
+	std::string sTop = out.str();
+	out.str("");
+	out << m_iBottom;
+	std::string sBottom = out.str();
+	out.str("");
+	out << m_iLeft;
+	std::string sLeft = out.str();
+	out.str("");
+	out << m_iRight;
+	std::string sRight = out.str();
+	
+	ret = setProperty("top-attach", sTop.c_str());
+	if(ret != UT_OK)
+		return ret;	
+
+	ret = setProperty("bot-attach", sBottom.c_str());
+	if(ret != UT_OK)
+		return ret;	
+
+	ret = setProperty("left-attach", sLeft.c_str());
+	if(ret != UT_OK)
+		return ret;	
+
+	ret = setProperty("right-attach", sRight.c_str());
+	if(ret != UT_OK)
+		return ret;	
+
+	const gchar** cell_props = getAttributesWithProps();
+
+	if(!pDocument->appendStrux(PTX_SectionCell, cell_props))
+		return UT_ERROR;
+
+	ret = addChildrenToPT(pDocument);
+	if(ret != UT_OK)
+		return ret;
+
+	if(!pDocument->appendStrux(PTX_EndCell,NULL))
+		return UT_ERROR;
+	
+	return ret;
 }
 
 

@@ -29,7 +29,8 @@
 #include <pd_Document.h>
 
 OXML_Element_Table::OXML_Element_Table(std::string id) : 
-	OXML_Element(id, TBL_TAG, TABLE)
+	OXML_Element(id, TBL_TAG, TABLE),
+	m_currentRowNumber(0)
 {
 }
 
@@ -105,11 +106,41 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 	return exporter->finishTableProperties(TARGET_DOCUMENT);
 }
 
-
-UT_Error OXML_Element_Table::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Table::addChildrenToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error ret = UT_OK;
+	UT_Error temp = UT_OK;
+	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		m_currentRowNumber = i;
+		temp = children[i]->addToPT(pDocument);
+		if (temp != UT_OK)
+			ret = temp;
+	}
+	return ret;
+}
+
+UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
+{
+	UT_Error ret = UT_OK;
+	if(!pDocument->appendStrux(PTX_SectionTable, NULL))
+		return UT_ERROR;
+
+	ret = addChildrenToPT(pDocument);
+	if(ret != UT_OK)
+		return ret;
+
+	if(!pDocument->appendStrux(PTX_EndTable,NULL))
+		return UT_ERROR;
+
+	return ret;
+}
+
+int OXML_Element_Table::getCurrentRowNumber()
+{
+	return m_currentRowNumber;
 }
 
 std::string OXML_Element_Table::getColumnWidth(int colIndex)

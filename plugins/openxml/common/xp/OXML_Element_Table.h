@@ -42,10 +42,14 @@ public:
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 	virtual std::string getColumnWidth(int colIndex);
+	UT_Error addChildrenToPT(PD_Document * pDocument);
+	
+	int getCurrentRowNumber();
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;
+	int m_currentRowNumber;
 };
 
 #endif //_OXML_ELEMENT_TABLE_H_

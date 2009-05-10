@@ -27,6 +27,7 @@
 #include <OXMLi_ListenerState.h>
 #include <OXMLi_Types.h>
 #include <OXML_Types.h>
+#include <OXML_Element_Table.h>
 
 /* \class OXMLi_ListenerState_Table
  * \brief This ListenerState parses the Tables.
@@ -38,6 +39,10 @@ public:
 	void startElement (OXMLi_StartElementRequest * rqst);
 	void endElement (OXMLi_EndElementRequest * rqst);
 	void charData (OXMLi_CharDataRequest * rqst);
+
+private:
+	std::stack<OXML_Element_Table*> m_tableStack;
+	std::stack<OXML_Element_Row*> m_rowStack;
 };
 
 #endif //_OXMLI_LISTENERSTATE_TABLE_H_

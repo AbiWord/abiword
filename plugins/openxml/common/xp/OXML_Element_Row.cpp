@@ -29,7 +29,8 @@
 #include <pd_Document.h>
 
 OXML_Element_Row::OXML_Element_Row(std::string id, OXML_Element_Table* tbl) : 
-	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl)
+	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl),
+	m_rowNumber(0), m_currentColumnNumber(0)
 {	
 }
 
@@ -75,7 +76,7 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 		
 		for(; left < cell->getLeft(); left++){
 			//top=-1,bottom=0 means vertically continued cell
-			OXML_Element_Cell temp("", table, left, left+1, -1, 0); 
+			OXML_Element_Cell temp("", table, this, left, left+1, -1, 0); 
 			OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
 
 			ret = temp.appendElement(shared_paragraph);
@@ -96,7 +97,7 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 
 	//right most vertically merged cells
 	for(; left < numCols; left++){
-		OXML_Element_Cell temp("", table, left, left+1, -1, 0); 
+		OXML_Element_Cell temp("", table, this, left, left+1, -1, 0); 
 		OXML_SharedElement shared_paragraph(new OXML_Element_Paragraph(""));
 
 		ret = temp.appendElement(shared_paragraph);
@@ -118,14 +119,40 @@ UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
 	return UT_OK;
 }
 
-
-UT_Error OXML_Element_Row::addToPT(PD_Document * /*pDocument*/)
+UT_Error OXML_Element_Row::addChildrenToPT(PD_Document * pDocument)
 {
-	//TODO
-	return UT_OK;
+	UT_Error ret = UT_OK;
+	UT_Error temp = UT_OK;
+
+	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		m_currentColumnNumber = i;
+		temp = children[i]->addToPT(pDocument);
+		if (temp != UT_OK)
+			ret = temp;
+	}
+	return ret;
+}
+
+UT_Error OXML_Element_Row::addToPT(PD_Document * pDocument)
+{
+	m_rowNumber = table->getCurrentRowNumber();
+	return addChildrenToPT(pDocument);
 }
 
 void OXML_Element_Row::setNumCols(UT_sint32 columns)
 {
 	numCols = columns;	
+}
+
+int OXML_Element_Row::getRowNumber()
+{
+	return m_rowNumber;
+}
+
+int OXML_Element_Row::getCurrentColumnNumber()
+{
+	return m_currentColumnNumber;
 }
