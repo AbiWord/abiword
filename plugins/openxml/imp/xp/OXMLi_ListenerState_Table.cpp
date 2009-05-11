@@ -49,6 +49,8 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		OXML_SharedElement table(pTable);
 		rqst->stck->push(table);
 		rqst->handled = true;
+		pTable->setCurrentRowNumber(-1);
+		pTable->setCurrentColNumber(-1);
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tr"))
 	{
@@ -58,13 +60,49 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		OXML_SharedElement row(pRow);
 		rqst->stck->push(row);
 		rqst->handled = true;
+		table->incrementCurrentRowNumber();
+		table->setCurrentColNumber(0);
+		pRow->setRowNumber(table->getCurrentRowNumber());
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "tc"))
 	{
 		OXML_Element_Table* table = m_tableStack.top();				
 		OXML_Element_Row* row = m_rowStack.top();				
-		OXML_SharedElement cell(new OXML_Element_Cell("", table, row, 0, 1, 0, 1));
+		OXML_Element_Cell* pCell = new OXML_Element_Cell("", table, row, 
+								table->getCurrentColNumber(), table->getCurrentColNumber()+1, //left right
+								table->getCurrentRowNumber(), table->getCurrentRowNumber()+1); //top,bottom
+		m_cellStack.push(pCell);
+		OXML_SharedElement cell(pCell);
 		rqst->stck->push(cell);
+		rqst->handled = true;
+		table->incrementCurrentColNumber();
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan"))
+	{
+		OXML_Element_Table* table = m_tableStack.top();				
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(val)
+		{
+			int span = atoi(val);
+			int left = table->getCurrentColNumber()-1;
+			int right = left + span;
+			//change current cell's right index
+			OXML_Element_Cell* cell = m_cellStack.top();
+			cell->setRight(right);
+			//update column index of current table			
+			table->setCurrentColNumber(right);
+		}
+		rqst->handled = true;
+	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "vMerge"))
+	{
+		OXML_Element_Cell* cell = m_cellStack.top();				
+		cell->setVerticalMergeStart(false); //default to continue if the attribute is missing
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(val && !strcmp(val, "restart")) 
+		{
+			cell->setVerticalMergeStart(true);
+		}
 		rqst->handled = true;
 	}
 	//TODO: more coming here
@@ -103,9 +141,31 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		OXML_SharedElement cell = rqst->stck->top();
 		rqst->stck->pop(); //pop cell
 		OXML_SharedElement row = rqst->stck->top();
-		row->appendElement(cell);
+		OXML_Element_Cell* pCell = m_cellStack.top();
+		if(!pCell->startsVerticalMerge())
+		{
+			OXML_Element_Table* table = m_tableStack.top();
+			if(!table->incrementBottomVerticalMergeStart(pCell->getLeft(), pCell->getTop()))
+			{
+				//this means there is no cell before this starting a vertical merge
+				//revert back to vertical merge start instead of continue
+				pCell->setVerticalMergeStart(true);
+				UT_DEBUGMSG(("FRT:OpenXML importer, invalid <vMerge val=continue> attribute.\n"));
+			}
+		}
+		else
+		{
+			OXML_Element_Row* pRow = m_rowStack.top();
+			row->appendElement(cell);
+		}
+		m_cellStack.pop();
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan") ||
+			nameMatches(rqst->pName, NS_W_KEY, "vMerge"))
+	{
+		rqst->handled = true;
+	}	
 	//TODO: more coming here
 }
 

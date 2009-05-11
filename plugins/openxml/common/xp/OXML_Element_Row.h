@@ -26,6 +26,7 @@
 // Internal includes
 #include <OXML_Element.h>
 #include <OXML_Element_Table.h>
+#include <OXML_Element_Cell.h>
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
@@ -46,8 +47,18 @@ public:
 	UT_Error addChildrenToPT(PD_Document * pDocument);
 	virtual void setNumCols(UT_sint32 numCols);
 
+	void setRowNumber(int row);
 	int getRowNumber();
 	int getCurrentColumnNumber();
+
+	void addCell(OXML_Element_Cell* cell);
+
+	//this method increments the vertical merge start cell's bottom by one. 
+	//It traverses the cells in the row and finds the vertical merge starting cell
+	//and increments its bottom value by one. Should be called for the vertMerge=continue cells.
+	//return true if successful
+	bool incrementBottomVerticalMergeStart(int left, int top);
+
 
 protected:
 	UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
@@ -56,6 +67,7 @@ private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	UT_sint32 numCols;
 	OXML_Element_Table* table;
+	std::vector<OXML_Element_Cell*> m_cells;
 	int m_rowNumber;
 	int m_currentColumnNumber;
 };

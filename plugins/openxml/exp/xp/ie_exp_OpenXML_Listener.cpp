@@ -617,6 +617,15 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 			UT_sint32 top = tableHelper.getTop();
 			UT_sint32 bottom = tableHelper.getBot();
 
+			if(!row || tableHelper.isNewRow())
+			{
+				row = new OXML_Element_Row(getNextId(), table);
+				row->setNumCols(tableHelper.getNumCols());
+				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
+				if(table->appendElement(shared_row) != UT_OK)
+					return false;
+			}
+
 			cell = new OXML_Element_Cell(getNextId(), table, row, left, right, top, bottom);
 			OXML_SharedElement shared_cell(static_cast<OXML_Element*>(cell));
 
@@ -651,16 +660,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(PL_StruxDocHandle sdh, const PX_Chan
 					}
 				}
 			}
-			
-			if(!row || tableHelper.isNewRow())
-			{
-				row = new OXML_Element_Row(getNextId(), table);
-				row->setNumCols(tableHelper.getNumCols());
-				OXML_SharedElement shared_row(static_cast<OXML_Element*>(row));
-				if(table->appendElement(shared_row) != UT_OK)
-					return false;
-			}
-			
+					
 			return row->appendElement(shared_cell) == UT_OK;
 		}
 		case PTX_SectionFootnote:

@@ -31,7 +31,9 @@
 OXML_Element_Row::OXML_Element_Row(std::string id, OXML_Element_Table* tbl) : 
 	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl),
 	m_rowNumber(0), m_currentColumnNumber(0)
-{	
+{
+	if(tbl)	
+		tbl->addRow(this);
 }
 
 OXML_Element_Row::~OXML_Element_Row()
@@ -147,6 +149,11 @@ void OXML_Element_Row::setNumCols(UT_sint32 columns)
 	numCols = columns;	
 }
 
+void OXML_Element_Row::setRowNumber(int row)
+{
+	m_rowNumber = row;
+}
+
 int OXML_Element_Row::getRowNumber()
 {
 	return m_rowNumber;
@@ -155,4 +162,24 @@ int OXML_Element_Row::getRowNumber()
 int OXML_Element_Row::getCurrentColumnNumber()
 {
 	return m_currentColumnNumber;
+}
+
+void OXML_Element_Row::addCell(OXML_Element_Cell* cell)
+{
+	m_cells.push_back(cell);
+}
+
+bool OXML_Element_Row::incrementBottomVerticalMergeStart(int left, int top)
+{
+	std::vector<OXML_Element_Cell*>::iterator it;
+	for( it=m_cells.begin(); it < m_cells.end(); ++it )
+	{
+		OXML_Element_Cell* pCell = *it;
+		if((pCell->getLeft() == left) && (pCell->getTop() < top) && pCell->startsVerticalMerge())
+		{
+			pCell->setBottom(pCell->getBottom()+1);
+			return true;
+		}
+	}
+	return false;	
 }

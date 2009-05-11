@@ -51,9 +51,18 @@ public:
 	UT_sint32 getTop();
 	UT_sint32 getBottom();
 
+	void setLeft(UT_sint32 left);
+	void setRight(UT_sint32 right);
+	void setTop(UT_sint32 top);
+	void setBottom(UT_sint32 bottom);
+
+	void setVerticalMergeStart(bool start);
+	bool startsVerticalMerge();
+
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	UT_sint32 m_iLeft, m_iRight, m_iTop, m_iBottom;
+	bool m_startVerticalMerge;
 	OXML_Element_Table* table; 
 	OXML_Element_Row* row;
 };

@@ -1247,7 +1247,7 @@ UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
  */
 UT_Error IE_Exp_OpenXML::setVerticalMerge(int target, const char* vmerge)
 {
-	std::string str("<w:vmerge w:val=\"");
+	std::string str("<w:vMerge w:val=\"");
 	str += vmerge;
 	str += "\"/>";
 	return writeTargetStream(target, str.c_str());

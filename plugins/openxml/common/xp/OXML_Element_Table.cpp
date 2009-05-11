@@ -30,7 +30,8 @@
 
 OXML_Element_Table::OXML_Element_Table(std::string id) : 
 	OXML_Element(id, TBL_TAG, TABLE),
-	m_currentRowNumber(0)
+	m_currentRowNumber(0),
+	m_currentColNumber(0)
 {
 }
 
@@ -143,6 +144,36 @@ int OXML_Element_Table::getCurrentRowNumber()
 	return m_currentRowNumber;
 }
 
+int OXML_Element_Table::getCurrentColNumber()
+{
+	return m_currentColNumber;
+}
+
+void OXML_Element_Table::setCurrentRowNumber(int row)
+{
+	m_currentRowNumber = row;
+}
+
+void OXML_Element_Table::setCurrentColNumber(int col)
+{
+	m_currentColNumber = col;
+}
+
+void OXML_Element_Table::incrementCurrentRowNumber()
+{
+	m_currentRowNumber++;
+}
+
+void OXML_Element_Table::incrementCurrentColNumber()
+{
+	m_currentColNumber++;
+}
+
+void OXML_Element_Table::addRow(OXML_Element_Row* row)
+{
+	m_rows.push_back(row);
+}
+
 std::string OXML_Element_Table::getColumnWidth(int colIndex)
 {
 	if((colIndex < 0) || (colIndex >= (int)columnWidth.size()))
@@ -150,3 +181,14 @@ std::string OXML_Element_Table::getColumnWidth(int colIndex)
 	return columnWidth.at(colIndex);
 }
 
+bool OXML_Element_Table::incrementBottomVerticalMergeStart(int left, int top)
+{
+	std::vector<OXML_Element_Row*>::reverse_iterator rit;
+	for( rit=m_rows.rbegin(); rit < m_rows.rend(); ++rit )
+	{
+		OXML_Element_Row* pRow = *rit;
+		if(pRow->incrementBottomVerticalMergeStart(left, top))
+			return true;
+	}
+	return false;	
+}
