@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "ut_color.h"
 #include "xap_Toolbar_Icons.h"
 #include <windows.h>
 
