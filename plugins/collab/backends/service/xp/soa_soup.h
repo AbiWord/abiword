@@ -32,7 +32,7 @@
 #include <string>
 #include <libsoup/soup.h>
 #include <boost/function.hpp>
-#include <soa.h>
+#include "soa.h"
 
 namespace soup_soa {
 	

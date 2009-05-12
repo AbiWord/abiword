@@ -30,7 +30,7 @@ class Synchronizer;
 // Windows implementation requirements
 #define WM_ABI_SYNCHRONIZER WM_USER+15
 #include <windows.h>
-#include <xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollabSessionManager.h>
 #else
 // Unix implementation requirements
 #include <unistd.h>

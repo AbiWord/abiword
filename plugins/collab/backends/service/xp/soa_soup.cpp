@@ -30,7 +30,7 @@
 #include <glib.h>
 #include <libsoup/soup.h>
 #include <boost/lexical_cast.hpp>
-#include <soa_soup.h>
+#include "soa_soup.h"
 #include "ut_assert.h"
 
 namespace soup_soa {
