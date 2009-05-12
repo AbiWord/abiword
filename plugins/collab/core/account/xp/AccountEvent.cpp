@@ -17,7 +17,7 @@
  */
 
 #include "DocHandle.h"
-#include <xp/AbiCollab_Packet.h>
+#include <packet/xp/AbiCollab_Packet.h>
 #include "Event.h"
 #include "AccountEvent.h"
 

@@ -20,7 +20,7 @@
 
 #include "AbiCollab.h"
 #include "AbiCollab_ImportRuleSet.h"
-#include <xp/AbiCollab_Packet.h>
+#include <packet/xp/AbiCollab_Packet.h>
 
 bool AbiCollab_ImportRuleSet::isOverlapAllowed(const ChangeAdjust& ca, const AbstractChangeRecordSessionPacket& acrsp, UT_sint32 iRemotePosAdjust)
 {

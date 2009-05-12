@@ -18,10 +18,10 @@
 
 #include "ut_path.h"
 
-#include <xp/AbiCollab_Plugin.h>
-#include <xp/AbiCollab.h>
-#include <xp/AbiCollab_Export.h>
-#include <xp/AbiCollabSessionManager.h>
+#include <plugin/xp/AbiCollab_Plugin.h>
+#include <session/xp/AbiCollab.h>
+#include <session/xp/AbiCollab_Export.h>
+#include <session/xp/AbiCollabSessionManager.h>
 #include "AccountEvent.h"
 #include "AccountHandler.h"
 #include "SessionEvent.h"

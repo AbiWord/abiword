@@ -56,14 +56,16 @@
 
 // dialog includes
 #include "xap_DialogFactory.h"
-#include <xp/ap_Dialog_CollaborationJoin.h>
-#include <xp/ap_Dialog_CollaborationAccounts.h>
-#include <xp/ap_Dialog_CollaborationAddAccount.h>
-#include <xp/ap_Dialog_CollaborationAddBuddy.h>
+#include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAddBuddy.h>
+
+// packet includes
+#include <packet/xp/AbiCollab_Packet.h>
 
 // session includes
-#include "AbiCollab.h"
-#include <xp/AbiCollab_Packet.h>
+#include <session/xp/AbiCollab.h>
 
 // account handler includes
 #ifdef ABICOLLAB_HANDLER_XMPP
@@ -96,7 +98,7 @@
 #include <gsf/gsf-output-gzip.h>
 
 // packet includes
-#include <xp/AbiCollab_Packet.h>
+#include <packet/xp/AbiCollab_Packet.h>
 
 // ... and include ourselves :)
 #include "AbiCollabSessionManager.h"

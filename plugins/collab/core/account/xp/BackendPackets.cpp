@@ -40,7 +40,7 @@
 #include "px_CR_Strux.h"
 #include "px_CR_Object.h"
 #include "DocHandle.h"
-#include <xp/AbiCollab_Packet.h>
+#include <packet/xp/AbiCollab_Packet.h>
 #include "Event.h"
 #include "AccountEvent.h"
 #include "SessionEvent.h"
