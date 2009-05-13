@@ -21,6 +21,9 @@
 #define ENCHANT_CHECKER_H
 
 #include "spell_manager.h"
+#ifdef _MSC_VER
+typedef long ssize_t;
+#endif
 #include <enchant.h>
 
 class ABI_EXPORT EnchantChecker : public SpellChecker
