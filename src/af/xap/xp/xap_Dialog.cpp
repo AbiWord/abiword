@@ -248,3 +248,13 @@ void XAP_Dialog_Modeless::BuildWindowName(char * pWindowName, char * pDialogName
 }
 
 
+XAP_NotebookDialog::Page::Page(const gchar *_title, AbiNativeWidget * _widget) 
+{
+	title = g_strdup(_title);
+	widget = _widget;
+}
+
+XAP_NotebookDialog::Page::~Page() 
+{
+	g_free(title);
+}

@@ -257,15 +257,9 @@ public:
 	class ABI_EXPORT Page {
 	public:
 		Page() {}
-		Page(const gchar *_title, AbiNativeWidget * _widget) 
-		{ 
-			title = g_strdup(_title);
-			widget = _widget;
-		}
-		~Page() 
-		{
-			g_free(title);
-		}
+		Page(const gchar *_title, AbiNativeWidget * _widget);
+		~Page();
+
 		gchar 			* title;
 		AbiNativeWidget * widget;
 	};
