@@ -1423,7 +1423,7 @@ void AbiCollabSessionManager::_deleteAccount(AccountHandler* pHandler)
 
 void AbiCollabSessionManager::_nullUpdate()
 {
-#if defined(TOOLKIT_WIN32)
+#if defined(TOOLKIT_WIN)
 		MSG msg;
 		for (UT_sint32 i = 0 ; i < 10 ; i++ )
 			if (PeekMessage(&msg, (HWND) NULL, 0, 0, PM_REMOVE))
