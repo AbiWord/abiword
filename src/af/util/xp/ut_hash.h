@@ -47,11 +47,11 @@
 #endif
 
 // fwd. decl.
-template <class T> class ABI_EXPORT hash_slot;
+template <class T> class hash_slot;
 
-template <class T> class ABI_EXPORT UT_GenericStringMap;
+template <class T> class UT_GenericStringMap;
 
-template <class T> class ABI_EXPORT UT_GenericStringMap
+template <class T> class UT_GenericStringMap
 {
 public:
 	UT_GenericStringMap(size_t expected_cardinality = 11);
@@ -306,7 +306,7 @@ private:
 
 
 // bucket for data
-template <class T> class ABI_EXPORT hash_slot
+template <class T> class hash_slot
 {
 public:
 	hash_slot() 

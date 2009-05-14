@@ -76,7 +76,7 @@
 	}
 
 
-template <class T> class ABI_EXPORT UT_GenericVector
+template <class T> class UT_GenericVector
 {
 public:
 	typedef int (*compar_fn_t) (const void *, const void *);
