@@ -356,26 +356,13 @@ char * UT_convert(const char*	str,
 		  UT_uint32*	bytes_read_arg,
 		  UT_uint32*	bytes_written_arg)
 {
+	gsize _bytes_read = 0, _bytes_written = 0;
+	char* result = g_convert(str, len, to_codeset, from_codeset, &_bytes_read, &_bytes_written, NULL);
 
-	if (!str || !from_codeset || !to_codeset)
-	{
-		return NULL;
-	}
+	if (bytes_read_arg) *bytes_read_arg = _bytes_read;
+	if (bytes_written_arg) *bytes_written_arg = _bytes_written;
 
-	UT_TRY
-	  {
-	    auto_iconv converter(from_codeset, to_codeset);
-	    return UT_convert_cd(str, len, converter, bytes_read_arg, bytes_written_arg);
-	  }
-	UT_CATCH(UT_CATCH_ANY)
-	  {
-	    if (bytes_read_arg)
-		*bytes_read_arg = 0;
-	    if (bytes_written_arg)
-		*bytes_written_arg = 0;
-	    return NULL;
-	  }
-	UT_END_CATCH
+	return result;
 }
 
 /*! This function is almost the same as the other UT_convert function,
@@ -388,108 +375,11 @@ char * UT_convert_cd(const char *str,
 		     UT_uint32 *bytes_read_arg,
 		     UT_uint32 *bytes_written_arg)
 {
-  if ( !UT_iconv_isValid ( cd ) || !str || len < 0 )
-    {
-      return NULL ;
-    }
+	gsize _bytes_read = 0, _bytes_written = 0;
+	char* result = g_convert_with_iconv(str, len, (GIConv)cd, &_bytes_read, &_bytes_written, NULL);
 
-	// The following two variables are used to be used in absence of given arguments
-	// (to not have to check for NULL pointers upon assignment).
-	UT_uint32 bytes_read_local;
-	UT_uint32 bytes_written_local;
+	if (bytes_read_arg) *bytes_read_arg = _bytes_read;
+	if (bytes_written_arg) *bytes_written_arg = _bytes_written;
 
-	UT_uint32& bytes_read = bytes_read_arg ? *bytes_read_arg : bytes_read_local; 
-	UT_uint32& bytes_written = bytes_written_arg ? *bytes_written_arg : bytes_written_local;
-
-	const char* p = str;
-	size_t inbytes_remaining = len;
-
-	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
-	/* + 1 for nul in case len == 1 */
-	size_t outbuf_size = ((len + 3) & ~3) + 15;
-	size_t outbytes_remaining = outbuf_size - 4; /* -4 for null (allow for ucs4 0) */
-
-	char* pDest = static_cast<char*>(g_try_malloc(outbuf_size));
-	char* outp = pDest;
-
-	bool have_error = false;
-	bool bAgain = true;
-
-	while (bAgain)
-	  {
-	    size_t err = UT_iconv(cd,
-	                          &p,
-				  &inbytes_remaining,
-				  &outp, &outbytes_remaining);
-
-	    if (err == (size_t) -1)
-	      {
-	        switch (errno)
-		  {
-		  case EINVAL:
-		    /* Incomplete text, do not report an error */
-		    bAgain = false;
-		    break;
-		  case E2BIG:
-		    {
-		      size_t used = outp - pDest;
-
-		      /* glibc's iconv can return E2BIG even if there is space
-		       * remaining if an internal buffer is exhausted. The
-		       * following is a heuristic to catch this. The 16 is
-		       * pretty arbitrary.
-		       */
-		      if (used + 16 > outbuf_size)
-		        {
-		          outbuf_size = outbuf_size  + 15;
-		          pDest = static_cast<char*>(g_try_realloc(pDest, outbuf_size));
-
-		          outp = pDest + used;
-		          outbytes_remaining = outbuf_size - used - 4; /* -1 for nul */
-		        }
-
-		      bAgain = true;
-		      break;
-		    }
-		  default:
-		    have_error = true;
-		    bAgain = false;
-		    break;
-		  }
-	      }
-	    else 
-	      {
-		bAgain = false;
-	      }
-	  }
-
-	// append 4 0s as a string terminator (so that even ucs4 string will be correctly terminated)
-	for(UT_uint32 i = 0; i < 4; ++i)
-		*outp++ = '\0';
-
-	const UT_sint32 nNewLen = p - str;
-
-	if (bytes_read_arg)
-	  {
-	    bytes_read = nNewLen;
-	  }
-	else
-	  {
-	    if (nNewLen != len) 
-	      {
-	        have_error = true;
-	      }
-	  }
-
-	bytes_written = outp - pDest;	/* Doesn't include '\0' */
-
-	if (have_error && pDest)
-	  {
-	    g_free(pDest);
-	  }
-
-	if (have_error)
-	  return NULL;
-
-	return pDest;
+	return result;	
 }
