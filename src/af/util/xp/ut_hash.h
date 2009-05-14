@@ -88,7 +88,7 @@ public:
 	inline size_t cardinality() const { return n_keys; }
 	inline size_t size() const { return n_keys; }
 
-	class ABI_EXPORT UT_Cursor
+	class UT_Cursor
 	{
 		friend class UT_GenericStringMap<T>;
 		
@@ -147,7 +147,7 @@ public:
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
 				if (hval1) {
 					hc1.make_deleted();
-					g_free(const_cast<T>(hval1));
+					g_free((gpointer)(hval1));
 				}
 			}
 		}
@@ -409,9 +409,9 @@ const gchar ** UT_GenericStringMap<T>::list()
 
 		UT_Cursor c(this);
 
-		for (const gchar * value = reinterpret_cast<gchar*>(c.first ()); 
+		for (const gchar * value = (gchar*)(c.first ()); 
 			 c.is_valid (); 
-			 value = reinterpret_cast<gchar*>(c.next ()))
+			 value = (gchar*)(c.next ()))
 		{
 			const char * key = c.key().c_str ();
 
