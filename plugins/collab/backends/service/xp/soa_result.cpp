@@ -25,7 +25,11 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef _MSV_VER
+#define strcasecmp stricmp
+#else
 #include <strings.h>
+#endif
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include <libxml/parser.h>
