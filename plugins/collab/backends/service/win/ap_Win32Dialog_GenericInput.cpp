@@ -146,7 +146,7 @@ BOOL AP_Win32Dialog_GenericInput::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 
 UT_UTF8String AP_Win32Dialog_GenericInput::_getText(HWND hWnd, int nID)
 {
-	int buflen = 4096;
+	const int buflen = 4096;
 	char szBuff[buflen];
 	*szBuff=0;
 	GetDlgItemText(hWnd, nID, szBuff, buflen);
