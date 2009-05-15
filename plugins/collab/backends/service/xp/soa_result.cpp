@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef _MSV_VER
+#ifdef _MSC_VER
 #define strcasecmp stricmp
 #else
 #include <strings.h>
