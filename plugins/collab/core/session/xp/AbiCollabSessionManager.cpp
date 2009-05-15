@@ -45,6 +45,7 @@
 #include "pp_Author.h"
 #include "pp_AttrProp.h"
 #ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #else
 #include <unistd.h>
