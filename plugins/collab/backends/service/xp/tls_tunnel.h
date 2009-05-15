@@ -21,12 +21,14 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/function.hpp>
-#include <gnutls/gnutls.h>
 #include <asio.hpp>
 #include <boost/bind.hpp>
 #include <string>
 #include <vector>
 #include <gcrypt.h>
+#ifdef _MSC_VER
+typedef long ssize_t
+#endif
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 

@@ -19,7 +19,11 @@
 #ifndef __PROGRESSIVE_SOAP_CALL__
 #define __PROGRESSIVE_SOAP_CALL__
 
+#ifdef _MSC_VER
+#include "msc_stdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <boost/bind.hpp>
 #include "InterruptableAsyncWorker.h"
 #include "soa_soup.h"

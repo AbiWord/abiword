@@ -21,7 +21,11 @@
 #define __SERVICEBUDDY__
 
 #include <string>
+#ifdef _MSC_VER
+#include "msc_stdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include "ut_string_class.h"

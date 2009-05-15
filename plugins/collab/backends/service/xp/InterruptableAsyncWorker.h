@@ -19,7 +19,11 @@
 #ifndef __INTERRUPTABLE_ASYNC_WORKER__
 #define __INTERRUPTABLE_ASYNC_WORKER__
 
+#ifdef _MSC_VER
+#include "msc_stdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <boost/bind.hpp>
 #include "xap_App.h"
 #include "xap_DialogFactory.h"

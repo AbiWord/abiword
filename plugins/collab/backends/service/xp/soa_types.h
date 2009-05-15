@@ -30,7 +30,11 @@
 #define __SOA_TYPES__
 
 #include <vector>
+#ifdef _MSC_VER
+#include "msc_stdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>

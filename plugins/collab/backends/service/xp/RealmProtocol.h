@@ -3,7 +3,11 @@
 
 #include <string>
 #include <vector>
+#ifdef _MSC_VER
+#include "msc_stdint.h"
+#else
 #include <stdint.h>
+#endif
 #include <boost/shared_ptr.hpp>
 #include <asio.hpp>
 
