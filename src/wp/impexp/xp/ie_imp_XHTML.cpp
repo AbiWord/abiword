@@ -2690,6 +2690,8 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 			 */
 			if ((strcmp (name, "margin-left")   == 0) ||
 				(strcmp (name, "margin-right")  == 0) ||
+				(strcmp (name, "margin-top")  == 0) ||
+				(strcmp (name, "margin-bottom")  == 0) ||
 				(strcmp (name, "text-align")    == 0) ||
 				(strcmp (name, "text-indent")   == 0) ||
 				(strcmp (name, "orphans")       == 0) ||
