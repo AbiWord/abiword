@@ -31,7 +31,8 @@ ServiceUnixAccountHandler::ServiceUnixAccountHandler()
 	table(NULL),
 	username_entry(NULL),
 	password_entry(NULL),
-	autoconnect_button(NULL)
+	autoconnect_button(NULL),
+	register_button(NULL)
 #if DEBUG
 	, uri_entry(NULL),
 	verify_webapp_host_button(NULL),
@@ -66,26 +67,30 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(autoconnect_button), true);
-	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 4, 5);
+	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 2, 3);
 
+	// register
+	register_button = gtk_link_button_new_with_label ("https://abicollab.net/user/register", "Get a free abicollab.net account");
+	gtk_table_attach_defaults(GTK_TABLE(table), register_button, 0, 2, 3, 4);
+	
 #ifdef DEBUG
 	// uri	
 	GtkWidget* uri_label = gtk_label_new("WebApp SOAP url:");
 	gtk_misc_set_alignment(GTK_MISC(uri_label), 0, 0.5);
-	gtk_table_attach_defaults(GTK_TABLE(table), uri_label, 0, 1, 5, 6);
+	gtk_table_attach_defaults(GTK_TABLE(table), uri_label, 0, 1, 4, 5);
 	uri_entry = gtk_entry_new();
 	gtk_entry_set_text(GTK_ENTRY(uri_entry), "https://abicollab.net/soap/");
-	gtk_table_attach_defaults(GTK_TABLE(table), uri_entry, 1, 2, 5, 6);
+	gtk_table_attach_defaults(GTK_TABLE(table), uri_entry, 1, 2, 4, 5);
 
 	// check webapp hostname
 	verify_webapp_host_button = gtk_check_button_new_with_label ("Verify WebApp hostname:");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_webapp_host_button), true);
-	gtk_table_attach_defaults(GTK_TABLE(table), verify_webapp_host_button, 0, 2, 6, 7);
+	gtk_table_attach_defaults(GTK_TABLE(table), verify_webapp_host_button, 0, 2, 5, 6);
 
 	// check realm hostname
 	verify_realm_host_button = gtk_check_button_new_with_label ("Verify Realm hostname:");
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(verify_realm_host_button), false);
-	gtk_table_attach_defaults(GTK_TABLE(table), verify_realm_host_button, 0, 2, 7, 8);
+	gtk_table_attach_defaults(GTK_TABLE(table), verify_realm_host_button, 0, 2, 6, 7);
 #endif
 	
 	gtk_box_pack_start(GTK_BOX(parent), table, FALSE, TRUE, 0);
@@ -113,7 +118,7 @@ void ServiceUnixAccountHandler::storeProperties()
 		addProperty("password", gtk_entry_get_text(GTK_ENTRY(password_entry)));
 	
 	if (autoconnect_button && GTK_IS_TOGGLE_BUTTON(autoconnect_button))
-		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );	
+		addProperty("autoconnect", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(autoconnect_button)) ? "true" : "false" );		
 
 #ifdef DEBUG
 	if (uri_entry && GTK_IS_ENTRY(uri_entry))

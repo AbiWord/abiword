@@ -41,6 +41,7 @@ private:
 	GtkWidget*								username_entry;
 	GtkWidget*								password_entry;
 	GtkWidget*								autoconnect_button;
+	GtkWidget*								register_button;
 #if DEBUG
 	GtkWidget*								uri_entry;
 	GtkWidget*								verify_webapp_host_button;
