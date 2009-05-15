@@ -461,7 +461,7 @@ Transport& ServerProxy::transport() {
 	return static_cast<Transport&>(transport_);
 }
 
-void ServerProxy::ServerProxy::on_transport_connect(socket_ptr_t remote_socket_ptr) {
+void ServerProxy::on_transport_connect(socket_ptr_t remote_socket_ptr) {
 	session_ptr_t session_ptr = setup_tls_session(remote_socket_ptr);
 	if (!session_ptr) {
 		disconnect_(session_ptr_t(), socket_ptr_t(), remote_socket_ptr);
