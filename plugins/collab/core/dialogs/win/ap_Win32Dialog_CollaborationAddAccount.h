@@ -26,7 +26,7 @@
 #include "xap_Win32DialogHelper.h"
 #include "ut_assert.h"
 
-#include <xp/ap_Dialog_CollaborationAddAccount.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAddAccount.h>
 #include "ap_Win32Res_DlgCollaborationAddAccount.rc2"
 
 class XAP_Frame;
