@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+#ifdef _MSC_VER
+#define strcasecmp stricmp
+#else
+#include <strings.h>
+#endif
 #ifndef WIN32
 #include <unistd.h>
 #endif
