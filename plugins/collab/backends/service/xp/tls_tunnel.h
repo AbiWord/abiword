@@ -25,10 +25,10 @@
 #include <boost/bind.hpp>
 #include <string>
 #include <vector>
-#include <gcrypt.h>
 #ifdef _MSC_VER
-typedef long ssize_t
+typedef long ssize_t;
 #endif
+#include <gcrypt.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 
