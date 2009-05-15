@@ -20,6 +20,8 @@
 #ifndef __TCPWIN32ACCOUNTHANDLER__
 #define __TCPWIN32ACCOUNTHANDLER__
 
+#define WIN32_LEAN_AND_MEAN
+
 #include <string>
 #include <ap_Win32App.h>
 #include "xap_Win32DialogHelper.h"
