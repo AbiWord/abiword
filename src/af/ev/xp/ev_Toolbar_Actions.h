@@ -57,7 +57,11 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 
 typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState);
 typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState);
-#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState)
+#ifdef ABI_DLL
+#define Defun_EV_GetToolbarItemState_Fn(fn)	EV_Toolbar_ItemState fn(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState)
+#else
+#define Defun_EV_GetToolbarItemState_Fn(fn)	ABI_EXPORT EV_Toolbar_ItemState fn(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState)
+#endif
 
 #define EV_TIS_ShouldBeGray(tis)		(((tis) & EV_TIS_Gray)!=0)
 #define EV_TIS_ShouldBeToggled(tis)		(((tis) & EV_TIS_Toggled)!=0)

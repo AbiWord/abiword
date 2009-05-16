@@ -63,7 +63,11 @@ typedef enum _ev_Menu_ItemState			/* values may be ORed */
 
 typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(AV_View * pView, XAP_Menu_Id id);
 typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_Id id);
+#ifdef ABI_DLL
 #define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(AV_View * pAV_View, XAP_Menu_Id id)
+#else
+#define Defun_EV_GetMenuItemState_Fn(fn) ABI_EXPORT EV_Menu_ItemState fn(AV_View * pAV_View, XAP_Menu_Id id)
+#endif
 
 // TODO decide if ...GetMenuItemComputedLabel... should take an XAP_App or an AV_View.
 // TODO for most-recently-used-file-list and window-history, we probably just need
@@ -75,7 +79,11 @@ typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_I
 
 typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(const EV_Menu_Label * pLabel, XAP_Menu_Id id);
 typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+#ifdef ABI_DLL
 #define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(const EV_Menu_Label * pLabel, XAP_Menu_Id id)
+#else
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) ABI_EXPORT const char * fn(const EV_Menu_Label * pLabel, XAP_Menu_Id id)
+#endif
 
 /*****************************************************************/
 
