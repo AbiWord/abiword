@@ -1442,7 +1442,7 @@ void s_DocBook_Listener::_handleImage(PT_AttrPropIndex api)
 
 	if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
 	{
-		char* dataid = strdup(const_cast<char*>(szValue));
+		const gchar* dataid = g_strdup(szValue);
 		char * temp = _stripSuffix(UT_go_basename(szValue), '_');
 		char * fstripped = _stripSuffix(temp, '.');
 		UT_UTF8String_sprintf(buf, "%s.png", fstripped);
@@ -1519,7 +1519,7 @@ void s_DocBook_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 
 	if(bHaveProp && pAP && pAP->getAttribute("strux-image-dataid", szValue))
 	{
-		char* dataid = strdup(const_cast<char*>(szValue));
+		const gchar* dataid = g_strdup(szValue);
 		char * temp = _stripSuffix(UT_go_basename(szValue), '_');
 		char * fstripped = _stripSuffix(temp, '.');
 		UT_UTF8String_sprintf(buf, "%s.png", fstripped);
@@ -1609,7 +1609,7 @@ void s_DocBook_Listener::_handleMath(PT_AttrPropIndex api)
 	{
 		buf = "snapshot-png-";
 		buf += szValue;
-		char* dataid = strdup(buf.utf8_str());
+		const gchar* dataid = g_strdup(buf.utf8_str());
 		m_utvDataIDs.push_back(dataid);
 		buf += ".png";
 
@@ -1687,7 +1687,7 @@ void s_DocBook_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	{
 		buf = "snapshot-png-";
 		buf += szValue;
-		char* dataid = strdup(buf.utf8_str());
+		const gchar* dataid = g_strdup(buf.utf8_str());
 		m_utvDataIDs.push_back(dataid);
 		buf += ".png";
 
