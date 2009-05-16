@@ -1742,11 +1742,10 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		
 		if (!bWroteOpenSection)
 		{
-			UT_UTF8String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" "
-							     "uid=\"%s\">\n",
+			UT_UTF8String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" uid=\"%s\">\n",
 							  m_pDocument->getDocVersion(),
-							  m_pDocument->getEditTime(),
-							  m_pDocument->getLastSavedTime(),
+							  static_cast<UT_sint32>(m_pDocument->getEditTime()),
+							  static_cast<UT_sint32>(m_pDocument->getLastSavedTime()),
 							  m_pDocument->getDocUUIDString());
 			
 			m_pie->write(s.utf8_str());
@@ -1754,7 +1753,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		}
 
 		UT_UTF8String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\" top-xid=\"%d\"/>\n",
-						  iVersion, tStarted, hUid.utf8_str(),bAuto, iXID);
+						  iVersion, static_cast<UT_sint32>(tStarted), hUid.utf8_str(),bAuto, iXID);
 		
 		m_pie->write(s.utf8_str());
 	}

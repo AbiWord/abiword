@@ -150,7 +150,7 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				time_t iMinutes = (iEditTime % 3600)/60;
 				time_t iSeconds = (iEditTime % 3600) % 60;
 				
-				UT_String_sprintf(S,"%.2d:%.2d:%.2d", iHours, iMinutes, iSeconds);
+				UT_String_sprintf(S,"%.2d:%.2d:%.2d", static_cast<UT_sint32>(iHours), static_cast<UT_sint32>(iMinutes), static_cast<UT_sint32>(iSeconds));
 				return g_strdup(S.c_str());
 			}
 
