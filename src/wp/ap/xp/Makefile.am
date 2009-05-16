@@ -247,7 +247,8 @@ EXTRA_DIST = \
 	margin.xpm \
 	orient-horizontal.xpm \
 	orient-vertical.xpm \
-	sidebar.png
+	sidebar.png \
+	ap_wp_sidebar_static.cpp
 
 ap_wp_sidebar.cpp: $(srcdir)/sidebar.png
 	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
