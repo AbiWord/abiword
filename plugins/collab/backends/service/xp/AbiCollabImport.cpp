@@ -214,7 +214,7 @@ ServiceAccountHandler* IE_Imp_AbiCollab::_getAccount(const std::string& email, c
 	// check if we already have an account handler for this server;
 	// if not, we'll create it
 	ServiceAccountHandler* pExistingServiceAccount = NULL;
-	const std::vector<AccountHandler *> accounts = pManager->getAccounts();
+	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
 		AccountHandler* pAccount = accounts[i];
