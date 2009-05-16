@@ -21,7 +21,7 @@
 #ifndef AP_WIN32DIALOG_COLLABORATIONADDBUDDY_H
 #define AP_WIN32DIALOG_COLLABORATIONADDBUDDY_H
 
-#include <xp/ap_Dialog_CollaborationAddBuddy.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAddBuddy.h>
 
 #include "ap_Win32Res_DlgCollaborationAddBuddy.rc2"
 

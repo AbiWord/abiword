@@ -25,7 +25,7 @@
 #include "xap_Frame.h"
 #include "xap_Win32DialogHelper.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollabSessionManager.h>
 
 #include "ap_Win32Dialog_CollaborationAddBuddy.h"
 /*

@@ -111,25 +111,24 @@ std::map<UT_UTF8String, AccountHandler*> AP_Win32Dialog_CollaborationAccounts::_
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, mModel);
 	
-	for (UT_sint32 i = 0; i < pManager->getAccounts().getItemCount(); i++)
+	for (UT_sint32 i = 0; i < pManager->getAccounts().size(); i++)
 	{
-		AccountHandler* pHandler = pManager->getAccounts().getNthItem(i);
-		if (pHandler)
+		AccountHandler* pHandler = pManager->getAccounts()[i];
+		UT_continue_if_fail(pHandler);
+
+		UT_DEBUGMSG(("Got account: %s of type %s\n", 
+				pHandler->getDescription().utf8_str(), 
+				pHandler->getDisplayType().utf8_str()
+			));
+		currentEntry = "";
+		currentEntry += pHandler->getDescription().utf8_str();
+		currentEntry += " - ";
+		currentEntry += pHandler->getDisplayType().utf8_str();
+		if (pHandler->isOnline())
 		{
-			UT_DEBUGMSG(("Got account: %s of type %s\n", 
-					pHandler->getDescription().utf8_str(), 
-					pHandler->getDisplayType().utf8_str()
-				));
-			currentEntry = "";
-			currentEntry += pHandler->getDescription().utf8_str();
-			currentEntry += " - ";
-			currentEntry += pHandler->getDisplayType().utf8_str();
-			if (pHandler->isOnline())
-			{
-				currentEntry += " (Online)";
-			}
-			mModel[currentEntry]=pHandler;
+			currentEntry += " (Online)";
 		}
+		mModel[currentEntry]=pHandler;
 	}
 	
 	return mModel;
@@ -173,7 +172,7 @@ void AP_Win32Dialog_CollaborationAccounts::setOnline(AccountHandler* pHandler, b
 	
 }
 
-void AP_Win32Dialog_CollaborationAccounts::signal(const Event& event, const Buddy* pSource)
+void AP_Win32Dialog_CollaborationAccounts::signal(const Event& event, BuddyPtr pSource)
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_CollaborationAccounts::signal()\n"));
 	switch (event.getClassType())

@@ -25,8 +25,8 @@
 #include "xap_Frame.h"
 #include "xap_Win32DialogHelper.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollabSessionManager.h>
-#include <backends/xp/AccountHandler.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <account/xp/AccountHandler.h>
 
 #include "ap_Win32Dialog_CollaborationAddAccount.h"
 
@@ -205,9 +205,10 @@ void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()
 	
 	UT_return_if_fail(m_pWin32Dialog);
 	
-	for (UT_uint32 i = 0; i < pSessionManager->getRegisteredAccountHandlers().size(); i++)
+	const std::map<UT_UTF8String, AccountHandlerConstructor>& registeredAccounts = pSessionManager->getRegisteredAccountHandlers();
+	for (std::map<UT_UTF8String, AccountHandlerConstructor>::const_iterator cit = registeredAccounts.begin(); cit != registeredAccounts.end(); cit++)
 	{
-		AccountHandlerConstructor pConstructor = pSessionManager->getRegisteredAccountHandlers().getNthItem(i);
+		AccountHandlerConstructor pConstructor = (*cit).second;
 		UT_continue_if_fail(pConstructor);
 
 		// TODO: we need to free these somewhere

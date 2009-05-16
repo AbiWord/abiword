@@ -28,14 +28,14 @@
 
 #include "ap_Win32Res_DlgCollaborationJoin.rc2"
 
-#include <xp/ap_Dialog_CollaborationJoin.h>
+#include <dialogs/xp/ap_Dialog_CollaborationJoin.h>
 
 class XAP_Frame;
 
 struct ShareListItem
 {
-	ShareListItem(const Buddy* pBuddy_, DocHandle* pDocHandle_) : pBuddy(pBuddy_), pDocHandle(pDocHandle_) {};
-	const Buddy* pBuddy;
+	ShareListItem(BuddyPtr pBuddy_, DocHandle* pDocHandle_) : pBuddy(pBuddy_), pDocHandle(pDocHandle_) {};
+	BuddyPtr pBuddy;
 	DocHandle* pDocHandle;
 };
 

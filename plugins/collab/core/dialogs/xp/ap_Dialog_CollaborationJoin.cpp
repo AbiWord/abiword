@@ -22,7 +22,7 @@
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
-#include <xp/AbiCollabSessionManager.h>
+#include <session/xp/AbiCollabSessionManager.h>
 
 #include "ap_Dialog_CollaborationJoin.h"
 #include "ap_Dialog_CollaborationAddBuddy.h"

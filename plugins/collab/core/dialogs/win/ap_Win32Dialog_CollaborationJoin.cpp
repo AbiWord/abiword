@@ -25,9 +25,9 @@
 #include "xap_Frame.h"
 #include "xap_Win32DialogHelper.h"
 #include "ut_string_class.h"
-#include <xp/AbiCollabSessionManager.h>
-#include <backends/xp/Event.h>
-#include <backends/xp/AccountEvent.h>
+#include <session/xp/AbiCollabSessionManager.h>
+#include <account/xp/Event.h>
+#include <account/xp/AccountEvent.h>
 #include <backends/xmpp/xp/XMPPBuddy.h>
 
 #include "ap_Win32Dialog_CollaborationJoin.h"
@@ -256,7 +256,7 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_if_fail(pManager);
 	
-	const UT_GenericVector<AccountHandler *>& accounts = pManager->getAccounts();
+	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	
 	// clear the treeview
 	m_mTreeItemHandles.clear();
@@ -265,12 +265,12 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
 
 	// Loop through accounts
-	for (UT_uint32 i = 0; i < accounts.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < accounts.size(); i++)
 	{
 		// Loop through buddies in accounts
-		for (UT_uint32 j = 0; j < accounts.getNthItem(i)->getBuddies().size(); j++)
+		for (UT_uint32 j = 0; j < accounts[i]->getBuddies().size(); j++)
 		{
-			const Buddy* pBuddy = accounts.getNthItem(i)->getBuddies()[j];
+			BuddyPtr pBuddy = accounts[i]->getBuddies()[j];
 			UT_UTF8String buddyDesc = pBuddy->getDescription();
 			UT_DEBUGMSG(("Adding buddy (%s) to the treeview\n", buddyDesc.utf8_str()));
 
@@ -373,7 +373,7 @@ void AP_Win32Dialog_CollaborationJoin::_setJoin(HTREEITEM hItem, bool joinStatus
 	std::map< HTREEITEM, ShareListItem >::const_iterator cit = m_mTreeItemHandles.find(hItem);
 	UT_return_if_fail(cit != m_mTreeItemHandles.end());	
 
-	const Buddy* pBuddy = cit->second.pBuddy;
+	BuddyPtr pBuddy = cit->second.pBuddy;
 	UT_return_if_fail(pBuddy);
 
 	DocHandle* pDocHandle = cit->second.pDocHandle;

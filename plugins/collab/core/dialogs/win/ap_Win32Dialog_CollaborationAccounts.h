@@ -25,7 +25,7 @@
 #include <ut_string.h>
 #include "ap_Win32Dialog_CollaborationAddAccount.h"
 
-#include <xp/ap_Dialog_CollaborationAccounts.h>
+#include <dialogs/xp/ap_Dialog_CollaborationAccounts.h>
 #include "ap_Win32Res_DlgCollaborationAccounts.rc2"
 
 class XAP_Frame;
@@ -41,7 +41,7 @@ public:
 	BOOL 					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	virtual void			signal(const Event& event, const Buddy* pSource);
+	virtual void			signal(const Event& event, BuddyPtr pSource);
 
 private:
 	std::map<UT_UTF8String, AccountHandler*> _constructModel();
