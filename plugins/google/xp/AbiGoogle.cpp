@@ -52,7 +52,7 @@ ABI_PLUGIN_DECLARE("Google")
 //   It should be called when the user selects from the context menu
 //
 static bool 
-AbiGoogle_invoke(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
+AbiGoogle_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 {
   // Get the current view that the user is in.
   XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
