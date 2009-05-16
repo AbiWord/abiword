@@ -252,7 +252,7 @@ void IE_Imp_WML::closeTable(void)
 	X_CheckError(m_TableHelperStack->tableEnd());
 }
 
-void IE_Imp_WML::openRow(const gchar **/*atts*/)
+void IE_Imp_WML::openRow(const gchar ** /*atts*/)
 {
 	X_CheckError(m_TableHelperStack->trStart(NULL));
 }
@@ -269,7 +269,7 @@ void IE_Imp_WML::closeRow(void)
 	}
 }
 
-void IE_Imp_WML::openCell(const gchar **/*atts*/)
+void IE_Imp_WML::openCell(const gchar ** /*atts*/)
 {
 	// Note: there's no rowspan or colspan in WML 1.1
 
