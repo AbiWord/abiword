@@ -119,9 +119,9 @@ namespace soa {
 
 		// parse this node
 
-		char* type_str = reinterpret_cast<char *>(xmlGetProp(element, reinterpret_cast<const xmlChar*>("type")));
-		Type elem_type = element_type(type_str);
-		free(type_str);
+		xmlChar* type_str = xmlGetProp(element, reinterpret_cast<const xmlChar*>("type"));
+		Type elem_type = element_type(reinterpret_cast<char *>(type_str));
+		xmlFree(type_str);
 
 		GenericPtr t;
 		switch (elem_type) {
