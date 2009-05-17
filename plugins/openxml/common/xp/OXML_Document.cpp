@@ -132,7 +132,7 @@ UT_Error OXML_Document::addList(const OXML_SharedList & obj)
 	return UT_OK;
 }
 
-OXML_SharedList OXML_Document::getListById(UT_uint32 id)
+OXML_SharedList OXML_Document::getListById(const UT_uint32 id)
 {
 	OXML_ListMap::iterator it;
 	it = m_lists_by_id.find(id);
@@ -461,7 +461,7 @@ void OXML_Document::_assignHdrFtrIds()
 	}
 }
 
-std::string OXML_Document::getMappedNumberingId(std::string numId)
+std::string OXML_Document::getMappedNumberingId(const std::string & numId)
 {
 	std::map<std::string, std::string>::iterator iter = m_numberingMap.find(numId);
 	if(iter == m_numberingMap.end())
@@ -469,7 +469,7 @@ std::string OXML_Document::getMappedNumberingId(std::string numId)
 	return iter->second; 
 }
 
-bool OXML_Document::setMappedNumberingId(std::string numId, std::string abstractNumId)
+bool OXML_Document::setMappedNumberingId(const std::string & numId, const std::string & abstractNumId)
 {
 	m_numberingMap.insert(std::make_pair(numId, abstractNumId));
 	return m_numberingMap.find(numId) != m_numberingMap.end();
