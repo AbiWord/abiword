@@ -84,7 +84,7 @@ _ucsToAscii(const UT_UCSChar* text)
 //   It should be called when the user selects from the context menu
 //
 static bool 
-URLDict_invoke(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
+URLDict_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 {
   // Get the current view that the user is in.
   XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
