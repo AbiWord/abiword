@@ -36,7 +36,7 @@
 class OXML_Element_Field: public OXML_Element
 {
 public:
-	OXML_Element_Field(std::string id, fd_Field::FieldType type, const gchar* value);
+	OXML_Element_Field(const std::string & id, fd_Field::FieldType type, const gchar* value);
 	virtual ~OXML_Element_Field();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Image::OXML_Element_Image(std::string id) : 
+OXML_Element_Image::OXML_Element_Image(const std::string & id) : 
 	OXML_Element(id, IMG_TAG, IMAGE)
 {
 }

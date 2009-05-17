@@ -37,7 +37,7 @@
 class OXML_Element_TextBox : public OXML_Element
 {
 public:
-	OXML_Element_TextBox(std::string id);
+	OXML_Element_TextBox(const std::string & id);
 	virtual ~OXML_Element_TextBox();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

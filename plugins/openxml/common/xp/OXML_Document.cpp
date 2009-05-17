@@ -132,7 +132,7 @@ UT_Error OXML_Document::addList(const OXML_SharedList & obj)
 	return UT_OK;
 }
 
-OXML_SharedList OXML_Document::getListById(const UT_uint32 id)
+OXML_SharedList OXML_Document::getListById(UT_uint32 id)
 {
 	OXML_ListMap::iterator it;
 	it = m_lists_by_id.find(id);

@@ -66,7 +66,7 @@ public:
 
 	UT_Error addList(const OXML_SharedList& obj);
 	UT_Error addImage(const OXML_SharedImage& obj);
-	OXML_SharedList getListById(const UT_uint32 id);
+	OXML_SharedList getListById(UT_uint32 id);
 
 	UT_Error addFootnote(const OXML_SharedSection & obj);
 	UT_Error clearFootnotes();

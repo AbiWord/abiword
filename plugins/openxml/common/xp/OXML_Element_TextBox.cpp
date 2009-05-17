@@ -31,7 +31,7 @@
 // External includes
 #include <string>
 
-OXML_Element_TextBox::OXML_Element_TextBox(std::string id) : 
+OXML_Element_TextBox::OXML_Element_TextBox(const std::string & id) : 
 	OXML_Element(id, TXTBX_TAG, TEXTBOX)
 {
 	//Intentionally empty

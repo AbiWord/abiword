@@ -35,7 +35,7 @@
 class OXML_Element_Bookmark : public OXML_Element
 {
 public:
-	OXML_Element_Bookmark(std::string id);
+	OXML_Element_Bookmark(const std::string & id);
 	virtual ~OXML_Element_Bookmark();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

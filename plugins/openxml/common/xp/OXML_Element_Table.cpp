@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Table::OXML_Element_Table(std::string id) : 
+OXML_Element_Table::OXML_Element_Table(const std::string & id) : 
 	OXML_Element(id, TBL_TAG, TABLE),
 	m_currentRowNumber(0),
 	m_currentColNumber(0)

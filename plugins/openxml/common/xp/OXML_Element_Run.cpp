@@ -31,7 +31,7 @@
 // External includes
 #include <string>
 
-OXML_Element_Run::OXML_Element_Run(std::string id) : 
+OXML_Element_Run::OXML_Element_Run(const std::string & id) : 
 	OXML_Element(id, R_TAG, SPAN)
 {
 	//Intentionally empty

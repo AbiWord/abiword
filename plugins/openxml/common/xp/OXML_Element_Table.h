@@ -37,7 +37,7 @@
 class OXML_Element_Table : public OXML_Element
 {
 public:
-	OXML_Element_Table(std::string id);
+	OXML_Element_Table(const std::string & id);
 	virtual ~OXML_Element_Table();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

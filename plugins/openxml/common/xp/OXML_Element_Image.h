@@ -35,7 +35,7 @@
 class OXML_Element_Image : public OXML_Element
 {
 public:
-	OXML_Element_Image(std::string id);
+	OXML_Element_Image(const std::string & id);
 	virtual ~OXML_Element_Image();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

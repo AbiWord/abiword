@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Bookmark::OXML_Element_Bookmark(std::string id) : 
+OXML_Element_Bookmark::OXML_Element_Bookmark(const std::string & id) : 
 	OXML_Element(id, BOOK_TAG, BOOKMRK)
 {
 }

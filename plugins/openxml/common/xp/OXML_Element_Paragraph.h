@@ -35,7 +35,7 @@
 class OXML_Element_Paragraph : public OXML_Element
 {
 public:
-	OXML_Element_Paragraph(std::string id);
+	OXML_Element_Paragraph(const std::string & id);
 	virtual ~OXML_Element_Paragraph();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

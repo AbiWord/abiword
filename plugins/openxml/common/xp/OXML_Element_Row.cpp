@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Row::OXML_Element_Row(std::string id, OXML_Element_Table* tbl) : 
+OXML_Element_Row::OXML_Element_Row(const std::string & id, OXML_Element_Table* tbl) : 
 	OXML_Element(id, TR_TAG, ROW), numCols(0), table(tbl),
 	m_rowNumber(0), m_currentColumnNumber(0)
 {
@@ -153,7 +153,7 @@ void OXML_Element_Row::setRowNumber(int row)
 {
 	m_rowNumber = row;
 }
-
+\
 int OXML_Element_Row::getRowNumber()
 {
 	return m_rowNumber;

@@ -35,7 +35,7 @@
 // External includes
 #include <string>
 
-OXML_Element::OXML_Element(std::string id, OXML_ElementTag tag, OXML_ElementType type) : 
+OXML_Element::OXML_Element(const std::string & id, OXML_ElementTag tag, OXML_ElementType type) : 
 	OXML_ObjectWithAttrProp(),
 	TARGET(0), 
 	m_id(id), 

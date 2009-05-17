@@ -20,6 +20,9 @@
  * 02111-1307, USA.
  */
 
+//External includes
+#include <boost/lexical_cast.hpp>
+
 // Class definition include
 #include <OXML_List.h>
 
@@ -31,10 +34,6 @@
 #include <ut_types.h>
 #include <ut_misc.h>
 #include <pd_Document.h>
-
-// External includes
-#include <string>
-#include <sstream>
 
 OXML_List::OXML_List() : 
 	OXML_ObjectWithAttrProp(),
@@ -309,18 +308,10 @@ UT_Error OXML_List::addToPT(PD_Document * pDocument)
 
 	const gchar* ppAttr[13];
 
-	std::stringstream out;
-	out << id;
-	std::string listId = out.str();
-	out.str("");
-	out << parentId;
-	std::string parentListId = out.str();
-	out.str("");
-	out << type;
-	std::string listType = out.str();
-	out.str("");
-	out << startValue;
-	std::string listStartVal = out.str();
+	std::string listId = boost::lexical_cast<std::string>(id);
+	std::string parentListId = boost::lexical_cast<std::string>(parentId);
+	std::string listType = boost::lexical_cast<std::string>(type);
+	std::string listStartVal = boost::lexical_cast<std::string>(startValue);
 	std::string listDelim("%L."); //TODO: need to fix for openxml delim
 	std::string listDecimal(".");
 	if(decimal)

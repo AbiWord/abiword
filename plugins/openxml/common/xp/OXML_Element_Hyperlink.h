@@ -35,7 +35,7 @@
 class OXML_Element_Hyperlink : public OXML_Element
 {
 public:
-	OXML_Element_Hyperlink(std::string id);
+	OXML_Element_Hyperlink(const std::string & id);
 	virtual ~OXML_Element_Hyperlink();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);

@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Hyperlink::OXML_Element_Hyperlink(std::string id) : 
+OXML_Element_Hyperlink::OXML_Element_Hyperlink(const std::string & id) : 
 	OXML_Element(id, HYPR_TAG, HYPRLNK)
 {
 }

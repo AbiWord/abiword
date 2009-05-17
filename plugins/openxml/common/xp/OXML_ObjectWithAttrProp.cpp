@@ -52,6 +52,11 @@ UT_Error OXML_ObjectWithAttrProp::setProperty(const gchar * szName, const gchar 
 	return ret;
 }
 
+UT_Error OXML_ObjectWithAttrProp::setProperty(const std::string & szName, const std::string & szValue)
+{
+	return setProperty(szName.c_str(), szValue.c_str());
+}
+
 UT_Error OXML_ObjectWithAttrProp::getAttribute(const gchar * szName, const gchar *& szValue)
 {
 	UT_return_val_if_fail(szName && *szName, UT_ERROR);

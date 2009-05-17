@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Paragraph::OXML_Element_Paragraph(std::string id) : 
+OXML_Element_Paragraph::OXML_Element_Paragraph(const std::string & id) : 
 	OXML_Element(id, P_TAG, BLOCK), pageBreak(false)
 {
 }

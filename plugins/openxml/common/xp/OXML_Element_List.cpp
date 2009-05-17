@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_List::OXML_Element_List(std::string id, OXML_Element_Paragraph* paragraph) : 
+OXML_Element_List::OXML_Element_List(const std::string & id, OXML_Element_Paragraph* paragraph) : 
 	OXML_Element(id, LST_TAG, LIST), parent(paragraph)
 {
 }

@@ -62,7 +62,7 @@ public:
 	 * \param tag The tag that this element represents.
 	 * \param The category (BLOCK or SPAN) that this element belongs to.
 	 */
-	OXML_Element(std::string id, OXML_ElementTag tag, OXML_ElementType type);
+	OXML_Element(const std::string & id, OXML_ElementTag tag, OXML_ElementType type);
 	virtual ~OXML_Element();
 
 	inline std::string getId() { return m_id; }

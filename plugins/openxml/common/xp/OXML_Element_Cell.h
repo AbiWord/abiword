@@ -40,7 +40,7 @@ class OXML_Element_Row;
 class OXML_Element_Cell : public OXML_Element
 {
 public:
-	OXML_Element_Cell(std::string id, OXML_Element_Table* table, OXML_Element_Row* row,
+	OXML_Element_Cell(const std::string & id, OXML_Element_Table* table, OXML_Element_Row* row,
 					  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom);
 	virtual ~OXML_Element_Cell();
 

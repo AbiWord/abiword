@@ -20,6 +20,9 @@
  * 02111-1307, USA.
  */
 
+//External includes
+#include <boost/lexical_cast.hpp>
+
 // Class definition include
 #include <OXML_Element_Cell.h>
 
@@ -28,10 +31,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-//External includes
-#include <sstream>
-
-OXML_Element_Cell::OXML_Element_Cell(std::string id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
+OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
 									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
 	OXML_Element(id, TC_TAG, CELL),
 	m_startVerticalMerge(true),
@@ -242,32 +242,24 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	UT_Error ret = UT_OK;
 
 	//add props:bot-attach, left-attach, right-attach, top-attach
-	std::stringstream out;
-	out << m_iTop;
-	std::string sTop = out.str();
-	out.str("");
-	out << m_iBottom;
-	std::string sBottom = out.str();
-	out.str("");
-	out << m_iLeft;
-	std::string sLeft = out.str();
-	out.str("");
-	out << m_iRight;
-	std::string sRight = out.str();
-	
-	ret = setProperty("top-attach", sTop.c_str());
+	std::string sTop = boost::lexical_cast<std::string>(m_iTop);
+	std::string sBottom = boost::lexical_cast<std::string>(m_iBottom);
+	std::string sLeft = boost::lexical_cast<std::string>(m_iLeft);
+	std::string sRight = boost::lexical_cast<std::string>(m_iRight);
+
+	ret = setProperty("top-attach", sTop);
 	if(ret != UT_OK)
 		return ret;	
 
-	ret = setProperty("bot-attach", sBottom.c_str());
+	ret = setProperty("bot-attach", sBottom);
 	if(ret != UT_OK)
 		return ret;	
 
-	ret = setProperty("left-attach", sLeft.c_str());
+	ret = setProperty("left-attach", sLeft);
 	if(ret != UT_OK)
 		return ret;	
 
-	ret = setProperty("right-attach", sRight.c_str());
+	ret = setProperty("right-attach", sRight);
 	if(ret != UT_OK)
 		return ret;	
 

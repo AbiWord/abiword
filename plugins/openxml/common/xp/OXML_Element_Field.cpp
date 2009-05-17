@@ -28,7 +28,7 @@
 #include <ut_string.h>
 #include <pd_Document.h>
 
-OXML_Element_Field::OXML_Element_Field(std::string id, fd_Field::FieldType type, const gchar* value) : 
+OXML_Element_Field::OXML_Element_Field(const std::string & id, fd_Field::FieldType type, const gchar* value) : 
 	OXML_Element(id, FLD_TAG, FIELD), fieldType(type), fieldValue(value)
 {
 }
