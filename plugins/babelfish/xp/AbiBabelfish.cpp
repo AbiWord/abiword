@@ -180,7 +180,7 @@ static bool _getTranslationCode (FV_View * pView, UT_String & langCode)
 //   online babelfish translation
 //   It should be called when the user selects from the context menu
 //
-static bool BabelFish_invoke(AV_View* /*v*/, EV_EditMethodCallData */*d*/)
+static bool BabelFish_invoke(AV_View* /*v*/, EV_EditMethodCallData * /*d*/)
 {
   // Get the current view that the user is in.
   XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
