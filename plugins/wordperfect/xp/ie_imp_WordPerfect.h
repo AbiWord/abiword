@@ -30,7 +30,13 @@
 #define IE_IMP_WP_H
 
 #include <stdio.h>
+#ifdef _WIN32
+#define POINT WPX_POINT
+#endif
 #include <libwpd/libwpd.h>
+#ifdef _WIN32
+#undef POINT
+#endif
 #include "ie_imp.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
