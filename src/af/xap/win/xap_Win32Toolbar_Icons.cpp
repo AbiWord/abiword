@@ -296,6 +296,8 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	UT_uint32 range = G_N_ELEMENTS(s_nametoIdTable);
 	UT_sint32 middle, right = range - 1, left = 0, cmp;
 	
+	// load in our image as a DIB
+
 	while (left <= right)
 	{
 		middle = (left + right) >> 1;
@@ -303,7 +305,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 
 		if (cmp == 0) {
 			*pBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id),
-				IMAGE_BITMAP, maxWidth, maxHeight, 0);
+				IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION);
 			break;
 		}
 
@@ -334,7 +336,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 
 			if (cmp == 0) {
 				*pBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id), 
-					IMAGE_BITMAP, maxWidth, maxHeight, 0);
+					IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION | LR_LOADTRANSPARENT);
 				break;
 			}
 
@@ -348,7 +350,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	if (*pBitmap == NULL) 
 		return false;
 		
-	/* Applies transparency to the image*/
+	/* Applies transparency to the DIB */
 	
 	HDC        	hdc=NULL;
 	LPVOID     	pBuf=NULL;
@@ -375,7 +377,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 
 	for (UT_uint32 pixel = 0; pixel < bmpInfo.bmiHeader.biSizeImage; pixel += 4)
 	{
-		if (!(buff[pixel] == TRANSPARENT_B  && buff[pixel + 1] == TRANSPARENT_G && buff[pixel + 2] == TRANSPARENT_R))
+		if (!(buff[pixel] == TRANSPARENT_B && buff[pixel + 1] == TRANSPARENT_G && buff[pixel + 2] == TRANSPARENT_R))
 			continue;
 
 		buff[pixel] = B;
@@ -384,6 +386,8 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 		buff[pixel + 3] = 0;
 	}
 
+	// convert the DIB into a DDB for display purposes
+	*pBitmap = CreateCompatibleBitmap(hdc, bmpInfo.bmiHeader.biWidth, bmpInfo.bmiHeader.biHeight);
 	SetDIBits(hdc, *pBitmap, 0, bmpInfo.bmiHeader.biHeight, pBuf, &bmpInfo, DIB_RGB_COLORS);
 	free (pBuf);	
 	return true;
