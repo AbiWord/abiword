@@ -126,7 +126,9 @@ UT_Error OXML_Element_Table::addChildrenToPT(PD_Document * pDocument)
 UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
-	if(!pDocument->appendStrux(PTX_SectionTable, NULL))
+
+	const gchar ** atts = getAttributesWithProps();
+	if(!pDocument->appendStrux(PTX_SectionTable, atts))
 		return UT_ERROR;
 
 	ret = addChildrenToPT(pDocument);

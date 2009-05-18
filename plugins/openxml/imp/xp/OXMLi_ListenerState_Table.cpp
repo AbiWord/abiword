@@ -105,6 +105,30 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;
 	}
+
+	//Table Properties
+	else if(nameMatches(rqst->pName, NS_W_KEY, "gridCol") && 
+			contextMatches(rqst->context->back(), NS_W_KEY, "tblGrid"))
+	{
+		OXML_Element_Table* table = m_tableStack.top();				
+		const gchar* w = attrMatches(NS_W_KEY, "w", rqst->ppAtts);
+		if(w) 
+		{
+			//append this width to table-column-props property
+			const gchar* tableColumnProps = NULL;
+			UT_Error ret = table->getProperty("table-column-props", tableColumnProps);
+			if((ret != UT_OK) || !tableColumnProps)
+				tableColumnProps = "";				
+			std::string cols(tableColumnProps);
+			cols += _TwipsToPoints(w);
+			cols += "pt/";
+			ret = table->setProperty("table-column-props", cols);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-column-props:%s\n", cols.c_str()));				
+		}
+		rqst->handled = true;
+	}
+
 	//TODO: more coming here
 }
 
@@ -162,7 +186,8 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = true;
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan") ||
-			nameMatches(rqst->pName, NS_W_KEY, "vMerge"))
+			nameMatches(rqst->pName, NS_W_KEY, "vMerge") ||
+			nameMatches(rqst->pName, NS_W_KEY, "gridCol"))
 	{
 		rqst->handled = true;
 	}	
