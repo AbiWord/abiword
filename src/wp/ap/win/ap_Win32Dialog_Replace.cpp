@@ -444,11 +444,9 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_Replace::_updateList\n"));
 	
-	UT_uint32 i = 0;
-	
 	SendMessage(hWnd, CB_RESETCONTENT, 0,0);		
 	
-	for (i = 0; i< list->getItemCount(); i++)
+	for (UT_sint32 i = 0; i < list->getItemCount(); i++)
 	{
 		// leaving the size 0 causes the string class to determine the length itself
 		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 

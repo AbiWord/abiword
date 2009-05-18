@@ -246,7 +246,7 @@ void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	}
 
 	int iToolbarCount = 0;
-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
 		EV_Win32Toolbar *pThisToolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(i);
 
@@ -309,7 +309,7 @@ void AP_Win32FrameImpl::_showOrHideToolbars(void)
 	UT_return_if_fail ( pFrame );
 	bool *bShowBar = static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowBar;
 
-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	for (UT_sint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
 		if (!bShowBar[i])
 			pFrame->toggleBar( i, false );

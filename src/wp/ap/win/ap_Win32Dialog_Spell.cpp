@@ -238,7 +238,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	} 
 	else 
 	{
-		for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
+		for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 		{
 			p = (UT_UCSChar *) m_Suggestions->getNthItem(i);
 			len = UT_UCS4_strlen(p);

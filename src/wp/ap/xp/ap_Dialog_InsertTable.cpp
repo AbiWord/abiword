@@ -40,7 +40,7 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	/* Default values for the dialog box*/
 	m_numRows = 2;
 	m_numCols = 5;
-	m_columnWidth = 0.7;	// In DIM_IN
+	m_columnWidth = static_cast<float>(0.7);	// In DIM_IN
 	
 	/* Use default units*/
 	const gchar * szRulerUnits;
@@ -52,8 +52,7 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	// The default m_columnWidth is in inches, convert 
 	// if the user default unit is different
 	if (m_dim != DIM_IN)								
-		m_columnWidth = UT_convertInchesToDimension(m_columnWidth, m_dim); 
-	
+		m_columnWidth = static_cast<float>(UT_convertInchesToDimension(m_columnWidth, m_dim));
 }
 
 void AP_Dialog_InsertTable::setColumnWidth(float columnWidth)
