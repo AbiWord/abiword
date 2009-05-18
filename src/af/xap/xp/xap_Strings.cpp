@@ -77,7 +77,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 	        UT_iconv_t conv = UT_iconv_open(inEncoding, m_encoding.c_str());
 		UT_return_val_if_fail(UT_iconv_isValid(conv), false);
 	  
-		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate), conv, NULL, NULL);
+		char * translated = UT_convert_cd(toTranslate, strlen (toTranslate)+1, conv, NULL, NULL);
 		
 		UT_iconv_close(conv);
 		
