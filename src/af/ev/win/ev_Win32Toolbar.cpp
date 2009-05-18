@@ -143,7 +143,7 @@ EV_Win32Toolbar::~EV_Win32Toolbar(void)
 	if (m_pFontCtrl)
 		delete m_pFontCtrl;
 
-	for (UT_uint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
+	for (UT_sint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
 		delete m_vecOrgStylesNames.getNthItem(c);
 
 }
@@ -1366,13 +1366,13 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	UT_UTF8String utf8;
 	UT_String str;
 
-	for (UT_uint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
+	for (UT_sint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
 		delete m_vecOrgStylesNames.getNthItem(c);
 
 	m_vecOrgStylesNames.clear();
 	
 	
-	for (UT_uint32 k=0; k < v->getItemCount(); k++)
+	for (UT_sint32 k=0; k < v->getItemCount(); k++)
 	{
 		const char*	sz = (char *)v->getNthItem(k);
 		const char*	pLocalised = sz;

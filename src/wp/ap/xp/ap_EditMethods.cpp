@@ -2977,7 +2977,7 @@ Defun1(filePreviewWeb)
 	if (err) {
 		g_warning ("%s", err->message);
 		g_error_free (err); err = NULL;
-		return UT_ERROR;
+		return false;
 	}
 	close(fp);
 	

@@ -177,5 +177,5 @@ UT_uint32 AP_Dialog_InsertTable::getNumCols(void)
 
 float AP_Dialog_InsertTable::getColumnWidth(void)
 {
-	return UT_convertDimToInches(m_columnWidth, m_dim); 
+	return static_cast<float>(UT_convertDimToInches(m_columnWidth, m_dim));
 }

@@ -218,7 +218,7 @@ GR_Win32Graphics::~GR_Win32Graphics()
 		
 	/* Release saved bitmaps */
 	HBITMAP hBit;
-	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	for (UT_sint32 i = 0; i < m_vSaveRectBuf.size (); i++)
 	{
 		hBit = (HBITMAP)m_vSaveRectBuf.getNthItem (i);
 		DeleteObject(hBit);			
@@ -1655,7 +1655,7 @@ GR_Win32Font::~GR_Win32Font()
 		bIsDC = dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC;
 	}
 
-	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
+	for (UT_sint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
 		  allocFont *p = (allocFont *)m_allocFonts.getNthItem(i);
 

@@ -429,7 +429,7 @@ void XAP_Frame::_createAutoSaveTimer()
 void XAP_Frame::_removeAutoSaveFile()
 {
 	const char *filename = NULL;
-	bool bURI = UT_go_path_is_uri(m_stAutoSaveNamePrevious.c_str());
+	gboolean bURI = UT_go_path_is_uri(m_stAutoSaveNamePrevious.c_str());
 
 	if(bURI)
 	{
@@ -862,7 +862,7 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   backupName = oldName + ext;
 
   const char* uri = NULL;
-  bool bURI = UT_go_path_is_uri(backupName.c_str());
+  gboolean bURI = UT_go_path_is_uri(backupName.c_str());
 
   if(!bURI)
     uri = UT_go_filename_to_uri(backupName.c_str());

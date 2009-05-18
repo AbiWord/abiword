@@ -79,7 +79,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/,
 	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
 
 	// load each frame name into the list
-	for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
+	for (UT_sint32 i=0; i<m_pApp->getFrameCount(); i++)
 	{
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_continue_if_fail(f);

@@ -141,7 +141,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	ListView_SetItemCount(h, _getDocumentCount());
 	LVITEM item;
-	for(UT_uint32 i = 0; i < _getDocumentCount(); i++)
+	for(UT_sint32 i = 0; i < _getDocumentCount(); i++)
 	{
 		item.pszText = (char *)_getNthDocumentName(i);
 		item.iItem = i;

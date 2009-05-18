@@ -1888,7 +1888,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		{
 			UT_DEBUGMSG(("Insert Table immediately after Section \n"));
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+			return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != NULL;
 		}
 #endif
 		default:						// unknown strux.
@@ -2410,7 +2410,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // The immediately prior strux is a Frame.  So, this
 			   // will become the first table of the Frame.
 		           fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			   return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+			   return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != NULL;
 
 		  }
 		case PTX_EndCell:	  

@@ -13902,7 +13902,7 @@ void FV_View::calculateNumHorizPages()
 		pFrame->nullUpdate();
 		double totOffset = static_cast<double>(iPrevYOffset)*static_cast<double>(iOldNo);
 		xxx_UT_DEBUGMSG(("Number horizontal pages changed totoffset %f \n",totOffset));
-		UT_uint32 newOffset = totOffset/static_cast<double>(m_iNumHorizPages);
+		UT_uint32 newOffset = static_cast<UT_uint32>(totOffset / static_cast<double>(m_iNumHorizPages));
 		UT_sint32 idiff = newOffset -  m_yScrollOffset;
 
 		if(idiff > 0)

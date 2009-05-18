@@ -212,17 +212,13 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 
 			if (LOWORD(wParam)==ID_APPLY)
 			{
-				XAP_Win32PropertyPage* pPage;	
-				UT_uint32 i= 0;
-				
-				for(i=0; i< pThis->m_vecPages.getItemCount();  i++)
+				for(UT_sint32 i = 0; i < pThis->m_vecPages.getItemCount(); i++)
 				{			
-					pPage = (XAP_Win32PropertyPage*)pThis->m_vecPages.getNthItem(i);		
+					XAP_Win32PropertyPage* pPage = (XAP_Win32PropertyPage*)pThis->m_vecPages.getNthItem(i);		
 					pPage->_onApply();					
 				}				
 
 				pThis->_onApply();
-
 				pThis->m_nRslt=ID_APPLY;
 				return 0;
 			}
@@ -230,13 +226,9 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			
 			if (LOWORD(wParam)==IDOK)
 			{
-				
-				XAP_Win32PropertyPage* pPage;	
-				UT_sint32 i= 0;
-				
-				for(i=0; i< pThis->m_vecPages.getItemCount();  i++)
+				for(UT_sint32 i = 0; i < pThis->m_vecPages.getItemCount(); i++)
 				{			
-					pPage = (XAP_Win32PropertyPage*)pThis->m_vecPages.getNthItem(i);		
+					XAP_Win32PropertyPage* pPage = (XAP_Win32PropertyPage*)pThis->m_vecPages.getNthItem(i);		
 					pPage->_onOK();					
 				}				
 

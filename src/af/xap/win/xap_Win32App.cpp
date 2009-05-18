@@ -278,7 +278,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void) // ansi only dirs for n
 
 static void s_buildDirName(const UT_Vector& vDirComponents, UT_uint32 iComponentsNeeded, char* pDirBuf)
 {
-	UT_ASSERT(iComponentsNeeded <= vDirComponents.getItemCount());
+	UT_ASSERT(iComponentsNeeded <= static_cast<UT_uint32>(vDirComponents.getItemCount()));
 
 	if(iComponentsNeeded == 0)
 	{

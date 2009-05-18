@@ -222,7 +222,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 
 bool GR_Win32CharWidths::_doesGlyphExist(UT_UCS4Char g)
 {
-	for(UT_uint32 i = 0; i < m_vRanges.getItemCount() - 1; i+=2)
+	for(UT_sint32 i = 0; i < m_vRanges.getItemCount() - 1; i+=2)
 	{
 		if((UT_uint32)m_vRanges.getNthItem(i) > g)
 			return false;
@@ -412,7 +412,7 @@ void GR_Win32CharWidths::_retrieveFontInfo(HDC hdc)
 		m_vRanges.addItem(0xffffffff);
 	}
 #ifdef DEBUG
-	for(UT_uint32 n = 0; n < m_vRanges.getItemCount() - 1; n += 2)
+	for(UT_sint32 n = 0; n < m_vRanges.getItemCount() - 1; n += 2)
 	{
 		xxx_UT_DEBUGMSG(("GR_Win32CharWidths::_retrieveFontInfo: range 0x%04x - 0x%04x\n",
 					 m_vRanges.getNthItem(n), m_vRanges.getNthItem(n+1)));

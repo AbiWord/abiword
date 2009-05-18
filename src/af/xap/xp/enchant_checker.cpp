@@ -134,7 +134,7 @@ bool EnchantChecker::isIgnored (const UT_UCSChar *toCorrect, size_t toCorrectLen
 	UT_return_val_if_fail (m_dict, false);
 
 	UT_UTF8String ignore (toCorrect, toCorrectLen);
-	return enchant_dict_is_in_session (m_dict, ignore.utf8_str(), ignore.byteLength());
+	return enchant_dict_is_in_session (m_dict, ignore.utf8_str(), ignore.byteLength()) != 0;
 }
 
 void EnchantChecker::ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen)

@@ -232,7 +232,7 @@ void XAP_Win32Dialog_PluginManager::refreshPluginList()
 	XAP_Module* pModule = 0;
 	const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules();
 
-	for (UT_uint32 i = 0; i < pVec->size(); i++)
+	for (UT_sint32 i = 0; i < pVec->size(); i++)
 	{
         pModule = (XAP_Module *)pVec->getNthItem (i);
 		addItemToList( XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST, pModule->getModuleInfo()->name );

@@ -563,7 +563,7 @@ BOOL CALLBACK UT_Win32AssertDlg::s_DisableWindows(HWND hwnd,	LPARAM lParam)
 
 void UT_Win32AssertDlg::enableWindows()
 {
-	for(UT_uint32 i = 0; i < m_vecDisabledWnds.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < m_vecDisabledWnds.getItemCount(); i++)
 	{
 		EnableWindow(m_vecDisabledWnds.getNthItem(i), TRUE);
 	}
