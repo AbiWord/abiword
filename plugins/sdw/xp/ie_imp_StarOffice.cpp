@@ -955,7 +955,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input) UT_THROWS(()) {
 						// FIXME: find a way to not have to copy and free 
 						// the result of UT_convert_cd.... --hub
 						UT_DEBUGMSG(("SDW: StringPool: found 0x%04x <-> %.*s\n", id, len, str));
-						UT_UCS4Char* convertedString = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(str, len, cd, NULL, NULL));
+						UT_UCS4Char* convertedString = reinterpret_cast<UT_UCS4Char*>(UT_convert_cd(str, len + 1, cd, NULL, NULL));
 						mStringPool.insert(stringpool_map::value_type(id, convertedString));
 						FREEP(convertedString);
                         delete [] str;
