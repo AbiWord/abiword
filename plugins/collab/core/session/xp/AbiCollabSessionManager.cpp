@@ -136,7 +136,7 @@ UT_Error AbiCollabSessionManager::serializeDocument(const PD_Document* pDoc, std
 			// this would be more efficient if we had a GsfOutputBase64.. ah well, this will do for now
 			guint8* base64zabwBuf = gsf_base64_encode_simple(zabwBuf, size);
 			document += (char*)base64zabwBuf;
-			free(base64zabwBuf);
+			g_free(base64zabwBuf);
 		}
 		else
 		{
