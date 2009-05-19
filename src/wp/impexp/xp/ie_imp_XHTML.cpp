@@ -2683,6 +2683,16 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 							verbatim = color.lookupNamedColor (value);
 						}
 				}
+			else if (strcmp (name, "text-transform") == 0)
+				{
+					if ((strcmp (value, "none") == 0) ||
+					    (strcmp (value, "capitalize") == 0) ||
+					    (strcmp (value, "uppercase") == 0) ||
+					    (strcmp (value, "lowercase") == 0))
+					{
+						verbatim = value;
+					}
+				}
 		}
 	if (css_mask & CSS_MASK_BLOCK)
 		{
