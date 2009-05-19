@@ -45,6 +45,7 @@ UT_Error OXML_Element_Row::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 
+	m_rowNumber = table->getCurrentRowNumber();
 	err = exporter->startRow();
 	if(err != UT_OK)
 		return err;
@@ -115,10 +116,23 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 }
 
 
-UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* /*exporter*/)
+UT_Error OXML_Element_Row::serializeProperties(IE_Exp_OpenXML* exporter)
 {
-	//TODO
-	return UT_OK;
+	UT_Error err = UT_OK;
+
+	err = exporter->startRowProperties(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	std::string height = table->getRowHeight(m_rowNumber);
+	if(height.compare("0in"))
+	{
+		err = exporter->setRowHeight(TARGET, height.c_str());
+		if(err != UT_OK)
+			return err;	
+	}
+
+	return exporter->finishRowProperties(TARGET);
 }
 
 UT_Error OXML_Element_Row::addChildrenToPT(PD_Document * pDocument)

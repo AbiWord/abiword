@@ -41,8 +41,10 @@ public:
 	virtual ~OXML_Element_Table();
 
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
+	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
 	virtual std::string getColumnWidth(int colIndex);
+	virtual std::string getRowHeight(int rowIndex);
 	UT_Error addChildrenToPT(PD_Document * pDocument);
 
 	void addRow(OXML_Element_Row* row);
@@ -65,6 +67,7 @@ public:
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	std::vector<std::string> columnWidth;
+	std::vector<std::string> rowHeight;
 	std::vector<OXML_Element_Row*> m_rows;
 	int m_currentRowNumber;
 	int m_currentColNumber;

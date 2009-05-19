@@ -92,6 +92,23 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 			return err;
 	}
 
+	if(getProperty("table-row-heights", szValue) == UT_OK)
+	{
+		std::string rowHeights(szValue);
+		std::string token("");
+
+		std::string::size_type prev = -1;
+		std::string::size_type pos = rowHeights.find_first_of("/");
+		
+		while (pos != std::string::npos) 
+		{
+			token = rowHeights.substr(prev+1, pos-prev-1);
+			rowHeight.push_back(token);
+			prev = pos;	
+			pos = rowHeights.find_first_of("/", pos + 1);
+		}
+	}
+
 	err = exporter->startTableProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;
@@ -105,6 +122,23 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 		return err;
 
 	return exporter->finishTableProperties(TARGET_DOCUMENT);
+}
+
+UT_Error OXML_Element_Table::serializeChildren(IE_Exp_OpenXML* exporter)
+{
+	UT_Error ret = UT_OK;
+
+	OXML_ElementVector::size_type i;
+	OXML_ElementVector children = getChildren();
+	for (i = 0; i < children.size(); i++)
+	{
+		m_currentRowNumber = i;
+		ret = children[i]->serialize(exporter);
+		if(ret != UT_OK)
+			return ret;
+	}
+
+	return ret;
 }
 
 UT_Error OXML_Element_Table::addChildrenToPT(PD_Document * pDocument)
@@ -181,6 +215,13 @@ std::string OXML_Element_Table::getColumnWidth(int colIndex)
 	if((colIndex < 0) || (colIndex >= (int)columnWidth.size()))
 		return "0in"; 
 	return columnWidth.at(colIndex);
+}
+
+std::string OXML_Element_Table::getRowHeight(int rowIndex)
+{
+	if((rowIndex < 0) || (rowIndex >= (int)rowHeight.size()))
+		return "0in"; 
+	return rowHeight.at(rowIndex);
 }
 
 bool OXML_Element_Table::incrementBottomVerticalMergeStart(int left, int top)

@@ -1295,6 +1295,18 @@ UT_Error IE_Exp_OpenXML::setTableBorder(int target, const char* border, const ch
 }
 
 /**
+ * Sets table row height to some exact value
+ */
+UT_Error IE_Exp_OpenXML::setRowHeight(int target, const char* height)
+{
+	std::string str("<w:trHeight w:val=\"");
+	str += convertToPositiveTwips(height);
+	str += "\" w:hRule=\"exact\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+
+/**
  * Starts table grid
  */
 UT_Error IE_Exp_OpenXML::startTableGrid(int target)
@@ -1308,6 +1320,22 @@ UT_Error IE_Exp_OpenXML::startTableGrid(int target)
 UT_Error IE_Exp_OpenXML::finishTableGrid(int target)
 {
 	return writeTargetStream(target, "</w:tblGrid>");
+}
+
+/**
+ * Starts table row properties
+ */
+UT_Error IE_Exp_OpenXML::startRowProperties(int target)
+{
+	return writeTargetStream(target, "<w:trPr>");
+}
+
+/**
+ * Finishes table row properties
+ */
+UT_Error IE_Exp_OpenXML::finishRowProperties(int target)
+{
+	return writeTargetStream(target, "</w:trPr>");
 }
 
 /**

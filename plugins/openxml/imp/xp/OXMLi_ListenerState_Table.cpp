@@ -128,7 +128,26 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;
 	}
-
+	else if(nameMatches(rqst->pName, NS_W_KEY, "trHeight") && 
+			contextMatches(rqst->context->back(), NS_W_KEY, "trPr"))
+	{
+		OXML_Element_Table* table = m_tableStack.top();				
+		const gchar* val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(val) 
+		{
+			const gchar* tableRowHeights = NULL;
+			UT_Error ret = table->getProperty("table-row-heights", tableRowHeights);
+			if((ret != UT_OK) || !tableRowHeights)
+				tableRowHeights = "";				
+			std::string rowHeights(tableRowHeights);
+			rowHeights += _TwipsToPoints(val);
+			rowHeights += "pt/";
+			ret = table->setProperty("table-row-heights", rowHeights);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-row-heights:%s\n", rowHeights.c_str()));				
+		}
+		rqst->handled = true;
+	}
 	//TODO: more coming here
 }
 
@@ -187,7 +206,8 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan") ||
 			nameMatches(rqst->pName, NS_W_KEY, "vMerge") ||
-			nameMatches(rqst->pName, NS_W_KEY, "gridCol"))
+			nameMatches(rqst->pName, NS_W_KEY, "gridCol") ||
+			nameMatches(rqst->pName, NS_W_KEY, "trHeight"))
 	{
 		rqst->handled = true;
 	}	
