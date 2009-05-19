@@ -26,31 +26,31 @@
 
 UT_UTF8String UT_go_basename(const char* uri)
 {
-  UT_UTF8String _base_name;
-  char *base_name = UT_go_basename_from_uri(uri);
-  if(base_name) {
-    _base_name = base_name;
-    g_free(base_name);
-  }
-  return _base_name;
+	UT_UTF8String _base_name;
+	char *base_name = UT_go_basename_from_uri(uri);
+	if(base_name) {
+		_base_name = base_name;
+		g_free(base_name);
+	}
+	return _base_name;
 }
 
 std::string UT_createTmpFile(const std::string& prefix, const std::string& extenstion)
 {
 	const gchar *filename = g_build_filename (g_get_tmp_dir (), prefix.c_str(), NULL);
-    UT_return_val_if_fail(filename, false);
+	UT_return_val_if_fail(filename, false);
 
-    std::string sName = filename;
-    FREEP(filename);
+	std::string sName = filename;
+	FREEP(filename);
 
 	UT_UTF8String rand = UT_UTF8String_sprintf("%X", UT_rand() * 0xFFFFFF);
-    sName += rand.utf8_str();
-    sName += extenstion;
+	sName += rand.utf8_str();
+	sName += extenstion;
 
-    FILE* f = fopen (sName.c_str(), "w+b");
+	FILE* f = fopen (sName.c_str(), "w+b");
 	if (!f)
 		return false;
 
-    fclose(f);
+	fclose(f);
 	return sName;
 }

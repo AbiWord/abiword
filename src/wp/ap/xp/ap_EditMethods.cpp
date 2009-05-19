@@ -2968,7 +2968,6 @@ Defun1(filePreviewWeb)
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-	GError *err = NULL;
 	
 	std::string file = UT_createTmpFile("web", ".html");
 
