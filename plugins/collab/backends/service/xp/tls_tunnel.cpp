@@ -211,7 +211,7 @@ static ssize_t read(gnutls_transport_ptr_t ptr, void* buffer, size_t size) {
 	asio::ip::tcp::socket* socket = reinterpret_cast<asio::ip::tcp::socket*>(ptr);
 	try {
 		return asio::read(*socket, asio::buffer(buffer, size));
-	} catch (asio::system_error& se) {
+	} catch (asio::system_error& /*se*/) {
 		return -1;
 	}
 }
@@ -220,7 +220,7 @@ static ssize_t write(gnutls_transport_ptr_t ptr, const void* buffer, size_t size
 	asio::ip::tcp::socket* socket = reinterpret_cast<asio::ip::tcp::socket*>(ptr);
 	try {
 		return asio::write(*socket, asio::buffer(buffer, size));
-	} catch (asio::system_error& se) {
+	} catch (asio::system_error& /*se*/) {
 		return -1;
 	}
 }
@@ -312,7 +312,7 @@ void Proxy::tunnel_(session_ptr_t session_ptr, socket_ptr_t local_socket_ptr, bu
 		// forward the data over the local connection
 		try {
 			asio::write(*local_socket_ptr, asio::buffer(&tunnel_buffer[0], bytes_transferred));
-		} catch (asio::system_error& se) {
+		} catch (asio::system_error& /*se*/) {
 			break;
 		}
 	}
@@ -474,7 +474,7 @@ void ServerProxy::on_transport_connect(socket_ptr_t remote_socket_ptr) {
 		asio::ip::tcp::resolver::query query("127.0.0.1", boost::lexical_cast<std::string>(local_port_));
 		asio::ip::tcp::resolver::iterator iterator(resolver.resolve(query));		
 		local_socket_ptr->connect(*iterator);		
-	} catch (asio::system_error& se) {
+	} catch (asio::system_error& /*se*/) {
 		disconnect_(session_ptr, local_socket_ptr, remote_socket_ptr);
 		return;
 	}
