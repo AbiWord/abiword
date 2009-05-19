@@ -58,6 +58,7 @@ libxp_la_SOURCES = \
 	ut_OverstrikingChars.cpp \
 	ut_OverstrikingChars.h \
 	ut_path.h \
+	ut_path.cpp \
 	ut_png.cpp \
 	ut_png.h \
 	ut_PropVector.cpp \
