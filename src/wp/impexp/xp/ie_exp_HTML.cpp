@@ -322,6 +322,7 @@ static const char * s_prop_list[] = {
 	"orphans",			"2",
 	"text-align",		"",
 	"text-decoration",	"none",
+	"text-transform",	"none",
 	"text-indent",		"0in",
 	"vertical-align",	"baseline",
 	"widows",			"2",
@@ -2779,6 +2780,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		const gchar * szP_FontFamily = 0;
 		const gchar * szP_TextDecoration = 0;
 		const gchar * szP_TextPosition = 0;
+		const gchar * szP_TextTransform = 0;
 		const gchar * szP_Color = 0;
 		const gchar * szP_BgColor = 0;
 		const gchar * szP_Display = 0;
@@ -2789,6 +2791,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		pAP->getProperty ("font-family",     szP_FontFamily);
 		pAP->getProperty ("text-decoration", szP_TextDecoration);
 		pAP->getProperty ("text-position",   szP_TextPosition);
+		pAP->getProperty ("text-transform",  szP_TextTransform);
 		pAP->getProperty ("color",           szP_Color);
 		pAP->getProperty ("bgcolor",         szP_BgColor);
 		pAP->getProperty ("display",         szP_Display);
@@ -2889,6 +2892,17 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				}
 			}
 		}
+		if (szP_TextTransform)
+			{
+				if (!compareStyle ("text-transform", szP_TextTransform))
+					{
+						if (!first) m_utf8_1 += ";";
+						m_utf8_1 += "text-transform:";
+						m_utf8_1 += szP_TextTransform;
+						first = false;
+					}
+			}
+
 		if (szP_TextPosition)
 		{
 			if (strcmp (szP_TextPosition, "superscript") == 0)

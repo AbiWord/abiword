@@ -1108,6 +1108,15 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
 		current = si.m_Text.getChar();
 
+		if (si.m_TextTransform == GR_ShapingInfo::LOWERCASE)
+			current = g_unichar_tolower(current);
+		else if (si.m_TextTransform == GR_ShapingInfo::UPPERCASE)
+			current = g_unichar_toupper(current);
+		else if (si.m_TextTransform == GR_ShapingInfo::CAPITALIZE) {
+			// TODO: can we do anything about capitalization here? remember if the
+			// TODO: last character was a word boundary?
+		} // else si.m_TextTransform == GR_ShapingInfo::NONE
+
 		if(si.m_iVisDir == UT_BIDI_RTL)
 			glyph = s_getMirrorChar(current);
 		else

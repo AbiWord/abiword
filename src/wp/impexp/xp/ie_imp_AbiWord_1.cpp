@@ -1216,7 +1216,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 			// added to the doc by the xml paraser
 			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0,
 											   m_currentRevisionTime,
-											   m_currentRevisionVersion));
+											   m_currentRevisionVersion, true));
 			m_currentRevisionId = 0;
 		}
 		

@@ -436,6 +436,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		else
 			setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 	}
+
 	// here we handle background colour -- we parse the property into
 	// m_pColorHL and then call updateHighlightColor() to overlay any
 	// colour from higher layout elements

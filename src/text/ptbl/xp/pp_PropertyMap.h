@@ -163,6 +163,7 @@ public:
 		abi_text_folded_id,
 		abi_text_indent,
 		abi_text_position,
+		abi_text_transform,
 		abi_tight_wrap,
 	    abi_toc_dest_style1,
 	    abi_toc_dest_style2,

@@ -311,17 +311,25 @@ class ABI_EXPORT GR_XPRenderInfo : public GR_RenderInfo
 class ABI_EXPORT GR_ShapingInfo
 {
   public:
+	enum TextTransform {
+		NONE = 0,
+		CAPITALIZE,
+		UPPERCASE,
+		LOWERCASE
+	};
+
 	GR_ShapingInfo(UT_TextIterator & text, UT_uint32 iLen,
 				   const char * pLang,
 				   UT_BidiCharType iVisDir,
 				   GRShapingResult eShapingRequired,
 				   const GR_Font * pFont,
-				   const GR_Item * pItem)
+				   const GR_Item * pItem,
+				   TextTransform textTransform = NONE)
 		:m_Text(text), m_iLength(iLen), m_pLang(pLang), m_iVisDir(iVisDir),
 		 m_eShapingRequired(eShapingRequired),
 	     m_pFont(pFont),
 	     m_iJustifyBy(0),
-	     m_pItem(pItem){};
+		m_pItem(pItem), m_TextTransform(textTransform){};
 	
 	virtual ~GR_ShapingInfo() {};
 
@@ -336,6 +344,8 @@ class ABI_EXPORT GR_ShapingInfo
 	UT_uint32           m_iJustifyBy;
 
 	const GR_Item *     m_pItem;
+
+	TextTransform       m_TextTransform;
 };
 
 

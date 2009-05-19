@@ -123,8 +123,13 @@ public:
 	static bool 		s_bBidiOS;
 
 	void                measureCharWidths();
+
+	GR_ShapingInfo::TextTransform getTextTransform() const { return m_TextTransform;}
+	void setTextTransform(GR_ShapingInfo::TextTransform transform) { m_TextTransform = transform; }
 	
 private:
+	GR_ShapingInfo::TextTransform m_TextTransform;
+
 	bool				_refreshDrawBuffer();
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,

@@ -189,6 +189,7 @@ static PP_Property _props[] =
 	{ "text-folded-id",        "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "text-indent",           "0in",             false, NULL, PP_LEVEL_BLOCK},
 	{ "text-position",         "normal",          true,  NULL, PP_LEVEL_CHAR},
+	{ "text-transform",         "none",          true,  NULL, PP_LEVEL_CHAR},
 	{ "toc-dest-style1",      "Contents 1"   ,   false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-dest-style2",      "Contents 2",      false, NULL, PP_LEVEL_BLOCK},
 	{ "toc-dest-style3",      "Contents 3",      false, NULL, PP_LEVEL_BLOCK},

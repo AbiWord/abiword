@@ -141,6 +141,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"text-folded-id",
 	"text-indent",
 	"text-position",
+	"text-transform",
 	"tight-wrap",
 	"toc-dest-style1",
 	"toc-dest-style2",

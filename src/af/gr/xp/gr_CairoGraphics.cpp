@@ -637,8 +637,19 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			utf8 += adobeToUnicode(c);
 		else if(isDingbat())
 			utf8 += adobeDingbatsToUnicode(c);
-		else
+		else {
+			
+			if (si.m_TextTransform == GR_ShapingInfo::LOWERCASE)
+				c = g_unichar_tolower(c);
+			else if (si.m_TextTransform == GR_ShapingInfo::UPPERCASE)
+				c = g_unichar_toupper(c);
+			else if (si.m_TextTransform == GR_ShapingInfo::CAPITALIZE) {
+				// TODO: can we do anything about capitalization here? remember if the
+				// TODO: last character was a word boundary?
+			} // else si.m_TextTransform == GR_ShapingInfo::NONE
+			
 			utf8 += c;
+		}
 
 		if (pfs)
 		{

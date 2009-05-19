@@ -67,6 +67,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   UT_uint32 iLen,
 					   bool bLookupProperties)
 :	fp_Run(pBL,iOffsetFirst, iLen, FPRUN_TEXT),
+	m_TextTransform(GR_ShapingInfo::NONE),
 	m_fPosition(TEXT_POSITION_NORMAL),
 #ifdef ENABLE_SPELL
 	m_bSpellSquiggled(false),
@@ -330,6 +331,22 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 		setDirection(UT_BIDI_UNSET, iNewOverride);
+
+	const gchar *pszTextTransform = PP_evalProperty("text-transform",pSpanAP,pBlockAP,
+													pSectionAP, pDoc, true);
+
+	GR_ShapingInfo::TextTransform oldTextTransform = getTextTransform();
+	if(pszTextTransform && strcmp(pszTextTransform,"none") != 0)
+	{
+		if (strcmp(pszTextTransform,"capitalize") == 0)
+			setTextTransform(GR_ShapingInfo::CAPITALIZE);
+		else if (strcmp(pszTextTransform,"uppercase") == 0)
+			setTextTransform(GR_ShapingInfo::UPPERCASE);
+		else if (strcmp(pszTextTransform,"lowercase") == 0)
+			setTextTransform(GR_ShapingInfo::LOWERCASE);							 
+	}
+
+	bChanged |= (oldTextTransform != getTextTransform());
 
 	if(bChanged && !bDontClear)
 		clearScreen();
@@ -2167,7 +2184,7 @@ bool fp_TextRun::_refreshDrawBuffer()
 
 		GR_ShapingInfo si(text,iLen, m_pLanguage, iVisDir,
 						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
-						  _getFont(), m_pItem);
+						  _getFont(), m_pItem, getTextTransform());		
 		getGraphics()->shape(si, m_pRenderInfo);
 		
 		UT_ASSERT(m_pRenderInfo && m_pRenderInfo->m_eShapingResult != GRSR_Error );
