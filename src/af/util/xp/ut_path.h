@@ -20,6 +20,7 @@
 #ifndef UT_PATH_H
 #define UT_PATH_H
 
+#include <stdio.h>
 #include <glib.h>
 #include <time.h>
 
