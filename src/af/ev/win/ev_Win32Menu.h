@@ -93,7 +93,7 @@ protected:
 typedef struct
 {
 	XAP_Menu_Id 	id;					// Menu ID
-	char			szText[256];		// Text	
+	wchar_t			szText[256];		// Text	
 	EV_Win32Menu*	pMenu;				
 } EV_Menu_Item;	
 
