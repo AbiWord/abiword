@@ -483,7 +483,7 @@ void Object_ChangeRecordSessionPacket::serialize( Archive& ar )
 
 static const std::string getPTObjectTypeStr( PTObjectType p )
 {
-	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Embed, str(boost::format( "<invalid value passed to getPTObjectTypeStr: %d>" ) % int(p) ));
+	UT_return_val_if_fail(p >= PTO_Image && p <= PTO_Annotation, str(boost::format( "<invalid value passed to getPTObjectTypeStr: %d>" ) % int(p) ));
 	static std::string PTObjectTypeStrs[] = {
 		"PTO_Image", 
 		"PTO_Field", 
