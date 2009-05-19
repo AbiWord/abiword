@@ -487,8 +487,13 @@ public:
   virtual bool startPrint(void)
   {
     char *filename = g_build_filename (g_get_tmp_dir (), "prXXXXXX.tif", NULL);
-    int fd = g_mkstemp (filename);
-    close(fd);
+    FILE* f = fopen (filename, "w+b");
+	if (!f)
+	{
+		g_free(filename);
+		return false;
+	}
+    fclose(f);
 
     d (g_print ("saving to %s\n", filename));
 
