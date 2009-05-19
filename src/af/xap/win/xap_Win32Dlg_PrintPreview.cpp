@@ -32,6 +32,7 @@
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "gr_Win32Graphics.h"
+#include "ut_rand.h"
 #include "ut_Win32OS.h"
 
 #include "fp_PageSize.h"
@@ -486,19 +487,24 @@ public:
 
   virtual bool startPrint(void)
   {
-    char *filename = g_build_filename (g_get_tmp_dir (), "prXXXXXX.tif", NULL);
-    FILE* f = fopen (filename, "w+b");
+    const gchar *filename = g_build_filename (g_get_tmp_dir (), "pr", NULL);
+    UT_return_val_if_fail(filename, false);
+
+    std::string sName = filename;
+    FREEP(filename);
+
+    sName += UT_UTF8String_sprintf("%X", UT_rand() * 0xFFFFFF).utf8_str();
+    sName += ".tif";
+
+    FILE* f = fopen (sName.c_str(), "w+b");
 	if (!f)
-	{
-		g_free(filename);
 		return false;
-	}
+
     fclose(f);
 
-    d (g_print ("saving to %s\n", filename));
+    d (g_print ("saving to %s\n", sName.c_str()));
 
-    m_tiffFilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
-    g_free (filename);
+    m_tiffFilename = g_utf8_to_utf16 (sName.c_str(), -1, NULL, NULL, NULL);
 
     return true;
   }
