@@ -347,55 +347,25 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
         m_color.assign(pVal);
     }
     
-    
-    const gchar* undrStyle = NULL;
-    const gchar* undrType = NULL;
-    const gchar* strkStyle = NULL;
-    const gchar* strkType = NULL;
+    const gchar* undrStyle = UT_getAttribute("style:text-underline-style", ppProps);
+    const gchar* undrType = UT_getAttribute("style:text-underline-type", ppProps);
 
-    undrStyle = const_cast<const gchar *>(
-        UT_getAttribute("style:text-underline-style", ppProps));
-    undrType = const_cast<const gchar *>(
-        UT_getAttribute("style:text-underline-type", ppProps));
-    strkStyle = const_cast<const gchar *>(
-        UT_getAttribute("style:text-line-through-style", ppProps));
-    strkType = const_cast<const gchar *>(
-        UT_getAttribute("style:text-line-through-type", ppProps));
+    if ((undrStyle && (strcmp(undrStyle, "none") != 0)) ||
+        (undrType && (strcmp(undrType, "none") != 0))) {
 
-    if (undrStyle || undrType || strkStyle || strkType) {
-        // I'm not sure if "+=" works for an uninitialized string.
-        m_textDecoration = "";
-        bool bUnderline = false, bStrike = false;
+        m_textDecoration += "underline";
+    }
 
-        if (undrStyle) {
-            if (strcmp(undrStyle, "none") != 0) {
-                m_textDecoration += "underline";
-                bUnderline = true;
-            }
-        }
+    const gchar* strkStyle = UT_getAttribute("style:text-line-through-style", ppProps);
+    const gchar* strkType = UT_getAttribute("style:text-line-through-type", ppProps);
 
-        if (!bUnderline && undrType) { //don't append "underline" twice
-            if (strcmp(undrType, "none") != 0) {
-                m_textDecoration += "underline";
-            }
-        }
+    if ((strkStyle && (strcmp(strkStyle, "none") != 0)) ||
+        (strkType && (strcmp(strkType, "none") != 0))) {
 
-        if (strkStyle) {
-            if (strcmp(strkStyle, "none") != 0) {
-                if(m_textDecoration.length())
-                    m_textDecoration += " "; //separate the props with a space, not a comma
-                m_textDecoration += "line-through";
-                bStrike = true;
-            }
-        }
+        if(!m_textDecoration.empty())
+            m_textDecoration += " "; //separate the props with a space, not a comma
 
-        if (!bStrike && strkType) { //don't append "line-through" twice
-            if (strcmp(strkType, "none") != 0) {
-                if(m_textDecoration.length())
-                    m_textDecoration += " "; //separate the props with a space, not a comma
-                m_textDecoration += "line-through";
-            }
-        }
+        m_textDecoration += "line-through";
     }
 
     pVal = UT_getAttribute("style:text-position", ppProps);
@@ -456,7 +426,7 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
     }
 
     // Note (for testing interoperability): OO.org doesn't correctly support hidden text:
-    // http://qa.openoffice.org/issues/show_bug.cgi?id=64237
+    // http://qa.openoffice.org/issues/show_bug.cgi?id=64237 [Fixed in OO.org 3.0]
 
     pVal = UT_getAttribute ("text:display", ppProps);
     if(pVal) {
