@@ -64,15 +64,17 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_return_if_fail(m_hPasswordLabel);
 	
 	/* Tabbable */
-	m_hEmailEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hEmailEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
 	80, 20, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailEntry);
+	SendMessage(m_hEmailEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
 
-	m_hPasswordEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
+	m_hPasswordEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
 	80, 40, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordEntry);
 	SendMessage(m_hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
-	
+	SendMessage(m_hPasswordEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
+
 	// Font setting code borrowed from XAP_Win32Dlg_About
 	LOGFONT lf = { 0 };
 	strcpy(lf.lfFaceName, "MS Sans Serif");
@@ -104,7 +106,7 @@ void ServiceWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	RedrawWindow(GetParent(hBox), NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW);	
 }
 
-#define READ_STRING(E, S) std::string S(255, ' '); S.resize(SendMessage(E, WM_GETTEXT, S.size()-1, (LPARAM)&S[0]));
+#define READ_STRING(E, S) std::string S(255*sizeof(TCHAR), ' '); S.resize(SendMessage(E, WM_GETTEXT, S.size()-1, (LPARAM)&S[0]));
 
 void ServiceWin32AccountHandler::storeProperties()
 {
