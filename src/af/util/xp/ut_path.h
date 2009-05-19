@@ -50,12 +50,12 @@ class UT_UTF8String;
 // todo: deprecate me
 ABI_EXPORT const char* UT_basename(const char* path);
 
-UT_UTF8String UT_go_basename(const char* uri);
+ABI_EXPORT UT_UTF8String UT_go_basename(const char* uri);
 
 // useful for win32, since we can't use the glib functions that return
 // a file descriptor in msvc (not unless someone adds a g_close() function
 // to glib
-std::string UT_createTmpFile(const std::string& prefix, const std::string& extenstion);
+ABI_EXPORT std::string UT_createTmpFile(const std::string& prefix, const std::string& extension);
 
 ABI_EXPORT bool UT_directoryExists(const char* dir);
 

@@ -35,21 +35,21 @@ UT_UTF8String UT_go_basename(const char* uri)
 	return _base_name;
 }
 
-std::string UT_createTmpFile(const std::string& prefix, const std::string& extenstion)
+std::string UT_createTmpFile(const std::string& prefix, const std::string& extension)
 {
 	const gchar *filename = g_build_filename (g_get_tmp_dir (), prefix.c_str(), NULL);
-	UT_return_val_if_fail(filename, false);
+	UT_return_val_if_fail(filename, "");
 
 	std::string sName = filename;
 	FREEP(filename);
 
 	UT_UTF8String rand = UT_UTF8String_sprintf("%X", UT_rand() * 0xFFFFFF);
 	sName += rand.utf8_str();
-	sName += extenstion;
+	sName += extension;
 
 	FILE* f = fopen (sName.c_str(), "w+b");
 	if (!f)
-		return false;
+		return "";
 
 	fclose(f);
 	return sName;
