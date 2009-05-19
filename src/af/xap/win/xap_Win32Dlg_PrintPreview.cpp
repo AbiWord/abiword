@@ -25,6 +25,7 @@
 
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_path.h"
 #include "ut_debugmsg.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_PrintPreview.h"
@@ -487,23 +488,9 @@ public:
 
   virtual bool startPrint(void)
   {
-    const gchar *filename = g_build_filename (g_get_tmp_dir (), "pr", NULL);
-    UT_return_val_if_fail(filename, false);
-
-    std::string sName = filename;
-    FREEP(filename);
-
-    sName += UT_UTF8String_sprintf("%X", UT_rand() * 0xFFFFFF).utf8_str();
-    sName += ".tif";
-
-    FILE* f = fopen (sName.c_str(), "w+b");
-	if (!f)
-		return false;
-
-    fclose(f);
+    std::string sName = UT_createTmpFile("pr", ".tif");
 
     d (g_print ("saving to %s\n", sName.c_str()));
-
     m_tiffFilename = g_utf8_to_utf16 (sName.c_str(), -1, NULL, NULL, NULL);
 
     return true;

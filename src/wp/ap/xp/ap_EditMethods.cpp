@@ -2968,21 +2968,9 @@ Defun1(filePreviewWeb)
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-	gchar *szTempFileName = NULL;
 	GError *err = NULL;
-
-	// to really make this bullet proof we must not hand away the open fp, 
-	// rather directly use with gsf stdio.
-	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
-	if (err) {
-		g_warning ("%s", err->message);
-		g_error_free (err); err = NULL;
-		return false;
-	}
-	close(fp);
 	
-	std::string file(szTempFileName);
-	file += ".html";
+	std::string file = UT_createTmpFile("web", ".html");
 
 	UT_Error errSaved = UT_OK;
 
@@ -3009,11 +2997,6 @@ Defun1(filePreviewWeb)
 	bool bOk = _openURL(uri);
 	g_free(uri);
 
-	#if 0
-		// ugly race condition
-		g_unlink (szTempFileName);
-	#endif
-	g_free(szTempFileName); szTempFileName = NULL;
 	return bOk;
 }
 

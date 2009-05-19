@@ -43,6 +43,7 @@
 
 #include "ut_string_class.h"
 #include "ut_go_file.h"
+#include "ut_rand.h"
 
 class UT_UTF8String;
 
@@ -58,6 +59,29 @@ static inline UT_UTF8String UT_go_basename(const char* uri)
     g_free(base_name);
   }
   return _base_name;
+}
+
+// useful for win32, since we can't use the glib functions that return
+// a file descriptor in msvc (not unless someone adds a g_close() function
+// to glib
+static inline std::string UT_createTmpFile(const std::string& prefix, const std::string& extenstion)
+{
+	const gchar *filename = g_build_filename (g_get_tmp_dir (), prefix.c_str(), NULL);
+    UT_return_val_if_fail(filename, false);
+
+    std::string sName = filename;
+    FREEP(filename);
+
+	UT_UTF8String rand = UT_UTF8String_sprintf("%X", UT_rand() * 0xFFFFFF);
+    sName += rand.utf8_str();
+    sName += extenstion;
+
+    FILE* f = fopen (sName.c_str(), "w+b");
+	if (!f)
+		return false;
+
+    fclose(f);
+	return sName;
 }
 
 ABI_EXPORT bool UT_directoryExists(const char* dir);
