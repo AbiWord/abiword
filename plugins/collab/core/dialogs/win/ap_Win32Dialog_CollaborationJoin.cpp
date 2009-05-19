@@ -124,7 +124,7 @@ BOOL AP_Win32Dialog_CollaborationJoin::_onInitDialog(HWND hWnd, WPARAM wParam, L
 	// Store handles for easy access
 	// Reminder: hDlg is in our DialogHelper
 	m_hDocumentTreeview = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONJOIN_DOCUMENT_TREE);
-	
+
 	// Set up common controls
 	INITCOMMONCONTROLSEX icc;
 	icc.dwSize=sizeof(INITCOMMONCONTROLSEX);
@@ -258,11 +258,10 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 	
 	const std::vector<AccountHandler *>& accounts = pManager->getAccounts();
 	
-	// clear the treeview
+	// clear the treeview; items will not be displayed until the window styles are reset
 	m_mTreeItemHandles.clear();
 	DWORD styles = GetWindowLong(m_hDocumentTreeview, GWL_STYLE);
 	TreeView_DeleteAllItems(m_hDocumentTreeview);
-	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
 
 	// Loop through accounts
 	for (UT_uint32 i = 0; i < accounts.size(); i++)
@@ -316,6 +315,9 @@ void AP_Win32Dialog_CollaborationJoin::_setModel()
 			TreeView_Expand(m_hDocumentTreeview, cit->first, TVE_EXPAND);
 	}
 	
+	// reset the window styles; shows all items
+	SetWindowLong(m_hDocumentTreeview, GWL_STYLE, styles);
+
 	_updateSelection();
 }
 
