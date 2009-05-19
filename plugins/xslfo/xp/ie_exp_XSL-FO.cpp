@@ -661,7 +661,7 @@ void s_XSL_FO_Listener::_handleEmbedded(PT_AttrPropIndex api)
 	buf = "snapshot-png-";
 	buf += szValue;
 	buf.escapeXML();
-	char* dataid = g_strdup(buf.utf8_str());
+	const gchar* dataid = g_strdup(buf.utf8_str());
 	m_utvDataIDs.push_back(dataid);
 
 	url = UT_go_basename(m_pie->getFileName());
@@ -828,7 +828,7 @@ void s_XSL_FO_Listener::_handleImage(PT_AttrPropIndex api)
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("dataid", szValue) && szValue);
 
-	char * dataid = g_strdup(const_cast<char*>(szValue));
+	const gchar * dataid = g_strdup(szValue);
 	m_utvDataIDs.push_back(dataid);
 
 	UT_UTF8String buf, img, url;
@@ -874,7 +874,7 @@ void s_XSL_FO_Listener::_handlePositionedImage(PT_AttrPropIndex api)
 
 	UT_return_if_fail(bHaveProp && pAP && pAP->getAttribute("strux-image-dataid", szValue) && szValue);
 
-	char * dataid = g_strdup(const_cast<char*>(szValue));
+	const gchar * dataid = g_strdup(szValue);
 	m_utvDataIDs.push_back(dataid);
 
 	UT_UTF8String buf, img, url;
@@ -925,7 +925,7 @@ void s_XSL_FO_Listener::_handleMath(PT_AttrPropIndex api)
 	buf = "snapshot-png-";
 	buf += szValue;
 	buf.escapeXML();
-	char * dataid = g_strdup(buf.utf8_str());
+	const gchar * dataid = g_strdup(buf.utf8_str());
 	m_utvDataIDs.push_back(dataid);
 
 	url = UT_go_basename(m_pie->getFileName());
@@ -1369,7 +1369,7 @@ void s_XSL_FO_Listener::_handleDataItems(void)
 		UT_sint32 loc = -1;
 		for (UT_sint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
 		{
-			if(strcmp(const_cast<char*>(reinterpret_cast<const char*>(m_utvDataIDs[i])), szName) == 0)
+			if(strcmp(reinterpret_cast<const char*>(m_utvDataIDs[i]), szName) == 0)
 			{
 				loc = i;
 				break;
