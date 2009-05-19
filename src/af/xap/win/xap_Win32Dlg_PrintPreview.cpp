@@ -286,9 +286,9 @@ public:
   virtual ~GR_Win32PrintPreviewGraphics()
   {
     d (g_print ("~GR_Win32PrintPreviewGraphics()\n"));
-    if (m_multiPageTiff)
+	if (m_multiPageTiff)
       GdipDisposeImage (m_multiPageTiff);
-    DELETEP(m_tiffFilename);
+    g_free(m_tiffFilename);
 
     // todo: delete DC and docInfo
   }
