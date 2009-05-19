@@ -582,6 +582,19 @@ void IE_Imp_XSL_FO::startElement(const gchar *name,
 					sBuf += static_cast<const char *>(pVal);
 				}
 
+				pVal = _getXMLPropValue("text-transform", atts);
+				if (pVal && *pVal &&
+				   ((strcmp(pVal, "none") == 0) ||
+				    (strcmp(pVal, "capitalize") == 0) ||
+				    (strcmp(pVal, "uppercase") == 0) ||
+				    (strcmp(pVal, "lowercase") == 0)))
+				{
+					USED();
+					sBuf += "text-transform:";
+					sBuf += pVal;
+				}
+
+
 				buf[1] = sBuf.utf8_str();
 
 				xxx_UT_DEBUGMSG(("FO import: inline props='%s'\n", sBuf.utf8_str()));

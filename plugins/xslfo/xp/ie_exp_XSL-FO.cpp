@@ -1593,6 +1593,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		PROPERTY("keep-together");
 		PROPERTY("keep-with-next");
 		PROPERTY("text-decoration");
+		PROPERTY("text-transform");
 	}
 
 	_tagOpen(TT_INLINE, buf, false);
