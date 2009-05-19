@@ -295,7 +295,8 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	HINSTANCE hInst = pWin32App->getInstance();		
 	UT_uint32 range = G_N_ELEMENTS(s_nametoIdTable);
 	UT_sint32 middle, right = range - 1, left = 0, cmp;
-	
+	HBITMAP dibBitmap = NULL;
+
 	// load in our image as a DIB
 
 	while (left <= right)
@@ -304,7 +305,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 		cmp = g_ascii_strcasecmp(szIconName, s_nametoIdTable[middle].name);
 
 		if (cmp == 0) {
-			*pBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id),
+			dibBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id),
 				IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION);
 			break;
 		}
@@ -316,7 +317,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	}
 	
 	// Search the toolbariconmap for ID to iconname
-	if (*pBitmap==NULL) 
+	if (dibBitmap==NULL) 
 	{
 		//	Format: ICONNAME_LANGCODE where LANGCODE code can be _XX (_yi) or _XXXA (_caES)
 		char szBaseID[300];
@@ -335,7 +336,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 			cmp = g_ascii_strcasecmp(szBaseID, s_nametoIdTable[middle].name);
 
 			if (cmp == 0) {
-				*pBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id), 
+				dibBitmap = (HBITMAP) LoadImage (hInst, MAKEINTRESOURCE (s_nametoIdTable[middle].id), 
 					IMAGE_BITMAP, maxWidth, maxHeight, LR_CREATEDIBSECTION | LR_LOADTRANSPARENT);
 				break;
 			}
@@ -347,7 +348,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 		}
 	}	
 	
-	if (*pBitmap == NULL) 
+	if (dibBitmap == NULL) 
 		return false;
 		
 	/* Applies transparency to the DIB */
@@ -365,13 +366,14 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 	ZeroMemory(&bmpInfo,sizeof(BITMAPINFO));
 	bmpInfo.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
 
-	GetDIBits(hdc, *pBitmap, 0, 0, NULL, &bmpInfo, DIB_RGB_COLORS);
+	GetDIBits(hdc, dibBitmap, 0, 0, NULL, &bmpInfo, DIB_RGB_COLORS);
 	pBuf = malloc(bmpInfo.bmiHeader.biSizeImage);		
 	if (pBuf == NULL) 
 		return false;	
 	
 	bmpInfo.bmiHeader.biCompression=BI_RGB;
-	GetDIBits(hdc, *pBitmap, 0, bmpInfo.bmiHeader.biHeight, pBuf, &bmpInfo, DIB_RGB_COLORS);
+	GetDIBits(hdc, dibBitmap, 0, bmpInfo.bmiHeader.biHeight, pBuf, &bmpInfo, DIB_RGB_COLORS);
+	DeleteObject(dibBitmap);
 
 	BYTE* buff = (BYTE *)pBuf;
 
