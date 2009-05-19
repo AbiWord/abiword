@@ -356,6 +356,18 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
         m_textDecoration += "underline";
     }
 
+    const gchar* ovrStyle = UT_getAttribute("style:text-overline-style", ppProps);
+    const gchar* ovrType = UT_getAttribute("style:text-overline-type", ppProps);
+
+    if ((ovrStyle && (strcmp(ovrStyle, "none") != 0)) ||
+        (ovrType && (strcmp(ovrType, "none") != 0))) {
+
+        if(!m_textDecoration.empty())
+            m_textDecoration += " "; //separate the props with a space, not a comma
+
+        m_textDecoration += "overline";
+    }
+
     const gchar* strkStyle = UT_getAttribute("style:text-line-through-style", ppProps);
     const gchar* strkType = UT_getAttribute("style:text-line-through-type", ppProps);
 
