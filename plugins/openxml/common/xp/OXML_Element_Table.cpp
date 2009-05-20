@@ -117,6 +117,112 @@ UT_Error OXML_Element_Table::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	const gchar* borderType = NULL;
+	const gchar* color = NULL;
+	const gchar* size = NULL;
+
+	//left border
+	borderType = "single";
+	if(getProperty("left-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("left-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("left-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "left", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//right border
+	borderType = "single";
+	if(getProperty("right-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("right-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("right-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "right", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//top border
+	borderType = "single";
+	if(getProperty("top-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+
+	color = NULL; 
+	if(getProperty("top-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+
+	size = NULL;
+	if(getProperty("top-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "top", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+	//bottom border
+	borderType = "single";
+	if(getProperty("bot-style", szValue) == UT_OK)
+	{
+		if(strcmp(szValue, "1") != 0)
+		{
+			 borderType = "dashed";
+		}
+	}
+	
+	color = NULL; 
+	if(getProperty("bot-color", szValue) == UT_OK)
+	{
+		color = szValue;
+	}
+	
+	size = NULL;
+	if(getProperty("bot-thickness", szValue) == UT_OK)
+	{
+		size = szValue;
+	}
+	err = exporter->setTableBorder(TARGET_DOCUMENT, "bottom", borderType, color, size);
+	if(err != UT_OK)
+		return err;
+
+
 	err = exporter->finishTableBorderProperties(TARGET_DOCUMENT);
 	if(err != UT_OK)
 		return err;

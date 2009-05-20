@@ -148,6 +148,54 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		}
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_W_KEY, "left") ||
+			nameMatches(rqst->pName, NS_W_KEY, "right") ||
+			nameMatches(rqst->pName, NS_W_KEY, "top") ||
+			nameMatches(rqst->pName, NS_W_KEY, "bottom"))
+	{
+		rqst->handled = true;
+		const gchar* color = attrMatches(NS_W_KEY, "color", rqst->ppAtts);
+		if(color && strcmp(color, "auto")) 
+		{
+			UT_Error ret = UT_OK;
+			std::string borderName(rqst->pName);
+			borderName = borderName.substr(strlen(NS_W_KEY)+1);
+			if(!borderName.compare("bottom"))
+				borderName = "bot";
+			std::string borderStyle = borderName + "-style";
+			borderName += "-color";
+
+			OXML_Element* element = NULL;
+
+			if(contextMatches(rqst->context->back(), NS_W_KEY, "tcBorders"))
+			{
+				element = m_cellStack.top();
+				if(!element)
+					return;	
+
+				ret = element->setProperty(borderStyle, "0");
+				if(ret != UT_OK)
+					UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));				
+			}
+			else if(contextMatches(rqst->context->back(), NS_W_KEY, "tblBorders"))
+			{
+				element = m_tableStack.top();
+				if(!element)
+					return;	
+
+				ret = element->setProperty(borderStyle, "1");
+				if(ret != UT_OK)
+					UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));				
+			}
+
+			if(!element)
+				return;
+	
+			ret = element->setProperty(borderName, color);
+			if(ret != UT_OK)
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderName.c_str(), color));				
+		}
+	}
 	//TODO: more coming here
 }
 
@@ -207,7 +255,11 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 	else if(nameMatches(rqst->pName, NS_W_KEY, "gridSpan") ||
 			nameMatches(rqst->pName, NS_W_KEY, "vMerge") ||
 			nameMatches(rqst->pName, NS_W_KEY, "gridCol") ||
-			nameMatches(rqst->pName, NS_W_KEY, "trHeight"))
+			nameMatches(rqst->pName, NS_W_KEY, "trHeight") ||
+			nameMatches(rqst->pName, NS_W_KEY, "left") ||
+			nameMatches(rqst->pName, NS_W_KEY, "right") ||
+			nameMatches(rqst->pName, NS_W_KEY, "top") ||
+			nameMatches(rqst->pName, NS_W_KEY, "bottom"))
 	{
 		rqst->handled = true;
 	}	
