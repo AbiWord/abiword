@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-2003 Hubert Figuiere
+ * Copyright (C) 2002-2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,6 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "ut_string_class.h"
 
 
 @interface XAP_StringListDataSource : NSObject {
@@ -31,7 +30,7 @@
 
 - (void)insertString:(NSString*)string atIndex:(int)index;
 - (void)addString:(NSString*)string;
-- (void)addUT_UTF8String:(const UT_UTF8String &)string;
+- (void)addCString:(const char * )string;
 - (int)rowWithCString:(const char *)cString;
 - (void)removeAllStrings;
 - (NSArray*)array;

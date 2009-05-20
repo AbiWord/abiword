@@ -2,7 +2,7 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2004, 2007 Hubert Figuiere
+ * Copyright (C) 2001-2004, 2007, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
-#include "ut_vector.h"
 
 #include "xap_CocoaAppController.h"
 #include "xap_Types.h"

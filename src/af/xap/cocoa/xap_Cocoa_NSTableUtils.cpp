@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-2003 Hubert Figuiere
+ * Copyright (C) 2002-2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_types.h"
 #import "xap_Cocoa_NSTableUtils.h"
 
 
@@ -65,9 +66,9 @@
 	[_array addObject:string];
 }
 
-- (void)addUT_UTF8String:(const UT_UTF8String &)string
+- (void)addCString:(const char *)string
 {
-	NSString *str = [[NSString alloc] initWithUTF8String:string.utf8_str()];
+	NSString *str = [[NSString alloc] initWithUTF8String:string];
 	[_array addObject:str];		
 	[str release];
 }

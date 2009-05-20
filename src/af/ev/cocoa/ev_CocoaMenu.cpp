@@ -2,7 +2,7 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2004, 2007 Hubert Figuiere
+ * Copyright (C) 2001-2004, 2007, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,7 +31,6 @@
 #include "ut_debugmsg.h"
 #include "ut_exception.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
 
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"

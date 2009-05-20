@@ -2,7 +2,7 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "ut_hash.h"
 #include "ut_units.h"
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_FontChooser.h"
@@ -431,13 +430,13 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		m_stylesDataSource = [[XAP_StringListDataSource alloc] init];
 		UT_UTF8String label;
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular, label);
-		[m_stylesDataSource addUT_UTF8String:label];
+		[m_stylesDataSource addCString:label.utf8_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic, label);
-		[m_stylesDataSource addUT_UTF8String:label];
+		[m_stylesDataSource addCString:label.utf8_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold, label);
-		[m_stylesDataSource addUT_UTF8String:label];
+		[m_stylesDataSource addCString:label.utf8_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic, label);
-		[m_stylesDataSource addUT_UTF8String:label];
+		[m_stylesDataSource addCString:label.utf8_str()];
 		[_styleList setDataSource:m_stylesDataSource];
 		[_styleList setDelegate:self];
 	

@@ -19,9 +19,6 @@
  * 02111-1307, USA.
  */
 
-#include "ut_string_class.h"
-#include "ut_vector.h"
-
 #include "xap_App.h"
 #include "xap_CocoaAppController.h"
 #include "xap_DialogFactory.h"

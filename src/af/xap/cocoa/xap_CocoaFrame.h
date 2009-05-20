@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@
 #import "gr_CocoaGraphics.h"
 
 #include "xap_Frame.h"
-#include "ut_vector.h"
 
 class XAP_CocoaApp;
 class EV_CocoaKeyboard;

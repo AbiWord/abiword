@@ -90,6 +90,15 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 	return true;
 }
 
+bool XAP_StringSet::getValueUTF8(XAP_String_Id id, std::string & s) const
+{	
+        UT_String s_;
+	bool b = getValue(id, "UTF-8", s_);
+	if (b)
+	        s = s_.c_str();
+	return b;
+}
+
 bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 {	
         UT_String s_;

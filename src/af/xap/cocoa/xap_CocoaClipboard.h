@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
  * Copyright (C) 2005 Net Integration Technologies Inc. (written by Hubert Figuiere)
+ * Copyright (C) 2001, 2003, 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,8 +25,6 @@
 #import <AppKit/AppKit.h>
 
 #include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_bytebuf.h"
 #include "xap_CocoaApp.h"
 #include "xap_FakeClipboard.h"
 

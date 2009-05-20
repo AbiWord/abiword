@@ -27,8 +27,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
 
 #import "xap_CocoaDialog_Utilities.h"
 

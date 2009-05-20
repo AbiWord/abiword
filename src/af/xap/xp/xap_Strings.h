@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -73,6 +74,7 @@ public:
 	virtual const gchar *	getValue(XAP_String_Id id) const = 0;
 
 	bool getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const;
+	bool getValueUTF8(XAP_String_Id id, std::string &s) const;
 	bool getValueUTF8(XAP_String_Id id, UT_UTF8String &s) const;
 
 	void setEncoding(const char * inEndcoding);

@@ -24,7 +24,6 @@
 #define EV_COCOATOOLBAR_H
 
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "xap_Types.h"
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"

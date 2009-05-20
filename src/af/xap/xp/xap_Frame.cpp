@@ -831,6 +831,13 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
   return showMessageBox(pDialog);
 }
 
+XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const std::string & msg,
+							 XAP_Dialog_MessageBox::tButtons buttons,
+							 XAP_Dialog_MessageBox::tAnswer default_answer)
+{
+	return showMessageBox(msg.c_str(), buttons, default_answer);
+}
+
 XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
 							 XAP_Dialog_MessageBox::tButtons buttons,
 							 XAP_Dialog_MessageBox::tAnswer default_answer)

@@ -20,6 +20,8 @@
 
 #include <stdlib.h>
 
+#include <string>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -352,11 +354,10 @@ void AP_CocoaDialog_Styles::event_Modify_OK(void)
     {
 		// error message!
 		const XAP_StringSet * pSS = m_pApp->getStringSet ();
-		UT_UTF8String label;
+		std::string label;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrBlankName, label);
-		const char * msg = label.utf8_str();
 
-		getFrame()->showMessageBox ((const char *)msg,
+		getFrame()->showMessageBox (label,
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
 
@@ -376,27 +377,27 @@ void AP_CocoaDialog_Styles::new_styleName(void)
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	const char * psz = [[m_modifyDlg->_styleNameData stringValue] UTF8String];
-	UT_UTF8String label;
+	std::string label;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone, label);
-	if(psz && strcmp(psz, label.utf8_str())== 0)
+	if(psz && (label == psz))
 	{
 			// TODO: do a real error dialog
-		UT_UTF8String label1, label2;
+		std::string label1, label2;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1, label1);
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2, label2);
-		sprintf(message,"%s%s%s",label1.utf8_str(),	psz, label2.utf8_str());
+		sprintf(message,"%s%s%s",label1.c_str(),	psz, label2.c_str());
 		//FIXME
 		//messageBoxOK((const char *) message);
 		return;
 	}
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent, label);
-	if(psz && strcmp(psz, label.utf8_str())== 0)
+	if(psz && (label == psz))
 	{
 			// TODO: do a real error dialog
-		UT_UTF8String label1, label2;
+		std::string label1, label2;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1, label1);
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2, label2);
-		sprintf(message,"%s%s%s",label1.utf8_str(),	psz, label2.utf8_str());
+		sprintf(message,"%s%s%s",label1.c_str(),	psz, label2.c_str());
 		//FIXME
 		//messageBoxOK((const char *) message);
 		return;
@@ -467,9 +468,9 @@ void AP_CocoaDialog_Styles::event_styleType(void)
 	const char * psz = [[m_modifyDlg->_styleTypeCombo stringValue] UTF8String];
 	snprintf((char *) m_styleType, sizeof(m_styleType), "%s", psz);
 	const gchar * pszSt = "P";
-	UT_UTF8String label;
+	std::string label;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter, label);
-	if(strstr(m_styleType, label.utf8_str()) != 0) {
+	if(strstr(m_styleType, label.c_str()) != 0) {
 		pszSt = "C";
 	}
 	addOrReplaceVecAttribs("type",pszSt);

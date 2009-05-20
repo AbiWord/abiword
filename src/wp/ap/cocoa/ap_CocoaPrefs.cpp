@@ -18,15 +18,17 @@
  * 02111-1307, USA.
  */
 
-#include "stdlib.h"
-#include "string.h"
-#include "locale.h"
-#include "ctype.h"
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <ctype.h>
+
+#include <string>
+
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_App.h"
 #include "ap_CocoaPrefs.h"
-#include "ut_string_class.h"
 
 /*****************************************************************/
 
@@ -38,7 +40,7 @@ AP_CocoaPrefs::AP_CocoaPrefs()
 const char * AP_CocoaPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
-	static UT_String buf;
+	static std::string buf;
 
 	if(!buf.empty())
 	  return buf.c_str();

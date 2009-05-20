@@ -23,6 +23,8 @@
 #ifndef XAP_Frame_H
 #define XAP_Frame_H
 
+#include <string>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -199,6 +201,10 @@ public:
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
 													   
+	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const std::string & sz,
+													   XAP_Dialog_MessageBox::tButtons buttons,
+													   XAP_Dialog_MessageBox::tAnswer default_answer);
+
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char * sz,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);

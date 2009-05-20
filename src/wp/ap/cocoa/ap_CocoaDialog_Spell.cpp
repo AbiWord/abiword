@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * Copyright (C) 2003-2004 Hubert Figuiere
+ * Copyright (C) 2003-2004, 2009 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -167,12 +167,12 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
 	[m_suggestionList removeAllStrings];
 	for (UT_sint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
 		UT_UTF8String str((UT_UCSChar*)m_Suggestions->getNthItem(i));
-		[m_suggestionList addUT_UTF8String:str];
+		[m_suggestionList addCString:str.utf8_str()];
 	}
 	
 	if (!m_Suggestions->getItemCount()) {	
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		[m_suggestionList addUT_UTF8String:pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions)];
+		[m_suggestionList addCString:pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions)];
 	}
 	[m_dlg reloadSuggestionList];
 

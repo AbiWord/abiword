@@ -35,10 +35,11 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#include <string>
+
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
 #include "ut_math.h"
 #include "ut_misc.h"
 #include "ut_png.h"
@@ -320,7 +321,7 @@ bool AP_CocoaApp::initialize(void)
 								   (const gchar**)&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
-			UT_String szPathname = szDirectory;
+			std::string szPathname = szDirectory;
 			if (szDirectory[szPathname.size()-1]!='/')
 				szPathname += "/";
 			szPathname += szStringSet;

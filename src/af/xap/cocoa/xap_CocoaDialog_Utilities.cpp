@@ -18,7 +18,6 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#include "ut_vector.h"
 
 #include "xap_CocoaDialog_Utilities.h"
 
@@ -104,23 +103,6 @@ void AppendLocalizedMenuItem (NSPopUpButton * menu, const XAP_StringSet * pSS, X
 
 	[[menu lastItem] setTag:tag];
 }
-
-/*!
-	Fill a NSPopUpButton with an UT_Vector full of char*
-
-	\desc The popup button gets emptied first.
- */
-void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_GenericVector<const char*>& vec)
-{
-	int i;
-	int count = vec.getItemCount();
-	
-	[menu removeAllItems];
-	for (i = 0; i < count; i++) {
-		[menu addItemWithTitle:[NSString stringWithUTF8String:vec[i]]];
-	}
-}
-
 
 /*!
 	Strip the '&' from the label

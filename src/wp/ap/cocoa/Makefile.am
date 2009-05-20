@@ -133,8 +133,6 @@ libcocoa_la_SOURCES = \
 	ap_CocoaDialog_Spell.cpp \
 	ap_CocoaDialog_SplitCells.h \
 	ap_CocoaDialog_SplitCells.cpp \
-	ap_CocoaDialog_Stub.h \
-	ap_CocoaDialog_Stub.cpp \
 	ap_CocoaDialog_Styles.h \
 	ap_CocoaDialog_Styles.cpp \
 	ap_CocoaDialog_Stylist.h \

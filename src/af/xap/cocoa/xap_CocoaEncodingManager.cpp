@@ -21,13 +21,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <string>
+
 #include <glib.h>
 
 #include "xap_CocoaEncodingManager.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
 
 /* We source this file in order not to replace symbols in gnome-libs.
   (if AW is linked with GNOME).
@@ -502,16 +504,16 @@ void  XAP_CocoaEncodingManager::initialize()
 				// language/territory if the utf-8 encoding was not specified
 				// by LANG
 
-			  UT_String OLDLANG (getenv("LANG"));
+			  std::string OLDLANG (getenv("LANG"));
 #if defined(SETENV_MISSING) 
-			  UT_String MYLANG ("LANG=");
+			  std::string MYLANG ("LANG=");
 			  
 			  MYLANG += LanguageISOName;
 			  MYLANG += "_";
 			  MYLANG += LanguageISOTerritory;
 			  putenv(MYLANG.c_str());
 #else
-			  UT_String MYLANG (LanguageISOName);
+			  std::string MYLANG (LanguageISOName);
 			  MYLANG += "_";
 			  MYLANG += LanguageISOTerritory;
 			  setenv ("LANG", MYLANG.c_str(), 1);

@@ -24,7 +24,6 @@
 #include <string.h>
 
 #include "ut_color.h"
-#include "ut_hash.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 
