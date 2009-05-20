@@ -42,7 +42,7 @@ public:
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							storeProperties();
-	BOOL									_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	
 private:
 	XAP_Win32DialogHelper *					m_pWin32Dialog;
@@ -57,8 +57,6 @@ private:
 	HWND									m_hPortLabel;
 	HWND									m_hAutoconnectCheck;
 	HWND									m_hUseSecureCheck;
-	
-	HWND									m_hParentDlg;
 	
 	void									_checkButtonHwnd(HWND hCtrl, bool bChecked);
 	bool									_isCheckedHwnd(HWND hCtrl);

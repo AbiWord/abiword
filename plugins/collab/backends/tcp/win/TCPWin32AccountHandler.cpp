@@ -39,11 +39,22 @@ AccountHandler * TCPWin32AccountHandler::static_constructor()
 // return true if we process the command, false otherwise
 BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	if (!m_hServerEntry || !m_hPortEntry)
+		return false; // we are still initializing the dialog
+
+	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	UT_return_val_if_fail(pThis, false);
+
 	WORD wId = LOWORD(wParam);
 	
 	bool serve = _isCheckedHwnd(m_hServerRadio);
-	AP_Win32Dialog_CollaborationAddAccount * pThis;
-	
+	// NOTE: GetWindowTextLength may have a Unicode caveat, according to MSDN
+	// It may return a value higher than the actual length.  This is probably OK for
+	// our purposes here.
+	// TODO: Input validation would be cool, but oh well.
+	bool hasPort = GetWindowTextLength(m_hPortEntry)>0;
+	bool hasServer = GetWindowTextLength(m_hServerEntry)>0;
+
 	switch (wId)
 	{
 	// Switch on resource ID's - where do they come from for these controls?
@@ -56,55 +67,33 @@ BOOL TCPWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			// disable the address entry
 			EnableWindow(m_hServerEntry, false);
+			// enable the OK button if we have a port filled in
+			pThis->setBackendValidity(hasPort);
 		}
 		else
 		{
 			// enable the address entry
 			EnableWindow(m_hServerEntry, true);
+			// enable the OK button if we have a port and an address filled in
+			pThis->setBackendValidity(hasServer && hasPort);
 		}
 		return true;
 		
 	case ABI_RID_DIALOG_COLLABTCP_SERVERENTRY:
 	case ABI_RID_DIALOG_COLLABTCP_PORTENTRY:
-		// These have the ability to enable or disable the "OK" button
-		
-		pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(m_hParentDlg,DWL_USER);
-		
-		// note: GetWindowTextLength may have a Unicode caveat, according to MSDN
-		// It may return a value higher than the actual length.  This is probably OK for
-		// our purposes here.
-		if (GetWindowTextLength(m_hPortEntry)>0)
 		{
-			// well, we have at least something in the port box.
-			// TODO: Input validation would be cool, but oh well.
-			
 			if (serve)
 			{
-				// All we need is a port.  We are cleared for enabling the OK button.
-				pThis->setBackendValidity(true);
+				// All we need is a port.
+				pThis->setBackendValidity(hasPort);
 			}
 			else
 			{
-				// We are connecting to a server: must have a server listed.
-				if (GetWindowTextLength(m_hServerEntry)>0)
-				{
-					// looks good, enable OK
-					pThis->setBackendValidity(true);
-				}
-				else
-				{
-					// No server entered.
-					pThis->setBackendValidity(false);
-				}
+				// We are connecting to a server: must have a server listed and have a port
+				pThis->setBackendValidity(hasServer && hasPort);
 			}
-		}
-		else
-		{
-			// we have no port - disable the OK button!
-			pThis->setBackendValidity(false);
-		}
 		return true;
-	
+		}
 	default:
 		return false;
 	}
@@ -122,8 +111,7 @@ TCPWin32AccountHandler::TCPWin32AccountHandler()
 	m_hServerLabel(NULL),
 	m_hPortLabel(NULL),
 	m_hAutoconnectCheck(NULL),
-	m_hUseSecureCheck(NULL),
-	m_hParentDlg(NULL)
+	m_hUseSecureCheck(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -199,6 +187,7 @@ void TCPWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	
 	// default to serve
 	_checkButtonHwnd(m_hServerRadio, true);
+	EnableWindow(m_hServerEntry, false);
 	
 	// default to autoconnect
 	_checkButtonHwnd(m_hAutoconnectCheck, true);

@@ -54,6 +54,7 @@ extern AccountHandlerConstructor ServiceAccountHandlerConstructor;
 typedef boost::shared_ptr< std::map<std::string, GetSessionsResponseEvent> > BuddySessionsPtr;
 
 #define SERVICE_ACCOUNT_HANDLER_TYPE "com.abisource.abiword.abicollab.backend.service"
+#define SERVICE_REGISTRATION_URL "https://abicollab.net/user/register"
 
 class ServiceAccountHandler : public AccountHandler
 {

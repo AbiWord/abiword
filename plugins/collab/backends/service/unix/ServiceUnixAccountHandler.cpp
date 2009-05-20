@@ -70,7 +70,7 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 2, 3);
 
 	// register
-	register_button = gtk_link_button_new_with_label ("https://abicollab.net/user/register", "Get a free abicollab.net account");
+	register_button = gtk_link_button_new_with_label (SERVICE_REGISTRATION_URL, "Get a free abicollab.net account");
 	gtk_table_attach_defaults(GTK_TABLE(table), register_button, 0, 2, 3, 4);
 	
 #ifdef DEBUG

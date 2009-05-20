@@ -39,26 +39,26 @@ public:
 
 	void						runModal(XAP_Frame * pFrame);
 	static BOOL CALLBACK		s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK		s_detailsProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL 						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL 						_onDetailsCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	BOOL						detailsProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	void						setBackendValidity(bool valid);
 
 protected:
 	XAP_Win32DialogHelper *		m_pWin32Dialog;
-	/*
+
 	virtual void*				_getEmbeddingParent()
-		{ return m_hDlg; }
-	// */
-	
-	virtual void*				_getEmbeddingParent()
-		{ return  m_hDetails;}
-	// */
+		{ return  m_hDetails; }
+
 	virtual AccountHandler*		_getActiveAccountHandler();
 	
 	// Handles
 	HINSTANCE 					m_hInstance;
 	HWND						m_hOk;
 	HWND						m_hDetails;
+	LONG_PTR					m_pOldDetailsProc;
 	
 	// Data
 	std::vector<AccountHandler*>	m_vAccountTypeCombo;

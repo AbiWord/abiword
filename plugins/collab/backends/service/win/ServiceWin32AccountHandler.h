@@ -34,6 +34,7 @@ public:
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							storeProperties();
+	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 private:
 	// handles
@@ -42,6 +43,7 @@ private:
 	HWND									m_hEmailLabel;
 	HWND									m_hPasswordEntry;
 	HWND									m_hPasswordLabel;
+	HWND									m_hUrlButton;
 };
 
 #endif /* __SERVICEWIN32ACCOUNTHANDLER__ */

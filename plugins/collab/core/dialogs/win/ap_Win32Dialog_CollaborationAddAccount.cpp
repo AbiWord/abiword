@@ -43,21 +43,36 @@ BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_dlgProc(HWND hWnd, UINT 
 		}
 		case WM_COMMAND:
 		{
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWL_USER);
 			UT_return_val_if_fail(pThis, false);
 			return pThis->_onCommand(hWnd,wParam,lParam);
 		}
 		case WM_DESTROY:
 		{
 			UT_DEBUGMSG(("Got WM_DESTROY\n"));
-			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLong(hWnd,DWL_USER);
+			AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd,DWL_USER);
 			UT_return_val_if_fail(pThis, false);
 			DELETEP(pThis->m_pWin32Dialog);
 			return true;
 		}
 		default:
-			// Message not processed - Windows should take care of it
 			return false;
+	}
+}
+
+BOOL CALLBACK AP_Win32Dialog_CollaborationAddAccount::s_detailsProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	AP_Win32Dialog_CollaborationAddAccount* pThis = (AP_Win32Dialog_CollaborationAddAccount *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	UT_return_val_if_fail(pThis, false);
+
+	switch (msg)
+	{
+		case WM_COMMAND:
+			if (pThis->_onDetailsCommand(hWnd, msg, wParam, lParam))
+				return true;
+			return pThis->detailsProc(hWnd, msg, wParam, lParam);
+		default:
+			return pThis->detailsProc(hWnd, msg, wParam, lParam);
 	}
 }
 
@@ -72,7 +87,8 @@ AP_Win32Dialog_CollaborationAddAccount::AP_Win32Dialog_CollaborationAddAccount(X
 	m_pWin32Dialog(NULL),
 	m_hInstance(NULL),
 	m_hOk(NULL),
-	m_hDetails(NULL)
+	m_hDetails(NULL),
+	m_pOldDetailsProc(NULL)
 {
 	AbiCollabSessionManager * pSessionManager = AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -108,36 +124,29 @@ void AP_Win32Dialog_CollaborationAddAccount::runModal(XAP_Frame * pFrame)
 /*****************************************************************/
 BOOL AP_Win32Dialog_CollaborationAddAccount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	// Welcome, let's initialize a dialog!
-	//////
 	// Store handles for easy access
-	// Dialog handle stored in DialogHelper - use it!
-	
 	m_hOk = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONADDACCOUNT_OK_BUTTON);
-	UT_ASSERT(m_hOk);
+	UT_return_val_if_fail(m_hOk, false);
 	m_hDetails = GetDlgItem(hWnd, AP_RID_DIALOG_COLLABORATIONADDACCOUNT_DETAILS_BOX);
-	UT_ASSERT(m_hDetails);
-	
-	// Danger Will Robinson:  This will cause the dialog to not work due to asserts in onCommand pThis.
-	//SetWindowLong(m_hDetails, GWL_WNDPROC, AP_Win32Dialog_CollaborationAddAccount::s_dlgProc);
-	
-	//////
+	UT_return_val_if_fail(m_hDetails, false);
+
+	// trap the messages that will be sent to the m_hDetails window, so we can forward
+	// them to the account handler
+	m_pOldDetailsProc = GetWindowLongPtr(m_hDetails, GWLP_WNDPROC);
+	SetWindowLongPtr(m_hDetails, GWLP_WNDPROC, (LPARAM)s_detailsProc);
+	SetWindowLongPtr(m_hDetails, GWLP_USERDATA, (LPARAM)this);
+
 	// Get ourselves a custom DialogHelper
-	if (m_pWin32Dialog)
-	{
-		DELETEP(m_pWin32Dialog);
-	}
+	DELETEP(m_pWin32Dialog);
 	m_pWin32Dialog = new XAP_Win32DialogHelper(hWnd);
 	
-	//////
 	// Set up dialog initial state
 	_populateWindowData();
 	
 	// Center Window
 	m_pWin32Dialog->centerDialog();
 
-	// Return 1 to proceed with dialog initialization
-	return 1;
+	return true;
 }
 
 // return true if we process the command, false otherwise
@@ -145,7 +154,7 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	
+
 	AccountHandler* pHandler;
 	switch (wId)
 	{
@@ -185,15 +194,21 @@ BOOL AP_Win32Dialog_CollaborationAddAccount::_onCommand(HWND hWnd, WPARAM wParam
 		return true;
 
 	default:
-		AccountHandler* pAccountHandler = _getActiveAccountHandler();
-		if (pAccountHandler) //if we have an account handler
-		{
-			return pAccountHandler->_onCommand(hWnd, wParam, lParam);
-		}
-		
 		// WM_COMMAND message NOT processed
 		return false;
 	}
+}
+
+BOOL AP_Win32Dialog_CollaborationAddAccount::_onDetailsCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	AccountHandler* pAccountHandler = _getActiveAccountHandler();
+	UT_return_val_if_fail(pAccountHandler, false);
+	return pAccountHandler->_onCommand(hWnd, wParam, lParam);
+}
+
+BOOL AP_Win32Dialog_CollaborationAddAccount::detailsProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return CallWindowProc((WNDPROC)m_pOldDetailsProc, hWnd, msg, wParam, lParam);
 }
 
 void AP_Win32Dialog_CollaborationAddAccount::_populateWindowData()

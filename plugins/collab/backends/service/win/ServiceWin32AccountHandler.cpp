@@ -16,12 +16,14 @@
  * 02111-1307, USA.
  */
 
+#include "xap_App.h"
 #include "ServiceWin32AccountHandler.h"
 
 #define ABI_RID_DIALOG_COLLABSERVICE_EMAILENTRY 201
 #define ABI_RID_DIALOG_COLLABSERVICE_EMAILLABEL 202
 #define ABI_RID_DIALOG_COLLABSERVICE_PASSWORDENTRY 203
 #define ABI_RID_DIALOG_COLLABSERVICE_PASSWORDLABEL 204
+#define ABI_RID_DIALOG_COLLABSERVICE_URLBUTTON 205
 
 AccountHandlerConstructor ServiceAccountHandlerConstructor = &ServiceWin32AccountHandler::static_constructor;
 
@@ -36,7 +38,8 @@ ServiceWin32AccountHandler::ServiceWin32AccountHandler()
 	m_hEmailEntry(NULL),
 	m_hEmailLabel(NULL),
 	m_hPasswordEntry(NULL),
-	m_hPasswordLabel(NULL)
+	m_hPasswordLabel(NULL),
+	m_hUrlButton(NULL)
 {
 	AbiCollabSessionManager * pSessionManager= AbiCollabSessionManager::getManager();
 	if (pSessionManager)
@@ -56,24 +59,27 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	/* Non-Tabbable Labels */
 
 	m_hEmailLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "E-mail address:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
-	15, 20, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILLABEL,  m_hInstance, 0);
+			15, 20, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailLabel);
 
 	m_hPasswordLabel = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "STATIC", "Password:", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP,
-	15, 40, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDLABEL,  m_hInstance, 0);
+			15, 40, 51, 15, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDLABEL,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordLabel);
 	
 	/* Tabbable */
 	m_hEmailEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
-	80, 20, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILENTRY,  m_hInstance, 0);
+			80, 20, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_EMAILENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hEmailEntry);
 	SendMessage(m_hEmailEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
 
 	m_hPasswordEntry = CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_CLIENTEDGE, "EDIT", "", ES_AUTOHSCROLL | ES_LEFT | WS_CHILD | WS_BORDER | WS_VISIBLE | WS_TABSTOP | WS_GROUP,
-	80, 40, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDENTRY,  m_hInstance, 0);
+			80, 40, 121, 20, hBox,  (HMENU) ABI_RID_DIALOG_COLLABSERVICE_PASSWORDENTRY,  m_hInstance, 0);
 	UT_return_if_fail(m_hPasswordEntry);
 	SendMessage(m_hPasswordEntry, EM_SETPASSWORDCHAR, '*', 0);
 	SendMessage(m_hPasswordEntry, EM_SETLIMITTEXT, 255*sizeof(TCHAR), 0);
+
+	m_hUrlButton = CreateWindowEx(WS_EX_NOPARENTNOTIFY, "BUTTON", "Get a free abicollab.net account", WS_CHILD | WS_VISIBLE | WS_TABSTOP, 
+			15, 64, 186, 20, hBox, (HMENU) ABI_RID_DIALOG_COLLABSERVICE_URLBUTTON, m_hInstance, 0);
 
 	// Font setting code borrowed from XAP_Win32Dlg_About
 	LOGFONT lf = { 0 };
@@ -82,7 +88,7 @@ void ServiceWin32AccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	lf.lfWeight = 0;
 	HFONT hfontPrimary = CreateFontIndirect(&lf);
 	HWND rgFontReceivers[] =
-		{ m_hEmailLabel, m_hEmailEntry, m_hPasswordLabel, m_hPasswordEntry };
+		{ m_hEmailLabel, m_hEmailEntry, m_hPasswordLabel, m_hPasswordEntry, m_hUrlButton};
 	for (UT_uint32 iWnd = 0; iWnd < G_N_ELEMENTS(rgFontReceivers); iWnd++)
 		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
 }
@@ -101,6 +107,7 @@ void ServiceWin32AccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 	DESTROY_WINDOW(m_hEmailEntry);
 	DESTROY_WINDOW(m_hPasswordLabel);
 	DESTROY_WINDOW(m_hPasswordEntry);
+	DESTROY_WINDOW(m_hUrlButton);
 	
 	// destroying a window does not repaint the area it owned, so do it here
 	RedrawWindow(GetParent(hBox), NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_UPDATENOW);	
@@ -124,4 +131,20 @@ void ServiceWin32AccountHandler::storeProperties()
 
 	// TODO: implement autoconnect
 	addProperty("autoconnect", "true" );
+}
+
+// return true if we process the command, false otherwise
+BOOL ServiceWin32AccountHandler::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+
+	switch (wId)
+	{
+		case ABI_RID_DIALOG_COLLABSERVICE_URLBUTTON:
+			XAP_App::getApp()->openURL(SERVICE_REGISTRATION_URL);
+			return true;
+	}
+
+	return false;
 }
