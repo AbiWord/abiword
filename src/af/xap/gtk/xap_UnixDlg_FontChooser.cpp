@@ -25,12 +25,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include <set>
+#include <string>
+
 #include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "ut_hash.h"
 #include "ut_units.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_FontChooser.h"
@@ -848,7 +851,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pFrame = static_cast<XAP_Frame *>(pFrame);
-	const gchar* text;
 
 	// used similarly to convert between text and numeric arguments
 	static char sizeString[50];
@@ -860,7 +862,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_blockUpdate = true;
 
 	// to sort out dupes
-	UT_StringPtrMap fontHash(256);
+    std::set<std::string> fontSet;
 
 	GtkTreeModel* model;
 	GtkTreeIter iter;
@@ -874,22 +876,20 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	const std::vector<const char *> & names =
-	    GR_CairoGraphics::getAllFontNames();
+	const std::vector<std::string> & names = GR_CairoGraphics::getAllFontNames();
 	
-	for (std::vector<const char *>::const_iterator  i = names.begin();
-		 i != names.end(); i++)
+	for (std::vector<std::string>::const_iterator  i = names.begin();
+		 i != names.end(); ++i)
 	{
-		const char * fName = *i;
+		const std::string & fName = *i;
 			
-		if (!fontHash.contains(fName, NULL))
+		if (fontSet.find(fName) == fontSet.end())
 		{
-		    fontHash.insert(fName,
-				    static_cast<const void *>(fName));
+            fontSet.insert(fName);
 
-		    text = fName;
 		    gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-		    gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, text, -1);
+		    gtk_list_store_set(GTK_LIST_STORE(model), &iter, TEXT_COLUMN, 
+                               fName.c_str(), -1);
 		    
 		  }
 	}

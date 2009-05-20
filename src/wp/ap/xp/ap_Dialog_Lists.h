@@ -20,6 +20,8 @@
 #ifndef AP_DIALOG_LISTS_H
 #define AP_DIALOG_LISTS_H
 
+#include <string>
+
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -46,8 +48,12 @@ public:
 	// data twiddlers
 	void				draw(void);
 	AP_Dialog_Lists*	getLists(void);
-	void				setData(gchar * pszFont,float fAlign,float fIndent);
-
+	void				setData(const gchar * pszFont,float fAlign,float fIndent);
+	void				setData(const std::string & font, float fAlign,
+                                float fIndent)
+    {
+        setData(font.c_str(), fAlign, fIndent);
+    }
 
 protected:
 
@@ -141,12 +147,30 @@ protected:
 
 #undef SET_GATHER
 
-    void copyCharToDelim(const char* pszDelim) { sprintf(m_pszDelim,"%s",pszDelim);}
-	const char * getDelim( void) { return static_cast<const char *>(m_pszDelim);}
-    void copyCharToDecimal(const  char * pszDecimal) { sprintf(m_pszDecimal,"%s",pszDecimal);}
-	const char * getDecimal( void)  { return static_cast<const char *>(m_pszDecimal);}
-    void copyCharToFont(const char* pszFont) { sprintf(m_pszFont,"%s",pszFont);}
-	const char * getFont( void) { return static_cast<const char *>(m_pszFont);}
+    void copyCharToDelim(const std::string & pszDelim) 
+    { 
+        m_pszDelim = pszDelim;
+    }
+    const std::string & getDelim(void) const 
+    { 
+        return m_pszDelim;
+    }
+    void copyCharToDecimal(const std::string & pszDecimal) 
+    { 
+        m_pszDecimal = pszDecimal;
+    }
+	const std::string & getDecimal( void) const  
+    { 
+        return m_pszDecimal;
+    }
+    void copyCharToFont(const std::string & pszFont) 
+    { 
+        m_pszFont = pszFont;
+    }
+	const std::string & getFont(void) 
+    { 
+        return m_pszFont;
+    }
     void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
     const char * getWindowName( void) { return static_cast<const char *>(m_WindowName);}  
 	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
@@ -177,9 +201,9 @@ private:
 	UT_UCSChar				m_curListLabel[100];
 	UT_UCSChar				m_newListLabel[100];
 	FL_ListType				m_NewListType;
-	gchar				m_pszDelim[80];
-	gchar				m_pszDecimal[80];
-	gchar				m_pszFont[80];
+    std::string				m_pszDelim;
+    std::string				m_pszDecimal;
+    std::string				m_pszFont;
 	float					m_fAlign;
 	float					m_fIndent;
 	UT_uint32				m_iLevel;

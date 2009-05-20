@@ -252,7 +252,7 @@ public:
 	virtual UT_uint32 getDeviceResolution(void) const;
 	double    getResolutionRatio(void) const { return 1.0;}
 
-	static  const std::vector<const char *> &       getAllFontNames(void);
+	static  const std::vector<std::string> &       getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
 									 const char * pszLang = NULL);

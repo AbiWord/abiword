@@ -2460,7 +2460,7 @@ void GR_CairoGraphics::getCoverage(UT_NumberVector& coverage)
 	}
 }
 
-const std::vector<const char *> & GR_CairoGraphics::getAllFontNames(void)
+const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 {
 	XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 	bool bExclude = false;
@@ -2469,9 +2469,9 @@ const std::vector<const char *> & GR_CairoGraphics::getAllFontNames(void)
 	/*
 	 * Do this only once
 	 */
-	static std::vector<const char *> Vec;
+	static std::vector<std::string> Vec;
 
-	if (Vec.size())
+	if (!Vec.empty())
 		return Vec;
 	
 	if (pPrefs)
@@ -2518,6 +2518,8 @@ const std::vector<const char *> & GR_CairoGraphics::getAllFontNames(void)
 				}
 			g_object_unref (G_OBJECT (context)), context = NULL;
 		}
+
+    std::sort(Vec.begin(), Vec.end());
 
 	return Vec;
 }

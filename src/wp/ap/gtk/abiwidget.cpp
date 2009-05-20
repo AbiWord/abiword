@@ -1597,7 +1597,7 @@ extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * /*w*/)
 {
 	// this is annoying asc getAllFontNames() returns a lot of dupes
-	const std::vector<const char *>& vFonts = GR_CairoGraphics::getAllFontNames();
+	const std::vector<std::string>& vFonts = GR_CairoGraphics::getAllFontNames();
 
 	const gchar** fonts_ar = 
 		reinterpret_cast<const gchar**>(g_malloc(sizeof(gchar*) * (vFonts.size() + 1))); // if there are any dupes, this will be too big, but we don't care
@@ -1605,16 +1605,16 @@ abi_widget_get_font_names (AbiWidget * /*w*/)
 	UT_uint32 actual_size = 0;
 	for	(i = 0; i < vFonts.size(); i++)
 	{
-		if (vFonts[i] != NULL && (*vFonts[i]) != '\0')
+		if (!vFonts[i].empty())
 		{
 			// check for dupes
 			UT_uint32 j;
 			for (j = 0; j < actual_size; j++)
-				if (strcmp(vFonts[i], fonts_ar[j]) == 0)
+				if (vFonts[i] ==  fonts_ar[j])
 					break;
 
 			if (j == actual_size)
-				fonts_ar[actual_size++] = vFonts[i];
+				fonts_ar[actual_size++] = vFonts[i].c_str();
 		}
 	}
 	fonts_ar[actual_size] = NULL;

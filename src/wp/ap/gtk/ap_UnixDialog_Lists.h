@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
@@ -20,6 +21,9 @@
 
 #ifndef AP_UNIXDIALOG_LISTS_H
 #define AP_UNIXDIALOG_LISTS_H
+
+#include <vector>
+#include <string>
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
@@ -73,7 +77,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					_fillBulletedStyleMenu( GtkListStore *listmenu);
 	void					_fillNoneStyleMenu( GtkListStore *listmenu);
 	void					_gatherData(void);
-	GList *					_getGlistFonts (void);
+	void					_getGlistFonts (std::vector<std::string> & glFonts);
 	void					_fillFontMenu(GtkListStore* store);
 
 	inline GtkWidget *		_getCloseButton(void) { return m_wClose; }
@@ -94,7 +98,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 		BUTTON_RESET
 	} ResponseId ;	
 	
-	GList *					m_glFonts;
+    std::vector<std::string>  m_glFonts;
 	GR_CairoGraphics *		        m_pPreviewWidget;
 
 	bool					m_bManualListStyle;

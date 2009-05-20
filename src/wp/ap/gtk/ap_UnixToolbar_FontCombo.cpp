@@ -73,18 +73,15 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		return false;
 	}
 
-	const std::vector<const char *>& names =
+	const std::vector<std::string>& names =
 		GR_CairoGraphics::getAllFontNames();
 
 	m_vecContents.clear();
 
-	for (std::vector<const char *>::const_iterator i = names.begin(); 
-		 i != names.end(); i++)
+	for (std::vector<std::string>::const_iterator i = names.begin(); 
+		 i != names.end(); ++i)
 	{
-		const char * fName = NULL;
-		
-		// sort-out duplicates
-		fName = *i;
+		const std::string & fName = *i;
 		
 		int foundAt = -1;
 
@@ -92,7 +89,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		{
 			// sort out dups
 			const char * str = m_vecContents.getNthItem(j);
-			if (str && !strcmp (str, fName))
+			if (str && (fName == str))
 			{
 				foundAt = j;
 				break;
@@ -100,7 +97,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		}
 
 		if (foundAt == -1)
-			m_vecContents.addItem(fName);
+			m_vecContents.addItem(fName.c_str());
 	}
 	
 	return true;

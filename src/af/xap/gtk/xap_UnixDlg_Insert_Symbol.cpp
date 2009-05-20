@@ -711,20 +711,20 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		return NULL;
 	}
 
-	const std::vector<const char *> & names =
+	const std::vector<std::string> & names =
 		GR_CairoGraphics::getAllFontNames();
 	
 	GList *glFonts = NULL;
 
-	for (std::vector<const char *>::const_iterator i = names.begin(); 
-		 i != names.end(); i++)
+	for (std::vector<std::string>::const_iterator i = names.begin(); 
+		 i != names.end(); ++i)
 	{
-		const gchar * lgn = NULL;
-		lgn = *i;
-		glFonts = g_list_insert_sorted(glFonts, g_strdup(lgn), reinterpret_cast <gint (*)(const void*, const void*)> (strcmp));
+        const std::string & lgn = *i;
+		glFonts = g_list_insert_sorted(glFonts, g_strdup(lgn.c_str()), 
+                                       reinterpret_cast <gint (*)(const void*, const void*)> (strcmp));
 	}	
 
-        UT_String lastfont;
+    std::string lastfont;
 	for (GList *g = g_list_first (glFonts); g;)
 	{
 		if (lastfont == static_cast <const char *> (g->data))
@@ -734,8 +734,8 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 			continue;
 		}
 		lastfont = static_cast <const char *> (g->data);
-	        g = g_list_next (g);
-        }
+        g = g_list_next (g);
+    }
 
 	return glFonts;
 }

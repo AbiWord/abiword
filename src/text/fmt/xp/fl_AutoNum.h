@@ -22,6 +22,8 @@
 #ifndef FL_AUTONUM_H
 #define FL_AUTONUM_H
 
+#include <string>
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
@@ -80,8 +82,16 @@ public:
 	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
 	void						setListType(FL_ListType lType);
 	void						setDelim(const gchar * pszDelim);
+	void						setDelim(const std::string & delim)
+    {
+        setDelim(delim.c_str());
+    }
 	const gchar *			getDelim() const;
 	void						setDecimal(const gchar * pszDecimal);
+    void                        setDecimal(const std::string & decimal)
+    { 
+        setDecimal(decimal.c_str());
+    }
 	const gchar *			getDecimal() const;
 	bool						isDirty() const;
 	UT_uint16					getStartValue() const { return m_iStartValue; }

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
@@ -219,7 +220,7 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 		response = abiRunModalDialog (GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false);		
 	} while (response == BUTTON_RESET);
 	AP_Dialog_Lists::tAnswer res = getAnswer();
-	g_list_free( m_glFonts);
+	m_glFonts.clear();
 	abiDestroyWidget ( mainWindow ) ;
 	setAnswer(res);
 	DELETEP (m_pPreviewWidget);
@@ -319,7 +320,7 @@ void AP_UnixDialog_Lists::destroy(void)
 		m_pAutoUpdateLists->stop();
 		setAnswer(AP_Dialog_Lists::a_CLOSE);
 
-		g_list_free( m_glFonts);
+		m_glFonts.clear();
 		modeless_cleanup();
 		abiDestroyWidget(m_wMainWindow);
 		m_wMainWindow = NULL;
@@ -621,24 +622,25 @@ static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
 
 void AP_UnixDialog_Lists::_fillFontMenu(GtkListStore* store)
 {
-	GList* glFonts;
 	gint i;
-	gint nfonts;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	glFonts = _getGlistFonts();
-	nfonts = g_list_length(glFonts);
+	_getGlistFonts(m_glFonts);
 
 	addToStore(store, pSS, AP_STRING_ID_DLG_Lists_Current_Font,
 			   0);
 
-	for(i = 0; i < nfonts; i++)
+    i = 1;
+	for(std::vector<std::string>::const_iterator iter = m_glFonts.begin();
+        iter != m_glFonts.end(); ++iter) 
 	{
-		GtkTreeIter iter;
-		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(store, &iter, 
-						   0, static_cast<const gchar *>(g_list_nth_data (glFonts, i)), 
-						   1, i+1, -1);
+		GtkTreeIter treeiter;
+		gtk_list_store_append(store, &treeiter);
+        // Here, the lifespan of the string *should* be longer than
+        // the store. One more case were I wish we used Gtkmm.
+		gtk_list_store_set(store, &treeiter, 
+						   0, iter->c_str(), 1, i, -1);
+        i++;
 	}
 }
 
@@ -1084,32 +1086,27 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
    glFonts. This will be used in the font selection combo
    box */
 
-GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
+void AP_UnixDialog_Lists::_getGlistFonts (std::vector<std::string> & glFonts)
 {
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
-	UT_return_val_if_fail(pGF, NULL);
+	UT_return_if_fail(pGF);
 	
-	const std::vector<const char *> & names =
-	    GR_CairoGraphics::getAllFontNames();
+	const std::vector<std::string> & names = GR_CairoGraphics::getAllFontNames();
 	
-	GList *glFonts = NULL;
-	const gchar *currentfont = NULL;
+    std::string currentfont;
 
-	for (std::vector<const char *>::const_iterator i = names.begin(); 
-		 i != names.end(); i++)
+	for (std::vector<std::string>::const_iterator i = names.begin(); 
+		 i != names.end(); ++i)
 	{
-	    const gchar * lgn  = *i;
-	    if(!currentfont ||
-	       strstr(currentfont,lgn)==NULL ||
-	       strlen(currentfont)!=strlen(lgn))
+	    const std::string & lgn  = *i;
+	    if(currentfont.empty() ||
+	       (strstr(currentfont.c_str(), lgn.c_str()) == NULL) ||
+	       currentfont.size() != lgn.size())
 	    {
 			currentfont = lgn;
-			glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
+            glFonts.push_back(lgn);
 	    }
 	}
-		
-	glFonts =  g_list_reverse(glFonts);
-	return glFonts;
 }
 
 
@@ -1266,7 +1263,6 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 
 	XAP_GtkSignalBlocker b3(  G_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
 	XAP_GtkSignalBlocker b4(  G_OBJECT(m_wDelimEntry), m_iDelimEntryID );
-	gint i;
 	//
 	// HACK to effectively block an update during this method
 	//
@@ -1285,18 +1281,20 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 	//
 	// Code to work out which is active Font
 	//
-	if(strcmp(static_cast<const char *>(getFont()),"NULL") == 0 )
+	if(getFont() == "NULL")
 	{
 		gtk_combo_box_set_active(m_wFontOptions, 0 );
 	}
 	else
 	{
-		for(i=0; i < static_cast<gint>(g_list_length(m_glFonts));i++)
+        size_t i = 0;
+		for(std::vector<std::string>::const_iterator iter = m_glFonts.begin();
+            iter != m_glFonts.end(); ++iter, ++i)
 		{
-			if(strcmp(getFont(),static_cast<char *>(g_list_nth_data(m_glFonts,i))) == 0)
+			if(*iter == getFont())
 				break;
 		}
-		if(i < static_cast<gint>(g_list_length(m_glFonts)))
+        if(i < m_glFonts.size())
 		{
 			gtk_combo_box_set_active(m_wFontOptions, i + 1 );
 		}
@@ -1307,8 +1305,8 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 	}
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),static_cast<float>(getiStartValue()));
 
-	gtk_entry_set_text( GTK_ENTRY(m_wDecimalEntry), static_cast<const gchar *>(getDecimal()));
-	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), static_cast<const gchar *>(getDelim()));
+    gtk_entry_set_text( GTK_ENTRY(m_wDecimalEntry), getDecimal().c_str());
+	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), getDelim().c_str());
 
 	//
 	// Now set the list type and style
@@ -1401,7 +1399,7 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	}
 	else
 	{
-		copyCharToFont( static_cast<char *>(g_list_nth_data(m_glFonts, ifont-1)));
+		copyCharToFont(m_glFonts[ifont - 1]);
 	}
 	const gchar * pszDec = gtk_entry_get_text( GTK_ENTRY(m_wDecimalEntry));
 	copyCharToDecimal( static_cast<const char *>(pszDec));
