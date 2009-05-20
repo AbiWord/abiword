@@ -1072,11 +1072,23 @@ void AP_Win32Dialog_Lists::_selectFont()
 	{
 		// stuff font properties into the dialog.
 
-		pDialog->setFontFamily(UT_getAttribute("font-family", props_in));
-		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
-		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
-		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
-		pDialog->setColor(UT_getAttribute("color", props_in));
+		const gchar *szFontFamily = UT_getAttribute("font-family", props_in);
+		const gchar *szFontSize = UT_getAttribute("font-size", props_in);
+		const gchar *szFontWeight = UT_getAttribute("font-weight", props_in);
+		const gchar *szFontStyle = UT_getAttribute("font-style", props_in);
+		const gchar *szColor = UT_getAttribute("color", props_in);
+
+		const std::string sFontFamily = (szFontFamily ? szFontFamily : "");
+		const std::string sFontSize = (szFontSize ? szFontSize : "");
+		const std::string sFontWeight = (szFontWeight ? szFontWeight : "");
+		const std::string sFontStyle = (szFontStyle ? szFontStyle : "");
+		const std::string sColor = (szColor ? szColor : "");
+
+		pDialog->setFontFamily(sFontFamily);
+		pDialog->setFontSize(sFontSize);
+		pDialog->setFontWeight(sFontWeight);
+		pDialog->setFontStyle(sFontStyle);
+		pDialog->setColor(sColor);
 
 		// these behave a little differently since they are
 		// probably just check boxes and we don't have to

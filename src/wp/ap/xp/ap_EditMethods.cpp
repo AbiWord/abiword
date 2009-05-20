@@ -7656,14 +7656,21 @@ UT_return_val_if_fail(pDialog, false);
 		// which change across the selection, we ask the dialog not
 		// to set the field (by passing "").
 
-		const std::string sFamily = UT_getAttribute("font-family", props_in);
-		const std::string sFontSize = UT_getAttribute("font-size", props_in);
-		const std::string sFontWeight = UT_getAttribute("font-weight", props_in);
-		const std::string sFontStyle = UT_getAttribute("font-style", props_in);
-		const std::string sColor = UT_getAttribute("color", props_in);
-		const std::string sBGColor = UT_getAttribute("bgcolor", props_in);
+		const gchar *szFontFamily = UT_getAttribute("font-family", props_in);
+		const gchar *szFontSize = UT_getAttribute("font-size", props_in);
+		const gchar *szFontWeight = UT_getAttribute("font-weight", props_in);
+		const gchar *szFontStyle = UT_getAttribute("font-style", props_in);
+		const gchar *szColor = UT_getAttribute("color", props_in);
+		const gchar *szBGColor = UT_getAttribute("bgcolor", props_in);
 
-		pDialog->setFontFamily(sFamily);
+		const std::string sFontFamily = (szFontFamily ? szFontFamily : "");
+		const std::string sFontSize = (szFontSize ? szFontSize : "");
+		const std::string sFontWeight = (szFontWeight ? szFontWeight : "");
+		const std::string sFontStyle = (szFontStyle ? szFontStyle : "");
+		const std::string sColor = (szColor ? szColor : "");
+		const std::string sBGColor = (szBGColor ? szBGColor : "");
+
+		pDialog->setFontFamily(sFontFamily);
 		pDialog->setFontSize(sFontSize);
 		pDialog->setFontWeight(sFontWeight);
 		pDialog->setFontStyle(sFontStyle);
