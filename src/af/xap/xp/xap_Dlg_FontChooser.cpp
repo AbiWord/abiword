@@ -397,7 +397,7 @@ bool XAP_Dialog_FontChooser::didPropChange(const std::string & v1, const std::st
 		return false;
 	else if(v1.empty() || v2.empty())
 		return true;
-	return v1 == v2;
+	return v1 != v2;
 }
 
 bool XAP_Dialog_FontChooser::getChangedHidden(bool * pbHidden) const
