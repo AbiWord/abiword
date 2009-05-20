@@ -738,7 +738,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 					case PX_ChangeRecord::PXT_InsertObject:
 					{
 						const Object_ChangeRecordSessionPacket* ocrsp = static_cast<const Object_ChangeRecordSessionPacket*>( crp );
-						PTObjectType pto = ocrsp->m_eObjectType;
+						PTObjectType pto = ocrsp->getObjectType();
 						gchar** szAtts = ocrsp->getAtts();
 						gchar** szProps = ocrsp->getProps();
 						

@@ -226,7 +226,7 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			packet->setAdjust( 1 ); // TODO: is this correct? - MARCM
 			// set properties
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
-			packet->m_eObjectType = pcro->getObjectType();
+			packet->setObjectType(pcro->getObjectType());
 			_mapPropsAtts( index, packet->getPropMap(), packet->getAttMap() );
 			return packet;
 		}
@@ -240,7 +240,7 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			packet->setAdjust( 0 ); // TODO: is this correct? - MARCM
 			// set properties
 			const PX_ChangeRecord_ObjectChange * pcro = static_cast<const PX_ChangeRecord_ObjectChange *>(pcr);
-			packet->m_eObjectType = pcro->getObjectType();
+			packet->setObjectType(pcro->getObjectType());
 			_mapPropsAtts( index, packet->getPropMap(), packet->getAttMap() );
 			return packet;
 		}
@@ -253,8 +253,8 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			packet->setLength( 1 );
 			packet->setAdjust( -1 );
 			// set properties
-			const PX_ChangeRecord_ObjectChange * pcro = static_cast<const PX_ChangeRecord_ObjectChange *>(pcr);
-			packet->m_eObjectType = pcro->getObjectType();
+			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+			packet->setObjectType(pcro->getObjectType());
 			return packet;
 		}
 		

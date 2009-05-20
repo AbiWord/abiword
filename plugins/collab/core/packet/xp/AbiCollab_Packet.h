@@ -368,7 +368,7 @@ public:
 class ChangeStrux_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(ChangeStrux_ChangeRecordSessionPacket);
-	ChangeStrux_ChangeRecordSessionPacket() : m_eStruxType(PTStruxType(0)) {}
+	ChangeStrux_ChangeRecordSessionPacket() : m_eStruxType(PTStruxType(0)) {} // FIXME: 0 is not a good initializer
 	ChangeStrux_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
@@ -377,6 +377,7 @@ public:
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
+	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
 	
 	virtual std::string toStr() const;
@@ -388,7 +389,8 @@ public:
 class DeleteStrux_ChangeRecordSessionPacket : public ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(DeleteStrux_ChangeRecordSessionPacket);
-	DeleteStrux_ChangeRecordSessionPacket() {}
+	DeleteStrux_ChangeRecordSessionPacket(): m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
+	{}
 	DeleteStrux_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
@@ -397,6 +399,7 @@ public:
 			int iRev, 
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
+	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
 	
 	virtual std::string toStr() const;	
@@ -408,7 +411,7 @@ public:
 class Object_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(Object_ChangeRecordSessionPacket);
-	Object_ChangeRecordSessionPacket() {}
+	Object_ChangeRecordSessionPacket() : m_eObjectType(PTObjectType(0)) {} // FIXME: 0 is not a good initializer
 	Object_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
@@ -417,10 +420,18 @@ public:
 			int iRev, 
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
+	, m_eObjectType(PTObjectType(0)) // FIXME: 0 is not a good initializer
 	{}
 	
 	virtual std::string toStr() const;
-	
+
+	PTObjectType getObjectType() const
+	{ return m_eObjectType; }
+
+	void setObjectType(PTObjectType eObjectType)
+	{ m_eObjectType = eObjectType; }
+
+private:
 	// XXX: make proper setters/getters when done!
 	PTObjectType				m_eObjectType;
 };
@@ -428,9 +439,7 @@ public:
 class Data_ChangeRecordSessionPacket : public Props_ChangeRecordSessionPacket {
 public:
 	DECLARE_PACKET(Data_ChangeRecordSessionPacket);
-	Data_ChangeRecordSessionPacket()
-	: m_bTokenSet(false)
-	{}
+	Data_ChangeRecordSessionPacket() : m_bTokenSet(false) {}
 	Data_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
 			PX_ChangeRecord::PXType cType, 
