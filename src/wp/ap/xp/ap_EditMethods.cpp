@@ -7654,14 +7654,21 @@ UT_return_val_if_fail(pDialog, false);
 		// for a/p which are constant across the selection (always
 		// present) we will set the field in the dialog.  for things
 		// which change across the selection, we ask the dialog not
-		// to set the field (by passing null).
+		// to set the field (by passing "").
 
-		pDialog->setFontFamily(UT_getAttribute("font-family", props_in));
-		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
-		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
-		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
-		pDialog->setColor(UT_getAttribute("color", props_in));
-		pDialog->setBGColor(UT_getAttribute("bgcolor", props_in));
+		const std::string sFamily = UT_getAttribute("font-family", props_in);
+		const std::string sFontSize = UT_getAttribute("font-size", props_in);
+		const std::string sFontWeight = UT_getAttribute("font-weight", props_in);
+		const std::string sFontStyle = UT_getAttribute("font-style", props_in);
+		const std::string sColor = UT_getAttribute("color", props_in);
+		const std::string sBGColor = UT_getAttribute("bgcolor", props_in);
+
+		pDialog->setFontFamily(sFamily);
+		pDialog->setFontSize(sFontSize);
+		pDialog->setFontWeight(sFontWeight);
+		pDialog->setFontStyle(sFontStyle);
+		pDialog->setColor(sColor);
+		pDialog->setBGColor(sBGColor);
 	   
 //
 // Set the background color for the preview
