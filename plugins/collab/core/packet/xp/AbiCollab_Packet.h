@@ -432,7 +432,6 @@ public:
 	{ m_eObjectType = eObjectType; }
 
 private:
-	// XXX: make proper setters/getters when done!
 	PTObjectType				m_eObjectType;
 };
 
