@@ -142,19 +142,19 @@ void XAP_Dialog_FontChooser::event_previewClear(void)
 }
 
 /*!
- * This method returns a pointer to the const char * value associated with the
+ * This method returns a std::string of the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists.
  * It assumes properties and values are stored the array like this:
  * vecProp(n)   :   vecProp(n+1)
  * "property"   :   "value"
  */
-const char * XAP_Dialog_FontChooser::getVal(const std::string & szProp) const
+const std::string XAP_Dialog_FontChooser::getVal(const std::string & sProp) const
 {
-	PropMap::const_iterator iter = m_mapProps.find(szProp);
+	PropMap::const_iterator iter = m_mapProps.find(sProp);
 	if(iter == m_mapProps.end()) {
-		return NULL;
+		return "";
 	}
-	return iter->second.c_str();
+	return iter->second;
 }
 
 /*!
@@ -326,7 +326,7 @@ bool XAP_Dialog_FontChooser::getChangedFontFamily(const gchar ** pszFontFamily) 
 	bool bchanged = didPropChange(m_sFontFamily,getVal("font-family"));
 	bool useVal = (bchanged && !m_bChangedFontFamily);
 	if (pszFontFamily && useVal)
-		*pszFontFamily = getVal("font-family");
+		*pszFontFamily = getVal("font-family").c_str();
 	else if(pszFontFamily)
 		*pszFontFamily = m_sFontFamily.c_str();
 	return bchanged;
@@ -337,7 +337,7 @@ bool XAP_Dialog_FontChooser::getChangedFontSize(const gchar ** pszFontSize) cons
 	bool bchanged = didPropChange(m_sFontSize,getVal("font-size"));
 	bool useVal = (bchanged && !m_bChangedFontSize);
 	if (pszFontSize && useVal)
-		*pszFontSize = getVal("font-size");
+		*pszFontSize = getVal("font-size").c_str();
 	else if(pszFontSize)
 		*pszFontSize = m_sFontSize.c_str();
 	return bchanged;
@@ -348,7 +348,7 @@ bool XAP_Dialog_FontChooser::getChangedFontWeight(const gchar ** pszFontWeight) 
 	bool bchanged = didPropChange(m_sFontWeight,getVal("font-weight"));
 	bool useVal = (bchanged && !m_bChangedFontWeight);
 	if (pszFontWeight && useVal)
-		*pszFontWeight = getVal("font-weight");
+		*pszFontWeight = getVal("font-weight").c_str();
 	else if(pszFontWeight)
 		*pszFontWeight = m_sFontWeight.c_str();
 	return bchanged;
@@ -359,7 +359,7 @@ bool XAP_Dialog_FontChooser::getChangedFontStyle(const gchar ** pszFontStyle) co
 	bool bchanged = didPropChange(m_sFontStyle,getVal("font-style"));
 	bool useVal = (bchanged && !m_bChangedFontStyle);
 	if (pszFontStyle && useVal)
-		*pszFontStyle = getVal("font-style");
+		*pszFontStyle = getVal("font-style").c_str();
 	else if(pszFontStyle)
 		*pszFontStyle = m_sFontStyle.c_str();
 	return bchanged;
@@ -370,7 +370,7 @@ bool XAP_Dialog_FontChooser::getChangedBGColor(const gchar ** pszBGColor) const
 	bool bchanged = didPropChange(m_sBGColor,getVal("bgcolor"));
 	bool useVal = (bchanged && !m_bChangedBGColor);
 	if (pszBGColor && useVal)
-		*pszBGColor = getVal("bgcolor");
+		*pszBGColor = getVal("bgcolor").c_str();
 	else if(pszBGColor)
 		*pszBGColor = m_sBGColor.c_str();
 	return bchanged;
@@ -382,7 +382,7 @@ bool XAP_Dialog_FontChooser::getChangedColor(const gchar ** pszColor) const
 	bool bchanged = didPropChange(m_sColor,getVal("color"));
 	bool useVal = (bchanged && !m_bChangedColor);
 	if (pszColor && useVal)
-		*pszColor = getVal("color");
+		*pszColor = getVal("color").c_str();
 	else if(pszColor)
 		*pszColor = m_sColor.c_str();
 	return bchanged;

@@ -897,8 +897,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// Set the defaults in the list boxes according to dialog data
 	gint foundAt = 0;
 
-	// is this safe with an gchar * string?
-	foundAt = searchTreeView(GTK_TREE_VIEW(m_fontList), getVal("font-family"));
+	const std::string sFontFamily = getVal("font-family");
+	foundAt = searchTreeView(GTK_TREE_VIEW(m_fontList), sFontFamily.c_str());
 
 	// select and scroll to font name
 	if (foundAt >= 0) {
@@ -910,13 +910,13 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
-	const char * weight = getVal("font-weight");
-	const char * style = getVal("font-style");
-	if (!style || !weight)
+	const std::string sWeight = getVal("font-weight");
+	const std::string sStyle = getVal("font-style");
+	if (sStyle.empty() || sWeight.empty())
 		st = LIST_STYLE_NONE;
 	else {
-		bool isBold = !g_ascii_strcasecmp(weight, "bold");
-		bool isItalic = !g_ascii_strcasecmp(style, "italic");
+		bool isBold = !g_ascii_strcasecmp(sWeight.c_str(), "bold");
+		bool isItalic = !g_ascii_strcasecmp(sStyle.c_str(), "italic");
 		if (!isBold && !isItalic) {
 			st = LIST_STYLE_NORMAL;
 		}
@@ -942,7 +942,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		gtk_tree_path_free(path);
 	}
 
-	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
+	g_snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(getVal("font-size").c_str())));
 	foundAt = searchTreeView(GTK_TREE_VIEW(m_sizeList), 
 				 XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString));
 
@@ -955,10 +955,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	// Set color in the color selector
-	if (const char *clr = getVal("color"))
+	const std::string sColor = getVal("color");
+	if (!sColor.empty())
 	{
 		UT_RGBColor c;
-		UT_parseColor(clr, c);
+		UT_parseColor(sColor.c_str(), c);
 
 		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
 		m_currentFGColor = *color;
@@ -976,11 +977,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	// Set color in the color selector
-	const gchar * pszBGCol = getVal("bgcolor");
-	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
+	const std::string sBGCol = getVal("bgcolor");
+	if (!sBGCol.empty() && strcmp(sBGCol.c_str(),"transparent") != 0)
 	{
 		UT_RGBColor c;
-		UT_parseColor(getVal("bgcolor"), c);
+		UT_parseColor(sBGCol.c_str(), c);
 
 		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
 		m_currentBGColor = *color;
@@ -1043,13 +1044,13 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_doneFirstFont = false;
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
-				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
-				 ((getVal("font-size")) ? getVal("font-size") : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
-				 ((getVal("font-weight")) ? getVal("font-weight") : ""),	((m_bChangedFontWeight) ? "(chg)" : ""),
-				 ((getVal("font-style")) ? getVal("font-style") : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
-				 ((getVal("color")) ? getVal("color") : "" ),				((m_bChangedColor) ? "(chg)" : ""),
-				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
-				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 getVal("font-family").c_str(),			((m_bChangedFontFamily) ? "(chg)" : ""),
+				 getVal("font-size").c_str(),			((m_bChangedFontSize) ? "(chg)" : ""),
+				 getVal("font-weight").c_str(),			((m_bChangedFontWeight) ? "(chg)" : ""),
+				 getVal("font-style").c_str(),			((m_bChangedFontStyle) ? "(chg)" : ""),
+				 getVal("color").c_str(),				((m_bChangedColor) ? "(chg)" : ""),
+				 m_bUnderline,							((m_bChangedUnderline) ? "(chg)" : ""),
+				 m_bStrikeout,							((m_bChangedStrikeOut) ? "(chg)" : "")));
 
 	// answer should be set by the appropriate callback
 	// the caller can get the answer from getAnswer().

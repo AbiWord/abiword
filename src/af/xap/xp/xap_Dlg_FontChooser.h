@@ -68,7 +68,7 @@ public:
 														const std::string & pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
-	const char *                    getVal(const std::string & szProp) const;
+	const std::string               getVal(const std::string & sProp) const;
 	void                            setAllPropsFromVec(const UT_Vector & vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
