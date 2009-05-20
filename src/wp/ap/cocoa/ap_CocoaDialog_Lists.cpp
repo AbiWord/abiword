@@ -578,18 +578,18 @@ void AP_CocoaDialog_Lists::loadXPDataIntoLocal(void)
 	//
 	// Code to work out which is active Font
 	//
-	if(strcmp((char *) getFont(),"NULL") == 0 )
+	if(getFont() == "NULL")
 	{
 		[m_dlg->_fontPopup selectItemAtIndex:0];
 	}
 	else
 	{
-		[m_dlg->_fontPopup selectItemWithTitle:[NSString stringWithUTF8String:getFont()]];
+		[m_dlg->_fontPopup selectItemWithTitle:[NSString stringWithUTF8String:getFont().c_str()]];
 	}
 	[m_dlg->_startAtData setIntValue:getiStartValue()];
 
-	[m_dlg->_levelDelimData setStringValue:[NSString stringWithUTF8String:getDelim()]];
-	[m_dlg->_formatData setStringValue:[NSString stringWithUTF8String:getDelim()]];
+	[m_dlg->_levelDelimData setStringValue:[NSString stringWithUTF8String:getDelim().c_str()]];
+	[m_dlg->_formatData setStringValue:[NSString stringWithUTF8String:getDelim().c_str()]];
 
 	//
 	// Now set the list type and style
