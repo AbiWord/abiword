@@ -245,15 +245,16 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 
 
 	// Set the defaults in the list boxes according to dialog data
-	[m_dlg selectFont:(char*)getVal("font-family")];
-	[m_dlg selectStyle:(char*)getVal("font-style") withWeight:(char*)getVal("font-weight")];
-	[m_dlg selectSize:(char*)getVal("font-size")];
+	[m_dlg selectFont:(char*)getVal("font-family").c_str()];
+	[m_dlg selectStyle:(char*)getVal("font-style").c_str() withWeight:(char*)getVal("font-weight").c_str()];
+	[m_dlg selectSize:(char*)getVal("font-size").c_str()];
 
 	// Set color in the color selector
-	if (getVal("color"))
+	const std::string sColor = getVal("color");
+	if (!sColor.empty())
 	{
 		UT_RGBColor c;
-		UT_parseColor(getVal("color"), c);
+		UT_parseColor(sColor.c_str(), c);
 
 		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
 		[m_dlg setTextColor:color];
@@ -263,11 +264,11 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 	}
 	
 	// Set color in the color selector
-	const gchar * pszBGCol = getVal("bgcolor");
-	if (pszBGCol && strcmp(pszBGCol,"transparent") != 0)
+	const std::string sBGCol = getVal("bgcolor");
+	if (!sBGCol.empty() && strcmp(sBGCol.c_str(),"transparent") != 0)
 	{
 		UT_RGBColor c;
-		UT_parseColor(getVal("bgcolor"), c);
+		UT_parseColor(sBGCol.c_str(), c);
 
 		NSColor *color = GR_CocoaGraphics::_utRGBColorToNSColor(c);
 		[m_dlg setBgColor:color];
@@ -298,13 +299,13 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * /*pFrame*/)
 	m_dlg = nil;
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
-				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
-				 ((getVal("font-size")) ? getVal("font-size") : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
-				 ((getVal("font-weight")) ? getVal("font-weight") : ""),	((m_bChangedFontWeight) ? "(chg)" : ""),
-				 ((getVal("font-style")) ? getVal("font-style") : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
-				 ((getVal("color")) ? getVal("color") : "" ),				((m_bChangedColor) ? "(chg)" : ""),
-				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
-				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 getVal("font-family").c_str(),	((m_bChangedFontFamily) ? "(chg)" : ""),
+				 getVal("font-size").c_str(),		((m_bChangedFontSize) ? "(chg)" : ""),
+				 getVal("font-weight").c_str(),	((m_bChangedFontWeight) ? "(chg)" : ""),
+				 getVal("font-style").c_str(),		((m_bChangedFontStyle) ? "(chg)" : ""),
+				 getVal("color").c_str(),				((m_bChangedColor) ? "(chg)" : ""),
+				 m_bUnderline,							((m_bChangedUnderline) ? "(chg)" : ""),
+				 m_bStrikeout,							((m_bChangedStrikeOut) ? "(chg)" : "")));
 
 }
 
