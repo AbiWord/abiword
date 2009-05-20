@@ -158,7 +158,7 @@ public:
 	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps);
-    const gchar * getVal(const std::string &);
+	const std::string getVal(const std::string &);
 	void draw(void);
 	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
 	void clearScreen(void);

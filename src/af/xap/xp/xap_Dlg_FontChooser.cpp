@@ -183,20 +183,19 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 //
 // Do the Text decorations
 //
-	const gchar * s = NULL;
-	s = getVal("text-decoration");
-	m_bUnderline = (NULL != strstr(s,"underline"));
-	m_bOverline = (NULL != strstr(s,"overline"));
-	m_bStrikeout = (NULL != strstr(s,"line-through"));
-	m_bTopline = (NULL != strstr(s,"topline"));
-	m_bBottomline = (NULL != strstr(s,"bottomline"));
+	const std::string sDecor = getVal("text-decoration");
+	m_bUnderline = (NULL != strstr(sDecor.c_str(),"underline"));
+	m_bOverline = (NULL != strstr(sDecor.c_str(),"overline"));
+	m_bStrikeout = (NULL != strstr(sDecor.c_str(),"line-through"));
+	m_bTopline = (NULL != strstr(sDecor.c_str(),"topline"));
+	m_bBottomline = (NULL != strstr(sDecor.c_str(),"bottomline"));
 
-	s = getVal("display");
-	m_bHidden = !strcmp(s,"none");
+	const std::string sDisplay = getVal("display");
+	m_bHidden = !strcmp(sDisplay.c_str(),"none");
 	
-	s = getVal("text-position");
-	m_bSuperScript = strcmp(s,"superscript")==0;
-	m_bSubScript = strcmp(s,"subscript")==0;
+	const std::string sPosition = getVal("text-position");
+	m_bSuperScript = strcmp(sPosition.c_str(),"superscript")==0;
+	m_bSubScript = strcmp(sPosition.c_str(),"subscript")==0;
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const std::string& sFontFamily)
@@ -494,13 +493,13 @@ void XAP_Preview_FontPreview::setVecProperties( const XAP_Dialog_FontChooser::Pr
  * This method returns a pointer to the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists.
  */
-const gchar * XAP_Preview_FontPreview::getVal(const std::string & szProp)
+const std::string XAP_Preview_FontPreview::getVal(const std::string & sProp)
 {
-	XAP_Dialog_FontChooser::PropMap::const_iterator iter = m_mapProps->find(szProp);
+	XAP_Dialog_FontChooser::PropMap::const_iterator iter = m_mapProps->find(sProp);
 	if(iter == m_mapProps->end()) {
-		return NULL;
+		return "";
 	}
-	return iter->second.c_str();
+	return iter->second;
 }
 
 /*
@@ -515,12 +514,12 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	bool isUnder,isOver,isStrike;
 
-	const gchar * pDecor = getVal("text-decoration");
-	if(pDecor)
+	const std::string sDecor = getVal("text-decoration");
+	if(!sDecor.empty())
 	{
-		isUnder = (NULL != strstr(pDecor,"underline"));
-		isOver = (NULL != strstr(pDecor,"overline"));
-		isStrike = (NULL != strstr(pDecor,"line-through"));
+		isUnder = (NULL != strstr(sDecor.c_str(),"underline"));
+		isOver = (NULL != strstr(sDecor.c_str(),"overline"));
+		isStrike = (NULL != strstr(sDecor.c_str(),"line-through"));
 	}
 	else
 	{
@@ -533,44 +532,45 @@ void XAP_Preview_FontPreview::draw(void)
 // Do foreground and background colors.
 //
 	UT_RGBColor FGcolor(0,0,0);
-	const char * pszFGColor = getVal("color");
-	if(pszFGColor)
-		UT_parseColor(pszFGColor,FGcolor);
+	const std::string sFGColor = getVal("color");
+	if(!sFGColor.empty())
+		UT_parseColor(sFGColor.c_str(),FGcolor);
 	UT_RGBColor BGcolor(m_clrBackground);
-	const char * pszBGColor = getVal("bgcolor");
-	if(pszBGColor && strcmp(pszBGColor,"transparent") != 0)
-		UT_parseColor(pszBGColor,BGcolor);
+	const std::string sBGColor = getVal("bgcolor");
+	if(!sBGColor.empty() && strcmp(sBGColor.c_str(),"transparent") != 0)
+		UT_parseColor(sBGColor.c_str(),BGcolor);
 //
 // Get the font and bold/italic- ness
 //
 	//GR_Font * pFont;
-	const char* pszFamily	= getVal("font-family");
-	const char* pszStyle	= getVal("font-style");
-	const char* pszVariant	= getVal("font-variant");
-	const char* pszWeight	= getVal("font-weight");
-	const char* pszStretch	= getVal("font-stretch");
-	const char* pszSize		= getVal("font-size");
-	if(!pszFamily)
-		pszFamily = "Times New Roman";
+	std::string sFamily = getVal("font-family");
+	std::string sStyle = getVal("font-style");
+	std::string sVariant = getVal("font-variant");
+	std::string sStretch = getVal("font-stretch");
+	std::string sSize = getVal("font-size");
+	std::string sWeight = getVal("font-weight");
 
-	if(!pszStyle)
-		pszStyle = "normal";
+	if(sFamily.empty())
+		sFamily = "Times New Roman";
 
-	if(!pszVariant)
-		pszVariant = "normal";
+	if(sStyle.empty())
+		sStyle = "normal";
 
-	if(!pszStretch)
-		pszStretch = "normal";
+	if(sVariant.empty())
+		sVariant = "normal";
 
-	if(!pszSize)
-		pszSize="12pt";
+	if(sStretch.empty())
+		sStretch = "normal";
 
-	if(!pszWeight)
-		pszWeight = "normal";
+	if(sSize.empty())
+		sSize="12pt";
 
-	m_pFont = m_gc->findFont(pszFamily, pszStyle,
-							 pszVariant, pszWeight,
-							 pszStretch, pszSize,
+	if(sWeight.empty())
+		sWeight = "normal";
+
+	m_pFont = m_gc->findFont(sFamily.c_str(), sStyle.c_str(),
+							 sVariant.c_str(), sWeight.c_str(),
+							 sStretch.c_str(), sSize.c_str(),
 							 NULL);
 
 	UT_ASSERT_HARMLESS(m_pFont);
@@ -604,7 +604,7 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	GR_Painter painter(m_gc);
 
-	if(pszBGColor)
+	if(!sBGColor.empty())
 		painter.fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
 //
 // Do the draw chars at last!
