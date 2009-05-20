@@ -92,7 +92,7 @@ public:
 	// of the field in the supplied argument w/o regard to whether
 	// they changed it or not.  this value is a static string in
 	// the dialog and must be valid only until the dialog is released.
-	bool                            didPropChange(const gchar * v1, const gchar * v2) const;
+	bool                            didPropChange(const std::string & v1, const std::string & v2) const;
 	bool							getChangedFontFamily(const gchar ** pszFontFamily) const;
 	bool							getChangedFontSize(const gchar ** pszFontSize) const;
 	bool							getChangedFontWeight(const gchar ** pszFontWeight) const;
@@ -115,13 +115,13 @@ protected:
 
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
 	GR_Graphics *					m_pGraphics;			/* input */
-	const gchar *                m_pColorBackground;
-	gchar *						m_pFontFamily;			/* input/output */
-	gchar *						m_pFontSize;			/* input/output */
-	gchar *						m_pFontWeight;			/* input/output */
-	gchar *						m_pFontStyle;			/* input/output */
-	gchar *						m_pColor;				/* input/output */
-	gchar *						m_pBGColor;				/* input/output */
+	std::string						m_sColorBackground;
+	std::string						m_sFontFamily;			/* input/output */
+	std::string						m_sFontSize;			/* input/output */
+	std::string						m_sFontWeight;			/* input/output */
+	std::string						m_sFontStyle;			/* input/output */
+	std::string						m_sColor;				/* input/output */
+	std::string						m_sBGColor;				/* input/output */
 	bool							m_bUnderline;			/* input/output */
 	bool							m_bOverline;			/* input/output */
 	bool							m_bStrikeout;			/* input/output */

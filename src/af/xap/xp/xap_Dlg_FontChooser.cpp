@@ -38,14 +38,7 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 {
 	m_answer				= a_CANCEL;
 	m_pGraphics				= NULL;
-	m_pColorBackground      = NULL;
 	m_pFontPreview          = NULL;
-	m_pFontFamily			= NULL;
-	m_pFontSize				= NULL;
-	m_pFontWeight			= NULL;
-	m_pFontStyle			= NULL;
-	m_pColor				= NULL;
-	m_pBGColor				= NULL;
 	m_bUnderline			= false;
 	m_bOverline				= false;
 	m_bStrikeout			= false;
@@ -74,12 +67,6 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 
 XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
 {
-	FREEP(m_pFontFamily);
-	FREEP(m_pFontSize);
-	FREEP(m_pFontWeight);
-	FREEP(m_pFontStyle);
-	FREEP(m_pColor);
-	FREEP(m_pBGColor);
 	FREEP(m_drawString);
 	DELETEP(m_pFontPreview);
 }
@@ -109,7 +96,7 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 
-	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
+	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_sColorBackground.c_str());
 	UT_return_if_fail(m_pFontPreview);
 
 	m_pFontPreview->setWindowSize(width, height);
@@ -214,37 +201,37 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 
 void XAP_Dialog_FontChooser::setFontFamily(const std::string& sFontFamily)
 {
-	CLONEP((char *&) m_pFontFamily, sFontFamily.c_str());
+	m_sFontFamily = sFontFamily;
 	addOrReplaceVecProp("font-family",sFontFamily);
 }
 
 void XAP_Dialog_FontChooser::setFontSize(const std::string& sFontSize)
 {
-	CLONEP((char *&) m_pFontSize, sFontSize.c_str());
+	m_sFontSize = sFontSize;
 	addOrReplaceVecProp("font-size",sFontSize);
 }
 
 void XAP_Dialog_FontChooser::setFontWeight(const std::string& sFontWeight)
 {
-	CLONEP((char *&) m_pFontWeight, sFontWeight.c_str());
+	m_sFontWeight = sFontWeight;
 	addOrReplaceVecProp("font-weight",sFontWeight);
 }
 
 void XAP_Dialog_FontChooser::setFontStyle(const std::string& sFontStyle)
 {
-	CLONEP((char *&)m_pFontStyle, sFontStyle.c_str());
+	m_sFontStyle = sFontStyle;
 	addOrReplaceVecProp("font-style",sFontStyle);
 }
 
 void XAP_Dialog_FontChooser::setColor(const std::string& sColor)
 {
-	CLONEP((char *&)m_pColor, sColor.c_str());
+	m_sColor = sColor;
 	addOrReplaceVecProp("color",sColor);
 }
 
 void XAP_Dialog_FontChooser::setBGColor(const std::string& sBGColor)
 {
-	CLONEP((char *&)m_pBGColor, sBGColor.c_str());
+	m_sBGColor = sBGColor;
 	addOrReplaceVecProp("bgcolor",sBGColor);
 }
 
@@ -300,7 +287,7 @@ void XAP_Dialog_FontChooser::setHidden(bool bHidden)
 
 void XAP_Dialog_FontChooser::setBackGroundColor(const gchar * pBackground)
 {
-	m_pColorBackground = pBackground;
+	m_sColorBackground = pBackground;
 }
 
 void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline)
@@ -337,81 +324,81 @@ XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 
 bool XAP_Dialog_FontChooser::getChangedFontFamily(const gchar ** pszFontFamily) const
 {
-	bool bchanged = didPropChange(m_pFontFamily,getVal("font-family"));
+	bool bchanged = didPropChange(m_sFontFamily,getVal("font-family"));
 	bool useVal = (bchanged && !m_bChangedFontFamily);
 	if (pszFontFamily && useVal)
 		*pszFontFamily = getVal("font-family");
 	else if(pszFontFamily)
-		*pszFontFamily = m_pFontFamily ;
+		*pszFontFamily = m_sFontFamily.c_str();
 	return bchanged;
 }
 
 bool XAP_Dialog_FontChooser::getChangedFontSize(const gchar ** pszFontSize) const
 {
-	bool bchanged = didPropChange(m_pFontSize,getVal("font-size"));
+	bool bchanged = didPropChange(m_sFontSize,getVal("font-size"));
 	bool useVal = (bchanged && !m_bChangedFontSize);
 	if (pszFontSize && useVal)
 		*pszFontSize = getVal("font-size");
 	else if(pszFontSize)
-		*pszFontSize = m_pFontSize ;
+		*pszFontSize = m_sFontSize.c_str();
 	return bchanged;
 }
 
 bool XAP_Dialog_FontChooser::getChangedFontWeight(const gchar ** pszFontWeight) const
 {
-	bool bchanged = didPropChange(m_pFontWeight,getVal("font-weight"));
+	bool bchanged = didPropChange(m_sFontWeight,getVal("font-weight"));
 	bool useVal = (bchanged && !m_bChangedFontWeight);
 	if (pszFontWeight && useVal)
 		*pszFontWeight = getVal("font-weight");
 	else if(pszFontWeight)
-		*pszFontWeight = m_pFontWeight ;
+		*pszFontWeight = m_sFontWeight.c_str();
 	return bchanged;
 }
 
 bool XAP_Dialog_FontChooser::getChangedFontStyle(const gchar ** pszFontStyle) const
 {
-	bool bchanged = didPropChange(m_pFontStyle,getVal("font-style"));
+	bool bchanged = didPropChange(m_sFontStyle,getVal("font-style"));
 	bool useVal = (bchanged && !m_bChangedFontStyle);
 	if (pszFontStyle && useVal)
 		*pszFontStyle = getVal("font-style");
 	else if(pszFontStyle)
-		*pszFontStyle = m_pFontStyle ;
+		*pszFontStyle = m_sFontStyle.c_str();
 	return bchanged;
 }
 
 bool XAP_Dialog_FontChooser::getChangedBGColor(const gchar ** pszBGColor) const
 {
-	bool bchanged = didPropChange(m_pBGColor,getVal("bgcolor"));
+	bool bchanged = didPropChange(m_sBGColor,getVal("bgcolor"));
 	bool useVal = (bchanged && !m_bChangedBGColor);
 	if (pszBGColor && useVal)
 		*pszBGColor = getVal("bgcolor");
 	else if(pszBGColor)
-		*pszBGColor = m_pBGColor ;
+		*pszBGColor = m_sBGColor.c_str();
 	return bchanged;
 }
 
 
 bool XAP_Dialog_FontChooser::getChangedColor(const gchar ** pszColor) const
 {
-	bool bchanged = didPropChange(m_pColor,getVal("color"));
+	bool bchanged = didPropChange(m_sColor,getVal("color"));
 	bool useVal = (bchanged && !m_bChangedColor);
 	if (pszColor && useVal)
 		*pszColor = getVal("color");
 	else if(pszColor)
-		*pszColor = m_pColor ;
+		*pszColor = m_sColor.c_str();
 	return bchanged;
 }
 
 /*!
  * Compare two prop values and gracefully handle the cases of NULL pointers
  */
-bool XAP_Dialog_FontChooser::didPropChange(const gchar * v1, const gchar * v2) const
+bool XAP_Dialog_FontChooser::didPropChange(const std::string & v1, const std::string & v2) const
 {
-	if(v1 == NULL && v2 == NULL)
+	if(v1.empty() && v2.empty())
 		return false;
-	if(v1 == NULL || v2 == NULL)
+	else if(v1.empty() || v2.empty())
 		return true;
-	return (strcmp(v1,v2) != 0);
+	return v1 == v2;
 }
 
 bool XAP_Dialog_FontChooser::getChangedHidden(bool * pbHidden) const
