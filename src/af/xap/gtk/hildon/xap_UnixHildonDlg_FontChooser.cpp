@@ -75,14 +75,14 @@ void XAP_UnixHildonDialog_FontChooser::fillFontInfo()
 	gchar* pszFontName;
 	PangoFontDescription *ptrFontDescNew;
 	
-	UT_parseColor (getVal("color"), c);
+	UT_parseColor (getVal("color").c_str(), c);
 	color.red = static_cast<guint16> ((c.m_red / 255.0) * 65535.0);
 	color.green = static_cast<guint16> ((c.m_grn / 255.0) * 65535.0);
 	color.blue = static_cast<guint16> ((c.m_blu / 255.0) * 65535.0);
 
 	
-       	pszFontName = g_strdup_printf ("%s %d", getVal("font-family"), 
-						atoi(std_size_string(UT_convertToPoints(getVal("font-size")))));
+       	pszFontName = g_strdup_printf ("%s %d", getVal("font-family").c_str(), 
+						atoi(std_size_string(UT_convertToPoints(getVal("font-size").c_str()))));
 						
 	PangoFontDescription* ptrFontDesc = pango_font_description_from_string (pszFontName);
 
@@ -95,7 +95,7 @@ void XAP_UnixHildonDialog_FontChooser::fillFontInfo()
 					   "underline", m_bUnderline,
 					   "strikethrough", m_bStrikeout,
 					   "color", &color,
-					   "size", atoi(std_size_string(UT_convertToPoints(getVal("font-size")))),
+					   "size", atoi(std_size_string(UT_convertToPoints(getVal("font-size").c_str()))),
 					   NULL);
 
 	pango_font_description_free (ptrFontDesc);
@@ -104,19 +104,19 @@ void XAP_UnixHildonDialog_FontChooser::fillFontInfo()
 	
 	//font style
 	listStyle st = LIST_STYLE_NORMAL;
-	if (!getVal("font-style") || !getVal("font-weight"))
+	if (getVal("font-style").empty() || getVal("font-weight").empty())
 			st = LIST_STYLE_NONE;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
-					 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
+	else if (!g_ascii_strcasecmp(getVal("font-style").c_str(), "normal") &&
+					 !g_ascii_strcasecmp(getVal("font-weight").c_str(), "normal"))
 			st = LIST_STYLE_NORMAL;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
-					 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
+	else if (!g_ascii_strcasecmp(getVal("font-style").c_str(), "normal") &&
+					 !g_ascii_strcasecmp(getVal("font-weight").c_str(), "bold"))
 			st = LIST_STYLE_BOLD;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
-					 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
+	else if (!g_ascii_strcasecmp(getVal("font-style").c_str(), "italic") &&
+					 !g_ascii_strcasecmp(getVal("font-weight").c_str(), "normal"))
 			st = LIST_STYLE_ITALIC;
-	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
-					 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
+	else if (!g_ascii_strcasecmp(getVal("font-style").c_str(), "italic") &&
+					 !g_ascii_strcasecmp(getVal("font-weight").c_str(), "bold"))
 			st = LIST_STYLE_BOLD_ITALIC;
 	else
 	{
@@ -261,12 +261,12 @@ void XAP_UnixHildonDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_doneFirstFont = false;
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
-							 ((getVal("font-family")) ? getVal("font-family") : ""),        ((m_bChangedFontFamily) ? "(chg)" : ""),
-							 ((getVal("font-size")) ? getVal("font-size") : ""),            ((m_bChangedFontSize) ? "(chg)" : ""),
-							 ((getVal("font-weight")) ? getVal("font-weight") : ""),        ((m_bChangedFontWeight) ? "(chg)" : ""),
-							 ((getVal("font-style")) ? getVal("font-style") : ""),          ((m_bChangedFontStyle) ? "(chg)" : ""),
-							 ((getVal("color")) ? getVal("color") : "" ),                           ((m_bChangedColor) ? "(chg)" : ""),
-							 (m_bUnderline),                                                        ((m_bChangedUnderline) ? "(chg)" : ""),
-							 (m_bStrikeout),                                                        ((m_bChangedStrikeOut) ? "(chg)" : "")));
+							 getVal("font-family").c_str(),        ((m_bChangedFontFamily) ? "(chg)" : ""),
+							 getVal("font-size").c_str(),            ((m_bChangedFontSize) ? "(chg)" : ""),
+							 getVal("font-weight").c_str(),        ((m_bChangedFontWeight) ? "(chg)" : ""),
+							 getVal("font-style").c_str(),          ((m_bChangedFontStyle) ? "(chg)" : ""),
+							 getVal("color").c_str(),                           ((m_bChangedColor) ? "(chg)" : ""),
+							 m_bUnderline,                                                        ((m_bChangedUnderline) ? "(chg)" : ""),
+							 m_bStrikeout,                                                        ((m_bChangedStrikeOut) ? "(chg)" : "")));
 	
 }
