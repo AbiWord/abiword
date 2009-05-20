@@ -77,7 +77,7 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
 	const gchar * getAttsVal(const gchar * szProp) const;
-	const gchar * getPropsVal(const gchar * szProp) const;
+	const std::string getPropsVal(const gchar * szProp) const;
 	const gchar * getVecVal(const UT_Vector * v, const gchar * szProp) const;
 	void ModifyLists(void);
 	void ModifyFont(void);

@@ -116,10 +116,9 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 	m_pFontPreview->setVecProperties( & m_mapProps);
 }
 
-void XAP_Dialog_FontChooser::addOrReplaceVecProp(const std::string & pszProp,
-												 const std::string & pszVal)
+void XAP_Dialog_FontChooser::addOrReplaceVecProp(const std::string & sProp, const std::string & sVal)
 {
-	m_mapProps[pszProp] = pszVal;
+	m_mapProps[sProp] = sVal;
 }
 
 /*!
@@ -213,40 +212,40 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 	m_bSubScript = strcmp(s,"subscript")==0;
 }
 
-void XAP_Dialog_FontChooser::setFontFamily(const gchar * pFontFamily)
+void XAP_Dialog_FontChooser::setFontFamily(const std::string& sFontFamily)
 {
-	CLONEP((char *&) m_pFontFamily, pFontFamily);
-	addOrReplaceVecProp("font-family",pFontFamily);
+	CLONEP((char *&) m_pFontFamily, sFontFamily.c_str());
+	addOrReplaceVecProp("font-family",sFontFamily);
 }
 
-void XAP_Dialog_FontChooser::setFontSize(const gchar * pFontSize)
+void XAP_Dialog_FontChooser::setFontSize(const std::string& sFontSize)
 {
-	CLONEP((char *&) m_pFontSize, pFontSize);
-	addOrReplaceVecProp("font-size",pFontSize);
+	CLONEP((char *&) m_pFontSize, sFontSize.c_str());
+	addOrReplaceVecProp("font-size",sFontSize);
 }
 
-void XAP_Dialog_FontChooser::setFontWeight(const gchar * pFontWeight)
+void XAP_Dialog_FontChooser::setFontWeight(const std::string& sFontWeight)
 {
-	CLONEP((char *&) m_pFontWeight, pFontWeight);
-	addOrReplaceVecProp("font-weight",pFontWeight);
+	CLONEP((char *&) m_pFontWeight, sFontWeight.c_str());
+	addOrReplaceVecProp("font-weight",sFontWeight);
 }
 
-void XAP_Dialog_FontChooser::setFontStyle(const gchar * pFontStyle)
+void XAP_Dialog_FontChooser::setFontStyle(const std::string& sFontStyle)
 {
-	CLONEP((char *&)m_pFontStyle, pFontStyle);
-	addOrReplaceVecProp("font-style",pFontStyle);
+	CLONEP((char *&)m_pFontStyle, sFontStyle.c_str());
+	addOrReplaceVecProp("font-style",sFontStyle);
 }
 
-void XAP_Dialog_FontChooser::setColor(const gchar * pColor)
+void XAP_Dialog_FontChooser::setColor(const std::string& sColor)
 {
-	CLONEP((char *&)m_pColor, pColor);
-	addOrReplaceVecProp("color",pColor);
+	CLONEP((char *&)m_pColor, sColor.c_str());
+	addOrReplaceVecProp("color",sColor);
 }
 
-void XAP_Dialog_FontChooser::setBGColor(const gchar * pBGColor)
+void XAP_Dialog_FontChooser::setBGColor(const std::string& sBGColor)
 {
-	CLONEP((char *&)m_pBGColor, pBGColor);
-	addOrReplaceVecProp("bgcolor",pBGColor);
+	CLONEP((char *&)m_pBGColor, sBGColor.c_str());
+	addOrReplaceVecProp("bgcolor",sBGColor);
 }
 
 void XAP_Dialog_FontChooser::setSuperScript(bool bSuperScript)

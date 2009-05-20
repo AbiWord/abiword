@@ -72,12 +72,12 @@ public:
 	void                            setAllPropsFromVec(const UT_Vector & vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
-	void							setFontFamily(const gchar * pFontFamily);
-	void							setFontSize(const gchar * pFontSize);
-	void							setFontWeight(const gchar * pFontWeight);
-	void							setFontStyle(const gchar * pFontStyle);
-	void							setColor(const gchar * pColor);
-	void							setBGColor(const gchar * pBGColor);
+	void							setFontFamily(const std::string& sFontFamily);
+	void							setFontSize(const std::string& sFontSize);
+	void							setFontWeight(const std::string& sFontWeight);
+	void							setFontStyle(const std::string& sFontStyle);
+	void							setColor(const std::string& sColor);
+	void							setBGColor(const std::string& sBGColor);
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
 	void                            setHidden(bool bHidden);
 	void                            setSuperScript(bool bSuperScript);

@@ -332,17 +332,17 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 
 
 /*!
- * This method returns a pointer to the const char * value associated with the
+ * This method returns a std::string of the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists and ap_Dialog_Styles.
  * It assumes properties and values are stored the array like this:
  * vecProp(n)   :   vecProp(n+1)
  * "property"   :   "value"
  */
-const gchar * AP_Dialog_Styles::getPropsVal(const gchar * szProp) const
+const std::string AP_Dialog_Styles::getPropsVal(const gchar * szProp) const
 {
 	UT_sint32 i = m_vecAllProps.getItemCount();
 	if(i <= 0)
-		return NULL;
+		return "";
 	UT_sint32 j;
 	const gchar * pszV = NULL;
 	for(j= 0; j<i ;j=j+2)
@@ -354,7 +354,7 @@ const gchar * AP_Dialog_Styles::getPropsVal(const gchar * szProp) const
 	if( j < i )
 		return  (const gchar *) m_vecAllProps.getNthItem(j+1);
 	else
-		return NULL;
+		return "";
 }
 
 
@@ -483,14 +483,21 @@ void AP_Dialog_Styles::ModifyFont(void)
 	// for a/p which are constant across the selection (always
 	// present) we will set the field in the dialog.  for things
 	// which change across the selection, we ask the dialog not
-	// to set the field (by passing null).
+	// to set the field (by passing "").
 
-	pDialog->setFontFamily(getPropsVal("font-family"));
-	pDialog->setFontSize(getPropsVal("font-size"));
-	pDialog->setFontWeight(getPropsVal("font-weight"));
-	pDialog->setFontStyle(getPropsVal("font-style"));
-	pDialog->setColor(getPropsVal("color"));
-	pDialog->setBGColor(getPropsVal("bgcolor"));
+	const std::string sFontFamily = getPropsVal("font-family");
+	const std::string sFontSize = getPropsVal("font-size");
+	const std::string sFontWeight = getPropsVal("font-weight");
+	const std::string sFontStyle = getPropsVal("font-style");
+	const std::string sColor = getPropsVal("color");
+	const std::string sBGColor = getPropsVal("bgcolor");
+
+	pDialog->setFontFamily(sFontFamily);
+	pDialog->setFontSize(sFontSize);
+	pDialog->setFontWeight(sFontWeight);
+	pDialog->setFontStyle(sFontStyle);
+	pDialog->setColor(sColor);
+	pDialog->setBGColor(sBGColor);
 //
 // Set the background color for the preview
 //
@@ -510,14 +517,14 @@ void AP_Dialog_Styles::ModifyFont(void)
 	bool bStrikeOut2 = false;
 	bool bTopline2 = false;
 	bool bBottomline2 = false;
-	const gchar * s2 = getPropsVal("text-decoration");
-	if (s2)
+	const std::string sDecoration = getPropsVal("text-decoration");
+	if (!sDecoration.empty())
 	{
-		bUnderline2 = (strstr(s2, "underline") != NULL);
-		bOverline2 = (strstr(s2, "overline") != NULL);
-		bStrikeOut2 = (strstr(s2, "line-through") != NULL);
-		bTopline2 = (strstr(s2, "topline") != NULL);
-		bBottomline2 = (strstr(s2, "bottomline") != NULL);
+		bUnderline2 = (strstr(sDecoration.c_str(), "underline") != NULL);
+		bOverline2 = (strstr(sDecoration.c_str(), "overline") != NULL);
+		bStrikeOut2 = (strstr(sDecoration.c_str(), "line-through") != NULL);
+		bTopline2 = (strstr(sDecoration.c_str(), "topline") != NULL);
+		bBottomline2 = (strstr(sDecoration.c_str(), "bottomline") != NULL);
 	}
 	pDialog->setFontDecoration(bUnderline2,bOverline2,bStrikeOut2,bTopline2,bBottomline2);
 /*
@@ -704,45 +711,55 @@ void AP_Dialog_Styles::ModifyLists(void)
 //
 // Fill input list for Lists dialog
 //
-	if(getPropsVal("list-style"))
+	const std::string sListStyle = getPropsVal("list-style");
+	const std::string sFieldFont = getPropsVal("field-font");
+	const std::string sStartValue = getPropsVal("start-value");
+	const std::string sListDelim = getPropsVal("list-delim");
+	const std::string sMarginLeft = getPropsVal("margin-left");
+	const std::string sListDecimal = getPropsVal("list-decimal");
+	const std::string sTextIndent = getPropsVal("text-indent");
+
+	if(!sListStyle.empty())
 	{
 		vp.addItem("list-style");
-		vp.addItem(getPropsVal("list-style"));
+		vp.addItem(sListStyle.c_str());
 	}
-	if(getPropsVal("field-font"))
+	if(!sFieldFont.empty())
 	{
 		vp.addItem("field-font");
-		vp.addItem(getPropsVal("field-font"));
+		vp.addItem(sFieldFont.c_str());
 	}
-	if(getPropsVal("start-value"))
+	if(!sStartValue.empty())
 	{
 		vp.addItem("start-value");
-		vp.addItem(getPropsVal("start-value"));
+		vp.addItem(sStartValue.c_str());
 	}
-	if(getPropsVal("list-delim"))
+	if(!sListDelim.empty())
 	{
 		vp.addItem("list-delim");
-		vp.addItem(getPropsVal("list-delim"));
+		vp.addItem(sListDelim.c_str());
 	}
-	if(getPropsVal("margin-left"))
+	if(!sMarginLeft.empty())
 	{
 		vp.addItem("margin-left");
-		vp.addItem(getPropsVal("margin-left"));
+		vp.addItem(sMarginLeft.c_str());
 	}
-	if(getPropsVal("field-font"))
+	// TODO: Why is field-font here twice?
+	if(!sFieldFont.empty())
 	{
 		vp.addItem("field-font");
-		vp.addItem(getPropsVal("field-font"));
+		vp.addItem(sFieldFont.c_str());
 	}
-	if(getPropsVal("list-decimal"))
+
+	if(!sListDecimal.empty())
 	{
 		vp.addItem("list-decimal");
-		vp.addItem(getPropsVal("list-decimal"));
+		vp.addItem(sListDecimal.c_str());
 	}
-	if(getPropsVal("text-indent"))
+	if(!sTextIndent.empty())
 	{
 		vp.addItem("text-indent");
-		vp.addItem(getPropsVal("text-indent"));
+		vp.addItem(sTextIndent.c_str());
 	}
 	pDialog->fillDialogFromVector(&vp);
 //
@@ -795,6 +812,7 @@ void AP_Dialog_Styles::ModifyLists(void)
 			m_ListProps[6] = getVecVal(vo,"text-indent");
 			addOrReplaceVecProp("text-indent",m_ListProps[6].c_str());
 		}
+		// TODO: Why is field-font here twice?
 		if(getVecVal(vo,"field-font"))
 		{
 			m_ListProps[7] = getVecVal(vo,"field-font");
