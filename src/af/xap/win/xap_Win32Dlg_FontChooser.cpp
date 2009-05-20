@@ -74,13 +74,13 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pEncMan);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
-				 ((m_pFontFamily) ? m_pFontFamily : ""),
-				 ((m_pFontSize) ? m_pFontSize : ""),
-				 ((m_pFontWeight) ? m_pFontWeight : ""),
-				 ((m_pFontStyle) ? m_pFontStyle : ""),
-				 ((m_pColor) ? m_pColor : "" ),
-				 (m_bUnderline),
-				 (m_bStrikeout)));
+				 m_sFontFamily.c_str(),
+				 m_sFontSize.c_str(),
+				 m_sFontWeight.c_str(),
+				 m_sFontStyle.c_str(),
+				 m_sColor.c_str(),
+				 m_bUnderline,
+				 m_bStrikeout));
 
 	m_bWin32Overline   = m_bOverline;
 	m_bWin32Hidden     = m_bHidden;
@@ -110,40 +110,40 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.lCustData = (LPARAM) this;
 	cf.hInstance = pApp->getInstance();
 
-	if (m_pFontFamily && *m_pFontFamily)
-		strcpy(lf.lfFaceName,pEncMan->strToNative(m_pFontFamily, "UTF-8"));
+	if (!m_sFontFamily.empty())
+		strcpy(lf.lfFaceName,pEncMan->strToNative(m_sFontFamily.c_str(), "UTF-8"));
 	else
 		cf.Flags |= CF_NOFACESEL;
 
-	if (m_pFontSize && *m_pFontSize)
+	if (!m_sFontSize.empty())
 	{
 		UT_ASSERT(sizeof(char) == sizeof(gchar));
-		lf.lfHeight = (long) -(UT_convertToPoints(m_pFontSize))*4/3;
+		lf.lfHeight = (long) -(UT_convertToPoints(m_sFontSize.c_str()))*4/3;
 	}
 	else
 		cf.Flags |= CF_NOSIZESEL;
 
-	if (m_pFontWeight && *m_pFontWeight)
+	if (!m_sFontWeight.empty())
 	{
-		if (g_ascii_strcasecmp(m_pFontWeight,"bold") == 0)
+		if (g_ascii_strcasecmp(m_sFontWeight.c_str(),"bold") == 0)
 			lf.lfWeight = 700;
 		// TODO do we need any others here...
 	}
 	else
 		cf.Flags |= CF_NOSTYLESEL;
 
-	if (m_pFontStyle && *m_pFontStyle)
+	if (!m_sFontStyle.empty())
 	{
-		if (g_ascii_strcasecmp(m_pFontStyle,"italic") == 0)
+		if (g_ascii_strcasecmp(m_sFontStyle.c_str(),"italic") == 0)
 			lf.lfItalic = TRUE;
 	}
 	else
 		cf.Flags |= CF_NOSTYLESEL;
 
-	if (m_pColor && *m_pColor)
+	if (!m_sColor.empty())
 	{
 		UT_RGBColor c;
-		UT_parseColor(m_pColor,c);
+		UT_parseColor(m_sColor.c_str(),c);
 		cf.rgbColors = RGB(c.m_red,c.m_grn,c.m_blu);
 	}
 
@@ -161,12 +161,12 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_answer == a_OK)
 	{
-		if(m_pFontFamily)
+		if(!m_sFontFamily.empty())
 		{
-			if((g_ascii_strcasecmp(szFontFamily, m_pFontFamily) != 0))
+			if((g_ascii_strcasecmp(szFontFamily, m_sFontFamily.c_str()) != 0))
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, szFontFamily);
+				m_sFontFamily = szFontFamily;
 			}
 		}
 		else
@@ -174,22 +174,22 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if(szFontFamily[0])
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, szFontFamily);
+				m_sFontFamily = szFontFamily;
 			}
 		}
 
 		bool bIsSizeValid = ((cf.Flags & CF_NOSIZESEL) == 0);
-		bool bWasSizeValid = (m_pFontSize && *m_pFontSize);
+		bool bWasSizeValid = !m_sFontSize.empty();
 		char bufSize[10];
 		if (bIsSizeValid)
 			sprintf(bufSize,"%dpt",(cf.iPointSize/10));
 		else
 			bufSize[0] = 0;
 
-		if (bIsSizeValid && bWasSizeValid && (g_ascii_strcasecmp(bufSize,m_pFontSize) != 0))			
+		if (bIsSizeValid && bWasSizeValid && (g_ascii_strcasecmp(bufSize,m_sFontSize.c_str()) != 0))			
 		{
 			m_bChangedFontSize = true;
-			CLONEP((char *&) m_pFontSize, bufSize);
+			m_sFontSize = bufSize;
 		}
 		else
 		{
@@ -197,40 +197,38 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 
 		bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
-		bool bWasBold = (m_pFontWeight && *m_pFontWeight && (g_ascii_strcasecmp(m_pFontWeight,"bold") == 0));
+		bool bWasBold = (g_ascii_strcasecmp(m_sFontWeight.c_str(),"bold") == 0);
 		bool bIsNormal = ((cf.nFontType & REGULAR_FONTTYPE) != 0);
-		bool bWasNormal = (!m_pFontWeight
-							  || !*m_pFontWeight
-							  || (g_ascii_strcasecmp(m_pFontWeight,"normal") != 0));
+		bool bWasNormal = (m_sFontWeight.empty() || (g_ascii_strcasecmp(m_sFontWeight.c_str(),"normal") != 0));
 		if ((bIsBold != bWasBold) || (bIsNormal != bWasNormal))
 		{
 			m_bChangedFontWeight = true;
 			if( bIsBold )
-				CLONEP((char *&) m_pFontWeight, "bold");
+				m_sFontWeight = "bold";
 			else
-				CLONEP((char *&) m_pFontWeight, "normal");
+				m_sFontWeight = "normal";
 		}
 
 		bool bIsItalic = ((cf.nFontType & ITALIC_FONTTYPE) != 0);
-		bool bWasItalic = (m_pFontStyle && *m_pFontStyle && (g_ascii_strcasecmp(m_pFontStyle,"italic") == 0));
+		bool bWasItalic = (g_ascii_strcasecmp(m_sFontStyle.c_str(),"italic") == 0);
 		if (bIsItalic != bWasItalic)
 		{
 			m_bChangedFontStyle = true;
 			if( bIsItalic )
-				CLONEP((char *&)m_pFontStyle, "italic");
+				m_sFontStyle = "italic";
 			else
-				CLONEP((char *&)m_pFontStyle, "normal");
+				m_sFontStyle = "normal";
 		}
 
 		char bufColor[10];
 		sprintf(bufColor,"%02x%02x%02x",GetRValue(cf.rgbColors),
 				GetGValue(cf.rgbColors),GetBValue(cf.rgbColors));
-		bool bWasColorValid = (m_pColor && *m_pColor);
+		bool bWasColorValid = !m_sColor.empty();
 
-		if ( m_bChangedColor &&  ((bWasColorValid && (g_ascii_strcasecmp(bufColor,m_pColor) != 0))
+		if ( m_bChangedColor &&  ((bWasColorValid && (g_ascii_strcasecmp(bufColor,m_sColor.c_str()) != 0))
 								  || (!bWasColorValid && (g_ascii_strcasecmp(bufColor,"000000") != 0))))
 		{
-			CLONEP((char *&)m_pColor, bufColor);
+			m_sColor = bufColor;
 		}
 
 		m_bChangedUnderline  = ((lf.lfUnderline == TRUE) != m_bUnderline);
@@ -258,13 +256,13 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
-				 ((m_pFontFamily) ? m_pFontFamily : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
-				 ((m_pFontSize) ? m_pFontSize : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
-				 ((m_pFontWeight) ? m_pFontWeight : ""),	((m_bChangedFontWeight) ? "(chg)" : ""),
-				 ((m_pFontStyle) ? m_pFontStyle : ""),		((m_bChangedFontStyle) ? "(chg)" : ""),
-				 ((m_pColor) ? m_pColor : "" ),				((m_bChangedColor) ? "(chg)" : ""),
-				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
-				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
+				 m_sFontFamily.c_str(),	((m_bChangedFontFamily) ? "(chg)" : ""),
+				 m_sFontSize.c_str(),	((m_bChangedFontSize) ? "(chg)" : ""),
+				 m_sFontWeight.c_str(),	((m_bChangedFontWeight) ? "(chg)" : ""),
+				 m_sFontStyle.c_str(),	((m_bChangedFontStyle) ? "(chg)" : ""),
+				 m_sColor.c_str(),		((m_bChangedColor) ? "(chg)" : ""),
+				 m_bUnderline,			((m_bChangedUnderline) ? "(chg)" : ""),
+				 m_bStrikeout,			((m_bChangedStrikeOut) ? "(chg)" : "")));
 
 	// the caller can get the answer from getAnswer().
 
@@ -365,7 +363,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 	m_iColorIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
 	m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
 
-	if(m_iColorIndx == 0 && m_pColor && *m_pColor && strcmp(m_pColor, "000000") != 0)
+	if(m_iColorIndx == 0 && !m_sColor.empty() && strcmp(m_sColor.c_str(), "000000") != 0)
 	{
 		// the first item of the list was selected either becase becase the color we
 		// passed to the dlg is not one of those it supports -- we simply add it to the end
@@ -376,7 +374,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LP
 
 		// set the color for the entry
 		UT_RGBColor c;
-		UT_parseColor(m_pColor,c);
+		UT_parseColor(m_sColor.c_str(),c);
 		DWORD dColor = RGB(c.m_red,c.m_grn,c.m_blu);
 		SendDlgItemMessage(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
 
