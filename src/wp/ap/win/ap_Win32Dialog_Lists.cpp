@@ -878,9 +878,9 @@ static void updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, LPCS
 void AP_Win32Dialog_Lists::_setDisplayedData()
 {
 	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_START_AT,getiStartValue());
-	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim().c_str());
 	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel());
-	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_DECIMAL, getDecimal());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_DECIMAL, getDecimal().c_str());
 
 	updateControlValue(_win32Dialog,AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN,
 						UT_convertToDimensionlessString(getfAlign(), ".2"));
