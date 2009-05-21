@@ -140,12 +140,12 @@ void AccountHandler::signal(const Event& event, BuddyPtr pSource)
 	UT_DEBUGMSG(("AccountHandler::signal()\n"));
 
 	// broadcast this event over our network (if applicable for each message type)
-	std::vector<BuddyPtr> vRecipients = 
+	const std::vector<BuddyPtr> vRecipients = 
 		(event.isBroadcast() ? getBuddies() : event.getRecipients());
 	
-	for (std::vector<BuddyPtr>::iterator it = vRecipients.begin(); it != m_vBuddies.end(); it++)
+	for (std::vector<BuddyPtr>::const_iterator cit = vRecipients.begin(); cit != vRecipients.end(); cit++)
 	{
-		BuddyPtr pRecipient = *it;
+		BuddyPtr pRecipient = *cit;
 		UT_continue_if_fail(pRecipient);
 
 		if (!pSource || (pSource != pRecipient))
