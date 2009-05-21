@@ -78,7 +78,7 @@ bool BarbarismChecker::load(const char * szLang)
 		if ((parser.parse (fullPath.c_str())) == UT_OK)
 		{
 			bLoaded = true;
-			UT_DEBUGMSG(("SPELL: barbar %s loaded %u\n", szLang, m_map.size()));
+			UT_DEBUGMSG(("SPELL: barbar %s loaded %zd\n", szLang, m_map.size()));
 		}
 	}
 	return bLoaded;

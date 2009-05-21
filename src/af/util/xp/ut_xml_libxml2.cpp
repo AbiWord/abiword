@@ -207,7 +207,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 		{
 			chucks++;
 			length = reader->readBytes (buffer, sizeof (buffer));
-			UT_DEBUGMSG(("Done chunk %d length %d \n",chucks,length));
+			UT_DEBUGMSG(("Done chunk %d length %zd \n",chucks,length));
 			done = (length < sizeof (buffer));
 			
 			if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))

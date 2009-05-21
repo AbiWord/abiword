@@ -3963,7 +3963,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 		UT_String_setProperty(sTableProps,sProp,sPropVal);
 	}
 	sProp = "table-sdh";
-	UT_String_sprintf(sPropVal,"%x",m_Table.getTableSDH());
+	UT_String_sprintf(sPropVal,"%p",m_Table.getTableSDH());
 	UT_String_setProperty(sTableProps,sProp,sPropVal);
 	if(sTableProps.size() == 0)
 	{
