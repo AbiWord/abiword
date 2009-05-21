@@ -2053,7 +2053,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 bool XAP_UnixFrameImpl::_close()
 {
 	gtk_widget_destroy(m_wTopLevelWindow);
-
+    m_wTopLevelWindow = NULL;
 	return true;
 }
 
