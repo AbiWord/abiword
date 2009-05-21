@@ -354,7 +354,11 @@ bool AP_Win32App::initialize(void)
 		char szPath[PATH_MAX];
 		char szPlugin[PATH_MAX];
 		_getExeDir( szPath, PATH_MAX);
+#ifdef _MSC_VER
+		strcat(szPath, "..\\plugins\\*.dll");
+#else
 		strcat(szPath, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\*.dll");
+#endif
 
 	    struct _finddata_t cfile;
 		long findtag = _findfirst( szPath, &cfile );
@@ -363,7 +367,11 @@ bool AP_Win32App::initialize(void)
 			do
 			{	
 				_getExeDir( szPlugin, PATH_MAX );
+#ifdef _MSC_VER
+				strcat( szPlugin, "..\\plugins\\" );
+#else
 				strcat( szPlugin, "..\\lib\\" PACKAGE "-" ABIWORD_SERIES "\\plugins\\" );
+#endif
 				strcat( szPlugin, cfile.name );
 				XAP_ModuleManager::instance().loadModule( szPlugin );
 			} while( _findnext( findtag, &cfile ) == 0 );
@@ -1148,7 +1156,7 @@ try
 	if (bShowApp)
 	{
 		// display the windows
-		for(UT_uint32 i = 0;i<pMyWin32App->m_vecFrames.getItemCount();i++)
+		for(UT_sint32 i = 0; i < pMyWin32App->m_vecFrames.getItemCount(); i++)
 		{
 			AP_Win32Frame * curFrame = (AP_Win32Frame*)pMyWin32App->m_vecFrames[i];
 			UT_continue_if_fail(curFrame);
@@ -1227,10 +1235,8 @@ catch (...)
 		// do nothing
 	}
 	
-	UT_uint32 i = 0;
-	
 	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
-	for(;i<pApp->m_vecFrames.getItemCount();i++)
+	for (UT_sint32 i = 0; i < pApp->m_vecFrames.getItemCount(); i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
 		UT_continue_if_fail(curFrame);
@@ -1424,7 +1430,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			const char * szRequest = Args->m_sPluginArgs[0];
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 			UT_DEBUGMSG((" %d plugins loaded \n",pVec->getItemCount()));
-			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+			for (UT_sint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;

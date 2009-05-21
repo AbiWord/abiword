@@ -329,9 +329,13 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		baselen = strlen(base);
 		g_free (base), base = NULL;
 		buf[len - baselen - 1] = '\0';
+#ifdef _MSC_VER
+		XAP_App::_setAbiSuiteLibDir(buf);
+#else
 		dir = g_build_filename(buf, "share", PACKAGE "-" ABIWORD_SERIES, NULL);
 		XAP_App::_setAbiSuiteLibDir(dir);
 		g_free (dir), dir = NULL;
+#endif
 		return;
 	}
 
