@@ -1344,11 +1344,11 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 				width  = static_cast<float>(100);
 				height = static_cast<float>(100);
 			}
-			width = width/96.0;
-			height = height/96.0;
+			width = width/96.0f;
+			height = height/96.0f;
 			if(height > 8.0)
 				{
-					float rat = 8.0/height;
+					float rat = 8.0f/height;
 					width = width * rat;
 					height = 8.0;
 				}
@@ -2456,7 +2456,7 @@ static unsigned char s_rgb_number (float f, bool bIsPercent)
 {
 	if (f < 0) return 0;
 
-	if (bIsPercent) f *= 2.55;
+	if (bIsPercent) f *= 2.55f;
 
 	if (f > 254.5) return 0xff;
 

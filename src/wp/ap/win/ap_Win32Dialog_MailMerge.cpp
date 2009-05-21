@@ -219,14 +219,13 @@ void AP_Win32Dialog_MailMerge::setFieldList()
 {
 	if(!m_vecFields.size())	return;	
 
-	UT_uint32 i;
 	UT_UTF8String * str;
 	UT_String	sAnsi;
 	
 	SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_RESETCONTENT,	0, 0);
 		
  	// build a list of all items
-    for (i = 0; i < m_vecFields.size(); i++)
+    for (UT_sint32 i = 0; i < m_vecFields.size(); i++)
 	{
 		str = (UT_UTF8String*)m_vecFields[i];
 		sAnsi = 	AP_Win32App::s_fromUTF8ToWinLocale(str->utf8_str());

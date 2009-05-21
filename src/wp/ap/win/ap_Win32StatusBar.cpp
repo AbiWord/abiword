@@ -211,7 +211,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 	// original wndproc and previous window-width
 	SetWindowLong(m_hwndStatusBar, GWL_USERDATA, reinterpret_cast<LONG>(this));
 
-	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) 
+	for (UT_sint32 k = 0; k < getFields()->getItemCount(); k++) 
 	{
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
 		UT_ASSERT_HARMLESS(pf); // we should NOT have null elements
