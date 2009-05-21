@@ -96,7 +96,6 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 {
-	_deleteInsertedFontList();
 #ifndef WITH_GUCHARMAP
 	DELETEP(m_unixGraphics);
 	DELETEP(m_unixarea);
@@ -244,7 +243,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 //
 	if (iDrawSymbol)
 		s_Prev_Font = iDrawSymbol->getSelectedFont();
-	_deleteInsertedFontList();
+    m_InsertS_Font_list.clear();
 	
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain);
@@ -305,13 +304,13 @@ void XAP_UnixDialog_Insert_Symbol::Scroll_Event (int direction)
 	if (direction && m_vadjust->upper > m_vadjust->value + 1)
 	{
 		m_vadjust->value += 1;
-	        gtk_adjustment_value_changed (m_vadjust);
+        gtk_adjustment_value_changed (m_vadjust);
 	}
 	else if (!direction && m_vadjust->lower <= m_vadjust->value - 1)
  	{
 		m_vadjust->value -= 1;
-	        gtk_adjustment_value_changed (m_vadjust);
-        }
+        gtk_adjustment_value_changed (m_vadjust);
+    }
 }
 
 
@@ -449,8 +448,8 @@ void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 
 	diff.width = width - diff_width;
 	diff.height = height - diff_height;
 
-        // set new sizes
-        iDrawSymbol->setWindowSize(diff.width, diff.height);
+    // set new sizes
+    iDrawSymbol->setWindowSize(diff.width, diff.height);
 	iDrawSymbol->setFontString ();
 }
 
@@ -605,23 +604,10 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 
 #endif /* WITH_GUCHARMAP */
 
-void XAP_UnixDialog_Insert_Symbol::_deleteInsertedFontList(void)
-{
-	if(m_InsertS_Font_list != NULL) { 
-		GList *l;
-        	for (l = m_InsertS_Font_list; l != NULL; l = l->next) {
-                	g_free(l->data);
-        	}
-        	g_list_free (m_InsertS_Font_list);
-		m_InsertS_Font_list = NULL;
-	}
-}
-
-
 void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	UT_DEBUGMSG(("XAP_UnixDialog_Insert_Symbol::destroy()"));
-	_deleteInsertedFontList();
+    m_InsertS_Font_list.clear();
 	modeless_cleanup();
 	
 	// Just nuke this dialog
@@ -664,13 +650,13 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 
 		
-        m_SymbolMap = _previewNew (608, 147);
-        gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
+    m_SymbolMap = _previewNew (608, 147);
+    gtk_box_pack_start (GTK_BOX (hbox1), m_SymbolMap, TRUE, TRUE, 0);
 
 	m_vadjust = GTK_ADJUSTMENT (gtk_adjustment_new (0, 0, 7, 0, 0, 7));
 	GtkWidget *vscroll = gtk_vscrollbar_new (m_vadjust);
 	gtk_widget_show (vscroll);
-        gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
 
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
@@ -697,47 +683,44 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 }
 	
 /*
-  This code is to suck all the available fonts and put them in a GList.
+  This code is to suck all the available fonts and put them in a std::list.
   This can then be displayed on a combo box at the top of the dialog.
   Code stolen from ap_UnixToolbar_FontCombo. Now we remove all the 
   duplicate name entries and create the Glist glFonts. This will be 
   used in the font selection combo box 
 */
-GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
+void XAP_UnixDialog_Insert_Symbol::_getGlistFonts (std::list<std::string> & glFonts)
 {
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
 	if(!pGF)
 	{
-		return NULL;
+		return;
 	}
 
 	const std::vector<std::string> & names =
 		GR_CairoGraphics::getAllFontNames();
 	
-	GList *glFonts = NULL;
-
 	for (std::vector<std::string>::const_iterator i = names.begin(); 
 		 i != names.end(); ++i)
 	{
         const std::string & lgn = *i;
-		glFonts = g_list_insert_sorted(glFonts, g_strdup(lgn.c_str()), 
-                                       reinterpret_cast <gint (*)(const void*, const void*)> (strcmp));
+		glFonts.push_back(lgn);
 	}	
 
-    std::string lastfont;
-	for (GList *g = g_list_first (glFonts); g;)
-	{
-		if (lastfont == static_cast <const char *> (g->data))
-		{
-			g_free (g->data);
-			g = g_list_remove_link (g, g);
-			continue;
-		}
-		lastfont = static_cast <const char *> (g->data);
-        g = g_list_next (g);
-    }
+    glFonts.sort();
 
-	return glFonts;
+    std::string lastfont;
+    for (std::list<std::string>::iterator iter = glFonts.begin();
+         iter != glFonts.end(); ) 
+    {
+		if (lastfont == *iter)
+		{
+            iter = glFonts.erase(iter);
+            continue;
+		}
+        lastfont = *iter;
+        ++iter;
+    }
 }
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
@@ -746,11 +729,12 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 	gtk_widget_show(fontcombo);
 
 	// ensure we don't override this without freeing...
-	_deleteInsertedFontList();
-	m_InsertS_Font_list = _getGlistFonts ();
-	for(GList * l = g_list_first(m_InsertS_Font_list); l; l = g_list_next(l))
+    m_InsertS_Font_list.clear();
+	_getGlistFonts (m_InsertS_Font_list);
+	for(std::list<std::string>::const_iterator iter = m_InsertS_Font_list.begin();
+        iter != m_InsertS_Font_list.end(); ++iter)
 	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(fontcombo), (const char*)(l->data));
+		gtk_combo_box_append_text(GTK_COMBO_BOX(fontcombo), iter->c_str());
 	}
 
 	// Turn off keyboard entry in the font selection box

@@ -1079,10 +1079,10 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 
 /*
-  This code is to suck all the available fonts and put them in a GList.
+  This code is to suck all the available fonts and put them in a vector.
   This can then be displayed on a combo box at the top of the dialog.
   Code stolen from xap_UnixDialog_Insert_Symbol */
-/* Now we remove all the duplicate name entries and create the Glist
+/* Now we remove all the duplicate name entries and create the vector
    glFonts. This will be used in the font selection combo
    box */
 

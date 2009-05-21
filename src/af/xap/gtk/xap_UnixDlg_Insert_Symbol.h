@@ -20,6 +20,9 @@
 #ifndef XAP_UNIXDIALOG_INSERT_SYMBOL_H
 #define XAP_UNIXDIALOG_INSERT_SYMBOL_H
 
+#include <list>
+#include <string>
+
 #include "xap_Dlg_Insert_Symbol.h"
 #include <gdk/gdkkeysyms.h>
 
@@ -71,8 +74,7 @@ public:
 private:
 
 	GtkWidget * _constructWindow(void);
-	GList *     _getGlistFonts(void);
-	void	    _deleteInsertedFontList(void);
+	void        _getGlistFonts(std::list<std::string> & glFonts);
 	GtkWidget * _createComboboxWithFonts (void);
 	void        _connectSignals (void);
 	void        _setScrolledWindow (void);
@@ -82,8 +84,7 @@ private:
 	GtkWidget * m_SymbolMap;
 	GtkWidget * m_fontcombo;
 	GtkAdjustment * m_vadjust;
-	GList     * m_InsertS_Font_list;
-	UT_GenericVector<gchar*>   m_fontlist;
+    std::list<std::string>     m_InsertS_Font_list;
 
 #ifndef WITH_GUCHARMAP
 	// private construction functions
