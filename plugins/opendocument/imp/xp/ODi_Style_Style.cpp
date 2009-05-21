@@ -451,6 +451,14 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
     if(pVal) {
         m_bgcolor.assign(pVal);
     }
+
+    pVal = UT_getAttribute ("fo:text-transform", ppProps);
+    if(pVal && *pVal && 
+       (!strcmp(pVal, "none") || !strcmp(pVal, "lowercase") ||
+        !strcmp(pVal, "uppercase") || !strcmp(pVal, "capitalize"))) {
+
+        m_transform = pVal;
+    }
 }
 
 
@@ -800,6 +808,8 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     if (m_family.length() && !strcmp("text", m_family.utf8_str())) {
         APPEND_STYLE("display: ", m_display);
     }
+
+    APPEND_STYLE("text-transform: ", m_transform);
     
     // <style:section-properties />
     APPEND_STYLE("columns: ", m_columns);
