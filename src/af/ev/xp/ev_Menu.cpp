@@ -91,7 +91,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 		// Here we should create end - i submenus
 		if (index == 0)
 		{
-			UT_DEBUGMSG(("... yes.  i = [%d], end = [%d]\n", i, end));
+			UT_DEBUGMSG(("... yes.  i = [%zd], end = [%zd]\n", i, end));
 			UT_uint32 lpos = m_pMenuLayout->getLayoutIndex(last_index);
 
 			// and now we add the new submenus

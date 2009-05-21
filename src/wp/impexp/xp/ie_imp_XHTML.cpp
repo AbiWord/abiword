@@ -2154,7 +2154,7 @@ bool IE_Imp_XHTML::requireSection ()
 
 bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const gchar ** attributes)
 {
-	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %x \n",pts,getDoc()));
+	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %p \n",pts,getDoc()));
 	if(pts == PTX_Section)
 	{
 		m_bFirstBlock = false;
