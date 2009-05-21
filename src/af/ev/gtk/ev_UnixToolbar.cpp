@@ -29,12 +29,16 @@
 #include "config.h"
 #endif
 
+#include <string.h>
+#include <stdlib.h>
+
+#include <string>
+
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include <goffice/gtk/go-combo-box.h>
 #include <goffice/gtk/go-combo-color.h>
-#include <string.h>
-#include <stdlib.h>
+
 #include "ap_Features.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -472,7 +476,7 @@ public:									// we create...
 			y += widget->allocation.y + widget->allocation.height;
 			XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 			wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
-			UT_DEBUGMSG(("ev_UnixToolbar - building new FontPreview %x \n",wd->m_pUnixToolbar));
+			UT_DEBUGMSG(("ev_UnixToolbar - building new FontPreview %p \n",wd->m_pUnixToolbar));
 		}
 
 		wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(text);
@@ -496,7 +500,7 @@ public:									// we create...
 		if (wd && 
 			wd->m_pUnixToolbar &&
 			wd->m_pUnixToolbar->m_pFontPreview) {
-				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
+				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %p \n",wd->m_pUnixToolbar));
 			    delete wd->m_pUnixToolbar->m_pFontPreview;
 				wd->m_pUnixToolbar->m_pFontPreview = NULL;
 				wd->m_pUnixToolbar->m_pFontPreviewPositionX = -1;
@@ -557,7 +561,7 @@ public:									// we create...
 				buffer = g_strdup (font);
 			}
 			if (wd->m_pUnixToolbar->m_pFontPreview) {
-				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
+				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %p \n",wd->m_pUnixToolbar));
 			    delete wd->m_pUnixToolbar->m_pFontPreview;
 				wd->m_pUnixToolbar->m_pFontPreview = NULL;
 				wd->m_pUnixToolbar->m_pFontPreviewPositionX = -1;
@@ -902,12 +906,12 @@ bool EV_UnixToolbar::synthesize(void)
 //
 					GtkWidget * abi_table = abi_table_new();
 					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-					UT_UTF8String sTable;
+                    std::string sTable;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_Table,sTable);
-					UT_UTF8String sCancel;
+                    std::string sCancel;
 					pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,sCancel);
 
-					abi_table_set_labels(ABITABLE_WIDGET(abi_table),sTable.utf8_str(),sCancel.utf8_str());
+					abi_table_set_labels(ABITABLE_WIDGET(abi_table),sTable.c_str(),sCancel.c_str());
 					gtk_widget_show(abi_table);
 					UT_DEBUGMSG(("SEVIOR: Made insert table widget \n"));
 					wd->m_handlerId = g_signal_connect(abi_table, "selected",
@@ -915,10 +919,10 @@ bool EV_UnixToolbar::synthesize(void)
 													   static_cast<gpointer>(wd));
 
 					UT_DEBUGMSG(("SEVIOR: Made connected to callback \n"));
-					UT_UTF8String s;
+                    std::string s;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
-										 s.utf8_str(), NULL, TRUE, NULL, NULL, NULL);
+										 s.c_str(), NULL, TRUE, NULL, NULL, NULL);
 					gtk_widget_show_all(abi_table);
 					gtk_widget_hide(ABITABLE_WIDGET(abi_table)->label);
 					wd->m_widget = abi_table;
@@ -1105,7 +1109,7 @@ bool EV_UnixToolbar::synthesize(void)
 				}
 				else {
 					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-					UT_UTF8String sClear;
+                    std::string sClear;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearBackground,sClear);
 
 					action_name = "dlgColorPickerBack";
@@ -1113,7 +1117,7 @@ bool EV_UnixToolbar::synthesize(void)
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_BACK, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, sClear.utf8_str(), 0, cg);
+					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
 
 				    wd->m_widget = combo;
 				    g_signal_connect (G_OBJECT (combo), "color-changed",
@@ -1372,7 +1376,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 						m_pFrame->setStatusMessage(szState);
 						if (wd->m_pUnixToolbar->m_pFontPreview) {
-							UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
+							UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %p \n",wd->m_pUnixToolbar));
 						    delete wd->m_pUnixToolbar->m_pFontPreview;
 							wd->m_pUnixToolbar->m_pFontPreview = NULL;
 							wd->m_pUnixToolbar->m_pFontPreviewPositionX = 0;
