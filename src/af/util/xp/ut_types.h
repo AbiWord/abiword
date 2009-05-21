@@ -92,6 +92,12 @@ typedef UT_uint8 UT_Confidence_t;
   #define ABI_EXPORT
 #endif
 
+#if __GNUC__
+  #define ABI_NORETURN __attribute__((noreturn))
+#else
+  #define ABI_NORETURN
+#endif
+
 /* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */
 #define ABI_FAR_CALL extern "C" ABI_PLUGIN_EXPORT
 

@@ -26,6 +26,7 @@
 #ifndef AP_UNIXAPP_H
 #define AP_UNIXAPP_H
 
+#include "ut_types.h"
 #include "ut_bytebuf.h"
 #include "ap_App.h"
 #include "ap_UnixPrefs.h"
@@ -94,7 +95,7 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
-	void							catchSignals(int sig_num);
+	void							catchSignals(int sig_num) ABI_NORETURN;
 	void loadAllPlugins ();
 
 	virtual void errorMsgBadArg(const char *msg);

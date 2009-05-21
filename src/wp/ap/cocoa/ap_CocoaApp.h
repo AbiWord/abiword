@@ -30,6 +30,7 @@
 #ifndef AP_COCOAAPP_H
 #define AP_COCOAAPP_H
 
+#include "ut_types.h"
 #include "ap_App.h"
 #include "ut_bytebuf.h"
 #include "xap_CocoaApp.h"
@@ -84,7 +85,7 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
-	void							catchSignals(int sig_num);
+	void							catchSignals(int sig_num) ABI_NORETURN;
 
 	void loadAllPlugins ();
 
