@@ -75,8 +75,7 @@ bool UT_Win32Idle::_isEmpty()
 
 void UT_Win32Idle::_fireall()
 {
-	UT_uint32 i;
-	for (i = 0; i < static_vecIdles.getItemCount(); ++i) 
+	for (UT_sint32 i = 0; i < static_vecIdles.getItemCount(); ++i) 
 	{
 		UT_Win32Idle * pIdle = (UT_Win32Idle *)static_vecIdles.getNthItem(i);
 		pIdle->fire();

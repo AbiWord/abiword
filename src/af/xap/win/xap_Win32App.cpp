@@ -320,7 +320,6 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 
 	if (_getExeDir(buf,sizeof(buf)) > 0)
 	{
-		char *dir;
 		char *base;
 		size_t len, baselen;
 

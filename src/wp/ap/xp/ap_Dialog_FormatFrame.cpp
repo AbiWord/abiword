@@ -890,11 +890,11 @@ static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, fl
 	UT_UTF8String sThick;
 
 	if (thickness < 0.01) {
-		thickness = 0.01;
+		thickness = 0.01f;
 		sThick = "0.01pt";
 	}
 	else if (thickness > 99.99) {
-		thickness = 99.99;
+		thickness = 99.99f;
 		sThick = "99.99pt";
 	}
 	else {
